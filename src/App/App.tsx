@@ -1,14 +1,13 @@
-import React from 'react';
-// import logo from './logo.svg';
+/******* Import Local Files *******/
 import './App.css';
-import HamburgerMenuIcon from './animations/hamburger-menu-icon';
-import AmbientLogoIcon from './animations/ambient-logo-icon';
+import HamburgerMenuIcon from '../animations/hamburger-menu-icon';
+import AmbientLogoIcon from '../animations/ambient-logo-icon';
 
-function App() {
+/******* React Function *******/
+export default function App() {
   return (
     <div className='App'>
       <header className='App-header'>
-        {/* <img src={logo} className='App-logo' alt='logo' /> */}
         <HamburgerMenuIcon />
         <AmbientLogoIcon />
         <p>
@@ -26,5 +25,3 @@ function App() {
     </div>
   );
 }
-
-export default App;
