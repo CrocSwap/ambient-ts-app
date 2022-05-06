@@ -2,14 +2,29 @@ import React from 'react';
 // import logo from './logo.svg';
 import './App.css';
 
-import Rive from '@rive-app/react-canvas';
+import { useRive, useStateMachineInput } from '@rive-app/react-canvas';
 
-export const Simple = () => (
-  // <Rive src='./new_file.riv' />
-  // <Rive src='https://cdn.rive.app/animations/off_road_car_v7.riv' />
-  <Rive src='ambient.riv' />
-  // <Rive src='off_road_car_v7.riv' />
-);
+function Simple() {
+  const { rive, RiveComponent } = useRive({
+    // src: 'https://cdn.rive.app/animations/vehicles.riv',
+    src: 'hamburger.riv',
+    stateMachines: 'Basic State Machine',
+    autoplay: true,
+  });
+
+  const switchInput = useStateMachineInput(
+    rive,
+    'Basic State Machine',
+    'Switch'
+  );
+
+  return (
+    <RiveComponent
+      style={{ height: '500px' }}
+      onClick={() => switchInput && switchInput.fire()}
+    />
+  );
+}
 
 function App() {
   return (
