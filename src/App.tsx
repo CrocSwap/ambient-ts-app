@@ -1,40 +1,25 @@
 import React from 'react';
 // import logo from './logo.svg';
 import './App.css';
-
-import { useRive, useStateMachineInput } from '@rive-app/react-canvas';
-
-function Simple() {
-  const { rive, RiveComponent } = useRive({
-    // src: 'https://cdn.rive.app/animations/vehicles.riv',
-    src: 'hamburger.riv',
-    stateMachines: 'Basic State Machine',
-    autoplay: true,
-  });
-
-  const switchInput = useStateMachineInput(
-    rive,
-    'Basic State Machine',
-    'Switch'
-  );
-
-  return (
-    <RiveComponent
-      style={{ height: '50px' }}
-      onClick={() => switchInput && switchInput.fire()}
-    />
-  );
-}
+import HamburgerMenuIcon from './hamburger-menu-icon';
 
 function App() {
   return (
     <div className='App'>
       <header className='App-header'>
         {/* <img src={logo} className='App-logo' alt='logo' /> */}
-        <Simple />
+        <HamburgerMenuIcon />
         <p>
           Edit <code>src/App.tsx</code> and save to reload.
         </p>
+        <a
+          className='App-link'
+          href='https://reactjs.org'
+          target='_blank'
+          rel='noopener noreferrer'
+        >
+          Learn React
+        </a>
       </header>
     </div>
   );
