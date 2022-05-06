@@ -1,6 +1,3 @@
-/******* Import React and Dongles *******/
-import { useRive, useStateMachineInput } from '@rive-app/react-canvas';
-
 /******* Import Local Files *******/
 import './App.css';
 import HamburgerMenuIcon from '../animations/hamburger-menu-icon';
