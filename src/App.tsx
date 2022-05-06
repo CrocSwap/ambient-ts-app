@@ -20,7 +20,7 @@ function Simple() {
 
   return (
     <RiveComponent
-      style={{ height: '500px' }}
+      style={{ height: '50px' }}
       onClick={() => switchInput && switchInput.fire()}
     />
   );
