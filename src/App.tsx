@@ -1,7 +1,8 @@
 import React from 'react';
 // import logo from './logo.svg';
 import './App.css';
-import HamburgerMenuIcon from './hamburger-menu-icon';
+import HamburgerMenuIcon from './animations/hamburger-menu-icon';
+import AmbientLogoIcon from './animations/ambient-logo-icon';
 
 function App() {
   return (
@@ -9,6 +10,7 @@ function App() {
       <header className='App-header'>
         {/* <img src={logo} className='App-logo' alt='logo' /> */}
         <HamburgerMenuIcon />
+        <AmbientLogoIcon />
         <p>
           Edit <code>src/App.tsx</code> and save to reload.
         </p>
