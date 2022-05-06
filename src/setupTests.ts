@@ -17,14 +17,17 @@ window.IntersectionObserver = class IntersectionObserver {
     this.thresholds = [];
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   disconnect() {}
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   observe() {}
 
   takeRecords(): IntersectionObserverEntry[] {
     return [];
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   unobserve() {}
 };
 
