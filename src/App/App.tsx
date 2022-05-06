@@ -1,12 +1,12 @@
-import React from 'react';
-// import logo from './logo.svg';
-import './App.css';
-
+/******* Import React and Dongles *******/
 import { useRive, useStateMachineInput } from '@rive-app/react-canvas';
 
+/******* Import Local Files *******/
+import './App.css';
+
+// TODO: move this function to its own file later
 function Simple() {
   const { rive, RiveComponent } = useRive({
-    // src: 'https://cdn.rive.app/animations/vehicles.riv',
     src: 'hamburger.riv',
     stateMachines: 'Basic State Machine',
     autoplay: true,
@@ -26,11 +26,11 @@ function Simple() {
   );
 }
 
-function App() {
+/******* React Function *******/
+export default function App() {
   return (
     <div className='App'>
       <header className='App-header'>
-        {/* <img src={logo} className='App-logo' alt='logo' /> */}
         <Simple />
         <p>
           Edit <code>src/App.tsx</code> and save to reload.
@@ -39,5 +39,3 @@ function App() {
     </div>
   );
 }
-
-export default App;
