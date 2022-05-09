@@ -1,5 +1,5 @@
-import Rive from '@rive-app/react-canvas';
+import Rive from '@rive-app/react-canvas'
 
 export default function AmbientLogoIcon() {
-  return <Rive src='ambient.riv' />;
+  return <Rive src='ambient.riv' />
 }
