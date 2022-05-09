@@ -8,16 +8,9 @@ export default function HamburgerMenuIcon() {
     autoplay: true,
   });
 
-  const switchInput = useStateMachineInput(
-    rive,
-    'Basic State Machine',
-    'Switch'
-  );
+  const switchInput = useStateMachineInput(rive, 'Basic State Machine', 'Switch');
 
   return (
-    <RiveComponent
-      style={{ height: '50px' }}
-      onClick={() => switchInput && switchInput.fire()}
-    />
+    <RiveComponent style={{ height: '50px' }} onClick={() => switchInput && switchInput.fire()} />
   );
 }

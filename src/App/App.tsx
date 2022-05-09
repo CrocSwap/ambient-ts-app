@@ -15,7 +15,7 @@ import Portfolio from '../pages/Portfolio/Portfolio';
 import './App.css';
 
 
-/******* React Function *******/
+/** ***** React Function *******/
 export default function App() {
   return (
     <>
