@@ -16,11 +16,17 @@ import './App.css';
 /******* React Function *******/
 export default function App() {
   return (
-    <Routes>
-      <Route index element={<Home />} />
-      <Route path='trade' element={<Trade />} />
-      <Route path='analytics' element={<Analytics />} />
-      <Route path='portfolio' element={<Portfolio />} />
-    </Routes>
+    <>
+      <header></header>
+      <Routes>
+        <Route index element={<Home />} />
+        <Route path='trade' element={<Trade />}>
+          
+        </Route>
+        <Route path='analytics' element={<Analytics />} />
+        <Route path='portfolio' element={<Portfolio />} />
+      </Routes>
+      <footer></footer>
+    </>
   );
 }
