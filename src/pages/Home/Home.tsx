@@ -1,6 +1,6 @@
 export default function Home() {
     return (
-        <main id={'home'}>
+        <main data-testid={'home'}>
         </main>
     );
 }
