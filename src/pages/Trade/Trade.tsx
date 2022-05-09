@@ -1,6 +1,6 @@
-export default function Home() {
+export default function Trade() {
     return (
-        <main data-testid={'home'}>
+        <main data-testid={'trade'}>
         </main>
     );
 }
