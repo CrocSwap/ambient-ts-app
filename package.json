@@ -40,7 +40,7 @@
   },
   "lint-staged": {
     "**/*.{js,jsx,ts,tsx}": [
-      "npx prettier --write",
+      "npx prettier --write --config ./.prettierrc",
       "npx eslint --fix"
     ]
   },
