@@ -32,12 +32,6 @@
     "pre-commit": "yarn lint:fix && yarn format && yarn test:nowatch",
     "prepare": "husky install"
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
   "lint-staged": {
     "**/*.{js,jsx,ts,tsx}": [
       "npx prettier --write --config ./.prettierrc",

@@ -1,6 +1,3 @@
 export default function Home() {
-    return (
-        <main data-testid={'home'}>
-        </main>
-    );
+  return <main data-testid={'home'}></main>;
 }

@@ -2,19 +2,19 @@
 // allows you to do things like:
 // expect(element).toHaveTextContent(/react/i)
 // learn more: https://github.com/testing-library/jest-dom
-import '@testing-library/jest-dom'
+import '@testing-library/jest-dom';
 
 window.IntersectionObserver = class IntersectionObserver {
-  readonly root: Element | null
+  readonly root: Element | null;
 
-  readonly rootMargin: string
+  readonly rootMargin: string;
 
-  readonly thresholds: ReadonlyArray<number>
+  readonly thresholds: ReadonlyArray<number>;
 
   constructor() {
-    this.root = null
-    this.rootMargin = ''
-    this.thresholds = []
+    this.root = null;
+    this.rootMargin = '';
+    this.thresholds = [];
   }
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -24,12 +24,12 @@ window.IntersectionObserver = class IntersectionObserver {
   observe() {}
 
   takeRecords(): IntersectionObserverEntry[] {
-    return []
+    return [];
   }
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   unobserve() {}
-}
+};
 
 // jest.mock('@rive-app/canvas', () => ({
 //   Rive: jest.fn().mockImplementation(() => ({

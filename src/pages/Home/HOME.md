@@ -4,8 +4,8 @@ This directory contains the JSX to render a page at the index URL and all suppor
 
 # Location and Files
 
-* This directory is located at `/src/pages/Home`
-* `Home.tsx` The main file housing the `Home()` react function
-* `Home.module.css` CSS module with styling for `Home.tsx`
-* `Home.test.tsx` test file holding Jest tests for the `Home()` React function
-* `HOME.md` documentation for all files in this directory
+- This directory is located at `/src/pages/Home`
+- `Home.tsx` The main file housing the `Home()` react function
+- `Home.module.css` CSS module with styling for `Home.tsx`
+- `Home.test.tsx` test file holding Jest tests for the `Home()` React function
+- `HOME.md` documentation for all files in this directory

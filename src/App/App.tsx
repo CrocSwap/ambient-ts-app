@@ -1,7 +1,7 @@
 /** ***** Import Local Files *******/
-import './App.css'
-import HamburgerMenuIcon from '../animations/hamburger-menu-icon'
-import AmbientLogoIcon from '../animations/ambient-logo-icon'
+import './App.css';
+import HamburgerMenuIcon from '../animations/hamburger-menu-icon';
+import AmbientLogoIcon from '../animations/ambient-logo-icon';
 
 /** ***** React Function *******/
 export default function App() {
@@ -23,5 +23,5 @@ export default function App() {
         </a>
       </header>
     </div>
-  )
+  );
 }

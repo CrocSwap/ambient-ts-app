@@ -1,4 +1,4 @@
-import { useRive, useStateMachineInput } from '@rive-app/react-canvas'
+import { useRive, useStateMachineInput } from '@rive-app/react-canvas';
 
 export default function HamburgerMenuIcon() {
   const { rive, RiveComponent } = useRive({
@@ -6,11 +6,11 @@ export default function HamburgerMenuIcon() {
     src: 'hamburger.riv',
     stateMachines: 'Basic State Machine',
     autoplay: true,
-  })
+  });
 
-  const switchInput = useStateMachineInput(rive, 'Basic State Machine', 'Switch')
+  const switchInput = useStateMachineInput(rive, 'Basic State Machine', 'Switch');
 
   return (
     <RiveComponent style={{ height: '50px' }} onClick={() => switchInput && switchInput.fire()} />
-  )
+  );
 }
