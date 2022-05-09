@@ -22,9 +22,7 @@ export default function App() {
       <PageHeader />
       <Routes>
         <Route index element={<Home />} />
-        <Route path='trade' element={<Trade />}>
-
-        </Route>
+        <Route path='trade' element={<Trade />} />
         <Route path='analytics' element={<Analytics />} />
         <Route path='portfolio' element={<Portfolio />} />
       </Routes>
