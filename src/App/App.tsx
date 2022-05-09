@@ -1,27 +1,26 @@
+/******* Import React and Dongles *******/
+import { Routes, Route } from 'react-router-dom';
+
+
+/******* Import JSX Files *******/
+import Home from '../pages/Home/Home';
+import Trade from '../pages/Trade/Trade';
+import Analytics from '../pages/Analytics/Analytics';
+import Portfolio from '../pages/Portfolio/Portfolio';
+
+
 /******* Import Local Files *******/
 import './App.css';
-import HamburgerMenuIcon from '../animations/hamburger-menu-icon';
-import AmbientLogoIcon from '../animations/ambient-logo-icon';
+
 
 /******* React Function *******/
 export default function App() {
   return (
-    <div className='App'>
-      <header className='App-header'>
-        <HamburgerMenuIcon />
-        <AmbientLogoIcon />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className='App-link'
-          href='https://reactjs.org'
-          target='_blank'
-          rel='noopener noreferrer'
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Routes>
+      <Route index element={<Home />} />
+      <Route path='trade' element={<Trade />} />
+      <Route path='analytics' element={<Analytics />} />
+      <Route path='portfolio' element={<Portfolio />} />
+    </Routes>
   );
 }
