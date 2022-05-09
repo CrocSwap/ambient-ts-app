@@ -5,7 +5,7 @@ import {
 
 import Home from './Home';
 
-test('renders learn react link', () => {
+test('renders Home() React function instance', () => {
     render(<Home />);
     const homeElement = screen.getByTestId('home');
     expect(homeElement).toBeInTheDocument();
