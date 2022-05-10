@@ -1,42 +1,52 @@
-.App {
-  text-align: center;
+@import url(../css/reset.css);
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  scroll-behavior: smooth;
+  font-family: var(--font-family);
+  font-weight: 200;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+html{
+  background: var(--body-bg);
+  color: var(--text-grey-white);
+
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+ svg{
+  color: var(--text-grey-light);
+  
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+body{
+
+  overflow-x: hidden;
+  padding: 0 4rem;
+ 
+}
+a {
+  color: unset;
+  text-decoration: none;
+  position: relative;
+  
 }
 
-.App-link {
-  color: #61dafb;
+.primary_apy{
+  background: var(--apy-gradient-primary);
+  -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.secondary_apy{
+  background: var(--apy-gradient-secondary);
+  -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
-
 
 .sr-only{
   position: absolute;

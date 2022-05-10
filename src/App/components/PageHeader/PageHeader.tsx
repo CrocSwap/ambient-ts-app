@@ -38,7 +38,9 @@ export default function PageHeader() {
 
     return (
         <header data-testid={'page-header'} className={styles.primary_header}>
+            <div className={styles.header_gradient}> </div>
             <div className={styles.logo_container}>
+                <img src='ambient_logo.svg' alt='ambient' />
                 <h1>ambient</h1>
             </div>
             <div
@@ -59,7 +61,7 @@ export default function PageHeader() {
                 <NavLink to='/analytics'>Analytics</NavLink>
                 <NavLink to='/portfolio'>Portfolio</NavLink>
             </nav>
-            <div>Account Info</div>
+            <div className={styles.account}>Account Info</div>
         </header>
     );
 }
