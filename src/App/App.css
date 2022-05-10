@@ -23,6 +23,8 @@ html{
 body{
 
   overflow-x: hidden;
+  padding: 0 4rem;
+ 
 }
 a {
   color: unset;
