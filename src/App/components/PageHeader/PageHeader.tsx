@@ -1,11 +1,10 @@
 /** ***** START: Import React and Dongles *******/
-import { Link, NavLink } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { useState } from 'react';
 /** ***** END: Import React and Dongles *********/
 
 /** ***** START: Import Local Files *******/
 import styles from './PageHeader.module.css';
-import { RiMenu3Line, RiCloseLine } from 'react-icons/ri';
 import { useRive, useStateMachineInput } from 'rive-react';
 /** ***** END: Import Local Files *********/
 
@@ -50,7 +49,11 @@ export default function PageHeader() {
         <RiveComponent onClick={handleMobileNavToggle} />
         <span className='sr-only'>Menu</span>
       </div>
-      <nav className={styles.primary_navigation} id='primary_navigation'>
+      <nav
+        className={styles.primary_navigation}
+        id='primary_navigation'
+        data-visible={mobileNavToggle}
+      >
         <NavLink to='/'>Home</NavLink>
         <NavLink to='/trade'>Trade</NavLink>
         <NavLink to='/analytics'>Analytics</NavLink>
