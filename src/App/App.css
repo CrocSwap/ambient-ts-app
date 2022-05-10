@@ -36,3 +36,16 @@
     transform: rotate(360deg);
   }
 }
+
+
+.sr-only{
+  position: absolute;
+  width: 1px;
+  aspect-ratio: 1;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  border: 0;
+
+}
