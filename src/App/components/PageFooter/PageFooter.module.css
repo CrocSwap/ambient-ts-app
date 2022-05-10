@@ -1,0 +1,27 @@
+.footer{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-top: auto;
+    padding: 16px 0;
+
+    font-size:  var(--body-size);
+line-height: var(--body-lh);
+gap: var(--gap, 1rem)
+
+}
+
+.footer a{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.25rem;
+    
+}
+
+@media( max-width: 35em){
+.footer{
+    flex-direction: column;
+}
+
+}

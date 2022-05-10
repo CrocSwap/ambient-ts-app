@@ -20,8 +20,8 @@ import './App.css';
 export default function App() {
     return (
         <>
-            <PageHeader />
-            <div className='App'>
+            <div className='content-container'>
+                <PageHeader />
                 <Routes>
                     <Route index element={<Home />} />
                     <Route path='trade' element={<Trade />}>
@@ -34,6 +34,7 @@ export default function App() {
                     <Route path='testpage' element={<TestPage />} />
                 </Routes>
             </div>
+
             <PageFooter />
         </>
     );

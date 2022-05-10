@@ -12,6 +12,8 @@
 html{
   background: var(--body-bg);
   color: var(--text-grey-white);
+
+
   
 }
 
@@ -24,12 +26,17 @@ body{
   
   overflow-x: hidden;
   padding: 0 4rem;
-  
-}
-.App{
-  height: 100%;
-  min-height: calc(100vh - 1rem);
 
+}
+  
+.content-container {
+  min-height: calc(100vh - 4rem);
+}
+
+footer {
+  position: relative;
+  left: 0;
+  bottom: 0;
 }
 a {
   color: unset;
