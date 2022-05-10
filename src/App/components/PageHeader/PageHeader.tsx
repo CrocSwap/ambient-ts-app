@@ -29,6 +29,14 @@ export default function PageHeader() {
 
   // End of Page Header States
 
+  // Page Header functions
+  function handleToggle() {
+    setToggleMenu(!toggleMenu);
+    onClickInput?.fire();
+  }
+
+  // End of Page Header Functions
+
   return (
     <header data-testid={'page-header'} className={styles.primary_header}>
       <div className={styles.logo_container}>
@@ -37,9 +45,9 @@ export default function PageHeader() {
       <div
         className={styles.mobile_nav_toggle}
         aria-controls='primary_navigation'
-        aria-expanded='false'
+        aria-expanded={toggleMenu}
       >
-        <RiveComponent onClick={() => onClickInput?.fire()} />
+        <RiveComponent onClick={handleToggle} />
         <span className='sr-only'>Menu</span>
       </div>
       <nav className={styles.primary_navigation} id='primary_navigation'>
