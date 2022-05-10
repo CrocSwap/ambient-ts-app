@@ -6,13 +6,21 @@ import { Provider } from 'react-redux';
 import './index.css';
 import App from './App/App';
 import reportWebVitals from './reportWebVitals';
+import { MoralisProvider } from 'react-moralis';
+
+// const APP_ID = process.env.REACT_APP_MORALIS_APPLICATION_ID;
+const APP_ID = 'mVXmmaPDkP1oWs7YcGSqnP3U7qmK7BwUHyrLlqJe';
+// const SERVER_URL = process.env.REACT_APP_MORALIS_SERVER_URL;
+const SERVER_URL = 'https://kvng1p7egepw.usemoralis.com:2053/server';
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 root.render(
     <React.StrictMode>
         <Provider store={store}>
             <BrowserRouter>
-                <App />
+                <MoralisProvider appId={APP_ID} serverUrl={SERVER_URL}>
+                    <App />{' '}
+                </MoralisProvider>
             </BrowserRouter>
         </Provider>
     </React.StrictMode>,
