@@ -13,18 +13,30 @@ html{
   background: var(--body-bg);
   color: var(--text-grey-white);
 
+
+  
 }
 
- svg{
+svg{
   color: var(--text-grey-light);
   
 }
 
 body{
-
+  
   overflow-x: hidden;
   padding: 0 4rem;
- 
+
+}
+  
+.content-container {
+  min-height: calc(100vh - 4rem);
+}
+
+footer {
+  position: relative;
+  left: 0;
+  bottom: 0;
 }
 a {
   color: unset;
@@ -59,3 +71,5 @@ a {
   border: 0;
 
 }
+
+

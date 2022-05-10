@@ -20,18 +20,21 @@ import './App.css';
 export default function App() {
     return (
         <>
-            <PageHeader />
-            <Routes>
-                <Route index element={<Home />} />
-                <Route path='trade' element={<Trade />}>
-                    <Route path='market' element={<Market />} />
-                    <Route path='limit' element={<Limit />} />
-                    <Route path='liquidity' element={<Liquidity />} />
-                </Route>
-                <Route path='analytics' element={<Analytics />} />
-                <Route path='portfolio' element={<Portfolio />} />
-                <Route path='testpage' element={<TestPage />} />
-            </Routes>
+            <div className='content-container'>
+                <PageHeader />
+                <Routes>
+                    <Route index element={<Home />} />
+                    <Route path='trade' element={<Trade />}>
+                        <Route path='market' element={<Market />} />
+                        <Route path='limit' element={<Limit />} />
+                        <Route path='liquidity' element={<Liquidity />} />
+                    </Route>
+                    <Route path='analytics' element={<Analytics />} />
+                    <Route path='portfolio' element={<Portfolio />} />
+                    <Route path='testpage' element={<TestPage />} />
+                </Routes>
+            </div>
+
             <PageFooter />
         </>
     );
