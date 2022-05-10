@@ -10,6 +10,7 @@ import Analytics from '../pages/Analytics/Analytics';
 import Portfolio from '../pages/Portfolio/Portfolio';
 import Market from '../pages/Trade/Market/Market';
 import Limit from '../pages/Trade/Limit/Limit';
+import Liquidity from '../pages/Trade/Liquidity/Liquidity';
 
 /** * **** Import Local Files *******/
 import './App.css';
@@ -24,6 +25,7 @@ export default function App() {
                 <Route path='trade' element={<Trade />}>
                     <Route path='market' element={<Market />} />
                     <Route path='limit' element={<Limit />} />
+                    <Route path='liquidity' element={<Liquidity />} />
                 </Route>
                 <Route path='analytics' element={<Analytics />} />
                 <Route path='portfolio' element={<Portfolio />} />
