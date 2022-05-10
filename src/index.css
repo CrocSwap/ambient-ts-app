@@ -1,11 +1,67 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
-    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lexend+Exa:wght@100;200;300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@100;200;400;500;600&display=swap');
+
+:root {
+  --font-logo: 'Lexend Exa', sans-serif;
+  --font-family: 'Lexend Deca', sans-serif;
+
+
+  --title-gradient: linear-gradient(90deg, #7371FC 0%, #CDC1FF 49.48%, #7371FC 100%);;
+
+  --apy-gradient-primary: linear-gradient(90deg, #15BE6F 0%, #8FE9BF
+  49.48%, #15BE6F 100%);
+
+  --apy-gradient-secondary: linear-gradient(90deg, #C7D80C
+  0%, #E0EA74
+
+  49.48%, #C7D80C
+  100%);
+
+  
+
+  /* font */
+  --title-ts:0px 0px 150px rgba(70, 183, 219, 0.5), 0px 0px 100px rgba(70, 183, 219, 0.5), 0px 0px 30px rgba(70, 183, 219, 0.5), 0px 0px 20px rgba(70, 183, 219, 0.5), 0px 0px 10px rgba(70, 183, 219, 0.5), 0px 0px 3px rgba(70, 183, 219, 0.5);
+
+  --header1-size: 24px;
+  --header1-lh: 25px;
+
+  --header2-size: 18px;
+  --header2-lh: 19px;
+  
+  --body-size: 12px;
+  --body-lh: 15px;
+
+
+  /* colors */
+  --body-bg: #0E131A;
+  --dark1: #0D1117;
+  --dark2: #12171f;
+  --navbar: transparent;
+
+  --positive: #15BE67;
+  --negative: #F6385B;
+
+
+  --text-grey-light: #BDBDBD;
+  --text-grey-dark: #555555;
+  --text-grey-white: #ffffff;
+  --light-blue: #46B7DB;
+
+
+
+
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+[data-theme="light"]{
+  --body-bg: rgb(247, 248, 250) ;
+  --dark1: rgb(234, 226, 226);
+  --dark2: rgb(226, 221, 221);
+  --text-grey-light: #19222d;
+  --text-grey-dark: #0E131A;
+  --text-grey-white: black;
+  --navbar: linear-gradient(to right, #FFFFFF, #ECE9E6);
+  --title-gradient:  linear-gradient(to right, #0f0c29, #302b63, #24243e);
 }
+
+
