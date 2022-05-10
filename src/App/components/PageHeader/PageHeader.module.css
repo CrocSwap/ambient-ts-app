@@ -17,6 +17,10 @@
     color: white;
 }
 
+.mobile_nav_toggle{
+    display: none;
+}
+
 @media( max-width: 35em){
 .primary_navigation{
     z-index: 1000;
@@ -28,5 +32,15 @@
     padding: min(30vh, 10rem) 2rem;
     
 
+}
+
+.mobile_nav_toggle{
+    display: block;
+    position: absolute;
+    z-index: 99999;
+    width: 2rem;
+    aspect-ratio: 1;
+    top: 2rem;
+    right: 2rem;
 }
 }
