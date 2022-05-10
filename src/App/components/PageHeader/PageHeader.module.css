@@ -2,6 +2,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    background: rgb(73, 47, 47);
 }
 
 .primary_navigation{

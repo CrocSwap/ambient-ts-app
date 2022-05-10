@@ -24,6 +24,11 @@ export default function PageHeader() {
 
   // end of rive component
 
+  // Page Header states
+  const [toggleMenu, setToggleMenu] = useState<boolean>(false);
+
+  // End of Page Header States
+
   return (
     <header data-testid={'page-header'} className={styles.primary_header}>
       <div className={styles.logo_container}>
