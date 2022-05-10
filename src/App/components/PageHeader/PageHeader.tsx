@@ -6,6 +6,7 @@ import { useState } from 'react';
 /** ***** START: Import Local Files *******/
 import styles from './PageHeader.module.css';
 import { RiMenu3Line, RiCloseLine } from 'react-icons/ri';
+import { useRive, useStateMachineInput } from '@rive-app/react-canvas';
 /** ***** END: Import Local Files *********/
 
 export default function PageHeader() {
