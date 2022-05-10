@@ -12,19 +12,24 @@
 html{
   background: var(--body-bg);
   color: var(--text-grey-white);
-
+  
 }
 
- svg{
+svg{
   color: var(--text-grey-light);
   
 }
 
 body{
-
+  
   overflow-x: hidden;
   padding: 0 4rem;
- 
+  
+}
+.App{
+  height: 100%;
+  min-height: calc(100vh - 1rem);
+
 }
 a {
   color: unset;
@@ -59,3 +64,5 @@ a {
   border: 0;
 
 }
+
+
