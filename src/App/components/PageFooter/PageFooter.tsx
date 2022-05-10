@@ -1,5 +1,5 @@
 import styles from './PageFooter.module.css';
-import { RiTable2, RiTwitchFill } from 'react-icons/ri';
+import { RiTwitchFill } from 'react-icons/ri';
 import { FaDiscord, FaGithub } from 'react-icons/fa';
 import { BsMedium } from 'react-icons/bs';
 
