@@ -59,6 +59,7 @@ export default function PageHeader() {
         <NavLink to='/analytics'>Analytics</NavLink>
         <NavLink to='/portfolio'>Portfolio</NavLink>
       </nav>
+      <div>Account Info</div>
     </header>
   );
 }
