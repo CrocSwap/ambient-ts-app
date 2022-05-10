@@ -21,16 +21,27 @@
 .mobile_nav_toggle{
     display: none;
 }
+@supports (backdrop-filter: blur(1rem)){
+    .primary_navigation{
+        background: hsl(0 0% 100% / 0.1);
+        backdrop-filter: blur(1rem);
+    }
+}
+
 
 @media( max-width: 35em){
 .primary_navigation{
     z-index: 1000;
     --gap: 2em;
     background: darkblue;
+    background: hsl(0 0% 100% / 0.1);
+    backdrop-filter: blur(1rem);
     position: fixed;
     flex-direction: column;
     inset: 0 0 0 30%;
     padding: min(30vh, 10rem) 2rem;
+    transform: translateX(100%);
+    transition: transform 350ms ease-in-out;
     
 
 }

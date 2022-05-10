@@ -25,13 +25,13 @@ export default function PageHeader() {
   // end of rive component
 
   // Page Header states
-  const [toggleMenu, setToggleMenu] = useState<boolean>(false);
+  const [mobileNavToggle, setMobileNavToggle] = useState<boolean>(false);
 
   // End of Page Header States
 
   // Page Header functions
-  function handleToggle() {
-    setToggleMenu(!toggleMenu);
+  function handleMobileNavToggle() {
+    setMobileNavToggle(!mobileNavToggle);
     onClickInput?.fire();
   }
 
@@ -45,9 +45,9 @@ export default function PageHeader() {
       <div
         className={styles.mobile_nav_toggle}
         aria-controls='primary_navigation'
-        aria-expanded={toggleMenu}
+        aria-expanded={mobileNavToggle}
       >
-        <RiveComponent onClick={handleToggle} />
+        <RiveComponent onClick={handleMobileNavToggle} />
         <span className='sr-only'>Menu</span>
       </div>
       <nav className={styles.primary_navigation} id='primary_navigation'>
