@@ -9,6 +9,7 @@ import Trade from '../pages/Trade/Trade';
 import Analytics from '../pages/Analytics/Analytics';
 import Portfolio from '../pages/Portfolio/Portfolio';
 import Market from '../pages/Trade/Market/Market';
+import Limit from '../pages/Trade/Limit/Limit';
 
 /** * **** Import Local Files *******/
 import './App.css';
@@ -22,6 +23,7 @@ export default function App() {
                 <Route index element={<Home />} />
                 <Route path='trade' element={<Trade />}>
                     <Route path='market' element={<Market />} />
+                    <Route path='limit' element={<Limit />} />
                 </Route>
                 <Route path='analytics' element={<Analytics />} />
                 <Route path='portfolio' element={<Portfolio />} />
