@@ -9,7 +9,7 @@ import Trade from '../pages/Trade/Trade';
 import Analytics from '../pages/Analytics/Analytics';
 import Portfolio from '../pages/Portfolio/Portfolio';
 
-/** ***** Import Local Files *******/
+/** * **** Import Local Files *******/
 import './App.css';
 
 /** ***** React Function *******/
