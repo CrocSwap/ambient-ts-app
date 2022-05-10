@@ -1,6 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
+import { store } from './utils/state/store';
+import { Provider } from 'react-redux';
 import './index.css';
 import App from './App/App';
 import reportWebVitals from './reportWebVitals';
@@ -14,11 +16,13 @@ const SERVER_URL = 'https://kvng1p7egepw.usemoralis.com:2053/server';
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 root.render(
     <React.StrictMode>
-        <BrowserRouter>
-            <MoralisProvider appId={APP_ID} serverUrl={SERVER_URL}>
-                <App />{' '}
-            </MoralisProvider>
-        </BrowserRouter>
+        <Provider store={store}>
+            <BrowserRouter>
+                <MoralisProvider appId={APP_ID} serverUrl={SERVER_URL}>
+                    <App />{' '}
+                </MoralisProvider>
+            </BrowserRouter>
+        </Provider>
     </React.StrictMode>,
 );
 
