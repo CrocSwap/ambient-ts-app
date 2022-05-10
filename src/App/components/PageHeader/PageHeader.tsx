@@ -15,10 +15,10 @@ export default function PageHeader() {
         <h1>ambient</h1>
       </div>
       <nav>
-        <Link to='/'>Home</Link>
-        <Link to='/trade'>Trade</Link>
-        <Link to='/analytics'>Analytics</Link>
-        <Link to='/portfolio'>Portfolio</Link>
+        <NavLink to='/'>Home</NavLink>
+        <NavLink to='/trade'>Trade</NavLink>
+        <NavLink to='/analytics'>Analytics</NavLink>
+        <NavLink to='/portfolio'>Portfolio</NavLink>
       </nav>
     </header>
   );
