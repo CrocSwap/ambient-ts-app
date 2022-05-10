@@ -4,6 +4,16 @@
     align-items: center;
     /* background: rgb(73, 47, 47); */
 }
+.header_gradient{
+    position: absolute;
+    width: 1440px;
+    height: 873px;
+    left: 0px;
+    top: -490px;
+    background: radial-gradient(50% 50% at 50% 50%, rgba(205, 193, 255, 0.2) 0.01%, rgba(205, 193, 255, 0.116) 19.79%, rgba(205, 193, 255, 0.02) 59.38%, rgba(205, 193, 255, 0) 100%);
+    pointer-events: none;
+ 
+}
 
 .primary_navigation{
     display: flex;
