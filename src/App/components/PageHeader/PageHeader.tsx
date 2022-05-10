@@ -10,9 +10,10 @@ import { RiMenu3Line, RiCloseLine } from 'react-icons/ri';
 
 export default function PageHeader() {
   return (
-    <header data-testid={'page-header'}>
-      <h1>This is the Page Header!</h1>
-      <h3>PageHeader.tsx</h3>
+    <header data-testid={'page-header'} className={styles.primary_header}>
+      <div className={styles.logo_container}>
+        <h1>ambient</h1>
+      </div>
       <nav>
         <Link to='/'>Home</Link>
         <Link to='/trade'>Trade</Link>
