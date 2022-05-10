@@ -15,9 +15,12 @@ import TestPage from '../pages/TestPage/TestPage';
 
 /** * **** Import Local Files *******/
 import './App.css';
+import { useWallet } from './useWallet';
 
 /** ***** React Function *******/
 export default function App() {
+    useWallet();
+
     return (
         <>
             <PageHeader />
