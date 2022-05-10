@@ -1,15 +1,10 @@
-import { render, screen } from '@testing-library/react';
-
-import { BrowserRouter as Router } from 'react-router-dom';
+import { screen } from '@testing-library/react';
+import { renderWithRouter } from '../../../test-utils';
 
 import PageHeader from './PageHeader';
 
 test('renders PageHeader() React function instance', () => {
-  render(
-    <Router>
-      <PageHeader />
-    </Router>,
-  );
+  renderWithRouter(<PageHeader />);
   const pageHeaderElement = screen.getByTestId('page-header');
   expect(pageHeaderElement).toBeInTheDocument();
 });
