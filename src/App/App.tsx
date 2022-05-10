@@ -11,6 +11,7 @@ import Portfolio from '../pages/Portfolio/Portfolio';
 import Market from '../pages/Trade/Market/Market';
 import Limit from '../pages/Trade/Limit/Limit';
 import Liquidity from '../pages/Trade/Liquidity/Liquidity';
+import TestPage from '../pages/TestPage/TestPage';
 
 /** * **** Import Local Files *******/
 import './App.css';
@@ -29,6 +30,7 @@ export default function App() {
                 </Route>
                 <Route path='analytics' element={<Analytics />} />
                 <Route path='portfolio' element={<Portfolio />} />
+                <Route path='testpage' element={<TestPage />} />
             </Routes>
             <PageFooter />
         </>
