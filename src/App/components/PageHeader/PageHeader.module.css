@@ -3,3 +3,30 @@
     justify-content: space-between;
     align-items: center;
 }
+
+.primary_navigation{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--gap, 2rem);
+   
+}
+
+.primary_navigation a{
+    text-decoration: none;
+    color: white;
+}
+
+@media( max-width: 35em){
+.primary_navigation{
+    z-index: 1000;
+    --gap: 2em;
+    background: darkblue;
+    position: fixed;
+    flex-direction: column;
+    inset: 0 0 0 30%;
+    padding: min(30vh, 10rem) 2rem;
+    
+
+}
+}

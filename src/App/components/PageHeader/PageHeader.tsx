@@ -14,7 +14,7 @@ export default function PageHeader() {
       <div className={styles.logo_container}>
         <h1>ambient</h1>
       </div>
-      <nav>
+      <nav className={styles.primary_navigation}>
         <NavLink to='/'>Home</NavLink>
         <NavLink to='/trade'>Trade</NavLink>
         <NavLink to='/analytics'>Analytics</NavLink>
