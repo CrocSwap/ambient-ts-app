@@ -1,5 +1,15 @@
 @import url(../css/reset.css);
 
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  scroll-behavior: smooth;
+  font-family: var(--font-family);
+  font-weight: 200;
+}
+
+
 .sr-only{
   position: absolute;
   width: 1px;
