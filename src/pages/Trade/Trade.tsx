@@ -2,10 +2,8 @@ import { Outlet } from 'react-router-dom';
 import styles from './Trade.module.css';
 import { FaTimes, FaArrowRight } from 'react-icons/fa';
 import { useState } from 'react';
-
 export default function Trade() {
     const [leftSidebar, setLeftSidebar] = useState<boolean>(true);
-
     const sidebarStyle = leftSidebar ? styles.main_layout : styles.main_layout2;
 
     return (
