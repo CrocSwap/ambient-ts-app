@@ -1,5 +1,6 @@
 /** ***** Import React and Dongles *******/
 import { Routes, Route } from 'react-router-dom';
+import { Signer } from 'ethers';
 
 /** ***** Import JSX Files *******/
 import PageHeader from './components/PageHeader/PageHeader';
@@ -16,13 +17,13 @@ import TestPage from '../pages/TestPage/TestPage';
 /** * **** Import Local Files *******/
 import './App.css';
 import { useWallet } from './useWallet';
-// import { useProvider } from './useProvider';
+import { useProvider } from './useProvider';
 
 /** ***** React Function *******/
 export default function App() {
-    // const provider = useProvider();
-    // console.log(provider);
-    useWallet();
+    const provider = useProvider();
+    console.log(typeof provider);
+    useWallet(provider as Signer);
 
     return (
         <>

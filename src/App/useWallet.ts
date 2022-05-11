@@ -1,10 +1,8 @@
 import { useMoralis } from 'react-moralis';
-// import {
-//     contractAddresses,
-//     getTokenBalance
-// } from '@crocswap-libs/sdk';
+import { contractAddresses, getTokenBalance } from '@crocswap-libs/sdk';
+import { Signer } from 'ethers';
 
-export const useWallet = async () => {
+export const useWallet = async (provider: Signer) => {
     // console.log(useMoralis());
     // console.log(useChain());
     const { Moralis, chainId, isWeb3Enabled, account } = useMoralis();
@@ -17,11 +15,12 @@ export const useWallet = async () => {
                 address: account,
             });
             console.log(tokens);
-            // const nativeEthBalance = await getTokenBalance(
-            //     contractAddresses.ZERO_ADDR,
-            //     account,
-            //     currentProvider
-            // );
+            const nativeEthBalance = await getTokenBalance(
+                contractAddresses.ZERO_ADDR,
+                account,
+                provider,
+            );
+            console.log(nativeEthBalance);
         }
     }
 };

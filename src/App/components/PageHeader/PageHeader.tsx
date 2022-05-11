@@ -37,18 +37,13 @@ export default function PageHeader() {
     // function to sever connection between user wallet and Moralis server
     const clickLogout = async () => await logout();
 
-    async function handleWeb3Enable() {
-        console.log('enabling web3');
-        enableWeb3();
-    }
-
     useEffect(() => {
         try {
             if (user && !account) {
-                handleWeb3Enable();
+                enableWeb3();
             }
-        } catch (error) {
-            console.log(error);
+        } catch (err) {
+            console.warn(`Could not automatically bridge Moralis to wallet. Error follows: ${err}`);
         }
     });
 
