@@ -28,15 +28,16 @@ export const useProvider = async () => {
         setMainnetProvider(mainnet);
         setFujiProvider(fuji);
         setKovanProvider(kovan);
-        // if (window.ethereum) {
-        //     if (!currentProvider) {
-        //         // console.log('setting metamask as current provider');
-        //         const provider = new ethers.providers.Web3Provider(window.ethereum);
-        //         setCurrentProvider(provider);
-        //     }
-        // } else {
-        //     setCurrentProvider(kovan);
-        // }
+        console.log(window);
+        if (window.ethereum) {
+            if (!currentProvider) {
+                // console.log('setting metamask as current provider');
+                const provider = new ethers.providers.Web3Provider(window.ethereum);
+                setCurrentProvider(provider);
+            }
+        } else {
+            setCurrentProvider(kovan);
+        }
         // eslint-disable-next-line
     }, []);
     return true;
