@@ -10,7 +10,7 @@ import { useRive, useStateMachineInput } from 'rive-react';
 /** ***** END: Import Local Files *********/
 
 export default function PageHeader() {
-    const { enableWeb3, isWeb3Enabled, authenticate, isAuthenticated } = useMoralis();
+    const { enableWeb3, isWeb3Enabled, authenticate, isAuthenticated, logout } = useMoralis();
 
     const clickLogin = async () => {
         if (!isAuthenticated || !isWeb3Enabled) {
@@ -29,6 +29,8 @@ export default function PageHeader() {
             });
         }
     };
+
+    const clickLogout = async () => await logout();
 
     // rive component
     const STATE_MACHINE_NAME = 'Basic State Machine';
@@ -84,7 +86,7 @@ export default function PageHeader() {
             </nav>
             <div className={styles.account}>Account Info</div>
             <button onClick={clickLogin}>Log In</button>
-            <button>Log Out</button>
+            <button onClick={clickLogout}>Log Out</button>
         </header>
     );
 }
