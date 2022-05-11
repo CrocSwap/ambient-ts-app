@@ -1,16 +1,16 @@
 import { useEffect, useState } from 'react';
 import { ethers } from 'ethers';
 
-export const useProvider = async () => {
+export const useProvider = () => {
     const [ropstenProvider, setRopstenProvider] = useState<null | unknown>(null);
     const [kovanProvider, setKovanProvider] = useState<null | unknown>(null);
     const [mainnetProvider, setMainnetProvider] = useState<null | unknown>(null);
     const [fujiProvider, setFujiProvider] = useState<null | unknown>(null);
     const [currentProvider, setCurrentProvider] = useState<null | unknown>(null);
 
-    useEffect(() => {
-        const makeNewProvider = (node: string) => new ethers.providers.JsonRpcProvider(node);
+    const makeNewProvider = (node: string) => new ethers.providers.JsonRpcProvider(node);
 
+    useEffect(() => {
         const ropsten = makeNewProvider(
             'https://speedy-nodes-nyc.moralis.io/015fffb61180886c9708499e/eth/ropsten',
         );
@@ -28,17 +28,10 @@ export const useProvider = async () => {
         setMainnetProvider(mainnet);
         setFujiProvider(fuji);
         setKovanProvider(kovan);
-        console.log(window);
-        if (window.ethereum) {
-            if (!currentProvider) {
-                // console.log('setting metamask as current provider');
-                const provider = new ethers.providers.Web3Provider(window.ethereum);
-                setCurrentProvider(provider);
-            }
-        } else {
-            setCurrentProvider(kovan);
-        }
-        // eslint-disable-next-line
+
+        window.ethereum && !currentProvider
+            ? setCurrentProvider(makeNewProvider(window.ethereum))
+            : setCurrentProvider(kovan);
     }, []);
-    return true;
+    return currentProvider;
 };

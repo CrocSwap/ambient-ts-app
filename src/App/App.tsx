@@ -20,7 +20,8 @@ import { useProvider } from './useProvider';
 
 /** ***** React Function *******/
 export default function App() {
-    useProvider();
+    const provider = useProvider();
+    console.log(provider);
     useWallet();
 
     return (
