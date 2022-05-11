@@ -14,6 +14,7 @@ export default function PageHeader() {
 
     // function to authenticate wallet with Moralis server
     const clickLogin = async () => {
+        console.log('user clicked Login');
         if (!isAuthenticated || !isWeb3Enabled) {
             await authenticate({
                 provider: 'metamask',
