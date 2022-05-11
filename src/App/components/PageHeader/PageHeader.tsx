@@ -10,7 +10,8 @@ import { useRive, useStateMachineInput } from 'rive-react';
 /** ***** END: Import Local Files *********/
 
 export default function PageHeader() {
-    const { user, enableWeb3, isWeb3Enabled, authenticate, isAuthenticated, logout } = useMoralis();
+    const { account, enableWeb3, isWeb3Enabled, authenticate, isAuthenticated, logout } =
+        useMoralis();
 
     // function to authenticate wallet with Moralis server
     const clickLogin = async () => {
@@ -88,7 +89,7 @@ export default function PageHeader() {
                 <NavLink to='/portfolio'>Portfolio</NavLink>
             </nav>
             <div className={styles.account}>Account Info</div>
-            <div className={styles.account}>{user?.attributes.ethAddress}</div>
+            <div className={styles.account}>{account}</div>
             <button onClick={clickLogin}>Log In</button>
             <button onClick={clickLogout}>Log Out</button>
         </header>
