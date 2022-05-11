@@ -11,16 +11,8 @@ import Account from './Account/Account';
 /** ***** END: Import Local Files *********/
 
 export default function PageHeader() {
-    const {
-        user,
-        account,
-        enableWeb3,
-        isWeb3Enabled,
-        authenticate,
-        isAuthenticated,
-        logout,
-        isWeb3EnableLoading,
-    } = useMoralis();
+    const { user, account, enableWeb3, isWeb3Enabled, authenticate, isAuthenticated, logout } =
+        useMoralis();
 
     // function to authenticate wallet with Moralis server
     const clickLogin = async () => {
@@ -45,25 +37,13 @@ export default function PageHeader() {
     // function to sever connection between user wallet and Moralis server
     const clickLogout = async () => await logout();
 
-    const [promptUserToEnableWeb3, setPromptUserToEnableWeb3] = useState(false);
-
     async function handleWeb3Enable() {
-        // const connectorId = window.localStorage.getItem('connectorId');
+        console.log('enabling web3');
         enableWeb3();
-        setPromptUserToEnableWeb3(false);
     }
 
     useEffect(() => {
-        if (promptUserToEnableWeb3) {
-            // console.log('handing web3enable - prompt enable');
-            handleWeb3Enable();
-            return;
-        }
-
         try {
-            // const unlocked = await isUnlocked();
-            // const unlocked = true;
-            // if (!isWeb3Enabled && !isWeb3EnableLoading && isAuthenticated && !!user) {
             if (user && !account) {
                 handleWeb3Enable();
             }
@@ -71,17 +51,6 @@ export default function PageHeader() {
             console.log(error);
         }
     });
-
-    useEffect(() => {
-        console.log({ account });
-        console.log({ isAuthenticated });
-        console.log({ isWeb3Enabled });
-        if (!account && isAuthenticated && !isWeb3EnableLoading) {
-            console.log('logging out');
-            logout();
-        }
-        // eslint-disable-next-line
-    }, [account]);
 
     // rive component
     const STATE_MACHINE_NAME = 'Basic State Machine';
