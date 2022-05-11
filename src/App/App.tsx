@@ -16,9 +16,11 @@ import TestPage from '../pages/TestPage/TestPage';
 /** * **** Import Local Files *******/
 import './App.css';
 import { useWallet } from './useWallet';
+import { useProvider } from './useProvider';
 
 /** ***** React Function *******/
 export default function App() {
+    useProvider();
     useWallet();
 
     return (
