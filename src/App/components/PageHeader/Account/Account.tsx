@@ -47,5 +47,42 @@ export default function Account() {
             {/* <Button title="Logout"/> */}
         </div>
     );
-    return <div>Account</div>;
+    return (
+        <div className={styles.navbar__sign}>
+            <div>
+                <img
+                    src='https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png'
+                    alt='ethereum'
+                    width='25px'
+                />
+            </div>
+            <div className={styles.title_gradient}>69 AMBI</div>
+            <div>69,420 ETH</div>
+            {/* <div className={styles.title_gradient}>{useLocalStorage("ambientHandle")}</div> */}
+            <div className={styles.title_gradient}>username</div>
+            <AiOutlineQuestionCircle size={20} />
+
+            <div>username</div>
+
+            <div className={styles.more} aria-describedby={popoverId} onClick={handlePopoverClick}>
+                <FiMoreHorizontal size={20} />
+            </div>
+            <Popover
+                popoverId={popoverId}
+                open={open}
+                anchorEl={anchorEl}
+                onClose={handlePopoverClose}
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'right',
+                }}
+                transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                }}
+            >
+                {popperContent}
+            </Popover>
+        </div>
+    );
 }
