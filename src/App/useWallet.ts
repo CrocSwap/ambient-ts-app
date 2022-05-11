@@ -1,12 +1,12 @@
-import { useMoralis, useChain } from 'react-moralis';
+import { useMoralis } from 'react-moralis';
 // import {
 //     contractAddresses,
 //     getTokenBalance
 // } from '@crocswap-libs/sdk';
 
 export const useWallet = async () => {
-    console.log(useMoralis());
-    console.log(useChain());
+    // console.log(useMoralis());
+    // console.log(useChain());
     const { Moralis, chainId, isWeb3Enabled, account } = useMoralis();
     if (isWeb3Enabled && account !== null) {
         // this conditional is important because it prevents a TS error
