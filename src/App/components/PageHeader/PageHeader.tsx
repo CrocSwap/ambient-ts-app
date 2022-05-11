@@ -12,6 +12,7 @@ import { useRive, useStateMachineInput } from 'rive-react';
 export default function PageHeader() {
     const { enableWeb3, isWeb3Enabled, authenticate, isAuthenticated, logout } = useMoralis();
 
+    // function to authenticate wallet with Moralis server
     const clickLogin = async () => {
         if (!isAuthenticated || !isWeb3Enabled) {
             await authenticate({
@@ -30,6 +31,7 @@ export default function PageHeader() {
         }
     };
 
+    // function to sever connection between user wallet and Moralis server
     const clickLogout = async () => await logout();
 
     // rive component
