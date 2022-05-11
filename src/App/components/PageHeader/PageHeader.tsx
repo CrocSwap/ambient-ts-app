@@ -62,6 +62,8 @@ export default function PageHeader() {
                 <NavLink to='/portfolio'>Portfolio</NavLink>
             </nav>
             <div className={styles.account}>Account Info</div>
+            <button>Log In</button>
+            <button>Log Out</button>
         </header>
     );
 }
