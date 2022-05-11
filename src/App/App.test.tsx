@@ -14,6 +14,7 @@ test('renders learn react link', () => {
             </Router>
         </MoralisProvider>,
     );
-    const linkElement = screen.getByText(/This is the Page Footer!/i);
+
+    const linkElement = screen.getByText(/Twitter/i);
     expect(linkElement).toBeInTheDocument();
 });

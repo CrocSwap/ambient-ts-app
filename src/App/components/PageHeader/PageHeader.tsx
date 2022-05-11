@@ -7,6 +7,7 @@ import { useMoralis } from 'react-moralis';
 /** ***** START: Import Local Files *******/
 import styles from './PageHeader.module.css';
 import { useRive, useStateMachineInput } from 'rive-react';
+import Account from './Account/Account';
 /** ***** END: Import Local Files *********/
 
 export default function PageHeader() {
@@ -92,6 +93,9 @@ export default function PageHeader() {
             <div className={styles.account}>{account}</div>
             <button onClick={clickLogin}>Log In</button>
             <button onClick={clickLogout}>Log Out</button>
+            <div className={styles.account}>
+                <Account />
+            </div>
         </header>
     );
 }
