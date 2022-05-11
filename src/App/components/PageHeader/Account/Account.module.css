@@ -27,6 +27,14 @@
     cursor: pointer;
   }
 
+  .white{
+    font-family: var(--font-deca);
+    font-weight: 300;
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+      color: white;
+  }
+
   .title_gradient{
     background: var(--title-gradient);
     -webkit-background-clip: text;

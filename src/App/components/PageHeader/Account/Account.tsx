@@ -58,15 +58,15 @@ export default function Account() {
             </div>
 
             <div className={styles.title_gradient}>69 AMBI</div>
-            <div>69,420 ETH</div>
+            <span className={styles.white}>69,420 ETH</span>
             {/* <div className={styles.title_gradient}>{useLocalStorage("ambientHandle")}</div> */}
             <div className={styles.title_gradient}>username</div>
-            <AiOutlineQuestionCircle size={20} />
+            <AiOutlineQuestionCircle size={20} color='#ffffff' />
 
             <div>username</div>
 
             <div className={styles.more} aria-describedby={popoverId} onClick={handlePopoverClick}>
-                <FiMoreHorizontal size={20} />
+                <FiMoreHorizontal size={20} color='#ffffff' />
             </div>
             {/* <Popover
                 popoverId={popoverId}
