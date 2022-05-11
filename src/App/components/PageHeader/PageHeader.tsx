@@ -10,12 +10,13 @@ import { useRive, useStateMachineInput } from 'rive-react';
 /** ***** END: Import Local Files *********/
 
 export default function PageHeader() {
-    const { enableWeb3, authenticate, isAuthenticated } = useMoralis();
+    const { enableWeb3, isWeb3Enabled, authenticate, isAuthenticated } = useMoralis();
 
     const clickLogin = async () => {
         console.log('user clicked "Log In"');
         console.log({ isAuthenticated });
-        if (!isAuthenticated) {
+        console.log({ isWeb3Enabled });
+        if (!isAuthenticated || !isWeb3Enabled) {
             console.log('Not authenticated, will authenticate!');
             await authenticate({
                 provider: 'metamask',
