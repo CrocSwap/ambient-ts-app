@@ -6,6 +6,7 @@ import { useState } from 'react';
 /** ***** START: Import Local Files *******/
 import styles from './PageHeader.module.css';
 import { useRive, useStateMachineInput } from 'rive-react';
+import Account from './Account/Account';
 /** ***** END: Import Local Files *********/
 
 export default function PageHeader() {
@@ -61,7 +62,9 @@ export default function PageHeader() {
                 <NavLink to='/analytics'>Analytics</NavLink>
                 <NavLink to='/portfolio'>Portfolio</NavLink>
             </nav>
-            <div className={styles.account}>Account Info</div>
+            <div className={styles.account}>
+                <Account />
+            </div>
         </header>
     );
 }
