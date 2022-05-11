@@ -1,6 +1,7 @@
 /** ***** START: Import React and Dongles *******/
 import { NavLink } from 'react-router-dom';
 import { useState } from 'react';
+import { useMoralis } from 'react-moralis';
 /** ***** END: Import React and Dongles *********/
 
 /** ***** START: Import Local Files *******/
@@ -9,6 +10,31 @@ import { useRive, useStateMachineInput } from 'rive-react';
 /** ***** END: Import Local Files *********/
 
 export default function PageHeader() {
+    const { enableWeb3, authenticate, isAuthenticated } = useMoralis();
+
+    const clickLogin = async () => {
+        console.log('user clicked "Log In"');
+        console.log({ isAuthenticated });
+        if (!isAuthenticated) {
+            console.log('Not authenticated, will authenticate!');
+            await authenticate({
+                provider: 'metamask',
+                signingMessage: 'Ambient API Authentication.',
+                onSuccess: () => {
+                    //  setPromptUserToEnableWeb3(true);
+                    enableWeb3();
+                },
+                onError: () => {
+                    // alert('error');
+                    authenticate({
+                        provider: 'metamask',
+                        signingMessage: 'Ambient API Authentication.',
+                    });
+                },
+            });
+        }
+    };
+
     // rive component
     const STATE_MACHINE_NAME = 'Basic State Machine';
     const INPUT_NAME = 'Switch';
@@ -62,7 +88,7 @@ export default function PageHeader() {
                 <NavLink to='/portfolio'>Portfolio</NavLink>
             </nav>
             <div className={styles.account}>Account Info</div>
-            <button>Log In</button>
+            <button onClick={clickLogin}>Log In</button>
             <button>Log Out</button>
         </header>
     );
