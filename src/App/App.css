@@ -25,7 +25,7 @@ svg{
 body{
   
   overflow-x: hidden;
-  padding: 0 4rem;
+  padding: 0 1rem;
 
 }
   
@@ -73,3 +73,18 @@ a {
 }
 
 
+
+
+
+
+@media only screen and (min-width: 768px) {
+  body{
+  
+
+    padding: 0 4rem;
+  
+  }
+
+	
+
+}
