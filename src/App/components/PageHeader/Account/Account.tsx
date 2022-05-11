@@ -1,5 +1,5 @@
 import styles from './Account.module.css';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import Popover from '@material-ui/core/Popover';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import { FiMoreHorizontal } from 'react-icons/fi';
@@ -7,7 +7,7 @@ import { FiMoreHorizontal } from 'react-icons/fi';
 export default function Account() {
     const [anchorEl, setAnchorEl] = useState(null);
 
-    const handlePopoverClick = (event) => {
+    const handlePopoverClick = (event: React.ChangeEvent<any>) => {
         setAnchorEl(event.currentTarget);
     };
 
@@ -48,14 +48,15 @@ export default function Account() {
         </div>
     );
     return (
-        <div className={styles.navbar__sign}>
-            <div>
+        <div className={styles.account_container}>
+            <div className={styles.ethereum_icon}>
                 <img
                     src='https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png'
                     alt='ethereum'
                     width='25px'
                 />
             </div>
+
             <div className={styles.title_gradient}>69 AMBI</div>
             <div>69,420 ETH</div>
             {/* <div className={styles.title_gradient}>{useLocalStorage("ambientHandle")}</div> */}
@@ -67,7 +68,7 @@ export default function Account() {
             <div className={styles.more} aria-describedby={popoverId} onClick={handlePopoverClick}>
                 <FiMoreHorizontal size={20} />
             </div>
-            <Popover
+            {/* <Popover
                 popoverId={popoverId}
                 open={open}
                 anchorEl={anchorEl}
@@ -82,7 +83,7 @@ export default function Account() {
                 }}
             >
                 {popperContent}
-            </Popover>
+            </Popover> */}
         </div>
     );
 }
