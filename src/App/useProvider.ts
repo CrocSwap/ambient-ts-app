@@ -2,11 +2,11 @@ import { useEffect, useState } from 'react';
 import { ethers } from 'ethers';
 
 export const useProvider = async () => {
-    const [ropstenProvider, setRopstenProvider] = useState<null | object>(null);
-    const [kovanProvider, setKovanProvider] = useState<null | object>(null);
-    const [mainnetProvider, setMainnetProvider] = useState<null | object>(null);
-    const [fujiProvider, setFujiProvider] = useState<null | object>(null);
-    const [currentProvider, setCurrentProvider] = useState<null | object>(null);
+    const [ropstenProvider, setRopstenProvider] = useState<null | unknown>(null);
+    const [kovanProvider, setKovanProvider] = useState<null | unknown>(null);
+    const [mainnetProvider, setMainnetProvider] = useState<null | unknown>(null);
+    const [fujiProvider, setFujiProvider] = useState<null | unknown>(null);
+    const [currentProvider, setCurrentProvider] = useState<null | unknown>(null);
 
     useEffect(() => {
         const makeNewProvider = (node: string) => new ethers.providers.JsonRpcProvider(node);
