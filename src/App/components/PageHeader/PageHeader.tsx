@@ -13,20 +13,14 @@ export default function PageHeader() {
     const { enableWeb3, isWeb3Enabled, authenticate, isAuthenticated } = useMoralis();
 
     const clickLogin = async () => {
-        console.log('user clicked "Log In"');
-        console.log({ isAuthenticated });
-        console.log({ isWeb3Enabled });
         if (!isAuthenticated || !isWeb3Enabled) {
-            console.log('Not authenticated, will authenticate!');
             await authenticate({
                 provider: 'metamask',
                 signingMessage: 'Ambient API Authentication.',
                 onSuccess: () => {
-                    //  setPromptUserToEnableWeb3(true);
                     enableWeb3();
                 },
                 onError: () => {
-                    // alert('error');
                     authenticate({
                         provider: 'metamask',
                         signingMessage: 'Ambient API Authentication.',
