@@ -4,5 +4,9 @@ type Props = {
     children?: React.ReactNode;
 };
 export default function MainLayout({ children }: Props) {
-    return <main data-testid={'main-layout'}>{children}</main>;
+    return (
+        <main data-testid={'main-layout'} className={styles.main_layout}>
+            {children}
+        </main>
+    );
 }
