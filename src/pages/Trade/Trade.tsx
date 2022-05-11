@@ -2,10 +2,10 @@ import { Outlet } from 'react-router-dom';
 import styles from './Trade.module.css';
 import { FaTimes, FaArrowRight } from 'react-icons/fa';
 import { useState } from 'react';
-
+import Toggle from '../../components/Global/Toggle/Toggle';
 export default function Trade() {
     const [leftSidebar, setLeftSidebar] = useState<boolean>(true);
-
+    const [isChecked, setIsChecked] = useState(false);
     const sidebarStyle = leftSidebar ? styles.main_layout : styles.main_layout2;
 
     return (
@@ -19,6 +19,12 @@ export default function Trade() {
                         ) : (
                             <FaArrowRight size={20} color='#bdbdbd' />
                         )}
+                        <Toggle
+                            id='toggle'
+                            isOn={isChecked}
+                            handleToggle={() => setIsChecked(!isChecked)}
+                            Width={50}
+                        />
                     </div>
                 </div>
                 <div className={styles.middle_col}></div>
