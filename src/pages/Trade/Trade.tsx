@@ -2,8 +2,11 @@ import { Outlet } from 'react-router-dom';
 import styles from './Trade.module.css';
 import MainLayout from '../../components/MainLayout/MainLayout';
 import { FaTimes } from 'react-icons/fa';
+import { useState } from 'react';
 
 export default function Trade() {
+    const [leftSidebar, setLeftSidebar] = useState<boolean>(true);
+
     return (
         <main data-testid={'trade'}>
             {/* <h1>This is Trade.tsx</h1> */}
