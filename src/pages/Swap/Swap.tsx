@@ -2,6 +2,7 @@ import CurrencyConverter from '../../components/Swap/CurrencyConverter/CurrencyC
 import ExtraInfo from '../../components/Swap/ExtraInfo/ExtraInfo';
 import ContentContainer from '../../components/Global/ContentContainer/ContentContainer';
 import SwapHeader from '../../components/Swap/SwapHeader/SwapHeader';
+import SwapButton from '../../components/Swap/SwapButton/SwapButton';
 
 export default function Swap() {
     return (
@@ -10,6 +11,7 @@ export default function Swap() {
                 <SwapHeader />
                 <CurrencyConverter />
                 <ExtraInfo />
+                <SwapButton />
             </ContentContainer>
         </main>
     );
