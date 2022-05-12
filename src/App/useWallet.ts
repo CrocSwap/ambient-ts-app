@@ -1,5 +1,5 @@
 import { useMoralis } from 'react-moralis';
-import { contractAddresses, getTokenBalance } from '@crocswap-libs/sdk';
+// import { contractAddresses, getTokenBalance } from '@crocswap-libs/sdk';
 import { Signer } from 'ethers';
 
 export const useWallet = async (provider: Signer) => {
@@ -15,12 +15,13 @@ export const useWallet = async (provider: Signer) => {
                 address: account,
             });
             console.log(tokens);
-            const nativeEthBalance = await getTokenBalance(
-                contractAddresses.ZERO_ADDR,
-                account,
-                provider,
-            );
-            console.log(nativeEthBalance);
+            // const nativeEthBalance = await getTokenBalance(
+            //     contractAddresses.ZERO_ADDR,
+            //     account,
+            //     provider,
+            // );
+            // const nativeTokenBalance = await provider.getBalance(account);
+            // console.log(nativeTokenBalance);
         }
     }
 };

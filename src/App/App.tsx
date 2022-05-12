@@ -1,5 +1,6 @@
 /** ***** Import React and Dongles *******/
 import { Routes, Route } from 'react-router-dom';
+import { useMoralis } from 'react-moralis';
 import { Signer } from 'ethers';
 
 /** ***** Import JSX Files *******/
@@ -23,8 +24,8 @@ import { useProvider } from './useProvider';
 
 /** ***** React Function *******/
 export default function App() {
-    const provider = useProvider();
-    console.log(typeof provider);
+    const { chainId } = useMoralis();
+    const provider = useProvider(chainId as string);
     useWallet(provider as Signer);
 
     return (
