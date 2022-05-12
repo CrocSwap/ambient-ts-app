@@ -10,7 +10,7 @@ export default function SwapHeader() {
             <span>
                 <MdShowChart />
             </span>
-            <span className={styles.title}>Trade</span>
+            <span className={styles.title}>Swap</span>
             <div className={styles.settings_container}>
                 <HiDotsHorizontal />
                 <FiSettings />
