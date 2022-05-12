@@ -58,6 +58,7 @@ export default function PageHeader() {
                 data-visible={mobileNavToggle}
             >
                 <NavLink to='/'>Home</NavLink>
+                <NavLink to='/swap'>Swap</NavLink>
                 <NavLink to='/trade'>Trade</NavLink>
                 <NavLink to='/analytics'>Analytics</NavLink>
                 <NavLink to='/portfolio'>Portfolio</NavLink>
