@@ -2,17 +2,17 @@ import styles from './SwapButton.module.css';
 import { useEffect, useState } from 'react';
 import Button from '../../Global/Button/Button';
 
-interface SwapButtonProps {
-    children: React.ReactNode;
-}
+// interface SwapButtonProps {
+//     children: React.ReactNode;
+// }
 
 export default function SwapButton() {
     const [allowedButton, setAllowedButton] = useState<boolean>(false);
 
-    const sellQtya = document.getElementById('sell-quantity');
-    console.log(sellQtya);
+    const inputValue = document.getElementById('sell-quantity') as HTMLInputElement;
+    console.log(inputValue);
+    const sellQty = parseInt(inputValue?.value);
 
-    // const sellQty = document.getElementById('sell-quantity')?.value;
     // function handleAllowedButton() {
     //   if (isNaN(sellQty) || sellQty === 0 || sellQty < 0) {
     //     setAllowedButton(false);
@@ -21,13 +21,17 @@ export default function SwapButton() {
     //   }
     // }
     // useEffect(() => {
-    //   handleAllowedButton();
-    // }, [sellQty]);
+    //     handleAllowedButton();
+    //     console.log(inputValue)
+    //     console.log(allowedButton)
+    // }, [inputValue]);
+
     const ButtonDisplay = (
         <div className={styles.button_container}>
             <Button
                 title={allowedButton ? 'Swap' : 'Enter an amount'}
                 action={() => console.log('clicked')}
+                disabled={allowedButton}
             />
         </div>
     );

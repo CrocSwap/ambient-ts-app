@@ -13,6 +13,7 @@ export default function CurrencyQuantity(props: CurrencyQuantityProps) {
             <input
                 id={`${fieldId}-quantity`}
                 className={styles.currency_quantity}
+                defaultValue='0'
                 type='text'
                 inputMode='decimal'
                 autoComplete='off'
