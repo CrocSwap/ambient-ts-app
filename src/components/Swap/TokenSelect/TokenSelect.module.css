@@ -45,11 +45,9 @@
   .modal_token_symbol,   .modal_tokens_amount{
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
-    /* font-weight: 400; */
   }
   .modal_token_name{
     font-size: var(--body-size);
     line-height: var(--body-lh);
     color: var(--text-grey-light);
-    /* font-weight: 400; */
   }

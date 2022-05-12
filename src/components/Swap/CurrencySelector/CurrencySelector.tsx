@@ -1,4 +1,4 @@
-import styles from 'CurrencySelector.module.css';
+import styles from './CurrencySelector.module.css';
 import CurrencyQuantity from '../CurrencyQuantity/CurrencyQauntity';
 import { RiArrowDownSLine } from 'react-icons/ri';
 import Toggle from '../../Global/Toggle/Toggle';
@@ -49,7 +49,10 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                 <div className={styles.swap_input}>
                     <CurrencyQuantity fieldId={fieldId} />
                 </div>
-                <div className={styles.token_select} onClick={openModal}>
+                <div
+                    className={styles.token_select}
+                    // onClick={""}
+                >
                     <img
                         className={styles.token_list_img}
                         src='https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png'

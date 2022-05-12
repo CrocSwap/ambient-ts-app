@@ -1,7 +1,7 @@
-import styles from 'CurrencyConverter.module.css';
+import styles from './CurrencyConverter.module.css';
 import CurrencySelector from '../CurrencySelector/CurrencySelector';
 interface CurrencyConverterProps {
-    isLiq: boolean;
+    isLiq?: boolean;
 }
 
 export default function CurrencyConverter(props: CurrencyConverterProps) {

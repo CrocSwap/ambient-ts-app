@@ -1,4 +1,4 @@
-import styles from 'SwapHeader.module.css';
+import styles from './SwapHeader.module.css';
 import { MdShowChart } from 'react-icons/md';
 import { HiDotsHorizontal } from 'react-icons/hi';
 import { FiSettings } from 'react-icons/fi';
