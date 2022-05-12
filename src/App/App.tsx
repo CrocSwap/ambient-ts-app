@@ -21,6 +21,7 @@ import TestPage from '../pages/TestPage/TestPage';
 import './App.css';
 import { useWallet } from './useWallet';
 import { useProvider } from './useProvider';
+import { useState } from 'react';
 
 /** ***** React Function *******/
 export default function App() {
@@ -28,12 +29,16 @@ export default function App() {
     const provider = useProvider(chainId as string);
     console.log(provider);
 
-    let nativeBalance;
+    const [nativeBalance, setNativeBalance] = useState('');
 
     (async () => {
-        nativeBalance = await useWallet(provider as Signer);
-        console.log({ nativeBalance });
+        const balance = await useWallet(provider as Signer);
+        if (typeof balance === 'string') {
+            setNativeBalance(balance);
+        }
     })();
+
+    console.log({ nativeBalance });
 
     return (
         <>
