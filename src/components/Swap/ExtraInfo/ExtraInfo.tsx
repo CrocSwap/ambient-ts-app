@@ -30,5 +30,23 @@ export default function ExtraInfo(props: ExtraInfoProps) {
         </div>
     );
 
-    return <div className={styles.row}>{props.children}</div>;
+    const ExtraDetailsOrNull = showExtraDetails ? extraInfoDetails : null;
+
+    return (
+        <div className={styles.extra_info_container}>
+            <div
+                className={styles.extra_info_content}
+                onClick={() => setShowExtraDetails(!showExtraDetails)}
+            >
+                <div className={styles.gas_pump}>
+                    <FaGasPump size={15} /> 46.26 gwei
+                </div>
+                <div className={styles.token_amount}>
+                    1 ETH = 2600 USDC
+                    <RiArrowDownSLine size={27} />{' '}
+                </div>
+            </div>
+            {ExtraDetailsOrNull}
+        </div>
+    );
 }
