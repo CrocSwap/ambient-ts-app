@@ -2,11 +2,12 @@ import styles from 'CurrencySelector.module.css';
 import CurrencyQuantity from '../CurrencyQuantity/CurrencyQauntity';
 import { RiArrowDownSLine } from 'react-icons/ri';
 import Toggle from '../../Global/Toggle/Toggle';
-import {  useState } from 'react';
+import { useState } from 'react';
 
 interface CurrencySelectorProps {
     fieldId: string;
     direction: string;
+    sellToken?: boolean;
 }
 
 export default function CurrencySelector(props: CurrencySelectorProps) {
