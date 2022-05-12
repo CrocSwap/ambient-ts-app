@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { ethers } from 'ethers';
 
-export const useProvider = (chain: string) => {
+export const useProvider = (chain = '0x2a') => {
     const [ropstenProvider, setRopstenProvider] = useState<null | unknown>(null);
     const [kovanProvider, setKovanProvider] = useState<null | unknown>(null);
     const [mainnetProvider, setMainnetProvider] = useState<null | unknown>(null);
@@ -73,7 +73,6 @@ export const useProvider = (chain: string) => {
         } catch (err) {
             console.warn(err);
         }
-    }, [chain]);
-
+    }, []);
     return currentProvider;
 };
