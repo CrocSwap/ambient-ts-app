@@ -2,8 +2,8 @@ import styles from 'ContentContainer.module.css';
 
 interface ContentContainerProps {
     children: React.ReactNode;
-    customWidth: boolean;
-    customWidthAuto: boolean;
+    customWidth?: boolean;
+    customWidthAuto?: boolean;
 }
 
 export default function ContentContainer(props: ContentContainerProps) {
