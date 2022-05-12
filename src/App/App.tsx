@@ -38,9 +38,7 @@ export default function App() {
         }
     })();
 
-    console.log({ nativeBalance });
     const headerProps = {
-        // make sure all required component's inputs/Props keys&types match
         nativeBalance: nativeBalance,
     };
 

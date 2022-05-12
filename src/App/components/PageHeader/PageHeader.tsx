@@ -18,8 +18,6 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
     const { user, account, enableWeb3, isWeb3Enabled, authenticate, isAuthenticated, logout } =
         useMoralis();
 
-    console.log({ props });
-
     // function to authenticate wallet with Moralis server
     const clickLogin = async () => {
         console.log('user clicked Login');
@@ -79,7 +77,6 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
     }
 
     const accountProps = {
-        // make sure all required component's inputs/Props keys&types match
         nativeBalance: props.nativeBalance,
     };
 
