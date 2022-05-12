@@ -5,5 +5,5 @@ interface ContentProps {
 }
 
 export default function ContentHeader(props: ContentProps) {
-    return <div className={styles.row}>{props.children}</div>;
+    return <div className={styles.content_header}>{props.children}</div>;
 }
