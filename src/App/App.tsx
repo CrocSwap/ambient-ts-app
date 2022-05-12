@@ -27,8 +27,13 @@ export default function App() {
     const { chainId } = useMoralis();
     const provider = useProvider(chainId as string);
     console.log(provider);
-    const nativeBalance = useWallet(provider as Signer);
-    console.log({ nativeBalance });
+
+    let nativeBalance;
+
+    (async () => {
+        nativeBalance = await useWallet(provider as Signer);
+        console.log({ nativeBalance });
+    })();
 
     return (
         <>
