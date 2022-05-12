@@ -22,6 +22,11 @@ svg{
   
 }
 
+svg:hover{
+  color: var(--text-grey-white);
+  transition: all 450ms ease-in-out;
+}
+
 body{
   
   overflow-x: hidden;
