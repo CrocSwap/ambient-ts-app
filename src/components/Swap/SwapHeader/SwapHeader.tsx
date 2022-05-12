@@ -1,9 +1,20 @@
 import styles from 'SwapHeader.module.css';
+import { MdShowChart } from 'react-icons/md';
+import { HiDotsHorizontal } from 'react-icons/hi';
+import { FiSettings } from 'react-icons/fi';
+import ContentHeader from '../../Global/ContentHeader/ContentHeader';
 
-interface SwapHeaderProps {
-    children: React.ReactNode;
-}
-
-export default function SwapHeader(props: SwapHeaderProps) {
-    return <div className={styles.row}>{props.children}</div>;
+export default function SwapHeader() {
+    return (
+        <ContentHeader>
+            <span>
+                <MdShowChart />
+            </span>
+            <span className={styles.title}>Trade</span>
+            <div className={styles.settings_container}>
+                <HiDotsHorizontal />
+                <FiSettings />
+            </div>
+        </ContentHeader>
+    );
 }
