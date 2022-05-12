@@ -38,7 +38,7 @@ export const useProvider = (chain = '0x2a') => {
         try {
             if (window.ethereum) {
                 if (!currentProvider) {
-                    const provider = makeNewProvider(window.ethereum);
+                    const provider = new ethers.providers.Web3Provider(window.ethereum);
                     if (currentProvider !== provider) {
                         setCurrentProvider(provider);
                     }
