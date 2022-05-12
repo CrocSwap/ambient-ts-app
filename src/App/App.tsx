@@ -26,6 +26,7 @@ import { useProvider } from './useProvider';
 export default function App() {
     const { chainId } = useMoralis();
     const provider = useProvider(chainId as string);
+    console.log(provider);
     useWallet(provider as Signer);
 
     return (

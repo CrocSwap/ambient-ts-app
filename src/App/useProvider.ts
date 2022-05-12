@@ -30,7 +30,7 @@ export const useProvider = (chain = '0x2a') => {
         setKovanProvider(kovan);
 
         window.ethereum && !currentProvider
-            ? setCurrentProvider(makeNewProvider(window.ethereum))
+            ? setCurrentProvider(new ethers.providers.Web3Provider(window.ethereum))
             : setCurrentProvider(kovan);
     }, []);
 
