@@ -2,7 +2,7 @@ import styles from 'CurrencySelector.module.css';
 import CurrencyQuantity from '../CurrencyQuantity/CurrencyQauntity';
 import { RiArrowDownSLine } from 'react-icons/ri';
 import Toggle from '../../Global/Toggle/Toggle';
-import { useCallback, useState } from 'react';
+import {  useState } from 'react';
 
 interface CurrencySelectorProps {
     fieldId: string;
@@ -67,7 +67,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                 )}
                 {fieldId === 'limit-sell' ? DexBalanceContent : WithdrawTokensContent}
             </div>
-            {ModalOrNull}
+            {/* {ModalOrNull} */}
         </div>
     );
 }
