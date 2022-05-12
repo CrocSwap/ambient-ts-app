@@ -15,3 +15,4 @@ Each sub-directory in this directory contains the `.tsx` file encoding a React f
 - The `/Trade` sub-directory contains all files necessary to render components exclusive to the `Trade.tsx` page file
 - The `/Analytics` sub-directory contains all files necessary to render components exclusive to the `Analytics.tsx` page file
 - The `/Portfolio` sub-directory contains all files necessary to render components exclusive to the `Portfolio.tsx` page file
+- The `/Global` sub-directory contains all files necessary to render components in multiple files throughout the app.
