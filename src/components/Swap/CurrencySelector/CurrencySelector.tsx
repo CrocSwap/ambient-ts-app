@@ -1,6 +1,8 @@
 import styles from 'CurrencySelector.module.css';
 import CurrencyQuantity from '../CurrencyQuantity/CurrencyQauntity';
 import { RiArrowDownSLine } from 'react-icons/ri';
+import Toggle from '../../Global/Toggle/Toggle';
+import { useCallback, useState } from 'react';
 
 interface CurrencySelectorProps {
     fieldId: string;
@@ -9,6 +11,35 @@ interface CurrencySelectorProps {
 
 export default function CurrencySelector(props: CurrencySelectorProps) {
     const { direction, fieldId } = props;
+    const [isChecked, setIsChecked] = useState<boolean>(false);
+
+    const DexBalanceContent = (
+        <span className={styles.surplus_toggle}>
+            Use DEX balance
+            <div className={styles.toggle_container}>
+                <Toggle
+                    isOn={isChecked}
+                    handleToggle={() => setIsChecked(!isChecked)}
+                    Width={40}
+                    id='surplus_liquidity'
+                />
+            </div>
+        </span>
+    );
+
+    const WithdrawTokensContent = (
+        <span className={styles.surplus_toggle}>
+            Withdraw tokens
+            <div className={styles.toggle_container}>
+                <Toggle
+                    isOn={isChecked}
+                    handleToggle={() => setIsChecked(!isChecked)}
+                    Width={40}
+                    id='tokens_withdrawal'
+                />
+            </div>
+        </span>
+    );
 
     return (
         <div className={styles.swapbox}>
