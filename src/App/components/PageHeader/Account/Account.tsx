@@ -4,7 +4,11 @@ import styles from './Account.module.css';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import { FiMoreHorizontal } from 'react-icons/fi';
 
-export default function Account() {
+interface IAccountProps {
+    nativeBalance: string;
+}
+
+export default function Account(props: IAccountProps): React.ReactElement<IAccountProps> {
     // const [anchorEl, setAnchorEl] = useState(null);
 
     // const handlePopoverClick = (event: React.ChangeEvent<any>) => {
@@ -58,7 +62,7 @@ export default function Account() {
             </div>
 
             <div className={styles.title_gradient}>69 AMBI</div>
-            <span className={styles.white}>69,420 ETH</span>
+            <span className={styles.white}>{props.nativeBalance} ETH</span>
             {/* <div className={styles.title_gradient}>{useLocalStorage("ambientHandle")}</div> */}
             <div className={styles.title_gradient}>username</div>
             <AiOutlineQuestionCircle size={20} color='#ffffff' />

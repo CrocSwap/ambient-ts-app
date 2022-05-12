@@ -39,11 +39,15 @@ export default function App() {
     })();
 
     console.log({ nativeBalance });
+    const headerProps = {
+        // make sure all required component's inputs/Props keys&types match
+        nativeBalance: nativeBalance,
+    };
 
     return (
         <>
             <div className='content-container'>
-                <PageHeader />
+                <PageHeader {...headerProps} />
                 <Routes>
                     <Route index element={<Home />} />
                     <Route path='trade' element={<Trade />}>
