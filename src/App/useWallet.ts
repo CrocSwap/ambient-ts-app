@@ -1,11 +1,12 @@
 import { useMoralis } from 'react-moralis';
-// import { contractAddresses, getTokenBalance } from '@crocswap-libs/sdk';
+import { contractAddresses, getTokenBalanceDisplay } from '@crocswap-libs/sdk';
 import { Signer } from 'ethers';
 
 export const useWallet = async (provider: Signer) => {
     // console.log(useMoralis());
     // console.log(useChain());
     const { Moralis, chainId, isWeb3Enabled, account } = useMoralis();
+    let nativeEthBalance = null;
     if (isWeb3Enabled && account !== null) {
         // this conditional is important because it prevents a TS error
         // ... in assigning the value of the key 'chain' below
@@ -14,14 +15,14 @@ export const useWallet = async (provider: Signer) => {
                 chain: chainId,
                 address: account,
             });
-            console.log(tokens);
-            // const nativeEthBalance = await getTokenBalance(
-            //     contractAddresses.ZERO_ADDR,
-            //     account,
-            //     provider,
-            // );
-            // const nativeTokenBalance = await provider.getBalance(account);
-            // console.log(nativeTokenBalance);
+            console.log({ tokens });
+            nativeEthBalance = await getTokenBalanceDisplay(
+                contractAddresses.ZERO_ADDR,
+                account,
+                provider,
+            );
+            console.log({ nativeEthBalance });
+            return nativeEthBalance;
         }
     }
 };
