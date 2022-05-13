@@ -1,5 +1,5 @@
 /** ***** Import React and Dongles *******/
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { useMoralis } from 'react-moralis';
 import { Signer } from 'ethers';
@@ -27,7 +27,15 @@ import { useProvider } from './useProvider';
 export default function App() {
     const { chainId } = useMoralis();
     const provider = useProvider(chainId as string);
-    const nativeBalance = useWallet(provider as Signer);
+    console.log(provider);
+
+    const [nativeBal, setNativeBal] = useState<string>('');
+    console.log(nativeBal);
+
+    (async () => {
+        const nativeBalance: any = await useWallet(provider as Signer);
+        setNativeBal(nativeBalance);
+    })();
 
     return (
         <>
