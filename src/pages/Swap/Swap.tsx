@@ -1,4 +1,4 @@
-import PropTypes from 'prop-types';
+// import PropTypes from 'prop-types';
 
 import CurrencyConverter from '../../components/Swap/CurrencyConverter/CurrencyConverter';
 import ExtraInfo from '../../components/Swap/ExtraInfo/ExtraInfo';
@@ -7,8 +7,14 @@ import SwapHeader from '../../components/Swap/SwapHeader/SwapHeader';
 import SwapButton from '../../components/Swap/SwapButton/SwapButton';
 import { Signer } from 'ethers';
 
-export default function Swap() {
-    // const { prov } = props;
+interface ISwapProps {
+    provider: Signer;
+}
+
+export default function Swap(props: ISwapProps) {
+    const { provider } = props;
+
+    console.log({ provider });
     return (
         <main data-testid={'swap'}>
             <ContentContainer>
