@@ -7,6 +7,7 @@ import { useState } from 'react';
 import styles from './PageHeader.module.css';
 import { useRive, useStateMachineInput } from 'rive-react';
 import Account from './Account/Account';
+import NetworkSelector from './NetworkSelector/NetworkSelector';
 /** ***** END: Import Local Files *********/
 
 export default function PageHeader() {
@@ -64,6 +65,7 @@ export default function PageHeader() {
                 <NavLink to='/portfolio'>Portfolio</NavLink>
             </nav>
             <div className={styles.account}>
+                <NetworkSelector />
                 <Account />
             </div>
         </header>
