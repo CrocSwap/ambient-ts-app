@@ -1,5 +1,8 @@
 /** ***** Import React and Dongles *******/
+import { useEffect, useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
+import { useMoralis } from 'react-moralis';
+import { Signer } from 'ethers';
 
 /** ***** Import JSX Files *******/
 import PageHeader from './components/PageHeader/PageHeader';
@@ -17,13 +20,68 @@ import TestPage from '../pages/TestPage/TestPage';
 
 /** * **** Import Local Files *******/
 import './App.css';
+// import { connectWallet } from './connectWallet';
+import { useProvider } from './useProvider';
+import { contractAddresses, getTokenBalanceDisplay } from '@crocswap-libs/sdk';
 
 /** ***** React Function *******/
 export default function App() {
+    const { chainId, isWeb3Enabled, account } = useMoralis();
+    const provider = useProvider(chainId as string);
+
+    const [nativeBalance, setNativeBalance] = useState<string>('');
+
+    // TODO: abstract this function to the 'connectWallet file', might
+    // TODO: ... make sense to change it to 'useWallet' and put the
+    // TODO: ... useEffect that calls it there as well
+    // function to connect a user's wallet
+    async function connectWallet(provider: Signer) {
+        let nativeEthBalance = null;
+        if (isWeb3Enabled && account !== null) {
+            // this conditional is important because it prevents a TS error
+            // ... in assigning the value of the key 'chain' below
+            if (!!chainId && chainId === '0x2a') {
+                // function to pull back all token balances from users wallet
+                // const tokens = await Moralis.Web3API.account.getTokenBalances({
+                //     chain: chainId,
+                //     address: account,
+                // });
+                // function to pull back native token balance from wallet
+                nativeEthBalance = await getTokenBalanceDisplay(
+                    contractAddresses.ZERO_ADDR,
+                    account,
+                    provider,
+                );
+                // TODO: write code to marry nativeEthBalance into the array
+                // TODO: ... of other balances and return all
+                return nativeEthBalance;
+            }
+        }
+    }
+
+    // TODO: this may work better as a useMemo... play with it a bit
+    // this is how we run the function to pull back balances asynchronously
+    useEffect(() => {
+        (async () => {
+            // run function pull back all balances in wallet
+            const balance = await connectWallet(provider as Signer);
+            // make sure a balance was returned, initialized as null
+            if (balance) {
+                // send value to local state
+                setNativeBalance(balance);
+            }
+        })();
+    }, [chainId, account]);
+
+    // props for <PageHeader/> React element
+    const headerProps = {
+        nativeBalance: nativeBalance,
+    };
+
     return (
         <>
             <div className='content-container'>
-                <PageHeader />
+                <PageHeader {...headerProps} />
                 <Routes>
                     <Route index element={<Home />} />
                     <Route path='trade' element={<Trade />}>

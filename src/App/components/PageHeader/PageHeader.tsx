@@ -1,6 +1,7 @@
 /** ***** START: Import React and Dongles *******/
 import { NavLink } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useMoralis } from 'react-moralis';
 /** ***** END: Import React and Dongles *********/
 
 /** ***** START: Import Local Files *******/
@@ -10,7 +11,47 @@ import Account from './Account/Account';
 import NetworkSelector from './NetworkSelector/NetworkSelector';
 /** ***** END: Import Local Files *********/
 
-export default function PageHeader() {
+interface IHeaderProps {
+    nativeBalance: string;
+}
+
+export default function PageHeader(props: IHeaderProps): React.ReactElement<IHeaderProps> {
+    const { user, account, enableWeb3, isWeb3Enabled, authenticate, isAuthenticated, logout } =
+        useMoralis();
+
+    // function to authenticate wallet with Moralis server
+    const clickLogin = async () => {
+        console.log('user clicked Login');
+        if (!isAuthenticated || !isWeb3Enabled) {
+            await authenticate({
+                provider: 'metamask',
+                signingMessage: 'Ambient API Authentication.',
+                onSuccess: () => {
+                    enableWeb3();
+                },
+                onError: () => {
+                    authenticate({
+                        provider: 'metamask',
+                        signingMessage: 'Ambient API Authentication.',
+                    });
+                },
+            });
+        }
+    };
+
+    // function to sever connection between user wallet and Moralis server
+    const clickLogout = async () => await logout();
+
+    useEffect(() => {
+        try {
+            if (user && !account) {
+                enableWeb3();
+            }
+        } catch (err) {
+            console.warn(`Could not automatically bridge Moralis to wallet. Error follows: ${err}`);
+        }
+    });
+
     // rive component
     const STATE_MACHINE_NAME = 'Basic State Machine';
     const INPUT_NAME = 'Switch';
@@ -35,6 +76,10 @@ export default function PageHeader() {
         setMobileNavToggle(!mobileNavToggle);
         onClickInput?.fire();
     }
+
+    const accountProps = {
+        nativeBalance: props.nativeBalance,
+    };
 
     // End of Page Header Functions
 
@@ -64,9 +109,13 @@ export default function PageHeader() {
                 <NavLink to='/analytics'>Analytics</NavLink>
                 <NavLink to='/portfolio'>Portfolio</NavLink>
             </nav>
+            <div className={styles.account}>Account Info</div>
+            <div className={styles.account}>{isAuthenticated ? account : null}</div>
+            <button onClick={clickLogin}>Log In</button>
+            <button onClick={clickLogout}>Log Out</button>
             <div className={styles.account}>
+                <Account {...accountProps} />
                 <NetworkSelector />
-                <Account />
             </div>
         </header>
     );

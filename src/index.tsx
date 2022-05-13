@@ -17,11 +17,11 @@ const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(
     <React.StrictMode>
         <Provider store={store}>
-            <BrowserRouter>
-                <MoralisProvider appId={APP_ID} serverUrl={SERVER_URL}>
-                    <App />{' '}
-                </MoralisProvider>
-            </BrowserRouter>
+            <MoralisProvider appId={APP_ID} serverUrl={SERVER_URL}>
+                <BrowserRouter>
+                    <App />
+                </BrowserRouter>
+            </MoralisProvider>
         </Provider>
     </React.StrictMode>,
 );

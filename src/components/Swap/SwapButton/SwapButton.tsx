@@ -1,12 +1,9 @@
 import styles from './SwapButton.module.css';
-import {useState } from 'react';
+import { useState } from 'react';
 import Button from '../../Global/Button/Button';
-
 
 export default function SwapButton() {
     const [allowedButton] = useState<boolean>(false);
-
-
 
     const ButtonDisplay = (
         <div className={styles.button_container}>
