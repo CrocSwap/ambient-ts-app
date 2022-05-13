@@ -1,0 +1,13 @@
+.sidebar_container{
+    background: #cf3d2a;
+
+}
+
+.sidebar_content{
+    position: fixed;
+}
+
+.sidebar_container > div{
+    width: 250px;
+    height: 100vh;
+}
