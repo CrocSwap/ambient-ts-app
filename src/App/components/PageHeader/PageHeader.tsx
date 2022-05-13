@@ -10,7 +10,11 @@ import { useRive, useStateMachineInput } from 'rive-react';
 import Account from './Account/Account';
 /** ***** END: Import Local Files *********/
 
-export default function PageHeader() {
+interface IHeaderProps {
+    nativeBalance: string;
+}
+
+export default function PageHeader(props: IHeaderProps): React.ReactElement<IHeaderProps> {
     const { user, account, enableWeb3, isWeb3Enabled, authenticate, isAuthenticated, logout } =
         useMoralis();
 
@@ -72,6 +76,10 @@ export default function PageHeader() {
         onClickInput?.fire();
     }
 
+    const accountProps = {
+        nativeBalance: props.nativeBalance,
+    };
+
     // End of Page Header Functions
 
     return (
@@ -104,7 +112,7 @@ export default function PageHeader() {
             <button onClick={clickLogin}>Log In</button>
             <button onClick={clickLogout}>Log Out</button>
             <div className={styles.account}>
-                <Account />
+                <Account {...accountProps} />
             </div>
         </header>
     );

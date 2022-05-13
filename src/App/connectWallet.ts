@@ -2,7 +2,7 @@ import { useMoralis } from 'react-moralis';
 import { contractAddresses, getTokenBalanceDisplay } from '@crocswap-libs/sdk';
 import { Signer } from 'ethers';
 
-export const useWallet = async (provider: Signer) => {
+export const connectWallet = async (provider: Signer) => {
     // console.log(useMoralis());
     // console.log(useChain());
     const { Moralis, chainId, isWeb3Enabled, account } = useMoralis();

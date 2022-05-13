@@ -1,5 +1,5 @@
 /** ***** Import React and Dongles *******/
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { useMoralis } from 'react-moralis';
 import { Signer } from 'ethers';
@@ -20,27 +20,58 @@ import TestPage from '../pages/TestPage/TestPage';
 
 /** * **** Import Local Files *******/
 import './App.css';
-import { useWallet } from './useWallet';
+// import { connectWallet } from './connectWallet';
 import { useProvider } from './useProvider';
+
+import { contractAddresses, getTokenBalanceDisplay } from '@crocswap-libs/sdk';
 
 /** ***** React Function *******/
 export default function App() {
-    const { chainId } = useMoralis();
+    const { Moralis, chainId, isWeb3Enabled, account } = useMoralis();
     const provider = useProvider(chainId as string);
-    console.log(provider);
+    // console.log(provider);
 
-    const [nativeBal, setNativeBal] = useState<string>('');
-    console.log(nativeBal);
+    const [nativeBalance, setNativeBalance] = useState<string>('');
 
-    (async () => {
-        const nativeBalance: any = await useWallet(provider as Signer);
-        setNativeBal(nativeBalance);
-    })();
+    async function connectWallet(provider: Signer) {
+        let nativeEthBalance = null;
+        if (isWeb3Enabled && account !== null) {
+            // this conditional is important because it prevents a TS error
+            // ... in assigning the value of the key 'chain' below
+            if (!!chainId && chainId === '0x2a') {
+                const tokens = await Moralis.Web3API.account.getTokenBalances({
+                    chain: chainId,
+                    address: account,
+                });
+                console.log({ tokens });
+                nativeEthBalance = await getTokenBalanceDisplay(
+                    contractAddresses.ZERO_ADDR,
+                    account,
+                    provider,
+                );
+                console.log({ nativeEthBalance });
+                return nativeEthBalance;
+            }
+        }
+    }
+
+    useEffect(() => {
+        (async () => {
+            const balance = await connectWallet(provider as Signer);
+            if (typeof balance === 'string') {
+                setNativeBalance(balance);
+            }
+        })();
+    }, [chainId, account]);
+
+    const headerProps = {
+        nativeBalance: nativeBalance,
+    };
 
     return (
         <>
             <div className='content-container'>
-                <PageHeader />
+                <PageHeader {...headerProps} />
                 <Routes>
                     <Route index element={<Home />} />
                     <Route path='trade' element={<Trade />}>
