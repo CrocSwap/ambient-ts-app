@@ -8,6 +8,7 @@ import { useMoralis } from 'react-moralis';
 import styles from './PageHeader.module.css';
 import { useRive, useStateMachineInput } from 'rive-react';
 import Account from './Account/Account';
+import NetworkSelector from './NetworkSelector/NetworkSelector';
 /** ***** END: Import Local Files *********/
 
 interface IHeaderProps {
@@ -103,6 +104,7 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
                 data-visible={mobileNavToggle}
             >
                 <NavLink to='/'>Home</NavLink>
+                <NavLink to='/swap'>Swap</NavLink>
                 <NavLink to='/trade'>Trade</NavLink>
                 <NavLink to='/analytics'>Analytics</NavLink>
                 <NavLink to='/portfolio'>Portfolio</NavLink>
@@ -113,6 +115,7 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
             <button onClick={clickLogout}>Log Out</button>
             <div className={styles.account}>
                 <Account {...accountProps} />
+                <NetworkSelector />
             </div>
         </header>
     );
