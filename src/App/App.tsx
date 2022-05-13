@@ -24,19 +24,21 @@ export default function App() {
         <>
             <div className='content-container'>
                 <PageHeader />
-                <Routes>
-                    <Route index element={<Home />} />
-                    <Route path='trade' element={<Trade />}>
-                        <Route path='market' element={<Market />} />
-                        <Route path='limit' element={<Limit />} />
-                        <Route path='liquidity' element={<Liquidity />} />
-                    </Route>
-                    <Route path='analytics' element={<Analytics />} />
-                    <Route path='portfolio' element={<Portfolio />} />
-                    <Route path='swap' element={<Swap />} />
-                    <Route path='chart' element={<Chart />} />
-                    <Route path='testpage' element={<TestPage />} />
-                </Routes>
+                <div className='main-layout'>
+                    <Routes>
+                        <Route index element={<Home />} />
+                        <Route path='trade' element={<Trade />}>
+                            <Route path='market' element={<Market />} />
+                            <Route path='limit' element={<Limit />} />
+                            <Route path='liquidity' element={<Liquidity />} />
+                        </Route>
+                        <Route path='analytics' element={<Analytics />} />
+                        <Route path='portfolio' element={<Portfolio />} />
+                        <Route path='swap' element={<Swap />} />
+                        <Route path='chart' element={<Chart />} />
+                        <Route path='testpage' element={<TestPage />} />
+                    </Routes>
+                </div>
             </div>
             <PageFooter />
         </>
