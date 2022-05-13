@@ -78,6 +78,7 @@ export default function App() {
         nativeBalance: nativeBalance,
     };
 
+    console.log(JSON.stringify(provider));
     return (
         <>
             <div className='content-container'>
