@@ -78,6 +78,12 @@ export default function App() {
         nativeBalance: nativeBalance,
     };
 
+    // props for <Swap/> React element
+    const swapProps = {
+        provider: provider as Signer,
+    };
+
+    // console.log({ provider });
     return (
         <>
             <div className='content-container'>
@@ -91,7 +97,7 @@ export default function App() {
                     </Route>
                     <Route path='analytics' element={<Analytics />} />
                     <Route path='portfolio' element={<Portfolio />} />
-                    <Route path='swap' element={<Swap />} />
+                    <Route path='swap' element={<Swap {...swapProps} />} />
                     <Route path='chart' element={<Chart />} />
                     <Route path='testpage' element={<TestPage />} />
                 </Routes>
