@@ -1,5 +1,3 @@
-// import PropTypes from 'prop-types';
-
 import CurrencyConverter from '../../components/Swap/CurrencyConverter/CurrencyConverter';
 import ExtraInfo from '../../components/Swap/ExtraInfo/ExtraInfo';
 import ContentContainer from '../../components/Global/ContentContainer/ContentContainer';
@@ -26,7 +24,3 @@ export default function Swap(props: ISwapProps) {
         </main>
     );
 }
-
-// Swap.propTypes = {
-//     prov: PropTypes.any.isRequired
-// }
