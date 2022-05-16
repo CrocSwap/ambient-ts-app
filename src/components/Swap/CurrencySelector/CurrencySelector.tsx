@@ -2,7 +2,7 @@ import styles from './CurrencySelector.module.css';
 import CurrencyQuantity from '../CurrencyQuantity/CurrencyQauntity';
 import { RiArrowDownSLine } from 'react-icons/ri';
 import Toggle from '../../Global/Toggle/Toggle';
-import { useState, SetStateAction } from 'react';
+import { useState, ChangeEvent, SetStateAction } from 'react';
 
 interface CurrencySelectorProps {
     fieldId: string;
@@ -10,11 +10,19 @@ interface CurrencySelectorProps {
     sellToken?: boolean;
     buyTokenQty: number;
     sellTokenQty: number;
-    updateTokenQuantity: React.Dispatch<SetStateAction<number[]>>;
+    updateTokenQuantity: React.Dispatch<SetStateAction<number>>;
+    updateOtherQuantity: (input: ChangeEvent<HTMLInputElement>) => void;
 }
 
 export default function CurrencySelector(props: CurrencySelectorProps) {
-    const { direction, fieldId, buyTokenQty, sellTokenQty, updateTokenQuantity } = props;
+    const {
+        direction,
+        fieldId,
+        buyTokenQty,
+        sellTokenQty,
+        updateTokenQuantity,
+        updateOtherQuantity,
+    } = props;
     const [isChecked, setIsChecked] = useState<boolean>(false);
 
     const DexBalanceContent = (
@@ -50,7 +58,11 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
             <span className={styles.direction}>{direction}</span>
             <div className={styles.swapbox_top}>
                 <div className={styles.swap_input}>
-                    <CurrencyQuantity fieldId={fieldId} />
+                    <CurrencyQuantity
+                        fieldId={fieldId}
+                        tokenQty={fieldId === 'buy' ? buyTokenQty : sellTokenQty}
+                        updateOtherQuantity={updateOtherQuantity}
+                    />
                 </div>
                 <div className={styles.token_select}>
                     <img
