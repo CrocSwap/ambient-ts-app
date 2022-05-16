@@ -78,17 +78,18 @@ export default function Swap(props: ISwapProps) {
     // }, [signer]);
 
     async function initiateSwap() {
-        // const qty = fromDisplayQty('0.000001', 18);
-        // console.log({ qty });
+        const qty = fromDisplayQty('0.000001', 18);
+        console.log({ qty });
 
-        // const displayQty = toDisplayQty(qty, 18);
-        // console.log({ displayQty });
+        const displayQty = toDisplayQty(qty, 18);
+        console.log({ displayQty });
 
-        const ethValue = fromDisplayQty('0.000001', 18);
-        console.log({ ethValue });
+        const ethValue = '0.000001';
+        // const ethValue = fromDisplayQty('0.000001', 18);
+        // console.log({ ethValue });
 
-        const ethValueDisplayQty = toDisplayQty(ethValue, 18);
-        console.log({ ethValueDisplayQty });
+        // const ethValueDisplayQty = toDisplayQty(ethValue, 18);
+        // console.log({ ethValueDisplayQty });
 
         // console.log(contractAddresses.ZERO_ADDR);
         // console.log({ daiKovanAddress });
@@ -98,9 +99,9 @@ export default function Swap(props: ISwapProps) {
                 contractAddresses.ZERO_ADDR,
                 daiKovanAddress,
                 true,
-                '0.000001',
+                qty,
                 ethValue,
-                15,
+                5,
                 POOL_PRIMARY,
                 signer,
             );
@@ -111,7 +112,7 @@ export default function Swap(props: ISwapProps) {
         <main data-testid={'swap'}>
             <ContentContainer>
                 <SwapHeader />
-                <CurrencyConverter />
+                <CurrencyConverter isLiq={false} />
                 <ExtraInfo />
                 <SwapButton onClickFn={initiateSwap} />
             </ContentContainer>
