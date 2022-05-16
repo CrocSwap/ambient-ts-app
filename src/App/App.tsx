@@ -24,6 +24,7 @@ import './App.css';
 // import { connectWallet } from './connectWallet';
 import { useProvider } from './useProvider';
 import { contractAddresses, getTokenBalanceDisplay } from '@crocswap-libs/sdk';
+import Sidebar from './components/Sidebar/Sidebar';
 
 /** ***** React Function *******/
 export default function App() {
@@ -89,19 +90,22 @@ export default function App() {
         <>
             <div className='content-container'>
                 <PageHeader {...headerProps} />
-                <Routes>
-                    <Route index element={<Home />} />
-                    <Route path='trade' element={<Trade />}>
-                        <Route path='market' element={<Market />} />
-                        <Route path='limit' element={<Limit />} />
-                        <Route path='liquidity' element={<Liquidity />} />
-                    </Route>
-                    <Route path='analytics' element={<Analytics />} />
-                    <Route path='portfolio' element={<Portfolio />} />
-                    <Route path='swap' element={<Swap {...swapProps} />} />
-                    <Route path='chart' element={<Chart />} />
-                    <Route path='testpage' element={<TestPage />} />
-                </Routes>
+                <Sidebar />
+                <div className='main-layout'>
+                    <Routes>
+                        <Route index element={<Home />} />
+                        <Route path='trade' element={<Trade />}>
+                            <Route path='market' element={<Market />} />
+                            <Route path='limit' element={<Limit />} />
+                            <Route path='liquidity' element={<Liquidity />} />
+                        </Route>
+                        <Route path='analytics' element={<Analytics />} />
+                        <Route path='portfolio' element={<Portfolio />} />
+                        <Route path='swap' element={<Swap {...swapProps} />} />
+                        <Route path='chart' element={<Chart />} />
+                        <Route path='testpage' element={<TestPage />} />
+                    </Routes>
+                </div>
             </div>
             <PageFooter />
         </>
