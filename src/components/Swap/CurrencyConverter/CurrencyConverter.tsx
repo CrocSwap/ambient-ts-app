@@ -1,4 +1,4 @@
-import { useState, ChangeEvent } from 'react';
+import { ChangeEvent } from 'react';
 import styles from './CurrencyConverter.module.css';
 import CurrencySelector from '../CurrencySelector/CurrencySelector';
 
@@ -11,9 +11,6 @@ export default function CurrencyConverter(
     props: CurrencyConverterProps,
 ): React.ReactElement<CurrencyConverterProps> {
     const { isLiq, poolPrice } = props;
-
-    const [sellTokenQty, setSellTokenQty] = useState<number>(0);
-    const [buyTokenQty, setBuyTokenQty] = useState<number>(8);
 
     // TODO: update name of functions with 'handle' verbiage
     // TODO: consolidate functions into a single function
@@ -43,9 +40,6 @@ export default function CurrencyConverter(
                 direction={isLiq ? 'Select Pair' : 'From:'}
                 fieldId='sell'
                 sellToken
-                buyTokenQty={buyTokenQty}
-                sellTokenQty={sellTokenQty}
-                updateTokenQuantity={setSellTokenQty}
                 updateOtherQuantity={updateBuyQty}
             />
             <div className={styles.arrow_container}>
@@ -54,9 +48,6 @@ export default function CurrencyConverter(
             <CurrencySelector
                 direction={isLiq ? '' : 'To:'}
                 fieldId='buy'
-                buyTokenQty={buyTokenQty}
-                sellTokenQty={sellTokenQty}
-                updateTokenQuantity={setBuyTokenQty}
                 updateOtherQuantity={updateSellQty}
             />
         </section>

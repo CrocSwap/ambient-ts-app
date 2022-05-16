@@ -4,12 +4,11 @@ import styles from './CurrencyQuantity.module.css';
 interface CurrencyQuantityProps {
     disable?: boolean;
     fieldId: string;
-    tokenQty: number;
     updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
 }
 
 export default function CurrencyQuantity(props: CurrencyQuantityProps) {
-    const { disable, fieldId, tokenQty, updateOtherQuantity } = props;
+    const { disable, fieldId, updateOtherQuantity } = props;
 
     return (
         <div className={styles.token_amount}>
