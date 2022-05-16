@@ -19,12 +19,12 @@
 
 .middle_col{
     background-color:#171f2b;
-    min-height: calc(100vh - 3rem);
+
 
 }
 .right_col{
     background-color: var(--dark1);
-    min-height: calc(100vh - 3rem);
+  
 }
 
 @media (min-width: 940px){
@@ -40,6 +40,10 @@
         display: grid;
         grid-template-columns:  auto 380px;
         grid-gap: 1em;
+    }
+
+    .middle_col, .right_col{
+        min-height: calc(100vh - 3rem);
     }
 
    
