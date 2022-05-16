@@ -45,7 +45,7 @@ footer {
   background: var(--dark3);
   min-height: calc(100vh - 5rem);
   margin-left: 5rem;
-  padding: 1rem;
+  /* padding: 1rem; */
 
 }
 .content-container {
