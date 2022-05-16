@@ -23,15 +23,18 @@ export default function CurrencyConverter(
         if (buyQtyField) {
             console.log(buyQtyField);
             buyQtyField.value = output;
-            // buyQtyField.setAttribute(value, output);
         }
     };
 
     const updateSellQty = (evt: ChangeEvent<HTMLInputElement>) => {
         console.log('fired function updateSellQty');
         const input = parseFloat(evt.target.value);
-        const output = poolPrice * input;
-        return output;
+        const output = (poolPrice * input).toString();
+        const sellQtyField = document.getElementById('sell-quantity') as HTMLInputElement;
+        if (sellQtyField) {
+            console.log(sellQtyField);
+            sellQtyField.value = output;
+        }
     };
 
     return (
