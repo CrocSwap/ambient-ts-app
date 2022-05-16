@@ -73,9 +73,6 @@ export default function Swap(props: ISwapProps) {
     }, [poolPriceDisplay]);
 
     const signer = provider?.getSigner();
-    // useEffect(() => {
-    //     console.log({ signer });
-    // }, [signer]);
 
     async function initiateSwap() {
         const qty = fromDisplayQty('0.000001', 18);
