@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { useMoralis } from 'react-moralis';
 import { Signer } from 'ethers';
+import { JsonRpcProvider } from '@ethersproject/providers';
 
 /** ***** Import JSX Files *******/
 import PageHeader from './components/PageHeader/PageHeader';
@@ -80,7 +81,7 @@ export default function App() {
 
     // props for <Swap/> React element
     const swapProps = {
-        provider: provider as Signer,
+        provider: provider as JsonRpcProvider,
     };
 
     // console.log({ provider });
