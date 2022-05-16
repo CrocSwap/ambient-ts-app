@@ -15,6 +15,7 @@ import {
     POOL_PRIMARY,
     sendSwap,
 } from '@crocswap-libs/sdk';
+// import { BigNumber } from 'ethers';
 import { JsonRpcProvider } from '@ethersproject/providers';
 // import { BigNumber } from 'ethers';
 
@@ -24,6 +25,14 @@ interface ISwapProps {
 
 export default function Swap(props: ISwapProps) {
     const { provider } = props;
+
+    const [isSellTokenPrimary, setIsSellTokenPrimary] = useState<boolean>(true);
+
+    // this is to track changes in whether the sell token is primary
+    // it's also making the linter happy until Ben uses the value
+    useEffect(() => {
+        console.log(isSellTokenPrimary);
+    }, [isSellTokenPrimary]);
 
     // const sellTokenAddress = contractAddresses.ZERO_ADDR;
     const daiKovanAddress = '0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa';
@@ -82,15 +91,6 @@ export default function Swap(props: ISwapProps) {
         console.log({ displayQty });
 
         const ethValue = '0.000001';
-        // const ethValue = fromDisplayQty('0.000001', 18);
-        // console.log({ ethValue });
-
-        // const ethValueDisplayQty = toDisplayQty(ethValue, 18);
-        // console.log({ ethValueDisplayQty });
-
-        // console.log(contractAddresses.ZERO_ADDR);
-        // console.log({ daiKovanAddress });
-
         if (signer) {
             await sendSwap(
                 contractAddresses.ZERO_ADDR,
@@ -109,7 +109,11 @@ export default function Swap(props: ISwapProps) {
         <main data-testid={'swap'}>
             <ContentContainer>
                 <SwapHeader />
-                <CurrencyConverter isLiq={false} />
+                <CurrencyConverter
+                    isLiq={false}
+                    poolPrice={poolPriceNonDisplay}
+                    setIsSellTokenPrimary={setIsSellTokenPrimary}
+                />
                 <ExtraInfo />
                 <SwapButton onClickFn={initiateSwap} />
             </ContentContainer>

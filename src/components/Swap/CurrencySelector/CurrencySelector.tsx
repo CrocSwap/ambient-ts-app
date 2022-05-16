@@ -1,17 +1,18 @@
 import styles from './CurrencySelector.module.css';
-import CurrencyQuantity from '../CurrencyQuantity/CurrencyQauntity';
+import CurrencyQuantity from '../CurrencyQuantity/CurrencyQuantity';
 import { RiArrowDownSLine } from 'react-icons/ri';
 import Toggle from '../../Global/Toggle/Toggle';
-import { useState } from 'react';
+import { useState, ChangeEvent } from 'react';
 
 interface CurrencySelectorProps {
     fieldId: string;
     direction: string;
     sellToken?: boolean;
+    updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
 }
 
 export default function CurrencySelector(props: CurrencySelectorProps) {
-    const { direction, fieldId } = props;
+    const { direction, fieldId, updateOtherQuantity } = props;
     const [isChecked, setIsChecked] = useState<boolean>(false);
 
     const DexBalanceContent = (
@@ -47,12 +48,9 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
             <span className={styles.direction}>{direction}</span>
             <div className={styles.swapbox_top}>
                 <div className={styles.swap_input}>
-                    <CurrencyQuantity fieldId={fieldId} />
+                    <CurrencyQuantity fieldId={fieldId} updateOtherQuantity={updateOtherQuantity} />
                 </div>
-                <div
-                    className={styles.token_select}
-                    // onClick={""}
-                >
+                <div className={styles.token_select}>
                     <img
                         className={styles.token_list_img}
                         src='https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png'
@@ -71,7 +69,6 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                 )}
                 {fieldId === 'limit-sell' ? DexBalanceContent : WithdrawTokensContent}
             </div>
-            {/* {ModalOrNull} */}
         </div>
     );
 }
