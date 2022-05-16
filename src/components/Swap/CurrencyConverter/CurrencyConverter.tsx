@@ -4,25 +4,29 @@ import CurrencySelector from '../CurrencySelector/CurrencySelector';
 
 interface CurrencyConverterProps {
     isLiq: boolean;
+    poolPrice: number;
 }
 
 export default function CurrencyConverter(
     props: CurrencyConverterProps,
 ): React.ReactElement<CurrencyConverterProps> {
-    const { isLiq } = props;
+    const { isLiq, poolPrice } = props;
 
     const [sellTokenQty, setSellTokenQty] = useState<number>(0);
     const [buyTokenQty, setBuyTokenQty] = useState<number>(0);
 
-    const updateSellQty = (evt: ChangeEvent<HTMLInputElement>) => {
-        console.log('fired function updateSellQty');
-        console.log(typeof evt, { evt });
-    };
-
     const updateBuyQty = (evt: ChangeEvent<HTMLInputElement>) => {
         console.log('fired function updateBuyQty');
         const input = parseFloat(evt.target.value);
-        console.log(typeof input, { input });
+        const output = (1 / poolPrice) * input;
+        return output;
+    };
+
+    const updateSellQty = (evt: ChangeEvent<HTMLInputElement>) => {
+        console.log('fired function updateSellQty');
+        const input = parseFloat(evt.target.value);
+        const output = poolPrice * input;
+        return output;
     };
 
     return (

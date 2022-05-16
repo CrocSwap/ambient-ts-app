@@ -101,7 +101,7 @@ export default function Swap(props: ISwapProps) {
         <main data-testid={'swap'}>
             <ContentContainer>
                 <SwapHeader />
-                <CurrencyConverter isLiq={false} />
+                <CurrencyConverter isLiq={false} poolPrice={poolPriceNonDisplay} />
                 <ExtraInfo />
                 <SwapButton onClickFn={initiateSwap} />
             </ContentContainer>
