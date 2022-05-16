@@ -26,6 +26,14 @@ interface ISwapProps {
 export default function Swap(props: ISwapProps) {
     const { provider } = props;
 
+    const [isSellTokenPrimary, setIsSellTokenPrimary] = useState<boolean>(true);
+
+    // this is to track changes in whether the sell token is primary
+    // it's also making the linter happy until Ben uses the value
+    useEffect(() => {
+        console.log(isSellTokenPrimary);
+    }, [isSellTokenPrimary]);
+
     // const sellTokenAddress = contractAddresses.ZERO_ADDR;
     const daiKovanAddress = '0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa';
     // const usdcKovanAddress = '0xb7a4F3E9097C08dA09517b5aB877F7a917224ede';
@@ -101,7 +109,11 @@ export default function Swap(props: ISwapProps) {
         <main data-testid={'swap'}>
             <ContentContainer>
                 <SwapHeader />
-                <CurrencyConverter isLiq={false} poolPrice={poolPriceNonDisplay} />
+                <CurrencyConverter
+                    isLiq={false}
+                    poolPrice={poolPriceNonDisplay}
+                    setIsSellTokenPrimary={setIsSellTokenPrimary}
+                />
                 <ExtraInfo />
                 <SwapButton onClickFn={initiateSwap} />
             </ContentContainer>

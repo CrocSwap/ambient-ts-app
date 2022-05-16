@@ -1,16 +1,17 @@
-import { ChangeEvent } from 'react';
+import { ChangeEvent, SetStateAction } from 'react';
 import styles from './CurrencyConverter.module.css';
 import CurrencySelector from '../CurrencySelector/CurrencySelector';
 
 interface CurrencyConverterProps {
     isLiq: boolean;
     poolPrice: number;
+    setIsSellTokenPrimary: React.Dispatch<SetStateAction<boolean>>;
 }
 
 export default function CurrencyConverter(
     props: CurrencyConverterProps,
 ): React.ReactElement<CurrencyConverterProps> {
-    const { isLiq, poolPrice } = props;
+    const { isLiq, poolPrice, setIsSellTokenPrimary } = props;
 
     // TODO: update name of functions with 'handle' verbiage
     // TODO: consolidate functions into a single function
@@ -20,6 +21,7 @@ export default function CurrencyConverter(
         const input = parseFloat(evt.target.value);
         const output = (1 / poolPrice) * input;
         const buyQtyField = document.getElementById('buy-quantity') as HTMLInputElement;
+        setIsSellTokenPrimary(true);
         if (buyQtyField) {
             buyQtyField.value = isNaN(output) ? '' : output.toString();
         }
@@ -29,6 +31,7 @@ export default function CurrencyConverter(
         const input = parseFloat(evt.target.value);
         const output = poolPrice * input;
         const sellQtyField = document.getElementById('sell-quantity') as HTMLInputElement;
+        setIsSellTokenPrimary(false);
         if (sellQtyField) {
             sellQtyField.value = isNaN(output) ? '' : output.toString();
         }
