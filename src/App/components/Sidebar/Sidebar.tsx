@@ -4,7 +4,7 @@ import { MdPlayArrow, MdDoubleArrow } from 'react-icons/md';
 
 interface SidebarProps {
     showSidebar: boolean;
-    toggleSidebar: (event: React.MouseEvent<HTMLButtonElement>) => void;
+    toggleSidebar: (event: React.MouseEvent<HTMLDivElement>) => void;
 }
 
 export default function Sidebar(props: SidebarProps): React.ReactElement<SidebarProps> {
@@ -40,8 +40,9 @@ export default function Sidebar(props: SidebarProps): React.ReactElement<Sidebar
                     <li className={styles.logo}>
                         <a href='#' className={styles.sidebar_link}>
                             <span className={`${styles.link_text} ${styles.logo_text}`}></span>
-                            <MdDoubleArrow size={30} />
-                            <button onClick={toggleSidebar}>Click me</button>
+                            <div onClick={toggleSidebar}>
+                                <MdDoubleArrow size={30} />
+                            </div>
                         </a>
                     </li>
                     {searchContainer}

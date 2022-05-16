@@ -113,6 +113,10 @@
     transform: rotate(-180deg);
   }
 
+  .sidebar_active .logo svg{
+    transform: rotate(-180deg);
+  }
+
   /* SEARCH CONTAINER */
 
   .search_container {
@@ -206,6 +210,7 @@
 
     .sidebar_active{
         width: 16rem;
+
     }
 
     .sidebar_active .search_container{

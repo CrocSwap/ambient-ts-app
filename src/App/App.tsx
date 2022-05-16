@@ -87,13 +87,18 @@ export default function App() {
     const swapProps = {
         provider: provider as JsonRpcProvider,
     };
-    // props for <Swap/> React element
+    // props for <Sidebar/> React element
     function toggleSidebar() {
         setShowSidebar(!showSidebar);
     }
     const sidebarProps = {
         showSidebar: showSidebar,
         toggleSidebar: toggleSidebar,
+    };
+    // props for <Trade/> React element
+
+    const tradeProps = {
+        showSidebar: showSidebar,
     };
 
     useEffect(() => {
