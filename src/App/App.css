@@ -11,15 +11,11 @@
 
 html{
   background: var(--body-bg);
-  color: var(--text-grey-white);
-
-
-  
+  color: var(--text-grey-white); 
 }
 
 svg{
-  color: var(--text-grey-light);
-  
+  color: var(--text-grey-light); 
 }
 
 svg:hover{
@@ -27,27 +23,33 @@ svg:hover{
   transition: all 450ms ease-in-out;
 }
 
+a {
+  color: unset;
+  text-decoration: none;
+  position: relative; 
+}
 body{
-  
   overflow-x: hidden;
   padding: 0 1rem;
 
 }
   
-.content-container {
-  min-height: calc(100vh - 4rem);
-}
 
 footer {
   position: relative;
   left: 0;
   bottom: 0;
 }
-a {
-  color: unset;
-  text-decoration: none;
-  position: relative;
-  
+
+.main-layout{
+  /* background: var(--dark3); */
+  /* min-height: calc(100vh - 5rem); */
+  margin-left: 5rem;
+  padding: 1rem;
+
+}
+.content-container {
+  min-height: calc(100vh - 4rem);
 }
 
 .primary_apy{
@@ -82,14 +84,13 @@ a {
 
 
 
-@media only screen and (min-width: 768px) {
-  body{
-  
+@media only screen and (max-width: 600px) {
 
-    padding: 0 4rem;
-  
+
+  .main-layout {
+
+    margin: 0;
+ 
+    overflow: scroll;
   }
-
-	
-
 }
