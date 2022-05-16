@@ -8,10 +8,12 @@ interface CurrencySelectorProps {
     fieldId: string;
     direction: string;
     sellToken?: boolean;
+    buyTokenQty: number;
+    sellTokenQty: number;
 }
 
 export default function CurrencySelector(props: CurrencySelectorProps) {
-    const { direction, fieldId } = props;
+    const { direction, fieldId, buyTokenQty, sellTokenQty } = props;
     const [isChecked, setIsChecked] = useState<boolean>(false);
 
     const DexBalanceContent = (
@@ -49,10 +51,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                 <div className={styles.swap_input}>
                     <CurrencyQuantity fieldId={fieldId} />
                 </div>
-                <div
-                    className={styles.token_select}
-                    // onClick={""}
-                >
+                <div className={styles.token_select}>
                     <img
                         className={styles.token_list_img}
                         src='https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png'
@@ -71,7 +70,6 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                 )}
                 {fieldId === 'limit-sell' ? DexBalanceContent : WithdrawTokensContent}
             </div>
-            {/* {ModalOrNull} */}
         </div>
     );
 }
