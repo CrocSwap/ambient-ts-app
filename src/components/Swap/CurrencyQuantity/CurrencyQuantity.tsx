@@ -5,7 +5,7 @@ interface CurrencyQuantityProps {
     disable?: boolean;
     fieldId: string;
     tokenQty: number;
-    updateOtherQuantity: (input: ChangeEvent<HTMLInputElement>) => void;
+    updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
 }
 
 export default function CurrencyQuantity(props: CurrencyQuantityProps) {

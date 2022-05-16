@@ -11,7 +11,7 @@ interface CurrencySelectorProps {
     buyTokenQty: number;
     sellTokenQty: number;
     updateTokenQuantity: React.Dispatch<SetStateAction<number>>;
-    updateOtherQuantity: (input: ChangeEvent<HTMLInputElement>) => void;
+    updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
 }
 
 export default function CurrencySelector(props: CurrencySelectorProps) {

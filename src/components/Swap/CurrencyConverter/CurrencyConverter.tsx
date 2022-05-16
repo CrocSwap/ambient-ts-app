@@ -11,13 +11,14 @@ export default function CurrencyConverter(props: CurrencyConverterProps) {
     const [sellTokenQty, setSellTokenQty] = useState<number>(0);
     const [buyTokenQty, setBuyTokenQty] = useState<number>(0);
 
-    const updateSellQty = (input: ChangeEvent<HTMLInputElement>) => {
+    const updateSellQty = (evt: ChangeEvent<HTMLInputElement>) => {
         console.log('fired function updateSellQty');
-        console.log(typeof input, { input });
+        console.log(typeof evt, { evt });
     };
 
-    const updateBuyQty = (input: ChangeEvent<HTMLInputElement>) => {
+    const updateBuyQty = (evt: ChangeEvent<HTMLInputElement>) => {
         console.log('fired function updateBuyQty');
+        const input = parseFloat(evt.target.value);
         console.log(typeof input, { input });
     };
 
