@@ -6,20 +6,12 @@ export default function Trade() {
         <main data-testid={'trade'}>
             {/* <h1>This is Trade.tsx</h1> */}
             <main className={styles.main_layout}>
-                {/* <div className={styles.left_col}>
-                    <div onClick={() => setLeftSidebar(!leftSidebar)}>
-                        {leftSidebar ? (
-                            <FaTimes size={20} color='#bdbdbd' />
-                        ) : (
-                            <FaArrowRight size={20} color='#bdbdbd' />
-                        )}
-                    </div>
-                </div> */}
                 <div className={styles.middle_col}>
-                    I AM THE MAIN LAYOUT AND I WORK JUST FINE. WHAT IS YOUR PROSO SOFJSOIFJSOIFJSFOS
-                    JSOIFJSOIFJSOIFJ SOI FJSIOF JSOIFJS OIF JSOIF JSIOJOFJSOI JFSOJF SOF
+                    <h1>THIS IS GRAPH COMPONENT</h1>
                 </div>
-                <div className={styles.right_col}></div>
+                <div className={styles.right_col}>
+                    <h1></h1>
+                </div>
             </main>
             <Outlet />
         </main>

@@ -38,33 +38,32 @@ export default function Sidebar(props: SidebarProps): React.ReactElement<Sidebar
             <nav className={`${styles.sidebar} ${sidebarStyle}`}>
                 <ul className={styles.sidebar_nav}>
                     <li className={styles.logo}>
-                        <a href='#' className={styles.sidebar_link}>
-                            <span className={`${styles.link_text} ${styles.logo_text}`}></span>
+                        <div className={styles.sidebar_link}>
                             <div onClick={toggleSidebar}>
                                 <MdDoubleArrow size={30} />
                             </div>
-                        </a>
+                        </div>
                     </li>
                     {searchContainer}
 
                     {navItems1.map((item, idx) => (
                         <li key={idx} className={styles.sidebar_item}>
-                            <a href='#' className={styles.sidebar_link}>
+                            <div className={styles.sidebar_link}>
                                 <MdPlayArrow size={20} color='#ffffff' />
 
                                 <span className={styles.link_text}>{item.name}</span>
-                            </a>
+                            </div>
                         </li>
                     ))}
 
                     <div className={styles.bottom_elements}>
                         {navItems2.map((item, idx) => (
                             <li key={idx} className={styles.sidebar_item} id='themeButton'>
-                                <a href='#' className={styles.sidebar_link}>
+                                <div className={styles.sidebar_link}>
                                     <MdPlayArrow size={20} color='#ffffff' />
 
                                     <span className={styles.link_text}>{item.name}</span>
-                                </a>
+                                </div>
                             </li>
                         ))}
                     </div>

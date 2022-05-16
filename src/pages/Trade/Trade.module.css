@@ -40,6 +40,10 @@
 
     .middle_col, .right_col{
         min-height: calc(100vh - 3rem);
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
 
    
