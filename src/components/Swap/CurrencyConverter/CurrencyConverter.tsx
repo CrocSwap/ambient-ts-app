@@ -16,25 +16,17 @@ export default function CurrencyConverter(
     const [buyTokenQty, setBuyTokenQty] = useState<number>(8);
 
     const updateBuyQty = (evt: ChangeEvent<HTMLInputElement>) => {
-        console.log('fired function updateBuyQty');
         const input = parseFloat(evt.target.value);
         const output = ((1 / poolPrice) * input).toString();
         const buyQtyField = document.getElementById('buy-quantity') as HTMLInputElement;
-        if (buyQtyField) {
-            console.log(buyQtyField);
-            buyQtyField.value = output;
-        }
+        if (buyQtyField) buyQtyField.value = output;
     };
 
     const updateSellQty = (evt: ChangeEvent<HTMLInputElement>) => {
-        console.log('fired function updateSellQty');
         const input = parseFloat(evt.target.value);
         const output = (poolPrice * input).toString();
         const sellQtyField = document.getElementById('sell-quantity') as HTMLInputElement;
-        if (sellQtyField) {
-            console.log(sellQtyField);
-            sellQtyField.value = output;
-        }
+        if (sellQtyField) sellQtyField.value = output;
     };
 
     return (
