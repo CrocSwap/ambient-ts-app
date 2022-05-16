@@ -10,7 +10,7 @@ export default function Trade() {
         <main data-testid={'trade'}>
             {/* <h1>This is Trade.tsx</h1> */}
             <main className={sidebarStyle}>
-                <div className={styles.left_col}>
+                {/* <div className={styles.left_col}>
                     <div onClick={() => setLeftSidebar(!leftSidebar)}>
                         {leftSidebar ? (
                             <FaTimes size={20} color='#bdbdbd' />
@@ -18,7 +18,7 @@ export default function Trade() {
                             <FaArrowRight size={20} color='#bdbdbd' />
                         )}
                     </div>
-                </div>
+                </div> */}
                 <div className={styles.middle_col}></div>
                 <div className={styles.right_col}></div>
             </main>

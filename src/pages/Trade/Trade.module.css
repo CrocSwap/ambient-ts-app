@@ -31,13 +31,13 @@
     .main_layout {
       
         display: grid;
-        grid-template-columns: 250px auto 380px;
+        grid-template-columns: auto 380px;
         grid-gap: 1em;
     }
 
     .main_layout2{
         display: grid;
-        grid-template-columns: 50px auto 380px;
+        grid-template-columns:  auto 380px;
         grid-gap: 1em;
     }
 
