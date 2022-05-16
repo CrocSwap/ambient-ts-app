@@ -15,7 +15,7 @@ import {
     POOL_PRIMARY,
     sendSwap,
 } from '@crocswap-libs/sdk';
-import { BigNumber } from 'ethers';
+// import { BigNumber } from 'ethers';
 import { JsonRpcProvider } from '@ethersproject/providers';
 // import { BigNumber } from 'ethers';
 
@@ -90,7 +90,7 @@ export default function Swap(props: ISwapProps) {
         const displayQty = toDisplayQty(qty, 18);
         console.log({ displayQty });
 
-        const ethValue = BigNumber.from('0.000001');
+        const ethValue = '0.000001';
         if (signer) {
             await sendSwap(
                 contractAddresses.ZERO_ADDR,
