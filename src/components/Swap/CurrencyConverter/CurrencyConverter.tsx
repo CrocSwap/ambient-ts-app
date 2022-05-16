@@ -13,13 +13,18 @@ export default function CurrencyConverter(
     const { isLiq, poolPrice } = props;
 
     const [sellTokenQty, setSellTokenQty] = useState<number>(0);
-    const [buyTokenQty, setBuyTokenQty] = useState<number>(0);
+    const [buyTokenQty, setBuyTokenQty] = useState<number>(8);
 
     const updateBuyQty = (evt: ChangeEvent<HTMLInputElement>) => {
         console.log('fired function updateBuyQty');
         const input = parseFloat(evt.target.value);
-        const output = (1 / poolPrice) * input;
-        return output;
+        const output = ((1 / poolPrice) * input).toString();
+        const buyQtyField = document.getElementById('buy-quantity') as HTMLInputElement;
+        if (buyQtyField) {
+            console.log(buyQtyField);
+            buyQtyField.value = output;
+            // buyQtyField.setAttribute(value, output);
+        }
     };
 
     const updateSellQty = (evt: ChangeEvent<HTMLInputElement>) => {
