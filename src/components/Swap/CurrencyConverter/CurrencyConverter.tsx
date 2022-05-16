@@ -9,13 +9,11 @@ export default function CurrencyConverter(props: CurrencyConverterProps) {
 
     return (
         <section className={styles.currency_converter}>
-            {
-                <CurrencySelector
-                    direction={isLiq ? 'Select Pair' : 'From:'}
-                    fieldId='sell'
-                    sellToken
-                />
-            }
+            <CurrencySelector
+                direction={isLiq ? 'Select Pair' : 'From:'}
+                fieldId='sell'
+                sellToken
+            />
             <div className={styles.arrow_container}>
                 {isLiq ? null : <span className={styles.arrow} />}
             </div>
