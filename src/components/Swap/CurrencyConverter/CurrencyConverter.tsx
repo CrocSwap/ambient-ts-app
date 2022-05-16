@@ -15,6 +15,10 @@ export default function CurrencyConverter(
     const [sellTokenQty, setSellTokenQty] = useState<number>(0);
     const [buyTokenQty, setBuyTokenQty] = useState<number>(8);
 
+    // TODO: update name of functions with 'handle' verbiage
+    // TODO: consolidate functions into a single function
+    // TODO: refactor functions to consider which token is base
+
     const updateBuyQty = (evt: ChangeEvent<HTMLInputElement>) => {
         const input = parseFloat(evt.target.value);
         const output = (1 / poolPrice) * input;
