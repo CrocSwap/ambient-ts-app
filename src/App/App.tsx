@@ -1,6 +1,6 @@
 /** ***** Import React and Dongles *******/
 import { useEffect, useState } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import { useMoralis } from 'react-moralis';
 import { Signer } from 'ethers';
 import { JsonRpcProvider } from '@ethersproject/providers';
@@ -28,7 +28,21 @@ import Sidebar from './components/Sidebar/Sidebar';
 
 /** ***** React Function *******/
 export default function App() {
-    const [showSidebar, setShowSidebar] = useState<boolean>(true);
+    const [showSidebar, setShowSidebar] = useState<boolean>(false);
+    const location = useLocation();
+
+    const currentLocation = location.pathname;
+
+    function toggleSidebarBasedOnRoute() {
+        setShowSidebar(true);
+        if (currentLocation === '/') {
+            setShowSidebar(false);
+        }
+    }
+
+    useEffect(() => {
+        toggleSidebarBasedOnRoute();
+    }, [location]);
 
     const { chainId, isWeb3Enabled, account } = useMoralis();
     const provider = useProvider(chainId as string);
@@ -95,23 +109,15 @@ export default function App() {
         showSidebar: showSidebar,
         toggleSidebar: toggleSidebar,
     };
-    // props for <Trade/> React element
 
-    const tradeProps = {
-        showSidebar: showSidebar,
-    };
-
-    useEffect(() => {
-        console.log('showing sidebar');
-    }, [showSidebar]);
-
+    const mainLayoutStyle = showSidebar ? 'main-layout-2' : 'main-layout';
     // console.log({ provider });
     return (
         <>
             <div className='content-container'>
                 <PageHeader {...headerProps} />
                 <Sidebar {...sidebarProps} />
-                <div className='main-layout'>
+                <div className={mainLayoutStyle}>
                     <Routes>
                         <Route index element={<Home />} />
                         <Route path='trade' element={<Trade />}>

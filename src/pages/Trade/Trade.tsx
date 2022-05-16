@@ -1,15 +1,11 @@
 import { Outlet } from 'react-router-dom';
 import styles from './Trade.module.css';
-import { FaTimes, FaArrowRight } from 'react-icons/fa';
-import { useState } from 'react';
-export default function Trade() {
-    const [showSidebar, setShowSidebar] = useState<boolean>(true);
-    const sidebarStyle = showSidebar ? styles.main_layout : styles.main_layout2;
 
+export default function Trade() {
     return (
         <main data-testid={'trade'}>
             {/* <h1>This is Trade.tsx</h1> */}
-            <main className={sidebarStyle}>
+            <main className={styles.main_layout}>
                 {/* <div className={styles.left_col}>
                     <div onClick={() => setLeftSidebar(!leftSidebar)}>
                         {leftSidebar ? (
@@ -19,7 +15,10 @@ export default function Trade() {
                         )}
                     </div>
                 </div> */}
-                <div className={styles.middle_col}></div>
+                <div className={styles.middle_col}>
+                    I AM THE MAIN LAYOUT AND I WORK JUST FINE. WHAT IS YOUR PROSO SOFJSOIFJSOIFJSFOS
+                    JSOIFJSOIFJSOIFJ SOI FJSIOF JSOIFJS OIF JSOIF JSIOJOFJSOI JFSOJF SOF
+                </div>
                 <div className={styles.right_col}></div>
             </main>
             <Outlet />

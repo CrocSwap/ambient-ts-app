@@ -63,11 +63,18 @@ footer {
 }
 
 .main-layout{
+  transition: all 600ms ease-in-out;
   background: var(--dark3);
   min-height: calc(100vh - 5rem);
   margin-left: 5rem;
   /* padding: 1rem; */
 
+}
+.main-layout-2{
+  transition: all 700ms ease-in-out;
+  background: var(--dark3);
+  min-height: calc(100vh - 5rem);
+  
 }
 .content-container {
   min-height: calc(100vh - 4rem);
@@ -114,4 +121,14 @@ footer {
  
     overflow: scroll;
   }
+
+}
+
+
+@media only screen and (min-width: 600px) {
+  .main-layout-2{
+    margin-left: 16rem;
+   
+  }
+
 }

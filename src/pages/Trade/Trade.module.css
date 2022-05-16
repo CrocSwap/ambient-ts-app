@@ -1,11 +1,11 @@
-.main_layout, .main_layout2{
-    transition: all 350ms ease-in-out;
+.main_layout{
+    transition: all 600ms ease-in-out;
 
     
 }
 
-.main_layout div, .main_layout2 div{
-    transition: all 350ms ease-in-out;
+.main_layout div{
+    transition: all 600ms ease-in-out;
     
     width: 100%;
 }
@@ -36,11 +36,7 @@
         grid-gap: 1em;
     }
 
-    .main_layout2{
-        display: grid;
-        grid-template-columns:  auto 380px;
-        grid-gap: 1em;
-    }
+  
 
     .middle_col, .right_col{
         min-height: calc(100vh - 3rem);
