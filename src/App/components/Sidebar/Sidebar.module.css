@@ -10,27 +10,27 @@
   
 
   
-  .navbar {
+  .sidebar {
     position: fixed;
-    background-color: var(--bg-primary);
+    background-color: var(--dark1);
     transition: width 600ms ease;
     overflow: scroll;
     /* margin-top: 4rem; */
   }
-  .navbar::-webkit-scrollbar {
+  .sidebar::-webkit-scrollbar {
     width: 0.25rem;
   }
   
-  .navbar::-webkit-scrollbar-track {
+  .sidebar::-webkit-scrollbar-track {
     background: #1e1e24;
   }
   
-  .navbar::-webkit-scrollbar-thumb {
+  .sidebar::-webkit-scrollbar-thumb {
     background: #6649b8;
   }
   
   
-  .navbar_nav {
+  .sidebar_nav {
     list-style: none;
     padding: 0;
     margin: 0;
@@ -40,17 +40,18 @@
     /* height: calc(100% - 4rem); */
   }
   
-  .nav_item {
+  .sidebar_item {
     width: 100%;
   }
   
 .bottom_elements{
     margin-top: auto;
+    width: 100%;
   }
   
   
   
-  .nav_link {
+  .sidebar_link {
     display: flex;
     align-items: center;
     height: 1.4375rem;
@@ -63,36 +64,26 @@
     transition: var(--transition-speed);
   }
   
-  .nav_link:hover {
+  .sidebar_link:hover {
     filter: grayscale(0%) opacity(1);
     background: var(--bg-secondary);
     color: var(--text-secondary);
   }
   
   .link_text {
+    color: var(--text-highlight);
+
     display: none;
     margin-left: 1rem;
   }
   
-  .nav_link svg {
+  .sidebar_link svg {
     width: 2rem;
     min-width: 2rem;
-    margin: 0 1.5rem;
+   
   }
   
-  .fa-primary {
-    color: #ff7eee;
-  }
-  
-  .fa-secondary {
-    color: #df49a6;
-  }
-  
-  .fa-primary,
-  .fa-secondary {
-    transition: var(--transition-speed);
-  }
-  
+
   .logo {
     font-weight: bold;
     text-transform: uppercase;
@@ -118,7 +109,7 @@
     transition: var(--transition-speed);
   }
   
-  .navbar:hover .logo svg {
+  .sidebar:hover .logo svg {
     transform: rotate(-180deg);
   }
 
@@ -128,21 +119,18 @@
       display: none;
     flex-direction: row;
     align-items: center;
+    width: 100%;
 
-  background-color: #1e272e;
 
-  border-radius: 4rem;
   padding: 10px;
 }
 .search__box {
+  
   width: 0;
-  height: 4rem;
-  background: none;
+  background: transparent;
   color: #f7f7f7;
-  border-radius: 2rem;
   outline: none;
   border: none;
-  position: relative;
   opacity: 1;
   transition: all .75s ease-in;
   cursor: pointer;
@@ -152,22 +140,15 @@
 .search__icon {
   box-sizing: border-box;
 
-  margin-left: .8rem;
   margin-top: 0;
   cursor: pointer;
   color: #fa983a;
   transition: all .25s ease-in;
-  padding: .7rem;
-  border-radius: 50%;
-}
-.search_container:hover > .search__box {
-  width: 85%;
-  padding: 0 1rem;
+
 }
 
-.search_container:hover > .search__icon {
-  background-color: #eee;
-}
+
+
 
 
 
@@ -176,7 +157,7 @@
   
   /* Small screens */
   @media only screen and (max-width: 600px) {
-    .navbar {
+    .sidebar {
       bottom: 0;
       width: 100vw;
       height: 5rem;
@@ -186,11 +167,11 @@
       display: none;
     }
   
-    .navbar_nav {
+    .sidebar_nav {
       flex-direction: row;
     }
   
-    .nav_link {
+    .sidebar_link {
       justify-content: center;
     }
   
@@ -203,32 +184,53 @@
   
   /* Large screens */
   @media only screen and (min-width: 600px) {
-    .navbar {
+    .sidebar {
       top: 0;
       width: 5rem;
       height: 100vh;
       margin-top: 4rem;
+      
     }
+
+    .sidebar::-webkit-scrollbar-track {
+        background:transparent;
+      }
+      
+      .sidebar::-webkit-scrollbar-thumb {
+        background: transparent;
+      }
   
-    .navbar:hover {
+    .sidebar:hover {
       width: 16rem;
     }
+
+    .sidebar:hover .search_container{
+        background-color: var(--dark3);
+    }
+    .sidebar:hover  .search__box {
+        width: 100%;
+        padding: 0 1rem;
+      }
+
+      .sidebar:hover .search__icon {
+        background-color: #eee;
+      }
   
-    .navbar:hover .link_text {
+    .sidebar:hover .link_text {
       display: inline;
     }
   
-    .navbar:hover .logo svg
+    .sidebar:hover .logo svg
     {
       margin-left: 11rem;
     }
   
-    .navbar:hover .logo_text
+    .sidebar:hover .logo_text
     {
       left: 0px;
     }
   
-    .navbar_nav {
+    .sidebar_nav {
   
       height: calc(100% - 4rem);
     }
