@@ -19,6 +19,7 @@ export default function CurrencyConverter(props: CurrencyConverterProps) {
                 sellToken
                 buyTokenQty={buyTokenQty}
                 sellTokenQty={sellTokenQty}
+                updateTokenQuantity={setSellTokenQty}
             />
             <div className={styles.arrow_container}>
                 {isLiq ? null : <span className={styles.arrow} />}
@@ -28,6 +29,7 @@ export default function CurrencyConverter(props: CurrencyConverterProps) {
                 fieldId='buy'
                 buyTokenQty={buyTokenQty}
                 sellTokenQty={sellTokenQty}
+                updateTokenQuantity={setBuyTokenQty}
             />
         </section>
     );

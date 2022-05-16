@@ -2,7 +2,7 @@ import styles from './CurrencySelector.module.css';
 import CurrencyQuantity from '../CurrencyQuantity/CurrencyQauntity';
 import { RiArrowDownSLine } from 'react-icons/ri';
 import Toggle from '../../Global/Toggle/Toggle';
-import { useState } from 'react';
+import { useState, SetStateAction } from 'react';
 
 interface CurrencySelectorProps {
     fieldId: string;
@@ -10,10 +10,11 @@ interface CurrencySelectorProps {
     sellToken?: boolean;
     buyTokenQty: number;
     sellTokenQty: number;
+    updateTokenQuantity: React.Dispatch<SetStateAction<number[]>>;
 }
 
 export default function CurrencySelector(props: CurrencySelectorProps) {
-    const { direction, fieldId, buyTokenQty, sellTokenQty } = props;
+    const { direction, fieldId, buyTokenQty, sellTokenQty, updateTokenQuantity } = props;
     const [isChecked, setIsChecked] = useState<boolean>(false);
 
     const DexBalanceContent = (
