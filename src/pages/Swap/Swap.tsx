@@ -15,6 +15,7 @@ import {
     POOL_PRIMARY,
     sendSwap,
 } from '@crocswap-libs/sdk';
+import { BigNumber } from 'ethers';
 import { JsonRpcProvider } from '@ethersproject/providers';
 // import { BigNumber } from 'ethers';
 
@@ -73,9 +74,6 @@ export default function Swap(props: ISwapProps) {
     }, [poolPriceDisplay]);
 
     const signer = provider?.getSigner();
-    // useEffect(() => {
-    //     console.log({ signer });
-    // }, [signer]);
 
     async function initiateSwap() {
         const qty = fromDisplayQty('0.000001', 18);
@@ -84,16 +82,7 @@ export default function Swap(props: ISwapProps) {
         const displayQty = toDisplayQty(qty, 18);
         console.log({ displayQty });
 
-        const ethValue = '0.000001';
-        // const ethValue = fromDisplayQty('0.000001', 18);
-        // console.log({ ethValue });
-
-        // const ethValueDisplayQty = toDisplayQty(ethValue, 18);
-        // console.log({ ethValueDisplayQty });
-
-        // console.log(contractAddresses.ZERO_ADDR);
-        // console.log({ daiKovanAddress });
-
+        const ethValue = BigNumber.from('0.000001');
         if (signer) {
             await sendSwap(
                 contractAddresses.ZERO_ADDR,
