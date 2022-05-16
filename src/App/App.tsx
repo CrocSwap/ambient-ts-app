@@ -28,6 +28,8 @@ import Sidebar from './components/Sidebar/Sidebar';
 
 /** ***** React Function *******/
 export default function App() {
+    const [showSidebar, setShowSidebar] = useState<boolean>(true);
+
     const { chainId, isWeb3Enabled, account } = useMoralis();
     const provider = useProvider(chainId as string);
 
@@ -81,16 +83,29 @@ export default function App() {
     };
 
     // props for <Swap/> React element
+
     const swapProps = {
         provider: provider as JsonRpcProvider,
     };
+    // props for <Swap/> React element
+    function toggleSidebar() {
+        setShowSidebar(!showSidebar);
+    }
+    const sidebarProps = {
+        showSidebar: showSidebar,
+        toggleSidebar: toggleSidebar,
+    };
+
+    useEffect(() => {
+        console.log('showing sidebar');
+    }, [showSidebar]);
 
     // console.log({ provider });
     return (
         <>
             <div className='content-container'>
                 <PageHeader {...headerProps} />
-                <Sidebar />
+                <Sidebar {...sidebarProps} />
                 <div className='main-layout'>
                     <Routes>
                         <Route index element={<Home />} />

@@ -2,7 +2,13 @@ import styles from './Sidebar.module.css';
 import { BiSearch } from 'react-icons/bi';
 import { MdPlayArrow, MdDoubleArrow } from 'react-icons/md';
 
-export default function Sidebar() {
+interface SidebarProps {
+    showSidebar: boolean;
+    toggleSidebar: (event: React.MouseEvent<HTMLButtonElement>) => void;
+}
+
+export default function Sidebar(props: SidebarProps): React.ReactElement<SidebarProps> {
+    const { toggleSidebar, showSidebar } = props;
     const navItems1 = [
         { name: 'Top Tokens' },
         { name: 'Top Pools' },
@@ -26,14 +32,16 @@ export default function Sidebar() {
         </div>
     );
 
+    const sidebarStyle = showSidebar ? styles.sidebar_active : styles.sidebar;
     return (
         <div>
-            <nav className={styles.sidebar}>
+            <nav className={`${styles.sidebar} ${sidebarStyle}`}>
                 <ul className={styles.sidebar_nav}>
                     <li className={styles.logo}>
                         <a href='#' className={styles.sidebar_link}>
                             <span className={`${styles.link_text} ${styles.logo_text}`}></span>
                             <MdDoubleArrow size={30} />
+                            <button onClick={toggleSidebar}>Click me</button>
                         </a>
                     </li>
                     {searchContainer}

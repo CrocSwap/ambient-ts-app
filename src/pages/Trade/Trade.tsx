@@ -3,8 +3,8 @@ import styles from './Trade.module.css';
 import { FaTimes, FaArrowRight } from 'react-icons/fa';
 import { useState } from 'react';
 export default function Trade() {
-    const [leftSidebar, setLeftSidebar] = useState<boolean>(true);
-    const sidebarStyle = leftSidebar ? styles.main_layout : styles.main_layout2;
+    const [showSidebar, setShowSidebar] = useState<boolean>(true);
+    const sidebarStyle = showSidebar ? styles.main_layout : styles.main_layout2;
 
     return (
         <main data-testid={'trade'}>
