@@ -1,13 +1,242 @@
-.sidebar_container{
-    background: #cf3d2a;
+:root {
+    font-size: 16px;
+    font-family: 'Open Sans';
+    --text-primary: #b6b6b6;
+    --text-secondary: #ececec;
+    --bg-primary: #23232e;
+    --bg-secondary: #141418;
+    --transition-speed: 600ms;
+  }
+  
 
-}
-
-.sidebar_content{
+  
+  .navbar {
     position: fixed;
+    background-color: var(--bg-primary);
+    transition: width 600ms ease;
+    overflow: scroll;
+    /* margin-top: 4rem; */
+  }
+  .navbar::-webkit-scrollbar {
+    width: 0.25rem;
+  }
+  
+  .navbar::-webkit-scrollbar-track {
+    background: #1e1e24;
+  }
+  
+  .navbar::-webkit-scrollbar-thumb {
+    background: #6649b8;
+  }
+  
+  
+  .navbar_nav {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* height: calc(100% - 4rem); */
+  }
+  
+  .nav_item {
+    width: 100%;
+  }
+  
+.bottom_elements{
+    margin-top: auto;
+  }
+  
+  
+  
+  .nav_link {
+    display: flex;
+    align-items: center;
+    height: 1.4375rem;
+    padding: 1.4375rem 0;
+    border-bottom: 1px solid #171D27;
+
+    color: var(--text-primary);
+    text-decoration: none;
+    filter: grayscale(100%) opacity(0.7);
+    transition: var(--transition-speed);
+  }
+  
+  .nav_link:hover {
+    filter: grayscale(0%) opacity(1);
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+  }
+  
+  .link_text {
+    display: none;
+    margin-left: 1rem;
+  }
+  
+  .nav_link svg {
+    width: 2rem;
+    min-width: 2rem;
+    margin: 0 1.5rem;
+  }
+  
+  .fa-primary {
+    color: #ff7eee;
+  }
+  
+  .fa-secondary {
+    color: #df49a6;
+  }
+  
+  .fa-primary,
+  .fa-secondary {
+    transition: var(--transition-speed);
+  }
+  
+  .logo {
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    text-align: center;
+    color: var(--text-secondary);
+    background: var(--bg-secondary);
+    font-size: 1.5rem;
+    letter-spacing: 0.3ch;
+    width: 100%;
+  }
+  
+  .logo svg {
+    transform: rotate(0deg);
+    transition: var(--transition-speed);
+  }
+  
+  .logo_text
+  {
+    display: inline;
+    position: absolute;
+    left: -999px;
+    transition: var(--transition-speed);
+  }
+  
+  .navbar:hover .logo svg {
+    transform: rotate(-180deg);
+  }
+
+  /* SEARCH CONTAINER */
+
+  .search_container {
+      display: none;
+    flex-direction: row;
+    align-items: center;
+
+  background-color: #1e272e;
+
+  border-radius: 4rem;
+  padding: 10px;
+}
+.search__box {
+  width: 0;
+  height: 4rem;
+  background: none;
+  color: #f7f7f7;
+  border-radius: 2rem;
+  outline: none;
+  border: none;
+  position: relative;
+  opacity: 1;
+  transition: all .75s ease-in;
+  cursor: pointer;
+
 }
 
-.sidebar_container > div{
-    width: 250px;
-    height: 100vh;
+.search__icon {
+  box-sizing: border-box;
+
+  margin-left: .8rem;
+  margin-top: 0;
+  cursor: pointer;
+  color: #fa983a;
+  transition: all .25s ease-in;
+  padding: .7rem;
+  border-radius: 50%;
 }
+.search_container:hover > .search__box {
+  width: 85%;
+  padding: 0 1rem;
+}
+
+.search_container:hover > .search__icon {
+  background-color: #eee;
+}
+
+
+
+
+  /* END OF SEARCH CONTAINER */
+  
+  /* Small screens */
+  @media only screen and (max-width: 600px) {
+    .navbar {
+      bottom: 0;
+      width: 100vw;
+      height: 5rem;
+    }
+  
+    .logo {
+      display: none;
+    }
+  
+    .navbar_nav {
+      flex-direction: row;
+    }
+  
+    .nav_link {
+      justify-content: center;
+    }
+  
+    main {
+      margin: 0;
+    }
+
+    
+  }
+  
+  /* Large screens */
+  @media only screen and (min-width: 600px) {
+    .navbar {
+      top: 0;
+      width: 5rem;
+      height: 100vh;
+      margin-top: 4rem;
+    }
+  
+    .navbar:hover {
+      width: 16rem;
+    }
+  
+    .navbar:hover .link_text {
+      display: inline;
+    }
+  
+    .navbar:hover .logo svg
+    {
+      margin-left: 11rem;
+    }
+  
+    .navbar:hover .logo_text
+    {
+      left: 0px;
+    }
+  
+    .navbar_nav {
+  
+      height: calc(100% - 4rem);
+    }
+    .search_container{
+        display:flex;
+    }
+  }
+  
+
+
+

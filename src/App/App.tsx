@@ -17,6 +17,7 @@ import TestPage from '../pages/TestPage/TestPage';
 
 /** * **** Import Local Files *******/
 import './App.css';
+import Sidebar from './components/Sidebar/Sidebar';
 
 /** ***** React Function *******/
 export default function App() {
@@ -24,6 +25,7 @@ export default function App() {
         <>
             <div className='content-container'>
                 <PageHeader />
+                <Sidebar />
                 <div className='main-layout'>
                     <Routes>
                         <Route index element={<Home />} />
