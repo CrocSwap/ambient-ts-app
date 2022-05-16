@@ -17,16 +17,20 @@ export default function CurrencyConverter(
 
     const updateBuyQty = (evt: ChangeEvent<HTMLInputElement>) => {
         const input = parseFloat(evt.target.value);
-        const output = ((1 / poolPrice) * input).toString();
+        const output = (1 / poolPrice) * input;
         const buyQtyField = document.getElementById('buy-quantity') as HTMLInputElement;
-        if (buyQtyField) buyQtyField.value = output;
+        if (buyQtyField) {
+            buyQtyField.value = isNaN(output) ? '' : output.toString();
+        }
     };
 
     const updateSellQty = (evt: ChangeEvent<HTMLInputElement>) => {
         const input = parseFloat(evt.target.value);
-        const output = (poolPrice * input).toString();
+        const output = poolPrice * input;
         const sellQtyField = document.getElementById('sell-quantity') as HTMLInputElement;
-        if (sellQtyField) sellQtyField.value = output;
+        if (sellQtyField) {
+            sellQtyField.value = isNaN(output) ? '' : output.toString();
+        }
     };
 
     return (
