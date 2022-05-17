@@ -1,13 +1,16 @@
 import Modal from '../../components/Global/Modal/Modal';
 import { useModal } from '../../components/Global/Modal/useModal';
+
 export default function Home() {
     const [isModalOpen, openModal, closeModal] = useModal();
 
     const modalContent = <div>I am modal content</div>;
 
-    const modalOrNull = isModalOpen ? (
+    const chooseTokenModal = (
         <Modal onClose={closeModal} title='Modals title' content={modalContent} />
-    ) : null;
+    );
+
+    const modalOrNull = isModalOpen ? chooseTokenModal : null;
 
     return (
         <main data-testid={'home'}>
