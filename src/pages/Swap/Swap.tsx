@@ -3,21 +3,19 @@ import ExtraInfo from '../../components/Swap/ExtraInfo/ExtraInfo';
 import ContentContainer from '../../components/Global/ContentContainer/ContentContainer';
 import SwapHeader from '../../components/Swap/SwapHeader/SwapHeader';
 import SwapButton from '../../components/Swap/SwapButton/SwapButton';
-// import { Signer } from 'ethers';
 import { useEffect, useState } from 'react';
 import {
     contractAddresses,
     // getSpotPriceDisplay,
     getSpotPrice,
     getSpotPriceDisplay,
-    fromDisplayQty,
-    toDisplayQty,
+    // fromDisplayQty,
+    // toDisplayQty,
     POOL_PRIMARY,
     sendSwap,
 } from '@crocswap-libs/sdk';
 // import { BigNumber } from 'ethers';
 import { JsonRpcProvider } from '@ethersproject/providers';
-// import { BigNumber } from 'ethers';
 
 interface ISwapProps {
     provider: JsonRpcProvider;
@@ -27,12 +25,6 @@ export default function Swap(props: ISwapProps) {
     const { provider } = props;
 
     const [isSellTokenPrimary, setIsSellTokenPrimary] = useState<boolean>(true);
-
-    // this is to track changes in whether the sell token is primary
-    // it's also making the linter happy until Ben uses the value
-    useEffect(() => {
-        console.log(isSellTokenPrimary);
-    }, [isSellTokenPrimary]);
 
     // const sellTokenAddress = contractAddresses.ZERO_ADDR;
     const daiKovanAddress = '0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa';
@@ -83,23 +75,47 @@ export default function Swap(props: ISwapProps) {
 
     const signer = provider?.getSigner();
 
+    const truncateDecimals = (number: number, decimalPlaces: number) => {
+        const truncatedNumber = number % 1 ? number.toFixed(decimalPlaces) : number;
+        return truncatedNumber;
+    };
     async function initiateSwap() {
-        const qty = fromDisplayQty('0.000001', 18);
+        const sellTokenAddress = contractAddresses.ZERO_ADDR;
+        const buyTokenAddress = daiKovanAddress;
+        const poolId = POOL_PRIMARY;
+        const slippageTolerancePercentage = 5;
+        const sellTokenQty = (document.getElementById('sell-quantity') as HTMLInputElement)?.value;
+        const buyTokenQty = (document.getElementById('buy-quantity') as HTMLInputElement)?.value;
+        const qty = isSellTokenPrimary ? sellTokenQty : buyTokenQty;
+
+        let ethValue = '0'; // A non-zero value is set below when the user is selling ETH for another token
+
+        // if ETH is the token being sold by the user
+        // and the user is requesting an exact output quantity
+        // pad the amount of ETH sent to the contract by 1% (the remainder will be automatically returned)
+        if (sellTokenAddress === contractAddresses.ZERO_ADDR) {
+            const roundedUpEthValue = truncateDecimals(
+                parseFloat(sellTokenQty) * 1.01,
+                18,
+            ).toString();
+            isSellTokenPrimary ? (ethValue = sellTokenQty) : (ethValue = roundedUpEthValue);
+        }
+
+        console.log({ isSellTokenPrimary });
+        console.log({ ethValue });
+        console.log({ sellTokenQty });
+        console.log({ buyTokenQty });
         console.log({ qty });
 
-        const displayQty = toDisplayQty(qty, 18);
-        console.log({ displayQty });
-
-        const ethValue = '0.000001';
         if (signer) {
             await sendSwap(
-                contractAddresses.ZERO_ADDR,
-                daiKovanAddress,
-                true,
+                sellTokenAddress,
+                buyTokenAddress,
+                isSellTokenPrimary,
                 qty,
                 ethValue,
-                5,
-                POOL_PRIMARY,
+                slippageTolerancePercentage,
+                poolId,
                 signer,
             );
         }
