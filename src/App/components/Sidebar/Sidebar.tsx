@@ -2,7 +2,13 @@ import styles from './Sidebar.module.css';
 import { BiSearch } from 'react-icons/bi';
 import { MdPlayArrow, MdDoubleArrow } from 'react-icons/md';
 
-export default function Sidebar() {
+interface SidebarProps {
+    showSidebar: boolean;
+    toggleSidebar: (event: React.MouseEvent<HTMLDivElement>) => void;
+}
+
+export default function Sidebar(props: SidebarProps): React.ReactElement<SidebarProps> {
+    const { toggleSidebar, showSidebar } = props;
     const navItems1 = [
         { name: 'Top Tokens' },
         { name: 'Top Pools' },
@@ -26,36 +32,38 @@ export default function Sidebar() {
         </div>
     );
 
+    const sidebarStyle = showSidebar ? styles.sidebar_active : styles.sidebar;
     return (
         <div>
-            <nav className={styles.sidebar}>
+            <nav className={`${styles.sidebar} ${sidebarStyle}`}>
                 <ul className={styles.sidebar_nav}>
                     <li className={styles.logo}>
-                        <a href='#' className={styles.sidebar_link}>
-                            <span className={`${styles.link_text} ${styles.logo_text}`}></span>
-                            <MdDoubleArrow size={30} />
-                        </a>
+                        <div className={styles.sidebar_link}>
+                            <div onClick={toggleSidebar}>
+                                <MdDoubleArrow size={30} />
+                            </div>
+                        </div>
                     </li>
                     {searchContainer}
 
                     {navItems1.map((item, idx) => (
                         <li key={idx} className={styles.sidebar_item}>
-                            <a href='#' className={styles.sidebar_link}>
+                            <div className={styles.sidebar_link}>
                                 <MdPlayArrow size={20} color='#ffffff' />
 
                                 <span className={styles.link_text}>{item.name}</span>
-                            </a>
+                            </div>
                         </li>
                     ))}
 
                     <div className={styles.bottom_elements}>
                         {navItems2.map((item, idx) => (
                             <li key={idx} className={styles.sidebar_item} id='themeButton'>
-                                <a href='#' className={styles.sidebar_link}>
+                                <div className={styles.sidebar_link}>
                                     <MdPlayArrow size={20} color='#ffffff' />
 
                                     <span className={styles.link_text}>{item.name}</span>
-                                </a>
+                                </div>
                             </li>
                         ))}
                     </div>
