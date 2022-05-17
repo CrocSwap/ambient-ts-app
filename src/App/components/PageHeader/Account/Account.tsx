@@ -62,7 +62,9 @@ export default function Account(props: IAccountProps): React.ReactElement<IAccou
             </div>
 
             <div className={styles.title_gradient}>69 AMBI</div>
-            <span className={styles.white}>{props.nativeBalance} ETH</span>
+            <span className={styles.white}>
+                {props.nativeBalance ? props.nativeBalance + ' ETH' : ''}
+            </span>
             {/* <div className={styles.title_gradient}>{useLocalStorage("ambientHandle")}</div> */}
             <div className={styles.title_gradient}>username</div>
             <AiOutlineQuestionCircle size={20} color='#ffffff' />
