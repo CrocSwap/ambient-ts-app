@@ -5,12 +5,14 @@ interface ModalProps {
     content: React.ReactNode;
     onClose: React.MouseEventHandler<HTMLElement>;
     title: string;
-    actionButton: React.ReactNode;
-    noHeader: boolean;
-    noBackground: boolean;
+    footer?: React.ReactNode;
+    noHeader?: boolean;
+
+    noBackground?: boolean;
 }
 
 export default function Modal(props: ModalProps) {
+    const { onClose, title, content, footer, noHeader, noBackground } = props;
     // THE ONCLOSE FUNCTION IS COMING FROM WHEREVER WE ARE CALLING THE MODAL FROM
 
     // THIS ALLOWS THE USER TO CLOSE MODAL BY HITTING THE ESCAPE KEY
@@ -20,7 +22,8 @@ export default function Modal(props: ModalProps) {
     //   }
 
     //   const closeOnEscapeKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    //     if ((event.charCode || event.keyCode) === 27) onClose();
+    //     if ((event.key) === 'Escape') onClose();
+    //       console.log(event)
     //   };
 
     //   useEffect(() => {
@@ -29,31 +32,29 @@ export default function Modal(props: ModalProps) {
     //       document.body.removeEventListener('keydown', closeOnEscapeKeyDown);
     //     };
     //   });
-    const { onClose, title, content, actionButton, noHeader, noBackground } = props;
 
     // THIS IS THE MODAL THAT WILL BE SHOWING UP(CHANGE MODAL CONTENTS AND CLASSNAMES HERE)
+    const headerOrNull = noHeader ? null : (
+        <header className={styles.modal_header}>
+            <div>{''}</div>
+            <h2>{title}</h2>
+            <span onClick={onClose} className={styles.close_button}>
+                <RiCloseFill size={27} />{' '}
+            </span>
+        </header>
+    );
+
+    const footerOrNull = !footer ? null : <footer className={styles.modal_footer}>{footer}</footer>;
+
     const modal = (
         <div className={styles.outside_modal} onClick={onClose}>
             <div
                 className={`${styles.modal} ${noBackground ? styles.no_background_modal : null}`}
                 onClick={(e) => e.stopPropagation()}
             >
-                {!noHeader && (
-                    <header className={styles.modal_header}>
-                        <div>{''}</div>
-                        <h2>{title}</h2>
-                        <span onClick={onClose} className={styles.close_button}>
-                            <RiCloseFill size={27} />{' '}
-                        </span>
-                    </header>
-                )}
-
-                <section className={`${styles.modal_content} `}>
-                    <h1> {content} </h1>
-                </section>
-                <footer className={styles.modal_footer}>
-                    <h3>{actionButton}</h3>
-                </footer>
+                {headerOrNull}
+                <section className={`${styles.modal_content} `}>{content}</section>
+                {footerOrNull}
             </div>
         </div>
     );

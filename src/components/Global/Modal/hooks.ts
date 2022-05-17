@@ -1,17 +1,8 @@
 import { useState } from 'react';
+export const useModal = (initialMode = false) => {
+    const [isModalOpen, setIsModalOpen] = useState<boolean>(initialMode);
+    const openModal = () => setIsModalOpen(true);
+    const closeModal = () => setIsModalOpen(false);
 
-export const useModal = (argu: string) => {
-    const [showModal, setShowModal] = useState<boolean>(false);
-
-    switch (argu) {
-        case 'open':
-            setShowModal(true);
-            break;
-        case 'close':
-        default:
-            setShowModal(false);
-            break;
-    }
-
-    return showModal;
+    return [isModalOpen, openModal, closeModal] as const;
 };

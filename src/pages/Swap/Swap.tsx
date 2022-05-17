@@ -4,17 +4,14 @@ import ContentContainer from '../../components/Global/ContentContainer/ContentCo
 import SwapHeader from '../../components/Swap/SwapHeader/SwapHeader';
 import SwapButton from '../../components/Swap/SwapButton/SwapButton';
 import { useEffect, useState } from 'react';
+import { useModal } from '../../components/Global/Modal/hooks';
 import {
     contractAddresses,
-    // getSpotPriceDisplay,
     getSpotPrice,
     getSpotPriceDisplay,
-    // fromDisplayQty,
-    // toDisplayQty,
     POOL_PRIMARY,
     sendSwap,
 } from '@crocswap-libs/sdk';
-// import { BigNumber } from 'ethers';
 import { JsonRpcProvider } from '@ethersproject/providers';
 
 interface ISwapProps {
