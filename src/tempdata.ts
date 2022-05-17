@@ -1,5 +1,5 @@
 export const ambientTokenList = {
-    name: 'Crocodile Labs List',
+    name: 'Ambient Token List',
     timestamp: '2022-03-17T15:02:53.363Z',
     version: {
         major: 1,
@@ -102,4 +102,26 @@ export const ambientTokenList = {
                 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599/logo.png',
         },
     ],
+};
+
+export const logAmbientList = () => {
+    console.log(ambientTokenList);
+};
+
+export const logAmbientTokens = () => {
+    console.log(ambientTokenList.tokens);
+};
+
+export const getAmbientList = () => {
+    return ambientTokenList;
+};
+
+export const getAmbientTokens = () => {
+    return ambientTokenList.tokens;
+};
+
+export const getAmbientTokensOnChain = (chain = 42) => {
+    const { tokens } = ambientTokenList;
+    const tokensOnChain = tokens.filter((token) => token.chainId === chain);
+    return tokensOnChain;
 };
