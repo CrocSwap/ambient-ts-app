@@ -135,6 +135,7 @@ export default function App() {
                             <Route path='liquidity' element={<Liquidity />} />
                         </Route>
                         <Route path='analytics' element={<Analytics />} />
+                        <Route path='liquidity2' element={<Liquidity />} />
                         <Route path='portfolio' element={<Portfolio />} />
                         <Route path='swap' element={<Swap {...swapProps} />} />
                         <Route path='chart' element={<Chart />} />
