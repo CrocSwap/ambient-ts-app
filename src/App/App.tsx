@@ -28,6 +28,7 @@ import Sidebar from './components/Sidebar/Sidebar';
 
 /** ***** React Function *******/
 export default function App() {
+    const { chainId, isWeb3Enabled, account, logout, isAuthenticated } = useMoralis();
     const [showSidebar, setShowSidebar] = useState<boolean>(false);
     const location = useLocation();
 
@@ -44,7 +45,6 @@ export default function App() {
         toggleSidebarBasedOnRoute();
     }, [location]);
 
-    const { chainId, isWeb3Enabled, account } = useMoralis();
     const provider = useProvider(chainId as string);
 
     const [nativeBalance, setNativeBalance] = useState<string>('');
@@ -55,7 +55,7 @@ export default function App() {
     // function to connect a user's wallet
     async function connectWallet(provider: Signer) {
         let nativeEthBalance = null;
-        if (isWeb3Enabled && account !== null) {
+        if (isAuthenticated && isWeb3Enabled && account !== null) {
             // this conditional is important because it prevents a TS error
             // ... in assigning the value of the key 'chain' below
             if (!!chainId && chainId === '0x2a') {
@@ -77,23 +77,32 @@ export default function App() {
         }
     }
 
+    // function to sever connection between user wallet and Moralis server
+    const clickLogout = async () => {
+        setNativeBalance('');
+        await logout();
+    };
+
     // TODO: this may work better as a useMemo... play with it a bit
     // this is how we run the function to pull back balances asynchronously
     useEffect(() => {
         (async () => {
             // run function pull back all balances in wallet
+            console.log('running connectWallet');
             const balance = await connectWallet(provider as Signer);
             // make sure a balance was returned, initialized as null
             if (balance) {
                 // send value to local state
                 setNativeBalance(balance);
             }
+            console.log({ balance });
         })();
-    }, [chainId, account]);
+    }, [chainId, account, isWeb3Enabled, isAuthenticated]);
 
     // props for <PageHeader/> React element
     const headerProps = {
         nativeBalance: nativeBalance,
+        clickLogout: clickLogout,
     };
 
     // props for <Swap/> React element

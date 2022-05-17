@@ -11,63 +11,55 @@
     z-index: 2;
   }
   
-  .modal {
+.modal_body {
+  -webkit-animation: slide-in-elliptic-top-fwd 0.7s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+  animation: slide-in-elliptic-top-fwd 0.7s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+  background-color: var(--dark1);
+  min-width: 450px;
+  min-height: 350px;
+  border-radius: 24px;
+  position: relative;
+  color: white;
+}
 
-    -webkit-animation: slide-in-elliptic-top-fwd 0.7s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
-    animation: slide-in-elliptic-top-fwd 0.7s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
-    background-color: var(--dark1);
-    min-width: 450px;
-    min-height: 350px;
-    border-radius: 24px;
-    position: relative;
-    color: white;   
-  }
+.no_background_modal{
+  background: transparent;
+}
 
+.modal_header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0;
+  background-color: #17191c;
+  letter-spacing: 1px;
+  text-transform: capitalize;
+  font-size: 14px;
+  color: white;
+  border-top-left-radius: 24px;
+  border-top-right-radius: 24px;
+  padding: 10px 20px;
+}
 
+.modal_header h2 {
+  font-size: var(--header1-size);
+  line-height: var(--header1-lh);
+  color: white;
+}
 
-  .no_background_modal{
-    background: transparent;
-  }
-  
-  .modal_header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0;
-    background-color: #17191c;
-    letter-spacing: 1px;
-    text-transform: capitalize;
-    /* font-weight: 500; */
-    font-size: 14px;
-    color: white;
-    border-top-left-radius: 24px;
-    border-top-right-radius: 24px;
-  
-    padding: 10px 20px;
-  }
+.close_button {
+  color: white;
+  cursor: pointer;
+}
 
-  .modal_header h2 {
-      font-size: var(--header1-size);
-      line-height: var(--header1-lh);
-      /* font-weight: 400; */
-      color: white;
-  }
-  
-  .close_button {
-    width: 15px;
-    color: white;
-    cursor: pointer;
-  }
-  
-  .modal_footer {
-    /* padding: 10px; */
-    bottom: 10px;
-    position: absolute;
-    width: 100%;
-    padding: 0 20px;
-  }
-  
-  .modal_content {
-    padding: 20px;
-  }
-  
+.modal_footer {
+  /* padding: 10px; */
+  bottom: 10px;
+  position: absolute;
+  width: 100%;
+  padding: 0 20px;
+}
+
+.modal_content {
+  padding: 20px;
+}

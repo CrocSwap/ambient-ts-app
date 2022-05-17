@@ -6,15 +6,11 @@ import SwapButton from '../../components/Swap/SwapButton/SwapButton';
 import { useEffect, useState } from 'react';
 import {
     contractAddresses,
-    // getSpotPriceDisplay,
     getSpotPrice,
     getSpotPriceDisplay,
-    // fromDisplayQty,
-    // toDisplayQty,
     POOL_PRIMARY,
     sendSwap,
 } from '@crocswap-libs/sdk';
-// import { BigNumber } from 'ethers';
 import { JsonRpcProvider } from '@ethersproject/providers';
 
 interface ISwapProps {

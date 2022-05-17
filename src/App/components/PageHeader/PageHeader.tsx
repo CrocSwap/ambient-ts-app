@@ -13,10 +13,11 @@ import NetworkSelector from './NetworkSelector/NetworkSelector';
 
 interface IHeaderProps {
     nativeBalance: string;
+    clickLogout: () => void;
 }
 
 export default function PageHeader(props: IHeaderProps): React.ReactElement<IHeaderProps> {
-    const { user, account, enableWeb3, isWeb3Enabled, authenticate, isAuthenticated, logout } =
+    const { user, account, enableWeb3, isWeb3Enabled, authenticate, isAuthenticated } =
         useMoralis();
 
     // function to authenticate wallet with Moralis server
@@ -38,9 +39,6 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
             });
         }
     };
-
-    // function to sever connection between user wallet and Moralis server
-    const clickLogout = async () => await logout();
 
     useEffect(() => {
         try {
@@ -112,7 +110,7 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
             <div className={styles.account}>Account Info</div>
             <div className={styles.account}>{isAuthenticated ? account : null}</div>
             <button onClick={clickLogin}>Log In</button>
-            <button onClick={clickLogout}>Log Out</button>
+            <button onClick={props.clickLogout}>Log Out</button>
             <div className={styles.account}>
                 <Account {...accountProps} />
                 <NetworkSelector />
