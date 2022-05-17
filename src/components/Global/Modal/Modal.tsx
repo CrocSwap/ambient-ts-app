@@ -37,7 +37,7 @@ export default function Modal(props: ModalProps) {
 
     const footerOrNull = !footer ? null : footerJSX;
 
-    const modal = (
+    return (
         <div id='outside-modal' className={styles.outside_modal} onClick={onClose}>
             <div
                 id='modal-body'
@@ -55,6 +55,4 @@ export default function Modal(props: ModalProps) {
             </div>
         </div>
     );
-
-    return <>{modal}</>;
 }
