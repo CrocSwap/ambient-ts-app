@@ -4,7 +4,6 @@ import ContentContainer from '../../components/Global/ContentContainer/ContentCo
 import SwapHeader from '../../components/Swap/SwapHeader/SwapHeader';
 import SwapButton from '../../components/Swap/SwapButton/SwapButton';
 import { useEffect, useState } from 'react';
-import { useModal } from '../../components/Global/Modal/hooks';
 import {
     contractAddresses,
     getSpotPrice,
