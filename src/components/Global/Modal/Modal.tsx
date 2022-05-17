@@ -13,28 +13,8 @@ interface ModalProps {
 
 export default function Modal(props: ModalProps) {
     const { onClose, title, content, footer, noHeader, noBackground } = props;
-    // THE ONCLOSE FUNCTION IS COMING FROM WHEREVER WE ARE CALLING THE MODAL FROM
 
-    // THIS ALLOWS THE USER TO CLOSE MODAL BY HITTING THE ESCAPE KEY
-
-    //    function closeOnEscapeKeyDown(e: React.KeyboardEvent<Element>) {
-    //     if ((e.charCode || e.keyCode) === 27) onClose();
-    //   }
-
-    //   const closeOnEscapeKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    //     if ((event.key) === 'Escape') onClose();
-    //       console.log(event)
-    //   };
-
-    //   useEffect(() => {
-    //     document.body.addEventListener('keydown', closeOnEscapeKeyDown);
-    //     return function cleanUp() {
-    //       document.body.removeEventListener('keydown', closeOnEscapeKeyDown);
-    //     };
-    //   });
-
-    // THIS IS THE MODAL THAT WILL BE SHOWING UP(CHANGE MODAL CONTENTS AND CLASSNAMES HERE)
-    const headerOrNull = noHeader ? null : (
+    const headerJSX = (
         <header className={styles.modal_header}>
             <div>{''}</div>
             <h2>{title}</h2>
@@ -44,7 +24,11 @@ export default function Modal(props: ModalProps) {
         </header>
     );
 
-    const footerOrNull = !footer ? null : <footer className={styles.modal_footer}>{footer}</footer>;
+    const headerOrNull = noHeader ? null : headerJSX;
+
+    const footerJSX = <footer className={styles.modal_footer}>{footer}</footer>;
+
+    const footerOrNull = !footer ? null : footerJSX;
 
     const modal = (
         <div className={styles.outside_modal} onClick={onClose}>
