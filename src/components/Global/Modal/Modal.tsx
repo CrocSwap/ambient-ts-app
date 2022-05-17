@@ -7,7 +7,6 @@ interface ModalProps {
     title: string;
     footer?: React.ReactNode;
     noHeader?: boolean;
-
     noBackground?: boolean;
 }
 
@@ -15,9 +14,10 @@ export default function Modal(props: ModalProps) {
     const { onClose, title, content, footer, noHeader, noBackground } = props;
 
     const headerJSX = (
-        <header className={styles.modal_header}>
-            <div>{''}</div>
-            <h2>{title}</h2>
+        <header id='modal-header' className={styles.modal_header}>
+            <h2 id='modal-title' className={styles.modal_title}>
+                {title}
+            </h2>
             <span onClick={onClose} className={styles.close_button}>
                 <RiCloseFill size={27} />{' '}
             </span>
@@ -26,18 +26,28 @@ export default function Modal(props: ModalProps) {
 
     const headerOrNull = noHeader ? null : headerJSX;
 
-    const footerJSX = <footer className={styles.modal_footer}>{footer}</footer>;
+    const footerJSX = (
+        <footer id='modal-footer' className={styles.modal_footer}>
+            {footer}
+        </footer>
+    );
 
     const footerOrNull = !footer ? null : footerJSX;
 
     const modal = (
-        <div className={styles.outside_modal} onClick={onClose}>
+        <div id='outside-modal' className={styles.outside_modal} onClick={onClose}>
             <div
-                className={`${styles.modal} ${noBackground ? styles.no_background_modal : null}`}
+                id='modal-body'
+                className={`
+                    ${styles.modal_body}
+                    ${noBackground ? styles.no_background_modal : null}
+                `}
                 onClick={(e) => e.stopPropagation()}
             >
                 {headerOrNull}
-                <section className={`${styles.modal_content} `}>{content}</section>
+                <section id='modal-content' className={styles.modal_content}>
+                    {content}
+                </section>
                 {footerOrNull}
             </div>
         </div>
