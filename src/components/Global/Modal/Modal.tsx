@@ -13,13 +13,16 @@ interface ModalProps {
 export default function Modal(props: ModalProps) {
     const { onClose, title, content, footer, noHeader, noBackground } = props;
 
+    // @Junior  I took out your space immediately after <RiCloseFill/>, please
+    // @Junior  ... use CSS spacing rules to accomplish spacing needs
+
     const headerJSX = (
         <header id='modal-header' className={styles.modal_header}>
             <h2 id='modal-title' className={styles.modal_title}>
                 {title}
             </h2>
             <span onClick={onClose} className={styles.close_button}>
-                <RiCloseFill size={27} />{' '}
+                <RiCloseFill size={27} />
             </span>
         </header>
     );
