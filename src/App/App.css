@@ -9,6 +9,27 @@
   font-weight: 200;
 }
 
+/* ===== Scrollbar CSS ===== */
+  /* Firefox */
+  * {
+    scrollbar-width: auto;
+    scrollbar-color: #8f54a0 #ffffff;
+  }
+
+ 
+body::-webkit-scrollbar {
+  width: 5px;
+}
+
+body::-webkit-scrollbar-track {
+  background: transparent; /* opacity: 0; should do the thing either */
+}
+body::-webkit-scrollbar-thumb {
+  background:  linear-gradient(0deg, #323171 0%, #4d4861 49.48%,#2e2d68  100%);
+
+  box-shadow: 0px 0px 0px 100000vh black;
+}
+
 html{
   background: var(--body-bg);
   color: var(--text-grey-white); 
@@ -42,11 +63,18 @@ footer {
 }
 
 .main-layout{
-  /* background: var(--dark3); */
-  /* min-height: calc(100vh - 5rem); */
+  transition: all 600ms ease-in-out;
+  background: var(--dark3);
+  min-height: calc(100vh - 5rem);
   margin-left: 5rem;
-  padding: 1rem;
+  /* padding: 1rem; */
 
+}
+.main-layout-2{
+  transition: all 700ms ease-in-out;
+  background: var(--dark3);
+  min-height: calc(100vh - 5rem);
+  
 }
 .content-container {
   min-height: calc(100vh - 4rem);
@@ -93,4 +121,14 @@ footer {
  
     overflow: scroll;
   }
+
+}
+
+
+@media only screen and (min-width: 600px) {
+  .main-layout-2{
+    margin-left: 16rem;
+   
+  }
+
 }
