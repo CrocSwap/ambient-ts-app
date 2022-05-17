@@ -10,8 +10,22 @@ import {
     getSpotPriceDisplay,
     POOL_PRIMARY,
     sendSwap,
+    parseSwapEthersTxReceipt,
+    toFixedNumber,
+    EthersNativeReceipt,
+    ParsedSwapReceipt,
 } from '@crocswap-libs/sdk';
+
 import { JsonRpcProvider } from '@ethersproject/providers';
+
+import { useMoralis } from 'react-moralis';
+// import { logger } from 'ethers';
+
+import {
+    // isTransactionFailedError,
+    isTransactionReplacedError,
+    TransactionError,
+} from '../../utils/TransactionError';
 
 interface ISwapProps {
     provider: JsonRpcProvider;
@@ -19,6 +33,8 @@ interface ISwapProps {
 
 export default function Swap(props: ISwapProps) {
     const { provider } = props;
+
+    const { Moralis } = useMoralis();
 
     const [isSellTokenPrimary, setIsSellTokenPrimary] = useState<boolean>(true);
 
@@ -75,6 +91,33 @@ export default function Swap(props: ISwapProps) {
         const truncatedNumber = number % 1 ? number.toFixed(decimalPlaces) : number;
         return truncatedNumber;
     };
+
+    const getContractEthDiff = async (txHash: string) => {
+        const params = { txHash: txHash };
+        const contractEthDiff = await Moralis.Cloud.run('getContractEthDiff', params);
+        return contractEthDiff;
+    };
+
+    async function handleParsedReceipt(txHash: string, parsedReceipt: ParsedSwapReceipt) {
+        const ethDiff = await getContractEthDiff(txHash);
+        console.log({ ethDiff });
+
+        if (parsedReceipt.buyQtyUnscaled === 0 && typeof ethDiff === 'string') {
+            parsedReceipt.buyQtyUnscaled = parseFloat(ethDiff?.substring(1));
+        }
+        if (parsedReceipt.sellQtyUnscaled === 0 || parsedReceipt.sellSymbol === 'ETH') {
+            parsedReceipt.sellQtyUnscaled = parseFloat(ethDiff);
+        }
+        const conversionRate = parsedReceipt.sellQtyUnscaled / parsedReceipt.buyQtyUnscaled;
+        parsedReceipt.readableConversionRate =
+            1 / conversionRate < 2
+                ? toFixedNumber(1 / conversionRate, 6)
+                : toFixedNumber(1 / conversionRate, 2);
+        parsedReceipt.conversionRateString = `Swapped ${parsedReceipt.sellQtyUnscaled} ${parsedReceipt.sellSymbol} for ${parsedReceipt.buyQtyUnscaled} ${parsedReceipt.buySymbol} at a rate of ${parsedReceipt.readableConversionRate} ${parsedReceipt.buySymbol} per ${parsedReceipt.sellSymbol}`;
+        // dispatch(addSwapReceipt(val));
+        console.log({ parsedReceipt });
+    }
+
     async function initiateSwap() {
         const sellTokenAddress = contractAddresses.ZERO_ADDR;
         const buyTokenAddress = daiKovanAddress;
@@ -84,27 +127,20 @@ export default function Swap(props: ISwapProps) {
         const buyTokenQty = (document.getElementById('buy-quantity') as HTMLInputElement)?.value;
         const qty = isSellTokenPrimary ? sellTokenQty : buyTokenQty;
 
-        let ethValue = '0'; // A non-zero value is set below when the user is selling ETH for another token
+        let ethValue = '0'; // Overwritten by a non-zero value when the user is selling ETH for another token
 
-        // if ETH is the token being sold by the user
-        // and the user is requesting an exact output quantity
-        // pad the amount of ETH sent to the contract by 1% (the remainder will be automatically returned)
+        // if the user is selling ETH and requesting an exact output quantity
+        // then pad the amount of ETH sent to the contract by 2% (the remainder will be automatically returned)
         if (sellTokenAddress === contractAddresses.ZERO_ADDR) {
             const roundedUpEthValue = truncateDecimals(
-                parseFloat(sellTokenQty) * 1.01,
+                parseFloat(sellTokenQty) * 1.02,
                 18,
             ).toString();
             isSellTokenPrimary ? (ethValue = sellTokenQty) : (ethValue = roundedUpEthValue);
         }
 
-        console.log({ isSellTokenPrimary });
-        console.log({ ethValue });
-        console.log({ sellTokenQty });
-        console.log({ buyTokenQty });
-        console.log({ qty });
-
         if (signer) {
-            await sendSwap(
+            const tx = await sendSwap(
                 sellTokenAddress,
                 buyTokenAddress,
                 isSellTokenPrimary,
@@ -114,6 +150,35 @@ export default function Swap(props: ISwapProps) {
                 poolId,
                 signer,
             );
+
+            let newTransactionHash = tx.hash;
+            let parsedReceipt;
+
+            console.log({ newTransactionHash });
+
+            try {
+                const receipt = await tx.wait();
+
+                parsedReceipt = await parseSwapEthersTxReceipt(receipt as EthersNativeReceipt);
+            } catch (e) {
+                const error = e as TransactionError;
+                if (isTransactionReplacedError(error)) {
+                    // The user used "speed up" or something similar
+                    // in their client, but we now have the updated info
+
+                    // dispatch(removePendingTx(tx.hash));
+                    console.log('repriced');
+                    newTransactionHash = error.replacement.hash;
+                    console.log({ newTransactionHash });
+                    // dispatch(setCurrentTxHash(replacementTxHash));
+                    // dispatch(addPendingTx(replacementTxHash));
+
+                    parsedReceipt = await parseSwapEthersTxReceipt(
+                        error.receipt as EthersNativeReceipt,
+                    );
+                }
+            }
+            if (parsedReceipt) handleParsedReceipt(newTransactionHash, parsedReceipt);
         }
     }
 
