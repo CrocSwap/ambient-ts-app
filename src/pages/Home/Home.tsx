@@ -1,5 +1,5 @@
 import Modal from '../../components/Global/Modal/Modal';
-import { useModal } from '../../components/Global/Modal/hooks';
+import { useModal } from '../../components/Global/Modal/useModal';
 export default function Home() {
     const [isModalOpen, openModal, closeModal] = useModal();
 
