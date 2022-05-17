@@ -6,11 +6,8 @@ import SwapButton from '../../components/Swap/SwapButton/SwapButton';
 import { useEffect, useState } from 'react';
 import {
     contractAddresses,
-    // getSpotPriceDisplay,
     getSpotPrice,
     getSpotPriceDisplay,
-    // fromDisplayQty,
-    // toDisplayQty,
     POOL_PRIMARY,
     sendSwap,
     parseSwapEthersTxReceipt,
@@ -18,8 +15,6 @@ import {
     EthersNativeReceipt,
     ParsedSwapReceipt,
 } from '@crocswap-libs/sdk';
-// import { BigNumber } from 'ethers';
-// import { Logger } from 'ethers/lib/utils';
 
 import { JsonRpcProvider } from '@ethersproject/providers';
 
