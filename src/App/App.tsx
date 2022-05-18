@@ -32,7 +32,9 @@ export default function App() {
     const [showSidebar, setShowSidebar] = useState<boolean>(false);
     const location = useLocation();
 
-    fetchTokenLists();
+    if (!window.localStorage.allTokenLists) {
+        fetchTokenLists();
+    }
 
     const currentLocation = location.pathname;
 
