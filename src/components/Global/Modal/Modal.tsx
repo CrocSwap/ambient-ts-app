@@ -3,60 +3,49 @@ import { RiCloseFill } from 'react-icons/ri';
 
 interface ModalProps {
     content: React.ReactNode;
-    onClose: React.MouseEventHandler<HTMLElement>;
+    onClose: React.MouseEventHandler<HTMLElement | SVGElement>;
     title: string;
-    actionButton: React.ReactNode;
-    noHeader: boolean;
-    noBackground: boolean;
+    footer?: React.ReactNode;
+    noHeader?: boolean;
+    noBackground?: boolean;
 }
 
 export default function Modal(props: ModalProps) {
-    // THE ONCLOSE FUNCTION IS COMING FROM WHEREVER WE ARE CALLING THE MODAL FROM
+    const { onClose, title, content, footer, noHeader, noBackground } = props;
 
-    // THIS ALLOWS THE USER TO CLOSE MODAL BY HITTING THE ESCAPE KEY
+    // TODO: Create functionality to close modal with escape key.
 
-    //    function closeOnEscapeKeyDown(e: React.KeyboardEvent<Element>) {
-    //     if ((e.charCode || e.keyCode) === 27) onClose();
-    //   }
+    // JSX for the header element
+    const headerJSX = (
+        <header className={styles.modal_header}>
+            <h2 className={styles.modal_title}>{title}</h2>
+            <RiCloseFill size={27} className={styles.close_button} onClick={onClose} />
+        </header>
+    );
 
-    //   const closeOnEscapeKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    //     if ((event.charCode || event.keyCode) === 27) onClose();
-    //   };
+    // JSX for the footer element
+    const footerJSX = <footer className={styles.modal_footer}>{footer}</footer>;
 
-    //   useEffect(() => {
-    //     document.body.addEventListener('keydown', closeOnEscapeKeyDown);
-    //     return function cleanUp() {
-    //       document.body.removeEventListener('keydown', closeOnEscapeKeyDown);
-    //     };
-    //   });
-    const { onClose, title, content, actionButton, noHeader, noBackground } = props;
+    // variables to hold both the header or footer JSX elements vs `null`
+    // ... both elements are optional and either or both may be absent
+    // ... from any given modal, this allows the element to render `null`
+    // ... if the element is not being used in a particular instance
+    const headerOrNull = noHeader ? null : headerJSX;
+    const footerOrNull = !footer ? null : footerJSX;
 
-    // THIS IS THE MODAL THAT WILL BE SHOWING UP(CHANGE MODAL CONTENTS AND CLASSNAMES HERE)
-    const modal = (
+    return (
         <div className={styles.outside_modal} onClick={onClose}>
             <div
-                className={`${styles.modal} ${noBackground ? styles.no_background_modal : null}`}
+                className={`
+                    ${styles.modal_body}
+                    ${noBackground ? styles.no_background_modal : null}
+                `}
                 onClick={(e) => e.stopPropagation()}
             >
-                {!noHeader && (
-                    <header className={styles.modal_header}>
-                        <div>{''}</div>
-                        <h2>{title}</h2>
-                        <span onClick={onClose} className={styles.close_button}>
-                            <RiCloseFill size={27} />{' '}
-                        </span>
-                    </header>
-                )}
-
-                <section className={`${styles.modal_content} `}>
-                    <h1> {content} </h1>
-                </section>
-                <footer className={styles.modal_footer}>
-                    <h3>{actionButton}</h3>
-                </footer>
+                {headerOrNull}
+                <section className={styles.modal_content}>{content}</section>
+                {footerOrNull}
             </div>
         </div>
     );
-
-    return <>{modal}</>;
 }

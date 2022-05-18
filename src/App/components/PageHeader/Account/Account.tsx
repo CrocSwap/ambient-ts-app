@@ -1,11 +1,12 @@
 import styles from './Account.module.css';
 // import React, { useState, useEffect } from 'react';
 // import Popover from '@material-ui/core/Popover';
-import { AiOutlineQuestionCircle } from 'react-icons/ai';
-import { FiMoreHorizontal } from 'react-icons/fi';
+// import { AiOutlineQuestionCircle } from 'react-icons/ai';
+// import { FiMoreHorizontal } from 'react-icons/fi';
 
 interface IAccountProps {
     nativeBalance: string;
+    accountAddress: string;
 }
 
 export default function Account(props: IAccountProps): React.ReactElement<IAccountProps> {
@@ -61,22 +62,22 @@ export default function Account(props: IAccountProps): React.ReactElement<IAccou
                 />
             </div>
 
-            <div className={styles.title_gradient}>69 AMBI</div>
+            {/* <div className={styles.title_gradient}>69 AMBI</div> */}
             <span className={styles.white}>
                 {props.nativeBalance ? props.nativeBalance + ' ETH' : ''}
             </span>
             {/* <div className={styles.title_gradient}>{useLocalStorage("ambientHandle")}</div> */}
-            <div className={styles.title_gradient}>username</div>
-            <AiOutlineQuestionCircle size={20} color='#ffffff' />
+            <div className={styles.title_gradient}>{props.accountAddress}</div>
+            {/* <AiOutlineQuestionCircle size={20} color='#ffffff' /> */}
 
-            <div>username</div>
+            {/* <div>username</div> */}
 
             {/* <div className={styles.more} aria-describedby={popoverId} onClick={handlePopoverClick}>
                 <FiMoreHorizontal size={20} color='#ffffff' />
             </div> */}
-            <div className={styles.more}>
+            {/* <div className={styles.more}>
                 <FiMoreHorizontal size={20} color='#ffffff' />
-            </div>
+            </div> */}
             {/* <Popover
                 popoverId={popoverId}
                 open={open}

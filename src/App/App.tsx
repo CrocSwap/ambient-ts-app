@@ -14,7 +14,7 @@ import Analytics from '../pages/Analytics/Analytics';
 import Portfolio from '../pages/Portfolio/Portfolio';
 import Market from '../pages/Trade/Market/Market';
 import Limit from '../pages/Trade/Limit/Limit';
-import Liquidity from '../pages/Trade/Liquidity/Liquidity';
+import Range from '../pages/Trade/Range/Range';
 import Swap from '../pages/Swap/Swap';
 import Chart from '../pages/Chart/Chart';
 import TestPage from '../pages/TestPage/TestPage';
@@ -132,9 +132,10 @@ export default function App() {
                         <Route path='trade' element={<Trade />}>
                             <Route path='market' element={<Market />} />
                             <Route path='limit' element={<Limit />} />
-                            <Route path='liquidity' element={<Liquidity />} />
+                            <Route path='range' element={<Range />} />
                         </Route>
                         <Route path='analytics' element={<Analytics />} />
+                        <Route path='range2' element={<Range />} />
                         <Route path='portfolio' element={<Portfolio />} />
                         <Route path='swap' element={<Swap {...swapProps} />} />
                         <Route path='chart' element={<Chart />} />

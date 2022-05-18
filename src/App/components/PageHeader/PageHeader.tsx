@@ -9,6 +9,7 @@ import styles from './PageHeader.module.css';
 import { useRive, useStateMachineInput } from 'rive-react';
 import Account from './Account/Account';
 import NetworkSelector from './NetworkSelector/NetworkSelector';
+import truncateAddress from '../../../utils/truncateAddress';
 /** ***** END: Import Local Files *********/
 
 interface IHeaderProps {
@@ -75,8 +76,11 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
         onClickInput?.fire();
     }
 
+    const accountAddress = isAuthenticated && account ? truncateAddress(account, 18) : '';
+
     const accountProps = {
         nativeBalance: props.nativeBalance,
+        accountAddress: accountAddress,
     };
 
     // End of Page Header Functions
@@ -103,12 +107,13 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
             >
                 <NavLink to='/'>Home</NavLink>
                 <NavLink to='/swap'>Swap</NavLink>
+                <NavLink to='/range2'>Range</NavLink>
                 <NavLink to='/trade'>Trade</NavLink>
                 <NavLink to='/analytics'>Analytics</NavLink>
                 <NavLink to='/portfolio'>Portfolio</NavLink>
             </nav>
-            <div className={styles.account}>Account Info</div>
-            <div className={styles.account}>{isAuthenticated ? account : null}</div>
+            {/* <div className={styles.account}>Account Info</div> */}
+            {/* <div className={styles.account}>{accountAddress}</div> */}
             <button onClick={clickLogin}>Log In</button>
             <button onClick={props.clickLogout}>Log Out</button>
             <div className={styles.account}>
