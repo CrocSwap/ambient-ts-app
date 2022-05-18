@@ -12,8 +12,8 @@ export default function NetworkSelector() {
     // this chains data will eventually be stored in the data folder.
     const chains = [
         {
-            name: 'Ropsten Testnet',
-            id: '0x3',
+            name: 'Kovan Testnet',
+            id: '0x2a',
             icon: null,
             theme: '#36364a',
         },
