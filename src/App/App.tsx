@@ -4,9 +4,11 @@ import { Routes, Route, useLocation } from 'react-router-dom';
 import { useMoralis } from 'react-moralis';
 import { Signer } from 'ethers';
 import { JsonRpcProvider } from '@ethersproject/providers';
+import { contractAddresses, getTokenBalanceDisplay } from '@crocswap-libs/sdk';
 
 /** ***** Import JSX Files *******/
 import PageHeader from './components/PageHeader/PageHeader';
+import Sidebar from './components/Sidebar/Sidebar';
 import PageFooter from './components/PageFooter/PageFooter';
 import Home from '../pages/Home/Home';
 import Trade from '../pages/Trade/Trade';
@@ -21,16 +23,18 @@ import TestPage from '../pages/TestPage/TestPage';
 
 /** * **** Import Local Files *******/
 import './App.css';
-// import { connectWallet } from './connectWallet';
 import { useProvider } from './useProvider';
-import { contractAddresses, getTokenBalanceDisplay } from '@crocswap-libs/sdk';
-import Sidebar from './components/Sidebar/Sidebar';
+import { fetchTokenLists } from './fetchTokenLists';
 
 /** ***** React Function *******/
 export default function App() {
     const { chainId, isWeb3Enabled, account, logout, isAuthenticated } = useMoralis();
     const [showSidebar, setShowSidebar] = useState<boolean>(false);
     const location = useLocation();
+
+    if (!window.localStorage.allTokenLists) {
+        fetchTokenLists();
+    }
 
     const currentLocation = location.pathname;
 
