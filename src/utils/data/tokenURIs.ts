@@ -1,4 +1,4 @@
-export const listURIs = {
+export const tokenListURIs = {
     croc: '/json/crocodile_labs_token_list.json',
     uniswap: 'https://tokens.uniswap.org',
     coinmarketcap: 'https://api.coinmarketcap.com/data-api/v3/uniswap/all.json',
