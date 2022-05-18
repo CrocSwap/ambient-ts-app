@@ -10,6 +10,7 @@ import { useRive, useStateMachineInput } from 'rive-react';
 import Account from './Account/Account';
 import NetworkSelector from './NetworkSelector/NetworkSelector';
 import truncateAddress from '../../../utils/truncateAddress';
+import { is } from 'immer/dist/internal';
 /** ***** END: Import Local Files *********/
 
 interface IHeaderProps {
@@ -85,6 +86,17 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
 
     // End of Page Header Functions
 
+    const enabledAccountDetails = (
+        <>
+            <button onClick={clickLogin}>Log In</button>
+            <button onClick={props.clickLogout}>Log Out</button>
+            <NetworkSelector />
+            <Account {...accountProps} />
+        </>
+    );
+
+    const disabledAccountDetails = <button onClick={clickLogin}>Log In</button>;
+
     return (
         <header data-testid={'page-header'} className={styles.primary_header}>
             <div className={styles.header_gradient}> </div>
@@ -114,11 +126,8 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
             </nav>
             {/* <div className={styles.account}>Account Info</div> */}
             {/* <div className={styles.account}>{accountAddress}</div> */}
-            <button onClick={clickLogin}>Log In</button>
-            <button onClick={props.clickLogout}>Log Out</button>
             <div className={styles.account}>
-                <Account {...accountProps} />
-                <NetworkSelector />
+                {isAuthenticated && isWeb3Enabled ? enabledAccountDetails : disabledAccountDetails}
             </div>
         </header>
     );
