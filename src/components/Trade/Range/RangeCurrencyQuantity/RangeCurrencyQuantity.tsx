@@ -1,22 +1,22 @@
-import { ChangeEvent } from 'react';
+// import { ChangeEvent } from 'react';
 import styles from './RangeCurrencyQuantity.module.css';
 
-interface LiquidityCurrencyQuantityProps {
+interface RangeCurrencyQuantityProps {
     disable?: boolean;
     fieldId: string;
-    updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
+    // updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
 }
 
-export default function LiquidityCurrencyQuantity(props: LiquidityCurrencyQuantityProps) {
-    const { disable, fieldId, updateOtherQuantity } = props;
+export default function RangeCurrencyQuantity(props: RangeCurrencyQuantityProps) {
+    const { disable, fieldId } = props;
 
     return (
         <div className={styles.token_amount}>
             <input
-                id={`${fieldId}-liquidity-quantity`}
+                id={`${fieldId}-range-quantity`}
                 className={styles.currency_quantity}
                 placeholder='0.0'
-                onChange={(event) => updateOtherQuantity(event)}
+                // onChange={(event) => updateOtherQuantity(event)}
                 type='string'
                 inputMode='decimal'
                 autoComplete='off'

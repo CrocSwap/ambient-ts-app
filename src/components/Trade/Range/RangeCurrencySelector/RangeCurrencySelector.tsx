@@ -1,18 +1,21 @@
-import styles from './CurrencySelector.module.css';
-import LiquidityCurrencyQuantity from '../LiquidityCurrencyQuantity/LiquidityCurrencyQuantity';
+import styles from './RangeCurrencySelector.module.css';
+import RangeCurrencyQuantity from '../RangeCurrencyQuantity/RangeCurrencyQuantity';
 import { RiArrowDownSLine } from 'react-icons/ri';
 import Toggle from '../../../Global/Toggle/Toggle';
-import { useState, ChangeEvent } from 'react';
+import {
+    useState,
+    // ChangeEvent
+} from 'react';
 
-interface LiquidityCurrencySelectorProps {
+interface RangeCurrencySelectorProps {
     fieldId: string;
-    direction: string;
+
     sellToken?: boolean;
-    updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
+    // updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
 }
 
-export default function LiquidityCurrencySelector(props: LiquidityCurrencySelectorProps) {
-    const { direction, fieldId, updateOtherQuantity } = props;
+export default function RangeCurrencySelector(props: RangeCurrencySelectorProps) {
+    const { fieldId } = props;
     const [isChecked, setIsChecked] = useState<boolean>(false);
 
     const DexBalanceContent = (
@@ -29,29 +32,12 @@ export default function LiquidityCurrencySelector(props: LiquidityCurrencySelect
         </span>
     );
 
-    const WithdrawTokensContent = (
-        <span className={styles.surplus_toggle}>
-            Withdraw tokens
-            <div className={styles.toggle_container}>
-                <Toggle
-                    isOn={isChecked}
-                    handleToggle={() => setIsChecked(!isChecked)}
-                    Width={40}
-                    id='tokens_withdrawal'
-                />
-            </div>
-        </span>
-    );
-
     return (
         <div className={styles.swapbox}>
-            <span className={styles.direction}>{direction}</span>
+            <span className={styles.direction}>Amounts</span>
             <div className={styles.swapbox_top}>
                 <div className={styles.swap_input}>
-                    <LiquidityCurrencyQuantity
-                        fieldId={fieldId}
-                        updateOtherQuantity={updateOtherQuantity}
-                    />
+                    <RangeCurrencyQuantity fieldId={fieldId} />
                 </div>
                 <div className={styles.token_select}>
                     <img
@@ -65,12 +51,9 @@ export default function LiquidityCurrencySelector(props: LiquidityCurrencySelect
                 </div>
             </div>
             <div className={styles.swapbox_bottom}>
-                {fieldId === 'limit-sell' ? (
-                    <span>Wallet: 69.420 | DEX: 0.00</span>
-                ) : (
-                    <span>Wallet: 0.00 | Surplus: 69.0</span>
-                )}
-                {fieldId === 'limit-sell' ? DexBalanceContent : WithdrawTokensContent}
+                <span>Wallet: 69.420 | DEX: 0.00</span>
+
+                {DexBalanceContent}
             </div>
         </div>
     );
