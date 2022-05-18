@@ -10,13 +10,16 @@ interface SidebarProps {
 export default function Sidebar(props: SidebarProps): React.ReactElement<SidebarProps> {
     const { toggleSidebar, showSidebar } = props;
     const navItems1 = [
-        { name: 'Top Tokens' },
-        { name: 'Top Pools' },
-        { name: 'Range Positions' },
-        { name: 'Open Orders' },
+        { name: 'Top Tokens', icon: 'topTokens.svg' },
+        { name: 'Top Pools', icon: 'topPools.svg' },
+        { name: 'Range Positions', icon: 'rangePositions.svg' },
+        { name: 'Open Orders', icon: 'openOrders.svg' },
     ];
 
-    const navItems2 = [{ name: 'Favorite Pools' }, { name: 'Recent Transactions' }];
+    const navItems2 = [
+        { name: 'Favorite Pools', icon: 'favouritePools.svg' },
+        { name: 'Recent Transactions', icon: 'recentTransactions.svg' },
+    ];
 
     const searchContainer = (
         <div className={styles.search_container}>
@@ -50,6 +53,7 @@ export default function Sidebar(props: SidebarProps): React.ReactElement<Sidebar
                         <li key={idx} className={styles.sidebar_item}>
                             <div className={styles.sidebar_link}>
                                 <MdPlayArrow size={20} color='#ffffff' />
+                                <img src={`sidebarImages/${item.icon}`} alt={item.name} />
 
                                 <span className={styles.link_text}>{item.name}</span>
                             </div>
@@ -61,6 +65,7 @@ export default function Sidebar(props: SidebarProps): React.ReactElement<Sidebar
                             <li key={idx} className={styles.sidebar_item} id='themeButton'>
                                 <div className={styles.sidebar_link}>
                                     <MdPlayArrow size={20} color='#ffffff' />
+                                    <img src={`sidebarImages/${item.icon}`} alt={item.name} />
 
                                     <span className={styles.link_text}>{item.name}</span>
                                 </div>
