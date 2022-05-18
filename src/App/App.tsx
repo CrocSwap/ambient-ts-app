@@ -121,6 +121,7 @@ export default function App() {
 
     const mainLayoutStyle = showSidebar ? 'main-layout-2' : 'main-layout';
     // console.log({ provider });
+
     return (
         <>
             <div className='content-container'>
@@ -130,7 +131,7 @@ export default function App() {
                     <Routes>
                         <Route index element={<Home />} />
                         <Route path='trade' element={<Trade />}>
-                            <Route path='market' element={<Market />} />
+                            <Route path='market' element={<Swap {...swapProps} />} />
                             <Route path='limit' element={<Limit />} />
                             <Route path='range' element={<Range />} />
                         </Route>

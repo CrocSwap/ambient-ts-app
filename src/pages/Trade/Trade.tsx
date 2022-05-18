@@ -1,7 +1,21 @@
-import { Outlet } from 'react-router-dom';
+import { Outlet, NavLink } from 'react-router-dom';
 import styles from './Trade.module.css';
 
 export default function Trade() {
+    const routes = [
+        {
+            path: '/market',
+            name: 'Market',
+        },
+        {
+            path: '/range',
+            name: 'Range',
+        },
+        {
+            path: '/limit',
+            name: 'Limit',
+        },
+    ];
     return (
         <main data-testid={'trade'}>
             {/* <h1>This is Trade.tsx</h1> */}
@@ -10,10 +24,16 @@ export default function Trade() {
                     <h1>THIS IS GRAPH COMPONENT</h1>
                 </div>
                 <div className={styles.right_col}>
-                    <h1></h1>
+                    <div className={styles.navigation_menu}>
+                        {routes.map((route, idx) => (
+                            <div className={`${styles.nav_container} trade_route`} key={idx}>
+                                <NavLink to={`/trade${route.path}`}>{route.name}</NavLink>
+                            </div>
+                        ))}
+                    </div>
+                    <Outlet />
                 </div>
             </main>
-            <Outlet />
         </main>
     );
 }

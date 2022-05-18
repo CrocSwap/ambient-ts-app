@@ -7,14 +7,18 @@
   
     width: 100%;
     padding: 12px 16px;
+
+    
     border: none;
+    max-height: 3rem;
   
     cursor: pointer;
     transition: color 4s ease-in-out;
     text-align: center;
   
     color: var(--dark1);
-    border-radius: 100px;
+    border-radius: var(--border-radius);
+
     background: var(--title-gradient);
 
   }
@@ -35,7 +39,7 @@
     transition: color 4s ease-in;
     text-align: center;
   
-    border-radius: 100px;
+    border-radius: var(--border-radius);
   
     background-color: var(--dark2);
   }
