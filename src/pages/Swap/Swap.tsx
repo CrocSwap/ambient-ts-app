@@ -26,6 +26,7 @@ import {
     isTransactionReplacedError,
     TransactionError,
 } from '../../utils/TransactionError';
+import DenominationSwitch from '../../components/Swap/DenominationSwitch/DenomicationSwitch';
 
 interface ISwapProps {
     provider: JsonRpcProvider;
@@ -186,6 +187,7 @@ export default function Swap(props: ISwapProps) {
         <main data-testid={'swap'}>
             <ContentContainer>
                 <SwapHeader />
+                <DenominationSwitch />
                 <CurrencyConverter
                     isLiq={false}
                     poolPrice={poolPriceNonDisplay}
