@@ -1,6 +1,7 @@
-import { fetchTokenLists } from './fetchTokenLists';
-
 export default function TestPage() {
-    fetchTokenLists();
-    return <main></main>;
+    return (
+        <main>
+            <h3>This is TestPage.tsx</h3>
+        </main>
+    );
 }

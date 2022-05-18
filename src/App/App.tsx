@@ -24,12 +24,15 @@ import TestPage from '../pages/TestPage/TestPage';
 /** * **** Import Local Files *******/
 import './App.css';
 import { useProvider } from './useProvider';
+import { fetchTokenLists } from './fetchTokenLists';
 
 /** ***** React Function *******/
 export default function App() {
     const { chainId, isWeb3Enabled, account, logout, isAuthenticated } = useMoralis();
     const [showSidebar, setShowSidebar] = useState<boolean>(false);
     const location = useLocation();
+
+    fetchTokenLists();
 
     const currentLocation = location.pathname;
 

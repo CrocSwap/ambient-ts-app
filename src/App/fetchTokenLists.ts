@@ -1,4 +1,4 @@
-import { tokenListURIs } from '../../utils/data/tokenURIs';
+import { tokenListURIs } from '../utils/data/tokenURIs';
 
 export function fetchTokenLists() {
     // check if the token lists are already in local storage, currently
