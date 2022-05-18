@@ -35,6 +35,7 @@
   
   .no_background{
     background: transparent;
+    margin-top: 0;
   }
   
   .main_content:hover, .main_content:focus-within{
