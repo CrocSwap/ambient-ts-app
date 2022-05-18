@@ -6,6 +6,7 @@ import { FiMoreHorizontal } from 'react-icons/fi';
 
 interface IAccountProps {
     nativeBalance: string;
+    accountAddress: string;
 }
 
 export default function Account(props: IAccountProps): React.ReactElement<IAccountProps> {
@@ -66,7 +67,7 @@ export default function Account(props: IAccountProps): React.ReactElement<IAccou
                 {props.nativeBalance ? props.nativeBalance + ' ETH' : ''}
             </span>
             {/* <div className={styles.title_gradient}>{useLocalStorage("ambientHandle")}</div> */}
-            <div className={styles.title_gradient}>username</div>
+            <div className={styles.title_gradient}>{props.accountAddress}</div>
             <AiOutlineQuestionCircle size={20} color='#ffffff' />
 
             {/* <div>username</div> */}

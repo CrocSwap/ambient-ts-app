@@ -76,8 +76,11 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
         onClickInput?.fire();
     }
 
+    const accountAddress = isAuthenticated && account ? truncateAddress(account, 18) : '';
+
     const accountProps = {
         nativeBalance: props.nativeBalance,
+        accountAddress: accountAddress,
     };
 
     // End of Page Header Functions
@@ -109,9 +112,7 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
                 <NavLink to='/portfolio'>Portfolio</NavLink>
             </nav>
             {/* <div className={styles.account}>Account Info</div> */}
-            <div className={styles.account}>
-                {isAuthenticated && account ? truncateAddress(account, 18) : null}
-            </div>
+            {/* <div className={styles.account}>{accountAddress}</div> */}
             <button onClick={clickLogin}>Log In</button>
             <button onClick={props.clickLogout}>Log Out</button>
             <div className={styles.account}>
