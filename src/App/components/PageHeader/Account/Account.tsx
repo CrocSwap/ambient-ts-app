@@ -86,7 +86,7 @@ export default function Account(props: IAccountProps): React.ReactElement<IAccou
             </div> */}
 
             <span className={styles.white}>
-                {props.nativeBalance ? props.nativeBalance + ' ETH' : ''}
+                {props.nativeBalance ? parseInt(props.nativeBalance).toFixed(4) + ' ETH' : ''}
             </span>
             <div className={styles.title_gradient}>{props.accountAddress}</div>
             <AiOutlineQuestionCircle size={20} color='#CDC1FF' />
