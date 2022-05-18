@@ -1,19 +1,26 @@
 import styles from './Account.module.css';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Popover from '@material-ui/core/Popover';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import { FiMoreHorizontal } from 'react-icons/fi';
+import { RiInformationLine } from 'react-icons/ri';
+import { GoRequestChanges } from 'react-icons/go';
+import { FaDiscord } from 'react-icons/fa';
+import { MdLanguage } from 'react-icons/md';
+import { BsBook } from 'react-icons/bs';
+import { HiOutlineDocumentText } from 'react-icons/hi';
 
 interface IAccountProps {
     nativeBalance: string;
     accountAddress: string;
     isAuthenticated?: boolean;
     isWeb3Enabled?: boolean;
+    clickLogout: () => void;
 }
 
 export default function Account(props: IAccountProps): React.ReactElement<IAccountProps> {
     const [anchorEl, setAnchorEl] = useState(null);
-    const { isAuthenticated, isWeb3Enabled } = props;
+    const { isAuthenticated, isWeb3Enabled, clickLogout } = props;
 
     const handlePopoverClick = (event: React.ChangeEvent<any>) => {
         setAnchorEl(event.currentTarget);
@@ -26,32 +33,46 @@ export default function Account(props: IAccountProps): React.ReactElement<IAccou
     const open = Boolean(anchorEl);
     const popoverId = open ? 'simple-popover' : undefined;
 
+    const logoutButton = (
+        <button className={styles.authenticate_button} onClick={clickLogout}>
+            Logout
+        </button>
+    );
+
     const popperContent = (
         <div className={styles.popperContent}>
             <div className={styles.more_row}>
                 <span>About</span>
+                <RiInformationLine />
             </div>
             <div className={styles.more_row}>
                 <span>Help Center</span>
+                <AiOutlineQuestionCircle />
             </div>
             <div className={styles.more_row}>
                 <span>Request Features</span>
+                <GoRequestChanges />
             </div>
             <div className={styles.more_row}>
                 <span>Discord</span>
+                <FaDiscord />
             </div>
             <div className={styles.more_row}>
                 <span>Language</span>
+                <MdLanguage />
             </div>
             {/* <div className={styles.more_row} onClick={switchTheme}>
                 <span>{theme === "dark" ? "Light" : "Dark"} Theme</span>
             </div> */}
             <div className={styles.more_row}>
                 <span>Docs</span>
+                <BsBook />
             </div>
             <div className={styles.more_row}>
                 <span>Legal & Privacy</span>
+                <HiOutlineDocumentText />
             </div>
+            {isAuthenticated && isWeb3Enabled && logoutButton}
         </div>
     );
     return (
