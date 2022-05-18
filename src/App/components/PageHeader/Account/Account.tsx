@@ -61,7 +61,7 @@ export default function Account(props: IAccountProps): React.ReactElement<IAccou
                 />
             </div>
 
-            <div className={styles.title_gradient}>69 AMBI</div>
+            {/* <div className={styles.title_gradient}>69 AMBI</div> */}
             <span className={styles.white}>
                 {props.nativeBalance ? props.nativeBalance + ' ETH' : ''}
             </span>
@@ -69,7 +69,7 @@ export default function Account(props: IAccountProps): React.ReactElement<IAccou
             <div className={styles.title_gradient}>username</div>
             <AiOutlineQuestionCircle size={20} color='#ffffff' />
 
-            <div>username</div>
+            {/* <div>username</div> */}
 
             {/* <div className={styles.more} aria-describedby={popoverId} onClick={handlePopoverClick}>
                 <FiMoreHorizontal size={20} color='#ffffff' />
