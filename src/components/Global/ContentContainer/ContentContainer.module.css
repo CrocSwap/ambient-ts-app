@@ -21,7 +21,6 @@
     padding: 1px;
 
     /* one line box shadow */
-    box-shadow: rgba(42, 42, 46, 0.4) 0 0 75rem 5rem;
     transition: 0.5s ease;  
   }
   
@@ -38,7 +37,6 @@
   .main_content:hover, .main_content:focus-within{
     transition: all 250ms ease-in-out;
 
-    filter: drop-shadow(0px 0px 100px rgba(205, 193, 255, 0.3)) drop-shadow(0px 0px 60px rgba(205, 193, 255, 0.1)) ;
 
   }
 
