@@ -10,7 +10,9 @@ import { useRive, useStateMachineInput } from 'rive-react';
 import Account from './Account/Account';
 import NetworkSelector from './NetworkSelector/NetworkSelector';
 import truncateAddress from '../../../utils/truncateAddress';
-import { is } from 'immer/dist/internal';
+import { AiOutlineQuestionCircle } from 'react-icons/ai';
+import { FiMoreHorizontal } from 'react-icons/fi';
+
 /** ***** END: Import Local Files *********/
 
 interface IHeaderProps {
@@ -82,20 +84,36 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
     const accountProps = {
         nativeBalance: props.nativeBalance,
         accountAddress: accountAddress,
+        isAuthenticated: isAuthenticated,
+        isWeb3Enabled: isWeb3Enabled,
+    };
+    const accountPropsNonAuthenticated = {
+        nativeBalance: props.nativeBalance,
+        accountAddress: accountAddress,
+        authenticated: false,
     };
 
     // End of Page Header Functions
 
     const enabledAccountDetails = (
         <>
-            <button onClick={clickLogin}>Log In</button>
+            <button onClick={clickLogin}>Connect Wallet</button>
             <button onClick={props.clickLogout}>Log Out</button>
             <NetworkSelector />
             <Account {...accountProps} />
         </>
     );
 
-    const disabledAccountDetails = <button onClick={clickLogin}>Log In</button>;
+    const disabledAccountDetails = (
+        <div className={styles.not_conncected}>
+            <button className={styles.authenticate_button} onClick={clickLogin}>
+                Connect Wallet
+            </button>
+            {/* <AiOutlineQuestionCircle size={20} color='#CDC1FF'/>
+            <FiMoreHorizontal size={20} color='#CDC1FF' /> */}
+            <Account {...accountProps} />
+        </div>
+    );
 
     return (
         <header data-testid={'page-header'} className={styles.primary_header}>
@@ -127,7 +145,10 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
             {/* <div className={styles.account}>Account Info</div> */}
             {/* <div className={styles.account}>{accountAddress}</div> */}
             <div className={styles.account}>
-                {isAuthenticated && isWeb3Enabled ? enabledAccountDetails : disabledAccountDetails}
+                <button onClick={clickLogin}>Connect Wallet</button>
+                <button onClick={props.clickLogout}>Log Out</button>
+                {isAuthenticated && isWeb3Enabled && <NetworkSelector />}
+                <Account {...accountProps} />
             </div>
         </header>
     );

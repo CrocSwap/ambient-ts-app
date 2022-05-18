@@ -1,16 +1,19 @@
 import styles from './Account.module.css';
 import React, { useState, useEffect } from 'react';
 import Popover from '@material-ui/core/Popover';
-// import { AiOutlineQuestionCircle } from 'react-icons/ai';
+import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import { FiMoreHorizontal } from 'react-icons/fi';
 
 interface IAccountProps {
     nativeBalance: string;
     accountAddress: string;
+    isAuthenticated?: boolean;
+    isWeb3Enabled?: boolean;
 }
 
 export default function Account(props: IAccountProps): React.ReactElement<IAccountProps> {
     const [anchorEl, setAnchorEl] = useState(null);
+    const { isAuthenticated, isWeb3Enabled } = props;
 
     const handlePopoverClick = (event: React.ChangeEvent<any>) => {
         setAnchorEl(event.currentTarget);
@@ -53,21 +56,22 @@ export default function Account(props: IAccountProps): React.ReactElement<IAccou
     );
     return (
         <div className={styles.account_container}>
-            <div className={styles.ethereum_icon}>
+            {/* <div className={styles.ethereum_icon}>
                 <img
                     src='https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png'
                     alt='ethereum'
                     width='25px'
                 />
-            </div>
+            </div> */}
 
             <span className={styles.white}>
                 {props.nativeBalance ? props.nativeBalance + ' ETH' : ''}
             </span>
             <div className={styles.title_gradient}>{props.accountAddress}</div>
+            <AiOutlineQuestionCircle size={20} color='#CDC1FF' />
 
             <div className={styles.more} aria-describedby={popoverId} onClick={handlePopoverClick}>
-                <FiMoreHorizontal size={20} color='#ffffff' />
+                <FiMoreHorizontal size={20} color='#CDC1FF' />
             </div>
 
             <Popover
