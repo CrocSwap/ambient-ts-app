@@ -10,30 +10,33 @@
   
   
   .window {
-      position: relative;
+    position: relative;
     margin-top: 50px;
-  
+    
     color: var(--text-grey-light);
     border-radius: 24px;
-   
+    
     background-color: var(--dark1);
     background: linear-gradient(to right, #7371FC, #CDC1FF, #7371FC);;
     padding: 1px;
-
+    
     /* one line box shadow */
     transition: 0.5s ease;  
   }
-  
   .main_content{
     background-color: var(--dark1);
     padding: 1rem;
     border-radius: 24px;
-
     
-
-
+    
+    
+    
   }
-
+  
+  .no_background{
+    background: transparent;
+  }
+  
   .main_content:hover, .main_content:focus-within{
     transition: all 250ms ease-in-out;
 

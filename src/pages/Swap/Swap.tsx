@@ -188,7 +188,7 @@ export default function Swap(props: ISwapProps) {
 
     return (
         <main data-testid={'swap'}>
-            <ContentContainer>
+            <ContentContainer isOnTradeRoute={isOnTradeRoute}>
                 <SwapHeader isOnTradeRoute={isOnTradeRoute} />
                 <DenominationSwitch />
                 <CurrencyConverter
