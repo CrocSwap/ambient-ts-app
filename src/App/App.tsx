@@ -103,7 +103,7 @@ export default function App() {
                 // send value to local state
                 setNativeBalance(balance);
             }
-            console.log({ balance });
+            // console.log({ balance });
         })();
     }, [chainId, account, isWeb3Enabled, isAuthenticated]);
 
