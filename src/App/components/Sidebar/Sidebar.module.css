@@ -42,8 +42,10 @@
   
   .sidebar_item {
     width: 100%;
+
   }
-  
+
+ 
 .bottom_elements{
     margin-top: auto;
     width: 100%;
@@ -58,24 +60,37 @@
     padding: 1.4375rem 0;
     border-bottom: 1px solid #171D27;
 
-    transition: var(--transition-speed);
     cursor: pointer;
   }
   
-  .sidebar_link:hover {
-    filter: grayscale(0%) opacity(1);
-    background: var(--bg-secondary);
-    color: var(--text-secondary);
+  .sidebar_item{
+
+    transition: all 4s ease-out;
+  }
+ 
+  .sidebar_item:hover{
+    background: var(--title-gradient);
+    transition: all 4s ease-out;
+
+
+
   }
 
 
   
   .link_text {
     color: var(--text-highlight);
+    transition: all 0.3s ease-out;
 
     display: none;
     margin-left: 1rem;
   }
+
+  .sidebar_link:hover > .link_text{
+    color: black;
+  }
+
+
   
   .sidebar_link svg {
     width: 2rem;

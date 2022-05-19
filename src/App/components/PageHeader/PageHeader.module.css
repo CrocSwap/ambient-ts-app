@@ -93,7 +93,25 @@
     display: flex;
 }
 
+.authenticate_button{
+    background: var(--title-gradient);
+    border: none;
+    outline: none;
+    color: var(--dark3);
+    font-weight: 200;
+    
+    border-radius: 4px;
+    width: 155px;
+    height: 25px;
+}
 
+
+.not_conncected{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
 @media( max-width: 35em){
 
     .account, .header_gradient{
