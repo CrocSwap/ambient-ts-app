@@ -22,6 +22,7 @@ import {
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { BigNumber } from 'ethers';
 import RangeHeader from '../../../components/Trade/Range/RangeHeader/RangeHeader';
+import RangeDenominationSwitch from '../../../components/Trade/Range/RangeDenominationSwitch/RangeDenominationSwitch';
 
 interface IRangeProps {
     provider: JsonRpcProvider;
@@ -34,6 +35,8 @@ export default function Range(props: IRangeProps) {
 
     const [poolPriceNonDisplay, setPoolPriceNonDisplay] = useState(0);
     const [liquidityForBase, setLiquidityForBase] = useState(BigNumber.from(0));
+
+    const [advancedMode, setAdvancedMode] = useState<boolean>(false);
 
     useEffect(() => {
         (async () => {
@@ -88,6 +91,7 @@ export default function Range(props: IRangeProps) {
         <section data-testid={'range'}>
             <ContentContainer isOnTradeRoute>
                 <RangeHeader />
+                <RangeDenominationSwitch />
                 <RangeCurrencyConverter />
                 <RangeWidth />
                 <RangePriceInfo />
