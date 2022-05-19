@@ -24,8 +24,8 @@ import { BigNumber } from 'ethers';
 import RangeHeader from '../../../components/Trade/Range/RangeHeader/RangeHeader';
 import RangeDenominationSwitch from '../../../components/Trade/Range/RangeDenominationSwitch/RangeDenominationSwitch';
 import AdvancedModeToggle from '../../../components/Trade/Range/AdvancedModeToggle/AdvancedModeToggle';
-import { StylesContext } from '@material-ui/styles';
 import MinMaxPrice from '../../../components/Trade/Range/AdvancedModeComponents/MinMaxPrice/MinMaxPrice';
+import AdvancedPriceInfo from '../../../components/Trade/Range/AdvancedModeComponents/AdvancedPriceInfo/AdvancedPriceInfo';
 
 interface IRangeProps {
     provider: JsonRpcProvider;
@@ -102,7 +102,12 @@ export default function Range(props: IRangeProps) {
         </div>
     );
 
-    const advancedModeContent = <MinMaxPrice />;
+    const advancedModeContent = (
+        <>
+            <MinMaxPrice />
+            <AdvancedPriceInfo />
+        </>
+    );
 
     const basedModeContent = (
         <>
@@ -116,10 +121,11 @@ export default function Range(props: IRangeProps) {
             <ContentContainer isOnTradeRoute>
                 <RangeHeader />
                 {denominationSwitch}
-                {/* <h1>{ advancedMode ? 'ADVANCED MODE' : 'NO ADVANCED MODE'}</h1> */}
                 <RangeCurrencyConverter />
+                {advancedMode ? advancedModeContent : basedModeContent}
+                {/* 
                 <RangeWidth />
-                <RangePriceInfo />
+                <RangePriceInfo /> */}
                 <RangeButton onClickFn={sendTransaction} />
             </ContentContainer>
         </section>

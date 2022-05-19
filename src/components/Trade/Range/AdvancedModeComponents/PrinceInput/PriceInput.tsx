@@ -33,11 +33,11 @@ export default function PriceInput(props: priceInputProps) {
             <span className={styles.title}>{title}</span>
             <div className={styles.price_input_container}>
                 <span className={styles.sign}>
-                    <FaMinus size={19} />
+                    <FaMinus size={16} />
                 </span>
                 <span>{priceInput}</span>
                 <span className={styles.sign}>
-                    <FaPlus size={19} />
+                    <FaPlus size={16} />
                 </span>
             </div>
             <span className={styles.percentage}>{percentageDifference}% difference</span>

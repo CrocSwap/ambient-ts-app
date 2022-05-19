@@ -1,64 +1,80 @@
 import styles from './AdvancedPriceInfo.module.css';
-import Row from '../../../../Global/Row/Row';
 
 const currentPrice = (
     <>
-        <Row>
+        <div className={styles.price_info_row}>
             <span>Current Price</span>
             <span>2,800</span>
-        </Row>
+        </div>
 
-        <Row>
+        <div className={styles.price_info_row}>
             <span>Est.APY</span>
-            <span>35.68%</span>
-        </Row>
+            <span className='primary_apy'>35.68%</span>
+        </div>
     </>
 );
 
-const balancedData = (
+const tableHead = (
+    <thead>
+        <tr>
+            <th></th>
+            <th>Current</th>
+            <th>Repositioned To</th>
+        </tr>
+    </thead>
+);
+
+const balanceData = (
     <>
-        <Row>
-            <span>ETH Balance</span>
-            <span>0.00</span>
-            <span>0.69</span>
-        </Row>
-        <Row>
-            <span>USDC Balance</span>
-            <span>1,000.0</span>
-            <span>500.0</span>
-        </Row>
+        <tr>
+            <td data-column='Target: '>ETH Balance</td>
+            <td data-column='Current'>0.00</td>
+            <td data-column='Repositioned To'>0.69</td>
+        </tr>
+        <tr>
+            <td data-column='Target: '>USDC Balance</td>
+            <td data-column='Current'>1,000.0</td>
+            <td data-column='Repositioned To'>500.0</td>
+        </tr>
     </>
 );
 
 const rangeData = (
     <>
-        <Row>
-            <span>Range Upper Limit</span>
-            <span>2,000.0</span>
-            <span>2,120.0</span>
-        </Row>
-        <Row>
-            <span>Range Lower Limit</span>
-            <span>1,000.0</span>
-            <span>3,200.0</span>
-        </Row>
+        <tr>
+            <td data-column='Target: '>Range Upper Limit</td>
+            <td data-column='Current'>2,000.0</td>
+            <td data-column='Repositioned To'>2,1210.0</td>
+        </tr>
+        <tr>
+            <td data-column='Target: '>Range Lower Limit</td>
+            <td data-column='Current'>1,000.0</td>
+            <td data-column='Repositioned To'>3,200.0</td>
+        </tr>
     </>
 );
+
+const tableContents = (
+    <>
+        <div className={styles.advanced_table_display}>
+            <table>
+                {tableHead}
+                <tbody>
+                    {balanceData}
+                    {rangeData}
+                </tbody>
+            </table>
+        </div>
+    </>
+);
+
 export default function AdvancedPriceInfo() {
     return (
         <div className={styles.price_info_container}>
             <div className={styles.price_info_content}>
                 {currentPrice}
 
-                {/* <Divider /> */}
-                <Row>
-                    <span></span>
-                    <span className={styles.current}>Current</span>
-                    <span>Repositioned To</span>
-                </Row>
-                {balancedData}
-                {/* <Divider /> */}
-                {rangeData}
+                {tableContents}
             </div>
         </div>
     );

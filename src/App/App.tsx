@@ -124,10 +124,7 @@ export default function App() {
     const rangeProps = {
         provider: provider as JsonRpcProvider,
     };
-    const rangePropsTrade = {
-        provider: provider as JsonRpcProvider,
-        isOnTradeRoute: true,
-    };
+
     // props for <Sidebar/> React element
     function toggleSidebar() {
         setShowSidebar(!showSidebar);
