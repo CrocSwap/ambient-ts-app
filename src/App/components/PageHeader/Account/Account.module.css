@@ -88,9 +88,17 @@
     color: rgb(195, 197, 203);
   }
 
-  .logout_button{
-
-  }
+  .authenticate_button{
+    background: var(--title-gradient);
+    border: none;
+    outline: none;
+    color: var(--dark3);
+    font-weight: 200;
+    
+    border-radius: 4px;
+    width: 155px;
+    height: 25px;
+}
   @media screen and (max-width: 550px) {
    
     .account_container {

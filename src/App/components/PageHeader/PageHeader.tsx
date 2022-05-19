@@ -10,6 +10,7 @@ import { useRive, useStateMachineInput } from 'rive-react';
 import Account from './Account/Account';
 import NetworkSelector from './NetworkSelector/NetworkSelector';
 import truncateAddress from '../../../utils/truncateAddress';
+
 /** ***** END: Import Local Files *********/
 
 interface IHeaderProps {
@@ -81,9 +82,18 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
     const accountProps = {
         nativeBalance: props.nativeBalance,
         accountAddress: accountAddress,
+        isAuthenticated: isAuthenticated,
+        isWeb3Enabled: isWeb3Enabled,
+        clickLogout: props.clickLogout,
     };
 
     // End of Page Header Functions
+
+    const loginButton = (
+        <button className={styles.authenticate_button} onClick={clickLogin}>
+            Connect Wallet
+        </button>
+    );
 
     return (
         <header data-testid={'page-header'} className={styles.primary_header}>
@@ -114,11 +124,10 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
             </nav>
             {/* <div className={styles.account}>Account Info</div> */}
             {/* <div className={styles.account}>{accountAddress}</div> */}
-            <button onClick={clickLogin}>Log In</button>
-            <button onClick={props.clickLogout}>Log Out</button>
             <div className={styles.account}>
+                {!isAuthenticated && !isWeb3Enabled && loginButton}
+                {isAuthenticated && isWeb3Enabled && <NetworkSelector />}
                 <Account {...accountProps} />
-                <NetworkSelector />
             </div>
         </header>
     );

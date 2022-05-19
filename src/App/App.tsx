@@ -4,9 +4,11 @@ import { Routes, Route, useLocation } from 'react-router-dom';
 import { useMoralis } from 'react-moralis';
 import { Signer } from 'ethers';
 import { JsonRpcProvider } from '@ethersproject/providers';
+import { contractAddresses, getTokenBalanceDisplay } from '@crocswap-libs/sdk';
 
 /** ***** Import JSX Files *******/
 import PageHeader from './components/PageHeader/PageHeader';
+import Sidebar from './components/Sidebar/Sidebar';
 import PageFooter from './components/PageFooter/PageFooter';
 import Home from '../pages/Home/Home';
 import Trade from '../pages/Trade/Trade';
@@ -21,16 +23,18 @@ import TestPage from '../pages/TestPage/TestPage';
 
 /** * **** Import Local Files *******/
 import './App.css';
-// import { connectWallet } from './connectWallet';
 import { useProvider } from './useProvider';
-import { contractAddresses, getTokenBalanceDisplay } from '@crocswap-libs/sdk';
-import Sidebar from './components/Sidebar/Sidebar';
+import { fetchTokenLists } from './fetchTokenLists';
 
 /** ***** React Function *******/
 export default function App() {
     const { chainId, isWeb3Enabled, account, logout, isAuthenticated } = useMoralis();
     const [showSidebar, setShowSidebar] = useState<boolean>(false);
     const location = useLocation();
+
+    if (!window.localStorage.allTokenLists) {
+        fetchTokenLists();
+    }
 
     const currentLocation = location.pathname;
 
@@ -110,9 +114,16 @@ export default function App() {
     const swapProps = {
         provider: provider as JsonRpcProvider,
     };
+
     const swapPropsTrade = {
         provider: provider as JsonRpcProvider,
         isOnTradeRoute: true,
+
+
+    // props for <Range/> React element
+    const rangeProps = {
+        provider: provider as JsonRpcProvider,
+
     };
     // props for <Sidebar/> React element
     function toggleSidebar() {
@@ -137,10 +148,10 @@ export default function App() {
                         <Route path='trade' element={<Trade />}>
                             <Route path='market' element={<Swap {...swapPropsTrade} />} />
                             <Route path='limit' element={<Limit />} />
-                            <Route path='range' element={<Range />} />
+                            <Route path='range' element={<Range {...rangeProps} />} />
                         </Route>
                         <Route path='analytics' element={<Analytics />} />
-                        <Route path='range2' element={<Range />} />
+                        <Route path='range2' element={<Range {...rangeProps} />} />
                         <Route path='portfolio' element={<Portfolio />} />
                         <Route path='swap' element={<Swap {...swapProps} />} />
                         <Route path='chart' element={<Chart />} />
