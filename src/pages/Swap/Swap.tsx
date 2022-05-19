@@ -21,6 +21,8 @@ import { JsonRpcProvider } from '@ethersproject/providers';
 import { useMoralis } from 'react-moralis';
 // import { logger } from 'ethers';
 
+import getContractEthDiff from '../../utils/EthDiff';
+
 import {
     // isTransactionFailedError,
     isTransactionReplacedError,
@@ -92,14 +94,14 @@ export default function Swap(props: ISwapProps) {
         return truncatedNumber;
     };
 
-    const getContractEthDiff = async (txHash: string) => {
-        const params = { txHash: txHash };
-        const contractEthDiff = await Moralis.Cloud.run('getContractEthDiff', params);
-        return contractEthDiff;
-    };
+    // const getContractEthDiff = async (txHash: string) => {
+    //     const params = { txHash: txHash };
+    //     const contractEthDiff = await Moralis.Cloud.run('getContractEthDiff', params);
+    //     return contractEthDiff;
+    // };
 
     async function handleParsedReceipt(txHash: string, parsedReceipt: ParsedSwapReceipt) {
-        const ethDiff = await getContractEthDiff(txHash);
+        const ethDiff = await getContractEthDiff(Moralis, txHash);
         console.log({ ethDiff });
 
         if (parsedReceipt.buyQtyUnscaled === 0 && typeof ethDiff === 'string') {
