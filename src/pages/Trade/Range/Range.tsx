@@ -4,6 +4,7 @@ import RangeButton from '../../../components/Trade/Range/RangeButton/RangeButton
 import RangeCurrencyConverter from '../../../components/Trade/Range/RangeCurrencyConverter/RangeCurrencyConverter';
 import RangePriceInfo from '../../../components/Trade/Range/RangePriceInfo/RangePriceInfo';
 import RangeWidth from '../../../components/Trade/Range/RangeWidth/RangeWidth';
+import Toggle from '../../../components/Global/Toggle/Toggle';
 
 import {
     contractAddresses,
