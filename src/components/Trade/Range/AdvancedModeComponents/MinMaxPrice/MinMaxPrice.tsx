@@ -1,5 +1,5 @@
 import styles from './MinMaxPrice.module.css';
-import PriceInput from '../PrinceInput/PriceInput';
+import PriceInput from '../PriceInput/PriceInput';
 
 export default function MinMaxPrice() {
     return (

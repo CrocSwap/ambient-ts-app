@@ -109,7 +109,7 @@ export default function Range(props: IRangeProps) {
         </>
     );
 
-    const basedModeContent = (
+    const baseModeContent = (
         <>
             <RangeWidth />
             <RangePriceInfo />
@@ -122,7 +122,7 @@ export default function Range(props: IRangeProps) {
                 <RangeHeader />
                 {denominationSwitch}
                 <RangeCurrencyConverter />
-                {advancedMode ? advancedModeContent : basedModeContent}
+                {advancedMode ? advancedModeContent : baseModeContent}
                 {/* 
                 <RangeWidth />
                 <RangePriceInfo /> */}
