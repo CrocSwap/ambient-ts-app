@@ -13,11 +13,18 @@ import {
     getSpotPrice,
     POOL_PRIMARY,
     // sendConcMint,
-    // parseSwapEthersTxReceipt,
+    // toFixedNumber,
+    parseMintEthersReceipt,
+    EthersNativeReceipt,
+    // ParsedSwapReceipt,
     // contractAddresses,
     // ambientPosSlot,
     // concPosSlot,
 } from '@crocswap-libs/sdk';
+
+import { isTransactionReplacedError, TransactionError } from '../../../utils/TransactionError';
+
+import { handleParsedReceipt } from '../../../utils/HandleParsedReceipt';
 
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { BigNumber } from 'ethers';
@@ -31,6 +38,8 @@ interface IRangeProps {
     provider: JsonRpcProvider;
 }
 
+import { useMoralis } from 'react-moralis';
+
 export default function Range(props: IRangeProps) {
     // const sellTokenAddress = contractAddresses.ZERO_ADDR;
     const daiKovanAddress = '0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa';
@@ -39,6 +48,7 @@ export default function Range(props: IRangeProps) {
     const [poolPriceNonDisplay, setPoolPriceNonDisplay] = useState(0);
     const [liquidityForBase, setLiquidityForBase] = useState(BigNumber.from(0));
 
+    const { Moralis } = useMoralis();
     const [advancedMode, setAdvancedMode] = useState<boolean>(false);
 
     const toggleAdvancedMode = () => setAdvancedMode(!advancedMode);
@@ -58,10 +68,6 @@ export default function Range(props: IRangeProps) {
         })();
     }, []);
 
-    // useEffect(() => {
-    //     console.log({ poolPriceNonDisplay });
-    // }, [poolPriceNonDisplay]);
-
     const qtyNonDisplay = fromDisplayQty('.00001', 18);
 
     useEffect(() => {
@@ -79,17 +85,50 @@ export default function Range(props: IRangeProps) {
     const signer = props.provider?.getSigner();
 
     const sendTransaction = async () => {
-        const tx = await sendAmbientMint(
-            contractAddresses.ZERO_ADDR,
-            daiKovanAddress,
-            liquidityForBase,
-            poolWeiPriceLowLimit,
-            poolWeiPriceHighLimit,
-            0.0001,
-            signer,
-        );
-        const newTransactionHash = tx.hash;
-        console.log({ newTransactionHash });
+        if (signer) {
+            const tx = await sendAmbientMint(
+                contractAddresses.ZERO_ADDR,
+                daiKovanAddress,
+                liquidityForBase,
+                poolWeiPriceLowLimit,
+                poolWeiPriceHighLimit,
+                0.0001,
+                signer,
+            );
+            let newTransactionHash = tx.hash;
+            console.log({ newTransactionHash });
+            let parsedReceipt;
+
+            try {
+                const receipt = await tx.wait();
+                console.log({ receipt });
+                parsedReceipt = await parseMintEthersReceipt(
+                    props.provider,
+                    receipt as EthersNativeReceipt,
+                );
+            } catch (e) {
+                const error = e as TransactionError;
+                if (isTransactionReplacedError(error)) {
+                    // The user used "speed up" or something similar
+                    // in their client, but we now have the updated info
+
+                    // dispatch(removePendingTx(tx.hash));
+                    console.log('repriced');
+                    newTransactionHash = error.replacement.hash;
+                    console.log({ newTransactionHash });
+                    // dispatch(setCurrentTxHash(replacementTxHash));
+                    // dispatch(addPendingTx(replacementTxHash));
+
+                    parsedReceipt = await parseMintEthersReceipt(
+                        props.provider,
+                        error.receipt as EthersNativeReceipt,
+                    );
+                }
+            }
+
+            if (parsedReceipt)
+                handleParsedReceipt(Moralis, 'mint', newTransactionHash, parsedReceipt);
+        }
     };
 
     const denominationSwitch = (
