@@ -21,6 +21,7 @@ import {
 
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { BigNumber } from 'ethers';
+import RangeHeader from '../../../components/Trade/Range/RangeHeader/RangeHeader';
 
 interface IRangeProps {
     provider: JsonRpcProvider;
@@ -86,6 +87,7 @@ export default function Range(props: IRangeProps) {
     return (
         <section data-testid={'range'}>
             <ContentContainer isOnTradeRoute>
+                <RangeHeader />
                 <RangeCurrencyConverter />
                 <RangeWidth />
                 <RangePriceInfo />
