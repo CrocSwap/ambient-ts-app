@@ -6,6 +6,7 @@
     border: 1px solid var(--border-color);
     border-radius: 16px;
     background-color: var(--content-bg);
+    transition: all 450ms ease-in-out;
   }
   
   .reposition_width_content {

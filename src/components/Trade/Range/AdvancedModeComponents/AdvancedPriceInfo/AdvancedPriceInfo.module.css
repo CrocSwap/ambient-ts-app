@@ -1,8 +1,10 @@
 .price_info_container{
     padding: 0 5%;
+    transition: all 450ms ease-in-out;
 }
 
 .price_info_content{
+    transition: all 450ms ease-in-out;
     background: var(--dark2);
     margin-top: 10px;
     padding: 8px 16px;
