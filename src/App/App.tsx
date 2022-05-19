@@ -14,7 +14,7 @@ import Home from '../pages/Home/Home';
 import Trade from '../pages/Trade/Trade';
 import Analytics from '../pages/Analytics/Analytics';
 import Portfolio from '../pages/Portfolio/Portfolio';
-import Market from '../pages/Trade/Market/Market';
+// import Market from '../pages/Trade/Market/Market';
 import Limit from '../pages/Trade/Limit/Limit';
 import Range from '../pages/Trade/Range/Range';
 import Swap from '../pages/Swap/Swap';
@@ -115,6 +115,11 @@ export default function App() {
         provider: provider as JsonRpcProvider,
     };
 
+    const swapPropsTrade = {
+        provider: provider as JsonRpcProvider,
+        isOnTradeRoute: true,
+    };
+
     // props for <Range/> React element
     const rangeProps = {
         provider: provider as JsonRpcProvider,
@@ -130,6 +135,7 @@ export default function App() {
 
     const mainLayoutStyle = showSidebar ? 'main-layout-2' : 'main-layout';
     // console.log({ provider });
+
     return (
         <>
             <div className='content-container'>
@@ -139,7 +145,7 @@ export default function App() {
                     <Routes>
                         <Route index element={<Home />} />
                         <Route path='trade' element={<Trade />}>
-                            <Route path='market' element={<Market />} />
+                            <Route path='market' element={<Swap {...swapPropsTrade} />} />
                             <Route path='limit' element={<Limit />} />
                             <Route path='range' element={<Range {...rangeProps} />} />
                         </Route>

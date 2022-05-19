@@ -22,7 +22,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                 <Toggle
                     isOn={isChecked}
                     handleToggle={() => setIsChecked(!isChecked)}
-                    Width={40}
+                    Width={36}
                     id='surplus_liquidity'
                 />
             </div>
@@ -36,7 +36,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                 <Toggle
                     isOn={isChecked}
                     handleToggle={() => setIsChecked(!isChecked)}
-                    Width={40}
+                    Width={36}
                     id='tokens_withdrawal'
                 />
             </div>

@@ -50,6 +50,9 @@
   --text-grey-white: #ffffff;
   --light-blue: #46B7DB;
 
+  /* border */
+  --border-radius: 4px;
+
 
 
 
@@ -65,5 +68,7 @@
   --navbar: linear-gradient(to right, #FFFFFF, #ECE9E6);
   --title-gradient:  linear-gradient(to right, #0f0c29, #302b63, #24243e);
 }
+
+
 
 
