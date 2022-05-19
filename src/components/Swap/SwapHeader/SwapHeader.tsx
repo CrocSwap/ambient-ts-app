@@ -4,8 +4,22 @@ import { HiDotsHorizontal } from 'react-icons/hi';
 import { FiSettings } from 'react-icons/fi';
 import ContentHeader from '../../Global/ContentHeader/ContentHeader';
 
-export default function SwapHeader() {
-    return (
+interface swapHeaderProps {
+    isOnTradeRoute?: boolean;
+}
+
+export default function SwapHeader(props: swapHeaderProps) {
+    const { isOnTradeRoute } = props;
+
+    const tradeRouteHeader = (
+        <ContentHeader>
+            <span />
+            <div className={styles.token_info}>ETH / USDC</div>
+            <HiDotsHorizontal />
+        </ContentHeader>
+    );
+
+    const mainHeader = (
         <ContentHeader>
             <span>
                 <MdShowChart />
@@ -17,4 +31,6 @@ export default function SwapHeader() {
             </div>
         </ContentHeader>
     );
+
+    return <>{isOnTradeRoute ? tradeRouteHeader : mainHeader}</>;
 }

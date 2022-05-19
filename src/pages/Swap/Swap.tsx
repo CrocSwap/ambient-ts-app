@@ -29,13 +29,17 @@ import {
     isTransactionReplacedError,
     TransactionError,
 } from '../../utils/TransactionError';
+import DenominationSwitch from '../../components/Swap/DenominationSwitch/DenomicationSwitch';
 
 interface ISwapProps {
     provider: JsonRpcProvider;
+    isOnTradeRoute?: boolean;
 }
 
 export default function Swap(props: ISwapProps) {
-    const { provider } = props;
+    const { provider, isOnTradeRoute } = props;
+
+    console.log(props);
 
     const { Moralis } = useMoralis();
 
@@ -172,8 +176,9 @@ export default function Swap(props: ISwapProps) {
 
     return (
         <main data-testid={'swap'}>
-            <ContentContainer>
-                <SwapHeader />
+            <ContentContainer isOnTradeRoute={isOnTradeRoute}>
+                <SwapHeader isOnTradeRoute={isOnTradeRoute} />
+                <DenominationSwitch />
                 <CurrencyConverter
                     isLiq={false}
                     poolPrice={poolPriceNonDisplay}

@@ -11,11 +11,12 @@ interface RangeCurrencySelectorProps {
     fieldId: string;
 
     sellToken?: boolean;
+
     // updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
 }
 
 export default function RangeCurrencySelector(props: RangeCurrencySelectorProps) {
-    const { fieldId } = props;
+    const { fieldId, sellToken } = props;
     const [isChecked, setIsChecked] = useState<boolean>(false);
 
     const DexBalanceContent = (
@@ -25,7 +26,7 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                 <Toggle
                     isOn={isChecked}
                     handleToggle={() => setIsChecked(!isChecked)}
-                    Width={40}
+                    Width={36}
                     id='surplus_liquidity'
                 />
             </div>
@@ -34,7 +35,7 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
 
     return (
         <div className={styles.swapbox}>
-            <span className={styles.direction}>Amounts</span>
+            {sellToken && <span className={styles.direction}>Amounts</span>}
             <div className={styles.swapbox_top}>
                 <div className={styles.swap_input}>
                     <RangeCurrencyQuantity fieldId={fieldId} />

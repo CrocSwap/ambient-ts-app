@@ -14,7 +14,7 @@ import Home from '../pages/Home/Home';
 import Trade from '../pages/Trade/Trade';
 import Analytics from '../pages/Analytics/Analytics';
 import Portfolio from '../pages/Portfolio/Portfolio';
-import Market from '../pages/Trade/Market/Market';
+// import Market from '../pages/Trade/Market/Market';
 import Limit from '../pages/Trade/Limit/Limit';
 import Range from '../pages/Trade/Range/Range';
 import Swap from '../pages/Swap/Swap';
@@ -25,6 +25,7 @@ import TestPage from '../pages/TestPage/TestPage';
 import './App.css';
 import { useProvider } from './useProvider';
 import { fetchTokenLists } from './fetchTokenLists';
+import { validateChain } from './validateChain';
 
 /** ***** React Function *******/
 export default function App() {
@@ -32,9 +33,16 @@ export default function App() {
     const [showSidebar, setShowSidebar] = useState<boolean>(false);
     const location = useLocation();
 
-    if (!window.localStorage.allTokenLists) {
-        fetchTokenLists();
-    }
+    // fetch token lists from URIs if none are in local storage
+    if (!window.localStorage.allTokenLists) fetchTokenLists();
+
+    // determine whether the user is connected to a supported chain
+    // the user being connected to a non-supported chain or not being
+    // ... connected at all are both reflected as `false`
+    // later we can make this available to the rest of the app through
+    // ... the React Router context provider API
+    const isChainValid = chainId ? validateChain(chainId as string) : false;
+    console.assert(true, isChainValid);
 
     const currentLocation = location.pathname;
 
@@ -99,7 +107,7 @@ export default function App() {
                 // send value to local state
                 setNativeBalance(balance);
             }
-            console.log({ balance });
+            // console.log({ balance });
         })();
     }, [chainId, account, isWeb3Enabled, isAuthenticated]);
 
@@ -115,10 +123,16 @@ export default function App() {
         provider: provider as JsonRpcProvider,
     };
 
+    const swapPropsTrade = {
+        provider: provider as JsonRpcProvider,
+        isOnTradeRoute: true,
+    };
+
     // props for <Range/> React element
     const rangeProps = {
         provider: provider as JsonRpcProvider,
     };
+
     // props for <Sidebar/> React element
     function toggleSidebar() {
         setShowSidebar(!showSidebar);
@@ -130,6 +144,7 @@ export default function App() {
 
     const mainLayoutStyle = showSidebar ? 'main-layout-2' : 'main-layout';
     // console.log({ provider });
+
     return (
         <>
             <div className='content-container'>
@@ -139,7 +154,7 @@ export default function App() {
                     <Routes>
                         <Route index element={<Home />} />
                         <Route path='trade' element={<Trade />}>
-                            <Route path='market' element={<Market />} />
+                            <Route path='market' element={<Swap {...swapPropsTrade} />} />
                             <Route path='limit' element={<Limit />} />
                             <Route path='range' element={<Range {...rangeProps} />} />
                         </Route>
