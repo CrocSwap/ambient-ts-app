@@ -118,12 +118,11 @@ export default function App() {
     const swapPropsTrade = {
         provider: provider as JsonRpcProvider,
         isOnTradeRoute: true,
-
+    };
 
     // props for <Range/> React element
     const rangeProps = {
         provider: provider as JsonRpcProvider,
-
     };
     // props for <Sidebar/> React element
     function toggleSidebar() {
