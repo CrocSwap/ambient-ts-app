@@ -21,7 +21,7 @@ interface IAccountProps {
 export default function Account(props: IAccountProps): React.ReactElement<IAccountProps> {
     const [anchorEl, setAnchorEl] = useState(null);
     const { isAuthenticated, isWeb3Enabled, clickLogout } = props;
-
+    // eslint-disable-next-line
     const handlePopoverClick = (event: React.ChangeEvent<any>) => {
         setAnchorEl(event.currentTarget);
     };
