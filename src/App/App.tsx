@@ -132,6 +132,7 @@ export default function App() {
     const rangeProps = {
         provider: provider as JsonRpcProvider,
     };
+
     // props for <Sidebar/> React element
     function toggleSidebar() {
         setShowSidebar(!showSidebar);

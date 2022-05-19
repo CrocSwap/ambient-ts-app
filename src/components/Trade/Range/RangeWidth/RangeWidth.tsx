@@ -2,6 +2,7 @@
 import styles from './RangeWidth.module.css';
 import { MdAdd } from 'react-icons/md';
 import { FiMinus } from 'react-icons/fi';
+import { AiOutlineInfoCircle } from 'react-icons/ai';
 
 export default function RangeWidth() {
     const PercentageOptionContent = (
@@ -11,11 +12,12 @@ export default function RangeWidth() {
                     <MdAdd size={22} />
                     <FiMinus size={22} />
                 </div>
+                <button className={styles.percentage_option_buttons}>10%</button>
+                <button className={styles.percentage_option_buttons}>25%</button>
                 <button className={styles.percentage_option_buttons}>50%</button>
-                <button className={styles.percentage_option_buttons}>100%</button>
-                <button className={styles.percentage_option_buttons}>200%</button>
 
                 <button className={styles.percentage_option_buttons}>Ambient</button>
+                <AiOutlineInfoCircle color='#ffffff' />
             </div>
         </>
     );

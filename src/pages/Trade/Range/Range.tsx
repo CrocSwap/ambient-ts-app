@@ -4,7 +4,7 @@ import RangeButton from '../../../components/Trade/Range/RangeButton/RangeButton
 import RangeCurrencyConverter from '../../../components/Trade/Range/RangeCurrencyConverter/RangeCurrencyConverter';
 import RangePriceInfo from '../../../components/Trade/Range/RangePriceInfo/RangePriceInfo';
 import RangeWidth from '../../../components/Trade/Range/RangeWidth/RangeWidth';
-
+import styles from './Range.module.css';
 import {
     contractAddresses,
     sendAmbientMint,
@@ -21,6 +21,11 @@ import {
 
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { BigNumber } from 'ethers';
+import RangeHeader from '../../../components/Trade/Range/RangeHeader/RangeHeader';
+import RangeDenominationSwitch from '../../../components/Trade/Range/RangeDenominationSwitch/RangeDenominationSwitch';
+import AdvancedModeToggle from '../../../components/Trade/Range/AdvancedModeToggle/AdvancedModeToggle';
+import MinMaxPrice from '../../../components/Trade/Range/AdvancedModeComponents/MinMaxPrice/MinMaxPrice';
+import AdvancedPriceInfo from '../../../components/Trade/Range/AdvancedModeComponents/AdvancedPriceInfo/AdvancedPriceInfo';
 
 interface IRangeProps {
     provider: JsonRpcProvider;
@@ -33,6 +38,10 @@ export default function Range(props: IRangeProps) {
 
     const [poolPriceNonDisplay, setPoolPriceNonDisplay] = useState(0);
     const [liquidityForBase, setLiquidityForBase] = useState(BigNumber.from(0));
+
+    const [advancedMode, setAdvancedMode] = useState<boolean>(false);
+
+    const toggleAdvancedMode = () => setAdvancedMode(!advancedMode);
 
     useEffect(() => {
         (async () => {
@@ -83,12 +92,40 @@ export default function Range(props: IRangeProps) {
         console.log({ newTransactionHash });
     };
 
+    const denominationSwitch = (
+        <div className={styles.denomination_switch_container}>
+            <AdvancedModeToggle
+                toggleAdvancedMode={toggleAdvancedMode}
+                advancedMode={advancedMode}
+            />
+            <RangeDenominationSwitch />
+        </div>
+    );
+
+    const advancedModeContent = (
+        <>
+            <MinMaxPrice />
+            <AdvancedPriceInfo />
+        </>
+    );
+
+    const baseModeContent = (
+        <>
+            <RangeWidth />
+            <RangePriceInfo />
+        </>
+    );
+
     return (
         <section data-testid={'range'}>
-            <ContentContainer>
+            <ContentContainer isOnTradeRoute>
+                <RangeHeader />
+                {denominationSwitch}
                 <RangeCurrencyConverter />
+                {advancedMode ? advancedModeContent : baseModeContent}
+                {/* 
                 <RangeWidth />
-                <RangePriceInfo />
+                <RangePriceInfo /> */}
                 <RangeButton onClickFn={sendTransaction} />
             </ContentContainer>
         </section>
