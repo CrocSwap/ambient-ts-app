@@ -124,6 +124,10 @@ export default function App() {
     const rangeProps = {
         provider: provider as JsonRpcProvider,
     };
+    const rangePropsTrade = {
+        provider: provider as JsonRpcProvider,
+        isOnTradeRoute: true,
+    };
     // props for <Sidebar/> React element
     function toggleSidebar() {
         setShowSidebar(!showSidebar);
@@ -147,7 +151,7 @@ export default function App() {
                         <Route path='trade' element={<Trade />}>
                             <Route path='market' element={<Swap {...swapPropsTrade} />} />
                             <Route path='limit' element={<Limit />} />
-                            <Route path='range' element={<Range {...rangeProps} />} />
+                            <Route path='range' element={<Range {...rangePropsTrade} />} />
                         </Route>
                         <Route path='analytics' element={<Analytics />} />
                         <Route path='range2' element={<Range {...rangeProps} />} />
