@@ -72,3 +72,8 @@ select {
     scroll-behavior: auto !important;
   }
 }
+
+
+iframe{
+  display: none;
+}
