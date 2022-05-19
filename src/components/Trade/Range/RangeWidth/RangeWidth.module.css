@@ -18,8 +18,10 @@
     display: flex;
     flex-direction: row;
     align-items: center;
+    padding:  0 12%;
+    
   }
-  
+
   .reposition_width_input span {
     /* font-weight: 600; */
   
@@ -55,6 +57,7 @@
   }
   .percentage_options {
     display: flex;
+    padding: 0 0rem;
   
     width: 100%;
   
@@ -79,7 +82,8 @@
     overflow: hidden;
   
     margin: 4px !important;
-    padding: 0.5rem 10px;
+    background: var(--dark3);
+    padding: 0.5rem 1%;
   
     cursor: pointer;
   
@@ -104,7 +108,7 @@
     outline: none;
     box-shadow: inset 0px 4px 4px rgba(0, 0, 0, 0.25);
   
-    background: linear-gradient(90deg, #AF99FF 0%, #46B7DB 49.48%, #F13D70 100%); /* Otherwise white in Chrome */
+    background: linear-gradient(90deg, #7371FC 0%, #CDC1FF 49.48%, #7371FC 100%); /* Otherwise white in Chrome */
   
     -webkit-appearance: none; /* Hides the slider so that custom slider can be made */
   }
@@ -116,6 +120,7 @@
   
   input[type="range"]::-ms-track {
     width: 100%;
+    border-radius: 10px;
   
     cursor: pointer;
   
@@ -134,7 +139,7 @@
     margin-top: -14px; 
     cursor: pointer;
   
-    border: 1px solid #46B7DB;
+    border: 1px solid #CDC1FF;
     box-sizing: border-box;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.25);
     border-radius: 8px;
@@ -175,13 +180,13 @@
   
     border: 0.2px solid #010101;
     border-radius: 1.3px;
-    background: linear-gradient(90deg, #AF99FF 0%, #46B7DB 49.48%, #F13D70 100%); /* Otherwise white in Chrome */
+    background: linear-gradient(90deg, #7371FC 0%, #CDC1FF 49.48%, #7371FC 100%); /* Otherwise white in Chrome */
 
     box-shadow: 1px 1px 1px #000, 0 0 1px #0d0d0d;
   }
   
   input[type="range"]:focus::-webkit-slider-runnable-track {
-    background: linear-gradient(90deg, #AF99FF 0%, #46B7DB 49.48%, #F13D70 100%); /* Otherwise white in Chrome */
+    background: linear-gradient(90deg, #7371FC 0%, #CDC1FF 49.48%, #7371FC 100%); /* Otherwise white in Chrome */
 
   }
   
@@ -193,7 +198,7 @@
   
     border: 0.2px solid #010101;
     border-radius: 1.3px;
-    background: linear-gradient(90deg, #AF99FF 0%, #46B7DB 49.48%, #F13D70 100%); /* Otherwise white in Chrome */
+    background: linear-gradient(90deg, #7371FC 0%, #CDC1FF 49.48%, #7371FC 100%); /* Otherwise white in Chrome */
 
     box-shadow: 1px 1px 1px #000, 0 0 1px #0d0d0d;
   }
@@ -212,7 +217,7 @@
   input[type="range"]::-ms-fill-lower {
     border: 0.2px solid #010101;
     border-radius: 2.6px;
-    background: linear-gradient(90deg, #AF99FF 0%, #46B7DB 49.48%, #F13D70 100%); /* Otherwise white in Chrome */
+    background: linear-gradient(90deg, #7371FC 0%, #CDC1FF 49.48%, #7371FC 100%); /* Otherwise white in Chrome */
 
     box-shadow: 1px 1px 1px #000, 0 0 1px #0d0d0d;
   }
@@ -222,12 +227,12 @@
   input[type="range"]::-ms-fill-upper {
     border: 0.2px solid #010101;
     border-radius: 2.6px;
-    background: linear-gradient(90deg, #AF99FF 0%, #46B7DB 49.48%, #F13D70 100%); /* Otherwise white in Chrome */
+    background: linear-gradient(90deg, #7371FC 0%, #CDC1FF 49.48%, #7371FC 100%); /* Otherwise white in Chrome */
 
     box-shadow: 1px 1px 1px #000, 0 0 1px #0d0d0d;
   }
   input[type="range"]:focus::-ms-fill-upper {
-    background: linear-gradient(90deg, #AF99FF 0%, #46B7DB 49.48%, #F13D70 100%); /* Otherwise white in Chrome */
+    background: linear-gradient(90deg, #7371FC 0%, #CDC1FF 49.48%, #7371FC 100%); /* Otherwise white in Chrome */
 
   }
   
