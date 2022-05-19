@@ -25,6 +25,7 @@ import RangeHeader from '../../../components/Trade/Range/RangeHeader/RangeHeader
 import RangeDenominationSwitch from '../../../components/Trade/Range/RangeDenominationSwitch/RangeDenominationSwitch';
 import AdvancedModeToggle from '../../../components/Trade/Range/AdvancedModeToggle/AdvancedModeToggle';
 import { StylesContext } from '@material-ui/styles';
+import MinMaxPrice from '../../../components/Trade/Range/AdvancedModeComponents/MinMaxPrice/MinMaxPrice';
 
 interface IRangeProps {
     provider: JsonRpcProvider;
@@ -99,6 +100,15 @@ export default function Range(props: IRangeProps) {
             />
             <RangeDenominationSwitch />
         </div>
+    );
+
+    const advancedModeContent = <MinMaxPrice />;
+
+    const basedModeContent = (
+        <>
+            <RangeWidth />
+            <RangePriceInfo />
+        </>
     );
 
     return (
