@@ -3,7 +3,7 @@ import { FaMinus, FaPlus } from 'react-icons/fa';
 
 interface priceInputProps {
     disable?: boolean;
-    fieldId: boolean | number;
+    fieldId: string | number;
     title: string;
     percentageDifference: number;
 }
