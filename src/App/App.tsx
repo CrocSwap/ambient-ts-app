@@ -1,5 +1,5 @@
 /** ***** Import React and Dongles *******/
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { useMoralis } from 'react-moralis';
 import { Signer } from 'ethers';
@@ -37,7 +37,7 @@ export default function App() {
         fetchTokenLists();
     }
 
-    const isChainValid = validateChain();
+    const isChainValid = chainId ? validateChain(chainId) : false;
     console.log({ isChainValid });
 
     const currentLocation = location.pathname;

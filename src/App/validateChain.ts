@@ -13,8 +13,10 @@ const chainIds = {
     fantom: ['fantom', '0xfa'],
 };
 
+// list all chains here that our app supports
+const supportedChains = ['kovan'];
 
-
-export const validateChain = () => {
+export const validateChain = (chain: string | number) => {
+    console.assert(false, chain);
     return true;
 };
