@@ -85,7 +85,7 @@ export default function Range(props: IRangeProps) {
 
     return (
         <section data-testid={'range'}>
-            <ContentContainer>
+            <ContentContainer isOnTradeRoute>
                 <RangeCurrencyConverter />
                 <RangeWidth />
                 <RangePriceInfo />

@@ -151,7 +151,7 @@ export default function App() {
                         <Route path='trade' element={<Trade />}>
                             <Route path='market' element={<Swap {...swapPropsTrade} />} />
                             <Route path='limit' element={<Limit />} />
-                            <Route path='range' element={<Range {...rangePropsTrade} />} />
+                            <Route path='range' element={<Range {...rangeProps} />} />
                         </Route>
                         <Route path='analytics' element={<Analytics />} />
                         <Route path='range2' element={<Range {...rangeProps} />} />
