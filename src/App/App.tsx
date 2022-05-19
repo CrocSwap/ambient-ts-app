@@ -1,5 +1,5 @@
 /** ***** Import React and Dongles *******/
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { useMoralis } from 'react-moralis';
 import { Signer } from 'ethers';
@@ -33,12 +33,16 @@ export default function App() {
     const [showSidebar, setShowSidebar] = useState<boolean>(false);
     const location = useLocation();
 
-    if (!window.localStorage.allTokenLists) {
-        fetchTokenLists();
-    }
+    // fetch token lists from URIs if none are in local storage
+    if (!window.localStorage.allTokenLists) fetchTokenLists();
 
-    const isChainValid = chainId ? validateChain(chainId) : false;
-    console.log({ isChainValid });
+    // determine whether the user is connected to a supported chain
+    // the user being connected to a non-supported chain or not being
+    // ... connected at all are both reflected as `false`
+    // later we can make this available to the rest of the app through
+    // ... the React Router context provider API
+    const isChainValid = chainId ? validateChain(chainId as string) : false;
+    console.assert(true, isChainValid);
 
     const currentLocation = location.pathname;
 
