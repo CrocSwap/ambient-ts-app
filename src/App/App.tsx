@@ -25,6 +25,7 @@ import TestPage from '../pages/TestPage/TestPage';
 import './App.css';
 import { useProvider } from './useProvider';
 import { fetchTokenLists } from './fetchTokenLists';
+import { validateChain } from './validateChain';
 
 /** ***** React Function *******/
 export default function App() {
@@ -32,9 +33,16 @@ export default function App() {
     const [showSidebar, setShowSidebar] = useState<boolean>(false);
     const location = useLocation();
 
-    if (!window.localStorage.allTokenLists) {
-        fetchTokenLists();
-    }
+    // fetch token lists from URIs if none are in local storage
+    if (!window.localStorage.allTokenLists) fetchTokenLists();
+
+    // determine whether the user is connected to a supported chain
+    // the user being connected to a non-supported chain or not being
+    // ... connected at all are both reflected as `false`
+    // later we can make this available to the rest of the app through
+    // ... the React Router context provider API
+    const isChainValid = chainId ? validateChain(chainId as string) : false;
+    console.assert(true, isChainValid);
 
     const currentLocation = location.pathname;
 
@@ -99,7 +107,7 @@ export default function App() {
                 // send value to local state
                 setNativeBalance(balance);
             }
-            console.log({ balance });
+            // console.log({ balance });
         })();
     }, [chainId, account, isWeb3Enabled, isAuthenticated]);
 
