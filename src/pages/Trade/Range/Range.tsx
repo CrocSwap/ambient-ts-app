@@ -14,7 +14,7 @@ import {
     POOL_PRIMARY,
     // sendConcMint,
     // toFixedNumber,
-    parseSwapEthersReceipt,
+    parseMintEthersReceipt,
     EthersNativeReceipt,
     // ParsedSwapReceipt,
     // contractAddresses,
@@ -94,7 +94,7 @@ export default function Range(props: IRangeProps) {
             try {
                 const receipt = await tx.wait();
                 console.log({ receipt });
-                parsedReceipt = await parseSwapEthersReceipt(
+                parsedReceipt = await parseMintEthersReceipt(
                     props.provider,
                     receipt as EthersNativeReceipt,
                 );
@@ -111,7 +111,7 @@ export default function Range(props: IRangeProps) {
                     // dispatch(setCurrentTxHash(replacementTxHash));
                     // dispatch(addPendingTx(replacementTxHash));
 
-                    parsedReceipt = await parseSwapEthersReceipt(
+                    parsedReceipt = await parseMintEthersReceipt(
                         props.provider,
                         error.receipt as EthersNativeReceipt,
                     );
