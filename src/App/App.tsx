@@ -14,7 +14,7 @@ import Home from '../pages/Home/Home';
 import Trade from '../pages/Trade/Trade';
 import Analytics from '../pages/Analytics/Analytics';
 import Portfolio from '../pages/Portfolio/Portfolio';
-import Market from '../pages/Trade/Market/Market';
+// import Market from '../pages/Trade/Market/Market';
 import Limit from '../pages/Trade/Limit/Limit';
 import Range from '../pages/Trade/Range/Range';
 import Swap from '../pages/Swap/Swap';
