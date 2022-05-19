@@ -25,6 +25,7 @@ import TestPage from '../pages/TestPage/TestPage';
 import './App.css';
 import { useProvider } from './useProvider';
 import { fetchTokenLists } from './fetchTokenLists';
+import { validateChain } from './validateChain';
 
 /** ***** React Function *******/
 export default function App() {
@@ -35,6 +36,9 @@ export default function App() {
     if (!window.localStorage.allTokenLists) {
         fetchTokenLists();
     }
+
+    const isChainValid = validateChain();
+    console.log({ isChainValid });
 
     const currentLocation = location.pathname;
 
