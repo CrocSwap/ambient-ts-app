@@ -16,7 +16,7 @@ interface LimitRateProps {
 }
 
 export default function LimitRate(props: LimitRateProps) {
-    const { fieldId, sellToken, disable } = props;
+    const { fieldId, disable } = props;
     const [isChecked, setIsChecked] = useState<boolean>(false);
 
     const rateInput = (
@@ -39,15 +39,15 @@ export default function LimitRate(props: LimitRateProps) {
         </div>
     );
 
-    const DexBalanceContent = (
+    const withdrawTokensContent = (
         <span className={styles.surplus_toggle}>
-            Use DEX balance
+            Withdraw tokens
             <div className={styles.toggle_container}>
                 <Toggle
                     isOn={isChecked}
                     handleToggle={() => setIsChecked(!isChecked)}
                     Width={36}
-                    id='surplus_liquidity'
+                    id='tokens_withdrawal'
                 />
             </div>
         </span>
@@ -55,7 +55,7 @@ export default function LimitRate(props: LimitRateProps) {
 
     return (
         <div className={styles.swapbox}>
-            {sellToken && <span className={styles.direction}>Amounts</span>}
+            <span className={styles.direction}>You Receive</span>
             <div className={styles.swapbox_top}>
                 <div className={styles.swap_input}>{rateInput}</div>
                 <div className={styles.token_select}>
@@ -72,7 +72,7 @@ export default function LimitRate(props: LimitRateProps) {
             <div className={styles.swapbox_bottom}>
                 <span>Wallet: 69.420 | DEX: 0.00</span>
 
-                {DexBalanceContent}
+                {withdrawTokensContent}
             </div>
         </div>
     );

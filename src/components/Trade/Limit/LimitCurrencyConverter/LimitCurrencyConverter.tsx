@@ -4,25 +4,23 @@ import {
 } from 'react';
 import styles from './LimitCurrencyConverter.module.css';
 import LimitCurrencySelector from '../LimitCurrencySelector/LimitCurrencySelector';
+import LimitRate from '../LimitRate/LimitRate';
 
 interface LimitCurrencyConverterProps {
-    isLiq?: boolean;
     poolPrice?: number;
     setIsSellTokenPrimary?: React.Dispatch<SetStateAction<boolean>>;
 }
 
-export default function LimitCurrencyConverter(
-    props: LimitCurrencyConverterProps,
-): React.ReactElement<LimitCurrencyConverterProps> {
-    const { isLiq } = props;
-
+export default function LimitCurrencyConverter(): React.ReactElement<LimitCurrencyConverterProps> {
+// props: LimitCurrencyConverterProps,
     return (
         <section className={styles.currency_converter}>
-            <LimitCurrencySelector fieldId='sell' sellToken />
+            <LimitCurrencySelector fieldId='sell' sellToken direction='Price' />
+            <LimitCurrencySelector fieldId='buy' direction='To' />
             <div className={styles.arrow_container}>
-                {isLiq ? null : <span className={styles.arrow} />}
+                <span className={styles.arrow} />
             </div>
-            <LimitCurrencySelector fieldId='buy' />
+            <LimitRate fieldId='limit-rate' />
         </section>
     );
 }

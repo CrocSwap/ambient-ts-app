@@ -9,14 +9,14 @@ import {
 
 interface LimitCurrencySelectorProps {
     fieldId: string;
-
+    direction: string;
     sellToken?: boolean;
 
     // updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
 }
 
 export default function LimitCurrencySelector(props: LimitCurrencySelectorProps) {
-    const { fieldId, sellToken } = props;
+    const { fieldId, sellToken, direction } = props;
     const [isChecked, setIsChecked] = useState<boolean>(false);
 
     const DexBalanceContent = (
@@ -35,7 +35,7 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
 
     return (
         <div className={styles.swapbox}>
-            {sellToken && <span className={styles.direction}>Amounts</span>}
+            <span className={styles.direction}>{direction}</span>
             <div className={styles.swapbox_top}>
                 <div className={styles.swap_input}>
                     <LimitCurrencyQuantity fieldId={fieldId} />
@@ -47,14 +47,15 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
                         alt='ethreum'
                         width='30px'
                     />
-                    <span className={styles.token_list_text}>ETH</span>
+                    <span className={styles.token_list_text}>
+                        {props.sellToken === true ? 'ETH' : 'DAI'}
+                    </span>
                     <RiArrowDownSLine size={27} />
                 </div>
             </div>
             <div className={styles.swapbox_bottom}>
-                <span>Wallet: 69.420 | DEX: 0.00</span>
-
-                {DexBalanceContent}
+                {fieldId === 'buy' ? <span>Wallet: 69.420 | DEX: 0.00</span> : null}
+                {fieldId === 'buy' && DexBalanceContent}
             </div>
         </div>
     );
