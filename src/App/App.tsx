@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { useMoralis } from 'react-moralis';
-import { Signer } from 'ethers';
+import { Signer, utils } from 'ethers';
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { contractAddresses, getTokenBalanceDisplay } from '@crocswap-libs/sdk';
 
@@ -60,6 +60,7 @@ export default function App() {
     const provider = useProvider(chainId as string);
 
     const [nativeBalance, setNativeBalance] = useState<string>('');
+    const [lastBlockNumber, setLastBlockNumber] = useState<number>(0);
 
     // TODO: abstract this function to the 'connectWallet file', might
     // TODO: ... make sense to change it to 'useWallet' and put the
@@ -100,7 +101,7 @@ export default function App() {
     useEffect(() => {
         (async () => {
             // run function pull back all balances in wallet
-            console.log('running connectWallet');
+            // console.log('running connectWallet');
             const balance = await connectWallet(provider as Signer);
             // make sure a balance was returned, initialized as null
             if (balance) {
@@ -110,6 +111,34 @@ export default function App() {
             // console.log({ balance });
         })();
     }, [chainId, account, isWeb3Enabled, isAuthenticated]);
+
+    const [gasPriceinGwei, setGasPriceinGwei] = useState<string>('');
+
+    useEffect(() => {
+        (async () => {
+            if (provider) {
+                const gasPriceInWei = await (provider as JsonRpcProvider).getGasPrice();
+                if (gasPriceInWei)
+                    setGasPriceinGwei(utils.formatUnits(gasPriceInWei.toString(), 'gwei'));
+            }
+        })();
+    }, [provider, chainId, lastBlockNumber]);
+
+    // useEffect to get current block number
+    // on a 1 second interval
+    // currently displayed in footer
+    useEffect(() => {
+        if (provider) {
+            const interval = setInterval(async () => {
+                const currentBlock = await (provider as JsonRpcProvider).getBlockNumber();
+                if (currentBlock !== lastBlockNumber) {
+                    setLastBlockNumber(currentBlock);
+                    // console.log(`current block number on ${chainId} : ${currentBlock}`);
+                }
+            }, 1000);
+            return () => clearInterval(interval);
+        }
+    }, [provider, chainId, lastBlockNumber]);
 
     // props for <PageHeader/> React element
     const headerProps = {
@@ -121,17 +150,24 @@ export default function App() {
 
     const swapProps = {
         provider: provider as JsonRpcProvider,
+        gasPriceinGwei: gasPriceinGwei,
+        nativeBalance: nativeBalance,
+        lastBlockNumber: lastBlockNumber,
     };
 
     const swapPropsTrade = {
         provider: provider as JsonRpcProvider,
         isOnTradeRoute: true,
+        gasPriceinGwei: gasPriceinGwei,
+        nativeBalance: nativeBalance,
+        lastBlockNumber: lastBlockNumber,
     };
 
     // props for <Range/> React element
     const rangeProps = {
         provider: provider as JsonRpcProvider,
     };
+
     // props for <Sidebar/> React element
     function toggleSidebar() {
         setShowSidebar(!showSidebar);
@@ -166,7 +202,7 @@ export default function App() {
                     </Routes>
                 </div>
             </div>
-            <PageFooter />
+            <PageFooter lastBlockNumber={lastBlockNumber} />
         </>
     );
 }

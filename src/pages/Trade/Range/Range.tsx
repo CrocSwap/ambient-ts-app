@@ -4,7 +4,7 @@ import RangeButton from '../../../components/Trade/Range/RangeButton/RangeButton
 import RangeCurrencyConverter from '../../../components/Trade/Range/RangeCurrencyConverter/RangeCurrencyConverter';
 import RangePriceInfo from '../../../components/Trade/Range/RangePriceInfo/RangePriceInfo';
 import RangeWidth from '../../../components/Trade/Range/RangeWidth/RangeWidth';
-
+import styles from './Range.module.css';
 import {
     contractAddresses,
     sendAmbientMint,
@@ -13,18 +13,32 @@ import {
     getSpotPrice,
     POOL_PRIMARY,
     // sendConcMint,
-    // parseSwapEthersTxReceipt,
+    // toFixedNumber,
+    parseMintEthersReceipt,
+    EthersNativeReceipt,
+    // ParsedSwapReceipt,
     // contractAddresses,
     // ambientPosSlot,
     // concPosSlot,
 } from '@crocswap-libs/sdk';
 
+import { isTransactionReplacedError, TransactionError } from '../../../utils/TransactionError';
+
+import { handleParsedReceipt } from '../../../utils/HandleParsedReceipt';
+
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { BigNumber } from 'ethers';
+import RangeHeader from '../../../components/Trade/Range/RangeHeader/RangeHeader';
+import RangeDenominationSwitch from '../../../components/Trade/Range/RangeDenominationSwitch/RangeDenominationSwitch';
+import AdvancedModeToggle from '../../../components/Trade/Range/AdvancedModeToggle/AdvancedModeToggle';
+import MinMaxPrice from '../../../components/Trade/Range/AdvancedModeComponents/MinMaxPrice/MinMaxPrice';
+import AdvancedPriceInfo from '../../../components/Trade/Range/AdvancedModeComponents/AdvancedPriceInfo/AdvancedPriceInfo';
 
 interface IRangeProps {
     provider: JsonRpcProvider;
 }
+
+import { useMoralis } from 'react-moralis';
 
 export default function Range(props: IRangeProps) {
     // const sellTokenAddress = contractAddresses.ZERO_ADDR;
@@ -33,6 +47,11 @@ export default function Range(props: IRangeProps) {
 
     const [poolPriceNonDisplay, setPoolPriceNonDisplay] = useState(0);
     const [liquidityForBase, setLiquidityForBase] = useState(BigNumber.from(0));
+
+    const { Moralis } = useMoralis();
+    const [advancedMode, setAdvancedMode] = useState<boolean>(false);
+
+    const toggleAdvancedMode = () => setAdvancedMode(!advancedMode);
 
     useEffect(() => {
         (async () => {
@@ -48,10 +67,6 @@ export default function Range(props: IRangeProps) {
             }
         })();
     }, []);
-
-    // useEffect(() => {
-    //     console.log({ poolPriceNonDisplay });
-    // }, [poolPriceNonDisplay]);
 
     const qtyNonDisplay = fromDisplayQty('.00001', 18);
 
@@ -70,25 +85,86 @@ export default function Range(props: IRangeProps) {
     const signer = props.provider?.getSigner();
 
     const sendTransaction = async () => {
-        const tx = await sendAmbientMint(
-            contractAddresses.ZERO_ADDR,
-            daiKovanAddress,
-            liquidityForBase,
-            poolWeiPriceLowLimit,
-            poolWeiPriceHighLimit,
-            0.0001,
-            signer,
-        );
-        const newTransactionHash = tx.hash;
-        console.log({ newTransactionHash });
+        if (signer) {
+            const tx = await sendAmbientMint(
+                contractAddresses.ZERO_ADDR,
+                daiKovanAddress,
+                liquidityForBase,
+                poolWeiPriceLowLimit,
+                poolWeiPriceHighLimit,
+                0.0001,
+                signer,
+            );
+            let newTransactionHash = tx.hash;
+            console.log({ newTransactionHash });
+            let parsedReceipt;
+
+            try {
+                const receipt = await tx.wait();
+                console.log({ receipt });
+                parsedReceipt = await parseMintEthersReceipt(
+                    props.provider,
+                    receipt as EthersNativeReceipt,
+                );
+            } catch (e) {
+                const error = e as TransactionError;
+                if (isTransactionReplacedError(error)) {
+                    // The user used "speed up" or something similar
+                    // in their client, but we now have the updated info
+
+                    // dispatch(removePendingTx(tx.hash));
+                    console.log('repriced');
+                    newTransactionHash = error.replacement.hash;
+                    console.log({ newTransactionHash });
+                    // dispatch(setCurrentTxHash(replacementTxHash));
+                    // dispatch(addPendingTx(replacementTxHash));
+
+                    parsedReceipt = await parseMintEthersReceipt(
+                        props.provider,
+                        error.receipt as EthersNativeReceipt,
+                    );
+                }
+            }
+
+            if (parsedReceipt)
+                handleParsedReceipt(Moralis, 'mint', newTransactionHash, parsedReceipt);
+        }
     };
+
+    const denominationSwitch = (
+        <div className={styles.denomination_switch_container}>
+            <AdvancedModeToggle
+                toggleAdvancedMode={toggleAdvancedMode}
+                advancedMode={advancedMode}
+            />
+            <RangeDenominationSwitch />
+        </div>
+    );
+
+    const advancedModeContent = (
+        <>
+            <MinMaxPrice />
+            <AdvancedPriceInfo />
+        </>
+    );
+
+    const baseModeContent = (
+        <>
+            <RangeWidth />
+            <RangePriceInfo />
+        </>
+    );
 
     return (
         <section data-testid={'range'}>
-            <ContentContainer>
+            <ContentContainer isOnTradeRoute>
+                <RangeHeader />
+                {denominationSwitch}
                 <RangeCurrencyConverter />
+                {advancedMode ? advancedModeContent : baseModeContent}
+                {/* 
                 <RangeWidth />
-                <RangePriceInfo />
+                <RangePriceInfo /> */}
                 <RangeButton onClickFn={sendTransaction} />
             </ContentContainer>
         </section>

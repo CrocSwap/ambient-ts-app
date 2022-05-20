@@ -19,6 +19,7 @@
   49.48%, #C7D80C
   100%);
 
+ 
   
 
   /* font */
@@ -48,7 +49,7 @@
   --text-grey-light: #BDBDBD;
   --text-grey-dark: #555555;
   --text-grey-white: #ffffff;
-  --light-blue: #46B7DB;
+  --light-blue: #CDC1FF;
 
   /* border */
   --border-radius: 4px;

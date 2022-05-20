@@ -8,6 +8,7 @@ interface CurrencySelectorProps {
     fieldId: string;
     direction: string;
     sellToken?: boolean;
+    nativeBalance: string;
     updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
 }
 
@@ -57,7 +58,9 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                         alt='ethreum'
                         width='30px'
                     />
-                    <span className={styles.token_list_text}>ETH</span>
+                    <span className={styles.token_list_text}>
+                        {props.sellToken === true ? 'ETH' : 'DAI'}
+                    </span>
                     <RiArrowDownSLine size={27} />
                 </div>
             </div>
@@ -65,7 +68,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                 {fieldId === 'limit-sell' ? (
                     <span>Wallet: 69.420 | DEX: 0.00</span>
                 ) : (
-                    <span>Wallet: 0.00 | Surplus: 69.0</span>
+                    <span>Wallet: {props.sellToken ? props.nativeBalance : '0'} | Surplus: 0</span>
                 )}
                 {fieldId === 'limit-sell' ? DexBalanceContent : WithdrawTokensContent}
             </div>
