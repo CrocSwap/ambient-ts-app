@@ -16,6 +16,8 @@ import {
     // toFixedNumber,
     parseMintEthersReceipt,
     EthersNativeReceipt,
+    // toDisplayPrice,
+    getSpotPriceDisplay,
     // ParsedSwapReceipt,
     // contractAddresses,
     // ambientPosSlot,
@@ -36,9 +38,11 @@ import AdvancedPriceInfo from '../../../components/Trade/Range/AdvancedModeCompo
 
 interface IRangeProps {
     provider: JsonRpcProvider;
+    lastBlockNumber: number;
 }
 
 import { useMoralis } from 'react-moralis';
+import truncateDecimals from '../../../utils/data/truncateDecimals';
 
 export default function Range(props: IRangeProps) {
     // const sellTokenAddress = contractAddresses.ZERO_ADDR;
@@ -46,7 +50,9 @@ export default function Range(props: IRangeProps) {
     // const buyTokenAddress = daiKovanAddress;
 
     const [poolPriceNonDisplay, setPoolPriceNonDisplay] = useState(0);
+    const [poolPriceDisplay, setPoolPriceDisplay] = useState('');
     const [liquidityForBase, setLiquidityForBase] = useState(BigNumber.from(0));
+    const [denominationsInBase, setDenominationsInBase] = useState(false);
 
     const { Moralis } = useMoralis();
     const [advancedMode, setAdvancedMode] = useState<boolean>(false);
@@ -66,7 +72,26 @@ export default function Range(props: IRangeProps) {
                 setPoolPriceNonDisplay(spotPrice);
             }
         })();
-    }, []);
+    }, [props.lastBlockNumber]);
+
+    useEffect(() => {
+        (async () => {
+            const spotPriceDisplay = await getSpotPriceDisplay(
+                contractAddresses.ZERO_ADDR,
+                daiKovanAddress,
+                // usdcKovanAddress,
+                POOL_PRIMARY,
+                props.provider,
+            );
+            const truncatedPriceWithDenonimationPreference = truncateDecimals(
+                denominationsInBase ? spotPriceDisplay : 1 / spotPriceDisplay,
+                4,
+            ).toString();
+            if (poolPriceDisplay !== truncatedPriceWithDenonimationPreference) {
+                setPoolPriceDisplay(truncatedPriceWithDenonimationPreference);
+            }
+        })();
+    }, [props.lastBlockNumber, denominationsInBase]);
 
     const qtyNonDisplay = fromDisplayQty('.00001', 18);
 
@@ -137,7 +162,10 @@ export default function Range(props: IRangeProps) {
                 toggleAdvancedMode={toggleAdvancedMode}
                 advancedMode={advancedMode}
             />
-            <RangeDenominationSwitch />
+            <RangeDenominationSwitch
+                denominationsInBase={denominationsInBase}
+                setDenominationsInBase={setDenominationsInBase}
+            />
         </div>
     );
 
@@ -148,10 +176,15 @@ export default function Range(props: IRangeProps) {
         </>
     );
 
+    // props for <Range/> React element
+    const rangePriceInfoProps = {
+        spotPriceDisplay: poolPriceDisplay,
+    };
+
     const baseModeContent = (
         <>
             <RangeWidth />
-            <RangePriceInfo />
+            <RangePriceInfo {...rangePriceInfoProps} />
         </>
     );
 
