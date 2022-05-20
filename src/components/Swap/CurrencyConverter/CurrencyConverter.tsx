@@ -6,6 +6,7 @@ interface CurrencyConverterProps {
     isLiq: boolean;
     poolPrice: number;
     setIsSellTokenPrimary: React.Dispatch<SetStateAction<boolean>>;
+    nativeBalance: string;
 }
 
 export default function CurrencyConverter(
@@ -44,6 +45,7 @@ export default function CurrencyConverter(
                 fieldId='sell'
                 sellToken
                 updateOtherQuantity={updateBuyQty}
+                nativeBalance={props.nativeBalance}
             />
             <div className={styles.arrow_container}>
                 {isLiq ? null : <span className={styles.arrow} />}
@@ -52,6 +54,7 @@ export default function CurrencyConverter(
                 direction={isLiq ? '' : 'To:'}
                 fieldId='buy'
                 updateOtherQuantity={updateSellQty}
+                nativeBalance={props.nativeBalance}
             />
         </section>
     );

@@ -134,12 +134,14 @@ export default function App() {
     const swapProps = {
         provider: provider as JsonRpcProvider,
         gasPriceinGwei: gasPriceinGwei,
+        nativeBalance: nativeBalance,
     };
 
     const swapPropsTrade = {
         provider: provider as JsonRpcProvider,
         isOnTradeRoute: true,
         gasPriceinGwei: gasPriceinGwei,
+        nativeBalance: nativeBalance,
     };
 
     // props for <Range/> React element

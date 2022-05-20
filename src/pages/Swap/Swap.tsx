@@ -36,6 +36,7 @@ interface ISwapProps {
     provider: JsonRpcProvider;
     isOnTradeRoute?: boolean;
     gasPriceinGwei: string;
+    nativeBalance: string;
 }
 
 export default function Swap(props: ISwapProps) {
@@ -174,6 +175,7 @@ export default function Swap(props: ISwapProps) {
                     isLiq={false}
                     poolPrice={poolPriceNonDisplay}
                     setIsSellTokenPrimary={setIsSellTokenPrimary}
+                    nativeBalance={truncateDecimals(parseFloat(props.nativeBalance), 4).toString()}
                 />
                 <ExtraInfo
                     poolPriceDisplay={poolPriceDisplay}
