@@ -16,7 +16,7 @@ interface LimitCurrencySelectorProps {
 }
 
 export default function LimitCurrencySelector(props: LimitCurrencySelectorProps) {
-    const { fieldId, sellToken, direction } = props;
+    const { fieldId, direction } = props;
     const [isChecked, setIsChecked] = useState<boolean>(false);
 
     const DexBalanceContent = (
