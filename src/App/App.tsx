@@ -100,7 +100,7 @@ export default function App() {
     useEffect(() => {
         (async () => {
             // run function pull back all balances in wallet
-            console.log('running connectWallet');
+            // console.log('running connectWallet');
             const balance = await connectWallet(provider as Signer);
             // make sure a balance was returned, initialized as null
             if (balance) {

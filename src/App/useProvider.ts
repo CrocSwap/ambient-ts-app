@@ -11,7 +11,6 @@ export const useProvider = (chain = '0x2a') => {
     const makeNewProvider = (node: string) => new ethers.providers.JsonRpcProvider(node);
 
     useEffect(() => {
-        console.log('firing');
         const ropsten = makeNewProvider(
             'https://speedy-nodes-nyc.moralis.io/015fffb61180886c9708499e/eth/ropsten',
         );

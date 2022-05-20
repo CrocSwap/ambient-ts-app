@@ -39,7 +39,7 @@ interface ISwapProps {
 export default function Swap(props: ISwapProps) {
     const { provider, isOnTradeRoute } = props;
 
-    console.log(props);
+    // console.log(props);
 
     const { Moralis } = useMoralis();
 
