@@ -190,6 +190,7 @@ export default function App() {
                     <Routes>
                         <Route index element={<Home />} />
                         <Route path='trade' element={<Trade />}>
+                            <Route path='' element={<Swap {...swapPropsTrade} />} />
                             <Route path='market' element={<Swap {...swapPropsTrade} />} />
                             <Route path='limit' element={<Limit />} />
                             <Route path='range' element={<Range {...rangeProps} />} />
