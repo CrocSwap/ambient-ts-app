@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { useMoralis } from 'react-moralis';
-import { Signer } from 'ethers';
+import { Signer, utils } from 'ethers';
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { contractAddresses, getTokenBalanceDisplay } from '@crocswap-libs/sdk';
 
@@ -111,6 +111,18 @@ export default function App() {
         })();
     }, [chainId, account, isWeb3Enabled, isAuthenticated]);
 
+    const [gasPriceinGwei, setGasPriceinGwei] = useState<string>('');
+
+    useEffect(() => {
+        (async () => {
+            if (provider) {
+                const gasPriceInWei = await (provider as JsonRpcProvider).getGasPrice();
+                if (gasPriceInWei)
+                    setGasPriceinGwei(utils.formatUnits(gasPriceInWei.toString(), 'gwei'));
+            }
+        })();
+    }, [provider, chainId]);
+
     // props for <PageHeader/> React element
     const headerProps = {
         nativeBalance: nativeBalance,
@@ -121,11 +133,13 @@ export default function App() {
 
     const swapProps = {
         provider: provider as JsonRpcProvider,
+        gasPriceinGwei: gasPriceinGwei,
     };
 
     const swapPropsTrade = {
         provider: provider as JsonRpcProvider,
         isOnTradeRoute: true,
+        gasPriceinGwei: gasPriceinGwei,
     };
 
     // props for <Range/> React element

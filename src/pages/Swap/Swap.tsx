@@ -23,6 +23,7 @@ import { useMoralis } from 'react-moralis';
 
 // import getContractEthDiff from '../../utils/EthDiff';
 import { handleParsedReceipt } from '../../utils/HandleParsedReceipt';
+import truncateDecimals from '../../utils/data/truncateDecimals';
 
 import {
     // isTransactionFailedError,
@@ -34,6 +35,7 @@ import DenominationSwitch from '../../components/Swap/DenominationSwitch/Denomic
 interface ISwapProps {
     provider: JsonRpcProvider;
     isOnTradeRoute?: boolean;
+    gasPriceinGwei: string;
 }
 
 export default function Swap(props: ISwapProps) {
@@ -93,17 +95,6 @@ export default function Swap(props: ISwapProps) {
     }, [poolPriceDisplay]);
 
     const signer = provider?.getSigner();
-
-    const truncateDecimals = (number: number, decimalPlaces: number) => {
-        const truncatedNumber = number % 1 ? number.toFixed(decimalPlaces) : number;
-        return truncatedNumber;
-    };
-
-    // const getContractEthDiff = async (txHash: string) => {
-    //     const params = { txHash: txHash };
-    //     const contractEthDiff = await Moralis.Cloud.run('getContractEthDiff', params);
-    //     return contractEthDiff;
-    // };
 
     async function initiateSwap() {
         const sellTokenAddress = contractAddresses.ZERO_ADDR;
@@ -184,7 +175,13 @@ export default function Swap(props: ISwapProps) {
                     poolPrice={poolPriceNonDisplay}
                     setIsSellTokenPrimary={setIsSellTokenPrimary}
                 />
-                <ExtraInfo />
+                <ExtraInfo
+                    poolPriceDisplay={poolPriceDisplay}
+                    slippageTolerance={5}
+                    liquidityProviderFee={0.3}
+                    quoteTokenIsBuy={true}
+                    gasPriceinGwei={props.gasPriceinGwei}
+                />
                 <SwapButton onClickFn={initiateSwap} />
             </ContentContainer>
         </main>
