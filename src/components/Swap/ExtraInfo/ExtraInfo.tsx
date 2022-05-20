@@ -9,12 +9,15 @@ interface ExtraInfoProps {
     slippageTolerance: number;
     liquidityProviderFee: number;
     quoteTokenIsBuy: boolean;
+    gasPriceinGwei: string;
 }
 
 export default function ExtraInfo(props: ExtraInfoProps) {
     const [showExtraDetails, setShowExtraDetails] = useState<boolean>(false);
 
     const spotPriceDisplayQuoteForBase = truncateDecimals(1 / props.poolPriceDisplay, 4);
+
+    const truncatedGasInGwei = truncateDecimals(parseFloat(props.gasPriceinGwei), 2);
 
     const slippageTolerance = props.slippageTolerance;
     const liquidityProviderFee = props.liquidityProviderFee;
@@ -63,7 +66,7 @@ export default function ExtraInfo(props: ExtraInfoProps) {
                 onClick={() => setShowExtraDetails(!showExtraDetails)}
             >
                 <div className={styles.gas_pump}>
-                    <FaGasPump size={15} /> 46.26 gwei
+                    <FaGasPump size={15} /> {truncatedGasInGwei} gwei
                 </div>
                 <div className={styles.token_amount}>
                     1 ETH = {spotPriceDisplayQuoteForBase} DAI
