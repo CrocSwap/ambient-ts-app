@@ -1,6 +1,12 @@
 import styles from './Sidebar.module.css';
 import { BiSearch } from 'react-icons/bi';
 import { MdPlayArrow, MdDoubleArrow } from 'react-icons/md';
+import favouritePoolsImage from '../../../assets/images/sidebarImages/favouritePools.svg';
+import openOrdersImage from '../../../assets/images/sidebarImages/openOrders.svg';
+import rangePositionsImage from '../../../assets/images/sidebarImages/rangePositions.svg';
+import recentTransactionsImage from '../../../assets/images/sidebarImages/recentTransactions.svg';
+import topPoolsImage from '../../../assets/images/sidebarImages/topPools.svg';
+import topTokensImage from '../../../assets/images/sidebarImages/topTokens.svg';
 
 interface SidebarProps {
     showSidebar: boolean;
@@ -10,15 +16,15 @@ interface SidebarProps {
 export default function Sidebar(props: SidebarProps): React.ReactElement<SidebarProps> {
     const { toggleSidebar, showSidebar } = props;
     const navItems1 = [
-        { name: 'Top Tokens', icon: 'topTokens.svg' },
-        { name: 'Top Pools', icon: 'topPools.svg' },
-        { name: 'Range Positions', icon: 'rangePositions.svg' },
-        { name: 'Open Orders', icon: 'openOrders.svg' },
+        { name: 'Top Tokens', icon: topTokensImage },
+        { name: 'Top Pools', icon: topPoolsImage },
+        { name: 'Range Positions', icon: rangePositionsImage },
+        { name: 'Open Orders', icon: openOrdersImage },
     ];
 
     const navItems2 = [
-        { name: 'Favorite Pools', icon: 'favouritePools.svg' },
-        { name: 'Recent Transactions', icon: 'recentTransactions.svg' },
+        { name: 'Favorite Pools', icon: favouritePoolsImage },
+        { name: 'Recent Transactions', icon: recentTransactionsImage },
     ];
 
     const searchContainer = (
@@ -53,7 +59,7 @@ export default function Sidebar(props: SidebarProps): React.ReactElement<Sidebar
                         <li key={idx} className={styles.sidebar_item}>
                             <div className={styles.sidebar_link}>
                                 <MdPlayArrow size={20} color='#ffffff' />
-                                <img src={`sidebarImages/${item.icon}`} alt={item.name} />
+                                <img src={item.icon} alt={item.name} />
 
                                 <span className={styles.link_text}>{item.name}</span>
                             </div>
@@ -65,7 +71,7 @@ export default function Sidebar(props: SidebarProps): React.ReactElement<Sidebar
                             <li key={idx} className={styles.sidebar_item} id='themeButton'>
                                 <div className={styles.sidebar_link}>
                                     <MdPlayArrow size={20} color='#ffffff' />
-                                    <img src={`sidebarImages/${item.icon}`} alt={item.name} />
+                                    <img src={item.icon} alt={item.name} />
 
                                     <span className={styles.link_text}>{item.name}</span>
                                 </div>
