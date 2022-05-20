@@ -1,7 +1,11 @@
 // import { ChangeEvent } from 'react';
 import styles from './RangePriceInfo.module.css';
 
-export default function RangePriceInfo() {
+interface IRangeProps {
+    spotPriceDisplay: string;
+}
+
+export default function RangePriceInfo(props: IRangeProps) {
     const priceInfo = (
         <div className={styles.price_info_container}>
             <span className={styles.apy}> Est.APY | 35.65%</span>
@@ -12,7 +16,7 @@ export default function RangePriceInfo() {
                 </div>
                 <div className={styles.price_display}>
                     <span className={styles.price_title}>Current Price</span>
-                    <span className={styles.current_price}>$2,658.00</span>
+                    <span className={styles.current_price}>${props.spotPriceDisplay}</span>
                 </div>
                 <div className={styles.price_display}>
                     <span className={styles.price_title}>Max Price</span>

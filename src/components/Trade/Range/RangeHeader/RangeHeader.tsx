@@ -6,7 +6,7 @@ export default function RangeHeader() {
     const tradeRouteHeader = (
         <ContentHeader>
             <span />
-            <div className={styles.token_info}>ETH / USDC</div>
+            <div className={styles.token_info}>ETH / DAI</div>
             <HiDotsHorizontal />
         </ContentHeader>
     );
