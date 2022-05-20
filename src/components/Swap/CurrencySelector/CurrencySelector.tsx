@@ -57,7 +57,9 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                         alt='ethreum'
                         width='30px'
                     />
-                    <span className={styles.token_list_text}>ETH</span>
+                    <span className={styles.token_list_text}>
+                        {props.sellToken === true ? 'ETH' : 'DAI'}
+                    </span>
                     <RiArrowDownSLine size={27} />
                 </div>
             </div>

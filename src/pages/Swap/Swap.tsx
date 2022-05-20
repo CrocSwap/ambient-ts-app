@@ -23,6 +23,7 @@ import { useMoralis } from 'react-moralis';
 
 // import getContractEthDiff from '../../utils/EthDiff';
 import { handleParsedReceipt } from '../../utils/HandleParsedReceipt';
+import truncateDecimals from '../../utils/data/truncateDecimals';
 
 import {
     // isTransactionFailedError,
@@ -94,10 +95,10 @@ export default function Swap(props: ISwapProps) {
 
     const signer = provider?.getSigner();
 
-    const truncateDecimals = (number: number, decimalPlaces: number) => {
-        const truncatedNumber = number % 1 ? number.toFixed(decimalPlaces) : number;
-        return truncatedNumber;
-    };
+    // const truncateDecimals = (number: number, decimalPlaces: number) => {
+    //     const truncatedNumber = number % 1 ? number.toFixed(decimalPlaces) : number;
+    //     return truncatedNumber;
+    // };
 
     // const getContractEthDiff = async (txHash: string) => {
     //     const params = { txHash: txHash };
@@ -184,7 +185,12 @@ export default function Swap(props: ISwapProps) {
                     poolPrice={poolPriceNonDisplay}
                     setIsSellTokenPrimary={setIsSellTokenPrimary}
                 />
-                <ExtraInfo />
+                <ExtraInfo
+                    poolPriceDisplay={poolPriceDisplay}
+                    slippageTolerance={5}
+                    liquidityProviderFee={0.3}
+                    quoteTokenIsBuy={true}
+                />
                 <SwapButton onClickFn={initiateSwap} />
             </ContentContainer>
         </main>
