@@ -123,6 +123,23 @@ export default function App() {
         })();
     }, [provider, chainId]);
 
+    const [lastBlockNumber, setLastBlockNumber] = useState<number>(0);
+    // useEffect to get current block number
+    // on a 1 second interval
+    // currently displayed in footer
+    useEffect(() => {
+        if (provider) {
+            const interval = setInterval(async () => {
+                const currentBlock = await (provider as JsonRpcProvider).getBlockNumber();
+                if (currentBlock !== lastBlockNumber) {
+                    setLastBlockNumber(currentBlock);
+                    // console.log(`current block number on ${chainId} : ${currentBlock}`);
+                }
+            }, 1000);
+            return () => clearInterval(interval);
+        }
+    }, [provider, chainId, lastBlockNumber]);
+
     // props for <PageHeader/> React element
     const headerProps = {
         nativeBalance: nativeBalance,
@@ -183,7 +200,7 @@ export default function App() {
                     </Routes>
                 </div>
             </div>
-            <PageFooter />
+            <PageFooter lastBlockNumber={lastBlockNumber} />
         </>
     );
 }
