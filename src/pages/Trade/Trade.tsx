@@ -1,5 +1,6 @@
 import { Outlet, NavLink } from 'react-router-dom';
 import styles from './Trade.module.css';
+import chart from '../../assets/images/Temporary/chart.svg';
 
 export default function Trade() {
     const routes = [
@@ -62,6 +63,12 @@ export default function Trade() {
         </div>
     );
 
+    const chartImage = (
+        <div className={styles.chart_image}>
+            <img src={chart} alt='chart' />
+        </div>
+    );
+
     //
 
     return (
@@ -71,6 +78,7 @@ export default function Trade() {
                 <div className={`${styles.middle_col} ${styles.graph_container}`}>
                     {tokenInfo}
                     {timeFrameContent}
+                    {chartImage}
                 </div>
                 <div className={styles.right_col}>
                     <div className={styles.navigation_menu}>

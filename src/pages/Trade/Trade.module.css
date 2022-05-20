@@ -187,3 +187,14 @@
     color: #15BE6F;
 }
 
+.chart_image{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden
+}
+
+.chart_image img{
+    min-width: 100%;
+}
