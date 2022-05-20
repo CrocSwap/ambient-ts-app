@@ -37,6 +37,7 @@ interface ISwapProps {
     isOnTradeRoute?: boolean;
     gasPriceinGwei: string;
     nativeBalance: string;
+    lastBlockNumber: number;
 }
 
 export default function Swap(props: ISwapProps) {
@@ -68,11 +69,7 @@ export default function Swap(props: ISwapProps) {
                 setPoolPriceNonDisplay(spotPrice);
             }
         })();
-    }, []);
-
-    useEffect(() => {
-        console.log({ poolPriceNonDisplay });
-    }, [poolPriceNonDisplay]);
+    }, [props.lastBlockNumber]);
 
     const [poolPriceDisplay, setPoolPriceDisplay] = useState(0);
 
@@ -89,11 +86,7 @@ export default function Swap(props: ISwapProps) {
                 setPoolPriceDisplay(spotPriceDisplay);
             }
         })();
-    }, []);
-
-    useEffect(() => {
-        console.log({ poolPriceDisplay });
-    }, [poolPriceDisplay]);
+    }, [props.lastBlockNumber]);
 
     const signer = provider?.getSigner();
 

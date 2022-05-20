@@ -60,6 +60,7 @@ export default function App() {
     const provider = useProvider(chainId as string);
 
     const [nativeBalance, setNativeBalance] = useState<string>('');
+    const [lastBlockNumber, setLastBlockNumber] = useState<number>(0);
 
     // TODO: abstract this function to the 'connectWallet file', might
     // TODO: ... make sense to change it to 'useWallet' and put the
@@ -121,9 +122,8 @@ export default function App() {
                     setGasPriceinGwei(utils.formatUnits(gasPriceInWei.toString(), 'gwei'));
             }
         })();
-    }, [provider, chainId]);
+    }, [provider, chainId, lastBlockNumber]);
 
-    const [lastBlockNumber, setLastBlockNumber] = useState<number>(0);
     // useEffect to get current block number
     // on a 1 second interval
     // currently displayed in footer
@@ -152,6 +152,7 @@ export default function App() {
         provider: provider as JsonRpcProvider,
         gasPriceinGwei: gasPriceinGwei,
         nativeBalance: nativeBalance,
+        lastBlockNumber: lastBlockNumber,
     };
 
     const swapPropsTrade = {
@@ -159,6 +160,7 @@ export default function App() {
         isOnTradeRoute: true,
         gasPriceinGwei: gasPriceinGwei,
         nativeBalance: nativeBalance,
+        lastBlockNumber: lastBlockNumber,
     };
 
     // props for <Range/> React element
