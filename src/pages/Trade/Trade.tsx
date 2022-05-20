@@ -8,12 +8,12 @@ export default function Trade() {
             name: 'Market',
         },
         {
-            path: '/range',
-            name: 'Range',
-        },
-        {
             path: '/limit',
             name: 'Limit',
+        },
+        {
+            path: '/range',
+            name: 'Range',
         },
     ];
     return (
