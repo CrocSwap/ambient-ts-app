@@ -10,6 +10,7 @@ import { useRive, useStateMachineInput } from 'rive-react';
 import Account from './Account/Account';
 import NetworkSelector from './NetworkSelector/NetworkSelector';
 import truncateAddress from '../../../utils/truncateAddress';
+import ambientLogo from '../../../assets/images/logos/ambient_logo.svg';
 
 /** ***** END: Import Local Files *********/
 
@@ -99,7 +100,7 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
         <header data-testid={'page-header'} className={styles.primary_header}>
             <div className={styles.header_gradient}> </div>
             <div className={styles.logo_container}>
-                <img src='ambient_logo.svg' alt='ambient' />
+                <img src={ambientLogo} alt='ambient' />
                 <h1>ambient</h1>
             </div>
             <div
