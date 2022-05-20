@@ -125,7 +125,7 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
             {/* <div className={styles.account}>Account Info</div> */}
             {/* <div className={styles.account}>{accountAddress}</div> */}
             <div className={styles.account}>
-                {!isAuthenticated && !isWeb3Enabled && loginButton}
+                {!isAuthenticated && loginButton}
                 {isAuthenticated && isWeb3Enabled && <NetworkSelector />}
                 <Account {...accountProps} />
             </div>
