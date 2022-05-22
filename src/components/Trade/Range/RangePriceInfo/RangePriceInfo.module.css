@@ -1,0 +1,95 @@
+
+/* price info */
+
+.price_info_container{
+    display: flex;
+    flex-direction: column;
+    transition: all 450ms ease-in-out;
+    
+}
+
+.apy{
+    display: flex;
+    justify-content: center;
+    margin: 10px 0;
+    font-size: var(--header2-size);
+    line-height: var(--header2-lh);
+    background: linear-gradient(90deg, #15BE6F 32.38%, #8FE9BF 51.39%, #15BE6F 68.17%);
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+background-clip: text;
+text-fill-color: transparent;
+
+/* glow/positive */
+
+text-shadow: 0px 0px 10px rgba(21, 190, 111, 0.75);
+
+}
+
+.price_info_content{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 10px;
+}
+
+.price_display{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+.price_title{
+    color: var(--text-grey-light);
+  font-size: var(--body-size);
+  line-height: var(--body-lh);
+}
+
+.min_price, .current_price, .max_price{
+    font-size: var(--header2-size);
+    /* font-weight: 400; */
+    line-height: var(--header2-lh);
+    margin: 5px 0;
+}
+
+.min_price{
+    color: #CDC1FF;
+    
+}
+
+.current_price{
+    color: #ffffff
+}
+
+.max_price{
+    color: #7371FC;
+}
+
+.collateral_container{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin: 12px 2rem;
+}
+
+.collateral_display{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.collateral_title{
+    color: var(--text-grey-light);
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+}
+.collateral_amount{
+    font-size: var(--header2-size);
+    line-height: var(--header2-lh);
+    color: var(--text-grey-white);
+    /* font-weight: 400; */
+    margin: 5px 0;
+}

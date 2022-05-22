@@ -1,7 +1,7 @@
-import styles from './Toggle.module.css';
+import styles from './Button.module.css';
 
 interface ButtonProps {
-    disabled: boolean;
+    disabled?: boolean;
     title: string;
 
     action: React.MouseEventHandler<HTMLElement>;

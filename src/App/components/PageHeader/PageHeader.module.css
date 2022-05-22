@@ -1,3 +1,4 @@
+
 .primary_header{
     background: var(--navbar);
     display: flex;
@@ -13,7 +14,7 @@
     top: -490px;
     background: radial-gradient(50% 50% at 50% 50%, rgba(205, 193, 255, 0.2) 0.01%, rgba(205, 193, 255, 0.116) 19.79%, rgba(205, 193, 255, 0.02) 59.38%, rgba(205, 193, 255, 0) 100%);
     pointer-events: none;
- 
+    
 }
 
 .primary_navigation{
@@ -22,7 +23,7 @@
     align-items: center;
     gap: var(--gap, 2rem);
     
-   
+    
 }
 
 
@@ -37,7 +38,7 @@
     line-height: var(--header2-lh);
     letter-spacing: -0.02em;
     color: var(--text-grey-light);
-   
+    
 }
 .primary_navigation a::after{
     position: absolute;
@@ -45,13 +46,13 @@
     display: block;
     height: 3px;
     background: white;
-   bottom: -.45em;
+    bottom: -.45em;
     left: 0;
     right: 0;
     transform: scale(0, 1);
     /* transform-origin: left; */
     transition: transform ease-in-out 250ms;
-
+    
     box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2), 0px 0px 21px rgba(205, 193, 255, 0.2), 0px 0px 12px rgba(205, 193, 255, 0.2), 0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px #CDC1FF, 0px 0px 2px rgba(205, 193, 255, 0.2);  
 }
 .primary_navigation a:hover:after{
@@ -71,14 +72,14 @@
 @keyframes logo-spin {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
-  }
+}
 .logo_container h1{
     background: var(--title-gradient);
     font-family: var(--font-logo);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-
+    
     font-size: 2.25rem;
     font-weight: 100;
     line-height: 2.81rem;
@@ -88,8 +89,29 @@
     display: none;
 }
 
+.account{
+    display: flex;
+}
+
+.authenticate_button{
+    background: var(--title-gradient);
+    border: none;
+    outline: none;
+    color: var(--dark3);
+    font-weight: 200;
+    
+    border-radius: 4px;
+    width: 155px;
+    height: 25px;
+}
 
 
+.not_conncected{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
 @media( max-width: 35em){
 
     .account, .header_gradient{

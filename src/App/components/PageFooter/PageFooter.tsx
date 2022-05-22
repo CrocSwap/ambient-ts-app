@@ -3,7 +3,11 @@ import { RiTwitchFill } from 'react-icons/ri';
 import { FaDiscord, FaGithub } from 'react-icons/fa';
 import { BsMedium } from 'react-icons/bs';
 
-export default function PageFooter() {
+interface IFooterProps {
+    lastBlockNumber: number;
+}
+
+export default function PageFooter(props: IFooterProps) {
     return (
         <footer data-testid={'page-footer'} className={styles.footer}>
             <a href='#'>
@@ -24,6 +28,9 @@ export default function PageFooter() {
             </a>
             <a href='#'>
                 <span>Docs</span>
+            </a>
+            <a href='#'>
+                <span>{props.lastBlockNumber}</span>
             </a>
         </footer>
     );

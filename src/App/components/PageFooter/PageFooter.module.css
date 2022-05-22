@@ -1,5 +1,6 @@
 .footer{
     display: flex;
+    justify-content: flex-end;
     flex-direction: row;
     align-items: center;
     margin-top: auto;
@@ -22,6 +23,7 @@ gap: var(--gap, 1rem)
 @media( max-width: 35em){
 .footer{
     flex-direction: column;
+    display: none;
 }
 
 }

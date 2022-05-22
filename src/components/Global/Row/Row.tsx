@@ -1,4 +1,4 @@
-import styles from 'Row.module.css';
+import styles from './Row.module.css';
 
 interface RowProps {
     children: React.ReactNode;

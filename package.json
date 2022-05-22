@@ -3,7 +3,7 @@
     "version": "0.1.0",
     "private": true,
     "dependencies": {
-        "@crocswap-libs/sdk": "file:../sdk/dist",
+        "@crocswap-libs/sdk": "^0.1.27-4",
         "@material-ui/core": "^4.12.4",
         "@reduxjs/toolkit": "^1.8.1",
         "@rive-app/react-canvas": "^3.0.1",
@@ -17,6 +17,7 @@
         "@walletconnect/web3-provider": "1.6.6",
         "@web3auth/web3auth": "^0.11.0-alpha.0",
         "d3fc": "^15.2.4",
+        "ethers": "^5.6.5",
         "magic-sdk": "7.0.0",
         "mockdate": "^3.0.5",
         "moralis": "^1.7.0",
