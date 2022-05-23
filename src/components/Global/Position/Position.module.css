@@ -37,5 +37,6 @@
 
   .option_button:hover {
     box-shadow: none;
+    color: black;
     
   }
