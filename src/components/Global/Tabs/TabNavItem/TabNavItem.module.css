@@ -1,0 +1,45 @@
+.tab_active{
+    color: #7371FC;
+    position: relative;
+    border-bottom: 1px solid #7371FC;
+    transition: all ease-in-out 200ms;
+    font-size: 14px;
+line-height: 18px;
+    
+}
+
+
+.tab_list{
+    position: relative;
+    min-width: 6.875rem;
+    min-height: 1.875rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 15px;
+    
+    /* gradient/start */
+    
+    
+    
+}
+.tab_list::after{
+    position: absolute;
+    content: "";
+    display: block;
+    height: 1px;
+    background: #7371FC;
+    bottom: -.15em;
+    left: 0;
+    right: 0;
+    transform: scale(0, 1);
+    transition: transform ease-in-out 250ms;
+    
+}
+
+.tab_list:hover:after{
+    transform: scale(1, 1);
+}
