@@ -3,8 +3,7 @@ import styles from './RangeWidth.module.css';
 import { MdAdd } from 'react-icons/md';
 import { FiMinus } from 'react-icons/fi';
 import { AiOutlineInfoCircle } from 'react-icons/ai';
-import { ChangeEventHandler, useCallback } from 'react';
-import truncateDecimals from '../../../../utils/data/truncateDecimals';
+import { updateRangeWithButton, handleRangeSlider } from './rangeWidthFunctions';
 
 interface IRangeWidthProps {
     rangeWidthPercentage: number;
@@ -13,39 +12,6 @@ interface IRangeWidthProps {
 
 export default function RangeWidth(props: IRangeWidthProps) {
     const { rangeWidthPercentage, setRangeWidthPercentage } = props;
-
-    // function transformValue(input: number) {
-    //     //   const numInput = parseFloat(input);
-    //     const scaledInput = input / (100 - input);
-    //     const output = truncateDecimals(scaledInput * 100, 2);
-
-    //     return output;
-    // }
-
-    const updateRangeWithButton = useCallback(
-        (value: number) => {
-            const inputSlider = document.getElementById('input-slider-reposition');
-            const valueString = value.toString();
-            if (inputSlider && valueString) {
-                (inputSlider as HTMLInputElement).value = valueString;
-            }
-            const truncatedValue = truncateDecimals(value, 2);
-            // const humanReadableValue = transformValue(value);
-
-            setRangeWidthPercentage(truncatedValue);
-        },
-        [setRangeWidthPercentage],
-    );
-
-    const handleRangeSlider: ChangeEventHandler<HTMLInputElement> = useCallback(
-        (event) => {
-            const { value } = event.target as HTMLInputElement;
-            const truncatedValue = truncateDecimals(parseFloat(value), 2);
-
-            setRangeWidthPercentage(truncatedValue);
-        },
-        [setRangeWidthPercentage],
-    );
 
     const PercentageOptionContent = (
         <>
@@ -57,7 +23,7 @@ export default function RangeWidth(props: IRangeWidthProps) {
                 <button
                     className={styles.percentage_option_buttons}
                     onClick={() => {
-                        updateRangeWithButton((1 / 10) * 100);
+                        updateRangeWithButton((1 / 10) * 100, setRangeWidthPercentage);
                     }}
                 >
                     10%
@@ -65,7 +31,7 @@ export default function RangeWidth(props: IRangeWidthProps) {
                 <button
                     className={styles.percentage_option_buttons}
                     onClick={() => {
-                        updateRangeWithButton((1 / 4) * 100);
+                        updateRangeWithButton((1 / 4) * 100, setRangeWidthPercentage);
                     }}
                 >
                     25%
@@ -73,7 +39,7 @@ export default function RangeWidth(props: IRangeWidthProps) {
                 <button
                     className={styles.percentage_option_buttons}
                     onClick={() => {
-                        updateRangeWithButton((1 / 2) * 100);
+                        updateRangeWithButton((1 / 2) * 100, setRangeWidthPercentage);
                     }}
                 >
                     50%
@@ -82,7 +48,7 @@ export default function RangeWidth(props: IRangeWidthProps) {
                 <button
                     className={styles.percentage_option_buttons}
                     onClick={() => {
-                        updateRangeWithButton(100);
+                        updateRangeWithButton(100, setRangeWidthPercentage);
                     }}
                 >
                     Ambient
@@ -93,24 +59,24 @@ export default function RangeWidth(props: IRangeWidthProps) {
     );
 
     return (
-        <div className={styles.reposition_width_container}>
-            <div className={styles.reposition_width_content}>
+        <div className={styles.range_width_container}>
+            <div className={styles.range_width_content}>
                 {PercentageOptionContent}
                 <span className={styles.percentage_amount} id='percentage-output'>
                     {rangeWidthPercentage === 100 ? 'Ambient' : rangeWidthPercentage + '%'}
                 </span>
-                <div className={styles.reposition_width_input}>
+                <div className={styles.range_width_input}>
                     <input
                         size={28}
                         aria-labelledby='input slider'
-                        id='input-slider-reposition'
+                        id='input-slider-range'
                         min='10'
                         max='100'
                         step='1'
                         defaultValue={100}
                         type='range'
                         className={styles.percentage_input}
-                        onChange={handleRangeSlider}
+                        onChange={(event) => handleRangeSlider(event, setRangeWidthPercentage)}
                     />
                 </div>
 
