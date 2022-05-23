@@ -23,8 +23,6 @@ import {
     ambientPosSlot,
     // concPosSlot,
     tickToPrice,
-    pinTickLower,
-    pinTickUpper,
     toDisplayPrice,
 } from '@crocswap-libs/sdk';
 
@@ -196,10 +194,6 @@ export default function Range(props: IRangeProps) {
         </>
     );
 
-    useEffect(() => {
-        console.log({ rangeWidthPercentage });
-    }, [rangeWidthPercentage]);
-
     const currentPoolPriceTick = Math.log(poolPriceNonDisplay) / Math.log(1.0001);
 
     const rangeLowTick = currentPoolPriceTick - rangeWidthPercentage * 100;
@@ -208,39 +202,7 @@ export default function Range(props: IRangeProps) {
     const rangeLowBoundNonDisplayPrice = tickToPrice(rangeLowTick);
     const rangeHighBoundNonDisplayPrice = tickToPrice(rangeHighTick);
 
-    useEffect(() => {
-        console.log({ currentPoolPriceTick });
-    }, [currentPoolPriceTick]);
-
-    useEffect(() => {
-        console.log({ rangeLowTick });
-    }, [rangeLowTick]);
-
-    useEffect(() => {
-        console.log({ rangeHighTick });
-    }, [rangeHighTick]);
-
-    useEffect(() => {
-        console.log({ poolPriceNonDisplay });
-    }, [poolPriceNonDisplay]);
-
-    useEffect(() => {
-        console.log({ rangeLowBoundNonDisplayPrice });
-    }, [rangeLowBoundNonDisplayPrice]);
-
-    useEffect(() => {
-        console.log({ rangeHighBoundNonDisplayPrice });
-    }, [rangeHighBoundNonDisplayPrice]);
-
-    useEffect(() => {
-        console.log({ poolPriceDisplay });
-    }, [poolPriceDisplay]);
-
     const rangeLowBoundDisplayPrice = toDisplayPrice(rangeLowBoundNonDisplayPrice, 18, 18, false);
-
-    useEffect(() => {
-        console.log({ rangeLowBoundDisplayPrice });
-    }, [rangeLowBoundDisplayPrice]);
 
     const rangeHighBoundDisplayPrice = toDisplayPrice(rangeHighBoundNonDisplayPrice, 18, 18, false);
 
@@ -263,17 +225,6 @@ export default function Range(props: IRangeProps) {
             ? truncateDecimals(rangeLowBoundDisplayPrice, 2).toString()
             : truncateDecimals(1 / rangeHighBoundDisplayPrice, 2).toString();
     }
-
-    useEffect(() => {
-        console.log({ rangeHighBoundDisplayPrice });
-    }, [rangeHighBoundDisplayPrice]);
-
-    // const rangeLowTick = Math.log(rangeLowLimitWeiPrice) / Math.log(1.0001);
-    // const rangeHighTick = Math.log(rangeHighLimitWeiPrice) / Math.log(1.0001);
-    // const lowTickDiff = (rangeLowTick - currentPoolPriceTick) / 100;
-    // const highTickDiff = (rangeHighTick - currentPoolPriceTick) / 100;
-
-    // const rangeLowTick = pinTickLower(rangeLowLimitWeiPrice);
 
     // props for <RangePriceInfo/> React element
     const rangePriceInfoProps = {
@@ -302,9 +253,6 @@ export default function Range(props: IRangeProps) {
                 {denominationSwitch}
                 <RangeCurrencyConverter />
                 {advancedMode ? advancedModeContent : baseModeContent}
-                {/* 
-                <RangeWidth />
-                <RangePriceInfo /> */}
                 <RangeButton onClickFn={sendTransaction} />
             </ContentContainer>
         </section>
