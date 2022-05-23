@@ -15,9 +15,9 @@ export default function Toggle(props: TabNavItemProps) {
         setActiveTab(id);
     };
 
-    const activeStyle = activeTab === id ? styles.active : null;
+    const activeStyle = activeTab === id ? styles.tab_active : null;
     return (
-        <li onClick={handleClick} className={activeStyle}>
+        <li onClick={handleClick} className={`${activeStyle} ${styles.tab_list}`}>
             {title}
         </li>
     );

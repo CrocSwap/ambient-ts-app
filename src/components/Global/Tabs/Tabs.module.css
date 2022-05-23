@@ -13,11 +13,12 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+    
 }
 .tab_navs{
    
     max-width: 80%;
-    width: 100%;
+    width: 50%;
     display: flex;
     justify-content: space-between;
     align-items: center;
