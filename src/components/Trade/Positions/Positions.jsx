@@ -10,7 +10,7 @@ export default function Positions() {
     const positionsHeader = (
         <thead>
             <tr>
-                <th>ID</th>
+                <th>Id</th>
                 <th>Range</th>
                 <th>APY</th>
                 <th></th>
