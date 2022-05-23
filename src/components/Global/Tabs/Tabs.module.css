@@ -1,8 +1,34 @@
 .tabs_container{
+    width: 100%;
     height: auto;
     margin-top: 1rem;
   min-height: 260px;
   border-radius: 4px;
   background: var(--dark1)
 
+}
+
+.tabs{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+.tab_navs{
+   
+    max-width: 80%;
+}
+
+ul.tab_navs{
+    color: var(--text-grey-dark);
+    font-weight: 500;
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+}
+
+.option_toggles{
+    max-width: 20%;
+    width: 20%;
+    height: 100%;
+    background: red;
 }
