@@ -3,6 +3,8 @@
     position: relative;
     border-bottom: 1px solid #7371FC;
     transition: all ease-in-out 200ms;
+    font-size: 14px;
+line-height: 18px;
     
 }
 
@@ -16,8 +18,8 @@
     align-items: center;
     text-align: center;
     font-weight: 500;
-    font-size: 14px;
-    line-height: 18px;
+    font-size: 12px;
+    line-height: 15px;
     
     /* gradient/start */
     

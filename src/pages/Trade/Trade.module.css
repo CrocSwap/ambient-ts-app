@@ -62,12 +62,12 @@
 
  
 
-.middle_col{
+/* .middle_col{
     background-color:#171f2b;
     
 
 
-}
+} */
 .right_col{
     display: flex;
     flex-direction: column;
