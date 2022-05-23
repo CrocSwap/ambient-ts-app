@@ -3,7 +3,7 @@ import styles from './RangeWidth.module.css';
 import { MdAdd } from 'react-icons/md';
 import { FiMinus } from 'react-icons/fi';
 import { AiOutlineInfoCircle } from 'react-icons/ai';
-import { useCallback } from 'react';
+import { ChangeEventHandler, useCallback } from 'react';
 import truncateDecimals from '../../../../utils/data/truncateDecimals';
 
 interface IRangeWidthProps {
@@ -31,6 +31,16 @@ export default function RangeWidth(props: IRangeWidthProps) {
             }
             const truncatedValue = truncateDecimals(value, 2);
             // const humanReadableValue = transformValue(value);
+
+            setRangeWidthPercentage(truncatedValue);
+        },
+        [setRangeWidthPercentage],
+    );
+
+    const handleRangeSlider: ChangeEventHandler<HTMLInputElement> = useCallback(
+        (event) => {
+            const { value } = event.target as HTMLInputElement;
+            const truncatedValue = truncateDecimals(parseFloat(value), 2);
 
             setRangeWidthPercentage(truncatedValue);
         },
@@ -100,7 +110,7 @@ export default function RangeWidth(props: IRangeWidthProps) {
                         defaultValue={100}
                         type='range'
                         className={styles.percentage_input}
-                        //   onChange={handleRespositionSlider}
+                        onChange={handleRangeSlider}
                     />
                 </div>
 
