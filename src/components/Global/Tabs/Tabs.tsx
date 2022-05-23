@@ -16,7 +16,7 @@ export default function Tabs() {
                     isOn={isChecked}
                     handleToggle={() => setIsChecked(!isChecked)}
                     Width={36}
-                    id='tokens_withdrawal'
+                    id='positions_only_toggle'
                 />
             </div>
         </span>
