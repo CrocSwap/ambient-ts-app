@@ -63,7 +63,7 @@ export default function RangeWidth(props: IRangeWidthProps) {
             <div className={styles.range_width_content}>
                 {PercentageOptionContent}
                 <span className={styles.percentage_amount} id='percentage-output'>
-                    {rangeWidthPercentage === 100 ? 'Ambient' : rangeWidthPercentage + '%'}
+                    {rangeWidthPercentage === 100 ? 'Ambient' : '± ' + rangeWidthPercentage + '%'}
                 </span>
                 <div className={styles.range_width_input}>
                     <input
@@ -73,7 +73,7 @@ export default function RangeWidth(props: IRangeWidthProps) {
                         min='10'
                         max='100'
                         step='1'
-                        defaultValue={100}
+                        defaultValue={rangeWidthPercentage}
                         type='range'
                         className={styles.percentage_input}
                         onChange={(event) => handleRangeSlider(event, setRangeWidthPercentage)}
