@@ -20,7 +20,7 @@ import {
     getSpotPriceDisplay,
     // ParsedSwapReceipt,
     // contractAddresses,
-    // ambientPosSlot,
+    ambientPosSlot,
     // concPosSlot,
 } from '@crocswap-libs/sdk';
 
@@ -41,10 +41,13 @@ interface IRangeProps {
     lastBlockNumber: number;
 }
 
-import { useMoralis } from 'react-moralis';
+import { useMoralis, useNewMoralisObject } from 'react-moralis';
+
 import truncateDecimals from '../../../utils/data/truncateDecimals';
 
 export default function Range(props: IRangeProps) {
+    const { save } = useNewMoralisObject('UserPosition');
+
     // const sellTokenAddress = contractAddresses.ZERO_ADDR;
     const daiKovanAddress = '0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa';
     // const buyTokenAddress = daiKovanAddress;
@@ -54,7 +57,7 @@ export default function Range(props: IRangeProps) {
     const [liquidityForBase, setLiquidityForBase] = useState(BigNumber.from(0));
     const [denominationsInBase, setDenominationsInBase] = useState(false);
 
-    const { Moralis } = useMoralis();
+    const { Moralis, user, account, chainId } = useMoralis();
     const [advancedMode, setAdvancedMode] = useState<boolean>(false);
 
     const toggleAdvancedMode = () => setAdvancedMode(!advancedMode);
@@ -109,11 +112,14 @@ export default function Range(props: IRangeProps) {
 
     const signer = props.provider?.getSigner();
 
+    const baseTokenAddress = contractAddresses.ZERO_ADDR;
+    const quoteTokenAddress = daiKovanAddress;
+
     const sendTransaction = async () => {
         if (signer) {
             const tx = await sendAmbientMint(
-                contractAddresses.ZERO_ADDR,
-                daiKovanAddress,
+                baseTokenAddress,
+                quoteTokenAddress,
                 liquidityForBase,
                 poolWeiPriceLowLimit,
                 poolWeiPriceHighLimit,
@@ -149,10 +155,19 @@ export default function Range(props: IRangeProps) {
                         error.receipt as EthersNativeReceipt,
                     );
                 }
-            }
+            } finally {
+                if (parsedReceipt)
+                    handleParsedReceipt(Moralis, 'mint', newTransactionHash, parsedReceipt);
 
-            if (parsedReceipt)
-                handleParsedReceipt(Moralis, 'mint', newTransactionHash, parsedReceipt);
+                const posHash = ambientPosSlot(
+                    account as string,
+                    baseTokenAddress,
+                    quoteTokenAddress,
+                );
+                const txHash = newTransactionHash;
+
+                save({ txHash, posHash, user, account, chainId });
+            }
         }
     };
 
