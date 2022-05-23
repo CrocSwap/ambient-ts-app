@@ -1,0 +1,43 @@
+
+.in_range_display{
+    background: rgb(30, 28, 28);
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    border-radius: 12px;
+  
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 5px;
+  
+  
+  }
+  
+  .range_text_positive::before, 
+  .range_text_negative::before
+  {
+    content: '';
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    -moz-border-radius: 7.5px;
+    -webkit-border-radius: 7.5px;
+    border-radius: 7.5px;
+    align-items: center;
+    margin: 0 10px;
+    border: 2px solid rgb(85, 84, 84);
+    
+   
+  }
+  
+  
+  
+  
+  .range_text_positive::before{
+    background: var(--positive);
+  }
+  
+  .range_text_negative::before{
+    background: var(--negative);
+  }
+  
