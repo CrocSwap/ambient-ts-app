@@ -17,6 +17,10 @@
 .tab_navs{
    
     max-width: 80%;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 ul.tab_navs{
@@ -24,7 +28,11 @@ ul.tab_navs{
     font-weight: 500;
     font-size: var(--body-size);
     line-height: var(--body-lh);
+    list-style: none;
+    cursor: pointer;
 }
+
+
 
 .option_toggles{
     max-width: 20%;

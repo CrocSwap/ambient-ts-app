@@ -14,6 +14,24 @@ export default function Tabs() {
                         activeTab={activeTab}
                         setActiveTab={setActiveTab}
                     />
+                    <TabNavItem
+                        title='Tab 2'
+                        id='tab2'
+                        activeTab={activeTab}
+                        setActiveTab={setActiveTab}
+                    />
+                    <TabNavItem
+                        title='Tab 3'
+                        id='tab3'
+                        activeTab={activeTab}
+                        setActiveTab={setActiveTab}
+                    />
+                    <TabNavItem
+                        title='Tab 4'
+                        id='tab4'
+                        activeTab={activeTab}
+                        setActiveTab={setActiveTab}
+                    />
                 </ul>
                 <div className={styles.option_toggles}>I AM OPTIONS</div>
             </div>
