@@ -1,4 +1,7 @@
 export default function truncateDecimals(number: number, decimalPlaces: number) {
-    const truncatedNumber = number % 1 ? number.toFixed(decimalPlaces) : number;
-    return truncatedNumber;
+    if (number >= 2) {
+        return number % 1 ? parseFloat(number.toFixed(decimalPlaces)) : number;
+    } else {
+        return number % 1 ? parseFloat(number.toFixed(4)) : number;
+    }
 }

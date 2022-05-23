@@ -22,6 +22,10 @@ import {
     // contractAddresses,
     ambientPosSlot,
     // concPosSlot,
+    tickToPrice,
+    pinTickLower,
+    pinTickUpper,
+    toDisplayPrice,
 } from '@crocswap-libs/sdk';
 
 import { isTransactionReplacedError, TransactionError } from '../../../utils/TransactionError';
@@ -54,6 +58,7 @@ export default function Range(props: IRangeProps) {
 
     const [poolPriceNonDisplay, setPoolPriceNonDisplay] = useState(0);
     const [poolPriceDisplay, setPoolPriceDisplay] = useState('');
+    const [rangeWidthPercentage, setRangeWidthPercentage] = useState(100);
     const [liquidityForBase, setLiquidityForBase] = useState(BigNumber.from(0));
     const [denominationsInBase, setDenominationsInBase] = useState(false);
 
@@ -88,7 +93,7 @@ export default function Range(props: IRangeProps) {
             );
             const truncatedPriceWithDenonimationPreference = truncateDecimals(
                 denominationsInBase ? spotPriceDisplay : 1 / spotPriceDisplay,
-                4,
+                2,
             ).toString();
             if (poolPriceDisplay !== truncatedPriceWithDenonimationPreference) {
                 setPoolPriceDisplay(truncatedPriceWithDenonimationPreference);
@@ -191,14 +196,101 @@ export default function Range(props: IRangeProps) {
         </>
     );
 
-    // props for <Range/> React element
+    useEffect(() => {
+        console.log({ rangeWidthPercentage });
+    }, [rangeWidthPercentage]);
+
+    const currentPoolPriceTick = Math.log(poolPriceNonDisplay) / Math.log(1.0001);
+
+    const rangeLowTick = currentPoolPriceTick - rangeWidthPercentage * 100;
+    const rangeHighTick = currentPoolPriceTick + rangeWidthPercentage * 100;
+
+    const rangeLowBoundNonDisplayPrice = tickToPrice(rangeLowTick);
+    const rangeHighBoundNonDisplayPrice = tickToPrice(rangeHighTick);
+
+    useEffect(() => {
+        console.log({ currentPoolPriceTick });
+    }, [currentPoolPriceTick]);
+
+    useEffect(() => {
+        console.log({ rangeLowTick });
+    }, [rangeLowTick]);
+
+    useEffect(() => {
+        console.log({ rangeHighTick });
+    }, [rangeHighTick]);
+
+    useEffect(() => {
+        console.log({ poolPriceNonDisplay });
+    }, [poolPriceNonDisplay]);
+
+    useEffect(() => {
+        console.log({ rangeLowBoundNonDisplayPrice });
+    }, [rangeLowBoundNonDisplayPrice]);
+
+    useEffect(() => {
+        console.log({ rangeHighBoundNonDisplayPrice });
+    }, [rangeHighBoundNonDisplayPrice]);
+
+    useEffect(() => {
+        console.log({ poolPriceDisplay });
+    }, [poolPriceDisplay]);
+
+    const rangeLowBoundDisplayPrice = toDisplayPrice(rangeLowBoundNonDisplayPrice, 18, 18, false);
+
+    useEffect(() => {
+        console.log({ rangeLowBoundDisplayPrice });
+    }, [rangeLowBoundDisplayPrice]);
+
+    const rangeHighBoundDisplayPrice = toDisplayPrice(rangeHighBoundNonDisplayPrice, 18, 18, false);
+
+    let maxPriceDisplay: string;
+
+    if (rangeWidthPercentage === 100) {
+        maxPriceDisplay = 'Infinity';
+    } else {
+        maxPriceDisplay = denominationsInBase
+            ? truncateDecimals(rangeHighBoundDisplayPrice, 2).toString()
+            : truncateDecimals(1 / rangeLowBoundDisplayPrice, 2).toString();
+    }
+
+    let minPriceDisplay: string;
+
+    if (rangeWidthPercentage === 100) {
+        minPriceDisplay = '0';
+    } else {
+        minPriceDisplay = denominationsInBase
+            ? truncateDecimals(rangeLowBoundDisplayPrice, 2).toString()
+            : truncateDecimals(1 / rangeHighBoundDisplayPrice, 2).toString();
+    }
+
+    useEffect(() => {
+        console.log({ rangeHighBoundDisplayPrice });
+    }, [rangeHighBoundDisplayPrice]);
+
+    // const rangeLowTick = Math.log(rangeLowLimitWeiPrice) / Math.log(1.0001);
+    // const rangeHighTick = Math.log(rangeHighLimitWeiPrice) / Math.log(1.0001);
+    // const lowTickDiff = (rangeLowTick - currentPoolPriceTick) / 100;
+    // const highTickDiff = (rangeHighTick - currentPoolPriceTick) / 100;
+
+    // const rangeLowTick = pinTickLower(rangeLowLimitWeiPrice);
+
+    // props for <RangePriceInfo/> React element
     const rangePriceInfoProps = {
         spotPriceDisplay: poolPriceDisplay,
+        maxPriceDisplay: maxPriceDisplay,
+        minPriceDisplay: minPriceDisplay,
+    };
+
+    // props for <RangeWidth/> React element
+    const rangeWidthProps = {
+        rangeWidthPercentage: rangeWidthPercentage,
+        setRangeWidthPercentage: setRangeWidthPercentage,
     };
 
     const baseModeContent = (
         <>
-            <RangeWidth />
+            <RangeWidth {...rangeWidthProps} />
             <RangePriceInfo {...rangePriceInfoProps} />
         </>
     );
