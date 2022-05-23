@@ -4,3 +4,38 @@
     justify-content: space-between;
     align-items: center;
 }
+
+.position_id{
+    font-weight: 500;
+    color: var(--text-grey-light); 
+}
+
+.option_buttons{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.option_button{
+    border-radius:6.25rem;
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    color: var(--text-grey-light); 
+
+    padding: .5rem 1rem;
+    
+    border: solid 1px transparent;
+    background-image: linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, 0)), linear-gradient(101deg, #7371FC, #CDC1FF, #7371FC
+    );
+    background-origin: border-box;
+    background-clip: content-box, border-box;
+    box-shadow: 2px 1000px 1px var(--dark3) inset;
+    transition: box-shadow 250ms ease-in-out;
+    cursor: pointer;
+  }
+
+  .option_button:hover {
+    box-shadow: none;
+    
+  }
