@@ -1,4 +1,3 @@
-import Divider from '../../Global/Divider/Divider';
 import Position from '../../Global/Position/Position';
 import styles from './Positions.module.css';
 
@@ -23,7 +22,7 @@ export default function Positions() {
         <div className={styles.posiitons_table_display}>
             <table>
                 {positionsHeader}
-                <Divider />
+
                 <tbody>{positionsDisplay}</tbody>
             </table>
         </div>
