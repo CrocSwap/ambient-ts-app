@@ -39,5 +39,29 @@ ul.tab_navs{
     max-width: 20%;
     width: 20%;
     height: 100%;
-    background: red;
+    color: var(--text-grey-light);
+    font-weight: 500;
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    list-style: none;
+    cursor: pointer;
+
+    
+    
 }
+
+.toggle_container{
+   
+    margin-left: 10px;
+    margin-bottom: 14px;
+   
+  }
+
+  .options_toggle{
+      
+    display: flex;
+    justify-content: flex-end;
+    margin-right: 0.5rem;
+    flex-direction: row;
+    align-items: center;
+  }

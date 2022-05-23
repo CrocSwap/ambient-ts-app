@@ -1,8 +1,24 @@
 import styles from './Tabs.module.css';
 import { useState } from 'react';
 import TabNavItem from './TabNavItem/TabNavItem';
+import Toggle from '../Toggle/Toggle';
 export default function Tabs() {
     const [activeTab, setActiveTab] = useState('tab1');
+    const [isChecked, setIsChecked] = useState<boolean>(false);
+
+    const positionsOnlyToggle = (
+        <span className={styles.options_toggle}>
+            My positions only
+            <div className={styles.toggle_container}>
+                <Toggle
+                    isOn={isChecked}
+                    handleToggle={() => setIsChecked(!isChecked)}
+                    Width={36}
+                    id='tokens_withdrawal'
+                />
+            </div>
+        </span>
+    );
 
     return (
         <div className={styles.tabs_container}>
@@ -33,7 +49,7 @@ export default function Tabs() {
                         setActiveTab={setActiveTab}
                     />
                 </ul>
-                <div className={styles.option_toggles}>I AM OPTIONS</div>
+                <div className={styles.option_toggles}>{positionsOnlyToggle}</div>
             </div>
             <div className={styles.tabs_outlet}></div>
         </div>
