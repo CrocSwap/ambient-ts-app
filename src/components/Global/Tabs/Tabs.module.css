@@ -1,0 +1,8 @@
+.tabs_container{
+    height: auto;
+    margin-top: 1rem;
+  min-height: 260px;
+  border-radius: 4px;
+  background: var(--dark1)
+
+}

@@ -1,6 +1,7 @@
 import { Outlet, NavLink } from 'react-router-dom';
 import styles from './Trade.module.css';
 import chart from '../../assets/images/Temporary/chart.svg';
+import Tabs from '../../components/Global/Tabs/Tabs';
 
 export default function Trade() {
     const routes = [
@@ -79,6 +80,9 @@ export default function Trade() {
                     {tokenInfo}
                     {timeFrameContent}
                     {chartImage}
+
+                    {/* tabs */}
+                    <Tabs />
                 </div>
                 <div className={styles.right_col}>
                     <div className={styles.navigation_menu}>

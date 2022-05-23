@@ -1,5 +1,4 @@
 // import { ChangeEvent } from 'react';
-import { useState, useCallback, useMemo, useEffect } from 'react';
 
 import styles from './RangeWidth.module.css';
 import { MdAdd } from 'react-icons/md';
@@ -7,17 +6,6 @@ import { FiMinus } from 'react-icons/fi';
 import { AiOutlineInfoCircle } from 'react-icons/ai';
 
 export default function RangeWidth() {
-    const [rangeValue, setRangeValue] = useState<number>();
-    const [sliderValue, setSliderValue] = useState<string>('50');
-    const [sliderDisabled, setSliderDisabled] = useState(false);
-
-    const updateSliderAmount = useCallback((event: HTMLAttributes<HTMLInputElement>) => {
-        const value = event.target.value;
-        // console.log({ value });
-        setRangeValue(value);
-        setSliderValue(value);
-    }, []);
-
     const PercentageOptionContent = (
         <>
             <div className={styles.percentage_options}>
@@ -50,9 +38,7 @@ export default function RangeWidth() {
                         min='20'
                         max='100'
                         step='1'
-                        value={sliderValue}
                         defaultValue={60}
-                        onChange={updateSliderAmount}
                         type='range'
                         className={styles.percentage_input}
                         //   onChange={handleRespositionSlider}
