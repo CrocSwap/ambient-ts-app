@@ -22,6 +22,8 @@ import {
     // contractAddresses,
     ambientPosSlot,
     // concPosSlot,
+    tickToPrice,
+    toDisplayPrice,
 } from '@crocswap-libs/sdk';
 
 import { isTransactionReplacedError, TransactionError } from '../../../utils/TransactionError';
@@ -54,6 +56,7 @@ export default function Range(props: IRangeProps) {
 
     const [poolPriceNonDisplay, setPoolPriceNonDisplay] = useState(0);
     const [poolPriceDisplay, setPoolPriceDisplay] = useState('');
+    const [rangeWidthPercentage, setRangeWidthPercentage] = useState(100);
     const [liquidityForBase, setLiquidityForBase] = useState(BigNumber.from(0));
     const [denominationsInBase, setDenominationsInBase] = useState(false);
 
@@ -88,7 +91,7 @@ export default function Range(props: IRangeProps) {
             );
             const truncatedPriceWithDenonimationPreference = truncateDecimals(
                 denominationsInBase ? spotPriceDisplay : 1 / spotPriceDisplay,
-                4,
+                2,
             ).toString();
             if (poolPriceDisplay !== truncatedPriceWithDenonimationPreference) {
                 setPoolPriceDisplay(truncatedPriceWithDenonimationPreference);
@@ -191,14 +194,54 @@ export default function Range(props: IRangeProps) {
         </>
     );
 
-    // props for <Range/> React element
+    const currentPoolPriceTick = Math.log(poolPriceNonDisplay) / Math.log(1.0001);
+
+    const rangeLowTick = currentPoolPriceTick - rangeWidthPercentage * 100;
+    const rangeHighTick = currentPoolPriceTick + rangeWidthPercentage * 100;
+
+    const rangeLowBoundNonDisplayPrice = tickToPrice(rangeLowTick);
+    const rangeHighBoundNonDisplayPrice = tickToPrice(rangeHighTick);
+
+    const rangeLowBoundDisplayPrice = toDisplayPrice(rangeLowBoundNonDisplayPrice, 18, 18, false);
+
+    const rangeHighBoundDisplayPrice = toDisplayPrice(rangeHighBoundNonDisplayPrice, 18, 18, false);
+
+    let maxPriceDisplay: string;
+
+    if (rangeWidthPercentage === 100) {
+        maxPriceDisplay = 'Infinity';
+    } else {
+        maxPriceDisplay = denominationsInBase
+            ? truncateDecimals(rangeHighBoundDisplayPrice, 2).toString()
+            : truncateDecimals(1 / rangeLowBoundDisplayPrice, 2).toString();
+    }
+
+    let minPriceDisplay: string;
+
+    if (rangeWidthPercentage === 100) {
+        minPriceDisplay = '0';
+    } else {
+        minPriceDisplay = denominationsInBase
+            ? truncateDecimals(rangeLowBoundDisplayPrice, 2).toString()
+            : truncateDecimals(1 / rangeHighBoundDisplayPrice, 2).toString();
+    }
+
+    // props for <RangePriceInfo/> React element
     const rangePriceInfoProps = {
         spotPriceDisplay: poolPriceDisplay,
+        maxPriceDisplay: maxPriceDisplay,
+        minPriceDisplay: minPriceDisplay,
+    };
+
+    // props for <RangeWidth/> React element
+    const rangeWidthProps = {
+        rangeWidthPercentage: rangeWidthPercentage,
+        setRangeWidthPercentage: setRangeWidthPercentage,
     };
 
     const baseModeContent = (
         <>
-            <RangeWidth />
+            <RangeWidth {...rangeWidthProps} />
             <RangePriceInfo {...rangePriceInfoProps} />
         </>
     );
@@ -210,9 +253,6 @@ export default function Range(props: IRangeProps) {
                 {denominationSwitch}
                 <RangeCurrencyConverter />
                 {advancedMode ? advancedModeContent : baseModeContent}
-                {/* 
-                <RangeWidth />
-                <RangePriceInfo /> */}
                 <RangeButton onClickFn={sendTransaction} />
             </ContentContainer>
         </section>
