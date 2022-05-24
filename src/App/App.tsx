@@ -1,10 +1,16 @@
 /** ***** Import React and Dongles *******/
 import { useEffect, useState } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
-import { useMoralis } from 'react-moralis';
+import { useMoralis, useMoralisQuery, useMoralisSubscription } from 'react-moralis';
+import Moralis from 'moralis/types';
+
 import { Signer, utils } from 'ethers';
 import { JsonRpcProvider } from '@ethersproject/providers';
-import { contractAddresses, getTokenBalanceDisplay } from '@crocswap-libs/sdk';
+import {
+    contractAddresses,
+    getTokenBalanceDisplay,
+    // queryPos,
+} from '@crocswap-libs/sdk';
 
 /** ***** Import JSX Files *******/
 import PageHeader from './components/PageHeader/PageHeader';
@@ -26,6 +32,8 @@ import './App.css';
 import { useProvider } from './useProvider';
 import { fetchTokenLists } from './fetchTokenLists';
 import { validateChain } from './validateChain';
+
+import { IParsedPosition, parsePositionArray } from './parsePositions';
 
 /** ***** React Function *******/
 export default function App() {
@@ -61,6 +69,57 @@ export default function App() {
 
     const [nativeBalance, setNativeBalance] = useState<string>('');
     const [lastBlockNumber, setLastBlockNumber] = useState<number>(0);
+
+    const [posArray, setPosArray] = useState<Moralis.Object<Moralis.Attributes>[]>();
+    const [parsedPositionArray, setParsedPositionArray] = useState<IParsedPosition[]>();
+
+    useMoralisSubscription(
+        'UserPosition',
+        (query) => query.equalTo('account', account).limit(1000),
+        [account],
+        {
+            // onCreate: (data) => console.log({ data }),
+            onCreate: (data) => {
+                if (data && posArray) {
+                    const newPosArray = [...posArray, data];
+                    setPosArray(newPosArray);
+                }
+            },
+        },
+    );
+
+    const { data } = useMoralisQuery(
+        'UserPosition',
+        (query) => query.equalTo('account', account).limit(1000),
+        [account],
+        { autoFetch: true },
+    );
+
+    // useEffect to dispatch new position data to RTK when
+    // when the moralis query returns different data
+    useEffect(() => {
+        if (data) {
+            setPosArray(data);
+        }
+    }, [data, account]);
+
+    // useEffect to console log for dev purposes
+    useEffect(() => {
+        if (posArray && posArray?.length > 0) {
+            parsePositionArray(
+                posArray,
+                provider as JsonRpcProvider,
+                setParsedPositionArray as React.Dispatch<React.SetStateAction<IParsedPosition[]>>,
+            );
+        }
+    }, [posArray]);
+
+    // useEffect to console log for dev purposes
+    useEffect(() => {
+        if (parsedPositionArray && parsedPositionArray?.length > 0) {
+            console.log({ parsedPositionArray });
+        }
+    }, [parsedPositionArray]);
 
     // TODO: abstract this function to the 'connectWallet file', might
     // TODO: ... make sense to change it to 'useWallet' and put the
