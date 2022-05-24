@@ -1,7 +1,9 @@
 import styles from './Tabs.module.css';
 import { useState } from 'react';
 import TabNavItem from './TabNavItem/TabNavItem';
+import TabContent from './TabContent/TabContent';
 import Toggle from '../Toggle/Toggle';
+import Positions from '../../Trade/Positions/Positions';
 export default function Tabs() {
     const [activeTab, setActiveTab] = useState('tab1');
     const [isChecked, setIsChecked] = useState<boolean>(false);
@@ -14,44 +16,50 @@ export default function Tabs() {
                     isOn={isChecked}
                     handleToggle={() => setIsChecked(!isChecked)}
                     Width={36}
-                    id='tokens_withdrawal'
+                    id='positions_only_toggle'
                 />
             </div>
         </span>
     );
 
+    const tabData = [
+        { title: 'Positions', id: 'tab1' },
+        { title: 'Limit Orders', id: 'tab2' },
+        { title: 'Transactions', id: 'tab3' },
+        { title: 'Leaderboard', id: 'tab4' },
+        { title: 'Info', id: 'tab5' },
+    ];
+
     return (
         <div className={styles.tabs_container}>
             <div className={styles.tabs}>
                 <ul className={styles.tab_navs}>
-                    <TabNavItem
-                        title='Tab 1'
-                        id='tab1'
-                        activeTab={activeTab}
-                        setActiveTab={setActiveTab}
-                    />
-                    <TabNavItem
-                        title='Tab 2'
-                        id='tab2'
-                        activeTab={activeTab}
-                        setActiveTab={setActiveTab}
-                    />
-                    <TabNavItem
-                        title='Tab 3'
-                        id='tab3'
-                        activeTab={activeTab}
-                        setActiveTab={setActiveTab}
-                    />
-                    <TabNavItem
-                        title='Tab 4'
-                        id='tab4'
-                        activeTab={activeTab}
-                        setActiveTab={setActiveTab}
-                    />
+                    {tabData.map((tab) => (
+                        <TabNavItem
+                            key={tab.title}
+                            title={tab.title}
+                            id={tab.id}
+                            activeTab={activeTab}
+                            setActiveTab={setActiveTab}
+                        />
+                    ))}
                 </ul>
                 <div className={styles.option_toggles}>{positionsOnlyToggle}</div>
             </div>
-            <div className={styles.tabs_outlet}></div>
+            <div className={styles.tabs_outlet}>
+                <TabContent id='tab1' activeTab={activeTab}>
+                    <Positions />
+                </TabContent>
+                <TabContent id='tab2' activeTab={activeTab}>
+                    <p>Tab 2 works!</p>
+                </TabContent>
+                <TabContent id='tab3' activeTab={activeTab}>
+                    <p>Tab 3 works!</p>
+                </TabContent>
+                <TabContent id='tab4' activeTab={activeTab}>
+                    <p>tab4 works!</p>
+                </TabContent>
+            </div>
         </div>
     );
 }
