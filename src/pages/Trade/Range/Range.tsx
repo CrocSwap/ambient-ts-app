@@ -5,6 +5,8 @@ import RangeCurrencyConverter from '../../../components/Trade/Range/RangeCurrenc
 import RangePriceInfo from '../../../components/Trade/Range/RangePriceInfo/RangePriceInfo';
 import RangeWidth from '../../../components/Trade/Range/RangeWidth/RangeWidth';
 import styles from './Range.module.css';
+import { motion } from 'framer-motion';
+
 import {
     contractAddresses,
     sendAmbientMint,
@@ -247,7 +249,12 @@ export default function Range(props: IRangeProps) {
     );
 
     return (
-        <section data-testid={'range'}>
+        <motion.section
+            initial={{ width: 0 }}
+            animate={{ width: '100%' }}
+            exit={{ x: window.innerWidth, transition: { duration: 0.3 } }}
+            data-testid={'range'}
+        >
             <ContentContainer isOnTradeRoute>
                 <RangeHeader />
                 {denominationSwitch}
@@ -255,6 +262,6 @@ export default function Range(props: IRangeProps) {
                 {advancedMode ? advancedModeContent : baseModeContent}
                 <RangeButton onClickFn={sendTransaction} />
             </ContentContainer>
-        </section>
+        </motion.section>
     );
 }

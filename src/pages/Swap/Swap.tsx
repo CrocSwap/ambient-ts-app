@@ -3,6 +3,7 @@ import ExtraInfo from '../../components/Swap/ExtraInfo/ExtraInfo';
 import ContentContainer from '../../components/Global/ContentContainer/ContentContainer';
 import SwapHeader from '../../components/Swap/SwapHeader/SwapHeader';
 import SwapButton from '../../components/Swap/SwapButton/SwapButton';
+import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import {
     contractAddresses,
@@ -160,7 +161,12 @@ export default function Swap(props: ISwapProps) {
     }
 
     return (
-        <main data-testid={'swap'}>
+        <motion.main
+            initial={{ width: 0 }}
+            animate={{ width: '100%' }}
+            exit={{ x: window.innerWidth, transition: { duration: 0.7 } }}
+            data-testid={'swap'}
+        >
             <ContentContainer isOnTradeRoute={isOnTradeRoute}>
                 <SwapHeader isOnTradeRoute={isOnTradeRoute} />
                 <DenominationSwitch />
@@ -179,6 +185,6 @@ export default function Swap(props: ISwapProps) {
                 />
                 <SwapButton onClickFn={initiateSwap} />
             </ContentContainer>
-        </main>
+        </motion.main>
     );
 }
