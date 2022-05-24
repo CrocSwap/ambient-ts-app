@@ -75,7 +75,7 @@ footer {
 }
 .main-layout-2{
   transition: all 700ms ease-in-out;
-  background: var(--dark3);
+  /* background: var(--dark3); */
   min-height: calc(100vh - 5rem);
   
 }
