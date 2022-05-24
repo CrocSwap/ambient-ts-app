@@ -2,6 +2,7 @@ import { Outlet, NavLink } from 'react-router-dom';
 import styles from './Trade.module.css';
 import chart from '../../assets/images/Temporary/chart.svg';
 import Tabs from '../../components/Global/Tabs/Tabs';
+import { motion } from 'framer-motion';
 
 export default function Trade() {
     const routes = [
@@ -73,7 +74,12 @@ export default function Trade() {
     //
 
     return (
-        <main data-testid={'trade'}>
+        <motion.main
+            initial={{ width: 0 }}
+            animate={{ width: '100%' }}
+            exit={{ x: window.innerWidth, transition: { duration: 0.1 } }}
+            data-testid={'trade'}
+        >
             {/* <h1>This is Trade.tsx</h1> */}
             <main className={styles.main_layout}>
                 <div className={`${styles.middle_col} ${styles.graph_container}`}>
@@ -95,6 +101,6 @@ export default function Trade() {
                     <Outlet />
                 </div>
             </main>
-        </main>
+        </motion.main>
     );
 }
