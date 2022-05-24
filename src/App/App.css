@@ -59,7 +59,9 @@ body{
 
 footer {
   position: relative;
-  left: 0;
+  position: absolute;
+  position: sticky;
+  right: 0;
   bottom: 0;
 }
 

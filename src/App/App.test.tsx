@@ -15,6 +15,6 @@ test('renders learn react link', () => {
         </MoralisProvider>,
     );
 
-    const linkElement = screen.getByText(/Twitter/i);
+    const linkElement = screen.getByText(/Docs/i);
     expect(linkElement).toBeInTheDocument();
 });

@@ -209,6 +209,11 @@
   and (-webkit-min-device-pixel-ratio: 2) {
  
     .graph_container{
-       display: none;
+       /* display: none; */
+       margin-bottom: 35px;
+    }
+
+    .chart_image, .time_frame_container, .token_info_container{
+        display: none;
     }
 }
