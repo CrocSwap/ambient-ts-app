@@ -19,7 +19,7 @@ export default function LimitOrders() {
     );
 
     return (
-        <div className={styles.posiitons_table_display}>
+        <div className={styles.limitOrders_table_display}>
             <table>
                 {LimitOrdersHeader}
 

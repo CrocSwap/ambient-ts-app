@@ -1,13 +1,13 @@
-.posiitons_table_display table { 
+.limitOrders_table_display table { 
 	/* width: 950px;  */
 	border-collapse: collapse;
-    width: 100%; 
+    width: 75%; 
 	/* margin:50px auto; */
 	}
 
 /* Zebra striping */
 
-    .posiitons_table_display th { 
+    .limitOrders_table_display th { 
 	
 	color: var(--text-grey-light); 
 	font-size: var(--body-size); 
@@ -19,7 +19,7 @@
 
 	}
 
-    .posiitons_table_display td{
+    .limitOrders_table_display td{
        
 	font-size: var(--body-size); 
     line-height: var(--body-lh);
@@ -27,7 +27,7 @@
 
     }
 
-    .posiitons_table_display td, .posiitons_table_display th { 
+    .limitOrders_table_display td, .limitOrders_table_display th { 
 	padding: 10px; 
     text-align: center;
 	
@@ -44,24 +44,24 @@ and also iPads specifically.
 only screen and (max-width: 760px),
 (min-device-width: 768px) and (max-device-width: 1024px)  {
 
-	.posiitons_table_display table { 
+	.limitOrders_table_display table { 
 	  	width: 100%; 
 	}
 
 	/* Force table to not be like tables anymore */
-	.posiitons_table_display table, .posiitons_table_display thead, .posiitons_table_display tbody,.posiitons_table_display th, .posiitons_table_display td, .posiitons_table_display tr { 
+	.limitOrders_table_display table, .limitOrders_table_display thead, .limitOrders_table_display tbody,.limitOrders_table_display th, .limitOrders_table_display td, .limitOrders_table_display tr { 
 		display: block; 
 	}
 	
 	/* Hide table headers (but not display: none;, for accessibility) */
-	.posiitons_table_display thead tr { 
+	.limitOrders_table_display thead tr { 
 		position: absolute;
 		top: -9999px;
 		left: -9999px;
 	}
 	
 	
-	.posiitons_table_display td { 
+	.limitOrders_table_display td { 
 		/* Behave  like a "row" */
 		border: none;
 		border-bottom: 1px solid rgb(160, 156, 156); 
@@ -69,7 +69,7 @@ only screen and (max-width: 760px),
 		padding-left: 50%; 
 	}
 
-	.posiitons_table_display td:before { 
+	.limitOrders_table_display td:before { 
 		/* Now like a table header */
 		position: absolute;
 		/* Top/left values mimic padding */
