@@ -27,6 +27,7 @@ import { handleParsedReceipt } from '../../utils/HandleParsedReceipt';
 import truncateDecimals from '../../utils/data/truncateDecimals';
 import { isTransactionReplacedError, TransactionError } from '../../utils/TransactionError';
 import { getCurrentTokens } from '../../utils/functions/processTokens';
+import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 
 interface ISwapProps {
     provider: JsonRpcProvider;
@@ -41,8 +42,16 @@ export default function Swap(props: ISwapProps) {
 
     const { Moralis, chainId } = useMoralis();
 
+    const tradeData = useAppSelector((state) => state.tradeData);
+
     const tokensBank = getCurrentTokens(chainId as string);
-    console.log(tokensBank);
+
+    const tokenPair = {
+        dataTokenA: tokensBank.find((tkn) => tkn.address === tradeData.addressTokenA),
+        dataTokenB: tokensBank.find((tkn) => tkn.address === tradeData.addressTokenB),
+    };
+
+    console.log(tokenPair);
 
     const [isSellTokenPrimary, setIsSellTokenPrimary] = useState<boolean>(true);
 
