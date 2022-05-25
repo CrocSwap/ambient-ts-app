@@ -1,5 +1,5 @@
 export const tokenListURIs = {
-    croc: '/ambient-token-list.json',
+    ambient: '/ambient-token-list.json',
     uniswap: 'https://tokens.uniswap.org',
     coinmarketcap: 'https://api.coinmarketcap.com/data-api/v3/uniswap/all.json',
     aave: 'https://wispy-bird-88a7.uniswap.workers.dev/?url=http://tokenlist.aave.eth.link',

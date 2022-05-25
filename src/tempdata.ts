@@ -8,7 +8,7 @@ export const ambientTokenList = {
     },
     tags: {},
     logoURI: 'ipfs://QmNa8mQkrNKp1WEEeGjFezDmDeodkWRevGFN8JCV7b4Xir',
-    keywords: ['crocswap', 'default'],
+    keywords: ['crocswap', 'ambient', 'default'],
     tokens: [
         {
             name: 'Native Ether',
