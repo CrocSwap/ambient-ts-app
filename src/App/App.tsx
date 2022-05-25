@@ -35,9 +35,7 @@ import TestPage from '../pages/TestPage/TestPage';
 /** * **** Import Local Files *******/
 import './App.css';
 import initializeLocalStorage from './functions/initializeLocalStorage';
-import { fetchTokenLists } from './functions/fetchTokenLists';
 import { validateChain } from './validateChain';
-
 import { IParsedPosition, parsePositionArray } from './parsePositions';
 
 /** ***** React Function *******/
@@ -72,9 +70,6 @@ export default function App() {
     // }, [account, isAuthenticated, isWeb3EnableLoading]);
 
     initializeLocalStorage();
-
-    // fetch token lists from URIs if none are in local storage
-    if (!window.localStorage.allTokenLists) fetchTokenLists();
 
     // determine whether the user is connected to a supported chain
     // the user being connected to a non-supported chain or not being
