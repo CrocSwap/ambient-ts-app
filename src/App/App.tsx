@@ -64,38 +64,38 @@ export default function App() {
     }, [window.ethereum, account]);
 
     useEffect(() => {
-        // if (account) {
-        const endpoint = 'https://api.thegraph.com/subgraphs/name/a0910841082130913312/croc18';
-        const query = gql`
-            query ($userAddress: Bytes) {
-                user(id: $userAddress) {
-                    id
-                    positions {
+        if (account) {
+            const endpoint = 'https://api.thegraph.com/subgraphs/name/a0910841082130913312/croc22';
+            const query = gql`
+                query ($userAddress: Bytes) {
+                    user(id: $userAddress) {
                         id
-                        pool {
+                        positions {
                             id
-                            base
-                            quote
-                            poolIdx
+                            pool {
+                                id
+                                base
+                                quote
+                                poolIdx
+                            }
+                            ambient
+                            bidTick
+                            askTick
                         }
-                        ambient
-                        bidTick
-                        askTick
                     }
                 }
-            }
-        `;
-        const variables = {
-            userAddress: '0x5d42d6046927dee12b9b4a235be0cecd55d0e0fb',
-        };
-        request(
-            endpoint,
-            query,
-            variables,
-            // requestHeaders: headers,
-        ).then((data) => console.log(data));
-        // }
-    }, []);
+            `;
+            const variables = {
+                userAddress: account,
+            };
+            request(
+                endpoint,
+                query,
+                variables,
+                // requestHeaders: headers,
+            ).then((data) => console.log(data));
+        }
+    }, [account]);
 
     // useEffect(() => {
     //     if (!account && isAuthenticated && !isWeb3EnableLoading) {
