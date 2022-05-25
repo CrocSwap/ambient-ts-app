@@ -19,6 +19,7 @@ export default function Modal(props: ModalProps) {
     // JSX for the header element
     const headerJSX = (
         <header className={styles.modal_header}>
+            <div />
             <h2 className={styles.modal_title}>{title}</h2>
             <RiCloseFill size={27} className={styles.close_button} onClick={onClose} />
         </header>

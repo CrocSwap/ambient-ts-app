@@ -12,7 +12,7 @@ export default function RemovePosition() {
     const modalContent = <div>I am modal content</div>;
 
     const chooseTokenModal = (
-        <Modal onClose={closeModal} title='Modals title' content={modalContent}>
+        <Modal onClose={closeModal} title='Remove Position' content={modalContent}>
             <RemovePositionHeader />
             <div className={styles.main_content}>
                 <RemoveRangeWidth />

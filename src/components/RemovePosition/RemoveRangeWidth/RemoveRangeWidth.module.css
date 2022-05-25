@@ -59,6 +59,7 @@
     color: var(--text-grey-white);
     font-size: var(--header1-size);
     line-height: var(--header1-lh);
+    margin-right: 10px;
 }
 .percentage_options {
     display: flex;
@@ -75,6 +76,7 @@
 
 
 .percentage_option_buttons {
+    background: var(--dark1);
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
 
@@ -82,14 +84,15 @@
 
     margin: 4px !important;
     background: var(--dark3);
+    border-radius: 10px;
     padding: 0.5rem 1%;
 
     cursor: pointer;
 
     color: var(--text-grey-light);
     border: none;
-    border-radius: 0.5rem;
-    background-color: transparent;
+    
+   
 }
 .percentage_input {
     /* padding: 15px 0px;  */
