@@ -1,8 +1,8 @@
 import { fetchTokenLists } from './fetchTokenLists';
 import { ambientTokenList } from '../../tempdata';
 
-export default function initializeLocalStorage() {
-    console.log('ran function initializeLocalStorage()');
+export function useInitializeLocalStorage() {
+    console.log('ran function useInitializeLocalStorage()');
 
     // fetch token lists from URIs if none are in local storage
     if (!localStorage.allTokenLists) fetchTokenLists();

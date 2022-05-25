@@ -34,7 +34,7 @@ import TestPage from '../pages/TestPage/TestPage';
 
 /** * **** Import Local Files *******/
 import './App.css';
-import initializeLocalStorage from './functions/initializeLocalStorage';
+import { useInitializeLocalStorage } from './functions/useInitializeLocalStorage';
 import { validateChain } from './validateChain';
 import { IParsedPosition, parsePositionArray } from './parsePositions';
 
@@ -69,7 +69,7 @@ export default function App() {
     //     // eslint-disable-next-line
     // }, [account, isAuthenticated, isWeb3EnableLoading]);
 
-    initializeLocalStorage();
+    useInitializeLocalStorage();
 
     // determine whether the user is connected to a supported chain
     // the user being connected to a non-supported chain or not being
