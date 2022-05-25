@@ -34,10 +34,8 @@ import TestPage from '../pages/TestPage/TestPage';
 
 /** * **** Import Local Files *******/
 import './App.css';
-// import { useProvider } from './useProvider';
-import { fetchTokenLists } from './fetchTokenLists';
+import initializeLocalStorage from './functions/initializeLocalStorage';
 import { validateChain } from './validateChain';
-
 import { IParsedPosition, parsePositionArray } from './parsePositions';
 
 /** ***** React Function *******/
@@ -63,8 +61,15 @@ export default function App() {
         })();
     }, [window.ethereum, account]);
 
-    // fetch token lists from URIs if none are in local storage
-    if (!window.localStorage.allTokenLists) fetchTokenLists();
+    // useEffect(() => {
+    //     if (!account && isAuthenticated && !isWeb3EnableLoading) {
+    //         console.log('logging out');
+    //         clickLogout();
+    //     }
+    //     // eslint-disable-next-line
+    // }, [account, isAuthenticated, isWeb3EnableLoading]);
+
+    initializeLocalStorage();
 
     // determine whether the user is connected to a supported chain
     // the user being connected to a non-supported chain or not being
