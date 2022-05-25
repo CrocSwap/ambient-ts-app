@@ -42,8 +42,7 @@ import { IParsedPosition, parsePositionArray } from './parsePositions';
 
 /** ***** React Function *******/
 export default function App() {
-    const { chainId, isWeb3Enabled, account, logout, isAuthenticated, isWeb3EnableLoading } =
-        useMoralis();
+    const { chainId, isWeb3Enabled, account, logout, isAuthenticated } = useMoralis();
     const [showSidebar, setShowSidebar] = useState<boolean>(false);
     const location = useLocation();
 
