@@ -51,8 +51,6 @@ export default function Swap(props: ISwapProps) {
         dataTokenB: tokensBank.find((tkn) => tkn.address === tradeData.addressTokenB),
     };
 
-    console.log(tokenPair);
-
     const [isSellTokenPrimary, setIsSellTokenPrimary] = useState<boolean>(true);
 
     const daiKovanAddress = '0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa';
@@ -173,6 +171,7 @@ export default function Swap(props: ISwapProps) {
                 <DenominationSwitch />
                 <DividerDark />
                 <CurrencyConverter
+                    tokenPair={tokenPair}
                     isLiq={false}
                     poolPrice={poolPriceNonDisplay}
                     setIsSellTokenPrimary={setIsSellTokenPrimary}
