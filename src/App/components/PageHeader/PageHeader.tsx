@@ -52,7 +52,7 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
         const timer = setTimeout(() => {
             // console.log('waited 1 second');
             reenableWeb3();
-        }, 1000);
+        }, 500);
         return () => clearTimeout(timer);
     }, [user, account, props.metamaskLocked]);
 
@@ -60,8 +60,8 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
         // console.log('firing reenableWeb3');
         try {
             if (user && !account && !props.metamaskLocked) {
-                console.log('enabling web3');
-                console.log(props.metamaskLocked);
+                // console.log('enabling web3');
+                // console.log(props.metamaskLocked);
                 await enableWeb3();
             }
         } catch (err) {
