@@ -11,5 +11,8 @@ export default function initializeLocalStorage() {
 
     // retrieve the user object from local storage
     // putting it there then pulling it back is necessary to prevent overwrites
-    const userData = JSON.parse(localStorage.getItem('user') as string);
+    const user = JSON.parse(localStorage.getItem('user') as string);
+
+    // if user object does not have active token lists, initialize with ambient
+    if (!user.activeTokenLists) user.activeTokenLists = ['ambient'];
 }
