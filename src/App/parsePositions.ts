@@ -1,10 +1,17 @@
-import { AmbientLiqPos, RangeLiqPos, queryPos } from '@crocswap-libs/sdk';
+import {
+    AmbientLiqPos,
+    RangeLiqPos,
+    queryPos,
+    getTokenDecimals,
+    toDisplayPrice,
+} from '@crocswap-libs/sdk';
 import Moralis from 'moralis';
 import { JsonRpcProvider } from '@ethersproject/providers';
 
 export interface IParsedPosition {
     posHash: string;
-    positionType: string;
+    lpType: string;
+    positionStatus: string;
     txHashes: string[];
     ambientLiq: string;
     accumQuoteFees: string;
@@ -13,6 +20,8 @@ export interface IParsedPosition {
     baseQty: string;
     quoteQty: string;
     concLiq: string;
+    lowerPriceDisplay: number;
+    upperPriceDisplay: number;
     lastUpdated: string;
     burnPending: boolean;
     posDetail: { pos: AmbientLiqPos | RangeLiqPos };
@@ -58,6 +67,7 @@ export async function parsePositionArray(
                 provider as JsonRpcProvider,
             );
             if (pos) {
+                const lpType = pos.lpType;
                 const ambientLiq = pos.ambientLiq?.toString();
                 const accumQuoteFees = pos.accumQuoteFees?.toString();
                 const accumBaseFees = pos.accumBaseFees?.toString();
@@ -65,19 +75,43 @@ export async function parsePositionArray(
                 const baseQty = pos.baseQty?.toString();
                 const quoteQty = pos.quoteQty?.toString();
                 const concLiq = (pos as RangeLiqPos).concLiq?.toString();
-                const positionType =
-                    concLiq && concLiq !== '0'
-                        ? 'range'
-                        : ambientLiq && ambientLiq !== '0'
-                        ? 'ambient'
-                        : 'closed';
-                // pos.ambientLiq !== '0' ? 'ambient' : concLiq !== '0' ? 'range' : 'closed';
+                let positionStatus;
+                let lowerPriceDisplay = 0;
+                let upperPriceDisplay = 0;
+                if (lpType === 'range' && concLiq === '0') {
+                    positionStatus = 'closed';
+                } else if (lpType === 'ambient' && ambientLiq === '0') {
+                    positionStatus = 'closed';
+                } else {
+                    positionStatus = 'open';
+                    if (lpType === 'range') {
+                        const lowerPriceNonDisplay = pos.lowerPrice;
+                        const upperPriceNonDisplay = pos.upperPrice;
+                        const baseDecimals = await getTokenDecimals(pos.baseToken, provider);
+                        const quoteDecimals = await getTokenDecimals(pos.quoteToken, provider);
+                        lowerPriceDisplay = toDisplayPrice(
+                            lowerPriceNonDisplay,
+                            baseDecimals,
+                            quoteDecimals,
+                        );
+                        upperPriceDisplay = toDisplayPrice(
+                            upperPriceNonDisplay,
+                            baseDecimals,
+                            quoteDecimals,
+                        );
+                        // console.log({ lowerPriceNonDisplay });
+                        // console.log({ upperPriceNonDisplay });
+                        // console.log({ lowerPriceDisplay });
+                        // console.log({ upperPriceDisplay });
+                    }
+                }
 
                 positions = [
                     ...positions,
                     {
                         posHash: object.get('posHash'),
-                        positionType: positionType,
+                        lpType: lpType,
+                        positionStatus: positionStatus,
                         burnPending: false,
                         txHashes: [object.get('txHash')],
                         ambientLiq: ambientLiq,
@@ -87,6 +121,8 @@ export async function parsePositionArray(
                         baseQty: baseQty,
                         quoteQty: quoteQty,
                         concLiq: concLiq,
+                        lowerPriceDisplay: lowerPriceDisplay,
+                        upperPriceDisplay: upperPriceDisplay,
                         lastUpdated: object.get('createdAt').toString(),
                         posDetail: { pos },
                     },
