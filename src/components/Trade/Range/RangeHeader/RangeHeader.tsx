@@ -1,5 +1,5 @@
 import styles from './RangeHeader.module.css';
-import { HiDotsHorizontal } from 'react-icons/hi';
+import { FiSettings } from 'react-icons/fi';
 import ContentHeader from '../../../Global/ContentHeader/ContentHeader';
 
 export default function RangeHeader() {
@@ -7,7 +7,7 @@ export default function RangeHeader() {
         <ContentHeader>
             <span />
             <div className={styles.token_info}>ETH / DAI</div>
-            <HiDotsHorizontal />
+            <FiSettings />
         </ContentHeader>
     );
 

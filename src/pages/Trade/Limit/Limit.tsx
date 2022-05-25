@@ -5,6 +5,7 @@ import LimitDenominationSwitch from '../../../components/Trade/Limit/LimitDenomi
 import LimitExtraInfo from '../../../components/Trade/Limit/LimitExtraInfo/LimitExtraInfo';
 import LimitHeader from '../../../components/Trade/Limit/LimitHeader/LimitHeader';
 import { motion } from 'framer-motion';
+import DividerDark from '../../../components/Global/DividerDark/DividerDark';
 
 export default function Limit() {
     return (
@@ -17,6 +18,7 @@ export default function Limit() {
             <ContentContainer isOnTradeRoute>
                 <LimitHeader />
                 <LimitDenominationSwitch />
+                <DividerDark />
                 <LimitCurrencyConverter />
                 <LimitExtraInfo />
                 <LimitButton />

@@ -1,5 +1,6 @@
 .denomination_switch{
     display: flex;
+    justify-content: flex-end;
     align-items: center;
     gap: 0.5rem;
 
@@ -10,8 +11,26 @@
     color: var(--text-grey-light)
 }
 
-.denomination_content{
+
+.denomination_switch button{
     background: var(--dark3);
     min-width: 2rem;
     padding: 0.1rem;
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    text-align: center;
+    color: var(--text-grey-light);
+    outline: none;
+    border: solid 0.2px transparent;
 }
+
+.denomination_switch .active_button{
+    border: solid 0.2px transparent;
+    background-image: linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, 0)), linear-gradient(101deg, #7371FC, #CDC1FF, #7371FC
+    );
+    background-origin: border-box;
+    background-clip: content-box, border-box;
+    box-shadow: 2px 1000px 1px var(--dark3) inset;
+    transition: box-shadow 250ms ease-in-out;
+}
+

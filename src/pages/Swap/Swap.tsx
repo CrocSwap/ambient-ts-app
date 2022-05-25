@@ -32,6 +32,7 @@ import {
     TransactionError,
 } from '../../utils/TransactionError';
 import DenominationSwitch from '../../components/Swap/DenominationSwitch/DenomicationSwitch';
+import DividerDark from '../../components/Global/DividerDark/DividerDark';
 
 interface ISwapProps {
     provider: JsonRpcProvider;
@@ -170,6 +171,7 @@ export default function Swap(props: ISwapProps) {
             <ContentContainer isOnTradeRoute={isOnTradeRoute}>
                 <SwapHeader isOnTradeRoute={isOnTradeRoute} />
                 <DenominationSwitch />
+                <DividerDark />
                 <CurrencyConverter
                     isLiq={false}
                     poolPrice={poolPriceNonDisplay}

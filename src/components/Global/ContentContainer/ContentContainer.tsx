@@ -18,6 +18,14 @@ export default function ContentContainer(props: ContentContainerProps) {
         <main className={`$ ${customWidthStyle} ${customWidthAutoStyle} ${tradeRouteStyle}`}>
             <section className={`${styles.window} ${tradeRouteStyle} `}>
                 <div className={styles.main_content}>{props.children}</div>
+                {!isOnTradeRoute && (
+                    <>
+                        <div className={styles.circle}>
+                            <div className={styles.inner_circle} />
+                        </div>
+                        {/* <div className={styles.circle2}></div> */}
+                    </>
+                )}
             </section>
         </main>
     );

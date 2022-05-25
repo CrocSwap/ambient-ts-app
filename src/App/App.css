@@ -67,7 +67,7 @@ footer {
 
 .main-layout{
   transition: all 600ms ease-in-out;
-  background: var(--dark3);
+  /* background: var(--dark3); */
   min-height: calc(100vh - 5rem);
   margin-left: 5rem;
   /* padding: 1rem; */
