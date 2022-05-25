@@ -36,7 +36,7 @@ interface ISwapProps {
 }
 
 export default function Swap(props: ISwapProps) {
-    const { provider, isOnTradeRoute } = props;
+    const { provider, isOnTradeRoute, lastBlockNumber, nativeBalance, gasPriceinGwei } = props;
 
     const { Moralis } = useMoralis();
 
@@ -59,7 +59,7 @@ export default function Swap(props: ISwapProps) {
                 setPoolPriceNonDisplay(spotPrice);
             }
         })();
-    }, [props.lastBlockNumber]);
+    }, [lastBlockNumber]);
 
     const [poolPriceDisplay, setPoolPriceDisplay] = useState(0);
 
@@ -75,7 +75,7 @@ export default function Swap(props: ISwapProps) {
                 setPoolPriceDisplay(spotPriceDisplay);
             }
         })();
-    }, [props.lastBlockNumber]);
+    }, [lastBlockNumber]);
 
     const signer = provider?.getSigner();
 
@@ -163,14 +163,14 @@ export default function Swap(props: ISwapProps) {
                     isLiq={false}
                     poolPrice={poolPriceNonDisplay}
                     setIsSellTokenPrimary={setIsSellTokenPrimary}
-                    nativeBalance={truncateDecimals(parseFloat(props.nativeBalance), 4).toString()}
+                    nativeBalance={truncateDecimals(parseFloat(nativeBalance), 4).toString()}
                 />
                 <ExtraInfo
                     poolPriceDisplay={poolPriceDisplay}
                     slippageTolerance={5}
                     liquidityProviderFee={0.3}
                     quoteTokenIsBuy={true}
-                    gasPriceinGwei={props.gasPriceinGwei}
+                    gasPriceinGwei={gasPriceinGwei}
                 />
                 <SwapButton onClickFn={initiateSwap} />
             </ContentContainer>
