@@ -2,8 +2,7 @@ import { fetchTokenLists } from './fetchTokenLists';
 import { ambientTokenList } from '../../tempdata';
 
 export default function initializeLocalStorage() {
-    console.log('ran function initializeLocalStorage()');
-
+    // boolean to control whether local storage for user data needs updating
     let userUpdated = false;
 
     // fetch token lists from URIs if none are in local storage
