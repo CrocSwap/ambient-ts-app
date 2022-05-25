@@ -1,3 +1,5 @@
+
+
 import CurrencyConverter from '../../components/Swap/CurrencyConverter/CurrencyConverter';
 import ExtraInfo from '../../components/Swap/ExtraInfo/ExtraInfo';
 import ContentContainer from '../../components/Global/ContentContainer/ContentContainer';
@@ -12,25 +14,17 @@ import {
     POOL_PRIMARY,
     sendSwap,
     parseSwapEthersReceipt,
-    // toFixedNumber,
     EthersNativeReceipt,
-    // ParsedSwapReceipt,
 } from '@crocswap-libs/sdk';
 
 import { JsonRpcProvider } from '@ethersproject/providers';
 
 import { useMoralis } from 'react-moralis';
-// import { logger } from 'ethers';
 
-// import getContractEthDiff from '../../utils/EthDiff';
 import { handleParsedReceipt } from '../../utils/HandleParsedReceipt';
 import truncateDecimals from '../../utils/data/truncateDecimals';
 
-import {
-    // isTransactionFailedError,
-    isTransactionReplacedError,
-    TransactionError,
-} from '../../utils/TransactionError';
+import { isTransactionReplacedError, TransactionError } from '../../utils/TransactionError';
 import DenominationSwitch from '../../components/Swap/DenominationSwitch/DenomicationSwitch';
 import DividerDark from '../../components/Global/DividerDark/DividerDark';
 
@@ -45,16 +39,11 @@ interface ISwapProps {
 export default function Swap(props: ISwapProps) {
     const { provider, isOnTradeRoute } = props;
 
-    // console.log(props);
-
     const { Moralis } = useMoralis();
 
     const [isSellTokenPrimary, setIsSellTokenPrimary] = useState<boolean>(true);
 
-    // const sellTokenAddress = contractAddresses.ZERO_ADDR;
     const daiKovanAddress = '0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa';
-    // const usdcKovanAddress = '0xb7a4F3E9097C08dA09517b5aB877F7a917224ede';
-    // const buyTokenAddress = daiKovanAddress;
 
     const [poolPriceNonDisplay, setPoolPriceNonDisplay] = useState(0);
 
@@ -80,7 +69,6 @@ export default function Swap(props: ISwapProps) {
             const spotPriceDisplay = await getSpotPriceDisplay(
                 contractAddresses.ZERO_ADDR,
                 daiKovanAddress,
-                // usdcKovanAddress,
                 POOL_PRIMARY,
                 provider,
             );
