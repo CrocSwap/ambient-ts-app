@@ -53,7 +53,7 @@ export default function App() {
         (async () => {
             if (window.ethereum) {
                 const metamaskAccounts = await window.ethereum.request({ method: 'eth_accounts' });
-                console.log({ metamaskAccounts });
+                // console.log({ metamaskAccounts });
                 if (metamaskAccounts?.length > 0) {
                     setMetamaskLocked(false);
                 } else {
@@ -62,14 +62,6 @@ export default function App() {
             }
         })();
     }, [window.ethereum, account]);
-
-    // useEffect(() => {
-    //     if (!account && isAuthenticated && !isWeb3EnableLoading) {
-    //         console.log('logging out');
-    //         clickLogout();
-    //     }
-    //     // eslint-disable-next-line
-    // }, [account, isAuthenticated, isWeb3EnableLoading]);
 
     // fetch token lists from URIs if none are in local storage
     if (!window.localStorage.allTokenLists) fetchTokenLists();
@@ -97,14 +89,15 @@ export default function App() {
 
     const [provider, setProvider] = useState<ethers.providers.JsonRpcProvider>();
 
-    useEffect(() => {
-        console.log({ provider });
-    }, [provider]);
+    // useEffect(() => {
+    //     console.log({ provider });
+    // }, [provider]);
 
     useEffect(() => {
         try {
             if (provider && provider.connection?.url === 'metamask' && !metamaskLocked) {
-                console.log('metamask connected and unlocked');
+                return;
+                // console.log('metamask connected and unlocked');
             } else if (provider && provider.connection?.url === 'metamask' && metamaskLocked) {
                 clickLogout();
             } else if (window.ethereum && !metamaskLocked) {
@@ -113,7 +106,7 @@ export default function App() {
             } else if (provider) {
                 return;
             } else {
-                console.log('making new kovan speedy node provider');
+                // console.log('making new kovan speedy node provider');
                 setProvider(
                     new ethers.providers.JsonRpcProvider(
                         'https://speedy-nodes-nyc.moralis.io/015fffb61180886c9708499e/eth/kovan',
@@ -154,7 +147,7 @@ export default function App() {
         { autoFetch: true },
     );
 
-    // useEffect to dispatch new position data to RTK when
+    // useEffect to dispatch new position data to local state when
     // when the moralis query returns different data
     useEffect(() => {
         if (data) {
@@ -180,34 +173,6 @@ export default function App() {
         }
     }, [parsedPositionArray]);
 
-    // TODO: abstract this function to the 'connectWallet file', might
-    // TODO: ... make sense to change it to 'useWallet' and put the
-    // TODO: ... useEffect that calls it there as well
-    // function to connect a user's wallet
-    // async function connectWallet(provider: Signer) {
-    //     let nativeEthBalance = null;
-    //     if (isAuthenticated && isWeb3Enabled && account !== null) {
-    //         // this conditional is important because it prevents a TS error
-    //         // ... in assigning the value of the key 'chain' below
-    //         if (chainId && chainId === '0x2a') {
-    //             // function to pull back all token balances from users wallet
-    //             // const tokens = await Moralis.Web3API.account.getTokenBalances({
-    //             //     chain: chainId,
-    //             //     address: account,
-    //             // });
-    //             // function to pull back native token balance from wallet
-    //             nativeEthBalance = await getTokenBalanceDisplay(
-    //                 contractAddresses.ZERO_ADDR,
-    //                 account,
-    //                 provider,
-    //             );
-    //             // TODO: write code to marry nativeEthBalance into the array
-    //             // TODO: ... of other balances and return all
-    //             return nativeEthBalance;
-    //         }
-    //     }
-    // }
-
     // function to sever connection between user wallet and Moralis server
     const clickLogout = async () => {
         setNativeBalance('');
@@ -220,9 +185,6 @@ export default function App() {
         (async () => {
             if (provider && account && isAuthenticated && provider.connection?.url === 'metamask') {
                 const signer = provider.getSigner();
-                // run function pull back all balances in wallet
-                // console.log('running connectWallet');
-                // const balance = await connectWallet(provider as Signer);
                 const nativeEthBalance = await getTokenBalanceDisplay(
                     contractAddresses.ZERO_ADDR,
                     account,
@@ -251,7 +213,7 @@ export default function App() {
     }, [provider, chainId, lastBlockNumber]);
 
     // useEffect to get current block number
-    // on a 1 second interval
+    // on a 3 second interval
     // currently displayed in footer
     useEffect(() => {
         if (provider) {
@@ -260,7 +222,7 @@ export default function App() {
                 if (currentBlock !== lastBlockNumber) {
                     setLastBlockNumber(currentBlock);
                 }
-            }, 1000);
+            }, 3000);
             return () => clearInterval(interval);
         }
     }, [provider, chainId, lastBlockNumber]);
@@ -273,7 +235,6 @@ export default function App() {
     };
 
     // props for <Swap/> React element
-
     const swapProps = {
         provider: provider as JsonRpcProvider,
         gasPriceinGwei: gasPriceinGwei,
@@ -281,6 +242,7 @@ export default function App() {
         lastBlockNumber: lastBlockNumber,
     };
 
+    // props for <Swap/> React element on trade route
     const swapPropsTrade = {
         provider: provider as JsonRpcProvider,
         isOnTradeRoute: true,
