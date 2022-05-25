@@ -26,6 +26,7 @@ import DividerDark from '../../components/Global/DividerDark/DividerDark';
 import { handleParsedReceipt } from '../../utils/HandleParsedReceipt';
 import truncateDecimals from '../../utils/data/truncateDecimals';
 import { isTransactionReplacedError, TransactionError } from '../../utils/TransactionError';
+import { getCurrentTokens } from '../../utils/functions/processTokens';
 
 interface ISwapProps {
     provider: JsonRpcProvider;
@@ -38,7 +39,10 @@ interface ISwapProps {
 export default function Swap(props: ISwapProps) {
     const { provider, isOnTradeRoute, lastBlockNumber, nativeBalance, gasPriceinGwei } = props;
 
-    const { Moralis } = useMoralis();
+    const { Moralis, chainId } = useMoralis();
+
+    const tokensBank = getCurrentTokens(chainId as string);
+    console.log(tokensBank);
 
     const [isSellTokenPrimary, setIsSellTokenPrimary] = useState<boolean>(true);
 
