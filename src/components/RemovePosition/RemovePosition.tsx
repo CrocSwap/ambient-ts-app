@@ -1,6 +1,10 @@
 import Modal from '../Global/Modal/Modal';
 import styles from './RemovePosition.module.css';
 import { useModal } from '../Global/Modal/useModal';
+import RemoveRangeWidth from './RemoveRangeWidth/RemoveRangeWidth';
+import RemovePositionHeader from './RemovePositionHeader/RemovePositionHeader';
+import RemovePositionInfo from './RemovePositionInfo/RemovePositionInfo';
+import RemovePositionButton from './RemovePositionButton/RemovePositionButton';
 
 export default function RemovePosition() {
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -9,7 +13,12 @@ export default function RemovePosition() {
 
     const chooseTokenModal = (
         <Modal onClose={closeModal} title='Modals title' content={modalContent}>
-            {modalContent}
+            <RemovePositionHeader />
+            <div className={styles.main_content}>
+                <RemoveRangeWidth />
+                <RemovePositionInfo />
+                <RemovePositionButton />
+            </div>
         </Modal>
     );
 
