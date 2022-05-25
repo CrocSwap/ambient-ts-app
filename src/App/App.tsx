@@ -34,7 +34,7 @@ import TestPage from '../pages/TestPage/TestPage';
 
 /** * **** Import Local Files *******/
 import './App.css';
-// import { useProvider } from './useProvider';
+import initializeLocalStorage from './functions/initializeLocalStorage';
 import { fetchTokenLists } from './fetchTokenLists';
 import { validateChain } from './validateChain';
 
@@ -70,6 +70,8 @@ export default function App() {
     //     }
     //     // eslint-disable-next-line
     // }, [account, isAuthenticated, isWeb3EnableLoading]);
+
+    initializeLocalStorage();
 
     // fetch token lists from URIs if none are in local storage
     if (!window.localStorage.allTokenLists) fetchTokenLists();
