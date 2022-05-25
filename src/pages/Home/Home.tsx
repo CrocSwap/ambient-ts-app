@@ -7,7 +7,9 @@ export default function Home() {
     const modalContent = <div>I am modal content</div>;
 
     const chooseTokenModal = (
-        <Modal onClose={closeModal} title='Modals title' content={modalContent} />
+        <Modal onClose={closeModal} title='Modals title' content={modalContent}>
+            {modalContent}
+        </Modal>
     );
 
     const modalOrNull = isModalOpen ? chooseTokenModal : null;

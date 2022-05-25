@@ -2,16 +2,17 @@ import styles from './Modal.module.css';
 import { RiCloseFill } from 'react-icons/ri';
 
 interface ModalProps {
-    content: React.ReactNode;
+    content?: React.ReactNode;
     onClose: React.MouseEventHandler<HTMLElement | SVGElement>;
     title: string;
     footer?: React.ReactNode;
     noHeader?: boolean;
     noBackground?: boolean;
+    children: React.ReactNode;
 }
 
 export default function Modal(props: ModalProps) {
-    const { onClose, title, content, footer, noHeader, noBackground } = props;
+    const { onClose, title, content, footer, noHeader, noBackground, children } = props;
 
     // TODO: Create functionality to close modal with escape key.
 
@@ -43,7 +44,7 @@ export default function Modal(props: ModalProps) {
                 onClick={(e) => e.stopPropagation()}
             >
                 {headerOrNull}
-                <section className={styles.modal_content}>{content}</section>
+                <section className={styles.modal_content}>{children}</section>
                 {footerOrNull}
             </div>
         </div>
