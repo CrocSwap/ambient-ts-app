@@ -35,7 +35,7 @@ import TestPage from '../pages/TestPage/TestPage';
 /** * **** Import Local Files *******/
 import './App.css';
 import initializeLocalStorage from './functions/initializeLocalStorage';
-import { fetchTokenLists } from './fetchTokenLists';
+import { fetchTokenLists } from './functions/fetchTokenLists';
 import { validateChain } from './validateChain';
 
 import { IParsedPosition, parsePositionArray } from './parsePositions';
