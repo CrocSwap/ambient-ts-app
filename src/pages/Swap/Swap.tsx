@@ -1,12 +1,8 @@
-
-
-import CurrencyConverter from '../../components/Swap/CurrencyConverter/CurrencyConverter';
-import ExtraInfo from '../../components/Swap/ExtraInfo/ExtraInfo';
-import ContentContainer from '../../components/Global/ContentContainer/ContentContainer';
-import SwapHeader from '../../components/Swap/SwapHeader/SwapHeader';
-import SwapButton from '../../components/Swap/SwapButton/SwapButton';
-import { motion } from 'framer-motion';
+// START: Import React and Dongles
+import { useMoralis } from 'react-moralis';
 import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
+import { JsonRpcProvider } from '@ethersproject/providers';
 import {
     contractAddresses,
     getSpotPrice,
@@ -17,16 +13,19 @@ import {
     EthersNativeReceipt,
 } from '@crocswap-libs/sdk';
 
-import { JsonRpcProvider } from '@ethersproject/providers';
-
-import { useMoralis } from 'react-moralis';
-
-import { handleParsedReceipt } from '../../utils/HandleParsedReceipt';
-import truncateDecimals from '../../utils/data/truncateDecimals';
-
-import { isTransactionReplacedError, TransactionError } from '../../utils/TransactionError';
+// START: Import React Components
+import CurrencyConverter from '../../components/Swap/CurrencyConverter/CurrencyConverter';
+import ExtraInfo from '../../components/Swap/ExtraInfo/ExtraInfo';
+import ContentContainer from '../../components/Global/ContentContainer/ContentContainer';
+import SwapHeader from '../../components/Swap/SwapHeader/SwapHeader';
+import SwapButton from '../../components/Swap/SwapButton/SwapButton';
 import DenominationSwitch from '../../components/Swap/DenominationSwitch/DenomicationSwitch';
 import DividerDark from '../../components/Global/DividerDark/DividerDark';
+
+// START: Import Local Files
+import { handleParsedReceipt } from '../../utils/HandleParsedReceipt';
+import truncateDecimals from '../../utils/data/truncateDecimals';
+import { isTransactionReplacedError, TransactionError } from '../../utils/TransactionError';
 
 interface ISwapProps {
     provider: JsonRpcProvider;
