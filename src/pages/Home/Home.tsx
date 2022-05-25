@@ -1,5 +1,6 @@
 import Modal from '../../components/Global/Modal/Modal';
 import { useModal } from '../../components/Global/Modal/useModal';
+import RemovePosition from '../../components/RemovePosition/RemovePosition';
 
 export default function Home() {
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -19,6 +20,7 @@ export default function Home() {
             <h1>This is Home.tsx</h1>
             {modalOrNull}
             <button onClick={openModal}>OPEN MODAL</button>
+            <RemovePosition />
         </main>
     );
 }
