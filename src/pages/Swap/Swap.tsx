@@ -28,6 +28,7 @@ import truncateDecimals from '../../utils/data/truncateDecimals';
 import { isTransactionReplacedError, TransactionError } from '../../utils/TransactionError';
 import { getCurrentTokens } from '../../utils/functions/processTokens';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
+import { TokenIF } from '../../utils/interfaces/TokenIF';
 
 interface ISwapProps {
     provider: JsonRpcProvider;
@@ -44,11 +45,15 @@ export default function Swap(props: ISwapProps) {
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
-    const tokensBank = getCurrentTokens(chainId as string);
+    // for some reason chaining the .filter here works fine, but filtering inside
+    // ... the function being called creates a race condition... whatever, it works
+    const tokensBank = getCurrentTokens(chainId as string).filter(
+        (tkn: TokenIF) => tkn.chainId === 42,
+    );
 
     const tokenPair = {
-        dataTokenA: tokensBank.find((tkn) => tkn.address === tradeData.addressTokenA),
-        dataTokenB: tokensBank.find((tkn) => tkn.address === tradeData.addressTokenB),
+        dataTokenA: tokensBank.find((tkn: TokenIF) => tkn.address === tradeData.addressTokenA),
+        dataTokenB: tokensBank.find((tkn: TokenIF) => tkn.address === tradeData.addressTokenB),
     };
 
     const [isSellTokenPrimary, setIsSellTokenPrimary] = useState<boolean>(true);
