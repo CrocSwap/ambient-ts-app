@@ -77,7 +77,7 @@ export default function Trade() {
         <motion.main
             initial={{ width: 0 }}
             animate={{ width: '100%' }}
-            exit={{ x: window.innerWidth, transition: { duration: 0.1 } }}
+            exit={{ x: window.innerWidth, transition: { duration: 0.4 } }}
             data-testid={'trade'}
         >
             {/* <h1>This is Trade.tsx</h1> */}

@@ -1,12 +1,13 @@
 import styles from './Sidebar.module.css';
 import { BiSearch } from 'react-icons/bi';
-import { MdPlayArrow, MdDoubleArrow } from 'react-icons/md';
+import { MdPlayArrow, MdDoubleArrow, MdMenuOpen } from 'react-icons/md';
 import favouritePoolsImage from '../../../assets/images/sidebarImages/favouritePools.svg';
 import openOrdersImage from '../../../assets/images/sidebarImages/openOrders.svg';
 import rangePositionsImage from '../../../assets/images/sidebarImages/rangePositions.svg';
 import recentTransactionsImage from '../../../assets/images/sidebarImages/recentTransactions.svg';
 import topPoolsImage from '../../../assets/images/sidebarImages/topPools.svg';
 import topTokensImage from '../../../assets/images/sidebarImages/topTokens.svg';
+import sidebarExpandImage from '../../../assets/images/sidebarImages/sidebarExpand.svg';
 
 interface SidebarProps {
     showSidebar: boolean;
@@ -49,7 +50,8 @@ export default function Sidebar(props: SidebarProps): React.ReactElement<Sidebar
                     <li className={styles.logo}>
                         <div className={styles.sidebar_link}>
                             <div onClick={toggleSidebar}>
-                                <MdDoubleArrow size={30} />
+                                <MdDoubleArrow size={20} color='#7371FC' />
+                                {/* <img src={sidebarExpandImage} alt="" /> */}
                             </div>
                         </div>
                     </li>
@@ -58,7 +60,7 @@ export default function Sidebar(props: SidebarProps): React.ReactElement<Sidebar
                     {navItems1.map((item, idx) => (
                         <li key={idx} className={styles.sidebar_item}>
                             <div className={styles.sidebar_link}>
-                                <MdPlayArrow size={20} color='#ffffff' />
+                                <MdPlayArrow size={12} color='#ffffff' />
                                 <img src={item.icon} alt={item.name} />
 
                                 <span className={styles.link_text}>{item.name}</span>
@@ -70,7 +72,7 @@ export default function Sidebar(props: SidebarProps): React.ReactElement<Sidebar
                         {navItems2.map((item, idx) => (
                             <li key={idx} className={styles.sidebar_item} id='themeButton'>
                                 <div className={styles.sidebar_link}>
-                                    <MdPlayArrow size={20} color='#ffffff' />
+                                    <MdPlayArrow size={12} color='#ffffff' />
                                     <img src={item.icon} alt={item.name} />
 
                                     <span className={styles.link_text}>{item.name}</span>
