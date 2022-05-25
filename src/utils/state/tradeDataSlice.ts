@@ -57,6 +57,15 @@ export const tradeDataSlice = createSlice({
         toggleDexBalTokenB: (state) => {
             state.dexBalTokenB = !state.dexBalTokenB;
         },
+        resetValues: (state) => {
+            state.addressTokenA = initialState.addressTokenA;
+            state.addressTokenB = initialState.addressTokenB;
+            state.denomInBase = initialState.denomInBase;
+            state.primQty = initialState.primQty;
+            state.isTokenABase = initialState.isTokenABase;
+            state.dexBalTokenA = initialState.dexBalTokenA;
+            state.dexBalTokenB = initialState.dexBalTokenB;
+        },
     },
 });
 
