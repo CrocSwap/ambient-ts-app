@@ -48,6 +48,7 @@ interface IRangeProps {
 import { useMoralis, useNewMoralisObject } from 'react-moralis';
 
 import truncateDecimals from '../../../utils/data/truncateDecimals';
+import DividerDark from '../../../components/Global/DividerDark/DividerDark';
 
 export default function Range(props: IRangeProps) {
     const { save } = useNewMoralisObject('UserPosition');
@@ -258,6 +259,7 @@ export default function Range(props: IRangeProps) {
             <ContentContainer isOnTradeRoute>
                 <RangeHeader />
                 {denominationSwitch}
+                <DividerDark />
                 <RangeCurrencyConverter />
                 {advancedMode ? advancedModeContent : baseModeContent}
                 <RangeButton onClickFn={sendTransaction} />

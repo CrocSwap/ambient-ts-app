@@ -1,13 +1,12 @@
 import styles from './Sidebar.module.css';
 import { BiSearch } from 'react-icons/bi';
-import { MdPlayArrow, MdDoubleArrow, MdMenuOpen } from 'react-icons/md';
+import { MdPlayArrow, MdDoubleArrow } from 'react-icons/md';
 import favouritePoolsImage from '../../../assets/images/sidebarImages/favouritePools.svg';
 import openOrdersImage from '../../../assets/images/sidebarImages/openOrders.svg';
 import rangePositionsImage from '../../../assets/images/sidebarImages/rangePositions.svg';
 import recentTransactionsImage from '../../../assets/images/sidebarImages/recentTransactions.svg';
 import topPoolsImage from '../../../assets/images/sidebarImages/topPools.svg';
 import topTokensImage from '../../../assets/images/sidebarImages/topTokens.svg';
-import sidebarExpandImage from '../../../assets/images/sidebarImages/sidebarExpand.svg';
 
 interface SidebarProps {
     showSidebar: boolean;

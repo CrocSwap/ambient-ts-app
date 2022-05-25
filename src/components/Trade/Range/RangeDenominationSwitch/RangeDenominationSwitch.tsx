@@ -7,22 +7,27 @@ interface IRangeDenominationSwitchProps {
 }
 
 export default function RangeDenominationSwitch(props: IRangeDenominationSwitchProps) {
+    const { denominationsInBase, setDenominationsInBase } = props;
     const toggleDenomination = () => {
-        props.denominationsInBase
-            ? props.setDenominationsInBase(false)
-            : props.setDenominationsInBase(true);
+        denominationsInBase ? setDenominationsInBase(false) : setDenominationsInBase(true);
     };
 
     return (
         <div className={styles.denomination_switch}>
             <div>Denomination</div>
-            <div className={styles.denomination_content}>
-                <button onClick={toggleDenomination}>ETH</button>
-            </div>
-            <div className={styles.denomination_content}>
-                {' '}
-                <span>DAI</span>
-            </div>
+            <button
+                className={!denominationsInBase ? styles.active_button : styles.non_active_button}
+                onClick={toggleDenomination}
+            >
+                ETH
+            </button>
+
+            <button
+                className={denominationsInBase ? styles.active_button : styles.non_active_button}
+                onClick={toggleDenomination}
+            >
+                DAI
+            </button>
         </div>
     );
 }
