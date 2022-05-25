@@ -37,7 +37,7 @@ export const tradeDataSlice = createSlice({
             state.denomInBase = !state.denomInBase;
         },
         setPrimQty: (state, action: PayloadAction<string>) => {
-            state.addressTokenB = action.payload;
+            state.primQty = action.payload;
         },
         setIsTokenABase: (state, action: PayloadAction<boolean>) => {
             state.isTokenABase = action.payload;
