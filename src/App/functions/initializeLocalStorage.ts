@@ -14,5 +14,7 @@ export default function initializeLocalStorage() {
     const user = JSON.parse(localStorage.getItem('user') as string);
 
     // if user object does not have active token lists, initialize with ambient
-    if (!user.activeTokenLists) user.activeTokenLists = ['ambient'];
+    if (!user.activeTokenLists || user.activeTokenLists.length) {
+        user.activeTokenLists = ['ambient'];
+    }
 }
