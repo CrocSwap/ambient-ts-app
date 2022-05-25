@@ -1,6 +1,6 @@
 /** ***** START: Import React and Dongles *******/
 import { NavLink } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useMoralis } from 'react-moralis';
 /** ***** END: Import React and Dongles *********/
 
@@ -17,6 +17,7 @@ import ambientLogo from '../../../assets/images/logos/ambient_logo.svg';
 interface IHeaderProps {
     nativeBalance: string;
     clickLogout: () => void;
+    metamaskLocked: boolean;
 }
 
 export default function PageHeader(props: IHeaderProps): React.ReactElement<IHeaderProps> {
@@ -24,10 +25,10 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
         useMoralis();
 
     // function to authenticate wallet with Moralis server
-    const clickLogin = async () => {
+    const clickLogin = () => {
         console.log('user clicked Login');
         if (!isAuthenticated || !isWeb3Enabled) {
-            await authenticate({
+            authenticate({
                 provider: 'metamask',
                 signingMessage: 'Ambient API Authentication.',
                 onSuccess: () => {
@@ -37,6 +38,10 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
                     authenticate({
                         provider: 'metamask',
                         signingMessage: 'Ambient API Authentication.',
+                        onSuccess: () => {
+                            enableWeb3;
+                            // alert('🎉');
+                        },
                     });
                 },
             });
@@ -44,14 +49,25 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
     };
 
     useEffect(() => {
+        const timer = setTimeout(() => {
+            // console.log('waited 1 second');
+            reenableWeb3();
+        }, 1000);
+        return () => clearTimeout(timer);
+    }, [user, account, props.metamaskLocked]);
+
+    const reenableWeb3 = useCallback(async () => {
+        // console.log('firing reenableWeb3');
         try {
-            if (user && !account) {
-                enableWeb3();
+            if (user && !account && !props.metamaskLocked) {
+                console.log('enabling web3');
+                console.log(props.metamaskLocked);
+                await enableWeb3();
             }
         } catch (err) {
             console.warn(`Could not automatically bridge Moralis to wallet. Error follows: ${err}`);
         }
-    });
+    }, [user, account, props.metamaskLocked]);
 
     // rive component
     const STATE_MACHINE_NAME = 'Basic State Machine';
