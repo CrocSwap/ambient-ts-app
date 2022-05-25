@@ -4,6 +4,7 @@ import { JsonRpcProvider } from '@ethersproject/providers';
 
 export interface IParsedPosition {
     posHash: string;
+    positionType: string;
     txHashes: string[];
     ambientLiq: string;
     accumQuoteFees: string;
@@ -64,11 +65,19 @@ export async function parsePositionArray(
                 const baseQty = pos.baseQty?.toString();
                 const quoteQty = pos.quoteQty?.toString();
                 const concLiq = (pos as RangeLiqPos).concLiq?.toString();
+                const positionType =
+                    concLiq && concLiq !== '0'
+                        ? 'range'
+                        : ambientLiq && ambientLiq !== '0'
+                        ? 'ambient'
+                        : 'closed';
+                // pos.ambientLiq !== '0' ? 'ambient' : concLiq !== '0' ? 'range' : 'closed';
 
                 positions = [
                     ...positions,
                     {
                         posHash: object.get('posHash'),
+                        positionType: positionType,
                         burnPending: false,
                         txHashes: [object.get('txHash')],
                         ambientLiq: ambientLiq,
