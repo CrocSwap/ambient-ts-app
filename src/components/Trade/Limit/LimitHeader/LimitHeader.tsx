@@ -1,5 +1,5 @@
 import styles from './LimitHeader.module.css';
-import { HiDotsHorizontal } from 'react-icons/hi';
+import { FiSettings } from 'react-icons/fi';
 import ContentHeader from '../../../Global/ContentHeader/ContentHeader';
 
 export default function LimitHeader() {
@@ -7,7 +7,7 @@ export default function LimitHeader() {
         <ContentHeader>
             <span />
             <div className={styles.token_info}>ETH / USDC</div>
-            <HiDotsHorizontal />
+            <FiSettings />
         </ContentHeader>
     );
 
