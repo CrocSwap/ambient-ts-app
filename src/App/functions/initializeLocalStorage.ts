@@ -1,8 +1,10 @@
 import { fetchTokenLists } from './fetchTokenLists';
 import { ambientTokenList } from '../../tempdata';
 
-export function useInitializeLocalStorage() {
-    console.log('ran function useInitializeLocalStorage()');
+export default function initializeLocalStorage() {
+    console.log('ran function initializeLocalStorage()');
+
+    let userUpdated = false;
 
     // fetch token lists from URIs if none are in local storage
     if (!localStorage.allTokenLists) fetchTokenLists();
@@ -17,11 +19,16 @@ export function useInitializeLocalStorage() {
     // if user object does not have active token lists, initialize with ambient
     if (!user.activeTokenLists || user.activeTokenLists.length) {
         user.activeTokenLists = ['ambient'];
+        userUpdated = true;
     }
 
     // if local storage does not have developmental token list, initialize with
     // ... tokens from the ambient list hardcoded locally
     if (!localStorage.testTokens) {
         localStorage.setItem('testTokens', JSON.stringify(ambientTokenList.tokens));
+    }
+
+    if (userUpdated) {
+        localStorage.setItem('user', JSON.stringify(user));
     }
 }
