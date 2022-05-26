@@ -6,6 +6,8 @@ import {
     ethers,
 } from 'ethers';
 
+import { request, gql } from 'graphql-request';
+
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { useMoralis, useMoralisQuery, useMoralisSubscription } from 'react-moralis';
 import Moralis from 'moralis/types';
@@ -60,6 +62,40 @@ export default function App() {
             }
         })();
     }, [window.ethereum, account]);
+
+    useEffect(() => {
+        if (account) {
+            const endpoint = 'https://api.thegraph.com/subgraphs/name/a0910841082130913312/croc22';
+            const query = gql`
+                query ($userAddress: Bytes) {
+                    user(id: $userAddress) {
+                        id
+                        positions {
+                            id
+                            pool {
+                                id
+                                base
+                                quote
+                                poolIdx
+                            }
+                            ambient
+                            bidTick
+                            askTick
+                        }
+                    }
+                }
+            `;
+            const variables = {
+                userAddress: account,
+            };
+            request(
+                endpoint,
+                query,
+                variables,
+                // requestHeaders: headers,
+            ).then((data) => console.log(data));
+        }
+    }, [account]);
 
     // useEffect(() => {
     //     if (!account && isAuthenticated && !isWeb3EnableLoading) {
