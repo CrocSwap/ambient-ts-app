@@ -34,7 +34,6 @@ import {
 } from '../../utils/TransactionError';
 import DenominationSwitch from '../../components/Swap/DenominationSwitch/DenomicationSwitch';
 import DividerDark from '../../components/Global/DividerDark/DividerDark';
-import { StylesProvider } from '@material-ui/core';
 
 interface ISwapProps {
     provider: JsonRpcProvider;

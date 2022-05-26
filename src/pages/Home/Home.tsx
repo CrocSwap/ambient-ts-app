@@ -1,27 +1,6 @@
-import Modal from '../../components/Global/Modal/Modal';
-import { useModal } from '../../components/Global/Modal/useModal';
-import ambientLogo from '../../assets/images/logos/ambient_logo.svg';
 import styles from './Home.module.css';
 
 export default function Home() {
-    const [isModalOpen, openModal, closeModal] = useModal();
-
-    const modalContent = <div>I am modal content</div>;
-
-    const chooseTokenModal = (
-        <Modal onClose={closeModal} title='Modals title' content={modalContent}>
-            {modalContent}
-        </Modal>
-    );
-
-    const modalOrNull = isModalOpen ? chooseTokenModal : null;
-
-    const ambientImage = (
-        <div className={styles.ambient_image}>
-            <img src={ambientLogo} alt='ambient' />
-        </div>
-    );
-
     const ambientText = (
         <div className={styles.text_container}>
             <div className={`${styles.sign} ${styles.light}`} id='one'>
