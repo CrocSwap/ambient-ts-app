@@ -60,7 +60,6 @@ export default function Range(props: IRangeProps) {
     const [poolPriceNonDisplay, setPoolPriceNonDisplay] = useState(0);
     const [poolPriceDisplay, setPoolPriceDisplay] = useState('');
     const [rangeWidthPercentage, setRangeWidthPercentage] = useState(100);
-    const [liquidityForBase, setLiquidityForBase] = useState(BigNumber.from(0));
     const [denominationsInBase, setDenominationsInBase] = useState(false);
 
     const { Moralis, user, account, chainId } = useMoralis();
@@ -125,7 +124,7 @@ export default function Range(props: IRangeProps) {
             if (signer) {
                 let tx;
                 if (isAmbient) {
-                    console.log({ liquidityForBase });
+                    console.log({ liquidity });
                     console.log({ poolWeiPriceLowLimit });
                     console.log({ poolWeiPriceHighLimit });
                     console.log({ tokenAQty });
