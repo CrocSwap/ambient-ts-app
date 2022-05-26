@@ -1,5 +1,7 @@
 /** ***** Import React and Dongles *******/
 import { useEffect, useState } from 'react';
+import { useAppDispatch } from '../utils/hooks/reduxToolkit';
+import { setPositionsByUser } from '../utils/state/graphDataSlice';
 import {
     // Signer,
     utils,
@@ -45,6 +47,8 @@ export default function App() {
     const { chainId, isWeb3Enabled, account, logout, isAuthenticated } = useMoralis();
     const [showSidebar, setShowSidebar] = useState<boolean>(false);
     const location = useLocation();
+
+    const dispatch = useAppDispatch();
 
     const [metamaskLocked, setMetamaskLocked] = useState<boolean>(true);
     const [lastBlockNumber, setLastBlockNumber] = useState<number>(0);
@@ -93,17 +97,17 @@ export default function App() {
                 query,
                 variables,
                 // requestHeaders: headers,
-            ).then((data) => console.log(data));
+            ).then((data) => {
+                dispatch(setPositionsByUser(data.user));
+            });
         }
     }, [account]);
 
+    // const graphData = useAppSelector((state) => state.graphData);
+
     // useEffect(() => {
-    //     if (!account && isAuthenticated && !isWeb3EnableLoading) {
-    //         console.log('logging out');
-    //         clickLogout();
-    //     }
-    //     // eslint-disable-next-line
-    // }, [account, isAuthenticated, isWeb3EnableLoading]);
+    //     console.log({ graphData });
+    // }, [graphData]);
 
     initializeLocalStorage();
 
