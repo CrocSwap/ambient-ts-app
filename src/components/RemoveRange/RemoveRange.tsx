@@ -1,7 +1,7 @@
 import styles from './RemoveRange.module.css';
 import RemoveRangeWidth from './RemoveRangeWidth/RemoveRangeWidth';
 import RemoveRangeHeader from './RemoveRangeHeader/RemoveRangeHeader';
-import RemoveRangeInfo from './RemoveRangeInfo/RemoveRangenfo';
+import RemoveRangeInfo from './RemoveRangeInfo/RemoveRangInfo';
 import RemoveRangeButton from './RemoveRangeButton/RemoveRangeButton';
 
 export default function RemoveRange() {

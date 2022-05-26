@@ -5,6 +5,8 @@ import Modal from '../Modal/Modal';
 import { useState } from 'react';
 
 import RemoveRange from '../../RemoveRange/RemoveRange';
+import RangeDetails from '../../RangeDetails/RangeDetails';
+import RangeDetailsHeader from '../../RangeDetails/RangeDetailsHeader/RangeDetailsHeader';
 export default function Position() {
     const [isModalOpen, openModal, closeModal] = useModal();
 
@@ -12,11 +14,10 @@ export default function Position() {
 
     const harvestContent = <div>I am harvest</div>;
     const editContent = <div>I am edit</div>;
-    const detailsContent = <div>I am details</div>;
 
     // MODAL FUNCTIONALITY
     let modalContent: React.ReactNode;
-    let modalTitle = 'Modal Title';
+    let modalTitle;
 
     switch (currentModal) {
         case 'remove':
@@ -28,8 +29,8 @@ export default function Position() {
             modalTitle = 'Edit Position';
             break;
         case 'details':
-            modalContent = detailsContent;
-            modalTitle = 'Position Details';
+            modalContent = <RangeDetails />;
+            modalTitle = <RangeDetailsHeader />;
             break;
         case 'harvest':
             modalContent = harvestContent;
