@@ -45,11 +45,9 @@ export default function Swap(props: ISwapProps) {
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
-    // for some reason chaining the .filter here works fine, but filtering inside
-    // ... the function being called creates a race condition... whatever, it works
-    const tokensBank = getCurrentTokens(chainId as string).filter(
-        (tkn: TokenIF) => tkn.chainId === 42,
-    );
+    // get current tokens for the active chain
+    // if called before Moralis can initialize use kovan
+    const tokensBank = getCurrentTokens(chainId ?? '0x2a');
 
     const tokenPair = {
         dataTokenA: tokensBank.find((tkn: TokenIF) => tkn.address === tradeData.addressTokenA),
