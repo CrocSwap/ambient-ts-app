@@ -1,7 +1,7 @@
 import RangeStatus from '../../Global/RangeStatus/RangeStatus';
-import styles from './RemovePositionHeader.module.css';
+import styles from './RemoveRangeHeader.module.css';
 
-export default function RemovePositionHeader() {
+export default function RemoveRangeHeader() {
     return (
         <div className={styles.container}>
             <div className={styles.token_info}>

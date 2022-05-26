@@ -1,8 +1,8 @@
-import styles from './RemovePositionInfo.module.css';
+import styles from './RemoveRangeInfo.module.css';
 import Row from '../../Global/Row/Row';
 import Divider from '../../Global/Divider/Divider';
 
-export default function RemovePositionInfo() {
+export default function RemoveRangeInfo() {
     return (
         <div className={styles.row}>
             <div className={styles.remove_position_info}>

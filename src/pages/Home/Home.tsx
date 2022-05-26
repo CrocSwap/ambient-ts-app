@@ -1,6 +1,6 @@
 import Modal from '../../components/Global/Modal/Modal';
 import { useModal } from '../../components/Global/Modal/useModal';
-import RemovePosition from '../../components/RemovePosition/RemovePosition';
+import RemovePosition from '../../components/RemoveRange/RemoveRange';
 
 export default function Home() {
     const [isModalOpen, openModal, closeModal] = useModal();
