@@ -308,9 +308,10 @@ export default function App() {
     };
 
     const mainLayoutStyle = showSidebar ? 'main-layout-2' : 'main-layout';
-
+    // take away margin from left if we are on homepage or swap
     const noSidebarStyle =
         currentLocation == '/' || currentLocation == '/swap' ? 'no-sidebar' : mainLayoutStyle;
+    const swapBodyStyle = currentLocation == '/swap' ? 'swap-body' : null;
 
     return (
         <>
@@ -319,7 +320,7 @@ export default function App() {
                 {currentLocation !== '/' && currentLocation !== '/swap' && (
                     <Sidebar {...sidebarProps} />
                 )}
-                <div className={noSidebarStyle}>
+                <div className={`${noSidebarStyle} ${swapBodyStyle}`}>
                     <Routes>
                         <Route index element={<Home />} />
                         <Route path='trade' element={<Trade />}>
