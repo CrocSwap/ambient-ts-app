@@ -1,5 +1,6 @@
 import Modal from '../../components/Global/Modal/Modal';
 import { useModal } from '../../components/Global/Modal/useModal';
+import RemovePosition from '../../components/RemoveRange/RemoveRange';
 
 export default function Home() {
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -7,7 +8,9 @@ export default function Home() {
     const modalContent = <div>I am modal content</div>;
 
     const chooseTokenModal = (
-        <Modal onClose={closeModal} title='Modals title' content={modalContent} />
+        <Modal onClose={closeModal} title='Modals title' content={modalContent}>
+            {modalContent}
+        </Modal>
     );
 
     const modalOrNull = isModalOpen ? chooseTokenModal : null;
@@ -17,6 +20,7 @@ export default function Home() {
             <h1>This is Home.tsx</h1>
             {modalOrNull}
             <button onClick={openModal}>OPEN MODAL</button>
+            <RemovePosition />
         </main>
     );
 }
