@@ -55,7 +55,7 @@ body{
   padding: 0 1rem;
 
 }
-  
+ 
 
 footer {
   position: relative;
@@ -73,6 +73,12 @@ footer {
   /* padding: 1rem; */
 
 }
+
+.no-sidebar{
+  margin-left: 0;
+  transition: all 600ms ease-in-out;
+  min-height: calc(100vh - 5rem);
+}
 .main-layout-2{
   transition: all 700ms ease-in-out;
   /* background: var(--dark3); */
@@ -81,6 +87,7 @@ footer {
 }
 .content-container {
   min-height: calc(100vh - 4rem);
+
 }
 
 .primary_apy{

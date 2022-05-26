@@ -119,7 +119,7 @@ export default function App() {
 
     function toggleSidebarBasedOnRoute() {
         setShowSidebar(true);
-        if (currentLocation === '/') {
+        if (currentLocation === '/' || currentLocation === '/swap') {
             setShowSidebar(false);
         }
     }
@@ -309,12 +309,17 @@ export default function App() {
 
     const mainLayoutStyle = showSidebar ? 'main-layout-2' : 'main-layout';
 
+    const noSidebarStyle =
+        currentLocation == '/' || currentLocation == '/swap' ? 'no-sidebar' : mainLayoutStyle;
+
     return (
         <>
             <div className='content-container'>
                 <PageHeader {...headerProps} />
-                <Sidebar {...sidebarProps} />
-                <div className={mainLayoutStyle}>
+                {currentLocation !== '/' && currentLocation !== '/swap' && (
+                    <Sidebar {...sidebarProps} />
+                )}
+                <div className={noSidebarStyle}>
                     <Routes>
                         <Route index element={<Home />} />
                         <Route path='trade' element={<Trade />}>
