@@ -14,10 +14,10 @@
   
   .window {
     position: relative;
-    margin-top: 50px;
+    /* margin-top: 50px; */
     
     color: var(--text-grey-light);
-    border-radius: 24px;
+    border-radius: 4px;
     
     background-color: var(--dark1);
     background: linear-gradient(to right, #0E131A, #CDC1FF, #13122d);
@@ -31,6 +31,8 @@
     transition: 0.5s ease;  
 
     
+
+    
   }
  
 
@@ -39,16 +41,14 @@
   .main_content{
     background-color: var(--dark1);
     padding: 1rem;
-    border-radius: 24px;
+    border-radius: 4px;
+    
    
 
-   
-    
-    
-    
     
   }
 
+  
   .circle, .circle2{
    display: none;
 }

@@ -55,7 +55,7 @@ body{
   padding: 0 1rem;
 
 }
-  
+ 
 
 footer {
   position: relative;
@@ -68,19 +68,35 @@ footer {
 .main-layout{
   transition: all 600ms ease-in-out;
   /* background: var(--dark3); */
-  min-height: calc(100vh - 5rem);
+  /* min-height: calc(100vh - 5rem); */
   margin-left: 5rem;
   /* padding: 1rem; */
 
 }
+
+.no-sidebar{
+  margin-left: 0;
+  transition: all 10ms ease-in-out;
+  /* min-height: calc(100vh - 5rem); */
+}
 .main-layout-2{
   transition: all 700ms ease-in-out;
   /* background: var(--dark3); */
-  min-height: calc(100vh - 5rem);
+  /* min-height: calc(100vh - 5rem); */
   
+}
+.swap-body{
+  background: #171D27;
+   min-height: calc(100vh - 8rem); 
+
+   display: flex;
+   justify-content: center;
+   align-items: center;
+ 
 }
 .content-container {
   min-height: calc(100vh - 4rem);
+
 }
 
 .primary_apy{
