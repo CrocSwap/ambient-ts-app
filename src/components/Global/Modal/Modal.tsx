@@ -12,7 +12,7 @@ interface ModalProps {
 }
 
 export default function Modal(props: ModalProps) {
-    const { onClose, title, content, footer, noHeader, noBackground, children } = props;
+    const { onClose, title, footer, noHeader, noBackground, children } = props;
 
     // TODO: Create functionality to close modal with escape key.
 
