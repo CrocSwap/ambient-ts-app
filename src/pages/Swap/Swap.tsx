@@ -29,7 +29,7 @@ import { isTransactionReplacedError, TransactionError } from '../../utils/Transa
 import { getCurrentTokens } from '../../utils/functions/processTokens';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
-
+import { kovanETH, kovanUSDC } from './defaultTokens';
 interface ISwapProps {
     provider: JsonRpcProvider;
     isOnTradeRoute?: boolean;
@@ -49,9 +49,14 @@ export default function Swap(props: ISwapProps) {
     // if called before Moralis can initialize use kovan
     const tokensBank = getCurrentTokens(chainId ?? '0x2a');
 
+    const findTknByAddr = (addr: string) => {
+        const tk = tokensBank.find((tkn: TokenIF) => tkn.address === addr);
+        return tk;
+    };
+
     const tokenPair = {
-        dataTokenA: tokensBank.find((tkn: TokenIF) => tkn.address === tradeData.addressTokenA),
-        dataTokenB: tokensBank.find((tkn: TokenIF) => tkn.address === tradeData.addressTokenB),
+        dataTokenA: findTknByAddr(tradeData.addressTokenA) ?? kovanETH,
+        dataTokenB: findTknByAddr(tradeData.addressTokenB) ?? kovanUSDC,
     };
 
     const [isSellTokenPrimary, setIsSellTokenPrimary] = useState<boolean>(true);
