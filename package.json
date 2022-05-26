@@ -3,7 +3,7 @@
     "version": "0.1.0",
     "private": true,
     "dependencies": {
-        "@crocswap-libs/sdk": "^0.1.27-5",
+        "@crocswap-libs/sdk": "^0.1.27-6",
         "@material-ui/core": "^4.12.4",
         "@reduxjs/toolkit": "^1.8.1",
         "@rive-app/react-canvas": "^3.0.1",
