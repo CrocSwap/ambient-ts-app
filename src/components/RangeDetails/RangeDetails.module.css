@@ -1,3 +1,7 @@
+.range_details_container{
+    max-width: 500px;
+}
+
 .main_content{
     display: flex;
     flex-direction: column;

@@ -4,7 +4,7 @@ import { RiCloseFill } from 'react-icons/ri';
 interface ModalProps {
     content?: React.ReactNode;
     onClose: React.MouseEventHandler<HTMLElement | SVGElement>;
-    title: string;
+    title: string | React.ReactNode;
     footer?: React.ReactNode;
     noHeader?: boolean;
     noBackground?: boolean;
