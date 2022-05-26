@@ -3,6 +3,7 @@ import ExtraInfo from '../../components/Swap/ExtraInfo/ExtraInfo';
 import ContentContainer from '../../components/Global/ContentContainer/ContentContainer';
 import SwapHeader from '../../components/Swap/SwapHeader/SwapHeader';
 import SwapButton from '../../components/Swap/SwapButton/SwapButton';
+import styles from './Swap.module.css';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import {
@@ -167,6 +168,7 @@ export default function Swap(props: ISwapProps) {
             animate={{ width: '100%' }}
             exit={{ x: window.innerWidth, transition: { duration: 0.7 } }}
             data-testid={'swap'}
+            className={styles.swap}
         >
             <ContentContainer isOnTradeRoute={isOnTradeRoute}>
                 <SwapHeader isOnTradeRoute={isOnTradeRoute} />

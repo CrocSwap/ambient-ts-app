@@ -1,26 +1,36 @@
-import Modal from '../../components/Global/Modal/Modal';
-import { useModal } from '../../components/Global/Modal/useModal';
-import RemovePosition from '../../components/RemoveRange/RemoveRange';
+import styles from './Home.module.css';
 
 export default function Home() {
-    const [isModalOpen, openModal, closeModal] = useModal();
-
-    const modalContent = <div>I am modal content</div>;
-
-    const chooseTokenModal = (
-        <Modal onClose={closeModal} title='Modals title' content={modalContent}>
-            {modalContent}
-        </Modal>
+    const ambientText = (
+        <div className={styles.text_container}>
+            <div className={`${styles.sign} ${styles.light}`} id='one'>
+                A
+            </div>
+            <div className={`${styles.sign} ${styles.light}`} id='two'>
+                M
+            </div>
+            <div className={`${styles.sign} ${styles.light}`} id='three'>
+                B
+            </div>
+            <div className={`${styles.sign} ${styles.light}`} id='four'>
+                I
+            </div>
+            <div className={`${styles.sign} ${styles.non_light}`} id='four'>
+                E
+            </div>
+            <div className={`${styles.sign} ${styles.non_light}`} id='four'>
+                N
+            </div>
+            <div className={`${styles.sign} ${styles.non_light}`} id='four'>
+                T
+            </div>
+        </div>
     );
 
-    const modalOrNull = isModalOpen ? chooseTokenModal : null;
-
     return (
-        <main data-testid={'home'}>
-            <h1>This is Home.tsx</h1>
-            {modalOrNull}
-            <button onClick={openModal}>OPEN MODAL</button>
-            <RemovePosition />
+        <main data-testid={'home'} className={styles.home_container}>
+            {/* {ambientImage} */}
+            {ambientText}
         </main>
     );
 }
