@@ -3,8 +3,10 @@ import CurrencyQuantity from '../CurrencyQuantity/CurrencyQuantity';
 import { RiArrowDownSLine } from 'react-icons/ri';
 import Toggle from '../../Global/Toggle/Toggle';
 import { useState, ChangeEvent } from 'react';
+import { TokenIF } from '../../../utils/interfaces/TokenIF';
 
 interface CurrencySelectorProps {
+    tokenData: TokenIF;
     fieldId: string;
     direction: string;
     sellToken?: boolean;
@@ -13,7 +15,7 @@ interface CurrencySelectorProps {
 }
 
 export default function CurrencySelector(props: CurrencySelectorProps) {
-    const { direction, fieldId, updateOtherQuantity } = props;
+    const { tokenData, direction, fieldId, updateOtherQuantity } = props;
     const [isChecked, setIsChecked] = useState<boolean>(false);
 
     const DexBalanceContent = (
@@ -58,9 +60,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                         alt='ethreum'
                         width='30px'
                     />
-                    <span className={styles.token_list_text}>
-                        {props.sellToken === true ? 'ETH' : 'DAI'}
-                    </span>
+                    <span className={styles.token_list_text}>{tokenData.symbol}</span>
                     <RiArrowDownSLine size={27} />
                 </div>
             </div>

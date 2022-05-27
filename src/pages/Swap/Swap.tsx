@@ -1,11 +1,8 @@
-import CurrencyConverter from '../../components/Swap/CurrencyConverter/CurrencyConverter';
-import ExtraInfo from '../../components/Swap/ExtraInfo/ExtraInfo';
-import ContentContainer from '../../components/Global/ContentContainer/ContentContainer';
-import SwapHeader from '../../components/Swap/SwapHeader/SwapHeader';
-import SwapButton from '../../components/Swap/SwapButton/SwapButton';
-import styles from './Swap.module.css';
-import { motion } from 'framer-motion';
+// START: Import React and Dongles
+import { useMoralis } from 'react-moralis';
 import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
+import { JsonRpcProvider } from '@ethersproject/providers';
 import {
     contractAddresses,
     getSpotPrice,
@@ -13,28 +10,27 @@ import {
     POOL_PRIMARY,
     sendSwap,
     parseSwapEthersReceipt,
-    // toFixedNumber,
     EthersNativeReceipt,
-    // ParsedSwapReceipt,
 } from '@crocswap-libs/sdk';
 
-import { JsonRpcProvider } from '@ethersproject/providers';
-
-import { useMoralis } from 'react-moralis';
-// import { logger } from 'ethers';
-
-// import getContractEthDiff from '../../utils/EthDiff';
-import { handleParsedReceipt } from '../../utils/HandleParsedReceipt';
-import truncateDecimals from '../../utils/data/truncateDecimals';
-
-import {
-    // isTransactionFailedError,
-    isTransactionReplacedError,
-    TransactionError,
-} from '../../utils/TransactionError';
+// START: Import React Components
+import CurrencyConverter from '../../components/Swap/CurrencyConverter/CurrencyConverter';
+import ExtraInfo from '../../components/Swap/ExtraInfo/ExtraInfo';
+import ContentContainer from '../../components/Global/ContentContainer/ContentContainer';
+import SwapHeader from '../../components/Swap/SwapHeader/SwapHeader';
+import SwapButton from '../../components/Swap/SwapButton/SwapButton';
 import DenominationSwitch from '../../components/Swap/DenominationSwitch/DenomicationSwitch';
 import DividerDark from '../../components/Global/DividerDark/DividerDark';
 
+// START: Import Local Files
+import styles from './Swap.module.css';
+import { handleParsedReceipt } from '../../utils/HandleParsedReceipt';
+import truncateDecimals from '../../utils/data/truncateDecimals';
+import { isTransactionReplacedError, TransactionError } from '../../utils/TransactionError';
+import { getCurrentTokens } from '../../utils/functions/processTokens';
+import { useAppSelector } from '../../utils/hooks/reduxToolkit';
+import { kovanETH, kovanUSDC } from './defaultTokens';
+import { findTknByAddr } from './findTknByAddr';
 interface ISwapProps {
     provider: JsonRpcProvider;
     isOnTradeRoute?: boolean;
@@ -44,18 +40,24 @@ interface ISwapProps {
 }
 
 export default function Swap(props: ISwapProps) {
-    const { provider, isOnTradeRoute } = props;
+    const { provider, isOnTradeRoute, lastBlockNumber, nativeBalance, gasPriceinGwei } = props;
 
-    // console.log(props);
+    const { Moralis, chainId } = useMoralis();
 
-    const { Moralis } = useMoralis();
+    const tradeData = useAppSelector((state) => state.tradeData);
+
+    // get current tokens for the active chain
+    // if called before Moralis can initialize use kovan
+    const tokensBank = getCurrentTokens(chainId ?? '0x2a');
+
+    const tokenPair = {
+        dataTokenA: findTknByAddr(tradeData.addressTokenA, tokensBank) ?? kovanETH,
+        dataTokenB: findTknByAddr(tradeData.addressTokenB, tokensBank) ?? kovanUSDC,
+    };
 
     const [isSellTokenPrimary, setIsSellTokenPrimary] = useState<boolean>(true);
 
-    // const sellTokenAddress = contractAddresses.ZERO_ADDR;
     const daiKovanAddress = '0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa';
-    // const usdcKovanAddress = '0xb7a4F3E9097C08dA09517b5aB877F7a917224ede';
-    // const buyTokenAddress = daiKovanAddress;
 
     const [poolPriceNonDisplay, setPoolPriceNonDisplay] = useState(0);
 
@@ -64,7 +66,6 @@ export default function Swap(props: ISwapProps) {
             const spotPrice = await getSpotPrice(
                 contractAddresses.ZERO_ADDR,
                 daiKovanAddress,
-                // usdcKovanAddress,
                 POOL_PRIMARY,
                 provider,
             );
@@ -72,7 +73,7 @@ export default function Swap(props: ISwapProps) {
                 setPoolPriceNonDisplay(spotPrice);
             }
         })();
-    }, [props.lastBlockNumber]);
+    }, [lastBlockNumber]);
 
     const [poolPriceDisplay, setPoolPriceDisplay] = useState(0);
 
@@ -81,7 +82,6 @@ export default function Swap(props: ISwapProps) {
             const spotPriceDisplay = await getSpotPriceDisplay(
                 contractAddresses.ZERO_ADDR,
                 daiKovanAddress,
-                // usdcKovanAddress,
                 POOL_PRIMARY,
                 provider,
             );
@@ -89,7 +89,7 @@ export default function Swap(props: ISwapProps) {
                 setPoolPriceDisplay(spotPriceDisplay);
             }
         })();
-    }, [props.lastBlockNumber]);
+    }, [lastBlockNumber]);
 
     const signer = provider?.getSigner();
 
@@ -102,10 +102,11 @@ export default function Swap(props: ISwapProps) {
         const buyTokenQty = (document.getElementById('buy-quantity') as HTMLInputElement)?.value;
         const qty = isSellTokenPrimary ? sellTokenQty : buyTokenQty;
 
-        let ethValue = '0'; // Overwritten by a non-zero value when the user is selling ETH for another token
+        // overwritten by a non-zero value when selling ETH for another token
+        let ethValue = '0';
 
         // if the user is selling ETH and requesting an exact output quantity
-        // then pad the amount of ETH sent to the contract by 2% (the remainder will be automatically returned)
+        // then pad the ETH sent to the contract by 2% (remainder will be returned)
         if (sellTokenAddress === contractAddresses.ZERO_ADDR) {
             const roundedUpEthValue = truncateDecimals(
                 parseFloat(sellTokenQty) * 1.02,
@@ -143,14 +144,9 @@ export default function Swap(props: ISwapProps) {
                 if (isTransactionReplacedError(error)) {
                     // The user used "speed up" or something similar
                     // in their client, but we now have the updated info
-
-                    // dispatch(removePendingTx(tx.hash));
                     console.log('repriced');
                     newTransactionHash = error.replacement.hash;
                     console.log({ newTransactionHash });
-                    // dispatch(setCurrentTxHash(replacementTxHash));
-                    // dispatch(addPendingTx(replacementTxHash));
-
                     parsedReceipt = await parseSwapEthersReceipt(
                         provider,
                         error.receipt as EthersNativeReceipt,
@@ -175,17 +171,18 @@ export default function Swap(props: ISwapProps) {
                 <DenominationSwitch />
                 <DividerDark />
                 <CurrencyConverter
+                    tokenPair={tokenPair}
                     isLiq={false}
                     poolPrice={poolPriceNonDisplay}
                     setIsSellTokenPrimary={setIsSellTokenPrimary}
-                    nativeBalance={truncateDecimals(parseFloat(props.nativeBalance), 4).toString()}
+                    nativeBalance={truncateDecimals(parseFloat(nativeBalance), 4).toString()}
                 />
                 <ExtraInfo
                     poolPriceDisplay={poolPriceDisplay}
                     slippageTolerance={5}
                     liquidityProviderFee={0.3}
                     quoteTokenIsBuy={true}
-                    gasPriceinGwei={props.gasPriceinGwei}
+                    gasPriceinGwei={gasPriceinGwei}
                 />
                 <SwapButton onClickFn={initiateSwap} />
             </ContentContainer>
