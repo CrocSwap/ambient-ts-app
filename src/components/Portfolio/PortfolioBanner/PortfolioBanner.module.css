@@ -10,11 +10,10 @@
     -moz-background-size: cover;
     -o-background-size: cover;
     background-size: cover; */
-    display: flex;
+    display: none;
     justify-content: space-between;
     align-items: flex-end;
-    padding: 1rem 2rem;
-    cursor: grab;
+
     border-radius: 24px;
 
     position: relative;
@@ -90,8 +89,29 @@ color: #BDBDBD;
 }
 
 .nft_container img{
-    width: 100px;
+    width: 50px;
     aspect-ratio: 1;
     border-radius: 24px;
 }
 
+
+/* Desktop screen Sizes */
+@media only screen and (min-width: 500px) {
+.rectangle_container{
+    display: flex;
+}
+.nft_container img{
+    width: 50px;
+    aspect-ratio: 1;
+    border-radius: 24px;
+}
+	
+
+}
+@media only screen and (min-width: 720px) {
+    .nft_container img{
+        width: 100px;
+       
+    }
+        
+}

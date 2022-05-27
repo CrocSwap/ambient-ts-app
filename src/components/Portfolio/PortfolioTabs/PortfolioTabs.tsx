@@ -5,28 +5,13 @@ import TabNavItem from '../../Global/Tabs/TabNavItem/TabNavItem';
 
 export default function PortfolioTabs() {
     const [activeTab, setActiveTab] = useState('tab1');
-    // const [isChecked, setIsChecked] = useState<boolean>(false);
-
-    // const positionsOnlyToggle = (
-    //     <span className={styles.options_toggle}>
-    //         My positions only
-    //         <div className={styles.toggle_container}>
-    //             <Toggle
-    //                 isOn={isChecked}
-    //                 handleToggle={() => setIsChecked(!isChecked)}
-    //                 Width={36}
-    //                 id='positions_only_toggle'
-    //             />
-    //         </div>
-    //     </span>
-    // );
 
     const tabData = [
-        { title: 'Positions', id: 'tab1' },
-        { title: 'Limit Orders', id: 'tab2' },
-        { title: 'Transactions', id: 'tab3' },
-        { title: 'Leaderboard', id: 'tab4' },
-        { title: 'Info', id: 'tab5' },
+        { title: 'Wallet', id: 'tab1' },
+        { title: 'Exchange', id: 'tab2' },
+        { title: 'Positions', id: 'tab3' },
+        { title: 'Limit Orders', id: 'tab4' },
+        { title: 'Transactions', id: 'tab5' },
     ];
 
     return (
@@ -47,16 +32,19 @@ export default function PortfolioTabs() {
             </div>
             <div className={styles.tabs_outlet}>
                 <TabContent id='tab1' activeTab={activeTab}>
-                    <p>Tab 3 works!</p>
+                    <p>Wallet component</p>
                 </TabContent>
                 <TabContent id='tab2' activeTab={activeTab}>
-                    <p>Tab 3 works!</p>
+                    <p>Exchange Component</p>
                 </TabContent>
                 <TabContent id='tab3' activeTab={activeTab}>
-                    <p>Tab 3 works!</p>
+                    <p>Position component</p>
                 </TabContent>
                 <TabContent id='tab4' activeTab={activeTab}>
-                    <p>tab4 works!</p>
+                    <p>Limit Orders component</p>
+                </TabContent>
+                <TabContent id='tab5' activeTab={activeTab}>
+                    <p>Transactions component</p>
                 </TabContent>
             </div>
         </div>
