@@ -1,3 +1,4 @@
+import styles from './TabContent.module.css';
 interface TabContentProps {
     children: React.ReactNode;
     id: string;
@@ -6,5 +7,5 @@ interface TabContentProps {
 export default function Toggle(props: TabContentProps) {
     const { children, id, activeTab } = props;
 
-    return activeTab === id ? <div className='TabContent'>{children}</div> : null;
+    return activeTab === id ? <div className={styles.TabContent}>{children}</div> : null;
 }

@@ -78,6 +78,7 @@ width: 70%;
       font-size: var(--header2-size);
       line-height: var(--header2-lh);
       color: var(--text-grey-white);
+      font-weight: 200;
   }
   
   /* bottom info */

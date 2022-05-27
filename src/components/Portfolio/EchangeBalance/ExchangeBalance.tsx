@@ -2,6 +2,7 @@ import styles from './ExchangeBalance.module.css';
 import { useState } from 'react';
 import TabContent from '../../Global/Tabs/TabContent/TabContent';
 import TabNavItem from '../../Global/Tabs/TabNavItem/TabNavItem';
+import Deposit from './Deposit/Deposit';
 
 export default function ExchangeBalance() {
     const [activeTab, setActiveTab] = useState('tab1');
@@ -30,7 +31,7 @@ export default function ExchangeBalance() {
                 </div>
                 <div className={styles.tabs_outlet}>
                     <TabContent id='tab1' activeTab={activeTab}>
-                        {/* <p>Deposit</p> */}
+                        <Deposit />
                     </TabContent>
                     <TabContent id='tab2' activeTab={activeTab}>
                         {/* <p>Withdraw</p> */}

@@ -18,7 +18,7 @@ export default function DepositCurrencySelector(props: DepositCurrencySelectorPr
             <input
                 id={`${fieldId}-limit-rate-quantity`}
                 className={styles.currency_quantity}
-                placeholder='0.0'
+                placeholder='0'
                 // onChange={(event) => updateOtherQuantity(event)}
                 type='string'
                 inputMode='decimal'
