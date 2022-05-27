@@ -96,16 +96,7 @@ width: 70%;
     display: none;
   }
   
-  .sellAllButton {
-    cursor: pointer;
-    transition: all 0.3s ease-out;
-  
-    color: green;
-  }
-  
-  .sellAllButton:hover {
-    color: hotpink;
-  }
+
   .toggle_container{
     margin-bottom: 10px;
     margin-left: 10px;
@@ -115,33 +106,4 @@ width: 70%;
     display: flex;
     flex-direction: row;
     align-items: center;
-  }
-
-  /* modal */
-
-  .pool_modal{
-    max-height: 400px;
-    overflow-y: scroll;
-  overflow-x: hidden;
-  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  }
-
-  .pool_modal::-webkit-scrollbar {
-    display: none;
-  }
-
-  .search_input input{
-    width: 100%;
-    background: var(--dark2);
-    
-    text-align: center;
-    color: var(--text-grey-light);
-    font-size: var(--body-size);
-    line-height: var(--body-lh);
-    padding: 1rem 0;
-    border-radius: var(--border-radius);
-    border: none;
-    outline: none;
-    
-
   }
