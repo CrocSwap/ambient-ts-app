@@ -1,22 +1,17 @@
+import { ChangeEvent, useState } from 'react';
 import styles from './RangeCurrencySelector.module.css';
 import RangeCurrencyQuantity from '../RangeCurrencyQuantity/RangeCurrencyQuantity';
 import { RiArrowDownSLine } from 'react-icons/ri';
 import Toggle from '../../../Global/Toggle/Toggle';
-import {
-    useState,
-    // ChangeEvent
-} from 'react';
 
 interface RangeCurrencySelectorProps {
     fieldId: string;
-
+    updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
     sellToken?: boolean;
-
-    // updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
 }
 
 export default function RangeCurrencySelector(props: RangeCurrencySelectorProps) {
-    const { fieldId, sellToken } = props;
+    const { fieldId, updateOtherQuantity, sellToken } = props;
     const [isChecked, setIsChecked] = useState<boolean>(false);
 
     const DexBalanceContent = (
@@ -38,7 +33,10 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
             {sellToken && <span className={styles.direction}>Amounts</span>}
             <div className={styles.swapbox_top}>
                 <div className={styles.swap_input}>
-                    <RangeCurrencyQuantity fieldId={fieldId} />
+                    <RangeCurrencyQuantity
+                        fieldId={fieldId}
+                        updateOtherQuantity={updateOtherQuantity}
+                    />
                 </div>
                 <div className={styles.token_select}>
                     <img
