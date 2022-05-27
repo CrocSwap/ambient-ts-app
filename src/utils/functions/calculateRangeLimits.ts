@@ -14,14 +14,17 @@ export const calculateRangeLimitsSimple = (
 ) => {
     const currentPoolPriceTick = Math.log(poolPriceNonDisplay) / Math.log(1.0001);
 
-    const rangeLowBoundTick = currentPoolPriceTick - rangeWidthPercentage * 100;
-    const rangeHighBoundTick = currentPoolPriceTick + rangeWidthPercentage * 100;
+    const unpinnedRangeLowBoundTick = currentPoolPriceTick - rangeWidthPercentage * 100;
+    const unpinnedRangeHighBoundTick = currentPoolPriceTick + rangeWidthPercentage * 100;
 
-    const rangeLowBoundNonDisplayPrice = tickToPrice(rangeLowBoundTick);
-    const rangeHighBoundNonDisplayPrice = tickToPrice(rangeHighBoundTick);
+    const rangeLowBoundNonDisplayPrice = tickToPrice(unpinnedRangeLowBoundTick);
+    const rangeHighBoundNonDisplayPrice = tickToPrice(unpinnedRangeHighBoundTick);
 
     const pinnedRangeLowBoundNonDisplayPrice = pinTickLower(rangeLowBoundNonDisplayPrice);
     const pinnedRangeHighBoundNonDisplayPrice = pinTickUpper(rangeHighBoundNonDisplayPrice);
+
+    const pinnedRangeLowBoundTick = pinTickLower(pinnedRangeLowBoundNonDisplayPrice);
+    const pinnedRangeHighBoundTick = pinTickLower(pinnedRangeHighBoundNonDisplayPrice);
 
     const pinnedRangeLowBoundDisplayPrice = toDisplayPrice(
         pinnedRangeLowBoundNonDisplayPrice,
@@ -38,10 +41,10 @@ export const calculateRangeLimitsSimple = (
     const rangeLimits = {
         pinnedRangeLowBoundNonDisplayPrice: pinnedRangeLowBoundNonDisplayPrice,
         pinnedRangeLowBoundDisplayPrice: pinnedRangeLowBoundDisplayPrice,
-        rangeLowBoundTick: rangeLowBoundTick,
+        pinnedRangeLowBoundTick: pinnedRangeLowBoundTick,
         pinnedRangeHighBoundNonDisplayPrice: pinnedRangeHighBoundNonDisplayPrice,
         pinnedRangeHighBoundDisplayPrice: pinnedRangeHighBoundDisplayPrice,
-        rangeHighBoundTick: rangeHighBoundTick,
+        pinnedRangeHighBoundTick: pinnedRangeHighBoundTick,
     };
 
     return rangeLimits;
@@ -59,23 +62,24 @@ export const calculateRangeLimitsAdvanced = (
     const rangeHighBoundDisplayPrice = parseFloat(rangeHowBoundDisplayPriceString);
 
     const rangeLowBoundNonDisplayPrice = isDenominationInBase
-        ? fromDisplayPrice(rangeLowBoundDisplayPrice, baseDecimals, quoteDecimals)
-        : fromDisplayPrice(rangeHighBoundDisplayPrice, baseDecimals, quoteDecimals);
+        ? fromDisplayPrice(rangeLowBoundDisplayPrice, baseDecimals, quoteDecimals, false)
+        : fromDisplayPrice(rangeHighBoundDisplayPrice, baseDecimals, quoteDecimals, true);
 
     const pinnedRangeLowBoundNonDisplayPrice = areBoundsPinnedToTick
         ? rangeLowBoundNonDisplayPrice
         : pinTickLower(rangeLowBoundNonDisplayPrice);
 
     const rangeHighBoundNonDisplayPrice = isDenominationInBase
-        ? fromDisplayPrice(rangeHighBoundDisplayPrice, baseDecimals, quoteDecimals)
-        : fromDisplayPrice(rangeLowBoundDisplayPrice, baseDecimals, quoteDecimals);
+        ? fromDisplayPrice(rangeHighBoundDisplayPrice, baseDecimals, quoteDecimals, false)
+        : fromDisplayPrice(rangeLowBoundDisplayPrice, baseDecimals, quoteDecimals, true);
 
     const pinnedRangeHighBoundNonDisplayPrice = areBoundsPinnedToTick
         ? rangeHighBoundNonDisplayPrice
         : pinTickUpper(rangeHighBoundNonDisplayPrice);
 
-    const rangeLowBoundTick = Math.log(pinnedRangeLowBoundNonDisplayPrice) / Math.log(1.0001);
-    const rangeHighBoundTick = Math.log(pinnedRangeHighBoundNonDisplayPrice) / Math.log(1.0001);
+    const pinnedRangeLowBoundTick = Math.log(pinnedRangeLowBoundNonDisplayPrice) / Math.log(1.0001);
+    const pinnedRangeHighBoundTick =
+        Math.log(pinnedRangeHighBoundNonDisplayPrice) / Math.log(1.0001);
 
     const pinnedRangeLowBoundDisplayPrice = areBoundsPinnedToTick
         ? rangeLowBoundDisplayPrice
@@ -88,10 +92,10 @@ export const calculateRangeLimitsAdvanced = (
     const rangeLimits = {
         pinnedRangeLowBoundNonDisplayPrice: pinnedRangeLowBoundNonDisplayPrice,
         pinnedRangeLowBoundDisplayPrice: pinnedRangeLowBoundDisplayPrice,
-        rangeLowBoundTick: rangeLowBoundTick,
+        pinnedRangeLowBoundTick: pinnedRangeLowBoundTick,
         pinnedRangeHighBoundNonDisplayPrice: pinnedRangeHighBoundNonDisplayPrice,
         pinnedRangeHighBoundDisplayPrice: pinnedRangeHighBoundDisplayPrice,
-        rangeHighBoundTick: rangeHighBoundTick,
+        pinnedRangeHighBoundTick: pinnedRangeHighBoundTick,
     };
 
     return rangeLimits;
