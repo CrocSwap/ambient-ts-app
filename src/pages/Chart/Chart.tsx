@@ -17,11 +17,10 @@ export default function Chart() {
             value: 97.2,
         },
     ]);
-    console.log('Helooo');
-    const [chart, setChart] = useState<CartesianChart<Scale, Scale>>();
+    // console.log('Helooo');
 
     useEffect(() => {
-        console.log('init chart');
+        console.log('update chart');
         const yExtent = d3fc.extentLinear().accessors([(d: any) => d.high, (d: any) => d.low]);
         const xExtent = d3fc.extentDate().accessors([(d: any) => d.date]);
 
@@ -42,11 +41,16 @@ export default function Chart() {
 
         const drag = d3.drag().on('drag', function (event, d: any) {
             const plotY = d3.pointer(event, d3.select('.plot-chart').select('svg'))[1];
-            console.log('y: ', plotY, ' invert: ', yScale.invert(plotY));
+            console.log('y: ', plotY, ' invert: ', yScale.invert(d3.pointer(event)[1] - 90));
 
-            d.value = yScale.invert(d3.pointer(event)[1] - 26);
-            setTargets(d);
+            const newValue = yScale.invert(d3.pointer(event)[1] - 90);
+            setTargets((prevState) => {
+                const newTargets = [...prevState];
+                newTargets.filter((target: any) => target.name === d.name)[0].value = newValue;
+                return newTargets;
+            });
         });
+
         horizontalLine.decorate((selection: any) => {
             selection.enter().select('g.left-handle').append('text').attr('x', 5).attr('y', -5);
             selection.enter().select('line').attr('stroke', 'red').call(drag);
@@ -78,19 +82,11 @@ export default function Chart() {
                 }
             });
 
-        const chrt = d3fc.chartCartesian(xScale, yScale).svgPlotArea(multi);
-        chrt.xDomain(xExtent(data));
-        chrt.yDomain(yExtent(data));
-        d3.select(d3Container.current).datum(data).call(chrt);
-        // setChart(chrt);
-    }, []);
-
-    useEffect(() => {
-        console.log('Redraw');
-        if (chart != null) {
-            d3.select(d3Container.current).datum(data).call(chart);
-        }
-    }, [targets, data, chart]);
+        const chart = d3fc.chartCartesian(xScale, yScale).svgPlotArea(multi);
+        chart.xDomain(xExtent(data));
+        chart.yDomain(yExtent(data));
+        d3.select(d3Container.current).datum(data).call(chart);
+    }, [targets, data]);
 
     return <div ref={d3Container} className='main_layout' data-testid={'chart'}></div>;
 }
