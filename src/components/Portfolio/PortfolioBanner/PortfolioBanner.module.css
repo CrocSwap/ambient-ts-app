@@ -3,9 +3,9 @@
 .rectangle_container{
     font-family: var(--font-family);
     width: 100%;
-    height: 245px;
+    height: 200px;
      background: linear-gradient(180deg, rgba(23, 29, 39, 0) 0%, var(--dark3) 100%), url('../../../assets/images/Temporary/nft/lightningBackground.png') no-repeat center center;
-    /* background: linear-gradient(180deg, rgba(23, 29, 39, 0) 0%, var(--dark3) 100%), url('../../../assets/images/waveform.svg') no-repeat center center;  */
+    background: linear-gradient(180deg, rgba(23, 29, 39, 0) 0%, var(--dark3) 100%), url('../../../assets/images/waveform.svg') no-repeat center center; 
      -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;

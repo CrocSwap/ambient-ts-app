@@ -1,5 +1,4 @@
 import styles from './TransferAddressInput.module.css';
-import { RiArrowDownSLine } from 'react-icons/ri';
 
 interface TransferAddressInputProps {
     fieldId: string;

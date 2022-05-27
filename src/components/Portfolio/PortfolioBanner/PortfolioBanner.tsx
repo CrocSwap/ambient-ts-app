@@ -3,7 +3,6 @@ import nft1 from '../../../assets/images/Temporary/nft/nft1.png';
 import nft2 from '../../../assets/images/Temporary/nft/nft2.png';
 import nft3 from '../../../assets/images/Temporary/nft/nft3.png';
 import avatarImage from '../../../assets/images/Temporary/nft/avatar.png';
-import AnimatedWaveForm from './AnimatedWaveForm/AnimatedWaveForm';
 
 export default function PortfolioBanner() {
     return (
