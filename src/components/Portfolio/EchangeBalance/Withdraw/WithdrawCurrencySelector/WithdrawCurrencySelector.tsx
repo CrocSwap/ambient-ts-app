@@ -1,7 +1,7 @@
-import styles from './DepositCurrencySelector.module.css';
+import styles from './WithdrawCurrencySelector.module.css';
 import { RiArrowDownSLine } from 'react-icons/ri';
 
-interface DepositCurrencySelectorProps {
+interface WithdrawCurrencySelectorProps {
     fieldId: string;
 
     sellToken?: boolean;
@@ -10,13 +10,13 @@ interface DepositCurrencySelectorProps {
     // updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
 }
 
-export default function DepositCurrencySelector(props: DepositCurrencySelectorProps) {
+export default function WithdrawCurrencySelector(props: WithdrawCurrencySelectorProps) {
     const { fieldId, disable } = props;
 
     const rateInput = (
         <div className={styles.token_amount}>
             <input
-                id={`${fieldId}-exchange-balance-deposit-quantity`}
+                id={`${fieldId}-exchange-balance-withdraw-quantity`}
                 className={styles.currency_quantity}
                 placeholder='0'
                 // onChange={(event) => updateOtherQuantity(event)}
