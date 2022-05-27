@@ -1,3 +1,4 @@
 .TabContent{
     padding: 1rem;
+    transition: all 40ms ease-in-out;
 }

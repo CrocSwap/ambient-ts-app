@@ -11,7 +11,7 @@
 
 }
 .title{
-    margin-top: 2rem;
+    margin-top: 1rem;
     font-size: var(--header1-size);
     line-height: var(--header1-lh);
     letter-spacing: -0.02em;

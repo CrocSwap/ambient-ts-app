@@ -8,7 +8,7 @@ export default function Portfolio() {
         <main data-testid={'portfolio'} className={styles.portfolio_container}>
             <PortfolioBanner />
             <PortfolioTabs />
-            <span className={styles.title}>Exchange Balance</span>
+            <div className={styles.title}>Exchange Balance</div>
             <div className={styles.exchange_balance}>
                 <ExchangeBalance />
             </div>
