@@ -14,7 +14,7 @@ import {
     fromDisplayQty,
     getSpotPrice,
     POOL_PRIMARY,
-    // sendConcMint,
+    sendConcMint,
     // toFixedNumber,
     parseMintEthersReceipt,
     EthersNativeReceipt,
@@ -60,11 +60,12 @@ export default function Range(props: IRangeProps) {
     const [poolPriceNonDisplay, setPoolPriceNonDisplay] = useState(0);
     const [poolPriceDisplay, setPoolPriceDisplay] = useState('');
     const [rangeWidthPercentage, setRangeWidthPercentage] = useState(100);
-    const [liquidityForBase, setLiquidityForBase] = useState(BigNumber.from(0));
     const [denominationsInBase, setDenominationsInBase] = useState(false);
 
     const { Moralis, user, account, chainId } = useMoralis();
     const [advancedMode, setAdvancedMode] = useState<boolean>(false);
+
+    const isAmbient = rangeWidthPercentage === 100;
 
     const toggleAdvancedMode = () => setAdvancedMode(!advancedMode);
 
@@ -102,15 +103,6 @@ export default function Range(props: IRangeProps) {
         })();
     }, [props.lastBlockNumber, denominationsInBase]);
 
-    const qtyNonDisplay = fromDisplayQty('.00001', 18);
-
-    useEffect(() => {
-        if (poolPriceNonDisplay) {
-            const liquidity = liquidityForBaseQty(poolPriceNonDisplay, qtyNonDisplay);
-            setLiquidityForBase(liquidity);
-        }
-    }, [poolPriceNonDisplay]);
-
     const maxSlippage = 5;
 
     const poolWeiPriceLowLimit = poolPriceNonDisplay * (1 - maxSlippage / 100);
@@ -122,57 +114,89 @@ export default function Range(props: IRangeProps) {
     const quoteTokenAddress = daiKovanAddress;
 
     const sendTransaction = async () => {
-        if (signer) {
-            const tx = await sendAmbientMint(
-                baseTokenAddress,
-                quoteTokenAddress,
-                liquidityForBase,
-                poolWeiPriceLowLimit,
-                poolWeiPriceHighLimit,
-                0.0001,
-                signer,
-            );
-            let newTransactionHash = tx.hash;
-            console.log({ newTransactionHash });
-            let parsedReceipt;
-
-            try {
-                const receipt = await tx.wait();
-                console.log({ receipt });
-                parsedReceipt = await parseMintEthersReceipt(
-                    props.provider,
-                    receipt as EthersNativeReceipt,
-                );
-            } catch (e) {
-                const error = e as TransactionError;
-                if (isTransactionReplacedError(error)) {
-                    // The user used "speed up" or something similar
-                    // in their client, but we now have the updated info
-
-                    // dispatch(removePendingTx(tx.hash));
-                    console.log('repriced');
-                    newTransactionHash = error.replacement.hash;
-                    console.log({ newTransactionHash });
-                    // dispatch(setCurrentTxHash(replacementTxHash));
-                    // dispatch(addPendingTx(replacementTxHash));
-
-                    parsedReceipt = await parseMintEthersReceipt(
-                        props.provider,
-                        error.receipt as EthersNativeReceipt,
+        const tokenAQty = (document.getElementById('sell-range-quantity') as HTMLInputElement)
+            ?.value;
+        let tokenAQtyNonDisplay: BigNumber;
+        let liquidity: BigNumber;
+        if (tokenAQty) {
+            tokenAQtyNonDisplay = fromDisplayQty(tokenAQty, 18);
+            liquidity = liquidityForBaseQty(poolPriceNonDisplay, tokenAQtyNonDisplay);
+            if (signer) {
+                let tx;
+                if (isAmbient) {
+                    console.log({ liquidity });
+                    console.log({ poolWeiPriceLowLimit });
+                    console.log({ poolWeiPriceHighLimit });
+                    console.log({ tokenAQty });
+                    tx = await sendAmbientMint(
+                        baseTokenAddress,
+                        quoteTokenAddress,
+                        liquidity,
+                        poolWeiPriceLowLimit,
+                        poolWeiPriceHighLimit,
+                        parseFloat(tokenAQty),
+                        signer,
+                    );
+                } else {
+                    const qtyIsBase = true;
+                    tx = await sendConcMint(
+                        baseTokenAddress,
+                        quoteTokenAddress,
+                        poolPriceNonDisplay,
+                        -70912, // tickLower,
+                        -63936, // tickHigher,
+                        tokenAQty, //  primaryField === 'A' ? tokenAQtyString : tokenBQtyString,
+                        qtyIsBase,
+                        poolWeiPriceLowLimit,
+                        poolWeiPriceHighLimit,
+                        parseFloat(tokenAQty),
+                        signer,
                     );
                 }
-            } finally {
-                if (parsedReceipt)
-                    handleParsedReceipt(Moralis, 'mint', newTransactionHash, parsedReceipt);
+                if (tx) {
+                    let newTransactionHash = tx.hash;
+                    console.log({ newTransactionHash });
+                    let parsedReceipt;
 
-                const posHash = ambientPosSlot(
-                    account as string,
-                    baseTokenAddress,
-                    quoteTokenAddress,
-                );
-                const txHash = newTransactionHash;
+                    try {
+                        const receipt = await tx.wait();
+                        console.log({ receipt });
+                        parsedReceipt = await parseMintEthersReceipt(
+                            props.provider,
+                            receipt as EthersNativeReceipt,
+                        );
+                    } catch (e) {
+                        const error = e as TransactionError;
+                        if (isTransactionReplacedError(error)) {
+                            // The user used "speed up" or something similar
+                            // in their client, but we now have the updated info
 
-                save({ txHash, posHash, user, account, chainId });
+                            // dispatch(removePendingTx(tx.hash));
+                            console.log('repriced');
+                            newTransactionHash = error.replacement.hash;
+                            console.log({ newTransactionHash });
+                            // dispatch(setCurrentTxHash(replacementTxHash));
+                            // dispatch(addPendingTx(replacementTxHash));
+
+                            parsedReceipt = await parseMintEthersReceipt(
+                                props.provider,
+                                error.receipt as EthersNativeReceipt,
+                            );
+                        }
+                    } finally {
+                        if (parsedReceipt)
+                            handleParsedReceipt(Moralis, 'mint', newTransactionHash, parsedReceipt);
+
+                        const posHash = ambientPosSlot(
+                            account as string,
+                            baseTokenAddress,
+                            quoteTokenAddress,
+                        );
+                        const txHash = newTransactionHash;
+
+                        save({ txHash, posHash, user, account, chainId });
+                    }
+                }
             }
         }
     };
@@ -211,7 +235,7 @@ export default function Range(props: IRangeProps) {
 
     let maxPriceDisplay: string;
 
-    if (rangeWidthPercentage === 100) {
+    if (isAmbient) {
         maxPriceDisplay = 'Infinity';
     } else {
         maxPriceDisplay = denominationsInBase
@@ -262,7 +286,7 @@ export default function Range(props: IRangeProps) {
                 <DividerDark />
                 <RangeCurrencyConverter />
                 {advancedMode ? advancedModeContent : baseModeContent}
-                <RangeButton onClickFn={sendTransaction} />
+                <RangeButton onClickFn={sendTransaction} isAmountEntered={true} />
             </ContentContainer>
         </motion.section>
     );

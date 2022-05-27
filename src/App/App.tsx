@@ -1,10 +1,14 @@
 /** ***** Import React and Dongles *******/
 import { useEffect, useState } from 'react';
+import { useAppDispatch } from '../utils/hooks/reduxToolkit';
+import { setPositionsByUser } from '../utils/state/graphDataSlice';
 import {
     // Signer,
     utils,
     ethers,
 } from 'ethers';
+
+import { request, gql } from 'graphql-request';
 
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { useMoralis, useMoralisQuery, useMoralisSubscription } from 'react-moralis';
@@ -44,6 +48,8 @@ export default function App() {
     const [showSidebar, setShowSidebar] = useState<boolean>(false);
     const location = useLocation();
 
+    const dispatch = useAppDispatch();
+
     const [metamaskLocked, setMetamaskLocked] = useState<boolean>(true);
     const [lastBlockNumber, setLastBlockNumber] = useState<number>(0);
 
@@ -61,13 +67,47 @@ export default function App() {
         })();
     }, [window.ethereum, account]);
 
+    useEffect(() => {
+        if (account) {
+            const endpoint = 'https://api.thegraph.com/subgraphs/name/a0910841082130913312/croc22';
+            const query = gql`
+                query ($userAddress: Bytes) {
+                    user(id: $userAddress) {
+                        id
+                        positions {
+                            id
+                            pool {
+                                id
+                                base
+                                quote
+                                poolIdx
+                            }
+                            ambient
+                            bidTick
+                            askTick
+                        }
+                    }
+                }
+            `;
+            const variables = {
+                userAddress: account,
+            };
+            request(
+                endpoint,
+                query,
+                variables,
+                // requestHeaders: headers,
+            ).then((data) => {
+                dispatch(setPositionsByUser(data.user));
+            });
+        }
+    }, [account]);
+
+    // const graphData = useAppSelector((state) => state.graphData);
+
     // useEffect(() => {
-    //     if (!account && isAuthenticated && !isWeb3EnableLoading) {
-    //         console.log('logging out');
-    //         clickLogout();
-    //     }
-    //     // eslint-disable-next-line
-    // }, [account, isAuthenticated, isWeb3EnableLoading]);
+    //     console.log({ graphData });
+    // }, [graphData]);
 
     initializeLocalStorage();
 
@@ -83,7 +123,7 @@ export default function App() {
 
     function toggleSidebarBasedOnRoute() {
         setShowSidebar(true);
-        if (currentLocation === '/') {
+        if (currentLocation === '/' || currentLocation === '/swap') {
             setShowSidebar(false);
         }
     }
@@ -272,13 +312,19 @@ export default function App() {
     };
 
     const mainLayoutStyle = showSidebar ? 'main-layout-2' : 'main-layout';
+    // take away margin from left if we are on homepage or swap
+    const noSidebarStyle =
+        currentLocation == '/' || currentLocation == '/swap' ? 'no-sidebar' : mainLayoutStyle;
+    const swapBodyStyle = currentLocation == '/swap' ? 'swap-body' : null;
 
     return (
         <>
             <div className='content-container'>
                 <PageHeader {...headerProps} />
-                <Sidebar {...sidebarProps} />
-                <div className={mainLayoutStyle}>
+                {currentLocation !== '/' && currentLocation !== '/swap' && (
+                    <Sidebar {...sidebarProps} />
+                )}
+                <div className={`${noSidebarStyle} ${swapBodyStyle}`}>
                     <Routes>
                         <Route index element={<Home />} />
                         <Route path='trade' element={<Trade />}>

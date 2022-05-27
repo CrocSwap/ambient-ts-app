@@ -1,0 +1,10 @@
+.range_details_container{
+    max-width: 500px;
+}
+
+.main_content{
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 0 2rem;
+}

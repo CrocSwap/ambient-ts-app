@@ -1,5 +1,6 @@
 .main_layout{
     transition: all 600ms ease-in-out;
+    border-top: 1px solid var(--dark3);
 
     
 }
@@ -26,7 +27,7 @@
 
 
    
-    background: var(--dark3);
+    /* background: var(--dark3); */
     border-radius: 4px;
 }
 
@@ -39,6 +40,7 @@
     color: var(--text-grey-white);
     width: 116.67px;
     height: 25px;
+    background: var(--dark3);
     
    
     
@@ -95,7 +97,7 @@
       
         display: grid;
         grid-template-columns: auto 380px;
-        grid-gap: 1em;
+        /* grid-gap: 1em; */
     }
 
   
@@ -124,7 +126,7 @@
 .graph_container{
     display: flex;
     flex-direction: column;
-    margin-top: 2rem;
+    /* margin-top: 2rem; */
     padding: 2rem;
 }
 

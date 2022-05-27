@@ -23,6 +23,7 @@ import DenominationSwitch from '../../components/Swap/DenominationSwitch/Denomic
 import DividerDark from '../../components/Global/DividerDark/DividerDark';
 
 // START: Import Local Files
+import styles from './Swap.module.css';
 import { handleParsedReceipt } from '../../utils/HandleParsedReceipt';
 import truncateDecimals from '../../utils/data/truncateDecimals';
 import { isTransactionReplacedError, TransactionError } from '../../utils/TransactionError';
@@ -163,6 +164,7 @@ export default function Swap(props: ISwapProps) {
             animate={{ width: '100%' }}
             exit={{ x: window.innerWidth, transition: { duration: 0.7 } }}
             data-testid={'swap'}
+            className={styles.swap}
         >
             <ContentContainer isOnTradeRoute={isOnTradeRoute}>
                 <SwapHeader isOnTradeRoute={isOnTradeRoute} />
