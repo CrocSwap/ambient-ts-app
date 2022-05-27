@@ -40,7 +40,8 @@
   }
 
   .direction{
-      padding: 12px;
+     font-weight: 300;
+    margin-bottom: 0.5rem;
   }
   .direction, .swapbox_bottom{
       font-size: var(--body-size);
@@ -81,30 +82,6 @@ width: 70%;
       font-weight: 200;
   }
   
-  /* bottom info */
-  .swapbox_bottom {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-evenly;
-    align-items: center;
-  }
-  
-  .token_select_button {
-    cursor: pointer;
-  }
-  
-  .buy_token {
-    display: none;
-  }
+
   
 
-  .toggle_container{
-    margin-bottom: 10px;
-    margin-left: 10px;
-  }
-
-  .surplus_toggle{
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-  }

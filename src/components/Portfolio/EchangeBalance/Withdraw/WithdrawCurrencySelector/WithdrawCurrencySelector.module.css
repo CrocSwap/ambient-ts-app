@@ -40,7 +40,8 @@
   }
 
   .direction{
-      padding: 12px;
+     font-weight: 300;
+    margin-bottom: 0.5rem;
   }
   .direction, .swapbox_bottom{
       font-size: var(--body-size);
@@ -81,30 +82,22 @@ width: 70%;
       font-weight: 200;
   }
   
-  /* bottom info */
-  .swapbox_bottom {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-evenly;
-    align-items: center;
-  }
-  
-  .token_select_button {
-    cursor: pointer;
-  }
-  
-  .buy_token {
-    display: none;
-  }
-  
 
+  /* toggle */
   .toggle_container{
-    margin-bottom: 10px;
+    margin-bottom: 12px;
     margin-left: 10px;
-  }
 
-  .surplus_toggle{
+}
+
+.surplus_toggle{
     display: flex;
     flex-direction: row;
+    justify-content: flex-end;
     align-items: center;
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    color: var(--text-grey-light)
   }
+
+
