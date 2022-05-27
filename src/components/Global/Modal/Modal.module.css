@@ -9,17 +9,35 @@
     justify-content: center;
     background-color: rgba(0, 0, 0, 0.7);
     z-index: 2;
+
+    background: rgba(1, 0, 16, 0.25);
+box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 );
+backdrop-filter: blur( 15px );
+-webkit-backdrop-filter: blur( 15px );
+border-radius: 10px;
+transition: all 350ms ease-in-out;
+   
   }
   
 .modal_body {
-  -webkit-animation: slide-in-elliptic-top-fwd 0.7s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
-  animation: slide-in-elliptic-top-fwd 0.7s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
-  background-color: var(--dark1);
+
+  border: solid 1px transparent;
+    background-image: linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, 0)), linear-gradient(101deg, #7371FC, #CDC1FF, #7371FC
+    );
+    background-origin: border-box;
+    background-clip: content-box, border-box;
+    box-shadow: 2px 1000px 1px var(--dark1) inset;
+    transition: box-shadow 250ms ease-in-out;
+    cursor: pointer;
+
+
   min-width: 450px;
   min-height: 350px;
-  border-radius: 24px;
+  border-radius: 4px;
   position: relative;
   color: white;
+ 
+
 }
 
 .no_background_modal{
@@ -30,8 +48,9 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  margin-top: 1rem;
   padding: 0;
-  background-color: #17191c;
+ 
   letter-spacing: 1px;
   text-transform: capitalize;
   font-size: 14px;
@@ -44,11 +63,12 @@
 .modal_header h2 {
   font-size: var(--header1-size);
   line-height: var(--header1-lh);
+  font-weight: 300;
   color: white;
 }
 
 .close_button {
-  color: white;
+  color: var(--text-grey-light);
   cursor: pointer;
 }
 

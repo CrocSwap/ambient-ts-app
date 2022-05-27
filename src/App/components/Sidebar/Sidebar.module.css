@@ -1,6 +1,5 @@
 :root {
     font-size: 16px;
-    font-family: 'Open Sans';
     --text-primary: #b6b6b6;
     --text-secondary: #ececec;
     --bg-primary: #23232e;
@@ -81,6 +80,10 @@
   .link_text {
     color: var(--text-highlight);
     transition: all 0.3s ease-out;
+    font-weight: 500;
+font-size: 12px;
+line-height: 15px;
+
 
     display: none;
     margin-left: 1rem;

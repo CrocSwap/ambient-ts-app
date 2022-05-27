@@ -1,6 +1,6 @@
 
 .primary_header{
-    background: var(--navbar);
+    background: var(--dark1);
     display: flex;
     justify-content: space-between;
     align-items: center;

@@ -15,7 +15,8 @@ export default function SwapHeader(props: swapHeaderProps) {
         <ContentHeader>
             <span />
             <div className={styles.token_info}>ETH / USDC</div>
-            <HiDotsHorizontal />
+
+            <FiSettings />
         </ContentHeader>
     );
 

@@ -5,6 +5,8 @@ import RangeCurrencyConverter from '../../../components/Trade/Range/RangeCurrenc
 import RangePriceInfo from '../../../components/Trade/Range/RangePriceInfo/RangePriceInfo';
 import RangeWidth from '../../../components/Trade/Range/RangeWidth/RangeWidth';
 import styles from './Range.module.css';
+import { motion } from 'framer-motion';
+
 import {
     contractAddresses,
     sendAmbientMint,
@@ -12,7 +14,7 @@ import {
     fromDisplayQty,
     getSpotPrice,
     POOL_PRIMARY,
-    // sendConcMint,
+    sendConcMint,
     // toFixedNumber,
     parseMintEthersReceipt,
     EthersNativeReceipt,
@@ -20,8 +22,10 @@ import {
     getSpotPriceDisplay,
     // ParsedSwapReceipt,
     // contractAddresses,
-    // ambientPosSlot,
+    ambientPosSlot,
     // concPosSlot,
+    tickToPrice,
+    toDisplayPrice,
 } from '@crocswap-libs/sdk';
 
 import { isTransactionReplacedError, TransactionError } from '../../../utils/TransactionError';
@@ -41,21 +45,27 @@ interface IRangeProps {
     lastBlockNumber: number;
 }
 
-import { useMoralis } from 'react-moralis';
+import { useMoralis, useNewMoralisObject } from 'react-moralis';
+
 import truncateDecimals from '../../../utils/data/truncateDecimals';
+import DividerDark from '../../../components/Global/DividerDark/DividerDark';
 
 export default function Range(props: IRangeProps) {
+    const { save } = useNewMoralisObject('UserPosition');
+
     // const sellTokenAddress = contractAddresses.ZERO_ADDR;
     const daiKovanAddress = '0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa';
     // const buyTokenAddress = daiKovanAddress;
 
     const [poolPriceNonDisplay, setPoolPriceNonDisplay] = useState(0);
     const [poolPriceDisplay, setPoolPriceDisplay] = useState('');
-    const [liquidityForBase, setLiquidityForBase] = useState(BigNumber.from(0));
+    const [rangeWidthPercentage, setRangeWidthPercentage] = useState(100);
     const [denominationsInBase, setDenominationsInBase] = useState(false);
 
-    const { Moralis } = useMoralis();
+    const { Moralis, user, account, chainId } = useMoralis();
     const [advancedMode, setAdvancedMode] = useState<boolean>(false);
+
+    const isAmbient = rangeWidthPercentage === 100;
 
     const toggleAdvancedMode = () => setAdvancedMode(!advancedMode);
 
@@ -85,22 +95,13 @@ export default function Range(props: IRangeProps) {
             );
             const truncatedPriceWithDenonimationPreference = truncateDecimals(
                 denominationsInBase ? spotPriceDisplay : 1 / spotPriceDisplay,
-                4,
+                2,
             ).toString();
             if (poolPriceDisplay !== truncatedPriceWithDenonimationPreference) {
                 setPoolPriceDisplay(truncatedPriceWithDenonimationPreference);
             }
         })();
     }, [props.lastBlockNumber, denominationsInBase]);
-
-    const qtyNonDisplay = fromDisplayQty('.00001', 18);
-
-    useEffect(() => {
-        if (poolPriceNonDisplay) {
-            const liquidity = liquidityForBaseQty(poolPriceNonDisplay, qtyNonDisplay);
-            setLiquidityForBase(liquidity);
-        }
-    }, [poolPriceNonDisplay]);
 
     const maxSlippage = 5;
 
@@ -109,50 +110,94 @@ export default function Range(props: IRangeProps) {
 
     const signer = props.provider?.getSigner();
 
+    const baseTokenAddress = contractAddresses.ZERO_ADDR;
+    const quoteTokenAddress = daiKovanAddress;
+
     const sendTransaction = async () => {
-        if (signer) {
-            const tx = await sendAmbientMint(
-                contractAddresses.ZERO_ADDR,
-                daiKovanAddress,
-                liquidityForBase,
-                poolWeiPriceLowLimit,
-                poolWeiPriceHighLimit,
-                0.0001,
-                signer,
-            );
-            let newTransactionHash = tx.hash;
-            console.log({ newTransactionHash });
-            let parsedReceipt;
-
-            try {
-                const receipt = await tx.wait();
-                console.log({ receipt });
-                parsedReceipt = await parseMintEthersReceipt(
-                    props.provider,
-                    receipt as EthersNativeReceipt,
-                );
-            } catch (e) {
-                const error = e as TransactionError;
-                if (isTransactionReplacedError(error)) {
-                    // The user used "speed up" or something similar
-                    // in their client, but we now have the updated info
-
-                    // dispatch(removePendingTx(tx.hash));
-                    console.log('repriced');
-                    newTransactionHash = error.replacement.hash;
-                    console.log({ newTransactionHash });
-                    // dispatch(setCurrentTxHash(replacementTxHash));
-                    // dispatch(addPendingTx(replacementTxHash));
-
-                    parsedReceipt = await parseMintEthersReceipt(
-                        props.provider,
-                        error.receipt as EthersNativeReceipt,
+        const tokenAQty = (document.getElementById('sell-range-quantity') as HTMLInputElement)
+            ?.value;
+        let tokenAQtyNonDisplay: BigNumber;
+        let liquidity: BigNumber;
+        if (tokenAQty) {
+            tokenAQtyNonDisplay = fromDisplayQty(tokenAQty, 18);
+            liquidity = liquidityForBaseQty(poolPriceNonDisplay, tokenAQtyNonDisplay);
+            if (signer) {
+                let tx;
+                if (isAmbient) {
+                    console.log({ liquidity });
+                    console.log({ poolWeiPriceLowLimit });
+                    console.log({ poolWeiPriceHighLimit });
+                    console.log({ tokenAQty });
+                    tx = await sendAmbientMint(
+                        baseTokenAddress,
+                        quoteTokenAddress,
+                        liquidity,
+                        poolWeiPriceLowLimit,
+                        poolWeiPriceHighLimit,
+                        parseFloat(tokenAQty),
+                        signer,
+                    );
+                } else {
+                    const qtyIsBase = true;
+                    tx = await sendConcMint(
+                        baseTokenAddress,
+                        quoteTokenAddress,
+                        poolPriceNonDisplay,
+                        -70912, // tickLower,
+                        -63936, // tickHigher,
+                        tokenAQty, //  primaryField === 'A' ? tokenAQtyString : tokenBQtyString,
+                        qtyIsBase,
+                        poolWeiPriceLowLimit,
+                        poolWeiPriceHighLimit,
+                        parseFloat(tokenAQty),
+                        signer,
                     );
                 }
-            }
+                if (tx) {
+                    let newTransactionHash = tx.hash;
+                    console.log({ newTransactionHash });
+                    let parsedReceipt;
 
-            if (parsedReceipt)
-                handleParsedReceipt(Moralis, 'mint', newTransactionHash, parsedReceipt);
+                    try {
+                        const receipt = await tx.wait();
+                        console.log({ receipt });
+                        parsedReceipt = await parseMintEthersReceipt(
+                            props.provider,
+                            receipt as EthersNativeReceipt,
+                        );
+                    } catch (e) {
+                        const error = e as TransactionError;
+                        if (isTransactionReplacedError(error)) {
+                            // The user used "speed up" or something similar
+                            // in their client, but we now have the updated info
+
+                            // dispatch(removePendingTx(tx.hash));
+                            console.log('repriced');
+                            newTransactionHash = error.replacement.hash;
+                            console.log({ newTransactionHash });
+                            // dispatch(setCurrentTxHash(replacementTxHash));
+                            // dispatch(addPendingTx(replacementTxHash));
+
+                            parsedReceipt = await parseMintEthersReceipt(
+                                props.provider,
+                                error.receipt as EthersNativeReceipt,
+                            );
+                        }
+                    } finally {
+                        if (parsedReceipt)
+                            handleParsedReceipt(Moralis, 'mint', newTransactionHash, parsedReceipt);
+
+                        const posHash = ambientPosSlot(
+                            account as string,
+                            baseTokenAddress,
+                            quoteTokenAddress,
+                        );
+                        const txHash = newTransactionHash;
+
+                        save({ txHash, posHash, user, account, chainId });
+                    }
+                }
+            }
         }
     };
 
@@ -176,30 +221,73 @@ export default function Range(props: IRangeProps) {
         </>
     );
 
-    // props for <Range/> React element
+    const currentPoolPriceTick = Math.log(poolPriceNonDisplay) / Math.log(1.0001);
+
+    const rangeLowTick = currentPoolPriceTick - rangeWidthPercentage * 100;
+    const rangeHighTick = currentPoolPriceTick + rangeWidthPercentage * 100;
+
+    const rangeLowBoundNonDisplayPrice = tickToPrice(rangeLowTick);
+    const rangeHighBoundNonDisplayPrice = tickToPrice(rangeHighTick);
+
+    const rangeLowBoundDisplayPrice = toDisplayPrice(rangeLowBoundNonDisplayPrice, 18, 18, false);
+
+    const rangeHighBoundDisplayPrice = toDisplayPrice(rangeHighBoundNonDisplayPrice, 18, 18, false);
+
+    let maxPriceDisplay: string;
+
+    if (isAmbient) {
+        maxPriceDisplay = 'Infinity';
+    } else {
+        maxPriceDisplay = denominationsInBase
+            ? truncateDecimals(rangeHighBoundDisplayPrice, 2).toString()
+            : truncateDecimals(1 / rangeLowBoundDisplayPrice, 2).toString();
+    }
+
+    let minPriceDisplay: string;
+
+    if (rangeWidthPercentage === 100) {
+        minPriceDisplay = '0';
+    } else {
+        minPriceDisplay = denominationsInBase
+            ? truncateDecimals(rangeLowBoundDisplayPrice, 2).toString()
+            : truncateDecimals(1 / rangeHighBoundDisplayPrice, 2).toString();
+    }
+
+    // props for <RangePriceInfo/> React element
     const rangePriceInfoProps = {
         spotPriceDisplay: poolPriceDisplay,
+        maxPriceDisplay: maxPriceDisplay,
+        minPriceDisplay: minPriceDisplay,
+    };
+
+    // props for <RangeWidth/> React element
+    const rangeWidthProps = {
+        rangeWidthPercentage: rangeWidthPercentage,
+        setRangeWidthPercentage: setRangeWidthPercentage,
     };
 
     const baseModeContent = (
         <>
-            <RangeWidth />
+            <RangeWidth {...rangeWidthProps} />
             <RangePriceInfo {...rangePriceInfoProps} />
         </>
     );
 
     return (
-        <section data-testid={'range'}>
+        <motion.section
+            initial={{ width: 0 }}
+            animate={{ width: '100%' }}
+            exit={{ x: window.innerWidth, transition: { duration: 0.3 } }}
+            data-testid={'range'}
+        >
             <ContentContainer isOnTradeRoute>
                 <RangeHeader />
                 {denominationSwitch}
+                <DividerDark />
                 <RangeCurrencyConverter />
                 {advancedMode ? advancedModeContent : baseModeContent}
-                {/* 
-                <RangeWidth />
-                <RangePriceInfo /> */}
-                <RangeButton onClickFn={sendTransaction} />
+                <RangeButton onClickFn={sendTransaction} isAmountEntered={true} />
             </ContentContainer>
-        </section>
+        </motion.section>
     );
 }

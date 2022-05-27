@@ -1,9 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit';
-import counterReducer from './counterSlice';
+import tradeDataReducer from './tradeDataSlice';
+import graphDataReducer from './graphDataSlice';
 
 export const store = configureStore({
     reducer: {
-        counter: counterReducer,
+        tradeData: tradeDataReducer,
+        graphData: graphDataReducer,
     },
 });
 

@@ -49,7 +49,8 @@ export default function Sidebar(props: SidebarProps): React.ReactElement<Sidebar
                     <li className={styles.logo}>
                         <div className={styles.sidebar_link}>
                             <div onClick={toggleSidebar}>
-                                <MdDoubleArrow size={30} />
+                                <MdDoubleArrow size={20} color='#7371FC' />
+                                {/* <img src={sidebarExpandImage} alt="" /> */}
                             </div>
                         </div>
                     </li>
@@ -58,7 +59,7 @@ export default function Sidebar(props: SidebarProps): React.ReactElement<Sidebar
                     {navItems1.map((item, idx) => (
                         <li key={idx} className={styles.sidebar_item}>
                             <div className={styles.sidebar_link}>
-                                <MdPlayArrow size={20} color='#ffffff' />
+                                <MdPlayArrow size={12} color='#ffffff' />
                                 <img src={item.icon} alt={item.name} />
 
                                 <span className={styles.link_text}>{item.name}</span>
@@ -70,7 +71,7 @@ export default function Sidebar(props: SidebarProps): React.ReactElement<Sidebar
                         {navItems2.map((item, idx) => (
                             <li key={idx} className={styles.sidebar_item} id='themeButton'>
                                 <div className={styles.sidebar_link}>
-                                    <MdPlayArrow size={20} color='#ffffff' />
+                                    <MdPlayArrow size={12} color='#ffffff' />
                                     <img src={item.icon} alt={item.name} />
 
                                     <span className={styles.link_text}>{item.name}</span>

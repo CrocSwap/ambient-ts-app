@@ -3,6 +3,8 @@ import ExtraInfo from '../../components/Swap/ExtraInfo/ExtraInfo';
 import ContentContainer from '../../components/Global/ContentContainer/ContentContainer';
 import SwapHeader from '../../components/Swap/SwapHeader/SwapHeader';
 import SwapButton from '../../components/Swap/SwapButton/SwapButton';
+import styles from './Swap.module.css';
+import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import {
     contractAddresses,
@@ -31,6 +33,7 @@ import {
     TransactionError,
 } from '../../utils/TransactionError';
 import DenominationSwitch from '../../components/Swap/DenominationSwitch/DenomicationSwitch';
+import DividerDark from '../../components/Global/DividerDark/DividerDark';
 
 interface ISwapProps {
     provider: JsonRpcProvider;
@@ -160,10 +163,17 @@ export default function Swap(props: ISwapProps) {
     }
 
     return (
-        <main data-testid={'swap'}>
+        <motion.main
+            initial={{ width: 0 }}
+            animate={{ width: '100%' }}
+            exit={{ x: window.innerWidth, transition: { duration: 0.7 } }}
+            data-testid={'swap'}
+            className={styles.swap}
+        >
             <ContentContainer isOnTradeRoute={isOnTradeRoute}>
                 <SwapHeader isOnTradeRoute={isOnTradeRoute} />
                 <DenominationSwitch />
+                <DividerDark />
                 <CurrencyConverter
                     isLiq={false}
                     poolPrice={poolPriceNonDisplay}
@@ -179,6 +189,6 @@ export default function Swap(props: ISwapProps) {
                 />
                 <SwapButton onClickFn={initiateSwap} />
             </ContentContainer>
-        </main>
+        </motion.main>
     );
 }

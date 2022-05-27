@@ -1,4 +1,4 @@
-import { tokenListURIs } from '../utils/data/tokenURIs';
+import { tokenListURIs } from '../../utils/data/tokenURIs';
 
 export function fetchTokenLists() {
     // create an array of promises to fetch all token lists in the URIs file

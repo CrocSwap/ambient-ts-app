@@ -1,3 +1,7 @@
+// import { logger } from 'ethers';
+
+// import Moralis from 'moralis/types';
+
 /* eslint-disable no-undef */
 Moralis.Cloud.define(
     'helloWorld',
@@ -15,7 +19,7 @@ Moralis.Cloud.define(
     'getContractEthDiff',
     async (request) => {
         // get a web3 instance for a specific chain
-        const web3 = Moralis.web3ByChain('0x3'); // ropsten
+        const web3 = Moralis.web3ByChain('0x2a'); // kovan
         const BN = web3.utils.BN;
         const txHash = request.params.txHash;
 
@@ -23,7 +27,7 @@ Moralis.Cloud.define(
 
         return await Moralis.Cloud.httpRequest({
             method: 'POST',
-            url: 'https://eth-ropsten.alchemyapi.io/v2/O4suRhDMBOsT3ZmuvTwisvUpjvszeA6D',
+            url: 'https://eth-kovan.alchemyapi.io/v2/O4suRhDMBOsT3ZmuvTwisvUpjvszeA6D',
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -44,18 +48,18 @@ Moralis.Cloud.define(
                 }
 
                 if (
-                    jsonObj?.result?.stateDiff['0xb6ff2e53408f38a5a363586746d1db306af5caa4']
+                    jsonObj?.result?.stateDiff['0x5d42d6046927dee12b9b4a235be0cecd55d0e0fb']
                         .balance['*'] === undefined
                 ) {
                     return 0;
                 }
 
                 const oldHexValue =
-                    jsonObj?.result?.stateDiff['0xb6ff2e53408f38a5a363586746d1db306af5caa4']
+                    jsonObj?.result?.stateDiff['0x5d42d6046927dee12b9b4a235be0cecd55d0e0fb']
                         .balance['*']['from'];
 
                 const newHexValue =
-                    jsonObj?.result?.stateDiff['0xb6ff2e53408f38a5a363586746d1db306af5caa4']
+                    jsonObj?.result?.stateDiff['0x5d42d6046927dee12b9b4a235be0cecd55d0e0fb']
                         .balance['*']['to'];
 
                 const oldValueDisplayString = Moralis.Cloud.units({
@@ -106,6 +110,16 @@ Moralis.Cloud.afterSave('EthTransactions', (request) => {
             console.error('Got an error ' + error.code + ' : ' + error.message);
         });
 });
+
+Moralis.Cloud.job('log current kovan block number', () => {
+    const web3 = Moralis.ethersByChain('0x2a');
+    var url = 'https://speedy-nodes-nyc.moralis.io/015fffb61180886c9708499e/eth/kovan';
+    var customHttpProvider = new web3.ethers.providers.JsonRpcProvider(url);
+    customHttpProvider.getBlockNumber().then((result) => {
+        logger.info('Current block number on kovan: ' + result);
+    });
+});
+
 //  Moralis.Cloud.afterSave('EthTransactions', async (request) => {
 //    const confirmed = request.object.get('confirmed');
 //    if (confirmed) {
