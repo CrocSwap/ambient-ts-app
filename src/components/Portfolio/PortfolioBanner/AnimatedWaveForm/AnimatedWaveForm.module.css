@@ -1,6 +1,12 @@
+.wave_form{
+    min-width: 100%;
+    min-height: 100%;
+    object-fit: cover;
+}
 
 .waveform > path{
-    animation: move-forever 10s cubic-bezier(.55,.5,.45,.5)     infinite;
+    animation: move-forever 2s cubic-bezier(.55,.5,.45,.5)     infinite;
+    width: 100%;
 
 }
 
