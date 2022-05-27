@@ -7,7 +7,12 @@ import { useState } from 'react';
 import RemoveRange from '../../RemoveRange/RemoveRange';
 import RangeDetails from '../../RangeDetails/RangeDetails';
 import RangeDetailsHeader from '../../RangeDetails/RangeDetailsHeader/RangeDetailsHeader';
-export default function Position() {
+
+interface PositionProps {
+    portfolio?: boolean;
+}
+export default function Position(props: PositionProps) {
+    const { portfolio } = props;
     const [isModalOpen, openModal, closeModal] = useModal();
 
     const [currentModal, setCurrentModal] = useState<string>('edit');
@@ -63,8 +68,26 @@ export default function Position() {
     }
     //  END OF MODAL FUNCTIONALITY
 
+    const tokenImages = (
+        <>
+            <td data-column='tokens' className={styles.tokens}>
+                <img
+                    src='https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png'
+                    alt='token'
+                    width='30px'
+                />
+                <img
+                    src='https://cryptologos.cc/logos/usd-coin-usdc-logo.png'
+                    alt='token'
+                    width='30px'
+                />
+            </td>
+        </>
+    );
+
     return (
         <tr>
+            {portfolio && tokenImages}
             <td data-column='Position ID' className={styles.position_id}>
                 0xfs05...db35
             </td>
