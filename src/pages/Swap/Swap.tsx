@@ -28,8 +28,8 @@ import truncateDecimals from '../../utils/data/truncateDecimals';
 import { isTransactionReplacedError, TransactionError } from '../../utils/TransactionError';
 import { getCurrentTokens } from '../../utils/functions/processTokens';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
-import { TokenIF } from '../../utils/interfaces/TokenIF';
 import { kovanETH, kovanUSDC } from './defaultTokens';
+import { findTknByAddr } from './findTknByAddr';
 interface ISwapProps {
     provider: JsonRpcProvider;
     isOnTradeRoute?: boolean;
@@ -49,14 +49,9 @@ export default function Swap(props: ISwapProps) {
     // if called before Moralis can initialize use kovan
     const tokensBank = getCurrentTokens(chainId ?? '0x2a');
 
-    const findTknByAddr = (addr: string) => {
-        const tk = tokensBank.find((tkn: TokenIF) => tkn.address === addr);
-        return tk;
-    };
-
     const tokenPair = {
-        dataTokenA: findTknByAddr(tradeData.addressTokenA) ?? kovanETH,
-        dataTokenB: findTknByAddr(tradeData.addressTokenB) ?? kovanUSDC,
+        dataTokenA: findTknByAddr(tradeData.addressTokenA, tokensBank) ?? kovanETH,
+        dataTokenB: findTknByAddr(tradeData.addressTokenB, tokensBank) ?? kovanUSDC,
     };
 
     const [isSellTokenPrimary, setIsSellTokenPrimary] = useState<boolean>(true);
@@ -70,7 +65,6 @@ export default function Swap(props: ISwapProps) {
             const spotPrice = await getSpotPrice(
                 contractAddresses.ZERO_ADDR,
                 daiKovanAddress,
-                // usdcKovanAddress,
                 POOL_PRIMARY,
                 provider,
             );
@@ -107,10 +101,11 @@ export default function Swap(props: ISwapProps) {
         const buyTokenQty = (document.getElementById('buy-quantity') as HTMLInputElement)?.value;
         const qty = isSellTokenPrimary ? sellTokenQty : buyTokenQty;
 
-        let ethValue = '0'; // Overwritten by a non-zero value when the user is selling ETH for another token
+        // overwritten by a non-zero value when selling ETH for another token
+        let ethValue = '0';
 
         // if the user is selling ETH and requesting an exact output quantity
-        // then pad the amount of ETH sent to the contract by 2% (the remainder will be automatically returned)
+        // then pad the ETH sent to the contract by 2% (remainder will be returned)
         if (sellTokenAddress === contractAddresses.ZERO_ADDR) {
             const roundedUpEthValue = truncateDecimals(
                 parseFloat(sellTokenQty) * 1.02,
@@ -148,14 +143,9 @@ export default function Swap(props: ISwapProps) {
                 if (isTransactionReplacedError(error)) {
                     // The user used "speed up" or something similar
                     // in their client, but we now have the updated info
-
-                    // dispatch(removePendingTx(tx.hash));
                     console.log('repriced');
                     newTransactionHash = error.replacement.hash;
                     console.log({ newTransactionHash });
-                    // dispatch(setCurrentTxHash(replacementTxHash));
-                    // dispatch(addPendingTx(replacementTxHash));
-
                     parsedReceipt = await parseSwapEthersReceipt(
                         provider,
                         error.receipt as EthersNativeReceipt,
