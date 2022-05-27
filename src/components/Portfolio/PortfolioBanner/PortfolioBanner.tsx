@@ -7,6 +7,7 @@ import avatarImage from '../../../assets/images/Temporary/nft/avatar.png';
 export default function PortfolioBanner() {
     return (
         <div className={styles.rectangle_container}>
+            <div className={styles.background}></div>
             <div className={styles.account_container}>
                 <img src={avatarImage} alt='avatar' />
                 <div className={styles.account_names}>
