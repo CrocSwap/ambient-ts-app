@@ -48,6 +48,7 @@ interface IRangeProps {
 }
 
 export default function Range(props: IRangeProps) {
+    const { provider, lastBlockNumber } = props;
     const { save } = useNewMoralisObject('UserPosition');
 
     const daiKovanAddress = '0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa';
@@ -83,13 +84,13 @@ export default function Range(props: IRangeProps) {
                 contractAddresses.ZERO_ADDR,
                 daiKovanAddress,
                 POOL_PRIMARY,
-                props.provider,
+                provider,
             );
             if (poolPriceNonDisplay !== spotPrice) {
                 setPoolPriceNonDisplay(spotPrice);
             }
         })();
-    }, [props.lastBlockNumber]);
+    }, [lastBlockNumber]);
 
     useEffect(() => {
         (async () => {
@@ -97,7 +98,7 @@ export default function Range(props: IRangeProps) {
                 contractAddresses.ZERO_ADDR,
                 daiKovanAddress,
                 POOL_PRIMARY,
-                props.provider,
+                provider,
             );
             const truncatedPriceWithDenonimationPreference = truncateDecimals(
                 denominationsInBase ? spotPriceDisplay : 1 / spotPriceDisplay,
@@ -107,14 +108,14 @@ export default function Range(props: IRangeProps) {
                 setPoolPriceDisplay(truncatedPriceWithDenonimationPreference);
             }
         })();
-    }, [props.lastBlockNumber, denominationsInBase]);
+    }, [lastBlockNumber, denominationsInBase]);
 
     const maxSlippage = 5;
 
     const poolWeiPriceLowLimit = poolPriceNonDisplay * (1 - maxSlippage / 100);
     const poolWeiPriceHighLimit = poolPriceNonDisplay * (1 + maxSlippage / 100);
 
-    const signer = props.provider?.getSigner();
+    const signer = provider?.getSigner();
 
     const baseTokenAddress = contractAddresses.ZERO_ADDR;
     const quoteTokenAddress = daiKovanAddress;
@@ -168,7 +169,7 @@ export default function Range(props: IRangeProps) {
                         const receipt = await tx.wait();
                         console.log({ receipt });
                         parsedReceipt = await parseMintEthersReceipt(
-                            props.provider,
+                            provider,
                             receipt as EthersNativeReceipt,
                         );
                     } catch (e) {
@@ -183,7 +184,7 @@ export default function Range(props: IRangeProps) {
                             console.log({ newTransactionHash });
 
                             parsedReceipt = await parseMintEthersReceipt(
-                                props.provider,
+                                provider,
                                 error.receipt as EthersNativeReceipt,
                             );
                         }
