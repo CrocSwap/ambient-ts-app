@@ -15,15 +15,10 @@ import {
     getSpotPrice,
     POOL_PRIMARY,
     sendConcMint,
-    // toFixedNumber,
     parseMintEthersReceipt,
     EthersNativeReceipt,
-    // toDisplayPrice,
     getSpotPriceDisplay,
-    // ParsedSwapReceipt,
-    // contractAddresses,
     ambientPosSlot,
-    // concPosSlot,
     tickToPrice,
     toDisplayPrice,
 } from '@crocswap-libs/sdk';
@@ -53,9 +48,7 @@ import DividerDark from '../../../components/Global/DividerDark/DividerDark';
 export default function Range(props: IRangeProps) {
     const { save } = useNewMoralisObject('UserPosition');
 
-    // const sellTokenAddress = contractAddresses.ZERO_ADDR;
     const daiKovanAddress = '0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa';
-    // const buyTokenAddress = daiKovanAddress;
 
     const [poolPriceNonDisplay, setPoolPriceNonDisplay] = useState(0);
     const [poolPriceDisplay, setPoolPriceDisplay] = useState('');
@@ -74,7 +67,6 @@ export default function Range(props: IRangeProps) {
             const spotPrice = await getSpotPrice(
                 contractAddresses.ZERO_ADDR,
                 daiKovanAddress,
-                // usdcKovanAddress,
                 POOL_PRIMARY,
                 props.provider,
             );
@@ -89,7 +81,6 @@ export default function Range(props: IRangeProps) {
             const spotPriceDisplay = await getSpotPriceDisplay(
                 contractAddresses.ZERO_ADDR,
                 daiKovanAddress,
-                // usdcKovanAddress,
                 POOL_PRIMARY,
                 props.provider,
             );
@@ -175,8 +166,6 @@ export default function Range(props: IRangeProps) {
                             console.log('repriced');
                             newTransactionHash = error.replacement.hash;
                             console.log({ newTransactionHash });
-                            // dispatch(setCurrentTxHash(replacementTxHash));
-                            // dispatch(addPendingTx(replacementTxHash));
 
                             parsedReceipt = await parseMintEthersReceipt(
                                 props.provider,
