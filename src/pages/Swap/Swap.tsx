@@ -27,10 +27,9 @@ import styles from './Swap.module.css';
 import { handleParsedReceipt } from '../../utils/HandleParsedReceipt';
 import truncateDecimals from '../../utils/data/truncateDecimals';
 import { isTransactionReplacedError, TransactionError } from '../../utils/TransactionError';
-import { getCurrentTokens } from '../../utils/functions/processTokens';
+import { getCurrentTokens, findTokenByAddress } from '../../utils/functions/processTokens';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
-import { kovanETH, kovanUSDC } from './defaultTokens';
-import { findTknByAddr } from './findTknByAddr';
+import { kovanETH, kovanUSDC } from '../../utils/data/defaultTokens';
 interface ISwapProps {
     provider: JsonRpcProvider;
     isOnTradeRoute?: boolean;
@@ -51,8 +50,8 @@ export default function Swap(props: ISwapProps) {
     const tokensBank = getCurrentTokens(chainId ?? '0x2a');
 
     const tokenPair = {
-        dataTokenA: findTknByAddr(tradeData.addressTokenA, tokensBank) ?? kovanETH,
-        dataTokenB: findTknByAddr(tradeData.addressTokenB, tokensBank) ?? kovanUSDC,
+        dataTokenA: findTokenByAddress(tradeData.addressTokenA, tokensBank) ?? kovanETH,
+        dataTokenB: findTokenByAddress(tradeData.addressTokenB, tokensBank) ?? kovanUSDC,
     };
 
     const [isSellTokenPrimary, setIsSellTokenPrimary] = useState<boolean>(true);

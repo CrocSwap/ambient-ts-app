@@ -38,6 +38,9 @@ import styles from './Range.module.css';
 import { isTransactionReplacedError, TransactionError } from '../../../utils/TransactionError';
 import { handleParsedReceipt } from '../../../utils/HandleParsedReceipt';
 import truncateDecimals from '../../../utils/data/truncateDecimals';
+import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import { getCurrentTokens, findTokenByAddress } from '../../../utils/functions/processTokens';
+import { kovanETH, kovanUSDC } from '../../../utils/data/defaultTokens';
 
 interface IRangeProps {
     provider: JsonRpcProvider;
@@ -55,6 +58,19 @@ export default function Range(props: IRangeProps) {
     const [denominationsInBase, setDenominationsInBase] = useState(false);
 
     const { Moralis, user, account, chainId } = useMoralis();
+
+    const rangeData = useAppSelector((state) => state.rangeData);
+
+    // get current tokens for the active chain
+    // if called before Moralis can initialize use kovan
+    const tokensBank = getCurrentTokens(chainId ?? '0x2a');
+
+    const tokenPair = {
+        dataTokenA: findTokenByAddress(rangeData.addressTokenA, tokensBank) ?? kovanETH,
+        dataTokenB: findTokenByAddress(rangeData.addressTokenB, tokensBank) ?? kovanUSDC,
+    };
+    console.assert(true, tokenPair);
+
     const [advancedMode, setAdvancedMode] = useState<boolean>(false);
 
     const isAmbient = rangeWidthPercentage === 100;
