@@ -5,9 +5,7 @@ import WithdrawCurrencySelector from './WithdrawCurrencySelector/WithdrawCurrenc
 export default function Withdraw() {
     return (
         <div className={styles.deposit_container}>
-            <div className={styles.info_text}>
-                Deposit tokens to Ambient Finance exchange wallet
-            </div>
+            <div className={styles.info_text}>Withdraw tokens from the exchange to your wallet</div>
             <WithdrawCurrencySelector fieldId='exchange-balance-withdraw' />
             <WithdrawButton />
         </div>

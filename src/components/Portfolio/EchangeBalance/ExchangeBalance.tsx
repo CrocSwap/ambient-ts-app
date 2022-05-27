@@ -3,6 +3,7 @@ import { useState } from 'react';
 import TabContent from '../../Global/Tabs/TabContent/TabContent';
 import TabNavItem from '../../Global/Tabs/TabNavItem/TabNavItem';
 import Deposit from './Deposit/Deposit';
+import Withdraw from './Withdraw/Withdraw';
 
 export default function ExchangeBalance() {
     const [activeTab, setActiveTab] = useState('tab1');
@@ -34,7 +35,7 @@ export default function ExchangeBalance() {
                         <Deposit />
                     </TabContent>
                     <TabContent id='tab2' activeTab={activeTab}>
-                        {/* <p>Withdraw</p> */}
+                        <Withdraw />
                     </TabContent>
                     <TabContent id='tab3' activeTab={activeTab}>
                         {/* <p>Transfer</p> */}

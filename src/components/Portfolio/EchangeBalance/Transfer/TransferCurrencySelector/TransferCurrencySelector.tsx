@@ -1,9 +1,7 @@
-import styles from './WithdrawCurrencySelector.module.css';
+import styles from './TransferCurrencySelector.module.css';
 import { RiArrowDownSLine } from 'react-icons/ri';
-import Toggle from '../../../../Global/Toggle/Toggle';
-import { useState } from 'react';
 
-interface WithdrawCurrencySelectorProps {
+interface TransferCurrencySelectorProps {
     fieldId: string;
 
     sellToken?: boolean;
@@ -12,29 +10,13 @@ interface WithdrawCurrencySelectorProps {
     // updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
 }
 
-export default function WithdrawCurrencySelector(props: WithdrawCurrencySelectorProps) {
+export default function TransferCurrencySelector(props: TransferCurrencySelectorProps) {
     const { fieldId, disable } = props;
-
-    const [isChecked, setIsChecked] = useState<boolean>(false);
-
-    const toggleContent = (
-        <span className={styles.surplus_toggle}>
-            Send to a different address
-            <div className={styles.toggle_container}>
-                <Toggle
-                    isOn={isChecked}
-                    handleToggle={() => setIsChecked(!isChecked)}
-                    Width={36}
-                    id='withdraw_to_different_address'
-                />
-            </div>
-        </span>
-    );
 
     const rateInput = (
         <div className={styles.token_amount}>
             <input
-                id={`${fieldId}-exchange-balance-withdraw-quantity`}
+                id={`${fieldId}-exchange-balance-transfer-quantity`}
                 className={styles.currency_quantity}
                 placeholder='0'
                 // onChange={(event) => updateOtherQuantity(event)}
@@ -53,7 +35,6 @@ export default function WithdrawCurrencySelector(props: WithdrawCurrencySelector
 
     return (
         <div className={styles.swapbox}>
-            {toggleContent}
             <span className={styles.direction}>Select Token</span>
             <div className={styles.swapbox_top}>
                 <div className={styles.swap_input}>{rateInput}</div>
