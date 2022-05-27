@@ -10,7 +10,7 @@ export default function PortfolioBanner() {
             <div className={styles.account_container}>
                 <img src={avatarImage} alt='avatar' />
                 <div className={styles.account_names}>
-                    <span className={styles.name}></span>
+                    <span className={styles.name}>Username.eth</span>
                     <span className={styles.hash}>0x284c...Ec38</span>
                 </div>
             </div>
