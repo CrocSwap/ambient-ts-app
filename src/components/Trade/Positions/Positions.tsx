@@ -1,14 +1,22 @@
 import Position from '../../Global/Position/Position';
 import styles from './Positions.module.css';
 
-export default function Positions() {
+interface PositionsProps {
+    portfolio?: boolean;
+}
+
+export default function Positions(props: PositionsProps) {
+    const { portfolio } = props;
     const examplePositions = [1, 2, 3];
 
-    const positionsDisplay = examplePositions.map((position, idx) => <Position key={idx} />);
+    const positionsDisplay = examplePositions.map((position, idx) => (
+        <Position key={idx} portfolio={portfolio} />
+    ));
 
     const positionsHeader = (
         <thead>
             <tr>
+                {portfolio && <th></th>}
                 <th>Id</th>
                 <th>Range</th>
                 <th>APY</th>
