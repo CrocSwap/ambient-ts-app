@@ -1,12 +1,9 @@
+// START: Import React and Dongles
 import { useEffect, useState } from 'react';
-import ContentContainer from '../../../components/Global/ContentContainer/ContentContainer';
-import RangeButton from '../../../components/Trade/Range/RangeButton/RangeButton';
-import RangeCurrencyConverter from '../../../components/Trade/Range/RangeCurrencyConverter/RangeCurrencyConverter';
-import RangePriceInfo from '../../../components/Trade/Range/RangePriceInfo/RangePriceInfo';
-import RangeWidth from '../../../components/Trade/Range/RangeWidth/RangeWidth';
-import styles from './Range.module.css';
+import { useMoralis, useNewMoralisObject } from 'react-moralis';
 import { motion } from 'framer-motion';
-
+import { BigNumber } from 'ethers';
+import { JsonRpcProvider } from '@ethersproject/providers';
 import {
     contractAddresses,
     sendAmbientMint,
@@ -23,27 +20,29 @@ import {
     toDisplayPrice,
 } from '@crocswap-libs/sdk';
 
-import { isTransactionReplacedError, TransactionError } from '../../../utils/TransactionError';
-
-import { handleParsedReceipt } from '../../../utils/HandleParsedReceipt';
-
-import { JsonRpcProvider } from '@ethersproject/providers';
-import { BigNumber } from 'ethers';
+// START: Import JSX Elements
+import ContentContainer from '../../../components/Global/ContentContainer/ContentContainer';
+import RangeButton from '../../../components/Trade/Range/RangeButton/RangeButton';
+import RangeCurrencyConverter from '../../../components/Trade/Range/RangeCurrencyConverter/RangeCurrencyConverter';
+import RangePriceInfo from '../../../components/Trade/Range/RangePriceInfo/RangePriceInfo';
+import RangeWidth from '../../../components/Trade/Range/RangeWidth/RangeWidth';
 import RangeHeader from '../../../components/Trade/Range/RangeHeader/RangeHeader';
 import RangeDenominationSwitch from '../../../components/Trade/Range/RangeDenominationSwitch/RangeDenominationSwitch';
 import AdvancedModeToggle from '../../../components/Trade/Range/AdvancedModeToggle/AdvancedModeToggle';
 import MinMaxPrice from '../../../components/Trade/Range/AdvancedModeComponents/MinMaxPrice/MinMaxPrice';
 import AdvancedPriceInfo from '../../../components/Trade/Range/AdvancedModeComponents/AdvancedPriceInfo/AdvancedPriceInfo';
+import DividerDark from '../../../components/Global/DividerDark/DividerDark';
+
+// START: Import Local Files
+import styles from './Range.module.css';
+import { isTransactionReplacedError, TransactionError } from '../../../utils/TransactionError';
+import { handleParsedReceipt } from '../../../utils/HandleParsedReceipt';
+import truncateDecimals from '../../../utils/data/truncateDecimals';
 
 interface IRangeProps {
     provider: JsonRpcProvider;
     lastBlockNumber: number;
 }
-
-import { useMoralis, useNewMoralisObject } from 'react-moralis';
-
-import truncateDecimals from '../../../utils/data/truncateDecimals';
-import DividerDark from '../../../components/Global/DividerDark/DividerDark';
 
 export default function Range(props: IRangeProps) {
     const { save } = useNewMoralisObject('UserPosition');
