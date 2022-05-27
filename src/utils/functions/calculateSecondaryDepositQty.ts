@@ -32,6 +32,19 @@ export const calculateSecondaryDepositQty = (
 
     const primInputValueNum = parseFloat(primaryInputValueStr);
 
+    // TODO: activate code with ternaries once function is tested in DOM
+    // if (isAmbientPosition) {
+    //     secondaryQuantity = isPrimaryTokenBase
+    //         ? primInputValueNum / poolDisplayPrice
+    //         : primInputValueNum / (1 / poolDisplayPrice);
+    // } else {
+    //     if (depositSkew) {
+    //         secondaryQuantity = isPrimaryTokenBase
+    //             ? (primInputValueNum / poolDisplayPrice) * depositSkew
+    //             : (primInputValueNum / (1 / poolDisplayPrice)) * depositSkew;
+    //     }
+    // }
+
     if (isAmbientPosition) {
         if (isPrimaryTokenBase) {
             secondaryQuantity = primInputValueNum / poolDisplayPrice;
