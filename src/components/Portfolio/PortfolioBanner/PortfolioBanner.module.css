@@ -1,0 +1,62 @@
+.animation_container{
+    width: 100%;
+    perspective: 2000;
+}
+
+
+.rectangle_container{
+    width: 100%;
+    height: 245px;
+    background: linear-gradient(180deg, rgba(23, 29, 39, 0) 0%, #0E131A 100%), url('../../public/lightning.png');
+
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding: 1rem 2rem;
+    cursor: grab;
+}
+
+.account_names img{
+    max-width: 100%;
+    width: 56px;
+    aspect-ratio: 1;
+}
+
+.name{
+    font-weight: 300;
+font-size: 24px;
+line-height: 30px;
+display: flex;
+align-items: flex-end;
+letter-spacing: -0.02em;
+
+/* text/white */
+
+color: #FFFFFF;
+}
+
+.hash{
+    font-style: normal;
+font-weight: 300;
+font-size: 12px;
+line-height: 16px;
+/* identical to box height */
+
+text-align: center;
+
+/* text/grey light */
+
+color: #BDBDBD;
+
+}
+
+.nft_container{
+    display: flex;
+    gap: 1rem;
+}
+
+.nft_container img{
+    width: 100px;
+    aspect-ratio: 1;
+}
+
