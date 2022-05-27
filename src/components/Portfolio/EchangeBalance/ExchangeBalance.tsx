@@ -4,6 +4,7 @@ import TabContent from '../../Global/Tabs/TabContent/TabContent';
 import TabNavItem from '../../Global/Tabs/TabNavItem/TabNavItem';
 import Deposit from './Deposit/Deposit';
 import Withdraw from './Withdraw/Withdraw';
+import Transfer from './Transfer/Transfer';
 
 export default function ExchangeBalance() {
     const [activeTab, setActiveTab] = useState('tab1');
@@ -38,7 +39,7 @@ export default function ExchangeBalance() {
                         <Withdraw />
                     </TabContent>
                     <TabContent id='tab3' activeTab={activeTab}>
-                        {/* <p>Transfer</p> */}
+                        <Transfer />
                     </TabContent>
                 </div>
             </div>
