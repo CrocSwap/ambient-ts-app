@@ -32,19 +32,19 @@ export default function PortfolioTabs() {
             </div>
             <div className={styles.tabs_outlet}>
                 <TabContent id='tab1' activeTab={activeTab}>
-                    <p>Wallet component</p>
+                    {/* <p>Wallet component</p> */}
                 </TabContent>
                 <TabContent id='tab2' activeTab={activeTab}>
-                    <p>Exchange Component</p>
+                    {/* <p>Exchange Component</p> */}
                 </TabContent>
                 <TabContent id='tab3' activeTab={activeTab}>
-                    <p>Position component</p>
+                    {/* <p>Position component</p> */}
                 </TabContent>
                 <TabContent id='tab4' activeTab={activeTab}>
-                    <p>Limit Orders component</p>
+                    {/* <p>Limit Orders component</p> */}
                 </TabContent>
                 <TabContent id='tab5' activeTab={activeTab}>
-                    <p>Transactions component</p>
+                    {/* <p>Transactions component</p> */}
                 </TabContent>
             </div>
         </div>
