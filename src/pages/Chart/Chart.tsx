@@ -53,17 +53,25 @@ export default function Chart() {
 
         horizontalLine.decorate((selection: any) => {
             selection.enter().select('g.left-handle').append('text').attr('x', 5).attr('y', -5);
-            selection.enter().select('line').attr('stroke', 'red').call(drag);
+            selection.enter().select('line').attr('class', 'redline').attr('stroke', 'red');
             selection
                 .select('g.left-handle text')
                 .text((d: any) => d.name + ' - ' + valueFormatter(d.value));
             selection
+                .enter()
+                .append('line')
+                .attr('class', 'detector')
+                .attr('stroke', 'transparent')
+                .attr('x2', '100%')
+                .attr('stroke-width', 5)
+                .style('pointer-events', 'all')
                 .on('mouseover', (event: any, data: any) => {
-                    d3.select(event.currentTarget).select('line').style('cursor', 'ns-resize');
+                    d3.select(event.currentTarget).style('cursor', 'ns-resize');
                 })
                 .on('mouseout', (event: any, data: any) => {
-                    d3.select(event.currentTarget).select('line').style('cursor', 'default');
-                });
+                    d3.select(event.currentTarget).style('cursor', 'default');
+                })
+                .call(drag);
         });
 
         const xAxisJoin = d3fc.dataJoin('g', 'x-axis');

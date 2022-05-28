@@ -9,12 +9,12 @@ text {
     fill: #BDBDBD;    
 }
 
-.domain, .tick>path, .gridline-y, .gridline-x, .annotation-line>line {
+.domain, .tick>path, .gridline-y, .gridline-x {
     stroke: #BDBDBD;
     stroke-opacity: 0.1;
 }
 
-.annotation-line>line {
+.annotation-line > .redline {
     stroke: red;
     stroke-width: 3;
     stroke-dasharray: 6 6;
