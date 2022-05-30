@@ -46,5 +46,5 @@ export default function GraphContainer() {
             </div>
         </div>
     );
-    return <div className={styles.GraphContainer}></div>;
+    return <div className={styles.GraphContainer}>{timeFrame}</div>;
 }
