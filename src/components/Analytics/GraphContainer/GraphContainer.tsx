@@ -1,5 +1,6 @@
 import styles from './GraphContainer.module.css';
 import chartImage from '../../../assets/images/Temporary/Analytics/chart.svg';
+import { motion } from 'framer-motion';
 
 export default function GraphContainer() {
     const timeFrame = (
@@ -22,13 +23,25 @@ export default function GraphContainer() {
             <div className={styles.graph_container}>
                 <div className={styles.title}>Total TVL</div>
                 <div className={styles.image_container}>
-                    <img src={chartImage} alt='chart' />
+                    <motion.img
+                        initial={{ width: 0 }}
+                        animate={{ width: '100%' }}
+                        exit={{ x: innerWidth, transition: { duration: 5 } }}
+                        src={chartImage}
+                        alt='chart'
+                    />
                 </div>
             </div>
             <div className={styles.graph_container}>
                 <div className={styles.title}>Total TVL</div>
                 <div className={styles.image_container}>
-                    <img src={chartImage} alt='chart' />
+                    <motion.img
+                        initial={{ width: 0 }}
+                        animate={{ width: '100%' }}
+                        exit={{ x: innerWidth, transition: { duration: 5 } }}
+                        src={chartImage}
+                        alt='chart'
+                    />
                 </div>
             </div>
         </div>
