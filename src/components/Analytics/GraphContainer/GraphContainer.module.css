@@ -1,0 +1,49 @@
+/* timeframe */
+.time_frame_container{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--text-grey-light)
+}
+.time_frame_container .right_side{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    
+}
+
+
+.right_side button{
+    outline: none;
+    border: none;
+    background: var(--dark1);
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    color: var(--text-grey-light);
+    padding: 4px;
+    border-radius: 100px;
+}
+/* Analytics Info */
+.info_content{
+    display: flex;
+    flex-direction: column;
+    color: var(--text-grey-white);
+    gap: 0.5rem;
+}
+
+.info_content .info_title{
+    font-weight: 100;
+font-size: 30px;
+line-height: 38px;
+
+}
+
+
+.info_content .info_value{
+    font-size: var(--header2-size);
+    line-height: var(--header2-lh);
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+
+}
