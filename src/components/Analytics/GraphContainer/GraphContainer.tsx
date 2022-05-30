@@ -25,6 +25,12 @@ export default function GraphContainer() {
                     <img src={chartImage} alt='chart' />
                 </div>
             </div>
+            <div className={styles.graph_container}>
+                <div className={styles.title}>Total TVL</div>
+                <div className={styles.image_container}>
+                    <img src={chartImage} alt='chart' />
+                </div>
+            </div>
         </div>
     );
 
@@ -46,5 +52,10 @@ export default function GraphContainer() {
             </div>
         </div>
     );
-    return <div className={styles.GraphContainer}>{timeFrame}</div>;
+    return (
+        <div className={styles.GraphContainers}>
+            {timeFrame}
+            {graphData}
+        </div>
+    );
 }

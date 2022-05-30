@@ -5,6 +5,13 @@
     align-items: center;
     color: var(--text-grey-light)
 }
+
+.time_frame_container .title{
+    font-size: var(--header1-size);
+    line-height: var(--header1-lh);
+    font-weight: 300;
+    color: var(--text-grey-white);
+}
 .time_frame_container .right_side{
     display: flex;
     flex-direction: row;
@@ -24,6 +31,28 @@
     padding: 4px;
     border-radius: 100px;
 }
+
+/* graph data */
+
+.graph_data{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin: 1rem 0;
+}
+
+.graph_container{
+    background: var(--dark1);
+    padding: 1rem;
+}
+.graph_container .title{
+    font-size: var(--header2-size);
+    line-height: var(--header2-lh);
+    font-weight: 200;
+    color: var(--text-grey-white);
+}
+
 /* Analytics Info */
 .info_container{
     display: flex;
