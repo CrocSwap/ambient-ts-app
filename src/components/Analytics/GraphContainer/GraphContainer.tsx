@@ -56,6 +56,7 @@ export default function GraphContainer() {
         <div className={styles.GraphContainers}>
             {timeFrame}
             {graphData}
+            {analyticsInfo}
         </div>
     );
 }

@@ -57,12 +57,17 @@
 .info_container{
     display: flex;
     flex-direction: row;
+    justify-content: space-between;
     align-items: center;
     gap: 3rem;
+   width: 80%;
+   margin: 0 auto;
 }
 .info_content{
     display: flex;
     flex-direction: column;
+    align-items: center;
+    
     color: var(--text-grey-white);
     gap: 0.5rem;
 }
@@ -78,7 +83,6 @@ line-height: 38px;
 .info_content .info_value{
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
-    font-size: var(--body-size);
-    line-height: var(--body-lh);
+   
 
 }
