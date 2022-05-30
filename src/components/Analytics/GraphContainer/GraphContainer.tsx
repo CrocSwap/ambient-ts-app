@@ -1,4 +1,5 @@
 import styles from './GraphContainer.module.css';
+import chartImage from '../../../assets/images/Temporary/Analytics/chart.svg';
 
 export default function GraphContainer() {
     const timeFrame = (
@@ -12,6 +13,17 @@ export default function GraphContainer() {
                 <button>1h</button>
                 <button>4h</button>
                 <button>1d</button>
+            </div>
+        </div>
+    );
+
+    const graphData = (
+        <div className={styles.graph_data}>
+            <div className={styles.graph_container}>
+                <div className={styles.title}>Total TVL</div>
+                <div className={styles.image_container}>
+                    <img src={chartImage} alt='chart' />
+                </div>
             </div>
         </div>
     );
