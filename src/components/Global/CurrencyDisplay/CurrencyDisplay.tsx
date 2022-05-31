@@ -3,6 +3,7 @@ import styles from './CurrencyDisplay.module.css';
 // we will eventually get the data passed down as props through token data.
 // For now, token data is hardcoded
 interface CurrencyDisplayProps {
+    // eslint-disable-next-line
     tokenData: any;
     amount: number;
 }
