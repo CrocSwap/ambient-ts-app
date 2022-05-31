@@ -1,5 +1,5 @@
 import styles from './ConfirmSwapModal.module.css';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import CurrencyDisplay from '../../Global/CurrencyDisplay/CurrencyDisplay';
 import WaitingConfirmation from '../../Global/WaitingConfirmation/WaitingConfirmation';
 import TransactionSubmitted from '../../Global/TransactionSubmitted/TransactionSubmitted';
@@ -12,7 +12,8 @@ interface ConfirmSwapModalProps {
 export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
     const { initiateSwapMethod } = props;
     const [confirmDetails, setConfirmDetails] = useState(true);
-    const [transactionApproved, setTransactionApproved] = useState(false);
+    // const [transactionApproved, setTransactionApproved] = useState(false);
+    const [transactionApproved] = useState(false);
 
     const sellTokenQty = 1;
     const buyTokenQty = 0;
