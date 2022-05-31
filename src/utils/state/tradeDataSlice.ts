@@ -5,6 +5,7 @@ export interface tradeData {
     addressTokenB: string;
     denomInBase: boolean;
     primQty: string;
+    isTokenAPrimary: boolean;
     isTokenABase: boolean;
     dexBalTokenA: boolean;
     dexBalTokenB: boolean;
@@ -15,6 +16,7 @@ const initialState: tradeData = {
     addressTokenB: '0xb7a4F3E9097C08dA09517b5aB877F7a917224ede',
     denomInBase: true,
     primQty: '0',
+    isTokenAPrimary: true,
     isTokenABase: true,
     dexBalTokenA: false,
     dexBalTokenB: false,
@@ -39,6 +41,12 @@ export const tradeDataSlice = createSlice({
         setPrimQty: (state, action: PayloadAction<string>) => {
             state.primQty = action.payload;
         },
+        setIsTokenAPrimary: (state, action: PayloadAction<boolean>) => {
+            state.isTokenAPrimary = action.payload;
+        },
+        toggleIsTokenAPrimary: (state) => {
+            state.isTokenAPrimary = !state.isTokenAPrimary;
+        },
         setIsTokenABase: (state, action: PayloadAction<boolean>) => {
             state.isTokenABase = action.payload;
         },
@@ -62,6 +70,7 @@ export const tradeDataSlice = createSlice({
             state.addressTokenB = initialState.addressTokenB;
             state.denomInBase = initialState.denomInBase;
             state.primQty = initialState.primQty;
+            state.isTokenAPrimary = initialState.isTokenAPrimary;
             state.isTokenABase = initialState.isTokenABase;
             state.dexBalTokenA = initialState.dexBalTokenA;
             state.dexBalTokenB = initialState.dexBalTokenB;
@@ -76,6 +85,8 @@ export const {
     setDenomInBase,
     toggleDenomInBase,
     setPrimQty,
+    setIsTokenAPrimary,
+    toggleIsTokenAPrimary,
     setIsTokenABase,
     toggleIsTokenABase,
     setDexBalTokenA,
