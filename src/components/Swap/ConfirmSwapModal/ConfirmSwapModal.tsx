@@ -5,11 +5,12 @@ import CurrencyDisplay from '../../Global/CurrencyDisplay/CurrencyDisplay';
 import WaitingConfirmation from '../../Global/WaitingConfirmation/WaitingConfirmation';
 import Button from '../../Global/Button/Button';
 
-// interface ConfirmSwapModalProps {
+interface ConfirmSwapModalProps {
+    initiateSwapMethod: () => void;
+}
 
-// }
-
-export default function ConfirmSwapModal() {
+export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
+    const { initiateSwapMethod } = props;
     const [confirmDetails, setConfirmDetails] = useState(true);
     const [transactionApproved, setTransactionApproved] = useState(false);
 
@@ -95,6 +96,22 @@ export default function ConfirmSwapModal() {
     );
 
     // END OF REGULAR CONFIRMATION MESSAGE
+
+    const confirmSwapButton = (
+        <Button
+            title='Confirm Swap'
+            action={() => {
+                console.log(
+                    `Sell Token Full name: ${sellTokenData.symbol} and quantity: ${sellTokenQty}`,
+                );
+                console.log(
+                    `Buy Token Full name: ${buyTokenData.symbol} and quantity: ${buyTokenQty}`,
+                );
+                initiateSwapMethod();
+                setConfirmDetails(false);
+            }}
+        />
+    );
 
     return <div className={styles.row}>YAYYY I AM WORKING</div>;
 }
