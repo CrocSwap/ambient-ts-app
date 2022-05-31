@@ -5,17 +5,22 @@
     justify-content: center;
     align-items: center;
   }
+  .transaction_submitted h2{
+      font-size: var(--header2-size);
+      line-height: var(--header2-lh);
+  }
   .transaction_submitted p a {
     cursor: pointer;
     text-decoration: none;
-  
-    color: green;
+  font-size: var(--body-size);
+  line-height: var(--body-lh);
+    color: var(--text-grey-light);
   }
   .completed_animation {
     display: flex;
   
-    min-width: 400px;
-    max-width: 400px;
+    /* min-width: 400px;
+    max-width: 400px; */
   
     justify-content: center;
     align-items: center;

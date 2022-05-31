@@ -107,7 +107,7 @@ export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
                 console.log(
                     `Buy Token Full name: ${buyTokenData.symbol} and quantity: ${buyTokenQty}`,
                 );
-                // initiateSwapMethod();
+                initiateSwapMethod();
                 setConfirmDetails(false);
             }}
         />
