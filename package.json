@@ -20,6 +20,7 @@
         "framer-motion": "4.1.17",
         "graphql": "^16.5.0",
         "graphql-request": "^4.2.0",
+        "jest-canvas-mock": "^2.4.0",
         "magic-sdk": "7.0.0",
         "moralis": "^1.8.0",
         "react": "^18.1.0",

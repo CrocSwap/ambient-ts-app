@@ -3,12 +3,13 @@ import { useEffect, useState } from 'react';
 import { useMoralis } from 'react-moralis';
 import CurrencyDisplay from '../../Global/CurrencyDisplay/CurrencyDisplay';
 import WaitingConfirmation from '../../Global/WaitingConfirmation/WaitingConfirmation';
+import Button from '../../Global/Button/Button';
 
-interface ConfirmSwapModalProps {
-    children: React.ReactNode;
-}
+// interface ConfirmSwapModalProps {
 
-export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
+// }
+
+export default function ConfirmSwapModal() {
     const [confirmDetails, setConfirmDetails] = useState(true);
     const [transactionApproved, setTransactionApproved] = useState(false);
 
@@ -95,5 +96,5 @@ export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
 
     // END OF REGULAR CONFIRMATION MESSAGE
 
-    return <div className={styles.row}>{props.children}</div>;
+    return <div className={styles.row}>YAYYY I AM WORKING</div>;
 }

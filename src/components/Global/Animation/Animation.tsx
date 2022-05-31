@@ -2,7 +2,7 @@ import Lottie from 'react-lottie-player';
 
 interface AnimationProps {
     loop?: boolean;
-    animData: object;
+    animData: Record<string, unknown>;
     width?: number | string;
     height?: number | string;
 }

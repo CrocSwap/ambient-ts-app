@@ -21,6 +21,8 @@ import SwapHeader from '../../components/Swap/SwapHeader/SwapHeader';
 import SwapButton from '../../components/Swap/SwapButton/SwapButton';
 import DenominationSwitch from '../../components/Swap/DenominationSwitch/DenomicationSwitch';
 import DividerDark from '../../components/Global/DividerDark/DividerDark';
+import Modal from '../../components/Global/Modal/Modal';
+import ConfirmSwapModal from '../../components/Swap/ConfirmSwapModal/ConfirmSwapModal';
 
 // START: Import Local Files
 import styles from './Swap.module.css';
@@ -31,6 +33,8 @@ import { getCurrentTokens } from '../../utils/functions/processTokens';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { kovanETH, kovanUSDC } from './defaultTokens';
 import { findTknByAddr } from './findTknByAddr';
+import { useModal } from '../../components/Global/Modal/useModal';
+
 interface ISwapProps {
     provider: JsonRpcProvider;
     isOnTradeRoute?: boolean;
@@ -41,6 +45,7 @@ interface ISwapProps {
 
 export default function Swap(props: ISwapProps) {
     const { provider, isOnTradeRoute, lastBlockNumber, nativeBalance, gasPriceinGwei } = props;
+    const [isModalOpen, openModal, closeModal] = useModal();
 
     const { Moralis, chainId } = useMoralis();
 
@@ -158,6 +163,12 @@ export default function Swap(props: ISwapProps) {
         }
     }
 
+    const confirmSwapModalOrNull = isModalOpen ? (
+        <Modal onClose={closeModal} title='Confirm Swap'>
+            <ConfirmSwapModal />
+        </Modal>
+    ) : null;
+
     return (
         <motion.main
             initial={{ width: 0 }}
@@ -185,7 +196,9 @@ export default function Swap(props: ISwapProps) {
                     gasPriceinGwei={gasPriceinGwei}
                 />
                 <SwapButton onClickFn={initiateSwap} />
+                <button onClick={openModal}>OPEN MODEAL</button>
             </ContentContainer>
+            {confirmSwapModalOrNull}
         </motion.main>
     );
 }
