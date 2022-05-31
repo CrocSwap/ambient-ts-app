@@ -2,6 +2,7 @@ import styles from './ConfirmSwapModal.module.css';
 import { useEffect, useState } from 'react';
 import { useMoralis } from 'react-moralis';
 import CurrencyDisplay from '../../Global/CurrencyDisplay/CurrencyDisplay';
+import WaitingConfirmation from '../../Global/WaitingConfirmation/WaitingConfirmation';
 
 interface ConfirmSwapModalProps {
     children: React.ReactNode;
@@ -84,5 +85,15 @@ export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
             {explanationText}
         </>
     );
+
+    // REGULAR CONFIRMATION MESSAGE STARTS HERE
+    const confirmSendMessage = (
+        <WaitingConfirmation
+            content={` Swapping ${sellTokenQty} ${sellTokenData.symbol} for ${buyTokenQty} ${buyTokenData.symbol}`}
+        />
+    );
+
+    // END OF REGULAR CONFIRMATION MESSAGE
+
     return <div className={styles.row}>{props.children}</div>;
 }
