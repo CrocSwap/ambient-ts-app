@@ -2,7 +2,7 @@ import styles from './CurrencySelector.module.css';
 import CurrencyQuantity from '../CurrencyQuantity/CurrencyQuantity';
 import { RiArrowDownSLine } from 'react-icons/ri';
 import Toggle from '../../Global/Toggle/Toggle';
-import { useState, ChangeEvent } from 'react';
+import { useState, ChangeEvent, SetStateAction } from 'react';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
 
 interface CurrencySelectorProps {
@@ -11,16 +11,29 @@ interface CurrencySelectorProps {
     direction: string;
     sellToken?: boolean;
     nativeBalance: string;
+    isWithdrawFromDexChecked: boolean;
+    setIsWithdrawFromDexChecked: React.Dispatch<SetStateAction<boolean>>;
+    isWithdrawToWalletChecked: boolean;
+    setIsWithdrawToWalletChecked: React.Dispatch<SetStateAction<boolean>>;
     updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
 }
 
 export default function CurrencySelector(props: CurrencySelectorProps) {
-    const { tokenData, direction, fieldId, updateOtherQuantity } = props;
+    const {
+        tokenData,
+        direction,
+        fieldId,
+        updateOtherQuantity,
+        isWithdrawFromDexChecked,
+        setIsWithdrawFromDexChecked,
+        isWithdrawToWalletChecked,
+        setIsWithdrawToWalletChecked,
+    } = props;
     const [isChecked, setIsChecked] = useState<boolean>(false);
 
     const DexBalanceContent = (
         <span className={styles.surplus_toggle}>
-            Use DEX balance
+            {fieldId === 'sell' ? 'Withdraw from DEX balance' : 'Withdraw to Wallet'}
             <div className={styles.toggle_container}>
                 <Toggle
                     isOn={isChecked}
@@ -34,14 +47,25 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
 
     const WithdrawTokensContent = (
         <span className={styles.surplus_toggle}>
-            Withdraw tokens
+            {fieldId === 'sell' ? 'Use DEX balance' : 'Withdraw to Wallet'}
             <div className={styles.toggle_container}>
-                <Toggle
-                    isOn={isChecked}
-                    handleToggle={() => setIsChecked(!isChecked)}
-                    Width={36}
-                    id='tokens_withdrawal'
-                />
+                {fieldId === 'sell' ? (
+                    <Toggle
+                        isOn={isWithdrawFromDexChecked}
+                        handleToggle={() => setIsWithdrawFromDexChecked(!isWithdrawFromDexChecked)}
+                        Width={36}
+                        id='sell_token_withdrawal'
+                    />
+                ) : (
+                    <Toggle
+                        isOn={isWithdrawToWalletChecked}
+                        handleToggle={() =>
+                            setIsWithdrawToWalletChecked(!isWithdrawToWalletChecked)
+                        }
+                        Width={36}
+                        id='buy_token_withdrawal'
+                    />
+                )}
             </div>
         </span>
     );
