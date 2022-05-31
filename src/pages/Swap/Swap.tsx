@@ -23,6 +23,7 @@ import DenominationSwitch from '../../components/Swap/DenominationSwitch/Denomic
 import DividerDark from '../../components/Global/DividerDark/DividerDark';
 import Modal from '../../components/Global/Modal/Modal';
 import ConfirmSwapModal from '../../components/Swap/ConfirmSwapModal/ConfirmSwapModal';
+import Button from '../../components/Global/Button/Button';
 
 // START: Import Local Files
 import styles from './Swap.module.css';
@@ -73,6 +74,8 @@ export default function Swap(props: ISwapProps) {
             });
         }
     };
+
+    const loginButton = <Button title='Login' action={clickLogin} />;
 
     //
 
