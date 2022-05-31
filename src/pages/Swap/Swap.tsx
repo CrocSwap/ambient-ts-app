@@ -225,7 +225,7 @@ export default function Swap(props: ISwapProps) {
                     quoteTokenIsBuy={true}
                     gasPriceinGwei={gasPriceinGwei}
                 />
-                <SwapButton onClickFn={initiateSwap} />
+                {isAuthenticated ? <SwapButton onClickFn={initiateSwap} /> : loginButton}
                 <button onClick={openModal}>OPEN MODEAL</button>
             </ContentContainer>
             {confirmSwapModalOrNull}
