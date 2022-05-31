@@ -61,10 +61,10 @@
     margin-top: 0;
   }
 
-  .no_background:hover{
+  /* .no_background:hover{
     -webkit-transform: scale(1);
     transform: scale(1)
-  }
+  } */
   
   .main_content:hover, .main_content:focus-within{
     transition: all 250ms ease-in-out;
@@ -105,14 +105,14 @@
     }
 
     .window:hover, .window:focus-within{
-      -webkit-transform: scale(1.03, 1.03);
-      transform: scale(1.03, 1.03);
+      /* -webkit-transform: scale(1.03, 1.03);
+      transform: scale(1.03, 1.03); */
       box-shadow: 0px 0px 78px 4px rgba(4, 66, 83, 0.73);
 
     }
     .no_background:hover, .no_background:focus-within{
-      -webkit-transform: scale(1, 1);
-      transform: scale(1, 1);
+      /* -webkit-transform: scale(1, 1);
+      transform: scale(1, 1); */
       box-shadow: none;
     }
 
