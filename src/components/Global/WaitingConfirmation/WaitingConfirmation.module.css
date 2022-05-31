@@ -1,0 +1,23 @@
+
+
+.wallet_confirm{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+
+}
+.waiting_detail{
+    padding: 10px 0;
+}
+.waiting_detail p{
+    opacity: 0.7;
+}
+.loading_animation{
+  
+    min-width: 200px;
+    max-width: 200px;
+
+}
+
