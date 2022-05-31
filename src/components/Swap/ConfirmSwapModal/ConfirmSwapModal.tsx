@@ -1,6 +1,7 @@
 import styles from './ConfirmSwapModal.module.css';
 import { useEffect, useState } from 'react';
 import { useMoralis } from 'react-moralis';
+import CurrencyDisplay from '../../Global/CurrencyDisplay/CurrencyDisplay';
 
 interface ConfirmSwapModalProps {
     children: React.ReactNode;
@@ -17,9 +18,14 @@ export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
     const primarySwapInput = 'sell';
     const sellTokenData = {
         symbol: 'ETH',
+        logoAltText: 'eth',
+        logoLocal:
+            'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png',
     };
     const buyTokenData = {
         symbol: 'DAI',
+        logoAltText: 'dai',
+        logoLocal: 'https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.png',
     };
 
     const explanationText =
@@ -40,5 +46,43 @@ export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
                 tolerance in settings.
             </div>
         );
+
+    const moreExpensiveToken = 'ETH';
+    const lessExpensiveToken = 'DAI';
+    const displayConversionRate = 0.00212;
+    const priceLimit = 0.12;
+
+    const fullTxDetails = (
+        <>
+            <div className={styles.modal_currency_converter}>
+                <CurrencyDisplay amount={sellTokenQty} tokenData={sellTokenData} />
+                {/* <div className={styles.arrow}>
+                  <img src={arrow} alt="" />
+                </div> */}
+
+                <CurrencyDisplay amount={buyTokenQty} tokenData={buyTokenData} />
+            </div>
+            <div className={styles.convRate}>
+                1 {moreExpensiveToken} ≈ {displayConversionRate}
+                {lessExpensiveToken}
+            </div>
+            <div className={styles.confSwap_detail}>
+                <div className={styles.detail_line}>
+                    Expected Output
+                    <span>
+                        {buyTokenQty} {buyTokenData.symbol}
+                    </span>
+                </div>
+                <div className={styles.detail_line}>
+                    Price Limit
+                    <span>
+                        {priceLimit} {lessExpensiveToken} /{moreExpensiveToken}
+                    </span>
+                </div>
+                <div className={`${styles.detail_line} ${styles.min_received}`}></div>
+            </div>
+            {explanationText}
+        </>
+    );
     return <div className={styles.row}>{props.children}</div>;
 }

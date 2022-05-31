@@ -3,27 +3,24 @@ import styles from './CurrencyDisplay.module.css';
 // we will eventually get the data passed down as props through token data.
 // For now, token data is hardcoded
 interface CurrencyDisplayProps {
-    // tokenData: React.ReactNode;
+    tokenData: any;
     amount: number;
-    logoLocal: string;
-    logoAltText: string;
-    symbol: string;
 }
 
 export default function CurrencyDisplay(props: CurrencyDisplayProps) {
-    const { amount, logoAltText, logoLocal, symbol } = props;
+    const { amount, tokenData } = props;
 
     const currencyBox = (
         <div className={styles.modalSwapbox}>
             <div className={styles.swapbox_top}>
                 <div className={styles.token_select}>
                     <img
-                        src={logoLocal}
+                        src={tokenData.logoLocal}
                         width='25px'
                         className={styles.token_list_img}
-                        alt={logoAltText}
+                        alt={tokenData.logoAltText}
                     />
-                    <span className={styles.token_list_text}>{symbol}</span>
+                    <span className={styles.token_list_text}>{tokenData.symbol}</span>
                 </div>
                 <div className={styles.token_amount}>
                     <span className={styles.currency_quantity}>{amount}</span>
@@ -31,5 +28,5 @@ export default function CurrencyDisplay(props: CurrencyDisplayProps) {
             </div>
         </div>
     );
-    return <div className={styles.CurrencyDisplau}>{currencyBox}</div>;
+    return <div>{currencyBox}</div>;
 }
