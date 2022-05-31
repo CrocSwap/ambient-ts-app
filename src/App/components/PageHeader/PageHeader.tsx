@@ -52,7 +52,7 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
         const timer = setTimeout(() => {
             // console.log('waited 1 second');
             reenableWeb3();
-        }, 500);
+        }, 100);
         return () => clearTimeout(timer);
     }, [user, account, props.metamaskLocked]);
 
@@ -142,7 +142,7 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
             {/* <div className={styles.account}>Account Info</div> */}
             {/* <div className={styles.account}>{accountAddress}</div> */}
             <div className={styles.account}>
-                {!isAuthenticated && loginButton}
+                {(!isAuthenticated || !isWeb3Enabled) && loginButton}
                 {isAuthenticated && isWeb3Enabled && <NetworkSelector />}
                 <Account {...accountProps} />
             </div>

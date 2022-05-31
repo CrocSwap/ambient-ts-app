@@ -10348,10 +10348,10 @@ mkdirp@^1.0.3, mkdirp@^1.0.4:
   resolved "https://registry.yarnpkg.com/mkdirp/-/mkdirp-1.0.4.tgz#3eb5ed62622756d79a5f0e2a221dfebad75c2f7e"
   integrity sha512-vVqVZQyf3WLx2Shd0qJ9xuvqgAyKPLAiqITEtqW0oIUjzo3PePDd6fW9iFz30ef7Ysp/oiWqbhszeGWW2T6Gzw==
 
-moralis@^1.7.0:
-  version "1.7.0"
-  resolved "https://registry.yarnpkg.com/moralis/-/moralis-1.7.0.tgz#2d39fd54e56982402c0b5177c4c5b1457e2a81ec"
-  integrity sha512-hgVdUQvm6a1zZGxODemLgMDMlMXPRQS1685NhZ6uz4Q94KeiMRxvYFN/N2yzhi4dAT5Qb0RMjzZh16ylgalwaA==
+moralis@^1.8.0:
+  version "1.8.0"
+  resolved "https://registry.yarnpkg.com/moralis/-/moralis-1.8.0.tgz#fc0aee2fdccde195e04e9395fa78bac97c1b133f"
+  integrity sha512-p8V5Ur4oLymweySUh+TBuYmQVDeqnNO3+Lk+VfPorGJsmbcer6xVy6MHHNinl1zhhWiCJNpc+XWot5wAcMb4QA==
   dependencies:
     "@babel/runtime" "7.16.7"
     "@babel/runtime-corejs3" "7.16.8"
