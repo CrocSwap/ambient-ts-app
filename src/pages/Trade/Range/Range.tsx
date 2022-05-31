@@ -26,6 +26,9 @@ import {
     // concPosSlot,
     tickToPrice,
     toDisplayPrice,
+    GRID_SIZE_DFLT,
+    MIN_TICK,
+    MAX_TICK,
 } from '@crocswap-libs/sdk';
 
 import { isTransactionReplacedError, TransactionError } from '../../../utils/TransactionError';
@@ -226,8 +229,25 @@ export default function Range(props: IRangeProps) {
     const rangeLowTick = currentPoolPriceTick - rangeWidthPercentage * 100;
     const rangeHighTick = currentPoolPriceTick + rangeWidthPercentage * 100;
 
-    const rangeLowBoundNonDisplayPrice = tickToPrice(rangeLowTick);
-    const rangeHighBoundNonDisplayPrice = tickToPrice(rangeHighTick);
+    const roundDownTick = (lowTick: number, nTicksGrid: number = GRID_SIZE_DFLT) => {
+        const tickGrid = Math.floor(rangeLowTick / nTicksGrid) * nTicksGrid;
+        const horizon = Math.floor(MIN_TICK / nTicksGrid) * nTicksGrid;
+        return Math.max(tickGrid, horizon);
+    };
+
+    const roundedLowTick = roundDownTick(rangeLowTick);
+
+    const roundUpTick = (highTick: number, nTicksGrid: number = GRID_SIZE_DFLT) => {
+        const tickGrid = Math.ceil(highTick / nTicksGrid) * nTicksGrid;
+        const horizon = Math.ceil(MAX_TICK / nTicksGrid) * nTicksGrid;
+        return Math.min(tickGrid, horizon);
+    };
+
+    const roundedHighTick = roundUpTick(rangeHighTick);
+
+    const rangeLowBoundNonDisplayPrice = tickToPrice(roundedLowTick);
+
+    const rangeHighBoundNonDisplayPrice = tickToPrice(roundedHighTick);
 
     const rangeLowBoundDisplayPrice = toDisplayPrice(rangeLowBoundNonDisplayPrice, 18, 18, false);
 

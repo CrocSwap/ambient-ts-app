@@ -52,7 +52,7 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
         const timer = setTimeout(() => {
             // console.log('waited 1 second');
             reenableWeb3();
-        }, 500);
+        }, 100);
         return () => clearTimeout(timer);
     }, [user, account, props.metamaskLocked]);
 
