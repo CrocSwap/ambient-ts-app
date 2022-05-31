@@ -1,8 +1,8 @@
 import styles from './ConfirmSwapModal.module.css';
 import { useEffect, useState } from 'react';
-import { useMoralis } from 'react-moralis';
 import CurrencyDisplay from '../../Global/CurrencyDisplay/CurrencyDisplay';
 import WaitingConfirmation from '../../Global/WaitingConfirmation/WaitingConfirmation';
+import TransactionSubmitted from '../../Global/TransactionSubmitted/TransactionSubmitted';
 import Button from '../../Global/Button/Button';
 
 interface ConfirmSwapModalProps {
@@ -13,8 +13,6 @@ export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
     const { initiateSwapMethod } = props;
     const [confirmDetails, setConfirmDetails] = useState(true);
     const [transactionApproved, setTransactionApproved] = useState(false);
-
-    const { isAuthenticated, authenticate, enableWeb3 } = useMoralis();
 
     const sellTokenQty = 1;
     const buyTokenQty = 0;
@@ -59,14 +57,13 @@ export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
         <>
             <div className={styles.modal_currency_converter}>
                 <CurrencyDisplay amount={sellTokenQty} tokenData={sellTokenData} />
-                {/* <div className={styles.arrow}>
-                  <img src={arrow} alt="" />
-                </div> */}
-
+                <div className={styles.arrow_container}>
+                    <span className={styles.arrow} />
+                </div>
                 <CurrencyDisplay amount={buyTokenQty} tokenData={buyTokenData} />
             </div>
             <div className={styles.convRate}>
-                1 {moreExpensiveToken} ≈ {displayConversionRate}
+                1 {moreExpensiveToken} = {displayConversionRate}
                 {lessExpensiveToken}
             </div>
             <div className={styles.confSwap_detail}>
@@ -89,11 +86,14 @@ export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
     );
 
     // REGULAR CONFIRMATION MESSAGE STARTS HERE
+    const currentTxHash = 'i am hash number';
     const confirmSendMessage = (
         <WaitingConfirmation
             content={` Swapping ${sellTokenQty} ${sellTokenData.symbol} for ${buyTokenQty} ${buyTokenData.symbol}`}
         />
     );
+
+    const transactionSubmitted = <TransactionSubmitted hash={currentTxHash} />;
 
     // END OF REGULAR CONFIRMATION MESSAGE
 
@@ -107,11 +107,27 @@ export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
                 console.log(
                     `Buy Token Full name: ${buyTokenData.symbol} and quantity: ${buyTokenQty}`,
                 );
-                initiateSwapMethod();
+                // initiateSwapMethod();
                 setConfirmDetails(false);
             }}
         />
     );
+    const closeButton = <Button title='Close ' action={() => console.log('I am closing this')} />;
 
-    return <div className={styles.row}>YAYYY I AM WORKING</div>;
+    const confirmationDisplay = transactionApproved ? transactionSubmitted : confirmSendMessage;
+
+    const modal = (
+        <div className={styles.modal_container}>
+            <section className={styles.modal_content}>
+                {confirmDetails ? fullTxDetails : confirmationDisplay}
+                {/* add modal content here */}
+            </section>
+            <footer className={styles.modal_footer}>
+                {/* add modal CTA button here */}
+                {confirmDetails ? confirmSwapButton : closeButton}
+            </footer>
+        </div>
+    );
+
+    return <>{modal}</>;
 }
