@@ -65,6 +65,9 @@ export default function Range(props: IRangeProps) {
     const [rangeWidthPercentage, setRangeWidthPercentage] = useState(100);
     const [denominationsInBase, setDenominationsInBase] = useState(false);
 
+    const [isWithdrawTokenAFromDexChecked, setIsWithdrawTokenAFromDexChecked] = useState(false);
+    const [isWithdrawTokenBFromDexChecked, setIsWithdrawTokenBFromDexChecked] = useState(false);
+
     const { Moralis, user, account, chainId } = useMoralis();
     const [advancedMode, setAdvancedMode] = useState<boolean>(false);
 
@@ -280,6 +283,14 @@ export default function Range(props: IRangeProps) {
         minPriceDisplay: minPriceDisplay,
     };
 
+    // props for <RangeCurrencyConverter/> React element
+    const rangeCurrencyConverterProps = {
+        isWithdrawTokenAFromDexChecked: isWithdrawTokenAFromDexChecked,
+        setIsWithdrawTokenAFromDexChecked: setIsWithdrawTokenAFromDexChecked,
+        isWithdrawTokenBFromDexChecked: isWithdrawTokenBFromDexChecked,
+        setIsWithdrawTokenBFromDexChecked: setIsWithdrawTokenBFromDexChecked,
+    };
+
     // props for <RangeWidth/> React element
     const rangeWidthProps = {
         rangeWidthPercentage: rangeWidthPercentage,
@@ -304,7 +315,7 @@ export default function Range(props: IRangeProps) {
                 <RangeHeader />
                 {denominationSwitch}
                 <DividerDark />
-                <RangeCurrencyConverter />
+                <RangeCurrencyConverter {...rangeCurrencyConverterProps} />
                 {advancedMode ? advancedModeContent : baseModeContent}
                 <RangeButton onClickFn={sendTransaction} isAmountEntered={true} />
             </ContentContainer>
