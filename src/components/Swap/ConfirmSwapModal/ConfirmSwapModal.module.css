@@ -83,10 +83,10 @@
   .min_received {
     display: flex;
   
-    padding: 20px 0;
+    padding: 10px 0;
   
     opacity: 0.6;
-    border-top: 1px solid rgb(46, 45, 45);
+   
   
     justify-content: space-between;
   }

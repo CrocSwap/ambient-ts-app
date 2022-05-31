@@ -4,6 +4,7 @@ import CurrencyDisplay from '../../Global/CurrencyDisplay/CurrencyDisplay';
 import WaitingConfirmation from '../../Global/WaitingConfirmation/WaitingConfirmation';
 import TransactionSubmitted from '../../Global/TransactionSubmitted/TransactionSubmitted';
 import Button from '../../Global/Button/Button';
+import Divider from '../../Global/Divider/Divider';
 
 interface ConfirmSwapModalProps {
     initiateSwapMethod: () => void;
@@ -67,6 +68,7 @@ export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
                 1 {moreExpensiveToken} = {displayConversionRate}
                 {lessExpensiveToken}
             </div>
+            <Divider />
             <div className={styles.confSwap_detail}>
                 <div className={styles.detail_line}>
                     Expected Output
