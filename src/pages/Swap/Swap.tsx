@@ -47,7 +47,34 @@ export default function Swap(props: ISwapProps) {
     const { provider, isOnTradeRoute, lastBlockNumber, nativeBalance, gasPriceinGwei } = props;
     const [isModalOpen, openModal, closeModal] = useModal();
 
-    const { Moralis, chainId } = useMoralis();
+    const { Moralis, chainId, enableWeb3, isWeb3Enabled, authenticate, isAuthenticated } =
+        useMoralis();
+
+    // login functionality
+    const clickLogin = () => {
+        console.log('user clicked Login');
+        if (!isAuthenticated || !isWeb3Enabled) {
+            authenticate({
+                provider: 'metamask',
+                signingMessage: 'Ambient API Authentication.',
+                onSuccess: () => {
+                    enableWeb3();
+                },
+                onError: () => {
+                    authenticate({
+                        provider: 'metamask',
+                        signingMessage: 'Ambient API Authentication.',
+                        onSuccess: () => {
+                            enableWeb3;
+                            // alert('🎉');
+                        },
+                    });
+                },
+            });
+        }
+    };
+
+    //
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
