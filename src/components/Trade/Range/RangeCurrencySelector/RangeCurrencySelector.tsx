@@ -69,7 +69,9 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                         alt='ethreum'
                         width='30px'
                     />
-                    <span className={styles.token_list_text}>{sellToken ? 'ETH' : 'DAI'}</span>
+                    <span className={styles.token_list_text}>
+                        {fieldId === 'A' ? 'ETH' : 'DAI'}
+                    </span>
                     <RiArrowDownSLine size={27} />
                 </div>
             </div>

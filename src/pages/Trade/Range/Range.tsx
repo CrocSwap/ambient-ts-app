@@ -120,8 +120,7 @@ export default function Range(props: IRangeProps) {
     const quoteTokenAddress = daiKovanAddress;
 
     const sendTransaction = async () => {
-        const tokenAQty = (document.getElementById('sell-range-quantity') as HTMLInputElement)
-            ?.value;
+        const tokenAQty = (document.getElementById('A-range-quantity') as HTMLInputElement)?.value;
         let tokenAQtyNonDisplay: BigNumber;
         let liquidity: BigNumber;
         if (tokenAQty) {
