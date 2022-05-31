@@ -21,7 +21,7 @@
         "graphql": "^16.5.0",
         "graphql-request": "^4.2.0",
         "magic-sdk": "7.0.0",
-        "moralis": "^1.7.0",
+        "moralis": "^1.8.0",
         "react": "^18.1.0",
         "react-dom": "^18.1.0",
         "react-icons": "^4.3.1",

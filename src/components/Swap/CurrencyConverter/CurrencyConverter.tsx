@@ -18,7 +18,7 @@ export default function CurrencyConverter(
     props: CurrencyConverterProps,
 ): React.ReactElement<CurrencyConverterProps> {
     const { tokenPair, isLiq, poolPrice, setIsSellTokenPrimary } = props;
-    console.log(tokenPair);
+    // console.log(tokenPair);
     // TODO: update name of functions with 'handle' verbiage
     // TODO: consolidate functions into a single function
     // TODO: refactor functions to consider which token is base
