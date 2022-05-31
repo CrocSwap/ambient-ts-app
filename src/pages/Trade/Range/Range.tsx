@@ -18,6 +18,8 @@ import {
     ambientPosSlot,
     tickToPrice,
     toDisplayPrice,
+    concDepositSkew,
+    getBaseTokenAddress,
 } from '@crocswap-libs/sdk';
 
 // START: Import JSX Elements
@@ -70,6 +72,11 @@ export default function Range(props: IRangeProps) {
         dataTokenA: findTokenByAddress(rangeData.addressTokenA, tokensBank) ?? kovanETH,
         dataTokenB: findTokenByAddress(rangeData.addressTokenB, tokensBank) ?? kovanUSDC,
     };
+
+    const isTokenABase =
+        getBaseTokenAddress(rangeData.addressTokenA, rangeData.addressTokenB) ===
+        rangeData.addressTokenA;
+
     console.assert(true, tokenPair);
 
     const [advancedMode, setAdvancedMode] = useState<boolean>(false);
@@ -235,8 +242,15 @@ export default function Range(props: IRangeProps) {
     const rangeHighBoundNonDisplayPrice = tickToPrice(rangeHighTick);
 
     const rangeLowBoundDisplayPrice = toDisplayPrice(rangeLowBoundNonDisplayPrice, 18, 18, false);
-
     const rangeHighBoundDisplayPrice = toDisplayPrice(rangeHighBoundNonDisplayPrice, 18, 18, false);
+
+    const depositSkew = concDepositSkew(
+        poolPriceNonDisplay,
+        rangeLowBoundNonDisplayPrice,
+        rangeHighBoundNonDisplayPrice,
+    );
+
+    console.log({ depositSkew });
 
     let maxPriceDisplay: string;
 
@@ -289,7 +303,12 @@ export default function Range(props: IRangeProps) {
                 <RangeHeader />
                 {denominationSwitch}
                 <DividerDark />
-                <RangeCurrencyConverter />
+                <RangeCurrencyConverter
+                    poolPriceNonDisplay={poolPriceNonDisplay}
+                    tokenPair={tokenPair}
+                    isTokenABase={isTokenABase}
+                    depositSkew={depositSkew}
+                />
                 {advancedMode ? advancedModeContent : baseModeContent}
                 <RangeButton onClickFn={sendTransaction} isAmountEntered={true} />
             </ContentContainer>

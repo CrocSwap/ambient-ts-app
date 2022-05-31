@@ -1,26 +1,54 @@
 import { ChangeEvent, SetStateAction } from 'react';
 import styles from './RangeCurrencyConverter.module.css';
 import RangeCurrencySelector from '../RangeCurrencySelector/RangeCurrencySelector';
+import { calculateSecondaryDepositQty } from '../../../../utils/functions/calculateSecondaryDepositQty';
+import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 
 interface RangeCurrencyConverterProps {
     isLiq?: boolean;
-    poolPrice?: number;
+    poolPriceNonDisplay: number;
+    tokenPair: {
+        dataTokenA: TokenIF;
+        dataTokenB: TokenIF;
+    };
+    isTokenABase: boolean;
+    depositSkew: number;
     setIsSellTokenPrimary?: React.Dispatch<SetStateAction<boolean>>;
 }
 
 export default function RangeCurrencyConverter(
     props: RangeCurrencyConverterProps,
 ): React.ReactElement<RangeCurrencyConverterProps> {
-    const { isLiq } = props;
+    const { isLiq, poolPriceNonDisplay, tokenPair, isTokenABase, depositSkew } = props;
 
     const handleChangeQtyTokenA = (evt: ChangeEvent<HTMLInputElement>) => {
-        console.log('user changed value for Token A');
-        console.log(evt.target.value);
+        const qtyTokenB = calculateSecondaryDepositQty(
+            poolPriceNonDisplay,
+            tokenPair.dataTokenA.decimals,
+            tokenPair.dataTokenB.decimals,
+            evt.target.value,
+            true,
+            isTokenABase,
+            false,
+            depositSkew,
+        )?.toString();
+        const fieldToUpdate = document.getElementById('buy-range-quantity') as HTMLInputElement;
+        fieldToUpdate.value = typeof qtyTokenB === 'string' ? qtyTokenB : '';
     };
 
     const handleChangeQtyTokenB = (evt: ChangeEvent<HTMLInputElement>) => {
-        console.log('user changed value for Token B');
-        console.log(evt.target.value);
+        const qtyTokenA = calculateSecondaryDepositQty(
+            poolPriceNonDisplay,
+            tokenPair.dataTokenA.decimals,
+            tokenPair.dataTokenB.decimals,
+            evt.target.value,
+            false,
+            isTokenABase,
+            false,
+            depositSkew,
+        )?.toString();
+        const fieldToUpdate = document.getElementById('sell-range-quantity') as HTMLInputElement;
+        fieldToUpdate.value = typeof qtyTokenA === 'string' ? qtyTokenA : '';
     };
 
     return (
