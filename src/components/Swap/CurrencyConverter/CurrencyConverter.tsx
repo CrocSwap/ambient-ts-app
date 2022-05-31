@@ -12,12 +12,25 @@ interface CurrencyConverterProps {
     poolPrice: number;
     setIsSellTokenPrimary: React.Dispatch<SetStateAction<boolean>>;
     nativeBalance: string;
+    isWithdrawFromDexChecked: boolean;
+    setIsWithdrawFromDexChecked: React.Dispatch<SetStateAction<boolean>>;
+    isWithdrawToWalletChecked: boolean;
+    setIsWithdrawToWalletChecked: React.Dispatch<SetStateAction<boolean>>;
 }
 
 export default function CurrencyConverter(
     props: CurrencyConverterProps,
 ): React.ReactElement<CurrencyConverterProps> {
-    const { tokenPair, isLiq, poolPrice, setIsSellTokenPrimary } = props;
+    const {
+        tokenPair,
+        isLiq,
+        poolPrice,
+        setIsSellTokenPrimary,
+        isWithdrawFromDexChecked,
+        setIsWithdrawFromDexChecked,
+        isWithdrawToWalletChecked,
+        setIsWithdrawToWalletChecked,
+    } = props;
     // console.log(tokenPair);
     // TODO: update name of functions with 'handle' verbiage
     // TODO: consolidate functions into a single function
@@ -52,6 +65,10 @@ export default function CurrencyConverter(
                 sellToken
                 updateOtherQuantity={updateBuyQty}
                 nativeBalance={props.nativeBalance}
+                isWithdrawFromDexChecked={isWithdrawFromDexChecked}
+                setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
+                isWithdrawToWalletChecked={isWithdrawToWalletChecked}
+                setIsWithdrawToWalletChecked={setIsWithdrawToWalletChecked}
             />
             <div className={styles.arrow_container}>
                 {isLiq ? null : <span className={styles.arrow} />}
@@ -62,6 +79,10 @@ export default function CurrencyConverter(
                 fieldId='buy'
                 updateOtherQuantity={updateSellQty}
                 nativeBalance={props.nativeBalance}
+                isWithdrawFromDexChecked={isWithdrawFromDexChecked}
+                setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
+                isWithdrawToWalletChecked={isWithdrawToWalletChecked}
+                setIsWithdrawToWalletChecked={setIsWithdrawToWalletChecked}
             />
         </section>
     );

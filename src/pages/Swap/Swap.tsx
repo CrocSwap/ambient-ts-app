@@ -57,6 +57,9 @@ export default function Swap(props: ISwapProps) {
 
     const [isSellTokenPrimary, setIsSellTokenPrimary] = useState<boolean>(true);
 
+    const [isWithdrawFromDexChecked, setIsWithdrawFromDexChecked] = useState(false);
+    const [isWithdrawToWalletChecked, setIsWithdrawToWalletChecked] = useState(true);
+
     const daiKovanAddress = '0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa';
 
     const [poolPriceNonDisplay, setPoolPriceNonDisplay] = useState(0);
@@ -176,6 +179,10 @@ export default function Swap(props: ISwapProps) {
                     poolPrice={poolPriceNonDisplay}
                     setIsSellTokenPrimary={setIsSellTokenPrimary}
                     nativeBalance={truncateDecimals(parseFloat(nativeBalance), 4).toString()}
+                    isWithdrawFromDexChecked={isWithdrawFromDexChecked}
+                    setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
+                    isWithdrawToWalletChecked={isWithdrawToWalletChecked}
+                    setIsWithdrawToWalletChecked={setIsWithdrawToWalletChecked}
                 />
                 <ExtraInfo
                     poolPriceDisplay={poolPriceDisplay}
