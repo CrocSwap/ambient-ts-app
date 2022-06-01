@@ -7,6 +7,10 @@ import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import { setIsTokenAPrimary, setPrimQty } from '../../../../utils/state/rangeDataSlice';
 
 interface RangeCurrencyConverterProps {
+    isWithdrawTokenAFromDexChecked: boolean;
+    setIsWithdrawTokenAFromDexChecked: React.Dispatch<SetStateAction<boolean>>;
+    isWithdrawTokenBFromDexChecked: boolean;
+    setIsWithdrawTokenBFromDexChecked: React.Dispatch<SetStateAction<boolean>>;
     isLiq?: boolean;
     poolPriceNonDisplay: number;
     tokenPair: {
@@ -18,10 +22,18 @@ interface RangeCurrencyConverterProps {
     setIsSellTokenPrimary?: React.Dispatch<SetStateAction<boolean>>;
 }
 
-export default function RangeCurrencyConverter(
-    props: RangeCurrencyConverterProps,
-): React.ReactElement<RangeCurrencyConverterProps> {
-    const { isLiq, poolPriceNonDisplay, tokenPair, isTokenABase, depositSkew } = props;
+export default function RangeCurrencyConverter(props: RangeCurrencyConverterProps) {
+    const {
+        isLiq,
+        poolPriceNonDisplay,
+        tokenPair,
+        isTokenABase,
+        depositSkew,
+        isWithdrawTokenAFromDexChecked,
+        setIsWithdrawTokenAFromDexChecked,
+        isWithdrawTokenBFromDexChecked,
+        setIsWithdrawTokenBFromDexChecked,
+    } = props;
 
     const dispatch = useAppDispatch();
 
@@ -58,18 +70,29 @@ export default function RangeCurrencyConverter(
         dispatch(setPrimQty(evt.target.value));
         dispatch(setIsTokenAPrimary(false));
     };
+    // props for <RangeCurrencyConverter/> React element
+    const rangeCurrencySelectorProps = {
+        isWithdrawTokenAFromDexChecked: isWithdrawTokenAFromDexChecked,
+        setIsWithdrawTokenAFromDexChecked: setIsWithdrawTokenAFromDexChecked,
+        isWithdrawTokenBFromDexChecked: isWithdrawTokenBFromDexChecked,
+        setIsWithdrawTokenBFromDexChecked: setIsWithdrawTokenBFromDexChecked,
+    };
 
     return (
         <section className={styles.currency_converter}>
             <RangeCurrencySelector
-                fieldId='sell'
+                fieldId='A'
                 updateOtherQuantity={handleChangeQtyTokenA}
-                sellToken
+                {...rangeCurrencySelectorProps}
             />
             <div className={styles.arrow_container}>
                 {isLiq ? null : <span className={styles.arrow} />}
             </div>
-            <RangeCurrencySelector fieldId='buy' updateOtherQuantity={handleChangeQtyTokenB} />
+            <RangeCurrencySelector
+                fieldId='B'
+                updateOtherQuantity={handleChangeQtyTokenB}
+                {...rangeCurrencySelectorProps}
+            />
         </section>
     );
 }

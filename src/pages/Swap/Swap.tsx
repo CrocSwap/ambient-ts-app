@@ -21,6 +21,9 @@ import SwapHeader from '../../components/Swap/SwapHeader/SwapHeader';
 import SwapButton from '../../components/Swap/SwapButton/SwapButton';
 import DenominationSwitch from '../../components/Swap/DenominationSwitch/DenomicationSwitch';
 import DividerDark from '../../components/Global/DividerDark/DividerDark';
+import Modal from '../../components/Global/Modal/Modal';
+import ConfirmSwapModal from '../../components/Swap/ConfirmSwapModal/ConfirmSwapModal';
+import Button from '../../components/Global/Button/Button';
 
 // START: Import Local Files
 import styles from './Swap.module.css';
@@ -30,6 +33,8 @@ import { isTransactionReplacedError, TransactionError } from '../../utils/Transa
 import { getCurrentTokens, findTokenByAddress } from '../../utils/functions/processTokens';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { kovanETH, kovanUSDC } from '../../utils/data/defaultTokens';
+import { useModal } from '../../components/Global/Modal/useModal';
+
 interface ISwapProps {
     provider: JsonRpcProvider;
     isOnTradeRoute?: boolean;
@@ -40,8 +45,38 @@ interface ISwapProps {
 
 export default function Swap(props: ISwapProps) {
     const { provider, isOnTradeRoute, lastBlockNumber, nativeBalance, gasPriceinGwei } = props;
+    const [isModalOpen, openModal, closeModal] = useModal();
 
-    const { Moralis, chainId } = useMoralis();
+    const { Moralis, chainId, enableWeb3, isWeb3Enabled, authenticate, isAuthenticated } =
+        useMoralis();
+
+    // login functionality
+    const clickLogin = () => {
+        console.log('user clicked Login');
+        if (!isAuthenticated || !isWeb3Enabled) {
+            authenticate({
+                provider: 'metamask',
+                signingMessage: 'Ambient API Authentication.',
+                onSuccess: () => {
+                    enableWeb3();
+                },
+                onError: () => {
+                    authenticate({
+                        provider: 'metamask',
+                        signingMessage: 'Ambient API Authentication.',
+                        onSuccess: () => {
+                            enableWeb3;
+                            // alert('🎉');
+                        },
+                    });
+                },
+            });
+        }
+    };
+
+    const loginButton = <Button title='Login' action={clickLogin} />;
+
+    //
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
@@ -55,6 +90,9 @@ export default function Swap(props: ISwapProps) {
     };
 
     const [isSellTokenPrimary, setIsSellTokenPrimary] = useState<boolean>(true);
+
+    const [isWithdrawFromDexChecked, setIsWithdrawFromDexChecked] = useState(false);
+    const [isWithdrawToWalletChecked, setIsWithdrawToWalletChecked] = useState(true);
 
     const daiKovanAddress = '0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa';
 
@@ -157,6 +195,12 @@ export default function Swap(props: ISwapProps) {
         }
     }
 
+    const confirmSwapModalOrNull = isModalOpen ? (
+        <Modal onClose={closeModal} title='Confirm Swap'>
+            <ConfirmSwapModal initiateSwapMethod={initiateSwap} />
+        </Modal>
+    ) : null;
+
     return (
         <motion.main
             initial={{ width: 0 }}
@@ -175,6 +219,10 @@ export default function Swap(props: ISwapProps) {
                     poolPrice={poolPriceNonDisplay}
                     setIsSellTokenPrimary={setIsSellTokenPrimary}
                     nativeBalance={truncateDecimals(parseFloat(nativeBalance), 4).toString()}
+                    isWithdrawFromDexChecked={isWithdrawFromDexChecked}
+                    setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
+                    isWithdrawToWalletChecked={isWithdrawToWalletChecked}
+                    setIsWithdrawToWalletChecked={setIsWithdrawToWalletChecked}
                 />
                 <ExtraInfo
                     poolPriceDisplay={poolPriceDisplay}
@@ -183,8 +231,9 @@ export default function Swap(props: ISwapProps) {
                     quoteTokenIsBuy={true}
                     gasPriceinGwei={gasPriceinGwei}
                 />
-                <SwapButton onClickFn={initiateSwap} />
+                {isAuthenticated ? <SwapButton onClickFn={openModal} /> : loginButton}
             </ContentContainer>
+            {confirmSwapModalOrNull}
         </motion.main>
     );
 }

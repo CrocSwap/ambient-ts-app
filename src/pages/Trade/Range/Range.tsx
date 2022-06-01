@@ -65,6 +65,9 @@ export default function Range(props: IRangeProps) {
     const [rangeWidthPercentage, setRangeWidthPercentage] = useState(100);
     const [denominationsInBase, setDenominationsInBase] = useState(false);
 
+    const [isWithdrawTokenAFromDexChecked, setIsWithdrawTokenAFromDexChecked] = useState(false);
+    const [isWithdrawTokenBFromDexChecked, setIsWithdrawTokenBFromDexChecked] = useState(false);
+
     const { Moralis, user, account, chainId } = useMoralis();
 
     const rangeData = useAppSelector((state) => state.rangeData);
@@ -133,8 +136,7 @@ export default function Range(props: IRangeProps) {
     const quoteTokenAddress = daiKovanAddress;
 
     const sendTransaction = async () => {
-        const tokenAQty = (document.getElementById('sell-range-quantity') as HTMLInputElement)
-            ?.value;
+        const tokenAQty = (document.getElementById('A-range-quantity') as HTMLInputElement)?.value;
         let tokenAQtyNonDisplay: BigNumber;
         let liquidity: BigNumber;
         if (tokenAQty) {
@@ -301,6 +303,18 @@ export default function Range(props: IRangeProps) {
         minPriceDisplay: minPriceDisplay,
     };
 
+    // props for <RangeCurrencyConverter/> React element
+    const rangeCurrencyConverterProps = {
+        poolPriceNonDisplay: poolPriceNonDisplay,
+        tokenPair: tokenPair,
+        isTokenABase: isTokenABase,
+        depositSkew: depositSkew,
+        isWithdrawTokenAFromDexChecked: isWithdrawTokenAFromDexChecked,
+        setIsWithdrawTokenAFromDexChecked: setIsWithdrawTokenAFromDexChecked,
+        isWithdrawTokenBFromDexChecked: isWithdrawTokenBFromDexChecked,
+        setIsWithdrawTokenBFromDexChecked: setIsWithdrawTokenBFromDexChecked,
+    };
+
     // props for <RangeWidth/> React element
     const rangeWidthProps = {
         rangeWidthPercentage: rangeWidthPercentage,
@@ -325,12 +339,7 @@ export default function Range(props: IRangeProps) {
                 <RangeHeader />
                 {denominationSwitch}
                 <DividerDark />
-                <RangeCurrencyConverter
-                    poolPriceNonDisplay={poolPriceNonDisplay}
-                    tokenPair={tokenPair}
-                    isTokenABase={isTokenABase}
-                    depositSkew={depositSkew}
-                />
+                <RangeCurrencyConverter {...rangeCurrencyConverterProps} />
                 {advancedMode ? advancedModeContent : baseModeContent}
                 <RangeButton onClickFn={sendTransaction} isAmountEntered={true} />
             </ContentContainer>
