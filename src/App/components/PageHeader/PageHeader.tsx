@@ -12,6 +12,10 @@ import NetworkSelector from './NetworkSelector/NetworkSelector';
 import truncateAddress from '../../../utils/truncateAddress';
 import ambientLogo from '../../../assets/images/logos/ambient_logo.svg';
 
+import { useModal } from '../../../components/Global/Modal/useModal';
+import Modal from '../../../components/Global/Modal/Modal';
+import MagicLogin from './MagicLogin';
+
 /** ***** END: Import Local Files *********/
 
 interface IHeaderProps {
@@ -23,6 +27,17 @@ interface IHeaderProps {
 export default function PageHeader(props: IHeaderProps): React.ReactElement<IHeaderProps> {
     const { user, account, enableWeb3, isWeb3Enabled, authenticate, isAuthenticated } =
         useMoralis();
+
+    const [isModalOpen, openModal, closeModal] = useModal();
+    const modalTitle = 'Log in with Magic';
+
+    const mainModal = (
+        <Modal onClose={closeModal} title={modalTitle}>
+            <MagicLogin />
+        </Modal>
+    );
+
+    const modalOrNull = isModalOpen ? mainModal : null;
 
     // function to authenticate wallet with Moralis server
     const clickLogin = () => {
@@ -106,9 +121,15 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
 
     // End of Page Header Functions
 
-    const loginButton = (
+    const metamaskButton = (
         <button className={styles.authenticate_button} onClick={clickLogin}>
-            Connect Wallet
+            Connect Metamask
+        </button>
+    );
+
+    const magicButton = (
+        <button className={styles.authenticate_button} onClick={openModal}>
+            Log in with Magic
         </button>
     );
 
@@ -142,10 +163,12 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
             {/* <div className={styles.account}>Account Info</div> */}
             {/* <div className={styles.account}>{accountAddress}</div> */}
             <div className={styles.account}>
-                {(!isAuthenticated || !isWeb3Enabled) && loginButton}
+                {(!isAuthenticated || !isWeb3Enabled) && metamaskButton}
+                {(!isAuthenticated || !isWeb3Enabled) && magicButton}
                 {isAuthenticated && isWeb3Enabled && <NetworkSelector />}
                 <Account {...accountProps} />
             </div>
+            {modalOrNull}
         </header>
     );
 }
