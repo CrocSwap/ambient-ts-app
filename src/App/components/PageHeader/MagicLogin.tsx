@@ -1,7 +1,11 @@
 import { useMoralis } from 'react-moralis';
 import { useState } from 'react';
 
-export default function MagicLogin() {
+interface IMagicLoginProps {
+    closeModal: () => void;
+}
+
+export default function MagicLogin(props: IMagicLoginProps) {
     const { authenticate, authError, isAuthenticating } = useMoralis();
 
     const [email, setEmail] = useState('');
@@ -12,8 +16,9 @@ export default function MagicLogin() {
             provider: 'magicLink',
             email: email,
             apiKey: 'pk_live_E2BB731C9C90E127', // Enter API key from Magic Dashboard https://dashboard.magic.link/
-            network: 'rinkbey',
+            network: 'rinkeby',
         });
+        props.closeModal();
     };
 
     return (

@@ -29,11 +29,11 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
         useMoralis();
 
     const [isModalOpen, openModal, closeModal] = useModal();
-    const modalTitle = 'Log in with Magic';
+    const modalTitle = 'Log in with Email';
 
     const mainModal = (
         <Modal onClose={closeModal} title={modalTitle}>
-            <MagicLogin />
+            <MagicLogin closeModal={closeModal} />
         </Modal>
     );
 
@@ -129,7 +129,7 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
 
     const magicButton = (
         <button className={styles.authenticate_button} onClick={openModal}>
-            Log in with Magic
+            Log in with Email
         </button>
     );
 
