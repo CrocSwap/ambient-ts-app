@@ -92,7 +92,13 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                 {fieldId === 'limit-sell' ? (
                     <span>Wallet: 69.420 | DEX: 0.00</span>
                 ) : (
-                    <span>Wallet: {props.sellToken ? props.nativeBalance : '0'} | Surplus: 0</span>
+                    <span>
+                        Wallet:{' '}
+                        {props.sellToken && props.nativeBalance !== 'NaN'
+                            ? props.nativeBalance
+                            : '0'}{' '}
+                        | Surplus: 0
+                    </span>
                 )}
                 {fieldId === 'limit-sell' ? DexBalanceContent : WithdrawTokensContent}
             </div>
