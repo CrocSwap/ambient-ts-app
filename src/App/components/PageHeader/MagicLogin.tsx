@@ -38,7 +38,7 @@ export default function MagicLogin(props: IMagicLoginProps) {
                 />
 
                 <button className='loginButton' onClick={handleCustomLogin}>
-                    Login with Magic Link
+                    Send Login Link
                 </button>
             </div>
         </div>
