@@ -73,6 +73,12 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
         </span>
     );
 
+    const tokenSelectModalOrNull = isModalOpen ? (
+        <Modal onClose={closeModal} title='Modal'>
+            I am modal
+        </Modal>
+    ) : null;
+
     return (
         <div className={styles.swapbox}>
             <span className={styles.direction}>{direction}</span>
@@ -80,7 +86,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                 <div className={styles.swap_input}>
                     <CurrencyQuantity fieldId={fieldId} updateOtherQuantity={updateOtherQuantity} />
                 </div>
-                <div className={styles.token_select}>
+                <div className={styles.token_select} onClick={openModal}>
                     <img
                         className={styles.token_list_img}
                         src='https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png'
@@ -105,6 +111,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                 )}
                 {fieldId === 'limit-sell' ? DexBalanceContent : WithdrawTokensContent}
             </div>
+            {tokenSelectModalOrNull}
         </div>
     );
 }
