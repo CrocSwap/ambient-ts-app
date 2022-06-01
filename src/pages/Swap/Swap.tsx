@@ -35,7 +35,6 @@ import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { kovanETH, kovanUSDC } from './defaultTokens';
 import { findTknByAddr } from './findTknByAddr';
 import { useModal } from '../../components/Global/Modal/useModal';
-import TokenSelect from '../../components/Global/TokenSelect/TokenSelect';
 
 interface ISwapProps {
     provider: JsonRpcProvider;
@@ -235,12 +234,7 @@ export default function Swap(props: ISwapProps) {
                 />
                 {isAuthenticated ? <SwapButton onClickFn={openModal} /> : loginButton}
             </ContentContainer>
-            <TokenSelect
-                symbol='ETH'
-                name='Ethereum'
-                qty={2000}
-                icon='https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png'
-            />
+
             {confirmSwapModalOrNull}
         </motion.main>
     );

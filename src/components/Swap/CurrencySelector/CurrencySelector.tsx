@@ -6,6 +6,8 @@ import { useState, ChangeEvent, SetStateAction } from 'react';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import Modal from '../../../components/Global/Modal/Modal';
+import TokenSelectContainer from '../../Global/TokenSelectContainer/TokenSelectContainer';
+import { getAmbientTokens } from '../../../tempdata';
 
 interface CurrencySelectorProps {
     tokenData: TokenIF;
@@ -73,9 +75,11 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
         </span>
     );
 
+    const tempTokenList = getAmbientTokens();
+
     const tokenSelectModalOrNull = isModalOpen ? (
-        <Modal onClose={closeModal} title='Modal'>
-            I am modal
+        <Modal onClose={closeModal} title='Select Token'>
+            <TokenSelectContainer tokenList={tempTokenList} />
         </Modal>
     ) : null;
 

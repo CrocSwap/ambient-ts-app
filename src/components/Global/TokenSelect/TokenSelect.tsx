@@ -10,7 +10,7 @@ interface TokenSelectProps {
 }
 
 export default function TokenSelect(props: TokenSelectProps) {
-    const { icon, qty, symbol, name } = props;
+    const { icon, symbol, name } = props;
     function getRandomInt() {
         return Math.floor(Math.random() * 18000);
     }
