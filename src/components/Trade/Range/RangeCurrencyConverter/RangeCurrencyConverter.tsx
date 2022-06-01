@@ -3,6 +3,8 @@ import styles from './RangeCurrencyConverter.module.css';
 import RangeCurrencySelector from '../RangeCurrencySelector/RangeCurrencySelector';
 import { calculateSecondaryDepositQty } from '../../../../utils/functions/calculateSecondaryDepositQty';
 import { TokenIF } from '../../../../utils/interfaces/TokenIF';
+import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
+import { setIsTokenAPrimary, setPrimQty } from '../../../../utils/state/rangeDataSlice';
 
 interface RangeCurrencyConverterProps {
     isLiq?: boolean;
@@ -21,6 +23,8 @@ export default function RangeCurrencyConverter(
 ): React.ReactElement<RangeCurrencyConverterProps> {
     const { isLiq, poolPriceNonDisplay, tokenPair, isTokenABase, depositSkew } = props;
 
+    const dispatch = useAppDispatch();
+
     const handleChangeQtyTokenA = (evt: ChangeEvent<HTMLInputElement>) => {
         const qtyTokenB = calculateSecondaryDepositQty(
             poolPriceNonDisplay,
@@ -34,6 +38,8 @@ export default function RangeCurrencyConverter(
         )?.toString();
         const fieldToUpdate = document.getElementById('buy-range-quantity') as HTMLInputElement;
         fieldToUpdate.value = typeof qtyTokenB === 'string' ? qtyTokenB : '';
+        dispatch(setPrimQty(evt.target.value));
+        dispatch(setIsTokenAPrimary(true));
     };
 
     const handleChangeQtyTokenB = (evt: ChangeEvent<HTMLInputElement>) => {
@@ -49,6 +55,8 @@ export default function RangeCurrencyConverter(
         )?.toString();
         const fieldToUpdate = document.getElementById('sell-range-quantity') as HTMLInputElement;
         fieldToUpdate.value = typeof qtyTokenA === 'string' ? qtyTokenA : '';
+        dispatch(setPrimQty(evt.target.value));
+        dispatch(setIsTokenAPrimary(false));
     };
 
     return (
