@@ -4,6 +4,10 @@ import { RiArrowDownSLine } from 'react-icons/ri';
 import Toggle from '../../Global/Toggle/Toggle';
 import { useState, ChangeEvent, SetStateAction } from 'react';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
+import { useModal } from '../../../components/Global/Modal/useModal';
+import Modal from '../../../components/Global/Modal/Modal';
+import TokenSelectContainer from '../../Global/TokenSelectContainer/TokenSelectContainer';
+import { getAmbientTokens } from '../../../tempdata';
 
 interface CurrencySelectorProps {
     tokenData: TokenIF;
@@ -30,6 +34,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
         setIsWithdrawToWalletChecked,
     } = props;
     const [isChecked, setIsChecked] = useState<boolean>(false);
+    const [isModalOpen, openModal, closeModal] = useModal();
 
     const DexBalanceContent = (
         <span className={styles.surplus_toggle}>
@@ -70,6 +75,14 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
         </span>
     );
 
+    const tempTokenList = getAmbientTokens();
+
+    const tokenSelectModalOrNull = isModalOpen ? (
+        <Modal onClose={closeModal} title='Select Token'>
+            <TokenSelectContainer tokenList={tempTokenList} />
+        </Modal>
+    ) : null;
+
     return (
         <div className={styles.swapbox}>
             <span className={styles.direction}>{direction}</span>
@@ -77,7 +90,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                 <div className={styles.swap_input}>
                     <CurrencyQuantity fieldId={fieldId} updateOtherQuantity={updateOtherQuantity} />
                 </div>
-                <div className={styles.token_select}>
+                <div className={styles.token_select} onClick={openModal}>
                     <img
                         className={styles.token_list_img}
                         src='https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png'
@@ -102,6 +115,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                 )}
                 {fieldId === 'limit-sell' ? DexBalanceContent : WithdrawTokensContent}
             </div>
+            {tokenSelectModalOrNull}
         </div>
     );
 }
