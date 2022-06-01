@@ -4,7 +4,7 @@ import { CgUnavailable } from 'react-icons/cg';
 
 interface TokenSelectProps {
     icon: string;
-    qty: number;
+    qty?: number;
     symbol: string;
     name: string;
 }
