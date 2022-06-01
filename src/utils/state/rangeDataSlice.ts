@@ -9,6 +9,7 @@ export interface rangeData {
     isTokenABase: boolean;
     dexBalTokenA: boolean;
     dexBalTokenB: boolean;
+    withdrawTokens: boolean;
 }
 
 const initialState: rangeData = {
@@ -20,6 +21,7 @@ const initialState: rangeData = {
     isTokenABase: true,
     dexBalTokenA: false,
     dexBalTokenB: false,
+    withdrawTokens: true,
 };
 
 export const rangeDataSlice = createSlice({
@@ -65,6 +67,13 @@ export const rangeDataSlice = createSlice({
         toggleDexBalTokenB: (state) => {
             state.dexBalTokenB = !state.dexBalTokenB;
         },
+        setWithdrawTokens: (state, action: PayloadAction<boolean>) => {
+            state.withdrawTokens = action.payload;
+        },
+        toggleWithdrawTokens: (state) => {
+            state.withdrawTokens = !state.withdrawTokens;
+        },
+
         resetValues: (state) => {
             state.addressTokenA = initialState.addressTokenA;
             state.addressTokenB = initialState.addressTokenB;
