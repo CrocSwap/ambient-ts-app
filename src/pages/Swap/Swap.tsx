@@ -233,6 +233,7 @@ export default function Swap(props: ISwapProps) {
                 />
                 {isAuthenticated ? <SwapButton onClickFn={openModal} /> : loginButton}
             </ContentContainer>
+
             {confirmSwapModalOrNull}
         </motion.main>
     );

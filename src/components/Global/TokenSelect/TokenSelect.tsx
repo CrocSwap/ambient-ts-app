@@ -1,17 +1,21 @@
-import styles from 'TokenSelect.module.css';
+import styles from './TokenSelect.module.css';
 import { RiStarFill, RiStarLine } from 'react-icons/ri';
 import { CgUnavailable } from 'react-icons/cg';
 
 interface TokenSelectProps {
-    icon?: string;
+    icon: string;
+    qty?: number;
     symbol: string;
     name: string;
 }
 
 export default function TokenSelect(props: TokenSelectProps) {
     const { icon, symbol, name } = props;
+    function getRandomInt() {
+        return Math.floor(Math.random() * 18000);
+    }
 
-    const fakeQty = Math.floor(Math.random() * 18000);
+    const fakeQty = getRandomInt();
 
     const noTokenImage = <CgUnavailable size={20} />;
 

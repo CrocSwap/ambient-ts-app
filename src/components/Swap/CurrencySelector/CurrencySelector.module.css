@@ -40,6 +40,11 @@ width: 70%;
    justify-content: space-between;
    align-items: center;
    width: 30%;
+   cursor: pointer;
+   transition: all 0.3s ease-in-out;
+  }
+  .token_select:hover > .token_select svg{
+   color: white;
   }
 
   .token_select img {

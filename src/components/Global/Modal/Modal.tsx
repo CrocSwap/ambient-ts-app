@@ -1,9 +1,11 @@
 import styles from './Modal.module.css';
 import { RiCloseFill } from 'react-icons/ri';
 
+import { useCallback, useEffect } from 'react';
+
 interface ModalProps {
     content?: React.ReactNode;
-    onClose: React.MouseEventHandler<HTMLElement | SVGElement>;
+    onClose: () => void;
     title: string | React.ReactNode;
     footer?: React.ReactNode;
     noHeader?: boolean;
@@ -14,7 +16,19 @@ interface ModalProps {
 export default function Modal(props: ModalProps) {
     const { onClose, title, footer, noHeader, noBackground, children } = props;
 
-    // TODO: Create functionality to close modal with escape key.
+    const escFunction = useCallback((event: KeyboardEvent) => {
+        if (event.key === 'Escape') {
+            onClose();
+        }
+    }, []);
+
+    useEffect(() => {
+        document.addEventListener('keydown', escFunction, false);
+
+        return () => {
+            document.removeEventListener('keydown', escFunction, false);
+        };
+    }, []);
 
     // JSX for the header element
     const headerJSX = (
