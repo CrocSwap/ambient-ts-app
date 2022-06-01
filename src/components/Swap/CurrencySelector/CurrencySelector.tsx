@@ -4,6 +4,8 @@ import { RiArrowDownSLine } from 'react-icons/ri';
 import Toggle from '../../Global/Toggle/Toggle';
 import { useState, ChangeEvent, SetStateAction } from 'react';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
+import { useModal } from '../../../components/Global/Modal/useModal';
+import Modal from '../../../components/Global/Modal/Modal';
 
 interface CurrencySelectorProps {
     tokenData: TokenIF;
@@ -30,6 +32,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
         setIsWithdrawToWalletChecked,
     } = props;
     const [isChecked, setIsChecked] = useState<boolean>(false);
+    const [isModalOpen, openModal, closeModal] = useModal();
 
     const DexBalanceContent = (
         <span className={styles.surplus_toggle}>
