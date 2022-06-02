@@ -1,3 +1,7 @@
+// TODO:  @Emily, this file exists in exact duplicate for the Swap/Market,
+// TODO:  ... Limit, and Range modules; reduce this to one global component
+// TODO:  ... file and import it into each module individually
+
 // START: Import React and Dongles
 import { useState } from 'react';
 
