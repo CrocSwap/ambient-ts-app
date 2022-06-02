@@ -236,6 +236,7 @@ export default function Range(props: IRangeProps) {
                 advancedMode={advancedMode}
             />
             <RangeDenominationSwitch
+                tokenPair={tokenPair}
                 denominationsInBase={denominationsInBase}
                 setDenominationsInBase={setDenominationsInBase}
             />
