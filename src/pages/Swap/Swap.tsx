@@ -93,7 +93,6 @@ export default function Swap(props: ISwapProps) {
         dataTokenA: findTokenByAddress(tradeData.addressTokenA, tokensBank) ?? kovanETH,
         dataTokenB: findTokenByAddress(tradeData.addressTokenB, tokensBank) ?? kovanUSDC,
     };
-    console.log(tokenPair);
 
     const [isSellTokenPrimary, setIsSellTokenPrimary] = useState<boolean>(true);
 
