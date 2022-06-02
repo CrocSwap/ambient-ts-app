@@ -1,8 +1,9 @@
-// import { ChangeEvent } from 'react';
+// START: Import Local Files
 import styles from './RangePriceInfo.module.css';
 import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 
-interface IRangePriceInfoProps {
+// interface for component props
+interface IRangePriceInfoPropsIF {
     tokenPair: {
         dataTokenA: TokenIF;
         dataTokenB: TokenIF;
@@ -12,11 +13,14 @@ interface IRangePriceInfoProps {
     minPriceDisplay: string;
 }
 
-export default function RangePriceInfo(props: IRangePriceInfoProps) {
+// central react functional component
+export default function RangePriceInfo(props: IRangePriceInfoPropsIF) {
     const { tokenPair, spotPriceDisplay, maxPriceDisplay, minPriceDisplay } = props;
 
-    const apy = <span className={styles.apy}> Est.APY | 35.65%</span>;
+    // JSX frag for estimated APY of position
+    const apy = <span className={styles.apy}> Est APY | 35.65%</span>;
 
+    // JSX frag for lowest price in range
     const minimumPrice = (
         <div className={styles.price_display}>
             <span className={styles.price_title}>Min Price</span>
@@ -24,6 +28,7 @@ export default function RangePriceInfo(props: IRangePriceInfoProps) {
         </div>
     );
 
+    // JSX frag for current pool price for the token pair
     const currentPrice = (
         <div className={styles.price_display}>
             <span className={styles.price_title}>Current Price</span>
@@ -31,6 +36,7 @@ export default function RangePriceInfo(props: IRangePriceInfoProps) {
         </div>
     );
 
+    // JSX frag for highest price in range
     const maximumPrice = (
         <div className={styles.price_display}>
             <span className={styles.price_title}>Max Price</span>
@@ -38,6 +44,7 @@ export default function RangePriceInfo(props: IRangePriceInfoProps) {
         </div>
     );
 
+    // JSX frag for amount of collateral of Token A in the position
     const collateralTokenA = (
         <div className={styles.collateral_display}>
             <span className={styles.collateral_title}>
@@ -47,6 +54,7 @@ export default function RangePriceInfo(props: IRangePriceInfoProps) {
         </div>
     );
 
+    // JSX frag for amount of collateral of Token B in the position
     const collateralTokenB = (
         <div className={styles.collateral_display}>
             <span className={styles.collateral_title}>
