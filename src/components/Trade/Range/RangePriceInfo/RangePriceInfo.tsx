@@ -15,7 +15,7 @@ interface IRangePriceInfoProps {
 export default function RangePriceInfo(props: IRangePriceInfoProps) {
     const { tokenPair, spotPriceDisplay, maxPriceDisplay, minPriceDisplay } = props;
 
-    const priceInfo = (
+    return (
         <div className={styles.price_info_container}>
             <span className={styles.apy}> Est.APY | 35.65%</span>
             <div className={styles.price_info_content}>
@@ -48,6 +48,4 @@ export default function RangePriceInfo(props: IRangePriceInfoProps) {
             </div>
         </div>
     );
-
-    return <>{priceInfo}</>;
 }
