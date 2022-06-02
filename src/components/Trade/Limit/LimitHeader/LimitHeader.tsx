@@ -8,6 +8,7 @@ import ContentHeader from '../../../Global/ContentHeader/ContentHeader';
 import styles from './LimitHeader.module.css';
 import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 
+// interface for component props
 interface LimitHeaderPropsIF {
     tokenPair: {
         dataTokenA: TokenIF;
@@ -15,6 +16,7 @@ interface LimitHeaderPropsIF {
     };
 }
 
+// central react functional component
 export default function LimitHeader(props: LimitHeaderPropsIF) {
     const { tokenPair } = props;
 
