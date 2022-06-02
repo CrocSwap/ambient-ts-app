@@ -1,8 +1,11 @@
 import styles from './SwapHeader.module.css';
 import { MdShowChart } from 'react-icons/md';
-import { HiDotsHorizontal } from 'react-icons/hi';
-import { FiSettings } from 'react-icons/fi';
+import Modal from '../../../components/Global/Modal/Modal';
+import { useModal } from '../../../components/Global/Modal/useModal';
+
 import ContentHeader from '../../Global/ContentHeader/ContentHeader';
+import settingsIcon from '../../../assets/images/icons/settings.svg';
+import TransactionSettings from '../../Global/TransactionSettings/TransactionSettings';
 
 interface swapHeaderProps {
     isOnTradeRoute?: boolean;
@@ -10,13 +13,21 @@ interface swapHeaderProps {
 
 export default function SwapHeader(props: swapHeaderProps) {
     const { isOnTradeRoute } = props;
+    const [isModalOpen, openModal, closeModal] = useModal();
+
+    const settingsModalOrNull = isModalOpen ? (
+        <Modal noHeader title='modal' onClose={closeModal}>
+            <TransactionSettings />
+        </Modal>
+    ) : null;
 
     const tradeRouteHeader = (
         <ContentHeader>
             <span />
             <div className={styles.token_info}>ETH / USDC</div>
-
-            <FiSettings />
+            <div onClick={openModal}>
+                <img src={settingsIcon} alt='settings' />
+            </div>
         </ContentHeader>
     );
 
@@ -26,12 +37,16 @@ export default function SwapHeader(props: swapHeaderProps) {
                 <MdShowChart />
             </span>
             <span className={styles.title}>Swap</span>
-            <div className={styles.settings_container}>
-                <HiDotsHorizontal />
-                <FiSettings />
+            <div className={styles.settings_container} onClick={openModal}>
+                <img src={settingsIcon} alt='settings' />
             </div>
         </ContentHeader>
     );
 
-    return <>{isOnTradeRoute ? tradeRouteHeader : mainHeader}</>;
+    return (
+        <>
+            {isOnTradeRoute ? tradeRouteHeader : mainHeader}
+            {settingsModalOrNull}
+        </>
+    );
 }
