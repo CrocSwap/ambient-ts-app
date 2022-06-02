@@ -45,7 +45,7 @@ export default function Limit() {
                 <DenominationSwitch tokenPair={tokenPair} />
                 <DividerDark />
                 <LimitCurrencyConverter tokenPair={tokenPair} />
-                <LimitExtraInfo />
+                <LimitExtraInfo tokenPair={tokenPair} />
                 <LimitButton />
             </ContentContainer>
         </motion.section>

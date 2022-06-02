@@ -2,39 +2,26 @@ import styles from './LimitExtraInfo.module.css';
 import { useState } from 'react';
 import { FaGasPump } from 'react-icons/fa';
 import { RiArrowDownSLine } from 'react-icons/ri';
+import { TokenIF } from '../../../../utils/interfaces/TokenIF';
+
 // import truncateDecimals from '../../../utils/data/truncateDecimals';
 
-// interface LimitExtraInfoProps {
-//     poolPriceDisplay: number;
-//     slippageTolerance: number;
-//     liquidityProviderFee: number;
-//     quoteTokenIsBuy: boolean;
-//     gasPriceinGwei: string;
-// }
+interface LimitExtraInfoPropsIF {
+    tokenPair: {
+        dataTokenA: TokenIF;
+        dataTokenB: TokenIF;
+    };
+    poolPriceDisplay?: number;
+    slippageTolerance?: number;
+    liquidityProviderFee?: number;
+    quoteTokenIsBuy?: boolean;
+    gasPriceinGwei?: string;
+}
 
-export default function LimitExtraInfo() {
+export default function LimitExtraInfo(props: LimitExtraInfoPropsIF) {
+    const { tokenPair } = props;
+    console.log(tokenPair);
     const [showExtraDetails, setShowExtraDetails] = useState<boolean>(false);
-
-    // const spotPriceDisplayQuoteForBase = truncateDecimals(1 / props.poolPriceDisplay, 4);
-
-    // const truncatedGasInGwei = truncateDecimals(parseFloat(props.gasPriceinGwei), 2);
-
-    // const slippageTolerance = props.slippageTolerance;
-    // const liquidityProviderFee = props.liquidityProviderFee;
-
-    // const priceLimitAfterSlippageAndFee = props.quoteTokenIsBuy
-    //     ? truncateDecimals(
-    //           (1 / props.poolPriceDisplay) *
-    //               (1 - slippageTolerance / 100) *
-    //               (1 - liquidityProviderFee / 100),
-    //           4,
-    //       )
-    //     : truncateDecimals(
-    //           (1 / props.poolPriceDisplay) *
-    //               (1 + slippageTolerance) *
-    //               (1 + liquidityProviderFee / 100),
-    //           4,
-    //       );
 
     // TEMP DATA TO RENDER UI
     const spotPriceDisplayQuoteForBase = 1310.7276;
