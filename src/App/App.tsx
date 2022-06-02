@@ -335,7 +335,7 @@ export default function App() {
                         </Route>
                         <Route path='analytics' element={<Analytics />} />
                         <Route path='range2' element={<Range {...rangeProps} />} />
-                        <Route path='portfolio' element={<Portfolio />} />
+                        <Route path='account' element={<Portfolio />} />
                         <Route path='swap' element={<Swap {...swapProps} />} />
                         <Route path='chart' element={<Chart />} />
                         <Route path='testpage' element={<TestPage />} />
