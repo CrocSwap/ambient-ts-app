@@ -28,8 +28,6 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
         updateOtherQuantity,
     } = props;
 
-    console.log(tokenData);
-
     const DexBalanceContent = (
         <span className={styles.surplus_toggle}>
             {'Use DEX Balance'}
@@ -74,9 +72,7 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                         alt='ethreum'
                         width='30px'
                     />
-                    <span className={styles.token_list_text}>
-                        {fieldId === 'A' ? 'ETH' : 'DAI'}
-                    </span>
+                    <span className={styles.token_list_text}>{tokenData.symbol}</span>
                     <RiArrowDownSLine size={27} />
                 </div>
             </div>
