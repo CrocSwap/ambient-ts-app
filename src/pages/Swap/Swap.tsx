@@ -231,6 +231,7 @@ export default function Swap(props: ISwapProps) {
                     setIsWithdrawToWalletChecked={setIsWithdrawToWalletChecked}
                 />
                 <ExtraInfo
+                    tokenPair={tokenPair}
                     poolPriceDisplay={poolPriceDisplay}
                     slippageTolerance={5}
                     liquidityProviderFee={0.3}

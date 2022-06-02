@@ -3,8 +3,13 @@ import { useState } from 'react';
 import { FaGasPump } from 'react-icons/fa';
 import { RiArrowDownSLine } from 'react-icons/ri';
 import truncateDecimals from '../../../utils/data/truncateDecimals';
+import { TokenIF } from '../../../utils/interfaces/TokenIF';
 
 interface ExtraInfoProps {
+    tokenPair: {
+        dataTokenA: TokenIF;
+        dataTokenB: TokenIF;
+    };
     poolPriceDisplay: number;
     slippageTolerance: number;
     liquidityProviderFee: number;
@@ -13,6 +18,9 @@ interface ExtraInfoProps {
 }
 
 export default function ExtraInfo(props: ExtraInfoProps) {
+    const { tokenPair } = props;
+    console.log(tokenPair);
+
     const [showExtraDetails, setShowExtraDetails] = useState<boolean>(false);
 
     const spotPriceDisplayQuoteForBase = truncateDecimals(1 / props.poolPriceDisplay, 4);
