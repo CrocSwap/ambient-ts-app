@@ -75,11 +75,13 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
         </span>
     );
 
+    const tokenToUpdate = fieldId === 'sell' ? 'A' : 'B';
+
     const tempTokenList = getAmbientTokens();
 
     const tokenSelectModalOrNull = isModalOpen ? (
         <Modal onClose={closeModal} title='Select Token'>
-            <TokenSelectContainer tokenList={tempTokenList} />
+            <TokenSelectContainer tokenToUpdate={tokenToUpdate} tokenList={tempTokenList} />
         </Modal>
     ) : null;
 

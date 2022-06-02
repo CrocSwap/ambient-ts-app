@@ -1,21 +1,15 @@
 import styles from './TokenSelectContainer.module.css';
 import { useState } from 'react';
 import TokenSelect from '../TokenSelect/TokenSelect';
+import { TokenIF } from '../../../utils/interfaces/TokenIF';
 
-type Item = {
-    name: string;
-    address: string;
-    symbol: string;
-    decimals: number;
-    chainId: number;
-    logoURI: string;
-};
-interface TokenSelectContainerProps {
-    tokenList: Item[];
+interface TokenSelectContainerPropsIF {
+    tokenList: Array<TokenIF>;
+    tokenToUpdate: string;
 }
 
-export default function TokenSelectContainer(props: TokenSelectContainerProps) {
-    const { tokenList } = props;
+export default function TokenSelectContainer(props: TokenSelectContainerPropsIF) {
+    const { tokenList, tokenToUpdate } = props;
     const [searchTerm, setSearchTerm] = useState('');
 
     const searchInput = (
@@ -49,6 +43,8 @@ export default function TokenSelectContainer(props: TokenSelectContainerProps) {
                             symbol={token.symbol}
                             name={token.name}
                             qty={token.decimals}
+                            address={token.address}
+                            tokenToUpdate={tokenToUpdate}
                         />
                     );
                 })}
