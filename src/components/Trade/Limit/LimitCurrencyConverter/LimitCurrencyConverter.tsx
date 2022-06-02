@@ -1,12 +1,15 @@
-import {
-    // ChangeEvent,
-    SetStateAction,
-} from 'react';
-import styles from './LimitCurrencyConverter.module.css';
+// START: Import React and Dongles
+import { SetStateAction } from 'react';
+
+// START: Import React Functional Components
 import LimitCurrencySelector from '../LimitCurrencySelector/LimitCurrencySelector';
 import LimitRate from '../LimitRate/LimitRate';
+
+// START: Import Local Files
+import styles from './LimitCurrencyConverter.module.css';
 import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 
+// interface for component props
 interface LimitCurrencyConverterProps {
     tokenPair: {
         dataTokenA: TokenIF;
@@ -16,9 +19,9 @@ interface LimitCurrencyConverterProps {
     setIsSellTokenPrimary?: React.Dispatch<SetStateAction<boolean>>;
 }
 
+// central react functional component
 export default function LimitCurrencyConverter(props: LimitCurrencyConverterProps) {
     const { tokenPair } = props;
-    console.log(tokenPair);
 
     return (
         <section className={styles.currency_converter}>
