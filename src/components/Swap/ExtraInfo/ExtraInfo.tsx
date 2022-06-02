@@ -18,29 +18,31 @@ interface ExtraInfoProps {
 }
 
 export default function ExtraInfo(props: ExtraInfoProps) {
-    const { tokenPair } = props;
+    const {
+        tokenPair,
+        poolPriceDisplay,
+        slippageTolerance,
+        liquidityProviderFee,
+        quoteTokenIsBuy,
+        gasPriceinGwei,
+    } = props;
     console.log(tokenPair);
 
     const [showExtraDetails, setShowExtraDetails] = useState<boolean>(false);
 
-    const spotPriceDisplayQuoteForBase = truncateDecimals(1 / props.poolPriceDisplay, 4);
+    const spotPriceDisplayQuoteForBase = truncateDecimals(1 / poolPriceDisplay, 4);
 
-    const truncatedGasInGwei = truncateDecimals(parseFloat(props.gasPriceinGwei), 2);
+    const truncatedGasInGwei = truncateDecimals(parseFloat(gasPriceinGwei), 2);
 
-    const slippageTolerance = props.slippageTolerance;
-    const liquidityProviderFee = props.liquidityProviderFee;
-
-    const priceLimitAfterSlippageAndFee = props.quoteTokenIsBuy
+    const priceLimitAfterSlippageAndFee = quoteTokenIsBuy
         ? truncateDecimals(
-              (1 / props.poolPriceDisplay) *
+              (1 / poolPriceDisplay) *
                   (1 - slippageTolerance / 100) *
                   (1 - liquidityProviderFee / 100),
               4,
           )
         : truncateDecimals(
-              (1 / props.poolPriceDisplay) *
-                  (1 + slippageTolerance) *
-                  (1 + liquidityProviderFee / 100),
+              (1 / poolPriceDisplay) * (1 + slippageTolerance) * (1 + liquidityProviderFee / 100),
               4,
           );
 
