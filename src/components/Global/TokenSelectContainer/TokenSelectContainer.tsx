@@ -36,13 +36,7 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
                         return val;
                     }
                 })
-                .filter((tkn) => {
-                    console.log(tkn);
-                    console.log(chainId);
-                    if (tkn.chainId.toString() === chainId) {
-                        return tkn;
-                    }
-                })
+                .filter((tkn) => tkn.chainId === parseInt(chainId))
                 .map((token, idx) => {
                     return (
                         <TokenSelect
