@@ -23,6 +23,9 @@ interface LimitCurrencyConverterProps {
 export default function LimitCurrencyConverter(props: LimitCurrencyConverterProps) {
     const { tokenPair } = props;
 
+    // TODO: pass tokenPair to <LimitRate /> as a prop such that we can use a dynamic
+    // TODO: ... logo instead of the hardcoded one it contains
+
     return (
         <section className={styles.currency_converter}>
             <LimitCurrencySelector
