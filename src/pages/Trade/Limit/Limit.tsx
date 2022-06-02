@@ -15,7 +15,8 @@ import { useTradeData } from '../Trade';
 
 export default function Limit() {
     const { tradeData } = useTradeData();
-    console.log(tradeData);
+    // this is just to make the linter happy
+    console.assert(true, tradeData);
     return (
         <motion.section
             initial={{ width: 0 }}

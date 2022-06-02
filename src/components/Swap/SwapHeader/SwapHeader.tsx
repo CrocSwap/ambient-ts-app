@@ -3,19 +3,25 @@ import { MdShowChart } from 'react-icons/md';
 import { HiDotsHorizontal } from 'react-icons/hi';
 import { FiSettings } from 'react-icons/fi';
 import ContentHeader from '../../Global/ContentHeader/ContentHeader';
+import { TokenIF } from '../../../utils/interfaces/TokenIF';
 
 interface swapHeaderProps {
+    tokenPair: {
+        dataTokenA: TokenIF;
+        dataTokenB: TokenIF;
+    };
     isOnTradeRoute?: boolean;
 }
 
 export default function SwapHeader(props: swapHeaderProps) {
-    const { isOnTradeRoute } = props;
+    const { tokenPair, isOnTradeRoute } = props;
 
     const tradeRouteHeader = (
         <ContentHeader>
             <span />
-            <div className={styles.token_info}>ETH / USDC</div>
-
+            <div className={styles.token_info}>
+                {tokenPair.dataTokenA.symbol} / {tokenPair.dataTokenB.symbol}
+            </div>
             <FiSettings />
         </ContentHeader>
     );
