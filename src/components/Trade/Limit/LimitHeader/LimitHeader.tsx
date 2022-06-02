@@ -12,9 +12,8 @@ interface LimitHeaderPropsIF {
 
 export default function LimitHeader(props: LimitHeaderPropsIF) {
     const { tokenPair } = props;
-    console.log(tokenPair);
 
-    const tradeRouteHeader = (
+    return (
         <ContentHeader>
             <span />
             <div className={styles.token_info}>
@@ -23,6 +22,4 @@ export default function LimitHeader(props: LimitHeaderPropsIF) {
             <FiSettings />
         </ContentHeader>
     );
-
-    return <>{tradeRouteHeader}</>;
 }
