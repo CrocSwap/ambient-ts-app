@@ -1,6 +1,7 @@
 // START: Import React and Dongles
-import { useMoralis } from 'react-moralis';
 import { useEffect, useState } from 'react';
+import { useMoralis } from 'react-moralis';
+import { useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { JsonRpcProvider } from '@ethersproject/providers';
 import {
@@ -33,6 +34,7 @@ import { isTransactionReplacedError, TransactionError } from '../../utils/Transa
 import { getCurrentTokens, findTokenByAddress } from '../../utils/functions/processTokens';
 import { kovanETH, kovanUSDC } from '../../utils/data/defaultTokens';
 import { useModal } from '../../components/Global/Modal/useModal';
+import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { useTradeData } from '../Trade/Trade';
 
 interface ISwapProps {
@@ -48,7 +50,14 @@ export default function Swap(props: ISwapProps) {
     const [isModalOpen, openModal, closeModal] = useModal();
     const { Moralis, chainId, enableWeb3, isWeb3Enabled, authenticate, isAuthenticated } =
         useMoralis();
-    const { tradeData } = useTradeData();
+    // get URL pathway for user relative to index
+    const { pathname } = useLocation();
+
+    // use URL pathway to determine if user is in swap or market page
+    // depending on location we pull data on the tx in progress differently
+    const tradeData = pathname.includes('/trade')
+        ? useTradeData().tradeData
+        : useAppSelector((state) => state.rangeData);
 
     // login functionality
     const clickLogin = () => {
