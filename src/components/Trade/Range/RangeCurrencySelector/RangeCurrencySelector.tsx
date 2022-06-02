@@ -1,21 +1,17 @@
+import { ChangeEvent, SetStateAction } from 'react';
 import styles from './RangeCurrencySelector.module.css';
 import RangeCurrencyQuantity from '../RangeCurrencyQuantity/RangeCurrencyQuantity';
 import { RiArrowDownSLine } from 'react-icons/ri';
 import Toggle from '../../../Global/Toggle/Toggle';
-import {
-    SetStateAction,
-    // ChangeEvent
-} from 'react';
 
 interface RangeCurrencySelectorProps {
     fieldId: string;
+    updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
     isWithdrawTokenAFromDexChecked: boolean;
     setIsWithdrawTokenAFromDexChecked: React.Dispatch<SetStateAction<boolean>>;
     isWithdrawTokenBFromDexChecked: boolean;
     setIsWithdrawTokenBFromDexChecked: React.Dispatch<SetStateAction<boolean>>;
     sellToken?: boolean;
-
-    // updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
 }
 
 export default function RangeCurrencySelector(props: RangeCurrencySelectorProps) {
@@ -26,6 +22,7 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
         setIsWithdrawTokenBFromDexChecked,
         fieldId,
         sellToken,
+        updateOtherQuantity,
     } = props;
 
     const DexBalanceContent = (
@@ -60,7 +57,10 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
             {sellToken && <span className={styles.direction}>Amounts</span>}
             <div className={styles.swapbox_top}>
                 <div className={styles.swap_input}>
-                    <RangeCurrencyQuantity fieldId={fieldId} />
+                    <RangeCurrencyQuantity
+                        fieldId={fieldId}
+                        updateOtherQuantity={updateOtherQuantity}
+                    />
                 </div>
                 <div className={styles.token_select}>
                     <img

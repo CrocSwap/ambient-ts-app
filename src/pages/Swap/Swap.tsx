@@ -1,6 +1,7 @@
 // START: Import React and Dongles
-import { useMoralis } from 'react-moralis';
 import { useEffect, useState } from 'react';
+import { useMoralis } from 'react-moralis';
+import { useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { JsonRpcProvider } from '@ethersproject/providers';
 import {
@@ -19,7 +20,7 @@ import ExtraInfo from '../../components/Swap/ExtraInfo/ExtraInfo';
 import ContentContainer from '../../components/Global/ContentContainer/ContentContainer';
 import SwapHeader from '../../components/Swap/SwapHeader/SwapHeader';
 import SwapButton from '../../components/Swap/SwapButton/SwapButton';
-import DenominationSwitch from '../../components/Swap/DenominationSwitch/DenomicationSwitch';
+import DenominationSwitch from '../../components/Swap/DenominationSwitch/DenominationSwitch';
 import DividerDark from '../../components/Global/DividerDark/DividerDark';
 import Modal from '../../components/Global/Modal/Modal';
 import ConfirmSwapModal from '../../components/Swap/ConfirmSwapModal/ConfirmSwapModal';
@@ -30,11 +31,11 @@ import styles from './Swap.module.css';
 import { handleParsedReceipt } from '../../utils/HandleParsedReceipt';
 import truncateDecimals from '../../utils/data/truncateDecimals';
 import { isTransactionReplacedError, TransactionError } from '../../utils/TransactionError';
-import { getCurrentTokens } from '../../utils/functions/processTokens';
-import { useAppSelector } from '../../utils/hooks/reduxToolkit';
-import { kovanETH, kovanDAI } from './defaultTokens';
-import { findTknByAddr } from './findTknByAddr';
+import { getCurrentTokens, findTokenByAddress } from '../../utils/functions/processTokens';
+import { kovanETH, kovanUSDC } from '../../utils/data/defaultTokens';
 import { useModal } from '../../components/Global/Modal/useModal';
+import { useAppSelector } from '../../utils/hooks/reduxToolkit';
+import { useTradeData } from '../Trade/Trade';
 
 interface ISwapProps {
     provider: JsonRpcProvider;
@@ -47,9 +48,16 @@ interface ISwapProps {
 export default function Swap(props: ISwapProps) {
     const { provider, isOnTradeRoute, lastBlockNumber, nativeBalance, gasPriceinGwei } = props;
     const [isModalOpen, openModal, closeModal] = useModal();
-
     const { Moralis, chainId, enableWeb3, isWeb3Enabled, authenticate, isAuthenticated } =
         useMoralis();
+    // get URL pathway for user relative to index
+    const { pathname } = useLocation();
+
+    // use URL pathway to determine if user is in swap or market page
+    // depending on location we pull data on the tx in progress differently
+    const tradeData = pathname.includes('/trade')
+        ? useTradeData().tradeData
+        : useAppSelector((state) => state.rangeData);
 
     // login functionality
     const clickLogin = () => {
@@ -77,15 +85,13 @@ export default function Swap(props: ISwapProps) {
 
     const loginButton = <Button title='Login' action={clickLogin} />;
 
-    const tradeData = useAppSelector((state) => state.tradeData);
-
     // get current tokens for the active chain
     // if called before Moralis can initialize use kovan
     const tokensBank = getCurrentTokens(chainId ?? '0x2a');
 
     const tokenPair = {
-        dataTokenA: findTknByAddr(tradeData.addressTokenA, tokensBank) ?? kovanETH,
-        dataTokenB: findTknByAddr(tradeData.addressTokenB, tokensBank) ?? kovanDAI,
+        dataTokenA: findTokenByAddress(tradeData.addressTokenA, tokensBank) ?? kovanETH,
+        dataTokenB: findTokenByAddress(tradeData.addressTokenB, tokensBank) ?? kovanUSDC,
     };
 
     const [swapAllowed, setSwapAllowed] = useState<boolean>(false);
@@ -218,8 +224,8 @@ export default function Swap(props: ISwapProps) {
             className={styles.swap}
         >
             <ContentContainer isOnTradeRoute={isOnTradeRoute}>
-                <SwapHeader isOnTradeRoute={isOnTradeRoute} />
-                <DenominationSwitch />
+                <SwapHeader tokenPair={tokenPair} isOnTradeRoute={isOnTradeRoute} />
+                <DenominationSwitch tokenPair={tokenPair} />
                 <DividerDark />
                 <CurrencyConverter
                     tokenPair={tokenPair}
@@ -234,6 +240,7 @@ export default function Swap(props: ISwapProps) {
                     setSwapAllowed={setSwapAllowed}
                 />
                 <ExtraInfo
+                    tokenPair={tokenPair}
                     poolPriceDisplay={poolPriceDisplay}
                     slippageTolerance={5}
                     liquidityProviderFee={0.3}

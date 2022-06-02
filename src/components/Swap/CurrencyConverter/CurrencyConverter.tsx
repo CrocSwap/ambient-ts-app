@@ -33,7 +33,6 @@ export default function CurrencyConverter(
         setIsWithdrawToWalletChecked,
         setSwapAllowed,
     } = props;
-    // console.log(tokenPair);
     // TODO: update name of functions with 'handle' verbiage
     // TODO: consolidate functions into a single function
     // TODO: refactor functions to consider which token is base

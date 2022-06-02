@@ -1,12 +1,9 @@
+// START: Import React and Dongles
 import { useEffect, useState } from 'react';
-import ContentContainer from '../../../components/Global/ContentContainer/ContentContainer';
-import RangeButton from '../../../components/Trade/Range/RangeButton/RangeButton';
-import RangeCurrencyConverter from '../../../components/Trade/Range/RangeCurrencyConverter/RangeCurrencyConverter';
-import RangePriceInfo from '../../../components/Trade/Range/RangePriceInfo/RangePriceInfo';
-import RangeWidth from '../../../components/Trade/Range/RangeWidth/RangeWidth';
-import styles from './Range.module.css';
+import { useMoralis, useNewMoralisObject } from 'react-moralis';
 import { motion } from 'framer-motion';
-
+import { BigNumber } from 'ethers';
+import { JsonRpcProvider } from '@ethersproject/providers';
 import {
     contractAddresses,
     sendAmbientMint,
@@ -15,51 +12,52 @@ import {
     getSpotPrice,
     POOL_PRIMARY,
     sendConcMint,
-    // toFixedNumber,
     parseMintEthersReceipt,
     EthersNativeReceipt,
-    // toDisplayPrice,
     getSpotPriceDisplay,
-    // ParsedSwapReceipt,
-    // contractAddresses,
     ambientPosSlot,
-    // concPosSlot,
     tickToPrice,
     toDisplayPrice,
+    concDepositSkew,
+    getBaseTokenAddress,
     GRID_SIZE_DFLT,
     MIN_TICK,
     MAX_TICK,
     concPosSlot,
 } from '@crocswap-libs/sdk';
 
-import { isTransactionReplacedError, TransactionError } from '../../../utils/TransactionError';
-
-import { handleParsedReceipt } from '../../../utils/HandleParsedReceipt';
-
-import { JsonRpcProvider } from '@ethersproject/providers';
-import { BigNumber } from 'ethers';
+// START: Import JSX Elements
+import ContentContainer from '../../../components/Global/ContentContainer/ContentContainer';
+import RangeButton from '../../../components/Trade/Range/RangeButton/RangeButton';
+import RangeCurrencyConverter from '../../../components/Trade/Range/RangeCurrencyConverter/RangeCurrencyConverter';
+import RangePriceInfo from '../../../components/Trade/Range/RangePriceInfo/RangePriceInfo';
+import RangeWidth from '../../../components/Trade/Range/RangeWidth/RangeWidth';
 import RangeHeader from '../../../components/Trade/Range/RangeHeader/RangeHeader';
 import RangeDenominationSwitch from '../../../components/Trade/Range/RangeDenominationSwitch/RangeDenominationSwitch';
 import AdvancedModeToggle from '../../../components/Trade/Range/AdvancedModeToggle/AdvancedModeToggle';
 import MinMaxPrice from '../../../components/Trade/Range/AdvancedModeComponents/MinMaxPrice/MinMaxPrice';
 import AdvancedPriceInfo from '../../../components/Trade/Range/AdvancedModeComponents/AdvancedPriceInfo/AdvancedPriceInfo';
+import DividerDark from '../../../components/Global/DividerDark/DividerDark';
+
+// START: Import Local Files
+import styles from './Range.module.css';
+import { isTransactionReplacedError, TransactionError } from '../../../utils/TransactionError';
+import { handleParsedReceipt } from '../../../utils/HandleParsedReceipt';
+import truncateDecimals from '../../../utils/data/truncateDecimals';
+import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import { getCurrentTokens, findTokenByAddress } from '../../../utils/functions/processTokens';
+import { kovanETH, kovanUSDC } from '../../../utils/data/defaultTokens';
 
 interface IRangeProps {
     provider: JsonRpcProvider;
     lastBlockNumber: number;
 }
 
-import { useMoralis, useNewMoralisObject } from 'react-moralis';
-
-import truncateDecimals from '../../../utils/data/truncateDecimals';
-import DividerDark from '../../../components/Global/DividerDark/DividerDark';
-
 export default function Range(props: IRangeProps) {
+    const { provider, lastBlockNumber } = props;
     const { save } = useNewMoralisObject('UserPosition');
 
-    // const sellTokenAddress = contractAddresses.ZERO_ADDR;
     const daiKovanAddress = '0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa';
-    // const buyTokenAddress = daiKovanAddress;
 
     const [poolPriceNonDisplay, setPoolPriceNonDisplay] = useState(0);
     const [poolPriceDisplay, setPoolPriceDisplay] = useState('');
@@ -70,6 +68,22 @@ export default function Range(props: IRangeProps) {
     const [isWithdrawTokenBFromDexChecked, setIsWithdrawTokenBFromDexChecked] = useState(false);
 
     const { Moralis, user, account, chainId } = useMoralis();
+
+    const tradeData = useAppSelector((state) => state.rangeData);
+
+    // get current tokens for the active chain
+    // if called before Moralis can initialize use kovan
+    const tokensBank = getCurrentTokens(chainId ?? '0x2a');
+
+    const tokenPair = {
+        dataTokenA: findTokenByAddress(tradeData.addressTokenA, tokensBank) ?? kovanETH,
+        dataTokenB: findTokenByAddress(tradeData.addressTokenB, tokensBank) ?? kovanUSDC,
+    };
+
+    const isTokenABase =
+        getBaseTokenAddress(tradeData.addressTokenA, tradeData.addressTokenB) ===
+        tradeData.addressTokenA;
+
     const [advancedMode, setAdvancedMode] = useState<boolean>(false);
 
     const isAmbient = rangeWidthPercentage === 100;
@@ -81,24 +95,22 @@ export default function Range(props: IRangeProps) {
             const spotPrice = await getSpotPrice(
                 contractAddresses.ZERO_ADDR,
                 daiKovanAddress,
-                // usdcKovanAddress,
                 POOL_PRIMARY,
-                props.provider,
+                provider,
             );
             if (poolPriceNonDisplay !== spotPrice) {
                 setPoolPriceNonDisplay(spotPrice);
             }
         })();
-    }, [props.lastBlockNumber]);
+    }, [lastBlockNumber]);
 
     useEffect(() => {
         (async () => {
             const spotPriceDisplay = await getSpotPriceDisplay(
                 contractAddresses.ZERO_ADDR,
                 daiKovanAddress,
-                // usdcKovanAddress,
                 POOL_PRIMARY,
-                props.provider,
+                provider,
             );
             const truncatedPriceWithDenonimationPreference = truncateDecimals(
                 denominationsInBase ? spotPriceDisplay : 1 / spotPriceDisplay,
@@ -108,14 +120,14 @@ export default function Range(props: IRangeProps) {
                 setPoolPriceDisplay(truncatedPriceWithDenonimationPreference);
             }
         })();
-    }, [props.lastBlockNumber, denominationsInBase]);
+    }, [lastBlockNumber, denominationsInBase]);
 
     const maxSlippage = 5;
 
     const poolWeiPriceLowLimit = poolPriceNonDisplay * (1 - maxSlippage / 100);
     const poolWeiPriceHighLimit = poolPriceNonDisplay * (1 + maxSlippage / 100);
 
-    const signer = props.provider?.getSigner();
+    const signer = provider?.getSigner();
 
     const baseTokenAddress = contractAddresses.ZERO_ADDR;
     const quoteTokenAddress = daiKovanAddress;
@@ -168,7 +180,7 @@ export default function Range(props: IRangeProps) {
                         const receipt = await tx.wait();
                         console.log({ receipt });
                         parsedReceipt = await parseMintEthersReceipt(
-                            props.provider,
+                            provider,
                             receipt as EthersNativeReceipt,
                         );
                     } catch (e) {
@@ -181,11 +193,9 @@ export default function Range(props: IRangeProps) {
                             console.log('repriced');
                             newTransactionHash = error.replacement.hash;
                             console.log({ newTransactionHash });
-                            // dispatch(setCurrentTxHash(replacementTxHash));
-                            // dispatch(addPendingTx(replacementTxHash));
 
                             parsedReceipt = await parseMintEthersReceipt(
-                                props.provider,
+                                provider,
                                 error.receipt as EthersNativeReceipt,
                             );
                         }
@@ -217,6 +227,8 @@ export default function Range(props: IRangeProps) {
         }
     };
 
+    // TODO:  @Emily refactor this fragment to use the same denomination switch
+    // TODO:  ... component used in the Market and Limit modules
     const denominationSwitch = (
         <div className={styles.denomination_switch_container}>
             <AdvancedModeToggle
@@ -233,7 +245,7 @@ export default function Range(props: IRangeProps) {
     const advancedModeContent = (
         <>
             <MinMaxPrice />
-            <AdvancedPriceInfo />
+            <AdvancedPriceInfo tokenPair={tokenPair} />
         </>
     );
 
@@ -263,8 +275,13 @@ export default function Range(props: IRangeProps) {
     const rangeHighBoundNonDisplayPrice = tickToPrice(roundedHighTick);
 
     const rangeLowBoundDisplayPrice = toDisplayPrice(rangeLowBoundNonDisplayPrice, 18, 18, false);
-
     const rangeHighBoundDisplayPrice = toDisplayPrice(rangeHighBoundNonDisplayPrice, 18, 18, false);
+
+    const depositSkew = concDepositSkew(
+        poolPriceNonDisplay,
+        rangeLowBoundNonDisplayPrice,
+        rangeHighBoundNonDisplayPrice,
+    );
 
     let maxPriceDisplay: string;
 
@@ -288,6 +305,7 @@ export default function Range(props: IRangeProps) {
 
     // props for <RangePriceInfo/> React element
     const rangePriceInfoProps = {
+        tokenPair: tokenPair,
         spotPriceDisplay: poolPriceDisplay,
         maxPriceDisplay: maxPriceDisplay,
         minPriceDisplay: minPriceDisplay,
@@ -295,6 +313,10 @@ export default function Range(props: IRangeProps) {
 
     // props for <RangeCurrencyConverter/> React element
     const rangeCurrencyConverterProps = {
+        poolPriceNonDisplay: poolPriceNonDisplay,
+        tokenPair: tokenPair,
+        isTokenABase: isTokenABase,
+        depositSkew: depositSkew,
         isWithdrawTokenAFromDexChecked: isWithdrawTokenAFromDexChecked,
         setIsWithdrawTokenAFromDexChecked: setIsWithdrawTokenAFromDexChecked,
         isWithdrawTokenBFromDexChecked: isWithdrawTokenBFromDexChecked,

@@ -1,18 +1,29 @@
-import styles from './SwapHeader.module.css';
+// START: Import React and Dongles
 import { MdShowChart } from 'react-icons/md';
+
+// START: Import React Functional Components
 import Modal from '../../../components/Global/Modal/Modal';
 import { useModal } from '../../../components/Global/Modal/useModal';
-
 import ContentHeader from '../../Global/ContentHeader/ContentHeader';
-import settingsIcon from '../../../assets/images/icons/settings.svg';
 import TransactionSettings from '../../Global/TransactionSettings/TransactionSettings';
 
+// START: Import Local Files
+import styles from './SwapHeader.module.css';
+import settingsIcon from '../../../assets/images/icons/settings.svg';
+import { TokenIF } from '../../../utils/interfaces/TokenIF';
+
+// interface for props
 interface swapHeaderProps {
+    tokenPair: {
+        dataTokenA: TokenIF;
+        dataTokenB: TokenIF;
+    };
     isOnTradeRoute?: boolean;
 }
 
+// main react functional component
 export default function SwapHeader(props: swapHeaderProps) {
-    const { isOnTradeRoute } = props;
+    const { tokenPair, isOnTradeRoute } = props;
     const [isModalOpen, openModal, closeModal] = useModal();
 
     const settingsModalOrNull = isModalOpen ? (
@@ -24,7 +35,9 @@ export default function SwapHeader(props: swapHeaderProps) {
     const tradeRouteHeader = (
         <ContentHeader>
             <span />
-            <div className={styles.token_info}>ETH / USDC</div>
+            <div className={styles.token_info}>
+                {tokenPair.dataTokenA.symbol} / {tokenPair.dataTokenB.symbol}
+            </div>
             <div onClick={openModal}>
                 <img src={settingsIcon} alt='settings' />
             </div>

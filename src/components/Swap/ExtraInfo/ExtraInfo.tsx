@@ -1,10 +1,19 @@
-import styles from './ExtraInfo.module.css';
+// START: Import React and Dongles
 import { useState } from 'react';
 import { FaGasPump } from 'react-icons/fa';
 import { RiArrowDownSLine } from 'react-icons/ri';
-import truncateDecimals from '../../../utils/data/truncateDecimals';
 
+// START: Import Local Files
+import styles from './ExtraInfo.module.css';
+import truncateDecimals from '../../../utils/data/truncateDecimals';
+import { TokenIF } from '../../../utils/interfaces/TokenIF';
+
+// interface for props in this file
 interface ExtraInfoProps {
+    tokenPair: {
+        dataTokenA: TokenIF;
+        dataTokenB: TokenIF;
+    };
     poolPriceDisplay: number;
     slippageTolerance: number;
     liquidityProviderFee: number;
@@ -12,27 +21,32 @@ interface ExtraInfoProps {
     gasPriceinGwei: string;
 }
 
+// central react functional component
 export default function ExtraInfo(props: ExtraInfoProps) {
+    const {
+        tokenPair,
+        poolPriceDisplay,
+        slippageTolerance,
+        liquidityProviderFee,
+        quoteTokenIsBuy,
+        gasPriceinGwei,
+    } = props;
+
     const [showExtraDetails, setShowExtraDetails] = useState<boolean>(false);
 
-    const spotPriceDisplayQuoteForBase = truncateDecimals(1 / props.poolPriceDisplay, 4);
+    const spotPriceDisplayQuoteForBase = truncateDecimals(1 / poolPriceDisplay, 4);
 
-    const truncatedGasInGwei = truncateDecimals(parseFloat(props.gasPriceinGwei), 2);
+    const truncatedGasInGwei = truncateDecimals(parseFloat(gasPriceinGwei), 2);
 
-    const slippageTolerance = props.slippageTolerance;
-    const liquidityProviderFee = props.liquidityProviderFee;
-
-    const priceLimitAfterSlippageAndFee = props.quoteTokenIsBuy
+    const priceLimitAfterSlippageAndFee = quoteTokenIsBuy
         ? truncateDecimals(
-              (1 / props.poolPriceDisplay) *
+              (1 / poolPriceDisplay) *
                   (1 - slippageTolerance / 100) *
                   (1 - liquidityProviderFee / 100),
               4,
           )
         : truncateDecimals(
-              (1 / props.poolPriceDisplay) *
-                  (1 + slippageTolerance) *
-                  (1 + liquidityProviderFee / 100),
+              (1 / poolPriceDisplay) * (1 + slippageTolerance) * (1 + liquidityProviderFee / 100),
               4,
           );
 
@@ -40,11 +54,17 @@ export default function ExtraInfo(props: ExtraInfoProps) {
         <div className={styles.extra_details}>
             <div className={styles.extra_row}>
                 <span>Spot Price</span>
-                <span>{spotPriceDisplayQuoteForBase} DAI per ETH</span>
+                <span>
+                    {spotPriceDisplayQuoteForBase} {tokenPair.dataTokenB.symbol} per{' '}
+                    {tokenPair.dataTokenA.symbol}
+                </span>
             </div>
             <div className={styles.extra_row}>
                 <span>Price Limit after Slippage and Fee</span>
-                <span>{priceLimitAfterSlippageAndFee} DAI per ETH</span>
+                <span>
+                    {priceLimitAfterSlippageAndFee} {tokenPair.dataTokenB.symbol} per{' '}
+                    {tokenPair.dataTokenA.symbol}
+                </span>
             </div>
             <div className={styles.extra_row}>
                 <span>Slippage Tolerance</span>
@@ -57,7 +77,12 @@ export default function ExtraInfo(props: ExtraInfoProps) {
         </div>
     );
 
-    const ExtraDetailsOrNull = showExtraDetails ? extraInfoDetails : null;
+    const extraDetailsOrNull = showExtraDetails ? extraInfoDetails : null;
+
+    // TODO:  right now we're hardcoding where token A symbol and token B symbol
+    // TODO:  ... are being displayed, we'll need to add logic to sort once we
+    // TODO:  ... have a different method of sorting the denomination and have
+    // TODO:  ... functionality for the user to toggle denomination in the app
 
     return (
         <div className={styles.extra_info_container}>
@@ -69,11 +94,12 @@ export default function ExtraInfo(props: ExtraInfoProps) {
                     <FaGasPump size={15} /> {truncatedGasInGwei} gwei
                 </div>
                 <div className={styles.token_amount}>
-                    1 ETH = {spotPriceDisplayQuoteForBase} DAI
+                    1 {tokenPair.dataTokenA.symbol} = {spotPriceDisplayQuoteForBase}{' '}
+                    {tokenPair.dataTokenB.symbol}
                     <RiArrowDownSLine size={27} />{' '}
                 </div>
             </div>
-            {ExtraDetailsOrNull}
+            {extraDetailsOrNull}
         </div>
     );
 }

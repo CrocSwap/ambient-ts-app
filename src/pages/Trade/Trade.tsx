@@ -1,8 +1,10 @@
-import { Outlet, NavLink } from 'react-router-dom';
+import { Outlet, useOutletContext, NavLink } from 'react-router-dom';
 import styles from './Trade.module.css';
 import chart from '../../assets/images/Temporary/chart.svg';
 import Tabs from '../../components/Global/Tabs/Tabs';
 import { motion } from 'framer-motion';
+import { useAppSelector } from '../../utils/hooks/reduxToolkit';
+import { rangeData as RangeDataIF } from '../../utils/state/rangeDataSlice';
 
 export default function Trade() {
     const routes = [
@@ -19,6 +21,8 @@ export default function Trade() {
             name: 'Range',
         },
     ];
+
+    const tradeData = useAppSelector((state) => state.rangeData);
 
     // These would be move to their own components, presumably the graph component
     const tokenInfo = (
@@ -71,8 +75,6 @@ export default function Trade() {
         </div>
     );
 
-    //
-
     return (
         <motion.main
             initial={{ width: 0 }}
@@ -86,8 +88,6 @@ export default function Trade() {
                     {tokenInfo}
                     {timeFrameContent}
                     {chartImage}
-
-                    {/* tabs */}
                     <Tabs />
                 </div>
                 <div className={styles.right_col}>
@@ -98,9 +98,15 @@ export default function Trade() {
                             </div>
                         ))}
                     </div>
-                    <Outlet />
+                    <Outlet context={{ tradeData }} />
                 </div>
             </main>
         </motion.main>
     );
+}
+
+type ContextType = { tradeData: RangeDataIF };
+
+export function useTradeData() {
+    return useOutletContext<ContextType>();
 }

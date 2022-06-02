@@ -11,3 +11,8 @@ export const getCurrentTokens = (chainId: string) => {
     const tokensOnChain = filterTokensByChain(allTokens, parseInt(chainId));
     return tokensOnChain;
 };
+
+export const findTokenByAddress = (addr: string, tokens: Array<TokenIF>) => {
+    const token = tokens.find((tkn: TokenIF) => tkn.address === addr);
+    return token;
+};
