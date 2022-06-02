@@ -29,6 +29,7 @@ import {
     GRID_SIZE_DFLT,
     MIN_TICK,
     MAX_TICK,
+    concPosSlot,
 } from '@crocswap-libs/sdk';
 
 import { isTransactionReplacedError, TransactionError } from '../../../utils/TransactionError';
@@ -148,8 +149,8 @@ export default function Range(props: IRangeProps) {
                         baseTokenAddress,
                         quoteTokenAddress,
                         poolPriceNonDisplay,
-                        -70912, // tickLower,
-                        -63936, // tickHigher,
+                        roundedLowTick, // tickLower,
+                        roundedHighTick, // tickHigher,
                         tokenAQty, //  primaryField === 'A' ? tokenAQtyString : tokenBQtyString,
                         qtyIsBase,
                         poolWeiPriceLowLimit,
@@ -191,12 +192,22 @@ export default function Range(props: IRangeProps) {
                     } finally {
                         if (parsedReceipt)
                             handleParsedReceipt(Moralis, 'mint', newTransactionHash, parsedReceipt);
-
-                        const posHash = ambientPosSlot(
-                            account as string,
-                            baseTokenAddress,
-                            quoteTokenAddress,
-                        );
+                        let posHash;
+                        if (isAmbient) {
+                            posHash = ambientPosSlot(
+                                account as string,
+                                baseTokenAddress,
+                                quoteTokenAddress,
+                            );
+                        } else {
+                            posHash = concPosSlot(
+                                account as string,
+                                baseTokenAddress,
+                                quoteTokenAddress,
+                                roundedLowTick,
+                                roundedHighTick,
+                            );
+                        }
                         const txHash = newTransactionHash;
 
                         save({ txHash, posHash, user, account, chainId });
