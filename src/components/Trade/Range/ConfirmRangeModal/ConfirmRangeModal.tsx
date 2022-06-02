@@ -32,7 +32,12 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalProps) {
         minPriceDisplay,
         maxPriceDisplay,
         spotPriceDisplay,
+        tokenPair,
     } = props;
+    const tokenA = tokenPair.dataTokenA;
+    const tokenB = tokenPair.dataTokenB;
+
+    console.log(tokenPair);
     const [confirmDetails, setConfirmDetails] = useState(true);
     const transactionApproved = newRangeTransactionHash !== '';
     const sellTokenQty = (document.getElementById('A-range-quantity') as HTMLInputElement)?.value;
@@ -107,22 +112,22 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalProps) {
         </>
     );
 
-    const sellTokenData = {
-        symbol: 'ETH',
-        logoAltText: 'eth',
-        logoLocal:
-            'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png',
-    };
-    const buyTokenData = {
-        symbol: 'DAI',
-        logoAltText: 'dai',
-        logoLocal: 'https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.png',
-    };
+    // const tokenAData = {
+    //     symbol: 'ETH',
+    //     logoAltText: 'eth',
+    //     logoLocal:
+    //         'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png',
+    // };
+    // const tokenBData = {
+    //     symbol: 'DAI',
+    //     logoAltText: 'dai',
+    //     logoLocal: 'https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.png',
+    // };
 
     // CONFIRMATION LOGIC STARTS HERE
     const confirmSendMessage = (
         <WaitingConfirmation
-            content={`Depositing Swapping ${sellTokenQty} ${sellTokenData.symbol} for ${buyTokenQty} ${buyTokenData.symbol}`}
+            content={`Depositing Swapping ${sellTokenQty} ${tokenA.symbol} for ${buyTokenQty} ${tokenB.symbol}`}
         />
     );
 
@@ -132,12 +137,8 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalProps) {
         <Button
             title='Send to Metamask'
             action={() => {
-                console.log(
-                    `Sell Token Full name: ${sellTokenData.symbol} and quantity: ${sellTokenQty}`,
-                );
-                console.log(
-                    `Buy Token Full name: ${buyTokenData.symbol} and quantity: ${buyTokenQty}`,
-                );
+                console.log(`Sell Token Full name: ${tokenA.symbol} and quantity: ${sellTokenQty}`);
+                console.log(`Buy Token Full name: ${tokenB.symbol} and quantity: ${buyTokenQty}`);
                 sendTransaction();
                 setConfirmDetails(false);
             }}
