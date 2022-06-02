@@ -217,7 +217,7 @@ export default function Swap(props: ISwapProps) {
         >
             <ContentContainer isOnTradeRoute={isOnTradeRoute}>
                 <SwapHeader tokenPair={tokenPair} isOnTradeRoute={isOnTradeRoute} />
-                <DenominationSwitch />
+                <DenominationSwitch tokenPair={tokenPair} />
                 <DividerDark />
                 <CurrencyConverter
                     tokenPair={tokenPair}
