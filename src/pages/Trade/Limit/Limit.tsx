@@ -32,7 +32,6 @@ export default function Limit() {
         dataTokenA: findTokenByAddress(tradeData.addressTokenA, tokensBank) ?? kovanETH,
         dataTokenB: findTokenByAddress(tradeData.addressTokenB, tokensBank) ?? kovanUSDC,
     };
-    console.log(tokenPair);
 
     return (
         <motion.section
