@@ -20,7 +20,6 @@ interface LimitExtraInfoPropsIF {
 
 export default function LimitExtraInfo(props: LimitExtraInfoPropsIF) {
     const { tokenPair } = props;
-    console.log(tokenPair);
     const [showExtraDetails, setShowExtraDetails] = useState<boolean>(false);
 
     // TEMP DATA TO RENDER UI
@@ -34,11 +33,17 @@ export default function LimitExtraInfo(props: LimitExtraInfoPropsIF) {
         <div className={styles.extra_details}>
             <div className={styles.extra_row}>
                 <span>Spot Price</span>
-                <span>{spotPriceDisplayQuoteForBase} DAI per ETH</span>
+                <span>
+                    {spotPriceDisplayQuoteForBase} {tokenPair.dataTokenB.symbol} per{' '}
+                    {tokenPair.dataTokenA.symbol}
+                </span>
             </div>
             <div className={styles.extra_row}>
                 <span>Price Limit after Slippage and Fee</span>
-                <span>{priceLimitAfterSlippageAndFee} DAI per ETH</span>
+                <span>
+                    {priceLimitAfterSlippageAndFee} {tokenPair.dataTokenB.symbol} per{' '}
+                    {tokenPair.dataTokenA.symbol}
+                </span>
             </div>
             <div className={styles.extra_row}>
                 <span>Slippage Tolerance</span>
@@ -63,7 +68,8 @@ export default function LimitExtraInfo(props: LimitExtraInfoPropsIF) {
                     <FaGasPump size={15} /> {truncatedGasInGwei} gwei
                 </div>
                 <div className={styles.token_amount}>
-                    1 ETH = {spotPriceDisplayQuoteForBase} DAI
+                    1 {tokenPair.dataTokenA.symbol} = {spotPriceDisplayQuoteForBase}{' '}
+                    {tokenPair.dataTokenB.symbol}
                     <RiArrowDownSLine size={27} />{' '}
                 </div>
             </div>
