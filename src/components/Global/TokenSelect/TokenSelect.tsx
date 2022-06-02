@@ -36,7 +36,7 @@ export default function TokenSelect(props: TokenSelectProps) {
     };
 
     return (
-        <button className={styles.modal_content} onClick={handleClick}>
+        <div className={styles.modal_content} onClick={handleClick}>
             <div className={styles.modal_tokens_info}>
                 <RiStarFill size={20} className={styles.star_filled} />
                 <RiStarLine size={20} className={styles.star_line} />
@@ -45,6 +45,6 @@ export default function TokenSelect(props: TokenSelectProps) {
                 <span className={styles.modal_token_name}>{name}</span>
             </div>
             <div className={styles.modal_tokens_amount}>{fakeQty}</div>
-        </button>
+        </div>
     );
 }

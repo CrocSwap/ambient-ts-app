@@ -5,11 +5,12 @@ import { TokenIF } from '../../../utils/interfaces/TokenIF';
 
 interface TokenSelectContainerPropsIF {
     tokenList: Array<TokenIF>;
+    chainId: string;
     tokenToUpdate: string;
 }
 
 export default function TokenSelectContainer(props: TokenSelectContainerPropsIF) {
-    const { tokenList, tokenToUpdate } = props;
+    const { tokenList, chainId, tokenToUpdate } = props;
     const [searchTerm, setSearchTerm] = useState('');
 
     const searchInput = (
@@ -33,6 +34,13 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
                         val.symbol.toLowerCase().includes(searchTerm.toLowerCase())
                     ) {
                         return val;
+                    }
+                })
+                .filter((tkn) => {
+                    console.log(tkn);
+                    console.log(chainId);
+                    if (tkn.chainId.toString() === chainId) {
+                        return tkn;
                     }
                 })
                 .map((token, idx) => {

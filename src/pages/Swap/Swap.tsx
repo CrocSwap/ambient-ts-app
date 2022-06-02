@@ -229,6 +229,7 @@ export default function Swap(props: ISwapProps) {
                 <DividerDark />
                 <CurrencyConverter
                     tokenPair={tokenPair}
+                    chainId={chainId ?? '42'}
                     isLiq={false}
                     poolPrice={poolPriceNonDisplay}
                     setIsSellTokenPrimary={setIsSellTokenPrimary}
