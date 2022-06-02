@@ -1,0 +1,33 @@
+/* switch buttons */
+
+/* Switch buttons */
+.button_container {
+    font-size: 0;
+  
+    width: 100%;
+    padding: 1rem 0;
+  }
+  .button_container button {
+    font-size: 14px;
+    /* width: 50%; */
+  
+    padding: 0.3rem 0.6rem;
+  
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+  
+    border: none;
+    border: 1px solid var(--border-color);
+    outline: none;
+  }
+  .button_container button:hover {
+    color: grey;
+  }
+  .active_button {
+    color: #fff;
+    background-color: var(--modal-content);
+  }
+  .non_active_button {
+    color: white;
+    background-color: transparent;
+  }

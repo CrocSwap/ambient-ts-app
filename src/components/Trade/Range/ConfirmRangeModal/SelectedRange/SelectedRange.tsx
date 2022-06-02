@@ -28,5 +28,12 @@ export default function SelectedRange() {
         </div>
     );
 
-    return <div></div>;
+    return (
+        <>
+            <div className={styles.selected_range}>
+                <div>Selected Range</div>
+                {switchButtons}
+            </div>
+        </>
+    );
 }
