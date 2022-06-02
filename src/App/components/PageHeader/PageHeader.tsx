@@ -158,7 +158,7 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
                 {/* <NavLink to='/range2'>Range</NavLink> */}
                 <NavLink to='/trade'>Trade</NavLink>
                 <NavLink to='/analytics'>Analytics</NavLink>
-                <NavLink to='/portfolio'>Portfolio</NavLink>
+                <NavLink to='/account'>Account</NavLink>
             </nav>
             {/* <div className={styles.account}>Account Info</div> */}
             {/* <div className={styles.account}>{accountAddress}</div> */}
