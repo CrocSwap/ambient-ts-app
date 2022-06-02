@@ -1,11 +1,13 @@
-import styles from './LimitExtraInfo.module.css';
+// START: Import React and Dongles
 import { useState } from 'react';
 import { FaGasPump } from 'react-icons/fa';
 import { RiArrowDownSLine } from 'react-icons/ri';
+
+// START: Import Local Files
+import styles from './LimitExtraInfo.module.css';
 import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 
-// import truncateDecimals from '../../../utils/data/truncateDecimals';
-
+// interface for component props
 interface LimitExtraInfoPropsIF {
     tokenPair: {
         dataTokenA: TokenIF;
@@ -18,6 +20,7 @@ interface LimitExtraInfoPropsIF {
     gasPriceinGwei?: string;
 }
 
+// central react functional component
 export default function LimitExtraInfo(props: LimitExtraInfoPropsIF) {
     const { tokenPair } = props;
     const [showExtraDetails, setShowExtraDetails] = useState<boolean>(false);
