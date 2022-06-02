@@ -9,6 +9,8 @@ import Divider from '../../Global/Divider/Divider';
 interface ConfirmSwapModalProps {
     initiateSwapMethod: () => void;
     onClose: () => void;
+    // sellTokenQty: string;
+    // buyTokenQty: string;
 }
 
 export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
@@ -16,9 +18,11 @@ export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
     const [confirmDetails, setConfirmDetails] = useState(true);
     // const [transactionApproved, setTransactionApproved] = useState(false);
     const [transactionApproved] = useState(false);
+    const sellTokenQty = (document.getElementById('sell-quantity') as HTMLInputElement)?.value;
+    const buyTokenQty = (document.getElementById('buy-quantity') as HTMLInputElement)?.value;
 
-    const sellTokenQty = 1;
-    const buyTokenQty = 0;
+    // const sellTokenQty = 1;
+    // const buyTokenQty = 0;
     const primarySwapInput = 'sell';
     const sellTokenData = {
         symbol: 'ETH',
@@ -53,7 +57,7 @@ export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
 
     const moreExpensiveToken = 'ETH';
     const lessExpensiveToken = 'DAI';
-    const displayConversionRate = 0.00212;
+    const displayConversionRate = parseFloat(buyTokenQty) / parseFloat(sellTokenQty);
     const priceLimit = 0.12;
 
     const fullTxDetails = (
@@ -66,8 +70,7 @@ export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
                 <CurrencyDisplay amount={buyTokenQty} tokenData={buyTokenData} />
             </div>
             <div className={styles.convRate}>
-                1 {moreExpensiveToken} = {displayConversionRate}
-                {lessExpensiveToken}
+                1 {moreExpensiveToken} = {displayConversionRate} {lessExpensiveToken}
             </div>
             <Divider />
             <div className={styles.confSwap_detail}>
@@ -103,7 +106,7 @@ export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
 
     const confirmSwapButton = (
         <Button
-            title='Confirm Swap'
+            title='Send Swap to Metamask'
             action={() => {
                 console.log(
                     `Sell Token Full name: ${sellTokenData.symbol} and quantity: ${sellTokenQty}`,
