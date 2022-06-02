@@ -1,8 +1,8 @@
 import styles from './SwapHeader.module.css';
 import { MdShowChart } from 'react-icons/md';
-import { HiDotsHorizontal } from 'react-icons/hi';
-import { FiSettings } from 'react-icons/fi';
+
 import ContentHeader from '../../Global/ContentHeader/ContentHeader';
+import settingsIcon from '../../../assets/images/icons/settings.svg';
 
 interface swapHeaderProps {
     isOnTradeRoute?: boolean;
@@ -16,7 +16,7 @@ export default function SwapHeader(props: swapHeaderProps) {
             <span />
             <div className={styles.token_info}>ETH / USDC</div>
 
-            <FiSettings />
+            <img src={settingsIcon} alt='settings' />
         </ContentHeader>
     );
 
@@ -27,8 +27,7 @@ export default function SwapHeader(props: swapHeaderProps) {
             </span>
             <span className={styles.title}>Swap</span>
             <div className={styles.settings_container}>
-                <HiDotsHorizontal />
-                <FiSettings />
+                <img src={settingsIcon} alt='settings' />
             </div>
         </ContentHeader>
     );
