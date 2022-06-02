@@ -24,8 +24,15 @@ interface ConfirmRangeModalProps {
 }
 
 export default function ConfirmRangeModal(props: ConfirmRangeModalProps) {
-    const { sendTransaction, closeModal, newRangeTransactionHash, setNewRangeTransactionHash } =
-        props;
+    const {
+        sendTransaction,
+        closeModal,
+        newRangeTransactionHash,
+        setNewRangeTransactionHash,
+        minPriceDisplay,
+        maxPriceDisplay,
+        spotPriceDisplay,
+    } = props;
     const [confirmDetails, setConfirmDetails] = useState(true);
     const transactionApproved = newRangeTransactionHash !== '';
     const sellTokenQty = (document.getElementById('A-range-quantity') as HTMLInputElement)?.value;
@@ -69,14 +76,14 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalProps) {
                         <img src={dataTokenA.icon} alt={dataTokenA.altText} />
                         <span>{dataTokenA.shortName}</span>
                     </div>
-                    <span>{dataTokenA.qty}</span>
+                    <span>{sellTokenQty}</span>
                 </div>
                 <div className={styles.detail_line}>
                     <div>
                         <img src={dataTokenB.icon} alt={dataTokenB.altText} />
                         <span>{dataTokenB.shortName}</span>
                     </div>
-                    <span>{dataTokenB.qty}</span>
+                    <span>{buyTokenQty}</span>
                 </div>
                 <Divider />
                 <div className={styles.detail_line}>
@@ -92,7 +99,11 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalProps) {
         <>
             {rangeHeader}
             {feeTierDisplay}
-            <SelectedRange />
+            <SelectedRange
+                minPriceDisplay={minPriceDisplay}
+                maxPriceDisplay={maxPriceDisplay}
+                spotPriceDisplay={spotPriceDisplay}
+            />
         </>
     );
 

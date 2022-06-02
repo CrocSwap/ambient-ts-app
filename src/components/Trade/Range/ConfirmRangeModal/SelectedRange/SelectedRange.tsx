@@ -1,7 +1,13 @@
 import styles from './SelectedRange.module.css';
 import { useState } from 'react';
 
-export default function SelectedRange() {
+interface SelectedRangeProps {
+    minPriceDisplay: number | string;
+    maxPriceDisplay: number | string;
+    spotPriceDisplay: number | string;
+}
+export default function SelectedRange(props: SelectedRangeProps) {
+    const { minPriceDisplay, maxPriceDisplay, spotPriceDisplay } = props;
     const [reverseDisplay, setReverseDisplay] = useState(false);
 
     const tokenAShortName = 'ETH';
@@ -31,7 +37,7 @@ export default function SelectedRange() {
     // PRICE RANGE DISPLAY
     interface PriceRangeProps {
         title: string;
-        value: number;
+        value: number | string;
         tokens: string;
         currentToken: string;
     }
@@ -55,13 +61,13 @@ export default function SelectedRange() {
         <div className={styles.selected_range_display}>
             <PriceRangeDisplay
                 title='Min Price'
-                value={662.21}
+                value={minPriceDisplay}
                 tokens='DAI per ETH'
                 currentToken='ETH'
             />
             <PriceRangeDisplay
                 title='Max Price'
-                value={1216.23}
+                value={maxPriceDisplay}
                 tokens='DAI per ETH'
                 currentToken='DAI'
             />
@@ -72,7 +78,7 @@ export default function SelectedRange() {
         <div className={styles.currentPrice_display}>
             <div className={styles.currentPrice_container}>
                 <span className={styles.currentPrice_title}>Current price</span>
-                <span className={styles.currentPrice_amount}>{898.12368}</span>
+                <span className={styles.currentPrice_amount}>{spotPriceDisplay}</span>
                 <span className={styles.currentPrice_info}> DAI per ETH</span>
             </div>
         </div>
