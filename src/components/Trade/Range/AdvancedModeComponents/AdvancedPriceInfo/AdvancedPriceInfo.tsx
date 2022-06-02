@@ -13,59 +13,59 @@ const currentPrice = (
     </>
 );
 
-const tableHead = (
-    <thead>
-        <tr>
-            <th></th>
-            <th>Current</th>
-            <th>Repositioned To</th>
-        </tr>
-    </thead>
-);
+// const tableHead = (
+//     <thead>
+//         <tr>
+//             <th></th>
+//             <th>Current</th>
+//             <th>Repositioned To</th>
+//         </tr>
+//     </thead>
+// );
 
-const balanceData = (
-    <>
-        <tr>
-            <td data-column='Target: '>ETH Balance</td>
-            <td data-column='Current'>0.00</td>
-            <td data-column='Repositioned To'>0.69</td>
-        </tr>
-        <tr>
-            <td data-column='Target: '>USDC Balance</td>
-            <td data-column='Current'>1,000.0</td>
-            <td data-column='Repositioned To'>500.0</td>
-        </tr>
-    </>
-);
+// const balanceData = (
+//     <>
+//         <tr>
+//             <td data-column='Target: '>ETH Balance</td>
+//             <td data-column='Current'>0.00</td>
+//             <td data-column='Repositioned To'>0.69</td>
+//         </tr>
+//         <tr>
+//             <td data-column='Target: '>USDC Balance</td>
+//             <td data-column='Current'>1,000.0</td>
+//             <td data-column='Repositioned To'>500.0</td>
+//         </tr>
+//     </>
+// );
 
-const rangeData = (
-    <>
-        <tr>
-            <td data-column='Target: '>Range Upper Limit</td>
-            <td data-column='Current'>2,000.0</td>
-            <td data-column='Repositioned To'>2,1210.0</td>
-        </tr>
-        <tr>
-            <td data-column='Target: '>Range Lower Limit</td>
-            <td data-column='Current'>1,000.0</td>
-            <td data-column='Repositioned To'>3,200.0</td>
-        </tr>
-    </>
-);
+// const rangeData = (
+//     <>
+//         <tr>
+//             <td data-column='Target: '>Range Upper Limit</td>
+//             <td data-column='Current'>2,000.0</td>
+//             <td data-column='Repositioned To'>2,1210.0</td>
+//         </tr>
+//         <tr>
+//             <td data-column='Target: '>Range Lower Limit</td>
+//             <td data-column='Current'>1,000.0</td>
+//             <td data-column='Repositioned To'>3,200.0</td>
+//         </tr>
+//     </>
+// );
 
-const tableContents = (
-    <>
-        <div className={styles.advanced_table_display}>
-            <table>
-                {tableHead}
-                <tbody>
-                    {balanceData}
-                    {rangeData}
-                </tbody>
-            </table>
-        </div>
-    </>
-);
+// const tableContents = (
+//     <>
+//         <div className={styles.advanced_table_display}>
+//             <table>
+//                 {tableHead}
+//                 <tbody>
+//                     {balanceData}
+//                     {rangeData}
+//                 </tbody>
+//             </table>
+//         </div>
+//     </>
+// );
 
 export default function AdvancedPriceInfo() {
     return (
