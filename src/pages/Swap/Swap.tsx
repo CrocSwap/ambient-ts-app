@@ -98,6 +98,7 @@ export default function Swap(props: ISwapProps) {
     const daiKovanAddress = '0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa';
 
     const [poolPriceNonDisplay, setPoolPriceNonDisplay] = useState(0);
+    const [newSwapTransactionHash, setNewSwapTransactionHash] = useState('');
 
     useEffect(() => {
         (async () => {
@@ -166,6 +167,7 @@ export default function Swap(props: ISwapProps) {
             );
 
             let newTransactionHash = tx.hash;
+            setNewSwapTransactionHash(newTransactionHash);
             let parsedReceipt;
 
             console.log({ newTransactionHash });
@@ -198,7 +200,12 @@ export default function Swap(props: ISwapProps) {
 
     const confirmSwapModalOrNull = isModalOpen ? (
         <Modal onClose={closeModal} title='Swap Confirmation'>
-            <ConfirmSwapModal initiateSwapMethod={initiateSwap} onClose={closeModal} />
+            <ConfirmSwapModal
+                initiateSwapMethod={initiateSwap}
+                onClose={closeModal}
+                newSwapTransactionHash={newSwapTransactionHash}
+                setNewSwapTransactionHash={setNewSwapTransactionHash}
+            />
         </Modal>
     ) : null;
 
