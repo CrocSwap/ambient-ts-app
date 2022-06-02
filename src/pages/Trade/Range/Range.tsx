@@ -70,20 +70,20 @@ export default function Range(props: IRangeProps) {
 
     const { Moralis, user, account, chainId } = useMoralis();
 
-    const rangeData = useAppSelector((state) => state.rangeData);
+    const tradeData = useAppSelector((state) => state.rangeData);
 
     // get current tokens for the active chain
     // if called before Moralis can initialize use kovan
     const tokensBank = getCurrentTokens(chainId ?? '0x2a');
 
     const tokenPair = {
-        dataTokenA: findTokenByAddress(rangeData.addressTokenA, tokensBank) ?? kovanETH,
-        dataTokenB: findTokenByAddress(rangeData.addressTokenB, tokensBank) ?? kovanUSDC,
+        dataTokenA: findTokenByAddress(tradeData.addressTokenA, tokensBank) ?? kovanETH,
+        dataTokenB: findTokenByAddress(tradeData.addressTokenB, tokensBank) ?? kovanUSDC,
     };
 
     const isTokenABase =
-        getBaseTokenAddress(rangeData.addressTokenA, rangeData.addressTokenB) ===
-        rangeData.addressTokenA;
+        getBaseTokenAddress(tradeData.addressTokenA, tradeData.addressTokenB) ===
+        tradeData.addressTokenA;
 
     console.assert(true, tokenPair);
 
