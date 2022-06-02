@@ -216,6 +216,8 @@ export default function Range(props: IRangeProps) {
         }
     };
 
+    // TODO:  @Emily refactor this fragment to use the same denomination switch
+    // TODO:  ... component used in the Market and Limit modules
     const denominationSwitch = (
         <div className={styles.denomination_switch_container}>
             <AdvancedModeToggle
