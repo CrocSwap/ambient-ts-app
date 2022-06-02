@@ -1,5 +1,8 @@
-import styles from './DenominationSwitch.module.css';
+// START: Import React and Dongles
 import { useState } from 'react';
+
+// START: Import Local Files
+import styles from './DenominationSwitch.module.css';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
 
 // interface for props
