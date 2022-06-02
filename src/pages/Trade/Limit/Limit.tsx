@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import ContentContainer from '../../../components/Global/ContentContainer/ContentContainer';
 import LimitButton from '../../../components/Trade/Limit/LimitButton/LimitButton';
 import LimitCurrencyConverter from '../../../components/Trade/Limit/LimitCurrencyConverter/LimitCurrencyConverter';
-import LimitDenominationSwitch from '../../../components/Trade/Limit/LimitDenominationSwitch/LimitDenominationSwitch';
+import DenominationSwitch from '../../../components/Swap/DenominationSwitch/DenominationSwitch';
 import LimitExtraInfo from '../../../components/Trade/Limit/LimitExtraInfo/LimitExtraInfo';
 import LimitHeader from '../../../components/Trade/Limit/LimitHeader/LimitHeader';
 import DividerDark from '../../../components/Global/DividerDark/DividerDark';
@@ -42,7 +42,7 @@ export default function Limit() {
         >
             <ContentContainer isOnTradeRoute>
                 <LimitHeader tokenPair={tokenPair} />
-                <LimitDenominationSwitch />
+                <DenominationSwitch tokenPair={tokenPair} />
                 <DividerDark />
                 <LimitCurrencyConverter />
                 <LimitExtraInfo />
