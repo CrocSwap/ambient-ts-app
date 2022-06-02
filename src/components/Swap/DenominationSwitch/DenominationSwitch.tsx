@@ -27,6 +27,10 @@ export default function DenominationSwitch(props: denominationSwitchProps) {
     // TODO:  ... value of `toggleDenomination`, let's do just one button with two
     // TODO   ... <div> elements nested inside of it
 
+    // TODO:  right now we have the display set up as TokenA||TokenB with TokenA
+    // TODO:  ... selected by default, we may want to change this logic later to
+    // TODO:  ... base||quote or to sort according to Doug's moneyness factor
+
     return (
         <div className={styles.denomination_switch}>
             <div>Denomination</div>
