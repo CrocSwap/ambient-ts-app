@@ -60,7 +60,7 @@ export default function ConfirmRangeModal() {
     );
 
     return (
-        <div className={styles.row}>
+        <div className={styles.confirm_range_modal_container}>
             {rangeHeader}
             {feeTierDisplay}
             <SelectedRange />

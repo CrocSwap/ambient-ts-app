@@ -1,3 +1,7 @@
+.confirm_range_modal_container{
+    max-width: 400px;
+}
+
 /* range header */
 .position_display {
     display: flex;

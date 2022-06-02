@@ -38,6 +38,8 @@ import AdvancedModeToggle from '../../../components/Trade/Range/AdvancedModeTogg
 import MinMaxPrice from '../../../components/Trade/Range/AdvancedModeComponents/MinMaxPrice/MinMaxPrice';
 import AdvancedPriceInfo from '../../../components/Trade/Range/AdvancedModeComponents/AdvancedPriceInfo/AdvancedPriceInfo';
 import DividerDark from '../../../components/Global/DividerDark/DividerDark';
+import Modal from '../../../components/Global/Modal/Modal';
+import { useModal } from '../../../components/Global/Modal/useModal';
 
 // START: Import Local Files
 import styles from './Range.module.css';
@@ -47,6 +49,7 @@ import truncateDecimals from '../../../utils/data/truncateDecimals';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { getCurrentTokens, findTokenByAddress } from '../../../utils/functions/processTokens';
 import { kovanETH, kovanUSDC } from '../../../utils/data/defaultTokens';
+import ConfirmRangeModal from '../../../components/Trade/Range/ConfirmRangeModal/ConfirmRangeModal';
 
 interface IRangeProps {
     provider: JsonRpcProvider;
@@ -54,6 +57,8 @@ interface IRangeProps {
 }
 
 export default function Range(props: IRangeProps) {
+    const [isModalOpen, openModal, closeModal] = useModal();
+
     const { provider, lastBlockNumber } = props;
     const { save } = useNewMoralisObject('UserPosition');
 
@@ -335,6 +340,11 @@ export default function Range(props: IRangeProps) {
             <RangePriceInfo {...rangePriceInfoProps} />
         </>
     );
+    const confirmSwapModalOrNull = isModalOpen ? (
+        <Modal onClose={closeModal} title='Swap Confirmation'>
+            <ConfirmRangeModal />
+        </Modal>
+    ) : null;
 
     return (
         <motion.section
@@ -351,6 +361,8 @@ export default function Range(props: IRangeProps) {
                 {advancedMode ? advancedModeContent : baseModeContent}
                 <RangeButton onClickFn={sendTransaction} isAmountEntered={true} />
             </ContentContainer>
+            <button onClick={openModal}>Open Modal</button>
+            {confirmSwapModalOrNull}
         </motion.section>
     );
 }

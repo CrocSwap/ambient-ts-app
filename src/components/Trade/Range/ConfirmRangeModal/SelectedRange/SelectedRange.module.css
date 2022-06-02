@@ -1,11 +1,14 @@
 /* switch buttons */
-
+.selected_range_button_container{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: row;
+}
 /* Switch buttons */
 .button_container {
-    font-size: 0;
-  
-    width: 100%;
-    padding: 1rem 0;
+ 
   }
   .button_container button {
     font-size: 14px;
