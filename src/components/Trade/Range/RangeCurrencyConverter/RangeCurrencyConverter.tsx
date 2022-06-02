@@ -26,7 +26,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
     const {
         isLiq,
         // poolPriceNonDisplay,
-        // tokenPair,
+        tokenPair,
         // isTokenABase,
         // depositSkew,
         isWithdrawTokenAFromDexChecked,
@@ -84,6 +84,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         <section className={styles.currency_converter}>
             <RangeCurrencySelector
                 fieldId='A'
+                tokenData={tokenPair.dataTokenA}
                 updateOtherQuantity={handleChangeQtyTokenA}
                 {...rangeCurrencySelectorProps}
             />
@@ -92,6 +93,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
             </div>
             <RangeCurrencySelector
                 fieldId='B'
+                tokenData={tokenPair.dataTokenB}
                 updateOtherQuantity={handleChangeQtyTokenB}
                 {...rangeCurrencySelectorProps}
             />

@@ -3,9 +3,11 @@ import styles from './RangeCurrencySelector.module.css';
 import RangeCurrencyQuantity from '../RangeCurrencyQuantity/RangeCurrencyQuantity';
 import { RiArrowDownSLine } from 'react-icons/ri';
 import Toggle from '../../../Global/Toggle/Toggle';
+import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 
 interface RangeCurrencySelectorProps {
     fieldId: string;
+    tokenData: TokenIF;
     updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
     isWithdrawTokenAFromDexChecked: boolean;
     setIsWithdrawTokenAFromDexChecked: React.Dispatch<SetStateAction<boolean>>;
@@ -16,6 +18,7 @@ interface RangeCurrencySelectorProps {
 
 export default function RangeCurrencySelector(props: RangeCurrencySelectorProps) {
     const {
+        tokenData,
         isWithdrawTokenAFromDexChecked,
         setIsWithdrawTokenAFromDexChecked,
         isWithdrawTokenBFromDexChecked,
@@ -69,9 +72,7 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                         alt='ethreum'
                         width='30px'
                     />
-                    <span className={styles.token_list_text}>
-                        {fieldId === 'A' ? 'ETH' : 'DAI'}
-                    </span>
+                    <span className={styles.token_list_text}>{tokenData.symbol}</span>
                     <RiArrowDownSLine size={27} />
                 </div>
             </div>
