@@ -74,6 +74,11 @@ export default function ExtraInfo(props: ExtraInfoProps) {
 
     const ExtraDetailsOrNull = showExtraDetails ? extraInfoDetails : null;
 
+    // TODO:  right now we're hardcoding where token A symbol and token B symbol
+    // TODO:  ... are being displayed, we'll need to add logic to sort once we
+    // TODO:  ... have a different method of sorting the denomination and have
+    // TODO:  ... functionality for the user to toggle denomination in the app
+
     return (
         <div className={styles.extra_info_container}>
             <div
