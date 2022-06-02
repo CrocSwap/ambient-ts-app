@@ -42,7 +42,7 @@ export default function AdvancedPriceInfo(props: AdvancedPriceInfoIF) {
     // JSX frag to display the balance of Token A
     const balanceTokenA = (
         <tr>
-            <td data-column='Target: '>ETH Balance</td>
+            <td data-column='Target: '>{tokenPair.dataTokenA.symbol} Balance</td>
             <td data-column='Current'>0.00</td>
             <td data-column='Repositioned To'>0.69</td>
         </tr>
@@ -51,7 +51,7 @@ export default function AdvancedPriceInfo(props: AdvancedPriceInfoIF) {
     // JSX frag to display the balance of Token B
     const balanceTokenB = (
         <tr>
-            <td data-column='Target: '>USDC Balance</td>
+            <td data-column='Target: '>{tokenPair.dataTokenB.symbol} Balance</td>
             <td data-column='Current'>1,000.0</td>
             <td data-column='Repositioned To'>500.0</td>
         </tr>
