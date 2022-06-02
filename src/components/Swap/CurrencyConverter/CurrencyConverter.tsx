@@ -8,6 +8,7 @@ interface CurrencyConverterProps {
         dataTokenA: TokenIF;
         dataTokenB: TokenIF;
     };
+    chainId: string;
     isLiq: boolean;
     poolPrice: number;
     setIsSellTokenPrimary: React.Dispatch<SetStateAction<boolean>>;
@@ -19,11 +20,10 @@ interface CurrencyConverterProps {
     setSwapAllowed: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export default function CurrencyConverter(
-    props: CurrencyConverterProps,
-): React.ReactElement<CurrencyConverterProps> {
+export default function CurrencyConverter(props: CurrencyConverterProps) {
     const {
         tokenPair,
+        chainId,
         isLiq,
         poolPrice,
         setIsSellTokenPrimary,
@@ -71,6 +71,7 @@ export default function CurrencyConverter(
         <section className={styles.currency_converter}>
             <CurrencySelector
                 tokenData={tokenPair.dataTokenA}
+                chainId={chainId}
                 direction={isLiq ? 'Select Pair' : 'From:'}
                 fieldId='sell'
                 sellToken
@@ -86,6 +87,7 @@ export default function CurrencyConverter(
             </div>
             <CurrencySelector
                 tokenData={tokenPair.dataTokenB}
+                chainId={chainId}
                 direction={isLiq ? '' : 'To:'}
                 fieldId='buy'
                 updateOtherQuantity={updateSellQty}

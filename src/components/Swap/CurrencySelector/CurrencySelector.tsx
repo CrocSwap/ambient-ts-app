@@ -11,6 +11,7 @@ import { getAmbientTokens } from '../../../tempdata';
 
 interface CurrencySelectorProps {
     tokenData: TokenIF;
+    chainId: string;
     fieldId: string;
     direction: string;
     sellToken?: boolean;
@@ -25,6 +26,7 @@ interface CurrencySelectorProps {
 export default function CurrencySelector(props: CurrencySelectorProps) {
     const {
         tokenData,
+        chainId,
         direction,
         fieldId,
         updateOtherQuantity,
@@ -75,11 +77,17 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
         </span>
     );
 
+    const tokenToUpdate = fieldId === 'sell' ? 'A' : 'B';
+
     const tempTokenList = getAmbientTokens();
 
     const tokenSelectModalOrNull = isModalOpen ? (
         <Modal onClose={closeModal} title='Select Token'>
-            <TokenSelectContainer tokenList={tempTokenList} />
+            <TokenSelectContainer
+                tokenToUpdate={tokenToUpdate}
+                chainId={chainId}
+                tokenList={tempTokenList}
+            />
         </Modal>
     ) : null;
 

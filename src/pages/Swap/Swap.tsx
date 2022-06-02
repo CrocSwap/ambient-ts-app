@@ -57,7 +57,7 @@ export default function Swap(props: ISwapProps) {
     // depending on location we pull data on the tx in progress differently
     const tradeData = pathname.includes('/trade')
         ? useTradeData().tradeData
-        : useAppSelector((state) => state.rangeData);
+        : useAppSelector((state) => state.tradeData);
 
     // login functionality
     const clickLogin = () => {
@@ -229,6 +229,7 @@ export default function Swap(props: ISwapProps) {
                 <DividerDark />
                 <CurrencyConverter
                     tokenPair={tokenPair}
+                    chainId={chainId as string}
                     isLiq={false}
                     poolPrice={poolPriceNonDisplay}
                     setIsSellTokenPrimary={setIsSellTokenPrimary}
