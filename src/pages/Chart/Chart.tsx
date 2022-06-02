@@ -1,8 +1,18 @@
-import { useEffect, useRef, useState } from 'react';
+import { DetailedHTMLProps, HTMLAttributes, useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import './Chart.css';
 import { CartesianChart, Scale } from '@d3fc/d3fc-chart/src/cartesian';
+
+declare global {
+    // eslint-disable-next-line @typescript-eslint/no-namespace
+    namespace JSX {
+        interface IntrinsicElements {
+            ['d3fc-group']: DetailedHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>;
+            ['d3fc-svg']: DetailedHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>;
+        }
+    }
+}
 
 export default function Chart() {
     const d3Container = useRef(null);
@@ -34,6 +44,15 @@ export default function Chart() {
                 .style('fill', (d: any) => (d.close > d.open ? '#7371FC' : '#CDC1FF'))
                 .style('stroke', (d: any) => (d.close > d.open ? '#7371FC' : '#CDC1FF'));
         });
+
+        const barSeries = d3fc
+            .autoBandwidth(d3fc.seriesSvgBar())
+            // .crossValue(d:any => d.tag)
+            .align('left')
+            .orient('horizontal')
+            .key((d: any) => d.high)
+            .mainValue((d: any) => d.volume)
+            .xScale(xScale);
 
         const horizontalLine = d3fc.annotationSvgLine().value((d: any) => d.value);
 
@@ -79,11 +98,12 @@ export default function Chart() {
 
         const multi = d3fc
             .seriesSvgMulti()
-            .series([gridlines, candlestick, horizontalLine])
+            .series([gridlines, candlestick, horizontalLine, barSeries])
             .mapping((dta: any, index: number, series: any[]) => {
                 switch (series[index]) {
                     case gridlines:
                     case candlestick:
+                    case barSeries:
                         return dta;
                     case horizontalLine:
                         return targets;
@@ -96,5 +116,28 @@ export default function Chart() {
         d3.select(d3Container.current).datum(data).call(chart);
     }, [targets, data]);
 
-    return <div ref={d3Container} className='main_layout' data-testid={'chart'}></div>;
+    return (
+        <div ref={d3Container} className='main_layout' data-testid={'chart'}>
+            <d3fc-group
+                id='group'
+                style={{ display: 'flex', height: '100%', width: '100%', flexDirection: 'column' }}
+                auto-resize
+            >
+                <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                        <d3fc-svg className='close-axis' style={{ width: '3em' }}></d3fc-svg>
+                        <d3fc-svg
+                            className='plot-area'
+                            style={{ flex: 1, overflow: 'hidden' }}
+                        ></d3fc-svg>
+                        <d3fc-svg className='open-axis' style={{ width: '3em' }}></d3fc-svg>
+                    </div>
+                    <d3fc-svg
+                        className='x-axis'
+                        style={{ height: '2em', marginLeft: '3em', marginRight: '3em' }}
+                    ></d3fc-svg>
+                </div>
+            </d3fc-group>
+        </div>
+    );
 }
