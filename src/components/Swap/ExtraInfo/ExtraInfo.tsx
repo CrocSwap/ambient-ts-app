@@ -1,10 +1,14 @@
-import styles from './ExtraInfo.module.css';
+// START: Import React and Dongles
 import { useState } from 'react';
 import { FaGasPump } from 'react-icons/fa';
 import { RiArrowDownSLine } from 'react-icons/ri';
+
+// START: Import Local Files
+import styles from './ExtraInfo.module.css';
 import truncateDecimals from '../../../utils/data/truncateDecimals';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
 
+// interface for props in this file
 interface ExtraInfoProps {
     tokenPair: {
         dataTokenA: TokenIF;
@@ -17,6 +21,7 @@ interface ExtraInfoProps {
     gasPriceinGwei: string;
 }
 
+// central react functional component
 export default function ExtraInfo(props: ExtraInfoProps) {
     const {
         tokenPair,
