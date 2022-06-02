@@ -1,26 +1,38 @@
 .btn {
+  width: 100%;
+  
+  padding: 12px 16px;
     font-size: 16px;
-    /* font-weight: 400; */
+ 
     line-height: 24px;
   
     display: block;
-  
-    width: 100%;
-    padding: 12px 16px;
-
     
-    border: none;
     max-height: 3rem;
-  
     cursor: pointer;
-    transition: color 4s ease-in-out;
     text-align: center;
+
+    background: transparent;
+    text-transform: uppercase;
+   
+   
+    color: #CDC1FF;
+    border-radius: 0;
+    transition: all 0.7s ease-out;
+    background: linear-gradient(270deg, #7371FC, #CDC1FF, #7371FC , rgba(34,34,34,0), rgba(34,34,34,0));
+    background-position: 1% 50%;
+    background-size: 300% 300%;
+    text-decoration: none;
+    border: 1px solid #7371FC;
   
-    color: var(--dark1);
-    border-radius: var(--border-radius);
 
-    background: var(--title-gradient);
+  }
 
+  .btn:hover{
+    color: var(--text-grey-white);
+    border: 1px solid rgba(223,190,106,0);
+    color: white;
+    background-position: 99% 50%;
   }
   
   .disabled_btn {
@@ -43,12 +55,11 @@
   
     background-color: var(--dark2);
   }
-  .btn:hover {
-    transition: all 0.4s ease-in-out;
+
   
-    box-shadow: 0px 0px 36px rgba(70, 183, 219, 0.2),
-    0px 0px 21px rgba(70, 183, 219, 0.2), 0px 0px 12px rgba(70, 183, 219, 0.2),
-    0px 0px 7px rgba(70, 183, 219, 0.2), 0px 0px 4px rgba(70, 183, 219, 0.2),
-    0px 0px 2px rgba(70, 183, 219, 0.2);
+  .disabled_btn {
+    
+   color: var(--text-grey-light);
+   pointer-events: none;
   }
-  
+ 

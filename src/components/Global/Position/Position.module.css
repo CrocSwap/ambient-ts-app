@@ -51,3 +51,22 @@ text-shadow: 0px 0px 10px rgba(21, 190, 111, 0.75);
     color: black;
     
   }
+
+  .option_button{
+    color: var(--text-grey-white);
+    border-radius:6.25rem;
+    transition: all 0.7s ease-out;
+    background: linear-gradient(270deg, #7371FC, #CDC1FF, #7371FC , rgba(34,34,34,0), rgba(34,34,34,0));
+    background-position: 1% 50%;
+    background-size: 300% 300%;
+    
+    text-decoration: none;
+    border: 1px solid #7371FC;
+  }
+  .option_button:hover{
+    color: var(--text-grey-white);
+    border: 1px solid rgba(223,190,106,0);
+    color: white;
+    background-position: 99% 50%;
+  }
+  
