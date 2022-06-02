@@ -14,7 +14,7 @@ interface IRangePriceInfoProps {
 
 export default function RangePriceInfo(props: IRangePriceInfoProps) {
     const { tokenPair, spotPriceDisplay, maxPriceDisplay, minPriceDisplay } = props;
-    console.log(tokenPair);
+
     const priceInfo = (
         <div className={styles.price_info_container}>
             <span className={styles.apy}> Est.APY | 35.65%</span>
@@ -34,11 +34,15 @@ export default function RangePriceInfo(props: IRangePriceInfoProps) {
             </div>
             <div className={styles.collateral_container}>
                 <div className={styles.collateral_display}>
-                    <span className={styles.collateral_title}>ETH Collateral</span>
+                    <span className={styles.collateral_title}>
+                        {tokenPair.dataTokenA.symbol} Collateral
+                    </span>
                     <span className={styles.collateral_amount}>1.69</span>
                 </div>
                 <div className={styles.collateral_display}>
-                    <span className={styles.collateral_title}>USDC Collateral</span>
+                    <span className={styles.collateral_title}>
+                        {tokenPair.dataTokenB.symbol} Collateral
+                    </span>
                     <span className={styles.collateral_amount}>5,000.00</span>
                 </div>
             </div>
