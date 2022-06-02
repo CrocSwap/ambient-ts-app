@@ -3,17 +3,8 @@
     grid-auto-rows: auto;
     row-gap: 12px;
     margin-top: 0.2rem;
+   
   }
   .settings_title{
-    box-sizing: border-box;
-    margin: 0px;
-    min-width: 0px;
-    width: 100%;
-    display: flex;
-    padding: 0px;
-    -webkit-box-align: center;
-    align-items: center;
-    -webkit-box-pack: justify;
-    justify-content: space-between;
     margin-bottom: 1rem;
   }

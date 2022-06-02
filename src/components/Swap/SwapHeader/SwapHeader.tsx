@@ -5,6 +5,7 @@ import { useModal } from '../../../components/Global/Modal/useModal';
 
 import ContentHeader from '../../Global/ContentHeader/ContentHeader';
 import settingsIcon from '../../../assets/images/icons/settings.svg';
+import TransactionSettings from '../../Global/TransactionSettings/TransactionSettings';
 
 interface swapHeaderProps {
     isOnTradeRoute?: boolean;
@@ -16,7 +17,7 @@ export default function SwapHeader(props: swapHeaderProps) {
 
     const settingsModalOrNull = isModalOpen ? (
         <Modal noHeader title='modal' onClose={closeModal}>
-            I am modal
+            <TransactionSettings />
         </Modal>
     ) : null;
 
