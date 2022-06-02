@@ -4,7 +4,8 @@ interface ButtonProps {
     disabled?: boolean;
     title: string;
 
-    action: React.MouseEventHandler<HTMLElement>;
+    // action: React.MouseEventHandler<HTMLElement>;
+    action: () => void;
 }
 export default function Toggle(props: ButtonProps) {
     const { disabled, action, title } = props;

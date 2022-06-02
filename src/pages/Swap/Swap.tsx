@@ -198,7 +198,7 @@ export default function Swap(props: ISwapProps) {
 
     const confirmSwapModalOrNull = isModalOpen ? (
         <Modal onClose={closeModal} title='Confirm Swap'>
-            <ConfirmSwapModal initiateSwapMethod={initiateSwap} />
+            <ConfirmSwapModal initiateSwapMethod={initiateSwap} onClose={closeModal} />
         </Modal>
     ) : null;
 

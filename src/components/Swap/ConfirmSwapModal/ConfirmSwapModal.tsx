@@ -8,10 +8,11 @@ import Divider from '../../Global/Divider/Divider';
 
 interface ConfirmSwapModalProps {
     initiateSwapMethod: () => void;
+    onClose: () => void;
 }
 
 export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
-    const { initiateSwapMethod } = props;
+    const { initiateSwapMethod, onClose } = props;
     const [confirmDetails, setConfirmDetails] = useState(true);
     // const [transactionApproved, setTransactionApproved] = useState(false);
     const [transactionApproved] = useState(false);
@@ -115,7 +116,7 @@ export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
             }}
         />
     );
-    const closeButton = <Button title='Close ' action={() => console.log('I am closing this')} />;
+    const closeButton = <Button title='Close' action={onClose} />;
 
     const confirmationDisplay = transactionApproved ? transactionSubmitted : confirmSendMessage;
 
