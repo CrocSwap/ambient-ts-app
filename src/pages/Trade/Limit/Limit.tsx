@@ -18,8 +18,10 @@ import { kovanETH, kovanUSDC } from '../../../utils/data/defaultTokens';
 
 export default function Limit() {
     const { tradeData } = useTradeData();
-    // this is just to make the linter happy
-    console.assert(true, tradeData);
+
+    // TODO:  @Emily the logic below to get token pair data was ported from Swap.tsx and
+    // TODO:  ... will need to be repeated in Range.tsx per the current architecture, we
+    // TODO:  ... should refactor this to have less redundancy in code and app processes
 
     const { chainId } = useMoralis();
     // get current tokens for the active chain
