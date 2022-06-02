@@ -7,8 +7,8 @@ export interface rangeData {
 }
 
 const initialState: rangeData = {
-    addressTokenA: '0x0000000000000000000000000000000000000000',
-    addressTokenB: '0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa',
+    addressTokenA: '0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa',
+    addressTokenB: '0xb7a4F3E9097C08dA09517b5aB877F7a917224ede',
     isDenomBase: true,
 };
 

@@ -292,6 +292,7 @@ export default function Range(props: IRangeProps) {
 
     // props for <RangePriceInfo/> React element
     const rangePriceInfoProps = {
+        tokenPair: tokenPair,
         spotPriceDisplay: poolPriceDisplay,
         maxPriceDisplay: maxPriceDisplay,
         minPriceDisplay: minPriceDisplay,

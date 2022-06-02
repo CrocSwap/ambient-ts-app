@@ -1,14 +1,20 @@
 // import { ChangeEvent } from 'react';
 import styles from './RangePriceInfo.module.css';
+import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 
 interface IRangePriceInfoProps {
+    tokenPair: {
+        dataTokenA: TokenIF;
+        dataTokenB: TokenIF;
+    };
     spotPriceDisplay: string;
     maxPriceDisplay: string;
     minPriceDisplay: string;
 }
 
 export default function RangePriceInfo(props: IRangePriceInfoProps) {
-    const { spotPriceDisplay, maxPriceDisplay, minPriceDisplay } = props;
+    const { tokenPair, spotPriceDisplay, maxPriceDisplay, minPriceDisplay } = props;
+    console.log(tokenPair);
     const priceInfo = (
         <div className={styles.price_info_container}>
             <span className={styles.apy}> Est.APY | 35.65%</span>
