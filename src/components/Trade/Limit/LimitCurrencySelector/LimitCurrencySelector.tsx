@@ -6,8 +6,10 @@ import {
     useState,
     // ChangeEvent
 } from 'react';
+import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 
 interface LimitCurrencySelectorProps {
+    tokenData: TokenIF;
     fieldId: string;
     direction: string;
     sellToken?: boolean;
@@ -16,7 +18,8 @@ interface LimitCurrencySelectorProps {
 }
 
 export default function LimitCurrencySelector(props: LimitCurrencySelectorProps) {
-    const { fieldId, direction } = props;
+    const { tokenData, fieldId, direction } = props;
+    console.log(tokenData);
     const [isChecked, setIsChecked] = useState<boolean>(false);
 
     const DexBalanceContent = (

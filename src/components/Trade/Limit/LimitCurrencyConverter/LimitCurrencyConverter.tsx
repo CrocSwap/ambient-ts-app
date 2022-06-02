@@ -22,8 +22,13 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
 
     return (
         <section className={styles.currency_converter}>
-            <LimitCurrencySelector fieldId='sell' sellToken direction='Price' />
-            <LimitCurrencySelector fieldId='buy' direction='To' />
+            <LimitCurrencySelector
+                tokenData={tokenPair.dataTokenA}
+                fieldId='sell'
+                sellToken
+                direction='Price'
+            />
+            <LimitCurrencySelector tokenData={tokenPair.dataTokenB} fieldId='buy' direction='To' />
             <div className={styles.arrow_container}>
                 <span className={styles.arrow} />
             </div>
