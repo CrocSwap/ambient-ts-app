@@ -1,4 +1,5 @@
 import styles from './AdvancedPriceInfo.module.css';
+import { TokenIF } from '../../../../../utils/interfaces/TokenIF';
 
 const currentPrice = (
     <>
@@ -68,7 +69,17 @@ const tableContents = (
     </>
 );
 
-export default function AdvancedPriceInfo() {
+interface AdvancedPriceInfoIF {
+    tokenPair: {
+        dataTokenA: TokenIF;
+        dataTokenB: TokenIF;
+    };
+}
+
+export default function AdvancedPriceInfo(props: AdvancedPriceInfoIF) {
+    const { tokenPair } = props;
+    console.log(tokenPair);
+
     return (
         <div className={styles.price_info_container}>
             <div className={styles.price_info_content}>

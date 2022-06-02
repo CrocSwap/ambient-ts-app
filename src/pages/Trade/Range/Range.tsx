@@ -234,7 +234,7 @@ export default function Range(props: IRangeProps) {
     const advancedModeContent = (
         <>
             <MinMaxPrice />
-            <AdvancedPriceInfo />
+            <AdvancedPriceInfo tokenPair={tokenPair} />
         </>
     );
 
