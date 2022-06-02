@@ -32,7 +32,7 @@ import truncateDecimals from '../../utils/data/truncateDecimals';
 import { isTransactionReplacedError, TransactionError } from '../../utils/TransactionError';
 import { getCurrentTokens } from '../../utils/functions/processTokens';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
-import { kovanETH, kovanUSDC } from './defaultTokens';
+import { kovanETH, kovanDAI } from './defaultTokens';
 import { findTknByAddr } from './findTknByAddr';
 import { useModal } from '../../components/Global/Modal/useModal';
 
@@ -77,8 +77,6 @@ export default function Swap(props: ISwapProps) {
 
     const loginButton = <Button title='Login' action={clickLogin} />;
 
-    //
-
     const tradeData = useAppSelector((state) => state.tradeData);
 
     // get current tokens for the active chain
@@ -87,8 +85,10 @@ export default function Swap(props: ISwapProps) {
 
     const tokenPair = {
         dataTokenA: findTknByAddr(tradeData.addressTokenA, tokensBank) ?? kovanETH,
-        dataTokenB: findTknByAddr(tradeData.addressTokenB, tokensBank) ?? kovanUSDC,
+        dataTokenB: findTknByAddr(tradeData.addressTokenB, tokensBank) ?? kovanDAI,
     };
+
+    const [swapAllowed, setSwapAllowed] = useState<boolean>(false);
 
     const [isSellTokenPrimary, setIsSellTokenPrimary] = useState<boolean>(true);
 
@@ -224,6 +224,7 @@ export default function Swap(props: ISwapProps) {
                     setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
                     isWithdrawToWalletChecked={isWithdrawToWalletChecked}
                     setIsWithdrawToWalletChecked={setIsWithdrawToWalletChecked}
+                    setSwapAllowed={setSwapAllowed}
                 />
                 <ExtraInfo
                     poolPriceDisplay={poolPriceDisplay}
@@ -232,7 +233,11 @@ export default function Swap(props: ISwapProps) {
                     quoteTokenIsBuy={true}
                     gasPriceinGwei={gasPriceinGwei}
                 />
-                {isAuthenticated ? <SwapButton onClickFn={openModal} /> : loginButton}
+                {isAuthenticated ? (
+                    <SwapButton onClickFn={openModal} swapAllowed={swapAllowed} />
+                ) : (
+                    loginButton
+                )}
             </ContentContainer>
 
             {confirmSwapModalOrNull}
