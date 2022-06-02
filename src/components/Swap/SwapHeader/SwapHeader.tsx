@@ -1,10 +1,16 @@
-import styles from './SwapHeader.module.css';
+// START: Import React and Dongles
 import { MdShowChart } from 'react-icons/md';
 import { HiDotsHorizontal } from 'react-icons/hi';
 import { FiSettings } from 'react-icons/fi';
+
+// START: Import React Functional Components
 import ContentHeader from '../../Global/ContentHeader/ContentHeader';
+
+// START: Import Local Files
+import styles from './SwapHeader.module.css';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
 
+// interface for props
 interface swapHeaderProps {
     tokenPair: {
         dataTokenA: TokenIF;
@@ -13,6 +19,7 @@ interface swapHeaderProps {
     isOnTradeRoute?: boolean;
 }
 
+// main react functional component
 export default function SwapHeader(props: swapHeaderProps) {
     const { tokenPair, isOnTradeRoute } = props;
 
