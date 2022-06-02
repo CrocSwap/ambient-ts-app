@@ -9,20 +9,18 @@ import Divider from '../../Global/Divider/Divider';
 interface ConfirmSwapModalProps {
     initiateSwapMethod: () => void;
     onClose: () => void;
-    // sellTokenQty: string;
-    // buyTokenQty: string;
+    newSwapTransactionHash: string;
+    setNewSwapTransactionHash: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
-    const { initiateSwapMethod, onClose } = props;
+    const { initiateSwapMethod, onClose, newSwapTransactionHash, setNewSwapTransactionHash } =
+        props;
     const [confirmDetails, setConfirmDetails] = useState(true);
-    // const [transactionApproved, setTransactionApproved] = useState(false);
-    const [transactionApproved] = useState(false);
+    const transactionApproved = newSwapTransactionHash !== '';
     const sellTokenQty = (document.getElementById('sell-quantity') as HTMLInputElement)?.value;
     const buyTokenQty = (document.getElementById('buy-quantity') as HTMLInputElement)?.value;
 
-    // const sellTokenQty = 1;
-    // const buyTokenQty = 0;
     const primarySwapInput = 'sell';
     const sellTokenData = {
         symbol: 'ETH',
@@ -93,14 +91,14 @@ export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
     );
 
     // REGULAR CONFIRMATION MESSAGE STARTS HERE
-    const currentTxHash = 'i am hash number';
+    // const currentTxHash = 'i am hash number';
     const confirmSendMessage = (
         <WaitingConfirmation
             content={` Swapping ${sellTokenQty} ${sellTokenData.symbol} for ${buyTokenQty} ${buyTokenData.symbol}`}
         />
     );
 
-    const transactionSubmitted = <TransactionSubmitted hash={currentTxHash} />;
+    const transactionSubmitted = <TransactionSubmitted hash={newSwapTransactionHash} />;
 
     // END OF REGULAR CONFIRMATION MESSAGE
 
@@ -119,7 +117,13 @@ export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
             }}
         />
     );
-    const closeButton = <Button title='Close' action={onClose} />;
+    function onConfirmSwapClose() {
+        setConfirmDetails(true);
+        setNewSwapTransactionHash('');
+        onClose();
+    }
+
+    const closeButton = <Button title='Close' action={onConfirmSwapClose} />;
 
     const confirmationDisplay = transactionApproved ? transactionSubmitted : confirmSendMessage;
 
