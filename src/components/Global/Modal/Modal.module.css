@@ -31,7 +31,7 @@ transition: all 350ms ease-in-out;
     cursor: pointer;
 
 
-  min-width: 450px;
+  min-width: 400px;
   min-height: 350px;
   border-radius: 4px;
   position: relative;

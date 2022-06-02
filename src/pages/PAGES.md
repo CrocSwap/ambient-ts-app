@@ -10,8 +10,8 @@ Each sub-directory in this directory contains the `.tsx` file encoding a top-lev
 
 # Location and Files
 
-- This file `PAGES.md` is located in the directory `/src/pages`
-- The `/Home` sub-directory contains all files necessary to render the `Home()` React function which maps to the index URL pathway
-- The `/Trade` sub-directory contains all files necessary to render the `Trade()` React function which maps to the `index/trade` URL pathway
-- The `/Analytics` sub-directory contains all files necessary to render the `Analytics()` React function which maps to the `index/analytics` URL pathway
-- The `/Portfolio` sub-directory contains all files necessary to render the `Portfolio()` React function which maps to the `index/portfolio` URL pathway
+-   This file `PAGES.md` is located in the directory `/src/pages`
+-   The `/Home` sub-directory contains all files necessary to render the `Home()` React function which maps to the index URL pathway
+-   The `/Trade` sub-directory contains all files necessary to render the `Trade()` React function which maps to the `index/trade` URL pathway
+-   The `/Analytics` sub-directory contains all files necessary to render the `Analytics()` React function which maps to the `index/analytics` URL pathway
+-   The `/Portfolio` sub-directory contains all files necessary to render the `Portfolio()` React function which maps to the `index/account` URL pathway

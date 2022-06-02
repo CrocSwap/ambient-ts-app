@@ -1,0 +1,10 @@
+.settings_container{
+    display: grid;
+    grid-auto-rows: auto;
+    row-gap: 12px;
+    margin-top: 0.2rem;
+   
+  }
+  .settings_title{
+    margin-bottom: 1rem;
+  }

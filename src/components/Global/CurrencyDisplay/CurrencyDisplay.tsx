@@ -5,7 +5,7 @@ import styles from './CurrencyDisplay.module.css';
 interface CurrencyDisplayProps {
     // eslint-disable-next-line
     tokenData: any;
-    amount: number;
+    amount: string;
 }
 
 export default function CurrencyDisplay(props: CurrencyDisplayProps) {

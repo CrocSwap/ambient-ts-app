@@ -1,6 +1,6 @@
 /** ***** Import React and Dongles *******/
 import { useEffect, useState } from 'react';
-import { useAppDispatch } from '../utils/hooks/reduxToolkit';
+import { useAppDispatch, useAppSelector } from '../utils/hooks/reduxToolkit';
 import { setPositionsByUser } from '../utils/state/graphDataSlice';
 import {
     // Signer,
@@ -67,6 +67,8 @@ export default function App() {
         })();
     }, [window.ethereum, account]);
 
+    const graphData = useAppSelector((state) => state.graphData);
+
     useEffect(() => {
         if (account) {
             const endpoint = 'https://api.thegraph.com/subgraphs/name/a0910841082130913312/croc22';
@@ -98,16 +100,12 @@ export default function App() {
                 variables,
                 // requestHeaders: headers,
             ).then((data) => {
-                dispatch(setPositionsByUser(data.user));
+                if (JSON.stringify(graphData.positionsByUser) !== JSON.stringify(data.user)) {
+                    dispatch(setPositionsByUser(data.user));
+                }
             });
         }
-    }, [account]);
-
-    // const graphData = useAppSelector((state) => state.graphData);
-
-    // useEffect(() => {
-    //     console.log({ graphData });
-    // }, [graphData]);
+    }, [account, lastBlockNumber]);
 
     initializeLocalStorage();
 
@@ -335,7 +333,7 @@ export default function App() {
                         </Route>
                         <Route path='analytics' element={<Analytics />} />
                         <Route path='range2' element={<Range {...rangeProps} />} />
-                        <Route path='portfolio' element={<Portfolio />} />
+                        <Route path='account' element={<Portfolio />} />
                         <Route path='swap' element={<Swap {...swapProps} />} />
                         <Route path='chart' element={<Chart />} />
                         <Route path='testpage' element={<TestPage />} />

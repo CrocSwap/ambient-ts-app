@@ -16,6 +16,7 @@ interface CurrencyConverterProps {
     setIsWithdrawFromDexChecked: React.Dispatch<SetStateAction<boolean>>;
     isWithdrawToWalletChecked: boolean;
     setIsWithdrawToWalletChecked: React.Dispatch<SetStateAction<boolean>>;
+    setSwapAllowed: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function CurrencyConverter(
@@ -30,6 +31,7 @@ export default function CurrencyConverter(
         setIsWithdrawFromDexChecked,
         isWithdrawToWalletChecked,
         setIsWithdrawToWalletChecked,
+        setSwapAllowed,
     } = props;
     // TODO: update name of functions with 'handle' verbiage
     // TODO: consolidate functions into a single function
@@ -43,6 +45,11 @@ export default function CurrencyConverter(
         if (buyQtyField) {
             buyQtyField.value = isNaN(output) ? '' : output.toString();
         }
+        if (!isNaN(output) && output > 0) {
+            setSwapAllowed(true);
+        } else {
+            setSwapAllowed(false);
+        }
     };
 
     const updateSellQty = (evt: ChangeEvent<HTMLInputElement>) => {
@@ -52,6 +59,11 @@ export default function CurrencyConverter(
         setIsSellTokenPrimary(false);
         if (sellQtyField) {
             sellQtyField.value = isNaN(output) ? '' : output.toString();
+        }
+        if (!isNaN(output) && output > 0) {
+            setSwapAllowed(true);
+        } else {
+            setSwapAllowed(false);
         }
     };
 

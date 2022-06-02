@@ -8,7 +8,7 @@ interface TransactionSubmittedProps {
 
 export default function TransactionSubmitted(props: TransactionSubmittedProps) {
     const { hash } = props;
-    const EthersanTx = `https://ropsten.etherscan.io/tx/${hash}`;
+    const EthersanTx = `https://kovan.etherscan.io/tx/${hash}`;
 
     return (
         <div className={styles.transaction_submitted}>
