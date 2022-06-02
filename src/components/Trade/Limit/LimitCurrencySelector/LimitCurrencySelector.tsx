@@ -1,22 +1,25 @@
-import styles from './LimitCurrencySelector.module.css';
-import LimitCurrencyQuantity from '../LimitCurrencyQuantity/LimitCurrencyQuantity';
+// START: Import React and Dongles
+import { useState } from 'react';
 import { RiArrowDownSLine } from 'react-icons/ri';
+
+// START: Import React Functional Components
+import LimitCurrencyQuantity from '../LimitCurrencyQuantity/LimitCurrencyQuantity';
 import Toggle from '../../../Global/Toggle/Toggle';
-import {
-    useState,
-    // ChangeEvent
-} from 'react';
+
+// START: Import Local Files
+import styles from './LimitCurrencySelector.module.css';
 import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 
+// interface for component props
 interface LimitCurrencySelectorProps {
     tokenData: TokenIF;
     fieldId: string;
     direction: string;
     sellToken?: boolean;
-
     // updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
 }
 
+// central react functional component
 export default function LimitCurrencySelector(props: LimitCurrencySelectorProps) {
     const { tokenData, fieldId, direction } = props;
     console.log(tokenData);
