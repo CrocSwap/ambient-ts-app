@@ -11,6 +11,9 @@ import styles from './LimitButton.module.css';
 export default function LimitButton() {
     const [allowedButton] = useState<boolean>(false);
 
+    // TODO:  @Junior do we need the top-level `<div>` here or can it be eliminated
+    // TODO:  ... as an unnecessary wrapper?
+
     return (
         <div className={styles.button_container}>
             <Button
