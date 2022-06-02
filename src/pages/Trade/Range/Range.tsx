@@ -56,8 +56,6 @@ export default function Range(props: IRangeProps) {
     const { provider, lastBlockNumber } = props;
     const { save } = useNewMoralisObject('UserPosition');
 
-    console.log('rendered Range.tsx component');
-
     const daiKovanAddress = '0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa';
 
     const [poolPriceNonDisplay, setPoolPriceNonDisplay] = useState(0);
@@ -84,8 +82,6 @@ export default function Range(props: IRangeProps) {
     const isTokenABase =
         getBaseTokenAddress(tradeData.addressTokenA, tradeData.addressTokenB) ===
         tradeData.addressTokenA;
-
-    console.assert(true, tokenPair);
 
     const [advancedMode, setAdvancedMode] = useState<boolean>(false);
 
@@ -273,8 +269,6 @@ export default function Range(props: IRangeProps) {
         rangeLowBoundNonDisplayPrice,
         rangeHighBoundNonDisplayPrice,
     );
-
-    console.log({ depositSkew });
 
     let maxPriceDisplay: string;
 
