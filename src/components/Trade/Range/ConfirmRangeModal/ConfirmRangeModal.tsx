@@ -1,7 +1,20 @@
+import Divider from '../../../Global/Divider/Divider';
+import RangeStatus from '../../../Global/RangeStatus/RangeStatus';
 import styles from './ConfirmRangeModal.module.css';
 import SelectedRange from './SelectedRange/SelectedRange';
+import { useState } from 'react';
 
-export default function ConfirmRangeModal() {
+interface ConfirmRangeModalProps {
+    sendTransaction: () => void;
+    onClose: () => void;
+    // newSwapTransactionHash: string;
+    // setNewSwapTransactionHash: React.Dispatch<React.SetStateAction<string>>;
+}
+
+export default function ConfirmRangeModal(props: ConfirmRangeModalProps) {
+    const [confirmDetails, setConfirmDetails] = useState(true);
+    const [transactionApproved, setTransactionApproved] = useState(false);
+
     const dataTokenA = {
         icon: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png',
         altText: 'Ethereum',
@@ -27,7 +40,7 @@ export default function ConfirmRangeModal() {
                     {dataTokenA.shortName}/{dataTokenB.shortName}
                 </span>
             </div>
-            <div>In range</div>
+            <RangeStatus isInRange />
         </section>
     );
     // FEE TIER DISPLAY
@@ -49,7 +62,7 @@ export default function ConfirmRangeModal() {
                     </div>
                     <span>{dataTokenB.qty}</span>
                 </div>
-                <div className={styles.divider}></div>
+                <Divider />
                 <div className={styles.detail_line}>
                     <span>CURRENT FEE TIER</span>
 

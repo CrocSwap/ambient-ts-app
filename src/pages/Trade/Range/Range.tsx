@@ -71,7 +71,7 @@ export default function Range(props: IRangeProps) {
 
     const [isWithdrawTokenAFromDexChecked, setIsWithdrawTokenAFromDexChecked] = useState(false);
     const [isWithdrawTokenBFromDexChecked, setIsWithdrawTokenBFromDexChecked] = useState(false);
-
+    const [newSwapTransactionHash, setNewSwapTransactionHash] = useState('');
     const { Moralis, user, account, chainId } = useMoralis();
 
     const tradeData = useAppSelector((state) => state.rangeData);
@@ -342,7 +342,7 @@ export default function Range(props: IRangeProps) {
     );
     const confirmSwapModalOrNull = isModalOpen ? (
         <Modal onClose={closeModal} title='Swap Confirmation'>
-            <ConfirmRangeModal />
+            <ConfirmRangeModal sendTransaction={sendTransaction} onClose={closeModal} />
         </Modal>
     ) : null;
 

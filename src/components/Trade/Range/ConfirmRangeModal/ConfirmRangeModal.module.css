@@ -14,13 +14,13 @@
     display: flex;
   
     align-items: center;
+    gap: 10px;
   }
-  .token_display span {
-    margin: 0 10px;
-  }
+ 
   .token_symbol {
-    font-size: 18px;
-    font-weight: 600;
+    font-size: var(--header2-size);
+    line-height: var(--header2-lh);
+    font-weight: 300;
   }
   .fee_tier {
     font-size: 14px;
@@ -82,7 +82,7 @@
   
     border: 1px solid var(--border-color);
     border-radius: 16px;
-    background-color: var(--modal-content);
+    background-color: var(--dark3);
   }
   .fee_tier_container {
     display: grid;
@@ -103,18 +103,17 @@
   
     align-items: center;
   }
-  .divider {
-    width: 100%;
-    height: 1px;
   
-    background-color: rgba(255, 255, 255, 0.2);
-  }
   .detail_line {
-    font-weight: 600;
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
   
     display: flex;
   
     align-items: center;
     justify-content: space-between;
+  }
+  .detail_line img{
+      margin: 0 10px;
   }
   
