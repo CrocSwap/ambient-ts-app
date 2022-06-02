@@ -1,7 +1,13 @@
-import styles from './LimitButton.module.css';
+// START: Import React and Dongles
 import { useState } from 'react';
+
+// START: Import React Functional Components
 import Button from '../../../Global/Button/Button';
 
+// START: Import Local Files
+import styles from './LimitButton.module.css';
+
+// central react functional component
 export default function LimitButton() {
     const [allowedButton] = useState<boolean>(false);
 
