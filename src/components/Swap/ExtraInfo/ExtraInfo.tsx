@@ -77,7 +77,7 @@ export default function ExtraInfo(props: ExtraInfoProps) {
         </div>
     );
 
-    const ExtraDetailsOrNull = showExtraDetails ? extraInfoDetails : null;
+    const extraDetailsOrNull = showExtraDetails ? extraInfoDetails : null;
 
     // TODO:  right now we're hardcoding where token A symbol and token B symbol
     // TODO:  ... are being displayed, we'll need to add logic to sort once we
@@ -99,7 +99,7 @@ export default function ExtraInfo(props: ExtraInfoProps) {
                     <RiArrowDownSLine size={27} />{' '}
                 </div>
             </div>
-            {ExtraDetailsOrNull}
+            {extraDetailsOrNull}
         </div>
     );
 }
