@@ -17,6 +17,10 @@ export default function DenominationSwitch(props: denominationSwitchProps) {
 
     const [toggleDenomination, setToggleDenomination] = useState<boolean>(false);
 
+    // TODO:  @Junior, if both buttons have the same action of reversing the current
+    // TODO:  ... value of `toggleDenomination`, let's do just one button with two
+    // TODO   ... <div> elements nested inside of it
+
     return (
         <div className={styles.denomination_switch}>
             <div>Denomination</div>
