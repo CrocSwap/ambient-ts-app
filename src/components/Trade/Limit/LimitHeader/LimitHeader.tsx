@@ -1,8 +1,19 @@
 import styles from './LimitHeader.module.css';
 import { FiSettings } from 'react-icons/fi';
 import ContentHeader from '../../../Global/ContentHeader/ContentHeader';
+import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 
-export default function LimitHeader() {
+interface LimitHeaderPropsIF {
+    tokenPair: {
+        dataTokenA: TokenIF;
+        dataTokenB: TokenIF;
+    };
+}
+
+export default function LimitHeader(props: LimitHeaderPropsIF) {
+    const { tokenPair } = props;
+    console.log(tokenPair);
+
     const tradeRouteHeader = (
         <ContentHeader>
             <span />

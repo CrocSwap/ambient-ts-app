@@ -42,7 +42,7 @@ export default function Limit() {
             data-testid={'limit'}
         >
             <ContentContainer isOnTradeRoute>
-                <LimitHeader />
+                <LimitHeader tokenPair={tokenPair} />
                 <LimitDenominationSwitch />
                 <DividerDark />
                 <LimitCurrencyConverter />
