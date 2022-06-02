@@ -13,7 +13,7 @@ export default function RangeButton(props: IRangeButtonProps) {
     const ButtonDisplay = (
         <div className={styles.button_container}>
             <Button
-                title={allowedButton ? 'Send to Metamask' : 'Enter an amount'}
+                title={allowedButton ? 'Open Confirmation' : 'Enter an amount'}
                 // action={() => console.log('clicked')}
                 action={props.onClickFn}
                 disabled={!allowedButton}

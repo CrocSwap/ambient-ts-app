@@ -71,7 +71,7 @@ export default function Range(props: IRangeProps) {
 
     const [isWithdrawTokenAFromDexChecked, setIsWithdrawTokenAFromDexChecked] = useState(false);
     const [isWithdrawTokenBFromDexChecked, setIsWithdrawTokenBFromDexChecked] = useState(false);
-    const [newSwapTransactionHash, setNewSwapTransactionHash] = useState('');
+    const [newRangeTransactionHash, setNewRangeTransactionHash] = useState('');
     const { Moralis, user, account, chainId } = useMoralis();
 
     const tradeData = useAppSelector((state) => state.rangeData);
@@ -178,6 +178,7 @@ export default function Range(props: IRangeProps) {
                 }
                 if (tx) {
                     let newTransactionHash = tx.hash;
+                    setNewRangeTransactionHash(newRangeTransactionHash);
                     console.log({ newTransactionHash });
                     let parsedReceipt;
 
@@ -315,6 +316,17 @@ export default function Range(props: IRangeProps) {
         maxPriceDisplay: maxPriceDisplay,
         minPriceDisplay: minPriceDisplay,
     };
+    // props for <ConfirmRangeModal/> React element
+    const rangeModalProps = {
+        tokenPair: tokenPair,
+        spotPriceDisplay: poolPriceDisplay,
+        maxPriceDisplay: maxPriceDisplay,
+        minPriceDisplay: minPriceDisplay,
+        sendTransaction: sendTransaction,
+        closeModal: closeModal,
+        newRangeTransactionHash: newRangeTransactionHash,
+        setNewRangeTransactionHash: setNewRangeTransactionHash,
+    };
 
     // props for <RangeCurrencyConverter/> React element
     const rangeCurrencyConverterProps = {
@@ -342,7 +354,7 @@ export default function Range(props: IRangeProps) {
     );
     const confirmSwapModalOrNull = isModalOpen ? (
         <Modal onClose={closeModal} title='Swap Confirmation'>
-            <ConfirmRangeModal sendTransaction={sendTransaction} onClose={closeModal} />
+            <ConfirmRangeModal {...rangeModalProps} />
         </Modal>
     ) : null;
 
@@ -359,9 +371,9 @@ export default function Range(props: IRangeProps) {
                 <DividerDark />
                 <RangeCurrencyConverter {...rangeCurrencyConverterProps} />
                 {advancedMode ? advancedModeContent : baseModeContent}
-                <RangeButton onClickFn={sendTransaction} isAmountEntered={true} />
+                <RangeButton onClickFn={openModal} isAmountEntered={true} />
             </ContentContainer>
-            <button onClick={openModal}>Open Modal</button>
+
             {confirmSwapModalOrNull}
         </motion.section>
     );

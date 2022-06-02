@@ -2,18 +2,34 @@ import Divider from '../../../Global/Divider/Divider';
 import RangeStatus from '../../../Global/RangeStatus/RangeStatus';
 import styles from './ConfirmRangeModal.module.css';
 import SelectedRange from './SelectedRange/SelectedRange';
+import Button from '../../../Global/Button/Button';
 import { useState } from 'react';
+import WaitingConfirmation from '../../../Global/WaitingConfirmation/WaitingConfirmation';
+import TransactionSubmitted from '../../../Global/TransactionSubmitted/TransactionSubmitted';
+import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 
 interface ConfirmRangeModalProps {
     sendTransaction: () => void;
-    onClose: () => void;
-    // newSwapTransactionHash: string;
-    // setNewSwapTransactionHash: React.Dispatch<React.SetStateAction<string>>;
+    closeModal: () => void;
+    newRangeTransactionHash: string;
+    setNewRangeTransactionHash: React.Dispatch<React.SetStateAction<string>>;
+
+    tokenPair: {
+        dataTokenA: TokenIF;
+        dataTokenB: TokenIF;
+    };
+    spotPriceDisplay: string;
+    maxPriceDisplay: string;
+    minPriceDisplay: string;
 }
 
 export default function ConfirmRangeModal(props: ConfirmRangeModalProps) {
+    const { sendTransaction, closeModal, newRangeTransactionHash, setNewRangeTransactionHash } =
+        props;
     const [confirmDetails, setConfirmDetails] = useState(true);
-    const [transactionApproved, setTransactionApproved] = useState(false);
+    const transactionApproved = newRangeTransactionHash !== '';
+    const sellTokenQty = (document.getElementById('A-range-quantity') as HTMLInputElement)?.value;
+    const buyTokenQty = (document.getElementById('B-range-quantity') as HTMLInputElement)?.value;
 
     const dataTokenA = {
         icon: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png',
@@ -72,11 +88,67 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalProps) {
         </section>
     );
 
-    return (
-        <div className={styles.confirm_range_modal_container}>
+    const fullTxDetails = (
+        <>
             {rangeHeader}
             {feeTierDisplay}
             <SelectedRange />
+        </>
+    );
+
+    const sellTokenData = {
+        symbol: 'ETH',
+        logoAltText: 'eth',
+        logoLocal:
+            'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png',
+    };
+    const buyTokenData = {
+        symbol: 'DAI',
+        logoAltText: 'dai',
+        logoLocal: 'https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.png',
+    };
+
+    // CONFIRMATION LOGIC STARTS HERE
+    const confirmSendMessage = (
+        <WaitingConfirmation
+            content={`Depositing Swapping ${sellTokenQty} ${sellTokenData.symbol} for ${buyTokenQty} ${buyTokenData.symbol}`}
+        />
+    );
+
+    const transactionSubmitted = <TransactionSubmitted hash={newRangeTransactionHash} />;
+
+    const confirmTradeButton = (
+        <Button
+            title='Send to Metamask'
+            action={() => {
+                console.log(
+                    `Sell Token Full name: ${sellTokenData.symbol} and quantity: ${sellTokenQty}`,
+                );
+                console.log(
+                    `Buy Token Full name: ${buyTokenData.symbol} and quantity: ${buyTokenQty}`,
+                );
+                sendTransaction();
+                setConfirmDetails(false);
+            }}
+        />
+    );
+
+    function onConfirmRangeClose() {
+        setConfirmDetails(true);
+        setNewRangeTransactionHash('');
+        closeModal();
+    }
+
+    const closeButton = <Button title='Close' action={onConfirmRangeClose} />;
+
+    const confirmationDisplay = transactionApproved ? transactionSubmitted : confirmSendMessage;
+
+    return (
+        <div className={styles.confirm_range_modal_container}>
+            <div>{confirmDetails ? fullTxDetails : confirmationDisplay}</div>
+            <footer className={styles.modal_footer}>
+                {confirmDetails ? confirmTradeButton : closeButton}
+            </footer>
         </div>
     );
 }

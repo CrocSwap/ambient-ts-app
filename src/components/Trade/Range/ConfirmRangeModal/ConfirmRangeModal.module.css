@@ -117,3 +117,8 @@
       margin: 0 10px;
   }
   
+
+  /* modal */
+  .modal_footer{
+     padding: 1rem;
+  }
