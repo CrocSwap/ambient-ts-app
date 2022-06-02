@@ -7,9 +7,8 @@ const currentPrice = (
             <span>2,800</span>
         </div>
 
-        <div className={styles.price_info_row}>
-            <span>Est.APY</span>
-            <span className='primary_apy'>35.68%</span>
+        <div className={styles.apy_container}>
+            <span className={styles.apy}> Est.APY | 35.65%</span>
         </div>
     </>
 );
@@ -74,7 +73,7 @@ export default function AdvancedPriceInfo() {
             <div className={styles.price_info_content}>
                 {currentPrice}
 
-                {tableContents}
+                {/* {tableContents} */}
             </div>
         </div>
     );
