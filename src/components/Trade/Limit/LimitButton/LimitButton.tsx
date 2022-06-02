@@ -5,7 +5,7 @@ import Button from '../../../Global/Button/Button';
 export default function LimitButton() {
     const [allowedButton] = useState<boolean>(false);
 
-    const ButtonDisplay = (
+    return (
         <div className={styles.button_container}>
             <Button
                 title={allowedButton ? 'Limit' : 'Enter an amount'}
@@ -15,6 +15,4 @@ export default function LimitButton() {
             />
         </div>
     );
-
-    return <div>{ButtonDisplay}</div>;
 }
