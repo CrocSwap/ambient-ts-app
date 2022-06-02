@@ -1,4 +1,5 @@
 import styles from './ConfirmRangeModal.module.css';
+import SelectedRange from './SelectedRange/SelectedRange';
 
 export default function ConfirmRangeModal() {
     const dataTokenA = {
@@ -58,5 +59,11 @@ export default function ConfirmRangeModal() {
         </section>
     );
 
-    return <div className={styles.row}>{}</div>;
+    return (
+        <div className={styles.row}>
+            {rangeHeader}
+            {feeTierDisplay}
+            <SelectedRange />
+        </div>
+    );
 }

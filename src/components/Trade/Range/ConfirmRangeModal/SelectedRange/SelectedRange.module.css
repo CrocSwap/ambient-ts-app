@@ -31,3 +31,95 @@
     color: white;
     background-color: transparent;
   }
+
+  /* price range container */
+  .price_range_container {
+    width: 48%;
+    padding: 8px;
+  
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    background-color: var(--modal-content);
+  }
+  .price_range_content {
+    display: grid;
+  
+    grid-auto-rows: auto;
+    row-gap: 4px;
+    justify-items: center;
+  }
+  
+  .price_range_title {
+    font-size: 12px;
+    font-weight: 500;
+  
+    color: rgb(195, 197, 203);
+  }
+  .price_range_amount {
+    font-size: 20px;
+    font-weight: 500;
+  
+    text-align: center;
+  }
+  
+  .price_range_info {
+    font-size: 11px;
+    font-weight: 500;
+  
+    text-align: center;
+  
+    color: rgb(143, 150, 172);
+  }
+  
+
+  /* SELECTED RANGE */
+  .selected_range_display {
+    display: flex;
+  
+    padding-bottom: 0.5rem;
+  
+    justify-content: space-between;
+  }
+  
+
+  /* CURRENT PRICE DISPLAY */
+  .currentPrice_display {
+    width: 100%;
+    padding: 12px;
+  
+    border: 1px solid rgb(44, 47, 54);
+    border-radius: 16px;
+    background-color: #17191c;
+  
+    /* padding: 1rem 0; */
+  }
+  .currentPrice_container {
+    display: grid;
+  
+    grid-auto-rows: auto;
+    row-gap: 4px;
+    justify-items: center;
+  }
+  
+  .currentPrice_title {
+    font-size: 12px;
+    font-weight: 500;
+  
+    color: rgb(195, 197, 203);
+  }
+  .currentPrice_amount {
+    font-size: 20px;
+    font-weight: 500;
+  
+    text-align: center;
+  }
+  
+  .currentPrice_info {
+    font-size: 11px;
+    font-weight: 500;
+  
+    text-align: center;
+  
+    color: rgb(143, 150, 172);
+  }
+  

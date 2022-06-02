@@ -28,11 +28,62 @@ export default function SelectedRange() {
         </div>
     );
 
+    // PRICE RANGE DISPLAY
+    interface PriceRangeProps {
+        title: string;
+        value: number;
+        tokens: string;
+        currentToken: string;
+    }
+    const PriceRangeDisplay = (props: PriceRangeProps) => {
+        const { title, value, tokens, currentToken } = props;
+        return (
+            <div className={styles.price_range_container}>
+                <div className={styles.price_range_content}>
+                    <span className={styles.price_range_title}>{title}</span>
+                    <span className={styles.price_range_amount}>{value}</span>
+                    <span className={styles.price_range_title}>{tokens}</span>
+                    <span className={styles.price_range_info}>
+                        Your position will be 100% composed of {currentToken} at this price.
+                    </span>
+                </div>
+            </div>
+        );
+    };
+
+    const selectedRangeDisplay = (
+        <div className={styles.selected_range_display}>
+            <PriceRangeDisplay
+                title='Min Price'
+                value={662.21}
+                tokens='DAI per ETH'
+                currentToken='ETH'
+            />
+            <PriceRangeDisplay
+                title='Max Price'
+                value={1216.23}
+                tokens='DAI per ETH'
+                currentToken='DAI'
+            />
+        </div>
+    );
+
+    const currentPriceDisplay = (
+        <div className={styles.currentPrice_display}>
+            <div className={styles.currentPrice_container}>
+                <span className={styles.currentPrice_title}>Current price</span>
+                <span className={styles.currentPrice_amount}>{898.12368}</span>
+                <span className={styles.currentPrice_info}> DAI per ETH</span>
+            </div>
+        </div>
+    );
+
     return (
         <>
             <div className={styles.selected_range}>
                 <div>Selected Range</div>
                 {switchButtons}
+                {selectedRangeDisplay}
             </div>
         </>
     );
