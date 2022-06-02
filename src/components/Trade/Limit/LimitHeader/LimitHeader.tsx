@@ -17,7 +17,9 @@ export default function LimitHeader(props: LimitHeaderPropsIF) {
     const tradeRouteHeader = (
         <ContentHeader>
             <span />
-            <div className={styles.token_info}>ETH / USDC</div>
+            <div className={styles.token_info}>
+                {tokenPair.dataTokenA.symbol} / {tokenPair.dataTokenB.symbol}
+            </div>
             <FiSettings />
         </ContentHeader>
     );
