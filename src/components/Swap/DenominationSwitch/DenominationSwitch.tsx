@@ -13,7 +13,6 @@ interface denominationSwitchProps {
 
 export default function DenominationSwitch(props: denominationSwitchProps) {
     const { tokenPair } = props;
-    console.log(tokenPair);
 
     const [toggleDenomination, setToggleDenomination] = useState<boolean>(false);
 
@@ -28,14 +27,14 @@ export default function DenominationSwitch(props: denominationSwitchProps) {
                 className={!toggleDenomination ? styles.active_button : styles.non_active_button}
                 onClick={() => setToggleDenomination(!toggleDenomination)}
             >
-                ETH
+                {tokenPair.dataTokenA.symbol}
             </button>
 
             <button
                 className={toggleDenomination ? styles.active_button : styles.non_active_button}
                 onClick={() => setToggleDenomination(!toggleDenomination)}
             >
-                DAI
+                {tokenPair.dataTokenB.symbol}
             </button>
         </div>
     );
