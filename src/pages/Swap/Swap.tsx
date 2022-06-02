@@ -31,9 +31,9 @@ import { handleParsedReceipt } from '../../utils/HandleParsedReceipt';
 import truncateDecimals from '../../utils/data/truncateDecimals';
 import { isTransactionReplacedError, TransactionError } from '../../utils/TransactionError';
 import { getCurrentTokens, findTokenByAddress } from '../../utils/functions/processTokens';
-import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { kovanETH, kovanUSDC } from '../../utils/data/defaultTokens';
 import { useModal } from '../../components/Global/Modal/useModal';
+import { useTradeData } from '../Trade/Trade';
 
 interface ISwapProps {
     provider: JsonRpcProvider;
@@ -46,9 +46,9 @@ interface ISwapProps {
 export default function Swap(props: ISwapProps) {
     const { provider, isOnTradeRoute, lastBlockNumber, nativeBalance, gasPriceinGwei } = props;
     const [isModalOpen, openModal, closeModal] = useModal();
-
     const { Moralis, chainId, enableWeb3, isWeb3Enabled, authenticate, isAuthenticated } =
         useMoralis();
+    const { tradeData } = useTradeData();
 
     // login functionality
     const clickLogin = () => {
@@ -75,10 +75,6 @@ export default function Swap(props: ISwapProps) {
     };
 
     const loginButton = <Button title='Login' action={clickLogin} />;
-
-    //
-
-    const tradeData = useAppSelector((state) => state.tradeData);
 
     // get current tokens for the active chain
     // if called before Moralis can initialize use kovan
