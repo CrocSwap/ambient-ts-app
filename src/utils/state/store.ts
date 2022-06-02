@@ -1,12 +1,10 @@
 import { configureStore } from '@reduxjs/toolkit';
 import tradeDataReducer from './tradeDataSlice';
-import rangeDataReducer from './rangeDataSlice';
 import graphDataReducer from './graphDataSlice';
 
 export const store = configureStore({
     reducer: {
         tradeData: tradeDataReducer,
-        rangeData: rangeDataReducer,
         graphData: graphDataReducer,
     },
 });

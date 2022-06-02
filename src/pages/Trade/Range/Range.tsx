@@ -69,7 +69,7 @@ export default function Range(props: IRangeProps) {
 
     const { Moralis, user, account, chainId } = useMoralis();
 
-    const tradeData = useAppSelector((state) => state.rangeData);
+    const tradeData = useAppSelector((state) => state.tradeData);
 
     // get current tokens for the active chain
     // if called before Moralis can initialize use kovan

@@ -4,7 +4,7 @@ import chart from '../../assets/images/Temporary/chart.svg';
 import Tabs from '../../components/Global/Tabs/Tabs';
 import { motion } from 'framer-motion';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
-import { rangeData as RangeDataIF } from '../../utils/state/rangeDataSlice';
+import { tradeData as TradeDataIF } from '../../utils/state/tradeDataSlice';
 
 export default function Trade() {
     const routes = [
@@ -22,7 +22,7 @@ export default function Trade() {
         },
     ];
 
-    const tradeData = useAppSelector((state) => state.rangeData);
+    const tradeData = useAppSelector((state) => state.tradeData);
 
     // These would be move to their own components, presumably the graph component
     const tokenInfo = (
@@ -105,7 +105,7 @@ export default function Trade() {
     );
 }
 
-type ContextType = { tradeData: RangeDataIF };
+type ContextType = { tradeData: TradeDataIF };
 
 export function useTradeData() {
     return useOutletContext<ContextType>();
