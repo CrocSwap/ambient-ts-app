@@ -32,7 +32,7 @@ export default function LimitExtraInfo(props: LimitExtraInfoPropsIF) {
     const liquidityProviderFee = 0.3;
     const truncatedGasInGwei = 2.5;
 
-    const LimitExtraInfoDetails = (
+    const limitExtraInfoDetails = (
         <div className={styles.extra_details}>
             <div className={styles.extra_row}>
                 <span>Spot Price</span>
@@ -59,7 +59,7 @@ export default function LimitExtraInfo(props: LimitExtraInfoPropsIF) {
         </div>
     );
 
-    const ExtraDetailsOrNull = showExtraDetails ? LimitExtraInfoDetails : null;
+    const extraDetailsOrNull = showExtraDetails ? limitExtraInfoDetails : null;
 
     return (
         <div className={styles.extra_info_container}>
@@ -76,7 +76,7 @@ export default function LimitExtraInfo(props: LimitExtraInfoPropsIF) {
                     <RiArrowDownSLine size={27} />{' '}
                 </div>
             </div>
-            {ExtraDetailsOrNull}
+            {extraDetailsOrNull}
         </div>
     );
 }
