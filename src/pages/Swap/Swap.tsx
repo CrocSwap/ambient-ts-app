@@ -20,7 +20,7 @@ import ExtraInfo from '../../components/Swap/ExtraInfo/ExtraInfo';
 import ContentContainer from '../../components/Global/ContentContainer/ContentContainer';
 import SwapHeader from '../../components/Swap/SwapHeader/SwapHeader';
 import SwapButton from '../../components/Swap/SwapButton/SwapButton';
-import DenominationSwitch from '../../components/Swap/DenominationSwitch/DenomicationSwitch';
+import DenominationSwitch from '../../components/Swap/DenominationSwitch/DenominationSwitch';
 import DividerDark from '../../components/Global/DividerDark/DividerDark';
 import Modal from '../../components/Global/Modal/Modal';
 import ConfirmSwapModal from '../../components/Swap/ConfirmSwapModal/ConfirmSwapModal';
