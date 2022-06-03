@@ -87,6 +87,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                 tokenToUpdate={tokenToUpdate}
                 chainId={chainId}
                 tokenList={tempTokenList}
+                closeModal={closeModal}
             />
         </Modal>
     ) : null;

@@ -7,10 +7,11 @@ interface TokenSelectContainerPropsIF {
     tokenList: Array<TokenIF>;
     chainId: string;
     tokenToUpdate: string;
+    closeModal: () => void;
 }
 
 export default function TokenSelectContainer(props: TokenSelectContainerPropsIF) {
-    const { tokenList, chainId, tokenToUpdate } = props;
+    const { tokenList, chainId, tokenToUpdate, closeModal } = props;
     const [searchTerm, setSearchTerm] = useState('');
 
     const searchInput = (
@@ -47,6 +48,7 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
                             qty={token.decimals}
                             address={token.address}
                             tokenToUpdate={tokenToUpdate}
+                            closeModal={closeModal}
                         />
                     );
                 })}

@@ -11,10 +11,11 @@ interface TokenSelectProps {
     name: string;
     address: string;
     tokenToUpdate: string;
+    closeModal: () => void;
 }
 
 export default function TokenSelect(props: TokenSelectProps) {
-    const { icon, symbol, name, address, tokenToUpdate } = props;
+    const { icon, symbol, name, address, tokenToUpdate, closeModal } = props;
     function getRandomInt() {
         return Math.floor(Math.random() * 18000);
     }
@@ -33,6 +34,7 @@ export default function TokenSelect(props: TokenSelectProps) {
         } else {
             console.warn('Error in TokenSelect.tsx, failed to find proper dispatch function.');
         }
+        closeModal();
     };
 
     return (
