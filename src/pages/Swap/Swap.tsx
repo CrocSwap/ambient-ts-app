@@ -50,7 +50,7 @@ interface ISwapProps {
 export default function Swap(props: ISwapProps) {
     const { provider, isOnTradeRoute, lastBlockNumber, nativeBalance, gasPriceinGwei } = props;
     const [isModalOpen, openModal, closeModal] = useModal();
-    const [isRelativeModalOpen, openRelativeModal, closeRelativeModal] = useModal();
+    const [isRelativeModalOpen, closeRelativeModal] = useRelativeModal();
     const { Moralis, chainId, enableWeb3, isWeb3Enabled, authenticate, isAuthenticated } =
         useMoralis();
     // get URL pathway for user relative to index
