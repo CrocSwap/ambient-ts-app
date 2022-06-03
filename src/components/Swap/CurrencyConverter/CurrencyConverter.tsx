@@ -1,18 +1,20 @@
-import { ChangeEvent, SetStateAction } from 'react';
+import { ChangeEvent, SetStateAction, useEffect, useState } from 'react';
 import styles from './CurrencyConverter.module.css';
 import CurrencySelector from '../CurrencySelector/CurrencySelector';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
 import { setAddressTokenA, setAddressTokenB } from '../../../utils/state/tradeDataSlice';
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
+import truncateDecimals from '../../../utils/data/truncateDecimals';
 
 interface CurrencyConverterProps {
     tokenPair: {
         dataTokenA: TokenIF;
         dataTokenB: TokenIF;
     };
+    isSellTokenBase: boolean;
     chainId: string;
     isLiq: boolean;
-    poolPrice: number;
+    poolPriceDisplay: number;
     setIsSellTokenPrimary: React.Dispatch<SetStateAction<boolean>>;
     nativeBalance: string;
     tokenABalance: string;
@@ -27,9 +29,10 @@ interface CurrencyConverterProps {
 export default function CurrencyConverter(props: CurrencyConverterProps) {
     const {
         tokenPair,
+        isSellTokenBase,
         chainId,
         isLiq,
-        poolPrice,
+        poolPriceDisplay,
         setIsSellTokenPrimary,
         isWithdrawFromDexChecked,
         setIsWithdrawFromDexChecked,
@@ -43,44 +46,123 @@ export default function CurrencyConverter(props: CurrencyConverterProps) {
     // TODO: consolidate functions into a single function
     // TODO: refactor functions to consider which token is base
 
-    const updateBuyQty = (evt: ChangeEvent<HTMLInputElement>) => {
-        const input = parseFloat(evt.target.value);
-        const output = (1 / poolPrice) * input;
+    const tokenADecimals = tokenPair.dataTokenA.decimals;
+    const tokenBDecimals = tokenPair.dataTokenB.decimals;
+
+    const [sellTokenQty, setSellTokenQty] = useState<number>(0);
+    const [buyTokenQty, setBuyTokenQty] = useState<number>(0);
+
+    // useEffect(() => {
+    //     console.log({ sellTokenQty });
+    // }, [sellTokenQty]);
+    // useEffect(() => {
+    //     console.log({ buyTokenQty });
+    // }, [buyTokenQty]);
+
+    const setBuyQtyValue = (value: number) => {
+        console.log({ value });
+        if (isReversalInProgress) {
+            const buyQtyField = document.getElementById('buy-quantity') as HTMLInputElement;
+
+            if (buyQtyField) {
+                buyQtyField.value = value.toString();
+                setBuyTokenQty(value);
+            }
+            return;
+        }
+        const output = isSellTokenBase ? (1 / poolPriceDisplay) * value : poolPriceDisplay * value;
+
+        const truncatedOutput = truncateDecimals(output, tokenBDecimals);
         const buyQtyField = document.getElementById('buy-quantity') as HTMLInputElement;
         setIsSellTokenPrimary(true);
         if (buyQtyField) {
-            buyQtyField.value = isNaN(output) ? '' : output.toString();
+            buyQtyField.value = isNaN(truncatedOutput) ? '' : truncatedOutput.toString();
         }
-        if (!isNaN(output) && output > 0) {
+        setBuyTokenQty(truncatedOutput);
+        setSellTokenQty(value);
+        if (!isNaN(truncatedOutput) && truncatedOutput > 0) {
             setSwapAllowed(true);
         } else {
             setSwapAllowed(false);
         }
     };
 
-    const updateSellQty = (evt: ChangeEvent<HTMLInputElement>) => {
-        const input = parseFloat(evt.target.value);
-        const output = poolPrice * input;
+    const [isReversalInProgress, setIsReversalInProgress] = useState<boolean>(false);
+
+    useEffect(() => {
+        console.log({ isReversalInProgress });
+    }, [isReversalInProgress]);
+
+    const setSellQtyValue = (value: number) => {
+        console.log({ value });
+
+        if (isReversalInProgress) {
+            const sellQtyField = document.getElementById('sell-quantity') as HTMLInputElement;
+
+            if (sellQtyField) {
+                sellQtyField.value = value.toString();
+                setSellTokenQty(value);
+            }
+            return;
+        }
+
+        const output = isSellTokenBase ? poolPriceDisplay * value : (1 / poolPriceDisplay) * value;
+        const truncatedOutput = truncateDecimals(output, tokenADecimals);
+
         const sellQtyField = document.getElementById('sell-quantity') as HTMLInputElement;
         setIsSellTokenPrimary(false);
         if (sellQtyField) {
-            sellQtyField.value = isNaN(output) ? '' : output.toString();
+            sellQtyField.value = isNaN(truncatedOutput) ? '' : truncatedOutput.toString();
         }
-        if (!isNaN(output) && output > 0) {
+        setSellTokenQty(truncatedOutput);
+        setBuyTokenQty(value);
+
+        if (!isNaN(truncatedOutput) && truncatedOutput > 0) {
             setSwapAllowed(true);
         } else {
             setSwapAllowed(false);
+        }
+    };
+
+    const updateBuyQty = (evt?: ChangeEvent<HTMLInputElement>) => {
+        if (evt) {
+            const input = parseFloat(evt.target.value);
+            setBuyQtyValue(input);
+        } else {
+            if (sellTokenQty) {
+                setBuyQtyValue(sellTokenQty);
+            }
+        }
+    };
+
+    const updateSellQty = (evt?: ChangeEvent<HTMLInputElement>) => {
+        if (evt) {
+            const input = parseFloat(evt.target.value);
+            setSellQtyValue(input);
+        } else {
+            if (buyTokenQty) {
+                setSellQtyValue(buyTokenQty);
+            }
         }
     };
 
     const dispatch = useAppDispatch();
 
     const handleArrowClick = (): void => {
+        setIsReversalInProgress(true);
+
         if (tokenPair) {
             dispatch(setAddressTokenA(tokenPair.dataTokenB.address));
             dispatch(setAddressTokenB(tokenPair.dataTokenA.address));
         }
     };
+
+    useEffect(() => {
+        console.log('firing');
+        updateBuyQty();
+        updateSellQty();
+        setIsReversalInProgress(false);
+    }, [JSON.stringify(tokenPair)]);
 
     return (
         <section className={styles.currency_converter}>

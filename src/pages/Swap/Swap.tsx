@@ -102,6 +102,8 @@ export default function Swap(props: ISwapProps) {
     const [baseTokenAddress, setBaseTokenAddress] = useState<string>('');
     const [quoteTokenAddress, setQuoteTokenAddress] = useState<string>('');
 
+    const [isSellTokenBase, setIsSellTokenBase] = useState<boolean>(true);
+
     // useEffect to set baseTokenAddress and quoteTokenAddress when pair changes
     useEffect(() => {
         if (tokenPair.dataTokenA.address && tokenPair.dataTokenB.address) {
@@ -111,8 +113,13 @@ export default function Swap(props: ISwapProps) {
             );
             setBaseTokenAddress(sortedTokens[0]);
             setQuoteTokenAddress(sortedTokens[1]);
+            if (tokenPair.dataTokenA.address === sortedTokens[0]) {
+                setIsSellTokenBase(true);
+            } else {
+                setIsSellTokenBase(false);
+            }
         }
-    }, [tokenPair]);
+    }, [JSON.stringify(tokenPair)]);
 
     // useEffect to update selected token balances
     useEffect(() => {
@@ -192,6 +199,10 @@ export default function Swap(props: ISwapProps) {
             })();
         }
     }, [lastBlockNumber, baseTokenAddress, quoteTokenAddress]);
+
+    // useEffect(() => {
+    //     console.log({ poolPriceDisplay });
+    // }, [poolPriceDisplay]);
 
     const signer = provider?.getSigner();
 
@@ -291,8 +302,9 @@ export default function Swap(props: ISwapProps) {
                     tokenPair={tokenPair}
                     chainId={chainId as string}
                     isLiq={false}
-                    poolPrice={poolPriceNonDisplay}
+                    poolPriceDisplay={poolPriceDisplay}
                     setIsSellTokenPrimary={setIsSellTokenPrimary}
+                    isSellTokenBase={isSellTokenBase}
                     nativeBalance={truncateDecimals(parseFloat(nativeBalance), 4).toString()}
                     tokenABalance={truncateDecimals(parseFloat(tokenABalance), 4).toString()}
                     tokenBBalance={truncateDecimals(parseFloat(tokenBBalance), 4).toString()}
