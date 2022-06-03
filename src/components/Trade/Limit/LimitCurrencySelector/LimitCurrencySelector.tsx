@@ -44,6 +44,25 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
 
     const [isChecked, setIsChecked] = useState<boolean>(false);
 
+    // IMPORTANT!  The Limit Order module is the one only transaction configurator
+    // ... in the app which has an input field with no token selector.  For that
+    // ... reason, `LimitCurrencySelector.tsx` file needs to be coded separately
+    // ... from its counterparts in the Swap/Market/Range modules, even if we use
+    // ... a common element for those modules in the future.
+
+    const tokenSelect = (
+        <div className={styles.token_select} onClick={openModal}>
+            <img
+                className={styles.token_list_img}
+                src='https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png'
+                alt='ethreum'
+                width='30px'
+            />
+            <span className={styles.token_list_text}>{tokenData.symbol}</span>
+            <RiArrowDownSLine size={27} />
+        </div>
+    );
+
     const DexBalanceContent = (
         <span className={styles.surplus_toggle}>
             Use DEX balance
@@ -65,16 +84,7 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
                 <div className={styles.swap_input}>
                     <LimitCurrencyQuantity fieldId={fieldId} />
                 </div>
-                <div className={styles.token_select} onClick={openModal}>
-                    <img
-                        className={styles.token_list_img}
-                        src='https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png'
-                        alt='ethreum'
-                        width='30px'
-                    />
-                    <span className={styles.token_list_text}>{tokenData.symbol}</span>
-                    <RiArrowDownSLine size={27} />
-                </div>
+                {fieldId === 'buy' && tokenSelect}
             </div>
             <div className={styles.swapbox_bottom}>
                 {fieldId === 'buy' ? <span>Wallet: 69.420 | DEX: 0.00</span> : null}
