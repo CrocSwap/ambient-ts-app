@@ -32,15 +32,17 @@
     max-height: 3rem;
   }
 
-  .swap_input{
-width: 70%;
-  }
-  .token_select {
-   display: flex;
-   justify-content: space-between;
-   align-items: center;
-   width: 30%;
-  }
+.swap_input{
+  width: 70%;
+}
+
+.token_select {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 30%;
+  cursor: pointer;
+}
 
   .token_select img {
     max-width: 100%;

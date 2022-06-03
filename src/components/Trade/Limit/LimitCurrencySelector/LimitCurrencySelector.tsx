@@ -9,10 +9,19 @@ import Toggle from '../../../Global/Toggle/Toggle';
 // START: Import Local Files
 import styles from './LimitCurrencySelector.module.css';
 import { TokenIF } from '../../../../utils/interfaces/TokenIF';
+import Modal from '../../../../components/Global/Modal/Modal';
+import TokenSelectContainer from '../../../Global/TokenSelectContainer/TokenSelectContainer';
+import { useModal } from '../../../../components/Global/Modal/useModal';
+import { getAmbientTokens } from '../../../../tempdata';
 
 // interface for component props
 interface LimitCurrencySelectorProps {
-    tokenData: TokenIF;
+    tokenPair: {
+        dataTokenA: TokenIF;
+        dataTokenB: TokenIF;
+    };
+    tokensBank: Array<TokenIF>;
+    chainId: string;
     fieldId: string;
     direction: string;
     sellToken?: boolean;
@@ -22,8 +31,46 @@ interface LimitCurrencySelectorProps {
 
 // central react functional component
 export default function LimitCurrencySelector(props: LimitCurrencySelectorProps) {
-    const { tokenData, fieldId, direction, updateOtherQuantity } = props;
+    const { tokenPair, tokensBank, chainId, fieldId, direction, updateOtherQuantity } = props;
+
+    const thisToken = fieldId === 'buy' ? tokenPair.dataTokenA : tokenPair.dataTokenB;
+
+    const [isModalOpen, openModal, closeModal] = useModal();
+    const tempTokenList = getAmbientTokens();
+
+    const tokenSelectModalOrNull = isModalOpen ? (
+        <Modal onClose={closeModal} title='Select Token'>
+            <TokenSelectContainer
+                tokenPair={tokenPair}
+                tokensBank={tokensBank}
+                tokenToUpdate={'A'}
+                chainId={chainId}
+                tokenList={tempTokenList}
+                closeModal={closeModal}
+            />
+        </Modal>
+    ) : null;
+
     const [isChecked, setIsChecked] = useState<boolean>(false);
+
+    // IMPORTANT!  The Limit Order module is the one only transaction configurator
+    // ... in the app which has an input field with no token selector.  For that
+    // ... reason, `LimitCurrencySelector.tsx` file needs to be coded separately
+    // ... from its counterparts in the Swap/Market/Range modules, even if we use
+    // ... a common element for those modules in the future.
+
+    const tokenSelect = (
+        <div className={styles.token_select} onClick={openModal}>
+            <img
+                className={styles.token_list_img}
+                src={thisToken.logoURI}
+                alt={thisToken.name + 'token logo'}
+                width='30px'
+            />
+            <span className={styles.token_list_text}>{thisToken.symbol}</span>
+            <RiArrowDownSLine size={27} />
+        </div>
+    );
 
     const DexBalanceContent = (
         <span className={styles.surplus_toggle}>
@@ -49,21 +96,13 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
                         updateOtherQuantity={updateOtherQuantity}
                     />
                 </div>
-                <div className={styles.token_select}>
-                    <img
-                        className={styles.token_list_img}
-                        src='https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png'
-                        alt='ethreum'
-                        width='30px'
-                    />
-                    <span className={styles.token_list_text}>{tokenData.symbol}</span>
-                    <RiArrowDownSLine size={27} />
-                </div>
+                {fieldId === 'buy' && tokenSelect}
             </div>
             <div className={styles.swapbox_bottom}>
                 {fieldId === 'buy' ? <span>Wallet: 69.420 | DEX: 0.00</span> : null}
                 {fieldId === 'buy' && DexBalanceContent}
             </div>
+            {tokenSelectModalOrNull}
         </div>
     );
 }

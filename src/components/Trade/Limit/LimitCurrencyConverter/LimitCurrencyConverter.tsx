@@ -15,6 +15,8 @@ interface LimitCurrencyConverterProps {
         dataTokenA: TokenIF;
         dataTokenB: TokenIF;
     };
+    tokensBank: Array<TokenIF>;
+    chainId: string;
     poolPrice?: number;
     setIsSellTokenPrimary?: React.Dispatch<SetStateAction<boolean>>;
     setLimitAllowed: React.Dispatch<React.SetStateAction<boolean>>;
@@ -22,7 +24,7 @@ interface LimitCurrencyConverterProps {
 
 // central react functional component
 export default function LimitCurrencyConverter(props: LimitCurrencyConverterProps) {
-    const { tokenPair, setLimitAllowed } = props;
+    const { tokenPair, tokensBank, chainId, setLimitAllowed } = props;
 
     // TODO: pass tokenPair to <LimitRate /> as a prop such that we can use a dynamic
     // TODO: ... logo instead of the hardcoded one it contains
@@ -62,14 +64,18 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
     return (
         <section className={styles.currency_converter}>
             <LimitCurrencySelector
-                tokenData={tokenPair.dataTokenA}
+                tokenPair={tokenPair}
+                tokensBank={tokensBank}
+                chainId={chainId}
                 fieldId='sell'
                 sellToken
                 direction='Price'
                 updateOtherQuantity={updateBuyQty}
             />
             <LimitCurrencySelector
-                tokenData={tokenPair.dataTokenB}
+                tokenPair={tokenPair}
+                tokensBank={tokensBank}
+                chainId={chainId}
                 fieldId='buy'
                 direction='To'
                 updateOtherQuantity={updateSellQty}
@@ -77,7 +83,12 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
             <div className={styles.arrow_container}>
                 <span className={styles.arrow} />
             </div>
-            <LimitRate fieldId='limit-rate' />
+            <LimitRate
+                tokenPair={tokenPair}
+                tokensBank={tokensBank}
+                chainId={chainId}
+                fieldId='limit-rate'
+            />
         </section>
     );
 }

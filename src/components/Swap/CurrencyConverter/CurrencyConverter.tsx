@@ -12,6 +12,7 @@ interface CurrencyConverterProps {
         dataTokenB: TokenIF;
     };
     isSellTokenBase: boolean;
+    tokensBank: Array<TokenIF>;
     chainId: string;
     isLiq: boolean;
     poolPriceDisplay: number;
@@ -31,6 +32,7 @@ export default function CurrencyConverter(props: CurrencyConverterProps) {
     const {
         tokenPair,
         isSellTokenBase,
+        tokensBank,
         chainId,
         isLiq,
         poolPriceDisplay,
@@ -158,8 +160,8 @@ export default function CurrencyConverter(props: CurrencyConverterProps) {
     return (
         <section className={styles.currency_converter}>
             <CurrencySelector
-                tokenData={tokenPair.dataTokenA}
                 tokenPair={tokenPair}
+                tokensBank={tokensBank}
                 chainId={chainId}
                 direction={isLiq ? 'Select Pair' : 'From:'}
                 fieldId='sell'
@@ -179,7 +181,7 @@ export default function CurrencyConverter(props: CurrencyConverterProps) {
             </div>
             <CurrencySelector
                 tokenPair={tokenPair}
-                tokenData={tokenPair.dataTokenB}
+                tokensBank={tokensBank}
                 chainId={chainId}
                 direction={isLiq ? '' : 'To:'}
                 fieldId='buy'
