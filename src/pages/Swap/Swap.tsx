@@ -127,7 +127,6 @@ export default function Swap(props: ISwapProps) {
                     setTokenBBalance(tokenBBal);
                 }
             }
-            // console.log({ balance });
         })();
     }, [chainId, account, isWeb3Enabled, isAuthenticated, tokenPair]);
 
@@ -176,8 +175,10 @@ export default function Swap(props: ISwapProps) {
     const signer = provider?.getSigner();
 
     async function initiateSwap() {
-        const sellTokenAddress = contractAddresses.ZERO_ADDR;
-        const buyTokenAddress = daiKovanAddress;
+        // const sellTokenAddress = contractAddresses.ZERO_ADDR;
+        const sellTokenAddress = tokenPair.dataTokenA.address;
+        const buyTokenAddress = tokenPair.dataTokenB.address;
+        // const buyTokenAddress = daiKovanAddress;
         const poolId = POOL_PRIMARY;
         const slippageTolerancePercentage = 5;
         const sellTokenQty = (document.getElementById('sell-quantity') as HTMLInputElement)?.value;
@@ -244,6 +245,7 @@ export default function Swap(props: ISwapProps) {
     const confirmSwapModalOrNull = isModalOpen ? (
         <Modal onClose={closeModal} title='Swap Confirmation'>
             <ConfirmSwapModal
+                tokenPair={tokenPair}
                 initiateSwapMethod={initiateSwap}
                 onClose={closeModal}
                 newSwapTransactionHash={newSwapTransactionHash}
