@@ -48,7 +48,6 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
     const [isModalOpen, openModal, closeModal] = useModal();
 
     const thisToken = fieldId === 'sell' ? tokenPair.dataTokenA : tokenPair.dataTokenB;
-    console.log(thisToken.logoURI);
 
     const DexBalanceContent = (
         <span className={styles.surplus_toggle}>
