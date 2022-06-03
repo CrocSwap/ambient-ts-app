@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useState } from 'react';
+import { useState, ChangeEvent, SetStateAction } from 'react';
 import { RiArrowDownSLine } from 'react-icons/ri';
 
 // START: Import React Functional Components
@@ -16,12 +16,13 @@ interface LimitCurrencySelectorProps {
     fieldId: string;
     direction: string;
     sellToken?: boolean;
-    // updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
+
+    updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
 }
 
 // central react functional component
 export default function LimitCurrencySelector(props: LimitCurrencySelectorProps) {
-    const { tokenData, fieldId, direction } = props;
+    const { tokenData, fieldId, direction, updateOtherQuantity } = props;
     const [isChecked, setIsChecked] = useState<boolean>(false);
 
     const DexBalanceContent = (
@@ -43,7 +44,10 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
             <span className={styles.direction}>{direction}</span>
             <div className={styles.swapbox_top}>
                 <div className={styles.swap_input}>
-                    <LimitCurrencyQuantity fieldId={fieldId} />
+                    <LimitCurrencyQuantity
+                        fieldId={fieldId}
+                        updateOtherQuantity={updateOtherQuantity}
+                    />
                 </div>
                 <div className={styles.token_select}>
                     <img

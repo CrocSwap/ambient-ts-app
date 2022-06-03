@@ -7,15 +7,17 @@ import Button from '../../../Global/Button/Button';
 import Divider from '../../../Global/Divider/Divider';
 
 interface ConfirmLimitModalProps {
-    children: React.ReactNode;
+    onClose: () => void;
 }
 
 export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
+    const { onClose } = props;
     const [confirmDetails, setConfirmDetails] = useState<boolean>(true);
     const [transactionApproved, setTransactionApproved] = useState<boolean>(false);
 
-    const sellTokenQty = (document.getElementById('sell-quantity') as HTMLInputElement)?.value;
-    const buyTokenQty = (document.getElementById('buy-quantity') as HTMLInputElement)?.value;
+    const sellTokenQty = (document.getElementById('sell-limit-quantity') as HTMLInputElement)
+        ?.value;
+    const buyTokenQty = (document.getElementById('buy-limit-quantity') as HTMLInputElement)?.value;
 
     const primarySwapInput = 'sell';
     const sellTokenData = {

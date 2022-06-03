@@ -8,19 +8,22 @@ import Button from '../../../Global/Button/Button';
 import styles from './LimitButton.module.css';
 
 // central react functional component
-export default function LimitButton() {
-    const [allowedButton] = useState<boolean>(false);
 
+interface ILimitButtonProps {
+    onClickFn: () => void;
+    limitAllowed: boolean;
+}
+export default function LimitButton(props: ILimitButtonProps) {
     // TODO:  @Junior do we need the top-level `<div>` here or can it be eliminated
     // TODO:  ... as an unnecessary wrapper?
 
     return (
         <div className={styles.button_container}>
             <Button
-                title={allowedButton ? 'Limit' : 'Enter an amount'}
+                title={props.limitAllowed ? 'Limit' : 'Enter an amount'}
                 // action={() => console.log('clicked')}
-                action={() => console.log('clicked')}
-                disabled={allowedButton}
+                action={props.onClickFn}
+                disabled={!props.limitAllowed}
             />
         </div>
     );
