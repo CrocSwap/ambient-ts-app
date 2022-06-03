@@ -27,6 +27,7 @@ interface CurrencySelectorProps {
     isWithdrawToWalletChecked: boolean;
     setIsWithdrawToWalletChecked: React.Dispatch<SetStateAction<boolean>>;
     updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
+    setIsReversalInProgress: React.Dispatch<SetStateAction<boolean>>;
 }
 
 export default function CurrencySelector(props: CurrencySelectorProps) {
@@ -43,6 +44,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
         setIsWithdrawToWalletChecked,
         tokenABalance,
         tokenBBalance,
+        setIsReversalInProgress,
     } = props;
     const [isChecked, setIsChecked] = useState<boolean>(false);
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -98,6 +100,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                 chainId={chainId}
                 tokenList={tempTokenList}
                 closeModal={closeModal}
+                setIsReversalInProgress={setIsReversalInProgress}
             />
         </Modal>
     ) : null;

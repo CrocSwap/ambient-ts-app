@@ -163,6 +163,10 @@ export default function Swap(props: ISwapProps) {
 
     const [isSellTokenPrimary, setIsSellTokenPrimary] = useState<boolean>(true);
 
+    useEffect(() => {
+        console.log({ isSellTokenPrimary });
+    }, [isSellTokenPrimary]);
+
     const [isWithdrawFromDexChecked, setIsWithdrawFromDexChecked] = useState(false);
     const [isWithdrawToWalletChecked, setIsWithdrawToWalletChecked] = useState(true);
 

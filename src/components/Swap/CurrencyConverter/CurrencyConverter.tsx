@@ -52,15 +52,7 @@ export default function CurrencyConverter(props: CurrencyConverterProps) {
     const [sellTokenQty, setSellTokenQty] = useState<number>(0);
     const [buyTokenQty, setBuyTokenQty] = useState<number>(0);
 
-    // useEffect(() => {
-    //     console.log({ sellTokenQty });
-    // }, [sellTokenQty]);
-    // useEffect(() => {
-    //     console.log({ buyTokenQty });
-    // }, [buyTokenQty]);
-
     const setBuyQtyValue = (value: number) => {
-        console.log({ value });
         if (isReversalInProgress) {
             const buyQtyField = document.getElementById('buy-quantity') as HTMLInputElement;
 
@@ -89,13 +81,11 @@ export default function CurrencyConverter(props: CurrencyConverterProps) {
 
     const [isReversalInProgress, setIsReversalInProgress] = useState<boolean>(false);
 
-    useEffect(() => {
-        console.log({ isReversalInProgress });
-    }, [isReversalInProgress]);
+    // useEffect(() => {
+    //     console.log({ isReversalInProgress });
+    // }, [isReversalInProgress]);
 
     const setSellQtyValue = (value: number) => {
-        console.log({ value });
-
         if (isReversalInProgress) {
             const sellQtyField = document.getElementById('sell-quantity') as HTMLInputElement;
 
@@ -158,7 +148,6 @@ export default function CurrencyConverter(props: CurrencyConverterProps) {
     };
 
     useEffect(() => {
-        console.log('firing');
         updateBuyQty();
         updateSellQty();
         setIsReversalInProgress(false);
@@ -181,6 +170,7 @@ export default function CurrencyConverter(props: CurrencyConverterProps) {
                 setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
                 isWithdrawToWalletChecked={isWithdrawToWalletChecked}
                 setIsWithdrawToWalletChecked={setIsWithdrawToWalletChecked}
+                setIsReversalInProgress={setIsReversalInProgress}
             />
             <div className={styles.arrow_container} onClick={handleArrowClick}>
                 {isLiq ? null : <span className={styles.arrow} />}
@@ -198,6 +188,7 @@ export default function CurrencyConverter(props: CurrencyConverterProps) {
                 isWithdrawFromDexChecked={isWithdrawFromDexChecked}
                 setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
                 isWithdrawToWalletChecked={isWithdrawToWalletChecked}
+                setIsReversalInProgress={setIsReversalInProgress}
                 setIsWithdrawToWalletChecked={setIsWithdrawToWalletChecked}
             />
         </section>
