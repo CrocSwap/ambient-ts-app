@@ -13,13 +13,12 @@ interface ConfirmLimitModalProps {
 export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
     const { onClose } = props;
     const [confirmDetails, setConfirmDetails] = useState<boolean>(true);
-    const [transactionApproved, setTransactionApproved] = useState<boolean>(false);
+    const [transactionApproved] = useState<boolean>(false);
 
     const sellTokenQty = (document.getElementById('sell-limit-quantity') as HTMLInputElement)
         ?.value;
     const buyTokenQty = (document.getElementById('buy-limit-quantity') as HTMLInputElement)?.value;
 
-    const primarySwapInput = 'sell';
     const sellTokenData = {
         symbol: 'ETH',
         logoAltText: 'eth',
@@ -35,7 +34,7 @@ export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
     const moreExpensiveToken = 'ETH';
     const lessExpensiveToken = 'DAI';
     const displayConversionRate = parseFloat(buyTokenQty) / parseFloat(sellTokenQty);
-    const priceLimit = 0.12;
+    // const priceLimit = 0.12;
 
     const explanationText = (
         <div className={styles.confSwap_detail_note}>any other explanation text will go here.</div>
@@ -86,13 +85,37 @@ export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
 
     const confirmationDisplay = transactionApproved ? transactionSubmitted : confirmSendMessage;
 
+    const confirmLimitButton = (
+        <Button
+            title='Send Limit to Metamask'
+            action={() => {
+                console.log(
+                    `Sell Token Full name: ${sellTokenData.symbol} and quantity: ${sellTokenQty}`,
+                );
+                console.log(
+                    `Buy Token Full name: ${buyTokenData.symbol} and quantity: ${buyTokenQty}`,
+                );
+
+                setConfirmDetails(false);
+            }}
+        />
+    );
+
+    function onConfirmLimitClose() {
+        setConfirmDetails(true);
+
+        onClose();
+    }
+
+    const closeButton = <Button title='Close' action={onConfirmLimitClose} />;
+
     const modal = (
         <div className={styles.modal_container}>
             <section className={styles.modal_content}>
                 {confirmDetails ? fullTxDetails : confirmationDisplay}
             </section>
             <footer className={styles.modal_footer}>
-                {/* {confirmDetails ? confirmSwapButton : closeButton} */}
+                {confirmDetails ? confirmLimitButton : closeButton}
             </footer>
         </div>
     );

@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useState, ChangeEvent, SetStateAction } from 'react';
+import { useState, ChangeEvent } from 'react';
 import { RiArrowDownSLine } from 'react-icons/ri';
 
 // START: Import React Functional Components
