@@ -102,8 +102,8 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                 <div className={styles.token_select} onClick={openModal}>
                     <img
                         className={styles.token_list_img}
-                        src='https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png'
-                        alt='ethreum'
+                        src={tokenData.logoURI}
+                        alt={tokenData.name}
                         width='30px'
                     />
                     <span className={styles.token_list_text}>{tokenData.symbol}</span>
