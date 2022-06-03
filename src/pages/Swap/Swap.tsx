@@ -163,10 +163,6 @@ export default function Swap(props: ISwapProps) {
 
     const [isSellTokenPrimary, setIsSellTokenPrimary] = useState<boolean>(true);
 
-    useEffect(() => {
-        console.log({ isSellTokenPrimary });
-    }, [isSellTokenPrimary]);
-
     const [isWithdrawFromDexChecked, setIsWithdrawFromDexChecked] = useState(false);
     const [isWithdrawToWalletChecked, setIsWithdrawToWalletChecked] = useState(true);
 
@@ -319,6 +315,7 @@ export default function Swap(props: ISwapProps) {
                     chainId={chainId as string}
                     isLiq={false}
                     poolPriceDisplay={poolPriceDisplay}
+                    isSellTokenPrimary={isSellTokenPrimary}
                     setIsSellTokenPrimary={setIsSellTokenPrimary}
                     isSellTokenBase={isSellTokenBase}
                     nativeBalance={truncateDecimals(parseFloat(nativeBalance), 4).toString()}

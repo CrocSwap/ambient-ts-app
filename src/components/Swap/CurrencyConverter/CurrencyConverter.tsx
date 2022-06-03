@@ -15,6 +15,7 @@ interface CurrencyConverterProps {
     chainId: string;
     isLiq: boolean;
     poolPriceDisplay: number;
+    isSellTokenPrimary: boolean;
     setIsSellTokenPrimary: React.Dispatch<SetStateAction<boolean>>;
     nativeBalance: string;
     tokenABalance: string;
@@ -33,6 +34,7 @@ export default function CurrencyConverter(props: CurrencyConverterProps) {
         chainId,
         isLiq,
         poolPriceDisplay,
+        isSellTokenPrimary,
         setIsSellTokenPrimary,
         isWithdrawFromDexChecked,
         setIsWithdrawFromDexChecked,
@@ -80,10 +82,6 @@ export default function CurrencyConverter(props: CurrencyConverterProps) {
     };
 
     const [isReversalInProgress, setIsReversalInProgress] = useState<boolean>(false);
-
-    // useEffect(() => {
-    //     console.log({ isReversalInProgress });
-    // }, [isReversalInProgress]);
 
     const setSellQtyValue = (value: number) => {
         if (isReversalInProgress) {
@@ -148,10 +146,14 @@ export default function CurrencyConverter(props: CurrencyConverterProps) {
     };
 
     useEffect(() => {
-        updateBuyQty();
-        updateSellQty();
+        if (isReversalInProgress) {
+            updateBuyQty();
+            updateSellQty();
+        } else {
+            isSellTokenPrimary ? updateBuyQty() : updateSellQty();
+        }
         setIsReversalInProgress(false);
-    }, [JSON.stringify(tokenPair)]);
+    }, [JSON.stringify(tokenPair), poolPriceDisplay]);
 
     return (
         <section className={styles.currency_converter}>
