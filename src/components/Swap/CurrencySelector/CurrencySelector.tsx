@@ -10,6 +10,10 @@ import TokenSelectContainer from '../../Global/TokenSelectContainer/TokenSelectC
 import { getAmbientTokens } from '../../../tempdata';
 
 interface CurrencySelectorProps {
+    tokenPair: {
+        dataTokenA: TokenIF;
+        dataTokenB: TokenIF;
+    };
     tokenData: TokenIF;
     chainId: string;
     fieldId: string;
@@ -26,6 +30,7 @@ interface CurrencySelectorProps {
 export default function CurrencySelector(props: CurrencySelectorProps) {
     const {
         tokenData,
+        tokenPair,
         chainId,
         direction,
         fieldId,
@@ -84,6 +89,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
     const tokenSelectModalOrNull = isModalOpen ? (
         <Modal onClose={closeModal} title='Select Token'>
             <TokenSelectContainer
+                tokenPair={tokenPair}
                 tokenToUpdate={tokenToUpdate}
                 chainId={chainId}
                 tokenList={tempTokenList}
