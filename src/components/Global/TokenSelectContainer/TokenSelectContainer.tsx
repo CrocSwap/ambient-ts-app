@@ -8,14 +8,17 @@ interface TokenSelectContainerPropsIF {
         dataTokenA: TokenIF;
         dataTokenB: TokenIF;
     };
-    tokenList: Array<TokenIF>;
-    chainId: string;
+    tokensBank: Array<TokenIF>;
+    tokenList?: Array<TokenIF>;
+    chainId?: string;
     tokenToUpdate: string;
     closeModal: () => void;
 }
 
 export default function TokenSelectContainer(props: TokenSelectContainerPropsIF) {
-    const { tokenPair, tokenList, chainId, tokenToUpdate, closeModal } = props;
+    const { tokenPair, tokensBank, tokenToUpdate, closeModal } = props;
+
+    console.log(tokenToUpdate);
     const [searchTerm, setSearchTerm] = useState('');
 
     const searchInput = (
@@ -30,7 +33,7 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
 
     const tokenListContent = (
         <>
-            {tokenList
+            {tokensBank
                 .filter((val) => {
                     if (searchTerm === '') {
                         return val;
@@ -41,7 +44,6 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
                         return val;
                     }
                 })
-                .filter((tkn) => tkn.chainId === parseInt(chainId ?? 42))
                 .map((token, idx) => {
                     return (
                         <TokenSelect
@@ -53,7 +55,6 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
                             address={token.address}
                             tokenToUpdate={tokenToUpdate}
                             closeModal={closeModal}
-                            // tokenData={tokenData}
                             tokenPair={tokenPair}
                         />
                     );

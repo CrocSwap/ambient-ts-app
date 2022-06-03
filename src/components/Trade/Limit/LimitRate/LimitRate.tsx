@@ -5,10 +5,20 @@ import {
     useState,
     // ChangeEvent
 } from 'react';
+import { TokenIF } from '../../../../utils/interfaces/TokenIF';
+import Modal from '../../../../components/Global/Modal/Modal';
+import TokenSelectContainer from '../../../Global/TokenSelectContainer/TokenSelectContainer';
+import { useModal } from '../../../../components/Global/Modal/useModal';
+import { getAmbientTokens } from '../../../../tempdata';
 
 interface LimitRateProps {
+    tokenPair: {
+        dataTokenA: TokenIF;
+        dataTokenB: TokenIF;
+    };
+    tokensBank: Array<TokenIF>;
     fieldId: string;
-
+    chainId: string;
     sellToken?: boolean;
     disable?: boolean;
 
@@ -16,8 +26,24 @@ interface LimitRateProps {
 }
 
 export default function LimitRate(props: LimitRateProps) {
-    const { fieldId, disable } = props;
+    const { fieldId, tokenPair, tokensBank, chainId, disable } = props;
     const [isChecked, setIsChecked] = useState<boolean>(false);
+
+    const [isModalOpen, openModal, closeModal] = useModal();
+    const tempTokenList = getAmbientTokens();
+
+    const tokenSelectModalOrNull = isModalOpen ? (
+        <Modal onClose={closeModal} title='Select Token'>
+            <TokenSelectContainer
+                tokenPair={tokenPair}
+                tokensBank={tokensBank}
+                tokenToUpdate={'B'}
+                chainId={chainId}
+                tokenList={tempTokenList}
+                closeModal={closeModal}
+            />
+        </Modal>
+    ) : null;
 
     const rateInput = (
         <div className={styles.token_amount}>
@@ -58,22 +84,21 @@ export default function LimitRate(props: LimitRateProps) {
             <span className={styles.direction}>You Receive</span>
             <div className={styles.swapbox_top}>
                 <div className={styles.swap_input}>{rateInput}</div>
-                <div className={styles.token_select}>
+                <div className={styles.token_select} onClick={openModal}>
                     <img
                         className={styles.token_list_img}
-                        src='https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png'
-                        alt='ethreum'
+                        src={tokenPair.dataTokenB.logoURI}
                         width='30px'
                     />
-                    <span className={styles.token_list_text}>ETH</span>
+                    <span className={styles.token_list_text}>{tokenPair.dataTokenB.symbol}</span>
                     <RiArrowDownSLine size={27} />
                 </div>
             </div>
             <div className={styles.swapbox_bottom}>
                 <span>Wallet: 69.420 | DEX: 0.00</span>
-
                 {withdrawTokensContent}
             </div>
+            {tokenSelectModalOrNull}
         </div>
     );
 }

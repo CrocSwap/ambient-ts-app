@@ -56,7 +56,12 @@ export default function Limit() {
                 <LimitHeader tokenPair={tokenPair} />
                 <DenominationSwitch tokenPair={tokenPair} />
                 <DividerDark />
-                <LimitCurrencyConverter tokenPair={tokenPair} setLimitAllowed={setLimitAllowed} />
+                <LimitCurrencyConverter
+                    tokenPair={tokenPair}
+                    tokensBank={tokensBank}
+                    chainId={chainId ?? '0x2a'}
+                    setLimitAllowed={setLimitAllowed}
+                />
                 <LimitExtraInfo tokenPair={tokenPair} />
                 <LimitButton onClickFn={openModal} limitAllowed={limitAllowed} />
             </ContentContainer>

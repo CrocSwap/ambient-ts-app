@@ -332,6 +332,8 @@ export default function Range(props: IRangeProps) {
     // props for <RangeCurrencyConverter/> React element
     const rangeCurrencyConverterProps = {
         poolPriceNonDisplay: poolPriceNonDisplay,
+        chainId: chainId ?? '0x2a',
+        tokensBank: tokensBank,
         tokenPair: tokenPair,
         isTokenABase: isTokenABase,
         depositSkew: depositSkew,
