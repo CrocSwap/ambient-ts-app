@@ -1,0 +1,124 @@
+.confirm_range_modal_container{
+    max-width: 400px;
+}
+
+/* range header */
+.position_display {
+    display: flex;
+    padding: 0.5rem 0;
+  
+    justify-content: space-between;
+    align-items: center;
+  }
+  .token_display {
+    display: flex;
+  
+    align-items: center;
+    gap: 10px;
+  }
+ 
+  .token_symbol {
+    font-size: var(--header2-size);
+    line-height: var(--header2-lh);
+    font-weight: 300;
+  }
+  .fee_tier {
+    font-size: 14px;
+    font-weight: 500;
+  
+    padding: 5px;
+  
+    background-color: var(--header-color);
+  }
+  
+  .tokens {
+    position: relative;
+  
+    display: flex;
+  
+    margin-left: 1rem;
+  
+    align-items: center;
+  }
+  
+  .tokens img {
+    width: 20px;
+    height: 20px;
+  
+    border-radius: 50%;
+    background: white;
+  }
+  
+  .tokens img:nth-child(1) {
+    z-index: 2;
+  }
+  .tokens img:nth-child(2) {
+    position: absolute;
+    left: -9px !important;
+  }
+  
+  .range_display {
+    font-size: 14px;
+    font-weight: 500;
+  
+    display: inline-flex;
+  
+    padding: 4px 6px;
+  
+    color: rgb(255, 255, 255);
+    border: unset;
+    border-radius: 0.5rem;
+    background-color: var(--content-bg);
+  
+    -webkit-box-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    justify-content: center;
+  }
+  
+/* fee tier display */
+.fee_tier_display {
+    padding: 1rem;
+  
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    background-color: var(--dark3);
+  }
+  .fee_tier_container {
+    display: grid;
+  
+    grid-auto-rows: auto;
+    row-gap: 12px;
+  }
+  
+  .detail_line img {
+    width: 20px;
+    height: 20px;
+  
+    border-radius: 50%;
+    background: white;
+  }
+  .detail_line div {
+    display: flex;
+  
+    align-items: center;
+  }
+  
+  .detail_line {
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+  
+    display: flex;
+  
+    align-items: center;
+    justify-content: space-between;
+  }
+  .detail_line img{
+      margin: 0 10px;
+  }
+  
+
+  /* modal */
+  .modal_footer{
+     padding: 1rem;
+  }

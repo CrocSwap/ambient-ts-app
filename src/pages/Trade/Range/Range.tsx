@@ -38,6 +38,8 @@ import AdvancedModeToggle from '../../../components/Trade/Range/AdvancedModeTogg
 import MinMaxPrice from '../../../components/Trade/Range/AdvancedModeComponents/MinMaxPrice/MinMaxPrice';
 import AdvancedPriceInfo from '../../../components/Trade/Range/AdvancedModeComponents/AdvancedPriceInfo/AdvancedPriceInfo';
 import DividerDark from '../../../components/Global/DividerDark/DividerDark';
+import Modal from '../../../components/Global/Modal/Modal';
+import { useModal } from '../../../components/Global/Modal/useModal';
 
 // START: Import Local Files
 import styles from './Range.module.css';
@@ -47,6 +49,7 @@ import truncateDecimals from '../../../utils/data/truncateDecimals';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { getCurrentTokens, findTokenByAddress } from '../../../utils/functions/processTokens';
 import { kovanETH, kovanUSDC } from '../../../utils/data/defaultTokens';
+import ConfirmRangeModal from '../../../components/Trade/Range/ConfirmRangeModal/ConfirmRangeModal';
 
 interface IRangeProps {
     provider: JsonRpcProvider;
@@ -54,6 +57,8 @@ interface IRangeProps {
 }
 
 export default function Range(props: IRangeProps) {
+    const [isModalOpen, openModal, closeModal] = useModal();
+
     const { provider, lastBlockNumber } = props;
     const { save } = useNewMoralisObject('UserPosition');
 
@@ -66,7 +71,7 @@ export default function Range(props: IRangeProps) {
 
     const [isWithdrawTokenAFromDexChecked, setIsWithdrawTokenAFromDexChecked] = useState(false);
     const [isWithdrawTokenBFromDexChecked, setIsWithdrawTokenBFromDexChecked] = useState(false);
-
+    const [newRangeTransactionHash, setNewRangeTransactionHash] = useState('');
     const { Moralis, user, account, chainId } = useMoralis();
 
     const tradeData = useAppSelector((state) => state.tradeData);
@@ -173,6 +178,7 @@ export default function Range(props: IRangeProps) {
                 }
                 if (tx) {
                     let newTransactionHash = tx.hash;
+                    setNewRangeTransactionHash(newRangeTransactionHash);
                     console.log({ newTransactionHash });
                     let parsedReceipt;
 
@@ -311,6 +317,17 @@ export default function Range(props: IRangeProps) {
         maxPriceDisplay: maxPriceDisplay,
         minPriceDisplay: minPriceDisplay,
     };
+    // props for <ConfirmRangeModal/> React element
+    const rangeModalProps = {
+        tokenPair: tokenPair,
+        spotPriceDisplay: poolPriceDisplay,
+        maxPriceDisplay: maxPriceDisplay,
+        minPriceDisplay: minPriceDisplay,
+        sendTransaction: sendTransaction,
+        closeModal: closeModal,
+        newRangeTransactionHash: newRangeTransactionHash,
+        setNewRangeTransactionHash: setNewRangeTransactionHash,
+    };
 
     // props for <RangeCurrencyConverter/> React element
     const rangeCurrencyConverterProps = {
@@ -336,6 +353,11 @@ export default function Range(props: IRangeProps) {
             <RangePriceInfo {...rangePriceInfoProps} />
         </>
     );
+    const confirmSwapModalOrNull = isModalOpen ? (
+        <Modal onClose={closeModal} title='Swap Confirmation'>
+            <ConfirmRangeModal {...rangeModalProps} />
+        </Modal>
+    ) : null;
 
     return (
         <motion.section
@@ -350,8 +372,10 @@ export default function Range(props: IRangeProps) {
                 <DividerDark />
                 <RangeCurrencyConverter {...rangeCurrencyConverterProps} />
                 {advancedMode ? advancedModeContent : baseModeContent}
-                <RangeButton onClickFn={sendTransaction} isAmountEntered={true} />
+                <RangeButton onClickFn={openModal} isAmountEntered={true} />
             </ContentContainer>
+
+            {confirmSwapModalOrNull}
         </motion.section>
     );
 }
