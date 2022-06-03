@@ -4,14 +4,19 @@ import CurrencyDisplay from '../../../Global/CurrencyDisplay/CurrencyDisplay';
 import WaitingConfirmation from '../../../Global/WaitingConfirmation/WaitingConfirmation';
 import TransactionSubmitted from '../../../Global/TransactionSubmitted/TransactionSubmitted';
 import Button from '../../../Global/Button/Button';
+import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import Divider from '../../../Global/Divider/Divider';
 
 interface ConfirmLimitModalProps {
     onClose: () => void;
+    tokenPair: {
+        dataTokenA: TokenIF;
+        dataTokenB: TokenIF;
+    };
 }
 
 export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
-    const { onClose } = props;
+    const { onClose, tokenPair } = props;
     const [confirmDetails, setConfirmDetails] = useState<boolean>(true);
     const [transactionApproved] = useState<boolean>(false);
 
@@ -19,17 +24,9 @@ export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
         ?.value;
     const buyTokenQty = (document.getElementById('buy-limit-quantity') as HTMLInputElement)?.value;
 
-    const sellTokenData = {
-        symbol: 'ETH',
-        logoAltText: 'eth',
-        logoLocal:
-            'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png',
-    };
-    const buyTokenData = {
-        symbol: 'DAI',
-        logoAltText: 'dai',
-        logoLocal: 'https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.png',
-    };
+    const sellTokenData = tokenPair.dataTokenA;
+
+    const buyTokenData = tokenPair.dataTokenB;
 
     const moreExpensiveToken = 'ETH';
     const lessExpensiveToken = 'DAI';

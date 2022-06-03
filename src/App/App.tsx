@@ -226,7 +226,11 @@ export default function App() {
     // this is how we run the function to pull back balances asynchronously
     useEffect(() => {
         (async () => {
-            if (provider && account && isAuthenticated && provider.connection?.url === 'metamask') {
+            if (
+                provider &&
+                account
+                // && isAuthenticated && provider.connection?.url === 'metamask'
+            ) {
                 const signer = provider.getSigner();
                 const nativeEthBalance = await getTokenBalanceDisplay(
                     contractAddresses.ZERO_ADDR,

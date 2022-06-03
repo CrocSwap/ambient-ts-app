@@ -12,6 +12,8 @@ import {
     sendSwap,
     parseSwapEthersReceipt,
     EthersNativeReceipt,
+    getTokenBalanceDisplay,
+    sortBaseQuoteTokens,
 } from '@crocswap-libs/sdk';
 
 // START: Import React Components
@@ -50,8 +52,10 @@ interface ISwapProps {
 export default function Swap(props: ISwapProps) {
     const { provider, isOnTradeRoute, lastBlockNumber, nativeBalance, gasPriceinGwei } = props;
     const [isModalOpen, openModal, closeModal] = useModal();
+
     const [isRelativeModalOpen, closeRelativeModal] = useRelativeModal();
-    const { Moralis, chainId, enableWeb3, isWeb3Enabled, authenticate, isAuthenticated } =
+
+    const { Moralis, chainId, enableWeb3, isWeb3Enabled, authenticate, isAuthenticated, account } =
         useMoralis();
     // get URL pathway for user relative to index
     const { pathname } = useLocation();
@@ -97,6 +101,57 @@ export default function Swap(props: ISwapProps) {
         dataTokenB: findTokenByAddress(tradeData.addressTokenB, tokensBank) ?? kovanUSDC,
     };
 
+    const [tokenABalance, setTokenABalance] = useState<string>('');
+    const [tokenBBalance, setTokenBBalance] = useState<string>('');
+
+    const [baseTokenAddress, setBaseTokenAddress] = useState<string>('');
+    const [quoteTokenAddress, setQuoteTokenAddress] = useState<string>('');
+
+    // useEffect to set baseTokenAddress and quoteTokenAddress when pair changes
+    useEffect(() => {
+        if (tokenPair.dataTokenA.address && tokenPair.dataTokenB.address) {
+            const sortedTokens = sortBaseQuoteTokens(
+                tokenPair.dataTokenA.address,
+                tokenPair.dataTokenB.address,
+            );
+            setBaseTokenAddress(sortedTokens[0]);
+            setQuoteTokenAddress(sortedTokens[1]);
+        }
+    }, [tokenPair]);
+
+    // useEffect to update selected token balances
+    useEffect(() => {
+        (async () => {
+            if (
+                provider &&
+                account
+                // && isAuthenticated && provider.connection?.url === 'metamask'
+            ) {
+                const signer = provider.getSigner();
+                const tokenABal = await getTokenBalanceDisplay(
+                    tokenPair.dataTokenA.address,
+                    account,
+                    signer,
+                );
+                // make sure a balance was returned, initialized as null
+                if (tokenABal) {
+                    // send value to local state
+                    setTokenABalance(tokenABal);
+                }
+                const tokenBBal = await getTokenBalanceDisplay(
+                    tokenPair.dataTokenB.address,
+                    account,
+                    signer,
+                );
+                // make sure a balance was returned, initialized as null
+                if (tokenBBal) {
+                    // send value to local state
+                    setTokenBBalance(tokenBBal);
+                }
+            }
+        })();
+    }, [chainId, account, isWeb3Enabled, isAuthenticated, tokenPair, lastBlockNumber]);
+
     const [swapAllowed, setSwapAllowed] = useState<boolean>(false);
 
     const [isSellTokenPrimary, setIsSellTokenPrimary] = useState<boolean>(true);
@@ -104,46 +159,52 @@ export default function Swap(props: ISwapProps) {
     const [isWithdrawFromDexChecked, setIsWithdrawFromDexChecked] = useState(false);
     const [isWithdrawToWalletChecked, setIsWithdrawToWalletChecked] = useState(true);
 
-    const daiKovanAddress = '0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa';
+    // const daiKovanAddress = '0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa';
 
     const [poolPriceNonDisplay, setPoolPriceNonDisplay] = useState(0);
     const [newSwapTransactionHash, setNewSwapTransactionHash] = useState('');
 
     useEffect(() => {
-        (async () => {
-            const spotPrice = await getSpotPrice(
-                contractAddresses.ZERO_ADDR,
-                daiKovanAddress,
-                POOL_PRIMARY,
-                provider,
-            );
-            if (poolPriceNonDisplay !== spotPrice) {
-                setPoolPriceNonDisplay(spotPrice);
-            }
-        })();
-    }, [lastBlockNumber]);
+        if (baseTokenAddress && quoteTokenAddress) {
+            (async () => {
+                const spotPrice = await getSpotPrice(
+                    baseTokenAddress,
+                    quoteTokenAddress,
+                    POOL_PRIMARY,
+                    provider,
+                );
+                if (poolPriceNonDisplay !== spotPrice) {
+                    setPoolPriceNonDisplay(spotPrice);
+                }
+            })();
+        }
+    }, [lastBlockNumber, baseTokenAddress, quoteTokenAddress]);
 
     const [poolPriceDisplay, setPoolPriceDisplay] = useState(0);
 
     useEffect(() => {
-        (async () => {
-            const spotPriceDisplay = await getSpotPriceDisplay(
-                contractAddresses.ZERO_ADDR,
-                daiKovanAddress,
-                POOL_PRIMARY,
-                provider,
-            );
-            if (poolPriceDisplay !== spotPriceDisplay) {
-                setPoolPriceDisplay(spotPriceDisplay);
-            }
-        })();
-    }, [lastBlockNumber]);
+        if (baseTokenAddress && quoteTokenAddress) {
+            (async () => {
+                const spotPriceDisplay = await getSpotPriceDisplay(
+                    baseTokenAddress,
+                    quoteTokenAddress,
+                    POOL_PRIMARY,
+                    provider,
+                );
+                if (poolPriceDisplay !== spotPriceDisplay) {
+                    setPoolPriceDisplay(spotPriceDisplay);
+                }
+            })();
+        }
+    }, [lastBlockNumber, baseTokenAddress, quoteTokenAddress]);
 
     const signer = provider?.getSigner();
 
     async function initiateSwap() {
-        const sellTokenAddress = contractAddresses.ZERO_ADDR;
-        const buyTokenAddress = daiKovanAddress;
+        // const sellTokenAddress = contractAddresses.ZERO_ADDR;
+        const sellTokenAddress = tokenPair.dataTokenA.address;
+        const buyTokenAddress = tokenPair.dataTokenB.address;
+        // const buyTokenAddress = daiKovanAddress;
         const poolId = POOL_PRIMARY;
         const slippageTolerancePercentage = 5;
         const sellTokenQty = (document.getElementById('sell-quantity') as HTMLInputElement)?.value;
@@ -210,6 +271,7 @@ export default function Swap(props: ISwapProps) {
     const confirmSwapModalOrNull = isModalOpen ? (
         <Modal onClose={closeModal} title='Swap Confirmation'>
             <ConfirmSwapModal
+                tokenPair={tokenPair}
                 initiateSwapMethod={initiateSwap}
                 onClose={closeModal}
                 newSwapTransactionHash={newSwapTransactionHash}
@@ -244,6 +306,8 @@ export default function Swap(props: ISwapProps) {
                     poolPrice={poolPriceNonDisplay}
                     setIsSellTokenPrimary={setIsSellTokenPrimary}
                     nativeBalance={truncateDecimals(parseFloat(nativeBalance), 4).toString()}
+                    tokenABalance={truncateDecimals(parseFloat(tokenABalance), 4).toString()}
+                    tokenBBalance={truncateDecimals(parseFloat(tokenBBalance), 4).toString()}
                     isWithdrawFromDexChecked={isWithdrawFromDexChecked}
                     setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
                     isWithdrawToWalletChecked={isWithdrawToWalletChecked}
@@ -258,7 +322,7 @@ export default function Swap(props: ISwapProps) {
                     quoteTokenIsBuy={true}
                     gasPriceinGwei={gasPriceinGwei}
                 />
-                {isAuthenticated ? (
+                {isAuthenticated && isWeb3Enabled ? (
                     <SwapButton onClickFn={openModal} swapAllowed={swapAllowed} />
                 ) : (
                     loginButton
