@@ -41,7 +41,7 @@ export default function Limit() {
 
     const confirmLimitModalOrNull = isModalOpen ? (
         <Modal onClose={closeModal} title='Limit Confirmation'>
-            <ConfirmLimitModal onClose={closeModal} />
+            <ConfirmLimitModal onClose={closeModal} tokenPair={tokenPair} />
         </Modal>
     ) : null;
 

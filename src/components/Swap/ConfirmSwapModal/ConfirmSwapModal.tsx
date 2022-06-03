@@ -4,6 +4,7 @@ import CurrencyDisplay from '../../Global/CurrencyDisplay/CurrencyDisplay';
 import WaitingConfirmation from '../../Global/WaitingConfirmation/WaitingConfirmation';
 import TransactionSubmitted from '../../Global/TransactionSubmitted/TransactionSubmitted';
 import Button from '../../Global/Button/Button';
+import { TokenIF } from '../../../utils/interfaces/TokenIF';
 import Divider from '../../Global/Divider/Divider';
 
 interface ConfirmSwapModalProps {
@@ -11,28 +12,39 @@ interface ConfirmSwapModalProps {
     onClose: () => void;
     newSwapTransactionHash: string;
     setNewSwapTransactionHash: React.Dispatch<React.SetStateAction<string>>;
+    tokenPair: {
+        dataTokenA: TokenIF;
+        dataTokenB: TokenIF;
+    };
 }
 
 export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
-    const { initiateSwapMethod, onClose, newSwapTransactionHash, setNewSwapTransactionHash } =
-        props;
+    const {
+        initiateSwapMethod,
+        onClose,
+        newSwapTransactionHash,
+        setNewSwapTransactionHash,
+        tokenPair,
+    } = props;
     const [confirmDetails, setConfirmDetails] = useState<boolean>(true);
     const transactionApproved = newSwapTransactionHash !== '';
     const sellTokenQty = (document.getElementById('sell-quantity') as HTMLInputElement)?.value;
     const buyTokenQty = (document.getElementById('buy-quantity') as HTMLInputElement)?.value;
 
     const primarySwapInput = 'sell';
-    const sellTokenData = {
-        symbol: 'ETH',
-        logoAltText: 'eth',
-        logoLocal:
-            'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png',
-    };
-    const buyTokenData = {
-        symbol: 'DAI',
-        logoAltText: 'dai',
-        logoLocal: 'https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.png',
-    };
+    const sellTokenData = tokenPair.dataTokenA;
+    // const sellTokenData = {
+    //     symbol: 'ETH',
+    //     logoAltText: 'eth',
+    //     logoLocal:
+    //         'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png',
+    // };
+    const buyTokenData = tokenPair.dataTokenB;
+    // const buyTokenData = {
+    //     symbol: 'DAI',
+    //     logoAltText: 'dai',
+    //     logoLocal: 'https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.png',
+    // };
 
     const explanationText =
         primarySwapInput === 'sell' ? (
