@@ -14,6 +14,7 @@ interface CurrencySelectorProps {
         dataTokenA: TokenIF;
         dataTokenB: TokenIF;
     };
+    tokensBank: Array<TokenIF>;
     tokenData: TokenIF;
     chainId: string;
     fieldId: string;
@@ -33,6 +34,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
     const {
         tokenData,
         tokenPair,
+        tokensBank,
         chainId,
         direction,
         fieldId,
@@ -94,6 +96,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
         <Modal onClose={closeModal} title='Select Token'>
             <TokenSelectContainer
                 tokenPair={tokenPair}
+                tokensBank={tokensBank}
                 tokenToUpdate={tokenToUpdate}
                 chainId={chainId}
                 tokenList={tempTokenList}

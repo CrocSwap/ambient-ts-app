@@ -16,6 +16,7 @@ interface LimitRateProps {
         dataTokenA: TokenIF;
         dataTokenB: TokenIF;
     };
+    tokensBank: Array<TokenIF>;
     fieldId: string;
     chainId: string;
     sellToken?: boolean;
@@ -25,7 +26,7 @@ interface LimitRateProps {
 }
 
 export default function LimitRate(props: LimitRateProps) {
-    const { fieldId, tokenPair, chainId, disable } = props;
+    const { fieldId, tokenPair, tokensBank, chainId, disable } = props;
     const [isChecked, setIsChecked] = useState<boolean>(false);
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -35,6 +36,7 @@ export default function LimitRate(props: LimitRateProps) {
         <Modal onClose={closeModal} title='Select Token'>
             <TokenSelectContainer
                 tokenPair={tokenPair}
+                tokensBank={tokensBank}
                 tokenToUpdate={'B'}
                 chainId={chainId}
                 tokenList={tempTokenList}

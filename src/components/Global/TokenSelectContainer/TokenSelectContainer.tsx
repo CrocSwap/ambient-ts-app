@@ -8,6 +8,7 @@ interface TokenSelectContainerPropsIF {
         dataTokenA: TokenIF;
         dataTokenB: TokenIF;
     };
+    tokensBank: Array<TokenIF>;
     tokenList: Array<TokenIF>;
     chainId: string;
     tokenToUpdate: string;

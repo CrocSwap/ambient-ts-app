@@ -27,6 +27,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
     const {
         chainId,
         isLiq,
+        tokensBank,
         // poolPriceNonDisplay,
         tokenPair,
         // isTokenABase,
@@ -88,6 +89,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
                 fieldId='A'
                 chainId={chainId}
                 tokenPair={tokenPair}
+                tokensBank={tokensBank}
                 updateOtherQuantity={handleChangeQtyTokenA}
                 {...rangeCurrencySelectorProps}
             />
@@ -98,6 +100,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
                 fieldId='B'
                 chainId={chainId}
                 tokenPair={tokenPair}
+                tokensBank={tokensBank}
                 updateOtherQuantity={handleChangeQtyTokenB}
                 {...rangeCurrencySelectorProps}
             />

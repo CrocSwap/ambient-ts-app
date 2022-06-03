@@ -20,6 +20,7 @@ interface LimitCurrencySelectorProps {
         dataTokenA: TokenIF;
         dataTokenB: TokenIF;
     };
+    tokensBank: Array<TokenIF>;
     chainId: string;
     fieldId: string;
     direction: string;
@@ -30,7 +31,7 @@ interface LimitCurrencySelectorProps {
 
 // central react functional component
 export default function LimitCurrencySelector(props: LimitCurrencySelectorProps) {
-    const { tokenPair, chainId, fieldId, direction, updateOtherQuantity } = props;
+    const { tokenPair, tokensBank, chainId, fieldId, direction, updateOtherQuantity } = props;
 
     const thisToken = fieldId === 'sell' ? tokenPair.dataTokenA : tokenPair.dataTokenB;
 
@@ -41,6 +42,7 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
         <Modal onClose={closeModal} title='Select Token'>
             <TokenSelectContainer
                 tokenPair={tokenPair}
+                tokensBank={tokensBank}
                 tokenToUpdate={'B'}
                 chainId={chainId}
                 tokenList={tempTokenList}

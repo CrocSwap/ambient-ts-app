@@ -16,6 +16,7 @@ interface RangeCurrencySelectorProps {
         dataTokenA: TokenIF;
         dataTokenB: TokenIF;
     };
+    tokensBank: Array<TokenIF>;
     updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
     isWithdrawTokenAFromDexChecked: boolean;
     setIsWithdrawTokenAFromDexChecked: React.Dispatch<SetStateAction<boolean>>;
@@ -27,6 +28,7 @@ interface RangeCurrencySelectorProps {
 export default function RangeCurrencySelector(props: RangeCurrencySelectorProps) {
     const {
         tokenPair,
+        tokensBank,
         chainId,
         isWithdrawTokenAFromDexChecked,
         setIsWithdrawTokenAFromDexChecked,
@@ -46,6 +48,7 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
         <Modal onClose={closeModal} title='Select Token'>
             <TokenSelectContainer
                 tokenPair={tokenPair}
+                tokensBank={tokensBank}
                 tokenToUpdate={fieldId}
                 chainId={chainId}
                 tokenList={tempTokenList}

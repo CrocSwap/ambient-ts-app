@@ -58,6 +58,7 @@ export default function Limit() {
                 <DividerDark />
                 <LimitCurrencyConverter
                     tokenPair={tokenPair}
+                    tokensBank={tokensBank}
                     chainId={chainId ?? '0x2a'}
                     setLimitAllowed={setLimitAllowed}
                 />
