@@ -37,7 +37,7 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
                         return val;
                     }
                 })
-                .filter((tkn) => tkn.chainId === parseInt(chainId))
+                .filter((tkn) => tkn.chainId === parseInt(chainId ?? 42))
                 .map((token, idx) => {
                     return (
                         <TokenSelect
