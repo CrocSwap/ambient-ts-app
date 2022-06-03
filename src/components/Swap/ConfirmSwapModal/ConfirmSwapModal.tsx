@@ -16,7 +16,7 @@ interface ConfirmSwapModalProps {
 export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
     const { initiateSwapMethod, onClose, newSwapTransactionHash, setNewSwapTransactionHash } =
         props;
-    const [confirmDetails, setConfirmDetails] = useState(true);
+    const [confirmDetails, setConfirmDetails] = useState<boolean>(true);
     const transactionApproved = newSwapTransactionHash !== '';
     const sellTokenQty = (document.getElementById('sell-quantity') as HTMLInputElement)?.value;
     const buyTokenQty = (document.getElementById('buy-quantity') as HTMLInputElement)?.value;
@@ -131,10 +131,8 @@ export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
         <div className={styles.modal_container}>
             <section className={styles.modal_content}>
                 {confirmDetails ? fullTxDetails : confirmationDisplay}
-                {/* add modal content here */}
             </section>
             <footer className={styles.modal_footer}>
-                {/* add modal CTA button here */}
                 {confirmDetails ? confirmSwapButton : closeButton}
             </footer>
         </div>

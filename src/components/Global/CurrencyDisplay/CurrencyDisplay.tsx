@@ -6,10 +6,25 @@ interface CurrencyDisplayProps {
     // eslint-disable-next-line
     tokenData: any;
     amount: string;
+    isLimitBox?: boolean;
 }
 
 export default function CurrencyDisplay(props: CurrencyDisplayProps) {
-    const { amount, tokenData } = props;
+    const { amount, tokenData, isLimitBox } = props;
+
+    const limitBox = (
+        <div className={styles.limit_modalSwapbox}>
+            <div className={styles.swapbox_top}>
+                <div className={styles.limit_token_select}>1 ETH =</div>
+                <div className={styles.token_amount}>
+                    <div className={styles.currency_quantity}>
+                        {amount}
+                        <span className={styles.text_grey}> DAI</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
 
     const currencyBox = (
         <div className={styles.modalSwapbox}>
@@ -29,5 +44,5 @@ export default function CurrencyDisplay(props: CurrencyDisplayProps) {
             </div>
         </div>
     );
-    return <div>{currencyBox}</div>;
+    return <div>{isLimitBox ? limitBox : currencyBox}</div>;
 }
