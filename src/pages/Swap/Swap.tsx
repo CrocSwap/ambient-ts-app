@@ -23,6 +23,7 @@ import SwapButton from '../../components/Swap/SwapButton/SwapButton';
 import DenominationSwitch from '../../components/Swap/DenominationSwitch/DenominationSwitch';
 import DividerDark from '../../components/Global/DividerDark/DividerDark';
 import Modal from '../../components/Global/Modal/Modal';
+import RelativeModal from '../../components/Global/RelativeModal/RelativeModal';
 import ConfirmSwapModal from '../../components/Swap/ConfirmSwapModal/ConfirmSwapModal';
 import Button from '../../components/Global/Button/Button';
 
@@ -34,6 +35,7 @@ import { isTransactionReplacedError, TransactionError } from '../../utils/Transa
 import { getCurrentTokens, findTokenByAddress } from '../../utils/functions/processTokens';
 import { kovanETH, kovanUSDC } from '../../utils/data/defaultTokens';
 import { useModal } from '../../components/Global/Modal/useModal';
+import { useRelativeModal } from '../../components/Global/RelativeModal/useRelativeModal';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { useTradeData } from '../Trade/Trade';
 
@@ -48,6 +50,7 @@ interface ISwapProps {
 export default function Swap(props: ISwapProps) {
     const { provider, isOnTradeRoute, lastBlockNumber, nativeBalance, gasPriceinGwei } = props;
     const [isModalOpen, openModal, closeModal] = useModal();
+    const [isRelativeModalOpen, openRelativeModal, closeRelativeModal] = useModal();
     const { Moralis, chainId, enableWeb3, isWeb3Enabled, authenticate, isAuthenticated } =
         useMoralis();
     // get URL pathway for user relative to index
@@ -215,6 +218,13 @@ export default function Swap(props: ISwapProps) {
         </Modal>
     ) : null;
 
+    const relativeModalOrNull = isRelativeModalOpen ? (
+        <RelativeModal onClose={closeRelativeModal} title='Relative Modal'>
+            You are about to do something that will lose you a lot of money. If you think you are
+            smarter than the awesome team that programmed this, press dismiss.
+        </RelativeModal>
+    ) : null;
+
     return (
         <motion.main
             initial={{ width: 0 }}
@@ -256,6 +266,8 @@ export default function Swap(props: ISwapProps) {
             </ContentContainer>
 
             {confirmSwapModalOrNull}
+            {relativeModalOrNull}
+            {/* <button onClick={openRelativeModal}>open relative modal</button> */}
         </motion.main>
     );
 }

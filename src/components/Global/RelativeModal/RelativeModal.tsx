@@ -1,5 +1,5 @@
 import styles from './RelativeModal.module.css';
-import { RiCloseFill } from 'react-icons/ri';
+// import { RiCloseFill } from 'react-icons/ri';
 
 import { useCallback, useEffect } from 'react';
 
@@ -14,7 +14,7 @@ interface RelativeModalProps {
 }
 
 export default function RelativeModal(props: RelativeModalProps) {
-    const { onClose, title, footer, noHeader, noBackground, children } = props;
+    const { onClose, noHeader, noBackground, children } = props;
 
     const escFunction = useCallback((event: KeyboardEvent) => {
         if (event.key === 'Escape') {
@@ -31,23 +31,24 @@ export default function RelativeModal(props: RelativeModalProps) {
     }, []);
 
     // JSX for the header element
-    const headerJSX = (
-        <header className={styles.modal_header}>
-            <div />
-            <h2 className={styles.modal_title}>{title}</h2>
-            <RiCloseFill size={27} className={styles.close_button} onClick={onClose} />
-        </header>
-    );
+    // const headerJSX = (
+    //     <header className={styles.modal_header}>
+    //         <div />
+    //         <h2 className={styles.modal_title}>{title}</h2>
+    //         <RiCloseFill size={27} className={styles.close_button} onClick={onClose} />
+    //     </header>
+    // );
 
     // JSX for the footer element
-    const footerJSX = <footer className={styles.modal_footer}>{footer}</footer>;
+    // const footerJSX = <footer className={styles.modal_footer}>{footer}</footer>;
 
     // variables to hold both the header or footer JSX elements vs `null`
     // ... both elements are optional and either or both may be absent
     // ... from any given modal, this allows the element to render `null`
     // ... if the element is not being used in a particular instance
-    const headerOrNull = noHeader ? null : headerJSX;
-    const footerOrNull = !footer ? null : footerJSX;
+    // const headerOrNull = noHeader ? null : headerJSX;
+    const headerOrNull = noHeader ? null : null;
+    // const footerOrNull = !footer ? null : footerJSX;
 
     return (
         <div className={styles.outside_modal} onClick={onClose}>
@@ -59,8 +60,14 @@ export default function RelativeModal(props: RelativeModalProps) {
                 onClick={(e) => e.stopPropagation()}
             >
                 {headerOrNull}
-                <section className={styles.modal_content}>{children}</section>
-                {footerOrNull}
+                <section className={styles.modal_content}>
+                    <img src='https://100dayscss.com/codepen/alert.png' width='44' height='38' />
+                    {children}
+                </section>
+                {/* {footerOrNull} */}
+                <button className={styles.footer_button} onClick={onClose}>
+                    Dismiss
+                </button>
             </div>
         </div>
     );

@@ -1,5 +1,5 @@
 .outside_modal {
-    position: fixed;
+    position: absolute;
     left: 0;
     top: 0;
     right: 0;
@@ -10,29 +10,36 @@
     background-color: rgba(0, 0, 0, 0.7);
     z-index: 2;
 
-    background: rgba(1, 0, 16, 0.25);
+
+
+background: rgba(6, 30, 118, 0.35);
 box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 );
-backdrop-filter: blur( 15px );
--webkit-backdrop-filter: blur( 15px );
+backdrop-filter: blur( 9.5px );
+-webkit-backdrop-filter: blur( 9.5px );
 border-radius: 10px;
+border: 1px solid rgba( 255, 255, 255, 0.18 );
+
 transition: all 350ms ease-in-out;
+
    
   }
   
 .modal_body {
+  
 
   border: solid 1px transparent;
-    background-image: linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, 0)), linear-gradient(101deg, #7371FC, #CDC1FF, #7371FC
+    /* background-image: linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, 0)), linear-gradient(101deg, #7371FC, #CDC1FF, #7371FC
     );
     background-origin: border-box;
     background-clip: content-box, border-box;
     box-shadow: 2px 1000px 1px var(--dark1) inset;
-    transition: box-shadow 250ms ease-in-out;
+    transition: box-shadow 250ms ease-in-out; */
+    background: var(--dark3);
     cursor: pointer;
 
 
-  min-width: 400px;
-  min-height: 350px;
+  width: 300px;
+  height: 300px;
   border-radius: 4px;
   position: relative;
   color: white;
@@ -82,4 +89,35 @@ transition: all 350ms ease-in-out;
 
 .modal_content {
   padding: 20px;
+  display: flex;
+  height: 100%;
+
+  flex-direction: column;
+  
+  align-items: center;
+  text-align: center;
+}
+
+.modal_content img{
+  margin: 2rem 0;
+}
+
+.footer_button{
+  position: absolute;
+  outline: none;
+  border: none;
+  height: 40px;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #F65656;
+  color: #fff;
+  line-height: 40px;
+  font-size: 14px;
+  font-weight: 400;
+  cursor: pointer;
+  transition: background .3s ease-in-out;
+}
+.footer_button:hover{
+  background: #EC3434;
 }
