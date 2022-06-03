@@ -13,6 +13,7 @@ import {
     parseSwapEthersReceipt,
     EthersNativeReceipt,
     getTokenBalanceDisplay,
+    sortBaseQuoteTokens,
 } from '@crocswap-libs/sdk';
 
 // START: Import React Components
@@ -98,6 +99,21 @@ export default function Swap(props: ISwapProps) {
     const [tokenABalance, setTokenABalance] = useState<string>('');
     const [tokenBBalance, setTokenBBalance] = useState<string>('');
 
+    const [baseTokenAddress, setBaseTokenAddress] = useState<string>('');
+    const [quoteTokenAddress, setQuoteTokenAddress] = useState<string>('');
+
+    // useEffect to set baseTokenAddress and quoteTokenAddress when pair changes
+    useEffect(() => {
+        if (tokenPair.dataTokenA.address && tokenPair.dataTokenB.address) {
+            const sortedTokens = sortBaseQuoteTokens(
+                tokenPair.dataTokenA.address,
+                tokenPair.dataTokenB.address,
+            );
+            setBaseTokenAddress(sortedTokens[0]);
+            setQuoteTokenAddress(sortedTokens[1]);
+        }
+    }, [tokenPair]);
+
     // useEffect to update selected token balances
     useEffect(() => {
         (async () => {
@@ -138,40 +154,44 @@ export default function Swap(props: ISwapProps) {
     const [isWithdrawFromDexChecked, setIsWithdrawFromDexChecked] = useState(false);
     const [isWithdrawToWalletChecked, setIsWithdrawToWalletChecked] = useState(true);
 
-    const daiKovanAddress = '0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa';
+    // const daiKovanAddress = '0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa';
 
     const [poolPriceNonDisplay, setPoolPriceNonDisplay] = useState(0);
     const [newSwapTransactionHash, setNewSwapTransactionHash] = useState('');
 
     useEffect(() => {
-        (async () => {
-            const spotPrice = await getSpotPrice(
-                contractAddresses.ZERO_ADDR,
-                daiKovanAddress,
-                POOL_PRIMARY,
-                provider,
-            );
-            if (poolPriceNonDisplay !== spotPrice) {
-                setPoolPriceNonDisplay(spotPrice);
-            }
-        })();
-    }, [lastBlockNumber]);
+        if (baseTokenAddress && quoteTokenAddress) {
+            (async () => {
+                const spotPrice = await getSpotPrice(
+                    baseTokenAddress,
+                    quoteTokenAddress,
+                    POOL_PRIMARY,
+                    provider,
+                );
+                if (poolPriceNonDisplay !== spotPrice) {
+                    setPoolPriceNonDisplay(spotPrice);
+                }
+            })();
+        }
+    }, [lastBlockNumber, baseTokenAddress, quoteTokenAddress]);
 
     const [poolPriceDisplay, setPoolPriceDisplay] = useState(0);
 
     useEffect(() => {
-        (async () => {
-            const spotPriceDisplay = await getSpotPriceDisplay(
-                contractAddresses.ZERO_ADDR,
-                daiKovanAddress,
-                POOL_PRIMARY,
-                provider,
-            );
-            if (poolPriceDisplay !== spotPriceDisplay) {
-                setPoolPriceDisplay(spotPriceDisplay);
-            }
-        })();
-    }, [lastBlockNumber]);
+        if (baseTokenAddress && quoteTokenAddress) {
+            (async () => {
+                const spotPriceDisplay = await getSpotPriceDisplay(
+                    baseTokenAddress,
+                    quoteTokenAddress,
+                    POOL_PRIMARY,
+                    provider,
+                );
+                if (poolPriceDisplay !== spotPriceDisplay) {
+                    setPoolPriceDisplay(spotPriceDisplay);
+                }
+            })();
+        }
+    }, [lastBlockNumber, baseTokenAddress, quoteTokenAddress]);
 
     const signer = provider?.getSigner();
 
