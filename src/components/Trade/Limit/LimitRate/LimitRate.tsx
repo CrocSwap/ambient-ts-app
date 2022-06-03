@@ -87,8 +87,7 @@ export default function LimitRate(props: LimitRateProps) {
                 <div className={styles.token_select} onClick={openModal}>
                     <img
                         className={styles.token_list_img}
-                        src='https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png'
-                        alt='ethreum'
+                        src={tokenPair.dataTokenB.logoURI}
                         width='30px'
                     />
                     <span className={styles.token_list_text}>{tokenPair.dataTokenB.symbol}</span>
