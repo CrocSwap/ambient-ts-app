@@ -15,7 +15,6 @@ interface CurrencySelectorProps {
         dataTokenB: TokenIF;
     };
     tokensBank: Array<TokenIF>;
-    tokenData: TokenIF;
     chainId: string;
     fieldId: string;
     direction: string;
@@ -32,7 +31,6 @@ interface CurrencySelectorProps {
 
 export default function CurrencySelector(props: CurrencySelectorProps) {
     const {
-        tokenData,
         tokenPair,
         tokensBank,
         chainId,
@@ -48,6 +46,8 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
     } = props;
     const [isChecked, setIsChecked] = useState<boolean>(false);
     const [isModalOpen, openModal, closeModal] = useModal();
+
+    const thisToken = fieldId === 'sell' ? tokenPair.dataTokenA : tokenPair.dataTokenB;
 
     const DexBalanceContent = (
         <span className={styles.surplus_toggle}>
@@ -122,11 +122,11 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                 <div className={styles.token_select} onClick={openModal}>
                     <img
                         className={styles.token_list_img}
-                        src={tokenData.logoURI}
-                        alt={tokenData.name}
+                        src={thisToken.logoURI}
+                        alt={thisToken.name}
                         width='30px'
                     />
-                    <span className={styles.token_list_text}>{tokenData.symbol}</span>
+                    <span className={styles.token_list_text}>{thisToken.symbol}</span>
                     <RiArrowDownSLine size={27} />
                 </div>
             </div>

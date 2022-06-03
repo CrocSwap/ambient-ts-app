@@ -87,7 +87,6 @@ export default function CurrencyConverter(props: CurrencyConverterProps) {
     return (
         <section className={styles.currency_converter}>
             <CurrencySelector
-                tokenData={tokenPair.dataTokenA}
                 tokenPair={tokenPair}
                 tokensBank={tokensBank}
                 chainId={chainId}
@@ -108,7 +107,6 @@ export default function CurrencyConverter(props: CurrencyConverterProps) {
             </div>
             <CurrencySelector
                 tokenPair={tokenPair}
-                tokenData={tokenPair.dataTokenB}
                 tokensBank={tokensBank}
                 chainId={chainId}
                 direction={isLiq ? '' : 'To:'}
