@@ -33,7 +33,7 @@ interface LimitCurrencySelectorProps {
 export default function LimitCurrencySelector(props: LimitCurrencySelectorProps) {
     const { tokenPair, tokensBank, chainId, fieldId, direction, updateOtherQuantity } = props;
 
-    const thisToken = fieldId === 'sell' ? tokenPair.dataTokenA : tokenPair.dataTokenB;
+    const thisToken = fieldId === 'buy' ? tokenPair.dataTokenA : tokenPair.dataTokenB;
 
     const [isModalOpen, openModal, closeModal] = useModal();
     const tempTokenList = getAmbientTokens();
@@ -43,7 +43,7 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
             <TokenSelectContainer
                 tokenPair={tokenPair}
                 tokensBank={tokensBank}
-                tokenToUpdate={'B'}
+                tokenToUpdate={'A'}
                 chainId={chainId}
                 tokenList={tempTokenList}
                 closeModal={closeModal}
