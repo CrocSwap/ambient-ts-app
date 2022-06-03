@@ -1,10 +1,10 @@
 import styles from './CurrencyDisplay.module.css';
+import { TokenIF } from '../../../utils/interfaces/TokenIF';
 
 // we will eventually get the data passed down as props through token data.
 // For now, token data is hardcoded
 interface CurrencyDisplayProps {
-    // eslint-disable-next-line
-    tokenData: any;
+    tokenData: TokenIF;
     amount: string;
     isLimitBox?: boolean;
 }
@@ -31,10 +31,10 @@ export default function CurrencyDisplay(props: CurrencyDisplayProps) {
             <div className={styles.swapbox_top}>
                 <div className={styles.token_select}>
                     <img
-                        src={tokenData.logoLocal}
+                        src={tokenData.logoURI}
                         width='25px'
                         className={styles.token_list_img}
-                        alt={tokenData.logoAltText}
+                        alt={tokenData.name}
                     />
                     <span className={styles.token_list_text}>{tokenData.symbol}</span>
                 </div>
