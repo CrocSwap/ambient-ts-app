@@ -87,7 +87,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
             <RangeCurrencySelector
                 fieldId='A'
                 chainId={chainId}
-                tokenData={tokenPair.dataTokenA}
+                tokenPair={tokenPair}
                 updateOtherQuantity={handleChangeQtyTokenA}
                 {...rangeCurrencySelectorProps}
             />
@@ -97,7 +97,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
             <RangeCurrencySelector
                 fieldId='B'
                 chainId={chainId}
-                tokenData={tokenPair.dataTokenB}
+                tokenPair={tokenPair}
                 updateOtherQuantity={handleChangeQtyTokenB}
                 {...rangeCurrencySelectorProps}
             />

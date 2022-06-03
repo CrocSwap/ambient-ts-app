@@ -3,8 +3,13 @@ import { RiStarFill, RiStarLine } from 'react-icons/ri';
 import { CgUnavailable } from 'react-icons/cg';
 import { setAddressTokenA, setAddressTokenB } from '../../../utils/state/tradeDataSlice';
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
+import { TokenIF } from '../../../utils/interfaces/TokenIF';
 
 interface TokenSelectProps {
+    tokenPair: {
+        dataTokenA: TokenIF;
+        dataTokenB: TokenIF;
+    };
     icon: string;
     qty?: number;
     symbol: string;
@@ -15,7 +20,7 @@ interface TokenSelectProps {
 }
 
 export default function TokenSelect(props: TokenSelectProps) {
-    const { icon, symbol, name, address, tokenToUpdate, closeModal } = props;
+    const { icon, symbol, name, address, tokenToUpdate, closeModal, tokenPair } = props;
     function getRandomInt() {
         return Math.floor(Math.random() * 18000);
     }
@@ -28,9 +33,19 @@ export default function TokenSelect(props: TokenSelectProps) {
 
     const handleClick = (): void => {
         if (tokenToUpdate === 'A') {
-            dispatch(setAddressTokenA(address));
+            if (tokenPair.dataTokenB.address === address) {
+                dispatch(setAddressTokenA(address));
+                dispatch(setAddressTokenB(tokenPair.dataTokenA.address));
+            } else {
+                dispatch(setAddressTokenA(address));
+            }
         } else if (tokenToUpdate === 'B') {
-            dispatch(setAddressTokenB(address));
+            if (tokenPair.dataTokenA.address === address) {
+                dispatch(setAddressTokenB(address));
+                dispatch(setAddressTokenA(tokenPair.dataTokenB.address));
+            } else {
+                dispatch(setAddressTokenB(address));
+            }
         } else {
             console.warn('Error in TokenSelect.tsx, failed to find proper dispatch function.');
         }

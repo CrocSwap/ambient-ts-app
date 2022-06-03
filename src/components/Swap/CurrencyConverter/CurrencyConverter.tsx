@@ -2,6 +2,8 @@ import { ChangeEvent, SetStateAction } from 'react';
 import styles from './CurrencyConverter.module.css';
 import CurrencySelector from '../CurrencySelector/CurrencySelector';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
+import { setAddressTokenA, setAddressTokenB } from '../../../utils/state/tradeDataSlice';
+import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 
 interface CurrencyConverterProps {
     tokenPair: {
@@ -13,6 +15,8 @@ interface CurrencyConverterProps {
     poolPrice: number;
     setIsSellTokenPrimary: React.Dispatch<SetStateAction<boolean>>;
     nativeBalance: string;
+    tokenABalance: string;
+    tokenBBalance: string;
     isWithdrawFromDexChecked: boolean;
     setIsWithdrawFromDexChecked: React.Dispatch<SetStateAction<boolean>>;
     isWithdrawToWalletChecked: boolean;
@@ -32,6 +36,8 @@ export default function CurrencyConverter(props: CurrencyConverterProps) {
         isWithdrawToWalletChecked,
         setIsWithdrawToWalletChecked,
         setSwapAllowed,
+        tokenABalance,
+        tokenBBalance,
     } = props;
     // TODO: update name of functions with 'handle' verbiage
     // TODO: consolidate functions into a single function
@@ -67,31 +73,46 @@ export default function CurrencyConverter(props: CurrencyConverterProps) {
         }
     };
 
+    const dispatch = useAppDispatch();
+
+    const handleArrowClick = (): void => {
+        if (tokenPair) {
+            dispatch(setAddressTokenA(tokenPair.dataTokenB.address));
+            dispatch(setAddressTokenB(tokenPair.dataTokenA.address));
+        }
+    };
+
     return (
         <section className={styles.currency_converter}>
             <CurrencySelector
                 tokenData={tokenPair.dataTokenA}
+                tokenPair={tokenPair}
                 chainId={chainId}
                 direction={isLiq ? 'Select Pair' : 'From:'}
                 fieldId='sell'
                 sellToken
                 updateOtherQuantity={updateBuyQty}
                 nativeBalance={props.nativeBalance}
+                tokenABalance={tokenABalance}
+                tokenBBalance={tokenBBalance}
                 isWithdrawFromDexChecked={isWithdrawFromDexChecked}
                 setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
                 isWithdrawToWalletChecked={isWithdrawToWalletChecked}
                 setIsWithdrawToWalletChecked={setIsWithdrawToWalletChecked}
             />
-            <div className={styles.arrow_container}>
+            <div className={styles.arrow_container} onClick={handleArrowClick}>
                 {isLiq ? null : <span className={styles.arrow} />}
             </div>
             <CurrencySelector
+                tokenPair={tokenPair}
                 tokenData={tokenPair.dataTokenB}
                 chainId={chainId}
                 direction={isLiq ? '' : 'To:'}
                 fieldId='buy'
                 updateOtherQuantity={updateSellQty}
                 nativeBalance={props.nativeBalance}
+                tokenABalance={tokenABalance}
+                tokenBBalance={tokenBBalance}
                 isWithdrawFromDexChecked={isWithdrawFromDexChecked}
                 setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
                 isWithdrawToWalletChecked={isWithdrawToWalletChecked}

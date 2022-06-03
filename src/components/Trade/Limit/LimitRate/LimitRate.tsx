@@ -12,8 +12,11 @@ import { useModal } from '../../../../components/Global/Modal/useModal';
 import { getAmbientTokens } from '../../../../tempdata';
 
 interface LimitRateProps {
+    tokenPair: {
+        dataTokenA: TokenIF;
+        dataTokenB: TokenIF;
+    };
     fieldId: string;
-    tokenData: TokenIF;
     chainId: string;
     sellToken?: boolean;
     disable?: boolean;
@@ -22,7 +25,7 @@ interface LimitRateProps {
 }
 
 export default function LimitRate(props: LimitRateProps) {
-    const { fieldId, tokenData, chainId, disable } = props;
+    const { fieldId, tokenPair, chainId, disable } = props;
     const [isChecked, setIsChecked] = useState<boolean>(false);
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -31,6 +34,7 @@ export default function LimitRate(props: LimitRateProps) {
     const tokenSelectModalOrNull = isModalOpen ? (
         <Modal onClose={closeModal} title='Select Token'>
             <TokenSelectContainer
+                tokenPair={tokenPair}
                 tokenToUpdate={'B'}
                 chainId={chainId}
                 tokenList={tempTokenList}
@@ -85,7 +89,7 @@ export default function LimitRate(props: LimitRateProps) {
                         alt='ethreum'
                         width='30px'
                     />
-                    <span className={styles.token_list_text}>{tokenData.symbol}</span>
+                    <span className={styles.token_list_text}>{tokenPair.dataTokenB.symbol}</span>
                     <RiArrowDownSLine size={27} />
                 </div>
             </div>

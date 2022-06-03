@@ -12,7 +12,10 @@ import { getAmbientTokens } from '../../../../tempdata';
 interface RangeCurrencySelectorProps {
     fieldId: string;
     chainId: string;
-    tokenData: TokenIF;
+    tokenPair: {
+        dataTokenA: TokenIF;
+        dataTokenB: TokenIF;
+    };
     updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
     isWithdrawTokenAFromDexChecked: boolean;
     setIsWithdrawTokenAFromDexChecked: React.Dispatch<SetStateAction<boolean>>;
@@ -23,7 +26,7 @@ interface RangeCurrencySelectorProps {
 
 export default function RangeCurrencySelector(props: RangeCurrencySelectorProps) {
     const {
-        tokenData,
+        tokenPair,
         chainId,
         isWithdrawTokenAFromDexChecked,
         setIsWithdrawTokenAFromDexChecked,
@@ -34,12 +37,15 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
         updateOtherQuantity,
     } = props;
 
+    const thisToken = fieldId === 'A' ? tokenPair.dataTokenA : tokenPair.dataTokenB;
+
     const [isModalOpen, openModal, closeModal] = useModal();
     const tempTokenList = getAmbientTokens();
 
     const tokenSelectModalOrNull = isModalOpen ? (
         <Modal onClose={closeModal} title='Select Token'>
             <TokenSelectContainer
+                tokenPair={tokenPair}
                 tokenToUpdate={fieldId}
                 chainId={chainId}
                 tokenList={tempTokenList}
@@ -92,7 +98,7 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                         alt='ethreum'
                         width='30px'
                     />
-                    <span className={styles.token_list_text}>{tokenData.symbol}</span>
+                    <span className={styles.token_list_text}>{thisToken.symbol}</span>
                     <RiArrowDownSLine size={27} />
                 </div>
             </div>

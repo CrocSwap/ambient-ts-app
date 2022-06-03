@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useState } from 'react';
+import { useState, ChangeEvent } from 'react';
 import { RiArrowDownSLine } from 'react-icons/ri';
 
 // START: Import React Functional Components
@@ -16,17 +16,23 @@ import { getAmbientTokens } from '../../../../tempdata';
 
 // interface for component props
 interface LimitCurrencySelectorProps {
-    tokenData: TokenIF;
+    tokenPair: {
+        dataTokenA: TokenIF;
+        dataTokenB: TokenIF;
+    };
     chainId: string;
     fieldId: string;
     direction: string;
     sellToken?: boolean;
-    // updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
+
+    updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
 }
 
 // central react functional component
 export default function LimitCurrencySelector(props: LimitCurrencySelectorProps) {
-    const { tokenData, chainId, fieldId, direction } = props;
+    const { tokenPair, chainId, fieldId, direction, updateOtherQuantity } = props;
+
+    const thisToken = fieldId === 'sell' ? tokenPair.dataTokenA : tokenPair.dataTokenB;
 
     const [isModalOpen, openModal, closeModal] = useModal();
     const tempTokenList = getAmbientTokens();
@@ -34,7 +40,8 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
     const tokenSelectModalOrNull = isModalOpen ? (
         <Modal onClose={closeModal} title='Select Token'>
             <TokenSelectContainer
-                tokenToUpdate={fieldId === 'sell' ? 'A' : 'B'}
+                tokenPair={tokenPair}
+                tokenToUpdate={'B'}
                 chainId={chainId}
                 tokenList={tempTokenList}
                 closeModal={closeModal}
@@ -58,7 +65,7 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
                 alt='ethreum'
                 width='30px'
             />
-            <span className={styles.token_list_text}>{tokenData.symbol}</span>
+            <span className={styles.token_list_text}>{thisToken.symbol}</span>
             <RiArrowDownSLine size={27} />
         </div>
     );
@@ -82,7 +89,10 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
             <span className={styles.direction}>{direction}</span>
             <div className={styles.swapbox_top}>
                 <div className={styles.swap_input}>
-                    <LimitCurrencyQuantity fieldId={fieldId} />
+                    <LimitCurrencyQuantity
+                        fieldId={fieldId}
+                        updateOtherQuantity={updateOtherQuantity}
+                    />
                 </div>
                 {fieldId === 'buy' && tokenSelect}
             </div>

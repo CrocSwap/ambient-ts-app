@@ -10,12 +10,18 @@ import TokenSelectContainer from '../../Global/TokenSelectContainer/TokenSelectC
 import { getAmbientTokens } from '../../../tempdata';
 
 interface CurrencySelectorProps {
+    tokenPair: {
+        dataTokenA: TokenIF;
+        dataTokenB: TokenIF;
+    };
     tokenData: TokenIF;
     chainId: string;
     fieldId: string;
     direction: string;
     sellToken?: boolean;
     nativeBalance: string;
+    tokenABalance: string;
+    tokenBBalance: string;
     isWithdrawFromDexChecked: boolean;
     setIsWithdrawFromDexChecked: React.Dispatch<SetStateAction<boolean>>;
     isWithdrawToWalletChecked: boolean;
@@ -26,6 +32,7 @@ interface CurrencySelectorProps {
 export default function CurrencySelector(props: CurrencySelectorProps) {
     const {
         tokenData,
+        tokenPair,
         chainId,
         direction,
         fieldId,
@@ -34,6 +41,8 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
         setIsWithdrawFromDexChecked,
         isWithdrawToWalletChecked,
         setIsWithdrawToWalletChecked,
+        tokenABalance,
+        tokenBBalance,
     } = props;
     const [isChecked, setIsChecked] = useState<boolean>(false);
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -84,6 +93,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
     const tokenSelectModalOrNull = isModalOpen ? (
         <Modal onClose={closeModal} title='Select Token'>
             <TokenSelectContainer
+                tokenPair={tokenPair}
                 tokenToUpdate={tokenToUpdate}
                 chainId={chainId}
                 tokenList={tempTokenList}
@@ -91,6 +101,13 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
             />
         </Modal>
     ) : null;
+
+    const walletBalance =
+        props.sellToken && tokenABalance !== 'NaN'
+            ? tokenABalance
+            : !props.sellToken && tokenBBalance !== 'NaN'
+            ? tokenBBalance
+            : '0';
 
     return (
         <div className={styles.swapbox}>
@@ -102,8 +119,8 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                 <div className={styles.token_select} onClick={openModal}>
                     <img
                         className={styles.token_list_img}
-                        src='https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png'
-                        alt='ethreum'
+                        src={tokenData.logoURI}
+                        alt={tokenData.name}
                         width='30px'
                     />
                     <span className={styles.token_list_text}>{tokenData.symbol}</span>
@@ -112,15 +129,9 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
             </div>
             <div className={styles.swapbox_bottom}>
                 {fieldId === 'limit-sell' ? (
-                    <span>Wallet: 69.420 | DEX: 0.00</span>
+                    <span>Wallet: {tokenABalance} | DEX: 0.00</span>
                 ) : (
-                    <span>
-                        Wallet:{' '}
-                        {props.sellToken && props.nativeBalance !== 'NaN'
-                            ? props.nativeBalance
-                            : '0'}{' '}
-                        | Surplus: 0
-                    </span>
+                    <span>Wallet: {walletBalance} | Surplus: 0</span>
                 )}
                 {fieldId === 'limit-sell' ? DexBalanceContent : WithdrawTokensContent}
             </div>

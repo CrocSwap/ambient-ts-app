@@ -4,6 +4,10 @@ import TokenSelect from '../TokenSelect/TokenSelect';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
 
 interface TokenSelectContainerPropsIF {
+    tokenPair: {
+        dataTokenA: TokenIF;
+        dataTokenB: TokenIF;
+    };
     tokenList: Array<TokenIF>;
     chainId: string;
     tokenToUpdate: string;
@@ -11,7 +15,7 @@ interface TokenSelectContainerPropsIF {
 }
 
 export default function TokenSelectContainer(props: TokenSelectContainerPropsIF) {
-    const { tokenList, chainId, tokenToUpdate, closeModal } = props;
+    const { tokenPair, tokenList, chainId, tokenToUpdate, closeModal } = props;
     const [searchTerm, setSearchTerm] = useState('');
 
     const searchInput = (
@@ -37,7 +41,7 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
                         return val;
                     }
                 })
-                .filter((tkn) => tkn.chainId === parseInt(chainId))
+                .filter((tkn) => tkn.chainId === parseInt(chainId ?? 42))
                 .map((token, idx) => {
                     return (
                         <TokenSelect
@@ -49,6 +53,7 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
                             address={token.address}
                             tokenToUpdate={tokenToUpdate}
                             closeModal={closeModal}
+                            tokenPair={tokenPair}
                         />
                     );
                 })}
