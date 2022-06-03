@@ -3,10 +3,10 @@ import styles from './RangeCurrencyConverter.module.css';
 import RangeCurrencySelector from '../RangeCurrencySelector/RangeCurrencySelector';
 // import { calculateSecondaryDepositQty } from '../../../../utils/functions/calculateSecondaryDepositQty';
 import { TokenIF } from '../../../../utils/interfaces/TokenIF';
-// import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
-// import { setIsTokenAPrimary, setPrimQty } from '../../../../utils/state/rangeDataSlice';
 
 interface RangeCurrencyConverterProps {
+    tokensBank: Array<TokenIF>;
+    chainId: string;
     isWithdrawTokenAFromDexChecked: boolean;
     setIsWithdrawTokenAFromDexChecked: React.Dispatch<SetStateAction<boolean>>;
     isWithdrawTokenBFromDexChecked: boolean;
@@ -23,7 +23,9 @@ interface RangeCurrencyConverterProps {
 }
 
 export default function RangeCurrencyConverter(props: RangeCurrencyConverterProps) {
+    // PLEASE PRESERVE COMMENTED-OUT CODE!!! -Emily
     const {
+        chainId,
         isLiq,
         // poolPriceNonDisplay,
         tokenPair,
@@ -84,6 +86,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         <section className={styles.currency_converter}>
             <RangeCurrencySelector
                 fieldId='A'
+                chainId={chainId}
                 tokenData={tokenPair.dataTokenA}
                 updateOtherQuantity={handleChangeQtyTokenA}
                 {...rangeCurrencySelectorProps}
@@ -93,6 +96,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
             </div>
             <RangeCurrencySelector
                 fieldId='B'
+                chainId={chainId}
                 tokenData={tokenPair.dataTokenB}
                 updateOtherQuantity={handleChangeQtyTokenB}
                 {...rangeCurrencySelectorProps}

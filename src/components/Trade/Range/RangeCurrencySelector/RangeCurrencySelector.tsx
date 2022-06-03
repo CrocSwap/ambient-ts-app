@@ -4,9 +4,14 @@ import RangeCurrencyQuantity from '../RangeCurrencyQuantity/RangeCurrencyQuantit
 import { RiArrowDownSLine } from 'react-icons/ri';
 import Toggle from '../../../Global/Toggle/Toggle';
 import { TokenIF } from '../../../../utils/interfaces/TokenIF';
+import { useModal } from '../../../../components/Global/Modal/useModal';
+import Modal from '../../../../components/Global/Modal/Modal';
+import TokenSelectContainer from '../../../Global/TokenSelectContainer/TokenSelectContainer';
+import { getAmbientTokens } from '../../../../tempdata';
 
 interface RangeCurrencySelectorProps {
     fieldId: string;
+    chainId: string;
     tokenData: TokenIF;
     updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
     isWithdrawTokenAFromDexChecked: boolean;
@@ -19,6 +24,7 @@ interface RangeCurrencySelectorProps {
 export default function RangeCurrencySelector(props: RangeCurrencySelectorProps) {
     const {
         tokenData,
+        chainId,
         isWithdrawTokenAFromDexChecked,
         setIsWithdrawTokenAFromDexChecked,
         isWithdrawTokenBFromDexChecked,
@@ -27,6 +33,22 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
         sellToken,
         updateOtherQuantity,
     } = props;
+
+    const [isModalOpen, openModal, closeModal] = useModal();
+    const tempTokenList = getAmbientTokens();
+    // const tokenToUpdate = fieldId === 'sell' ? 'A' : 'B';
+    console.log(fieldId);
+
+    const tokenSelectModalOrNull = isModalOpen ? (
+        <Modal onClose={closeModal} title='Select Token'>
+            <TokenSelectContainer
+                tokenToUpdate={fieldId}
+                chainId={chainId}
+                tokenList={tempTokenList}
+                closeModal={closeModal}
+            />
+        </Modal>
+    ) : null;
 
     const DexBalanceContent = (
         <span className={styles.surplus_toggle}>
@@ -65,7 +87,7 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                         updateOtherQuantity={updateOtherQuantity}
                     />
                 </div>
-                <div className={styles.token_select}>
+                <div className={styles.token_select} onClick={openModal}>
                     <img
                         className={styles.token_list_img}
                         src='https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png'
@@ -78,9 +100,9 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
             </div>
             <div className={styles.swapbox_bottom}>
                 <span>Wallet: 69.420 | DEX: 0.00</span>
-
                 {DexBalanceContent}
             </div>
+            {tokenSelectModalOrNull}
         </div>
     );
 }
