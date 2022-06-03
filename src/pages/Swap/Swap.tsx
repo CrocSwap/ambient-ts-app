@@ -98,6 +98,7 @@ export default function Swap(props: ISwapProps) {
     const [tokenABalance, setTokenABalance] = useState<string>('');
     const [tokenBBalance, setTokenBBalance] = useState<string>('');
 
+    // useEffect to update selected token balances
     useEffect(() => {
         (async () => {
             if (
@@ -128,7 +129,7 @@ export default function Swap(props: ISwapProps) {
                 }
             }
         })();
-    }, [chainId, account, isWeb3Enabled, isAuthenticated, tokenPair]);
+    }, [chainId, account, isWeb3Enabled, isAuthenticated, tokenPair, lastBlockNumber]);
 
     const [swapAllowed, setSwapAllowed] = useState<boolean>(false);
 
