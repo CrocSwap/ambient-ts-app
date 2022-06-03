@@ -173,6 +173,9 @@
     background-color: rgb(33, 36, 41);
   }
   
+  .limit_price_container{
+    padding: 0 3rem;
+  }
   /* arrow */
 
 .arrow_container{

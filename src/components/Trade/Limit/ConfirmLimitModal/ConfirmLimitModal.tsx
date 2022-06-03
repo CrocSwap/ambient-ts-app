@@ -38,13 +38,16 @@ export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
     const priceLimit = 0.12;
 
     const explanationText = (
-        <div className={styles.confSwap_detail_note}>this is explanation text</div>
+        <div className={styles.confSwap_detail_note}>any other explanation text will go here.</div>
     );
 
     const fullTxDetails = (
         <>
             <div className={styles.modal_currency_converter}>
                 <CurrencyDisplay amount={sellTokenQty} tokenData={sellTokenData} />
+                <div className={styles.limit_price_container}>
+                    <CurrencyDisplay amount={'2.33'} tokenData={buyTokenData} isLimitBox />
+                </div>
                 <div className={styles.arrow_container}>
                     <span className={styles.arrow} />
                 </div>
@@ -56,16 +59,14 @@ export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
             <Divider />
             <div className={styles.confSwap_detail}>
                 <div className={styles.detail_line}>
-                    Expected Output
+                    Current Price
                     <span>
-                        {buyTokenQty} {buyTokenData.symbol}
+                        0.000043 {moreExpensiveToken} per {lessExpensiveToken}
                     </span>
                 </div>
                 <div className={styles.detail_line}>
-                    Price Limit
-                    <span>
-                        {priceLimit} {lessExpensiveToken} /{moreExpensiveToken}
-                    </span>
+                    ETH Appreciation Before Swap
+                    <span>2%</span>
                 </div>
                 <div className={`${styles.detail_line} ${styles.min_received}`}></div>
             </div>
