@@ -44,7 +44,7 @@ export default function Limit() {
                 <LimitHeader tokenPair={tokenPair} />
                 <DenominationSwitch tokenPair={tokenPair} />
                 <DividerDark />
-                <LimitCurrencyConverter tokenPair={tokenPair} />
+                <LimitCurrencyConverter tokenPair={tokenPair} chainId={chainId ?? '0x2a'} />
                 <LimitExtraInfo tokenPair={tokenPair} />
                 <LimitButton />
             </ContentContainer>

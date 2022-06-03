@@ -36,8 +36,6 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
 
     const [isModalOpen, openModal, closeModal] = useModal();
     const tempTokenList = getAmbientTokens();
-    // const tokenToUpdate = fieldId === 'sell' ? 'A' : 'B';
-    console.log(fieldId);
 
     const tokenSelectModalOrNull = isModalOpen ? (
         <Modal onClose={closeModal} title='Select Token'>

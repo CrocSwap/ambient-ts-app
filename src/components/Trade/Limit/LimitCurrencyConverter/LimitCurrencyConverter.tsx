@@ -15,13 +15,14 @@ interface LimitCurrencyConverterProps {
         dataTokenA: TokenIF;
         dataTokenB: TokenIF;
     };
+    chainId: string;
     poolPrice?: number;
     setIsSellTokenPrimary?: React.Dispatch<SetStateAction<boolean>>;
 }
 
 // central react functional component
 export default function LimitCurrencyConverter(props: LimitCurrencyConverterProps) {
-    const { tokenPair } = props;
+    const { tokenPair, chainId } = props;
 
     // TODO: pass tokenPair to <LimitRate /> as a prop such that we can use a dynamic
     // TODO: ... logo instead of the hardcoded one it contains
@@ -30,15 +31,21 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
         <section className={styles.currency_converter}>
             <LimitCurrencySelector
                 tokenData={tokenPair.dataTokenA}
+                chainId={chainId}
                 fieldId='sell'
                 sellToken
                 direction='Price'
             />
-            <LimitCurrencySelector tokenData={tokenPair.dataTokenB} fieldId='buy' direction='To' />
+            <LimitCurrencySelector
+                tokenData={tokenPair.dataTokenB}
+                chainId={chainId}
+                fieldId='buy'
+                direction='To'
+            />
             <div className={styles.arrow_container}>
                 <span className={styles.arrow} />
             </div>
-            <LimitRate fieldId='limit-rate' />
+            <LimitRate tokenData={tokenPair.dataTokenB} chainId={chainId} fieldId='limit-rate' />
         </section>
     );
 }
