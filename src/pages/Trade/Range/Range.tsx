@@ -137,6 +137,12 @@ export default function Range(props: IRangeProps) {
     const baseTokenAddress = contractAddresses.ZERO_ADDR;
     const quoteTokenAddress = daiKovanAddress;
 
+    const [isReversalInProgress, setIsReversalInProgress] = useState<boolean>(false);
+
+    useEffect(() => {
+        console.log({ isReversalInProgress });
+    }, [isReversalInProgress]);
+
     const sendTransaction = async () => {
         const tokenAQty = (document.getElementById('A-range-quantity') as HTMLInputElement)?.value;
         let tokenAQtyNonDisplay: BigNumber;
@@ -341,6 +347,7 @@ export default function Range(props: IRangeProps) {
         setIsWithdrawTokenAFromDexChecked: setIsWithdrawTokenAFromDexChecked,
         isWithdrawTokenBFromDexChecked: isWithdrawTokenBFromDexChecked,
         setIsWithdrawTokenBFromDexChecked: setIsWithdrawTokenBFromDexChecked,
+        setIsReversalInProgress: setIsReversalInProgress,
     };
 
     // props for <RangeWidth/> React element

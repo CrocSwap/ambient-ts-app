@@ -19,12 +19,13 @@ interface LimitCurrencyConverterProps {
     chainId: string;
     poolPrice?: number;
     setIsSellTokenPrimary?: React.Dispatch<SetStateAction<boolean>>;
+    setIsReversalInProgress: React.Dispatch<SetStateAction<boolean>>;
     setLimitAllowed: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 // central react functional component
 export default function LimitCurrencyConverter(props: LimitCurrencyConverterProps) {
-    const { tokenPair, tokensBank, chainId, setLimitAllowed } = props;
+    const { tokenPair, tokensBank, chainId, setLimitAllowed, setIsReversalInProgress } = props;
 
     // TODO: pass tokenPair to <LimitRate /> as a prop such that we can use a dynamic
     // TODO: ... logo instead of the hardcoded one it contains
@@ -71,6 +72,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 sellToken
                 direction='Price'
                 updateOtherQuantity={updateBuyQty}
+                setIsReversalInProgress={setIsReversalInProgress}
             />
             <LimitCurrencySelector
                 tokenPair={tokenPair}
@@ -79,6 +81,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 fieldId='buy'
                 direction='To'
                 updateOtherQuantity={updateSellQty}
+                setIsReversalInProgress={setIsReversalInProgress}
             />
             <div className={styles.arrow_container}>
                 <span className={styles.arrow} />
@@ -88,6 +91,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 tokensBank={tokensBank}
                 chainId={chainId}
                 fieldId='limit-rate'
+                setIsReversalInProgress={setIsReversalInProgress}
             />
         </section>
     );

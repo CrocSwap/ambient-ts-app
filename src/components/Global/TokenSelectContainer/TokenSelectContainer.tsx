@@ -19,7 +19,7 @@ interface TokenSelectContainerPropsIF {
 export default function TokenSelectContainer(props: TokenSelectContainerPropsIF) {
     const { tokenPair, tokensBank, tokenToUpdate, closeModal, setIsReversalInProgress } = props;
 
-    console.log(tokenToUpdate);
+    // console.log(tokenToUpdate);
     const [searchTerm, setSearchTerm] = useState('');
 
     const searchInput = (
