@@ -20,6 +20,8 @@ interface CurrencySelectorProps {
     direction: string;
     sellToken?: boolean;
     nativeBalance: string;
+    tokenABalance: string;
+    tokenBBalance: string;
     isWithdrawFromDexChecked: boolean;
     setIsWithdrawFromDexChecked: React.Dispatch<SetStateAction<boolean>>;
     isWithdrawToWalletChecked: boolean;
@@ -39,6 +41,8 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
         setIsWithdrawFromDexChecked,
         isWithdrawToWalletChecked,
         setIsWithdrawToWalletChecked,
+        tokenABalance,
+        tokenBBalance,
     } = props;
     const [isChecked, setIsChecked] = useState<boolean>(false);
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -98,6 +102,13 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
         </Modal>
     ) : null;
 
+    const walletBalance =
+        props.sellToken && tokenABalance !== 'NaN'
+            ? tokenABalance
+            : !props.sellToken && tokenBBalance !== 'NaN'
+            ? tokenBBalance
+            : '0';
+
     return (
         <div className={styles.swapbox}>
             <span className={styles.direction}>{direction}</span>
@@ -118,15 +129,9 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
             </div>
             <div className={styles.swapbox_bottom}>
                 {fieldId === 'limit-sell' ? (
-                    <span>Wallet: 69.420 | DEX: 0.00</span>
+                    <span>Wallet: {tokenABalance} | DEX: 0.00</span>
                 ) : (
-                    <span>
-                        Wallet:{' '}
-                        {props.sellToken && props.nativeBalance !== 'NaN'
-                            ? props.nativeBalance
-                            : '0'}{' '}
-                        | Surplus: 0
-                    </span>
+                    <span>Wallet: {walletBalance} | Surplus: 0</span>
                 )}
                 {fieldId === 'limit-sell' ? DexBalanceContent : WithdrawTokensContent}
             </div>

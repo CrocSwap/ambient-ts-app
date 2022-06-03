@@ -12,6 +12,7 @@ import {
     sendSwap,
     parseSwapEthersReceipt,
     EthersNativeReceipt,
+    getTokenBalanceDisplay,
 } from '@crocswap-libs/sdk';
 
 // START: Import React Components
@@ -48,7 +49,7 @@ interface ISwapProps {
 export default function Swap(props: ISwapProps) {
     const { provider, isOnTradeRoute, lastBlockNumber, nativeBalance, gasPriceinGwei } = props;
     const [isModalOpen, openModal, closeModal] = useModal();
-    const { Moralis, chainId, enableWeb3, isWeb3Enabled, authenticate, isAuthenticated } =
+    const { Moralis, chainId, enableWeb3, isWeb3Enabled, authenticate, isAuthenticated, account } =
         useMoralis();
     // get URL pathway for user relative to index
     const { pathname } = useLocation();
@@ -93,6 +94,42 @@ export default function Swap(props: ISwapProps) {
         dataTokenA: findTokenByAddress(tradeData.addressTokenA, tokensBank) ?? kovanETH,
         dataTokenB: findTokenByAddress(tradeData.addressTokenB, tokensBank) ?? kovanUSDC,
     };
+
+    const [tokenABalance, setTokenABalance] = useState<string>('');
+    const [tokenBBalance, setTokenBBalance] = useState<string>('');
+
+    useEffect(() => {
+        (async () => {
+            if (
+                provider &&
+                account
+                // && isAuthenticated && provider.connection?.url === 'metamask'
+            ) {
+                const signer = provider.getSigner();
+                const tokenABal = await getTokenBalanceDisplay(
+                    tokenPair.dataTokenA.address,
+                    account,
+                    signer,
+                );
+                // make sure a balance was returned, initialized as null
+                if (tokenABal) {
+                    // send value to local state
+                    setTokenABalance(tokenABal);
+                }
+                const tokenBBal = await getTokenBalanceDisplay(
+                    tokenPair.dataTokenB.address,
+                    account,
+                    signer,
+                );
+                // make sure a balance was returned, initialized as null
+                if (tokenBBal) {
+                    // send value to local state
+                    setTokenBBalance(tokenBBal);
+                }
+            }
+            // console.log({ balance });
+        })();
+    }, [chainId, account, isWeb3Enabled, isAuthenticated, tokenPair]);
 
     const [swapAllowed, setSwapAllowed] = useState<boolean>(false);
 
@@ -234,6 +271,8 @@ export default function Swap(props: ISwapProps) {
                     poolPrice={poolPriceNonDisplay}
                     setIsSellTokenPrimary={setIsSellTokenPrimary}
                     nativeBalance={truncateDecimals(parseFloat(nativeBalance), 4).toString()}
+                    tokenABalance={truncateDecimals(parseFloat(tokenABalance), 4).toString()}
+                    tokenBBalance={truncateDecimals(parseFloat(tokenBBalance), 4).toString()}
                     isWithdrawFromDexChecked={isWithdrawFromDexChecked}
                     setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
                     isWithdrawToWalletChecked={isWithdrawToWalletChecked}
@@ -248,7 +287,7 @@ export default function Swap(props: ISwapProps) {
                     quoteTokenIsBuy={true}
                     gasPriceinGwei={gasPriceinGwei}
                 />
-                {isAuthenticated ? (
+                {isAuthenticated && isWeb3Enabled ? (
                     <SwapButton onClickFn={openModal} swapAllowed={swapAllowed} />
                 ) : (
                     loginButton

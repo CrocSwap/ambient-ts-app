@@ -15,6 +15,8 @@ interface CurrencyConverterProps {
     poolPrice: number;
     setIsSellTokenPrimary: React.Dispatch<SetStateAction<boolean>>;
     nativeBalance: string;
+    tokenABalance: string;
+    tokenBBalance: string;
     isWithdrawFromDexChecked: boolean;
     setIsWithdrawFromDexChecked: React.Dispatch<SetStateAction<boolean>>;
     isWithdrawToWalletChecked: boolean;
@@ -34,6 +36,8 @@ export default function CurrencyConverter(props: CurrencyConverterProps) {
         isWithdrawToWalletChecked,
         setIsWithdrawToWalletChecked,
         setSwapAllowed,
+        tokenABalance,
+        tokenBBalance,
     } = props;
     // TODO: update name of functions with 'handle' verbiage
     // TODO: consolidate functions into a single function
@@ -89,6 +93,8 @@ export default function CurrencyConverter(props: CurrencyConverterProps) {
                 sellToken
                 updateOtherQuantity={updateBuyQty}
                 nativeBalance={props.nativeBalance}
+                tokenABalance={tokenABalance}
+                tokenBBalance={tokenBBalance}
                 isWithdrawFromDexChecked={isWithdrawFromDexChecked}
                 setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
                 isWithdrawToWalletChecked={isWithdrawToWalletChecked}
@@ -105,6 +111,8 @@ export default function CurrencyConverter(props: CurrencyConverterProps) {
                 fieldId='buy'
                 updateOtherQuantity={updateSellQty}
                 nativeBalance={props.nativeBalance}
+                tokenABalance={tokenABalance}
+                tokenBBalance={tokenBBalance}
                 isWithdrawFromDexChecked={isWithdrawFromDexChecked}
                 setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
                 isWithdrawToWalletChecked={isWithdrawToWalletChecked}
