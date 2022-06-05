@@ -3,11 +3,11 @@ import Toggle from '../../../Global/Toggle/Toggle';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import { toggleAdvancedMode } from '../../../../utils/state/tradeDataSlice';
 
-interface advancedModeProps {
+interface advancedModePropsIF {
     advancedMode: boolean;
 }
 
-export default function AdvancedModeToggle(props: advancedModeProps) {
+export default function AdvancedModeToggle(props: advancedModePropsIF) {
     const { advancedMode } = props;
 
     const dispatch = useAppDispatch();
