@@ -239,7 +239,7 @@ export default function Range(props: IRangeProps) {
         <div className={styles.denomination_switch_container}>
             <AdvancedModeToggle
                 toggleAdvancedMode={toggleAdvancedMode}
-                advancedMode={advancedMode}
+                advancedMode={tradeData.advancedMode}
             />
             <RangeDenominationSwitch
                 tokenPair={tokenPair}
