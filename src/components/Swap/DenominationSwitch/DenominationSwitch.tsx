@@ -7,14 +7,11 @@ import { useState } from 'react';
 
 // START: Import Local Files
 import styles from './DenominationSwitch.module.css';
-import { TokenIF } from '../../../utils/interfaces/TokenIF';
+import { TokenPairIF } from '../../../utils/interfaces/TokenPairIF';
 
 // interface for props
 interface denominationSwitchProps {
-    tokenPair: {
-        dataTokenA: TokenIF;
-        dataTokenB: TokenIF;
-    };
+    tokenPair: TokenPairIF;
     isOnTradeRoute?: boolean;
 }
 
