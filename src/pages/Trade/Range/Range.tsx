@@ -89,11 +89,7 @@ export default function Range(props: IRangeProps) {
         getBaseTokenAddress(tradeData.addressTokenA, tradeData.addressTokenB) ===
         tradeData.addressTokenA;
 
-    const [advancedMode, setAdvancedMode] = useState<boolean>(false);
-
     const isAmbient = rangeWidthPercentage === 100;
-
-    const toggleAdvancedMode = () => setAdvancedMode(!advancedMode);
 
     useEffect(() => {
         (async () => {
@@ -237,10 +233,7 @@ export default function Range(props: IRangeProps) {
     // TODO:  ... component used in the Market and Limit modules
     const denominationSwitch = (
         <div className={styles.denomination_switch_container}>
-            <AdvancedModeToggle
-                toggleAdvancedMode={toggleAdvancedMode}
-                advancedMode={tradeData.advancedMode}
-            />
+            <AdvancedModeToggle advancedMode={tradeData.advancedMode} />
             <RangeDenominationSwitch
                 tokenPair={tokenPair}
                 denominationsInBase={denominationsInBase}
@@ -373,7 +366,7 @@ export default function Range(props: IRangeProps) {
                 {denominationSwitch}
                 <DividerDark />
                 <RangeCurrencyConverter {...rangeCurrencyConverterProps} />
-                {advancedMode ? advancedModeContent : baseModeContent}
+                {tradeData.advancedMode ? advancedModeContent : baseModeContent}
                 <RangeButton onClickFn={openModal} isAmountEntered={true} />
             </ContentContainer>
 

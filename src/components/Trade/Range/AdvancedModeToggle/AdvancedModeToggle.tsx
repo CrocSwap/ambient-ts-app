@@ -1,13 +1,17 @@
 import styles from './AdvancedModeToggle.module.css';
 import Toggle from '../../../Global/Toggle/Toggle';
+import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
+import { toggleAdvancedMode } from '../../../../utils/state/tradeDataSlice';
 
 interface advancedModeProps {
-    toggleAdvancedMode: (event: React.ChangeEvent<HTMLDivElement>) => void;
     advancedMode: boolean;
 }
 
 export default function AdvancedModeToggle(props: advancedModeProps) {
-    const { toggleAdvancedMode, advancedMode } = props;
+    const { advancedMode } = props;
+
+    const dispatch = useAppDispatch();
+    const handleToggle = () => dispatch(toggleAdvancedMode());
 
     const advancedModeToggle = (
         <div className={styles.advanced_toggle}>
@@ -15,7 +19,7 @@ export default function AdvancedModeToggle(props: advancedModeProps) {
             <div className={styles.advanced_toggle_container}>
                 <Toggle
                     isOn={advancedMode}
-                    handleToggle={toggleAdvancedMode}
+                    handleToggle={handleToggle}
                     Width={36}
                     id='advanced_reposition'
                 />
