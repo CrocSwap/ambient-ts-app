@@ -10,14 +10,11 @@ import TransactionSettings from '../../Global/TransactionSettings/TransactionSet
 // START: Import Local Files
 import styles from './SwapHeader.module.css';
 import settingsIcon from '../../../assets/images/icons/settings.svg';
-import { TokenIF } from '../../../utils/interfaces/TokenIF';
+import { TokenPairIF } from '../../../utils/interfaces/TokenPairIF';
 
 // interface for props
 interface swapHeaderProps {
-    tokenPair: {
-        dataTokenA: TokenIF;
-        dataTokenB: TokenIF;
-    };
+    tokenPair: TokenPairIF;
     isOnTradeRoute?: boolean;
 }
 
