@@ -13,19 +13,19 @@ export default function AdvancedModeToggle(props: advancedModePropsIF) {
     const dispatch = useAppDispatch();
     const handleToggle = () => dispatch(toggleAdvancedMode());
 
-    const advancedModeToggle = (
-        <div className={styles.advanced_toggle}>
-            <span className={styles.advanced_toggle_title}>Advanced Mode</span>
-            <div className={styles.advanced_toggle_container}>
-                <Toggle
-                    isOn={advancedMode}
-                    handleToggle={handleToggle}
-                    Width={36}
-                    id='advanced_reposition'
-                />
+    return (
+        <div className={styles.AdvancedMode}>
+            <div className={styles.advanced_toggle}>
+                <span className={styles.advanced_toggle_title}>Advanced Mode</span>
+                <div className={styles.advanced_toggle_container}>
+                    <Toggle
+                        isOn={advancedMode}
+                        handleToggle={handleToggle}
+                        Width={36}
+                        id='advanced_reposition'
+                    />
+                </div>
             </div>
         </div>
     );
-
-    return <div className={styles.AdvancedMode}>{advancedModeToggle}</div>;
 }
