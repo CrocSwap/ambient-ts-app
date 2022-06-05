@@ -9,6 +9,7 @@ import Toggle from '../../../Global/Toggle/Toggle';
 // START: Import Local Files
 import styles from './LimitCurrencySelector.module.css';
 import { TokenIF } from '../../../../utils/interfaces/TokenIF';
+import { TokenPairIF } from '../../../../utils/interfaces/TokenPairIF';
 import Modal from '../../../../components/Global/Modal/Modal';
 import TokenSelectContainer from '../../../Global/TokenSelectContainer/TokenSelectContainer';
 import { useModal } from '../../../../components/Global/Modal/useModal';
@@ -16,10 +17,7 @@ import { getAmbientTokens } from '../../../../tempdata';
 
 // interface for component props
 interface LimitCurrencySelectorProps {
-    tokenPair: {
-        dataTokenA: TokenIF;
-        dataTokenB: TokenIF;
-    };
+    tokenPair: TokenPairIF;
     tokensBank: Array<TokenIF>;
     chainId: string;
     fieldId: string;
