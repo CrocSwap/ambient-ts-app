@@ -10,7 +10,6 @@ interface AdvancedPriceInfoIF {
 
 export default function AdvancedPriceInfo(props: AdvancedPriceInfoIF) {
     const { tokenPair } = props;
-    console.log(tokenPair);
 
     // JSX frag to display the pool price for the current pair
     const currentPrice = (

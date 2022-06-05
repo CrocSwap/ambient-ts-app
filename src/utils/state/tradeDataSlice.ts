@@ -4,12 +4,14 @@ export interface tradeData {
     addressTokenA: string;
     addressTokenB: string;
     isDenomBase: boolean;
+    advancedMode: boolean;
 }
 
 const initialState: tradeData = {
     addressTokenA: '0x0000000000000000000000000000000000000000',
     addressTokenB: '0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa',
     isDenomBase: true,
+    advancedMode: false,
 };
 
 export const tradeDataSlice = createSlice({
@@ -28,12 +30,24 @@ export const tradeDataSlice = createSlice({
         toggleDenomInBase: (state) => {
             state.isDenomBase = !state.isDenomBase;
         },
+        setAdvancedMode: (state, action: PayloadAction<boolean>) => {
+            state.advancedMode = action.payload;
+        },
+        toggleAdvancedMode: (state) => {
+            state.advancedMode = !state.advancedMode;
+        },
     },
 });
 
 // action creators are generated for each case reducer function
-export const { setAddressTokenA, setAddressTokenB, setDenomInBase, toggleDenomInBase } =
-    tradeDataSlice.actions;
+export const {
+    setAddressTokenA,
+    setAddressTokenB,
+    setDenomInBase,
+    toggleDenomInBase,
+    setAdvancedMode,
+    toggleAdvancedMode,
+} = tradeDataSlice.actions;
 
 export default tradeDataSlice.reducer;
 
