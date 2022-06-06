@@ -2,8 +2,7 @@ import { ChangeEvent, SetStateAction } from 'react';
 import styles from './RangeCurrencyConverter.module.css';
 import RangeCurrencySelector from '../RangeCurrencySelector/RangeCurrencySelector';
 // import { calculateSecondaryDepositQty } from '../../../../utils/functions/calculateSecondaryDepositQty';
-import { TokenIF } from '../../../../utils/interfaces/TokenIF';
-import { TokenPairIF } from '../../../../utils/interfaces/TokenPairIF';
+import { TokenIF, TokenPairIF } from '../../../../utils/interfaces/exports';
 
 interface RangeCurrencyConverterProps {
     tokensBank: Array<TokenIF>;
