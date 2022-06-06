@@ -6,7 +6,7 @@ import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import { setIsTokenAPrimary, setPrimaryQuantity } from '../../../../utils/state/tradeDataSlice';
 
-interface RangeCurrencyConverterProps {
+interface RangeCurrencyConverterPropsIF {
     tokensBank: Array<TokenIF>;
     chainId: string;
     isWithdrawTokenAFromDexChecked: boolean;
@@ -24,8 +24,7 @@ interface RangeCurrencyConverterProps {
     setIsSellTokenPrimary?: React.Dispatch<SetStateAction<boolean>>;
 }
 
-export default function RangeCurrencyConverter(props: RangeCurrencyConverterProps) {
-    // PLEASE PRESERVE COMMENTED-OUT CODE!!! -Emily
+export default function RangeCurrencyConverter(props: RangeCurrencyConverterPropsIF) {
     const {
         chainId,
         isLiq,
@@ -75,6 +74,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         dispatch(setPrimaryQuantity(evt.target.value));
         dispatch(setIsTokenAPrimary(false));
     };
+
     // props for <RangeCurrencyConverter/> React element
     const rangeCurrencySelectorProps = {
         isWithdrawTokenAFromDexChecked: isWithdrawTokenAFromDexChecked,
