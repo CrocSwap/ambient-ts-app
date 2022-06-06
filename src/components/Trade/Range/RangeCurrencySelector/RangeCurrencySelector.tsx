@@ -7,7 +7,6 @@ import { TokenIF, TokenPairIF } from '../../../../utils/interfaces/exports';
 import { useModal } from '../../../../components/Global/Modal/useModal';
 import Modal from '../../../../components/Global/Modal/Modal';
 import TokenSelectContainer from '../../../Global/TokenSelectContainer/TokenSelectContainer';
-import { getAmbientTokens } from '../../../../tempdata';
 
 interface RangeCurrencySelectorProps {
     fieldId: string;
@@ -41,7 +40,6 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
     const thisToken = fieldId === 'A' ? tokenPair.dataTokenA : tokenPair.dataTokenB;
 
     const [isModalOpen, openModal, closeModal] = useModal();
-    const tempTokenList = getAmbientTokens();
 
     const tokenSelectModalOrNull = isModalOpen ? (
         <Modal onClose={closeModal} title='Select Token'>
@@ -50,7 +48,7 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                 tokensBank={tokensBank}
                 tokenToUpdate={fieldId}
                 chainId={chainId}
-                tokenList={tempTokenList}
+                tokenList={tokensBank}
                 closeModal={closeModal}
                 setIsReversalInProgress={setIsReversalInProgress}
             />
