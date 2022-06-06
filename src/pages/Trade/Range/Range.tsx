@@ -154,6 +154,7 @@ export default function Range(props: IRangeProps) {
     const signer = provider?.getSigner();
 
     const [isReversalInProgress, setIsReversalInProgress] = useState<boolean>(false);
+    const [isTokenAPrimary, setIsTokenAPrimary] = useState<boolean>(false);
 
     useEffect(() => {
         console.log({ isReversalInProgress });
@@ -354,13 +355,17 @@ export default function Range(props: IRangeProps) {
         chainId: chainId ?? '0x2a',
         tokensBank: tokensBank,
         tokenPair: tokenPair,
+        isAmbient: isAmbient,
         isTokenABase: isTokenABase,
         depositSkew: depositSkew,
+        isTokenAPrimary: isTokenAPrimary,
+        setIsTokenAPrimary: setIsTokenAPrimary,
         isWithdrawTokenAFromDexChecked: isWithdrawTokenAFromDexChecked,
         setIsWithdrawTokenAFromDexChecked: setIsWithdrawTokenAFromDexChecked,
         isWithdrawTokenBFromDexChecked: isWithdrawTokenBFromDexChecked,
         setIsWithdrawTokenBFromDexChecked: setIsWithdrawTokenBFromDexChecked,
         setIsReversalInProgress: setIsReversalInProgress,
+        isReversalInProgress: isReversalInProgress,
     };
 
     // props for <RangeWidth/> React element
@@ -376,7 +381,7 @@ export default function Range(props: IRangeProps) {
         </>
     );
     const confirmSwapModalOrNull = isModalOpen ? (
-        <Modal onClose={closeModal} title='Swap Confirmation'>
+        <Modal onClose={closeModal} title='Range Confirmation'>
             <ConfirmRangeModal {...rangeModalProps} />
         </Modal>
     ) : null;
