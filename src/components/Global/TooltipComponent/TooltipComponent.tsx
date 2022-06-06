@@ -23,14 +23,14 @@ interface TooltipComponentProps {
 export default function TooltipComponent(props: TooltipComponentProps) {
     return (
         <Tooltip
-            title='Tooltip title'
+            title={props.title}
             placement={props.placement ? props.placement : 'right'}
             arrow
             enterDelay={400}
             leaveDelay={200}
         >
             <div className={styles.icon}>
-                <AiOutlineQuestionCircle size={18} />
+                <AiOutlineQuestionCircle size={15} />
             </div>
         </Tooltip>
     );
