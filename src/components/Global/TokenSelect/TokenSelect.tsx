@@ -3,6 +3,8 @@ import { RiStarFill, RiStarLine } from 'react-icons/ri';
 import { CgUnavailable } from 'react-icons/cg';
 import { setAddressTokenA, setAddressTokenB } from '../../../utils/state/tradeDataSlice';
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
+// import { TokenIF } from '../../../utils/interfaces/TokenIF';
+import { SetStateAction } from 'react';
 import { TokenPairIF } from '../../../utils/interfaces/exports';
 
 interface TokenSelectProps {
@@ -14,10 +16,20 @@ interface TokenSelectProps {
     address: string;
     tokenToUpdate: string;
     closeModal: () => void;
+    setIsReversalInProgress: React.Dispatch<SetStateAction<boolean>>;
 }
 
 export default function TokenSelect(props: TokenSelectProps) {
-    const { icon, symbol, name, address, tokenToUpdate, closeModal, tokenPair } = props;
+    const {
+        icon,
+        symbol,
+        name,
+        address,
+        tokenToUpdate,
+        closeModal,
+        tokenPair,
+        setIsReversalInProgress,
+    } = props;
     function getRandomInt() {
         return Math.floor(Math.random() * 18000);
     }
@@ -31,6 +43,7 @@ export default function TokenSelect(props: TokenSelectProps) {
     const handleClick = (): void => {
         if (tokenToUpdate === 'A') {
             if (tokenPair.dataTokenB.address === address) {
+                setIsReversalInProgress(true);
                 dispatch(setAddressTokenA(address));
                 dispatch(setAddressTokenB(tokenPair.dataTokenA.address));
             } else {
@@ -38,6 +51,7 @@ export default function TokenSelect(props: TokenSelectProps) {
             }
         } else if (tokenToUpdate === 'B') {
             if (tokenPair.dataTokenA.address === address) {
+                setIsReversalInProgress(true);
                 dispatch(setAddressTokenB(address));
                 dispatch(setAddressTokenA(tokenPair.dataTokenB.address));
             } else {

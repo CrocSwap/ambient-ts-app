@@ -20,6 +20,7 @@ interface RangeCurrencySelectorProps {
     isWithdrawTokenBFromDexChecked: boolean;
     setIsWithdrawTokenBFromDexChecked: React.Dispatch<SetStateAction<boolean>>;
     sellToken?: boolean;
+    setIsReversalInProgress: React.Dispatch<SetStateAction<boolean>>;
 }
 
 export default function RangeCurrencySelector(props: RangeCurrencySelectorProps) {
@@ -34,6 +35,7 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
         fieldId,
         sellToken,
         updateOtherQuantity,
+        setIsReversalInProgress,
     } = props;
 
     const thisToken = fieldId === 'A' ? tokenPair.dataTokenA : tokenPair.dataTokenB;
@@ -50,6 +52,7 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                 chainId={chainId}
                 tokenList={tempTokenList}
                 closeModal={closeModal}
+                setIsReversalInProgress={setIsReversalInProgress}
             />
         </Modal>
     ) : null;

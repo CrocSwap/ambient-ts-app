@@ -1,16 +1,19 @@
-import { ChangeEvent, SetStateAction } from 'react';
+import { ChangeEvent, SetStateAction, useEffect, useState } from 'react';
 import styles from './CurrencyConverter.module.css';
 import CurrencySelector from '../CurrencySelector/CurrencySelector';
 import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
 import { setAddressTokenA, setAddressTokenB } from '../../../utils/state/tradeDataSlice';
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
+import truncateDecimals from '../../../utils/data/truncateDecimals';
 
 interface CurrencyConverterPropsIF {
+    isSellTokenBase: boolean;
     tokenPair: TokenPairIF;
     tokensBank: Array<TokenIF>;
     chainId: string;
     isLiq: boolean;
-    poolPrice: number;
+    poolPriceDisplay: number;
+    isSellTokenPrimary: boolean;
     setIsSellTokenPrimary: React.Dispatch<SetStateAction<boolean>>;
     nativeBalance: string;
     tokenABalance: string;
@@ -25,10 +28,12 @@ interface CurrencyConverterPropsIF {
 export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
     const {
         tokenPair,
+        isSellTokenBase,
         tokensBank,
         chainId,
         isLiq,
-        poolPrice,
+        poolPriceDisplay,
+        isSellTokenPrimary,
         setIsSellTokenPrimary,
         isWithdrawFromDexChecked,
         setIsWithdrawFromDexChecked,
@@ -42,44 +47,112 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
     // TODO: consolidate functions into a single function
     // TODO: refactor functions to consider which token is base
 
-    const updateBuyQty = (evt: ChangeEvent<HTMLInputElement>) => {
-        const input = parseFloat(evt.target.value);
-        const output = (1 / poolPrice) * input;
+    const tokenADecimals = tokenPair.dataTokenA.decimals;
+    const tokenBDecimals = tokenPair.dataTokenB.decimals;
+
+    const [sellTokenQty, setSellTokenQty] = useState<number>(0);
+    const [buyTokenQty, setBuyTokenQty] = useState<number>(0);
+
+    const setBuyQtyValue = (value: number) => {
+        if (isReversalInProgress) {
+            const buyQtyField = document.getElementById('buy-quantity') as HTMLInputElement;
+
+            if (buyQtyField) {
+                buyQtyField.value = value.toString();
+                setBuyTokenQty(value);
+            }
+            return;
+        }
+        const output = isSellTokenBase ? (1 / poolPriceDisplay) * value : poolPriceDisplay * value;
+
+        const truncatedOutput = truncateDecimals(output, tokenBDecimals);
         const buyQtyField = document.getElementById('buy-quantity') as HTMLInputElement;
         setIsSellTokenPrimary(true);
         if (buyQtyField) {
-            buyQtyField.value = isNaN(output) ? '' : output.toString();
+            buyQtyField.value = isNaN(truncatedOutput) ? '' : truncatedOutput.toString();
         }
-        if (!isNaN(output) && output > 0) {
+        setBuyTokenQty(truncatedOutput);
+        setSellTokenQty(value);
+        if (!isNaN(truncatedOutput) && truncatedOutput > 0) {
             setSwapAllowed(true);
         } else {
             setSwapAllowed(false);
         }
     };
 
-    const updateSellQty = (evt: ChangeEvent<HTMLInputElement>) => {
-        const input = parseFloat(evt.target.value);
-        const output = poolPrice * input;
+    const [isReversalInProgress, setIsReversalInProgress] = useState<boolean>(false);
+
+    const setSellQtyValue = (value: number) => {
+        if (isReversalInProgress) {
+            const sellQtyField = document.getElementById('sell-quantity') as HTMLInputElement;
+
+            if (sellQtyField) {
+                sellQtyField.value = value.toString();
+                setSellTokenQty(value);
+            }
+            return;
+        }
+
+        const output = isSellTokenBase ? poolPriceDisplay * value : (1 / poolPriceDisplay) * value;
+        const truncatedOutput = truncateDecimals(output, tokenADecimals);
+
         const sellQtyField = document.getElementById('sell-quantity') as HTMLInputElement;
         setIsSellTokenPrimary(false);
         if (sellQtyField) {
-            sellQtyField.value = isNaN(output) ? '' : output.toString();
+            sellQtyField.value = isNaN(truncatedOutput) ? '' : truncatedOutput.toString();
         }
-        if (!isNaN(output) && output > 0) {
+        setSellTokenQty(truncatedOutput);
+        setBuyTokenQty(value);
+
+        if (!isNaN(truncatedOutput) && truncatedOutput > 0) {
             setSwapAllowed(true);
         } else {
             setSwapAllowed(false);
+        }
+    };
+
+    const updateBuyQty = (evt?: ChangeEvent<HTMLInputElement>) => {
+        if (evt) {
+            const input = parseFloat(evt.target.value);
+            setBuyQtyValue(input);
+        } else {
+            if (sellTokenQty) {
+                setBuyQtyValue(sellTokenQty);
+            }
+        }
+    };
+
+    const updateSellQty = (evt?: ChangeEvent<HTMLInputElement>) => {
+        if (evt) {
+            const input = parseFloat(evt.target.value);
+            setSellQtyValue(input);
+        } else {
+            if (buyTokenQty) {
+                setSellQtyValue(buyTokenQty);
+            }
         }
     };
 
     const dispatch = useAppDispatch();
 
     const handleArrowClick = (): void => {
+        setIsReversalInProgress(true);
+
         if (tokenPair) {
             dispatch(setAddressTokenA(tokenPair.dataTokenB.address));
             dispatch(setAddressTokenB(tokenPair.dataTokenA.address));
         }
     };
+
+    useEffect(() => {
+        if (isReversalInProgress) {
+            updateBuyQty();
+            updateSellQty();
+        } else {
+            isSellTokenPrimary ? updateBuyQty() : updateSellQty();
+        }
+        setIsReversalInProgress(false);
+    }, [JSON.stringify(tokenPair), poolPriceDisplay]);
 
     return (
         <section className={styles.currency_converter}>
@@ -98,6 +171,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                 setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
                 isWithdrawToWalletChecked={isWithdrawToWalletChecked}
                 setIsWithdrawToWalletChecked={setIsWithdrawToWalletChecked}
+                setIsReversalInProgress={setIsReversalInProgress}
             />
             <div className={styles.arrow_container} onClick={handleArrowClick}>
                 {isLiq ? null : <span className={styles.arrow} />}
@@ -115,6 +189,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                 isWithdrawFromDexChecked={isWithdrawFromDexChecked}
                 setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
                 isWithdrawToWalletChecked={isWithdrawToWalletChecked}
+                setIsReversalInProgress={setIsReversalInProgress}
                 setIsWithdrawToWalletChecked={setIsWithdrawToWalletChecked}
             />
         </section>

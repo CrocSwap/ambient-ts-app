@@ -27,6 +27,7 @@ interface RangeCurrencyConverterPropsIF {
     };
     isTokenABase: boolean;
     depositSkew: number;
+    setIsReversalInProgress: React.Dispatch<SetStateAction<boolean>>;
     setIsSellTokenPrimary?: React.Dispatch<SetStateAction<boolean>>;
 }
 
@@ -44,6 +45,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         setIsWithdrawTokenAFromDexChecked,
         isWithdrawTokenBFromDexChecked,
         setIsWithdrawTokenBFromDexChecked,
+        setIsReversalInProgress,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -91,6 +93,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         setIsWithdrawTokenAFromDexChecked: setIsWithdrawTokenAFromDexChecked,
         isWithdrawTokenBFromDexChecked: isWithdrawTokenBFromDexChecked,
         setIsWithdrawTokenBFromDexChecked: setIsWithdrawTokenBFromDexChecked,
+        setIsReversalInProgress: setIsReversalInProgress,
     };
 
     return (
