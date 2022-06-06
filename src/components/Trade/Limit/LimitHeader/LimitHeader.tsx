@@ -6,7 +6,7 @@ import ContentHeader from '../../../Global/ContentHeader/ContentHeader';
 
 // START: Import Local Files
 import styles from './LimitHeader.module.css';
-import { TokenPairIF } from '../../../../utils/interfaces/TokenPairIF';
+import { TokenPairIF } from '../../../../utils/interfaces/exports';
 
 // interface for component props
 interface LimitHeaderPropsIF {
