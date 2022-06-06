@@ -1,6 +1,6 @@
 // START: Import Local Files
 import styles from './RangePriceInfo.module.css';
-import { TokenPairIF } from '../../../../utils/interfaces/TokenPairIF';
+import { TokenPairIF } from '../../../../utils/interfaces/exports';
 
 // interface for component props
 interface IRangePriceInfoPropsIF {
