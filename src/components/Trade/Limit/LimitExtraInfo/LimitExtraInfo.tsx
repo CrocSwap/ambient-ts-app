@@ -5,7 +5,7 @@ import { RiArrowDownSLine } from 'react-icons/ri';
 
 // START: Import Local Files
 import styles from './LimitExtraInfo.module.css';
-import { TokenPairIF } from '../../../../utils/interfaces/TokenPairIF';
+import { TokenPairIF } from '../../../../utils/interfaces/exports';
 
 // interface for component props
 interface LimitExtraInfoPropsIF {
