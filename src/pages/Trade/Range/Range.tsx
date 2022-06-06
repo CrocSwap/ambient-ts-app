@@ -156,10 +156,6 @@ export default function Range(props: IRangeProps) {
     const [isReversalInProgress, setIsReversalInProgress] = useState<boolean>(false);
     const [isTokenAPrimary, setIsTokenAPrimary] = useState<boolean>(false);
 
-    useEffect(() => {
-        console.log({ isReversalInProgress });
-    }, [isReversalInProgress]);
-
     const sendTransaction = async () => {
         const tokenAQty = (document.getElementById('A-range-quantity') as HTMLInputElement)?.value;
         let tokenAQtyNonDisplay: BigNumber;

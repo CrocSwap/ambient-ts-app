@@ -56,10 +56,6 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         isReversalInProgress,
     } = props;
 
-    // useEffect(() => {
-    //     console.log({ depositSkew });
-    // }, [depositSkew]);
-
     const dispatch = useAppDispatch();
 
     const [tokenAQty, setTokenAQty] = useState<number>(0);
@@ -68,19 +64,8 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
     const setTokenAQtyValue = (value: number) => {
         setTokenAQty(value);
         if (isReversalInProgress) {
-            console.log('reversing');
-            const tokenBQtyField = document.getElementById('B-range-quantity') as HTMLInputElement;
-
-            if (tokenBQtyField) {
-                tokenBQtyField.value = value.toString();
-                setTokenBQty(value);
-            }
             return;
         }
-
-        console.log({ isTokenABase });
-        console.log({ value });
-        console.log({ isAmbient });
 
         const qtyTokenB = calculateSecondaryDepositQty(
             poolPriceNonDisplay,
@@ -92,8 +77,6 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
             isAmbient,
             depositSkew,
         );
-
-        console.log({ qtyTokenB });
 
         const tokenBQtyField = document.getElementById('B-range-quantity') as HTMLInputElement;
 
@@ -114,13 +97,6 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         setTokenBQty(value);
 
         if (isReversalInProgress) {
-            console.log('reversing');
-            const tokenAQtyField = document.getElementById('A-range-quantity') as HTMLInputElement;
-
-            if (tokenAQtyField) {
-                tokenAQtyField.value = value.toString();
-                setTokenAQty(value);
-            }
             return;
         }
 
@@ -152,34 +128,37 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
 
     const handleTokenAQtyFieldUpdate = (evt?: ChangeEvent<HTMLInputElement>) => {
         if (evt) {
-            console.log('field A manually updated');
             setTokenAQtyValue(parseFloat(evt.target.value));
             setIsTokenAPrimary(true);
         } else {
-            console.log('quanties updated based on field A');
-
             if (tokenAQty) setTokenAQtyValue(tokenAQty);
         }
     };
 
     const handleTokenBQtyFieldUpdate = (evt?: ChangeEvent<HTMLInputElement>) => {
         if (evt) {
-            console.log('field B manually updated');
             setTokenBQtyValue(parseFloat(evt.target.value));
             setIsTokenAPrimary(false);
         } else {
-            console.log('quanties updated based on field B');
             if (tokenBQty) setTokenBQtyValue(tokenBQty);
         }
     };
 
     useEffect(() => {
         if (isReversalInProgress) {
-            handleTokenAQtyFieldUpdate();
-            handleTokenBQtyFieldUpdate();
-        } else {
-            console.log({ isTokenAPrimary });
+            const tokenAQtyField = document.getElementById('A-range-quantity') as HTMLInputElement;
+            const tokenBQtyField = document.getElementById('B-range-quantity') as HTMLInputElement;
 
+            if (tokenAQtyField) {
+                tokenAQtyField.value = tokenBQty.toString();
+                setTokenAQty(tokenBQty);
+            }
+
+            if (tokenBQtyField) {
+                tokenBQtyField.value = tokenAQty.toString();
+                setTokenBQty(tokenAQty);
+            }
+        } else {
             isTokenAPrimary ? handleTokenAQtyFieldUpdate() : handleTokenBQtyFieldUpdate();
         }
         setIsReversalInProgress(false);
