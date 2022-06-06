@@ -1,11 +1,17 @@
+// START: Import React and Dongles
 import { ChangeEvent, SetStateAction } from 'react';
-import styles from './RangeCurrencyConverter.module.css';
+
+// START: Import React Functional Components
 import RangeCurrencySelector from '../RangeCurrencySelector/RangeCurrencySelector';
+
+// START: Import Local Files
+import styles from './RangeCurrencyConverter.module.css';
 import { calculateSecondaryDepositQty } from '../../../../utils/functions/calculateSecondaryDepositQty';
 import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import { setIsTokenAPrimary, setPrimaryQuantity } from '../../../../utils/state/tradeDataSlice';
 
+// interface for component props
 interface RangeCurrencyConverterPropsIF {
     tokensBank: Array<TokenIF>;
     chainId: string;
@@ -24,6 +30,7 @@ interface RangeCurrencyConverterPropsIF {
     setIsSellTokenPrimary?: React.Dispatch<SetStateAction<boolean>>;
 }
 
+// central React functional component
 export default function RangeCurrencyConverter(props: RangeCurrencyConverterPropsIF) {
     const {
         chainId,
@@ -87,9 +94,6 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         <section className={styles.currency_converter}>
             <RangeCurrencySelector
                 fieldId='A'
-                chainId={chainId}
-                tokenPair={tokenPair}
-                tokensBank={tokensBank}
                 updateOtherQuantity={handleChangeQtyTokenA}
                 {...rangeCurrencySelectorProps}
             />
