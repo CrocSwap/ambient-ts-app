@@ -1,7 +1,7 @@
 // START: Import React and Dongles
 import { useMoralis } from 'react-moralis';
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 // START: Import React Functional Components
 import ContentContainer from '../../../components/Global/ContentContainer/ContentContainer';
@@ -45,6 +45,12 @@ export default function Limit() {
         </Modal>
     ) : null;
 
+    const [isReversalInProgress, setIsReversalInProgress] = useState<boolean>(false);
+
+    useEffect(() => {
+        console.log({ isReversalInProgress });
+    }, [isReversalInProgress]);
+
     return (
         <motion.section
             initial={{ width: 0 }}
@@ -61,6 +67,7 @@ export default function Limit() {
                     tokensBank={tokensBank}
                     chainId={chainId ?? '0x2a'}
                     setLimitAllowed={setLimitAllowed}
+                    setIsReversalInProgress={setIsReversalInProgress}
                 />
                 <LimitExtraInfo tokenPair={tokenPair} />
                 <LimitButton onClickFn={openModal} limitAllowed={limitAllowed} />
