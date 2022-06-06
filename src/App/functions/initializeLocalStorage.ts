@@ -1,4 +1,5 @@
 import { fetchTokenLists } from './fetchTokenLists';
+import { defaultTokenLists } from '../../utils/data/defaultTokenLists';
 import { ambientTokenList } from '../../tempdata';
 
 export default function initializeLocalStorage() {
@@ -16,8 +17,8 @@ export default function initializeLocalStorage() {
     const user = JSON.parse(localStorage.getItem('user') as string);
 
     // if user object does not have active token lists, initialize with ambient
-    if (!user.activeTokenLists || user.activeTokenLists.length) {
-        user.activeTokenLists = ['ambient'];
+    if (!user.activeTokenLists || !user.activeTokenLists.length) {
+        user.activeTokenLists = defaultTokenLists;
         userUpdated = true;
     }
 
