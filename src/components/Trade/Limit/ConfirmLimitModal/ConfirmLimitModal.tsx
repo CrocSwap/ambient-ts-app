@@ -4,7 +4,7 @@ import CurrencyDisplay from '../../../Global/CurrencyDisplay/CurrencyDisplay';
 import WaitingConfirmation from '../../../Global/WaitingConfirmation/WaitingConfirmation';
 import TransactionSubmitted from '../../../Global/TransactionSubmitted/TransactionSubmitted';
 import Button from '../../../Global/Button/Button';
-import { TokenPairIF } from '../../../../utils/interfaces/TokenPairIF';
+import { TokenPairIF } from '../../../../utils/interfaces/exports';
 import Divider from '../../../Global/Divider/Divider';
 
 interface ConfirmLimitModalProps {
