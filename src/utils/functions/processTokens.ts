@@ -6,9 +6,8 @@ export const filterTokensByChain = (tkns: Array<TokenIF>, chain: number) => {
 };
 
 export const getCurrentTokens = (chainId: string) => {
-    const tokensInLocalStorage = localStorage.getItem('testTokens');
-    const allTokens = tokensInLocalStorage ? JSON.parse(tokensInLocalStorage) : '';
-    const tokensOnChain = filterTokensByChain(allTokens, parseInt(chainId));
+    const { importedTokens } = JSON.parse(localStorage.getItem('user') as string);
+    const tokensOnChain = filterTokensByChain(importedTokens, parseInt(chainId));
     return tokensOnChain;
 };
 
