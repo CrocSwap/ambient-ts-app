@@ -27,10 +27,11 @@ export default function initializeLocalStorage() {
         user.activeTokenLists = JSON.parse(localStorage.allTokenLists).filter(
             (list: TokenListIF) => list.default === true,
         );
-        console.log(typeof user.activeTokenLists);
         userUpdated = true;
     }
 
+    // if user object does not have imported tokens, initialize with tokens
+    // ... from default lists (see defaultTokenLists.ts file)
     if (!user.importedTokens) {
         user.importedTokens = user.activeTokenLists.map((list: TokenListIF) => list.tokens).flat();
         userUpdated = true;
