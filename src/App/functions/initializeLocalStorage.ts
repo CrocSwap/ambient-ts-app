@@ -32,8 +32,8 @@ export default function initializeLocalStorage() {
     }
 
     if (!user.importedTokens) {
-        // const importedTokens = user.activeTokenLists.map((list: TokenListIF) => list.tokens);
-        // console.log(importedTokens);
+        user.importedTokens = user.activeTokenLists.map((list: TokenListIF) => list.tokens).flat();
+        userUpdated = true;
     }
 
     // if local storage does not have developmental token list, initialize with
