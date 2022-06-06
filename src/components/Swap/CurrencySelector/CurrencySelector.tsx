@@ -7,7 +7,6 @@ import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import Modal from '../../../components/Global/Modal/Modal';
 import TokenSelectContainer from '../../Global/TokenSelectContainer/TokenSelectContainer';
-import { getAmbientTokens } from '../../../tempdata';
 
 interface CurrencySelectorProps {
     tokenPair: TokenPairIF;
@@ -89,8 +88,6 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
 
     const tokenToUpdate = fieldId === 'sell' ? 'A' : 'B';
 
-    const tempTokenList = getAmbientTokens();
-
     const tokenSelectModalOrNull = isModalOpen ? (
         <Modal onClose={closeModal} title='Select Token'>
             <TokenSelectContainer
@@ -98,7 +95,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                 tokensBank={tokensBank}
                 tokenToUpdate={tokenToUpdate}
                 chainId={chainId}
-                tokenList={tempTokenList}
+                tokenList={tokensBank}
                 closeModal={closeModal}
                 setIsReversalInProgress={setIsReversalInProgress}
             />
