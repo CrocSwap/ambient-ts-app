@@ -30,7 +30,7 @@ export default function TooltipComponent(props: TooltipComponentProps) {
             leaveDelay={200}
         >
             <div className={styles.icon}>
-                <AiOutlineQuestionCircle size={18} />
+                <AiOutlineQuestionCircle size={15} />
             </div>
         </Tooltip>
     );
