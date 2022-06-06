@@ -6,6 +6,12 @@ export default function initializeLocalStorage() {
     // boolean to control whether local storage for user data needs updating
     let userUpdated = false;
 
+    // TODO:  @Emily eventually I would like to move the logic for token list
+    // TODO:  ... middleware and writing to local storage out of the function
+    // TODO:  ... call and into this file, but that's complicated because the
+    // TODO:  ... function uses a promise, for now it's easier to leave it
+    // TODO:  ... as it currently is written
+
     // fetch token lists from URIs if none are in local storage
     if (!localStorage.allTokenLists) fetchTokenLists();
 
@@ -18,6 +24,10 @@ export default function initializeLocalStorage() {
 
     // if user object does not have active token lists, initialize with ambient
     if (!user.activeTokenLists || !user.activeTokenLists.length) {
+        const tokenLists = JSON.parse(localStorage.allTokenLists).filter(
+            (list: any) => list.default === true,
+        );
+        console.log(tokenLists);
         user.activeTokenLists = defaultTokenLists;
         userUpdated = true;
     }
