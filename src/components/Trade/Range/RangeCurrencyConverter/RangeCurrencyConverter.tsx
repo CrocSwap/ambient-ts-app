@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { ChangeEvent, SetStateAction } from 'react';
+import { ChangeEvent, SetStateAction, useState, useEffect } from 'react';
 
 // START: Import React Functional Components
 import RangeCurrencySelector from '../RangeCurrencySelector/RangeCurrencySelector';
@@ -9,7 +9,7 @@ import styles from './RangeCurrencyConverter.module.css';
 import { calculateSecondaryDepositQty } from '../../../../utils/functions/calculateSecondaryDepositQty';
 import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
-import { setIsTokenAPrimary, setPrimaryQuantity } from '../../../../utils/state/tradeDataSlice';
+import { setPrimaryQuantity } from '../../../../utils/state/tradeDataSlice';
 
 // interface for component props
 interface RangeCurrencyConverterPropsIF {
@@ -25,8 +25,12 @@ interface RangeCurrencyConverterPropsIF {
         dataTokenA: TokenIF;
         dataTokenB: TokenIF;
     };
+    isTokenAPrimary: boolean;
+    setIsTokenAPrimary: React.Dispatch<SetStateAction<boolean>>;
     isTokenABase: boolean;
+    isAmbient: boolean;
     depositSkew: number;
+    isReversalInProgress: boolean;
     setIsReversalInProgress: React.Dispatch<SetStateAction<boolean>>;
     setIsSellTokenPrimary?: React.Dispatch<SetStateAction<boolean>>;
 }
@@ -40,49 +44,146 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         poolPriceNonDisplay,
         tokenPair,
         isTokenABase,
+        isTokenAPrimary,
+        setIsTokenAPrimary,
+        isAmbient,
         depositSkew,
         isWithdrawTokenAFromDexChecked,
         setIsWithdrawTokenAFromDexChecked,
         isWithdrawTokenBFromDexChecked,
         setIsWithdrawTokenBFromDexChecked,
         setIsReversalInProgress,
+        isReversalInProgress,
     } = props;
+
+    // useEffect(() => {
+    //     console.log({ depositSkew });
+    // }, [depositSkew]);
 
     const dispatch = useAppDispatch();
 
-    const handleChangeQtyTokenA = (evt: ChangeEvent<HTMLInputElement>) => {
+    const [tokenAQty, setTokenAQty] = useState<number>(0);
+    const [tokenBQty, setTokenBQty] = useState<number>(0);
+
+    const setTokenAQtyValue = (value: number) => {
+        setTokenAQty(value);
+        if (isReversalInProgress) {
+            console.log('reversing');
+            const tokenBQtyField = document.getElementById('B-range-quantity') as HTMLInputElement;
+
+            if (tokenBQtyField) {
+                tokenBQtyField.value = value.toString();
+                setTokenBQty(value);
+            }
+            return;
+        }
+
+        console.log({ isTokenABase });
+        console.log({ value });
+        console.log({ isAmbient });
+
         const qtyTokenB = calculateSecondaryDepositQty(
             poolPriceNonDisplay,
             tokenPair.dataTokenA.decimals,
             tokenPair.dataTokenB.decimals,
-            evt.target.value,
+            value.toString(),
             true,
             isTokenABase,
-            false,
+            isAmbient,
             depositSkew,
-        )?.toString();
-        const fieldToUpdate = document.getElementById('B-range-quantity') as HTMLInputElement;
-        fieldToUpdate.value = typeof qtyTokenB === 'string' ? qtyTokenB : '';
-        dispatch(setPrimaryQuantity(evt.target.value));
-        dispatch(setIsTokenAPrimary(true));
+        );
+
+        console.log({ qtyTokenB });
+
+        const tokenBQtyField = document.getElementById('B-range-quantity') as HTMLInputElement;
+
+        if (qtyTokenB) {
+            tokenBQtyField.value = typeof qtyTokenB === 'string' ? qtyTokenB : qtyTokenB.toString();
+            dispatch(setPrimaryQuantity(value.toString()));
+            setIsTokenAPrimary(true);
+            setTokenBQty(qtyTokenB);
+        } else {
+            tokenBQtyField.value = '';
+            dispatch(setPrimaryQuantity('0'));
+            setIsTokenAPrimary(true);
+            setTokenBQty(0);
+        }
     };
 
-    const handleChangeQtyTokenB = (evt: ChangeEvent<HTMLInputElement>) => {
+    const setTokenBQtyValue = (value: number) => {
+        setTokenBQty(value);
+
+        if (isReversalInProgress) {
+            console.log('reversing');
+            const tokenAQtyField = document.getElementById('A-range-quantity') as HTMLInputElement;
+
+            if (tokenAQtyField) {
+                tokenAQtyField.value = value.toString();
+                setTokenAQty(value);
+            }
+            return;
+        }
+
         const qtyTokenA = calculateSecondaryDepositQty(
             poolPriceNonDisplay,
             tokenPair.dataTokenA.decimals,
             tokenPair.dataTokenB.decimals,
-            evt.target.value,
+            value.toString(),
             false,
             isTokenABase,
-            false,
+            isAmbient,
             depositSkew,
-        )?.toString();
-        const fieldToUpdate = document.getElementById('A-range-quantity') as HTMLInputElement;
-        fieldToUpdate.value = typeof qtyTokenA === 'string' ? qtyTokenA : '';
-        dispatch(setPrimaryQuantity(evt.target.value));
-        dispatch(setIsTokenAPrimary(false));
+        );
+        console.log({ qtyTokenA });
+
+        const tokenAQtyField = document.getElementById('A-range-quantity') as HTMLInputElement;
+        if (qtyTokenA) {
+            tokenAQtyField.value = typeof qtyTokenA === 'string' ? qtyTokenA : qtyTokenA.toString();
+            dispatch(setPrimaryQuantity(value.toString()));
+            setIsTokenAPrimary(false);
+            setTokenAQty(qtyTokenA);
+        } else {
+            tokenAQtyField.value = '';
+            dispatch(setPrimaryQuantity('0'));
+            setIsTokenAPrimary(false);
+            setTokenAQty(0);
+        }
     };
+
+    const handleTokenAQtyFieldUpdate = (evt?: ChangeEvent<HTMLInputElement>) => {
+        if (evt) {
+            console.log('field A manually updated');
+            setTokenAQtyValue(parseFloat(evt.target.value));
+            setIsTokenAPrimary(true);
+        } else {
+            console.log('quanties updated based on field A');
+
+            if (tokenAQty) setTokenAQtyValue(tokenAQty);
+        }
+    };
+
+    const handleTokenBQtyFieldUpdate = (evt?: ChangeEvent<HTMLInputElement>) => {
+        if (evt) {
+            console.log('field B manually updated');
+            setTokenBQtyValue(parseFloat(evt.target.value));
+            setIsTokenAPrimary(false);
+        } else {
+            console.log('quanties updated based on field B');
+            if (tokenBQty) setTokenBQtyValue(tokenBQty);
+        }
+    };
+
+    useEffect(() => {
+        if (isReversalInProgress) {
+            handleTokenAQtyFieldUpdate();
+            handleTokenBQtyFieldUpdate();
+        } else {
+            console.log({ isTokenAPrimary });
+
+            isTokenAPrimary ? handleTokenAQtyFieldUpdate() : handleTokenBQtyFieldUpdate();
+        }
+        setIsReversalInProgress(false);
+    }, [JSON.stringify(tokenPair), poolPriceNonDisplay, depositSkew]);
 
     // props for <RangeCurrencyConverter/> React element
     const rangeCurrencySelectorCommonProps = {
@@ -100,7 +201,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         <section className={styles.currency_converter}>
             <RangeCurrencySelector
                 fieldId='A'
-                updateOtherQuantity={handleChangeQtyTokenA}
+                updateOtherQuantity={handleTokenAQtyFieldUpdate}
                 {...rangeCurrencySelectorCommonProps}
             />
             <div className={styles.arrow_container}>
@@ -108,7 +209,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
             </div>
             <RangeCurrencySelector
                 fieldId='B'
-                updateOtherQuantity={handleChangeQtyTokenB}
+                updateOtherQuantity={handleTokenBQtyFieldUpdate}
                 {...rangeCurrencySelectorCommonProps}
             />
         </section>
