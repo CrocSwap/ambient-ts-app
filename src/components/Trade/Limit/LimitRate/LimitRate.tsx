@@ -10,7 +10,6 @@ import { TokenIF, TokenPairIF } from '../../../../utils/interfaces/exports';
 import Modal from '../../../../components/Global/Modal/Modal';
 import TokenSelectContainer from '../../../Global/TokenSelectContainer/TokenSelectContainer';
 import { useModal } from '../../../../components/Global/Modal/useModal';
-import { getAmbientTokens } from '../../../../tempdata';
 
 interface LimitRateProps {
     tokenPair: TokenPairIF;
@@ -29,7 +28,6 @@ export default function LimitRate(props: LimitRateProps) {
     const [isChecked, setIsChecked] = useState<boolean>(false);
 
     const [isModalOpen, openModal, closeModal] = useModal();
-    const tempTokenList = getAmbientTokens();
 
     const tokenSelectModalOrNull = isModalOpen ? (
         <Modal onClose={closeModal} title='Select Token'>
@@ -38,7 +36,7 @@ export default function LimitRate(props: LimitRateProps) {
                 tokensBank={tokensBank}
                 tokenToUpdate={'B'}
                 chainId={chainId}
-                tokenList={tempTokenList}
+                tokenList={tokensBank}
                 closeModal={closeModal}
                 setIsReversalInProgress={setIsReversalInProgress}
             />
