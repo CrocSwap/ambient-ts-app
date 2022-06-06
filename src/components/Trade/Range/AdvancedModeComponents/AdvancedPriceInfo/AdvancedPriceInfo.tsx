@@ -1,5 +1,5 @@
 import styles from './AdvancedPriceInfo.module.css';
-import { TokenPairIF } from '../../../../../utils/interfaces/TokenPairIF';
+import { TokenPairIF } from '../../../../../utils/interfaces/exports';
 
 interface AdvancedPriceInfoIF {
     tokenPair: TokenPairIF;
