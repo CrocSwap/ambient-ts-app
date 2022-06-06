@@ -2,8 +2,11 @@ import { TokenIF } from '../interfaces/exports';
 
 export const makeUserTokenList = () => {
     // let importedTokens;
-    if (!localStorage.user.importedTokens) {
+    if (localStorage.user && !localStorage.user.importedTokens) {
         console.log('no importedTokens in local storage user object');
+        const { activeTokenLists } = JSON.parse(localStorage.user);
+        console.log(activeTokenLists);
+        
     }
 };
 
