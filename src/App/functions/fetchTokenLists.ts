@@ -17,7 +17,6 @@ export function fetchTokenLists() {
         const list = listName as tokenListURIsKey;
         return tokenListURIs[list];
     });
-    console.log(defaultListURIs);
     // when all promises have been resolved, send to local storage
     // IMPORTANT!  because of how `Promise.all` works, if a single
     // ... promise is rejected, the function will not execute, if
