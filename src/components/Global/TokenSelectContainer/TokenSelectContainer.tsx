@@ -2,12 +2,10 @@ import styles from './TokenSelectContainer.module.css';
 import { useState } from 'react';
 import TokenSelect from '../TokenSelect/TokenSelect';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
+import { TokenPairIF } from '../../../utils/interfaces/TokenPairIF';
 
 interface TokenSelectContainerPropsIF {
-    tokenPair: {
-        dataTokenA: TokenIF;
-        dataTokenB: TokenIF;
-    };
+    tokenPair: TokenPairIF;
     tokensBank: Array<TokenIF>;
     tokenList?: Array<TokenIF>;
     chainId?: string;

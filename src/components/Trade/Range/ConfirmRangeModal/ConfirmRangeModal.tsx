@@ -6,18 +6,14 @@ import Button from '../../../Global/Button/Button';
 import { useState } from 'react';
 import WaitingConfirmation from '../../../Global/WaitingConfirmation/WaitingConfirmation';
 import TransactionSubmitted from '../../../Global/TransactionSubmitted/TransactionSubmitted';
-import { TokenIF } from '../../../../utils/interfaces/TokenIF';
+import { TokenPairIF } from '../../../../utils/interfaces/TokenPairIF';
 
 interface ConfirmRangeModalProps {
     sendTransaction: () => void;
     closeModal: () => void;
     newRangeTransactionHash: string;
     setNewRangeTransactionHash: React.Dispatch<React.SetStateAction<string>>;
-
-    tokenPair: {
-        dataTokenA: TokenIF;
-        dataTokenB: TokenIF;
-    };
+    tokenPair: TokenPairIF;
     spotPriceDisplay: string;
     maxPriceDisplay: string;
     minPriceDisplay: string;

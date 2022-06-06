@@ -1,12 +1,9 @@
 import styles from './RangeDenominationSwitch.module.css';
 import { SetStateAction } from 'react';
-import { TokenIF } from '../../../../utils/interfaces/TokenIF';
+import { TokenPairIF } from '../../../../utils/interfaces/TokenPairIF';
 
 interface IRangeDenominationSwitchProps {
-    tokenPair: {
-        dataTokenA: TokenIF;
-        dataTokenB: TokenIF;
-    };
+    tokenPair: TokenPairIF;
     setDenominationsInBase: React.Dispatch<SetStateAction<boolean>>;
     denominationsInBase: boolean;
 }
