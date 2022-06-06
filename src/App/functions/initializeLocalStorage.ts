@@ -1,6 +1,6 @@
 import { fetchTokenLists } from './fetchTokenLists';
-import { defaultTokenLists } from '../../utils/data/defaultTokenLists';
 import { ambientTokenList } from '../../tempdata';
+import { TokenListIF } from '../../utils/interfaces/exports';
 
 export default function initializeLocalStorage() {
     // boolean to control whether local storage for user data needs updating
@@ -24,11 +24,9 @@ export default function initializeLocalStorage() {
 
     // if user object does not have active token lists, initialize with ambient
     if (!user.activeTokenLists || !user.activeTokenLists.length) {
-        const tokenLists = JSON.parse(localStorage.allTokenLists).filter(
-            (list: any) => list.default === true,
+        user.activeTokenLists = JSON.parse(localStorage.allTokenLists).filter(
+            (list: TokenListIF) => list.default === true,
         );
-        console.log(tokenLists);
-        user.activeTokenLists = defaultTokenLists;
         userUpdated = true;
     }
 

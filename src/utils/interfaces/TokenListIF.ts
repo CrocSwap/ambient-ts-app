@@ -1,6 +1,6 @@
 import { TokenIF } from './TokenIF';
 
-export default interface TokenListIF {
+export interface TokenListIF {
     keywords: Array<string>;
     logoURI: string;
     name: string;
@@ -14,5 +14,5 @@ export default interface TokenListIF {
     // eslint-disable-next-line
     tags?: any;
     default?: boolean;
-    uri: string;
+    uri?: string;
 }
