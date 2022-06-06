@@ -6,6 +6,7 @@ export const kovanETH = {
     chainId: 42,
     logoURI:
         'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
+    fromList: '/ambient-token-list.json',
 };
 
 export const kovanUSDC = {
@@ -16,6 +17,7 @@ export const kovanUSDC = {
     chainId: 42,
     logoURI:
         'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
+    fromList: '/ambient-token-list.json',
 };
 
 export const kovanDAI = {
@@ -25,4 +27,5 @@ export const kovanDAI = {
     decimals: 18,
     chainId: 42,
     logoURI: 'https://tokens.1inch.io/0x6b175474e89094c44da98b954eedeac495271d0f.png',
+    fromList: '/ambient-token-list.json',
 };

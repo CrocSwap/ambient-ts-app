@@ -1,5 +1,6 @@
 import { tokenListURIs } from '../../utils/data/tokenURIs';
 import { defaultTokenLists } from '../../utils/data/defaultTokenLists';
+import { TokenIF } from '../../utils/interfaces/exports';
 
 export function fetchTokenLists() {
     // create an array of promises to fetch all token lists in the URIs file
@@ -24,6 +25,9 @@ export function fetchTokenLists() {
     // ... Promise.allSettled()
     Promise.all(tokenLists).then((results) => {
         results.forEach((list) => (list.default = defaultListURIs.includes(list.uri)));
+        results.forEach((list) => {
+            list.tokens.forEach((token: TokenIF) => (token.fromList = list.uri));
+        });
         localStorage.setItem('allTokenLists', JSON.stringify(results));
     });
 }
