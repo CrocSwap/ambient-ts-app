@@ -6,7 +6,11 @@ export const makeUserTokenList = () => {
         console.log('no importedTokens in local storage user object');
         const { activeTokenLists } = JSON.parse(localStorage.user);
         console.log(activeTokenLists);
-        
+        const activeTokens = activeTokenLists.map((token: string) => {
+            const tokenList = JSON.parse(localStorage.allTokenLists)[token];
+            return tokenList;
+        });
+        console.log(activeTokens);
     }
 };
 
