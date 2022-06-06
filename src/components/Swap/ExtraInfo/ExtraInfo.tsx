@@ -7,6 +7,7 @@ import { RiArrowDownSLine } from 'react-icons/ri';
 import styles from './ExtraInfo.module.css';
 import truncateDecimals from '../../../utils/data/truncateDecimals';
 import { TokenPairIF } from '../../../utils/interfaces/exports';
+import TooltipComponent from '../../Global/TooltipComponent/TooltipComponent';
 
 // interface for props in this file
 interface ExtraInfoProps {
@@ -47,30 +48,39 @@ export default function ExtraInfo(props: ExtraInfoProps) {
               4,
           );
 
+    const extraInfoData = [
+        {
+            title: 'Spot Price',
+            tooltipTitle: 'spot price explanation',
+            data: `${spotPriceDisplayQuoteForBase} ${tokenPair.dataTokenB.symbol} per ${tokenPair.dataTokenA.symbol}`,
+        },
+        {
+            title: 'Price Limit after Slippage and Fee',
+            tooltipTitle: 'price limit explanation',
+            data: `${priceLimitAfterSlippageAndFee} ${tokenPair.dataTokenB.symbol} per ${tokenPair.dataTokenA.symbol}`,
+        },
+        {
+            title: 'Slippage Tolerance',
+            tooltipTitle: 'slippage tolerance explanation',
+            data: `${slippageTolerance}%`,
+        },
+        {
+            title: 'Liquidity Provider Fee',
+            tooltipTitle: 'liquidity provider fee explanation',
+            data: `${liquidityProviderFee}%`,
+        },
+    ];
     const extraInfoDetails = (
         <div className={styles.extra_details}>
-            <div className={styles.extra_row}>
-                <span>Spot Price</span>
-                <span>
-                    {spotPriceDisplayQuoteForBase} {tokenPair.dataTokenB.symbol} per{' '}
-                    {tokenPair.dataTokenA.symbol}
-                </span>
-            </div>
-            <div className={styles.extra_row}>
-                <span>Price Limit after Slippage and Fee</span>
-                <span>
-                    {priceLimitAfterSlippageAndFee} {tokenPair.dataTokenB.symbol} per{' '}
-                    {tokenPair.dataTokenA.symbol}
-                </span>
-            </div>
-            <div className={styles.extra_row}>
-                <span>Slippage Tolerance</span>
-                <span>{slippageTolerance}%</span>
-            </div>
-            <div className={styles.extra_row}>
-                <span>Liquidity Provider Fee</span>
-                <span>{liquidityProviderFee}%</span>
-            </div>
+            {extraInfoData.map((item, idx) => (
+                <div className={styles.extra_row} key={idx}>
+                    <div className={styles.align_center}>
+                        <div>{item.title}</div>
+                        <TooltipComponent title={item.title} />
+                    </div>
+                    <div>{item.data}</div>
+                </div>
+            ))}
         </div>
     );
 

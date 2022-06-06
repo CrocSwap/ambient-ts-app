@@ -179,6 +179,7 @@ export default function Swap(props: ISwapProps) {
     const [poolPriceNonDisplay, setPoolPriceNonDisplay] = useState(0);
     const [newSwapTransactionHash, setNewSwapTransactionHash] = useState('');
 
+    // useEffect to get non-display spot price when tokens change and block updates
     useEffect(() => {
         if (baseTokenAddress && quoteTokenAddress) {
             (async () => {
@@ -197,6 +198,7 @@ export default function Swap(props: ISwapProps) {
 
     const [poolPriceDisplay, setPoolPriceDisplay] = useState(0);
 
+    // useEffect to get display spot price when tokens change and block updates
     useEffect(() => {
         if (baseTokenAddress && quoteTokenAddress) {
             (async () => {

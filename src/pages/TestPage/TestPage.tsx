@@ -1,6 +1,7 @@
 import SnackbarComponent from '../../components/Global/SnackbarComponent/SnackbarComponent';
 import { useState } from 'react';
 import TooltipComponent from '../../components/Global/TooltipComponent/TooltipComponent';
+import PoolCard from '../../components/Global/PoolCard/PoolCard';
 
 export default function TestPage() {
     const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
@@ -17,6 +18,7 @@ export default function TestPage() {
                 I am snackbar
             </SnackbarComponent>
             <TooltipComponent title='Snackbar title' />
+            <PoolCard />
         </main>
     );
 }
