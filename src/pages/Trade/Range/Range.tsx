@@ -369,7 +369,7 @@ export default function Range(props: IRangeProps) {
             data-testid={'range'}
         >
             <ContentContainer isOnTradeRoute>
-                <RangeHeader />
+                <RangeHeader tokenPair={tokenPair} />
                 {denominationSwitch}
                 <DividerDark />
                 <RangeCurrencyConverter {...rangeCurrencyConverterProps} />
