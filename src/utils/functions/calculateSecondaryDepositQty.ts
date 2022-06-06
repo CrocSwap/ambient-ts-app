@@ -18,15 +18,18 @@ export const calculateSecondaryDepositQty = (
     const isPrimaryTokenBase =
         (isTokenAPrimary && isTokenABase) || (!isTokenAPrimary && !isTokenABase);
 
-    console.log({
-        isAmbientPosition,
-        poolDisplayPrice,
-        isTokenAPrimary,
-        isTokenABase,
-        depositSkew,
-        isPrimaryTokenBase,
-        primaryInputValueStr,
-    });
+    // console.log({
+    //     baseDecimals,
+    //     quoteDecimals,
+    //     isAmbientPosition,
+    //     poolPriceNonDisplay,
+    //     poolDisplayPrice,
+    //     isTokenAPrimary,
+    //     isTokenABase,
+    //     depositSkew,
+    //     isPrimaryTokenBase,
+    //     primaryInputValueStr,
+    // });
 
     let secondaryQuantity;
 
