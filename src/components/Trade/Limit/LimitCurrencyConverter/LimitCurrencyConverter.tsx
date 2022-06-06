@@ -7,8 +7,7 @@ import LimitRate from '../LimitRate/LimitRate';
 
 // START: Import Local Files
 import styles from './LimitCurrencyConverter.module.css';
-import { TokenIF } from '../../../../utils/interfaces/TokenIF';
-import { TokenPairIF } from '../../../../utils/interfaces/TokenPairIF';
+import { TokenIF, TokenPairIF } from '../../../../utils/interfaces/exports';
 
 // interface for component props
 interface LimitCurrencyConverterProps {
