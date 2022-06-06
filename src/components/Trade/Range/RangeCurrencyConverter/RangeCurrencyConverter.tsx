@@ -83,7 +83,10 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
     };
 
     // props for <RangeCurrencyConverter/> React element
-    const rangeCurrencySelectorProps = {
+    const rangeCurrencySelectorCommonProps = {
+        chainId: chainId,
+        tokenPair: tokenPair,
+        tokensBank: tokensBank,
         isWithdrawTokenAFromDexChecked: isWithdrawTokenAFromDexChecked,
         setIsWithdrawTokenAFromDexChecked: setIsWithdrawTokenAFromDexChecked,
         isWithdrawTokenBFromDexChecked: isWithdrawTokenBFromDexChecked,
@@ -95,18 +98,15 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
             <RangeCurrencySelector
                 fieldId='A'
                 updateOtherQuantity={handleChangeQtyTokenA}
-                {...rangeCurrencySelectorProps}
+                {...rangeCurrencySelectorCommonProps}
             />
             <div className={styles.arrow_container}>
                 {isLiq ? null : <span className={styles.arrow} />}
             </div>
             <RangeCurrencySelector
                 fieldId='B'
-                chainId={chainId}
-                tokenPair={tokenPair}
-                tokensBank={tokensBank}
                 updateOtherQuantity={handleChangeQtyTokenB}
-                {...rangeCurrencySelectorProps}
+                {...rangeCurrencySelectorCommonProps}
             />
         </section>
     );
