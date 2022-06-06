@@ -1,17 +1,14 @@
 import styles from './RangeDenominationSwitch.module.css';
 import { SetStateAction } from 'react';
-import { TokenIF } from '../../../../utils/interfaces/TokenIF';
+import { TokenPairIF } from '../../../../utils/interfaces/exports';
 
-interface IRangeDenominationSwitchProps {
-    tokenPair: {
-        dataTokenA: TokenIF;
-        dataTokenB: TokenIF;
-    };
+interface RangeDenominationSwitchPropsIF {
+    tokenPair: TokenPairIF;
     setDenominationsInBase: React.Dispatch<SetStateAction<boolean>>;
     denominationsInBase: boolean;
 }
 
-export default function RangeDenominationSwitch(props: IRangeDenominationSwitchProps) {
+export default function RangeDenominationSwitch(props: RangeDenominationSwitchPropsIF) {
     const { tokenPair, denominationsInBase, setDenominationsInBase } = props;
     const toggleDenomination = () => {
         denominationsInBase ? setDenominationsInBase(false) : setDenominationsInBase(true);

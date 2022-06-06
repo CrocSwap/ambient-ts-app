@@ -7,14 +7,11 @@ import LimitRate from '../LimitRate/LimitRate';
 
 // START: Import Local Files
 import styles from './LimitCurrencyConverter.module.css';
-import { TokenIF } from '../../../../utils/interfaces/TokenIF';
+import { TokenIF, TokenPairIF } from '../../../../utils/interfaces/exports';
 
 // interface for component props
 interface LimitCurrencyConverterProps {
-    tokenPair: {
-        dataTokenA: TokenIF;
-        dataTokenB: TokenIF;
-    };
+    tokenPair: TokenPairIF;
     tokensBank: Array<TokenIF>;
     chainId: string;
     poolPrice?: number;

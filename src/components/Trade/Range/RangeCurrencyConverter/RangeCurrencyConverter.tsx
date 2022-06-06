@@ -2,7 +2,7 @@ import { ChangeEvent, SetStateAction } from 'react';
 import styles from './RangeCurrencyConverter.module.css';
 import RangeCurrencySelector from '../RangeCurrencySelector/RangeCurrencySelector';
 // import { calculateSecondaryDepositQty } from '../../../../utils/functions/calculateSecondaryDepositQty';
-import { TokenIF } from '../../../../utils/interfaces/TokenIF';
+import { TokenIF, TokenPairIF } from '../../../../utils/interfaces/exports';
 
 interface RangeCurrencyConverterProps {
     tokensBank: Array<TokenIF>;
@@ -13,10 +13,7 @@ interface RangeCurrencyConverterProps {
     setIsWithdrawTokenBFromDexChecked: React.Dispatch<SetStateAction<boolean>>;
     isLiq?: boolean;
     poolPriceNonDisplay: number;
-    tokenPair: {
-        dataTokenA: TokenIF;
-        dataTokenB: TokenIF;
-    };
+    tokenPair: TokenPairIF;
     isTokenABase: boolean;
     depositSkew: number;
     setIsReversalInProgress: React.Dispatch<SetStateAction<boolean>>;

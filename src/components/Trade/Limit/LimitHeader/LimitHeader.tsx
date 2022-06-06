@@ -6,14 +6,11 @@ import ContentHeader from '../../../Global/ContentHeader/ContentHeader';
 
 // START: Import Local Files
 import styles from './LimitHeader.module.css';
-import { TokenIF } from '../../../../utils/interfaces/TokenIF';
+import { TokenPairIF } from '../../../../utils/interfaces/exports';
 
 // interface for component props
 interface LimitHeaderPropsIF {
-    tokenPair: {
-        dataTokenA: TokenIF;
-        dataTokenB: TokenIF;
-    };
+    tokenPair: TokenPairIF;
 }
 
 // central react functional component

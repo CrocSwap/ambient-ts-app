@@ -6,17 +6,14 @@ import {
     SetStateAction,
     // ChangeEvent
 } from 'react';
-import { TokenIF } from '../../../../utils/interfaces/TokenIF';
+import { TokenIF, TokenPairIF } from '../../../../utils/interfaces/exports';
 import Modal from '../../../../components/Global/Modal/Modal';
 import TokenSelectContainer from '../../../Global/TokenSelectContainer/TokenSelectContainer';
 import { useModal } from '../../../../components/Global/Modal/useModal';
 import { getAmbientTokens } from '../../../../tempdata';
 
 interface LimitRateProps {
-    tokenPair: {
-        dataTokenA: TokenIF;
-        dataTokenB: TokenIF;
-    };
+    tokenPair: TokenPairIF;
     tokensBank: Array<TokenIF>;
     fieldId: string;
     chainId: string;

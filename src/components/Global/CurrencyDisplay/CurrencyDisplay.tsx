@@ -1,5 +1,5 @@
 import styles from './CurrencyDisplay.module.css';
-import { TokenIF } from '../../../utils/interfaces/TokenIF';
+import { TokenIF } from '../../../utils/interfaces/exports';
 
 // we will eventually get the data passed down as props through token data.
 // For now, token data is hardcoded

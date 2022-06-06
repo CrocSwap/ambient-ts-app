@@ -3,17 +3,14 @@ import CurrencyQuantity from '../CurrencyQuantity/CurrencyQuantity';
 import { RiArrowDownSLine } from 'react-icons/ri';
 import Toggle from '../../Global/Toggle/Toggle';
 import { useState, ChangeEvent, SetStateAction } from 'react';
-import { TokenIF } from '../../../utils/interfaces/TokenIF';
+import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import Modal from '../../../components/Global/Modal/Modal';
 import TokenSelectContainer from '../../Global/TokenSelectContainer/TokenSelectContainer';
 import { getAmbientTokens } from '../../../tempdata';
 
 interface CurrencySelectorProps {
-    tokenPair: {
-        dataTokenA: TokenIF;
-        dataTokenB: TokenIF;
-    };
+    tokenPair: TokenPairIF;
     tokensBank: Array<TokenIF>;
     chainId: string;
     fieldId: string;

@@ -3,14 +3,12 @@ import { RiStarFill, RiStarLine } from 'react-icons/ri';
 import { CgUnavailable } from 'react-icons/cg';
 import { setAddressTokenA, setAddressTokenB } from '../../../utils/state/tradeDataSlice';
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
-import { TokenIF } from '../../../utils/interfaces/TokenIF';
+// import { TokenIF } from '../../../utils/interfaces/TokenIF';
 import { SetStateAction } from 'react';
+import { TokenPairIF } from '../../../utils/interfaces/exports';
 
 interface TokenSelectProps {
-    tokenPair: {
-        dataTokenA: TokenIF;
-        dataTokenB: TokenIF;
-    };
+    tokenPair: TokenPairIF;
     icon: string;
     qty?: number;
     symbol: string;

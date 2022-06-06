@@ -4,7 +4,7 @@ import CurrencyDisplay from '../../Global/CurrencyDisplay/CurrencyDisplay';
 import WaitingConfirmation from '../../Global/WaitingConfirmation/WaitingConfirmation';
 import TransactionSubmitted from '../../Global/TransactionSubmitted/TransactionSubmitted';
 import Button from '../../Global/Button/Button';
-import { TokenIF } from '../../../utils/interfaces/TokenIF';
+import { TokenPairIF } from '../../../utils/interfaces/exports';
 import Divider from '../../Global/Divider/Divider';
 
 interface ConfirmSwapModalProps {
@@ -12,10 +12,7 @@ interface ConfirmSwapModalProps {
     onClose: () => void;
     newSwapTransactionHash: string;
     setNewSwapTransactionHash: React.Dispatch<React.SetStateAction<string>>;
-    tokenPair: {
-        dataTokenA: TokenIF;
-        dataTokenB: TokenIF;
-    };
+    tokenPair: TokenPairIF;
 }
 
 export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {

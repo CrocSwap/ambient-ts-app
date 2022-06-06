@@ -1,13 +1,10 @@
 // START: Import Local Files
 import styles from './RangePriceInfo.module.css';
-import { TokenIF } from '../../../../utils/interfaces/TokenIF';
+import { TokenPairIF } from '../../../../utils/interfaces/exports';
 
 // interface for component props
 interface IRangePriceInfoPropsIF {
-    tokenPair: {
-        dataTokenA: TokenIF;
-        dataTokenB: TokenIF;
-    };
+    tokenPair: TokenPairIF;
     spotPriceDisplay: string;
     maxPriceDisplay: string;
     minPriceDisplay: string;

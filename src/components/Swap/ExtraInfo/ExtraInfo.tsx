@@ -6,14 +6,11 @@ import { RiArrowDownSLine } from 'react-icons/ri';
 // START: Import Local Files
 import styles from './ExtraInfo.module.css';
 import truncateDecimals from '../../../utils/data/truncateDecimals';
-import { TokenIF } from '../../../utils/interfaces/TokenIF';
+import { TokenPairIF } from '../../../utils/interfaces/exports';
 
 // interface for props in this file
 interface ExtraInfoProps {
-    tokenPair: {
-        dataTokenA: TokenIF;
-        dataTokenB: TokenIF;
-    };
+    tokenPair: TokenPairIF;
     poolPriceDisplay: number;
     slippageTolerance: number;
     liquidityProviderFee: number;
