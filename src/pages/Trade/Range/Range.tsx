@@ -5,7 +5,6 @@ import { motion } from 'framer-motion';
 import { BigNumber } from 'ethers';
 import { JsonRpcProvider } from '@ethersproject/providers';
 import {
-    contractAddresses,
     sendAmbientMint,
     liquidityForBaseQty,
     fromDisplayQty,
@@ -19,11 +18,11 @@ import {
     tickToPrice,
     toDisplayPrice,
     concDepositSkew,
-    getBaseTokenAddress,
     GRID_SIZE_DFLT,
     MIN_TICK,
     MAX_TICK,
     concPosSlot,
+    sortBaseQuoteTokens,
 } from '@crocswap-libs/sdk';
 
 // START: Import JSX Elements
@@ -62,8 +61,6 @@ export default function Range(props: IRangeProps) {
     const { provider, lastBlockNumber } = props;
     const { save } = useNewMoralisObject('UserPosition');
 
-    const daiKovanAddress = '0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa';
-
     const [poolPriceNonDisplay, setPoolPriceNonDisplay] = useState(0);
     const [poolPriceDisplay, setPoolPriceDisplay] = useState('');
     const [rangeWidthPercentage, setRangeWidthPercentage] = useState(100);
@@ -85,43 +82,69 @@ export default function Range(props: IRangeProps) {
         dataTokenB: findTokenByAddress(tradeData.addressTokenB, tokensBank) ?? kovanUSDC,
     };
 
-    const isTokenABase =
-        getBaseTokenAddress(tradeData.addressTokenA, tradeData.addressTokenB) ===
-        tradeData.addressTokenA;
+    // const isTokenABase =
+    //     getBaseTokenAddress(tradeData.addressTokenA, tradeData.addressTokenB) ===
+    //     tradeData.addressTokenA;
 
     const isAmbient = rangeWidthPercentage === 100;
 
+    const [baseTokenAddress, setBaseTokenAddress] = useState<string>('');
+    const [quoteTokenAddress, setQuoteTokenAddress] = useState<string>('');
+
+    const [isTokenABase, setIsTokenABase] = useState<boolean>(true);
+
+    // useEffect to set baseTokenAddress and quoteTokenAddress when pair changes
     useEffect(() => {
-        (async () => {
-            const spotPrice = await getSpotPrice(
-                contractAddresses.ZERO_ADDR,
-                daiKovanAddress,
-                POOL_PRIMARY,
-                provider,
+        if (tokenPair.dataTokenA.address && tokenPair.dataTokenB.address) {
+            const sortedTokens = sortBaseQuoteTokens(
+                tokenPair.dataTokenA.address,
+                tokenPair.dataTokenB.address,
             );
-            if (poolPriceNonDisplay !== spotPrice) {
-                setPoolPriceNonDisplay(spotPrice);
+            setBaseTokenAddress(sortedTokens[0]);
+            setQuoteTokenAddress(sortedTokens[1]);
+            if (tokenPair.dataTokenA.address === sortedTokens[0]) {
+                setIsTokenABase(true);
+            } else {
+                setIsTokenABase(false);
             }
-        })();
-    }, [lastBlockNumber]);
+        }
+    }, [JSON.stringify(tokenPair)]);
 
     useEffect(() => {
-        (async () => {
-            const spotPriceDisplay = await getSpotPriceDisplay(
-                contractAddresses.ZERO_ADDR,
-                daiKovanAddress,
-                POOL_PRIMARY,
-                provider,
-            );
-            const truncatedPriceWithDenonimationPreference = truncateDecimals(
-                denominationsInBase ? spotPriceDisplay : 1 / spotPriceDisplay,
-                2,
-            ).toString();
-            if (poolPriceDisplay !== truncatedPriceWithDenonimationPreference) {
-                setPoolPriceDisplay(truncatedPriceWithDenonimationPreference);
-            }
-        })();
-    }, [lastBlockNumber, denominationsInBase]);
+        if (baseTokenAddress && quoteTokenAddress) {
+            (async () => {
+                const spotPrice = await getSpotPrice(
+                    baseTokenAddress,
+                    quoteTokenAddress,
+                    POOL_PRIMARY,
+                    provider,
+                );
+                if (poolPriceNonDisplay !== spotPrice) {
+                    setPoolPriceNonDisplay(spotPrice);
+                }
+            })();
+        }
+    }, [lastBlockNumber, baseTokenAddress, quoteTokenAddress]);
+
+    useEffect(() => {
+        if (baseTokenAddress && quoteTokenAddress) {
+            (async () => {
+                const spotPriceDisplay = await getSpotPriceDisplay(
+                    baseTokenAddress,
+                    quoteTokenAddress,
+                    POOL_PRIMARY,
+                    provider,
+                );
+                const truncatedPriceWithDenonimationPreference = truncateDecimals(
+                    denominationsInBase ? spotPriceDisplay : 1 / spotPriceDisplay,
+                    4,
+                ).toString();
+                if (poolPriceDisplay !== truncatedPriceWithDenonimationPreference) {
+                    setPoolPriceDisplay(truncatedPriceWithDenonimationPreference);
+                }
+            })();
+        }
+    }, [lastBlockNumber, denominationsInBase, baseTokenAddress, quoteTokenAddress]);
 
     const maxSlippage = 5;
 
@@ -129,9 +152,6 @@ export default function Range(props: IRangeProps) {
     const poolWeiPriceHighLimit = poolPriceNonDisplay * (1 + maxSlippage / 100);
 
     const signer = provider?.getSigner();
-
-    const baseTokenAddress = contractAddresses.ZERO_ADDR;
-    const quoteTokenAddress = daiKovanAddress;
 
     const [isReversalInProgress, setIsReversalInProgress] = useState<boolean>(false);
 
@@ -295,8 +315,8 @@ export default function Range(props: IRangeProps) {
         maxPriceDisplay = 'Infinity';
     } else {
         maxPriceDisplay = denominationsInBase
-            ? truncateDecimals(rangeHighBoundDisplayPrice, 2).toString()
-            : truncateDecimals(1 / rangeLowBoundDisplayPrice, 2).toString();
+            ? truncateDecimals(rangeHighBoundDisplayPrice, 4).toString()
+            : truncateDecimals(1 / rangeLowBoundDisplayPrice, 4).toString();
     }
 
     let minPriceDisplay: string;
@@ -305,8 +325,8 @@ export default function Range(props: IRangeProps) {
         minPriceDisplay = '0';
     } else {
         minPriceDisplay = denominationsInBase
-            ? truncateDecimals(rangeLowBoundDisplayPrice, 2).toString()
-            : truncateDecimals(1 / rangeHighBoundDisplayPrice, 2).toString();
+            ? truncateDecimals(rangeLowBoundDisplayPrice, 4).toString()
+            : truncateDecimals(1 / rangeHighBoundDisplayPrice, 4).toString();
     }
 
     // props for <RangePriceInfo/> React element
