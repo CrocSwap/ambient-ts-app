@@ -39,6 +39,7 @@ import TestPage from '../pages/TestPage/TestPage';
 /** * **** Import Local Files *******/
 import './App.css';
 import initializeLocalStorage from './functions/initializeLocalStorage';
+import { makeUserTokenList } from '../utils/functions/processTokens';
 import { validateChain } from './validateChain';
 import { IParsedPosition, parsePositionArray } from './parsePositions';
 
@@ -107,7 +108,15 @@ export default function App() {
         }
     }, [account, lastBlockNumber]);
 
+    // run function to initialize local storage
+    // internal controls will only initialize values that don't exist
+    // existing values will not be overwritten
     initializeLocalStorage();
+
+    // run function to make a user token list if one does not exist
+    // this must be called below initializeLocalStorage()
+    // this call may later be moved inside initializeLocalStorage()
+    makeUserTokenList();
 
     // determine whether the user is connected to a supported chain
     // the user being connected to a non-supported chain or not being

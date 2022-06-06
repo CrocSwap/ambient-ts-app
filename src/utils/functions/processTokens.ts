@@ -1,5 +1,12 @@
 import { TokenIF } from '../interfaces/exports';
 
+export const makeUserTokenList = () => {
+    // let importedTokens;
+    if (!localStorage.user.importedTokens) {
+        console.log('no importedTokens in local storage user object');
+    }
+};
+
 export const filterTokensByChain = (tkns: Array<TokenIF>, chain: number) => {
     const tokensOnChain = tkns.filter((tkn: TokenIF) => tkn.chainId === chain);
     return tokensOnChain;
