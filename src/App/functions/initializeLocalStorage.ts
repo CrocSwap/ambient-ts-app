@@ -1,5 +1,4 @@
 import { fetchTokenLists } from './fetchTokenLists';
-import { ambientTokenList } from '../../tempdata';
 import { TokenListIF } from '../../utils/interfaces/exports';
 
 export default function initializeLocalStorage() {
@@ -35,12 +34,6 @@ export default function initializeLocalStorage() {
     if (!user.importedTokens) {
         user.importedTokens = user.activeTokenLists.map((list: TokenListIF) => list.tokens).flat();
         userUpdated = true;
-    }
-
-    // if local storage does not have developmental token list, initialize with
-    // ... tokens from the ambient list hardcoded locally
-    if (!localStorage.testTokens) {
-        localStorage.setItem('testTokens', JSON.stringify(ambientTokenList.tokens));
     }
 
     if (userUpdated) {
