@@ -3,7 +3,7 @@ import { RiStarFill, RiStarLine } from 'react-icons/ri';
 import { CgUnavailable } from 'react-icons/cg';
 import { setAddressTokenA, setAddressTokenB } from '../../../utils/state/tradeDataSlice';
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
-import { TokenPairIF } from '../../../utils/interfaces/TokenPairIF';
+import { TokenPairIF } from '../../../utils/interfaces/exports';
 
 interface TokenSelectProps {
     tokenPair: TokenPairIF;

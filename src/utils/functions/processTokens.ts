@@ -1,4 +1,4 @@
-import { TokenIF } from '../interfaces/TokenIF';
+import { TokenIF } from '../interfaces/exports';
 
 export const filterTokensByChain = (tkns: Array<TokenIF>, chain: number) => {
     const tokensOnChain = tkns.filter((tkn: TokenIF) => tkn.chainId === chain);

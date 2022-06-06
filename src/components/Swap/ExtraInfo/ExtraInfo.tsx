@@ -6,7 +6,7 @@ import { RiArrowDownSLine } from 'react-icons/ri';
 // START: Import Local Files
 import styles from './ExtraInfo.module.css';
 import truncateDecimals from '../../../utils/data/truncateDecimals';
-import { TokenPairIF } from '../../../utils/interfaces/TokenPairIF';
+import { TokenPairIF } from '../../../utils/interfaces/exports';
 
 // interface for props in this file
 interface ExtraInfoProps {

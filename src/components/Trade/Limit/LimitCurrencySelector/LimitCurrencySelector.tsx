@@ -8,8 +8,7 @@ import Toggle from '../../../Global/Toggle/Toggle';
 
 // START: Import Local Files
 import styles from './LimitCurrencySelector.module.css';
-import { TokenIF } from '../../../../utils/interfaces/TokenIF';
-import { TokenPairIF } from '../../../../utils/interfaces/TokenPairIF';
+import { TokenIF, TokenPairIF } from '../../../../utils/interfaces/exports';
 import Modal from '../../../../components/Global/Modal/Modal';
 import TokenSelectContainer from '../../../Global/TokenSelectContainer/TokenSelectContainer';
 import { useModal } from '../../../../components/Global/Modal/useModal';

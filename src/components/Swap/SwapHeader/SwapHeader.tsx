@@ -10,16 +10,16 @@ import TransactionSettings from '../../Global/TransactionSettings/TransactionSet
 // START: Import Local Files
 import styles from './SwapHeader.module.css';
 import settingsIcon from '../../../assets/images/icons/settings.svg';
-import { TokenPairIF } from '../../../utils/interfaces/TokenPairIF';
+import { TokenPairIF } from '../../../utils/interfaces/exports';
 
 // interface for props
-interface swapHeaderProps {
+interface swapHeaderPropsIF {
     tokenPair: TokenPairIF;
     isOnTradeRoute?: boolean;
 }
 
 // main react functional component
-export default function SwapHeader(props: swapHeaderProps) {
+export default function SwapHeader(props: swapHeaderPropsIF) {
     const { tokenPair, isOnTradeRoute } = props;
     const [isModalOpen, openModal, closeModal] = useModal();
 

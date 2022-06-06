@@ -7,15 +7,15 @@ import { useState } from 'react';
 
 // START: Import Local Files
 import styles from './DenominationSwitch.module.css';
-import { TokenPairIF } from '../../../utils/interfaces/TokenPairIF';
+import { TokenPairIF } from '../../../utils/interfaces/exports';
 
 // interface for props
-interface denominationSwitchProps {
+interface denominationSwitchPropsIF {
     tokenPair: TokenPairIF;
     isOnTradeRoute?: boolean;
 }
 
-export default function DenominationSwitch(props: denominationSwitchProps) {
+export default function DenominationSwitch(props: denominationSwitchPropsIF) {
     const { tokenPair } = props;
 
     const [toggleDenomination, setToggleDenomination] = useState<boolean>(false);

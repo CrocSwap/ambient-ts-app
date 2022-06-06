@@ -1,12 +1,11 @@
 import { ChangeEvent, SetStateAction } from 'react';
 import styles from './CurrencyConverter.module.css';
 import CurrencySelector from '../CurrencySelector/CurrencySelector';
-import { TokenPairIF } from '../../../utils/interfaces/TokenPairIF';
-import { TokenIF } from '../../../utils/interfaces/TokenIF';
+import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
 import { setAddressTokenA, setAddressTokenB } from '../../../utils/state/tradeDataSlice';
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 
-interface CurrencyConverterProps {
+interface CurrencyConverterPropsIF {
     tokenPair: TokenPairIF;
     tokensBank: Array<TokenIF>;
     chainId: string;
@@ -23,7 +22,7 @@ interface CurrencyConverterProps {
     setSwapAllowed: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export default function CurrencyConverter(props: CurrencyConverterProps) {
+export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
     const {
         tokenPair,
         tokensBank,

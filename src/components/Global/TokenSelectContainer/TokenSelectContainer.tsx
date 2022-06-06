@@ -1,8 +1,7 @@
 import styles from './TokenSelectContainer.module.css';
 import { useState } from 'react';
 import TokenSelect from '../TokenSelect/TokenSelect';
-import { TokenIF } from '../../../utils/interfaces/TokenIF';
-import { TokenPairIF } from '../../../utils/interfaces/TokenPairIF';
+import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
 
 interface TokenSelectContainerPropsIF {
     tokenPair: TokenPairIF;

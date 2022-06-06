@@ -6,7 +6,7 @@ import Button from '../../../Global/Button/Button';
 import { useState } from 'react';
 import WaitingConfirmation from '../../../Global/WaitingConfirmation/WaitingConfirmation';
 import TransactionSubmitted from '../../../Global/TransactionSubmitted/TransactionSubmitted';
-import { TokenPairIF } from '../../../../utils/interfaces/TokenPairIF';
+import { TokenPairIF } from '../../../../utils/interfaces/exports';
 
 interface ConfirmRangeModalProps {
     sendTransaction: () => void;
