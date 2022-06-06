@@ -29,3 +29,5 @@ export const kovanDAI = {
     logoURI: 'https://tokens.1inch.io/0x6b175474e89094c44da98b954eedeac495271d0f.png',
     fromList: '/ambient-token-list.json',
 };
+
+export const defaultTokens = [kovanDAI, kovanUSDC, kovanETH];

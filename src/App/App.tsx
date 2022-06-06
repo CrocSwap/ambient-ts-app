@@ -41,10 +41,17 @@ import './App.css';
 import initializeLocalStorage from './functions/initializeLocalStorage';
 import { validateChain } from './validateChain';
 import { IParsedPosition, parsePositionArray } from './parsePositions';
+import { getCurrentTokens } from '../utils/functions/processTokens';
+import { defaultTokens } from '../utils/data/defaultTokens';
 
 /** ***** React Function *******/
 export default function App() {
     const { chainId, isWeb3Enabled, account, logout, isAuthenticated } = useMoralis();
+
+    useEffect(() => {
+        initializeLocalStorage();
+    }, []);
+
     const [showSidebar, setShowSidebar] = useState<boolean>(false);
     const location = useLocation();
 
@@ -110,7 +117,10 @@ export default function App() {
     // run function to initialize local storage
     // internal controls will only initialize values that don't exist
     // existing values will not be overwritten
-    initializeLocalStorage();
+
+    const importedTokens = JSON.parse(localStorage.getItem('user') as string)
+        ? getCurrentTokens(chainId ?? '0x2a')
+        : defaultTokens;
 
     // determine whether the user is connected to a supported chain
     // the user being connected to a non-supported chain or not being
@@ -286,6 +296,7 @@ export default function App() {
 
     // props for <Swap/> React element
     const swapProps = {
+        importedTokens: importedTokens,
         provider: provider as JsonRpcProvider,
         gasPriceinGwei: gasPriceinGwei,
         nativeBalance: nativeBalance,
@@ -294,6 +305,7 @@ export default function App() {
 
     // props for <Swap/> React element on trade route
     const swapPropsTrade = {
+        importedTokens: importedTokens,
         provider: provider as JsonRpcProvider,
         isOnTradeRoute: true,
         gasPriceinGwei: gasPriceinGwei,
@@ -301,8 +313,14 @@ export default function App() {
         lastBlockNumber: lastBlockNumber,
     };
 
+    // props for <Limit/> React element
+    const limitProps = {
+        importedTokens: importedTokens,
+    };
+
     // props for <Range/> React element
     const rangeProps = {
+        importedTokens: importedTokens,
         provider: provider as JsonRpcProvider,
         lastBlockNumber: lastBlockNumber,
     };
@@ -335,7 +353,7 @@ export default function App() {
                         <Route path='trade' element={<Trade />}>
                             <Route path='' element={<Swap {...swapPropsTrade} />} />
                             <Route path='market' element={<Swap {...swapPropsTrade} />} />
-                            <Route path='limit' element={<Limit />} />
+                            <Route path='limit' element={<Limit {...limitProps} />} />
                             <Route path='range' element={<Range {...rangeProps} />} />
                         </Route>
                         <Route path='analytics' element={<Analytics />} />

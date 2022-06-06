@@ -34,14 +34,16 @@ import styles from './Swap.module.css';
 import { handleParsedReceipt } from '../../utils/HandleParsedReceipt';
 import truncateDecimals from '../../utils/data/truncateDecimals';
 import { isTransactionReplacedError, TransactionError } from '../../utils/TransactionError';
-import { getCurrentTokens, findTokenByAddress } from '../../utils/functions/processTokens';
+import { findTokenByAddress } from '../../utils/functions/processTokens';
 import { kovanETH, kovanUSDC } from '../../utils/data/defaultTokens';
 import { useModal } from '../../components/Global/Modal/useModal';
 import { useRelativeModal } from '../../components/Global/RelativeModal/useRelativeModal';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { useTradeData } from '../Trade/Trade';
+import { TokenIF } from '../../utils/interfaces/exports';
 
 interface ISwapProps {
+    importedTokens: Array<TokenIF>;
     provider: JsonRpcProvider;
     isOnTradeRoute?: boolean;
     gasPriceinGwei: string;
@@ -50,7 +52,14 @@ interface ISwapProps {
 }
 
 export default function Swap(props: ISwapProps) {
-    const { provider, isOnTradeRoute, lastBlockNumber, nativeBalance, gasPriceinGwei } = props;
+    const {
+        importedTokens,
+        provider,
+        isOnTradeRoute,
+        lastBlockNumber,
+        nativeBalance,
+        gasPriceinGwei,
+    } = props;
     const [isModalOpen, openModal, closeModal] = useModal();
 
     const [isRelativeModalOpen, closeRelativeModal] = useRelativeModal();
@@ -94,11 +103,10 @@ export default function Swap(props: ISwapProps) {
 
     // get current tokens for the active chain
     // if called before Moralis can initialize use kovan
-    const tokensBank = getCurrentTokens(chainId ?? '0x2a');
 
     const tokenPair = {
-        dataTokenA: findTokenByAddress(tradeData.addressTokenA, tokensBank) ?? kovanETH,
-        dataTokenB: findTokenByAddress(tradeData.addressTokenB, tokensBank) ?? kovanUSDC,
+        dataTokenA: findTokenByAddress(tradeData.addressTokenA, importedTokens) ?? kovanETH,
+        dataTokenB: findTokenByAddress(tradeData.addressTokenB, importedTokens) ?? kovanUSDC,
     };
 
     const [tokenABalance, setTokenABalance] = useState<string>('');
@@ -312,7 +320,7 @@ export default function Swap(props: ISwapProps) {
                 <DividerDark />
                 <CurrencyConverter
                     tokenPair={tokenPair}
-                    tokensBank={tokensBank}
+                    tokensBank={importedTokens}
                     chainId={chainId as string}
                     isLiq={false}
                     poolPriceDisplay={poolPriceDisplay}

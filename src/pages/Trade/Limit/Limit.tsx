@@ -16,11 +16,17 @@ import ConfirmLimitModal from '../../../components/Trade/Limit/ConfirmLimitModal
 
 // START: Import Local Files
 import { useTradeData } from '../Trade';
-import { getCurrentTokens, findTokenByAddress } from '../../../utils/functions/processTokens';
+import { findTokenByAddress } from '../../../utils/functions/processTokens';
 import { kovanETH, kovanUSDC } from '../../../utils/data/defaultTokens';
 import { useModal } from '../../../components/Global/Modal/useModal';
+import { TokenIF } from '../../../utils/interfaces/exports';
 
-export default function Limit() {
+interface LimitPropsIF {
+    importedTokens: Array<TokenIF>;
+}
+
+export default function Limit(props: LimitPropsIF) {
+    const { importedTokens } = props;
     const { tradeData } = useTradeData();
     const [isModalOpen, openModal, closeModal] = useModal();
     const [limitAllowed, setLimitAllowed] = useState<boolean>(false);
@@ -30,13 +36,10 @@ export default function Limit() {
     // TODO:  ... should refactor this to have less redundancy in code and app processes
 
     const { chainId } = useMoralis();
-    // get current tokens for the active chain
-    // if called before Moralis can initialize use kovan
-    const tokensBank = getCurrentTokens(chainId ?? '0x2a');
 
     const tokenPair = {
-        dataTokenA: findTokenByAddress(tradeData.addressTokenA, tokensBank) ?? kovanETH,
-        dataTokenB: findTokenByAddress(tradeData.addressTokenB, tokensBank) ?? kovanUSDC,
+        dataTokenA: findTokenByAddress(tradeData.addressTokenA, importedTokens) ?? kovanETH,
+        dataTokenB: findTokenByAddress(tradeData.addressTokenB, importedTokens) ?? kovanUSDC,
     };
 
     const confirmLimitModalOrNull = isModalOpen ? (
@@ -64,7 +67,7 @@ export default function Limit() {
                 <DividerDark />
                 <LimitCurrencyConverter
                     tokenPair={tokenPair}
-                    tokensBank={tokensBank}
+                    tokensBank={importedTokens}
                     chainId={chainId ?? '0x2a'}
                     setLimitAllowed={setLimitAllowed}
                     setIsReversalInProgress={setIsReversalInProgress}

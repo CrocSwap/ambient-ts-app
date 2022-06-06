@@ -23,11 +23,13 @@ export function fetchTokenLists() {
     // ... promise is rejected, the function will not execute, if
     // ... this is acting strangely, try changing Promise.all() to
     // ... Promise.allSettled()
-    Promise.all(tokenLists).then((results) => {
+    const returnedLists = Promise.all(tokenLists).then((results) => {
         results.forEach((list) => (list.default = defaultListURIs.includes(list.uri)));
         results.forEach((list) => {
             list.tokens.forEach((token: TokenIF) => (token.fromList = list.uri));
         });
         localStorage.setItem('allTokenLists', JSON.stringify(results));
+        return results;
     });
+    return returnedLists;
 }

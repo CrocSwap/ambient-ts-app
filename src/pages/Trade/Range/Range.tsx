@@ -46,19 +46,21 @@ import { isTransactionReplacedError, TransactionError } from '../../../utils/Tra
 import { handleParsedReceipt } from '../../../utils/HandleParsedReceipt';
 import truncateDecimals from '../../../utils/data/truncateDecimals';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import { getCurrentTokens, findTokenByAddress } from '../../../utils/functions/processTokens';
+import { findTokenByAddress } from '../../../utils/functions/processTokens';
 import { kovanETH, kovanUSDC } from '../../../utils/data/defaultTokens';
 import ConfirmRangeModal from '../../../components/Trade/Range/ConfirmRangeModal/ConfirmRangeModal';
+import { TokenIF } from '../../../utils/interfaces/exports';
 
 interface IRangeProps {
+    importedTokens: Array<TokenIF>;
     provider: JsonRpcProvider;
     lastBlockNumber: number;
 }
 
 export default function Range(props: IRangeProps) {
+    const { importedTokens, provider, lastBlockNumber } = props;
     const [isModalOpen, openModal, closeModal] = useModal();
 
-    const { provider, lastBlockNumber } = props;
     const { save } = useNewMoralisObject('UserPosition');
 
     const [poolPriceNonDisplay, setPoolPriceNonDisplay] = useState(0);
@@ -73,13 +75,9 @@ export default function Range(props: IRangeProps) {
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
-    // get current tokens for the active chain
-    // if called before Moralis can initialize use kovan
-    const tokensBank = getCurrentTokens(chainId ?? '0x2a');
-
     const tokenPair = {
-        dataTokenA: findTokenByAddress(tradeData.addressTokenA, tokensBank) ?? kovanETH,
-        dataTokenB: findTokenByAddress(tradeData.addressTokenB, tokensBank) ?? kovanUSDC,
+        dataTokenA: findTokenByAddress(tradeData.addressTokenA, importedTokens) ?? kovanETH,
+        dataTokenB: findTokenByAddress(tradeData.addressTokenB, importedTokens) ?? kovanUSDC,
     };
 
     // const isTokenABase =
@@ -352,7 +350,7 @@ export default function Range(props: IRangeProps) {
     const rangeCurrencyConverterProps = {
         poolPriceNonDisplay: poolPriceNonDisplay,
         chainId: chainId ?? '0x2a',
-        tokensBank: tokensBank,
+        tokensBank: importedTokens,
         tokenPair: tokenPair,
         isTokenABase: isTokenABase,
         depositSkew: depositSkew,

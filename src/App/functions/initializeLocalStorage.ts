@@ -12,23 +12,23 @@ export default function initializeLocalStorage() {
     // TODO:  ... as it currently is written
 
     // fetch token lists from URIs if none are in local storage
-    if (!localStorage.allTokenLists) fetchTokenLists();
+    const allTokenLists = localStorage.allTokenLists
+        ? JSON.parse(localStorage.getItem('allTokenLists') as string)
+        : fetchTokenLists();
 
     // retrieve the user object from local storage
     // putting it there then pulling it back is necessary to prevent overwrites
     const user = localStorage.user ? JSON.parse(localStorage.getItem('user') as string) : {};
 
     // if user object does not have active token lists, initialize with ambient
-    if (!user.activeTokenLists || !user.activeTokenLists.length) {
-        user.activeTokenLists = JSON.parse(localStorage.allTokenLists).filter(
-            (list: TokenListIF) => list.default === true,
-        );
+    if ((!user.activeTokenLists || !user.activeTokenLists.length) && Array.isArray(allTokenLists)) {
+        user.activeTokenLists = allTokenLists.filter((list: TokenListIF) => list.default === true);
         userUpdated = true;
     }
 
     // if user object does not have imported tokens, initialize with tokens
     // ... from default lists (see defaultTokenLists.ts file)
-    if (!user.importedTokens) {
+    if (!user.importedTokens && user.activeTokenLists) {
         user.importedTokens = user.activeTokenLists.map((list: TokenListIF) => list.tokens).flat();
         userUpdated = true;
     }
