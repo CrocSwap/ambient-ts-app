@@ -5,6 +5,8 @@ export interface tradeData {
     addressTokenB: string;
     isDenomBase: boolean;
     advancedMode: boolean;
+    isTokenAPrimary: boolean;
+    primaryQuantity: string;
 }
 
 const initialState: tradeData = {
@@ -12,6 +14,8 @@ const initialState: tradeData = {
     addressTokenB: '0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa',
     isDenomBase: true,
     advancedMode: false,
+    isTokenAPrimary: true,
+    primaryQuantity: '',
 };
 
 export const tradeDataSlice = createSlice({
@@ -36,6 +40,15 @@ export const tradeDataSlice = createSlice({
         toggleAdvancedMode: (state) => {
             state.advancedMode = !state.advancedMode;
         },
+        setIsTokenAPrimary: (state, action: PayloadAction<boolean>) => {
+            state.isTokenAPrimary = action.payload;
+        },
+        toggleIsTokenAPrimary: (state) => {
+            state.isTokenAPrimary = !state.isTokenAPrimary;
+        },
+        setPrimaryQuantity: (state, action: PayloadAction<string>) => {
+            state.primaryQuantity = action.payload;
+        },
     },
 });
 
@@ -47,6 +60,9 @@ export const {
     toggleDenomInBase,
     setAdvancedMode,
     toggleAdvancedMode,
+    setIsTokenAPrimary,
+    toggleIsTokenAPrimary,
+    setPrimaryQuantity,
 } = tradeDataSlice.actions;
 
 export default tradeDataSlice.reducer;
