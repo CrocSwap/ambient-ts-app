@@ -23,7 +23,7 @@ interface TooltipComponentProps {
 export default function TooltipComponent(props: TooltipComponentProps) {
     return (
         <Tooltip
-            title='Tooltip title'
+            title={props.title}
             placement={props.placement ? props.placement : 'right'}
             arrow
             enterDelay={400}
