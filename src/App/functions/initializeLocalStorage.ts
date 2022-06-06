@@ -1,5 +1,4 @@
 import { fetchTokenLists } from './fetchTokenLists';
-import { tokenListURIs } from '../../utils/data/tokenURIs';
 import { ambientTokenList } from '../../tempdata';
 
 export default function initializeLocalStorage() {

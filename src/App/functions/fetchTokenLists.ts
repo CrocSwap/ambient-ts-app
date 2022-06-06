@@ -10,7 +10,7 @@ export function fetchTokenLists() {
             .then((response) => ({ ...response, uri })),
     );
     // translate default token lists from a human-readable strings to URI
-    // ... strings, this syntax is necessary to map over aan array of
+    // ... strings, this syntax is necessary to map over an array of
     // ... strings and look up each as a key in an object
     const defaultListURIs = defaultTokenLists.map((listName: string) => {
         type tokenListURIsKey = keyof typeof tokenListURIs;
@@ -23,10 +23,7 @@ export function fetchTokenLists() {
     // ... this is acting strangely, try changing Promise.all() to
     // ... Promise.allSettled()
     Promise.all(tokenLists).then((results) => {
-        console.log(`we need this one: ${tokenListURIs.ambient}`);
-        results.forEach((list) => {
-            console.warn(list);
-        });
+        results.forEach((list) => (list.default = defaultListURIs.includes(list.uri)));
         localStorage.setItem('allTokenLists', JSON.stringify(results));
     });
 }
