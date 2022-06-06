@@ -137,7 +137,7 @@ export default function Range(props: IRangeProps) {
                 );
                 const truncatedPriceWithDenonimationPreference = truncateDecimals(
                     denominationsInBase ? spotPriceDisplay : 1 / spotPriceDisplay,
-                    2,
+                    4,
                 ).toString();
                 if (poolPriceDisplay !== truncatedPriceWithDenonimationPreference) {
                     setPoolPriceDisplay(truncatedPriceWithDenonimationPreference);
@@ -315,8 +315,8 @@ export default function Range(props: IRangeProps) {
         maxPriceDisplay = 'Infinity';
     } else {
         maxPriceDisplay = denominationsInBase
-            ? truncateDecimals(rangeHighBoundDisplayPrice, 2).toString()
-            : truncateDecimals(1 / rangeLowBoundDisplayPrice, 2).toString();
+            ? truncateDecimals(rangeHighBoundDisplayPrice, 4).toString()
+            : truncateDecimals(1 / rangeLowBoundDisplayPrice, 4).toString();
     }
 
     let minPriceDisplay: string;
@@ -325,8 +325,8 @@ export default function Range(props: IRangeProps) {
         minPriceDisplay = '0';
     } else {
         minPriceDisplay = denominationsInBase
-            ? truncateDecimals(rangeLowBoundDisplayPrice, 2).toString()
-            : truncateDecimals(1 / rangeHighBoundDisplayPrice, 2).toString();
+            ? truncateDecimals(rangeLowBoundDisplayPrice, 4).toString()
+            : truncateDecimals(1 / rangeHighBoundDisplayPrice, 4).toString();
     }
 
     // props for <RangePriceInfo/> React element
