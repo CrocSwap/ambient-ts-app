@@ -12,7 +12,6 @@ import { TokenIF, TokenPairIF } from '../../../../utils/interfaces/exports';
 import Modal from '../../../../components/Global/Modal/Modal';
 import TokenSelectContainer from '../../../Global/TokenSelectContainer/TokenSelectContainer';
 import { useModal } from '../../../../components/Global/Modal/useModal';
-import { getAmbientTokens } from '../../../../tempdata';
 
 // interface for component props
 interface LimitCurrencySelectorProps {
@@ -42,7 +41,6 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
     const thisToken = fieldId === 'buy' ? tokenPair.dataTokenA : tokenPair.dataTokenB;
 
     const [isModalOpen, openModal, closeModal] = useModal();
-    const tempTokenList = getAmbientTokens();
 
     const tokenSelectModalOrNull = isModalOpen ? (
         <Modal onClose={closeModal} title='Select Token'>
@@ -51,7 +49,7 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
                 tokensBank={tokensBank}
                 tokenToUpdate={'A'}
                 chainId={chainId}
-                tokenList={tempTokenList}
+                tokenList={tokensBank}
                 closeModal={closeModal}
                 setIsReversalInProgress={setIsReversalInProgress}
             />
