@@ -12,7 +12,7 @@ interface IRangePriceInfoPropsIF {
 
 // central react functional component
 export default function RangePriceInfo(props: IRangePriceInfoPropsIF) {
-    const { tokenPair, spotPriceDisplay, maxPriceDisplay, minPriceDisplay } = props;
+    const { spotPriceDisplay, maxPriceDisplay, minPriceDisplay } = props;
 
     // JSX frag for estimated APY of position
     const apy = <span className={styles.apy}> Est APY | 35.65%</span>;
@@ -41,25 +41,25 @@ export default function RangePriceInfo(props: IRangePriceInfoPropsIF) {
         </div>
     );
 
-    // JSX frag for amount of collateral of Token A in the position
-    const collateralTokenA = (
-        <div className={styles.collateral_display}>
-            <span className={styles.collateral_title}>
-                {tokenPair.dataTokenA.symbol} Collateral
-            </span>
-            <span className={styles.collateral_amount}>1.69</span>
-        </div>
-    );
+    // // JSX frag for amount of collateral of Token A in the position
+    // const collateralTokenA = (
+    //     <div className={styles.collateral_display}>
+    //         <span className={styles.collateral_title}>
+    //             {tokenPair.dataTokenA.symbol} Collateral
+    //         </span>
+    //         <span className={styles.collateral_amount}>1.69</span>
+    //     </div>
+    // );
 
-    // JSX frag for amount of collateral of Token B in the position
-    const collateralTokenB = (
-        <div className={styles.collateral_display}>
-            <span className={styles.collateral_title}>
-                {tokenPair.dataTokenB.symbol} Collateral
-            </span>
-            <span className={styles.collateral_amount}>5,000.00</span>
-        </div>
-    );
+    // // JSX frag for amount of collateral of Token B in the position
+    // const collateralTokenB = (
+    //     <div className={styles.collateral_display}>
+    //         <span className={styles.collateral_title}>
+    //             {tokenPair.dataTokenB.symbol} Collateral
+    //         </span>
+    //         <span className={styles.collateral_amount}>5,000.00</span>
+    //     </div>
+    // );
 
     return (
         <div className={styles.price_info_container}>
@@ -69,10 +69,10 @@ export default function RangePriceInfo(props: IRangePriceInfoPropsIF) {
                 {currentPrice}
                 {maximumPrice}
             </div>
-            <div className={styles.collateral_container}>
+            {/* <div className={styles.collateral_container}>
                 {collateralTokenA}
                 {collateralTokenB}
-            </div>
+            </div> */}
         </div>
     );
 }
