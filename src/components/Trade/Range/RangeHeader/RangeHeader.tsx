@@ -9,12 +9,13 @@ interface RangeHeaderPropsIF {
 
 export default function RangeHeader(props: RangeHeaderPropsIF) {
     const { tokenPair } = props;
-    console.log(tokenPair);
 
     const tradeRouteHeader = (
         <ContentHeader>
             <span />
-            <div className={styles.token_info}>ETH / DAI</div>
+            <div className={styles.token_info}>
+                {tokenPair.dataTokenA.symbol} / {tokenPair.dataTokenB.symbol}
+            </div>
             <FiSettings />
         </ContentHeader>
     );
