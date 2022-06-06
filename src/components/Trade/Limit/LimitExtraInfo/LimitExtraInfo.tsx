@@ -57,10 +57,10 @@ export default function LimitExtraInfo(props: LimitExtraInfoPropsIF) {
             {extraInfoData.map((item, idx) => (
                 <div className={styles.extra_row} key={idx}>
                     <div className={styles.align_center}>
-                        <span>{item.title}</span>
+                        <div>{item.title}</div>
                         <TooltipComponent title={item.title} />
                     </div>
-                    <span>{item.data}</span>
+                    <div>{item.data}</div>
                 </div>
             ))}
         </div>
