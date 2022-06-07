@@ -1,5 +1,5 @@
 import ContentHeader from '../../../Global/ContentHeader/ContentHeader';
-import styles from './EditHeader.module.css';
+// import styles from './EditHeader.module.css';
 import { RiCloseFill } from 'react-icons/ri';
 import { useNavigate } from 'react-router-dom';
 
