@@ -1,4 +1,10 @@
-import { Outlet, useOutletContext, NavLink, useLocation } from 'react-router-dom';
+import {
+    Outlet,
+    useOutletContext,
+    NavLink,
+    useLocation,
+    BrowserRouter as Router,
+} from 'react-router-dom';
 import styles from './Trade.module.css';
 import chart from '../../assets/images/Temporary/chart.svg';
 import Tabs from '../../components/Global/Tabs/Tabs';
@@ -88,13 +94,15 @@ export default function Trade(props: TradeProps) {
     );
 
     const navigationMenu = (
-        <div className={styles.navigation_menu}>
-            {routes.map((route, idx) => (
-                <div className={`${styles.nav_container} trade_route`} key={idx}>
-                    <NavLink to={`/trade${route.path}`}>{route.name}</NavLink>
-                </div>
-            ))}
-        </div>
+        <Router>
+            <div className={styles.navigation_menu}>
+                {routes.map((route, idx) => (
+                    <div className={`${styles.nav_container} trade_route`} key={idx}>
+                        <NavLink to={`/trade${route.path}`}>{route.name}</NavLink>
+                    </div>
+                ))}
+            </div>
+        </Router>
     );
 
     const mainContent = (

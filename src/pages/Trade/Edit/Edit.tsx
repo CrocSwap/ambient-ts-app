@@ -1,3 +1,4 @@
+import EditHeader from '../../../components/Trade/Edit/EditHeader/EditHeader';
 import styles from './Edit.module.css';
 
 // interface EditProps {
@@ -5,5 +6,9 @@ import styles from './Edit.module.css';
 // }
 
 export default function Edit() {
-    return <div className={styles.Edit}>I am edit</div>;
+    return (
+        <div className={styles.Edit}>
+            <EditHeader />
+        </div>
+    );
 }
