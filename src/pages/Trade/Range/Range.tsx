@@ -153,7 +153,6 @@ export default function Range(props: IRangeProps) {
 
     const signer = provider?.getSigner();
 
-    const [isReversalInProgress, setIsReversalInProgress] = useState<boolean>(false);
     const [isTokenAPrimary, setIsTokenAPrimary] = useState<boolean>(false);
 
     const sendTransaction = async () => {
@@ -362,8 +361,6 @@ export default function Range(props: IRangeProps) {
         setIsWithdrawTokenAFromDexChecked: setIsWithdrawTokenAFromDexChecked,
         isWithdrawTokenBFromDexChecked: isWithdrawTokenBFromDexChecked,
         setIsWithdrawTokenBFromDexChecked: setIsWithdrawTokenBFromDexChecked,
-        setIsReversalInProgress: setIsReversalInProgress,
-        isReversalInProgress: isReversalInProgress,
     };
 
     // props for <RangeWidth/> React element

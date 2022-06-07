@@ -1,5 +1,5 @@
 import styles from './TokenSelectContainer.module.css';
-import { useState, SetStateAction } from 'react';
+import { useState } from 'react';
 import TokenSelect from '../TokenSelect/TokenSelect';
 import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
 
@@ -10,11 +10,11 @@ interface TokenSelectContainerPropsIF {
     chainId?: string;
     tokenToUpdate: string;
     closeModal: () => void;
-    setIsReversalInProgress: React.Dispatch<SetStateAction<boolean>>;
+    reverseTokens: () => void;
 }
 
 export default function TokenSelectContainer(props: TokenSelectContainerPropsIF) {
-    const { tokenPair, tokensBank, tokenToUpdate, closeModal, setIsReversalInProgress } = props;
+    const { tokenPair, tokensBank, tokenToUpdate, closeModal, reverseTokens } = props;
 
     // console.log(tokenToUpdate);
     const [searchTerm, setSearchTerm] = useState('');
@@ -54,7 +54,7 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
                             tokenToUpdate={tokenToUpdate}
                             closeModal={closeModal}
                             tokenPair={tokenPair}
-                            setIsReversalInProgress={setIsReversalInProgress}
+                            reverseTokens={reverseTokens}
                         />
                     );
                 })}

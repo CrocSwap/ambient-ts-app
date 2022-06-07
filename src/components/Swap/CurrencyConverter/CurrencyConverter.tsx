@@ -2,8 +2,13 @@ import { ChangeEvent, SetStateAction, useEffect, useState } from 'react';
 import styles from './CurrencyConverter.module.css';
 import CurrencySelector from '../CurrencySelector/CurrencySelector';
 import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
-import { setAddressTokenA, setAddressTokenB } from '../../../utils/state/tradeDataSlice';
-import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
+import {
+    setAddressTokenA,
+    setAddressTokenB,
+    setIsTokenAPrimary,
+    setPrimaryQuantity,
+} from '../../../utils/state/tradeDataSlice';
+import { useAppDispatch, useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import truncateDecimals from '../../../utils/data/truncateDecimals';
 
 interface CurrencyConverterPropsIF {
@@ -13,11 +18,15 @@ interface CurrencyConverterPropsIF {
     chainId: string;
     isLiq: boolean;
     poolPriceDisplay: number;
-    isSellTokenPrimary: boolean;
-    setIsSellTokenPrimary: React.Dispatch<SetStateAction<boolean>>;
+    isTokenAPrimary: boolean;
+    setIsTokenAPrimary: React.Dispatch<SetStateAction<boolean>>;
     nativeBalance: string;
     tokenABalance: string;
     tokenBBalance: string;
+    tokenAInputQty: string;
+    tokenBInputQty: string;
+    setTokenAInputQty: React.Dispatch<React.SetStateAction<string>>;
+    setTokenBInputQty: React.Dispatch<React.SetStateAction<string>>;
     isWithdrawFromDexChecked: boolean;
     setIsWithdrawFromDexChecked: React.Dispatch<SetStateAction<boolean>>;
     isWithdrawToWalletChecked: boolean;
@@ -33,8 +42,8 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         chainId,
         isLiq,
         poolPriceDisplay,
-        isSellTokenPrimary,
-        setIsSellTokenPrimary,
+        // isTokenAPrimary,
+        // setIsTokenAPrimary,
         isWithdrawFromDexChecked,
         setIsWithdrawFromDexChecked,
         isWithdrawToWalletChecked,
@@ -42,117 +51,143 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         setSwapAllowed,
         tokenABalance,
         tokenBBalance,
+        // setTokenAInputQty,
+        // setTokenBInputQty,
+        // tokenAInputQty,
+        // tokenBInputQty,
     } = props;
+
     // TODO: update name of functions with 'handle' verbiage
     // TODO: consolidate functions into a single function
     // TODO: refactor functions to consider which token is base
 
+    const dispatch = useAppDispatch();
+
+    const tradeData = useAppSelector((state) => state.tradeData);
+
+    const [isTokenAPrimaryLocal, setIsTokenAPrimaryLocal] = useState<boolean>(
+        tradeData.isTokenAPrimary,
+    );
+    const [tokenAQtyLocal, setTokenAQtyLocal] = useState<string>('');
+    const [tokenBQtyLocal, setTokenBQtyLocal] = useState<string>('');
+
     const tokenADecimals = tokenPair.dataTokenA.decimals;
     const tokenBDecimals = tokenPair.dataTokenB.decimals;
 
-    const [sellTokenQty, setSellTokenQty] = useState<number>(0);
-    const [buyTokenQty, setBuyTokenQty] = useState<number>(0);
-
-    const setBuyQtyValue = (value: number) => {
-        if (isReversalInProgress) {
-            const buyQtyField = document.getElementById('buy-quantity') as HTMLInputElement;
-
-            if (buyQtyField) {
-                buyQtyField.value = value.toString();
-                setBuyTokenQty(value);
-            }
-            return;
-        }
-        const output = isSellTokenBase ? (1 / poolPriceDisplay) * value : poolPriceDisplay * value;
-
-        const truncatedOutput = truncateDecimals(output, tokenBDecimals);
-        const buyQtyField = document.getElementById('buy-quantity') as HTMLInputElement;
-        setIsSellTokenPrimary(true);
-        if (buyQtyField) {
-            buyQtyField.value = isNaN(truncatedOutput) ? '' : truncatedOutput.toString();
-        }
-        setBuyTokenQty(truncatedOutput);
-        setSellTokenQty(value);
-        if (!isNaN(truncatedOutput) && truncatedOutput > 0) {
-            setSwapAllowed(true);
-        } else {
-            setSwapAllowed(false);
-        }
-    };
-
-    const [isReversalInProgress, setIsReversalInProgress] = useState<boolean>(false);
-
-    const setSellQtyValue = (value: number) => {
-        if (isReversalInProgress) {
-            const sellQtyField = document.getElementById('sell-quantity') as HTMLInputElement;
-
-            if (sellQtyField) {
-                sellQtyField.value = value.toString();
-                setSellTokenQty(value);
-            }
-            return;
-        }
-
-        const output = isSellTokenBase ? poolPriceDisplay * value : (1 / poolPriceDisplay) * value;
-        const truncatedOutput = truncateDecimals(output, tokenADecimals);
-
-        const sellQtyField = document.getElementById('sell-quantity') as HTMLInputElement;
-        setIsSellTokenPrimary(false);
-        if (sellQtyField) {
-            sellQtyField.value = isNaN(truncatedOutput) ? '' : truncatedOutput.toString();
-        }
-        setSellTokenQty(truncatedOutput);
-        setBuyTokenQty(value);
-
-        if (!isNaN(truncatedOutput) && truncatedOutput > 0) {
-            setSwapAllowed(true);
-        } else {
-            setSwapAllowed(false);
-        }
-    };
-
-    const updateBuyQty = (evt?: ChangeEvent<HTMLInputElement>) => {
-        if (evt) {
-            const input = parseFloat(evt.target.value);
-            setBuyQtyValue(input);
-        } else {
-            if (sellTokenQty) {
-                setBuyQtyValue(sellTokenQty);
+    useEffect(() => {
+        if (tradeData) {
+            if (tradeData.isTokenAPrimary) {
+                setTokenAQtyLocal(tradeData.primaryQuantity);
+                const sellQtyField = document.getElementById('sell-quantity') as HTMLInputElement;
+                if (sellQtyField) {
+                    sellQtyField.value =
+                        tradeData.primaryQuantity === 'NaN' ? '' : tradeData.primaryQuantity;
+                }
+            } else {
+                setTokenBQtyLocal(tradeData.primaryQuantity);
+                const buyQtyField = document.getElementById('buy-quantity') as HTMLInputElement;
+                if (buyQtyField) {
+                    buyQtyField.value =
+                        tradeData.primaryQuantity === 'NaN' ? '' : tradeData.primaryQuantity;
+                }
             }
         }
-    };
-
-    const updateSellQty = (evt?: ChangeEvent<HTMLInputElement>) => {
-        if (evt) {
-            const input = parseFloat(evt.target.value);
-            setSellQtyValue(input);
-        } else {
-            if (buyTokenQty) {
-                setSellQtyValue(buyTokenQty);
-            }
-        }
-    };
-
-    const dispatch = useAppDispatch();
+    }, []);
 
     const handleArrowClick = (): void => {
-        setIsReversalInProgress(true);
+        reverseTokens();
+    };
 
+    const reverseTokens = (): void => {
         if (tokenPair) {
             dispatch(setAddressTokenA(tokenPair.dataTokenB.address));
             dispatch(setAddressTokenB(tokenPair.dataTokenA.address));
         }
+        if (!isTokenAPrimaryLocal) {
+            setTokenAQtyLocal(tokenBQtyLocal);
+            const sellQtyField = document.getElementById('sell-quantity') as HTMLInputElement;
+            if (sellQtyField) {
+                sellQtyField.value = tokenBQtyLocal === 'NaN' ? '' : tokenBQtyLocal;
+            }
+        } else {
+            setTokenBQtyLocal(tokenAQtyLocal);
+            const buyQtyField = document.getElementById('buy-quantity') as HTMLInputElement;
+            if (buyQtyField) {
+                buyQtyField.value = tokenAQtyLocal === 'NaN' ? '' : tokenAQtyLocal;
+            }
+        }
+        setIsTokenAPrimaryLocal(!isTokenAPrimaryLocal);
+        dispatch(setIsTokenAPrimary(!isTokenAPrimaryLocal));
     };
 
     useEffect(() => {
-        if (isReversalInProgress) {
-            updateBuyQty();
-            updateSellQty();
+        isTokenAPrimaryLocal ? handleTokenAChangeEvent() : handleTokenBChangeEvent();
+    }, [poolPriceDisplay, isSellTokenBase, isTokenAPrimaryLocal]);
+
+    const handleTokenAChangeEvent = (evt?: ChangeEvent<HTMLInputElement>) => {
+        let rawTokenBQty;
+
+        if (evt) {
+            const input = evt.target.value;
+            setTokenAQtyLocal(input);
+            setIsTokenAPrimaryLocal(true);
+            dispatch(setIsTokenAPrimary(true));
+            dispatch(setPrimaryQuantity(input));
+
+            rawTokenBQty = isSellTokenBase
+                ? (1 / poolPriceDisplay) * parseFloat(input)
+                : poolPriceDisplay * parseFloat(input);
         } else {
-            isSellTokenPrimary ? updateBuyQty() : updateSellQty();
+            rawTokenBQty = isSellTokenBase
+                ? (1 / poolPriceDisplay) * parseFloat(tokenAQtyLocal)
+                : poolPriceDisplay * parseFloat(tokenAQtyLocal);
         }
-        setIsReversalInProgress(false);
-    }, [JSON.stringify(tokenPair), poolPriceDisplay]);
+        const truncatedTokenBQty = truncateDecimals(rawTokenBQty, tokenBDecimals).toString();
+
+        setTokenBQtyLocal(truncatedTokenBQty);
+        const buyQtyField = document.getElementById('buy-quantity') as HTMLInputElement;
+
+        if (buyQtyField) {
+            buyQtyField.value = truncatedTokenBQty === 'NaN' ? '' : truncatedTokenBQty;
+        }
+        if (truncatedTokenBQty !== 'NaN' && parseFloat(truncatedTokenBQty) > 0) {
+            setSwapAllowed(true);
+        } else {
+            setSwapAllowed(false);
+        }
+    };
+    const handleTokenBChangeEvent = (evt?: ChangeEvent<HTMLInputElement>) => {
+        let rawTokenAQty;
+
+        if (evt) {
+            const input = evt.target.value;
+            setTokenBQtyLocal(input);
+            setIsTokenAPrimaryLocal(false);
+            dispatch(setIsTokenAPrimary(false));
+            dispatch(setPrimaryQuantity(input));
+
+            rawTokenAQty = isSellTokenBase
+                ? poolPriceDisplay * parseFloat(input)
+                : (1 / poolPriceDisplay) * parseFloat(input);
+        } else {
+            rawTokenAQty = isSellTokenBase
+                ? poolPriceDisplay * parseFloat(tokenBQtyLocal)
+                : (1 / poolPriceDisplay) * parseFloat(tokenBQtyLocal);
+        }
+
+        const truncatedTokenAQty = truncateDecimals(rawTokenAQty, tokenADecimals).toString();
+
+        setTokenAQtyLocal(truncatedTokenAQty);
+        const sellQtyField = document.getElementById('sell-quantity') as HTMLInputElement;
+        if (sellQtyField) {
+            sellQtyField.value = truncatedTokenAQty === 'NaN' ? '' : truncatedTokenAQty;
+        }
+        if (truncatedTokenAQty !== 'NaN' && parseFloat(truncatedTokenAQty) > 0) {
+            setSwapAllowed(true);
+        } else {
+            setSwapAllowed(false);
+        }
+    };
 
     return (
         <section className={styles.currency_converter}>
@@ -163,7 +198,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                 direction={isLiq ? 'Select Pair' : 'From:'}
                 fieldId='sell'
                 sellToken
-                updateOtherQuantity={updateBuyQty}
+                handleChangeEvent={handleTokenAChangeEvent}
                 nativeBalance={props.nativeBalance}
                 tokenABalance={tokenABalance}
                 tokenBBalance={tokenBBalance}
@@ -171,7 +206,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                 setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
                 isWithdrawToWalletChecked={isWithdrawToWalletChecked}
                 setIsWithdrawToWalletChecked={setIsWithdrawToWalletChecked}
-                setIsReversalInProgress={setIsReversalInProgress}
+                reverseTokens={reverseTokens}
             />
             <div className={styles.arrow_container} onClick={handleArrowClick}>
                 {isLiq ? null : <span className={styles.arrow} />}
@@ -182,14 +217,14 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                 chainId={chainId}
                 direction={isLiq ? '' : 'To:'}
                 fieldId='buy'
-                updateOtherQuantity={updateSellQty}
+                handleChangeEvent={handleTokenBChangeEvent}
                 nativeBalance={props.nativeBalance}
                 tokenABalance={tokenABalance}
                 tokenBBalance={tokenBBalance}
                 isWithdrawFromDexChecked={isWithdrawFromDexChecked}
                 setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
                 isWithdrawToWalletChecked={isWithdrawToWalletChecked}
-                setIsReversalInProgress={setIsReversalInProgress}
+                reverseTokens={reverseTokens}
                 setIsWithdrawToWalletChecked={setIsWithdrawToWalletChecked}
             />
         </section>

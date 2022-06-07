@@ -23,8 +23,8 @@ interface CurrencySelectorProps {
     setIsWithdrawFromDexChecked: React.Dispatch<SetStateAction<boolean>>;
     isWithdrawToWalletChecked: boolean;
     setIsWithdrawToWalletChecked: React.Dispatch<SetStateAction<boolean>>;
-    updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
-    setIsReversalInProgress: React.Dispatch<SetStateAction<boolean>>;
+    handleChangeEvent: (evt: ChangeEvent<HTMLInputElement>) => void;
+    reverseTokens: () => void;
 }
 
 export default function CurrencySelector(props: CurrencySelectorProps) {
@@ -34,14 +34,14 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
         chainId,
         direction,
         fieldId,
-        updateOtherQuantity,
+        handleChangeEvent,
         isWithdrawFromDexChecked,
         setIsWithdrawFromDexChecked,
         isWithdrawToWalletChecked,
         setIsWithdrawToWalletChecked,
         tokenABalance,
         tokenBBalance,
-        setIsReversalInProgress,
+        reverseTokens,
     } = props;
     const [isChecked, setIsChecked] = useState<boolean>(false);
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -100,7 +100,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                 chainId={chainId}
                 tokenList={tempTokenList}
                 closeModal={closeModal}
-                setIsReversalInProgress={setIsReversalInProgress}
+                reverseTokens={reverseTokens}
             />
         </Modal>
     ) : null;
@@ -117,7 +117,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
             <span className={styles.direction}>{direction}</span>
             <div className={styles.swapbox_top}>
                 <div className={styles.swap_input}>
-                    <CurrencyQuantity fieldId={fieldId} updateOtherQuantity={updateOtherQuantity} />
+                    <CurrencyQuantity fieldId={fieldId} handleChangeEvent={handleChangeEvent} />
                 </div>
                 <div className={styles.token_select} onClick={openModal}>
                     <img

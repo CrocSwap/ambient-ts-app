@@ -298,6 +298,15 @@ export default function App() {
         lastBlockNumber: lastBlockNumber,
     };
 
+    // props for <Limit/> React element on trade route
+    const limitPropsTrade = {
+        provider: provider as JsonRpcProvider,
+        isOnTradeRoute: true,
+        gasPriceinGwei: gasPriceinGwei,
+        nativeBalance: nativeBalance,
+        lastBlockNumber: lastBlockNumber,
+    };
+
     // props for <Range/> React element
     const rangeProps = {
         provider: provider as JsonRpcProvider,
@@ -332,7 +341,7 @@ export default function App() {
                         <Route path='trade' element={<Trade />}>
                             <Route path='' element={<Swap {...swapPropsTrade} />} />
                             <Route path='market' element={<Swap {...swapPropsTrade} />} />
-                            <Route path='limit' element={<Limit />} />
+                            <Route path='limit' element={<Limit {...limitPropsTrade} />} />
                             <Route path='range' element={<Range {...rangeProps} />} />
                         </Route>
                         <Route path='analytics' element={<Analytics />} />
