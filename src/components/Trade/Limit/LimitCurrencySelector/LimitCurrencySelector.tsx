@@ -41,7 +41,6 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
 
     const thisToken = fieldId === 'sell' ? tokenPair.dataTokenA : tokenPair.dataTokenB;
 
-    console.log({ thisToken });
     const [isModalOpen, openModal, closeModal] = useModal();
     const tempTokenList = getAmbientTokens();
 
