@@ -104,6 +104,9 @@ export default function Swap(props: ISwapProps) {
     const [tokenABalance, setTokenABalance] = useState<string>('');
     const [tokenBBalance, setTokenBBalance] = useState<string>('');
 
+    const [tokenAInputQty, setTokenAInputQty] = useState<string>('');
+    const [tokenBInputQty, setTokenBInputQty] = useState<string>('');
+
     const [baseTokenAddress, setBaseTokenAddress] = useState<string>('');
     const [quoteTokenAddress, setQuoteTokenAddress] = useState<string>('');
 
@@ -161,7 +164,7 @@ export default function Swap(props: ISwapProps) {
 
     const [swapAllowed, setSwapAllowed] = useState<boolean>(false);
 
-    const [isSellTokenPrimary, setIsSellTokenPrimary] = useState<boolean>(true);
+    const [isTokenAPrimary, setIsTokenAPrimary] = useState<boolean>(true);
 
     const [isWithdrawFromDexChecked, setIsWithdrawFromDexChecked] = useState(false);
     const [isWithdrawToWalletChecked, setIsWithdrawToWalletChecked] = useState(true);
@@ -222,7 +225,7 @@ export default function Swap(props: ISwapProps) {
         const slippageTolerancePercentage = 5;
         const sellTokenQty = (document.getElementById('sell-quantity') as HTMLInputElement)?.value;
         const buyTokenQty = (document.getElementById('buy-quantity') as HTMLInputElement)?.value;
-        const qty = isSellTokenPrimary ? sellTokenQty : buyTokenQty;
+        const qty = isTokenAPrimary ? sellTokenQty : buyTokenQty;
 
         // overwritten by a non-zero value when selling ETH for another token
         let ethValue = '0';
@@ -234,14 +237,14 @@ export default function Swap(props: ISwapProps) {
                 parseFloat(sellTokenQty) * 1.02,
                 18,
             ).toString();
-            isSellTokenPrimary ? (ethValue = sellTokenQty) : (ethValue = roundedUpEthValue);
+            isTokenAPrimary ? (ethValue = sellTokenQty) : (ethValue = roundedUpEthValue);
         }
 
         if (signer) {
             const tx = await sendSwap(
                 sellTokenAddress,
                 buyTokenAddress,
-                isSellTokenPrimary,
+                isTokenAPrimary,
                 qty,
                 ethValue,
                 slippageTolerancePercentage,
@@ -318,12 +321,16 @@ export default function Swap(props: ISwapProps) {
                     chainId={chainId as string}
                     isLiq={false}
                     poolPriceDisplay={poolPriceDisplay}
-                    isSellTokenPrimary={isSellTokenPrimary}
-                    setIsSellTokenPrimary={setIsSellTokenPrimary}
+                    isTokenAPrimary={isTokenAPrimary}
+                    setIsTokenAPrimary={setIsTokenAPrimary}
                     isSellTokenBase={isSellTokenBase}
                     nativeBalance={truncateDecimals(parseFloat(nativeBalance), 4).toString()}
                     tokenABalance={truncateDecimals(parseFloat(tokenABalance), 4).toString()}
                     tokenBBalance={truncateDecimals(parseFloat(tokenBBalance), 4).toString()}
+                    tokenAInputQty={tokenAInputQty}
+                    tokenBInputQty={tokenBInputQty}
+                    setTokenAInputQty={setTokenAInputQty}
+                    setTokenBInputQty={setTokenBInputQty}
                     isWithdrawFromDexChecked={isWithdrawFromDexChecked}
                     setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
                     isWithdrawToWalletChecked={isWithdrawToWalletChecked}

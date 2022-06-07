@@ -30,8 +30,6 @@ interface RangeCurrencyConverterPropsIF {
     isTokenABase: boolean;
     isAmbient: boolean;
     depositSkew: number;
-    isReversalInProgress: boolean;
-    setIsReversalInProgress: React.Dispatch<SetStateAction<boolean>>;
     setIsSellTokenPrimary?: React.Dispatch<SetStateAction<boolean>>;
 }
 
@@ -52,8 +50,6 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         setIsWithdrawTokenAFromDexChecked,
         isWithdrawTokenBFromDexChecked,
         setIsWithdrawTokenBFromDexChecked,
-        setIsReversalInProgress,
-        isReversalInProgress,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -63,9 +59,6 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
 
     const setTokenAQtyValue = (value: number) => {
         setTokenAQty(value);
-        if (isReversalInProgress) {
-            return;
-        }
 
         const qtyTokenB = calculateSecondaryDepositQty(
             poolPriceNonDisplay,
@@ -96,10 +89,6 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
     const setTokenBQtyValue = (value: number) => {
         setTokenBQty(value);
 
-        if (isReversalInProgress) {
-            return;
-        }
-
         const qtyTokenA = calculateSecondaryDepositQty(
             poolPriceNonDisplay,
             tokenPair.dataTokenA.decimals,
@@ -125,6 +114,20 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         }
     };
 
+    const reverseTokens = (): void => {
+        //   if (tokenPair) {
+        //       dispatch(setAddressTokenA(tokenPair.dataTokenB.address));
+        //       dispatch(setAddressTokenB(tokenPair.dataTokenA.address));
+        //   }
+        //   if (isTokenAPrimary) {
+        //       setTokenBInputQty(tokenAInputQty);
+        //       handleTokenBChangeEvent();
+        //   } else {
+        //       setTokenAInputQty(tokenBInputQty);
+        //       handleTokenAChangeEvent();
+        //   }
+    };
+
     const handleTokenAQtyFieldUpdate = (evt?: ChangeEvent<HTMLInputElement>) => {
         if (evt) {
             setTokenAQtyValue(parseFloat(evt.target.value));
@@ -144,23 +147,22 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
     };
 
     useEffect(() => {
-        if (isReversalInProgress) {
-            const tokenAQtyField = document.getElementById('A-range-quantity') as HTMLInputElement;
-            const tokenBQtyField = document.getElementById('B-range-quantity') as HTMLInputElement;
+        // if () {
+        //     const tokenAQtyField = document.getElementById('A-range-quantity') as HTMLInputElement;
+        //     const tokenBQtyField = document.getElementById('B-range-quantity') as HTMLInputElement;
 
-            if (tokenAQtyField) {
-                tokenAQtyField.value = tokenBQty.toString();
-                setTokenAQty(tokenBQty);
-            }
+        //     if (tokenAQtyField) {
+        //         tokenAQtyField.value = tokenBQty.toString();
+        //         setTokenAQty(tokenBQty);
+        //     }
 
-            if (tokenBQtyField) {
-                tokenBQtyField.value = tokenAQty.toString();
-                setTokenBQty(tokenAQty);
-            }
-        } else {
-            isTokenAPrimary ? handleTokenAQtyFieldUpdate() : handleTokenBQtyFieldUpdate();
-        }
-        setIsReversalInProgress(false);
+        //     if (tokenBQtyField) {
+        //         tokenBQtyField.value = tokenAQty.toString();
+        //         setTokenBQty(tokenAQty);
+        //     }
+        // } else {
+        isTokenAPrimary ? handleTokenAQtyFieldUpdate() : handleTokenBQtyFieldUpdate();
+        // }
     }, [JSON.stringify(tokenPair), poolPriceNonDisplay, depositSkew]);
 
     // props for <RangeCurrencyConverter/> React element
@@ -172,7 +174,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         setIsWithdrawTokenAFromDexChecked: setIsWithdrawTokenAFromDexChecked,
         isWithdrawTokenBFromDexChecked: isWithdrawTokenBFromDexChecked,
         setIsWithdrawTokenBFromDexChecked: setIsWithdrawTokenBFromDexChecked,
-        setIsReversalInProgress: setIsReversalInProgress,
+        reverseTokens: reverseTokens,
     };
 
     return (

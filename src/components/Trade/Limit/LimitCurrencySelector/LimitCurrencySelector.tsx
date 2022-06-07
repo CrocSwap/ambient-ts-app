@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useState, ChangeEvent, SetStateAction } from 'react';
+import { useState, ChangeEvent } from 'react';
 import { RiArrowDownSLine } from 'react-icons/ri';
 
 // START: Import React Functional Components
@@ -22,7 +22,7 @@ interface LimitCurrencySelectorProps {
     fieldId: string;
     direction: string;
     sellToken?: boolean;
-    setIsReversalInProgress: React.Dispatch<SetStateAction<boolean>>;
+    reverseTokens: () => void;
 
     updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
 }
@@ -36,7 +36,7 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
         fieldId,
         direction,
         updateOtherQuantity,
-        setIsReversalInProgress,
+        reverseTokens,
     } = props;
 
     const thisToken = fieldId === 'buy' ? tokenPair.dataTokenA : tokenPair.dataTokenB;
@@ -53,7 +53,7 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
                 chainId={chainId}
                 tokenList={tempTokenList}
                 closeModal={closeModal}
-                setIsReversalInProgress={setIsReversalInProgress}
+                reverseTokens={reverseTokens}
             />
         </Modal>
     ) : null;

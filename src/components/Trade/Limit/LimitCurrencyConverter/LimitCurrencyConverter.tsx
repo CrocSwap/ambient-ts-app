@@ -1,6 +1,10 @@
 // START: Import React and Dongles
 import { ChangeEvent, SetStateAction } from 'react';
 
+import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
+
+import { setAddressTokenA, setAddressTokenB } from '../../../../utils/state/tradeDataSlice';
+
 // START: Import React Functional Components
 import LimitCurrencySelector from '../LimitCurrencySelector/LimitCurrencySelector';
 import LimitRate from '../LimitRate/LimitRate';
@@ -16,13 +20,14 @@ interface LimitCurrencyConverterProps {
     chainId: string;
     poolPrice?: number;
     setIsSellTokenPrimary?: React.Dispatch<SetStateAction<boolean>>;
-    setIsReversalInProgress: React.Dispatch<SetStateAction<boolean>>;
     setLimitAllowed: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 // central react functional component
 export default function LimitCurrencyConverter(props: LimitCurrencyConverterProps) {
-    const { tokenPair, tokensBank, chainId, setLimitAllowed, setIsReversalInProgress } = props;
+    const { tokenPair, tokensBank, chainId, setLimitAllowed } = props;
+
+    const dispatch = useAppDispatch();
 
     // TODO: pass tokenPair to <LimitRate /> as a prop such that we can use a dynamic
     // TODO: ... logo instead of the hardcoded one it contains
@@ -59,6 +64,20 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
         }
     };
 
+    const reverseTokens = (): void => {
+        if (tokenPair) {
+            dispatch(setAddressTokenA(tokenPair.dataTokenB.address));
+            dispatch(setAddressTokenB(tokenPair.dataTokenA.address));
+        }
+        //   if (isTokenAPrimary) {
+        //       setTokenBInputQty(tokenAInputQty);
+        //       handleTokenBChangeEvent();
+        //   } else {
+        //       setTokenAInputQty(tokenBInputQty);
+        //       handleTokenAChangeEvent();
+        //   }
+    };
+
     return (
         <section className={styles.currency_converter}>
             <LimitCurrencySelector
@@ -69,7 +88,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 sellToken
                 direction='Price'
                 updateOtherQuantity={updateBuyQty}
-                setIsReversalInProgress={setIsReversalInProgress}
+                reverseTokens={reverseTokens}
             />
             <LimitCurrencySelector
                 tokenPair={tokenPair}
@@ -78,7 +97,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 fieldId='buy'
                 direction='To'
                 updateOtherQuantity={updateSellQty}
-                setIsReversalInProgress={setIsReversalInProgress}
+                reverseTokens={reverseTokens}
             />
             <div className={styles.arrow_container}>
                 <span className={styles.arrow} />
@@ -88,7 +107,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 tokensBank={tokensBank}
                 chainId={chainId}
                 fieldId='limit-rate'
-                setIsReversalInProgress={setIsReversalInProgress}
+                reverseTokens={reverseTokens}
             />
         </section>
     );

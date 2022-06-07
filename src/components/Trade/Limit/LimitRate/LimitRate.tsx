@@ -3,7 +3,6 @@ import { RiArrowDownSLine } from 'react-icons/ri';
 import Toggle from '../../../Global/Toggle/Toggle';
 import {
     useState,
-    SetStateAction,
     // ChangeEvent
 } from 'react';
 import { TokenIF, TokenPairIF } from '../../../../utils/interfaces/exports';
@@ -19,13 +18,13 @@ interface LimitRateProps {
     chainId: string;
     sellToken?: boolean;
     disable?: boolean;
-    setIsReversalInProgress: React.Dispatch<SetStateAction<boolean>>;
+    reverseTokens: () => void;
 
     // updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
 }
 
 export default function LimitRate(props: LimitRateProps) {
-    const { fieldId, tokenPair, tokensBank, chainId, disable, setIsReversalInProgress } = props;
+    const { fieldId, tokenPair, tokensBank, chainId, disable, reverseTokens } = props;
     const [isChecked, setIsChecked] = useState<boolean>(false);
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -40,7 +39,7 @@ export default function LimitRate(props: LimitRateProps) {
                 chainId={chainId}
                 tokenList={tempTokenList}
                 closeModal={closeModal}
-                setIsReversalInProgress={setIsReversalInProgress}
+                reverseTokens={reverseTokens}
             />
         </Modal>
     ) : null;
