@@ -110,7 +110,6 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
             isAmbient,
             depositSkew,
         );
-        console.log({ qtyTokenA });
 
         const tokenAQtyField = document.getElementById('A-range-quantity') as HTMLInputElement;
         if (qtyTokenA) {

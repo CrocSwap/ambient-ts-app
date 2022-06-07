@@ -317,6 +317,7 @@ export default function Range(props: IRangeProps) {
     }
 
     let minPriceDisplay: string;
+    const apyPercentage: number = 100 - rangeWidthPercentage + 10;
 
     if (rangeWidthPercentage === 100) {
         minPriceDisplay = '0';
@@ -332,6 +333,7 @@ export default function Range(props: IRangeProps) {
         spotPriceDisplay: poolPriceDisplay,
         maxPriceDisplay: maxPriceDisplay,
         minPriceDisplay: minPriceDisplay,
+        apyPercentage: apyPercentage,
     };
     // props for <ConfirmRangeModal/> React element
     const rangeModalProps = {
