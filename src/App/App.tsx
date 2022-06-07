@@ -43,6 +43,7 @@ import { validateChain } from './validateChain';
 import { IParsedPosition, parsePositionArray } from './parsePositions';
 import { getCurrentTokens } from '../utils/functions/processTokens';
 import { defaultTokens } from '../utils/data/defaultTokens';
+import { useLocalStorage } from '../utils/hooks/useLocalStorage';
 
 /** ***** React Function *******/
 export default function App() {
@@ -51,6 +52,8 @@ export default function App() {
     useEffect(() => {
         initializeLocalStorage();
     }, []);
+
+    const [importedTokens, setImportedTokens] = useLocalStorage();
 
     const [showSidebar, setShowSidebar] = useState<boolean>(false);
     const location = useLocation();
@@ -117,10 +120,6 @@ export default function App() {
     // run function to initialize local storage
     // internal controls will only initialize values that don't exist
     // existing values will not be overwritten
-
-    const importedTokens = JSON.parse(localStorage.getItem('user') as string)
-        ? getCurrentTokens(chainId ?? '0x2a')
-        : defaultTokens;
 
     // determine whether the user is connected to a supported chain
     // the user being connected to a non-supported chain or not being
