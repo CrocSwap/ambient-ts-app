@@ -39,8 +39,9 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
         reverseTokens,
     } = props;
 
-    const thisToken = fieldId === 'buy' ? tokenPair.dataTokenA : tokenPair.dataTokenB;
+    const thisToken = fieldId === 'sell' ? tokenPair.dataTokenA : tokenPair.dataTokenB;
 
+    console.log({ thisToken });
     const [isModalOpen, openModal, closeModal] = useModal();
     const tempTokenList = getAmbientTokens();
 
