@@ -5,5 +5,5 @@ import styles from './Edit.module.css';
 // }
 
 export default function Edit() {
-    return <div className={styles.Edit}></div>;
+    return <div className={styles.Edit}>I am edit</div>;
 }
