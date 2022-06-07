@@ -1,3 +1,4 @@
+import ComponentToggle from '../../../components/Trade/Edit/ComponentToggle/ComponentToggle';
 import EditHeader from '../../../components/Trade/Edit/EditHeader/EditHeader';
 import styles from './Edit.module.css';
 
@@ -7,8 +8,9 @@ import styles from './Edit.module.css';
 
 export default function Edit() {
     return (
-        <div className={styles.Edit}>
+        <div className={styles.editContainer}>
             <EditHeader />
+            <ComponentToggle />
         </div>
     );
 }

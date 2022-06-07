@@ -2,22 +2,12 @@ import ExchangeBalance from '../../components/Portfolio/EchangeBalance/ExchangeB
 import PortfolioBanner from '../../components/Portfolio/PortfolioBanner/PortfolioBanner';
 import PortfolioTabs from '../../components/Portfolio/PortfolioTabs/PortfolioTabs';
 import styles from './Portfolio.module.css';
-import { SetStateAction } from 'react';
 
-interface PortfolioProps {
-    showEditComponent: boolean;
-    setShowEditComponent: React.Dispatch<SetStateAction<boolean>>;
-}
-export default function Portfolio(props: PortfolioProps) {
-    const { showEditComponent, setShowEditComponent } = props;
+export default function Portfolio() {
     return (
         <main data-testid={'portfolio'} className={styles.portfolio_container}>
             <PortfolioBanner />
-            <PortfolioTabs
-                showEditComponent={showEditComponent}
-                setShowEditComponent={setShowEditComponent}
-                notOntradeRoute
-            />
+            <PortfolioTabs />
             <div className={styles.title}>Exchange Balance</div>
             <div className={styles.exchange_balance}>
                 <ExchangeBalance />

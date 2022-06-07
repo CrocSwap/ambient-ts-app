@@ -1,30 +1,17 @@
-import {
-    Outlet,
-    useOutletContext,
-    NavLink,
-    useLocation,
-    BrowserRouter as Router,
-} from 'react-router-dom';
+import { Outlet, useOutletContext, NavLink, useLocation } from 'react-router-dom';
 import styles from './Trade.module.css';
 import chart from '../../assets/images/Temporary/chart.svg';
 import Tabs from '../../components/Global/Tabs/Tabs';
 import { motion } from 'framer-motion';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { tradeData as TradeDataIF } from '../../utils/state/tradeDataSlice';
-import { SetStateAction } from 'react';
 
-interface TradeProps {
-    showEditComponent: boolean;
-    setShowEditComponent: React.Dispatch<SetStateAction<boolean>>;
-}
-
-export default function Trade(props: TradeProps) {
+export default function Trade() {
     const location = useLocation();
     const currentLocation = location.pathname;
 
     console.log(currentLocation);
 
-    const { showEditComponent, setShowEditComponent } = props;
     const routes = [
         {
             path: '/market',
@@ -94,28 +81,19 @@ export default function Trade(props: TradeProps) {
     );
 
     const navigationMenu = (
-        <Router>
-            <div className={styles.navigation_menu}>
-                {routes.map((route, idx) => (
-                    <div className={`${styles.nav_container} trade_route`} key={idx}>
-                        <NavLink to={`/trade${route.path}`}>{route.name}</NavLink>
-                    </div>
-                ))}
-            </div>
-        </Router>
+        <div className={styles.navigation_menu}>
+            {routes.map((route, idx) => (
+                <div className={`${styles.nav_container} trade_route`} key={idx}>
+                    <NavLink to={`/trade${route.path}`}>{route.name}</NavLink>
+                </div>
+            ))}
+        </div>
     );
 
     const mainContent = (
         <div className={styles.right_col}>
             {currentLocation !== '/trade/edit' && navigationMenu}
             <Outlet context={{ tradeData }} />
-        </div>
-    );
-
-    const editContent = (
-        <div className={styles.right_col}>
-            I am edit
-            <button onClick={() => setShowEditComponent(false)}>Close out</button>
         </div>
     );
 
@@ -131,12 +109,9 @@ export default function Trade(props: TradeProps) {
                     {tokenInfo}
                     {timeFrameContent}
                     {chartImage}
-                    <Tabs
-                        showEditComponent={showEditComponent}
-                        setShowEditComponent={setShowEditComponent}
-                    />
+                    <Tabs />
                 </div>
-                {showEditComponent ? editContent : mainContent}
+                {mainContent}
             </main>
         </motion.main>
     );

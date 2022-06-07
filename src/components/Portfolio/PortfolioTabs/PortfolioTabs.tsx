@@ -1,16 +1,10 @@
 import styles from './PortfolioTabs.module.css';
-import { useState, SetStateAction } from 'react';
+import { useState } from 'react';
 import TabContent from '../../Global/Tabs/TabContent/TabContent';
 import TabNavItem from '../../Global/Tabs/TabNavItem/TabNavItem';
 import Positions from '../../Trade/Positions/Positions';
 
-interface PortfolioTabsProps {
-    notOntradeRoute: boolean;
-    showEditComponent: boolean;
-    setShowEditComponent: React.Dispatch<SetStateAction<boolean>>;
-}
-export default function PortfolioTabs(props: PortfolioTabsProps) {
-    const { showEditComponent, setShowEditComponent, notOntradeRoute } = props;
+export default function PortfolioTabs() {
     const [activeTab, setActiveTab] = useState('tab1');
 
     const tabData = [
@@ -39,12 +33,7 @@ export default function PortfolioTabs(props: PortfolioTabsProps) {
             </div>
             <div className={styles.tabs_outlet}>
                 <TabContent id='tab1' activeTab={activeTab}>
-                    <Positions
-                        portfolio
-                        showEditComponent={showEditComponent}
-                        setShowEditComponent={setShowEditComponent}
-                        notOnTradeRoute={notOntradeRoute}
-                    />
+                    <Positions portfolio />
                 </TabContent>
                 <TabContent id='tab2' activeTab={activeTab}>
                     {/* <p>Exchange Component</p> */}
