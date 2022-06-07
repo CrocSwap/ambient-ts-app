@@ -1,16 +1,26 @@
 import Position from '../../Global/Position/Position';
 import styles from './Positions.module.css';
+import { SetStateAction } from 'react';
 
 interface PositionsProps {
     portfolio?: boolean;
+    notOnTradeRoute?: boolean;
+    showEditComponent: boolean;
+    setShowEditComponent: React.Dispatch<SetStateAction<boolean>>;
 }
 
 export default function Positions(props: PositionsProps) {
-    const { portfolio } = props;
+    const { portfolio, showEditComponent, setShowEditComponent, notOnTradeRoute } = props;
     const examplePositions = [1, 2, 3];
 
     const positionsDisplay = examplePositions.map((position, idx) => (
-        <Position key={idx} portfolio={portfolio} />
+        <Position
+            key={idx}
+            portfolio={portfolio}
+            showEditComponent={showEditComponent}
+            setShowEditComponent={setShowEditComponent}
+            notOnTradeRoute={notOnTradeRoute}
+        />
     ));
 
     const positionsHeader = (

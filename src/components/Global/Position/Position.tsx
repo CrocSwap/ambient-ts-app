@@ -2,7 +2,8 @@ import RangeStatus from '../RangeStatus/RangeStatus';
 import styles from './Position.module.css';
 import { useModal } from '../Modal/useModal';
 import Modal from '../Modal/Modal';
-import { useState } from 'react';
+import { useState, SetStateAction } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import RemoveRange from '../../RemoveRange/RemoveRange';
 import RangeDetails from '../../RangeDetails/RangeDetails';
@@ -10,9 +11,14 @@ import RangeDetailsHeader from '../../RangeDetails/RangeDetailsHeader/RangeDetai
 
 interface PositionProps {
     portfolio?: boolean;
+    notOnTradeRoute?: boolean;
+    showEditComponent: boolean;
+    setShowEditComponent: React.Dispatch<SetStateAction<boolean>>;
 }
 export default function Position(props: PositionProps) {
-    const { portfolio } = props;
+    // const navigate = useNavigate();
+
+    const { portfolio, setShowEditComponent, notOnTradeRoute } = props;
     const [isModalOpen, openModal, closeModal] = useModal();
 
     const [currentModal, setCurrentModal] = useState<string>('edit');
@@ -54,10 +60,7 @@ export default function Position(props: PositionProps) {
         setCurrentModal('remove');
         openModal();
     }
-    function openEditModal() {
-        setCurrentModal('edit');
-        openModal();
-    }
+
     function openHarvestModal() {
         setCurrentModal('harvest');
         openModal();
@@ -67,6 +70,15 @@ export default function Position(props: PositionProps) {
         openModal();
     }
     //  END OF MODAL FUNCTIONALITY
+
+    // function handleEditForNonTradeRoutes() {
+    //     navigate('/trade')
+    //     setShowEditComponent(true)
+    // }
+
+    function handleEditForTradeROute() {
+        setShowEditComponent(true);
+    }
 
     const tokenImages = (
         <>
@@ -105,7 +117,7 @@ export default function Position(props: PositionProps) {
                 <button className={styles.option_button} onClick={openHarvestModal}>
                     Harvest
                 </button>
-                <button className={styles.option_button} onClick={openEditModal}>
+                <button className={styles.option_button} onClick={handleEditForTradeROute}>
                     Edit
                 </button>
                 <button className={styles.option_button} onClick={openRemoveModal}>

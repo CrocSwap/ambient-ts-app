@@ -1,11 +1,18 @@
 import styles from './Tabs.module.css';
-import { useState } from 'react';
+import { useState, SetStateAction } from 'react';
 import TabNavItem from './TabNavItem/TabNavItem';
 import TabContent from './TabContent/TabContent';
 import Toggle from '../Toggle/Toggle';
 import Positions from '../../Trade/Positions/Positions';
 import LimitOrders from '../../Trade/LimitOrders/LimitOrders';
-export default function Tabs() {
+
+interface TabsProps {
+    showEditComponent: boolean;
+    setShowEditComponent: React.Dispatch<SetStateAction<boolean>>;
+}
+
+export default function Tabs(props: TabsProps) {
+    const { showEditComponent, setShowEditComponent } = props;
     const [activeTab, setActiveTab] = useState('tab1');
     const [isChecked, setIsChecked] = useState<boolean>(false);
 
@@ -49,7 +56,10 @@ export default function Tabs() {
             </div>
             <div className={styles.tabs_outlet}>
                 <TabContent id='tab1' activeTab={activeTab}>
-                    <Positions />
+                    <Positions
+                        showEditComponent={showEditComponent}
+                        setShowEditComponent={setShowEditComponent}
+                    />
                 </TabContent>
                 <TabContent id='tab2' activeTab={activeTab}>
                     <LimitOrders />

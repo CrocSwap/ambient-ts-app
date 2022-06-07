@@ -1,12 +1,18 @@
 import styles from './AnalyticsTabs.module.css';
-import { useState } from 'react';
+import { useState, SetStateAction } from 'react';
 import TabContent from '../../Global/Tabs/TabContent/TabContent';
 import TabNavItem from '../../Global/Tabs/TabNavItem/TabNavItem';
 import Positions from '../../Trade/Positions/Positions';
 import { BiSearch } from 'react-icons/bi';
 
-export default function AnalyticsTabs() {
+interface AnalyticsTabsProps {
+    showEditComponent: boolean;
+    notOnTradeRoute: boolean;
+    setShowEditComponent: React.Dispatch<SetStateAction<boolean>>;
+}
+export default function AnalyticsTabs(props: AnalyticsTabsProps) {
     const [activeTab, setActiveTab] = useState('tab1');
+    const { showEditComponent, setShowEditComponent, notOnTradeRoute } = props;
 
     const tabData = [
         { title: 'Top Tokens', id: 'tab1' },
@@ -42,7 +48,12 @@ export default function AnalyticsTabs() {
             </div>
             <div className={styles.tabs_outlet}>
                 <TabContent id='tab1' activeTab={activeTab}>
-                    <Positions portfolio />
+                    <Positions
+                        portfolio
+                        showEditComponent={showEditComponent}
+                        setShowEditComponent={setShowEditComponent}
+                        notOnTradeRoute={notOnTradeRoute}
+                    />
                 </TabContent>
                 <TabContent id='tab2' activeTab={activeTab}>
                     {/* <p>Exchange Component</p> */}

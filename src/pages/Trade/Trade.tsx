@@ -5,9 +5,15 @@ import Tabs from '../../components/Global/Tabs/Tabs';
 import { motion } from 'framer-motion';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { tradeData as TradeDataIF } from '../../utils/state/tradeDataSlice';
-import { useState } from 'react';
+import { SetStateAction } from 'react';
 
-export default function Trade() {
+interface TradeProps {
+    showEditComponent: boolean;
+    setShowEditComponent: React.Dispatch<SetStateAction<boolean>>;
+}
+
+export default function Trade(props: TradeProps) {
+    const { showEditComponent, setShowEditComponent } = props;
     const routes = [
         {
             path: '/market',
@@ -24,8 +30,6 @@ export default function Trade() {
     ];
 
     const tradeData = useAppSelector((state) => state.tradeData);
-
-    const [showEditComponent, setShowEditComponent] = useState<boolean>(false);
 
     // These would be move to their own components, presumably the graph component
     const tokenInfo = (
@@ -91,7 +95,12 @@ export default function Trade() {
         </div>
     );
 
-    const editContent = <div className={styles.right_col}>I am edit</div>;
+    const editContent = (
+        <div className={styles.right_col}>
+            I am edit
+            <button onClick={() => setShowEditComponent(false)}>Close out</button>
+        </div>
+    );
 
     return (
         <motion.main
@@ -105,7 +114,10 @@ export default function Trade() {
                     {tokenInfo}
                     {timeFrameContent}
                     {chartImage}
-                    <Tabs />
+                    <Tabs
+                        showEditComponent={showEditComponent}
+                        setShowEditComponent={setShowEditComponent}
+                    />
                 </div>
                 {showEditComponent ? editContent : mainContent}
             </main>

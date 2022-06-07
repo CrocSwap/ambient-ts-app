@@ -167,6 +167,7 @@ export default function App() {
 
     const [posArray, setPosArray] = useState<Moralis.Object<Moralis.Attributes>[]>();
     const [parsedPositionArray, setParsedPositionArray] = useState<IParsedPosition[]>();
+    const [showEditComponent, setShowEditComponent] = useState<boolean>(false);
 
     useMoralisSubscription(
         'UserPosition',
@@ -303,7 +304,22 @@ export default function App() {
         provider: provider as JsonRpcProvider,
         lastBlockNumber: lastBlockNumber,
     };
+    // props for <Trade/> React element
+    const tradeProps = {
+        showEditComponent: showEditComponent,
+        setShowEditComponent: setShowEditComponent,
+    };
 
+    // props for <Analytics/> React element
+    const analyticsProps = {
+        showEditComponent: showEditComponent,
+        setShowEditComponent: setShowEditComponent,
+    };
+    // props for <Portfolio/> React element
+    const portfolioProps = {
+        showEditComponent: showEditComponent,
+        setShowEditComponent: setShowEditComponent,
+    };
     // props for <Sidebar/> React element
     function toggleSidebar() {
         setShowSidebar(!showSidebar);
@@ -329,15 +345,15 @@ export default function App() {
                 <div className={`${noSidebarStyle} ${swapBodyStyle}`}>
                     <Routes>
                         <Route index element={<Home />} />
-                        <Route path='trade' element={<Trade />}>
+                        <Route path='trade' element={<Trade {...tradeProps} />}>
                             <Route path='' element={<Swap {...swapPropsTrade} />} />
                             <Route path='market' element={<Swap {...swapPropsTrade} />} />
                             <Route path='limit' element={<Limit />} />
                             <Route path='range' element={<Range {...rangeProps} />} />
                         </Route>
-                        <Route path='analytics' element={<Analytics />} />
+                        <Route path='analytics' element={<Analytics {...analyticsProps} />} />
                         <Route path='range2' element={<Range {...rangeProps} />} />
-                        <Route path='account' element={<Portfolio />} />
+                        <Route path='account' element={<Portfolio {...portfolioProps} />} />
                         <Route path='swap' element={<Swap {...swapProps} />} />
                         <Route path='chart' element={<Chart />} />
                         <Route path='testpage' element={<TestPage />} />
