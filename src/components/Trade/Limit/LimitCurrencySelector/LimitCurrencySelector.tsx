@@ -103,11 +103,13 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
                         updateOtherQuantity={updateOtherQuantity}
                     />
                 </div>
-                {fieldId === 'buy' && tokenSelect}
+                {fieldId === 'buy' || fieldId === 'sell' ? tokenSelect : null}
             </div>
             <div className={styles.swapbox_bottom}>
-                {fieldId === 'buy' ? <span>Wallet: 69.420 | DEX: 0.00</span> : null}
-                {fieldId === 'buy' && DexBalanceContent}
+                {fieldId === 'buy' || fieldId === 'sell' ? (
+                    <span>Wallet: 69.420 | DEX: 0.00</span>
+                ) : null}
+                {fieldId === 'buy' || fieldId === 'sell' ? DexBalanceContent : null}
             </div>
             {tokenSelectModalOrNull}
         </div>

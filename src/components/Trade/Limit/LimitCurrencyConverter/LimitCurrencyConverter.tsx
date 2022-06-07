@@ -117,10 +117,13 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 chainId={chainId}
                 fieldId='sell'
                 sellToken
-                direction='Price'
+                direction='From'
                 updateOtherQuantity={updateBuyQty}
                 reverseTokens={reverseTokens}
             />
+            <div className={styles.arrow_container}>
+                <span className={styles.arrow} />
+            </div>
             <LimitCurrencySelector
                 tokenPair={tokenPair}
                 tokensBank={tokensBank}
@@ -130,9 +133,6 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 updateOtherQuantity={updateSellQty}
                 reverseTokens={reverseTokens}
             />
-            <div className={styles.arrow_container}>
-                <span className={styles.arrow} />
-            </div>
             <LimitRate
                 tokenPair={tokenPair}
                 tokensBank={tokensBank}
