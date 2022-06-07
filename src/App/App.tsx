@@ -34,6 +34,7 @@ import Limit from '../pages/Trade/Limit/Limit';
 import Range from '../pages/Trade/Range/Range';
 import Swap from '../pages/Swap/Swap';
 import Chart from '../pages/Chart/Chart';
+import Edit from '../pages/Trade/Edit/Edit';
 import TestPage from '../pages/TestPage/TestPage';
 
 /** * **** Import Local Files *******/
@@ -350,6 +351,7 @@ export default function App() {
                             <Route path='market' element={<Swap {...swapPropsTrade} />} />
                             <Route path='limit' element={<Limit />} />
                             <Route path='range' element={<Range {...rangeProps} />} />
+                            <Route path='edit' element={<Edit />} />
                         </Route>
                         <Route path='analytics' element={<Analytics {...analyticsProps} />} />
                         <Route path='range2' element={<Range {...rangeProps} />} />
