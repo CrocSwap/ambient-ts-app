@@ -1,9 +1,14 @@
 // START: Import React and Dongles
-import { ChangeEvent, SetStateAction } from 'react';
+import { ChangeEvent, SetStateAction, useEffect } from 'react';
 
-import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
+import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 
-import { setAddressTokenA, setAddressTokenB } from '../../../../utils/state/tradeDataSlice';
+import {
+    setAddressTokenA,
+    setAddressTokenB,
+    // setIsTokenAPrimary,
+    // setPrimaryQuantity,
+} from '../../../../utils/state/tradeDataSlice';
 
 // START: Import React Functional Components
 import LimitCurrencySelector from '../LimitCurrencySelector/LimitCurrencySelector';
@@ -29,8 +34,34 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
 
     const dispatch = useAppDispatch();
 
+    const tradeData = useAppSelector((state) => state.tradeData);
+
     // TODO: pass tokenPair to <LimitRate /> as a prop such that we can use a dynamic
     // TODO: ... logo instead of the hardcoded one it contains
+
+    useEffect(() => {
+        if (tradeData) {
+            if (tradeData.isTokenAPrimary) {
+                // setTokenAQtyLocal(tradeData.primaryQuantity);
+                const sellQtyField = document.getElementById(
+                    'sell-limit-quantity',
+                ) as HTMLInputElement;
+                if (sellQtyField) {
+                    sellQtyField.value =
+                        tradeData.primaryQuantity === 'NaN' ? '' : tradeData.primaryQuantity;
+                }
+            } else {
+                // setTokenBQtyLocal(tradeData.primaryQuantity);
+                const buyQtyField = document.getElementById(
+                    'buy-limit-quantity',
+                ) as HTMLInputElement;
+                if (buyQtyField) {
+                    buyQtyField.value =
+                        tradeData.primaryQuantity === 'NaN' ? '' : tradeData.primaryQuantity;
+                }
+            }
+        }
+    }, []);
 
     // hardcoded pool price
     const poolPrice = 0;

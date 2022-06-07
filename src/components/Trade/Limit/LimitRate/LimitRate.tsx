@@ -47,7 +47,7 @@ export default function LimitRate(props: LimitRateProps) {
     const rateInput = (
         <div className={styles.token_amount}>
             <input
-                id={`${fieldId}-limit-rate-quantity`}
+                id={`${fieldId}-quantity`}
                 className={styles.currency_quantity}
                 placeholder='0.0'
                 // onChange={(event) => updateOtherQuantity(event)}
