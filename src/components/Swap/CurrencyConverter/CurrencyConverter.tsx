@@ -2,8 +2,13 @@ import { ChangeEvent, SetStateAction, useEffect, useState } from 'react';
 import styles from './CurrencyConverter.module.css';
 import CurrencySelector from '../CurrencySelector/CurrencySelector';
 import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
-import { setAddressTokenA, setAddressTokenB } from '../../../utils/state/tradeDataSlice';
-import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
+import {
+    setAddressTokenA,
+    setAddressTokenB,
+    setIsTokenAPrimary,
+    setPrimaryQuantity,
+} from '../../../utils/state/tradeDataSlice';
+import { useAppDispatch, useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import truncateDecimals from '../../../utils/data/truncateDecimals';
 
 interface CurrencyConverterPropsIF {
@@ -58,12 +63,36 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
 
     const dispatch = useAppDispatch();
 
-    const [isTokenAPrimaryLocal, setIsTokenAPrimaryLocal] = useState<boolean>(true);
+    const tradeData = useAppSelector((state) => state.tradeData);
+
+    const [isTokenAPrimaryLocal, setIsTokenAPrimaryLocal] = useState<boolean>(
+        tradeData.isTokenAPrimary,
+    );
     const [tokenAQtyLocal, setTokenAQtyLocal] = useState<string>('');
     const [tokenBQtyLocal, setTokenBQtyLocal] = useState<string>('');
 
     const tokenADecimals = tokenPair.dataTokenA.decimals;
     const tokenBDecimals = tokenPair.dataTokenB.decimals;
+
+    useEffect(() => {
+        if (tradeData) {
+            if (tradeData.isTokenAPrimary) {
+                setTokenAQtyLocal(tradeData.primaryQuantity);
+                const sellQtyField = document.getElementById('sell-quantity') as HTMLInputElement;
+                if (sellQtyField) {
+                    sellQtyField.value =
+                        tradeData.primaryQuantity === 'NaN' ? '' : tradeData.primaryQuantity;
+                }
+            } else {
+                setTokenBQtyLocal(tradeData.primaryQuantity);
+                const buyQtyField = document.getElementById('buy-quantity') as HTMLInputElement;
+                if (buyQtyField) {
+                    buyQtyField.value =
+                        tradeData.primaryQuantity === 'NaN' ? '' : tradeData.primaryQuantity;
+                }
+            }
+        }
+    }, []);
 
     const handleArrowClick = (): void => {
         reverseTokens();
@@ -88,6 +117,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
             }
         }
         setIsTokenAPrimaryLocal(!isTokenAPrimaryLocal);
+        dispatch(setIsTokenAPrimary(!isTokenAPrimaryLocal));
     };
 
     useEffect(() => {
@@ -101,6 +131,8 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
             const input = evt.target.value;
             setTokenAQtyLocal(input);
             setIsTokenAPrimaryLocal(true);
+            dispatch(setIsTokenAPrimary(true));
+            dispatch(setPrimaryQuantity(input));
 
             rawTokenBQty = isSellTokenBase
                 ? (1 / poolPriceDisplay) * parseFloat(input)
@@ -131,6 +163,8 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
             const input = evt.target.value;
             setTokenBQtyLocal(input);
             setIsTokenAPrimaryLocal(false);
+            dispatch(setIsTokenAPrimary(false));
+            dispatch(setPrimaryQuantity(input));
 
             rawTokenAQty = isSellTokenBase
                 ? poolPriceDisplay * parseFloat(input)
