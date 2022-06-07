@@ -5,6 +5,7 @@ import Tabs from '../../components/Global/Tabs/Tabs';
 import { motion } from 'framer-motion';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { tradeData as TradeDataIF } from '../../utils/state/tradeDataSlice';
+import { useState } from 'react';
 
 export default function Trade() {
     const routes = [
@@ -23,6 +24,8 @@ export default function Trade() {
     ];
 
     const tradeData = useAppSelector((state) => state.tradeData);
+
+    const [showEditComponent, setShowEditComponent] = useState<boolean>(false);
 
     // These would be move to their own components, presumably the graph component
     const tokenInfo = (
@@ -75,6 +78,21 @@ export default function Trade() {
         </div>
     );
 
+    const mainContent = (
+        <div className={styles.right_col}>
+            <div className={styles.navigation_menu}>
+                {routes.map((route, idx) => (
+                    <div className={`${styles.nav_container} trade_route`} key={idx}>
+                        <NavLink to={`/trade${route.path}`}>{route.name}</NavLink>
+                    </div>
+                ))}
+            </div>
+            <Outlet context={{ tradeData }} />
+        </div>
+    );
+
+    const editContent = <div className={styles.right_col}>I am edit</div>;
+
     return (
         <motion.main
             initial={{ width: 0 }}
@@ -82,7 +100,6 @@ export default function Trade() {
             exit={{ x: window.innerWidth, transition: { duration: 0.4 } }}
             data-testid={'trade'}
         >
-            {/* <h1>This is Trade.tsx</h1> */}
             <main className={styles.main_layout}>
                 <div className={`${styles.middle_col} ${styles.graph_container}`}>
                     {tokenInfo}
@@ -90,16 +107,7 @@ export default function Trade() {
                     {chartImage}
                     <Tabs />
                 </div>
-                <div className={styles.right_col}>
-                    <div className={styles.navigation_menu}>
-                        {routes.map((route, idx) => (
-                            <div className={`${styles.nav_container} trade_route`} key={idx}>
-                                <NavLink to={`/trade${route.path}`}>{route.name}</NavLink>
-                            </div>
-                        ))}
-                    </div>
-                    <Outlet context={{ tradeData }} />
-                </div>
+                {showEditComponent ? editContent : mainContent}
             </main>
         </motion.main>
     );
