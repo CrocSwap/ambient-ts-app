@@ -1,11 +1,12 @@
-import styles from './CurrencyDisplay.module.css';
-import { RiArrowDownSLine } from 'react-icons/ri';
+import styles from './AmountAndCurrencyDisplay.module.css';
 
-// interface CurrencyDisplayProps {
-//     children: React.ReactNode;
-// }
+interface AmountAndCurrencyDisplayProps {
+    value: string | number;
+    tokenImg: string;
+}
 
-export default function CurrencyDisplay() {
+export default function AmountAndCurrencyDisplay(props: AmountAndCurrencyDisplayProps) {
+    const { value, tokenImg } = props;
     const currencyQuantity = (
         <div className={styles.token_amount}>
             <input
@@ -22,23 +23,22 @@ export default function CurrencyDisplay() {
                 pattern='^[0-9]*[.,]?[0-9]*$'
                 disabled
                 required
+                value={value}
             />
         </div>
     );
     return (
         <div className={styles.swapbox}>
-            {/* {sellToken && <span className={styles.direction}>Amounts</span>} */}
             <div className={styles.swapbox_top}>
                 <div className={styles.swap_input}>{currencyQuantity}</div>
                 <div className={styles.token_select}>
                     <img
                         className={styles.token_list_img}
-                        src='https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png'
+                        src={tokenImg}
                         alt='ethreum'
                         width='30px'
                     />
                     <span className={styles.token_list_text}>ETH</span>
-                    <RiArrowDownSLine size={27} />
                 </div>
             </div>
             <div className={styles.swapbox_bottom}>

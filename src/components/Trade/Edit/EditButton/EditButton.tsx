@@ -1,4 +1,4 @@
-import styles from './RangeButton.module.css';
+import styles from './EditButton.module.css';
 import { useState } from 'react';
 import Button from '../../../Global/Button/Button';
 

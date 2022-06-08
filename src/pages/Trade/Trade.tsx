@@ -92,7 +92,7 @@ export default function Trade() {
 
     const mainContent = (
         <div className={styles.right_col}>
-            {currentLocation !== '/trade/edit' && navigationMenu}
+            {currentLocation.slice(0, 11) !== '/trade/edit' && navigationMenu}
             <Outlet context={{ tradeData }} />
         </div>
     );

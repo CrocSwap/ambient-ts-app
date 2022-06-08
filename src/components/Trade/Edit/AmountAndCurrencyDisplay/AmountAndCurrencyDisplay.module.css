@@ -52,7 +52,7 @@
   
   .swapbox_top {
     border-radius: var(--border-radius);
-    background-color: var(--dark2);
+    background-color: var(--dark1);
     display: flex;
     justify-content: space-between;
     flex-direction: row;
@@ -67,7 +67,7 @@
 
 .token_select {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
   align-items: center;
   width: 30%;
   cursor: pointer;
