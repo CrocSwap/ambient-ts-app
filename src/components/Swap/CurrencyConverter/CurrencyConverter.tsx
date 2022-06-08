@@ -10,6 +10,7 @@ import {
 } from '../../../utils/state/tradeDataSlice';
 import { useAppDispatch, useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import truncateDecimals from '../../../utils/data/truncateDecimals';
+// import { parseJsonConfigFileContent } from 'typescript';
 
 interface CurrencyConverterPropsIF {
     isSellTokenBase: boolean;
@@ -68,8 +69,12 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
     const [isTokenAPrimaryLocal, setIsTokenAPrimaryLocal] = useState<boolean>(
         tradeData.isTokenAPrimary,
     );
-    const [tokenAQtyLocal, setTokenAQtyLocal] = useState<string>('');
-    const [tokenBQtyLocal, setTokenBQtyLocal] = useState<string>('');
+    const [tokenAQtyLocal, setTokenAQtyLocal] = useState<string>(
+        isTokenAPrimaryLocal ? tradeData?.primaryQuantity : '',
+    );
+    const [tokenBQtyLocal, setTokenBQtyLocal] = useState<string>(
+        !isTokenAPrimaryLocal ? tradeData?.primaryQuantity : '',
+    );
 
     const tokenADecimals = tokenPair.dataTokenA.decimals;
     const tokenBDecimals = tokenPair.dataTokenB.decimals;
