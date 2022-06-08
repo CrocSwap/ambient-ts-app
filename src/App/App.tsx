@@ -29,7 +29,6 @@ import Home from '../pages/Home/Home';
 import Trade from '../pages/Trade/Trade';
 import Analytics from '../pages/Analytics/Analytics';
 import Portfolio from '../pages/Portfolio/Portfolio';
-// import Market from '../pages/Trade/Market/Market';
 import Limit from '../pages/Trade/Limit/Limit';
 import Range from '../pages/Trade/Range/Range';
 import Swap from '../pages/Swap/Swap';
@@ -38,7 +37,6 @@ import TestPage from '../pages/TestPage/TestPage';
 
 /** * **** Import Local Files *******/
 import './App.css';
-// import initializeLocalStorage from './functions/initializeLocalStorage';
 import { validateChain } from './validateChain';
 import { IParsedPosition, parsePositionArray } from './parsePositions';
 import { defaultTokens } from '../utils/data/defaultTokens';
