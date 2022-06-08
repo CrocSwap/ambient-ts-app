@@ -28,7 +28,6 @@ export function fetchTokenLists() {
         results.forEach((list) => {
             list.tokens.forEach((token: TokenIF) => (token.fromList = list.uri));
         });
-        localStorage.setItem('allTokenLists', JSON.stringify(results));
         return results;
     });
     return returnedLists;

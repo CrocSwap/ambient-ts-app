@@ -38,11 +38,11 @@ import TestPage from '../pages/TestPage/TestPage';
 
 /** * **** Import Local Files *******/
 import './App.css';
-import initializeLocalStorage from './functions/initializeLocalStorage';
+// import initializeLocalStorage from './functions/initializeLocalStorage';
+import { fetchTokenLists } from './functions/fetchTokenLists';
 import { validateChain } from './validateChain';
 import { IParsedPosition, parsePositionArray } from './parsePositions';
-import { getCurrentTokens } from '../utils/functions/processTokens';
-import { defaultTokens } from '../utils/data/defaultTokens';
+import { kovanETH, kovanDAI, kovanUSDC } from '../utils/data/defaultTokens';
 import { useLocalStorage } from '../utils/hooks/useLocalStorage';
 
 /** ***** React Function *******/
@@ -50,10 +50,20 @@ export default function App() {
     const { chainId, isWeb3Enabled, account, logout, isAuthenticated } = useMoralis();
 
     useEffect(() => {
-        initializeLocalStorage();
+        if (localStorage.allTokenLists) {
+            const allTokenLists = fetchTokenLists();
+        }
     }, []);
 
-    const [importedTokens, setImportedTokens] = useLocalStorage();
+    // 1. check if all token lists are in local storage
+    // 2. if yes, do nothing
+    // 3. if no, fetch token lists and send to local storage
+
+    // const defaultTks = {kovanETH, kovanDAI, kovanUSDC};
+
+    // const [importedTokens, setImportedTokens] = useLocalStorage('importedTokens', JSON.stringify(defaultTks));
+
+    const importedTokens = [kovanDAI, kovanUSDC, kovanETH];
 
     const [showSidebar, setShowSidebar] = useState<boolean>(false);
     const location = useLocation();
