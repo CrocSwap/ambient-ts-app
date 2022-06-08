@@ -48,10 +48,12 @@ import initializeLocalStorage from './functions/initializeLocalStorage';
 export default function App() {
     const { chainId, isWeb3Enabled, account, logout, isAuthenticated } = useMoralis();
 
-    if (!localStorage.isAppInitialized) {
-        localStorage.setItem('isAppInitialized', 'true');
-        initializeLocalStorage();
-    }
+    useEffect(() => {
+        if (!localStorage.isAppInitialized) {
+            localStorage.setItem('isAppInitialized', 'true');
+            initializeLocalStorage();
+        }
+    }, []);
 
     // 1. check if all token lists are in local storage
     // 2. if yes, do nothing
