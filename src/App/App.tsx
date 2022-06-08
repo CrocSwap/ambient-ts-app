@@ -49,6 +49,10 @@ import { useLocalStorage } from '../utils/hooks/useLocalStorage';
 export default function App() {
     const { chainId, isWeb3Enabled, account, logout, isAuthenticated } = useMoralis();
 
+    console.log(localStorage.isAppInitialized);
+    console.assert(localStorage.getItem('isAppInitialized'), 'not initialized!');
+    localStorage.setItem('isAppInitialized', 'true');
+
     useEffect(() => {
         if (localStorage.allTokenLists) {
             const allTokenLists = fetchTokenLists();
