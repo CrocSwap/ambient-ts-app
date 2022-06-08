@@ -45,8 +45,6 @@ import styles from './Range.module.css';
 import { isTransactionReplacedError, TransactionError } from '../../../utils/TransactionError';
 import { handleParsedReceipt } from '../../../utils/HandleParsedReceipt';
 import truncateDecimals from '../../../utils/data/truncateDecimals';
-import { findTokenByAddress } from '../../../utils/functions/processTokens';
-import { kovanETH, kovanUSDC } from '../../../utils/data/defaultTokens';
 import ConfirmRangeModal from '../../../components/Trade/Range/ConfirmRangeModal/ConfirmRangeModal';
 import { TokenIF } from '../../../utils/interfaces/exports';
 import { useTradeData } from '../Trade';
