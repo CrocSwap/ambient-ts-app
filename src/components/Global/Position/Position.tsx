@@ -3,6 +3,7 @@ import styles from './Position.module.css';
 import { useModal } from '../Modal/useModal';
 import Modal from '../Modal/Modal';
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 import RemoveRange from '../../RemoveRange/RemoveRange';
 import RangeDetails from '../../RangeDetails/RangeDetails';
@@ -10,8 +11,11 @@ import RangeDetailsHeader from '../../RangeDetails/RangeDetailsHeader/RangeDetai
 
 interface PositionProps {
     portfolio?: boolean;
+    notOnTradeRoute?: boolean;
 }
 export default function Position(props: PositionProps) {
+    // const navigate = useNavigate();
+
     const { portfolio } = props;
     const [isModalOpen, openModal, closeModal] = useModal();
 
@@ -54,10 +58,7 @@ export default function Position(props: PositionProps) {
         setCurrentModal('remove');
         openModal();
     }
-    function openEditModal() {
-        setCurrentModal('edit');
-        openModal();
-    }
+
     function openHarvestModal() {
         setCurrentModal('harvest');
         openModal();
@@ -84,6 +85,7 @@ export default function Position(props: PositionProps) {
             </td>
         </>
     );
+    const positionId = '0xfd05fss3da3ff';
 
     return (
         <tr>
@@ -105,8 +107,8 @@ export default function Position(props: PositionProps) {
                 <button className={styles.option_button} onClick={openHarvestModal}>
                     Harvest
                 </button>
-                <button className={styles.option_button} onClick={openEditModal}>
-                    Edit
+                <button className={styles.option_button}>
+                    <Link to={`/trade/edit/${positionId}`}>Edit</Link>
                 </button>
                 <button className={styles.option_button} onClick={openRemoveModal}>
                     Remove

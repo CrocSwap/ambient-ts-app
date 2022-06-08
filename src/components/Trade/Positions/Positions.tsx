@@ -3,14 +3,15 @@ import styles from './Positions.module.css';
 
 interface PositionsProps {
     portfolio?: boolean;
+    notOnTradeRoute?: boolean;
 }
 
 export default function Positions(props: PositionsProps) {
-    const { portfolio } = props;
+    const { portfolio, notOnTradeRoute } = props;
     const examplePositions = [1, 2, 3];
 
     const positionsDisplay = examplePositions.map((position, idx) => (
-        <Position key={idx} portfolio={portfolio} />
+        <Position key={idx} portfolio={portfolio} notOnTradeRoute={notOnTradeRoute} />
     ));
 
     const positionsHeader = (
