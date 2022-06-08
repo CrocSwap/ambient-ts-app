@@ -16,8 +16,6 @@ import ConfirmLimitModal from '../../../components/Trade/Limit/ConfirmLimitModal
 
 // START: Import Local Files
 import { useTradeData } from '../Trade';
-import { findTokenByAddress } from '../../../utils/functions/processTokens';
-import { kovanETH, kovanUSDC } from '../../../utils/data/defaultTokens';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import { TokenIF } from '../../../utils/interfaces/exports';
 
@@ -28,18 +26,13 @@ interface LimitPropsIF {
 export default function Limit(props: LimitPropsIF) {
     const { importedTokens } = props;
     const { tradeData } = useTradeData();
+    const { chainId } = useMoralis();
     const [isModalOpen, openModal, closeModal] = useModal();
     const [limitAllowed, setLimitAllowed] = useState<boolean>(false);
 
-    // TODO:  @Emily the logic below to get token pair data was ported from Swap.tsx and
-    // TODO:  ... will need to be repeated in Range.tsx per the current architecture, we
-    // TODO:  ... should refactor this to have less redundancy in code and app processes
-
-    const { chainId } = useMoralis();
-
     const tokenPair = {
-        dataTokenA: findTokenByAddress(tradeData.tokenA.address, importedTokens) ?? kovanETH,
-        dataTokenB: findTokenByAddress(tradeData.tokenB.address, importedTokens) ?? kovanUSDC,
+        dataTokenA: tradeData.tokenA,
+        dataTokenB: tradeData.tokenB,
     };
 
     const confirmLimitModalOrNull = isModalOpen ? (
