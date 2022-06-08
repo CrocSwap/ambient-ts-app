@@ -30,11 +30,16 @@ export default function Account(props: IAccountProps): React.ReactElement<IAccou
         setAnchorEl(null);
     };
 
+    const handleLogout = () => {
+        clickLogout();
+        handlePopoverClose();
+    };
+
     const open = Boolean(anchorEl);
     const popoverId = open ? 'simple-popover' : undefined;
 
     const logoutButton = (
-        <button className={styles.authenticate_button} onClick={clickLogout}>
+        <button className={styles.authenticate_button} onClick={handleLogout}>
             Logout
         </button>
     );
@@ -86,7 +91,9 @@ export default function Account(props: IAccountProps): React.ReactElement<IAccou
             </div> */}
 
             <span className={styles.white}>
-                {props.nativeBalance ? parseFloat(props.nativeBalance).toFixed(4) + ' ETH' : ''}
+                {props.nativeBalance && isAuthenticated && isWeb3Enabled
+                    ? parseFloat(props.nativeBalance).toFixed(4) + ' ETH'
+                    : ''}
             </span>
             <div className={styles.title_gradient}>{props.accountAddress}</div>
             <AiOutlineQuestionCircle size={20} color='#CDC1FF' />
