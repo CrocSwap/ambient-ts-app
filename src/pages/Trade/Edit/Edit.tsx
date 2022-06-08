@@ -5,6 +5,7 @@ import { useParams } from 'react-router-dom';
 import CurrencyDisplay from '../../../components/Global/CurrencyDisplay/CurrencyDisplay';
 import CurrencyDisplayContainer from '../../../components/Trade/Edit/CurrencyDisplayContainer/CurrencyDisplayContainer';
 import MinMaxPrice from '../../../components/Trade/Range/AdvancedModeComponents/MinMaxPrice/MinMaxPrice';
+import EditPriceInfo from '../../../components/Trade/Edit/EditPriceInfo/EditPriceInfo';
 
 // interface EditProps {
 //     children: React.ReactNode;
@@ -19,6 +20,7 @@ export default function Edit() {
             {/* <ComponentToggle /> */}
             <CurrencyDisplayContainer />
             <MinMaxPrice />
+            <EditPriceInfo />
         </div>
     );
 }
