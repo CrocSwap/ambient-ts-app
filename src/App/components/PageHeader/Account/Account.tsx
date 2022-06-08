@@ -41,34 +41,34 @@ export default function Account(props: IAccountProps): React.ReactElement<IAccou
 
     const popperContent = (
         <div className={styles.popperContent}>
-            <div className={styles.more_row}>
+            <div className={styles.more_row} onClick={handlePopoverClose}>
                 <span>About</span>
                 <RiInformationLine />
             </div>
-            <div className={styles.more_row}>
+            <div className={styles.more_row} onClick={handlePopoverClose}>
                 <span>Help Center</span>
                 <AiOutlineQuestionCircle />
             </div>
-            <div className={styles.more_row}>
+            <div className={styles.more_row} onClick={handlePopoverClose}>
                 <span>Request Features</span>
                 <GoRequestChanges />
             </div>
-            <div className={styles.more_row}>
+            <div className={styles.more_row} onClick={handlePopoverClose}>
                 <span>Discord</span>
                 <FaDiscord />
             </div>
-            <div className={styles.more_row}>
+            <div className={styles.more_row} onClick={handlePopoverClose}>
                 <span>Language</span>
                 <MdLanguage />
             </div>
             {/* <div className={styles.more_row} onClick={switchTheme}>
                 <span>{theme === "dark" ? "Light" : "Dark"} Theme</span>
             </div> */}
-            <div className={styles.more_row}>
+            <div className={styles.more_row} onClick={handlePopoverClose}>
                 <span>Docs</span>
                 <BsBook />
             </div>
-            <div className={styles.more_row}>
+            <div className={styles.more_row} onClick={handlePopoverClose}>
                 <span>Legal & Privacy</span>
                 <HiOutlineDocumentText />
             </div>
