@@ -47,10 +47,6 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
                         <TokenSelect
                             key={idx}
                             token={token}
-                            symbol={token.symbol}
-                            name={token.name}
-                            qty={token.decimals}
-                            address={token.address}
                             tokenToUpdate={tokenToUpdate}
                             closeModal={closeModal}
                             tokenPair={tokenPair}

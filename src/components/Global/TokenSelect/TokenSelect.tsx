@@ -10,27 +10,13 @@ import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
 interface TokenSelectProps {
     token: TokenIF;
     tokenPair: TokenPairIF;
-    icon: string;
-    qty?: number;
-    symbol: string;
-    name: string;
-    address: string;
     tokenToUpdate: string;
     closeModal: () => void;
     setIsReversalInProgress: React.Dispatch<SetStateAction<boolean>>;
 }
 
 export default function TokenSelect(props: TokenSelectProps) {
-    const {
-        icon,
-        symbol,
-        name,
-        address,
-        tokenToUpdate,
-        closeModal,
-        tokenPair,
-        setIsReversalInProgress,
-    } = props;
+    const { token, tokenToUpdate, closeModal, tokenPair, setIsReversalInProgress } = props;
     function getRandomInt() {
         return Math.floor(Math.random() * 18000);
     }
@@ -43,20 +29,20 @@ export default function TokenSelect(props: TokenSelectProps) {
 
     const handleClick = (): void => {
         if (tokenToUpdate === 'A') {
-            if (tokenPair.dataTokenB.address === address) {
+            if (tokenPair.dataTokenB.address === token.address) {
                 setIsReversalInProgress(true);
-                dispatch(setAddressTokenA(address));
+                dispatch(setAddressTokenA(token.address));
                 dispatch(setAddressTokenB(tokenPair.dataTokenA.address));
             } else {
-                dispatch(setAddressTokenA(address));
+                dispatch(setAddressTokenA(token.address));
             }
         } else if (tokenToUpdate === 'B') {
-            if (tokenPair.dataTokenA.address === address) {
+            if (tokenPair.dataTokenA.address === token.address) {
                 setIsReversalInProgress(true);
-                dispatch(setAddressTokenB(address));
+                dispatch(setAddressTokenB(token.address));
                 dispatch(setAddressTokenA(tokenPair.dataTokenB.address));
             } else {
-                dispatch(setAddressTokenB(address));
+                dispatch(setAddressTokenB(token.address));
             }
         } else {
             console.warn('Error in TokenSelect.tsx, failed to find proper dispatch function.');
@@ -69,9 +55,9 @@ export default function TokenSelect(props: TokenSelectProps) {
             <div className={styles.modal_tokens_info}>
                 <RiStarFill size={20} className={styles.star_filled} />
                 <RiStarLine size={20} className={styles.star_line} />
-                {icon ? <img src={icon} alt='' width='27px' /> : noTokenImage}
-                <span className={styles.modal_token_symbol}>{symbol}</span>
-                <span className={styles.modal_token_name}>{name}</span>
+                {token.logoURI ? <img src={token.logoURI} alt='' width='27px' /> : noTokenImage}
+                <span className={styles.modal_token_symbol}>{token.symbol}</span>
+                <span className={styles.modal_token_name}>{token.name}</span>
             </div>
             <div className={styles.modal_tokens_amount}>{fakeQty}</div>
         </div>
