@@ -1,11 +1,11 @@
 import styles from './CurrencyDisplay.module.css';
 import { RiArrowDownSLine } from 'react-icons/ri';
 
-interface CurrencyDisplayProps {
-    children: React.ReactNode;
-}
+// interface CurrencyDisplayProps {
+//     children: React.ReactNode;
+// }
 
-export default function CurrencyDisplay(props: CurrencyDisplayProps) {
+export default function CurrencyDisplay() {
     const currencyQuantity = (
         <div className={styles.token_amount}>
             <input
