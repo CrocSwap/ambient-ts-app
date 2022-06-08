@@ -32,6 +32,7 @@ interface CurrencyConverterPropsIF {
     isWithdrawToWalletChecked: boolean;
     setIsWithdrawToWalletChecked: React.Dispatch<SetStateAction<boolean>>;
     setSwapAllowed: React.Dispatch<React.SetStateAction<boolean>>;
+    setSwapButtonErrorMessage: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
@@ -51,6 +52,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         setSwapAllowed,
         tokenABalance,
         tokenBBalance,
+        setSwapButtonErrorMessage,
         // setTokenAInputQty,
         // setTokenBInputQty,
         // tokenAInputQty,
@@ -128,6 +130,20 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         isTokenAPrimaryLocal ? handleTokenAChangeEvent() : handleTokenBChangeEvent();
     }, [poolPriceDisplay, isSellTokenBase, isTokenAPrimaryLocal]);
 
+    const handleSwapButtonMessage = (tokenAAmount: number) => {
+        if (tokenAAmount > 0 && tokenAAmount <= parseFloat(tokenABalance)) {
+            setSwapAllowed(true);
+        } else {
+            setSwapAllowed(false);
+
+            if (tokenAAmount > parseFloat(tokenABalance)) {
+                setSwapButtonErrorMessage('Entered Amount Exceeds Wallet Balance');
+            } else {
+                setSwapButtonErrorMessage('Enter an Amount');
+            }
+        }
+    };
+
     const handleTokenAChangeEvent = (evt?: ChangeEvent<HTMLInputElement>) => {
         let rawTokenBQty;
 
@@ -141,10 +157,13 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
             rawTokenBQty = isSellTokenBase
                 ? (1 / poolPriceDisplay) * parseFloat(input)
                 : poolPriceDisplay * parseFloat(input);
+
+            handleSwapButtonMessage(parseFloat(input));
         } else {
             rawTokenBQty = isSellTokenBase
                 ? (1 / poolPriceDisplay) * parseFloat(tokenAQtyLocal)
                 : poolPriceDisplay * parseFloat(tokenAQtyLocal);
+            handleSwapButtonMessage(parseFloat(tokenAQtyLocal));
         }
         const truncatedTokenBQty = truncateDecimals(rawTokenBQty, tokenBDecimals).toString();
 
@@ -153,11 +172,6 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
 
         if (buyQtyField) {
             buyQtyField.value = truncatedTokenBQty === 'NaN' ? '' : truncatedTokenBQty;
-        }
-        if (truncatedTokenBQty !== 'NaN' && parseFloat(truncatedTokenBQty) > 0) {
-            setSwapAllowed(true);
-        } else {
-            setSwapAllowed(false);
         }
     };
     const handleTokenBChangeEvent = (evt?: ChangeEvent<HTMLInputElement>) => {
@@ -178,6 +192,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                 ? poolPriceDisplay * parseFloat(tokenBQtyLocal)
                 : (1 / poolPriceDisplay) * parseFloat(tokenBQtyLocal);
         }
+        handleSwapButtonMessage(rawTokenAQty);
 
         const truncatedTokenAQty = truncateDecimals(rawTokenAQty, tokenADecimals).toString();
 
@@ -185,11 +200,6 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         const sellQtyField = document.getElementById('sell-quantity') as HTMLInputElement;
         if (sellQtyField) {
             sellQtyField.value = truncatedTokenAQty === 'NaN' ? '' : truncatedTokenAQty;
-        }
-        if (truncatedTokenAQty !== 'NaN' && parseFloat(truncatedTokenAQty) > 0) {
-            setSwapAllowed(true);
-        } else {
-            setSwapAllowed(false);
         }
     };
 

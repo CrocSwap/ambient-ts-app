@@ -115,6 +115,8 @@ export default function Swap(props: ISwapProps) {
 
     const [swapAllowed, setSwapAllowed] = useState<boolean>(false);
 
+    const [swapButtonErrorMessage, setSwapButtonErrorMessage] = useState<string>('');
+
     const [isTokenAPrimary, setIsTokenAPrimary] = useState<boolean>(true);
 
     const [isWithdrawFromDexChecked, setIsWithdrawFromDexChecked] = useState(false);
@@ -249,6 +251,7 @@ export default function Swap(props: ISwapProps) {
                     isWithdrawToWalletChecked={isWithdrawToWalletChecked}
                     setIsWithdrawToWalletChecked={setIsWithdrawToWalletChecked}
                     setSwapAllowed={setSwapAllowed}
+                    setSwapButtonErrorMessage={setSwapButtonErrorMessage}
                 />
                 <ExtraInfo
                     tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
@@ -259,7 +262,11 @@ export default function Swap(props: ISwapProps) {
                     gasPriceinGwei={gasPriceinGwei}
                 />
                 {isAuthenticated && isWeb3Enabled ? (
-                    <SwapButton onClickFn={openModal} swapAllowed={swapAllowed} />
+                    <SwapButton
+                        onClickFn={openModal}
+                        swapAllowed={swapAllowed}
+                        swapButtonErrorMessage={swapButtonErrorMessage}
+                    />
                 ) : (
                     loginButton
                 )}
