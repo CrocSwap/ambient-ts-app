@@ -5,6 +5,7 @@ import TabContent from './TabContent/TabContent';
 import Toggle from '../Toggle/Toggle';
 import Positions from '../../Trade/Positions/Positions';
 import LimitOrders from '../../Trade/LimitOrders/LimitOrders';
+
 export default function Tabs() {
     const [activeTab, setActiveTab] = useState('tab1');
     const [isChecked, setIsChecked] = useState<boolean>(false);
