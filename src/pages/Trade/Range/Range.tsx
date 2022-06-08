@@ -45,11 +45,11 @@ import styles from './Range.module.css';
 import { isTransactionReplacedError, TransactionError } from '../../../utils/TransactionError';
 import { handleParsedReceipt } from '../../../utils/HandleParsedReceipt';
 import truncateDecimals from '../../../utils/data/truncateDecimals';
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { findTokenByAddress } from '../../../utils/functions/processTokens';
 import { kovanETH, kovanUSDC } from '../../../utils/data/defaultTokens';
 import ConfirmRangeModal from '../../../components/Trade/Range/ConfirmRangeModal/ConfirmRangeModal';
 import { TokenIF } from '../../../utils/interfaces/exports';
+import { useTradeData } from '../Trade';
 
 interface IRangeProps {
     importedTokens: Array<TokenIF>;
@@ -73,7 +73,7 @@ export default function Range(props: IRangeProps) {
     const [newRangeTransactionHash, setNewRangeTransactionHash] = useState('');
     const { Moralis, user, account, chainId } = useMoralis();
 
-    const tradeData = useAppSelector((state) => state.tradeData);
+    const { tradeData } = useTradeData();
 
     const tokenPair = {
         dataTokenA: findTokenByAddress(tradeData.addressTokenA, importedTokens) ?? kovanETH,
