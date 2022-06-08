@@ -1,14 +1,21 @@
 import { TokenIF } from '../interfaces/exports';
 
+import { kovanDAI, kovanUSDC, kovanETH } from '../data/defaultTokens';
+
+const tempBackupTokens = [kovanDAI, kovanUSDC, kovanETH];
+
 export const filterTokensByChain = (tkns: Array<TokenIF>, chain: number) => {
     const tokensOnChain = tkns.filter((tkn: TokenIF) => tkn.chainId === chain);
     return tokensOnChain;
 };
 
 export const getCurrentTokens = (chainId: string) => {
-    console.log('firing getCurrentTokens()');
-    const { importedTokens } = JSON.parse(localStorage.getItem('user') as string);
-    const tokensOnChain = filterTokensByChain(importedTokens, parseInt(chainId));
+    const tokensInLocalStorage = localStorage.getItem('testTokens');
+    const allTokens = tokensInLocalStorage ? JSON.parse(tokensInLocalStorage) : '';
+    const tokensOnChain = filterTokensByChain(
+        allTokens ? allTokens : tempBackupTokens,
+        parseInt(chainId),
+    );
     return tokensOnChain;
 };
 

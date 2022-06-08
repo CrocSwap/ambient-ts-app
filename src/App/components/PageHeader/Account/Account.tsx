@@ -30,45 +30,50 @@ export default function Account(props: IAccountProps): React.ReactElement<IAccou
         setAnchorEl(null);
     };
 
+    const handleLogout = () => {
+        clickLogout();
+        handlePopoverClose();
+    };
+
     const open = Boolean(anchorEl);
     const popoverId = open ? 'simple-popover' : undefined;
 
     const logoutButton = (
-        <button className={styles.authenticate_button} onClick={clickLogout}>
+        <button className={styles.authenticate_button} onClick={handleLogout}>
             Logout
         </button>
     );
 
     const popperContent = (
         <div className={styles.popperContent}>
-            <div className={styles.more_row}>
+            <div className={styles.more_row} onClick={handlePopoverClose}>
                 <span>About</span>
                 <RiInformationLine />
             </div>
-            <div className={styles.more_row}>
+            <div className={styles.more_row} onClick={handlePopoverClose}>
                 <span>Help Center</span>
                 <AiOutlineQuestionCircle />
             </div>
-            <div className={styles.more_row}>
+            <div className={styles.more_row} onClick={handlePopoverClose}>
                 <span>Request Features</span>
                 <GoRequestChanges />
             </div>
-            <div className={styles.more_row}>
+            <div className={styles.more_row} onClick={handlePopoverClose}>
                 <span>Discord</span>
                 <FaDiscord />
             </div>
-            <div className={styles.more_row}>
+            <div className={styles.more_row} onClick={handlePopoverClose}>
                 <span>Language</span>
                 <MdLanguage />
             </div>
             {/* <div className={styles.more_row} onClick={switchTheme}>
                 <span>{theme === "dark" ? "Light" : "Dark"} Theme</span>
             </div> */}
-            <div className={styles.more_row}>
+            <div className={styles.more_row} onClick={handlePopoverClose}>
                 <span>Docs</span>
                 <BsBook />
             </div>
-            <div className={styles.more_row}>
+            <div className={styles.more_row} onClick={handlePopoverClose}>
                 <span>Legal & Privacy</span>
                 <HiOutlineDocumentText />
             </div>
@@ -86,7 +91,9 @@ export default function Account(props: IAccountProps): React.ReactElement<IAccou
             </div> */}
 
             <span className={styles.white}>
-                {props.nativeBalance ? parseFloat(props.nativeBalance).toFixed(4) + ' ETH' : ''}
+                {props.nativeBalance && isAuthenticated && isWeb3Enabled
+                    ? parseFloat(props.nativeBalance).toFixed(4) + ' ETH'
+                    : ''}
             </span>
             <div className={styles.title_gradient}>{props.accountAddress}</div>
             <AiOutlineQuestionCircle size={20} color='#CDC1FF' />

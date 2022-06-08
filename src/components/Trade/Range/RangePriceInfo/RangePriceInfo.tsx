@@ -8,14 +8,15 @@ interface IRangePriceInfoPropsIF {
     spotPriceDisplay: string;
     maxPriceDisplay: string;
     minPriceDisplay: string;
+    apyPercentage: number;
 }
 
 // central react functional component
 export default function RangePriceInfo(props: IRangePriceInfoPropsIF) {
-    const { spotPriceDisplay, maxPriceDisplay, minPriceDisplay } = props;
+    const { spotPriceDisplay, maxPriceDisplay, minPriceDisplay, apyPercentage } = props;
 
     // JSX frag for estimated APY of position
-    const apy = <span className={styles.apy}> Est APY | 35.65%</span>;
+    const apy = <span className={styles.apy}> Est. APY | {apyPercentage}%</span>;
 
     // JSX frag for lowest price in range
     const minimumPrice = (

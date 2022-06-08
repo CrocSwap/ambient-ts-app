@@ -30,9 +30,9 @@ interface RangeCurrencyConverterPropsIF {
     isTokenABase: boolean;
     isAmbient: boolean;
     depositSkew: number;
-    isReversalInProgress: boolean;
-    setIsReversalInProgress: React.Dispatch<SetStateAction<boolean>>;
     setIsSellTokenPrimary?: React.Dispatch<SetStateAction<boolean>>;
+    truncatedTokenABalance: string;
+    truncatedTokenBBalance: string;
 }
 
 // central React functional component
@@ -52,13 +52,9 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         setIsWithdrawTokenAFromDexChecked,
         isWithdrawTokenBFromDexChecked,
         setIsWithdrawTokenBFromDexChecked,
-        setIsReversalInProgress,
-        isReversalInProgress,
+        truncatedTokenABalance,
+        truncatedTokenBBalance,
     } = props;
-
-    // useEffect(() => {
-    //     console.log({ depositSkew });
-    // }, [depositSkew]);
 
     const dispatch = useAppDispatch();
 
@@ -67,20 +63,6 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
 
     const setTokenAQtyValue = (value: number) => {
         setTokenAQty(value);
-        if (isReversalInProgress) {
-            console.log('reversing');
-            const tokenBQtyField = document.getElementById('B-range-quantity') as HTMLInputElement;
-
-            if (tokenBQtyField) {
-                tokenBQtyField.value = value.toString();
-                setTokenBQty(value);
-            }
-            return;
-        }
-
-        console.log({ isTokenABase });
-        console.log({ value });
-        console.log({ isAmbient });
 
         const qtyTokenB = calculateSecondaryDepositQty(
             poolPriceNonDisplay,
@@ -92,8 +74,6 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
             isAmbient,
             depositSkew,
         );
-
-        console.log({ qtyTokenB });
 
         const tokenBQtyField = document.getElementById('B-range-quantity') as HTMLInputElement;
 
@@ -113,17 +93,6 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
     const setTokenBQtyValue = (value: number) => {
         setTokenBQty(value);
 
-        if (isReversalInProgress) {
-            console.log('reversing');
-            const tokenAQtyField = document.getElementById('A-range-quantity') as HTMLInputElement;
-
-            if (tokenAQtyField) {
-                tokenAQtyField.value = value.toString();
-                setTokenAQty(value);
-            }
-            return;
-        }
-
         const qtyTokenA = calculateSecondaryDepositQty(
             poolPriceNonDisplay,
             tokenPair.dataTokenA.decimals,
@@ -134,7 +103,6 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
             isAmbient,
             depositSkew,
         );
-        console.log({ qtyTokenA });
 
         const tokenAQtyField = document.getElementById('A-range-quantity') as HTMLInputElement;
         if (qtyTokenA) {
@@ -150,39 +118,55 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         }
     };
 
+    const reverseTokens = (): void => {
+        //   if (tokenPair) {
+        //       dispatch(setAddressTokenA(tokenPair.dataTokenB.address));
+        //       dispatch(setAddressTokenB(tokenPair.dataTokenA.address));
+        //   }
+        //   if (isTokenAPrimary) {
+        //       setTokenBInputQty(tokenAInputQty);
+        //       handleTokenBChangeEvent();
+        //   } else {
+        //       setTokenAInputQty(tokenBInputQty);
+        //       handleTokenAChangeEvent();
+        //   }
+    };
+
     const handleTokenAQtyFieldUpdate = (evt?: ChangeEvent<HTMLInputElement>) => {
         if (evt) {
-            console.log('field A manually updated');
             setTokenAQtyValue(parseFloat(evt.target.value));
             setIsTokenAPrimary(true);
         } else {
-            console.log('quanties updated based on field A');
-
             if (tokenAQty) setTokenAQtyValue(tokenAQty);
         }
     };
 
     const handleTokenBQtyFieldUpdate = (evt?: ChangeEvent<HTMLInputElement>) => {
         if (evt) {
-            console.log('field B manually updated');
             setTokenBQtyValue(parseFloat(evt.target.value));
             setIsTokenAPrimary(false);
         } else {
-            console.log('quanties updated based on field B');
             if (tokenBQty) setTokenBQtyValue(tokenBQty);
         }
     };
 
     useEffect(() => {
-        if (isReversalInProgress) {
-            handleTokenAQtyFieldUpdate();
-            handleTokenBQtyFieldUpdate();
-        } else {
-            console.log({ isTokenAPrimary });
+        // if () {
+        //     const tokenAQtyField = document.getElementById('A-range-quantity') as HTMLInputElement;
+        //     const tokenBQtyField = document.getElementById('B-range-quantity') as HTMLInputElement;
 
-            isTokenAPrimary ? handleTokenAQtyFieldUpdate() : handleTokenBQtyFieldUpdate();
-        }
-        setIsReversalInProgress(false);
+        //     if (tokenAQtyField) {
+        //         tokenAQtyField.value = tokenBQty.toString();
+        //         setTokenAQty(tokenBQty);
+        //     }
+
+        //     if (tokenBQtyField) {
+        //         tokenBQtyField.value = tokenAQty.toString();
+        //         setTokenBQty(tokenAQty);
+        //     }
+        // } else {
+        isTokenAPrimary ? handleTokenAQtyFieldUpdate() : handleTokenBQtyFieldUpdate();
+        // }
     }, [JSON.stringify(tokenPair), poolPriceNonDisplay, depositSkew]);
 
     // props for <RangeCurrencyConverter/> React element
@@ -194,7 +178,9 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         setIsWithdrawTokenAFromDexChecked: setIsWithdrawTokenAFromDexChecked,
         isWithdrawTokenBFromDexChecked: isWithdrawTokenBFromDexChecked,
         setIsWithdrawTokenBFromDexChecked: setIsWithdrawTokenBFromDexChecked,
-        setIsReversalInProgress: setIsReversalInProgress,
+        reverseTokens: reverseTokens,
+        truncatedTokenABalance: truncatedTokenABalance,
+        truncatedTokenBBalance: truncatedTokenBBalance,
     };
 
     return (

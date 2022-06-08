@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useState, ChangeEvent, SetStateAction } from 'react';
+import { useState, ChangeEvent } from 'react';
 import { RiArrowDownSLine } from 'react-icons/ri';
 
 // START: Import React Functional Components
@@ -21,9 +21,10 @@ interface LimitCurrencySelectorProps {
     fieldId: string;
     direction: string;
     sellToken?: boolean;
-    setIsReversalInProgress: React.Dispatch<SetStateAction<boolean>>;
-
-    updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
+    reverseTokens: () => void;
+    tokenABalance: string;
+    tokenBBalance: string;
+    handleChangeEvent: (evt: ChangeEvent<HTMLInputElement>) => void;
 }
 
 // central react functional component
@@ -34,11 +35,13 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
         chainId,
         fieldId,
         direction,
-        updateOtherQuantity,
-        setIsReversalInProgress,
+        handleChangeEvent,
+        reverseTokens,
+        tokenABalance,
+        tokenBBalance,
     } = props;
 
-    const thisToken = fieldId === 'buy' ? tokenPair.dataTokenA : tokenPair.dataTokenB;
+    const thisToken = fieldId === 'sell' ? tokenPair.dataTokenA : tokenPair.dataTokenB;
 
     const [isModalOpen, openModal, closeModal] = useModal();
 
@@ -51,7 +54,7 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
                 chainId={chainId}
                 tokenList={tokensBank}
                 closeModal={closeModal}
-                setIsReversalInProgress={setIsReversalInProgress}
+                reverseTokens={reverseTokens}
             />
         </Modal>
     ) : null;
@@ -98,14 +101,18 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
                 <div className={styles.swap_input}>
                     <LimitCurrencyQuantity
                         fieldId={fieldId}
-                        updateOtherQuantity={updateOtherQuantity}
+                        handleChangeEvent={handleChangeEvent}
                     />
                 </div>
-                {fieldId === 'buy' && tokenSelect}
+                {fieldId === 'buy' || fieldId === 'sell' ? tokenSelect : null}
             </div>
             <div className={styles.swapbox_bottom}>
-                {fieldId === 'buy' ? <span>Wallet: 69.420 | DEX: 0.00</span> : null}
-                {fieldId === 'buy' && DexBalanceContent}
+                {fieldId === 'sell' ? (
+                    <span>Wallet: {tokenABalance ?? '0'} | DEX: 0.00</span>
+                ) : (
+                    <span>Wallet: {tokenBBalance ?? '0'} | DEX: 0.00</span>
+                )}
+                {fieldId === 'buy' || fieldId === 'sell' ? DexBalanceContent : null}
             </div>
             {tokenSelectModalOrNull}
         </div>

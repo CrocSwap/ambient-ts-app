@@ -3,7 +3,7 @@ import { RiStarFill, RiStarLine } from 'react-icons/ri';
 import { CgUnavailable } from 'react-icons/cg';
 import { setTokenA, setTokenB } from '../../../utils/state/tradeDataSlice';
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
-import { SetStateAction } from 'react';
+// import { SetStateAction } from 'react';
 import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
 
 interface TokenSelectProps {
@@ -11,11 +11,11 @@ interface TokenSelectProps {
     tokenPair: TokenPairIF;
     tokenToUpdate: string;
     closeModal: () => void;
-    setIsReversalInProgress: React.Dispatch<SetStateAction<boolean>>;
+    reverseTokens: () => void;
 }
 
 export default function TokenSelect(props: TokenSelectProps) {
-    const { token, tokenToUpdate, closeModal, tokenPair, setIsReversalInProgress } = props;
+    const { token, tokenToUpdate, closeModal, tokenPair, reverseTokens } = props;
 
     const dispatch = useAppDispatch();
 
@@ -29,24 +29,20 @@ export default function TokenSelect(props: TokenSelectProps) {
     const handleClick = (): void => {
         if (tokenToUpdate === 'A') {
             if (tokenPair.dataTokenB.address === token.address) {
-                setIsReversalInProgress(true);
-                // dispatch(setAddressTokenA(token.address));
+                console.log('token A matches token B');
+                reverseTokens();
                 dispatch(setTokenA(token));
-                // dispatch(setAddressTokenB(tokenPair.dataTokenA.address));
                 dispatch(setTokenB(tokenPair.dataTokenA));
             } else {
-                // dispatch(setAddressTokenA(token.address));
                 dispatch(setTokenA(token));
             }
         } else if (tokenToUpdate === 'B') {
             if (tokenPair.dataTokenA.address === token.address) {
-                setIsReversalInProgress(true);
-                // dispatch(setAddressTokenB(token.address));
+                console.log('token B matches token A');
+                reverseTokens();
                 dispatch(setTokenB(token));
-                // dispatch(setAddressTokenA(tokenPair.dataTokenB.address));
                 dispatch(setTokenA(tokenPair.dataTokenB));
             } else {
-                // dispatch(setAddressTokenB(token.address));
                 dispatch(setTokenB(token));
             }
         } else {

@@ -1,19 +1,15 @@
 // START: Import React and Dongles
-import { useEffect, useState } from 'react';
-import { useMoralis } from 'react-moralis';
+import { useState } from 'react';
 import { useLocation } from 'react-router-dom';
+import { useMoralis } from 'react-moralis';
 import { motion } from 'framer-motion';
 import { JsonRpcProvider } from '@ethersproject/providers';
 import {
     contractAddresses,
-    getSpotPrice,
-    getSpotPriceDisplay,
     POOL_PRIMARY,
     sendSwap,
     parseSwapEthersReceipt,
     EthersNativeReceipt,
-    getTokenBalanceDisplay,
-    sortBaseQuoteTokens,
 } from '@crocswap-libs/sdk';
 
 // START: Import React Components
@@ -34,11 +30,11 @@ import styles from './Swap.module.css';
 import { handleParsedReceipt } from '../../utils/HandleParsedReceipt';
 import truncateDecimals from '../../utils/data/truncateDecimals';
 import { isTransactionReplacedError, TransactionError } from '../../utils/TransactionError';
-import { useModal } from '../../components/Global/Modal/useModal';
-import { useRelativeModal } from '../../components/Global/RelativeModal/useRelativeModal';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { useTradeData } from '../Trade/Trade';
 import { TokenIF } from '../../utils/interfaces/exports';
+import { useModal } from '../../components/Global/Modal/useModal';
+import { useRelativeModal } from '../../components/Global/RelativeModal/useRelativeModal';
 
 interface ISwapProps {
     importedTokens: Array<TokenIF>;
@@ -47,6 +43,14 @@ interface ISwapProps {
     gasPriceinGwei: string;
     nativeBalance: string;
     lastBlockNumber: number;
+    tokenABalance: string;
+    tokenBBalance: string;
+    isSellTokenBase: boolean;
+    tokenPair: {
+        dataTokenA: TokenIF;
+        dataTokenB: TokenIF;
+    };
+    poolPriceDisplay: number;
 }
 
 export default function Swap(props: ISwapProps) {
@@ -54,15 +58,20 @@ export default function Swap(props: ISwapProps) {
         importedTokens,
         provider,
         isOnTradeRoute,
-        lastBlockNumber,
+        // lastBlockNumber,
         nativeBalance,
         gasPriceinGwei,
+        tokenABalance,
+        tokenBBalance,
+        isSellTokenBase,
+        tokenPair,
+        poolPriceDisplay,
     } = props;
     const [isModalOpen, openModal, closeModal] = useModal();
 
     const [isRelativeModalOpen, closeRelativeModal] = useRelativeModal();
 
-    const { Moralis, chainId, enableWeb3, isWeb3Enabled, authenticate, isAuthenticated, account } =
+    const { Moralis, chainId, enableWeb3, isWeb3Enabled, authenticate, isAuthenticated } =
         useMoralis();
     // get URL pathway for user relative to index
     const { pathname } = useLocation();
@@ -101,107 +110,17 @@ export default function Swap(props: ISwapProps) {
 
     const loginButton = <Button title='Login' action={clickLogin} />;
 
-    // get current tokens for the active chain
-    // if called before Moralis can initialize use kovan
-
-    const [tokenABalance, setTokenABalance] = useState<string>('');
-    const [tokenBBalance, setTokenBBalance] = useState<string>('');
-
-    const [baseTokenAddress, setBaseTokenAddress] = useState<string>('');
-    const [quoteTokenAddress, setQuoteTokenAddress] = useState<string>('');
-
-    const [isSellTokenBase, setIsSellTokenBase] = useState<boolean>(true);
-
-    // useEffect to set baseTokenAddress and quoteTokenAddress when pair changes
-    useEffect(() => {
-        if (tokenA.address && tokenB.address) {
-            const sortedTokens = sortBaseQuoteTokens(tokenA.address, tokenB.address);
-            setBaseTokenAddress(sortedTokens[0]);
-            setQuoteTokenAddress(sortedTokens[1]);
-            if (tokenA.address === sortedTokens[0]) {
-                setIsSellTokenBase(true);
-            } else {
-                setIsSellTokenBase(false);
-            }
-        }
-    }, [tokenA.address, tokenB.address]);
-
-    // useEffect to update selected token balances
-    useEffect(() => {
-        (async () => {
-            if (
-                provider &&
-                account
-                // && isAuthenticated && provider.connection?.url === 'metamask'
-            ) {
-                const signer = provider.getSigner();
-                const tokenABal = await getTokenBalanceDisplay(tokenA.address, account, signer);
-                // make sure a balance was returned, initialized as null
-                if (tokenABal) {
-                    // send value to local state
-                    setTokenABalance(tokenABal);
-                }
-                const tokenBBal = await getTokenBalanceDisplay(tokenB.address, account, signer);
-                // make sure a balance was returned, initialized as null
-                if (tokenBBal) {
-                    // send value to local state
-                    setTokenBBalance(tokenBBal);
-                }
-            }
-        })();
-    }, [chainId, account, isWeb3Enabled, isAuthenticated, tokenA, tokenB, lastBlockNumber]);
+    const [tokenAInputQty, setTokenAInputQty] = useState<string>('');
+    const [tokenBInputQty, setTokenBInputQty] = useState<string>('');
 
     const [swapAllowed, setSwapAllowed] = useState<boolean>(false);
 
-    const [isSellTokenPrimary, setIsSellTokenPrimary] = useState<boolean>(true);
+    const [isTokenAPrimary, setIsTokenAPrimary] = useState<boolean>(true);
 
     const [isWithdrawFromDexChecked, setIsWithdrawFromDexChecked] = useState(false);
     const [isWithdrawToWalletChecked, setIsWithdrawToWalletChecked] = useState(true);
 
-    // const daiKovanAddress = '0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa';
-
-    const [poolPriceNonDisplay, setPoolPriceNonDisplay] = useState(0);
     const [newSwapTransactionHash, setNewSwapTransactionHash] = useState('');
-
-    // useEffect to get non-display spot price when tokens change and block updates
-    useEffect(() => {
-        if (baseTokenAddress && quoteTokenAddress) {
-            (async () => {
-                const spotPrice = await getSpotPrice(
-                    baseTokenAddress,
-                    quoteTokenAddress,
-                    POOL_PRIMARY,
-                    provider,
-                );
-                if (poolPriceNonDisplay !== spotPrice) {
-                    setPoolPriceNonDisplay(spotPrice);
-                }
-            })();
-        }
-    }, [lastBlockNumber, baseTokenAddress, quoteTokenAddress]);
-
-    const [poolPriceDisplay, setPoolPriceDisplay] = useState(0);
-
-    // useEffect to get display spot price when tokens change and block updates
-    useEffect(() => {
-        if (baseTokenAddress && quoteTokenAddress) {
-            (async () => {
-                const spotPriceDisplay = await getSpotPriceDisplay(
-                    baseTokenAddress,
-                    quoteTokenAddress,
-                    POOL_PRIMARY,
-                    provider,
-                );
-                if (poolPriceDisplay !== spotPriceDisplay) {
-                    setPoolPriceDisplay(spotPriceDisplay);
-                }
-            })();
-        }
-    }, [lastBlockNumber, baseTokenAddress, quoteTokenAddress]);
-
-    // useEffect(() => {
-    //     console.log({ poolPriceDisplay });
-    // }, [poolPriceDisplay]);
 
     const signer = provider?.getSigner();
 
@@ -214,7 +133,7 @@ export default function Swap(props: ISwapProps) {
         const slippageTolerancePercentage = 5;
         const sellTokenQty = (document.getElementById('sell-quantity') as HTMLInputElement)?.value;
         const buyTokenQty = (document.getElementById('buy-quantity') as HTMLInputElement)?.value;
-        const qty = isSellTokenPrimary ? sellTokenQty : buyTokenQty;
+        const qty = isTokenAPrimary ? sellTokenQty : buyTokenQty;
 
         // overwritten by a non-zero value when selling ETH for another token
         let ethValue = '0';
@@ -226,14 +145,14 @@ export default function Swap(props: ISwapProps) {
                 parseFloat(sellTokenQty) * 1.02,
                 18,
             ).toString();
-            isSellTokenPrimary ? (ethValue = sellTokenQty) : (ethValue = roundedUpEthValue);
+            isTokenAPrimary ? (ethValue = sellTokenQty) : (ethValue = roundedUpEthValue);
         }
 
         if (signer) {
             const tx = await sendSwap(
                 sellTokenAddress,
                 buyTokenAddress,
-                isSellTokenPrimary,
+                isTokenAPrimary,
                 qty,
                 ethValue,
                 slippageTolerancePercentage,
@@ -310,17 +229,21 @@ export default function Swap(props: ISwapProps) {
                 <DenominationSwitch tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }} />
                 <DividerDark />
                 <CurrencyConverter
-                    tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
+                    tokenPair={tokenPair}
                     tokensBank={importedTokens}
                     chainId={chainId as string}
                     isLiq={false}
                     poolPriceDisplay={poolPriceDisplay}
-                    isSellTokenPrimary={isSellTokenPrimary}
-                    setIsSellTokenPrimary={setIsSellTokenPrimary}
+                    isTokenAPrimary={isTokenAPrimary}
+                    setIsTokenAPrimary={setIsTokenAPrimary}
                     isSellTokenBase={isSellTokenBase}
                     nativeBalance={truncateDecimals(parseFloat(nativeBalance), 4).toString()}
                     tokenABalance={truncateDecimals(parseFloat(tokenABalance), 4).toString()}
                     tokenBBalance={truncateDecimals(parseFloat(tokenBBalance), 4).toString()}
+                    tokenAInputQty={tokenAInputQty}
+                    tokenBInputQty={tokenBInputQty}
+                    setTokenAInputQty={setTokenAInputQty}
+                    setTokenBInputQty={setTokenBInputQty}
                     isWithdrawFromDexChecked={isWithdrawFromDexChecked}
                     setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
                     isWithdrawToWalletChecked={isWithdrawToWalletChecked}

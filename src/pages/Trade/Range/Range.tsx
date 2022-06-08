@@ -49,14 +49,16 @@ import ConfirmRangeModal from '../../../components/Trade/Range/ConfirmRangeModal
 import { TokenIF } from '../../../utils/interfaces/exports';
 import { useTradeData } from '../Trade';
 
-interface IRangeProps {
+interface RangePropsIF {
     importedTokens: Array<TokenIF>;
     provider: JsonRpcProvider;
     lastBlockNumber: number;
+    tokenABalance: string;
+    tokenBBalance: string;
 }
 
-export default function Range(props: IRangeProps) {
-    const { importedTokens, provider, lastBlockNumber } = props;
+export default function Range(props: RangePropsIF) {
+    const { importedTokens, provider, lastBlockNumber, tokenABalance, tokenBBalance } = props;
     const [isModalOpen, openModal, closeModal] = useModal();
 
     const { save } = useNewMoralisObject('UserPosition');
@@ -145,12 +147,7 @@ export default function Range(props: IRangeProps) {
 
     const signer = provider?.getSigner();
 
-    const [isReversalInProgress, setIsReversalInProgress] = useState<boolean>(false);
     const [isTokenAPrimary, setIsTokenAPrimary] = useState<boolean>(false);
-
-    useEffect(() => {
-        console.log({ isReversalInProgress });
-    }, [isReversalInProgress]);
 
     const sendTransaction = async () => {
         const tokenAQty = (document.getElementById('A-range-quantity') as HTMLInputElement)?.value;
@@ -313,6 +310,7 @@ export default function Range(props: IRangeProps) {
     }
 
     let minPriceDisplay: string;
+    const apyPercentage: number = 100 - rangeWidthPercentage + 10;
 
     if (rangeWidthPercentage === 100) {
         minPriceDisplay = '0';
@@ -322,12 +320,16 @@ export default function Range(props: IRangeProps) {
             : truncateDecimals(1 / rangeHighBoundDisplayPrice, 4).toString();
     }
 
+    const truncatedTokenABalance = truncateDecimals(parseFloat(tokenABalance), 4).toString();
+    const truncatedTokenBBalance = truncateDecimals(parseFloat(tokenBBalance), 4).toString();
+
     // props for <RangePriceInfo/> React element
     const rangePriceInfoProps = {
         tokenPair: tokenPair,
         spotPriceDisplay: poolPriceDisplay,
         maxPriceDisplay: maxPriceDisplay,
         minPriceDisplay: minPriceDisplay,
+        apyPercentage: apyPercentage,
     };
     // props for <ConfirmRangeModal/> React element
     const rangeModalProps = {
@@ -356,8 +358,8 @@ export default function Range(props: IRangeProps) {
         setIsWithdrawTokenAFromDexChecked: setIsWithdrawTokenAFromDexChecked,
         isWithdrawTokenBFromDexChecked: isWithdrawTokenBFromDexChecked,
         setIsWithdrawTokenBFromDexChecked: setIsWithdrawTokenBFromDexChecked,
-        setIsReversalInProgress: setIsReversalInProgress,
-        isReversalInProgress: isReversalInProgress,
+        truncatedTokenABalance: truncatedTokenABalance,
+        truncatedTokenBBalance: truncatedTokenBBalance,
     };
 
     // props for <RangeWidth/> React element

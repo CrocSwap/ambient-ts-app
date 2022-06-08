@@ -1,5 +1,16 @@
 // START: Import React and Dongles
-import { ChangeEvent, SetStateAction } from 'react';
+import { ChangeEvent, SetStateAction, useEffect, useState } from 'react';
+
+import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+
+import {
+    setAddressTokenA,
+    setAddressTokenB,
+    setIsTokenAPrimary,
+    setPrimaryQuantity,
+} from '../../../../utils/state/tradeDataSlice';
+
+import truncateDecimals from '../../../../utils/data/truncateDecimals';
 
 // START: Import React Functional Components
 import LimitCurrencySelector from '../LimitCurrencySelector/LimitCurrencySelector';
@@ -14,45 +25,156 @@ interface LimitCurrencyConverterProps {
     tokenPair: TokenPairIF;
     tokensBank: Array<TokenIF>;
     chainId: string;
-    poolPrice?: number;
+    poolPriceDisplay: number;
     setIsSellTokenPrimary?: React.Dispatch<SetStateAction<boolean>>;
-    setIsReversalInProgress: React.Dispatch<SetStateAction<boolean>>;
     setLimitAllowed: React.Dispatch<React.SetStateAction<boolean>>;
+    isSellTokenBase: boolean;
+    tokenABalance: string;
+    tokenBBalance: string;
 }
 
 // central react functional component
 export default function LimitCurrencyConverter(props: LimitCurrencyConverterProps) {
-    const { tokenPair, tokensBank, chainId, setLimitAllowed, setIsReversalInProgress } = props;
+    const {
+        tokenPair,
+        tokensBank,
+        chainId,
+        poolPriceDisplay,
+        setLimitAllowed,
+        isSellTokenBase,
+        tokenABalance,
+        tokenBBalance,
+    } = props;
+
+    const dispatch = useAppDispatch();
+
+    const tradeData = useAppSelector((state) => state.tradeData);
+
+    const [isTokenAPrimaryLocal, setIsTokenAPrimaryLocal] = useState<boolean>(
+        tradeData.isTokenAPrimary,
+    );
+    const [tokenAQtyLocal, setTokenAQtyLocal] = useState<string>('');
+    const [tokenBQtyLocal, setTokenBQtyLocal] = useState<string>('');
+
+    const tokenADecimals = tokenPair.dataTokenA.decimals;
+    const tokenBDecimals = tokenPair.dataTokenB.decimals;
 
     // TODO: pass tokenPair to <LimitRate /> as a prop such that we can use a dynamic
     // TODO: ... logo instead of the hardcoded one it contains
 
-    // hardcoded pool price
-    const poolPrice = 0;
-    const updateBuyQty = (evt: ChangeEvent<HTMLInputElement>) => {
-        const input = parseFloat(evt.target.value);
-        const output = (1 / poolPrice) * input;
-        const buyQtyField = document.getElementById('limit-buy-quantity') as HTMLInputElement;
+    useEffect(() => {
+        if (tradeData) {
+            if (isTokenAPrimaryLocal) {
+                setTokenAQtyLocal(tradeData.primaryQuantity);
+                const sellQtyField = document.getElementById(
+                    'sell-limit-quantity',
+                ) as HTMLInputElement;
+                if (sellQtyField) {
+                    sellQtyField.value =
+                        tradeData.primaryQuantity === 'NaN' ? '' : tradeData.primaryQuantity;
+                }
+            } else {
+                setTokenBQtyLocal(tradeData.primaryQuantity);
+                const buyQtyField = document.getElementById(
+                    'buy-limit-quantity',
+                ) as HTMLInputElement;
+                if (buyQtyField) {
+                    buyQtyField.value =
+                        tradeData.primaryQuantity === 'NaN' ? '' : tradeData.primaryQuantity;
+                }
+            }
+        }
+    }, []);
+
+    const handleArrowClick = (): void => {
+        reverseTokens();
+    };
+
+    const reverseTokens = (): void => {
+        if (tokenPair) {
+            dispatch(setAddressTokenA(tokenPair.dataTokenB.address));
+            dispatch(setAddressTokenB(tokenPair.dataTokenA.address));
+        }
+        if (!isTokenAPrimaryLocal) {
+            setTokenAQtyLocal(tokenBQtyLocal);
+            const sellQtyField = document.getElementById('sell-limit-quantity') as HTMLInputElement;
+            if (sellQtyField) {
+                sellQtyField.value = tokenBQtyLocal === 'NaN' ? '' : tokenBQtyLocal;
+            }
+        } else {
+            setTokenBQtyLocal(tokenAQtyLocal);
+            const buyQtyField = document.getElementById('buy-limit-quantity') as HTMLInputElement;
+            if (buyQtyField) {
+                buyQtyField.value = tokenAQtyLocal === 'NaN' ? '' : tokenAQtyLocal;
+            }
+        }
+        setIsTokenAPrimaryLocal(!isTokenAPrimaryLocal);
+        dispatch(setIsTokenAPrimary(!isTokenAPrimaryLocal));
+    };
+
+    useEffect(() => {
+        isTokenAPrimaryLocal ? handleTokenAChangeEvent() : handleTokenBChangeEvent();
+    }, [poolPriceDisplay, isSellTokenBase, isTokenAPrimaryLocal]);
+
+    const handleTokenAChangeEvent = (evt?: ChangeEvent<HTMLInputElement>) => {
+        let rawTokenBQty;
+
+        if (evt) {
+            const input = evt.target.value;
+            setTokenAQtyLocal(input);
+            setIsTokenAPrimaryLocal(true);
+            dispatch(setIsTokenAPrimary(true));
+            dispatch(setPrimaryQuantity(input));
+
+            rawTokenBQty = isSellTokenBase
+                ? (1 / poolPriceDisplay) * parseFloat(input)
+                : poolPriceDisplay * parseFloat(input);
+        } else {
+            rawTokenBQty = isSellTokenBase
+                ? (1 / poolPriceDisplay) * parseFloat(tokenAQtyLocal)
+                : poolPriceDisplay * parseFloat(tokenAQtyLocal);
+        }
+        const truncatedTokenBQty = truncateDecimals(rawTokenBQty, tokenBDecimals).toString();
+
+        setTokenBQtyLocal(truncatedTokenBQty);
+        const buyQtyField = document.getElementById('buy-limit-quantity') as HTMLInputElement;
 
         if (buyQtyField) {
-            buyQtyField.value = isNaN(output) ? '' : output.toString();
+            buyQtyField.value = truncatedTokenBQty === 'NaN' ? '' : truncatedTokenBQty;
         }
-        if (!isNaN(output) && output > 0) {
+        if (truncatedTokenBQty !== 'NaN' && parseFloat(truncatedTokenBQty) > 0) {
             setLimitAllowed(true);
         } else {
             setLimitAllowed(false);
         }
     };
+    const handleTokenBChangeEvent = (evt?: ChangeEvent<HTMLInputElement>) => {
+        let rawTokenAQty;
 
-    const updateSellQty = (evt: ChangeEvent<HTMLInputElement>) => {
-        const input = parseFloat(evt.target.value);
-        const output = poolPrice * input;
-        const sellQtyField = document.getElementById('limit-sell-quantity') as HTMLInputElement;
+        if (evt) {
+            const input = evt.target.value;
+            setTokenBQtyLocal(input);
+            setIsTokenAPrimaryLocal(false);
+            dispatch(setIsTokenAPrimary(false));
+            dispatch(setPrimaryQuantity(input));
 
-        if (sellQtyField) {
-            sellQtyField.value = isNaN(output) ? '' : output.toString();
+            rawTokenAQty = isSellTokenBase
+                ? poolPriceDisplay * parseFloat(input)
+                : (1 / poolPriceDisplay) * parseFloat(input);
+        } else {
+            rawTokenAQty = isSellTokenBase
+                ? poolPriceDisplay * parseFloat(tokenBQtyLocal)
+                : (1 / poolPriceDisplay) * parseFloat(tokenBQtyLocal);
         }
-        if (!isNaN(output) && output > 0) {
+
+        const truncatedTokenAQty = truncateDecimals(rawTokenAQty, tokenADecimals).toString();
+
+        setTokenAQtyLocal(truncatedTokenAQty);
+        const sellQtyField = document.getElementById('sell-limit-quantity') as HTMLInputElement;
+        if (sellQtyField) {
+            sellQtyField.value = truncatedTokenAQty === 'NaN' ? '' : truncatedTokenAQty;
+        }
+        if (truncatedTokenAQty !== 'NaN' && parseFloat(truncatedTokenAQty) > 0) {
             setLimitAllowed(true);
         } else {
             setLimitAllowed(false);
@@ -67,28 +189,32 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 chainId={chainId}
                 fieldId='sell'
                 sellToken
-                direction='Price'
-                updateOtherQuantity={updateBuyQty}
-                setIsReversalInProgress={setIsReversalInProgress}
+                direction='From: '
+                handleChangeEvent={handleTokenAChangeEvent}
+                reverseTokens={reverseTokens}
+                tokenABalance={tokenABalance}
+                tokenBBalance={tokenBBalance}
             />
+            <div className={styles.arrow_container} onClick={handleArrowClick}>
+                <span className={styles.arrow} />
+            </div>
             <LimitCurrencySelector
                 tokenPair={tokenPair}
                 tokensBank={tokensBank}
                 chainId={chainId}
                 fieldId='buy'
-                direction='To'
-                updateOtherQuantity={updateSellQty}
-                setIsReversalInProgress={setIsReversalInProgress}
+                direction='To: '
+                handleChangeEvent={handleTokenBChangeEvent}
+                reverseTokens={reverseTokens}
+                tokenABalance={tokenABalance}
+                tokenBBalance={tokenBBalance}
             />
-            <div className={styles.arrow_container}>
-                <span className={styles.arrow} />
-            </div>
             <LimitRate
                 tokenPair={tokenPair}
                 tokensBank={tokensBank}
                 chainId={chainId}
                 fieldId='limit-rate'
-                setIsReversalInProgress={setIsReversalInProgress}
+                reverseTokens={reverseTokens}
             />
         </section>
     );
