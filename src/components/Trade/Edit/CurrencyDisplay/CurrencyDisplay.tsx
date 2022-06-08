@@ -43,9 +43,8 @@ export default function CurrencyDisplay() {
             </div>
             <div className={styles.swapbox_bottom}>
                 <span>Wallet: 69.420 | DEX: 0.00</span>
-                {/* {DexBalanceContent} */}
+                Dex Balance
             </div>
-            {/* {tokenSelectModalOrNull} */}
         </div>
     );
 }

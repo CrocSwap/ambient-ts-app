@@ -2,6 +2,8 @@ import ComponentToggle from '../../../components/Trade/Edit/ComponentToggle/Comp
 import EditHeader from '../../../components/Trade/Edit/EditHeader/EditHeader';
 import styles from './Edit.module.css';
 import { useParams } from 'react-router-dom';
+import CurrencyDisplay from '../../../components/Global/CurrencyDisplay/CurrencyDisplay';
+import CurrencyDisplayContainer from '../../../components/Trade/Edit/CurrencyDisplayContainer/CurrencyDisplayContainer';
 
 // interface EditProps {
 //     children: React.ReactNode;
@@ -13,7 +15,8 @@ export default function Edit() {
     return (
         <div className={styles.editContainer}>
             <EditHeader positionHash={positionHash} />
-            <ComponentToggle />
+            {/* <ComponentToggle /> */}
+            <CurrencyDisplayContainer />
         </div>
     );
 }
