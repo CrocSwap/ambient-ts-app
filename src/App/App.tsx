@@ -41,34 +41,43 @@ import './App.css';
 // import initializeLocalStorage from './functions/initializeLocalStorage';
 import { validateChain } from './validateChain';
 import { IParsedPosition, parsePositionArray } from './parsePositions';
-import { kovanETH, kovanDAI, kovanUSDC } from '../utils/data/defaultTokens';
+import { defaultTokens } from '../utils/data/defaultTokens';
 import initializeLocalStorage from './functions/initializeLocalStorage';
+import { TokenIF } from '../utils/interfaces/exports';
 
 /** ***** React Function *******/
 export default function App() {
     const { chainId, isWeb3Enabled, account, logout, isAuthenticated } = useMoralis();
 
+    const dispatch = useAppDispatch();
+
+    const [importedTokens, setImportedTokens] = useState(defaultTokens);
+
     useEffect(() => {
+        // check if app needs local storage initialized post-render
+        // if so, initialize local storage
         if (!localStorage.isAppInitialized) {
             localStorage.setItem('isAppInitialized', 'true');
             initializeLocalStorage();
         }
+        // see if there's a user object in local storage
+        if (localStorage.user) {
+            // if user object exists, pull it
+            const user = JSON.parse(localStorage.getItem('user') as string);
+            // see if user object has a list of imported tokens
+            if (user.importedTokens) {
+                // if imported tokens are listed, hold in local state
+                setImportedTokens(
+                    user.importedTokens.filter(
+                        (tkn: TokenIF) => tkn.chainId === parseInt(chainId ?? '0x2a'),
+                    ),
+                );
+            }
+        }
     }, []);
-
-    // 1. check if all token lists are in local storage
-    // 2. if yes, do nothing
-    // 3. if no, fetch token lists and send to local storage
-
-    // const defaultTks = {kovanETH, kovanDAI, kovanUSDC};
-
-    // const [importedTokens, setImportedTokens] = useLocalStorage('importedTokens', JSON.stringify(defaultTks));
-
-    const importedTokens = [kovanDAI, kovanUSDC, kovanETH];
 
     const [showSidebar, setShowSidebar] = useState<boolean>(false);
     const location = useLocation();
-
-    const dispatch = useAppDispatch();
 
     const [metamaskLocked, setMetamaskLocked] = useState<boolean>(true);
     const [lastBlockNumber, setLastBlockNumber] = useState<number>(0);
