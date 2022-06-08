@@ -71,9 +71,9 @@ export default function Swap(props: ISwapProps) {
 
     // use URL pathway to determine if user is in swap or market page
     // depending on location we pull data on the tx in progress differently
-    const tradeData = pathname.includes('/trade')
-        ? useTradeData().tradeData
-        : useAppSelector((state) => state.tradeData);
+    const { tradeData } = pathname.includes('/trade')
+        ? useTradeData()
+        : useAppSelector((state) => state);
 
     // login functionality
     const clickLogin = () => {
