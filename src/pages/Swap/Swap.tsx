@@ -34,8 +34,6 @@ import styles from './Swap.module.css';
 import { handleParsedReceipt } from '../../utils/HandleParsedReceipt';
 import truncateDecimals from '../../utils/data/truncateDecimals';
 import { isTransactionReplacedError, TransactionError } from '../../utils/TransactionError';
-import { findTokenByAddress } from '../../utils/functions/processTokens';
-import { kovanETH, kovanUSDC } from '../../utils/data/defaultTokens';
 import { useModal } from '../../components/Global/Modal/useModal';
 import { useRelativeModal } from '../../components/Global/RelativeModal/useRelativeModal';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
@@ -75,6 +73,8 @@ export default function Swap(props: ISwapProps) {
         ? useTradeData()
         : useAppSelector((state) => state);
 
+    const { tokenA, tokenB } = tradeData;
+
     // login functionality
     const clickLogin = () => {
         console.log('user clicked Login');
@@ -104,11 +104,6 @@ export default function Swap(props: ISwapProps) {
     // get current tokens for the active chain
     // if called before Moralis can initialize use kovan
 
-    const tokenPair = {
-        dataTokenA: findTokenByAddress(tradeData.tokenA.address, importedTokens) ?? kovanETH,
-        dataTokenB: findTokenByAddress(tradeData.tokenB.address, importedTokens) ?? kovanUSDC,
-    };
-
     const [tokenABalance, setTokenABalance] = useState<string>('');
     const [tokenBBalance, setTokenBBalance] = useState<string>('');
 
@@ -119,20 +114,17 @@ export default function Swap(props: ISwapProps) {
 
     // useEffect to set baseTokenAddress and quoteTokenAddress when pair changes
     useEffect(() => {
-        if (tokenPair.dataTokenA.address && tokenPair.dataTokenB.address) {
-            const sortedTokens = sortBaseQuoteTokens(
-                tokenPair.dataTokenA.address,
-                tokenPair.dataTokenB.address,
-            );
+        if (tokenA.address && tokenB.address) {
+            const sortedTokens = sortBaseQuoteTokens(tokenA.address, tokenB.address);
             setBaseTokenAddress(sortedTokens[0]);
             setQuoteTokenAddress(sortedTokens[1]);
-            if (tokenPair.dataTokenA.address === sortedTokens[0]) {
+            if (tokenA.address === sortedTokens[0]) {
                 setIsSellTokenBase(true);
             } else {
                 setIsSellTokenBase(false);
             }
         }
-    }, [JSON.stringify(tokenPair)]);
+    }, [tokenA.address, tokenB.address]);
 
     // useEffect to update selected token balances
     useEffect(() => {
@@ -143,21 +135,13 @@ export default function Swap(props: ISwapProps) {
                 // && isAuthenticated && provider.connection?.url === 'metamask'
             ) {
                 const signer = provider.getSigner();
-                const tokenABal = await getTokenBalanceDisplay(
-                    tokenPair.dataTokenA.address,
-                    account,
-                    signer,
-                );
+                const tokenABal = await getTokenBalanceDisplay(tokenA.address, account, signer);
                 // make sure a balance was returned, initialized as null
                 if (tokenABal) {
                     // send value to local state
                     setTokenABalance(tokenABal);
                 }
-                const tokenBBal = await getTokenBalanceDisplay(
-                    tokenPair.dataTokenB.address,
-                    account,
-                    signer,
-                );
+                const tokenBBal = await getTokenBalanceDisplay(tokenB.address, account, signer);
                 // make sure a balance was returned, initialized as null
                 if (tokenBBal) {
                     // send value to local state
@@ -165,7 +149,7 @@ export default function Swap(props: ISwapProps) {
                 }
             }
         })();
-    }, [chainId, account, isWeb3Enabled, isAuthenticated, tokenPair, lastBlockNumber]);
+    }, [chainId, account, isWeb3Enabled, isAuthenticated, tokenA, tokenB, lastBlockNumber]);
 
     const [swapAllowed, setSwapAllowed] = useState<boolean>(false);
 
@@ -221,11 +205,11 @@ export default function Swap(props: ISwapProps) {
 
     const signer = provider?.getSigner();
 
+    // TODO:  @Emily refactor this function to remove sellTokenAddress
+    // TODO:  ... and buyTokenAddress references
     async function initiateSwap() {
-        // const sellTokenAddress = contractAddresses.ZERO_ADDR;
-        const sellTokenAddress = tokenPair.dataTokenA.address;
-        const buyTokenAddress = tokenPair.dataTokenB.address;
-        // const buyTokenAddress = daiKovanAddress;
+        const sellTokenAddress = tokenA.address;
+        const buyTokenAddress = tokenB.address;
         const poolId = POOL_PRIMARY;
         const slippageTolerancePercentage = 5;
         const sellTokenQty = (document.getElementById('sell-quantity') as HTMLInputElement)?.value;
@@ -289,10 +273,12 @@ export default function Swap(props: ISwapProps) {
         }
     }
 
+    // TODO:  @Emily refactor this Modal and later elements such that
+    // TODO:  ... tradeData is passed to directly instead of tokenPair
     const confirmSwapModalOrNull = isModalOpen ? (
         <Modal onClose={closeModal} title='Swap Confirmation'>
             <ConfirmSwapModal
-                tokenPair={tokenPair}
+                tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
                 initiateSwapMethod={initiateSwap}
                 onClose={closeModal}
                 newSwapTransactionHash={newSwapTransactionHash}
@@ -317,11 +303,14 @@ export default function Swap(props: ISwapProps) {
             className={styles.swap}
         >
             <ContentContainer isOnTradeRoute={isOnTradeRoute}>
-                <SwapHeader tokenPair={tokenPair} isOnTradeRoute={isOnTradeRoute} />
-                <DenominationSwitch tokenPair={tokenPair} />
+                <SwapHeader
+                    tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
+                    isOnTradeRoute={isOnTradeRoute}
+                />
+                <DenominationSwitch tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }} />
                 <DividerDark />
                 <CurrencyConverter
-                    tokenPair={tokenPair}
+                    tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
                     tokensBank={importedTokens}
                     chainId={chainId as string}
                     isLiq={false}
@@ -339,7 +328,7 @@ export default function Swap(props: ISwapProps) {
                     setSwapAllowed={setSwapAllowed}
                 />
                 <ExtraInfo
-                    tokenPair={tokenPair}
+                    tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
                     poolPriceDisplay={poolPriceDisplay}
                     slippageTolerance={5}
                     liquidityProviderFee={0.3}
