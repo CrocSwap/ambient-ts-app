@@ -439,6 +439,8 @@ export default function App() {
     const rangeProps = {
         provider: provider as JsonRpcProvider,
         lastBlockNumber: lastBlockNumber,
+        tokenABalance: tokenABalance,
+        tokenBBalance: tokenBBalance,
     };
 
     // props for <Sidebar/> React element

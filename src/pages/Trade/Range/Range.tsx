@@ -53,12 +53,14 @@ import ConfirmRangeModal from '../../../components/Trade/Range/ConfirmRangeModal
 interface IRangeProps {
     provider: JsonRpcProvider;
     lastBlockNumber: number;
+    tokenABalance: string;
+    tokenBBalance: string;
 }
 
 export default function Range(props: IRangeProps) {
     const [isModalOpen, openModal, closeModal] = useModal();
 
-    const { provider, lastBlockNumber } = props;
+    const { provider, lastBlockNumber, tokenABalance, tokenBBalance } = props;
     const { save } = useNewMoralisObject('UserPosition');
 
     const [poolPriceNonDisplay, setPoolPriceNonDisplay] = useState(0);
@@ -326,6 +328,9 @@ export default function Range(props: IRangeProps) {
             : truncateDecimals(1 / rangeHighBoundDisplayPrice, 4).toString();
     }
 
+    const truncatedTokenABalance = truncateDecimals(parseFloat(tokenABalance), 4).toString();
+    const truncatedTokenBBalance = truncateDecimals(parseFloat(tokenBBalance), 4).toString();
+
     // props for <RangePriceInfo/> React element
     const rangePriceInfoProps = {
         tokenPair: tokenPair,
@@ -361,6 +366,8 @@ export default function Range(props: IRangeProps) {
         setIsWithdrawTokenAFromDexChecked: setIsWithdrawTokenAFromDexChecked,
         isWithdrawTokenBFromDexChecked: isWithdrawTokenBFromDexChecked,
         setIsWithdrawTokenBFromDexChecked: setIsWithdrawTokenBFromDexChecked,
+        truncatedTokenABalance: truncatedTokenABalance,
+        truncatedTokenBBalance: truncatedTokenBBalance,
     };
 
     // props for <RangeWidth/> React element
