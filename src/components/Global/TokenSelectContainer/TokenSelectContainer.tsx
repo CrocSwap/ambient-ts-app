@@ -46,7 +46,7 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
                     return (
                         <TokenSelect
                             key={idx}
-                            icon={token.logoURI}
+                            token={token}
                             symbol={token.symbol}
                             name={token.name}
                             qty={token.decimals}

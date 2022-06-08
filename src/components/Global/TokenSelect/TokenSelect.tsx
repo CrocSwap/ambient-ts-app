@@ -5,9 +5,10 @@ import { setAddressTokenA, setAddressTokenB } from '../../../utils/state/tradeDa
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 // import { TokenIF } from '../../../utils/interfaces/TokenIF';
 import { SetStateAction } from 'react';
-import { TokenPairIF } from '../../../utils/interfaces/exports';
+import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
 
 interface TokenSelectProps {
+    token: TokenIF;
     tokenPair: TokenPairIF;
     icon: string;
     qty?: number;
