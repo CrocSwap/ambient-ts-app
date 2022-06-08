@@ -29,12 +29,22 @@ interface LimitCurrencyConverterProps {
     setIsSellTokenPrimary?: React.Dispatch<SetStateAction<boolean>>;
     setLimitAllowed: React.Dispatch<React.SetStateAction<boolean>>;
     isSellTokenBase: boolean;
+    tokenABalance: string;
+    tokenBBalance: string;
 }
 
 // central react functional component
 export default function LimitCurrencyConverter(props: LimitCurrencyConverterProps) {
-    const { tokenPair, tokensBank, chainId, poolPriceDisplay, setLimitAllowed, isSellTokenBase } =
-        props;
+    const {
+        tokenPair,
+        tokensBank,
+        chainId,
+        poolPriceDisplay,
+        setLimitAllowed,
+        isSellTokenBase,
+        tokenABalance,
+        tokenBBalance,
+    } = props;
 
     const dispatch = useAppDispatch();
 
@@ -182,6 +192,8 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 direction='From: '
                 handleChangeEvent={handleTokenAChangeEvent}
                 reverseTokens={reverseTokens}
+                tokenABalance={tokenABalance}
+                tokenBBalance={tokenBBalance}
             />
             <div className={styles.arrow_container} onClick={handleArrowClick}>
                 <span className={styles.arrow} />
@@ -194,6 +206,8 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 direction='To: '
                 handleChangeEvent={handleTokenBChangeEvent}
                 reverseTokens={reverseTokens}
+                tokenABalance={tokenABalance}
+                tokenBBalance={tokenBBalance}
             />
             <LimitRate
                 tokenPair={tokenPair}

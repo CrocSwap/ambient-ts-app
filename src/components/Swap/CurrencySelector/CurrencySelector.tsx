@@ -2,7 +2,11 @@ import styles from './CurrencySelector.module.css';
 import CurrencyQuantity from '../CurrencyQuantity/CurrencyQuantity';
 import { RiArrowDownSLine } from 'react-icons/ri';
 import Toggle from '../../Global/Toggle/Toggle';
-import { useState, ChangeEvent, SetStateAction } from 'react';
+import {
+    // useState,
+    ChangeEvent,
+    SetStateAction,
+} from 'react';
 import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import Modal from '../../../components/Global/Modal/Modal';
@@ -43,24 +47,24 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
         tokenBBalance,
         reverseTokens,
     } = props;
-    const [isChecked, setIsChecked] = useState<boolean>(false);
+    // const [isChecked, setIsChecked] = useState<boolean>(false);
     const [isModalOpen, openModal, closeModal] = useModal();
 
     const thisToken = fieldId === 'sell' ? tokenPair.dataTokenA : tokenPair.dataTokenB;
 
-    const DexBalanceContent = (
-        <span className={styles.surplus_toggle}>
-            {fieldId === 'sell' ? 'Withdraw from DEX balance' : 'Withdraw to Wallet'}
-            <div className={styles.toggle_container}>
-                <Toggle
-                    isOn={isChecked}
-                    handleToggle={() => setIsChecked(!isChecked)}
-                    Width={36}
-                    id='surplus_liquidity'
-                />
-            </div>
-        </span>
-    );
+    // const DexBalanceContent = (
+    //     <span className={styles.surplus_toggle}>
+    //         {fieldId === 'sell' ? 'Withdraw from DEX balance' : 'Withdraw to Wallet'}
+    //         <div className={styles.toggle_container}>
+    //             <Toggle
+    //                 isOn={isChecked}
+    //                 handleToggle={() => setIsChecked(!isChecked)}
+    //                 Width={36}
+    //                 id='surplus_liquidity'
+    //             />
+    //         </div>
+    //     </span>
+    // );
 
     const WithdrawTokensContent = (
         <span className={styles.surplus_toggle}>
@@ -131,12 +135,9 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                 </div>
             </div>
             <div className={styles.swapbox_bottom}>
-                {fieldId === 'limit-sell' ? (
-                    <span>Wallet: {tokenABalance} | DEX: 0.00</span>
-                ) : (
-                    <span>Wallet: {walletBalance} | Surplus: 0</span>
-                )}
-                {fieldId === 'limit-sell' ? DexBalanceContent : WithdrawTokensContent}
+                <span>Wallet: {walletBalance} | Surplus: 0</span>
+                {/* {fieldId === 'limit-sell' ? DexBalanceContent : WithdrawTokensContent} */}
+                {WithdrawTokensContent}
             </div>
             {tokenSelectModalOrNull}
         </div>

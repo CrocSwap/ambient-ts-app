@@ -428,6 +428,11 @@ export default function App() {
         gasPriceinGwei: gasPriceinGwei,
         nativeBalance: nativeBalance,
         lastBlockNumber: lastBlockNumber,
+        tokenABalance: tokenABalance,
+        tokenBBalance: tokenBBalance,
+        isSellTokenBase: isSellTokenBase,
+        tokenPair: tokenPair,
+        poolPriceDisplay: poolPriceDisplay,
     };
 
     // props for <Range/> React element

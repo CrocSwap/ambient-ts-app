@@ -23,14 +23,24 @@ interface LimitCurrencySelectorProps {
     direction: string;
     sellToken?: boolean;
     reverseTokens: () => void;
-
+    tokenABalance: string;
+    tokenBBalance: string;
     handleChangeEvent: (evt: ChangeEvent<HTMLInputElement>) => void;
 }
 
 // central react functional component
 export default function LimitCurrencySelector(props: LimitCurrencySelectorProps) {
-    const { tokenPair, tokensBank, chainId, fieldId, direction, handleChangeEvent, reverseTokens } =
-        props;
+    const {
+        tokenPair,
+        tokensBank,
+        chainId,
+        fieldId,
+        direction,
+        handleChangeEvent,
+        reverseTokens,
+        tokenABalance,
+        tokenBBalance,
+    } = props;
 
     const thisToken = fieldId === 'sell' ? tokenPair.dataTokenA : tokenPair.dataTokenB;
 
@@ -99,9 +109,11 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
                 {fieldId === 'buy' || fieldId === 'sell' ? tokenSelect : null}
             </div>
             <div className={styles.swapbox_bottom}>
-                {fieldId === 'buy' || fieldId === 'sell' ? (
-                    <span>Wallet: 69.420 | DEX: 0.00</span>
-                ) : null}
+                {fieldId === 'sell' ? (
+                    <span>Wallet: {tokenABalance ?? '0'} | DEX: 0.00</span>
+                ) : (
+                    <span>Wallet: {tokenBBalance ?? '0'} | DEX: 0.00</span>
+                )}
                 {fieldId === 'buy' || fieldId === 'sell' ? DexBalanceContent : null}
             </div>
             {tokenSelectModalOrNull}
