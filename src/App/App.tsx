@@ -39,25 +39,19 @@ import TestPage from '../pages/TestPage/TestPage';
 /** * **** Import Local Files *******/
 import './App.css';
 // import initializeLocalStorage from './functions/initializeLocalStorage';
-import { fetchTokenLists } from './functions/fetchTokenLists';
 import { validateChain } from './validateChain';
 import { IParsedPosition, parsePositionArray } from './parsePositions';
 import { kovanETH, kovanDAI, kovanUSDC } from '../utils/data/defaultTokens';
-import { useLocalStorage } from '../utils/hooks/useLocalStorage';
+import initializeLocalStorage from './functions/initializeLocalStorage';
 
 /** ***** React Function *******/
 export default function App() {
     const { chainId, isWeb3Enabled, account, logout, isAuthenticated } = useMoralis();
 
-    console.log(localStorage.isAppInitialized);
-    console.assert(localStorage.getItem('isAppInitialized'), 'not initialized!');
-    localStorage.setItem('isAppInitialized', 'true');
-
-    useEffect(() => {
-        if (localStorage.allTokenLists) {
-            const allTokenLists = fetchTokenLists();
-        }
-    }, []);
+    if (!localStorage.isAppInitialized) {
+        localStorage.setItem('isAppInitialized', 'true');
+        initializeLocalStorage();
+    }
 
     // 1. check if all token lists are in local storage
     // 2. if yes, do nothing
