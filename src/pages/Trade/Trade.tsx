@@ -23,7 +23,6 @@ export default function Trade() {
     ];
 
     const tradeData = useAppSelector((state) => state.tradeData);
-    console.log(tradeData);
 
     // These would be move to their own components, presumably the graph component
     const tokenInfo = (
