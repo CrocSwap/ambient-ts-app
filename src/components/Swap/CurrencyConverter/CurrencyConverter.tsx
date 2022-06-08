@@ -2,7 +2,7 @@ import { ChangeEvent, SetStateAction, useEffect, useState } from 'react';
 import styles from './CurrencyConverter.module.css';
 import CurrencySelector from '../CurrencySelector/CurrencySelector';
 import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
-import { setAddressTokenA, setAddressTokenB } from '../../../utils/state/tradeDataSlice';
+import { setTokenA, setTokenB } from '../../../utils/state/tradeDataSlice';
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import truncateDecimals from '../../../utils/data/truncateDecimals';
 
@@ -139,8 +139,8 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         setIsReversalInProgress(true);
 
         if (tokenPair) {
-            dispatch(setAddressTokenA(tokenPair.dataTokenB.address));
-            dispatch(setAddressTokenB(tokenPair.dataTokenA.address));
+            dispatch(setTokenA(tokenPair.dataTokenB));
+            dispatch(setTokenB(tokenPair.dataTokenA));
         }
     };
 
