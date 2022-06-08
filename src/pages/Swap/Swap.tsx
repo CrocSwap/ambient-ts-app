@@ -105,8 +105,8 @@ export default function Swap(props: ISwapProps) {
     // if called before Moralis can initialize use kovan
 
     const tokenPair = {
-        dataTokenA: findTokenByAddress(tradeData.addressTokenA, importedTokens) ?? kovanETH,
-        dataTokenB: findTokenByAddress(tradeData.addressTokenB, importedTokens) ?? kovanUSDC,
+        dataTokenA: findTokenByAddress(tradeData.tokenA.address, importedTokens) ?? kovanETH,
+        dataTokenB: findTokenByAddress(tradeData.tokenB.address, importedTokens) ?? kovanUSDC,
     };
 
     const [tokenABalance, setTokenABalance] = useState<string>('');

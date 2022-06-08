@@ -76,13 +76,9 @@ export default function Range(props: IRangeProps) {
     const { tradeData } = useTradeData();
 
     const tokenPair = {
-        dataTokenA: findTokenByAddress(tradeData.addressTokenA, importedTokens) ?? kovanETH,
-        dataTokenB: findTokenByAddress(tradeData.addressTokenB, importedTokens) ?? kovanUSDC,
+        dataTokenA: findTokenByAddress(tradeData.tokenA.address, importedTokens) ?? kovanETH,
+        dataTokenB: findTokenByAddress(tradeData.tokenB.address, importedTokens) ?? kovanUSDC,
     };
-
-    // const isTokenABase =
-    //     getBaseTokenAddress(tradeData.addressTokenA, tradeData.addressTokenB) ===
-    //     tradeData.addressTokenA;
 
     const isAmbient = rangeWidthPercentage === 100;
 

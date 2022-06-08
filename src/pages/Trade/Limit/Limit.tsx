@@ -38,8 +38,8 @@ export default function Limit(props: LimitPropsIF) {
     const { chainId } = useMoralis();
 
     const tokenPair = {
-        dataTokenA: findTokenByAddress(tradeData.addressTokenA, importedTokens) ?? kovanETH,
-        dataTokenB: findTokenByAddress(tradeData.addressTokenB, importedTokens) ?? kovanUSDC,
+        dataTokenA: findTokenByAddress(tradeData.tokenA.address, importedTokens) ?? kovanETH,
+        dataTokenB: findTokenByAddress(tradeData.tokenB.address, importedTokens) ?? kovanUSDC,
     };
 
     const confirmLimitModalOrNull = isModalOpen ? (
