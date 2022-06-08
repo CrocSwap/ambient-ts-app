@@ -1,25 +1,13 @@
 /** ***** Import React and Dongles *******/
 import { useEffect, useState } from 'react';
-import { useAppDispatch, useAppSelector } from '../utils/hooks/reduxToolkit';
 import { setPositionsByUser } from '../utils/state/graphDataSlice';
-import {
-    // Signer,
-    utils,
-    ethers,
-} from 'ethers';
-
+import { utils, ethers } from 'ethers';
+import { JsonRpcProvider } from '@ethersproject/providers';
 import { request, gql } from 'graphql-request';
-
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { useMoralis, useMoralisQuery, useMoralisSubscription } from 'react-moralis';
 import Moralis from 'moralis/types';
-
-import { JsonRpcProvider } from '@ethersproject/providers';
-import {
-    contractAddresses,
-    getTokenBalanceDisplay,
-    // queryPos,
-} from '@crocswap-libs/sdk';
+import { contractAddresses, getTokenBalanceDisplay } from '@crocswap-libs/sdk';
 
 /** ***** Import JSX Files *******/
 import PageHeader from './components/PageHeader/PageHeader';
@@ -37,6 +25,7 @@ import TestPage from '../pages/TestPage/TestPage';
 
 /** * **** Import Local Files *******/
 import './App.css';
+import { useAppDispatch, useAppSelector } from '../utils/hooks/reduxToolkit';
 import { validateChain } from './validateChain';
 import { IParsedPosition, parsePositionArray } from './parsePositions';
 import { defaultTokens } from '../utils/data/defaultTokens';
@@ -160,10 +149,6 @@ export default function App() {
     }, [location]);
 
     const [provider, setProvider] = useState<ethers.providers.JsonRpcProvider>();
-
-    // useEffect(() => {
-    //     console.log({ provider });
-    // }, [provider]);
 
     useEffect(() => {
         try {
