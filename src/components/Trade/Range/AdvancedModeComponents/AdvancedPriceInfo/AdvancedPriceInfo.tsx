@@ -1,13 +1,11 @@
 import styles from './AdvancedPriceInfo.module.css';
-import { TokenPairIF } from '../../../../../utils/interfaces/exports';
+// import { TokenPairIF } from '../../../../../utils/interfaces/exports';
 
-interface AdvancedPriceInfoIF {
-    tokenPair: TokenPairIF;
-}
+// interface AdvancedPriceInfoIF {
+//     tokenPair: TokenPairIF;
+// }
 
-export default function AdvancedPriceInfo(props: AdvancedPriceInfoIF) {
-    const { tokenPair } = props;
-
+export default function AdvancedPriceInfo() {
     // JSX frag to display the pool price for the current pair
     const currentPrice = (
         <div className={styles.price_info_row}>
