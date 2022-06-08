@@ -43,6 +43,12 @@ export const tradeDataSlice = createSlice({
     name: 'tradeData',
     initialState,
     reducers: {
+        setTokenA: (state, action: PayloadAction<TokenIF>) => {
+            state.tokenA = action.payload;
+        },
+        setTokenB: (state, action: PayloadAction<TokenIF>) => {
+            state.tokenB = action.payload;
+        },
         setAddressTokenA: (state, action: PayloadAction<string>) => {
             state.addressTokenA = action.payload;
         },
@@ -75,6 +81,8 @@ export const tradeDataSlice = createSlice({
 
 // action creators are generated for each case reducer function
 export const {
+    setTokenA,
+    setTokenB,
     setAddressTokenA,
     setAddressTokenB,
     setDenomInBase,
