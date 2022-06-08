@@ -335,7 +335,7 @@ export default function App() {
                             <Route path='market' element={<Swap {...swapPropsTrade} />} />
                             <Route path='limit' element={<Limit />} />
                             <Route path='range' element={<Range {...rangeProps} />} />
-                            <Route path='edit' element={<Edit />} />
+                            <Route path='edit/:positionHash' element={<Edit />} />
                         </Route>
                         <Route path='analytics' element={<Analytics />} />
                         <Route path='range2' element={<Range {...rangeProps} />} />

@@ -85,6 +85,7 @@ export default function Position(props: PositionProps) {
             </td>
         </>
     );
+    const positionId = '0xfd05fss3da3ff';
 
     return (
         <tr>
@@ -107,7 +108,7 @@ export default function Position(props: PositionProps) {
                     Harvest
                 </button>
                 <button className={styles.option_button}>
-                    <Link to={'/trade/edit'}>Edit</Link>
+                    <Link to={`/trade/edit/${positionId}`}>Edit</Link>
                 </button>
                 <button className={styles.option_button} onClick={openRemoveModal}>
                     Remove
