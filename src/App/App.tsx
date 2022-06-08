@@ -2,12 +2,14 @@
 import { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../utils/hooks/reduxToolkit';
 import { setPositionsByUser } from '../utils/state/graphDataSlice';
+import { findTokenByAddress, getCurrentTokens } from '../utils/functions/processTokens';
 import {
     // Signer,
     utils,
     ethers,
 } from 'ethers';
 
+import { kovanETH, kovanUSDC } from '../utils/data/defaultTokens';
 import { request, gql } from 'graphql-request';
 
 import { Routes, Route, useLocation } from 'react-router-dom';
@@ -18,15 +20,20 @@ import { JsonRpcProvider } from '@ethersproject/providers';
 import {
     contractAddresses,
     getTokenBalanceDisplay,
+    sortBaseQuoteTokens,
+    POOL_PRIMARY,
+    getSpotPrice,
+    getSpotPriceDisplay,
     // queryPos,
 } from '@crocswap-libs/sdk';
+
+import Trade from '../pages/Trade/Trade';
 
 /** ***** Import JSX Files *******/
 import PageHeader from './components/PageHeader/PageHeader';
 import Sidebar from './components/Sidebar/Sidebar';
 import PageFooter from './components/PageFooter/PageFooter';
 import Home from '../pages/Home/Home';
-import Trade from '../pages/Trade/Trade';
 import Analytics from '../pages/Analytics/Analytics';
 import Portfolio from '../pages/Portfolio/Portfolio';
 // import Market from '../pages/Trade/Market/Market';
@@ -45,6 +52,7 @@ import { IParsedPosition, parsePositionArray } from './parsePositions';
 
 /** ***** React Function *******/
 export default function App() {
+    // console.log('app rendering');
     const { chainId, isWeb3Enabled, account, logout, isAuthenticated } = useMoralis();
     const [showSidebar, setShowSidebar] = useState<boolean>(false);
     const location = useLocation();
@@ -53,6 +61,8 @@ export default function App() {
 
     const [metamaskLocked, setMetamaskLocked] = useState<boolean>(true);
     const [lastBlockNumber, setLastBlockNumber] = useState<number>(0);
+
+    const tradeData = useAppSelector((state) => state.tradeData);
 
     useEffect(() => {
         (async () => {
@@ -67,6 +77,108 @@ export default function App() {
             }
         })();
     }, [window.ethereum, account]);
+
+    const [baseTokenAddress, setBaseTokenAddress] = useState<string>('');
+    const [quoteTokenAddress, setQuoteTokenAddress] = useState<string>('');
+
+    const [isSellTokenBase, setIsSellTokenBase] = useState<boolean>(true);
+
+    const tokensBank = getCurrentTokens(chainId ?? '0x2a');
+
+    const tokenPair = {
+        dataTokenA: findTokenByAddress(tradeData?.addressTokenA, tokensBank) ?? kovanETH,
+        dataTokenB: findTokenByAddress(tradeData?.addressTokenB, tokensBank) ?? kovanUSDC,
+    };
+
+    // useEffect to set baseTokenAddress and quoteTokenAddress when pair changes
+    useEffect(() => {
+        if (tokenPair.dataTokenA.address && tokenPair.dataTokenB.address) {
+            const sortedTokens = sortBaseQuoteTokens(
+                tokenPair.dataTokenA.address,
+                tokenPair.dataTokenB.address,
+            );
+            setBaseTokenAddress(sortedTokens[0]);
+            setQuoteTokenAddress(sortedTokens[1]);
+            if (tokenPair.dataTokenA.address === sortedTokens[0]) {
+                setIsSellTokenBase(true);
+            } else {
+                setIsSellTokenBase(false);
+            }
+        }
+    }, [JSON.stringify(tokenPair)]);
+
+    const [tokenABalance, setTokenABalance] = useState<string>('');
+    const [tokenBBalance, setTokenBBalance] = useState<string>('');
+    const [poolPriceNonDisplay, setPoolPriceNonDisplay] = useState(0);
+
+    // useEffect to get non-display spot price when tokens change and block updates
+    useEffect(() => {
+        if (baseTokenAddress && quoteTokenAddress) {
+            (async () => {
+                const spotPrice = await getSpotPrice(
+                    baseTokenAddress,
+                    quoteTokenAddress,
+                    POOL_PRIMARY,
+                    provider,
+                );
+                if (poolPriceNonDisplay !== spotPrice) {
+                    setPoolPriceNonDisplay(spotPrice);
+                }
+            })();
+        }
+    }, [lastBlockNumber, baseTokenAddress, quoteTokenAddress]);
+
+    const [poolPriceDisplay, setPoolPriceDisplay] = useState(0);
+
+    // useEffect to get display spot price when tokens change and block updates
+    useEffect(() => {
+        if (baseTokenAddress && quoteTokenAddress) {
+            (async () => {
+                const spotPriceDisplay = await getSpotPriceDisplay(
+                    baseTokenAddress,
+                    quoteTokenAddress,
+                    POOL_PRIMARY,
+                    provider,
+                );
+                if (poolPriceDisplay !== spotPriceDisplay) {
+                    setPoolPriceDisplay(spotPriceDisplay);
+                }
+            })();
+        }
+    }, [lastBlockNumber, baseTokenAddress, quoteTokenAddress]);
+
+    // useEffect to update selected token balances
+    useEffect(() => {
+        (async () => {
+            if (
+                provider &&
+                account
+                // && isAuthenticated && provider.connection?.url === 'metamask'
+            ) {
+                const signer = provider.getSigner();
+                const tokenABal = await getTokenBalanceDisplay(
+                    tokenPair.dataTokenA.address,
+                    account,
+                    signer,
+                );
+                // make sure a balance was returned, initialized as null
+                if (tokenABal) {
+                    // send value to local state
+                    setTokenABalance(tokenABal);
+                }
+                const tokenBBal = await getTokenBalanceDisplay(
+                    tokenPair.dataTokenB.address,
+                    account,
+                    signer,
+                );
+                // make sure a balance was returned, initialized as null
+                if (tokenBBal) {
+                    // send value to local state
+                    setTokenBBalance(tokenBBal);
+                }
+            }
+        })();
+    }, [chainId, account, isWeb3Enabled, isAuthenticated, tokenPair, lastBlockNumber]);
 
     const graphData = useAppSelector((state) => state.graphData);
 
@@ -288,6 +400,11 @@ export default function App() {
         gasPriceinGwei: gasPriceinGwei,
         nativeBalance: nativeBalance,
         lastBlockNumber: lastBlockNumber,
+        tokenABalance: tokenABalance,
+        tokenBBalance: tokenBBalance,
+        isSellTokenBase: isSellTokenBase,
+        tokenPair: tokenPair,
+        poolPriceDisplay: poolPriceDisplay,
     };
 
     // props for <Swap/> React element on trade route
@@ -297,6 +414,11 @@ export default function App() {
         gasPriceinGwei: gasPriceinGwei,
         nativeBalance: nativeBalance,
         lastBlockNumber: lastBlockNumber,
+        tokenABalance: tokenABalance,
+        tokenBBalance: tokenBBalance,
+        isSellTokenBase: isSellTokenBase,
+        tokenPair: tokenPair,
+        poolPriceDisplay: poolPriceDisplay,
     };
 
     // props for <Limit/> React element on trade route
@@ -306,12 +428,19 @@ export default function App() {
         gasPriceinGwei: gasPriceinGwei,
         nativeBalance: nativeBalance,
         lastBlockNumber: lastBlockNumber,
+        tokenABalance: tokenABalance,
+        tokenBBalance: tokenBBalance,
+        isSellTokenBase: isSellTokenBase,
+        tokenPair: tokenPair,
+        poolPriceDisplay: poolPriceDisplay,
     };
 
     // props for <Range/> React element
     const rangeProps = {
         provider: provider as JsonRpcProvider,
         lastBlockNumber: lastBlockNumber,
+        tokenABalance: tokenABalance,
+        tokenBBalance: tokenBBalance,
     };
 
     // props for <Sidebar/> React element

@@ -16,11 +16,17 @@ import DividerDark from '../../../components/Global/DividerDark/DividerDark';
 import Modal from '../../../components/Global/Modal/Modal';
 import ConfirmLimitModal from '../../../components/Trade/Limit/ConfirmLimitModal/ConfirmLimitModal';
 import { JsonRpcProvider } from '@ethersproject/providers';
+import { TokenIF } from '../../../utils/interfaces/TokenIF';
+
+import truncateDecimals from '../../../utils/data/truncateDecimals';
 
 // START: Import Local Files
-import { useTradeData } from '../Trade';
-import { getCurrentTokens, findTokenByAddress } from '../../../utils/functions/processTokens';
-import { kovanETH, kovanUSDC } from '../../../utils/data/defaultTokens';
+// import { useTradeData } from '../Trade';
+import {
+    getCurrentTokens,
+    // findTokenByAddress
+} from '../../../utils/functions/processTokens';
+// import { kovanETH, kovanUSDC } from '../../../utils/data/defaultTokens';
 import { useModal } from '../../../components/Global/Modal/useModal';
 
 interface ILimitProps {
@@ -29,6 +35,14 @@ interface ILimitProps {
     gasPriceinGwei: string;
     nativeBalance: string;
     lastBlockNumber: number;
+    tokenABalance: string;
+    tokenBBalance: string;
+    isSellTokenBase: boolean;
+    tokenPair: {
+        dataTokenA: TokenIF;
+        dataTokenB: TokenIF;
+    };
+    poolPriceDisplay: number;
 }
 
 export default function Limit(props: ILimitProps) {
@@ -37,10 +51,14 @@ export default function Limit(props: ILimitProps) {
         // isOnTradeRoute,
         lastBlockNumber,
         //  nativeBalance,
-        //  gasPriceinGwei
+        //  gasPriceinGwei ,
+        tokenABalance,
+        tokenBBalance,
+        tokenPair,
+        gasPriceinGwei,
     } = props;
 
-    const { tradeData } = useTradeData();
+    // const { tradeData } = useTradeData();
     const [isModalOpen, openModal, closeModal] = useModal();
     const [limitAllowed, setLimitAllowed] = useState<boolean>(false);
 
@@ -53,10 +71,10 @@ export default function Limit(props: ILimitProps) {
     // if called before Moralis can initialize use kovan
     const tokensBank = getCurrentTokens(chainId ?? '0x2a');
 
-    const tokenPair = {
-        dataTokenA: findTokenByAddress(tradeData.addressTokenA, tokensBank) ?? kovanETH,
-        dataTokenB: findTokenByAddress(tradeData.addressTokenB, tokensBank) ?? kovanUSDC,
-    };
+    // const tokenPair = {
+    //     dataTokenA: findTokenByAddress(tradeData.addressTokenA, tokensBank) ?? kovanETH,
+    //     dataTokenB: findTokenByAddress(tradeData.addressTokenB, tokensBank) ?? kovanUSDC,
+    // };
 
     const confirmLimitModalOrNull = isModalOpen ? (
         <Modal onClose={closeModal} title='Limit Confirmation'>
@@ -123,8 +141,10 @@ export default function Limit(props: ILimitProps) {
                     tokensBank={tokensBank}
                     chainId={chainId ?? '0x2a'}
                     setLimitAllowed={setLimitAllowed}
+                    tokenABalance={truncateDecimals(parseFloat(tokenABalance), 4).toString()}
+                    tokenBBalance={truncateDecimals(parseFloat(tokenBBalance), 4).toString()}
                 />
-                <LimitExtraInfo tokenPair={tokenPair} />
+                <LimitExtraInfo tokenPair={tokenPair} gasPriceinGwei={gasPriceinGwei} />
                 <LimitButton onClickFn={openModal} limitAllowed={limitAllowed} />
             </ContentContainer>
             {confirmLimitModalOrNull}

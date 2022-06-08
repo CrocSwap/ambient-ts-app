@@ -10,7 +10,7 @@ export default function Trade() {
     const location = useLocation();
     const currentLocation = location.pathname;
 
-    console.log(currentLocation);
+    // console.log(currentLocation);
 
     const routes = [
         {

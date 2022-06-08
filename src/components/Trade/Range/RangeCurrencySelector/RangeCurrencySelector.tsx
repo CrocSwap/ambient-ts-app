@@ -21,6 +21,8 @@ interface RangeCurrencySelectorProps {
     setIsWithdrawTokenBFromDexChecked: React.Dispatch<SetStateAction<boolean>>;
     sellToken?: boolean;
     reverseTokens: () => void;
+    truncatedTokenABalance: string;
+    truncatedTokenBBalance: string;
 }
 
 export default function RangeCurrencySelector(props: RangeCurrencySelectorProps) {
@@ -36,6 +38,8 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
         sellToken,
         updateOtherQuantity,
         reverseTokens,
+        truncatedTokenABalance,
+        truncatedTokenBBalance,
     } = props;
 
     const thisToken = fieldId === 'A' ? tokenPair.dataTokenA : tokenPair.dataTokenB;
@@ -98,7 +102,7 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                     <img
                         className={styles.token_list_img}
                         src={thisToken.logoURI}
-                        alt='ethreum'
+                        alt='ethereum logo'
                         width='30px'
                     />
                     <span className={styles.token_list_text}>{thisToken.symbol}</span>
@@ -106,7 +110,12 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                 </div>
             </div>
             <div className={styles.swapbox_bottom}>
-                <span>Wallet: 69.420 | DEX: 0.00</span>
+                {fieldId === 'A' ? (
+                    <span>Wallet: {truncatedTokenABalance} | DEX: 0.00</span>
+                ) : (
+                    <span>Wallet: {truncatedTokenBBalance} | DEX: 0.00</span>
+                )}
+
                 {DexBalanceContent}
             </div>
             {tokenSelectModalOrNull}
