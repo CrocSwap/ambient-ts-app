@@ -1,6 +1,6 @@
 /** ***** Import React and Dongles *******/
 import { useEffect, useState } from 'react';
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { setPositionsByUser } from '../utils/state/graphDataSlice';
 import { utils, ethers } from 'ethers';
 import { JsonRpcProvider } from '@ethersproject/providers';
@@ -30,7 +30,7 @@ import Swap from '../pages/Swap/Swap';
 import Chart from '../pages/Chart/Chart';
 import Edit from '../pages/Trade/Edit/Edit';
 import TestPage from '../pages/TestPage/TestPage';
-
+import NotFound from '../pages/NotFound/NotFound';
 /** * **** Import Local Files *******/
 import './App.css';
 import { useAppDispatch, useAppSelector } from '../utils/hooks/reduxToolkit';
@@ -503,6 +503,10 @@ export default function App() {
                         <Route path='swap' element={<Swap {...swapProps} />} />
                         <Route path='chart' element={<Chart />} />
                         <Route path='testpage' element={<TestPage />} />
+
+                        <Route path='*' element={<Navigate to='/404' replace />} />
+
+                        <Route path='/404' element={<NotFound />} />
                     </Routes>
                 </div>
             </div>
