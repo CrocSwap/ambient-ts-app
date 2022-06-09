@@ -54,8 +54,8 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         tokenABalance,
         tokenBBalance,
         setSwapButtonErrorMessage,
-        // setTokenAInputQty,
-        // setTokenBInputQty,
+        setTokenAInputQty,
+        setTokenBInputQty,
         // tokenAInputQty,
         tokenAAllowance,
         // tokenBInputQty,
@@ -86,6 +86,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         if (tradeData) {
             if (tradeData.isTokenAPrimary) {
                 setTokenAQtyLocal(tradeData.primaryQuantity);
+                setTokenAInputQty(tradeData.primaryQuantity);
                 const sellQtyField = document.getElementById('sell-quantity') as HTMLInputElement;
                 if (sellQtyField) {
                     sellQtyField.value =
@@ -113,12 +114,14 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         }
         if (!isTokenAPrimaryLocal) {
             setTokenAQtyLocal(tokenBQtyLocal);
+            setTokenAInputQty(tokenBQtyLocal);
             const sellQtyField = document.getElementById('sell-quantity') as HTMLInputElement;
             if (sellQtyField) {
                 sellQtyField.value = tokenBQtyLocal === 'NaN' ? '' : tokenBQtyLocal;
             }
         } else {
             setTokenBQtyLocal(tokenAQtyLocal);
+            setTokenBInputQty(tokenAQtyLocal);
             const buyQtyField = document.getElementById('buy-quantity') as HTMLInputElement;
             if (buyQtyField) {
                 buyQtyField.value = tokenAQtyLocal === 'NaN' ? '' : tokenAQtyLocal;
@@ -158,6 +161,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         if (evt) {
             const input = evt.target.value;
             setTokenAQtyLocal(input);
+            setTokenAInputQty(input);
             setIsTokenAPrimaryLocal(true);
             dispatch(setIsTokenAPrimary(true));
             dispatch(setPrimaryQuantity(input));
@@ -176,6 +180,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         const truncatedTokenBQty = truncateDecimals(rawTokenBQty, tokenBDecimals).toString();
 
         setTokenBQtyLocal(truncatedTokenBQty);
+        setTokenBInputQty(truncatedTokenBQty);
         const buyQtyField = document.getElementById('buy-quantity') as HTMLInputElement;
 
         if (buyQtyField) {
@@ -188,6 +193,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         if (evt) {
             const input = evt.target.value;
             setTokenBQtyLocal(input);
+            setTokenBInputQty(input);
             setIsTokenAPrimaryLocal(false);
             dispatch(setIsTokenAPrimary(false));
             dispatch(setPrimaryQuantity(input));
@@ -205,6 +211,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         const truncatedTokenAQty = truncateDecimals(rawTokenAQty, tokenADecimals).toString();
 
         setTokenAQtyLocal(truncatedTokenAQty);
+        setTokenAInputQty(truncatedTokenAQty);
         const sellQtyField = document.getElementById('sell-quantity') as HTMLInputElement;
         if (sellQtyField) {
             sellQtyField.value = truncatedTokenAQty === 'NaN' ? '' : truncatedTokenAQty;

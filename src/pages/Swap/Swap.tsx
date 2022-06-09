@@ -112,6 +112,15 @@ export default function Swap(props: ISwapProps) {
 
     const loginButton = <Button title='Login' action={clickLogin} />;
 
+    const allowanceButton = (
+        <Button
+            title={`Click to Approve ${tokenPair.dataTokenA.symbol}`}
+            action={() => {
+                console.log('allow clicked');
+            }}
+        />
+    );
+
     const [tokenAInputQty, setTokenAInputQty] = useState<string>('');
     const [tokenBInputQty, setTokenBInputQty] = useState<string>('');
 
@@ -217,6 +226,10 @@ export default function Swap(props: ISwapProps) {
         </RelativeModal>
     ) : null;
 
+    const isTokenAAllowanceSufficient = parseFloat(tokenAAllowance) >= parseFloat(tokenAInputQty);
+    console.log({ tokenAAllowance });
+    console.log({ tokenAInputQty });
+    console.log({ isTokenAAllowanceSufficient });
     return (
         <motion.main
             initial={{ width: 0 }}
@@ -265,11 +278,15 @@ export default function Swap(props: ISwapProps) {
                     gasPriceinGwei={gasPriceinGwei}
                 />
                 {isAuthenticated && isWeb3Enabled ? (
-                    <SwapButton
-                        onClickFn={openModal}
-                        swapAllowed={swapAllowed}
-                        swapButtonErrorMessage={swapButtonErrorMessage}
-                    />
+                    !isTokenAAllowanceSufficient && parseFloat(tokenAInputQty) > 0 ? (
+                        allowanceButton
+                    ) : (
+                        <SwapButton
+                            onClickFn={openModal}
+                            swapAllowed={swapAllowed}
+                            swapButtonErrorMessage={swapButtonErrorMessage}
+                        />
+                    )
                 ) : (
                     loginButton
                 )}
