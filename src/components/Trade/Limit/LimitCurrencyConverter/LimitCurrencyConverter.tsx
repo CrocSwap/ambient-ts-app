@@ -53,8 +53,12 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
     const [isTokenAPrimaryLocal, setIsTokenAPrimaryLocal] = useState<boolean>(
         tradeData.isTokenAPrimary,
     );
-    const [tokenAQtyLocal, setTokenAQtyLocal] = useState<string>('');
-    const [tokenBQtyLocal, setTokenBQtyLocal] = useState<string>('');
+    const [tokenAQtyLocal, setTokenAQtyLocal] = useState<string>(
+        isTokenAPrimaryLocal ? tradeData?.primaryQuantity : '',
+    );
+    const [tokenBQtyLocal, setTokenBQtyLocal] = useState<string>(
+        !isTokenAPrimaryLocal ? tradeData?.primaryQuantity : '',
+    );
 
     const tokenADecimals = tokenPair.dataTokenA.decimals;
     const tokenBDecimals = tokenPair.dataTokenB.decimals;
@@ -114,7 +118,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
 
     useEffect(() => {
         isTokenAPrimaryLocal ? handleTokenAChangeEvent() : handleTokenBChangeEvent();
-    }, [poolPriceDisplay, isSellTokenBase, isTokenAPrimaryLocal]);
+    }, [poolPriceDisplay, isSellTokenBase, isTokenAPrimaryLocal, tokenABalance]);
 
     const handleTokenAChangeEvent = (evt?: ChangeEvent<HTMLInputElement>) => {
         let rawTokenBQty;
@@ -166,9 +170,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 ? poolPriceDisplay * parseFloat(tokenBQtyLocal)
                 : (1 / poolPriceDisplay) * parseFloat(tokenBQtyLocal);
         }
-
         const truncatedTokenAQty = truncateDecimals(rawTokenAQty, tokenADecimals).toString();
-
         setTokenAQtyLocal(truncatedTokenAQty);
         const sellQtyField = document.getElementById('sell-limit-quantity') as HTMLInputElement;
         if (sellQtyField) {
