@@ -226,7 +226,10 @@ export default function Swap(props: ISwapProps) {
                     tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
                     isOnTradeRoute={isOnTradeRoute}
                 />
-                <DenominationSwitch tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }} />
+                <DenominationSwitch
+                    tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
+                    displayForBase={tradeData.isDenomBase}
+                />
                 <DividerDark />
                 <CurrencyConverter
                     tokenPair={tokenPair}

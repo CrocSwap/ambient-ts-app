@@ -66,7 +66,6 @@ export default function Range(props: RangePropsIF) {
     const [poolPriceNonDisplay, setPoolPriceNonDisplay] = useState(0);
     const [poolPriceDisplay, setPoolPriceDisplay] = useState('');
     const [rangeWidthPercentage, setRangeWidthPercentage] = useState(100);
-    const [denominationsInBase, setDenominationsInBase] = useState(false);
 
     const [isWithdrawTokenAFromDexChecked, setIsWithdrawTokenAFromDexChecked] = useState(false);
     const [isWithdrawTokenBFromDexChecked, setIsWithdrawTokenBFromDexChecked] = useState(false);
@@ -79,6 +78,8 @@ export default function Range(props: RangePropsIF) {
         dataTokenA: tradeData.tokenA,
         dataTokenB: tradeData.tokenB,
     };
+
+    const denominationsInBase = tradeData.isDenomBase;
 
     const isAmbient = rangeWidthPercentage === 100;
 
@@ -250,7 +251,7 @@ export default function Range(props: RangePropsIF) {
     const denominationSwitch = (
         <div className={styles.denomination_switch_container}>
             <AdvancedModeToggle advancedMode={tradeData.advancedMode} />
-            <DenominationSwitch tokenPair={tokenPair} />
+            <DenominationSwitch tokenPair={tokenPair} displayForBase={tradeData.isDenomBase} />
         </div>
     );
 

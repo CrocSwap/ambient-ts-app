@@ -1,20 +1,20 @@
-// START: Import React and Dongles
-import { useState } from 'react';
-
 // START: Import Local Files
 import styles from './DenominationSwitch.module.css';
 import { TokenPairIF } from '../../../utils/interfaces/exports';
+import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
+import { setDenomInBase } from '../../../utils/state/tradeDataSlice';
 
 // interface for props
 interface denominationSwitchPropsIF {
     tokenPair: TokenPairIF;
+    displayForBase: boolean;
     isOnTradeRoute?: boolean;
 }
 
 export default function DenominationSwitch(props: denominationSwitchPropsIF) {
-    const { tokenPair } = props;
+    const { tokenPair, displayForBase } = props;
 
-    const [toggleDenomination, setToggleDenomination] = useState<boolean>(false);
+    const dispatch = useAppDispatch();
 
     // TODO:  @Junior, if both buttons have the same action of reversing the current
     // TODO:  ... value of `toggleDenomination`, let's do just one button with two
@@ -28,15 +28,15 @@ export default function DenominationSwitch(props: denominationSwitchPropsIF) {
         <div className={styles.denomination_switch}>
             <div>Denomination</div>
             <button
-                className={!toggleDenomination ? styles.active_button : styles.non_active_button}
-                onClick={() => setToggleDenomination(!toggleDenomination)}
+                className={displayForBase ? styles.active_button : styles.non_active_button}
+                onClick={() => dispatch(setDenomInBase(true))}
             >
                 {tokenPair.dataTokenA.symbol}
             </button>
 
             <button
-                className={toggleDenomination ? styles.active_button : styles.non_active_button}
-                onClick={() => setToggleDenomination(!toggleDenomination)}
+                className={!displayForBase ? styles.active_button : styles.non_active_button}
+                onClick={() => dispatch(setDenomInBase(false))}
             >
                 {tokenPair.dataTokenB.symbol}
             </button>

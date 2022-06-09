@@ -20,7 +20,7 @@ import { JsonRpcProvider } from '@ethersproject/providers';
 import truncateDecimals from '../../../utils/data/truncateDecimals';
 
 // START: Import Local Files
-// import { useTradeData } from '../Trade';
+import { useTradeData } from '../Trade';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import { TokenIF } from '../../../utils/interfaces/exports';
 
@@ -54,7 +54,7 @@ export default function Limit(props: LimitPropsIF) {
         tokenPair,
         gasPriceinGwei,
     } = props;
-    // const { tradeData } = useTradeData();
+    const { tradeData } = useTradeData();
     const { chainId } = useMoralis();
     const [isModalOpen, openModal, closeModal] = useModal();
     const [limitAllowed, setLimitAllowed] = useState<boolean>(false);
@@ -115,7 +115,7 @@ export default function Limit(props: LimitPropsIF) {
         >
             <ContentContainer isOnTradeRoute>
                 <LimitHeader tokenPair={tokenPair} />
-                <DenominationSwitch tokenPair={tokenPair} />
+                <DenominationSwitch tokenPair={tokenPair} displayForBase={tradeData.isDenomBase} />
                 <DividerDark />
                 <LimitCurrencyConverter
                     tokenPair={tokenPair}
