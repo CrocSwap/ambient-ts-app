@@ -7,7 +7,6 @@ import tetherImage from '../../../assets/images/memory-game/tether.png';
 import usdcImage from '../../../assets/images/memory-game/usdc.png';
 import wbtcImage from '../../../assets/images/memory-game/wbtc.png';
 import GameCard from '../GameCard/GameCard';
-import Button from '../../Global/Button/Button';
 
 type gameItem = {
     src: string;
@@ -53,11 +52,9 @@ export default function Game() {
     useEffect(() => {
         if (choiceOne && choiceTwo) {
             setDisabled(true);
-            // eslint-disable-next-line
             if (choiceOne.src === choiceTwo.src) {
                 setCards((prevCards) => {
                     return prevCards.map((card) => {
-                        // eslint-disable-next-line no-use-before-define
                         if (card.src === choiceOne.src) {
                             return { ...card, matched: true };
                         } else {
@@ -87,8 +84,6 @@ export default function Game() {
 
     return (
         <div className={styles.game_container}>
-            {/* <button onClick={shuffleCards}>New game</button> */}
-
             <div className={styles.card_grid}>
                 {cards.map((card) => (
                     <GameCard
@@ -101,7 +96,6 @@ export default function Game() {
                 ))}
             </div>
             <div>Turns : {turns}</div>
-            {/* <Button title='New Game' action={shuffleCards} /> */}
         </div>
     );
 }
