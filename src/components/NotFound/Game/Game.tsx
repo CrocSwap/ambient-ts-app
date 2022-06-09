@@ -101,7 +101,7 @@ export default function Game() {
                 ))}
             </div>
             <div>Turns : {turns}</div>
-            {/* <Button title='New Game' action={shuffleCards} /> */}
+            <Button title='New Game' action={shuffleCards} />
         </div>
     );
 }
