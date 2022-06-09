@@ -31,6 +31,10 @@ interface LimitCurrencyConverterProps {
     isSellTokenBase: boolean;
     tokenABalance: string;
     tokenBBalance: string;
+    tokenAInputQty: string;
+    tokenBInputQty: string;
+    setTokenAInputQty: React.Dispatch<React.SetStateAction<string>>;
+    setTokenBInputQty: React.Dispatch<React.SetStateAction<string>>;
 }
 
 // central react functional component
@@ -44,6 +48,8 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
         isSellTokenBase,
         tokenABalance,
         tokenBBalance,
+        setTokenAInputQty,
+        setTokenBInputQty,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -70,6 +76,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
         if (tradeData) {
             if (isTokenAPrimaryLocal) {
                 setTokenAQtyLocal(tradeData.primaryQuantity);
+                setTokenAInputQty(tradeData.primaryQuantity);
                 const sellQtyField = document.getElementById(
                     'sell-limit-quantity',
                 ) as HTMLInputElement;
@@ -79,6 +86,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 }
             } else {
                 setTokenBQtyLocal(tradeData.primaryQuantity);
+                setTokenBInputQty(tradeData.primaryQuantity);
                 const buyQtyField = document.getElementById(
                     'buy-limit-quantity',
                 ) as HTMLInputElement;
@@ -101,12 +109,14 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
         }
         if (!isTokenAPrimaryLocal) {
             setTokenAQtyLocal(tokenBQtyLocal);
+            setTokenAInputQty(tokenBQtyLocal);
             const sellQtyField = document.getElementById('sell-limit-quantity') as HTMLInputElement;
             if (sellQtyField) {
                 sellQtyField.value = tokenBQtyLocal === 'NaN' ? '' : tokenBQtyLocal;
             }
         } else {
             setTokenBQtyLocal(tokenAQtyLocal);
+            setTokenBInputQty(tokenAQtyLocal);
             const buyQtyField = document.getElementById('buy-limit-quantity') as HTMLInputElement;
             if (buyQtyField) {
                 buyQtyField.value = tokenAQtyLocal === 'NaN' ? '' : tokenAQtyLocal;
@@ -126,6 +136,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
         if (evt) {
             const input = evt.target.value;
             setTokenAQtyLocal(input);
+            setTokenAInputQty(input);
             setIsTokenAPrimaryLocal(true);
             dispatch(setIsTokenAPrimary(true));
             dispatch(setPrimaryQuantity(input));
@@ -141,6 +152,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
         const truncatedTokenBQty = truncateDecimals(rawTokenBQty, tokenBDecimals).toString();
 
         setTokenBQtyLocal(truncatedTokenBQty);
+        setTokenBInputQty(truncatedTokenBQty);
         const buyQtyField = document.getElementById('buy-limit-quantity') as HTMLInputElement;
 
         if (buyQtyField) {
@@ -158,6 +170,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
         if (evt) {
             const input = evt.target.value;
             setTokenBQtyLocal(input);
+            setTokenBInputQty(input);
             setIsTokenAPrimaryLocal(false);
             dispatch(setIsTokenAPrimary(false));
             dispatch(setPrimaryQuantity(input));
@@ -172,6 +185,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
         }
         const truncatedTokenAQty = truncateDecimals(rawTokenAQty, tokenADecimals).toString();
         setTokenAQtyLocal(truncatedTokenAQty);
+        setTokenAInputQty(truncatedTokenAQty);
         const sellQtyField = document.getElementById('sell-limit-quantity') as HTMLInputElement;
         if (sellQtyField) {
             sellQtyField.value = truncatedTokenAQty === 'NaN' ? '' : truncatedTokenAQty;

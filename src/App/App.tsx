@@ -200,15 +200,7 @@ export default function App() {
     const [tokenBAllowance, setTokenBAllowance] = useState<string>('');
 
     const [recheckTokenAApproval, setRecheckTokenAApproval] = useState<boolean>(false);
-    // const [recheckTokenBApproval, setRecheckTokenBApproval] = useState<boolean>(false);
-
-    useEffect(() => {
-        console.log({ tokenAAllowance });
-    }, [tokenAAllowance]);
-
-    useEffect(() => {
-        console.log({ tokenBAllowance });
-    }, [tokenBAllowance]);
+    const [recheckTokenBApproval, setRecheckTokenBApproval] = useState<boolean>(false);
 
     // useEffect to check if user has approved CrocSwap to sell the token A
     // (hardcoded for native Ether)
@@ -221,7 +213,6 @@ export default function App() {
                         return;
                     }
                     if (tokenAAddress === contractAddresses.ZERO_ADDR) {
-                        console.log('token A is eth');
                         setTokenAAllowance((Number.MAX_SAFE_INTEGER - 1).toString());
                         return;
                     }
@@ -229,7 +220,6 @@ export default function App() {
                         const signer = provider.getSigner();
                         getTokenAllowance(tokenAAddress, account, signer)
                             .then(function (result) {
-                                // console.log({ result });
                                 const allowance = result.lt(Number.MAX_SAFE_INTEGER - 1)
                                     ? result.toNumber()
                                     : Number.MAX_SAFE_INTEGER - 1;
@@ -246,19 +236,12 @@ export default function App() {
             setRecheckTokenAApproval(false);
         })();
     }, [
-        // poolPrice,
         tokenPair.dataTokenA.address,
         lastBlockNumber,
-        // poolQuoteTokenAddress,
-        // poolTokenAName,
-        // poolTokenBName,
         account,
         chainId,
         isWeb3Enabled,
         recheckTokenAApproval,
-        // recheckTokenBApproval,
-        // swapReceipt,
-        // tokenAisBase,
     ]);
 
     // useEffect to check if user has approved CrocSwap to sell token B
@@ -272,7 +255,6 @@ export default function App() {
                         return;
                     }
                     if (tokenBAddress === contractAddresses.ZERO_ADDR) {
-                        console.log('token A is eth');
                         setTokenBAllowance((Number.MAX_SAFE_INTEGER - 1).toString());
                         return;
                     }
@@ -296,18 +278,12 @@ export default function App() {
             }
         })();
     }, [
-        // poolPrice,
         tokenPair.dataTokenB.address,
-        // poolQuoteTokenAddress,
-        // poolTokenAName,
-        // poolTokenBName,
         account,
         chainId,
         isWeb3Enabled,
-        // recheckTokenAApproval,
-        // recheckTokenBApproval,
-        // swapReceipt,
-        // tokenAisBase,
+        recheckTokenBApproval,
+        lastBlockNumber,
     ]);
 
     const graphData = useAppSelector((state) => state.graphData);
@@ -574,6 +550,8 @@ export default function App() {
         isSellTokenBase: isTokenABase,
         tokenPair: tokenPair,
         poolPriceDisplay: poolPriceDisplay,
+        setRecheckTokenAApproval: setRecheckTokenAApproval,
+        tokenAAllowance: tokenAAllowance,
     };
 
     // props for <Range/> React element
@@ -582,7 +560,11 @@ export default function App() {
         provider: provider as JsonRpcProvider,
         lastBlockNumber: lastBlockNumber,
         tokenABalance: tokenABalance,
+        tokenAAllowance: tokenAAllowance,
+        setRecheckTokenAApproval: setRecheckTokenAApproval,
         tokenBBalance: tokenBBalance,
+        tokenBAllowance: tokenBAllowance,
+        setRecheckTokenBApproval: setRecheckTokenBApproval,
     };
 
     // props for <Sidebar/> React element

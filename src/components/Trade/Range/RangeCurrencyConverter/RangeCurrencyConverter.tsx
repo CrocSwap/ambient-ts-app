@@ -33,6 +33,8 @@ interface RangeCurrencyConverterPropsIF {
     setIsSellTokenPrimary?: React.Dispatch<SetStateAction<boolean>>;
     truncatedTokenABalance: string;
     truncatedTokenBBalance: string;
+    setTokenAInputQty: React.Dispatch<React.SetStateAction<string>>;
+    setTokenBInputQty: React.Dispatch<React.SetStateAction<string>>;
 }
 
 // central React functional component
@@ -54,6 +56,8 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         setIsWithdrawTokenBFromDexChecked,
         truncatedTokenABalance,
         truncatedTokenBBalance,
+        setTokenAInputQty,
+        setTokenBInputQty,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -63,6 +67,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
 
     const setTokenAQtyValue = (value: number) => {
         setTokenAQty(value);
+        setTokenAInputQty(value.toString());
 
         const qtyTokenB = calculateSecondaryDepositQty(
             poolPriceNonDisplay,
@@ -82,11 +87,13 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
             dispatch(setPrimaryQuantity(value.toString()));
             setIsTokenAPrimary(true);
             setTokenBQty(qtyTokenB);
+            setTokenBInputQty(qtyTokenB.toString());
         } else {
             tokenBQtyField.value = '';
             dispatch(setPrimaryQuantity('0'));
             setIsTokenAPrimary(true);
             setTokenBQty(0);
+            setTokenBInputQty('0');
         }
     };
 
@@ -110,11 +117,13 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
             dispatch(setPrimaryQuantity(value.toString()));
             setIsTokenAPrimary(false);
             setTokenAQty(qtyTokenA);
+            setTokenAInputQty(qtyTokenA.toString());
         } else {
             tokenAQtyField.value = '';
             dispatch(setPrimaryQuantity('0'));
             setIsTokenAPrimary(false);
             setTokenAQty(0);
+            setTokenAInputQty('0');
         }
     };
 
