@@ -53,6 +53,7 @@ interface ISwapProps {
     };
     poolPriceDisplay: number;
     tokenAAllowance: string;
+    setRecheckTokenAApproval: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function Swap(props: ISwapProps) {
@@ -69,6 +70,7 @@ export default function Swap(props: ISwapProps) {
         tokenPair,
         poolPriceDisplay,
         tokenAAllowance,
+        setRecheckTokenAApproval,
     } = props;
     const [isModalOpen, openModal, closeModal] = useModal();
 
@@ -115,9 +117,39 @@ export default function Swap(props: ISwapProps) {
 
     const [isApprovalPending, setIsApprovalPending] = useState(false);
 
-    const approveToken = async (tokenAddress: string) => {
+    const approve = async (tokenAddress: string) => {
         // console.log(`allow button clicked for ${tokenAddress}`);
         setIsApprovalPending(true);
+        let tx;
+        try {
+            tx = await approveToken(tokenAddress, signer);
+        } catch (error) {
+            setIsApprovalPending(false);
+            setRecheckTokenAApproval(true);
+        }
+        if (tx.hash) {
+            console.log('approval transaction hash: ' + tx.hash);
+            // setApprovalButtonText('Approval Pending...');
+            // dispatch(setCurrentTxHash(tx.hash));
+            // dispatch(addPendingTx(tx.hash));
+        }
+
+        try {
+            const receipt = await tx.wait();
+            // console.log({ receipt });
+            if (receipt) {
+                // console.log('approval receipt: ' + JSON.stringify(receipt));
+                // setShouldRecheckApproval(true);
+                // parseSwapEthersTxReceipt(receipt).then((val) => {
+                //   val.conversionRateString = `${val.sellSymbol} Approval Successful`;
+                //   dispatch(addApprovalReceipt(val));
+            }
+        } catch (error) {
+            console.log({ error });
+        } finally {
+            setIsApprovalPending(false);
+            setRecheckTokenAApproval(true);
+        }
     };
 
     const approvalButton = (
@@ -127,10 +159,10 @@ export default function Swap(props: ISwapProps) {
                     ? `Click to Approve ${tokenPair.dataTokenA.symbol}`
                     : `${tokenPair.dataTokenA.symbol} Approval Pending`
             }
-            action={async () => {
-                await approveToken(tokenA.address);
-            }}
             disabled={isApprovalPending}
+            action={async () => {
+                await approve(tokenA.address);
+            }}
         />
     );
 
@@ -280,7 +312,6 @@ export default function Swap(props: ISwapProps) {
                     setIsWithdrawToWalletChecked={setIsWithdrawToWalletChecked}
                     setSwapAllowed={setSwapAllowed}
                     setSwapButtonErrorMessage={setSwapButtonErrorMessage}
-                    tokenAAllowance={tokenAAllowance}
                 />
                 <ExtraInfo
                     tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}

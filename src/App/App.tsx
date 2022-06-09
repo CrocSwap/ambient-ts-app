@@ -200,6 +200,9 @@ export default function App() {
     const [tokenAAllowance, setTokenAAllowance] = useState<string>('');
     const [tokenBAllowance, setTokenBAllowance] = useState<string>('');
 
+    const [recheckTokenAApproval, setRecheckTokenAApproval] = useState<boolean>(false);
+    // const [recheckTokenBApproval, setRecheckTokenBApproval] = useState<boolean>(false);
+
     useEffect(() => {
         console.log({ tokenAAllowance });
     }, [tokenAAllowance]);
@@ -241,17 +244,19 @@ export default function App() {
             } catch (err) {
                 console.log(err);
             }
+            setRecheckTokenAApproval(false);
         })();
     }, [
         // poolPrice,
         tokenPair.dataTokenA.address,
+        lastBlockNumber,
         // poolQuoteTokenAddress,
         // poolTokenAName,
         // poolTokenBName,
         account,
         chainId,
         isWeb3Enabled,
-        // recheckTokenAApproval,
+        recheckTokenAApproval,
         // recheckTokenBApproval,
         // swapReceipt,
         // tokenAisBase,
@@ -535,6 +540,7 @@ export default function App() {
         tokenPair: tokenPair,
         poolPriceDisplay: poolPriceDisplay,
         tokenAAllowance: tokenAAllowance,
+        setRecheckTokenAApproval: setRecheckTokenAApproval,
         // tokenBAllowance: tokenBAllowance,
     };
 
@@ -551,6 +557,7 @@ export default function App() {
         isSellTokenBase: isTokenABase,
         tokenPair: tokenPair,
         poolPriceDisplay: poolPriceDisplay,
+        setRecheckTokenAApproval: setRecheckTokenAApproval,
         tokenAAllowance: tokenAAllowance,
         // tokenBAllowance: tokenBAllowance,
     };
