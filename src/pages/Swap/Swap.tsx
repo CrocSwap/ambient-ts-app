@@ -10,6 +10,7 @@ import {
     sendSwap,
     parseSwapEthersReceipt,
     EthersNativeReceipt,
+    approveToken,
 } from '@crocswap-libs/sdk';
 
 // START: Import React Components
@@ -112,12 +113,24 @@ export default function Swap(props: ISwapProps) {
 
     const loginButton = <Button title='Login' action={clickLogin} />;
 
-    const allowanceButton = (
+    const [isApprovalPending, setIsApprovalPending] = useState(false);
+
+    const approveToken = async (tokenAddress: string) => {
+        // console.log(`allow button clicked for ${tokenAddress}`);
+        setIsApprovalPending(true);
+    };
+
+    const approvalButton = (
         <Button
-            title={`Click to Approve ${tokenPair.dataTokenA.symbol}`}
-            action={() => {
-                console.log('allow clicked');
+            title={
+                !isApprovalPending
+                    ? `Click to Approve ${tokenPair.dataTokenA.symbol}`
+                    : `${tokenPair.dataTokenA.symbol} Approval Pending`
+            }
+            action={async () => {
+                await approveToken(tokenA.address);
             }}
+            disabled={isApprovalPending}
         />
     );
 
@@ -227,9 +240,9 @@ export default function Swap(props: ISwapProps) {
     ) : null;
 
     const isTokenAAllowanceSufficient = parseFloat(tokenAAllowance) >= parseFloat(tokenAInputQty);
-    console.log({ tokenAAllowance });
-    console.log({ tokenAInputQty });
-    console.log({ isTokenAAllowanceSufficient });
+    // console.log({ tokenAAllowance });
+    // console.log({ tokenAInputQty });
+    // console.log({ isTokenAAllowanceSufficient });
     return (
         <motion.main
             initial={{ width: 0 }}
@@ -279,7 +292,7 @@ export default function Swap(props: ISwapProps) {
                 />
                 {isAuthenticated && isWeb3Enabled ? (
                     !isTokenAAllowanceSufficient && parseFloat(tokenAInputQty) > 0 ? (
-                        allowanceButton
+                        approvalButton
                     ) : (
                         <SwapButton
                             onClickFn={openModal}
