@@ -278,7 +278,14 @@ export default function App() {
                 console.log(err);
             }
         })();
-    }, [tokenPair.dataTokenB.address, account, chainId, isWeb3Enabled, recheckTokenBApproval]);
+    }, [
+        tokenPair.dataTokenB.address,
+        account,
+        chainId,
+        isWeb3Enabled,
+        recheckTokenBApproval,
+        lastBlockNumber,
+    ]);
 
     const graphData = useAppSelector((state) => state.graphData);
 

@@ -37,7 +37,6 @@ export default function TokenSelect(props: TokenSelectProps) {
             }
         } else if (tokenToUpdate === 'B') {
             if (tokenPair.dataTokenA.address === token.address) {
-                console.log('token B matches token A');
                 reverseTokens();
                 dispatch(setTokenB(token));
                 dispatch(setTokenA(tokenPair.dataTokenB));
