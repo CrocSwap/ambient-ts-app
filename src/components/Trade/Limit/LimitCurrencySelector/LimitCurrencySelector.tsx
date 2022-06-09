@@ -45,12 +45,14 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
 
     const [isModalOpen, openModal, closeModal] = useModal();
 
+    const tokenToUpdate = fieldId === 'sell' ? 'A' : 'B';
+
     const tokenSelectModalOrNull = isModalOpen ? (
         <Modal onClose={closeModal} title='Select Token'>
             <TokenSelectContainer
                 tokenPair={tokenPair}
                 tokensBank={tokensBank}
-                tokenToUpdate={'A'}
+                tokenToUpdate={tokenToUpdate}
                 chainId={chainId}
                 tokenList={tokensBank}
                 closeModal={closeModal}

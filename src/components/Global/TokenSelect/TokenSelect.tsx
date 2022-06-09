@@ -29,7 +29,6 @@ export default function TokenSelect(props: TokenSelectProps) {
     const handleClick = (): void => {
         if (tokenToUpdate === 'A') {
             if (tokenPair.dataTokenB.address === token.address) {
-                console.log('token A matches token B');
                 reverseTokens();
                 dispatch(setTokenA(token));
                 dispatch(setTokenB(tokenPair.dataTokenA));

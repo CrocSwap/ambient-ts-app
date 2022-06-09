@@ -55,10 +55,24 @@ interface RangePropsIF {
     lastBlockNumber: number;
     tokenABalance: string;
     tokenBBalance: string;
+    tokenAAllowance: string;
+    setRecheckTokenAApproval: React.Dispatch<React.SetStateAction<boolean>>;
+    tokenBAllowance: string;
+    setRecheckTokenBApproval: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function Range(props: RangePropsIF) {
-    const { importedTokens, provider, lastBlockNumber, tokenABalance, tokenBBalance } = props;
+    const {
+        importedTokens,
+        provider,
+        lastBlockNumber,
+        tokenABalance,
+        tokenBBalance,
+        // tokenAAllowance,
+        // setRecheckTokenAApproval,
+        // tokenBAllowance,
+        // setRecheckTokenBApproval,
+    } = props;
     const [isModalOpen, openModal, closeModal] = useModal();
 
     const { save } = useNewMoralisObject('UserPosition');
