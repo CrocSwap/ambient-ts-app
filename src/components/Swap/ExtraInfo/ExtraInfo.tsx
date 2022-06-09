@@ -103,7 +103,7 @@ export default function ExtraInfo(props: ExtraInfoProps) {
                     <FaGasPump size={15} /> {truncatedGasInGwei} gwei
                 </div>
                 <div className={styles.token_amount}>
-                    1 {isDenomBase ? tokenPair.dataTokenA.symbol : tokenPair.dataTokenB.symbol} ={' '}
+                    1 {isDenomBase ? tokenPair.dataTokenA.symbol : tokenPair.dataTokenB.symbol} ≈{' '}
                     {isDenomBase
                         ? spotPriceDisplayQuoteForBase
                         : truncateDecimals(1 / spotPriceDisplayQuoteForBase, 6)}{' '}
