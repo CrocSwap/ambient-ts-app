@@ -166,8 +166,10 @@ export default function App() {
         (async () => {
             if (
                 provider &&
-                account
-                // && isAuthenticated && provider.connection?.url === 'metamask'
+                account &&
+                isAuthenticated &&
+                isWeb3Enabled
+                // && provider.connection?.url === 'metamask'
             ) {
                 const signer = provider.getSigner();
                 const tokenABal = await getTokenBalanceDisplay(
@@ -344,6 +346,8 @@ export default function App() {
     // function to sever connection between user wallet and Moralis server
     const clickLogout = async () => {
         setNativeBalance('');
+        setTokenABalance('0');
+        setTokenBBalance('0');
         await logout();
     };
 
@@ -353,8 +357,10 @@ export default function App() {
         (async () => {
             if (
                 provider &&
-                account
-                // && isAuthenticated && provider.connection?.url === 'metamask'
+                account &&
+                isAuthenticated &&
+                isWeb3Enabled
+                // && provider.connection?.url === 'metamask'
             ) {
                 const signer = provider.getSigner();
                 const nativeEthBalance = await getTokenBalanceDisplay(
