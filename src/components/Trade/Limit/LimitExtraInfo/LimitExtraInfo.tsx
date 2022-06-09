@@ -7,6 +7,8 @@ import { RiArrowDownSLine } from 'react-icons/ri';
 import styles from './LimitExtraInfo.module.css';
 import { TokenPairIF } from '../../../../utils/interfaces/exports';
 import TooltipComponent from '../../../Global/TooltipComponent/TooltipComponent';
+import truncateDecimals from '../../../../utils/data/truncateDecimals';
+
 // interface for component props
 interface LimitExtraInfoPropsIF {
     tokenPair: TokenPairIF;
@@ -15,11 +17,12 @@ interface LimitExtraInfoPropsIF {
     liquidityProviderFee?: number;
     quoteTokenIsBuy?: boolean;
     gasPriceinGwei?: string;
+    displayForBase: boolean;
 }
 
 // central react functional component
 export default function LimitExtraInfo(props: LimitExtraInfoPropsIF) {
-    const { tokenPair } = props;
+    const { tokenPair, displayForBase } = props;
     const [showExtraDetails, setShowExtraDetails] = useState<boolean>(false);
 
     // TEMP DATA TO RENDER UI
@@ -78,8 +81,11 @@ export default function LimitExtraInfo(props: LimitExtraInfoPropsIF) {
                     <FaGasPump size={15} /> {truncatedGasInGwei} gwei
                 </div>
                 <div className={styles.token_amount}>
-                    1 {tokenPair.dataTokenA.symbol} = {spotPriceDisplayQuoteForBase}{' '}
-                    {tokenPair.dataTokenB.symbol}
+                    1 {displayForBase ? tokenPair.dataTokenA.symbol : tokenPair.dataTokenB.symbol} ≈{' '}
+                    {displayForBase
+                        ? spotPriceDisplayQuoteForBase
+                        : truncateDecimals(1 / spotPriceDisplayQuoteForBase, 6)}{' '}
+                    {displayForBase ? tokenPair.dataTokenB.symbol : tokenPair.dataTokenA.symbol}
                     <RiArrowDownSLine size={27} />{' '}
                 </div>
             </div>

@@ -131,7 +131,11 @@ export default function Limit(props: LimitPropsIF) {
                     tokenABalance={truncateDecimals(parseFloat(tokenABalance), 4).toString()}
                     tokenBBalance={truncateDecimals(parseFloat(tokenBBalance), 4).toString()}
                 />
-                <LimitExtraInfo tokenPair={tokenPair} gasPriceinGwei={gasPriceinGwei} />
+                <LimitExtraInfo
+                    tokenPair={tokenPair}
+                    gasPriceinGwei={gasPriceinGwei}
+                    displayForBase={tradeData.isDenomBase}
+                />
                 <LimitButton onClickFn={openModal} limitAllowed={limitAllowed} />
             </ContentContainer>
             {confirmLimitModalOrNull}
