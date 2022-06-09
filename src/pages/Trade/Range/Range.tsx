@@ -255,7 +255,7 @@ export default function Range(props: RangePropsIF) {
             <DenominationSwitch
                 tokenPair={tokenPair}
                 displayForBase={tradeData.isDenomBase}
-                poolPriceDisplay={poolPriceDisplay}
+                poolPriceDisplay={parseFloat(poolPriceDisplay)}
             />
         </div>
     );
