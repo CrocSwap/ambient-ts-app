@@ -20,7 +20,7 @@ export default function LimitButton(props: ILimitButtonProps) {
     return (
         <div className={styles.button_container}>
             <Button
-                title={props.limitAllowed ? 'Limit' : 'Enter an amount'}
+                title={props.limitAllowed ? 'Open Confirmation' : 'Enter an amount'}
                 // action={() => console.log('clicked')}
                 action={props.onClickFn}
                 disabled={!props.limitAllowed}
