@@ -477,20 +477,22 @@ export default function App() {
     const mainLayoutStyle = showSidebar ? 'main-layout-2' : 'main-layout';
     // take away margin from left if we are on homepage or swap
     const noSidebarStyle =
-        currentLocation == '/' || currentLocation == '/swap' ? 'no-sidebar' : mainLayoutStyle;
+        currentLocation == '/' || currentLocation == '/swap' || currentLocation == '/404'
+            ? 'no-sidebar'
+            : mainLayoutStyle;
     const swapBodyStyle = currentLocation == '/swap' ? 'swap-body' : null;
 
     return (
         <>
             <div className='content-container'>
-                <PageHeader {...headerProps} />
-                {currentLocation !== '/' && currentLocation !== '/swap' && (
-                    <Sidebar {...sidebarProps} />
-                )}
+                {currentLocation !== '/404' && <PageHeader {...headerProps} />}
+                {currentLocation !== '/' &&
+                    currentLocation !== '/swap' &&
+                    currentLocation !== '/404' && <Sidebar {...sidebarProps} />}
                 <div className={`${noSidebarStyle} ${swapBodyStyle}`}>
                     <Routes>
                         <Route index element={<Home />} />
-                        <Route path='trade' element={<Trade />}>
+                        <Route path='trade' element={<Navigate to='/trade/market' replace />}>
                             <Route path='' element={<Swap {...swapPropsTrade} />} />
                             <Route path='market' element={<Swap {...swapPropsTrade} />} />
                             <Route path='limit' element={<Limit {...limitPropsTrade} />} />
