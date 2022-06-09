@@ -128,7 +128,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
 
     useEffect(() => {
         isTokenAPrimaryLocal ? handleTokenAChangeEvent() : handleTokenBChangeEvent();
-    }, [poolPriceDisplay, isSellTokenBase, isTokenAPrimaryLocal]);
+    }, [poolPriceDisplay, isSellTokenBase, isTokenAPrimaryLocal, tokenABalance]);
 
     const handleSwapButtonMessage = (tokenAAmount: number) => {
         if (tokenAAmount > 0 && tokenAAmount <= parseFloat(tokenABalance)) {
