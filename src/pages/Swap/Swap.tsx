@@ -261,6 +261,7 @@ export default function Swap(props: ISwapProps) {
                     liquidityProviderFee={0.3}
                     quoteTokenIsBuy={true}
                     gasPriceinGwei={gasPriceinGwei}
+                    isDenomBase={tradeData.isDenomBase}
                 />
                 {isAuthenticated && isWeb3Enabled ? (
                     <SwapButton onClickFn={openModal} swapAllowed={swapAllowed} />

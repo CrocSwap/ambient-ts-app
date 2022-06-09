@@ -17,6 +17,7 @@ interface ExtraInfoProps {
     liquidityProviderFee: number;
     quoteTokenIsBuy: boolean;
     gasPriceinGwei: string;
+    isDenomBase: boolean;
 }
 
 // central react functional component
@@ -28,6 +29,7 @@ export default function ExtraInfo(props: ExtraInfoProps) {
         liquidityProviderFee,
         quoteTokenIsBuy,
         gasPriceinGwei,
+        isDenomBase,
     } = props;
 
     const [showExtraDetails, setShowExtraDetails] = useState<boolean>(false);
@@ -101,8 +103,11 @@ export default function ExtraInfo(props: ExtraInfoProps) {
                     <FaGasPump size={15} /> {truncatedGasInGwei} gwei
                 </div>
                 <div className={styles.token_amount}>
-                    1 {tokenPair.dataTokenA.symbol} = {spotPriceDisplayQuoteForBase}{' '}
-                    {tokenPair.dataTokenB.symbol}
+                    1 {isDenomBase ? tokenPair.dataTokenA.symbol : tokenPair.dataTokenB.symbol} ={' '}
+                    {isDenomBase
+                        ? spotPriceDisplayQuoteForBase
+                        : truncateDecimals(1 / spotPriceDisplayQuoteForBase, 6)}{' '}
+                    {isDenomBase ? tokenPair.dataTokenB.symbol : tokenPair.dataTokenA.symbol}
                     <RiArrowDownSLine size={27} />{' '}
                 </div>
             </div>
