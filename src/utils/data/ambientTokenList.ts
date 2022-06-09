@@ -8,7 +8,7 @@ export const ambientTokenList = {
     },
     tags: {},
     logoURI: 'ipfs://QmNa8mQkrNKp1WEEeGjFezDmDeodkWRevGFN8JCV7b4Xir',
-    keywords: ['crocswap', 'ambient', 'default'],
+    keywords: ['ambient', 'default'],
     tokens: [
         {
             name: 'Native Ether',
@@ -77,8 +77,7 @@ export const ambientTokenList = {
             symbol: 'DAI',
             decimals: 18,
             chainId: 1,
-            logoURI:
-                'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x6B175474E89094C44Da98b954EedeAC495271d0F/logo.png',
+            logoURI: 'https://tokens.1inch.io/0x6b175474e89094c44da98b954eedeac495271d0f.png',
         },
         {
             name: 'USDCoin',
@@ -100,26 +99,4 @@ export const ambientTokenList = {
                 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599/logo.png',
         },
     ],
-};
-
-export const logAmbientList = () => {
-    console.log(ambientTokenList);
-};
-
-export const logAmbientTokens = () => {
-    console.log(ambientTokenList.tokens);
-};
-
-export const getAmbientList = () => {
-    return ambientTokenList;
-};
-
-export const getAmbientTokens = () => {
-    return ambientTokenList.tokens;
-};
-
-export const getAmbientTokensOnChain = (chain = 42) => {
-    const { tokens } = ambientTokenList;
-    const tokensOnChain = tokens.filter((token) => token.chainId === chain);
-    return tokensOnChain;
 };

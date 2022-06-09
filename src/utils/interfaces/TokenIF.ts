@@ -5,4 +5,5 @@ export interface TokenIF {
     decimals: number;
     chainId: number;
     logoURI: string;
+    fromList?: string;
 }

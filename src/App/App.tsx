@@ -1,22 +1,12 @@
 /** ***** Import React and Dongles *******/
 import { useEffect, useState } from 'react';
-import { useAppDispatch, useAppSelector } from '../utils/hooks/reduxToolkit';
-import { setPositionsByUser } from '../utils/state/graphDataSlice';
-import { findTokenByAddress, getCurrentTokens } from '../utils/functions/processTokens';
-import {
-    // Signer,
-    utils,
-    ethers,
-} from 'ethers';
-
-import { kovanETH, kovanUSDC } from '../utils/data/defaultTokens';
-import { request, gql } from 'graphql-request';
-
 import { Routes, Route, useLocation } from 'react-router-dom';
+import { setPositionsByUser } from '../utils/state/graphDataSlice';
+import { utils, ethers } from 'ethers';
+import { JsonRpcProvider } from '@ethersproject/providers';
+import { request, gql } from 'graphql-request';
 import { useMoralis, useMoralisQuery, useMoralisSubscription } from 'react-moralis';
 import Moralis from 'moralis/types';
-
-import { JsonRpcProvider } from '@ethersproject/providers';
 import {
     contractAddresses,
     getTokenBalanceDisplay,
@@ -24,10 +14,7 @@ import {
     POOL_PRIMARY,
     getSpotPrice,
     getSpotPriceDisplay,
-    // queryPos,
 } from '@crocswap-libs/sdk';
-
-import Trade from '../pages/Trade/Trade';
 
 /** ***** Import JSX Files *******/
 import PageHeader from './components/PageHeader/PageHeader';
@@ -36,7 +23,7 @@ import PageFooter from './components/PageFooter/PageFooter';
 import Home from '../pages/Home/Home';
 import Analytics from '../pages/Analytics/Analytics';
 import Portfolio from '../pages/Portfolio/Portfolio';
-// import Market from '../pages/Trade/Market/Market';
+import Trade from '../pages/Trade/Trade';
 import Limit from '../pages/Trade/Limit/Limit';
 import Range from '../pages/Trade/Range/Range';
 import Swap from '../pages/Swap/Swap';
@@ -46,18 +33,47 @@ import TestPage from '../pages/TestPage/TestPage';
 
 /** * **** Import Local Files *******/
 import './App.css';
-import initializeLocalStorage from './functions/initializeLocalStorage';
+import { useAppDispatch, useAppSelector } from '../utils/hooks/reduxToolkit';
 import { validateChain } from './validateChain';
 import { IParsedPosition, parsePositionArray } from './parsePositions';
+import { defaultTokens } from '../utils/data/defaultTokens';
+import initializeLocalStorage from './functions/initializeLocalStorage';
+import { TokenIF } from '../utils/interfaces/exports';
 
 /** ***** React Function *******/
 export default function App() {
     // console.log('app rendering');
     const { chainId, isWeb3Enabled, account, logout, isAuthenticated } = useMoralis();
-    const [showSidebar, setShowSidebar] = useState<boolean>(false);
-    const location = useLocation();
 
     const dispatch = useAppDispatch();
+
+    const [importedTokens, setImportedTokens] = useState(defaultTokens);
+
+    useEffect(() => {
+        // check if app needs local storage initialized post-render
+        // if so, initialize local storage
+        if (!localStorage.isAppInitialized) {
+            localStorage.setItem('isAppInitialized', 'true');
+            initializeLocalStorage();
+        }
+        // see if there's a user object in local storage
+        if (localStorage.user) {
+            // if user object exists, pull it
+            const user = JSON.parse(localStorage.getItem('user') as string);
+            // see if user object has a list of imported tokens
+            if (user.importedTokens) {
+                // if imported tokens are listed, hold in local state
+                setImportedTokens(
+                    user.importedTokens.filter(
+                        (tkn: TokenIF) => tkn.chainId === parseInt(chainId ?? '0x2a'),
+                    ),
+                );
+            }
+        }
+    }, []);
+
+    const [showSidebar, setShowSidebar] = useState<boolean>(false);
+    const location = useLocation();
 
     const [metamaskLocked, setMetamaskLocked] = useState<boolean>(true);
     const [lastBlockNumber, setLastBlockNumber] = useState<number>(0);
@@ -83,11 +99,9 @@ export default function App() {
 
     const [isSellTokenBase, setIsSellTokenBase] = useState<boolean>(true);
 
-    const tokensBank = getCurrentTokens(chainId ?? '0x2a');
-
     const tokenPair = {
-        dataTokenA: findTokenByAddress(tradeData?.addressTokenA, tokensBank) ?? kovanETH,
-        dataTokenB: findTokenByAddress(tradeData?.addressTokenB, tokensBank) ?? kovanUSDC,
+        dataTokenA: tradeData.tokenA,
+        dataTokenB: tradeData.tokenB,
     };
 
     // useEffect to set baseTokenAddress and quoteTokenAddress when pair changes
@@ -220,7 +234,9 @@ export default function App() {
         }
     }, [account, lastBlockNumber]);
 
-    initializeLocalStorage();
+    // run function to initialize local storage
+    // internal controls will only initialize values that don't exist
+    // existing values will not be overwritten
 
     // determine whether the user is connected to a supported chain
     // the user being connected to a non-supported chain or not being
@@ -244,10 +260,6 @@ export default function App() {
     }, [location]);
 
     const [provider, setProvider] = useState<ethers.providers.JsonRpcProvider>();
-
-    // useEffect(() => {
-    //     console.log({ provider });
-    // }, [provider]);
 
     useEffect(() => {
         try {
@@ -396,6 +408,7 @@ export default function App() {
 
     // props for <Swap/> React element
     const swapProps = {
+        importedTokens: importedTokens,
         provider: provider as JsonRpcProvider,
         gasPriceinGwei: gasPriceinGwei,
         nativeBalance: nativeBalance,
@@ -409,6 +422,7 @@ export default function App() {
 
     // props for <Swap/> React element on trade route
     const swapPropsTrade = {
+        importedTokens: importedTokens,
         provider: provider as JsonRpcProvider,
         isOnTradeRoute: true,
         gasPriceinGwei: gasPriceinGwei,
@@ -423,6 +437,7 @@ export default function App() {
 
     // props for <Limit/> React element on trade route
     const limitPropsTrade = {
+        importedTokens: importedTokens,
         provider: provider as JsonRpcProvider,
         isOnTradeRoute: true,
         gasPriceinGwei: gasPriceinGwei,
@@ -437,6 +452,7 @@ export default function App() {
 
     // props for <Range/> React element
     const rangeProps = {
+        importedTokens: importedTokens,
         provider: provider as JsonRpcProvider,
         lastBlockNumber: lastBlockNumber,
         tokenABalance: tokenABalance,

@@ -1,5 +1,6 @@
 // START: Import React and Dongles
 import { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useMoralis } from 'react-moralis';
 import { motion } from 'framer-motion';
 import { JsonRpcProvider } from '@ethersproject/providers';
@@ -10,8 +11,6 @@ import {
     parseSwapEthersReceipt,
     EthersNativeReceipt,
 } from '@crocswap-libs/sdk';
-
-import { TokenIF } from '../../utils/interfaces/TokenIF';
 
 // START: Import React Components
 import CurrencyConverter from '../../components/Swap/CurrencyConverter/CurrencyConverter';
@@ -31,12 +30,14 @@ import styles from './Swap.module.css';
 import { handleParsedReceipt } from '../../utils/HandleParsedReceipt';
 import truncateDecimals from '../../utils/data/truncateDecimals';
 import { isTransactionReplacedError, TransactionError } from '../../utils/TransactionError';
-import { getCurrentTokens } from '../../utils/functions/processTokens';
+import { useAppSelector } from '../../utils/hooks/reduxToolkit';
+import { useTradeData } from '../Trade/Trade';
+import { TokenIF } from '../../utils/interfaces/exports';
 import { useModal } from '../../components/Global/Modal/useModal';
 import { useRelativeModal } from '../../components/Global/RelativeModal/useRelativeModal';
-// import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 
 interface ISwapProps {
+    importedTokens: Array<TokenIF>;
     provider: JsonRpcProvider;
     isOnTradeRoute?: boolean;
     gasPriceinGwei: string;
@@ -54,13 +55,15 @@ interface ISwapProps {
 
 export default function Swap(props: ISwapProps) {
     const {
+        importedTokens,
         provider,
         isOnTradeRoute,
+        // lastBlockNumber,
         nativeBalance,
+        gasPriceinGwei,
         tokenABalance,
         tokenBBalance,
         isSellTokenBase,
-        gasPriceinGwei,
         tokenPair,
         poolPriceDisplay,
     } = props;
@@ -71,6 +74,15 @@ export default function Swap(props: ISwapProps) {
     const { Moralis, chainId, enableWeb3, isWeb3Enabled, authenticate, isAuthenticated } =
         useMoralis();
     // get URL pathway for user relative to index
+    const { pathname } = useLocation();
+
+    // use URL pathway to determine if user is in swap or market page
+    // depending on location we pull data on the tx in progress differently
+    const { tradeData } = pathname.includes('/trade')
+        ? useTradeData()
+        : useAppSelector((state) => state);
+
+    const { tokenA, tokenB } = tradeData;
 
     // login functionality
     const clickLogin = () => {
@@ -98,14 +110,12 @@ export default function Swap(props: ISwapProps) {
 
     const loginButton = <Button title='Login' action={clickLogin} />;
 
-    // get current tokens for the active chain
-    // if called before Moralis can initialize use kovan
-    const tokensBank = getCurrentTokens(chainId ?? '0x2a');
-
     const [tokenAInputQty, setTokenAInputQty] = useState<string>('');
     const [tokenBInputQty, setTokenBInputQty] = useState<string>('');
 
     const [swapAllowed, setSwapAllowed] = useState<boolean>(false);
+
+    const [swapButtonErrorMessage, setSwapButtonErrorMessage] = useState<string>('');
 
     const [isTokenAPrimary, setIsTokenAPrimary] = useState<boolean>(true);
 
@@ -116,11 +126,11 @@ export default function Swap(props: ISwapProps) {
 
     const signer = provider?.getSigner();
 
+    // TODO:  @Emily refactor this function to remove sellTokenAddress
+    // TODO:  ... and buyTokenAddress references
     async function initiateSwap() {
-        // const sellTokenAddress = contractAddresses.ZERO_ADDR;
-        const sellTokenAddress = tokenPair.dataTokenA.address;
-        const buyTokenAddress = tokenPair.dataTokenB.address;
-        // const buyTokenAddress = daiKovanAddress;
+        const sellTokenAddress = tokenA.address;
+        const buyTokenAddress = tokenB.address;
         const poolId = POOL_PRIMARY;
         const slippageTolerancePercentage = 5;
         const sellTokenQty = (document.getElementById('sell-quantity') as HTMLInputElement)?.value;
@@ -184,10 +194,12 @@ export default function Swap(props: ISwapProps) {
         }
     }
 
+    // TODO:  @Emily refactor this Modal and later elements such that
+    // TODO:  ... tradeData is passed to directly instead of tokenPair
     const confirmSwapModalOrNull = isModalOpen ? (
         <Modal onClose={closeModal} title='Swap Confirmation'>
             <ConfirmSwapModal
-                tokenPair={tokenPair}
+                tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
                 initiateSwapMethod={initiateSwap}
                 onClose={closeModal}
                 newSwapTransactionHash={newSwapTransactionHash}
@@ -212,12 +224,15 @@ export default function Swap(props: ISwapProps) {
             className={styles.swap}
         >
             <ContentContainer isOnTradeRoute={isOnTradeRoute}>
-                <SwapHeader tokenPair={tokenPair} isOnTradeRoute={isOnTradeRoute} />
-                <DenominationSwitch tokenPair={tokenPair} />
+                <SwapHeader
+                    tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
+                    isOnTradeRoute={isOnTradeRoute}
+                />
+                <DenominationSwitch tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }} />
                 <DividerDark />
                 <CurrencyConverter
                     tokenPair={tokenPair}
-                    tokensBank={tokensBank}
+                    tokensBank={importedTokens}
                     chainId={chainId as string}
                     isLiq={false}
                     poolPriceDisplay={poolPriceDisplay}
@@ -236,9 +251,10 @@ export default function Swap(props: ISwapProps) {
                     isWithdrawToWalletChecked={isWithdrawToWalletChecked}
                     setIsWithdrawToWalletChecked={setIsWithdrawToWalletChecked}
                     setSwapAllowed={setSwapAllowed}
+                    setSwapButtonErrorMessage={setSwapButtonErrorMessage}
                 />
                 <ExtraInfo
-                    tokenPair={tokenPair}
+                    tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
                     poolPriceDisplay={poolPriceDisplay}
                     slippageTolerance={5}
                     liquidityProviderFee={0.3}
@@ -246,7 +262,11 @@ export default function Swap(props: ISwapProps) {
                     gasPriceinGwei={gasPriceinGwei}
                 />
                 {isAuthenticated && isWeb3Enabled ? (
-                    <SwapButton onClickFn={openModal} swapAllowed={swapAllowed} />
+                    <SwapButton
+                        onClickFn={openModal}
+                        swapAllowed={swapAllowed}
+                        swapButtonErrorMessage={swapButtonErrorMessage}
+                    />
                 ) : (
                     loginButton
                 )}

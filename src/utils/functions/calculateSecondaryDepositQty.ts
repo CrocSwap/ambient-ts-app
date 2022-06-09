@@ -10,6 +10,7 @@ export const calculateSecondaryDepositQty = (
     isAmbientPosition: boolean,
     depositSkew?: number,
 ) => {
+    console.log(tokenADecimals, tokenBDecimals);
     const baseDecimals = isTokenABase ? tokenADecimals : tokenBDecimals;
     const quoteDecimals = !isTokenABase ? tokenADecimals : tokenBDecimals;
 

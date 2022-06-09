@@ -45,22 +45,22 @@ import styles from './Range.module.css';
 import { isTransactionReplacedError, TransactionError } from '../../../utils/TransactionError';
 import { handleParsedReceipt } from '../../../utils/HandleParsedReceipt';
 import truncateDecimals from '../../../utils/data/truncateDecimals';
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import { getCurrentTokens, findTokenByAddress } from '../../../utils/functions/processTokens';
-import { kovanETH, kovanUSDC } from '../../../utils/data/defaultTokens';
 import ConfirmRangeModal from '../../../components/Trade/Range/ConfirmRangeModal/ConfirmRangeModal';
+import { TokenIF } from '../../../utils/interfaces/exports';
+import { useTradeData } from '../Trade';
 
-interface IRangeProps {
+interface RangePropsIF {
+    importedTokens: Array<TokenIF>;
     provider: JsonRpcProvider;
     lastBlockNumber: number;
     tokenABalance: string;
     tokenBBalance: string;
 }
 
-export default function Range(props: IRangeProps) {
+export default function Range(props: RangePropsIF) {
+    const { importedTokens, provider, lastBlockNumber, tokenABalance, tokenBBalance } = props;
     const [isModalOpen, openModal, closeModal] = useModal();
 
-    const { provider, lastBlockNumber, tokenABalance, tokenBBalance } = props;
     const { save } = useNewMoralisObject('UserPosition');
 
     const [poolPriceNonDisplay, setPoolPriceNonDisplay] = useState(0);
@@ -73,20 +73,12 @@ export default function Range(props: IRangeProps) {
     const [newRangeTransactionHash, setNewRangeTransactionHash] = useState('');
     const { Moralis, user, account, chainId } = useMoralis();
 
-    const tradeData = useAppSelector((state) => state.tradeData);
-
-    // get current tokens for the active chain
-    // if called before Moralis can initialize use kovan
-    const tokensBank = getCurrentTokens(chainId ?? '0x2a');
+    const { tradeData } = useTradeData();
 
     const tokenPair = {
-        dataTokenA: findTokenByAddress(tradeData.addressTokenA, tokensBank) ?? kovanETH,
-        dataTokenB: findTokenByAddress(tradeData.addressTokenB, tokensBank) ?? kovanUSDC,
+        dataTokenA: tradeData.tokenA,
+        dataTokenB: tradeData.tokenB,
     };
-
-    // const isTokenABase =
-    //     getBaseTokenAddress(tradeData.addressTokenA, tradeData.addressTokenB) ===
-    //     tradeData.addressTokenA;
 
     const isAmbient = rangeWidthPercentage === 100;
 
@@ -355,7 +347,7 @@ export default function Range(props: IRangeProps) {
     const rangeCurrencyConverterProps = {
         poolPriceNonDisplay: poolPriceNonDisplay,
         chainId: chainId ?? '0x2a',
-        tokensBank: tokensBank,
+        tokensBank: importedTokens,
         tokenPair: tokenPair,
         isAmbient: isAmbient,
         isTokenABase: isTokenABase,
