@@ -31,6 +31,7 @@ import Chart from '../pages/Chart/Chart';
 import Edit from '../pages/Trade/Edit/Edit';
 import TestPage from '../pages/TestPage/TestPage';
 import NotFound from '../pages/NotFound/NotFound';
+import Trade from '../pages/Trade/Trade';
 /** * **** Import Local Files *******/
 import './App.css';
 import { useAppDispatch, useAppSelector } from '../utils/hooks/reduxToolkit';
@@ -594,7 +595,7 @@ export default function App() {
                 <div className={`${noSidebarStyle} ${swapBodyStyle}`}>
                     <Routes>
                         <Route index element={<Home />} />
-                        <Route path='trade' element={<Navigate to='/trade/market' replace />}>
+                        <Route path='trade' element={<Trade />}>
                             <Route path='' element={<Swap {...swapPropsTrade} />} />
                             <Route path='market' element={<Swap {...swapPropsTrade} />} />
                             <Route path='limit' element={<Limit {...limitPropsTrade} />} />
