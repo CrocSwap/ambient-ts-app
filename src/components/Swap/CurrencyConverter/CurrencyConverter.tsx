@@ -131,16 +131,19 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
     }, [poolPriceDisplay, isSellTokenBase, isTokenAPrimaryLocal, tokenABalance]);
 
     const handleSwapButtonMessage = (tokenAAmount: number) => {
-        if (tokenAAmount > 0 && tokenAAmount <= parseFloat(tokenABalance)) {
-            setSwapAllowed(true);
-        } else {
+        if (poolPriceDisplay === 0) {
             setSwapAllowed(false);
-
-            if (tokenAAmount > parseFloat(tokenABalance)) {
-                setSwapButtonErrorMessage('Entered Amount Exceeds Wallet Balance');
-            } else {
-                setSwapButtonErrorMessage('Enter an Amount');
-            }
+            setSwapButtonErrorMessage('Invalid Token Pair');
+        } else if (tokenAAmount > parseFloat(tokenABalance)) {
+            setSwapAllowed(false);
+            setSwapButtonErrorMessage(
+                `${tokenPair.dataTokenA.symbol} Amount Exceeds Wallet Balance`,
+            );
+        } else if (isNaN(tokenAAmount) || tokenAAmount <= 0) {
+            setSwapAllowed(false);
+            setSwapButtonErrorMessage('Enter an Amount');
+        } else {
+            setSwapAllowed(true);
         }
     };
 
