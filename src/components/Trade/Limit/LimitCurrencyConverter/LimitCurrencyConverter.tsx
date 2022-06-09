@@ -4,8 +4,8 @@ import { ChangeEvent, SetStateAction, useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 
 import {
-    setAddressTokenA,
-    setAddressTokenB,
+    setTokenA,
+    setTokenB,
     setIsTokenAPrimary,
     setPrimaryQuantity,
 } from '../../../../utils/state/tradeDataSlice';
@@ -96,8 +96,8 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
 
     const reverseTokens = (): void => {
         if (tokenPair) {
-            dispatch(setAddressTokenA(tokenPair.dataTokenB.address));
-            dispatch(setAddressTokenB(tokenPair.dataTokenA.address));
+            dispatch(setTokenA(tokenPair.dataTokenB));
+            dispatch(setTokenB(tokenPair.dataTokenA));
         }
         if (!isTokenAPrimaryLocal) {
             setTokenAQtyLocal(tokenBQtyLocal);
