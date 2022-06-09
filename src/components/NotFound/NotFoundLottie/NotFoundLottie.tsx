@@ -1,6 +1,6 @@
 import styles from './NotFoundLottie.module.css';
-import Animation from '../Global/Animation/Animation';
-import NotFound from '../../assets/animations/NotFound.json';
+import Animation from '../../Global/Animation/Animation';
+import NotFound from '../../../assets/animations/NotFound.json';
 import { Link } from 'react-router-dom';
 
 export default function NotFoundLottie() {
