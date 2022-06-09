@@ -115,7 +115,11 @@ export default function Limit(props: LimitPropsIF) {
         >
             <ContentContainer isOnTradeRoute>
                 <LimitHeader tokenPair={tokenPair} />
-                <DenominationSwitch tokenPair={tokenPair} displayForBase={tradeData.isDenomBase} />
+                <DenominationSwitch
+                    tokenPair={tokenPair}
+                    displayForBase={tradeData.isDenomBase}
+                    poolPriceDisplay={poolPriceDisplay}
+                />
                 <DividerDark />
                 <LimitCurrencyConverter
                     tokenPair={tokenPair}

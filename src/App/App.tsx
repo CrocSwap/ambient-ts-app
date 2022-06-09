@@ -456,6 +456,7 @@ export default function App() {
         lastBlockNumber: lastBlockNumber,
         tokenABalance: tokenABalance,
         tokenBBalance: tokenBBalance,
+        poolPriceDisplay: poolPriceDisplay,
     };
 
     // props for <Sidebar/> React element

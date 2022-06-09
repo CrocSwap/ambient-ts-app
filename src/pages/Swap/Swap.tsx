@@ -229,6 +229,7 @@ export default function Swap(props: ISwapProps) {
                 <DenominationSwitch
                     tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
                     displayForBase={tradeData.isDenomBase}
+                    poolPriceDisplay={poolPriceDisplay}
                 />
                 <DividerDark />
                 <CurrencyConverter

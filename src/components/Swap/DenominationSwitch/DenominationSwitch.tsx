@@ -8,8 +8,13 @@ import { setDenomInBase } from '../../../utils/state/tradeDataSlice';
 interface denominationSwitchPropsIF {
     tokenPair: TokenPairIF;
     displayForBase: boolean;
+    poolPriceDisplay: number;
     isOnTradeRoute?: boolean;
 }
+
+// TODO:  @Emily poolPriceDisplay is passed here as a prop for the purpose of managing
+// TODO:  ... which token to initialize the display too, if it's not necessary in the
+// TODO   ... end, please remove the value from props
 
 export default function DenominationSwitch(props: denominationSwitchPropsIF) {
     const { tokenPair, displayForBase } = props;

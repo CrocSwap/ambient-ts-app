@@ -55,6 +55,7 @@ interface RangePropsIF {
     lastBlockNumber: number;
     tokenABalance: string;
     tokenBBalance: string;
+    poolPriceDisplay: number;
 }
 
 export default function Range(props: RangePropsIF) {
@@ -251,7 +252,11 @@ export default function Range(props: RangePropsIF) {
     const denominationSwitch = (
         <div className={styles.denomination_switch_container}>
             <AdvancedModeToggle advancedMode={tradeData.advancedMode} />
-            <DenominationSwitch tokenPair={tokenPair} displayForBase={tradeData.isDenomBase} />
+            <DenominationSwitch
+                tokenPair={tokenPair}
+                displayForBase={tradeData.isDenomBase}
+                poolPriceDisplay={poolPriceDisplay}
+            />
         </div>
     );
 
