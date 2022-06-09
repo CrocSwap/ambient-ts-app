@@ -32,6 +32,7 @@ interface CurrencyConverterPropsIF {
     isWithdrawToWalletChecked: boolean;
     setIsWithdrawToWalletChecked: React.Dispatch<SetStateAction<boolean>>;
     setSwapAllowed: React.Dispatch<React.SetStateAction<boolean>>;
+    tokenAAllowance: string;
     setSwapButtonErrorMessage: React.Dispatch<React.SetStateAction<string>>;
 }
 
@@ -56,6 +57,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         // setTokenAInputQty,
         // setTokenBInputQty,
         // tokenAInputQty,
+        tokenAAllowance,
         // tokenBInputQty,
     } = props;
 
@@ -139,6 +141,9 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
             setSwapButtonErrorMessage(
                 `${tokenPair.dataTokenA.symbol} Amount Exceeds Wallet Balance`,
             );
+        } else if (parseInt(tokenAAllowance) < tokenAAmount) {
+            setSwapAllowed(false);
+            setSwapButtonErrorMessage(`${tokenPair.dataTokenA.symbol} Amount Exceeds Allowance`);
         } else if (isNaN(tokenAAmount) || tokenAAmount <= 0) {
             setSwapAllowed(false);
             setSwapButtonErrorMessage('Enter an Amount');

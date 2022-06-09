@@ -51,6 +51,7 @@ interface ISwapProps {
         dataTokenB: TokenIF;
     };
     poolPriceDisplay: number;
+    tokenAAllowance: string;
 }
 
 export default function Swap(props: ISwapProps) {
@@ -66,6 +67,7 @@ export default function Swap(props: ISwapProps) {
         isSellTokenBase,
         tokenPair,
         poolPriceDisplay,
+        tokenAAllowance,
     } = props;
     const [isModalOpen, openModal, closeModal] = useModal();
 
@@ -252,6 +254,7 @@ export default function Swap(props: ISwapProps) {
                     setIsWithdrawToWalletChecked={setIsWithdrawToWalletChecked}
                     setSwapAllowed={setSwapAllowed}
                     setSwapButtonErrorMessage={setSwapButtonErrorMessage}
+                    tokenAAllowance={tokenAAllowance}
                 />
                 <ExtraInfo
                     tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
