@@ -10,6 +10,7 @@ import {
     sendSwap,
     parseSwapEthersReceipt,
     EthersNativeReceipt,
+    approveToken,
 } from '@crocswap-libs/sdk';
 
 // START: Import React Components
@@ -51,6 +52,8 @@ interface ISwapProps {
         dataTokenB: TokenIF;
     };
     poolPriceDisplay: number;
+    tokenAAllowance: string;
+    setRecheckTokenAApproval: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function Swap(props: ISwapProps) {
@@ -66,6 +69,8 @@ export default function Swap(props: ISwapProps) {
         isSellTokenBase,
         tokenPair,
         poolPriceDisplay,
+        tokenAAllowance,
+        setRecheckTokenAApproval,
     } = props;
     const [isModalOpen, openModal, closeModal] = useModal();
 
@@ -109,6 +114,57 @@ export default function Swap(props: ISwapProps) {
     };
 
     const loginButton = <Button title='Login' action={clickLogin} />;
+
+    const [isApprovalPending, setIsApprovalPending] = useState(false);
+
+    const approve = async (tokenAddress: string) => {
+        // console.log(`allow button clicked for ${tokenAddress}`);
+        setIsApprovalPending(true);
+        let tx;
+        try {
+            tx = await approveToken(tokenAddress, signer);
+        } catch (error) {
+            setIsApprovalPending(false);
+            setRecheckTokenAApproval(true);
+        }
+        if (tx.hash) {
+            console.log('approval transaction hash: ' + tx.hash);
+            // setApprovalButtonText('Approval Pending...');
+            // dispatch(setCurrentTxHash(tx.hash));
+            // dispatch(addPendingTx(tx.hash));
+        }
+
+        try {
+            const receipt = await tx.wait();
+            // console.log({ receipt });
+            if (receipt) {
+                // console.log('approval receipt: ' + JSON.stringify(receipt));
+                // setShouldRecheckApproval(true);
+                // parseSwapEthersTxReceipt(receipt).then((val) => {
+                //   val.conversionRateString = `${val.sellSymbol} Approval Successful`;
+                //   dispatch(addApprovalReceipt(val));
+            }
+        } catch (error) {
+            console.log({ error });
+        } finally {
+            setIsApprovalPending(false);
+            setRecheckTokenAApproval(true);
+        }
+    };
+
+    const approvalButton = (
+        <Button
+            title={
+                !isApprovalPending
+                    ? `Click to Approve ${tokenPair.dataTokenA.symbol}`
+                    : `${tokenPair.dataTokenA.symbol} Approval Pending`
+            }
+            disabled={isApprovalPending}
+            action={async () => {
+                await approve(tokenA.address);
+            }}
+        />
+    );
 
     const [tokenAInputQty, setTokenAInputQty] = useState<string>('');
     const [tokenBInputQty, setTokenBInputQty] = useState<string>('');
@@ -215,6 +271,10 @@ export default function Swap(props: ISwapProps) {
         </RelativeModal>
     ) : null;
 
+    const isTokenAAllowanceSufficient = parseFloat(tokenAAllowance) >= parseFloat(tokenAInputQty);
+    // console.log({ tokenAAllowance });
+    // console.log({ tokenAInputQty });
+    // console.log({ isTokenAAllowanceSufficient });
     return (
         <motion.main
             initial={{ width: 0 }}
@@ -262,11 +322,15 @@ export default function Swap(props: ISwapProps) {
                     gasPriceinGwei={gasPriceinGwei}
                 />
                 {isAuthenticated && isWeb3Enabled ? (
-                    <SwapButton
-                        onClickFn={openModal}
-                        swapAllowed={swapAllowed}
-                        swapButtonErrorMessage={swapButtonErrorMessage}
-                    />
+                    !isTokenAAllowanceSufficient && parseFloat(tokenAInputQty) > 0 ? (
+                        approvalButton
+                    ) : (
+                        <SwapButton
+                            onClickFn={openModal}
+                            swapAllowed={swapAllowed}
+                            swapButtonErrorMessage={swapButtonErrorMessage}
+                        />
+                    )
                 ) : (
                     loginButton
                 )}

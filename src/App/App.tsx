@@ -14,6 +14,7 @@ import {
     POOL_PRIMARY,
     getSpotPrice,
     getSpotPriceDisplay,
+    getTokenAllowance,
 } from '@crocswap-libs/sdk';
 
 /** ***** Import JSX Files *******/
@@ -97,7 +98,7 @@ export default function App() {
     const [baseTokenAddress, setBaseTokenAddress] = useState<string>('');
     const [quoteTokenAddress, setQuoteTokenAddress] = useState<string>('');
 
-    const [isSellTokenBase, setIsSellTokenBase] = useState<boolean>(true);
+    const [isTokenABase, setIsTokenABase] = useState<boolean>(true);
 
     const tokenPair = {
         dataTokenA: tradeData.tokenA,
@@ -114,9 +115,9 @@ export default function App() {
             setBaseTokenAddress(sortedTokens[0]);
             setQuoteTokenAddress(sortedTokens[1]);
             if (tokenPair.dataTokenA.address === sortedTokens[0]) {
-                setIsSellTokenBase(true);
+                setIsTokenABase(true);
             } else {
-                setIsSellTokenBase(false);
+                setIsTokenABase(false);
             }
         }
     }, [JSON.stringify(tokenPair)]);
@@ -195,6 +196,120 @@ export default function App() {
             }
         })();
     }, [chainId, account, isWeb3Enabled, isAuthenticated, tokenPair, lastBlockNumber]);
+
+    const [tokenAAllowance, setTokenAAllowance] = useState<string>('');
+    const [tokenBAllowance, setTokenBAllowance] = useState<string>('');
+
+    const [recheckTokenAApproval, setRecheckTokenAApproval] = useState<boolean>(false);
+    // const [recheckTokenBApproval, setRecheckTokenBApproval] = useState<boolean>(false);
+
+    useEffect(() => {
+        console.log({ tokenAAllowance });
+    }, [tokenAAllowance]);
+
+    useEffect(() => {
+        console.log({ tokenBAllowance });
+    }, [tokenBAllowance]);
+
+    // useEffect to check if user has approved CrocSwap to sell the token A
+    // (hardcoded for native Ether)
+    useEffect(() => {
+        (async () => {
+            try {
+                const tokenAAddress = tokenPair.dataTokenA.address;
+                if (isWeb3Enabled && account !== null) {
+                    if (!tokenAAddress) {
+                        return;
+                    }
+                    if (tokenAAddress === contractAddresses.ZERO_ADDR) {
+                        console.log('token A is eth');
+                        setTokenAAllowance((Number.MAX_SAFE_INTEGER - 1).toString());
+                        return;
+                    }
+                    if (provider) {
+                        const signer = provider.getSigner();
+                        getTokenAllowance(tokenAAddress, account, signer)
+                            .then(function (result) {
+                                // console.log({ result });
+                                const allowance = result.lt(Number.MAX_SAFE_INTEGER - 1)
+                                    ? result.toNumber()
+                                    : Number.MAX_SAFE_INTEGER - 1;
+                                setTokenAAllowance(allowance.toString());
+                            })
+                            .catch((e) => {
+                                console.log(e);
+                            });
+                    }
+                }
+            } catch (err) {
+                console.log(err);
+            }
+            setRecheckTokenAApproval(false);
+        })();
+    }, [
+        // poolPrice,
+        tokenPair.dataTokenA.address,
+        lastBlockNumber,
+        // poolQuoteTokenAddress,
+        // poolTokenAName,
+        // poolTokenBName,
+        account,
+        chainId,
+        isWeb3Enabled,
+        recheckTokenAApproval,
+        // recheckTokenBApproval,
+        // swapReceipt,
+        // tokenAisBase,
+    ]);
+
+    // useEffect to check if user has approved CrocSwap to sell token B
+    // (hardcoded for native Ether)
+    useEffect(() => {
+        (async () => {
+            try {
+                const tokenBAddress = tokenPair.dataTokenB.address;
+                if (isWeb3Enabled && account !== null) {
+                    if (!tokenBAddress) {
+                        return;
+                    }
+                    if (tokenBAddress === contractAddresses.ZERO_ADDR) {
+                        console.log('token A is eth');
+                        setTokenBAllowance((Number.MAX_SAFE_INTEGER - 1).toString());
+                        return;
+                    }
+                    if (provider) {
+                        const signer = provider.getSigner();
+                        getTokenAllowance(tokenBAddress, account, signer)
+                            .then(function (result) {
+                                // console.log({ result });
+                                const allowance = result.lt(Number.MAX_SAFE_INTEGER - 1)
+                                    ? result.toNumber()
+                                    : Number.MAX_SAFE_INTEGER - 1;
+                                setTokenBAllowance(allowance.toString());
+                            })
+                            .catch((e) => {
+                                console.log(e);
+                            });
+                    }
+                }
+            } catch (err) {
+                console.log(err);
+            }
+        })();
+    }, [
+        // poolPrice,
+        tokenPair.dataTokenB.address,
+        // poolQuoteTokenAddress,
+        // poolTokenAName,
+        // poolTokenBName,
+        account,
+        chainId,
+        isWeb3Enabled,
+        // recheckTokenAApproval,
+        // recheckTokenBApproval,
+        // swapReceipt,
+        // tokenAisBase,
+    ]);
 
     const graphData = useAppSelector((state) => state.graphData);
 
@@ -421,9 +536,12 @@ export default function App() {
         lastBlockNumber: lastBlockNumber,
         tokenABalance: tokenABalance,
         tokenBBalance: tokenBBalance,
-        isSellTokenBase: isSellTokenBase,
+        isSellTokenBase: isTokenABase,
         tokenPair: tokenPair,
         poolPriceDisplay: poolPriceDisplay,
+        tokenAAllowance: tokenAAllowance,
+        setRecheckTokenAApproval: setRecheckTokenAApproval,
+        // tokenBAllowance: tokenBAllowance,
     };
 
     // props for <Swap/> React element on trade route
@@ -436,9 +554,12 @@ export default function App() {
         lastBlockNumber: lastBlockNumber,
         tokenABalance: tokenABalance,
         tokenBBalance: tokenBBalance,
-        isSellTokenBase: isSellTokenBase,
+        isSellTokenBase: isTokenABase,
         tokenPair: tokenPair,
         poolPriceDisplay: poolPriceDisplay,
+        setRecheckTokenAApproval: setRecheckTokenAApproval,
+        tokenAAllowance: tokenAAllowance,
+        // tokenBAllowance: tokenBAllowance,
     };
 
     // props for <Limit/> React element on trade route
@@ -451,7 +572,7 @@ export default function App() {
         lastBlockNumber: lastBlockNumber,
         tokenABalance: tokenABalance,
         tokenBBalance: tokenBBalance,
-        isSellTokenBase: isSellTokenBase,
+        isSellTokenBase: isTokenABase,
         tokenPair: tokenPair,
         poolPriceDisplay: poolPriceDisplay,
     };
