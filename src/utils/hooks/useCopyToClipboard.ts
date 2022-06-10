@@ -28,3 +28,22 @@ function useCopyToClipboard(): [CopiedValue, CopyFn] {
 }
 
 export default useCopyToClipboard;
+
+// USAGE
+// import React from 'react'
+
+// import  useCopyToClipboard  from 'usehooks-ts'
+
+// export default function Component() {
+//   const [value, copy] = useCopyToClipboard()
+//   return (
+//     <>
+//
+//       <div >
+//
+//         <button onClick={() => copy('C')}>C</button>
+//       </div>
+//       <p>Copied value: {value ?? 'Nothing is copied yet!'}</p>
+//     </>
+//   )
+// }
