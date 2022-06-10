@@ -124,7 +124,6 @@ export default function Account(props: IAccountProps): React.ReactElement<IAccou
             <div className={styles.title_gradient} onClick={handleCopyAddress}>
                 {props.accountAddress}
             </div>
-            <button onClick={handleCopyAddress}>Open</button>
 
             <AiOutlineQuestionCircle size={20} color='#CDC1FF' />
 
