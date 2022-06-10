@@ -66,6 +66,8 @@ export default function Limit(props: LimitPropsIF) {
     const [tokenAInputQty, setTokenAInputQty] = useState<string>('');
     const [tokenBInputQty, setTokenBInputQty] = useState<string>('');
 
+    const [limitButtonErrorMessage, setLimitButtonErrorMessage] = useState<string>('');
+
     // login functionality
     const clickLogin = () => {
         console.log('user clicked Login');
@@ -174,13 +176,18 @@ export default function Limit(props: LimitPropsIF) {
                     tokenBInputQty={tokenBInputQty}
                     setTokenAInputQty={setTokenAInputQty}
                     setTokenBInputQty={setTokenBInputQty}
+                    setLimitButtonErrorMessage={setLimitButtonErrorMessage}
                 />
                 <LimitExtraInfo tokenPair={tokenPair} gasPriceinGwei={gasPriceinGwei} />
                 {isAuthenticated && isWeb3Enabled ? (
                     !isTokenAAllowanceSufficient && parseFloat(tokenAInputQty) > 0 ? (
                         approvalButton
                     ) : (
-                        <LimitButton onClickFn={openModal} limitAllowed={limitAllowed} />
+                        <LimitButton
+                            onClickFn={openModal}
+                            limitAllowed={limitAllowed}
+                            limitButtonErrorMessage={limitButtonErrorMessage}
+                        />
                     )
                 ) : (
                     loginButton

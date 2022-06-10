@@ -35,6 +35,7 @@ interface LimitCurrencyConverterProps {
     tokenBInputQty: string;
     setTokenAInputQty: React.Dispatch<React.SetStateAction<string>>;
     setTokenBInputQty: React.Dispatch<React.SetStateAction<string>>;
+    setLimitButtonErrorMessage: React.Dispatch<React.SetStateAction<string>>;
 }
 
 // central react functional component
@@ -50,6 +51,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
         tokenBBalance,
         setTokenAInputQty,
         setTokenBInputQty,
+        setLimitButtonErrorMessage,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -130,6 +132,28 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
         isTokenAPrimaryLocal ? handleTokenAChangeEvent() : handleTokenBChangeEvent();
     }, [poolPriceDisplay, isSellTokenBase, isTokenAPrimaryLocal, tokenABalance]);
 
+    const handleLimitButtonMessage = (tokenAAmount: number) => {
+        if (poolPriceDisplay === 0) {
+            setLimitAllowed(false);
+            setLimitButtonErrorMessage('Invalid Token Pair');
+        } else if (tokenAAmount > parseFloat(tokenABalance)) {
+            setLimitAllowed(false);
+            setLimitButtonErrorMessage(
+                `${tokenPair.dataTokenA.symbol} Amount Exceeds Wallet Balance`,
+            );
+        }
+        // else if (parseInt(tokenAAllowance) < tokenAAmount) {
+        //     setSwapAllowed(false);
+        //     setSwapButtonErrorMessage(`${tokenPair.dataTokenA.symbol} Amount Exceeds Allowance`);
+        // }
+        else if (isNaN(tokenAAmount) || tokenAAmount <= 0) {
+            setLimitAllowed(false);
+            setLimitButtonErrorMessage('Enter an Amount');
+        } else {
+            setLimitAllowed(true);
+        }
+    };
+
     const handleTokenAChangeEvent = (evt?: ChangeEvent<HTMLInputElement>) => {
         let rawTokenBQty;
 
@@ -144,10 +168,13 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
             rawTokenBQty = isSellTokenBase
                 ? (1 / poolPriceDisplay) * parseFloat(input)
                 : poolPriceDisplay * parseFloat(input);
+
+            handleLimitButtonMessage(parseFloat(input));
         } else {
             rawTokenBQty = isSellTokenBase
                 ? (1 / poolPriceDisplay) * parseFloat(tokenAQtyLocal)
                 : poolPriceDisplay * parseFloat(tokenAQtyLocal);
+            handleLimitButtonMessage(parseFloat(tokenAQtyLocal));
         }
         const truncatedTokenBQty = truncateDecimals(rawTokenBQty, tokenBDecimals).toString();
 
@@ -157,11 +184,6 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
 
         if (buyQtyField) {
             buyQtyField.value = truncatedTokenBQty === 'NaN' ? '' : truncatedTokenBQty;
-        }
-        if (truncatedTokenBQty !== 'NaN' && parseFloat(truncatedTokenBQty) > 0) {
-            setLimitAllowed(true);
-        } else {
-            setLimitAllowed(false);
         }
     };
     const handleTokenBChangeEvent = (evt?: ChangeEvent<HTMLInputElement>) => {
@@ -183,17 +205,13 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 ? poolPriceDisplay * parseFloat(tokenBQtyLocal)
                 : (1 / poolPriceDisplay) * parseFloat(tokenBQtyLocal);
         }
+        handleLimitButtonMessage(rawTokenAQty);
         const truncatedTokenAQty = truncateDecimals(rawTokenAQty, tokenADecimals).toString();
         setTokenAQtyLocal(truncatedTokenAQty);
         setTokenAInputQty(truncatedTokenAQty);
         const sellQtyField = document.getElementById('sell-limit-quantity') as HTMLInputElement;
         if (sellQtyField) {
             sellQtyField.value = truncatedTokenAQty === 'NaN' ? '' : truncatedTokenAQty;
-        }
-        if (truncatedTokenAQty !== 'NaN' && parseFloat(truncatedTokenAQty) > 0) {
-            setLimitAllowed(true);
-        } else {
-            setLimitAllowed(false);
         }
     };
 
