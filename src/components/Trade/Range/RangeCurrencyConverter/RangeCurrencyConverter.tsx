@@ -8,8 +8,11 @@ import RangeCurrencySelector from '../RangeCurrencySelector/RangeCurrencySelecto
 import styles from './RangeCurrencyConverter.module.css';
 import { calculateSecondaryDepositQty } from '../../../../utils/functions/calculateSecondaryDepositQty';
 import { TokenIF } from '../../../../utils/interfaces/TokenIF';
-import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
-import { setPrimaryQuantity } from '../../../../utils/state/tradeDataSlice';
+import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import {
+    setIsTokenAPrimaryRange,
+    setPrimaryQuantityRange,
+} from '../../../../utils/state/tradeDataSlice';
 
 // interface for component props
 interface RangeCurrencyConverterPropsIF {
@@ -69,7 +72,38 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
     const [tokenAQtyLocal, setTokenAQtyLocal] = useState<number>(0);
     const [tokenBQtyLocal, setTokenBQtyLocal] = useState<number>(0);
 
-    const [isTokenAPrimaryLocal, setIsTokenAPrimaryLocal] = useState<boolean>(true);
+    const tradeData = useAppSelector((state) => state.tradeData);
+    const [isTokenAPrimaryLocal, setIsTokenAPrimaryLocal] = useState<boolean>(
+        tradeData.isTokenAPrimaryRange,
+    );
+
+    useEffect(() => {
+        if (tradeData) {
+            if (tradeData.isTokenAPrimaryRange) {
+                setTokenAQtyLocal(parseFloat(tradeData.primaryQuantityRange));
+                setTokenAInputQty(tradeData.primaryQuantityRange);
+                const sellQtyField = document.getElementById(
+                    'A-range-quantity',
+                ) as HTMLInputElement;
+                if (sellQtyField) {
+                    sellQtyField.value =
+                        tradeData.primaryQuantityRange === 'NaN'
+                            ? ''
+                            : tradeData.primaryQuantityRange;
+                }
+            } else {
+                setTokenBQtyLocal(parseFloat(tradeData.primaryQuantityRange));
+                setTokenBInputQty(tradeData.primaryQuantityRange);
+                const buyQtyField = document.getElementById('B-range-quantity') as HTMLInputElement;
+                if (buyQtyField) {
+                    buyQtyField.value =
+                        tradeData.primaryQuantityRange === 'NaN'
+                            ? ''
+                            : tradeData.primaryQuantityRange;
+                }
+            }
+        }
+    }, []);
 
     const setTokenAQtyValue = (value: number) => {
         setTokenAQtyLocal(value);
@@ -91,13 +125,13 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
 
         if (qtyTokenB) {
             tokenBQtyField.value = typeof qtyTokenB === 'string' ? qtyTokenB : qtyTokenB.toString();
-            dispatch(setPrimaryQuantity(value.toString()));
+            dispatch(setPrimaryQuantityRange(value.toString()));
             setIsTokenAPrimaryLocal(true);
             setTokenBQtyLocal(qtyTokenB);
             setTokenBInputQty(qtyTokenB.toString());
         } else {
             tokenBQtyField.value = '';
-            dispatch(setPrimaryQuantity('0'));
+            dispatch(setPrimaryQuantityRange('0'));
             setIsTokenAPrimaryLocal(true);
             setTokenBQtyLocal(0);
             setTokenBInputQty('0');
@@ -122,13 +156,13 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         const tokenAQtyField = document.getElementById('A-range-quantity') as HTMLInputElement;
         if (qtyTokenA) {
             tokenAQtyField.value = typeof qtyTokenA === 'string' ? qtyTokenA : qtyTokenA.toString();
-            dispatch(setPrimaryQuantity(value.toString()));
+            dispatch(setPrimaryQuantityRange(value.toString()));
             setIsTokenAPrimaryLocal(false);
             setTokenAQtyLocal(qtyTokenA);
             setTokenAInputQty(qtyTokenA.toString());
         } else {
             tokenAQtyField.value = '';
-            dispatch(setPrimaryQuantity('0'));
+            dispatch(setPrimaryQuantityRange('0'));
             setIsTokenAPrimaryLocal(false);
             setTokenAQtyLocal(0);
             setTokenAInputQty('0');
@@ -141,7 +175,6 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
 
             const tokenAField = document.getElementById('A-range-quantity') as HTMLInputElement;
             if (tokenAField) {
-                console.log('token b field exists');
                 tokenAField.value = isNaN(tokenBQtyLocal) ? '' : tokenBQtyLocal.toString();
             }
         } else {
@@ -153,6 +186,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         }
 
         setIsTokenAPrimaryLocal(!isTokenAPrimaryLocal);
+        dispatch(setIsTokenAPrimaryRange(!isTokenAPrimaryLocal));
     };
 
     const handleRangeButtonMessageTokenA = (tokenAAmount: number) => {
@@ -194,6 +228,8 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
             const input = evt.target.value;
             setTokenAQtyValue(parseFloat(input));
             setIsTokenAPrimaryLocal(true);
+            dispatch(setIsTokenAPrimaryRange(true));
+            dispatch(setPrimaryQuantityRange(input));
         } else {
             if (tokenAQtyLocal) setTokenAQtyValue(tokenAQtyLocal);
         }
@@ -201,8 +237,11 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
 
     const handleTokenBQtyFieldUpdate = (evt?: ChangeEvent<HTMLInputElement>) => {
         if (evt) {
-            setTokenBQtyValue(parseFloat(evt.target.value));
+            const input = evt.target.value;
+            setTokenBQtyValue(parseFloat(input));
             setIsTokenAPrimaryLocal(false);
+            dispatch(setIsTokenAPrimaryRange(false));
+            dispatch(setPrimaryQuantityRange(input));
         } else {
             if (tokenBQtyLocal) setTokenBQtyValue(tokenBQtyLocal);
         }
