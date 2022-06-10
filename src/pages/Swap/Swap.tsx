@@ -173,8 +173,8 @@ export default function Swap(props: ISwapProps) {
 
     const [swapButtonErrorMessage, setSwapButtonErrorMessage] = useState<string>('');
 
-    const [isTokenAPrimary, setIsTokenAPrimary] = useState<boolean>(true);
-
+    // const [isTokenAPrimary, setIsTokenAPrimary] = useState<boolean>(tradeData.isTokenAPrimary);
+    const isTokenAPrimary = tradeData.isTokenAPrimary;
     const [isWithdrawFromDexChecked, setIsWithdrawFromDexChecked] = useState(false);
     const [isWithdrawToWalletChecked, setIsWithdrawToWalletChecked] = useState(true);
 
@@ -192,6 +192,8 @@ export default function Swap(props: ISwapProps) {
         const sellTokenQty = (document.getElementById('sell-quantity') as HTMLInputElement)?.value;
         const buyTokenQty = (document.getElementById('buy-quantity') as HTMLInputElement)?.value;
         const qty = isTokenAPrimary ? sellTokenQty : buyTokenQty;
+
+        console.log({ isTokenAPrimary });
 
         // overwritten by a non-zero value when selling ETH for another token
         let ethValue = '0';
@@ -297,7 +299,6 @@ export default function Swap(props: ISwapProps) {
                     isLiq={false}
                     poolPriceDisplay={poolPriceDisplay}
                     isTokenAPrimary={isTokenAPrimary}
-                    setIsTokenAPrimary={setIsTokenAPrimary}
                     isSellTokenBase={isSellTokenBase}
                     nativeBalance={truncateDecimals(parseFloat(nativeBalance), 4).toString()}
                     tokenABalance={truncateDecimals(parseFloat(tokenABalance), 4).toString()}

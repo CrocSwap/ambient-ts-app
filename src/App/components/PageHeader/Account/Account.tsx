@@ -1,5 +1,5 @@
 import styles from './Account.module.css';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Popover from '@material-ui/core/Popover';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import { FiMoreHorizontal } from 'react-icons/fi';
@@ -42,7 +42,9 @@ export default function Account(props: IAccountProps): React.ReactElement<IAccou
     const open = Boolean(anchorEl);
     const popoverId = open ? 'simple-popover' : undefined;
 
-    console.log(value);
+    useEffect(() => {
+        value ? console.log(value) : null;
+    }, [value]);
 
     const logoutButton = (
         <button className={styles.authenticate_button} onClick={handleLogout}>

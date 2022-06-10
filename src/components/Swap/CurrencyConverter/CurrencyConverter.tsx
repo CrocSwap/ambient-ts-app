@@ -19,7 +19,6 @@ interface CurrencyConverterPropsIF {
     isLiq: boolean;
     poolPriceDisplay: number;
     isTokenAPrimary: boolean;
-    setIsTokenAPrimary: React.Dispatch<SetStateAction<boolean>>;
     nativeBalance: string;
     tokenABalance: string;
     tokenBBalance: string;
@@ -43,8 +42,6 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         chainId,
         isLiq,
         poolPriceDisplay,
-        // isTokenAPrimary,
-        // setIsTokenAPrimary,
         isWithdrawFromDexChecked,
         setIsWithdrawFromDexChecked,
         isWithdrawToWalletChecked,
@@ -55,8 +52,6 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         setSwapButtonErrorMessage,
         setTokenAInputQty,
         setTokenBInputQty,
-        // tokenAInputQty,
-        // tokenBInputQty,
     } = props;
 
     // TODO: update name of functions with 'handle' verbiage
