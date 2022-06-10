@@ -65,6 +65,9 @@ export default function Limit(props: LimitPropsIF) {
 
     const [tokenAInputQty, setTokenAInputQty] = useState<string>('');
     const [tokenBInputQty, setTokenBInputQty] = useState<string>('');
+    const [isWithdrawFromDexChecked, setIsWithdrawFromDexChecked] = useState(false);
+
+    const [isWithdrawToWalletChecked, setIsWithdrawToWalletChecked] = useState(true);
 
     const [limitButtonErrorMessage, setLimitButtonErrorMessage] = useState<string>('');
 
@@ -175,8 +178,12 @@ export default function Limit(props: LimitPropsIF) {
                     tokenAInputQty={tokenAInputQty}
                     tokenBInputQty={tokenBInputQty}
                     setTokenAInputQty={setTokenAInputQty}
+                    isWithdrawToWalletChecked={isWithdrawToWalletChecked}
                     setTokenBInputQty={setTokenBInputQty}
+                    setIsWithdrawToWalletChecked={setIsWithdrawToWalletChecked}
                     setLimitButtonErrorMessage={setLimitButtonErrorMessage}
+                    isWithdrawFromDexChecked={isWithdrawFromDexChecked}
+                    setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
                 />
                 <LimitExtraInfo tokenPair={tokenPair} gasPriceinGwei={gasPriceinGwei} />
                 {isAuthenticated && isWeb3Enabled ? (

@@ -36,6 +36,10 @@ interface LimitCurrencyConverterProps {
     setTokenAInputQty: React.Dispatch<React.SetStateAction<string>>;
     setTokenBInputQty: React.Dispatch<React.SetStateAction<string>>;
     setLimitButtonErrorMessage: React.Dispatch<React.SetStateAction<string>>;
+    isWithdrawFromDexChecked: boolean;
+    setIsWithdrawFromDexChecked: React.Dispatch<SetStateAction<boolean>>;
+    isWithdrawToWalletChecked: boolean;
+    setIsWithdrawToWalletChecked: React.Dispatch<SetStateAction<boolean>>;
 }
 
 // central react functional component
@@ -52,6 +56,10 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
         setTokenAInputQty,
         setTokenBInputQty,
         setLimitButtonErrorMessage,
+        isWithdrawFromDexChecked,
+        setIsWithdrawFromDexChecked,
+        isWithdrawToWalletChecked,
+        setIsWithdrawToWalletChecked,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -228,6 +236,10 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 reverseTokens={reverseTokens}
                 tokenABalance={tokenABalance}
                 tokenBBalance={tokenBBalance}
+                isWithdrawFromDexChecked={isWithdrawFromDexChecked}
+                setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
+                isWithdrawToWalletChecked={isWithdrawToWalletChecked}
+                setIsWithdrawToWalletChecked={setIsWithdrawToWalletChecked}
             />
             <div className={styles.arrow_container} onClick={handleArrowClick}>
                 <span className={styles.arrow} />
@@ -242,6 +254,10 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 reverseTokens={reverseTokens}
                 tokenABalance={tokenABalance}
                 tokenBBalance={tokenBBalance}
+                isWithdrawFromDexChecked={isWithdrawFromDexChecked}
+                setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
+                isWithdrawToWalletChecked={isWithdrawToWalletChecked}
+                setIsWithdrawToWalletChecked={setIsWithdrawToWalletChecked}
             />
             <LimitRate
                 tokenPair={tokenPair}
