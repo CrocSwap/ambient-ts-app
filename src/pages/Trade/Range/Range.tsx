@@ -178,7 +178,7 @@ export default function Range(props: RangePropsIF) {
 
     const signer = provider?.getSigner();
 
-    const [isTokenAPrimary, setIsTokenAPrimary] = useState<boolean>(false);
+    // const [isTokenAPrimary, setIsTokenAPrimary] = useState<boolean>(false);
 
     const sendTransaction = async () => {
         const tokenAQty = (document.getElementById('A-range-quantity') as HTMLInputElement)?.value;
@@ -387,8 +387,8 @@ export default function Range(props: RangePropsIF) {
         isAmbient: isAmbient,
         isTokenABase: isTokenABase,
         depositSkew: depositSkew,
-        isTokenAPrimary: isTokenAPrimary,
-        setIsTokenAPrimary: setIsTokenAPrimary,
+        // isTokenAPrimary: isTokenAPrimary,
+        // setIsTokenAPrimary: setIsTokenAPrimary,
         isWithdrawTokenAFromDexChecked: isWithdrawTokenAFromDexChecked,
         setIsWithdrawTokenAFromDexChecked: setIsWithdrawTokenAFromDexChecked,
         isWithdrawTokenBFromDexChecked: isWithdrawTokenBFromDexChecked,

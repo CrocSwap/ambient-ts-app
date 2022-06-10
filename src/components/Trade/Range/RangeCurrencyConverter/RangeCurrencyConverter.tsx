@@ -25,8 +25,8 @@ interface RangeCurrencyConverterPropsIF {
         dataTokenA: TokenIF;
         dataTokenB: TokenIF;
     };
-    isTokenAPrimary: boolean;
-    setIsTokenAPrimary: React.Dispatch<SetStateAction<boolean>>;
+    // isTokenAPrimaryLocal: boolean;
+    // setIsTokenAPrimaryLocal: React.Dispatch<SetStateAction<boolean>>;
     isTokenABase: boolean;
     isAmbient: boolean;
     depositSkew: number;
@@ -48,8 +48,8 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         poolPriceNonDisplay,
         tokenPair,
         isTokenABase,
-        isTokenAPrimary,
-        setIsTokenAPrimary,
+        // isTokenAPrimaryLocal,
+        // setIsTokenAPrimaryLocal,
         isAmbient,
         depositSkew,
         isWithdrawTokenAFromDexChecked,
@@ -66,11 +66,14 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
 
     const dispatch = useAppDispatch();
 
-    const [tokenAQty, setTokenAQty] = useState<number>(0);
-    const [tokenBQty, setTokenBQty] = useState<number>(0);
+    const [tokenAQtyLocal, setTokenAQtyLocal] = useState<number>(0);
+    const [tokenBQtyLocal, setTokenBQtyLocal] = useState<number>(0);
+
+    const [isTokenAPrimaryLocal, setIsTokenAPrimaryLocal] = useState<boolean>(true);
 
     const setTokenAQtyValue = (value: number) => {
-        setTokenAQty(value);
+        console.log({ value });
+        setTokenAQtyLocal(value);
         setTokenAInputQty(value.toString());
         handleRangeButtonMessageTokenA(value);
 
@@ -90,20 +93,20 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         if (qtyTokenB) {
             tokenBQtyField.value = typeof qtyTokenB === 'string' ? qtyTokenB : qtyTokenB.toString();
             dispatch(setPrimaryQuantity(value.toString()));
-            setIsTokenAPrimary(true);
-            setTokenBQty(qtyTokenB);
+            setIsTokenAPrimaryLocal(true);
+            setTokenBQtyLocal(qtyTokenB);
             setTokenBInputQty(qtyTokenB.toString());
         } else {
             tokenBQtyField.value = '';
             dispatch(setPrimaryQuantity('0'));
-            setIsTokenAPrimary(true);
-            setTokenBQty(0);
+            setIsTokenAPrimaryLocal(true);
+            setTokenBQtyLocal(0);
             setTokenBInputQty('0');
         }
     };
 
     const setTokenBQtyValue = (value: number) => {
-        setTokenBQty(value);
+        setTokenBQtyLocal(value);
 
         handleRangeButtonMessageTokenB(value);
 
@@ -122,33 +125,47 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         if (qtyTokenA) {
             tokenAQtyField.value = typeof qtyTokenA === 'string' ? qtyTokenA : qtyTokenA.toString();
             dispatch(setPrimaryQuantity(value.toString()));
-            setIsTokenAPrimary(false);
-            setTokenAQty(qtyTokenA);
+            setIsTokenAPrimaryLocal(false);
+            setTokenAQtyLocal(qtyTokenA);
             setTokenAInputQty(qtyTokenA.toString());
         } else {
             tokenAQtyField.value = '';
             dispatch(setPrimaryQuantity('0'));
-            setIsTokenAPrimary(false);
-            setTokenAQty(0);
+            setIsTokenAPrimaryLocal(false);
+            setTokenAQtyLocal(0);
             setTokenAInputQty('0');
         }
     };
 
     const reverseTokens = (): void => {
-        //   if (tokenPair) {
-        //       dispatch(setAddressTokenA(tokenPair.dataTokenB.address));
-        //       dispatch(setAddressTokenB(tokenPair.dataTokenA.address));
-        //   }
-        //   if (isTokenAPrimary) {
-        //       setTokenBInputQty(tokenAInputQty);
-        //       handleTokenBChangeEvent();
-        //   } else {
-        //       setTokenAInputQty(tokenBInputQty);
-        //       handleTokenAChangeEvent();
-        //   }
+        // if (tokenPair) {
+        //     dispatch(setTokenA(tokenPair.dataTokenB));
+        //     dispatch(setTokenB(tokenPair.dataTokenA));
+        // }
+        console.log({ isTokenAPrimaryLocal });
+        if (!isTokenAPrimaryLocal) {
+            setTokenAQtyValue(tokenBQtyLocal);
+
+            const tokenAField = document.getElementById('A-range-quantity') as HTMLInputElement;
+            if (tokenAField) {
+                console.log('token b field exists');
+                tokenAField.value = isNaN(tokenBQtyLocal) ? '' : tokenBQtyLocal.toString();
+            }
+            // handleTokenBQtyFieldUpdate();
+        } else {
+            setTokenBQtyValue(tokenAQtyLocal);
+            const tokenBField = document.getElementById('B-range-quantity') as HTMLInputElement;
+            if (tokenBField) {
+                tokenBField.value = isNaN(tokenAQtyLocal) ? '' : tokenAQtyLocal.toString();
+            }
+            // handleTokenAQtyFieldUpdate();
+        }
+
+        setIsTokenAPrimaryLocal(!isTokenAPrimaryLocal);
     };
 
     const handleRangeButtonMessageTokenA = (tokenAAmount: number) => {
+        console.log({ isTokenAPrimaryLocal });
         if (poolPriceNonDisplay === 0) {
             setRangeAllowed(false);
             setRangeButtonErrorMessage('Invalid Token Pair');
@@ -166,6 +183,8 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
     };
 
     const handleRangeButtonMessageTokenB = (tokenBAmount: number) => {
+        console.log({ isTokenAPrimaryLocal });
+
         if (poolPriceNonDisplay === 0) {
             setRangeAllowed(false);
             setRangeButtonErrorMessage('Invalid Token Pair');
@@ -187,24 +206,24 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
             const input = evt.target.value;
 
             setTokenAQtyValue(parseFloat(input));
-            setIsTokenAPrimary(true);
+            setIsTokenAPrimaryLocal(true);
         } else {
-            if (tokenAQty) setTokenAQtyValue(tokenAQty);
+            if (tokenAQtyLocal) setTokenAQtyValue(tokenAQtyLocal);
         }
     };
 
     const handleTokenBQtyFieldUpdate = (evt?: ChangeEvent<HTMLInputElement>) => {
         if (evt) {
             setTokenBQtyValue(parseFloat(evt.target.value));
-            setIsTokenAPrimary(false);
+            setIsTokenAPrimaryLocal(false);
         } else {
-            if (tokenBQty) setTokenBQtyValue(tokenBQty);
+            if (tokenBQtyLocal) setTokenBQtyValue(tokenBQtyLocal);
         }
     };
 
     // useEffect(() => {
     //     //    if (tradeData) {
-    //     //        if (tradeData.isTokenAPrimary) {
+    //     //        if (tradeData.isTokenAPrimaryLocal) {
     //     //            setTokenAQtyLocal(tradeData.primaryQuantity);
     //     //            setTokenAInputQty(tradeData.primaryQuantity);
     //     //            const sellQtyField = document.getElementById(
@@ -227,28 +246,18 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
     // }, []);
 
     useEffect(() => {
-        // if () {
-        //     const tokenAQtyField = document.getElementById('A-range-quantity') as HTMLInputElement;
-        //     const tokenBQtyField = document.getElementById('B-range-quantity') as HTMLInputElement;
+        console.log({ tokenAQtyLocal });
+        console.log({ tokenBQtyLocal });
+        console.log({ isTokenAPrimaryLocal });
 
-        //     if (tokenAQtyField) {
-        //         tokenAQtyField.value = tokenBQty.toString();
-        //         setTokenAQty(tokenBQty);
-        //     }
-
-        //     if (tokenBQtyField) {
-        //         tokenBQtyField.value = tokenAQty.toString();
-        //         setTokenBQty(tokenAQty);
-        //     }
-        // } else {
-        isTokenAPrimary ? handleTokenAQtyFieldUpdate() : handleTokenBQtyFieldUpdate();
+        isTokenAPrimaryLocal ? handleTokenAQtyFieldUpdate() : handleTokenBQtyFieldUpdate();
         // }
     }, [
-        JSON.stringify(tokenPair),
         poolPriceNonDisplay,
         depositSkew,
-        isTokenAPrimary,
+        isTokenAPrimaryLocal,
         truncatedTokenABalance,
+        truncatedTokenBBalance,
     ]);
 
     // props for <RangeCurrencyConverter/> React element
