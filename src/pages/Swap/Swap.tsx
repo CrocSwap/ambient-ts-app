@@ -256,6 +256,7 @@ export default function Swap(props: ISwapProps) {
                 />
                 <ExtraInfo
                     tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
+                    isTokenABase={isSellTokenBase}
                     poolPriceDisplay={poolPriceDisplay}
                     slippageTolerance={5}
                     liquidityProviderFee={0.3}

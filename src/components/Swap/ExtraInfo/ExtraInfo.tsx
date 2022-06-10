@@ -18,6 +18,7 @@ interface ExtraInfoProps {
     quoteTokenIsBuy: boolean;
     gasPriceinGwei: string;
     isDenomBase: boolean;
+    isTokenABase: boolean;
 }
 
 // central react functional component
@@ -30,6 +31,7 @@ export default function ExtraInfo(props: ExtraInfoProps) {
         quoteTokenIsBuy,
         gasPriceinGwei,
         isDenomBase,
+        isTokenABase,
     } = props;
 
     const [showExtraDetails, setShowExtraDetails] = useState<boolean>(false);
@@ -88,10 +90,40 @@ export default function ExtraInfo(props: ExtraInfoProps) {
 
     const extraDetailsOrNull = showExtraDetails ? extraInfoDetails : null;
 
-    // TODO:  right now we're hardcoding where token A symbol and token B symbol
-    // TODO:  ... are being displayed, we'll need to add logic to sort once we
-    // TODO:  ... have a different method of sorting the denomination and have
-    // TODO:  ... functionality for the user to toggle denomination in the app
+    function makePriceDisplay(symbolTokenA: string, symbolTokenB: string, displayPrice: number) {
+        const shouldBeFlipped = () => {
+            if (isTokenABase) {
+                if (isDenomBase) {
+                    return true;
+                } else if (!isDenomBase) {
+                    return false;
+                }
+            } else if (!isTokenABase) {
+                if (isDenomBase) {
+                    return false;
+                } else if (!isDenomBase) {
+                    return true;
+                }
+            }
+        };
+        const flipped = shouldBeFlipped();
+        const formattedDisplayPrice =
+            displayPrice > 1 ? displayPrice : truncateDecimals(displayPrice, 6);
+        const makeTemplate = (symbolOne: string, price: number, symbolTwo: string) =>
+            `1 ${symbolOne} = ${price} ${symbolTwo}`;
+        const output = makeTemplate(
+            flipped ? symbolTokenA : symbolTokenB,
+            flipped ? truncateDecimals(1 / formattedDisplayPrice, 6) : formattedDisplayPrice,
+            flipped ? symbolTokenB : symbolTokenA,
+        );
+        return output;
+    }
+
+    const priceDisplay = makePriceDisplay(
+        tokenPair.dataTokenA.symbol,
+        tokenPair.dataTokenB.symbol,
+        poolPriceDisplay,
+    );
 
     return (
         <div className={styles.extra_info_container}>
@@ -103,11 +135,7 @@ export default function ExtraInfo(props: ExtraInfoProps) {
                     <FaGasPump size={15} /> {truncatedGasInGwei} gwei
                 </div>
                 <div className={styles.token_amount}>
-                    1 {isDenomBase ? tokenPair.dataTokenA.symbol : tokenPair.dataTokenB.symbol} ≈{' '}
-                    {isDenomBase
-                        ? spotPriceDisplayQuoteForBase
-                        : truncateDecimals(1 / spotPriceDisplayQuoteForBase, 6)}{' '}
-                    {isDenomBase ? tokenPair.dataTokenB.symbol : tokenPair.dataTokenA.symbol}
+                    {priceDisplay}
                     <RiArrowDownSLine size={27} />{' '}
                 </div>
             </div>
