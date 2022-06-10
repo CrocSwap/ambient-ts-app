@@ -3,6 +3,8 @@ import { useState } from 'react';
 import { FaGasPump } from 'react-icons/fa';
 import { RiArrowDownSLine } from 'react-icons/ri';
 
+import truncateDecimals from '../../../../utils/data/truncateDecimals';
+
 // START: Import Local Files
 import styles from './LimitExtraInfo.module.css';
 import { TokenPairIF } from '../../../../utils/interfaces/exports';
@@ -10,24 +12,39 @@ import TooltipComponent from '../../../Global/TooltipComponent/TooltipComponent'
 // interface for component props
 interface LimitExtraInfoPropsIF {
     tokenPair: TokenPairIF;
-    poolPriceDisplay?: number;
-    slippageTolerance?: number;
-    liquidityProviderFee?: number;
-    quoteTokenIsBuy?: boolean;
-    gasPriceinGwei?: string;
+    poolPriceDisplay: number;
+    slippageTolerance: number;
+    liquidityProviderFee: number;
+    quoteTokenIsBuy: boolean;
+    gasPriceinGwei: string;
 }
 
 // central react functional component
 export default function LimitExtraInfo(props: LimitExtraInfoPropsIF) {
-    const { tokenPair } = props;
+    const {
+        tokenPair,
+        gasPriceinGwei,
+        quoteTokenIsBuy,
+        poolPriceDisplay,
+        slippageTolerance,
+        liquidityProviderFee,
+    } = props;
     const [showExtraDetails, setShowExtraDetails] = useState<boolean>(false);
 
     // TEMP DATA TO RENDER UI
-    const spotPriceDisplayQuoteForBase = 1310.7276;
-    const priceLimitAfterSlippageAndFee = 1241.4556;
-    const slippageTolerance = 5;
-    const liquidityProviderFee = 0.3;
-    const truncatedGasInGwei = 2.5;
+    const spotPriceDisplayQuoteForBase = truncateDecimals(1 / poolPriceDisplay, 4);
+    const priceLimitAfterSlippageAndFee = quoteTokenIsBuy
+        ? truncateDecimals(
+              (1 / poolPriceDisplay) *
+                  (1 - slippageTolerance / 100) *
+                  (1 - liquidityProviderFee / 100),
+              4,
+          )
+        : truncateDecimals(
+              (1 / poolPriceDisplay) * (1 + slippageTolerance) * (1 + liquidityProviderFee / 100),
+              4,
+          );
+    const truncatedGasInGwei = truncateDecimals(parseFloat(gasPriceinGwei), 2);
 
     const extraInfoData = [
         {

@@ -185,7 +185,14 @@ export default function Limit(props: LimitPropsIF) {
                     isWithdrawFromDexChecked={isWithdrawFromDexChecked}
                     setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
                 />
-                <LimitExtraInfo tokenPair={tokenPair} gasPriceinGwei={gasPriceinGwei} />
+                <LimitExtraInfo
+                    tokenPair={tokenPair}
+                    gasPriceinGwei={gasPriceinGwei}
+                    poolPriceDisplay={poolPriceDisplay}
+                    slippageTolerance={5}
+                    liquidityProviderFee={0.3}
+                    quoteTokenIsBuy={true}
+                />
                 {isAuthenticated && isWeb3Enabled ? (
                     !isTokenAAllowanceSufficient && parseFloat(tokenAInputQty) > 0 ? (
                         approvalButton
