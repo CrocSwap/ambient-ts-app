@@ -96,6 +96,13 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
         </span>
     );
 
+    const walletBalance =
+        props.sellToken && tokenABalance !== 'NaN'
+            ? tokenABalance
+            : !props.sellToken && tokenBBalance !== 'NaN'
+            ? tokenBBalance
+            : '0';
+
     return (
         <div className={styles.swapbox}>
             <span className={styles.direction}>{direction}</span>
@@ -110,9 +117,9 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
             </div>
             <div className={styles.swapbox_bottom}>
                 {fieldId === 'sell' ? (
-                    <span>Wallet: {tokenABalance ?? '0'} | DEX: 0.00</span>
+                    <span>Wallet: {walletBalance} | DEX: 0.00</span>
                 ) : (
-                    <span>Wallet: {tokenBBalance ?? '0'} | DEX: 0.00</span>
+                    <span>Wallet: {walletBalance} | DEX: 0.00</span>
                 )}
                 {fieldId === 'buy' || fieldId === 'sell' ? DexBalanceContent : null}
             </div>

@@ -86,6 +86,13 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
         </span>
     );
 
+    const walletBalance =
+        fieldId === 'A' && truncatedTokenABalance !== 'NaN'
+            ? truncatedTokenABalance
+            : fieldId === 'B' && truncatedTokenBBalance !== 'NaN'
+            ? truncatedTokenBBalance
+            : '0';
+
     return (
         <div className={styles.swapbox}>
             {sellToken && <span className={styles.direction}>Amounts</span>}
@@ -109,9 +116,9 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
             </div>
             <div className={styles.swapbox_bottom}>
                 {fieldId === 'A' ? (
-                    <span>Wallet: {truncatedTokenABalance} | DEX: 0.00</span>
+                    <span>Wallet: {walletBalance} | DEX: 0.00</span>
                 ) : (
-                    <span>Wallet: {truncatedTokenBBalance} | DEX: 0.00</span>
+                    <span>Wallet: {walletBalance} | DEX: 0.00</span>
                 )}
 
                 {DexBalanceContent}
