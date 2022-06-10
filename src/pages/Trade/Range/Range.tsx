@@ -111,6 +111,8 @@ export default function Range(props: RangePropsIF) {
     const [baseTokenAddress, setBaseTokenAddress] = useState<string>('');
     const [quoteTokenAddress, setQuoteTokenAddress] = useState<string>('');
 
+    const [rangeAllowed, setRangeAllowed] = useState<boolean>(false);
+
     const [isTokenABase, setIsTokenABase] = useState<boolean>(true);
 
     const [tokenAInputQty, setTokenAInputQty] = useState<string>('');
@@ -294,6 +296,10 @@ export default function Range(props: RangePropsIF) {
         </>
     );
 
+    const [rangeButtonErrorMessage, setRangeButtonErrorMessage] =
+        useState<string>('Enter an Amount');
+    // useState<string>('');
+
     const currentPoolPriceTick = Math.log(poolPriceNonDisplay) / Math.log(1.0001);
 
     const rangeLowTick = currentPoolPriceTick - rangeWidthPercentage * 100;
@@ -391,6 +397,8 @@ export default function Range(props: RangePropsIF) {
         truncatedTokenBBalance: truncatedTokenBBalance,
         setTokenAInputQty: setTokenAInputQty,
         setTokenBInputQty: setTokenBInputQty,
+        setRangeButtonErrorMessage: setRangeButtonErrorMessage,
+        setRangeAllowed: setRangeAllowed,
     };
 
     // props for <RangeWidth/> React element
@@ -507,7 +515,7 @@ export default function Range(props: RangePropsIF) {
         />
     );
 
-    const isAmountEntered = parseFloat(tokenAInputQty) > 0 && parseFloat(tokenBInputQty) > 0;
+    // const isAmountEntered = parseFloat(tokenAInputQty) > 0 && parseFloat(tokenBInputQty) > 0;
 
     return (
         <motion.section
@@ -524,12 +532,20 @@ export default function Range(props: RangePropsIF) {
                 {tradeData.advancedMode ? advancedModeContent : baseModeContent}
                 {!isAuthenticated || !isWeb3Enabled ? (
                     loginButton
-                ) : parseFloat(tokenAInputQty) > 0 && !isTokenAAllowanceSufficient ? (
+                ) : poolPriceNonDisplay !== 0 &&
+                  parseFloat(tokenAInputQty) > 0 &&
+                  !isTokenAAllowanceSufficient ? (
                     tokenAApprovalButton
-                ) : parseFloat(tokenBInputQty) > 0 && !isTokenBAllowanceSufficient ? (
+                ) : poolPriceNonDisplay !== 0 &&
+                  parseFloat(tokenBInputQty) > 0 &&
+                  !isTokenBAllowanceSufficient ? (
                     tokenBApprovalButton
                 ) : (
-                    <RangeButton onClickFn={openModal} isAmountEntered={isAmountEntered} />
+                    <RangeButton
+                        onClickFn={openModal}
+                        rangeAllowed={rangeAllowed}
+                        rangeButtonErrorMessage={rangeButtonErrorMessage}
+                    />
                 )}
             </ContentContainer>
 

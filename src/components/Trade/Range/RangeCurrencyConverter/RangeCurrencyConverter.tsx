@@ -35,6 +35,8 @@ interface RangeCurrencyConverterPropsIF {
     truncatedTokenBBalance: string;
     setTokenAInputQty: React.Dispatch<React.SetStateAction<string>>;
     setTokenBInputQty: React.Dispatch<React.SetStateAction<string>>;
+    setRangeButtonErrorMessage: React.Dispatch<React.SetStateAction<string>>;
+    setRangeAllowed: React.Dispatch<SetStateAction<boolean>>;
 }
 
 // central React functional component
@@ -58,6 +60,8 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         truncatedTokenBBalance,
         setTokenAInputQty,
         setTokenBInputQty,
+        setRangeButtonErrorMessage,
+        setRangeAllowed,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -68,6 +72,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
     const setTokenAQtyValue = (value: number) => {
         setTokenAQty(value);
         setTokenAInputQty(value.toString());
+        handleRangeButtonMessageTokenA(value);
 
         const qtyTokenB = calculateSecondaryDepositQty(
             poolPriceNonDisplay,
@@ -99,6 +104,8 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
 
     const setTokenBQtyValue = (value: number) => {
         setTokenBQty(value);
+
+        handleRangeButtonMessageTokenB(value);
 
         const qtyTokenA = calculateSecondaryDepositQty(
             poolPriceNonDisplay,
@@ -141,9 +148,45 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         //   }
     };
 
+    const handleRangeButtonMessageTokenA = (tokenAAmount: number) => {
+        if (poolPriceNonDisplay === 0) {
+            setRangeAllowed(false);
+            setRangeButtonErrorMessage('Invalid Token Pair');
+        } else if (tokenAAmount > parseFloat(truncatedTokenABalance)) {
+            setRangeAllowed(false);
+            setRangeButtonErrorMessage(
+                `${tokenPair.dataTokenA.symbol} Amount Exceeds Wallet Balance`,
+            );
+        } else if (isNaN(tokenAAmount) || tokenAAmount <= 0) {
+            setRangeAllowed(false);
+            setRangeButtonErrorMessage('Enter an Amount');
+        } else {
+            setRangeAllowed(true);
+        }
+    };
+
+    const handleRangeButtonMessageTokenB = (tokenBAmount: number) => {
+        if (poolPriceNonDisplay === 0) {
+            setRangeAllowed(false);
+            setRangeButtonErrorMessage('Invalid Token Pair');
+        } else if (tokenBAmount > parseFloat(truncatedTokenBBalance)) {
+            setRangeAllowed(false);
+            setRangeButtonErrorMessage(
+                `${tokenPair.dataTokenB.symbol} Amount Exceeds Wallet Balance`,
+            );
+        } else if (isNaN(tokenBAmount) || tokenBAmount <= 0) {
+            setRangeAllowed(false);
+            setRangeButtonErrorMessage('Enter an Amount');
+        } else {
+            setRangeAllowed(true);
+        }
+    };
+
     const handleTokenAQtyFieldUpdate = (evt?: ChangeEvent<HTMLInputElement>) => {
         if (evt) {
-            setTokenAQtyValue(parseFloat(evt.target.value));
+            const input = evt.target.value;
+
+            setTokenAQtyValue(parseFloat(input));
             setIsTokenAPrimary(true);
         } else {
             if (tokenAQty) setTokenAQtyValue(tokenAQty);
@@ -158,6 +201,30 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
             if (tokenBQty) setTokenBQtyValue(tokenBQty);
         }
     };
+
+    // useEffect(() => {
+    //     //    if (tradeData) {
+    //     //        if (tradeData.isTokenAPrimary) {
+    //     //            setTokenAQtyLocal(tradeData.primaryQuantity);
+    //     //            setTokenAInputQty(tradeData.primaryQuantity);
+    //     //            const sellQtyField = document.getElementById(
+    //     //                'sell-quantity',
+    //     //            ) as HTMLInputElement;
+    //     //            if (sellQtyField) {
+    //     //                sellQtyField.value =
+    //     //                    tradeData.primaryQuantity === 'NaN' ? '' : tradeData.primaryQuantity;
+    //     //            }
+    //     //        } else {
+    //     //            setTokenBQtyLocal(tradeData.primaryQuantity);
+    //     //            const buyQtyField = document.getElementById('buy-quantity') as HTMLInputElement;
+    //     //            if (buyQtyField) {
+    //     //                buyQtyField.value =
+    //     //                    tradeData.primaryQuantity === 'NaN' ? '' : tradeData.primaryQuantity;
+    //     //            }
+    //     //        }
+    //     //    }
+    //     handleTokenAQtyFieldUpdate();
+    // }, []);
 
     useEffect(() => {
         // if () {
@@ -176,7 +243,13 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         // } else {
         isTokenAPrimary ? handleTokenAQtyFieldUpdate() : handleTokenBQtyFieldUpdate();
         // }
-    }, [JSON.stringify(tokenPair), poolPriceNonDisplay, depositSkew]);
+    }, [
+        JSON.stringify(tokenPair),
+        poolPriceNonDisplay,
+        depositSkew,
+        isTokenAPrimary,
+        truncatedTokenABalance,
+    ]);
 
     // props for <RangeCurrencyConverter/> React element
     const rangeCurrencySelectorCommonProps = {
