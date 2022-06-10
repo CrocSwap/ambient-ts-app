@@ -10,6 +10,7 @@ import { MdLanguage } from 'react-icons/md';
 import { BsBook } from 'react-icons/bs';
 import { HiOutlineDocumentText } from 'react-icons/hi';
 import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
+import SnackbarComponent from '../../../../components/Global/SnackbarComponent/SnackbarComponent';
 
 interface IAccountProps {
     nativeBalance: string;
@@ -21,6 +22,7 @@ interface IAccountProps {
 }
 
 export default function Account(props: IAccountProps): React.ReactElement<IAccountProps> {
+    const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
     const [anchorEl, setAnchorEl] = useState(null);
     const [value, copy] = useCopyToClipboard();
 
@@ -88,6 +90,21 @@ export default function Account(props: IAccountProps): React.ReactElement<IAccou
             {isAuthenticated && isWeb3Enabled && logoutButton}
         </div>
     );
+
+    function handleCopyAddress() {
+        copy(props.accountAddressFull);
+        setOpenSnackbar(true);
+    }
+
+    const snackbarContent = (
+        <SnackbarComponent
+            severity='info'
+            setOpenSnackbar={setOpenSnackbar}
+            openSnackbar={openSnackbar}
+        >
+            {value} copied
+        </SnackbarComponent>
+    );
     return (
         <div className={styles.account_container}>
             {/* <div className={styles.ethereum_icon}>
@@ -104,9 +121,10 @@ export default function Account(props: IAccountProps): React.ReactElement<IAccou
                     : ''}
             </span>
             {/* TODO : REFACTOR THIS TO POPUP ALERT ON COPY - USE VALUE */}
-            <div className={styles.title_gradient} onClick={() => copy(props.accountAddressFull)}>
+            <div className={styles.title_gradient} onClick={handleCopyAddress}>
                 {props.accountAddress}
             </div>
+            <button onClick={handleCopyAddress}>Open</button>
 
             <AiOutlineQuestionCircle size={20} color='#CDC1FF' />
 
@@ -131,6 +149,7 @@ export default function Account(props: IAccountProps): React.ReactElement<IAccou
             >
                 {popperContent}
             </Popover>
+            {snackbarContent}
         </div>
     );
 }
