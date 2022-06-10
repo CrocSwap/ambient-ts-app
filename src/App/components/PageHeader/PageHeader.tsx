@@ -114,6 +114,8 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
     const accountProps = {
         nativeBalance: props.nativeBalance,
         accountAddress: accountAddress,
+        accountAddressFull: isAuthenticated && account ? account : '',
+
         isAuthenticated: isAuthenticated,
         isWeb3Enabled: isWeb3Enabled,
         clickLogout: props.clickLogout,
