@@ -69,7 +69,11 @@ export default function Chart() {
             .mainValue((d: any) => d.volume)
             .xScale(xScale);
 
-        const horizontalLine = d3fc.annotationSvgLine().value((d: any) => d.value);
+        const horizontalLine = d3fc
+            .annotationSvgLine()
+            .value((d: any) => d.value)
+            .xScale(xScale)
+            .yScale(yScale);
 
         const valueFormatter = d3.format('.2f');
 
@@ -99,10 +103,10 @@ export default function Chart() {
                 .attr('x2', '100%')
                 .attr('stroke-width', 5)
                 .style('pointer-events', 'all')
-                .on('mouseover', (event: any, data: any) => {
+                .on('mouseover', (event: any) => {
                     d3.select(event.currentTarget).style('cursor', 'ns-resize');
                 })
-                .on('mouseout', (event: any, data: any) => {
+                .on('mouseout', (event: any) => {
                     d3.select(event.currentTarget).style('cursor', 'default');
                 })
                 .call(drag);
@@ -111,22 +115,8 @@ export default function Chart() {
         const xAxisJoin = d3fc.dataJoin('g', 'x-axis');
         const gridJoin = d3fc.dataJoin('g', 'grid');
         const candleJoin = d3fc.dataJoin('g', 'candle');
-        const yAxisJoin = d3fc.dataJoin('g', 'y-axis');
+        const targetsJoin = d3fc.dataJoin('g', 'targets');
         const barJoin = d3fc.dataJoin('g', 'bar');
-
-        // const multi = d3fc
-        //     .seriesSvgMulti()
-        //     .series([gridlines, candlestick, horizontalLine, barSeries])
-        //     .mapping((dta: any, index: number, series: any[]) => {
-        //         switch (series[index]) {
-        //             case gridlines:
-        //             case candlestick:
-        //             case barSeries:
-        //                 return dta;
-        //             case horizontalLine:
-        //                 return targets;
-        //         }
-        //     });
 
         // handle the plot area measure event in order to compute the scale ranges
         d3.select(d3PlotArea.current).on('measure', function (event: any) {
@@ -138,10 +128,9 @@ export default function Chart() {
             const svg = d3.select(event.target).select('svg');
 
             gridJoin(svg, [data]).call(gridlines);
-
             candleJoin(svg, [data]).call(candlestick);
-
             barJoin(svg, [data]).call(barSeries);
+            targetsJoin(svg, [targets]).call(horizontalLine);
         });
 
         d3.select(d3Xaxis.current).on('draw', function (event: any) {
