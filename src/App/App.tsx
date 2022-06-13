@@ -43,7 +43,6 @@ import { TokenIF } from '../utils/interfaces/exports';
 
 /** ***** React Function *******/
 export default function App() {
-    // console.log('app rendering');
     const { chainId, isWeb3Enabled, account, logout, isAuthenticated } = useMoralis();
 
     const dispatch = useAppDispatch();
