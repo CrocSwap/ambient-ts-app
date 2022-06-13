@@ -550,7 +550,9 @@ export default function App() {
         tokenBBalance: tokenBBalance,
         isSellTokenBase: isTokenABase,
         tokenPair: tokenPair,
+        isTokenABase: isTokenABase,
         poolPriceDisplay: poolPriceDisplay,
+        poolPriceNonDisplay: poolPriceNonDisplay,
         setRecheckTokenAApproval: setRecheckTokenAApproval,
         tokenAAllowance: tokenAAllowance,
     };

@@ -26,6 +26,8 @@ interface LimitCurrencyConverterProps {
     tokensBank: Array<TokenIF>;
     chainId: string;
     poolPriceDisplay: number;
+    poolPriceNonDisplay: number;
+    insideTickDisplayPrice: number;
     setIsSellTokenPrimary?: React.Dispatch<SetStateAction<boolean>>;
     setLimitAllowed: React.Dispatch<React.SetStateAction<boolean>>;
     isSellTokenBase: boolean;
@@ -50,6 +52,8 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
         tokensBank,
         chainId,
         poolPriceDisplay,
+        poolPriceNonDisplay,
+        insideTickDisplayPrice,
         setLimitAllowed,
         isSellTokenBase,
         tokenABalance,
@@ -268,6 +272,8 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 fieldId='limit-rate'
                 reverseTokens={reverseTokens}
                 setLimitRate={setLimitRate}
+                poolPriceNonDisplay={poolPriceNonDisplay}
+                insideTickDisplayPrice={insideTickDisplayPrice}
             />
         </section>
     );
