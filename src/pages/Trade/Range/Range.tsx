@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useMoralis, useNewMoralisObject } from 'react-moralis';
 import { motion } from 'framer-motion';
 import { BigNumber } from 'ethers';
@@ -8,12 +8,9 @@ import {
     sendAmbientMint,
     liquidityForBaseQty,
     fromDisplayQty,
-    getSpotPrice,
-    POOL_PRIMARY,
     sendConcMint,
     parseMintEthersReceipt,
     EthersNativeReceipt,
-    getSpotPriceDisplay,
     ambientPosSlot,
     tickToPrice,
     toDisplayPrice,
@@ -22,7 +19,6 @@ import {
     MIN_TICK,
     MAX_TICK,
     concPosSlot,
-    sortBaseQuoteTokens,
     approveToken,
 } from '@crocswap-libs/sdk';
 
@@ -55,7 +51,12 @@ import { useTradeData } from '../Trade';
 interface RangePropsIF {
     importedTokens: Array<TokenIF>;
     provider: JsonRpcProvider;
+    gasPriceinGwei: string;
     lastBlockNumber: number;
+    baseTokenAddress: string;
+    quoteTokenAddress: string;
+    poolPriceDisplay: string;
+    poolPriceNonDisplay: number;
     tokenABalance: string;
     tokenBBalance: string;
     tokenAAllowance: string;
@@ -68,7 +69,10 @@ export default function Range(props: RangePropsIF) {
     const {
         importedTokens,
         provider,
-        lastBlockNumber,
+        baseTokenAddress,
+        quoteTokenAddress,
+        poolPriceDisplay,
+        poolPriceNonDisplay,
         tokenABalance,
         tokenBBalance,
         tokenAAllowance,
@@ -80,8 +84,6 @@ export default function Range(props: RangePropsIF) {
 
     const { save } = useNewMoralisObject('UserPosition');
 
-    const [poolPriceNonDisplay, setPoolPriceNonDisplay] = useState(0);
-    const [poolPriceDisplay, setPoolPriceDisplay] = useState('');
     const [rangeWidthPercentage, setRangeWidthPercentage] = useState(100);
 
     const [isWithdrawTokenAFromDexChecked, setIsWithdrawTokenAFromDexChecked] = useState(false);
@@ -109,68 +111,12 @@ export default function Range(props: RangePropsIF) {
 
     const isAmbient = rangeWidthPercentage === 100;
 
-    const [baseTokenAddress, setBaseTokenAddress] = useState<string>('');
-    const [quoteTokenAddress, setQuoteTokenAddress] = useState<string>('');
-
     const [rangeAllowed, setRangeAllowed] = useState<boolean>(false);
-
-    const [isTokenABase, setIsTokenABase] = useState<boolean>(true);
 
     const [tokenAInputQty, setTokenAInputQty] = useState<string>('');
     const [tokenBInputQty, setTokenBInputQty] = useState<string>('');
 
-    // useEffect to set baseTokenAddress and quoteTokenAddress when pair changes
-    useEffect(() => {
-        if (tokenPair.dataTokenA.address && tokenPair.dataTokenB.address) {
-            const sortedTokens = sortBaseQuoteTokens(
-                tokenPair.dataTokenA.address,
-                tokenPair.dataTokenB.address,
-            );
-            setBaseTokenAddress(sortedTokens[0]);
-            setQuoteTokenAddress(sortedTokens[1]);
-            if (tokenPair.dataTokenA.address === sortedTokens[0]) {
-                setIsTokenABase(true);
-            } else {
-                setIsTokenABase(false);
-            }
-        }
-    }, [JSON.stringify(tokenPair)]);
-
-    useEffect(() => {
-        if (baseTokenAddress && quoteTokenAddress) {
-            (async () => {
-                const spotPrice = await getSpotPrice(
-                    baseTokenAddress,
-                    quoteTokenAddress,
-                    POOL_PRIMARY,
-                    provider,
-                );
-                if (poolPriceNonDisplay !== spotPrice) {
-                    setPoolPriceNonDisplay(spotPrice);
-                }
-            })();
-        }
-    }, [lastBlockNumber, baseTokenAddress, quoteTokenAddress]);
-
-    useEffect(() => {
-        if (baseTokenAddress && quoteTokenAddress) {
-            (async () => {
-                const spotPriceDisplay = await getSpotPriceDisplay(
-                    baseTokenAddress,
-                    quoteTokenAddress,
-                    POOL_PRIMARY,
-                    provider,
-                );
-                const truncatedPriceWithDenonimationPreference = truncateDecimals(
-                    denominationsInBase ? spotPriceDisplay : 1 / spotPriceDisplay,
-                    4,
-                ).toString();
-                if (poolPriceDisplay !== truncatedPriceWithDenonimationPreference) {
-                    setPoolPriceDisplay(truncatedPriceWithDenonimationPreference);
-                }
-            })();
-        }
-    }, [lastBlockNumber, denominationsInBase, baseTokenAddress, quoteTokenAddress]);
+    const isTokenABase = tokenPair?.dataTokenA.address === baseTokenAddress;
 
     const maxSlippage = 5;
 

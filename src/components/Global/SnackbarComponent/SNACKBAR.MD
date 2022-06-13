@@ -28,7 +28,7 @@ Ex: `const [openSnackbar, setOpenSnackbar] = useState<boolean>(false)`
 6. Give the SnackbarComponent a prop for severity. You have the option between `error`, `warning`, `info`, `success`. The default is success. 
 7. The snackbar component takes content to render as a child component.
 Full example of usablity:
-` <SnackbarComponent severity='success' setOpenSnackbar=         {setOpenSnackbar} openSnackbar={openSnackbar}>
+` <SnackbarComponent severity='success' setOpenSnackbar={setOpenSnackbar} openSnackbar={openSnackbar}>
     I am snackbar
 </SnackbarComponent>`
 
