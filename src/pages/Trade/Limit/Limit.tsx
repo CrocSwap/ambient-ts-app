@@ -1,11 +1,11 @@
 // START: Import React and Dongles
 import { useMoralis } from 'react-moralis';
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import Button from '../../../components/Global/Button/Button';
 
-import { approveToken } from '@crocswap-libs/sdk';
+import { approveToken, POOL_PRIMARY, contractAddresses, sendSwap } from '@crocswap-libs/sdk';
 
 // START: Import React Functional Components
 import ContentContainer from '../../../components/Global/ContentContainer/ContentContainer';
@@ -18,6 +18,8 @@ import DividerDark from '../../../components/Global/DividerDark/DividerDark';
 import Modal from '../../../components/Global/Modal/Modal';
 import ConfirmLimitModal from '../../../components/Trade/Limit/ConfirmLimitModal/ConfirmLimitModal';
 import { JsonRpcProvider } from '@ethersproject/providers';
+
+import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 
 import truncateDecimals from '../../../utils/data/truncateDecimals';
 
@@ -95,9 +97,96 @@ export default function Limit(props: LimitPropsIF) {
         }
     };
 
+    const [newLimitOrderTransactionHash, setNewLimitOrderTransactionHash] = useState('');
+
+    useEffect(() => {
+        console.log({ newLimitOrderTransactionHash });
+    }, [newLimitOrderTransactionHash]);
+
+    const tokenA = tokenPair.dataTokenA;
+    const tokenB = tokenPair.dataTokenB;
+
+    const { tradeData } = useAppSelector((state) => state);
+
+    const isTokenAPrimary = tradeData.isTokenAPrimary;
+
+    const [limitRate, setLimitRate] = useState<string>('');
+
+    const initiateLimitOrderMethod = async () => {
+        const sellTokenAddress = tokenA.address;
+        const buyTokenAddress = tokenB.address;
+        const poolId = POOL_PRIMARY;
+        const slippageTolerancePercentage = 5;
+        const sellTokenQty = tokenAInputQty;
+        const buyTokenQty = tokenBInputQty;
+        const qty = isTokenAPrimary ? sellTokenQty : buyTokenQty;
+
+        console.log({ isTokenAPrimary });
+
+        console.log({ limitRate });
+
+        // overwritten by a non-zero value when selling ETH for another token
+        let ethValue = '0';
+
+        // if the user is selling ETH and requesting an exact output quantity
+        // then pad the ETH sent to the contract by 2% (remainder will be returned)
+        if (sellTokenAddress === contractAddresses.ZERO_ADDR) {
+            const roundedUpEthValue = truncateDecimals(
+                parseFloat(sellTokenQty) * 1.02,
+                18,
+            ).toString();
+            isTokenAPrimary ? (ethValue = sellTokenQty) : (ethValue = roundedUpEthValue);
+        }
+
+        if (signer) {
+            const tx = await sendSwap(
+                sellTokenAddress,
+                buyTokenAddress,
+                isTokenAPrimary,
+                qty,
+                ethValue,
+                slippageTolerancePercentage,
+                poolId,
+                signer,
+            );
+
+            const newTransactionHash = tx.hash;
+            setNewLimitOrderTransactionHash(newTransactionHash);
+            // let parsedReceipt;
+
+            // try {
+            //     const receipt = await tx.wait();
+            //     console.log({ receipt });
+            //     parsedReceipt = await parseSwapEthersReceipt(provider, receipt as EthersNativeReceipt);
+            // } catch (e) {
+            //     const error = e as TransactionError;
+            //     if (isTransactionReplacedError(error)) {
+            //         // The user used "speed up" or something similar
+            //         // in their client, but we now have the updated info
+            //         console.log('repriced');
+            //         newTransactionHash = error.replacement.hash;
+            //         console.log({ newTransactionHash });
+            //         parsedReceipt = await parseSwapEthersReceipt(
+            //             provider,
+            //             error.receipt as EthersNativeReceipt,
+            //         );
+            //     }
+            // }
+            // if (parsedReceipt) handleParsedReceipt(Moralis, 'swap', newTransactionHash, parsedReceipt);
+        }
+    };
+
     const confirmLimitModalOrNull = isModalOpen ? (
         <Modal onClose={closeModal} title='Limit Confirmation'>
-            <ConfirmLimitModal onClose={closeModal} tokenPair={tokenPair} />
+            <ConfirmLimitModal
+                onClose={closeModal}
+                tokenPair={tokenPair}
+                initiateLimitOrderMethod={initiateLimitOrderMethod}
+                tokenAInputQty={tokenAInputQty}
+                tokenBInputQty={tokenBInputQty}
+                isTokenAPrimary={isTokenAPrimary}
+                limitRate={limitRate}
+            />
         </Modal>
     ) : null;
 
@@ -184,6 +273,7 @@ export default function Limit(props: LimitPropsIF) {
                     setLimitButtonErrorMessage={setLimitButtonErrorMessage}
                     isWithdrawFromDexChecked={isWithdrawFromDexChecked}
                     setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
+                    setLimitRate={setLimitRate}
                 />
                 <LimitExtraInfo
                     tokenPair={tokenPair}

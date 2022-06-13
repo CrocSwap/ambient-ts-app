@@ -40,6 +40,7 @@ interface LimitCurrencyConverterProps {
     setIsWithdrawFromDexChecked: React.Dispatch<SetStateAction<boolean>>;
     isWithdrawToWalletChecked: boolean;
     setIsWithdrawToWalletChecked: React.Dispatch<SetStateAction<boolean>>;
+    setLimitRate: React.Dispatch<React.SetStateAction<string>>;
 }
 
 // central react functional component
@@ -60,6 +61,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
         setIsWithdrawFromDexChecked,
         isWithdrawToWalletChecked,
         setIsWithdrawToWalletChecked,
+        setLimitRate,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -265,6 +267,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 chainId={chainId}
                 fieldId='limit-rate'
                 reverseTokens={reverseTokens}
+                setLimitRate={setLimitRate}
             />
         </section>
     );

@@ -18,6 +18,7 @@ interface LimitRateProps {
     sellToken?: boolean;
     disable?: boolean;
     reverseTokens: () => void;
+    setLimitRate: React.Dispatch<React.SetStateAction<string>>;
 
     // updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
 }
@@ -29,6 +30,7 @@ export default function LimitRate(props: LimitRateProps) {
         //   tokensBank,
         //   chainId,
         disable,
+        setLimitRate,
         //   reverseTokens
     } = props;
     // const [isChecked, setIsChecked] = useState<boolean>(false);
@@ -56,7 +58,7 @@ export default function LimitRate(props: LimitRateProps) {
                 id={`${fieldId}-quantity`}
                 className={styles.currency_quantity}
                 placeholder='0.0'
-                // onChange={(event) => updateOtherQuantity(event)}
+                onChange={(event) => setLimitRate(event.target.value)}
                 type='string'
                 inputMode='decimal'
                 autoComplete='off'
