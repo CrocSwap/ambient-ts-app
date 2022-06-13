@@ -28,8 +28,6 @@ import Modal from '../../../components/Global/Modal/Modal';
 import ConfirmLimitModal from '../../../components/Trade/Limit/ConfirmLimitModal/ConfirmLimitModal';
 import { JsonRpcProvider } from '@ethersproject/providers';
 
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-
 import truncateDecimals from '../../../utils/data/truncateDecimals';
 
 // START: Import Local Files
@@ -124,8 +122,6 @@ export default function Limit(props: LimitPropsIF) {
 
     const baseDecimals = isTokenABase ? tokenADecimals : tokenBDecimals;
     const quoteDecimals = !isTokenABase ? tokenADecimals : tokenBDecimals;
-
-    const { tradeData } = useAppSelector((state) => state);
 
     const isTokenAPrimary = tradeData.isTokenAPrimary;
 
