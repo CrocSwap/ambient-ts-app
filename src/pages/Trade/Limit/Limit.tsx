@@ -33,7 +33,7 @@ import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import truncateDecimals from '../../../utils/data/truncateDecimals';
 
 // START: Import Local Files
-// import { useTradeData } from '../Trade';
+import { useTradeData } from '../Trade';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import { TokenIF } from '../../../utils/interfaces/exports';
 
@@ -73,7 +73,7 @@ export default function Limit(props: LimitPropsIF) {
         tokenAAllowance,
         setRecheckTokenAApproval,
     } = props;
-    // const { tradeData } = useTradeData();
+    const { tradeData } = useTradeData();
     const { chainId, enableWeb3, isWeb3Enabled, authenticate, isAuthenticated } = useMoralis();
     const [isModalOpen, openModal, closeModal] = useModal();
     const [limitAllowed, setLimitAllowed] = useState<boolean>(false);
@@ -320,7 +320,12 @@ export default function Limit(props: LimitPropsIF) {
         >
             <ContentContainer isOnTradeRoute>
                 <LimitHeader tokenPair={tokenPair} />
-                <DenominationSwitch tokenPair={tokenPair} />
+                <DenominationSwitch
+                    tokenPair={tokenPair}
+                    displayForBase={tradeData.isDenomBase}
+                    poolPriceDisplay={poolPriceDisplay}
+                    isTokenABase={isSellTokenBase}
+                />
                 <DividerDark />
                 <LimitCurrencyConverter
                     tokenPair={tokenPair}
@@ -351,6 +356,8 @@ export default function Limit(props: LimitPropsIF) {
                     slippageTolerance={5}
                     liquidityProviderFee={0.3}
                     quoteTokenIsBuy={true}
+                    displayForBase={tradeData.isDenomBase}
+                    isTokenABase={isSellTokenBase}
                 />
                 {isAuthenticated && isWeb3Enabled ? (
                     !isTokenAAllowanceSufficient && parseFloat(tokenAInputQty) > 0 ? (

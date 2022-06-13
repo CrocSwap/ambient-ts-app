@@ -29,14 +29,12 @@ import RangeCurrencyConverter from '../../../components/Trade/Range/RangeCurrenc
 import RangePriceInfo from '../../../components/Trade/Range/RangePriceInfo/RangePriceInfo';
 import RangeWidth from '../../../components/Trade/Range/RangeWidth/RangeWidth';
 import RangeHeader from '../../../components/Trade/Range/RangeHeader/RangeHeader';
-import RangeDenominationSwitch from '../../../components/Trade/Range/RangeDenominationSwitch/RangeDenominationSwitch';
+import DenominationSwitch from '../../../components/Swap/DenominationSwitch/DenominationSwitch';
 import AdvancedModeToggle from '../../../components/Trade/Range/AdvancedModeToggle/AdvancedModeToggle';
 import MinMaxPrice from '../../../components/Trade/Range/AdvancedModeComponents/MinMaxPrice/MinMaxPrice';
 import AdvancedPriceInfo from '../../../components/Trade/Range/AdvancedModeComponents/AdvancedPriceInfo/AdvancedPriceInfo';
 import DividerDark from '../../../components/Global/DividerDark/DividerDark';
 import Modal from '../../../components/Global/Modal/Modal';
-import { useModal } from '../../../components/Global/Modal/useModal';
-
 import Button from '../../../components/Global/Button/Button';
 
 // START: Import Local Files
@@ -47,6 +45,7 @@ import truncateDecimals from '../../../utils/data/truncateDecimals';
 import ConfirmRangeModal from '../../../components/Trade/Range/ConfirmRangeModal/ConfirmRangeModal';
 import { TokenIF } from '../../../utils/interfaces/exports';
 import { useTradeData } from '../Trade';
+import { useModal } from '../../../components/Global/Modal/useModal';
 
 interface RangePropsIF {
     importedTokens: Array<TokenIF>;
@@ -85,7 +84,6 @@ export default function Range(props: RangePropsIF) {
     const { save } = useNewMoralisObject('UserPosition');
 
     const [rangeWidthPercentage, setRangeWidthPercentage] = useState(100);
-    const [denominationsInBase, setDenominationsInBase] = useState(false);
 
     const [isWithdrawTokenAFromDexChecked, setIsWithdrawTokenAFromDexChecked] = useState(false);
     const [isWithdrawTokenBFromDexChecked, setIsWithdrawTokenBFromDexChecked] = useState(false);
@@ -108,6 +106,8 @@ export default function Range(props: RangePropsIF) {
         dataTokenB: tradeData.tokenB,
     };
 
+    const denominationsInBase = tradeData.isDenomBase;
+
     const isAmbient = rangeWidthPercentage === 100;
 
     const [rangeAllowed, setRangeAllowed] = useState<boolean>(false);
@@ -123,8 +123,6 @@ export default function Range(props: RangePropsIF) {
     const poolWeiPriceHighLimit = poolPriceNonDisplay * (1 + maxSlippage / 100);
 
     const signer = provider?.getSigner();
-
-    // const [isTokenAPrimary, setIsTokenAPrimary] = useState<boolean>(false);
 
     const sendTransaction = async () => {
         const tokenAQty = (document.getElementById('A-range-quantity') as HTMLInputElement)?.value;
@@ -227,10 +225,11 @@ export default function Range(props: RangePropsIF) {
     const denominationSwitch = (
         <div className={styles.denomination_switch_container}>
             <AdvancedModeToggle advancedMode={tradeData.advancedMode} />
-            <RangeDenominationSwitch
+            <DenominationSwitch
                 tokenPair={tokenPair}
-                denominationsInBase={denominationsInBase}
-                setDenominationsInBase={setDenominationsInBase}
+                displayForBase={tradeData.isDenomBase}
+                poolPriceDisplay={parseFloat(poolPriceDisplay)}
+                isTokenABase={isTokenABase}
             />
         </div>
     );
@@ -311,6 +310,8 @@ export default function Range(props: RangePropsIF) {
         maxPriceDisplay: maxPriceDisplay,
         minPriceDisplay: minPriceDisplay,
         apyPercentage: apyPercentage,
+        isTokenABase: isTokenABase,
+        isDenomBase: tradeData.isDenomBase,
     };
     // props for <ConfirmRangeModal/> React element
     const rangeModalProps = {

@@ -1,46 +1,68 @@
-// TODO:  @Emily, this file exists in exact duplicate for the Swap/Market,
-// TODO:  ... Limit, and Range modules; reduce this to one global component
-// TODO:  ... file and import it into each module individually
-
-// START: Import React and Dongles
-import { useState } from 'react';
-
 // START: Import Local Files
 import styles from './DenominationSwitch.module.css';
 import { TokenPairIF } from '../../../utils/interfaces/exports';
+import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
+import { toggleDenomInBase } from '../../../utils/state/tradeDataSlice';
 
 // interface for props
 interface denominationSwitchPropsIF {
     tokenPair: TokenPairIF;
+    displayForBase: boolean;
+    poolPriceDisplay: number;
     isOnTradeRoute?: boolean;
+    isTokenABase: boolean;
 }
 
-export default function DenominationSwitch(props: denominationSwitchPropsIF) {
-    const { tokenPair } = props;
+// TODO:  @Emily poolPriceDisplay is passed here as a prop for the purpose of managing
+// TODO:  ... which token to initialize the display too, if it's not necessary in the
+// TODO   ... end, please remove the value from props
 
-    const [toggleDenomination, setToggleDenomination] = useState<boolean>(false);
+export default function DenominationSwitch(props: denominationSwitchPropsIF) {
+    const { tokenPair, displayForBase, isTokenABase, poolPriceDisplay } = props;
+
+    const dispatch = useAppDispatch();
 
     // TODO:  @Junior, if both buttons have the same action of reversing the current
     // TODO:  ... value of `toggleDenomination`, let's do just one button with two
     // TODO   ... <div> elements nested inside of it
 
-    // TODO:  right now we have the display set up as TokenA||TokenB with TokenA
-    // TODO:  ... selected by default, we may want to change this logic later to
-    // TODO:  ... base||quote or to sort according to Doug's moneyness factor
+    const isTokenAMoreExpensive = isTokenABase
+        ? poolPriceDisplay < 1
+            ? true
+            : false
+        : poolPriceDisplay < 1
+        ? false
+        : true;
 
     return (
         <div className={styles.denomination_switch}>
             <div>Denomination</div>
             <button
-                className={!toggleDenomination ? styles.active_button : styles.non_active_button}
-                onClick={() => setToggleDenomination(!toggleDenomination)}
+                className={
+                    displayForBase
+                        ? isTokenAMoreExpensive
+                            ? styles.active_button
+                            : styles.non_active_button
+                        : isTokenAMoreExpensive
+                        ? styles.non_active_button
+                        : styles.active_button
+                }
+                onClick={() => dispatch(toggleDenomInBase())}
             >
                 {tokenPair.dataTokenA.symbol}
             </button>
 
             <button
-                className={toggleDenomination ? styles.active_button : styles.non_active_button}
-                onClick={() => setToggleDenomination(!toggleDenomination)}
+                className={
+                    !displayForBase
+                        ? isTokenAMoreExpensive
+                            ? styles.active_button
+                            : styles.non_active_button
+                        : isTokenAMoreExpensive
+                        ? styles.non_active_button
+                        : styles.active_button
+                }
+                onClick={() => dispatch(toggleDenomInBase())}
             >
                 {tokenPair.dataTokenB.symbol}
             </button>

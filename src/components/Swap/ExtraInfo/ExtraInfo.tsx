@@ -17,6 +17,8 @@ interface ExtraInfoProps {
     liquidityProviderFee: number;
     quoteTokenIsBuy: boolean;
     gasPriceinGwei: string;
+    isDenomBase: boolean;
+    isTokenABase: boolean;
 }
 
 // central react functional component
@@ -28,6 +30,8 @@ export default function ExtraInfo(props: ExtraInfoProps) {
         liquidityProviderFee,
         quoteTokenIsBuy,
         gasPriceinGwei,
+        isDenomBase,
+        isTokenABase,
     } = props;
 
     const [showExtraDetails, setShowExtraDetails] = useState<boolean>(false);
@@ -89,10 +93,23 @@ export default function ExtraInfo(props: ExtraInfoProps) {
 
     const extraDetailsOrNull = showExtraDetails ? extraInfoDetails : null;
 
-    // TODO:  right now we're hardcoding where token A symbol and token B symbol
-    // TODO:  ... are being displayed, we'll need to add logic to sort once we
-    // TODO:  ... have a different method of sorting the denomination and have
-    // TODO:  ... functionality for the user to toggle denomination in the app
+    const [baseTokenData, quoteTokenData] = isTokenABase
+        ? [tokenPair.dataTokenA, tokenPair.dataTokenB]
+        : [tokenPair.dataTokenB, tokenPair.dataTokenA];
+
+    const defaultDisplay =
+        poolPriceDisplay < 1
+            ? `1 ${baseTokenData.symbol} ≈ ${truncateDecimals(1 / poolPriceDisplay, 4)} ${
+                  quoteTokenData.symbol
+              }`
+            : `1 ${quoteTokenData.symbol} ≈ ${poolPriceDisplay} ${baseTokenData.symbol}`;
+
+    const flippedDisplay =
+        poolPriceDisplay < 1
+            ? `1 ${quoteTokenData.symbol} ≈ ${poolPriceDisplay} ${baseTokenData.symbol}`
+            : `1 ${baseTokenData.symbol} ≈ ${truncateDecimals(1 / poolPriceDisplay, 4)} ${
+                  quoteTokenData.symbol
+              }`;
 
     return (
         <div className={styles.extra_info_container}>
@@ -104,8 +121,7 @@ export default function ExtraInfo(props: ExtraInfoProps) {
                     <FaGasPump size={15} /> {truncatedGasInGwei} gwei
                 </div>
                 <div className={styles.token_amount}>
-                    1 {tokenPair.dataTokenA.symbol} = {displayPriceString}{' '}
-                    {tokenPair.dataTokenB.symbol}
+                    {isDenomBase ? defaultDisplay : flippedDisplay}
                     <RiArrowDownSLine size={27} />{' '}
                 </div>
             </div>

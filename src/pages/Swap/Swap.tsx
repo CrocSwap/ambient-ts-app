@@ -61,7 +61,6 @@ export default function Swap(props: ISwapProps) {
         importedTokens,
         provider,
         isOnTradeRoute,
-        // lastBlockNumber,
         nativeBalance,
         gasPriceinGwei,
         tokenABalance,
@@ -274,9 +273,7 @@ export default function Swap(props: ISwapProps) {
     ) : null;
 
     const isTokenAAllowanceSufficient = parseFloat(tokenAAllowance) >= parseFloat(tokenAInputQty);
-    // console.log({ tokenAAllowance });
-    // console.log({ tokenAInputQty });
-    // console.log({ isTokenAAllowanceSufficient });
+
     return (
         <motion.main
             initial={{ width: 0 }}
@@ -290,7 +287,12 @@ export default function Swap(props: ISwapProps) {
                     tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
                     isOnTradeRoute={isOnTradeRoute}
                 />
-                <DenominationSwitch tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }} />
+                <DenominationSwitch
+                    tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
+                    isTokenABase={isSellTokenBase}
+                    displayForBase={tradeData.isDenomBase}
+                    poolPriceDisplay={poolPriceDisplay}
+                />
                 <DividerDark />
                 <CurrencyConverter
                     tokenPair={tokenPair}
@@ -316,11 +318,13 @@ export default function Swap(props: ISwapProps) {
                 />
                 <ExtraInfo
                     tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
+                    isTokenABase={isSellTokenBase}
                     poolPriceDisplay={poolPriceDisplay}
                     slippageTolerance={5}
                     liquidityProviderFee={0.3}
                     quoteTokenIsBuy={true}
                     gasPriceinGwei={gasPriceinGwei}
+                    isDenomBase={tradeData.isDenomBase}
                 />
                 {isAuthenticated && isWeb3Enabled ? (
                     !isTokenAAllowanceSufficient && parseFloat(tokenAInputQty) > 0 ? (
@@ -336,10 +340,8 @@ export default function Swap(props: ISwapProps) {
                     loginButton
                 )}
             </ContentContainer>
-
             {confirmSwapModalOrNull}
             {relativeModalOrNull}
-            {/* <button onClick={openRelativeModal}>open relative modal</button> */}
         </motion.main>
     );
 }
