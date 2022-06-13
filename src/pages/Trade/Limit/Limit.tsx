@@ -151,9 +151,9 @@ export default function Limit(props: LimitPropsIF) {
             };
 
             const currentPoolPriceTick = Math.log(poolPriceNonDisplay) / Math.log(1.0001);
-            console.log({ currentPoolPriceTick });
+            // console.log({ currentPoolPriceTick });
             const roundedTickInsideCurrentPrice = roundDownTick(currentPoolPriceTick * 0.99);
-            console.log({ roundedTickInsideCurrentPrice });
+            // console.log({ roundedTickInsideCurrentPrice });
 
             const insideTickNonDisplayPrice = tickToPrice(roundedTickInsideCurrentPrice);
 
@@ -165,7 +165,7 @@ export default function Limit(props: LimitPropsIF) {
             setInsideTickDisplayPrice(insideTickDisplayPrice);
 
             const pinnedInitialDisplayPrice = insideTickDisplayPrice.toString();
-            console.log({ pinnedInitialDisplayPrice });
+            // console.log({ pinnedInitialDisplayPrice });
 
             // setLimitInputValue(initialLimitRateTruncated);
             if (limitRateInputField) {
@@ -188,9 +188,9 @@ export default function Limit(props: LimitPropsIF) {
         const buyTokenQty = tokenBInputQty;
         const qty = isTokenAPrimary ? sellTokenQty : buyTokenQty;
 
-        console.log({ isTokenAPrimary });
+        // console.log({ isTokenAPrimary });
 
-        console.log({ limitRate });
+        // console.log({ limitRate });
 
         // overwritten by a non-zero value when selling ETH for another token
         let ethValue = '0';
