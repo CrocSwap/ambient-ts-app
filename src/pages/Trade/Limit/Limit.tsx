@@ -197,6 +197,7 @@ export default function Limit(props: LimitPropsIF) {
                     liquidityProviderFee={0.3}
                     quoteTokenIsBuy={true}
                     displayForBase={tradeData.isDenomBase}
+                    isTokenABase={isSellTokenBase}
                 />
                 {isAuthenticated && isWeb3Enabled ? (
                     !isTokenAAllowanceSufficient && parseFloat(tokenAInputQty) > 0 ? (

@@ -18,6 +18,7 @@ interface LimitExtraInfoPropsIF {
     quoteTokenIsBuy?: boolean;
     gasPriceinGwei: string;
     displayForBase: boolean;
+    isTokenABase: boolean;
 }
 
 // central react functional component
@@ -30,6 +31,7 @@ export default function LimitExtraInfo(props: LimitExtraInfoPropsIF) {
         slippageTolerance,
         liquidityProviderFee,
         displayForBase,
+        isTokenABase,
     } = props;
     const [showExtraDetails, setShowExtraDetails] = useState<boolean>(false);
 
@@ -90,6 +92,24 @@ export default function LimitExtraInfo(props: LimitExtraInfoPropsIF) {
 
     const extraDetailsOrNull = showExtraDetails ? limitExtraInfoDetails : null;
 
+    const [baseTokenData, quoteTokenData] = isTokenABase
+        ? [tokenPair.dataTokenA, tokenPair.dataTokenB]
+        : [tokenPair.dataTokenB, tokenPair.dataTokenA];
+
+    const defaultDisplay =
+        poolPriceDisplay < 1
+            ? `1 ${baseTokenData.symbol} ≈ ${truncateDecimals(1 / poolPriceDisplay, 4)} ${
+                  quoteTokenData.symbol
+              }`
+            : `1 ${quoteTokenData.symbol} ≈ ${poolPriceDisplay} ${baseTokenData.symbol}`;
+
+    const flippedDisplay =
+        poolPriceDisplay < 1
+            ? `1 ${quoteTokenData.symbol} ≈ ${poolPriceDisplay} ${baseTokenData.symbol}`
+            : `1 ${baseTokenData.symbol} ≈ ${truncateDecimals(1 / poolPriceDisplay, 4)} ${
+                  quoteTokenData.symbol
+              }`;
+
     return (
         <div className={styles.extra_info_container}>
             <div
@@ -100,11 +120,7 @@ export default function LimitExtraInfo(props: LimitExtraInfoPropsIF) {
                     <FaGasPump size={15} /> {truncatedGasInGwei} gwei
                 </div>
                 <div className={styles.token_amount}>
-                    1 {displayForBase ? tokenPair.dataTokenA.symbol : tokenPair.dataTokenB.symbol} ≈{' '}
-                    {displayForBase
-                        ? spotPriceDisplayQuoteForBase
-                        : truncateDecimals(1 / spotPriceDisplayQuoteForBase, 6)}{' '}
-                    {displayForBase ? tokenPair.dataTokenB.symbol : tokenPair.dataTokenA.symbol}
+                    {displayForBase ? defaultDisplay : flippedDisplay}
                     <RiArrowDownSLine size={27} />{' '}
                 </div>
             </div>
