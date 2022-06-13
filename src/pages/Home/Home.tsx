@@ -1,4 +1,6 @@
+import DividerDark from '../../components/Global/DividerDark/DividerDark';
 import Landing from '../../components/Home/Landing/Landing';
+import TopPools from '../../components/Home/TopPools/TopPools';
 import styles from './Home.module.css';
 
 export default function Home() {
@@ -7,6 +9,8 @@ export default function Home() {
             {/* {ambientImage} */}
             {/* {ambientText} */}
             <Landing />
+            <DividerDark />
+            <TopPools />
         </main>
     );
 }
