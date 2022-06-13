@@ -52,11 +52,14 @@ export default function ExtraInfo(props: ExtraInfoProps) {
               4,
           );
 
+    const displayPriceString =
+        spotPriceDisplayQuoteForBase === Infinity ? '' : spotPriceDisplayQuoteForBase.toString();
+
     const extraInfoData = [
         {
             title: 'Spot Price',
             tooltipTitle: 'spot price explanation',
-            data: `${spotPriceDisplayQuoteForBase} ${tokenPair.dataTokenB.symbol} per ${tokenPair.dataTokenA.symbol}`,
+            data: `${displayPriceString} ${tokenPair.dataTokenB.symbol} per ${tokenPair.dataTokenA.symbol}`,
         },
         {
             title: 'Price Limit after Slippage and Fee',
@@ -119,11 +122,11 @@ export default function ExtraInfo(props: ExtraInfoProps) {
         return output;
     }
 
-    const priceDisplay = makePriceDisplay(
-        tokenPair.dataTokenA.symbol,
-        tokenPair.dataTokenB.symbol,
-        poolPriceDisplay,
-    );
+    // const priceDisplay = makePriceDisplay(
+    //     tokenPair.dataTokenA.symbol,
+    //     tokenPair.dataTokenB.symbol,
+    //     poolPriceDisplay,
+    // );
 
     return (
         <div className={styles.extra_info_container}>
@@ -135,7 +138,8 @@ export default function ExtraInfo(props: ExtraInfoProps) {
                     <FaGasPump size={15} /> {truncatedGasInGwei} gwei
                 </div>
                 <div className={styles.token_amount}>
-                    {priceDisplay}
+                    1 {tokenPair.dataTokenA.symbol} = {displayPriceString}{' '}
+                    {tokenPair.dataTokenB.symbol}
                     <RiArrowDownSLine size={27} />{' '}
                 </div>
             </div>

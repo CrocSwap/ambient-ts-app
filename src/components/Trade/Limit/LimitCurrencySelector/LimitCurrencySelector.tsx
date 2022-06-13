@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useState, ChangeEvent } from 'react';
+import { ChangeEvent, SetStateAction } from 'react';
 import { RiArrowDownSLine } from 'react-icons/ri';
 
 // START: Import React Functional Components
@@ -25,6 +25,10 @@ interface LimitCurrencySelectorProps {
     tokenABalance: string;
     tokenBBalance: string;
     handleChangeEvent: (evt: ChangeEvent<HTMLInputElement>) => void;
+    isWithdrawFromDexChecked: boolean;
+    setIsWithdrawFromDexChecked: React.Dispatch<SetStateAction<boolean>>;
+    isWithdrawToWalletChecked: boolean;
+    setIsWithdrawToWalletChecked: React.Dispatch<SetStateAction<boolean>>;
 }
 
 // central react functional component
@@ -39,18 +43,24 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
         reverseTokens,
         tokenABalance,
         tokenBBalance,
+        isWithdrawFromDexChecked,
+        setIsWithdrawFromDexChecked,
+        isWithdrawToWalletChecked,
+        setIsWithdrawToWalletChecked,
     } = props;
 
     const thisToken = fieldId === 'sell' ? tokenPair.dataTokenA : tokenPair.dataTokenB;
 
     const [isModalOpen, openModal, closeModal] = useModal();
 
+    const tokenToUpdate = fieldId === 'sell' ? 'A' : 'B';
+
     const tokenSelectModalOrNull = isModalOpen ? (
         <Modal onClose={closeModal} title='Select Token'>
             <TokenSelectContainer
                 tokenPair={tokenPair}
                 tokensBank={tokensBank}
-                tokenToUpdate={'A'}
+                tokenToUpdate={tokenToUpdate}
                 chainId={chainId}
                 tokenList={tokensBank}
                 closeModal={closeModal}
@@ -58,8 +68,6 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
             />
         </Modal>
     ) : null;
-
-    const [isChecked, setIsChecked] = useState<boolean>(false);
 
     // IMPORTANT!  The Limit Order module is the one only transaction configurator
     // ... in the app which has an input field with no token selector.  For that
@@ -82,17 +90,35 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
 
     const DexBalanceContent = (
         <span className={styles.surplus_toggle}>
-            Use DEX balance
+            {fieldId === 'sell' ? 'Use DEX balance' : 'Withdraw to Wallet'}
             <div className={styles.toggle_container}>
-                <Toggle
-                    isOn={isChecked}
-                    handleToggle={() => setIsChecked(!isChecked)}
-                    Width={36}
-                    id='surplus_liquidity'
-                />
+                {fieldId === 'sell' ? (
+                    <Toggle
+                        isOn={isWithdrawFromDexChecked}
+                        handleToggle={() => setIsWithdrawFromDexChecked(!isWithdrawFromDexChecked)}
+                        Width={36}
+                        id='sell_token_withdrawal'
+                    />
+                ) : (
+                    <Toggle
+                        isOn={isWithdrawToWalletChecked}
+                        handleToggle={() =>
+                            setIsWithdrawToWalletChecked(!isWithdrawToWalletChecked)
+                        }
+                        Width={36}
+                        id='buy_token_withdrawal'
+                    />
+                )}
             </div>
         </span>
     );
+
+    const walletBalance =
+        props.sellToken && tokenABalance !== 'NaN'
+            ? tokenABalance
+            : !props.sellToken && tokenBBalance !== 'NaN'
+            ? tokenBBalance
+            : '0';
 
     return (
         <div className={styles.swapbox}>
@@ -108,9 +134,9 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
             </div>
             <div className={styles.swapbox_bottom}>
                 {fieldId === 'sell' ? (
-                    <span>Wallet: {tokenABalance ?? '0'} | DEX: 0.00</span>
+                    <span>Wallet: {walletBalance} | DEX: 0.00</span>
                 ) : (
-                    <span>Wallet: {tokenBBalance ?? '0'} | DEX: 0.00</span>
+                    <span>Wallet: {walletBalance} | DEX: 0.00</span>
                 )}
                 {fieldId === 'buy' || fieldId === 'sell' ? DexBalanceContent : null}
             </div>

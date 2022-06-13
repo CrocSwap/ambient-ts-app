@@ -1,6 +1,6 @@
 /** ***** Import React and Dongles *******/
 import { useEffect, useState } from 'react';
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { setPositionsByUser } from '../utils/state/graphDataSlice';
 import { utils, ethers } from 'ethers';
 import { JsonRpcProvider } from '@ethersproject/providers';
@@ -14,6 +14,7 @@ import {
     POOL_PRIMARY,
     getSpotPrice,
     getSpotPriceDisplay,
+    getTokenAllowance,
 } from '@crocswap-libs/sdk';
 
 /** ***** Import JSX Files *******/
@@ -23,14 +24,14 @@ import PageFooter from './components/PageFooter/PageFooter';
 import Home from '../pages/Home/Home';
 import Analytics from '../pages/Analytics/Analytics';
 import Portfolio from '../pages/Portfolio/Portfolio';
-import Trade from '../pages/Trade/Trade';
 import Limit from '../pages/Trade/Limit/Limit';
 import Range from '../pages/Trade/Range/Range';
 import Swap from '../pages/Swap/Swap';
 import Chart from '../pages/Chart/Chart';
 import Edit from '../pages/Trade/Edit/Edit';
 import TestPage from '../pages/TestPage/TestPage';
-
+import NotFound from '../pages/NotFound/NotFound';
+import Trade from '../pages/Trade/Trade';
 /** * **** Import Local Files *******/
 import './App.css';
 import { useAppDispatch, useAppSelector } from '../utils/hooks/reduxToolkit';
@@ -96,7 +97,7 @@ export default function App() {
     const [baseTokenAddress, setBaseTokenAddress] = useState<string>('');
     const [quoteTokenAddress, setQuoteTokenAddress] = useState<string>('');
 
-    const [isSellTokenBase, setIsSellTokenBase] = useState<boolean>(true);
+    const [isTokenABase, setIsTokenABase] = useState<boolean>(true);
 
     const tokenPair = {
         dataTokenA: tradeData.tokenA,
@@ -113,9 +114,9 @@ export default function App() {
             setBaseTokenAddress(sortedTokens[0]);
             setQuoteTokenAddress(sortedTokens[1]);
             if (tokenPair.dataTokenA.address === sortedTokens[0]) {
-                setIsSellTokenBase(true);
+                setIsTokenABase(true);
             } else {
-                setIsSellTokenBase(false);
+                setIsTokenABase(false);
             }
         }
     }, [JSON.stringify(tokenPair)]);
@@ -165,8 +166,10 @@ export default function App() {
         (async () => {
             if (
                 provider &&
-                account
-                // && isAuthenticated && provider.connection?.url === 'metamask'
+                account &&
+                isAuthenticated &&
+                isWeb3Enabled
+                // && provider.connection?.url === 'metamask'
             ) {
                 const signer = provider.getSigner();
                 const tokenABal = await getTokenBalanceDisplay(
@@ -192,6 +195,96 @@ export default function App() {
             }
         })();
     }, [chainId, account, isWeb3Enabled, isAuthenticated, tokenPair, lastBlockNumber]);
+
+    const [tokenAAllowance, setTokenAAllowance] = useState<string>('');
+    const [tokenBAllowance, setTokenBAllowance] = useState<string>('');
+
+    const [recheckTokenAApproval, setRecheckTokenAApproval] = useState<boolean>(false);
+    const [recheckTokenBApproval, setRecheckTokenBApproval] = useState<boolean>(false);
+
+    // useEffect to check if user has approved CrocSwap to sell the token A
+    // (hardcoded for native Ether)
+    useEffect(() => {
+        (async () => {
+            try {
+                const tokenAAddress = tokenPair.dataTokenA.address;
+                if (isWeb3Enabled && account !== null) {
+                    if (!tokenAAddress) {
+                        return;
+                    }
+                    if (tokenAAddress === contractAddresses.ZERO_ADDR) {
+                        setTokenAAllowance((Number.MAX_SAFE_INTEGER - 1).toString());
+                        return;
+                    }
+                    if (provider) {
+                        const signer = provider.getSigner();
+                        getTokenAllowance(tokenAAddress, account, signer)
+                            .then(function (result) {
+                                const allowance = result.lt(Number.MAX_SAFE_INTEGER - 1)
+                                    ? result.toNumber()
+                                    : Number.MAX_SAFE_INTEGER - 1;
+                                setTokenAAllowance(allowance.toString());
+                            })
+                            .catch((e) => {
+                                console.log(e);
+                            });
+                    }
+                }
+            } catch (err) {
+                console.log(err);
+            }
+            setRecheckTokenAApproval(false);
+        })();
+    }, [
+        tokenPair.dataTokenA.address,
+        lastBlockNumber,
+        account,
+        chainId,
+        isWeb3Enabled,
+        recheckTokenAApproval,
+    ]);
+
+    // useEffect to check if user has approved CrocSwap to sell token B
+    // (hardcoded for native Ether)
+    useEffect(() => {
+        (async () => {
+            try {
+                const tokenBAddress = tokenPair.dataTokenB.address;
+                if (isWeb3Enabled && account !== null) {
+                    if (!tokenBAddress) {
+                        return;
+                    }
+                    if (tokenBAddress === contractAddresses.ZERO_ADDR) {
+                        setTokenBAllowance((Number.MAX_SAFE_INTEGER - 1).toString());
+                        return;
+                    }
+                    if (provider) {
+                        const signer = provider.getSigner();
+                        getTokenAllowance(tokenBAddress, account, signer)
+                            .then(function (result) {
+                                // console.log({ result });
+                                const allowance = result.lt(Number.MAX_SAFE_INTEGER - 1)
+                                    ? result.toNumber()
+                                    : Number.MAX_SAFE_INTEGER - 1;
+                                setTokenBAllowance(allowance.toString());
+                            })
+                            .catch((e) => {
+                                console.log(e);
+                            });
+                    }
+                }
+            } catch (err) {
+                console.log(err);
+            }
+        })();
+    }, [
+        tokenPair.dataTokenB.address,
+        account,
+        chainId,
+        isWeb3Enabled,
+        recheckTokenBApproval,
+        lastBlockNumber,
+    ]);
 
     const graphData = useAppSelector((state) => state.graphData);
 
@@ -343,6 +436,8 @@ export default function App() {
     // function to sever connection between user wallet and Moralis server
     const clickLogout = async () => {
         setNativeBalance('');
+        setTokenABalance('0');
+        setTokenBBalance('0');
         await logout();
     };
 
@@ -352,8 +447,10 @@ export default function App() {
         (async () => {
             if (
                 provider &&
-                account
-                // && isAuthenticated && provider.connection?.url === 'metamask'
+                account &&
+                isAuthenticated &&
+                isWeb3Enabled
+                // && provider.connection?.url === 'metamask'
             ) {
                 const signer = provider.getSigner();
                 const nativeEthBalance = await getTokenBalanceDisplay(
@@ -414,9 +511,12 @@ export default function App() {
         lastBlockNumber: lastBlockNumber,
         tokenABalance: tokenABalance,
         tokenBBalance: tokenBBalance,
-        isSellTokenBase: isSellTokenBase,
+        isSellTokenBase: isTokenABase,
         tokenPair: tokenPair,
         poolPriceDisplay: poolPriceDisplay,
+        tokenAAllowance: tokenAAllowance,
+        setRecheckTokenAApproval: setRecheckTokenAApproval,
+        // tokenBAllowance: tokenBAllowance,
     };
 
     // props for <Swap/> React element on trade route
@@ -429,9 +529,12 @@ export default function App() {
         lastBlockNumber: lastBlockNumber,
         tokenABalance: tokenABalance,
         tokenBBalance: tokenBBalance,
-        isSellTokenBase: isSellTokenBase,
+        isSellTokenBase: isTokenABase,
         tokenPair: tokenPair,
         poolPriceDisplay: poolPriceDisplay,
+        setRecheckTokenAApproval: setRecheckTokenAApproval,
+        tokenAAllowance: tokenAAllowance,
+        // tokenBAllowance: tokenBAllowance,
     };
 
     // props for <Limit/> React element on trade route
@@ -444,9 +547,11 @@ export default function App() {
         lastBlockNumber: lastBlockNumber,
         tokenABalance: tokenABalance,
         tokenBBalance: tokenBBalance,
-        isSellTokenBase: isSellTokenBase,
+        isSellTokenBase: isTokenABase,
         tokenPair: tokenPair,
         poolPriceDisplay: poolPriceDisplay,
+        setRecheckTokenAApproval: setRecheckTokenAApproval,
+        tokenAAllowance: tokenAAllowance,
     };
 
     // props for <Range/> React element
@@ -455,8 +560,12 @@ export default function App() {
         provider: provider as JsonRpcProvider,
         lastBlockNumber: lastBlockNumber,
         tokenABalance: tokenABalance,
+        tokenAAllowance: tokenAAllowance,
+        setRecheckTokenAApproval: setRecheckTokenAApproval,
         tokenBBalance: tokenBBalance,
         poolPriceDisplay: poolPriceDisplay,
+        tokenBAllowance: tokenBAllowance,
+        setRecheckTokenBApproval: setRecheckTokenBApproval,
     };
 
     // props for <Sidebar/> React element
@@ -471,16 +580,18 @@ export default function App() {
     const mainLayoutStyle = showSidebar ? 'main-layout-2' : 'main-layout';
     // take away margin from left if we are on homepage or swap
     const noSidebarStyle =
-        currentLocation == '/' || currentLocation == '/swap' ? 'no-sidebar' : mainLayoutStyle;
+        currentLocation == '/' || currentLocation == '/swap' || currentLocation == '/404'
+            ? 'no-sidebar'
+            : mainLayoutStyle;
     const swapBodyStyle = currentLocation == '/swap' ? 'swap-body' : null;
 
     return (
         <>
             <div className='content-container'>
-                <PageHeader {...headerProps} />
-                {currentLocation !== '/' && currentLocation !== '/swap' && (
-                    <Sidebar {...sidebarProps} />
-                )}
+                {currentLocation !== '/404' && <PageHeader {...headerProps} />}
+                {currentLocation !== '/' &&
+                    currentLocation !== '/swap' &&
+                    currentLocation !== '/404' && <Sidebar {...sidebarProps} />}
                 <div className={`${noSidebarStyle} ${swapBodyStyle}`}>
                     <Routes>
                         <Route index element={<Home />} />
@@ -497,6 +608,10 @@ export default function App() {
                         <Route path='swap' element={<Swap {...swapProps} />} />
                         <Route path='chart' element={<Chart />} />
                         <Route path='testpage' element={<TestPage />} />
+
+                        <Route path='*' element={<Navigate to='/404' replace />} />
+
+                        <Route path='/404' element={<NotFound />} />
                     </Routes>
                 </div>
             </div>

@@ -10,6 +10,7 @@ import {
     sendSwap,
     parseSwapEthersReceipt,
     EthersNativeReceipt,
+    approveToken,
 } from '@crocswap-libs/sdk';
 
 // START: Import React Components
@@ -51,6 +52,8 @@ interface ISwapProps {
         dataTokenB: TokenIF;
     };
     poolPriceDisplay: number;
+    tokenAAllowance: string;
+    setRecheckTokenAApproval: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function Swap(props: ISwapProps) {
@@ -66,6 +69,8 @@ export default function Swap(props: ISwapProps) {
         isSellTokenBase,
         tokenPair,
         poolPriceDisplay,
+        tokenAAllowance,
+        setRecheckTokenAApproval,
     } = props;
     const [isModalOpen, openModal, closeModal] = useModal();
 
@@ -110,13 +115,66 @@ export default function Swap(props: ISwapProps) {
 
     const loginButton = <Button title='Login' action={clickLogin} />;
 
+    const [isApprovalPending, setIsApprovalPending] = useState(false);
+
+    const approve = async (tokenAddress: string) => {
+        // console.log(`allow button clicked for ${tokenAddress}`);
+        setIsApprovalPending(true);
+        let tx;
+        try {
+            tx = await approveToken(tokenAddress, signer);
+        } catch (error) {
+            setIsApprovalPending(false);
+            setRecheckTokenAApproval(true);
+        }
+        if (tx.hash) {
+            console.log('approval transaction hash: ' + tx.hash);
+            // setApprovalButtonText('Approval Pending...');
+            // dispatch(setCurrentTxHash(tx.hash));
+            // dispatch(addPendingTx(tx.hash));
+        }
+
+        try {
+            const receipt = await tx.wait();
+            // console.log({ receipt });
+            if (receipt) {
+                // console.log('approval receipt: ' + JSON.stringify(receipt));
+                // setShouldRecheckApproval(true);
+                // parseSwapEthersTxReceipt(receipt).then((val) => {
+                //   val.conversionRateString = `${val.sellSymbol} Approval Successful`;
+                //   dispatch(addApprovalReceipt(val));
+            }
+        } catch (error) {
+            console.log({ error });
+        } finally {
+            setIsApprovalPending(false);
+            setRecheckTokenAApproval(true);
+        }
+    };
+
+    const approvalButton = (
+        <Button
+            title={
+                !isApprovalPending
+                    ? `Click to Approve ${tokenPair.dataTokenA.symbol}`
+                    : `${tokenPair.dataTokenA.symbol} Approval Pending`
+            }
+            disabled={isApprovalPending}
+            action={async () => {
+                await approve(tokenA.address);
+            }}
+        />
+    );
+
     const [tokenAInputQty, setTokenAInputQty] = useState<string>('');
     const [tokenBInputQty, setTokenBInputQty] = useState<string>('');
 
     const [swapAllowed, setSwapAllowed] = useState<boolean>(false);
 
-    const [isTokenAPrimary, setIsTokenAPrimary] = useState<boolean>(true);
+    const [swapButtonErrorMessage, setSwapButtonErrorMessage] = useState<string>('');
 
+    // const [isTokenAPrimary, setIsTokenAPrimary] = useState<boolean>(tradeData.isTokenAPrimary);
+    const isTokenAPrimary = tradeData.isTokenAPrimary;
     const [isWithdrawFromDexChecked, setIsWithdrawFromDexChecked] = useState(false);
     const [isWithdrawToWalletChecked, setIsWithdrawToWalletChecked] = useState(true);
 
@@ -134,6 +192,8 @@ export default function Swap(props: ISwapProps) {
         const sellTokenQty = (document.getElementById('sell-quantity') as HTMLInputElement)?.value;
         const buyTokenQty = (document.getElementById('buy-quantity') as HTMLInputElement)?.value;
         const qty = isTokenAPrimary ? sellTokenQty : buyTokenQty;
+
+        console.log({ isTokenAPrimary });
 
         // overwritten by a non-zero value when selling ETH for another token
         let ethValue = '0';
@@ -213,6 +273,10 @@ export default function Swap(props: ISwapProps) {
         </RelativeModal>
     ) : null;
 
+    const isTokenAAllowanceSufficient = parseFloat(tokenAAllowance) >= parseFloat(tokenAInputQty);
+    // console.log({ tokenAAllowance });
+    // console.log({ tokenAInputQty });
+    // console.log({ isTokenAAllowanceSufficient });
     return (
         <motion.main
             initial={{ width: 0 }}
@@ -239,7 +303,6 @@ export default function Swap(props: ISwapProps) {
                     isLiq={false}
                     poolPriceDisplay={poolPriceDisplay}
                     isTokenAPrimary={isTokenAPrimary}
-                    setIsTokenAPrimary={setIsTokenAPrimary}
                     isSellTokenBase={isSellTokenBase}
                     nativeBalance={truncateDecimals(parseFloat(nativeBalance), 4).toString()}
                     tokenABalance={truncateDecimals(parseFloat(tokenABalance), 4).toString()}
@@ -253,6 +316,7 @@ export default function Swap(props: ISwapProps) {
                     isWithdrawToWalletChecked={isWithdrawToWalletChecked}
                     setIsWithdrawToWalletChecked={setIsWithdrawToWalletChecked}
                     setSwapAllowed={setSwapAllowed}
+                    setSwapButtonErrorMessage={setSwapButtonErrorMessage}
                 />
                 <ExtraInfo
                     tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
@@ -265,7 +329,15 @@ export default function Swap(props: ISwapProps) {
                     isDenomBase={tradeData.isDenomBase}
                 />
                 {isAuthenticated && isWeb3Enabled ? (
-                    <SwapButton onClickFn={openModal} swapAllowed={swapAllowed} />
+                    !isTokenAAllowanceSufficient && parseFloat(tokenAInputQty) > 0 ? (
+                        approvalButton
+                    ) : (
+                        <SwapButton
+                            onClickFn={openModal}
+                            swapAllowed={swapAllowed}
+                            swapButtonErrorMessage={swapButtonErrorMessage}
+                        />
+                    )
                 ) : (
                     loginButton
                 )}

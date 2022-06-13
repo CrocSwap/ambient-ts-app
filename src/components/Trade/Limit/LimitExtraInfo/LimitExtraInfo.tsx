@@ -12,31 +12,50 @@ import truncateDecimals from '../../../../utils/data/truncateDecimals';
 // interface for component props
 interface LimitExtraInfoPropsIF {
     tokenPair: TokenPairIF;
-    poolPriceDisplay?: number;
-    slippageTolerance?: number;
-    liquidityProviderFee?: number;
+    poolPriceDisplay: number;
+    slippageTolerance: number;
+    liquidityProviderFee: number;
     quoteTokenIsBuy?: boolean;
-    gasPriceinGwei?: string;
+    gasPriceinGwei: string;
     displayForBase: boolean;
 }
 
 // central react functional component
 export default function LimitExtraInfo(props: LimitExtraInfoPropsIF) {
-    const { tokenPair, displayForBase } = props;
+    const {
+        tokenPair,
+        gasPriceinGwei,
+        quoteTokenIsBuy,
+        poolPriceDisplay,
+        slippageTolerance,
+        liquidityProviderFee,
+        displayForBase,
+    } = props;
     const [showExtraDetails, setShowExtraDetails] = useState<boolean>(false);
 
     // TEMP DATA TO RENDER UI
-    const spotPriceDisplayQuoteForBase = 1310.7276;
-    const priceLimitAfterSlippageAndFee = 1241.4556;
-    const slippageTolerance = 5;
-    const liquidityProviderFee = 0.3;
-    const truncatedGasInGwei = 2.5;
+    const spotPriceDisplayQuoteForBase = truncateDecimals(1 / poolPriceDisplay, 4);
+
+    const displayPriceString =
+        spotPriceDisplayQuoteForBase === Infinity ? '' : spotPriceDisplayQuoteForBase.toString();
+    const priceLimitAfterSlippageAndFee = quoteTokenIsBuy
+        ? truncateDecimals(
+              (1 / poolPriceDisplay) *
+                  (1 - slippageTolerance / 100) *
+                  (1 - liquidityProviderFee / 100),
+              4,
+          )
+        : truncateDecimals(
+              (1 / poolPriceDisplay) * (1 + slippageTolerance) * (1 + liquidityProviderFee / 100),
+              4,
+          );
+    const truncatedGasInGwei = truncateDecimals(parseFloat(gasPriceinGwei), 2);
 
     const extraInfoData = [
         {
             title: 'Spot Price',
             tooltipTitle: 'spot price explanation',
-            data: `${spotPriceDisplayQuoteForBase} ${tokenPair.dataTokenB.symbol} per ${tokenPair.dataTokenA.symbol}`,
+            data: `${displayPriceString} ${tokenPair.dataTokenB.symbol} per ${tokenPair.dataTokenA.symbol}`,
         },
         {
             title: 'Price Limit after Slippage and Fee',

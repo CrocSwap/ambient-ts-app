@@ -1,9 +1,11 @@
 // START: Import React and Dongles
 import { useMoralis } from 'react-moralis';
 import { motion } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
-import { sortBaseQuoteTokens, getSpotPriceDisplay, POOL_PRIMARY } from '@crocswap-libs/sdk';
+import Button from '../../../components/Global/Button/Button';
+
+import { approveToken } from '@crocswap-libs/sdk';
 
 // START: Import React Functional Components
 import ContentContainer from '../../../components/Global/ContentContainer/ContentContainer';
@@ -39,25 +41,59 @@ interface LimitPropsIF {
         dataTokenB: TokenIF;
     };
     poolPriceDisplay: number;
+    tokenAAllowance: string;
+    setRecheckTokenAApproval: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function Limit(props: LimitPropsIF) {
     const {
         importedTokens,
         provider,
-        // isOnTradeRoute,
-        lastBlockNumber,
-        //  nativeBalance,
-        //  gasPriceinGwei ,
+        isSellTokenBase,
         tokenABalance,
         tokenBBalance,
         tokenPair,
         gasPriceinGwei,
+        poolPriceDisplay,
+        tokenAAllowance,
+        setRecheckTokenAApproval,
     } = props;
     const { tradeData } = useTradeData();
-    const { chainId } = useMoralis();
+    const { chainId, enableWeb3, isWeb3Enabled, authenticate, isAuthenticated } = useMoralis();
     const [isModalOpen, openModal, closeModal] = useModal();
     const [limitAllowed, setLimitAllowed] = useState<boolean>(false);
+
+    const [tokenAInputQty, setTokenAInputQty] = useState<string>('');
+    const [tokenBInputQty, setTokenBInputQty] = useState<string>('');
+    const [isWithdrawFromDexChecked, setIsWithdrawFromDexChecked] = useState(false);
+
+    const [isWithdrawToWalletChecked, setIsWithdrawToWalletChecked] = useState(true);
+
+    const [limitButtonErrorMessage, setLimitButtonErrorMessage] = useState<string>('');
+
+    // login functionality
+    const clickLogin = () => {
+        console.log('user clicked Login');
+        if (!isAuthenticated || !isWeb3Enabled) {
+            authenticate({
+                provider: 'metamask',
+                signingMessage: 'Ambient API Authentication.',
+                onSuccess: () => {
+                    enableWeb3();
+                },
+                onError: () => {
+                    authenticate({
+                        provider: 'metamask',
+                        signingMessage: 'Ambient API Authentication.',
+                        onSuccess: () => {
+                            enableWeb3;
+                            // alert('🎉');
+                        },
+                    });
+                },
+            });
+        }
+    };
 
     const confirmLimitModalOrNull = isModalOpen ? (
         <Modal onClose={closeModal} title='Limit Confirmation'>
@@ -65,47 +101,60 @@ export default function Limit(props: LimitPropsIF) {
         </Modal>
     ) : null;
 
-    const [poolPriceDisplay, setPoolPriceDisplay] = useState(0);
+    const isTokenAAllowanceSufficient = parseFloat(tokenAAllowance) >= parseFloat(tokenAInputQty);
+    const loginButton = <Button title='Login' action={clickLogin} />;
+    const [isApprovalPending, setIsApprovalPending] = useState(false);
 
-    const [baseTokenAddress, setBaseTokenAddress] = useState<string>('');
-    const [quoteTokenAddress, setQuoteTokenAddress] = useState<string>('');
+    const signer = provider?.getSigner();
 
-    const [isSellTokenBase, setIsSellTokenBase] = useState<boolean>(true);
+    const approve = async (tokenAddress: string) => {
+        // console.log(`allow button clicked for ${tokenAddress}`);
+        setIsApprovalPending(true);
+        let tx;
+        try {
+            tx = await approveToken(tokenAddress, signer);
+        } catch (error) {
+            setIsApprovalPending(false);
+            setRecheckTokenAApproval(true);
+        }
+        if (tx.hash) {
+            console.log('approval transaction hash: ' + tx.hash);
+            // setApprovalButtonText('Approval Pending...');
+            // dispatch(setCurrentTxHash(tx.hash));
+            // dispatch(addPendingTx(tx.hash));
+        }
 
-    // useEffect to set baseTokenAddress and quoteTokenAddress when pair changes
-    useEffect(() => {
-        if (tokenPair.dataTokenA.address && tokenPair.dataTokenB.address) {
-            const sortedTokens = sortBaseQuoteTokens(
-                tokenPair.dataTokenA.address,
-                tokenPair.dataTokenB.address,
-            );
-            setBaseTokenAddress(sortedTokens[0]);
-            setQuoteTokenAddress(sortedTokens[1]);
-            if (tokenPair.dataTokenA.address === sortedTokens[0]) {
-                setIsSellTokenBase(true);
-            } else {
-                setIsSellTokenBase(false);
+        try {
+            const receipt = await tx.wait();
+            // console.log({ receipt });
+            if (receipt) {
+                // console.log('approval receipt: ' + JSON.stringify(receipt));
+                // setShouldRecheckApproval(true);
+                // parseSwapEthersTxReceipt(receipt).then((val) => {
+                //   val.conversionRateString = `${val.sellSymbol} Approval Successful`;
+                //   dispatch(addApprovalReceipt(val));
             }
+        } catch (error) {
+            console.log({ error });
+        } finally {
+            setIsApprovalPending(false);
+            setRecheckTokenAApproval(true);
         }
-    }, [JSON.stringify(tokenPair)]);
+    };
 
-    // useEffect to get display spot price when tokens change and block updates
-    useEffect(() => {
-        if (baseTokenAddress && quoteTokenAddress) {
-            (async () => {
-                const spotPriceDisplay = await getSpotPriceDisplay(
-                    baseTokenAddress,
-                    quoteTokenAddress,
-                    POOL_PRIMARY,
-                    provider,
-                );
-                if (poolPriceDisplay !== spotPriceDisplay) {
-                    setPoolPriceDisplay(spotPriceDisplay);
-                }
-            })();
-        }
-    }, [lastBlockNumber, baseTokenAddress, quoteTokenAddress]);
-
+    const approvalButton = (
+        <Button
+            title={
+                !isApprovalPending
+                    ? `Click to Approve ${tokenPair.dataTokenA.symbol}`
+                    : `${tokenPair.dataTokenA.symbol} Approval Pending`
+            }
+            disabled={isApprovalPending}
+            action={async () => {
+                await approve(tokenPair.dataTokenA.address);
+            }}
+        />
+    );
     return (
         <motion.section
             initial={{ width: 0 }}
@@ -130,13 +179,38 @@ export default function Limit(props: LimitPropsIF) {
                     setLimitAllowed={setLimitAllowed}
                     tokenABalance={truncateDecimals(parseFloat(tokenABalance), 4).toString()}
                     tokenBBalance={truncateDecimals(parseFloat(tokenBBalance), 4).toString()}
+                    tokenAInputQty={tokenAInputQty}
+                    tokenBInputQty={tokenBInputQty}
+                    setTokenAInputQty={setTokenAInputQty}
+                    isWithdrawToWalletChecked={isWithdrawToWalletChecked}
+                    setTokenBInputQty={setTokenBInputQty}
+                    setIsWithdrawToWalletChecked={setIsWithdrawToWalletChecked}
+                    setLimitButtonErrorMessage={setLimitButtonErrorMessage}
+                    isWithdrawFromDexChecked={isWithdrawFromDexChecked}
+                    setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
                 />
                 <LimitExtraInfo
                     tokenPair={tokenPair}
                     gasPriceinGwei={gasPriceinGwei}
+                    poolPriceDisplay={poolPriceDisplay}
+                    slippageTolerance={5}
+                    liquidityProviderFee={0.3}
+                    quoteTokenIsBuy={true}
                     displayForBase={tradeData.isDenomBase}
                 />
-                <LimitButton onClickFn={openModal} limitAllowed={limitAllowed} />
+                {isAuthenticated && isWeb3Enabled ? (
+                    !isTokenAAllowanceSufficient && parseFloat(tokenAInputQty) > 0 ? (
+                        approvalButton
+                    ) : (
+                        <LimitButton
+                            onClickFn={openModal}
+                            limitAllowed={limitAllowed}
+                            limitButtonErrorMessage={limitButtonErrorMessage}
+                        />
+                    )
+                ) : (
+                    loginButton
+                )}
             </ContentContainer>
             {confirmLimitModalOrNull}
         </motion.section>

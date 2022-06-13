@@ -1,5 +1,5 @@
 import styles from './Account.module.css';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Popover from '@material-ui/core/Popover';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import { FiMoreHorizontal } from 'react-icons/fi';
@@ -9,10 +9,12 @@ import { FaDiscord } from 'react-icons/fa';
 import { MdLanguage } from 'react-icons/md';
 import { BsBook } from 'react-icons/bs';
 import { HiOutlineDocumentText } from 'react-icons/hi';
+import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
 
 interface IAccountProps {
     nativeBalance: string;
     accountAddress: string;
+    accountAddressFull: string;
     isAuthenticated?: boolean;
     isWeb3Enabled?: boolean;
     clickLogout: () => void;
@@ -20,6 +22,8 @@ interface IAccountProps {
 
 export default function Account(props: IAccountProps): React.ReactElement<IAccountProps> {
     const [anchorEl, setAnchorEl] = useState(null);
+    const [value, copy] = useCopyToClipboard();
+
     const { isAuthenticated, isWeb3Enabled, clickLogout } = props;
     // eslint-disable-next-line
     const handlePopoverClick = (event: React.ChangeEvent<any>) => {
@@ -37,6 +41,10 @@ export default function Account(props: IAccountProps): React.ReactElement<IAccou
 
     const open = Boolean(anchorEl);
     const popoverId = open ? 'simple-popover' : undefined;
+
+    useEffect(() => {
+        value ? console.log(value) : null;
+    }, [value]);
 
     const logoutButton = (
         <button className={styles.authenticate_button} onClick={handleLogout}>
@@ -95,7 +103,11 @@ export default function Account(props: IAccountProps): React.ReactElement<IAccou
                     ? parseFloat(props.nativeBalance).toFixed(4) + ' ETH'
                     : ''}
             </span>
-            <div className={styles.title_gradient}>{props.accountAddress}</div>
+            {/* TODO : REFACTOR THIS TO POPUP ALERT ON COPY - USE VALUE */}
+            <div className={styles.title_gradient} onClick={() => copy(props.accountAddressFull)}>
+                {props.accountAddress}
+            </div>
+
             <AiOutlineQuestionCircle size={20} color='#CDC1FF' />
 
             <div className={styles.more} aria-describedby={popoverId} onClick={handlePopoverClick}>

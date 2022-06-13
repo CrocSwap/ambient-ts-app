@@ -5,7 +5,7 @@
     font-size: var(--header1-size);
     line-height: var(--header1-lh);
     color: #fffefd;
-    text-align: start;
+    text-align: center;
     width: 100%;
     height: calc(1.5em + 0.75rem + 2px);
     padding: 0.375rem 0.75rem;
@@ -16,6 +16,8 @@
     background-clip: padding-box;
   
     transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+
+    
   
   }
   .currency_quantity::placeholder {
@@ -33,16 +35,33 @@
     flex-direction: column;
     overflow-y: hidden;
     color: white;
+
+    border-radius: 8px;
+    background: rgba( 18, 23, 31, 0.5 );
+    /* box-shadow: 0 1px 32px 0 rgba(13, 17, 70, 0.37); */
+    backdrop-filter: blur( 8.5px );
+    -webkit-backdrop-filter: blur( 8.5px );
+    border: 1px solid rgba( 255, 255, 255, 0.18 );
+
+    
   }
   
-  .modalSwapbox {
+  /* .modalSwapbox {
     background-color: var(--dark2); 
-  }
+
+    
+
+    
+  } */
 
   .direction{
       padding: 12px;
   }
   .direction, .swapbox_bottom{
+
+    display: flex;
+    justify-content: center;
+
       font-size: var(--body-size);
       line-height: var(--body-lh);
       color: var(--text-grey-light);
@@ -60,7 +79,8 @@
   }
 
   .swap_input{
-width: 70%;
+width: 100%;
+
   }
   .token_select {
    display: flex;
