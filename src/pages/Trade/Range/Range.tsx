@@ -35,8 +35,6 @@ import MinMaxPrice from '../../../components/Trade/Range/AdvancedModeComponents/
 import AdvancedPriceInfo from '../../../components/Trade/Range/AdvancedModeComponents/AdvancedPriceInfo/AdvancedPriceInfo';
 import DividerDark from '../../../components/Global/DividerDark/DividerDark';
 import Modal from '../../../components/Global/Modal/Modal';
-import { useModal } from '../../../components/Global/Modal/useModal';
-
 import Button from '../../../components/Global/Button/Button';
 
 // START: Import Local Files
@@ -47,6 +45,7 @@ import truncateDecimals from '../../../utils/data/truncateDecimals';
 import ConfirmRangeModal from '../../../components/Trade/Range/ConfirmRangeModal/ConfirmRangeModal';
 import { TokenIF } from '../../../utils/interfaces/exports';
 import { useTradeData } from '../Trade';
+import { useModal } from '../../../components/Global/Modal/useModal';
 
 interface RangePropsIF {
     importedTokens: Array<TokenIF>;
@@ -232,6 +231,7 @@ export default function Range(props: RangePropsIF) {
                 tokenPair={tokenPair}
                 displayForBase={tradeData.isDenomBase}
                 poolPriceDisplay={parseFloat(poolPriceDisplay)}
+                isTokenABase={isTokenABase}
             />
         </div>
     );

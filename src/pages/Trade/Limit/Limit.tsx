@@ -168,6 +168,7 @@ export default function Limit(props: LimitPropsIF) {
                     tokenPair={tokenPair}
                     displayForBase={tradeData.isDenomBase}
                     poolPriceDisplay={poolPriceDisplay}
+                    isTokenABase={isSellTokenBase}
                 />
                 <DividerDark />
                 <LimitCurrencyConverter

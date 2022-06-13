@@ -10,6 +10,7 @@ interface denominationSwitchPropsIF {
     displayForBase: boolean;
     poolPriceDisplay: number;
     isOnTradeRoute?: boolean;
+    isTokenABase?: boolean;
 }
 
 // TODO:  @Emily poolPriceDisplay is passed here as a prop for the purpose of managing
@@ -17,7 +18,7 @@ interface denominationSwitchPropsIF {
 // TODO   ... end, please remove the value from props
 
 export default function DenominationSwitch(props: denominationSwitchPropsIF) {
-    const { tokenPair, displayForBase } = props;
+    const { tokenPair, displayForBase, isTokenABase } = props;
 
     const dispatch = useAppDispatch();
 
@@ -25,22 +26,34 @@ export default function DenominationSwitch(props: denominationSwitchPropsIF) {
     // TODO:  ... value of `toggleDenomination`, let's do just one button with two
     // TODO   ... <div> elements nested inside of it
 
-    // TODO:  right now we have the display set up as TokenA||TokenB with TokenA
-    // TODO:  ... selected by default, we may want to change this logic later to
-    // TODO:  ... base||quote or to sort according to Doug's moneyness factor
-
     return (
         <div className={styles.denomination_switch}>
             <div>Denomination</div>
             <button
-                className={displayForBase ? styles.active_button : styles.non_active_button}
+                className={
+                    displayForBase
+                        ? isTokenABase
+                            ? styles.active_button
+                            : styles.non_active_button
+                        : isTokenABase
+                        ? styles.non_active_button
+                        : styles.active_button
+                }
                 onClick={() => dispatch(setDenomInBase(true))}
             >
                 {tokenPair.dataTokenA.symbol}
             </button>
 
             <button
-                className={!displayForBase ? styles.active_button : styles.non_active_button}
+                className={
+                    !displayForBase
+                        ? isTokenABase
+                            ? styles.active_button
+                            : styles.non_active_button
+                        : isTokenABase
+                        ? styles.non_active_button
+                        : styles.active_button
+                }
                 onClick={() => dispatch(setDenomInBase(false))}
             >
                 {tokenPair.dataTokenB.symbol}
