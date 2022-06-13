@@ -2,7 +2,7 @@
 import styles from './DenominationSwitch.module.css';
 import { TokenPairIF } from '../../../utils/interfaces/exports';
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
-import { setDenomInBase } from '../../../utils/state/tradeDataSlice';
+import { toggleDenomInBase } from '../../../utils/state/tradeDataSlice';
 
 // interface for props
 interface denominationSwitchPropsIF {
@@ -10,7 +10,7 @@ interface denominationSwitchPropsIF {
     displayForBase: boolean;
     poolPriceDisplay: number;
     isOnTradeRoute?: boolean;
-    isTokenABase?: boolean;
+    isTokenABase: boolean;
 }
 
 // TODO:  @Emily poolPriceDisplay is passed here as a prop for the purpose of managing
@@ -18,7 +18,7 @@ interface denominationSwitchPropsIF {
 // TODO   ... end, please remove the value from props
 
 export default function DenominationSwitch(props: denominationSwitchPropsIF) {
-    const { tokenPair, displayForBase, isTokenABase } = props;
+    const { tokenPair, displayForBase, isTokenABase, poolPriceDisplay } = props;
 
     const dispatch = useAppDispatch();
 
@@ -26,20 +26,28 @@ export default function DenominationSwitch(props: denominationSwitchPropsIF) {
     // TODO:  ... value of `toggleDenomination`, let's do just one button with two
     // TODO   ... <div> elements nested inside of it
 
+    const isTokenAMoreExpensive = isTokenABase
+        ? poolPriceDisplay < 1
+            ? true
+            : false
+        : poolPriceDisplay < 1
+        ? false
+        : true;
+
     return (
         <div className={styles.denomination_switch}>
             <div>Denomination</div>
             <button
                 className={
                     displayForBase
-                        ? isTokenABase
+                        ? isTokenAMoreExpensive
                             ? styles.active_button
                             : styles.non_active_button
-                        : isTokenABase
+                        : isTokenAMoreExpensive
                         ? styles.non_active_button
                         : styles.active_button
                 }
-                onClick={() => dispatch(setDenomInBase(true))}
+                onClick={() => dispatch(toggleDenomInBase())}
             >
                 {tokenPair.dataTokenA.symbol}
             </button>
@@ -47,14 +55,14 @@ export default function DenominationSwitch(props: denominationSwitchPropsIF) {
             <button
                 className={
                     !displayForBase
-                        ? isTokenABase
+                        ? isTokenAMoreExpensive
                             ? styles.active_button
                             : styles.non_active_button
-                        : isTokenABase
+                        : isTokenAMoreExpensive
                         ? styles.non_active_button
                         : styles.active_button
                 }
-                onClick={() => dispatch(setDenomInBase(false))}
+                onClick={() => dispatch(toggleDenomInBase())}
             >
                 {tokenPair.dataTokenB.symbol}
             </button>

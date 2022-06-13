@@ -124,8 +124,6 @@ export default function Range(props: RangePropsIF) {
 
     const signer = provider?.getSigner();
 
-    // const [isTokenAPrimary, setIsTokenAPrimary] = useState<boolean>(false);
-
     const sendTransaction = async () => {
         const tokenAQty = (document.getElementById('A-range-quantity') as HTMLInputElement)?.value;
         let tokenAQtyNonDisplay: BigNumber;
@@ -312,6 +310,8 @@ export default function Range(props: RangePropsIF) {
         maxPriceDisplay: maxPriceDisplay,
         minPriceDisplay: minPriceDisplay,
         apyPercentage: apyPercentage,
+        isTokenABase: isTokenABase,
+        isDenomBase: tradeData.isDenomBase,
     };
     // props for <ConfirmRangeModal/> React element
     const rangeModalProps = {
