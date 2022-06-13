@@ -12,6 +12,7 @@ import {
     sendSwap,
     GRID_SIZE_DFLT,
     MIN_TICK,
+    MAX_TICK,
     tickToPrice,
     toDisplayPrice,
 } from '@crocswap-libs/sdk';
@@ -126,9 +127,11 @@ export default function Limit(props: LimitPropsIF) {
 
     const [initialLoad, setInitialLoad] = useState<boolean>(true);
 
+    const isDenomBase = tradeData.isDenomBase;
+
     useEffect(() => {
         setInitialLoad(true);
-    }, [tokenPair]);
+    }, [tokenPair, isDenomBase]);
 
     useEffect(() => {
         const limitRateInputField = document.getElementById(
@@ -142,34 +145,51 @@ export default function Limit(props: LimitPropsIF) {
                 return Math.max(tickGrid, horizon);
             };
 
+            const roundUpTick = (tick: number, nTicksGrid: number = GRID_SIZE_DFLT) => {
+                const tickGrid = Math.ceil(tick / nTicksGrid) * nTicksGrid;
+                const horizon = Math.ceil(MAX_TICK / nTicksGrid) * nTicksGrid;
+                return Math.min(tickGrid, horizon);
+            };
+
             const currentPoolPriceTick = Math.log(poolPriceNonDisplay) / Math.log(1.0001);
             // console.log({ currentPoolPriceTick });
-            const roundedTickInsideCurrentPrice = roundDownTick(currentPoolPriceTick * 0.99);
-            // console.log({ roundedTickInsideCurrentPrice });
+            let roundedTickInsideCurrentPrice: number;
 
-            const insideTickNonDisplayPrice = tickToPrice(roundedTickInsideCurrentPrice);
+            if (isDenomBase) {
+                roundedTickInsideCurrentPrice = roundDownTick(currentPoolPriceTick * 0.99);
+                // console.log({ roundedTickInsideCurrentPrice });
+                const insideTickNonDisplayPrice = tickToPrice(roundedTickInsideCurrentPrice);
+                const insideTickDisplayPrice =
+                    1 / toDisplayPrice(insideTickNonDisplayPrice, baseDecimals, quoteDecimals);
+                setInsideTickDisplayPrice(insideTickDisplayPrice);
 
-            const insideTickDisplayPrice = toDisplayPrice(
-                insideTickNonDisplayPrice,
-                baseDecimals,
-                quoteDecimals,
-            );
-            setInsideTickDisplayPrice(insideTickDisplayPrice);
+                const pinnedInitialDisplayPrice = insideTickDisplayPrice.toString();
 
-            const pinnedInitialDisplayPrice = insideTickDisplayPrice.toString();
-            // console.log({ pinnedInitialDisplayPrice });
+                if (limitRateInputField) {
+                    limitRateInputField.value = pinnedInitialDisplayPrice;
+                }
+                setLimitRate(pinnedInitialDisplayPrice);
+            } else {
+                roundedTickInsideCurrentPrice = roundUpTick(currentPoolPriceTick * 1.01);
+                // console.log({ roundedTickInsideCurrentPrice });
+                const insideTickNonDisplayPrice = tickToPrice(roundedTickInsideCurrentPrice);
+                const insideTickDisplayPrice = toDisplayPrice(
+                    insideTickNonDisplayPrice,
+                    baseDecimals,
+                    quoteDecimals,
+                );
+                setInsideTickDisplayPrice(insideTickDisplayPrice);
 
-            // setLimitInputValue(initialLimitRateTruncated);
-            if (limitRateInputField) {
-                limitRateInputField.value = pinnedInitialDisplayPrice;
+                const pinnedInitialDisplayPrice = insideTickDisplayPrice.toString();
+
+                if (limitRateInputField) {
+                    limitRateInputField.value = pinnedInitialDisplayPrice;
+                }
+                setLimitRate(pinnedInitialDisplayPrice);
             }
-            setLimitRate(pinnedInitialDisplayPrice);
-            // console.log(3);
-            // console.log({ pinnedInitialDisplayPrice });
-            // setLimitInputValue(pinnedInitialDisplayPrice);
+            setInitialLoad(false);
         }
-        setInitialLoad(false);
-    }, [initialLoad, poolPriceNonDisplay, baseDecimals, quoteDecimals]);
+    }, [initialLoad, poolPriceNonDisplay, baseDecimals, quoteDecimals, isDenomBase]);
 
     const initiateLimitOrderMethod = async () => {
         const sellTokenAddress = tokenA.address;
