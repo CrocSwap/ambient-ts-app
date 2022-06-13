@@ -61,7 +61,6 @@ export default function Swap(props: ISwapProps) {
         importedTokens,
         provider,
         isOnTradeRoute,
-        // lastBlockNumber,
         nativeBalance,
         gasPriceinGwei,
         tokenABalance,
@@ -274,9 +273,7 @@ export default function Swap(props: ISwapProps) {
     ) : null;
 
     const isTokenAAllowanceSufficient = parseFloat(tokenAAllowance) >= parseFloat(tokenAInputQty);
-    // console.log({ tokenAAllowance });
-    // console.log({ tokenAInputQty });
-    // console.log({ isTokenAAllowanceSufficient });
+
     return (
         <motion.main
             initial={{ width: 0 }}
@@ -342,10 +339,8 @@ export default function Swap(props: ISwapProps) {
                     loginButton
                 )}
             </ContentContainer>
-
             {confirmSwapModalOrNull}
             {relativeModalOrNull}
-            {/* <button onClick={openRelativeModal}>open relative modal</button> */}
         </motion.main>
     );
 }

@@ -93,40 +93,23 @@ export default function ExtraInfo(props: ExtraInfoProps) {
 
     const extraDetailsOrNull = showExtraDetails ? extraInfoDetails : null;
 
-    function makePriceDisplay(symbolTokenA: string, symbolTokenB: string, displayPrice: number) {
-        const shouldBeFlipped = () => {
-            if (isTokenABase) {
-                if (isDenomBase) {
-                    return true;
-                } else if (!isDenomBase) {
-                    return false;
-                }
-            } else if (!isTokenABase) {
-                if (isDenomBase) {
-                    return false;
-                } else if (!isDenomBase) {
-                    return true;
-                }
-            }
-        };
-        const flipped = shouldBeFlipped();
-        const formattedDisplayPrice =
-            displayPrice > 1 ? displayPrice : truncateDecimals(displayPrice, 6);
-        const makeTemplate = (symbolOne: string, price: number, symbolTwo: string) =>
-            `1 ${symbolOne} = ${price} ${symbolTwo}`;
-        const output = makeTemplate(
-            flipped ? symbolTokenA : symbolTokenB,
-            flipped ? truncateDecimals(1 / formattedDisplayPrice, 6) : formattedDisplayPrice,
-            flipped ? symbolTokenB : symbolTokenA,
-        );
-        return output;
-    }
+    const [baseTokenData, quoteTokenData] = isTokenABase
+        ? [tokenPair.dataTokenA, tokenPair.dataTokenB]
+        : [tokenPair.dataTokenB, tokenPair.dataTokenA];
 
-    // const priceDisplay = makePriceDisplay(
-    //     tokenPair.dataTokenA.symbol,
-    //     tokenPair.dataTokenB.symbol,
-    //     poolPriceDisplay,
-    // );
+    const defaultDisplay =
+        poolPriceDisplay < 1
+            ? `1 ${baseTokenData.symbol} ≈ ${truncateDecimals(1 / poolPriceDisplay, 4)} ${
+                  quoteTokenData.symbol
+              }`
+            : `1 ${quoteTokenData.symbol} ≈ ${poolPriceDisplay} ${baseTokenData.symbol}`;
+
+    const flippedDisplay =
+        poolPriceDisplay < 1
+            ? `1 ${quoteTokenData.symbol} ≈ ${poolPriceDisplay} ${baseTokenData.symbol}`
+            : `1 ${baseTokenData.symbol} ≈ ${truncateDecimals(1 / poolPriceDisplay, 4)} ${
+                  quoteTokenData.symbol
+              }`;
 
     return (
         <div className={styles.extra_info_container}>
@@ -138,8 +121,7 @@ export default function ExtraInfo(props: ExtraInfoProps) {
                     <FaGasPump size={15} /> {truncatedGasInGwei} gwei
                 </div>
                 <div className={styles.token_amount}>
-                    1 {tokenPair.dataTokenA.symbol} = {displayPriceString}{' '}
-                    {tokenPair.dataTokenB.symbol}
+                    {isDenomBase ? defaultDisplay : flippedDisplay}
                     <RiArrowDownSLine size={27} />{' '}
                 </div>
             </div>

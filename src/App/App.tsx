@@ -568,7 +568,6 @@ export default function App() {
         tokenAAllowance: tokenAAllowance,
         setRecheckTokenAApproval: setRecheckTokenAApproval,
         tokenBBalance: tokenBBalance,
-        poolPriceDisplay: poolPriceDisplay,
         tokenBAllowance: tokenBAllowance,
         setRecheckTokenBApproval: setRecheckTokenBApproval,
     };
