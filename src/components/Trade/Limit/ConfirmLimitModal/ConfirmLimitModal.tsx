@@ -9,11 +9,23 @@ import Divider from '../../../Global/Divider/Divider';
 
 interface ConfirmLimitModalProps {
     onClose: () => void;
+    initiateLimitOrderMethod: () => void;
     tokenPair: TokenPairIF;
+    tokenAInputQty: string;
+    tokenBInputQty: string;
+    isTokenAPrimary: boolean;
+    limitRate: string;
+    newLimitOrderTransactionHash: string;
 }
 
 export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
-    const { onClose, tokenPair } = props;
+    const {
+        onClose,
+        tokenPair,
+        initiateLimitOrderMethod,
+        limitRate,
+        newLimitOrderTransactionHash,
+    } = props;
     const [confirmDetails, setConfirmDetails] = useState<boolean>(true);
     const [transactionApproved] = useState<boolean>(false);
 
@@ -39,7 +51,7 @@ export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
             <div className={styles.modal_currency_converter}>
                 <CurrencyDisplay amount={sellTokenQty} tokenData={sellTokenData} />
                 <div className={styles.limit_price_container}>
-                    <CurrencyDisplay amount={'2.33'} tokenData={buyTokenData} isLimitBox />
+                    <CurrencyDisplay amount={limitRate} tokenData={buyTokenData} isLimitBox />
                 </div>
                 <div className={styles.arrow_container}>
                     <span className={styles.arrow} />
@@ -75,7 +87,7 @@ export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
         />
     );
 
-    const transactionSubmitted = <TransactionSubmitted hash={'newSwapTransactionHash'} />;
+    const transactionSubmitted = <TransactionSubmitted hash={newLimitOrderTransactionHash} />;
 
     const confirmationDisplay = transactionApproved ? transactionSubmitted : confirmSendMessage;
 
@@ -83,12 +95,13 @@ export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
         <Button
             title='Send Limit to Metamask'
             action={() => {
-                console.log(
-                    `Sell Token Full name: ${sellTokenData.symbol} and quantity: ${sellTokenQty}`,
-                );
-                console.log(
-                    `Buy Token Full name: ${buyTokenData.symbol} and quantity: ${buyTokenQty}`,
-                );
+                // console.log(
+                //     `Sell Token Full name: ${sellTokenData.symbol} and quantity: ${sellTokenQty}`,
+                // );
+                // console.log(
+                //     `Buy Token Full name: ${buyTokenData.symbol} and quantity: ${buyTokenQty}`,
+                // );
+                initiateLimitOrderMethod();
 
                 setConfirmDetails(false);
             }}

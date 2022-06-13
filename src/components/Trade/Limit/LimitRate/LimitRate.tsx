@@ -1,10 +1,9 @@
 import styles from './LimitRate.module.css';
 // import { RiArrowDownSLine } from 'react-icons/ri';
 // import Toggle from '../../../Global/Toggle/Toggle';
-import // useState,
-// ChangeEvent
-'react';
+
 import { TokenIF, TokenPairIF } from '../../../../utils/interfaces/exports';
+// import { useState, useEffect } from 'react';
 // import Modal from '../../../../components/Global/Modal/Modal';
 // import TokenSelectContainer from '../../../Global/TokenSelectContainer/TokenSelectContainer';
 // import { useModal } from '../../../../components/Global/Modal/useModal';
@@ -18,7 +17,9 @@ interface LimitRateProps {
     sellToken?: boolean;
     disable?: boolean;
     reverseTokens: () => void;
-
+    setLimitRate: React.Dispatch<React.SetStateAction<string>>;
+    poolPriceNonDisplay: number;
+    insideTickDisplayPrice: number;
     // updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
 }
 
@@ -29,6 +30,8 @@ export default function LimitRate(props: LimitRateProps) {
         //   tokensBank,
         //   chainId,
         disable,
+        setLimitRate,
+        // insideTickDisplayPrice,
         //   reverseTokens
     } = props;
     // const [isChecked, setIsChecked] = useState<boolean>(false);
@@ -56,7 +59,7 @@ export default function LimitRate(props: LimitRateProps) {
                 id={`${fieldId}-quantity`}
                 className={styles.currency_quantity}
                 placeholder='0.0'
-                // onChange={(event) => updateOtherQuantity(event)}
+                onChange={(event) => setLimitRate(event.target.value)}
                 type='string'
                 inputMode='decimal'
                 autoComplete='off'

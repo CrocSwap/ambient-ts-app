@@ -26,6 +26,8 @@ interface LimitCurrencyConverterProps {
     tokensBank: Array<TokenIF>;
     chainId: string;
     poolPriceDisplay: number;
+    poolPriceNonDisplay: number;
+    insideTickDisplayPrice: number;
     setIsSellTokenPrimary?: React.Dispatch<SetStateAction<boolean>>;
     setLimitAllowed: React.Dispatch<React.SetStateAction<boolean>>;
     isSellTokenBase: boolean;
@@ -40,6 +42,7 @@ interface LimitCurrencyConverterProps {
     setIsWithdrawFromDexChecked: React.Dispatch<SetStateAction<boolean>>;
     isWithdrawToWalletChecked: boolean;
     setIsWithdrawToWalletChecked: React.Dispatch<SetStateAction<boolean>>;
+    setLimitRate: React.Dispatch<React.SetStateAction<string>>;
 }
 
 // central react functional component
@@ -49,6 +52,8 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
         tokensBank,
         chainId,
         poolPriceDisplay,
+        poolPriceNonDisplay,
+        insideTickDisplayPrice,
         setLimitAllowed,
         isSellTokenBase,
         tokenABalance,
@@ -60,6 +65,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
         setIsWithdrawFromDexChecked,
         isWithdrawToWalletChecked,
         setIsWithdrawToWalletChecked,
+        setLimitRate,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -265,6 +271,9 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 chainId={chainId}
                 fieldId='limit-rate'
                 reverseTokens={reverseTokens}
+                setLimitRate={setLimitRate}
+                poolPriceNonDisplay={poolPriceNonDisplay}
+                insideTickDisplayPrice={insideTickDisplayPrice}
             />
         </section>
     );
