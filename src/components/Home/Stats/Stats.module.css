@@ -1,0 +1,51 @@
+
+.container{
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+.title{
+    font-style: normal;
+font-weight: 300;
+font-size: 24px;
+line-height: 30px;
+text-align: center;
+letter-spacing: -0.02em;
+color: var(--text-grey-white)
+}
+
+.content{
+    --auto-grid-min-size: 16rem;
+    max-width: 1120px;
+    margin: 0 auto;
+  
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(var(--auto-grid-min-size), 1fr));
+    grid-gap: 1rem;
+}
+
+
+.stat_card_container{
+    background: var(--dark3);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 350px;
+    height: 100px;
+}
+
+.title{
+    font-size: var(--font-logo);
+    color: var(--text-grey-white);
+    font-weight: 100;
+font-size: 30px;
+line-height: 38px;
+}
+.value{
+    font-weight: 200;
+font-size: 18px;
+line-height: 22px;
+letter-spacing: -0.02em;
+color: var(--text-grey-white);
+
+}
