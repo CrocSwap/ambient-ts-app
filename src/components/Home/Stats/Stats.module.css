@@ -16,12 +16,10 @@ color: var(--text-grey-white)
 }
 
 .content{
-    --auto-grid-min-size: 18rem;
     max-width: 1120px;
     margin: 0 auto;
   
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(var(--auto-grid-min-size), 1fr));
     grid-gap: 1rem;
 }
 
@@ -54,3 +52,10 @@ letter-spacing: -0.02em;
 color: var(--text-grey-white);
 
 }
+@media (min-width: 600px) {
+    .content { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (min-width: 900px) {
+    .content { grid-template-columns: repeat(3, 1fr); }
+  }

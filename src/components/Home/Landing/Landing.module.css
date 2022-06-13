@@ -24,7 +24,26 @@
     align-items: center;
     gap: 1rem;
 }
+.ambient_background{
+  font-size: clamp(40px, 10vw, 15vw);
+  font-weight: 700;
+  position: relative;
+  z-index: 1;
+  background-image: -webkit-gradient(linear,left top,left bottom,from(rgba(162,147,255,.3)),to(rgba(22,16,59,.3)));
+  background-image: linear-gradient(180deg,rgba(162,147,255,.3),rgba(22,16,59,.3));
+  font-family: Averta,sans-serif;
+  /* font-size: 15.63em; */
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  opacity: 0.2;
+  display: none;
+
+}
 .ambient{
+ 
+ 
+ 
     background: var(--title-gradient);
     font-family: var(--font-logo);
     -webkit-background-clip: text;
@@ -97,3 +116,30 @@ line-height: 38px;
     }
     
    
+
+    /* Desktop screen Sizes */
+@media only screen and (min-width: 768px) {
+
+	.ambient_background{
+    display: block;
+    font-size: clamp(40px, 10vw, 15vw);
+    font-weight: 700;
+    position: relative;
+    z-index: 1;
+    background-image: -webkit-gradient(linear,left top,left bottom,from(rgba(162,147,255,.3)),to(rgba(22,16,59,.3)));
+    background-image: linear-gradient(180deg,rgba(162,147,255,.3),rgba(22,16,59,.3));
+    font-family: Averta,sans-serif;
+    /* font-size: 15.63em; */
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    opacity: 0.19;
+  
+  }
+
+  .ambient{
+    position: absolute;
+    z-index: 2;
+  }
+
+}

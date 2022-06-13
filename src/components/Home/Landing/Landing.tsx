@@ -5,6 +5,7 @@ export default function Landing() {
     return (
         <div className={styles.main_container}>
             <div className={styles.content_container}>
+                <div className={styles.ambient_background}>DEFI 2.0</div>
                 <div className={styles.ambient}>ambient</div>
                 <Link to={'/trade'}>
                     <button className={styles.action_button}>
