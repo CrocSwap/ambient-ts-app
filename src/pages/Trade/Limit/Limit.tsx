@@ -110,10 +110,6 @@ export default function Limit(props: LimitPropsIF) {
 
     const [newLimitOrderTransactionHash, setNewLimitOrderTransactionHash] = useState('');
 
-    useEffect(() => {
-        console.log({ newLimitOrderTransactionHash });
-    }, [newLimitOrderTransactionHash]);
-
     const tokenA = tokenPair.dataTokenA;
     const tokenB = tokenPair.dataTokenB;
 
@@ -249,6 +245,7 @@ export default function Limit(props: LimitPropsIF) {
                 tokenBInputQty={tokenBInputQty}
                 isTokenAPrimary={isTokenAPrimary}
                 limitRate={limitRate}
+                newLimitOrderTransactionHash={newLimitOrderTransactionHash}
             />
         </Modal>
     ) : null;

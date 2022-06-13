@@ -15,10 +15,17 @@ interface ConfirmLimitModalProps {
     tokenBInputQty: string;
     isTokenAPrimary: boolean;
     limitRate: string;
+    newLimitOrderTransactionHash: string;
 }
 
 export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
-    const { onClose, tokenPair, initiateLimitOrderMethod, limitRate } = props;
+    const {
+        onClose,
+        tokenPair,
+        initiateLimitOrderMethod,
+        limitRate,
+        newLimitOrderTransactionHash,
+    } = props;
     const [confirmDetails, setConfirmDetails] = useState<boolean>(true);
     const [transactionApproved] = useState<boolean>(false);
 
@@ -80,7 +87,7 @@ export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
         />
     );
 
-    const transactionSubmitted = <TransactionSubmitted hash={'newSwapTransactionHash'} />;
+    const transactionSubmitted = <TransactionSubmitted hash={newLimitOrderTransactionHash} />;
 
     const confirmationDisplay = transactionApproved ? transactionSubmitted : confirmSendMessage;
 
