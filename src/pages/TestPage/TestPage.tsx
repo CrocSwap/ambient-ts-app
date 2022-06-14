@@ -5,6 +5,7 @@ import PoolCard from '../../components/Global/PoolCard/PoolCard';
 import Stats from '../../components/Home/Stats/AmbientStats';
 import Carousel from '../../components/Global/Carousel/Carousel';
 import CarouselItem from '../../components/Global/Carousel/CarouselItem/CarouselItem';
+import Landing2 from '../../components/Home/Landing/Landing2';
 
 export default function TestPage() {
     const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
@@ -28,6 +29,7 @@ export default function TestPage() {
                 <CarouselItem height={'526px'}>2</CarouselItem>
                 <CarouselItem height={'526px'}>3</CarouselItem>
             </Carousel>
+            <Landing2 />
         </main>
     );
 }
