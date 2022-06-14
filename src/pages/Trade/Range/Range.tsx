@@ -447,8 +447,6 @@ export default function Range(props: RangePropsIF) {
         isTokenABase: false,
     };
 
-    console.log(Number(poolPriceDisplay));
-
     const baseModeContent = (
         <>
             <RangeWidth {...rangeWidthProps} />

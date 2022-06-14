@@ -40,6 +40,7 @@ import { IParsedPosition, parsePositionArray } from './parsePositions';
 import { defaultTokens } from '../utils/data/defaultTokens';
 import initializeLocalStorage from './functions/initializeLocalStorage';
 import { TokenIF } from '../utils/interfaces/exports';
+import { setDenomInBase } from '../utils/state/tradeDataSlice';
 
 /** ***** React Function *******/
 export default function App() {
@@ -583,6 +584,28 @@ export default function App() {
         showSidebar: showSidebar,
         toggleSidebar: toggleSidebar,
     };
+
+    function updateDenomIsInBase() {
+        console.log('------------');
+        // we need to know if the denom token is base or quote
+        // currently the denom token is the cheaper one by default
+        // ergo we need to know if the cheaper token is base or quote
+        // whether pool price is greater or less than 1 indicates which is more expensive
+        // if pool price is < 0.1 then denom token will be quote (cheaper one)
+        // if pool price is > 0.1 then denom token will be base (also cheaper one)
+        // then reverse if didUserToggleDenom === true
+        const isDenomInBase = poolPriceDisplay < 1
+            ? (tradeData.didUserFlipDenom ? false : true)
+            : (tradeData.didUserFlipDenom ? true : false);
+        console.log({isDenomInBase});
+        console.log('------------');
+        return isDenomInBase;
+    }
+
+    useEffect(() => {
+        dispatch(setDenomInBase(updateDenomIsInBase()));
+    }, [tradeData.didUserFlipDenom]);
+    updateDenomIsInBase();
 
     const mainLayoutStyle = showSidebar ? 'main-layout-2' : 'main-layout';
     // take away margin from left if we are on homepage or swap
