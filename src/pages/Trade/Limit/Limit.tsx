@@ -160,7 +160,8 @@ export default function Limit(props: LimitPropsIF) {
             let roundedTickInsideCurrentPrice: number;
 
             if (isTokenABase) {
-                roundedTickInsideCurrentPrice = roundUpTick(currentPoolPriceTick * 1.01);
+                const offset = 100;
+                roundedTickInsideCurrentPrice = roundUpTick(currentPoolPriceTick + offset);
                 // console.log({ roundedTickInsideCurrentPrice });
                 const insideTickNonDisplayPrice = tickToPrice(roundedTickInsideCurrentPrice);
                 const insideTickDisplayPrice =
@@ -174,7 +175,8 @@ export default function Limit(props: LimitPropsIF) {
                 }
                 setLimitRate(pinnedInitialDisplayPrice);
             } else {
-                roundedTickInsideCurrentPrice = roundDownTick(currentPoolPriceTick * 0.99);
+                const offset = 100;
+                roundedTickInsideCurrentPrice = roundDownTick(currentPoolPriceTick - offset);
                 // console.log({ roundedTickInsideCurrentPrice });
                 const insideTickNonDisplayPrice = tickToPrice(roundedTickInsideCurrentPrice);
                 const insideTickDisplayPrice = toDisplayPrice(
