@@ -77,6 +77,8 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         tradeData.isTokenAPrimaryRange,
     );
 
+    const primaryQuantityRange = tradeData.primaryQuantityRange;
+
     useEffect(() => {
         if (tradeData) {
             if (tradeData.isTokenAPrimaryRange) {
@@ -125,7 +127,9 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
 
         if (qtyTokenB) {
             tokenBQtyField.value = typeof qtyTokenB === 'string' ? qtyTokenB : qtyTokenB.toString();
-            dispatch(setPrimaryQuantityRange(value.toString()));
+            if (primaryQuantityRange !== value.toString()) {
+                dispatch(setPrimaryQuantityRange(value.toString()));
+            }
             setIsTokenAPrimaryLocal(true);
             setTokenBQtyLocal(qtyTokenB);
             setTokenBInputQty(qtyTokenB.toString());
@@ -158,7 +162,9 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         const tokenAQtyField = document.getElementById('A-range-quantity') as HTMLInputElement;
         if (qtyTokenA) {
             tokenAQtyField.value = typeof qtyTokenA === 'string' ? qtyTokenA : qtyTokenA.toString();
-            dispatch(setPrimaryQuantityRange(value.toString()));
+            if (primaryQuantityRange !== value.toString()) {
+                dispatch(setPrimaryQuantityRange(value.toString()));
+            }
             setIsTokenAPrimaryLocal(false);
             setTokenAQtyLocal(qtyTokenA);
             setTokenAInputQty(qtyTokenA.toString());
@@ -227,6 +233,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
 
     const handleTokenAQtyFieldUpdate = (evt?: ChangeEvent<HTMLInputElement>) => {
         if (evt) {
+            console.log('new handle token A event');
             const input = evt.target.value;
             setTokenAQtyValue(parseFloat(input));
             setIsTokenAPrimaryLocal(true);
@@ -239,6 +246,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
 
     const handleTokenBQtyFieldUpdate = (evt?: ChangeEvent<HTMLInputElement>) => {
         if (evt) {
+            console.log('new handle token B event');
             const input = evt.target.value;
             setTokenBQtyValue(parseFloat(input));
             setIsTokenAPrimaryLocal(false);
