@@ -6,23 +6,23 @@ import { RiArrowDownSLine } from 'react-icons/ri';
 // START: Import Local Files
 import styles from './ExtraInfo.module.css';
 import truncateDecimals from '../../../utils/data/truncateDecimals';
-import { TokenPairIF } from '../../../utils/interfaces/exports';
+import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
 import TooltipComponent from '../../Global/TooltipComponent/TooltipComponent';
 
 // interface for props in this file
-interface ExtraInfoProps {
+interface ExtraInfoPropsIF {
     tokenPair: TokenPairIF;
     poolPriceDisplay: number;
     slippageTolerance: number;
     liquidityProviderFee: number;
     quoteTokenIsBuy: boolean;
     gasPriceinGwei: string;
-    isDenomBase: boolean;
+    didUserFlipDenom: boolean;
     isTokenABase: boolean;
 }
 
 // central react functional component
-export default function ExtraInfo(props: ExtraInfoProps) {
+export default function ExtraInfo(props: ExtraInfoPropsIF) {
     const {
         tokenPair,
         poolPriceDisplay,
@@ -30,7 +30,7 @@ export default function ExtraInfo(props: ExtraInfoProps) {
         liquidityProviderFee,
         quoteTokenIsBuy,
         gasPriceinGwei,
-        isDenomBase,
+        didUserFlipDenom,
         isTokenABase,
     } = props;
 
@@ -93,23 +93,33 @@ export default function ExtraInfo(props: ExtraInfoProps) {
 
     const extraDetailsOrNull = showExtraDetails ? extraInfoDetails : null;
 
-    const [baseTokenData, quoteTokenData] = isTokenABase
-        ? [tokenPair.dataTokenA, tokenPair.dataTokenB]
-        : [tokenPair.dataTokenB, tokenPair.dataTokenA];
+    const makePriceDisplay = (tokenA:TokenIF, tokenB:TokenIF) => {
+        const [baseTokenData, quoteTokenData] = isTokenABase
+            ? [tokenA, tokenB]
+            : [tokenB, tokenA];
 
-    const defaultDisplay =
-        poolPriceDisplay < 1
-            ? `1 ${baseTokenData.symbol} ≈ ${truncateDecimals(1 / poolPriceDisplay, 4)} ${
-                  quoteTokenData.symbol
-              }`
-            : `1 ${quoteTokenData.symbol} ≈ ${poolPriceDisplay} ${baseTokenData.symbol}`;
+        const [expTokenData, cheapTokenData] = poolPriceDisplay < 1
+            ? [baseTokenData, quoteTokenData]
+            : [quoteTokenData, baseTokenData];
 
-    const flippedDisplay =
-        poolPriceDisplay < 1
-            ? `1 ${quoteTokenData.symbol} ≈ ${poolPriceDisplay} ${baseTokenData.symbol}`
-            : `1 ${baseTokenData.symbol} ≈ ${truncateDecimals(1 / poolPriceDisplay, 4)} ${
-                  quoteTokenData.symbol
-              }`;
+        const [firstSymbol, secondSymbol] = didUserFlipDenom
+            ? [cheapTokenData.symbol, expTokenData.symbol]
+            : [expTokenData.symbol, cheapTokenData.symbol];
+
+        const priceRelationship = poolPriceDisplay < 1
+            ? !didUserFlipDenom
+                ? 1 / poolPriceDisplay
+                : poolPriceDisplay
+            : !didUserFlipDenom
+                ? poolPriceDisplay
+                : 1 / poolPriceDisplay;
+
+        const truncPrice = truncateDecimals(priceRelationship, 4);
+
+        return '1 ' + firstSymbol + ' ≈ ' + truncPrice + ' ' + secondSymbol;
+    };
+
+    const priceDisplay = makePriceDisplay(tokenPair.dataTokenA, tokenPair.dataTokenB);
 
     return (
         <div className={styles.extra_info_container}>
@@ -121,7 +131,7 @@ export default function ExtraInfo(props: ExtraInfoProps) {
                     <FaGasPump size={15} /> {truncatedGasInGwei} gwei
                 </div>
                 <div className={styles.token_amount}>
-                    {isDenomBase ? defaultDisplay : flippedDisplay}
+                    {priceDisplay}
                     <RiArrowDownSLine size={27} />{' '}
                 </div>
             </div>
