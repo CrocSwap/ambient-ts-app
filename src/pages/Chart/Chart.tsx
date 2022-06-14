@@ -3,6 +3,8 @@ import * as d3fc from 'd3fc';
 import { DetailedHTMLProps, HTMLAttributes, useEffect, useRef, useState } from 'react';
 import './Chart.css';
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace JSX {
@@ -19,7 +21,7 @@ export default function Chart() {
     const d3Xaxis = useRef(null);
     const d3Yaxis = useRef(null);
 
-    const [data, setData] = useState(d3fc.randomFinancial()(50));
+    const [data] = useState(d3fc.randomFinancial()(50));
     const [targets, setTargets] = useState([
         {
             name: 'high',
@@ -34,15 +36,51 @@ export default function Chart() {
 
     useEffect(() => {
         console.log('update chart');
-        const container = d3Container.current;
-        const yExtent = d3fc.extentLinear().accessors([(d: any) => d.high, (d: any) => d.low]);
+
+        // const createMarketProfile = (_data: any, _priceBuckets: any[]) => {
+        //     // find the price bucket size
+        //     const priceStep = _priceBuckets[1] - _priceBuckets[0];
+
+        //     // determine whether a datapoint is within a bucket
+        //     const inBucket = (datum: any, priceBucket: any) =>
+        //         datum.low < priceBucket && datum.high > (priceBucket - priceStep);
+
+        //     // the volume contribution for this range
+        //     const volumeInBucket = (datum: any, priceBucket: any) =>
+        //         // inBucket(datum, priceBucket) ? 1 : 0;
+        //         inBucket(datum, priceBucket) ? datum.volume / Math.ceil((datum.high - datum.low) / priceStep) : 0;
+
+        //     // map each point in our time series, to construct the market profile
+        //     const marketProfile = data.map(
+        //         (datum: any, index: number) => _priceBuckets.map(priceBucket => {
+        //             // determine how many points to the left are also within this time bucket
+        //             const base = d3.sum(data.slice(0, index)
+        //                 .map((d:any) => volumeInBucket(d, priceBucket)));
+        //             return {
+        //                 base,
+        //                 value: base + volumeInBucket(datum, priceBucket),
+        //                 price: priceBucket
+        //             };
+        //         })
+        //     );
+
+        //     // similar to d3-stack - cache the underlying data
+        //     marketProfile.data = data;
+        //     return marketProfile;
+        // };
+
+        const priceRange = d3fc.extentLinear().accessors([(d: any) => d.high, (d: any) => d.low]);
         const xExtent = d3fc.extentDate().accessors([(d: any) => d.date]);
 
         const xScale = d3.scaleTime();
         const yScale = d3.scaleLinear();
+        // bar chart
+        // const priceScale = d3.scaleLinear().domain(priceRange);
+        // const priceBuckets = priceScale.ticks(20);
+        // const marketProfile = createMarketProfile(data, priceBuckets);
 
         xScale.domain(xExtent(data));
-        yScale.domain(yExtent(data));
+        yScale.domain(priceRange(data));
 
         // axes
         const xAxis = d3fc.axisBottom().scale(xScale);
@@ -62,12 +100,13 @@ export default function Chart() {
 
         const barSeries = d3fc
             .autoBandwidth(d3fc.seriesSvgBar())
-            // .crossValue(d: any => d.tag)
+            .crossValue((d: any) => d.high)
             .align('left')
             .orient('horizontal')
             .key((d: any) => d.high)
             .mainValue((d: any) => d.volume)
-            .xScale(xScale);
+            .xScale(yScale)
+            .yScale(xScale);
 
         const horizontalLine = d3fc
             .annotationSvgLine()
@@ -112,7 +151,6 @@ export default function Chart() {
                 .call(drag);
         });
 
-        const xAxisJoin = d3fc.dataJoin('g', 'x-axis');
         const gridJoin = d3fc.dataJoin('g', 'grid');
         const candleJoin = d3fc.dataJoin('g', 'candle');
         const targetsJoin = d3fc.dataJoin('g', 'targets');
@@ -140,7 +178,7 @@ export default function Chart() {
         d3.select(d3Yaxis.current).on('draw', function (event: any) {
             d3.select(event.target).select('svg').call(yAxis);
         });
-        const nd = d3.select('#group').node()! as any;
+        const nd = d3.select('#group').node() as any;
         nd.requestRedraw();
         // const chart = d3fc.chartCartesian(xScale, yScale).svgPlotArea(multi);
         // chart.xDomain(xExtent(data));
