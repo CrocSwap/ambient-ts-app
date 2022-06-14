@@ -6,11 +6,25 @@
     transition: transform 0.3s;
 }
 
-.carousel_item{
+/* .carousel_item{
     display: inline-flex;
     align-items: center;
     justify-content: center;
     height: 200px;
     background-color: blue;
+    color: white;
+} */
+
+.indicators{
+    display: flex;
+    justify-content: center;
+}
+
+.indicators > button{
+    margin: 5px;
+}
+
+.indicators > button.active {
+    background: blue;
     color: white;
 }
