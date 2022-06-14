@@ -1,5 +1,6 @@
 // START: Import Local Files
 import styles from './RangePriceInfo.module.css';
+import truncateDecimals from '../../../../utils/data/truncateDecimals';
 import { TokenPairIF } from '../../../../utils/interfaces/exports';
 
 // interface for component props
@@ -10,7 +11,7 @@ interface IRangePriceInfoPropsIF {
     minPriceDisplay: string;
     apyPercentage: number;
     isTokenABase: boolean;
-    isDenomBase: boolean;
+    didUserFlipDenom: boolean;
 }
 
 // central react functional component
@@ -20,8 +21,8 @@ export default function RangePriceInfo(props: IRangePriceInfoPropsIF) {
         maxPriceDisplay,
         minPriceDisplay,
         apyPercentage,
-        isTokenABase,
-        isDenomBase,
+        // isTokenABase,
+        didUserFlipDenom
     } = props;
 
     // JSX frag for estimated APY of position
@@ -39,13 +40,11 @@ export default function RangePriceInfo(props: IRangePriceInfoPropsIF) {
 
     function makeCurrentPrice() {
         const priceAsFloat = parseFloat(spotPriceDisplay);
-        let output;
-        if (isDenomBase) {
-            output = isTokenABase ? priceAsFloat : 1 / priceAsFloat;
-        } else if (!isDenomBase) {
-            output = isTokenABase ? 1 / priceAsFloat : priceAsFloat;
-        }
-        return output;
+        const rawPrice = priceAsFloat < 1
+            ? (!didUserFlipDenom ? 1 / priceAsFloat : priceAsFloat)
+            : (!didUserFlipDenom ? priceAsFloat : 1 / priceAsFloat);
+        const truncPrice = truncateDecimals(rawPrice, 4);
+        return truncPrice;
     }
 
     // JSX frag for current pool price for the token pair
