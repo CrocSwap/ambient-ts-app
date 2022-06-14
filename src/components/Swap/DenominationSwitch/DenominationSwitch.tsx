@@ -37,16 +37,17 @@ export default function DenominationSwitch(props: denominationSwitchPropsIF) {
     // TODO:  ... value of `toggleDenomination`, let's do just one button with two
     // TODO   ... <div> elements nested inside of it
 
-    const buttonTokenA = useMemo(() => {
-        const moreExpensiveToken = poolPriceDisplay < 1
-            ? (isTokenABase ? 'A' : 'B')
-            : (isTokenABase ? 'B' : 'A');
+    const moreExpensiveToken = poolPriceDisplay < 1
+        ? (isTokenABase ? 'A' : 'B')
+        : (isTokenABase ? 'B' : 'A');
 
-        const tokenToHighlight = moreExpensiveToken === 'A'
-            ? (didUserFlipDenom ? 'B' : 'A')
-            : (didUserFlipDenom ? 'A' : 'B');
+    const tokenToHighlight = moreExpensiveToken === 'A'
+        ? (didUserFlipDenom ? 'B' : 'A')
+        : (didUserFlipDenom ? 'A' : 'B');
 
-        return (
+    return (
+        <div className={styles.denomination_switch}>
+            <div>Denomination</div>
             <button
                 className={
                     tokenToHighlight === 'A'
@@ -57,19 +58,6 @@ export default function DenominationSwitch(props: denominationSwitchPropsIF) {
             >
                 {tokenPair.dataTokenA.symbol}
             </button>
-        );
-    }, [tokenPair]);
-
-    const buttonTokenB = useMemo(() => {
-        const moreExpensiveToken = poolPriceDisplay < 1
-        ? (isTokenABase ? 'A' : 'B')
-        : (isTokenABase ? 'B' : 'A');
-
-    const tokenToHighlight = moreExpensiveToken === 'A'
-        ? (didUserFlipDenom ? 'B' : 'A')
-        : (didUserFlipDenom ? 'A' : 'B');
-
-        return (
             <button
                 className={
                     tokenToHighlight === 'B'
@@ -80,14 +68,6 @@ export default function DenominationSwitch(props: denominationSwitchPropsIF) {
             >
                 {tokenPair.dataTokenB.symbol}
             </button>
-        );
-    }, [tokenPair]);
-
-    return (
-        <div className={styles.denomination_switch}>
-            <div>Denomination</div>
-            {buttonTokenA}
-            {buttonTokenB}
         </div>
     );
 }
