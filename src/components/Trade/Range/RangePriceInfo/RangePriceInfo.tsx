@@ -1,6 +1,6 @@
 // START: Import Local Files
 import styles from './RangePriceInfo.module.css';
-import truncateDecimals from '../../../../utils/data/truncateDecimals';
+import makeCurrentPrice from './makeCurrentPrice';
 import { TokenPairIF } from '../../../../utils/interfaces/exports';
 
 // interface for component props
@@ -36,16 +36,10 @@ export default function RangePriceInfo(props: IRangePriceInfoPropsIF) {
         </div>
     );
 
-    const currentPrice = makeCurrentPrice();
-
-    function makeCurrentPrice() {
-        const priceAsFloat = parseFloat(spotPriceDisplay);
-        const rawPrice = priceAsFloat < 1
-            ? (!didUserFlipDenom ? 1 / priceAsFloat : priceAsFloat)
-            : (!didUserFlipDenom ? priceAsFloat : 1 / priceAsFloat);
-        const truncPrice = truncateDecimals(rawPrice, 4);
-        return truncPrice;
-    }
+    const currentPrice = makeCurrentPrice(
+        parseFloat(spotPriceDisplay),
+        didUserFlipDenom
+    );
 
     // JSX frag for current pool price for the token pair
     const currentPriceFrag = (
