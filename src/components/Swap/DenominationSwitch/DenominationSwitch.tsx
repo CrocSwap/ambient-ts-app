@@ -4,8 +4,14 @@ import { useMemo } from 'react';
 // START: Import Local Files
 import styles from './DenominationSwitch.module.css';
 import { TokenPairIF } from '../../../utils/interfaces/exports';
-import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
-import { toggleDenomInBase } from '../../../utils/state/tradeDataSlice';
+import {
+    useAppDispatch,
+    useAppSelector
+} from '../../../utils/hooks/reduxToolkit';
+import {
+    // toggleDenomInBase,
+    toggleDidUserFlipDenom
+} from '../../../utils/state/tradeDataSlice';
 
 // interface for props
 interface denominationSwitchPropsIF {
@@ -21,7 +27,9 @@ interface denominationSwitchPropsIF {
 // TODO   ... end, please remove the value from props
 
 export default function DenominationSwitch(props: denominationSwitchPropsIF) {
-    const { tokenPair, displayForBase, isTokenABase, poolPriceDisplay } = props;
+    const { tokenPair, isTokenABase, poolPriceDisplay } = props;
+
+    const { didUserFlipDenom } = useAppSelector(state => state.tradeData);
 
     const dispatch = useAppDispatch();
 
@@ -29,42 +37,46 @@ export default function DenominationSwitch(props: denominationSwitchPropsIF) {
     // TODO:  ... value of `toggleDenomination`, let's do just one button with two
     // TODO   ... <div> elements nested inside of it
 
-    const isTokenAMoreExpensive = isTokenABase
-        ? poolPriceDisplay < 1
-            ? true
-            : false
-        : poolPriceDisplay < 1
-        ? false
-        : true;
-
     const buttonTokenA = useMemo(() => {
-        // const isBaseMoreExpensive = poolPriceDisplay < 1;
         const moreExpensiveToken = poolPriceDisplay < 1
             ? (isTokenABase ? 'A' : 'B')
             : (isTokenABase ? 'B' : 'A');
-        const cssClass = moreExpensiveToken === 'A'
-            ? styles.active_button
-            : styles.non_active_button;
+
+        const tokenToHighlight = moreExpensiveToken === 'A'
+            ? (didUserFlipDenom ? 'B' : 'A')
+            : (didUserFlipDenom ? 'A' : 'B');
+
         return (
-            <button className={cssClass} onClick={() => dispatch(toggleDenomInBase())}>
+            <button
+                className={
+                    tokenToHighlight === 'A'
+                        ? styles.active_button
+                        : styles.non_active_button
+                }
+                onClick={() => dispatch(toggleDidUserFlipDenom())}
+            >
                 {tokenPair.dataTokenA.symbol}
             </button>
         );
     }, [tokenPair]);
 
     const buttonTokenB = useMemo(() => {
+        const moreExpensiveToken = poolPriceDisplay < 1
+        ? (isTokenABase ? 'A' : 'B')
+        : (isTokenABase ? 'B' : 'A');
+
+    const tokenToHighlight = moreExpensiveToken === 'A'
+        ? (didUserFlipDenom ? 'B' : 'A')
+        : (didUserFlipDenom ? 'A' : 'B');
+
         return (
             <button
                 className={
-                    !displayForBase
-                        ? isTokenAMoreExpensive
-                            ? styles.active_button
-                            : styles.non_active_button
-                        : isTokenAMoreExpensive
-                        ? styles.non_active_button
-                        : styles.active_button
+                    tokenToHighlight === 'B'
+                        ? styles.active_button
+                        : styles.non_active_button
                 }
-                onClick={() => dispatch(toggleDenomInBase())}
+                onClick={() => dispatch(toggleDidUserFlipDenom())}
             >
                 {tokenPair.dataTokenB.symbol}
             </button>
