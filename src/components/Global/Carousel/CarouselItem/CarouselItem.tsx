@@ -6,5 +6,10 @@ interface CarouselItemProps {
 }
 
 export default function CarouselItem(props: CarouselItemProps) {
-    return <div className={styles.carousel_tem}>{props.children}</div>;
+    const { children, width } = props;
+    return (
+        <div className={styles.carousel_tem} style={{ width: width }}>
+            {children}
+        </div>
+    );
 }
