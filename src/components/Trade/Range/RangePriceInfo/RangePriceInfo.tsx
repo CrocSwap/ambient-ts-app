@@ -1,5 +1,6 @@
 // START: Import Local Files
 import styles from './RangePriceInfo.module.css';
+import truncateDecimals from '../../../../utils/data/truncateDecimals';
 import makeCurrentPrice from './makeCurrentPrice';
 import { TokenPairIF } from '../../../../utils/interfaces/exports';
 
@@ -10,7 +11,6 @@ interface IRangePriceInfoPropsIF {
     maxPriceDisplay: string;
     minPriceDisplay: string;
     apyPercentage: number;
-    isTokenABase: boolean;
     didUserFlipDenom: boolean;
 }
 
@@ -21,7 +21,6 @@ export default function RangePriceInfo(props: IRangePriceInfoPropsIF) {
         maxPriceDisplay,
         minPriceDisplay,
         apyPercentage,
-        // isTokenABase,
         didUserFlipDenom
     } = props;
 
@@ -32,7 +31,9 @@ export default function RangePriceInfo(props: IRangePriceInfoPropsIF) {
     const minimumPrice = (
         <div className={styles.price_display}>
             <h4 className={styles.price_title}>Min Price</h4>
-            <span className={styles.min_price}>{minPriceDisplay}</span>
+            <span className={styles.min_price}>
+                {truncateDecimals(parseFloat(minPriceDisplay), 4).toString()}
+            </span>
         </div>
     );
 
@@ -45,7 +46,9 @@ export default function RangePriceInfo(props: IRangePriceInfoPropsIF) {
     const maximumPrice = (
         <div className={styles.price_display}>
             <h4 className={styles.price_title}>Max Price</h4>
-            <span className={styles.max_price}>{maxPriceDisplay}</span>
+            <span className={styles.max_price}>
+                {truncateDecimals(parseFloat(maxPriceDisplay), 4).toString()}
+            </span>
         </div>
     );
 
