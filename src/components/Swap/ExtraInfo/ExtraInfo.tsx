@@ -6,7 +6,8 @@ import { RiArrowDownSLine } from 'react-icons/ri';
 // START: Import Local Files
 import styles from './ExtraInfo.module.css';
 import truncateDecimals from '../../../utils/data/truncateDecimals';
-import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
+import makePriceDisplay from './makePriceDisplay';
+import { TokenPairIF } from '../../../utils/interfaces/exports';
 import TooltipComponent from '../../Global/TooltipComponent/TooltipComponent';
 
 // interface for props in this file
@@ -93,33 +94,13 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
 
     const extraDetailsOrNull = showExtraDetails ? extraInfoDetails : null;
 
-    const makePriceDisplay = (tokenA:TokenIF, tokenB:TokenIF) => {
-        const [baseTokenData, quoteTokenData] = isTokenABase
-            ? [tokenA, tokenB]
-            : [tokenB, tokenA];
-
-        const [expTokenData, cheapTokenData] = poolPriceDisplay < 1
-            ? [baseTokenData, quoteTokenData]
-            : [quoteTokenData, baseTokenData];
-
-        const [firstSymbol, secondSymbol] = didUserFlipDenom
-            ? [cheapTokenData.symbol, expTokenData.symbol]
-            : [expTokenData.symbol, cheapTokenData.symbol];
-
-        const priceRelationship = poolPriceDisplay < 1
-            ? !didUserFlipDenom
-                ? 1 / poolPriceDisplay
-                : poolPriceDisplay
-            : !didUserFlipDenom
-                ? poolPriceDisplay
-                : 1 / poolPriceDisplay;
-
-        const truncPrice = truncateDecimals(priceRelationship, 4);
-
-        return '1 ' + firstSymbol + ' ≈ ' + truncPrice + ' ' + secondSymbol;
-    };
-
-    const priceDisplay = makePriceDisplay(tokenPair.dataTokenA, tokenPair.dataTokenB);
+    const priceDisplay = makePriceDisplay(
+        tokenPair.dataTokenA,
+        tokenPair.dataTokenB,
+        isTokenABase,
+        poolPriceDisplay,
+        didUserFlipDenom
+    );
 
     return (
         <div className={styles.extra_info_container}>
