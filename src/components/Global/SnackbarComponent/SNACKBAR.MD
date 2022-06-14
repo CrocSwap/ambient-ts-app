@@ -30,7 +30,7 @@ Ex: `const [openSnackbar, setOpenSnackbar] = useState<boolean>(false)`
 Full example of usablity:
 ` <SnackbarComponent severity='success' setOpenSnackbar={setOpenSnackbar} openSnackbar={openSnackbar}>
     I am snackbar
-</SnackbarComponent>`
+</SnackbarComponent>` 
 
 To open the snackbar component, create a function that toggles the `SetOpenSnackbar` to `true`. To test the snackbar out, I suggest you create a button with an onclick that handles this functionality.
 
