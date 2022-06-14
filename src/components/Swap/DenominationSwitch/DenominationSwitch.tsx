@@ -1,3 +1,6 @@
+// START: Import React and Dongles
+import { useMemo } from 'react';
+
 // START: Import Local Files
 import styles from './DenominationSwitch.module.css';
 import { TokenPairIF } from '../../../utils/interfaces/exports';
@@ -34,9 +37,8 @@ export default function DenominationSwitch(props: denominationSwitchPropsIF) {
         ? false
         : true;
 
-    return (
-        <div className={styles.denomination_switch}>
-            <div>Denomination</div>
+    const buttonTokenA = useMemo(() => {
+        return (
             <button
                 className={
                     displayForBase
@@ -51,7 +53,11 @@ export default function DenominationSwitch(props: denominationSwitchPropsIF) {
             >
                 {tokenPair.dataTokenA.symbol}
             </button>
+        );
+    }, [tokenPair]);
 
+    const buttonTokenB = useMemo(() => {
+        return (
             <button
                 className={
                     !displayForBase
@@ -66,6 +72,14 @@ export default function DenominationSwitch(props: denominationSwitchPropsIF) {
             >
                 {tokenPair.dataTokenB.symbol}
             </button>
+        );
+    }, [tokenPair]);
+
+    return (
+        <div className={styles.denomination_switch}>
+            <div>Denomination</div>
+            {buttonTokenA}
+            {buttonTokenB}
         </div>
     );
 }
