@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useMoralis, useNewMoralisObject } from 'react-moralis';
 import { motion } from 'framer-motion';
 import { BigNumber } from 'ethers';
@@ -22,6 +22,8 @@ import {
     concPosSlot,
     approveToken,
     contractAddresses,
+    // pinTickLower,
+    fromDisplayPrice,
 } from '@crocswap-libs/sdk';
 
 // START: Import JSX Elements
@@ -85,8 +87,6 @@ export default function Range(props: RangePropsIF) {
 
     const { save } = useNewMoralisObject('UserPosition');
 
-    const [rangeWidthPercentage, setRangeWidthPercentage] = useState(100);
-
     const [isWithdrawTokenAFromDexChecked, setIsWithdrawTokenAFromDexChecked] = useState(false);
     const [isWithdrawTokenBFromDexChecked, setIsWithdrawTokenBFromDexChecked] = useState(false);
     const [newRangeTransactionHash, setNewRangeTransactionHash] = useState('');
@@ -107,11 +107,10 @@ export default function Range(props: RangePropsIF) {
         dataTokenA: tradeData.tokenA,
         dataTokenB: tradeData.tokenB,
     };
+    const isAdvancedModeActive = tradeData.advancedMode;
 
     const denominationsInBase = tradeData.isDenomBase;
     const isTokenAPrimary = tradeData.isTokenAPrimaryRange;
-
-    const isAmbient = rangeWidthPercentage === 100;
 
     const [rangeAllowed, setRangeAllowed] = useState<boolean>(false);
 
@@ -130,11 +129,188 @@ export default function Range(props: RangePropsIF) {
     const tokenB = tokenPair.dataTokenB;
     const tokenADecimals = tokenA.decimals;
     const tokenBDecimals = tokenB.decimals;
+    const baseTokenDecimals = isTokenABase ? tokenADecimals : tokenBDecimals;
+    const quoteTokenDecimals = !isTokenABase ? tokenADecimals : tokenBDecimals;
 
     const isTokenAEth = tokenA.address === contractAddresses.ZERO_ADDR;
     const isTokenBEth = tokenB.address === contractAddresses.ZERO_ADDR;
 
     const qtyIsBase = (isTokenAPrimary && isTokenABase) || (!isTokenAPrimary && !isTokenABase);
+
+    const [rangeButtonErrorMessage, setRangeButtonErrorMessage] =
+        useState<string>('Enter an Amount');
+
+    const roundDownTick = (lowTick: number, nTicksGrid: number = GRID_SIZE_DFLT) => {
+        const tickGrid = Math.floor(rangeLowTick / nTicksGrid) * nTicksGrid;
+        const horizon = Math.floor(MIN_TICK / nTicksGrid) * nTicksGrid;
+        return Math.max(tickGrid, horizon);
+    };
+
+    const roundUpTick = (highTick: number, nTicksGrid: number = GRID_SIZE_DFLT) => {
+        const tickGrid = Math.ceil(highTick / nTicksGrid) * nTicksGrid;
+        const horizon = Math.ceil(MAX_TICK / nTicksGrid) * nTicksGrid;
+        return Math.min(tickGrid, horizon);
+    };
+
+    const currentPoolPriceTick = Math.log(poolPriceNonDisplay) / Math.log(1.0001);
+    const [rangeWidthPercentage, setRangeWidthPercentage] = useState<number>(100);
+
+    const [minPriceInputString, setMinPriceInputString] = useState<string>('');
+    const [maxPriceInputString, setMaxPriceInputString] = useState<string>('');
+
+    const minPriceNonDisplay = denominationsInBase
+        ? fromDisplayPrice(parseFloat(minPriceInputString), baseTokenDecimals, quoteTokenDecimals)
+        : fromDisplayPrice(parseFloat(maxPriceInputString), baseTokenDecimals, quoteTokenDecimals);
+
+    const maxPriceNonDisplay = denominationsInBase
+        ? fromDisplayPrice(parseFloat(maxPriceInputString), baseTokenDecimals, quoteTokenDecimals)
+        : fromDisplayPrice(parseFloat(minPriceInputString), baseTokenDecimals, quoteTokenDecimals);
+
+    useEffect(() => {
+        const reversedMinPriceDisplay = toDisplayPrice(
+            minPriceNonDisplay,
+            baseTokenDecimals,
+            quoteTokenDecimals,
+        );
+        console.log({ reversedMinPriceDisplay });
+    }, [minPriceNonDisplay]);
+
+    useEffect(() => {
+        const reversedMaxPriceDisplay = toDisplayPrice(
+            maxPriceNonDisplay,
+            baseTokenDecimals,
+            quoteTokenDecimals,
+        );
+        console.log({ reversedMaxPriceDisplay });
+    }, [maxPriceNonDisplay]);
+
+    useEffect(() => {
+        console.log({ minPriceInputString });
+    }, [minPriceInputString]);
+
+    useEffect(() => {
+        console.log({ maxPriceInputString });
+    }, [maxPriceInputString]);
+
+    useEffect(() => {
+        console.log({ denominationsInBase });
+    }, [denominationsInBase]);
+
+    const defaultMinPriceDifferencePercentage = -15;
+    const defaultMaxPriceDifferencePercentage = 15;
+
+    let minPriceDifferencePercentage = defaultMinPriceDifferencePercentage;
+    let maxPriceDifferencePercentage = defaultMaxPriceDifferencePercentage;
+
+    let rangeLowTick: number, rangeHighTick: number, isAmbient: boolean;
+
+    useEffect(() => {
+        console.log({ currentPoolPriceTick });
+    }, [currentPoolPriceTick]);
+
+    if (!isAdvancedModeActive) {
+        isAmbient = rangeWidthPercentage === 100;
+
+        rangeLowTick = currentPoolPriceTick - rangeWidthPercentage * 100;
+        rangeHighTick = currentPoolPriceTick + rangeWidthPercentage * 100;
+    } else {
+        isAmbient = false;
+
+        // const currentPoolPriceTick = Math.log(poolPriceNonDisplay) / Math.log(1.0001);
+        if (isNaN(minPriceNonDisplay)) {
+            rangeLowTick = currentPoolPriceTick + defaultMinPriceDifferencePercentage * 100;
+        } else {
+            rangeLowTick = Math.log(minPriceNonDisplay) / Math.log(1.0001);
+            const geometricDifferencePercentage = truncateDecimals(
+                ((currentPoolPriceTick - rangeLowTick) / currentPoolPriceTick) * 100,
+                4,
+            );
+
+            denominationsInBase
+                ? (minPriceDifferencePercentage = geometricDifferencePercentage)
+                : (maxPriceDifferencePercentage = geometricDifferencePercentage);
+        }
+        if (isNaN(maxPriceNonDisplay)) {
+            rangeHighTick = currentPoolPriceTick + defaultMaxPriceDifferencePercentage * 100;
+        } else {
+            rangeHighTick = Math.log(maxPriceNonDisplay) / Math.log(1.0001);
+            const geometricDifferencePercentage = truncateDecimals(
+                ((currentPoolPriceTick - rangeHighTick) / currentPoolPriceTick) * 100,
+                4,
+            );
+            denominationsInBase
+                ? (maxPriceDifferencePercentage = geometricDifferencePercentage)
+                : (minPriceDifferencePercentage = geometricDifferencePercentage);
+        }
+    }
+
+    useEffect(() => {
+        console.log({ rangeLowTick });
+    }, [rangeLowTick]);
+
+    useEffect(() => {
+        console.log({ rangeHighTick });
+    }, [rangeHighTick]);
+
+    const roundedLowTick = roundDownTick(rangeLowTick);
+
+    const roundedHighTick = roundUpTick(rangeHighTick);
+
+    const rangeLowBoundNonDisplayPrice = tickToPrice(roundedLowTick);
+
+    const rangeHighBoundNonDisplayPrice = tickToPrice(roundedHighTick);
+
+    const rangeLowBoundDisplayPrice = toDisplayPrice(
+        rangeLowBoundNonDisplayPrice,
+        baseTokenDecimals,
+        quoteTokenDecimals,
+        false,
+    );
+
+    useEffect(() => {
+        console.log({ rangeLowBoundDisplayPrice });
+    }, [rangeLowBoundDisplayPrice]);
+
+    const rangeHighBoundDisplayPrice = toDisplayPrice(
+        rangeHighBoundNonDisplayPrice,
+        baseTokenDecimals,
+        quoteTokenDecimals,
+        false,
+    );
+
+    useEffect(() => {
+        console.log({ rangeHighBoundDisplayPrice });
+    }, [rangeHighBoundDisplayPrice]);
+
+    const depositSkew = concDepositSkew(
+        poolPriceNonDisplay,
+        rangeLowBoundNonDisplayPrice,
+        rangeHighBoundNonDisplayPrice,
+    );
+
+    let maxPriceDisplay: string;
+
+    if (isAmbient) {
+        maxPriceDisplay = 'Infinity';
+    } else {
+        maxPriceDisplay = denominationsInBase
+            ? truncateDecimals(rangeHighBoundDisplayPrice, 4).toString()
+            : truncateDecimals(1 / rangeLowBoundDisplayPrice, 4).toString();
+    }
+
+    let minPriceDisplay: string;
+    const apyPercentage: number = 100 - rangeWidthPercentage + 10;
+
+    if (rangeWidthPercentage === 100) {
+        minPriceDisplay = '0';
+    } else {
+        minPriceDisplay = denominationsInBase
+            ? truncateDecimals(rangeLowBoundDisplayPrice, 4).toString()
+            : truncateDecimals(1 / rangeHighBoundDisplayPrice, 4).toString();
+    }
+
+    const truncatedTokenABalance = truncateDecimals(parseFloat(tokenABalance), 4).toString();
+    const truncatedTokenBBalance = truncateDecimals(parseFloat(tokenBBalance), 4).toString();
 
     const sendTransaction = async () => {
         console.log({ isTokenAPrimary });
@@ -315,72 +491,25 @@ export default function Range(props: RangePropsIF) {
 
     const advancedModeContent = (
         <>
-            <MinMaxPrice />
+            <MinMaxPrice
+                minPricePercentage={
+                    denominationsInBase
+                        ? minPriceDifferencePercentage
+                        : maxPriceDifferencePercentage
+                }
+                maxPricePercentage={
+                    denominationsInBase
+                        ? maxPriceDifferencePercentage
+                        : minPriceDifferencePercentage
+                }
+                minPriceInputString={minPriceInputString}
+                maxPriceInputString={maxPriceInputString}
+                setMinPriceInputString={setMinPriceInputString}
+                setMaxPriceInputString={setMaxPriceInputString}
+            />
             <AdvancedPriceInfo />
         </>
     );
-
-    const [rangeButtonErrorMessage, setRangeButtonErrorMessage] =
-        useState<string>('Enter an Amount');
-    // useState<string>('');
-
-    const currentPoolPriceTick = Math.log(poolPriceNonDisplay) / Math.log(1.0001);
-
-    const rangeLowTick = currentPoolPriceTick - rangeWidthPercentage * 100;
-    const rangeHighTick = currentPoolPriceTick + rangeWidthPercentage * 100;
-
-    const roundDownTick = (lowTick: number, nTicksGrid: number = GRID_SIZE_DFLT) => {
-        const tickGrid = Math.floor(rangeLowTick / nTicksGrid) * nTicksGrid;
-        const horizon = Math.floor(MIN_TICK / nTicksGrid) * nTicksGrid;
-        return Math.max(tickGrid, horizon);
-    };
-
-    const roundedLowTick = roundDownTick(rangeLowTick);
-
-    const roundUpTick = (highTick: number, nTicksGrid: number = GRID_SIZE_DFLT) => {
-        const tickGrid = Math.ceil(highTick / nTicksGrid) * nTicksGrid;
-        const horizon = Math.ceil(MAX_TICK / nTicksGrid) * nTicksGrid;
-        return Math.min(tickGrid, horizon);
-    };
-
-    const roundedHighTick = roundUpTick(rangeHighTick);
-
-    const rangeLowBoundNonDisplayPrice = tickToPrice(roundedLowTick);
-
-    const rangeHighBoundNonDisplayPrice = tickToPrice(roundedHighTick);
-
-    const rangeLowBoundDisplayPrice = toDisplayPrice(rangeLowBoundNonDisplayPrice, 18, 18, false);
-    const rangeHighBoundDisplayPrice = toDisplayPrice(rangeHighBoundNonDisplayPrice, 18, 18, false);
-
-    const depositSkew = concDepositSkew(
-        poolPriceNonDisplay,
-        rangeLowBoundNonDisplayPrice,
-        rangeHighBoundNonDisplayPrice,
-    );
-
-    let maxPriceDisplay: string;
-
-    if (isAmbient) {
-        maxPriceDisplay = 'Infinity';
-    } else {
-        maxPriceDisplay = denominationsInBase
-            ? truncateDecimals(rangeHighBoundDisplayPrice, 4).toString()
-            : truncateDecimals(1 / rangeLowBoundDisplayPrice, 4).toString();
-    }
-
-    let minPriceDisplay: string;
-    const apyPercentage: number = 100 - rangeWidthPercentage + 10;
-
-    if (rangeWidthPercentage === 100) {
-        minPriceDisplay = '0';
-    } else {
-        minPriceDisplay = denominationsInBase
-            ? truncateDecimals(rangeLowBoundDisplayPrice, 4).toString()
-            : truncateDecimals(1 / rangeHighBoundDisplayPrice, 4).toString();
-    }
-
-    const truncatedTokenABalance = truncateDecimals(parseFloat(tokenABalance), 4).toString();
-    const truncatedTokenBBalance = truncateDecimals(parseFloat(tokenBBalance), 4).toString();
 
     // props for <RangePriceInfo/> React element
     const rangePriceInfoProps = {
@@ -555,7 +684,7 @@ export default function Range(props: RangePropsIF) {
                 {denominationSwitch}
                 <DividerDark />
                 <RangeCurrencyConverter {...rangeCurrencyConverterProps} />
-                {tradeData.advancedMode ? advancedModeContent : baseModeContent}
+                {isAdvancedModeActive ? advancedModeContent : baseModeContent}
                 {!isAuthenticated || !isWeb3Enabled ? (
                     loginButton
                 ) : poolPriceNonDisplay !== 0 &&
