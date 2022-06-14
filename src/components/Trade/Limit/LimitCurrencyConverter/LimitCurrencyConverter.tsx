@@ -225,12 +225,12 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
             dispatch(setPrimaryQuantity(input));
 
             rawTokenAQty = isDenominationInBase
-                ? (1 / limitRateNumber) * parseFloat(input)
-                : limitRateNumber * parseFloat(input);
+                ? limitRateNumber * parseFloat(input)
+                : (1 / limitRateNumber) * parseFloat(input);
         } else {
             rawTokenAQty = isDenominationInBase
-                ? (1 / limitRateNumber) * parseFloat(tokenBQtyLocal)
-                : limitRateNumber * parseFloat(tokenBQtyLocal);
+                ? limitRateNumber * parseFloat(tokenBQtyLocal)
+                : (1 / limitRateNumber) * parseFloat(tokenBQtyLocal);
         }
         handleLimitButtonMessage(rawTokenAQty);
         const truncatedTokenAQty = truncateDecimals(rawTokenAQty, tokenADecimals).toString();

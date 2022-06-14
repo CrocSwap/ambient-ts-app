@@ -2,7 +2,7 @@
 import { useMoralis } from 'react-moralis';
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
-
+import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import Button from '../../../components/Global/Button/Button';
 
 import {
@@ -35,6 +35,7 @@ import truncateDecimals from '../../../utils/data/truncateDecimals';
 import { useTradeData } from '../Trade';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import { TokenIF } from '../../../utils/interfaces/exports';
+import { setLimitPrice } from '../../../utils/state/tradeDataSlice';
 
 interface LimitPropsIF {
     importedTokens: Array<TokenIF>;
@@ -73,6 +74,7 @@ export default function Limit(props: LimitPropsIF) {
         setRecheckTokenAApproval,
     } = props;
     const { tradeData } = useTradeData();
+    const dispatch = useAppDispatch();
     const { chainId, enableWeb3, isWeb3Enabled, authenticate, isAuthenticated } = useMoralis();
     const [isModalOpen, openModal, closeModal] = useModal();
     const [limitAllowed, setLimitAllowed] = useState<boolean>(false);
@@ -122,16 +124,30 @@ export default function Limit(props: LimitPropsIF) {
 
     const isTokenAPrimary = tradeData.isTokenAPrimary;
 
-    const [limitRate, setLimitRate] = useState<string>('');
+    const [limitRate, setLimitRate] = useState<string>(tradeData.limitPrice);
     const [insideTickDisplayPrice, setInsideTickDisplayPrice] = useState<number>(0);
 
     const [initialLoad, setInitialLoad] = useState<boolean>(true);
 
     const isDenomBase = tradeData.isDenomBase;
 
+    const roundDownTick = (tick: number, nTicksGrid: number = GRID_SIZE_DFLT) => {
+        const tickGrid = Math.floor(tick / nTicksGrid) * nTicksGrid;
+        const horizon = Math.floor(MIN_TICK / nTicksGrid) * nTicksGrid;
+        return Math.max(tickGrid, horizon);
+    };
+
+    const roundUpTick = (tick: number, nTicksGrid: number = GRID_SIZE_DFLT) => {
+        const tickGrid = Math.ceil(tick / nTicksGrid) * nTicksGrid;
+        const horizon = Math.ceil(MAX_TICK / nTicksGrid) * nTicksGrid;
+        return Math.min(tickGrid, horizon);
+    };
+
+    const currentPoolPriceTick = Math.log(poolPriceNonDisplay) / Math.log(1.0001);
+
     useEffect(() => {
         setInitialLoad(true);
-    }, [tokenPair.dataTokenA.address, tokenPair.dataTokenB.address, isDenomBase]);
+    }, [tokenPair]);
 
     useEffect(() => {
         const limitRateInputField = document.getElementById(
@@ -139,33 +155,22 @@ export default function Limit(props: LimitPropsIF) {
         ) as HTMLInputElement;
         if (initialLoad) {
             if (poolPriceNonDisplay === 0) return;
-            const roundDownTick = (tick: number, nTicksGrid: number = GRID_SIZE_DFLT) => {
-                const tickGrid = Math.floor(tick / nTicksGrid) * nTicksGrid;
-                const horizon = Math.floor(MIN_TICK / nTicksGrid) * nTicksGrid;
-                return Math.max(tickGrid, horizon);
-            };
 
-            const roundUpTick = (tick: number, nTicksGrid: number = GRID_SIZE_DFLT) => {
-                const tickGrid = Math.ceil(tick / nTicksGrid) * nTicksGrid;
-                const horizon = Math.ceil(MAX_TICK / nTicksGrid) * nTicksGrid;
-                return Math.min(tickGrid, horizon);
-            };
-
-            const currentPoolPriceTick = Math.log(poolPriceNonDisplay) / Math.log(1.0001);
             // console.log({ currentPoolPriceTick });
             let roundedTickInsideCurrentPrice: number;
             let pinnedInitialDisplayPrice: string;
 
             if (isDenomBase) {
                 const offset = 100;
-                isTokenAPrimary
-                    ? (roundedTickInsideCurrentPrice = roundDownTick(currentPoolPriceTick - offset))
+                isTokenABase
+                    ? (roundedTickInsideCurrentPrice = roundUpTick(currentPoolPriceTick - offset))
                     : (roundedTickInsideCurrentPrice = roundUpTick(currentPoolPriceTick + offset));
 
                 // console.log({ roundedTickInsideCurrentPrice });
                 const insideTickNonDisplayPrice = tickToPrice(roundedTickInsideCurrentPrice);
                 const insideTickDisplayPrice =
                     1 / toDisplayPrice(insideTickNonDisplayPrice, baseDecimals, quoteDecimals);
+
                 setInsideTickDisplayPrice(insideTickDisplayPrice);
 
                 pinnedInitialDisplayPrice = insideTickDisplayPrice.toString();
@@ -175,11 +180,12 @@ export default function Limit(props: LimitPropsIF) {
                 }
             } else {
                 const offset = 100;
-                isTokenAPrimary
-                    ? (roundedTickInsideCurrentPrice = roundUpTick(currentPoolPriceTick + offset))
-                    : (roundedTickInsideCurrentPrice = roundDownTick(
-                          currentPoolPriceTick - offset,
-                      ));
+                // roundedTickInsideCurrentPrice = roundDownTick(currentPoolPriceTick - offset);
+                // roundedTickInsideCurrentPrice = roundUpTick(currentPoolPriceTick + offset);
+                isTokenABase
+                    ? (roundedTickInsideCurrentPrice = roundUpTick(currentPoolPriceTick - offset))
+                    : (roundedTickInsideCurrentPrice = roundUpTick(currentPoolPriceTick + offset));
+
                 // console.log({ roundedTickInsideCurrentPrice });
                 const insideTickNonDisplayPrice = tickToPrice(roundedTickInsideCurrentPrice);
                 const insideTickDisplayPrice = toDisplayPrice(
@@ -195,10 +201,19 @@ export default function Limit(props: LimitPropsIF) {
                     limitRateInputField.value = pinnedInitialDisplayPrice;
                 }
             }
+            dispatch(setLimitPrice(pinnedInitialDisplayPrice));
             setLimitRate(pinnedInitialDisplayPrice);
             setInitialLoad(false);
         }
-    }, [initialLoad, poolPriceNonDisplay, baseDecimals, quoteDecimals, isDenomBase, isTokenABase]);
+    }, [
+        initialLoad,
+        poolPriceNonDisplay,
+        baseDecimals,
+        quoteDecimals,
+        isDenomBase,
+        isTokenABase,
+        limitRate,
+    ]);
 
     const initiateLimitOrderMethod = async () => {
         const sellTokenAddress = tokenA.address;

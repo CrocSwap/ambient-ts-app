@@ -13,6 +13,7 @@ export interface tradeData {
     primaryQuantity: string;
     isTokenAPrimaryRange: boolean;
     primaryQuantityRange: string;
+    limitPrice: string;
 }
 
 const initialState: tradeData = {
@@ -42,6 +43,7 @@ const initialState: tradeData = {
     primaryQuantity: '',
     isTokenAPrimaryRange: true,
     primaryQuantityRange: '',
+    limitPrice: '',
 };
 
 export const tradeDataSlice = createSlice({
@@ -93,6 +95,9 @@ export const tradeDataSlice = createSlice({
         setPrimaryQuantityRange: (state, action: PayloadAction<string>) => {
             state.primaryQuantityRange = action.payload;
         },
+        setLimitPrice: (state, action: PayloadAction<string>) => {
+            state.limitPrice = action.payload;
+        },
     },
 });
 
@@ -113,6 +118,7 @@ export const {
     setPrimaryQuantity,
     setIsTokenAPrimaryRange,
     setPrimaryQuantityRange,
+    setLimitPrice,
 } = tradeDataSlice.actions;
 
 export default tradeDataSlice.reducer;
