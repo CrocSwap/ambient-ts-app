@@ -1,23 +1,10 @@
 import styles from './Carousel.module.css';
 import React, { cloneElement, useState, useEffect } from 'react';
+// import { HiArrowNarrowLeft, HiArrowNarrowRight} from 'react-icons/hi'
 
 interface CarouselProps {
     children?: React.ReactNode;
 }
-
-// interface CarouselItemProps {
-//     children: React.ReactNode;
-//     width?: number | string;
-// }
-
-// export const CarouselItem = (props: CarouselItemProps) => {
-//     const { children, width } = props;
-//     return (
-//         <div className={styles.carousel_item} style={{ width: width }}>
-//             {children}
-//         </div>
-//     );
-// };
 
 export default function Carousel(props: CarouselProps) {
     const { children } = props;
@@ -51,32 +38,32 @@ export default function Carousel(props: CarouselProps) {
 
     const triggerButtons = (
         <div className={styles.indicators}>
-            <button
+            {/* <span
                 onClick={() => {
                     updateIndex(activeIndex - 1);
                 }}
             >
-                Prev
-            </button>
+                <HiArrowNarrowLeft size={20}  color='#bdbdbd'/>
+            </span> */}
             {React.Children.map(children, (child, index) => {
                 return (
-                    <button
+                    <div
                         className={`${index === activeIndex ? styles.active : ''}`}
                         onClick={() => {
                             updateIndex(index);
                         }}
                     >
-                        {index + 1}
-                    </button>
+                        <div className={styles.inner_circle}></div>
+                    </div>
                 );
             })}
-            <button
+            {/* <span
                 onClick={() => {
                     updateIndex(activeIndex + 1);
                 }}
             >
-                Next
-            </button>
+               <HiArrowNarrowRight size={20}  color='#bdbdbd'  />
+            </span> */}
         </div>
     );
 

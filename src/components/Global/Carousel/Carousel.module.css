@@ -6,25 +6,40 @@
     transition: transform 0.3s;
 }
 
-/* .carousel_item{
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    height: 200px;
-    background-color: blue;
-    color: white;
-} */
+
 
 .indicators{
+    padding: 5px 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.indicators > div{
+    
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    padding: 2px;
     display: flex;
     justify-content: center;
+    align-items: center;
+    cursor: pointer;
 }
 
-.indicators > button{
-    margin: 5px;
-}
-
-.indicators > button.active {
-    background: blue;
+.indicators > div.active {
+    background: linear-gradient(90deg, #7371FC 0%, #CDC1FF 49.48%, #7371FC 100%);
     color: white;
 }
+
+.inner_circle{
+    background: var(--dark3);
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+
+}
+
+
