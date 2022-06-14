@@ -41,14 +41,6 @@ export default function RangePriceInfo(props: IRangePriceInfoPropsIF) {
         didUserFlipDenom
     );
 
-    // JSX frag for current pool price for the token pair
-    const currentPriceFrag = (
-        <div className={styles.price_display}>
-            <span className={styles.price_title}>Current Price</span>
-            <span className={styles.current_price}>{currentPrice}</span>
-        </div>
-    );
-
     // JSX frag for highest price in range
     const maximumPrice = (
         <div className={styles.price_display}>
@@ -62,7 +54,10 @@ export default function RangePriceInfo(props: IRangePriceInfoPropsIF) {
             {apy}
             <div className={styles.price_info_content}>
                 {minimumPrice}
-                {currentPriceFrag}
+                <div className={styles.price_display}>
+                    <span className={styles.price_title}>Current Price</span>
+                    <span className={styles.current_price}>{currentPrice}</span>
+                </div>
                 {maximumPrice}
             </div>
         </div>
