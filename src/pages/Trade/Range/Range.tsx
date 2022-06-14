@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useMoralis, useNewMoralisObject } from 'react-moralis';
 import { motion } from 'framer-motion';
 import { BigNumber } from 'ethers';
@@ -168,35 +168,17 @@ export default function Range(props: RangePropsIF) {
         ? fromDisplayPrice(parseFloat(maxPriceInputString), baseTokenDecimals, quoteTokenDecimals)
         : fromDisplayPrice(parseFloat(minPriceInputString), baseTokenDecimals, quoteTokenDecimals);
 
-    useEffect(() => {
-        const reversedMinPriceDisplay = toDisplayPrice(
-            minPriceNonDisplay,
-            baseTokenDecimals,
-            quoteTokenDecimals,
-        );
-        console.log({ reversedMinPriceDisplay });
-    }, [minPriceNonDisplay]);
+    // useEffect(() => {
+    //     console.log({ minPriceInputString });
+    // }, [minPriceInputString]);
 
-    useEffect(() => {
-        const reversedMaxPriceDisplay = toDisplayPrice(
-            maxPriceNonDisplay,
-            baseTokenDecimals,
-            quoteTokenDecimals,
-        );
-        console.log({ reversedMaxPriceDisplay });
-    }, [maxPriceNonDisplay]);
+    // useEffect(() => {
+    //     console.log({ maxPriceInputString });
+    // }, [maxPriceInputString]);
 
-    useEffect(() => {
-        console.log({ minPriceInputString });
-    }, [minPriceInputString]);
-
-    useEffect(() => {
-        console.log({ maxPriceInputString });
-    }, [maxPriceInputString]);
-
-    useEffect(() => {
-        console.log({ denominationsInBase });
-    }, [denominationsInBase]);
+    // useEffect(() => {
+    //     console.log({ denominationsInBase });
+    // }, [denominationsInBase]);
 
     const defaultMinPriceDifferencePercentage = -15;
     const defaultMaxPriceDifferencePercentage = 15;
@@ -206,9 +188,9 @@ export default function Range(props: RangePropsIF) {
 
     let rangeLowTick: number, rangeHighTick: number, isAmbient: boolean;
 
-    useEffect(() => {
-        console.log({ currentPoolPriceTick });
-    }, [currentPoolPriceTick]);
+    // useEffect(() => {
+    //     console.log({ currentPoolPriceTick });
+    // }, [currentPoolPriceTick]);
 
     if (!isAdvancedModeActive) {
         isAmbient = rangeWidthPercentage === 100;
@@ -224,8 +206,8 @@ export default function Range(props: RangePropsIF) {
         } else {
             rangeLowTick = Math.log(minPriceNonDisplay) / Math.log(1.0001);
             const geometricDifferencePercentage = truncateDecimals(
-                ((currentPoolPriceTick - rangeLowTick) / currentPoolPriceTick) * 100,
-                4,
+                (rangeLowTick - currentPoolPriceTick) / 100,
+                2,
             );
 
             denominationsInBase
@@ -237,8 +219,8 @@ export default function Range(props: RangePropsIF) {
         } else {
             rangeHighTick = Math.log(maxPriceNonDisplay) / Math.log(1.0001);
             const geometricDifferencePercentage = truncateDecimals(
-                ((currentPoolPriceTick - rangeHighTick) / currentPoolPriceTick) * 100,
-                4,
+                (rangeHighTick - currentPoolPriceTick) / 100,
+                2,
             );
             denominationsInBase
                 ? (maxPriceDifferencePercentage = geometricDifferencePercentage)
@@ -246,13 +228,13 @@ export default function Range(props: RangePropsIF) {
         }
     }
 
-    useEffect(() => {
-        console.log({ rangeLowTick });
-    }, [rangeLowTick]);
+    // useEffect(() => {
+    //     console.log({ rangeLowTick });
+    // }, [rangeLowTick]);
 
-    useEffect(() => {
-        console.log({ rangeHighTick });
-    }, [rangeHighTick]);
+    // useEffect(() => {
+    //     console.log({ rangeHighTick });
+    // }, [rangeHighTick]);
 
     const roundedLowTick = roundDownTick(rangeLowTick);
 
@@ -269,9 +251,9 @@ export default function Range(props: RangePropsIF) {
         false,
     );
 
-    useEffect(() => {
-        console.log({ rangeLowBoundDisplayPrice });
-    }, [rangeLowBoundDisplayPrice]);
+    // useEffect(() => {
+    //     console.log({ rangeLowBoundDisplayPrice });
+    // }, [rangeLowBoundDisplayPrice]);
 
     const rangeHighBoundDisplayPrice = toDisplayPrice(
         rangeHighBoundNonDisplayPrice,
@@ -280,9 +262,9 @@ export default function Range(props: RangePropsIF) {
         false,
     );
 
-    useEffect(() => {
-        console.log({ rangeHighBoundDisplayPrice });
-    }, [rangeHighBoundDisplayPrice]);
+    // useEffect(() => {
+    //     console.log({ rangeHighBoundDisplayPrice });
+    // }, [rangeHighBoundDisplayPrice]);
 
     const depositSkew = concDepositSkew(
         poolPriceNonDisplay,
@@ -574,8 +556,6 @@ export default function Range(props: RangePropsIF) {
         displayForBase: tradeData.isDenomBase,
         isTokenABase: false,
     };
-
-    console.log(Number(poolPriceDisplay));
 
     const baseModeContent = (
         <>
