@@ -111,6 +111,7 @@ export default function App() {
                 tokenPair.dataTokenA.address,
                 tokenPair.dataTokenB.address,
             );
+            console.log({ sortedTokens });
             setBaseTokenAddress(sortedTokens[0]);
             setQuoteTokenAddress(sortedTokens[1]);
             if (tokenPair.dataTokenA.address === sortedTokens[0]) {

@@ -4,43 +4,42 @@ import { FaGasPump } from 'react-icons/fa';
 import { RiArrowDownSLine } from 'react-icons/ri';
 
 // START: Import Local Files
-import styles from './ExtraInfo.module.css';
-import truncateDecimals from '../../../utils/data/truncateDecimals';
-import makePriceDisplay from './makePriceDisplay';
-import { TokenPairIF } from '../../../utils/interfaces/exports';
-import TooltipComponent from '../../Global/TooltipComponent/TooltipComponent';
+import styles from './RangeExtraInfo.module.css';
+import { TokenPairIF } from '../../../../utils/interfaces/exports';
+import TooltipComponent from '../../../Global/TooltipComponent/TooltipComponent';
+import truncateDecimals from '../../../../utils/data/truncateDecimals';
 
-// interface for props in this file
-interface ExtraInfoPropsIF {
+// interface for component props
+interface RangeExtraInfoPropsIF {
     tokenPair: TokenPairIF;
     poolPriceDisplay: number;
     slippageTolerance: number;
     liquidityProviderFee: number;
-    quoteTokenIsBuy: boolean;
+    quoteTokenIsBuy?: boolean;
     gasPriceinGwei: string;
-    didUserFlipDenom: boolean;
+    displayForBase: boolean;
     isTokenABase: boolean;
 }
 
 // central react functional component
-export default function ExtraInfo(props: ExtraInfoPropsIF) {
+export default function RangeExtraInfo(props: RangeExtraInfoPropsIF) {
     const {
         tokenPair,
+        gasPriceinGwei,
+        quoteTokenIsBuy,
         poolPriceDisplay,
         slippageTolerance,
         liquidityProviderFee,
-        quoteTokenIsBuy,
-        gasPriceinGwei,
-        didUserFlipDenom,
+        displayForBase,
         isTokenABase,
     } = props;
-
     const [showExtraDetails, setShowExtraDetails] = useState<boolean>(false);
 
+    // TEMP DATA TO RENDER UI
     const spotPriceDisplayQuoteForBase = truncateDecimals(1 / poolPriceDisplay, 4);
 
-    const truncatedGasInGwei = truncateDecimals(parseFloat(gasPriceinGwei), 2);
-
+    const displayPriceString =
+        spotPriceDisplayQuoteForBase === Infinity ? '' : spotPriceDisplayQuoteForBase.toString();
     const priceLimitAfterSlippageAndFee = quoteTokenIsBuy
         ? truncateDecimals(
               (1 / poolPriceDisplay) *
@@ -52,9 +51,7 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
               (1 / poolPriceDisplay) * (1 + slippageTolerance) * (1 + liquidityProviderFee / 100),
               4,
           );
-
-    const displayPriceString =
-        spotPriceDisplayQuoteForBase === Infinity ? '' : spotPriceDisplayQuoteForBase.toString();
+    const truncatedGasInGwei = truncateDecimals(parseFloat(gasPriceinGwei), 2);
 
     const extraInfoData = [
         {
@@ -78,7 +75,8 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
             data: `${liquidityProviderFee}%`,
         },
     ];
-    const extraInfoDetails = (
+
+    const RangeExtraInfoDetails = (
         <div className={styles.extra_details}>
             {extraInfoData.map((item, idx) => (
                 <div className={styles.extra_row} key={idx}>
@@ -92,15 +90,25 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
         </div>
     );
 
-    const extraDetailsOrNull = showExtraDetails ? extraInfoDetails : null;
+    const extraDetailsOrNull = showExtraDetails ? RangeExtraInfoDetails : null;
 
-    const priceDisplay = makePriceDisplay(
-        tokenPair.dataTokenA,
-        tokenPair.dataTokenB,
-        isTokenABase,
-        poolPriceDisplay,
-        didUserFlipDenom
-    );
+    const [baseTokenData, quoteTokenData] = isTokenABase
+        ? [tokenPair.dataTokenA, tokenPair.dataTokenB]
+        : [tokenPair.dataTokenB, tokenPair.dataTokenA];
+
+    const defaultDisplay =
+        poolPriceDisplay < 1
+            ? `1 ${baseTokenData.symbol} ≈ ${truncateDecimals(1 / poolPriceDisplay, 4)} ${
+                  quoteTokenData.symbol
+              }`
+            : `1 ${quoteTokenData.symbol} ≈ ${poolPriceDisplay} ${baseTokenData.symbol}`;
+
+    const flippedDisplay =
+        poolPriceDisplay < 1
+            ? `1 ${quoteTokenData.symbol} ≈ ${poolPriceDisplay} ${baseTokenData.symbol}`
+            : `1 ${baseTokenData.symbol} ≈ ${truncateDecimals(1 / poolPriceDisplay, 4)} ${
+                  quoteTokenData.symbol
+              }`;
 
     return (
         <div className={styles.extra_info_container}>
@@ -112,7 +120,7 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
                     <FaGasPump size={15} /> {truncatedGasInGwei} gwei
                 </div>
                 <div className={styles.token_amount}>
-                    {priceDisplay}
+                    {displayForBase ? defaultDisplay : flippedDisplay}
                     <RiArrowDownSLine size={27} />{' '}
                 </div>
             </div>

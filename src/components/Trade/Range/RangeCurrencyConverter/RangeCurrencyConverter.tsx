@@ -140,6 +140,8 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
 
     const setTokenBQtyValue = (value: number) => {
         setTokenBQtyLocal(value);
+        setTokenBInputQty(value.toString());
+
         handleRangeButtonMessageTokenB(value);
 
         const qtyTokenA = calculateSecondaryDepositQty(

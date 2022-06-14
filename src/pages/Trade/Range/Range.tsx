@@ -7,6 +7,7 @@ import { JsonRpcProvider } from '@ethersproject/providers';
 import {
     sendAmbientMint,
     liquidityForBaseQty,
+    liquidityForQuoteQty,
     fromDisplayQty,
     sendConcMint,
     parseMintEthersReceipt,
@@ -20,6 +21,7 @@ import {
     MAX_TICK,
     concPosSlot,
     approveToken,
+    contractAddresses,
 } from '@crocswap-libs/sdk';
 
 // START: Import JSX Elements
@@ -46,6 +48,7 @@ import ConfirmRangeModal from '../../../components/Trade/Range/ConfirmRangeModal
 import { TokenIF } from '../../../utils/interfaces/exports';
 import { useTradeData } from '../Trade';
 import { useModal } from '../../../components/Global/Modal/useModal';
+import RangeExtraInfo from '../../../components/Trade/Range/RangeExtraInfo/RangeExtraInfo';
 
 interface RangePropsIF {
     importedTokens: Array<TokenIF>;
@@ -78,6 +81,7 @@ export default function Range(props: RangePropsIF) {
         setRecheckTokenAApproval,
         tokenBAllowance,
         setRecheckTokenBApproval,
+        gasPriceinGwei,
     } = props;
     const [isModalOpen, openModal, closeModal] = useModal();
 
@@ -107,6 +111,7 @@ export default function Range(props: RangePropsIF) {
     };
 
     const denominationsInBase = tradeData.isDenomBase;
+    const isTokenAPrimary = tradeData.isTokenAPrimaryRange;
 
     const isAmbient = rangeWidthPercentage === 100;
 
@@ -123,99 +128,175 @@ export default function Range(props: RangePropsIF) {
     const poolWeiPriceHighLimit = poolPriceNonDisplay * (1 + maxSlippage / 100);
 
     const signer = provider?.getSigner();
+    const tokenA = tokenPair.dataTokenA;
+    const tokenB = tokenPair.dataTokenB;
+    const tokenADecimals = tokenA.decimals;
+    const tokenBDecimals = tokenB.decimals;
+
+    const isTokenAEth = tokenA.address === contractAddresses.ZERO_ADDR;
+    const isTokenBEth = tokenB.address === contractAddresses.ZERO_ADDR;
+
+    const qtyIsBase = (isTokenAPrimary && isTokenABase) || (!isTokenAPrimary && !isTokenABase);
 
     const sendTransaction = async () => {
-        const tokenAQty = (document.getElementById('A-range-quantity') as HTMLInputElement)?.value;
-        let tokenAQtyNonDisplay: BigNumber;
+        console.log({ isTokenAPrimary });
+
         let liquidity: BigNumber;
-        if (tokenAQty) {
-            tokenAQtyNonDisplay = fromDisplayQty(tokenAQty, 18);
-            liquidity = liquidityForBaseQty(poolPriceNonDisplay, tokenAQtyNonDisplay);
+        let tx;
+        if (isTokenAPrimary) {
+            // console.log({ tokenAInputQty });
+            // console.log({ tokenADecimals });
+            // console.log({ isTokenABase });
+            // console.log({ baseTokenAddress });
+            // console.log({ quoteTokenAddress });
+            // console.log({ isTokenAEth });
+            // console.log({ isTokenBEth });
+            const tokenAQtyNonDisplay = fromDisplayQty(tokenAInputQty, tokenADecimals);
+            if (isTokenABase) {
+                liquidity = liquidityForBaseQty(poolPriceNonDisplay, tokenAQtyNonDisplay);
+            } else {
+                liquidity = liquidityForQuoteQty(poolPriceNonDisplay, tokenAQtyNonDisplay);
+            }
             if (signer) {
-                let tx;
                 if (isAmbient) {
-                    console.log({ liquidity });
-                    console.log({ poolWeiPriceLowLimit });
-                    console.log({ poolWeiPriceHighLimit });
-                    console.log({ tokenAQty });
                     tx = await sendAmbientMint(
                         baseTokenAddress,
                         quoteTokenAddress,
                         liquidity,
                         poolWeiPriceLowLimit,
                         poolWeiPriceHighLimit,
-                        parseFloat(tokenAQty),
+                        isTokenAEth
+                            ? parseFloat(tokenAInputQty)
+                            : isTokenBEth
+                            ? parseFloat(tokenBInputQty)
+                            : 0,
                         signer,
                     );
                 } else {
-                    const qtyIsBase = true;
+                    console.log({ tokenAInputQty });
+                    console.log({ tokenADecimals });
                     tx = await sendConcMint(
                         baseTokenAddress,
                         quoteTokenAddress,
                         poolPriceNonDisplay,
                         roundedLowTick, // tickLower,
                         roundedHighTick, // tickHigher,
-                        tokenAQty, //  primaryField === 'A' ? tokenAQtyString : tokenBQtyString,
+                        tokenAInputQty,
                         qtyIsBase,
                         poolWeiPriceLowLimit,
                         poolWeiPriceHighLimit,
-                        parseFloat(tokenAQty),
+                        isTokenAEth
+                            ? parseFloat(tokenAInputQty)
+                            : isTokenBEth
+                            ? parseFloat(tokenBInputQty)
+                            : 0,
                         signer,
                     );
                 }
-                if (tx) {
-                    let newTransactionHash = tx.hash;
-                    setNewRangeTransactionHash(newRangeTransactionHash);
-                    console.log({ newTransactionHash });
-                    let parsedReceipt;
-
-                    try {
-                        const receipt = await tx.wait();
-                        console.log({ receipt });
-                        parsedReceipt = await parseMintEthersReceipt(
-                            provider,
-                            receipt as EthersNativeReceipt,
-                        );
-                    } catch (e) {
-                        const error = e as TransactionError;
-                        if (isTransactionReplacedError(error)) {
-                            // The user used "speed up" or something similar
-                            // in their client, but we now have the updated info
-
-                            // dispatch(removePendingTx(tx.hash));
-                            console.log('repriced');
-                            newTransactionHash = error.replacement.hash;
-                            console.log({ newTransactionHash });
-
-                            parsedReceipt = await parseMintEthersReceipt(
-                                provider,
-                                error.receipt as EthersNativeReceipt,
-                            );
-                        }
-                    } finally {
-                        if (parsedReceipt)
-                            handleParsedReceipt(Moralis, 'mint', newTransactionHash, parsedReceipt);
-                        let posHash;
-                        if (isAmbient) {
-                            posHash = ambientPosSlot(
-                                account as string,
-                                baseTokenAddress,
-                                quoteTokenAddress,
-                            );
-                        } else {
-                            posHash = concPosSlot(
-                                account as string,
-                                baseTokenAddress,
-                                quoteTokenAddress,
-                                roundedLowTick,
-                                roundedHighTick,
-                            );
-                        }
-                        const txHash = newTransactionHash;
-
-                        save({ txHash, posHash, user, account, chainId });
-                    }
+            }
+        } else {
+            // console.log({ tokenBInputQty });
+            // console.log({ tokenBDecimals });
+            // console.log({ isTokenABase });
+            // console.log({ baseTokenAddress });
+            // console.log({ quoteTokenAddress });
+            // console.log({ isTokenAEth });
+            // console.log({ isTokenBEth });
+            const tokenBQtyNonDisplay = fromDisplayQty(tokenBInputQty, tokenBDecimals);
+            if (!isTokenABase) {
+                liquidity = liquidityForBaseQty(poolPriceNonDisplay, tokenBQtyNonDisplay);
+            } else {
+                liquidity = liquidityForQuoteQty(poolPriceNonDisplay, tokenBQtyNonDisplay);
+            }
+            if (signer) {
+                if (isAmbient) {
+                    tx = await sendAmbientMint(
+                        baseTokenAddress,
+                        quoteTokenAddress,
+                        liquidity,
+                        poolWeiPriceLowLimit,
+                        poolWeiPriceHighLimit,
+                        isTokenAEth
+                            ? parseFloat(tokenAInputQty)
+                            : isTokenBEth
+                            ? parseFloat(tokenBInputQty)
+                            : 0,
+                        signer,
+                    );
+                } else {
+                    console.log({ tokenBInputQty });
+                    console.log({ tokenBDecimals });
+                    tx = await sendConcMint(
+                        baseTokenAddress,
+                        quoteTokenAddress,
+                        poolPriceNonDisplay,
+                        roundedLowTick, // tickLower,
+                        roundedHighTick, // tickHigher,
+                        tokenBInputQty,
+                        qtyIsBase,
+                        poolWeiPriceLowLimit,
+                        poolWeiPriceHighLimit,
+                        isTokenAEth
+                            ? parseFloat(tokenAInputQty)
+                            : isTokenBEth
+                            ? parseFloat(tokenBInputQty)
+                            : 0,
+                        signer,
+                    );
                 }
+            }
+        }
+        if (tx) {
+            let newTransactionHash = tx.hash;
+            setNewRangeTransactionHash(newRangeTransactionHash);
+            console.log({ newTransactionHash });
+            let parsedReceipt;
+
+            try {
+                const receipt = await tx.wait();
+                console.log({ receipt });
+                parsedReceipt = await parseMintEthersReceipt(
+                    provider,
+                    receipt as EthersNativeReceipt,
+                );
+            } catch (e) {
+                const error = e as TransactionError;
+                if (isTransactionReplacedError(error)) {
+                    // The user used "speed up" or something similar
+                    // in their client, but we now have the updated info
+
+                    // dispatch(removePendingTx(tx.hash));
+                    console.log('repriced');
+                    newTransactionHash = error.replacement.hash;
+                    console.log({ newTransactionHash });
+
+                    parsedReceipt = await parseMintEthersReceipt(
+                        provider,
+                        error.receipt as EthersNativeReceipt,
+                    );
+                }
+            } finally {
+                if (parsedReceipt)
+                    handleParsedReceipt(Moralis, 'mint', newTransactionHash, parsedReceipt);
+                let posHash;
+                if (isAmbient) {
+                    posHash = ambientPosSlot(
+                        account as string,
+                        baseTokenAddress,
+                        quoteTokenAddress,
+                    );
+                } else {
+                    posHash = concPosSlot(
+                        account as string,
+                        baseTokenAddress,
+                        quoteTokenAddress,
+                        roundedLowTick,
+                        roundedHighTick,
+                    );
+                }
+                const txHash = newTransactionHash;
+
+                save({ txHash, posHash, user, account, chainId });
             }
         }
     };
@@ -354,11 +435,25 @@ export default function Range(props: RangePropsIF) {
         rangeWidthPercentage: rangeWidthPercentage,
         setRangeWidthPercentage: setRangeWidthPercentage,
     };
+    // props for <RangeExtraInfo/> React element
+    const rangeExtraInfoProps = {
+        tokenPair: tokenPair,
+        gasPriceinGwei: gasPriceinGwei,
+        poolPriceDisplay: Number(poolPriceDisplay),
+        slippageTolerance: 5,
+        liquidityProviderFee: 0.3,
+        quoteTokenIsBuy: true,
+        displayForBase: tradeData.isDenomBase,
+        isTokenABase: false,
+    };
+
+    console.log(Number(poolPriceDisplay));
 
     const baseModeContent = (
         <>
             <RangeWidth {...rangeWidthProps} />
             <RangePriceInfo {...rangePriceInfoProps} />
+            <RangeExtraInfo {...rangeExtraInfoProps} />
         </>
     );
     const confirmSwapModalOrNull = isModalOpen ? (
