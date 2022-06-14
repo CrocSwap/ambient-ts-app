@@ -31,7 +31,7 @@ export default function RangePriceInfo(props: IRangePriceInfoPropsIF) {
     // JSX frag for lowest price in range
     const minimumPrice = (
         <div className={styles.price_display}>
-            <span className={styles.price_title}>Min Price</span>
+            <h4 className={styles.price_title}>Min Price</h4>
             <span className={styles.min_price}>{minPriceDisplay}</span>
         </div>
     );
@@ -44,7 +44,7 @@ export default function RangePriceInfo(props: IRangePriceInfoPropsIF) {
     // JSX frag for highest price in range
     const maximumPrice = (
         <div className={styles.price_display}>
-            <span className={styles.price_title}>Max Price</span>
+            <h4 className={styles.price_title}>Max Price</h4>
             <span className={styles.max_price}>{maxPriceDisplay}</span>
         </div>
     );
@@ -55,7 +55,7 @@ export default function RangePriceInfo(props: IRangePriceInfoPropsIF) {
             <div className={styles.price_info_content}>
                 {minimumPrice}
                 <div className={styles.price_display}>
-                    <span className={styles.price_title}>Current Price</span>
+                    <h4 className={styles.price_title}>Current Price</h4>
                     <span className={styles.current_price}>{currentPrice}</span>
                 </div>
                 {maximumPrice}
