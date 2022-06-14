@@ -134,6 +134,10 @@ export default function Limit(props: LimitPropsIF) {
     }, [tokenPair, isDenomBase]);
 
     useEffect(() => {
+        console.log({ isDenomBase });
+    }, [isDenomBase]);
+
+    useEffect(() => {
         const limitRateInputField = document.getElementById(
             'limit-rate-quantity',
         ) as HTMLInputElement;
@@ -155,8 +159,8 @@ export default function Limit(props: LimitPropsIF) {
             // console.log({ currentPoolPriceTick });
             let roundedTickInsideCurrentPrice: number;
 
-            if (isDenomBase) {
-                roundedTickInsideCurrentPrice = roundDownTick(currentPoolPriceTick * 0.99);
+            if (isTokenABase) {
+                roundedTickInsideCurrentPrice = roundUpTick(currentPoolPriceTick * 1.01);
                 // console.log({ roundedTickInsideCurrentPrice });
                 const insideTickNonDisplayPrice = tickToPrice(roundedTickInsideCurrentPrice);
                 const insideTickDisplayPrice =
@@ -170,7 +174,7 @@ export default function Limit(props: LimitPropsIF) {
                 }
                 setLimitRate(pinnedInitialDisplayPrice);
             } else {
-                roundedTickInsideCurrentPrice = roundUpTick(currentPoolPriceTick * 1.01);
+                roundedTickInsideCurrentPrice = roundDownTick(currentPoolPriceTick * 0.99);
                 // console.log({ roundedTickInsideCurrentPrice });
                 const insideTickNonDisplayPrice = tickToPrice(roundedTickInsideCurrentPrice);
                 const insideTickDisplayPrice = toDisplayPrice(
@@ -189,7 +193,7 @@ export default function Limit(props: LimitPropsIF) {
             }
             setInitialLoad(false);
         }
-    }, [initialLoad, poolPriceNonDisplay, baseDecimals, quoteDecimals, isDenomBase]);
+    }, [initialLoad, poolPriceNonDisplay, baseDecimals, quoteDecimals, isDenomBase, isTokenABase]);
 
     const initiateLimitOrderMethod = async () => {
         const sellTokenAddress = tokenA.address;
@@ -342,7 +346,7 @@ export default function Limit(props: LimitPropsIF) {
                 <DividerDark />
                 <LimitCurrencyConverter
                     tokenPair={tokenPair}
-                    poolPriceDisplay={poolPriceDisplay}
+                    // poolPriceDisplay={poolPriceDisplay}
                     poolPriceNonDisplay={poolPriceNonDisplay}
                     isSellTokenBase={isSellTokenBase}
                     tokensBank={importedTokens}
@@ -359,8 +363,10 @@ export default function Limit(props: LimitPropsIF) {
                     setLimitButtonErrorMessage={setLimitButtonErrorMessage}
                     isWithdrawFromDexChecked={isWithdrawFromDexChecked}
                     setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
+                    limitRate={limitRate}
                     setLimitRate={setLimitRate}
                     insideTickDisplayPrice={insideTickDisplayPrice}
+                    isDenominationInBase={tradeData.isDenomBase}
                 />
                 <LimitExtraInfo
                     tokenPair={tokenPair}
