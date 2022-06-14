@@ -54,6 +54,7 @@ interface ISwapProps {
     poolPriceDisplay: number;
     tokenAAllowance: string;
     setRecheckTokenAApproval: React.Dispatch<React.SetStateAction<boolean>>;
+    didUserFlipDenom: boolean;
 }
 
 export default function Swap(props: ISwapProps) {
@@ -70,6 +71,7 @@ export default function Swap(props: ISwapProps) {
         poolPriceDisplay,
         tokenAAllowance,
         setRecheckTokenAApproval,
+        didUserFlipDenom
     } = props;
     const [isModalOpen, openModal, closeModal] = useModal();
 
@@ -292,6 +294,7 @@ export default function Swap(props: ISwapProps) {
                     isTokenABase={isSellTokenBase}
                     displayForBase={tradeData.isDenomBase}
                     poolPriceDisplay={poolPriceDisplay}
+                    didUserFlipDenom={didUserFlipDenom}
                 />
                 <DividerDark />
                 <CurrencyConverter

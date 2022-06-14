@@ -1,17 +1,8 @@
-// START: Import React and Dongles
-import { useMemo } from 'react';
-
 // START: Import Local Files
 import styles from './DenominationSwitch.module.css';
 import { TokenPairIF } from '../../../utils/interfaces/exports';
-import {
-    useAppDispatch,
-    useAppSelector
-} from '../../../utils/hooks/reduxToolkit';
-import {
-    // toggleDenomInBase,
-    toggleDidUserFlipDenom
-} from '../../../utils/state/tradeDataSlice';
+import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
+import { toggleDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
 
 // interface for props
 interface denominationSwitchPropsIF {
@@ -20,6 +11,7 @@ interface denominationSwitchPropsIF {
     poolPriceDisplay: number;
     isOnTradeRoute?: boolean;
     isTokenABase: boolean;
+    didUserFlipDenom: boolean;
 }
 
 // TODO:  @Emily poolPriceDisplay is passed here as a prop for the purpose of managing
@@ -27,9 +19,7 @@ interface denominationSwitchPropsIF {
 // TODO   ... end, please remove the value from props
 
 export default function DenominationSwitch(props: denominationSwitchPropsIF) {
-    const { tokenPair, isTokenABase, poolPriceDisplay } = props;
-
-    const { didUserFlipDenom } = useAppSelector(state => state.tradeData);
+    const { tokenPair, isTokenABase, poolPriceDisplay, didUserFlipDenom } = props;
 
     const dispatch = useAppDispatch();
 

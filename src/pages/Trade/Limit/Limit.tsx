@@ -55,6 +55,7 @@ interface LimitPropsIF {
     poolPriceNonDisplay: number;
     tokenAAllowance: string;
     setRecheckTokenAApproval: React.Dispatch<React.SetStateAction<boolean>>;
+    didUserFlipDenom: boolean;
 }
 
 export default function Limit(props: LimitPropsIF) {
@@ -71,6 +72,7 @@ export default function Limit(props: LimitPropsIF) {
         poolPriceNonDisplay,
         tokenAAllowance,
         setRecheckTokenAApproval,
+        didUserFlipDenom
     } = props;
     const { tradeData } = useTradeData();
     const { chainId, enableWeb3, isWeb3Enabled, authenticate, isAuthenticated } = useMoralis();
@@ -338,6 +340,7 @@ export default function Limit(props: LimitPropsIF) {
                     displayForBase={tradeData.isDenomBase}
                     poolPriceDisplay={poolPriceDisplay}
                     isTokenABase={isSellTokenBase}
+                    didUserFlipDenom={didUserFlipDenom}
                 />
                 <DividerDark />
                 <LimitCurrencyConverter

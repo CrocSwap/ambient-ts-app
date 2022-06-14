@@ -62,6 +62,7 @@ interface RangePropsIF {
     setRecheckTokenAApproval: React.Dispatch<React.SetStateAction<boolean>>;
     tokenBAllowance: string;
     setRecheckTokenBApproval: React.Dispatch<React.SetStateAction<boolean>>;
+    didUserFlipDenom: boolean;
 }
 
 export default function Range(props: RangePropsIF) {
@@ -78,6 +79,7 @@ export default function Range(props: RangePropsIF) {
         setRecheckTokenAApproval,
         tokenBAllowance,
         setRecheckTokenBApproval,
+        didUserFlipDenom
     } = props;
     const [isModalOpen, openModal, closeModal] = useModal();
 
@@ -230,6 +232,7 @@ export default function Range(props: RangePropsIF) {
                 displayForBase={tradeData.isDenomBase}
                 poolPriceDisplay={parseFloat(poolPriceDisplay)}
                 isTokenABase={isTokenABase}
+                didUserFlipDenom={didUserFlipDenom}
             />
         </div>
     );

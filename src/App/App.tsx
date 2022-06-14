@@ -516,6 +516,7 @@ export default function App() {
         poolPriceDisplay: poolPriceDisplay,
         tokenAAllowance: tokenAAllowance,
         setRecheckTokenAApproval: setRecheckTokenAApproval,
+        didUserFlipDenom: tradeData.didUserFlipDenom
         // tokenBAllowance: tokenBAllowance,
     };
 
@@ -534,6 +535,7 @@ export default function App() {
         poolPriceDisplay: poolPriceDisplay,
         setRecheckTokenAApproval: setRecheckTokenAApproval,
         tokenAAllowance: tokenAAllowance,
+        didUserFlipDenom: tradeData.didUserFlipDenom
         // tokenBAllowance: tokenBAllowance,
     };
 
@@ -554,6 +556,7 @@ export default function App() {
         poolPriceNonDisplay: poolPriceNonDisplay,
         setRecheckTokenAApproval: setRecheckTokenAApproval,
         tokenAAllowance: tokenAAllowance,
+        didUserFlipDenom: tradeData.didUserFlipDenom
     };
 
     // props for <Range/> React element
@@ -572,6 +575,7 @@ export default function App() {
         tokenBBalance: tokenBBalance,
         tokenBAllowance: tokenBAllowance,
         setRecheckTokenBApproval: setRecheckTokenBApproval,
+        didUserFlipDenom: tradeData.didUserFlipDenom
     };
 
     // props for <Sidebar/> React element
