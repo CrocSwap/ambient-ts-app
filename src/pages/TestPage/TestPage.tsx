@@ -3,6 +3,8 @@ import { useState } from 'react';
 import TooltipComponent from '../../components/Global/TooltipComponent/TooltipComponent';
 import PoolCard from '../../components/Global/PoolCard/PoolCard';
 import Stats from '../../components/Home/Stats/AmbientStats';
+import Carousel from '../../components/Global/Carousel/Carousel';
+import CarouselItem from '../../components/Global/Carousel/CarouselItem/CarouselItem';
 
 export default function TestPage() {
     const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
@@ -21,6 +23,11 @@ export default function TestPage() {
             <TooltipComponent title='Snackbar title' />
             <PoolCard />
             <Stats />
+            <Carousel>
+                <CarouselItem height={'526px'}>1</CarouselItem>
+                <CarouselItem height={'526px'}>2</CarouselItem>
+                <CarouselItem height={'526px'}>3</CarouselItem>
+            </Carousel>
         </main>
     );
 }
