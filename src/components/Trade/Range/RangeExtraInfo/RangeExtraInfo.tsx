@@ -4,13 +4,13 @@ import { FaGasPump } from 'react-icons/fa';
 import { RiArrowDownSLine } from 'react-icons/ri';
 
 // START: Import Local Files
-import styles from './LimitExtraInfo.module.css';
+import styles from './RangeExtraInfo.module.css';
 import { TokenPairIF } from '../../../../utils/interfaces/exports';
 import TooltipComponent from '../../../Global/TooltipComponent/TooltipComponent';
 import truncateDecimals from '../../../../utils/data/truncateDecimals';
 
 // interface for component props
-interface LimitExtraInfoPropsIF {
+interface RangeExtraInfoPropsIF {
     tokenPair: TokenPairIF;
     poolPriceDisplay: number;
     slippageTolerance: number;
@@ -22,7 +22,7 @@ interface LimitExtraInfoPropsIF {
 }
 
 // central react functional component
-export default function LimitExtraInfo(props: LimitExtraInfoPropsIF) {
+export default function RangeExtraInfo(props: RangeExtraInfoPropsIF) {
     const {
         tokenPair,
         gasPriceinGwei,
@@ -76,7 +76,7 @@ export default function LimitExtraInfo(props: LimitExtraInfoPropsIF) {
         },
     ];
 
-    const limitExtraInfoDetails = (
+    const RangeExtraInfoDetails = (
         <div className={styles.extra_details}>
             {extraInfoData.map((item, idx) => (
                 <div className={styles.extra_row} key={idx}>
@@ -90,7 +90,7 @@ export default function LimitExtraInfo(props: LimitExtraInfoPropsIF) {
         </div>
     );
 
-    const extraDetailsOrNull = showExtraDetails ? limitExtraInfoDetails : null;
+    const extraDetailsOrNull = showExtraDetails ? RangeExtraInfoDetails : null;
 
     const [baseTokenData, quoteTokenData] = isTokenABase
         ? [tokenPair.dataTokenA, tokenPair.dataTokenB]

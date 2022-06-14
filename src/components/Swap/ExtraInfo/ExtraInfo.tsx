@@ -85,7 +85,7 @@ export default function ExtraInfo(props: ExtraInfoProps) {
                         <div>{item.title}</div>
                         <TooltipComponent title={item.title} />
                     </div>
-                    <div>{item.data}</div>
+                    <div className={styles.data}>{item.data}</div>
                 </div>
             ))}
         </div>
