@@ -131,11 +131,7 @@ export default function Limit(props: LimitPropsIF) {
 
     useEffect(() => {
         setInitialLoad(true);
-    }, [tokenPair, isDenomBase]);
-
-    useEffect(() => {
-        console.log({ isDenomBase });
-    }, [isDenomBase]);
+    }, [tokenPair.dataTokenA.address, tokenPair.dataTokenB.address, isDenomBase]);
 
     useEffect(() => {
         const limitRateInputField = document.getElementById(
@@ -158,25 +154,32 @@ export default function Limit(props: LimitPropsIF) {
             const currentPoolPriceTick = Math.log(poolPriceNonDisplay) / Math.log(1.0001);
             // console.log({ currentPoolPriceTick });
             let roundedTickInsideCurrentPrice: number;
+            let pinnedInitialDisplayPrice: string;
 
-            if (isTokenABase) {
+            if (isDenomBase) {
                 const offset = 100;
-                roundedTickInsideCurrentPrice = roundUpTick(currentPoolPriceTick + offset);
+                isTokenAPrimary
+                    ? (roundedTickInsideCurrentPrice = roundDownTick(currentPoolPriceTick - offset))
+                    : (roundedTickInsideCurrentPrice = roundUpTick(currentPoolPriceTick + offset));
+
                 // console.log({ roundedTickInsideCurrentPrice });
                 const insideTickNonDisplayPrice = tickToPrice(roundedTickInsideCurrentPrice);
                 const insideTickDisplayPrice =
                     1 / toDisplayPrice(insideTickNonDisplayPrice, baseDecimals, quoteDecimals);
                 setInsideTickDisplayPrice(insideTickDisplayPrice);
 
-                const pinnedInitialDisplayPrice = insideTickDisplayPrice.toString();
+                pinnedInitialDisplayPrice = insideTickDisplayPrice.toString();
 
                 if (limitRateInputField) {
                     limitRateInputField.value = pinnedInitialDisplayPrice;
                 }
-                setLimitRate(pinnedInitialDisplayPrice);
             } else {
                 const offset = 100;
-                roundedTickInsideCurrentPrice = roundDownTick(currentPoolPriceTick - offset);
+                isTokenAPrimary
+                    ? (roundedTickInsideCurrentPrice = roundUpTick(currentPoolPriceTick + offset))
+                    : (roundedTickInsideCurrentPrice = roundDownTick(
+                          currentPoolPriceTick - offset,
+                      ));
                 // console.log({ roundedTickInsideCurrentPrice });
                 const insideTickNonDisplayPrice = tickToPrice(roundedTickInsideCurrentPrice);
                 const insideTickDisplayPrice = toDisplayPrice(
@@ -186,13 +189,13 @@ export default function Limit(props: LimitPropsIF) {
                 );
                 setInsideTickDisplayPrice(insideTickDisplayPrice);
 
-                const pinnedInitialDisplayPrice = insideTickDisplayPrice.toString();
+                pinnedInitialDisplayPrice = insideTickDisplayPrice.toString();
 
                 if (limitRateInputField) {
                     limitRateInputField.value = pinnedInitialDisplayPrice;
                 }
-                setLimitRate(pinnedInitialDisplayPrice);
             }
+            setLimitRate(pinnedInitialDisplayPrice);
             setInitialLoad(false);
         }
     }, [initialLoad, poolPriceNonDisplay, baseDecimals, quoteDecimals, isDenomBase, isTokenABase]);
