@@ -469,6 +469,7 @@ export default function Range(props: RangePropsIF) {
                 displayForBase={tradeData.isDenomBase}
                 poolPriceDisplay={parseFloat(poolPriceDisplay)}
                 isTokenABase={isTokenABase}
+                didUserFlipDenom={tradeData.didUserFlipDenom}
             />
         </div>
     );
@@ -503,7 +504,7 @@ export default function Range(props: RangePropsIF) {
         minPriceDisplay: minPriceDisplay,
         apyPercentage: apyPercentage,
         isTokenABase: isTokenABase,
-        isDenomBase: tradeData.isDenomBase,
+        didUserFlipDenom: tradeData.didUserFlipDenom,
     };
     // props for <ConfirmRangeModal/> React element
     const rangeModalProps = {

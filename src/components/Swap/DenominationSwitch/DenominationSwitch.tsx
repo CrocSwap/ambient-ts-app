@@ -2,7 +2,7 @@
 import styles from './DenominationSwitch.module.css';
 import { TokenPairIF } from '../../../utils/interfaces/exports';
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
-import { toggleDenomInBase } from '../../../utils/state/tradeDataSlice';
+import { toggleDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
 
 // interface for props
 interface denominationSwitchPropsIF {
@@ -11,6 +11,7 @@ interface denominationSwitchPropsIF {
     poolPriceDisplay: number;
     isOnTradeRoute?: boolean;
     isTokenABase: boolean;
+    didUserFlipDenom: boolean;
 }
 
 // TODO:  @Emily poolPriceDisplay is passed here as a prop for the purpose of managing
@@ -18,7 +19,7 @@ interface denominationSwitchPropsIF {
 // TODO   ... end, please remove the value from props
 
 export default function DenominationSwitch(props: denominationSwitchPropsIF) {
-    const { tokenPair, displayForBase, isTokenABase, poolPriceDisplay } = props;
+    const { tokenPair, isTokenABase, poolPriceDisplay, didUserFlipDenom } = props;
 
     const dispatch = useAppDispatch();
 
@@ -26,43 +27,34 @@ export default function DenominationSwitch(props: denominationSwitchPropsIF) {
     // TODO:  ... value of `toggleDenomination`, let's do just one button with two
     // TODO   ... <div> elements nested inside of it
 
-    const isTokenAMoreExpensive = isTokenABase
-        ? poolPriceDisplay < 1
-            ? true
-            : false
-        : poolPriceDisplay < 1
-        ? false
-        : true;
+    const moreExpensiveToken = poolPriceDisplay < 1
+        ? (isTokenABase ? 'A' : 'B')
+        : (isTokenABase ? 'B' : 'A');
+
+    const tokenToHighlight = moreExpensiveToken === 'A'
+        ? (didUserFlipDenom ? 'B' : 'A')
+        : (didUserFlipDenom ? 'A' : 'B');
 
     return (
         <div className={styles.denomination_switch}>
             <div>Denomination</div>
             <button
                 className={
-                    displayForBase
-                        ? isTokenAMoreExpensive
-                            ? styles.active_button
-                            : styles.non_active_button
-                        : isTokenAMoreExpensive
-                        ? styles.non_active_button
-                        : styles.active_button
+                    tokenToHighlight === 'A'
+                        ? styles.active_button
+                        : styles.non_active_button
                 }
-                onClick={() => dispatch(toggleDenomInBase())}
+                onClick={() => dispatch(toggleDidUserFlipDenom())}
             >
                 {tokenPair.dataTokenA.symbol}
             </button>
-
             <button
                 className={
-                    !displayForBase
-                        ? isTokenAMoreExpensive
-                            ? styles.active_button
-                            : styles.non_active_button
-                        : isTokenAMoreExpensive
-                        ? styles.non_active_button
-                        : styles.active_button
+                    tokenToHighlight === 'B'
+                        ? styles.active_button
+                        : styles.non_active_button
                 }
-                onClick={() => dispatch(toggleDenomInBase())}
+                onClick={() => dispatch(toggleDidUserFlipDenom())}
             >
                 {tokenPair.dataTokenB.symbol}
             </button>

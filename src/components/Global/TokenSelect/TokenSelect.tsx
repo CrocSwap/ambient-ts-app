@@ -1,9 +1,12 @@
 import styles from './TokenSelect.module.css';
 import { RiStarFill, RiStarLine } from 'react-icons/ri';
 import { CgUnavailable } from 'react-icons/cg';
-import { setTokenA, setTokenB } from '../../../utils/state/tradeDataSlice';
+import {
+    setTokenA,
+    setTokenB,
+    setDidUserFlipDenom
+} from '../../../utils/state/tradeDataSlice';
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
-// import { SetStateAction } from 'react';
 import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
 
 interface TokenSelectProps {
@@ -34,6 +37,7 @@ export default function TokenSelect(props: TokenSelectProps) {
                 dispatch(setTokenB(tokenPair.dataTokenA));
             } else {
                 dispatch(setTokenA(token));
+                dispatch(setDidUserFlipDenom(false));
             }
         } else if (tokenToUpdate === 'B') {
             if (tokenPair.dataTokenA.address === token.address) {
@@ -42,6 +46,7 @@ export default function TokenSelect(props: TokenSelectProps) {
                 dispatch(setTokenA(tokenPair.dataTokenB));
             } else {
                 dispatch(setTokenB(token));
+                dispatch(setDidUserFlipDenom(false));
             }
         } else {
             console.warn('Error in TokenSelect.tsx, failed to find proper dispatch function.');
