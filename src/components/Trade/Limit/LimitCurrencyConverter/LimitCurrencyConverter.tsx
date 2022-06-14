@@ -173,7 +173,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
     };
 
     const handleTokenAChangeEvent = (evt?: ChangeEvent<HTMLInputElement>) => {
-        let rawTokenBQty;
+        let rawTokenBQty: number;
 
         if (evt) {
             const input = evt.target.value;
@@ -183,23 +183,27 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
             dispatch(setIsTokenAPrimary(true));
             dispatch(setPrimaryQuantity(input));
 
-            rawTokenBQty = isDenominationInBase
-                ? limitRateNumber * parseFloat(input)
-                : (1 / limitRateNumber) * parseFloat(input);
-
-            // rawTokenBQty = isDenominationInBase
-            //     ? isSellTokenBase
-            //         ? limitRateNumber * parseFloat(input)
-            //         : (1 / limitRateNumber) * parseFloat(input)
-            //     : isSellTokenBase
-            //     ? (1 / limitRateNumber) * parseFloat(input)
-            //     : limitRateNumber * parseFloat(input);
+            if (!isDenominationInBase) {
+                rawTokenBQty = isSellTokenBase
+                    ? (1 / limitRateNumber) * parseFloat(input)
+                    : limitRateNumber * parseFloat(input);
+            } else {
+                rawTokenBQty = !isSellTokenBase
+                    ? (1 / limitRateNumber) * parseFloat(input)
+                    : limitRateNumber * parseFloat(input);
+            }
 
             handleLimitButtonMessage(parseFloat(input));
         } else {
-            rawTokenBQty = isDenominationInBase
-                ? limitRateNumber * parseFloat(tokenAQtyLocal)
-                : (1 / limitRateNumber) * parseFloat(tokenAQtyLocal);
+            if (!isDenominationInBase) {
+                rawTokenBQty = isSellTokenBase
+                    ? (1 / limitRateNumber) * parseFloat(tokenAQtyLocal)
+                    : limitRateNumber * parseFloat(tokenAQtyLocal);
+            } else {
+                rawTokenBQty = !isSellTokenBase
+                    ? (1 / limitRateNumber) * parseFloat(tokenAQtyLocal)
+                    : limitRateNumber * parseFloat(tokenAQtyLocal);
+            }
 
             handleLimitButtonMessage(parseFloat(tokenAQtyLocal));
         }
@@ -224,13 +228,32 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
             dispatch(setIsTokenAPrimary(false));
             dispatch(setPrimaryQuantity(input));
 
-            rawTokenAQty = isDenominationInBase
-                ? limitRateNumber * parseFloat(input)
-                : (1 / limitRateNumber) * parseFloat(input);
+            if (!isDenominationInBase) {
+                rawTokenAQty = isSellTokenBase
+                    ? limitRateNumber * parseFloat(input)
+                    : (1 / limitRateNumber) * parseFloat(input);
+            } else {
+                rawTokenAQty = !isSellTokenBase
+                    ? limitRateNumber * parseFloat(input)
+                    : (1 / limitRateNumber) * parseFloat(input);
+            }
+
+            // rawTokenAQty = isDenominationInBase
+            //     ? (1 / limitRateNumber) * parseFloat(input)
+            //     : limitRateNumber * parseFloat(input);
         } else {
-            rawTokenAQty = isDenominationInBase
-                ? limitRateNumber * parseFloat(tokenBQtyLocal)
-                : (1 / limitRateNumber) * parseFloat(tokenBQtyLocal);
+            if (!isDenominationInBase) {
+                rawTokenAQty = isSellTokenBase
+                    ? limitRateNumber * parseFloat(tokenBQtyLocal)
+                    : (1 / limitRateNumber) * parseFloat(tokenBQtyLocal);
+            } else {
+                rawTokenAQty = !isSellTokenBase
+                    ? limitRateNumber * parseFloat(tokenBQtyLocal)
+                    : (1 / limitRateNumber) * parseFloat(tokenBQtyLocal);
+            }
+            // rawTokenAQty = isDenominationInBase
+            //     ? (1 / limitRateNumber) * parseFloat(tokenBQtyLocal)
+            //     : limitRateNumber * parseFloat(tokenBQtyLocal);
         }
         handleLimitButtonMessage(rawTokenAQty);
         const truncatedTokenAQty = truncateDecimals(rawTokenAQty, tokenADecimals).toString();

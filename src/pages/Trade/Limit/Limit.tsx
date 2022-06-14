@@ -163,7 +163,7 @@ export default function Limit(props: LimitPropsIF) {
             if (isDenomBase) {
                 const offset = 100;
                 isTokenABase
-                    ? (roundedTickInsideCurrentPrice = roundUpTick(currentPoolPriceTick - offset))
+                    ? (roundedTickInsideCurrentPrice = roundDownTick(currentPoolPriceTick - offset))
                     : (roundedTickInsideCurrentPrice = roundUpTick(currentPoolPriceTick + offset));
 
                 // console.log({ roundedTickInsideCurrentPrice });
@@ -183,7 +183,7 @@ export default function Limit(props: LimitPropsIF) {
                 // roundedTickInsideCurrentPrice = roundDownTick(currentPoolPriceTick - offset);
                 // roundedTickInsideCurrentPrice = roundUpTick(currentPoolPriceTick + offset);
                 isTokenABase
-                    ? (roundedTickInsideCurrentPrice = roundUpTick(currentPoolPriceTick - offset))
+                    ? (roundedTickInsideCurrentPrice = roundDownTick(currentPoolPriceTick - offset))
                     : (roundedTickInsideCurrentPrice = roundUpTick(currentPoolPriceTick + offset));
 
                 // console.log({ roundedTickInsideCurrentPrice });
@@ -205,15 +205,7 @@ export default function Limit(props: LimitPropsIF) {
             setLimitRate(pinnedInitialDisplayPrice);
             setInitialLoad(false);
         }
-    }, [
-        initialLoad,
-        poolPriceNonDisplay,
-        baseDecimals,
-        quoteDecimals,
-        isDenomBase,
-        isTokenABase,
-        limitRate,
-    ]);
+    }, [initialLoad, poolPriceNonDisplay, baseDecimals, quoteDecimals, isDenomBase, isTokenABase]);
 
     const initiateLimitOrderMethod = async () => {
         const sellTokenAddress = tokenA.address;
