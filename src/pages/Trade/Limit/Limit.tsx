@@ -340,7 +340,7 @@ export default function Limit(props: LimitPropsIF) {
                     displayForBase={tradeData.isDenomBase}
                     poolPriceDisplay={poolPriceDisplay}
                     isTokenABase={isSellTokenBase}
-                    didUserFlipDenom={didUserFlipDenom}
+                    didUserFlipDenom={tradeData.didUserFlipDenom}
                 />
                 <DividerDark />
                 <LimitCurrencyConverter
@@ -372,7 +372,7 @@ export default function Limit(props: LimitPropsIF) {
                     slippageTolerance={5}
                     liquidityProviderFee={0.3}
                     quoteTokenIsBuy={true}
-                    displayForBase={tradeData.isDenomBase}
+                    didUserFlipDenom={tradeData.didUserFlipDenom}
                     isTokenABase={isSellTokenBase}
                 />
                 {isAuthenticated && isWeb3Enabled ? (

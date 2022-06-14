@@ -8,6 +8,7 @@ import styles from './LimitExtraInfo.module.css';
 import { TokenPairIF } from '../../../../utils/interfaces/exports';
 import TooltipComponent from '../../../Global/TooltipComponent/TooltipComponent';
 import truncateDecimals from '../../../../utils/data/truncateDecimals';
+import makePriceDisplay from './makePriceDisplay';
 
 // interface for component props
 interface LimitExtraInfoPropsIF {
@@ -17,7 +18,7 @@ interface LimitExtraInfoPropsIF {
     liquidityProviderFee: number;
     quoteTokenIsBuy?: boolean;
     gasPriceinGwei: string;
-    displayForBase: boolean;
+    didUserFlipDenom: boolean;
     isTokenABase: boolean;
 }
 
@@ -30,7 +31,7 @@ export default function LimitExtraInfo(props: LimitExtraInfoPropsIF) {
         poolPriceDisplay,
         slippageTolerance,
         liquidityProviderFee,
-        displayForBase,
+        didUserFlipDenom,
         isTokenABase,
     } = props;
     const [showExtraDetails, setShowExtraDetails] = useState<boolean>(false);
@@ -92,23 +93,13 @@ export default function LimitExtraInfo(props: LimitExtraInfoPropsIF) {
 
     const extraDetailsOrNull = showExtraDetails ? limitExtraInfoDetails : null;
 
-    const [baseTokenData, quoteTokenData] = isTokenABase
-        ? [tokenPair.dataTokenA, tokenPair.dataTokenB]
-        : [tokenPair.dataTokenB, tokenPair.dataTokenA];
-
-    const defaultDisplay =
-        poolPriceDisplay < 1
-            ? `1 ${baseTokenData.symbol} ≈ ${truncateDecimals(1 / poolPriceDisplay, 4)} ${
-                  quoteTokenData.symbol
-              }`
-            : `1 ${quoteTokenData.symbol} ≈ ${poolPriceDisplay} ${baseTokenData.symbol}`;
-
-    const flippedDisplay =
-        poolPriceDisplay < 1
-            ? `1 ${quoteTokenData.symbol} ≈ ${poolPriceDisplay} ${baseTokenData.symbol}`
-            : `1 ${baseTokenData.symbol} ≈ ${truncateDecimals(1 / poolPriceDisplay, 4)} ${
-                  quoteTokenData.symbol
-              }`;
+    const priceDisplay = makePriceDisplay(
+        tokenPair.dataTokenA,
+        tokenPair.dataTokenB,
+        isTokenABase,
+        poolPriceDisplay,
+        didUserFlipDenom
+    );
 
     return (
         <div className={styles.extra_info_container}>
@@ -120,7 +111,7 @@ export default function LimitExtraInfo(props: LimitExtraInfoPropsIF) {
                     <FaGasPump size={15} /> {truncatedGasInGwei} gwei
                 </div>
                 <div className={styles.token_amount}>
-                    {displayForBase ? defaultDisplay : flippedDisplay}
+                    {priceDisplay}
                     <RiArrowDownSLine size={27} />{' '}
                 </div>
             </div>
