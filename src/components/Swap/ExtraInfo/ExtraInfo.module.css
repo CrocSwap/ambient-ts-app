@@ -57,9 +57,20 @@
 }
 
 @media only screen and (min-width: 700px)  {
+    .align_center{
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 5px;
+        text-align: start;
+      
+    }
     .extra_info_content{
         padding: 0 10%;
         
+    }
+    .data{
+        text-align: end;
     }
 
     .extra_details{

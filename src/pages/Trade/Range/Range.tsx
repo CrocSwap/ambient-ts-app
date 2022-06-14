@@ -50,6 +50,7 @@ import ConfirmRangeModal from '../../../components/Trade/Range/ConfirmRangeModal
 import { TokenIF } from '../../../utils/interfaces/exports';
 import { useTradeData } from '../Trade';
 import { useModal } from '../../../components/Global/Modal/useModal';
+import RangeExtraInfo from '../../../components/Trade/Range/RangeExtraInfo/RangeExtraInfo';
 
 interface RangePropsIF {
     importedTokens: Array<TokenIF>;
@@ -82,6 +83,7 @@ export default function Range(props: RangePropsIF) {
         setRecheckTokenAApproval,
         tokenBAllowance,
         setRecheckTokenBApproval,
+        gasPriceinGwei,
     } = props;
     const [isModalOpen, openModal, closeModal] = useModal();
 
@@ -561,11 +563,25 @@ export default function Range(props: RangePropsIF) {
         rangeWidthPercentage: rangeWidthPercentage,
         setRangeWidthPercentage: setRangeWidthPercentage,
     };
+    // props for <RangeExtraInfo/> React element
+    const rangeExtraInfoProps = {
+        tokenPair: tokenPair,
+        gasPriceinGwei: gasPriceinGwei,
+        poolPriceDisplay: Number(poolPriceDisplay),
+        slippageTolerance: 5,
+        liquidityProviderFee: 0.3,
+        quoteTokenIsBuy: true,
+        displayForBase: tradeData.isDenomBase,
+        isTokenABase: false,
+    };
+
+    console.log(Number(poolPriceDisplay));
 
     const baseModeContent = (
         <>
             <RangeWidth {...rangeWidthProps} />
             <RangePriceInfo {...rangePriceInfoProps} />
+            <RangeExtraInfo {...rangeExtraInfoProps} />
         </>
     );
     const confirmSwapModalOrNull = isModalOpen ? (
