@@ -38,19 +38,13 @@ export default function DenominationSwitch(props: denominationSwitchPropsIF) {
         : true;
 
     const buttonTokenA = useMemo(() => {
+        // const isBaseMoreExpensive = poolPriceDisplay < 1;
+        const moreExpensiveToken =
+            poolPriceDisplay < 1 ? (isTokenABase ? 'A' : 'B') : isTokenABase ? 'B' : 'A';
+        const cssClass =
+            moreExpensiveToken === 'A' ? styles.active_button : styles.non_active_button;
         return (
-            <button
-                className={
-                    displayForBase
-                        ? isTokenAMoreExpensive
-                            ? styles.active_button
-                            : styles.non_active_button
-                        : isTokenAMoreExpensive
-                        ? styles.non_active_button
-                        : styles.active_button
-                }
-                onClick={() => dispatch(toggleDenomInBase())}
-            >
+            <button className={cssClass} onClick={() => dispatch(toggleDenomInBase())}>
                 {tokenPair.dataTokenA.symbol}
             </button>
         );
