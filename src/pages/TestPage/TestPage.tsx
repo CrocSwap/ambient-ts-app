@@ -10,6 +10,7 @@ import Landing from '../../components/Home/Landing/Landing';
 import Landing3 from '../../components/Home/Landing/Landing3';
 import Landing4 from '../../components/Home/Landing/Landing4';
 import Landing5 from '../../components/Home/Landing/Landing5';
+import Landing6 from '../../components/Home/Landing/Landing6';
 
 export default function TestPage() {
     const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
@@ -44,6 +45,7 @@ export default function TestPage() {
             <Landing3 />
             <Landing4 />
             <Landing5 />
+            <Landing6 />
         </main>
     );
 }
