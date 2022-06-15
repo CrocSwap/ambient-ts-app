@@ -39,7 +39,7 @@ import { useAppDispatch, useAppSelector } from '../utils/hooks/reduxToolkit';
 import { validateChain } from './validateChain';
 import { IParsedPosition, parsePositionArray } from './parsePositions';
 import { defaultTokens } from '../utils/data/defaultTokens';
-import initializeLocalStorage from './functions/initializeLocalStorage';
+import initializeUserLocalStorage from './functions/initializeUserLocalStorage';
 import { TokenIF } from '../utils/interfaces/exports';
 import { fetchTokenLists } from './functions/fetchTokenLists';
 import { setDenomInBase } from '../utils/state/tradeDataSlice';
@@ -62,7 +62,7 @@ export default function App() {
     }
     
     useEffect(() => {
-        initializeLocalStorage();
+        initializeUserLocalStorage();
         // see if there's a user object in local storage
         if (localStorage.user) {
             // if user object exists, pull it
