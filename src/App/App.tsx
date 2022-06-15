@@ -602,15 +602,13 @@ export default function App() {
                 : tradeData.didUserFlipDenom
                 ? true
                 : false;
-        // console.log({isDenomInBase});
-        // console.log('------------');
         return isDenomInBase;
     }
 
     useEffect(() => {
-        dispatch(setDenomInBase(updateDenomIsInBase()));
+        const isDenomBase = updateDenomIsInBase();
+        dispatch(setDenomInBase(isDenomBase));
     }, [tradeData.didUserFlipDenom, tokenPair]);
-    updateDenomIsInBase();
 
     const mainLayoutStyle = showSidebar ? 'main-layout-2' : 'main-layout';
     // take away margin from left if we are on homepage or swap
