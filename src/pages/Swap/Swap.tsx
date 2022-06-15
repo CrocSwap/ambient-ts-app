@@ -292,6 +292,7 @@ export default function Swap(props: ISwapProps) {
                     isTokenABase={isSellTokenBase}
                     displayForBase={tradeData.isDenomBase}
                     poolPriceDisplay={poolPriceDisplay}
+                    didUserFlipDenom={tradeData.didUserFlipDenom}
                 />
                 <DividerDark />
                 <CurrencyConverter
@@ -324,7 +325,7 @@ export default function Swap(props: ISwapProps) {
                     liquidityProviderFee={0.3}
                     quoteTokenIsBuy={true}
                     gasPriceinGwei={gasPriceinGwei}
-                    isDenomBase={tradeData.isDenomBase}
+                    didUserFlipDenom={tradeData.didUserFlipDenom}
                 />
                 {isAuthenticated && isWeb3Enabled ? (
                     !isTokenAAllowanceSufficient && parseFloat(tokenAInputQty) > 0 ? (

@@ -24,3 +24,4 @@ yarn-error.log*
 /test-results/
 /playwright-report/
 /dist-pw/
+/.prettierignore

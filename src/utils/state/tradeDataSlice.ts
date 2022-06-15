@@ -6,12 +6,14 @@ export interface tradeData {
     tokenB: TokenIF;
     addressTokenA: string;
     addressTokenB: string;
+    didUserFlipDenom: boolean;
     isDenomBase: boolean;
     advancedMode: boolean;
     isTokenAPrimary: boolean;
     primaryQuantity: string;
     isTokenAPrimaryRange: boolean;
     primaryQuantityRange: string;
+    limitPrice: string;
 }
 
 const initialState: tradeData = {
@@ -34,12 +36,14 @@ const initialState: tradeData = {
     },
     addressTokenA: '0x0000000000000000000000000000000000000000',
     addressTokenB: '0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa',
+    didUserFlipDenom: false,
     isDenomBase: true,
     advancedMode: false,
     isTokenAPrimary: true,
     primaryQuantity: '',
     isTokenAPrimaryRange: true,
     primaryQuantityRange: '',
+    limitPrice: '',
 };
 
 export const tradeDataSlice = createSlice({
@@ -57,6 +61,12 @@ export const tradeDataSlice = createSlice({
         },
         setAddressTokenB: (state, action: PayloadAction<string>) => {
             state.addressTokenB = action.payload;
+        },
+        setDidUserFlipDenom: (state, action: PayloadAction<boolean>) => {
+            state.didUserFlipDenom = action.payload;
+        },
+        toggleDidUserFlipDenom: (state) => {
+            state.didUserFlipDenom = !state.didUserFlipDenom;
         },
         setDenomInBase: (state, action: PayloadAction<boolean>) => {
             state.isDenomBase = action.payload;
@@ -85,6 +95,9 @@ export const tradeDataSlice = createSlice({
         setPrimaryQuantityRange: (state, action: PayloadAction<string>) => {
             state.primaryQuantityRange = action.payload;
         },
+        setLimitPrice: (state, action: PayloadAction<string>) => {
+            state.limitPrice = action.payload;
+        },
     },
 });
 
@@ -94,6 +107,8 @@ export const {
     setTokenB,
     setAddressTokenA,
     setAddressTokenB,
+    setDidUserFlipDenom,
+    toggleDidUserFlipDenom,
     setDenomInBase,
     toggleDenomInBase,
     setAdvancedMode,
@@ -103,6 +118,7 @@ export const {
     setPrimaryQuantity,
     setIsTokenAPrimaryRange,
     setPrimaryQuantityRange,
+    setLimitPrice,
 } = tradeDataSlice.actions;
 
 export default tradeDataSlice.reducer;

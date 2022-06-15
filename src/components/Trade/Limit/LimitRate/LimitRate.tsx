@@ -1,6 +1,7 @@
 import styles from './LimitRate.module.css';
 // import { RiArrowDownSLine } from 'react-icons/ri';
 // import Toggle from '../../../Global/Toggle/Toggle';
+import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 
 import { TokenIF, TokenPairIF } from '../../../../utils/interfaces/exports';
 // import { useState, useEffect } from 'react';
@@ -8,6 +9,7 @@ import { TokenIF, TokenPairIF } from '../../../../utils/interfaces/exports';
 // import TokenSelectContainer from '../../../Global/TokenSelectContainer/TokenSelectContainer';
 // import { useModal } from '../../../../components/Global/Modal/useModal';
 // import { getAmbientTokens } from '../../../../tempdata';
+import { setLimitPrice } from '../../../../utils/state/tradeDataSlice';
 
 interface LimitRateProps {
     tokenPair: TokenPairIF;
@@ -34,6 +36,7 @@ export default function LimitRate(props: LimitRateProps) {
         // insideTickDisplayPrice,
         //   reverseTokens
     } = props;
+    const dispatch = useAppDispatch();
     // const [isChecked, setIsChecked] = useState<boolean>(false);
 
     // const [isModalOpen, openModal, closeModal] = useModal();
@@ -53,13 +56,18 @@ export default function LimitRate(props: LimitRateProps) {
     //     </Modal>
     // ) : null;
 
+    const handleLimitChange = (value: string) => {
+        dispatch(setLimitPrice(value));
+        setLimitRate(value);
+    };
+
     const rateInput = (
         <div className={styles.token_amount}>
             <input
                 id={`${fieldId}-quantity`}
                 className={styles.currency_quantity}
                 placeholder='0.0'
-                onChange={(event) => setLimitRate(event.target.value)}
+                onChange={(event) => handleLimitChange(event.target.value)}
                 type='string'
                 inputMode='decimal'
                 autoComplete='off'

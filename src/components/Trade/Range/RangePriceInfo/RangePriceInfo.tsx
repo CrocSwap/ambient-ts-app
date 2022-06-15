@@ -1,5 +1,7 @@
 // START: Import Local Files
 import styles from './RangePriceInfo.module.css';
+import truncateDecimals from '../../../../utils/data/truncateDecimals';
+import makeCurrentPrice from './makeCurrentPrice';
 import { TokenPairIF } from '../../../../utils/interfaces/exports';
 
 // interface for component props
@@ -9,8 +11,7 @@ interface IRangePriceInfoPropsIF {
     maxPriceDisplay: string;
     minPriceDisplay: string;
     apyPercentage: number;
-    isTokenABase: boolean;
-    isDenomBase: boolean;
+    didUserFlipDenom: boolean;
 }
 
 // central react functional component
@@ -20,8 +21,7 @@ export default function RangePriceInfo(props: IRangePriceInfoPropsIF) {
         maxPriceDisplay,
         minPriceDisplay,
         apyPercentage,
-        isTokenABase,
-        isDenomBase,
+        didUserFlipDenom
     } = props;
 
     // JSX frag for estimated APY of position
@@ -30,37 +30,25 @@ export default function RangePriceInfo(props: IRangePriceInfoPropsIF) {
     // JSX frag for lowest price in range
     const minimumPrice = (
         <div className={styles.price_display}>
-            <span className={styles.price_title}>Min Price</span>
-            <span className={styles.min_price}>{minPriceDisplay}</span>
+            <h4 className={styles.price_title}>Min Price</h4>
+            <span className={styles.min_price}>
+                {truncateDecimals(parseFloat(minPriceDisplay), 4).toString()}
+            </span>
         </div>
     );
 
-    const currentPrice = makeCurrentPrice();
-
-    function makeCurrentPrice() {
-        const priceAsFloat = parseFloat(spotPriceDisplay);
-        let output;
-        if (isDenomBase) {
-            output = isTokenABase ? priceAsFloat : 1 / priceAsFloat;
-        } else if (!isDenomBase) {
-            output = isTokenABase ? 1 / priceAsFloat : priceAsFloat;
-        }
-        return output;
-    }
-
-    // JSX frag for current pool price for the token pair
-    const currentPriceFrag = (
-        <div className={styles.price_display}>
-            <span className={styles.price_title}>Current Price</span>
-            <span className={styles.current_price}>{currentPrice}</span>
-        </div>
+    const currentPrice = makeCurrentPrice(
+        parseFloat(spotPriceDisplay),
+        didUserFlipDenom
     );
 
     // JSX frag for highest price in range
     const maximumPrice = (
         <div className={styles.price_display}>
-            <span className={styles.price_title}>Max Price</span>
-            <span className={styles.max_price}>{maxPriceDisplay}</span>
+            <h4 className={styles.price_title}>Max Price</h4>
+            <span className={styles.max_price}>
+                {truncateDecimals(parseFloat(maxPriceDisplay), 4).toString()}
+            </span>
         </div>
     );
 
@@ -69,7 +57,10 @@ export default function RangePriceInfo(props: IRangePriceInfoPropsIF) {
             {apy}
             <div className={styles.price_info_content}>
                 {minimumPrice}
-                {currentPriceFrag}
+                <div className={styles.price_display}>
+                    <h4 className={styles.price_title}>Current Price</h4>
+                    <span className={styles.current_price}>{currentPrice}</span>
+                </div>
                 {maximumPrice}
             </div>
         </div>
