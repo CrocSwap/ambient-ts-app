@@ -1,5 +1,4 @@
 import styles from './Landing2.module.css';
-import { Link } from 'react-router-dom';
 
 export default function Landing2() {
     return (
