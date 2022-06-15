@@ -1,4 +1,5 @@
-import { fetchTokenLists } from './fetchTokenLists';
+// import { fetchTokenLists } from './fetchTokenLists';
+import { ambientTokenList } from '../../utils/data/ambientTokenList';
 import { TokenListIF } from '../../utils/interfaces/exports';
 
 export default function initializeLocalStorage() {
@@ -14,7 +15,7 @@ export default function initializeLocalStorage() {
     // fetch token lists from URIs if none are in local storage
     const allTokenLists = localStorage.allTokenLists
         ? JSON.parse(localStorage.getItem('allTokenLists') as string)
-        : fetchTokenLists();
+        : [ambientTokenList];
 
     // retrieve the user object from local storage
     // putting it there then pulling it back is necessary to prevent overwrites

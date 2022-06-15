@@ -3,6 +3,7 @@ import { defaultTokenLists } from '../../utils/data/defaultTokenLists';
 import { TokenIF } from '../../utils/interfaces/exports';
 
 export function fetchTokenLists() {
+    console.warn('fetching token lists!!!');
     // create an array of promises to fetch all token lists in the URIs file
     // middleware will add the source URI to every return
     const tokenLists = Object.values(tokenListURIs).map((uri) =>
