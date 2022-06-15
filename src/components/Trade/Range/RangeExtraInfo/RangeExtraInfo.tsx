@@ -26,10 +26,10 @@ export default function RangeExtraInfo(props: RangeExtraInfoPropsIF) {
     const {
         tokenPair,
         gasPriceinGwei,
-        quoteTokenIsBuy,
+        // quoteTokenIsBuy,
         poolPriceDisplay,
         slippageTolerance,
-        liquidityProviderFee,
+        // liquidityProviderFee,
         displayForBase,
         isTokenABase,
     } = props;
@@ -49,17 +49,17 @@ export default function RangeExtraInfo(props: RangeExtraInfoPropsIF) {
         ? truncateDecimals(1 / poolPriceDisplay, 4).toString()
         : truncateDecimals(poolPriceDisplay, 4).toString();
 
-    const priceLimitAfterSlippageAndFee = quoteTokenIsBuy
-        ? truncateDecimals(
-              (1 / poolPriceDisplay) *
-                  (1 - slippageTolerance / 100) *
-                  (1 - liquidityProviderFee / 100),
-              4,
-          )
-        : truncateDecimals(
-              (1 / poolPriceDisplay) * (1 + slippageTolerance) * (1 + liquidityProviderFee / 100),
-              4,
-          );
+    // const priceLimitAfterSlippageAndFee = quoteTokenIsBuy
+    //     ? truncateDecimals(
+    //           (1 / poolPriceDisplay) *
+    //               (1 - slippageTolerance / 100) *
+    //               (1 - liquidityProviderFee / 100),
+    //           4,
+    //       )
+    //     : truncateDecimals(
+    //           (1 / poolPriceDisplay) * (1 + slippageTolerance) * (1 + liquidityProviderFee / 100),
+    //           4,
+    //       );
     const truncatedGasInGwei = truncateDecimals(parseFloat(gasPriceinGwei), 2);
 
     const extraInfoData = [
@@ -68,21 +68,21 @@ export default function RangeExtraInfo(props: RangeExtraInfoPropsIF) {
             tooltipTitle: 'spot price explanation',
             data: `${displayPriceString} ${tokenPair.dataTokenB.symbol} per ${tokenPair.dataTokenA.symbol}`,
         },
-        {
-            title: 'Price Limit after Slippage and Fee',
-            tooltipTitle: 'price limit explanation',
-            data: `${priceLimitAfterSlippageAndFee} ${tokenPair.dataTokenB.symbol} per ${tokenPair.dataTokenA.symbol}`,
-        },
+        // {
+        //     title: 'Price Limit after Slippage and Fee',
+        //     tooltipTitle: 'price limit explanation',
+        //     data: `${priceLimitAfterSlippageAndFee} ${tokenPair.dataTokenB.symbol} per ${tokenPair.dataTokenA.symbol}`,
+        // },
         {
             title: 'Slippage Tolerance',
             tooltipTitle: 'slippage tolerance explanation',
             data: `${slippageTolerance}%`,
         },
-        {
-            title: 'Liquidity Provider Fee',
-            tooltipTitle: 'liquidity provider fee explanation',
-            data: `${liquidityProviderFee}%`,
-        },
+        // {
+        //     title: 'Liquidity Provider Fee',
+        //     tooltipTitle: 'liquidity provider fee explanation',
+        //     data: `${liquidityProviderFee}%`,
+        // },
     ];
 
     const RangeExtraInfoDetails = (
