@@ -66,7 +66,9 @@ export default function RangeExtraInfo(props: RangeExtraInfoPropsIF) {
         {
             title: 'Spot Price',
             tooltipTitle: 'spot price explanation',
-            data: `${displayPriceString} ${tokenPair.dataTokenB.symbol} per ${tokenPair.dataTokenA.symbol}`,
+            data: reverseDisplay
+                ? `${displayPriceString} ${tokenPair.dataTokenA.symbol} per ${tokenPair.dataTokenB.symbol}`
+                : `${displayPriceString} ${tokenPair.dataTokenB.symbol} per ${tokenPair.dataTokenA.symbol}`,
         },
         // {
         //     title: 'Price Limit after Slippage and Fee',
