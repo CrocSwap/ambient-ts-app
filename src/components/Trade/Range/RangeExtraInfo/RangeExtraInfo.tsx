@@ -29,7 +29,7 @@ export default function RangeExtraInfo(props: RangeExtraInfoPropsIF) {
         // quoteTokenIsBuy,
         poolPriceDisplay,
         slippageTolerance,
-        // liquidityProviderFee,
+        liquidityProviderFee,
         displayForBase,
         isTokenABase,
     } = props;
@@ -80,11 +80,11 @@ export default function RangeExtraInfo(props: RangeExtraInfoPropsIF) {
             tooltipTitle: 'slippage tolerance explanation',
             data: `${slippageTolerance}%`,
         },
-        // {
-        //     title: 'Liquidity Provider Fee',
-        //     tooltipTitle: 'liquidity provider fee explanation',
-        //     data: `${liquidityProviderFee}%`,
-        // },
+        {
+            title: 'Current Provider Fee',
+            tooltipTitle: 'liquidity provider fee explanation',
+            data: `${liquidityProviderFee}%`,
+        },
     ];
 
     const RangeExtraInfoDetails = (
