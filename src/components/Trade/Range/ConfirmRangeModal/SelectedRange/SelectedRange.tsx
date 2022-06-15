@@ -26,6 +26,8 @@ export default function SelectedRange(props: SelectedRangeProps) {
     const reverseDisplay =
         (isTokenABase && denominationsInBase) || (!isTokenABase && !denominationsInBase);
 
+    const invertPrice = denominationsInBase;
+
     const tokenAShortName = tokenPair.dataTokenA.symbol;
     const tokenBShortName = tokenPair.dataTokenB.symbol;
 
@@ -109,7 +111,7 @@ export default function SelectedRange(props: SelectedRangeProps) {
             <div className={styles.currentPrice_container}>
                 <span className={styles.currentPrice_title}>Current price</span>
                 <span className={styles.currentPrice_amount}>
-                    {reverseDisplay ? 1 / parseFloat(spotPriceDisplay) : spotPriceDisplay}
+                    {invertPrice ? 1 / parseFloat(spotPriceDisplay) : spotPriceDisplay}
                 </span>
                 <span className={styles.currentPrice_info}>
                     {reverseDisplay
