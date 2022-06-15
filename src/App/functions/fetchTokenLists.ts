@@ -8,7 +8,13 @@ export function fetchTokenLists() {
     const tokenLists = Object.values(tokenListURIs).map((uri) =>
         fetch(uri)
             .then((response) => response.json())
-            .then((response) => ({ ...response, uri })),
+            .then((response) => (
+                {
+                    ...response,
+                    uri,
+                    dateRetrieved: Date.now()
+                }
+            )),
     );
     // translate default token lists from a human-readable strings to URI
     // ... strings, this syntax is necessary to map over an array of

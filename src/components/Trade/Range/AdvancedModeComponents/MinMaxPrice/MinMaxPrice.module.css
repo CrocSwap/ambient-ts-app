@@ -1,7 +1,20 @@
 .min_max_container{
+display: flex;
+flex-direction: column;
+gap: 5px;
+}
+
+.min_max_content{
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
     transition: all 450ms ease-in-out;
+}
+.disable_text{
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    text-align: center;
+    font-weight: 200;
+    color: #f6385b
 }

@@ -474,28 +474,6 @@ export default function Range(props: RangePropsIF) {
         </div>
     );
 
-    const advancedModeContent = (
-        <>
-            <MinMaxPrice
-                minPricePercentage={
-                    denominationsInBase
-                        ? minPriceDifferencePercentage
-                        : maxPriceDifferencePercentage
-                }
-                maxPricePercentage={
-                    denominationsInBase
-                        ? maxPriceDifferencePercentage
-                        : minPriceDifferencePercentage
-                }
-                minPriceInputString={minPriceInputString}
-                maxPriceInputString={maxPriceInputString}
-                setMinPriceInputString={setMinPriceInputString}
-                setMaxPriceInputString={setMaxPriceInputString}
-            />
-            <AdvancedPriceInfo />
-        </>
-    );
-
     // props for <RangePriceInfo/> React element
     const rangePriceInfoProps = {
         tokenPair: tokenPair,
@@ -565,6 +543,28 @@ export default function Range(props: RangePropsIF) {
         <>
             <RangeWidth {...rangeWidthProps} />
             <RangePriceInfo {...rangePriceInfoProps} />
+            <RangeExtraInfo {...rangeExtraInfoProps} />
+        </>
+    );
+    const advancedModeContent = (
+        <>
+            <MinMaxPrice
+                minPricePercentage={
+                    denominationsInBase
+                        ? minPriceDifferencePercentage
+                        : maxPriceDifferencePercentage
+                }
+                maxPricePercentage={
+                    denominationsInBase
+                        ? maxPriceDifferencePercentage
+                        : minPriceDifferencePercentage
+                }
+                minPriceInputString={minPriceInputString}
+                maxPriceInputString={maxPriceInputString}
+                setMinPriceInputString={setMinPriceInputString}
+                setMaxPriceInputString={setMaxPriceInputString}
+            />
+            <AdvancedPriceInfo />
             <RangeExtraInfo {...rangeExtraInfoProps} />
         </>
     );
