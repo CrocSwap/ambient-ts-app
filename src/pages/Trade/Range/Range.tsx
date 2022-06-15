@@ -564,7 +564,12 @@ export default function Range(props: RangePropsIF) {
                 setMinPriceInputString={setMinPriceInputString}
                 setMaxPriceInputString={setMaxPriceInputString}
             />
-            <AdvancedPriceInfo />
+            <AdvancedPriceInfo
+                tokenPair={tokenPair}
+                poolPriceDisplay={poolPriceDisplay}
+                isDenomBase={denominationsInBase}
+                isTokenABase={isTokenABase}
+            />
             <RangeExtraInfo {...rangeExtraInfoProps} />
         </>
     );
