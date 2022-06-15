@@ -51,7 +51,7 @@ export default function LimitExtraInfo(props: LimitExtraInfoPropsIF) {
         ? truncateDecimals(1 / poolPriceDisplay, 4).toString()
         : truncateDecimals(poolPriceDisplay, 4).toString();
 
-    console.log({ limitRateNum });
+    // console.log({ limitRateNum });
     // const limitPriceString = isDenomBase
     //     ? truncateDecimals(1 / limitRateNum, 4).toString()
     //     : truncateDecimals(limitRateNum, 4).toString();
