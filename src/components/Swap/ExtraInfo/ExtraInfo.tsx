@@ -20,6 +20,7 @@ interface ExtraInfoPropsIF {
     gasPriceinGwei: string;
     didUserFlipDenom: boolean;
     isTokenABase: boolean;
+    isDenomBase: boolean;
 }
 
 // central react functional component
@@ -29,43 +30,54 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
         poolPriceDisplay,
         slippageTolerance,
         liquidityProviderFee,
-        quoteTokenIsBuy,
+        // quoteTokenIsBuy,
         gasPriceinGwei,
         didUserFlipDenom,
         isTokenABase,
+        isDenomBase,
     } = props;
 
     const [showExtraDetails, setShowExtraDetails] = useState<boolean>(false);
 
-    const spotPriceDisplayQuoteForBase = truncateDecimals(1 / poolPriceDisplay, 4);
+    // const spotPriceDisplayQuoteForBase = truncateDecimals(1 / poolPriceDisplay, 4);
 
     const truncatedGasInGwei = truncateDecimals(parseFloat(gasPriceinGwei), 2);
 
-    const priceLimitAfterSlippageAndFee = quoteTokenIsBuy
+    const reverseDisplay = (isTokenABase && !isDenomBase) || (!isTokenABase && isDenomBase);
+
+    const displayPriceString = isDenomBase
+        ? truncateDecimals(1 / poolPriceDisplay, 4).toString()
+        : truncateDecimals(poolPriceDisplay, 4).toString();
+
+    const priceLimitAfterSlippageAndFee = isDenomBase
         ? truncateDecimals(
               (1 / poolPriceDisplay) *
                   (1 - slippageTolerance / 100) *
                   (1 - liquidityProviderFee / 100),
-              4,
+              6,
           )
         : truncateDecimals(
-              (1 / poolPriceDisplay) * (1 + slippageTolerance) * (1 + liquidityProviderFee / 100),
-              4,
+              poolPriceDisplay * (1 + slippageTolerance / 100) * (1 + liquidityProviderFee / 100),
+              6,
           );
 
-    const displayPriceString =
-        spotPriceDisplayQuoteForBase === Infinity ? '' : spotPriceDisplayQuoteForBase.toString();
+    // const displayPriceString =
+    //     spotPriceDisplayQuoteForBase === Infinity ? '' : spotPriceDisplayQuoteForBase.toString();
 
     const extraInfoData = [
         {
             title: 'Spot Price',
             tooltipTitle: 'spot price explanation',
-            data: `${displayPriceString} ${tokenPair.dataTokenB.symbol} per ${tokenPair.dataTokenA.symbol}`,
+            data: reverseDisplay
+                ? `${displayPriceString} ${tokenPair.dataTokenA.symbol} per ${tokenPair.dataTokenB.symbol}`
+                : `${displayPriceString} ${tokenPair.dataTokenB.symbol} per ${tokenPair.dataTokenA.symbol}`,
         },
         {
             title: 'Price Limit after Slippage and Fee',
             tooltipTitle: 'price limit explanation',
-            data: `${priceLimitAfterSlippageAndFee} ${tokenPair.dataTokenB.symbol} per ${tokenPair.dataTokenA.symbol}`,
+            data: reverseDisplay
+                ? `${priceLimitAfterSlippageAndFee} ${tokenPair.dataTokenA.symbol} per ${tokenPair.dataTokenB.symbol}`
+                : `${priceLimitAfterSlippageAndFee} ${tokenPair.dataTokenB.symbol} per ${tokenPair.dataTokenA.symbol}`,
         },
         {
             title: 'Slippage Tolerance',
@@ -99,7 +111,7 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
         tokenPair.dataTokenB,
         isTokenABase,
         poolPriceDisplay,
-        didUserFlipDenom
+        didUserFlipDenom,
     );
 
     return (
