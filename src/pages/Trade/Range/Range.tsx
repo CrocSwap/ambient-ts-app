@@ -488,6 +488,9 @@ export default function Range(props: RangePropsIF) {
     const rangeModalProps = {
         tokenPair: tokenPair,
         spotPriceDisplay: poolPriceDisplay,
+        denominationsInBase: denominationsInBase,
+        isTokenABase: isTokenABase,
+        isAmbient: isAmbient,
         maxPriceDisplay: maxPriceDisplay,
         minPriceDisplay: minPriceDisplay,
         sendTransaction: sendTransaction,
@@ -533,7 +536,7 @@ export default function Range(props: RangePropsIF) {
         liquidityProviderFee: 0.3,
         quoteTokenIsBuy: true,
         displayForBase: tradeData.isDenomBase,
-        isTokenABase: false,
+        isTokenABase: isTokenABase,
     };
 
     const baseModeContent = (

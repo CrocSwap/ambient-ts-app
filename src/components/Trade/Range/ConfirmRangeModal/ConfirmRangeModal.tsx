@@ -17,6 +17,9 @@ interface ConfirmRangeModalProps {
     spotPriceDisplay: string;
     maxPriceDisplay: string;
     minPriceDisplay: string;
+    denominationsInBase: boolean;
+    isTokenABase: boolean;
+    isAmbient: boolean;
 }
 
 export default function ConfirmRangeModal(props: ConfirmRangeModalProps) {
@@ -29,39 +32,45 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalProps) {
         maxPriceDisplay,
         spotPriceDisplay,
         tokenPair,
+        denominationsInBase,
+        isTokenABase,
+        isAmbient,
     } = props;
+
     const tokenA = tokenPair.dataTokenA;
     const tokenB = tokenPair.dataTokenB;
 
-    console.log(tokenPair);
+    // console.log(tokenPair);
     const [confirmDetails, setConfirmDetails] = useState(true);
     const transactionApproved = newRangeTransactionHash !== '';
     const sellTokenQty = (document.getElementById('A-range-quantity') as HTMLInputElement)?.value;
     const buyTokenQty = (document.getElementById('B-range-quantity') as HTMLInputElement)?.value;
 
-    const dataTokenA = {
-        icon: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png',
-        altText: 'Ethereum',
-        shortName: 'ETH',
-        qty: 0.0001,
-    };
-    const dataTokenB = {
-        icon: 'https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.png',
-        altText: 'dai',
-        shortName: 'DAI',
-        qty: 0.0898121212,
-    };
+    // const dataTokenA = {
+    //     icon: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png',
+    //     altText: 'Ethereum',
+    //     shortName: 'ETH',
+    //     qty: 0.0001,
+    // };
+    const dataTokenA = tokenPair.dataTokenA;
+    const dataTokenB = tokenPair.dataTokenB;
+    // const dataTokenB = {
+    //     icon: 'https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.png',
+    //     altText: 'dai',
+    //     shortName: 'DAI',
+    //     qty: 0.0898121212,
+    // };
     // RANGE HEADER DISPLAY
 
     const rangeHeader = (
         <section className={styles.position_display}>
             <div className={styles.token_display}>
                 <div className={styles.tokens}>
-                    <img src={dataTokenA.icon} alt={dataTokenA.altText} />
-                    <img src={dataTokenB.icon} alt={dataTokenB.altText} />
+                    <img src={dataTokenB.logoURI} alt={dataTokenB.name} />
+                    <img src={dataTokenA.logoURI} alt={dataTokenA.name} />
                 </div>
                 <span className={styles.token_symbol}>
-                    {dataTokenA.shortName}/{dataTokenB.shortName}
+                    {dataTokenA.symbol}/{dataTokenB.symbol}
                 </span>
             </div>
             <RangeStatus isInRange />
@@ -74,15 +83,15 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalProps) {
             <div className={styles.fee_tier_container}>
                 <div className={styles.detail_line}>
                     <div>
-                        <img src={dataTokenA.icon} alt={dataTokenA.altText} />
-                        <span>{dataTokenA.shortName}</span>
+                        <img src={dataTokenA.logoURI} alt={dataTokenA.name} />
+                        <span>{dataTokenA.symbol}</span>
                     </div>
                     <span>{sellTokenQty}</span>
                 </div>
                 <div className={styles.detail_line}>
                     <div>
-                        <img src={dataTokenB.icon} alt={dataTokenB.altText} />
-                        <span>{dataTokenB.shortName}</span>
+                        <img src={dataTokenB.logoURI} alt={dataTokenB.name} />
+                        <span>{dataTokenB.symbol}</span>
                     </div>
                     <span>{buyTokenQty}</span>
                 </div>
@@ -104,6 +113,10 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalProps) {
                 minPriceDisplay={minPriceDisplay}
                 maxPriceDisplay={maxPriceDisplay}
                 spotPriceDisplay={spotPriceDisplay}
+                tokenPair={tokenPair}
+                denominationsInBase={denominationsInBase}
+                isTokenABase={isTokenABase}
+                isAmbient={isAmbient}
             />
         </>
     );

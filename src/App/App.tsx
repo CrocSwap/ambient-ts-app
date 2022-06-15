@@ -112,7 +112,7 @@ export default function App() {
                 tokenPair.dataTokenA.address,
                 tokenPair.dataTokenB.address,
             );
-            console.log({ sortedTokens });
+            // console.log({ sortedTokens });
             setBaseTokenAddress(sortedTokens[0]);
             setQuoteTokenAddress(sortedTokens[1]);
             if (tokenPair.dataTokenA.address === sortedTokens[0]) {
@@ -602,15 +602,13 @@ export default function App() {
                 : tradeData.didUserFlipDenom
                 ? true
                 : false;
-        // console.log({isDenomInBase});
-        // console.log('------------');
         return isDenomInBase;
     }
 
     useEffect(() => {
-        dispatch(setDenomInBase(updateDenomIsInBase()));
-    }, [tradeData.didUserFlipDenom]);
-    updateDenomIsInBase();
+        const isDenomBase = updateDenomIsInBase();
+        dispatch(setDenomInBase(isDenomBase));
+    }, [tradeData.didUserFlipDenom, tokenPair]);
 
     const mainLayoutStyle = showSidebar ? 'main-layout-2' : 'main-layout';
     // take away margin from left if we are on homepage or swap
