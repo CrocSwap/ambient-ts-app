@@ -277,7 +277,7 @@ export default function Range(props: RangePropsIF) {
     if (isAmbient) {
         maxPriceDisplay = 'Infinity';
     } else {
-        maxPriceDisplay = denominationsInBase
+        maxPriceDisplay = !denominationsInBase
             ? truncateDecimals(rangeHighBoundDisplayPrice, 4).toString()
             : truncateDecimals(1 / rangeLowBoundDisplayPrice, 4).toString();
     }
@@ -288,7 +288,7 @@ export default function Range(props: RangePropsIF) {
     if (rangeWidthPercentage === 100) {
         minPriceDisplay = '0';
     } else {
-        minPriceDisplay = denominationsInBase
+        minPriceDisplay = !denominationsInBase
             ? truncateDecimals(rangeLowBoundDisplayPrice, 4).toString()
             : truncateDecimals(1 / rangeHighBoundDisplayPrice, 4).toString();
     }
