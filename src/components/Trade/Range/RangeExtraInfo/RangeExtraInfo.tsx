@@ -19,6 +19,7 @@ interface RangeExtraInfoPropsIF {
     gasPriceinGwei: string;
     displayForBase: boolean;
     isTokenABase: boolean;
+    daysInRangeEstimation: number;
 }
 
 // central react functional component
@@ -32,6 +33,7 @@ export default function RangeExtraInfo(props: RangeExtraInfoPropsIF) {
         liquidityProviderFee,
         displayForBase,
         isTokenABase,
+        daysInRangeEstimation,
     } = props;
 
     const [showExtraDetails, setShowExtraDetails] = useState<boolean>(false);
@@ -70,11 +72,6 @@ export default function RangeExtraInfo(props: RangeExtraInfoPropsIF) {
                 ? `${displayPriceString} ${tokenPair.dataTokenA.symbol} per ${tokenPair.dataTokenB.symbol}`
                 : `${displayPriceString} ${tokenPair.dataTokenB.symbol} per ${tokenPair.dataTokenA.symbol}`,
         },
-        // {
-        //     title: 'Price Limit after Slippage and Fee',
-        //     tooltipTitle: 'price limit explanation',
-        //     data: `${priceLimitAfterSlippageAndFee} ${tokenPair.dataTokenB.symbol} per ${tokenPair.dataTokenA.symbol}`,
-        // },
         {
             title: 'Slippage Tolerance',
             tooltipTitle: 'slippage tolerance explanation',
@@ -84,6 +81,11 @@ export default function RangeExtraInfo(props: RangeExtraInfoPropsIF) {
             title: 'Current Provider Fee',
             tooltipTitle: 'liquidity provider fee explanation',
             data: `${liquidityProviderFee}%`,
+        },
+        {
+            title: 'Estimated Range Duration',
+            tooltipTitle: 'range duration explanation',
+            data: `${daysInRangeEstimation} Days`,
         },
     ];
 
