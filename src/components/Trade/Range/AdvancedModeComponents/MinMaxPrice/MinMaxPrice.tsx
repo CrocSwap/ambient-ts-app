@@ -9,6 +9,7 @@ interface IMinMaxPrice {
     maxPriceInputString: string;
     setMinPriceInputString: React.Dispatch<React.SetStateAction<string>>;
     setMaxPriceInputString: React.Dispatch<React.SetStateAction<string>>;
+    disabled?: boolean;
 }
 
 export default function MinMaxPrice(props: IMinMaxPrice) {
@@ -47,20 +48,29 @@ export default function MinMaxPrice(props: IMinMaxPrice) {
         //       buyQtyField.value = truncatedTokenBQty === 'NaN' ? '' : truncatedTokenBQty;
         //   }
     };
+
+    const disableInputContent = (
+        <div className={styles.disable_text}>
+            Invalid range selected. The min price must be lower than the max price.
+        </div>
+    );
     return (
         <div className={styles.min_max_container}>
-            <PriceInput
-                fieldId='min'
-                title='Min Price'
-                percentageDifference={minPricePercentage}
-                handleChangeEvent={handleMinPriceChangeEvent}
-            />
-            <PriceInput
-                fieldId='max'
-                title='Max Price'
-                percentageDifference={maxPricePercentage}
-                handleChangeEvent={handleMaxPriceChangeEvent}
-            />
+            <div className={styles.min_max_content}>
+                <PriceInput
+                    fieldId='min'
+                    title='Min Price'
+                    percentageDifference={minPricePercentage}
+                    handleChangeEvent={handleMinPriceChangeEvent}
+                />
+                <PriceInput
+                    fieldId='max'
+                    title='Max Price'
+                    percentageDifference={maxPricePercentage}
+                    handleChangeEvent={handleMaxPriceChangeEvent}
+                />
+            </div>
+            {props.disabled && disableInputContent}
         </div>
     );
 }
