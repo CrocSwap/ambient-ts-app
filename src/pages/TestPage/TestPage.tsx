@@ -14,7 +14,7 @@ export default function TestPage() {
             // }
             <li key={`token-list-toggle-${list.uri}`} className={styles.token_list_li}>
                 <h4>{list.name}</h4>
-                
+                <button>Toggle</button>
             </li>
         ));
 
