@@ -3,10 +3,14 @@ import styles from './TestPage.module.css';
 
 export default function TestPage() {
 
-    // const { activeTokenLists } = JSON.parse(localStorage.getItem('user') as string);
+    const userData = JSON.parse(localStorage.getItem('user') as string);
 
     const toggleList = (list:string) => {
-        console.log(list);
+        const newActiveTokenList = (userData.activeTokenLists.includes(list))
+            ? userData.activeTokenLists.filter((uri:string) => uri !== list)
+            : [...userData.activeTokenLists, list];
+        userData.activeTokenLists = newActiveTokenList;
+        localStorage.setItem('user', JSON.stringify(userData));
     };
 
     const allTokenListMeta = JSON.parse(localStorage.getItem('allTokenLists') as string)
