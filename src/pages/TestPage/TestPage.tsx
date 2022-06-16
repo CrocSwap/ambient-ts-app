@@ -10,7 +10,9 @@ export default function TestPage() {
                 isDefault: list.default
             }
         ));
-        console.log(allTokenListMeta);
+
+        const { activeTokenLists } = JSON.parse(localStorage.getItem('user') as string);
+        console.log(activeTokenLists);
 
     return (
         <main>
