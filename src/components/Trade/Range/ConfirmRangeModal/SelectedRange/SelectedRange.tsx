@@ -1,23 +1,42 @@
 import styles from './SelectedRange.module.css';
-import { useState } from 'react';
+// import { useState } from 'react';
+import { TokenPairIF } from '../../../../../utils/interfaces/exports';
 
 interface SelectedRangeProps {
     minPriceDisplay: number | string;
     maxPriceDisplay: number | string;
-    spotPriceDisplay: number | string;
+    spotPriceDisplay: string;
+    denominationsInBase: boolean;
+    isTokenABase: boolean;
+    tokenPair: TokenPairIF;
+    isAmbient: boolean;
 }
 export default function SelectedRange(props: SelectedRangeProps) {
-    const { minPriceDisplay, maxPriceDisplay, spotPriceDisplay } = props;
-    const [reverseDisplay, setReverseDisplay] = useState(false);
+    const {
+        minPriceDisplay,
+        maxPriceDisplay,
+        spotPriceDisplay,
+        denominationsInBase,
+        isTokenABase,
+        tokenPair,
+        isAmbient,
+    } = props;
+    // const [reverseDisplay, setReverseDisplay] = useState(false);
 
-    const tokenAShortName = 'ETH';
-    const tokenBShortName = 'DAI';
+    const reverseDisplay =
+        (isTokenABase && denominationsInBase) || (!isTokenABase && !denominationsInBase);
+
+    const invertPrice = denominationsInBase;
+
+    const tokenAShortName = tokenPair.dataTokenA.symbol;
+    const tokenBShortName = tokenPair.dataTokenB.symbol;
 
     const switchButtons = (
         <div className={styles.button_container}>
             <button
                 onClick={() => {
-                    setReverseDisplay(!reverseDisplay);
+                    null;
+                    // setReverseDisplay(!reverseDisplay);
                 }}
                 className={reverseDisplay ? styles.active_button : styles.non_active_button}
             >
@@ -25,7 +44,8 @@ export default function SelectedRange(props: SelectedRangeProps) {
             </button>
             <button
                 onClick={() => {
-                    setReverseDisplay(!reverseDisplay);
+                    null;
+                    // setReverseDisplay(!reverseDisplay);
                 }}
                 className={reverseDisplay ? styles.non_active_button : styles.active_button}
             >
@@ -62,14 +82,26 @@ export default function SelectedRange(props: SelectedRangeProps) {
             <PriceRangeDisplay
                 title='Min Price'
                 value={minPriceDisplay}
-                tokens='DAI per ETH'
-                currentToken='ETH'
+                tokens={
+                    reverseDisplay
+                        ? `${tokenPair.dataTokenB.symbol} per ${tokenPair.dataTokenA.symbol}`
+                        : `${tokenPair.dataTokenA.symbol} per ${tokenPair.dataTokenB.symbol}`
+                }
+                currentToken={
+                    reverseDisplay ? tokenPair.dataTokenA.symbol : tokenPair.dataTokenB.symbol
+                }
             />
             <PriceRangeDisplay
                 title='Max Price'
                 value={maxPriceDisplay}
-                tokens='DAI per ETH'
-                currentToken='DAI'
+                tokens={
+                    reverseDisplay
+                        ? `${tokenPair.dataTokenB.symbol} per ${tokenPair.dataTokenA.symbol}`
+                        : `${tokenPair.dataTokenA.symbol} per ${tokenPair.dataTokenB.symbol}`
+                }
+                currentToken={
+                    reverseDisplay ? tokenPair.dataTokenB.symbol : tokenPair.dataTokenA.symbol
+                }
             />
         </div>
     );
@@ -78,8 +110,14 @@ export default function SelectedRange(props: SelectedRangeProps) {
         <div className={styles.currentPrice_display}>
             <div className={styles.currentPrice_container}>
                 <span className={styles.currentPrice_title}>Current price</span>
-                <span className={styles.currentPrice_amount}>{spotPriceDisplay}</span>
-                <span className={styles.currentPrice_info}> DAI per ETH</span>
+                <span className={styles.currentPrice_amount}>
+                    {invertPrice ? 1 / parseFloat(spotPriceDisplay) : spotPriceDisplay}
+                </span>
+                <span className={styles.currentPrice_info}>
+                    {reverseDisplay
+                        ? `${tokenPair.dataTokenB.symbol} per ${tokenPair.dataTokenA.symbol}`
+                        : `${tokenPair.dataTokenA.symbol} per ${tokenPair.dataTokenB.symbol}`}
+                </span>
             </div>
         </div>
     );
@@ -91,7 +129,7 @@ export default function SelectedRange(props: SelectedRangeProps) {
                     <div>Selected Range</div>
                     {switchButtons}
                 </div>
-                {selectedRangeDisplay}
+                {!isAmbient ? selectedRangeDisplay : null}
                 {currentPriceDisplay}
             </div>
         </>

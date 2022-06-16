@@ -326,6 +326,7 @@ export default function Swap(props: ISwapProps) {
                     quoteTokenIsBuy={true}
                     gasPriceinGwei={gasPriceinGwei}
                     didUserFlipDenom={tradeData.didUserFlipDenom}
+                    isDenomBase={tradeData.isDenomBase}
                 />
                 {isAuthenticated && isWeb3Enabled ? (
                     !isTokenAAllowanceSufficient && parseFloat(tokenAInputQty) > 0 ? (

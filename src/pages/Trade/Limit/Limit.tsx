@@ -386,10 +386,12 @@ export default function Limit(props: LimitPropsIF) {
                     gasPriceinGwei={gasPriceinGwei}
                     poolPriceDisplay={poolPriceDisplay}
                     slippageTolerance={5}
-                    liquidityProviderFee={0.3}
+                    liquidityProviderFee={0}
                     quoteTokenIsBuy={true}
                     didUserFlipDenom={tradeData.didUserFlipDenom}
                     isTokenABase={isSellTokenBase}
+                    isDenomBase={isDenomBase}
+                    limitRate={limitRate}
                 />
                 {isAuthenticated && isWeb3Enabled ? (
                     !isTokenAAllowanceSufficient && parseFloat(tokenAInputQty) > 0 ? (

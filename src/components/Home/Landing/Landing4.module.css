@@ -1,0 +1,122 @@
+.main_container{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    gap: 10px;
+   
+     height: 526px;
+
+     
+     border-radius: 4px;
+    
+ 
+     background: url('../../../assets/images/home/landing4.png') 
+     no-repeat
+      center center;
+  
+   -webkit-background-size: cover;
+   -moz-background-size: cover;
+   -o-background-size: cover;
+   background-size: cover;
+   font-family: var(--font-logo);
+ }
+
+ .content_container{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+ }
+
+
+.header_content{
+    display: flex;
+    flex-direction: column;
+    font-size: 24px;
+    line-height: 30px;
+    text-align: center;
+   
+    font-family: var(--font-logo);
+
+}
+
+.header_text{
+  
+
+color: #CDC1FF;
+font-weight: 100;
+
+}
+
+
+.ambient_text{
+  
+        background: var(--title-gradient);
+        font-family: var(--font-logo);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        
+     
+     
+    
+}
+
+.highlight_text{
+    color: #7371FC;
+    font-weight: 300;
+
+}
+.amm_pools{
+    font-size: 16px;
+    color: #BDBDBD;
+
+}
+
+.row{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+}
+
+.liquidity_content{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px 16px;
+    gap: 8px;
+    
+    width: 442.14px;
+    height: 177px;
+    
+    background: rgba(23, 29, 39, 0.3);
+    backdrop-filter: blur(20px);
+    /* Note: backdrop-filter has minimal browser support */
+    
+    border-radius: 4px;
+
+}
+.liquidity_content_combined{
+    width: 892.29px;
+height: 147px;
+}
+
+.liquidity_content img{
+    max-width: 100%;
+}
+
+.content_title{
+    font-weight: 300;
+    font-size: 16px;
+    line-height: 20px;
+    color: #CDC1FF;
+}
+.content_text{
+    font-weight: 100;
+    font-size: 12px;
+    line-height: 15px; 
+    color: #BDBDBD;
+}
