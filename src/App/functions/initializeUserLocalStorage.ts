@@ -2,7 +2,9 @@
 import { ambientTokenList } from '../../utils/data/ambientTokenList';
 import { TokenListIF } from '../../utils/interfaces/exports';
 
-export default function initializeUserLocalStorage() {
+export default function initializeUserLocalStorage(
+    tokenListsReceived: boolean
+) {
     // boolean to control whether local storage for user data needs updating
     let userUpdated = false;
 
@@ -21,20 +23,24 @@ export default function initializeUserLocalStorage() {
     // putting it there then pulling it back is necessary to prevent overwrites
     const user = localStorage.user ? JSON.parse(localStorage.getItem('user') as string) : {};
 
-    // if user object does not have active token lists, initialize with ambient
-    if ((!user.activeTokenLists || !user.activeTokenLists.length) && Array.isArray(allTokenLists)) {
-        console.log(allTokenLists);
+    // if user object does not have active token lists, initialize with all lists where
+    // ... [list].default === `true`, it is very important this ONLY run if there is no
+    // ... list or the list is empty, because we don't want to overwrite the array if
+    // ... the user has activated or deactivated lists manually
+    if ((!user.activeTokenLists || !user.activeTokenLists.length) && Array.isArray(allTokenLists) && tokenListsReceived) {
         allTokenLists.forEach((list: TokenListIF) => console.log(list));
-        user.activeTokenLists = allTokenLists.filter((list: TokenListIF) => list.default === true);
+        user.activeTokenLists = allTokenLists
+            .filter((list: TokenListIF) => list.default === true)
+            .map((list: TokenListIF) => list.uri);
         userUpdated = true;
     }
 
-    // if user object does not have imported tokens, initialize with tokens
-    // ... from default lists (see defaultTokenLists.ts file)
-    if (!user.importedTokens && user.activeTokenLists) {
-        user.importedTokens = user.activeTokenLists.map((list: TokenListIF) => list.tokens).flat();
-        userUpdated = true;
-    }
+    // // if user object does not have imported tokens, initialize with tokens
+    // // ... from default lists (see defaultTokenLists.ts file)
+    // if (!user.importedTokens && user.activeTokenLists) {
+    //     user.importedTokens = user.activeTokenLists.map((list: TokenListIF) => list.tokens).flat();
+    //     userUpdated = true;
+    // }
 
     if (userUpdated) {
         localStorage.setItem('user', JSON.stringify(user));

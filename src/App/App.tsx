@@ -54,15 +54,20 @@ export default function App() {
 
     const [importedTokens, setImportedTokens] = useState(defaultTokens);
     
+    // prevent multiple fetch requests to external URIs for token lists
     const [needTokenLists, setNeedTokenLists] = useState(true);
+
+    // trigger a useEffect() which needs to run when new token lists are received
+    // true vs false is an arbitrary distinction here
+    const [tokenListsReceived, indicateTokenListsReceived] = useState(false);
 
     if (needTokenLists) {
         setNeedTokenLists(false);
-        fetchTokenLists();
+        fetchTokenLists(tokenListsReceived, indicateTokenListsReceived);
     }
-    
+
     useEffect(() => {
-        initializeUserLocalStorage();
+        initializeUserLocalStorage(tokenListsReceived);
         // see if there's a user object in local storage
         if (localStorage.user) {
             // if user object exists, pull it
@@ -77,7 +82,7 @@ export default function App() {
                 );
             }
         }
-    }, []);
+    }, [tokenListsReceived]);
 
     const [showSidebar, setShowSidebar] = useState<boolean>(false);
     const location = useLocation();
