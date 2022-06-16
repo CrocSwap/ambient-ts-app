@@ -58,7 +58,7 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
         </>
     );
 
-    const manageTokeListButton = (
+    const manageTokenListButton = (
         <Button title='Manage Token List' action={() => console.log('yes')} />
     );
 
@@ -66,7 +66,7 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
         <div className={styles.token_select_container}>
             {searchInput}
             {tokenListContent}
-            {manageTokeListButton}
+            {manageTokenListButton}
         </div>
     );
 }
