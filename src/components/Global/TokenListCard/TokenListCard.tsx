@@ -3,11 +3,7 @@ import { useState } from 'react';
 import { MdOutlineSettings } from 'react-icons/md';
 import Toggle from '../../Global/Toggle/Toggle';
 
-interface TokenListCardProps {
-    children: React.ReactNode;
-}
-
-export default function TokenListCard(props: TokenListCardProps) {
+export default function TokenListCard() {
     const listIsActive = false;
     const [isChecked, setIsChecked] = useState(listIsActive);
 
