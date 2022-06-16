@@ -6,7 +6,6 @@ export function fetchTokenLists(
     tokenListsReceived: boolean,
     indicateTokenListsReceived: React.Dispatch<React.SetStateAction<boolean>>
 ) {
-    console.warn('fetching token lists!!!');
     // create an array of promises to fetch all token lists in the URIs file
     // middleware will add the source URI to every return
     const tokenLists = Object.values(tokenListURIs).map((uri) =>
