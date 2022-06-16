@@ -2,6 +2,7 @@ import styles from './TokenSelectContainer.module.css';
 import { useState } from 'react';
 import TokenSelect from '../TokenSelect/TokenSelect';
 import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
+import Button from '../../Global/Button/Button';
 
 interface TokenSelectContainerPropsIF {
     tokenPair: TokenPairIF;
@@ -57,10 +58,15 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
         </>
     );
 
+    const manageTokeListButton = (
+        <Button title='Manage Token List' action={() => console.log('yes')} />
+    );
+
     return (
         <div className={styles.token_select_container}>
             {searchInput}
             {tokenListContent}
+            {manageTokeListButton}
         </div>
     );
 }
