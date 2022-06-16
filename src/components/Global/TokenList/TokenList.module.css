@@ -1,0 +1,118 @@
+.token_list_container {
+    min-height: 600px;
+}
+.token_list_content{
+    height: 400px;
+    max-height: 400px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+}
+
+
+.token_list_content::-webkit-scrollbar {
+display: none;
+}
+
+.search_input input{
+    width: 100%;
+    background: var(--dark2);
+    
+    text-align: center;
+    color: var(--text-grey-light);
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    padding: 1rem 0;
+    border-radius: 24px;
+    border: none;
+    
+    outline: none;
+    
+  
+  }
+
+  .header_container{
+      width: 100%;
+    
+      margin-top: 1rem;
+      padding: 0 2rem;
+    }
+    .header_content{
+        background: #434343;
+        padding: 0.7rem 10px;
+        display: flex;
+        flex-direction: row;
+        /* justify-content: space-between; */
+        align-items: center;
+        border-radius: 12px;
+        font-weight: 600;
+
+        
+  }
+
+  .header_content div{
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 48%;
+      padding: 10px;
+      border-radius: 12px;
+
+      transition: all 0.6s ease-in-out;
+    
+  }
+  .divider{
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    height: 1px;
+    padding: 0 6rem;
+    background: #00bf8f;  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right, #001510, #00916d);  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right, #001510, #009570); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  
+  }
+
+  .active_button{
+      background: var(--bgSecondary);
+  }
+
+  .inactive_button{
+      background: transparent;
+  }
+
+  .custom_tokens{
+    min-height: 600px;
+    position: relative;
+  }
+
+  .custom_tokens_header{
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      padding: 0 2rem;
+  }
+
+  .clear_all_button{
+      color: var(--green);
+      cursor: pointer;
+  }
+  .clear_all_button:hover{
+      cursor: pointer;
+      color: green;
+      transition: all 0.4s ease-in-out;
+  }
+  
+  .custom_tokens_footer{
+position: absolute;
+display: flex;
+width: 100%;
+justify-content: center;
+align-items: center;
+text-align: center;
+bottom: 0;
+padding: 1rem 0;
+color: rgb(229, 224, 224);
+  }
