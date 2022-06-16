@@ -5,16 +5,15 @@ export default function TestPage() {
 
     // const { activeTokenLists } = JSON.parse(localStorage.getItem('user') as string);
 
+    const toggleList = (list:string) => {
+        console.log(list);
+    };
+
     const allTokenListMeta = JSON.parse(localStorage.getItem('allTokenLists') as string)
         .map((list:TokenListIF) => (
-            // {
-            //     name: list.name,
-            //     uri: list.uri,
-            //     isActive: activeTokenLists.includes(list.uri)
-            // }
             <li key={`token-list-toggle-${list.uri}`} className={styles.token_list_li}>
                 <h4>{list.name}</h4>
-                <button>Toggle</button>
+                <button onClick={() => toggleList(list.uri as string)}>Toggle</button>
             </li>
         ));
 
