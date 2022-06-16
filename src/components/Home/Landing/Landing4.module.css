@@ -6,7 +6,7 @@
     width: 100%;
     gap: 10px;
    
-     height: 526px;
+    height: 100%;
 
      
      border-radius: 4px;
@@ -67,6 +67,7 @@ font-weight: 100;
 .highlight_text{
     color: #7371FC;
     font-weight: 300;
+    margin: 0 5px;
 
 }
 .amm_pools{
@@ -89,19 +90,17 @@ font-weight: 100;
     padding: 8px 16px;
     gap: 8px;
     
-    width: 442.14px;
-    height: 177px;
+
     
     background: rgba(23, 29, 39, 0.3);
     backdrop-filter: blur(20px);
-    /* Note: backdrop-filter has minimal browser support */
     
     border-radius: 4px;
 
 }
 .liquidity_content_combined{
-    width: 892.29px;
-height: 147px;
+    /* width: 892.29px;
+height: 147px; */
 }
 
 .liquidity_content img{
@@ -119,4 +118,5 @@ height: 147px;
     font-size: 12px;
     line-height: 15px; 
     color: #BDBDBD;
+    word-wrap: break-word;
 }

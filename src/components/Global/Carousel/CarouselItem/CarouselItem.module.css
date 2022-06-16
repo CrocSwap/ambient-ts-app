@@ -2,7 +2,9 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    height: 200px;
+    /* height: 200px; */
+    /* height: 600px; */
     /* background-color: blue; */
     color: white;
+   
 }

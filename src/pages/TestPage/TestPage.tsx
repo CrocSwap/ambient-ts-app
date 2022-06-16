@@ -3,8 +3,8 @@ import { useState } from 'react';
 import TooltipComponent from '../../components/Global/TooltipComponent/TooltipComponent';
 import PoolCard from '../../components/Global/PoolCard/PoolCard';
 import Stats from '../../components/Home/Stats/AmbientStats';
-// import Carousel from '../../components/Global/Carousel/Carousel';
-// import CarouselItem from '../../components/Global/Carousel/CarouselItem/CarouselItem';
+import Carousel from '../../components/Global/Carousel/Carousel';
+import CarouselItem from '../../components/Global/Carousel/CarouselItem/CarouselItem';
 import Landing2 from '../../components/Home/Landing/Landing2';
 import Landing from '../../components/Home/Landing/Landing';
 import Landing3 from '../../components/Home/Landing/Landing3';
@@ -29,23 +29,32 @@ export default function TestPage() {
             <TooltipComponent title='Snackbar title' />
             <PoolCard />
             <Stats />
-            {/* <Carousel>
-                <CarouselItem height={'526px'}>
+            <Carousel>
+                <CarouselItem>
                     <Landing />
                 </CarouselItem>
-                <CarouselItem height={'526px'}>
+                <CarouselItem>
                     <Landing2 />
                 </CarouselItem>
-                <CarouselItem height={'526px'}>
-                    <Landing />
+                <CarouselItem>
+                    <Landing3 />
                 </CarouselItem>
-            </Carousel> */}
-            <Landing />
+                <CarouselItem>
+                    <Landing4 />
+                </CarouselItem>
+                <CarouselItem>
+                    <Landing5 />
+                </CarouselItem>
+                <CarouselItem>
+                    <Landing6 />
+                </CarouselItem>
+            </Carousel>
+            {/* <Landing />
             <Landing2 />
             <Landing3 />
             <Landing4 />
             <Landing5 />
-            <Landing6 />
+            <Landing6 /> */}
         </main>
     );
 }

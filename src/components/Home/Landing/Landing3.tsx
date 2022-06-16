@@ -33,17 +33,17 @@ export default function Landing3() {
                 runs the entire DEX inside a{' '}
                 <span className={styles.highlight_text}>single smart contract</span>
             </div>
-            <div className={styles.amm_pools}>
+            {/* <div className={styles.amm_pools}>
                 Individual AMM pools are lightweight data structures instead of separate smart
                 contracts
-            </div>
-            <div className={styles.efficiency}>
+            </div> */}
+            {/* <div className={styles.efficiency}>
                 This and other design decisions makes Ambient the most efficient Ethereum-based DEX
                 in existence.
-            </div>
+            </div> */}
         </div>
     );
-
+    // eslint-disable-next-line
     const multiContractContent = (
         <div className={styles.multi_container}>
             <div className={styles.title}>Multi contract design</div>
@@ -75,6 +75,7 @@ export default function Landing3() {
             </div>
         </div>
     );
+    // eslint-disable-next-line
     const singleContractContent = (
         <div className={styles.multi_container}>
             <div className={styles.title}>Single contract design</div>
@@ -109,10 +110,10 @@ export default function Landing3() {
     return (
         <div className={styles.main_container}>
             {headerText}
-            <div className={styles.content_container}>
+            {/* <div className={styles.content_container}>
                 {multiContractContent}
                 {singleContractContent}
-            </div>
+            </div> */}
         </div>
     );
 }
