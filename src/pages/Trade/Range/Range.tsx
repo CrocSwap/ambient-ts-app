@@ -285,6 +285,8 @@ export default function Range(props: RangePropsIF) {
     let minPriceDisplay: string;
     const apyPercentage: number = 100 - rangeWidthPercentage + 10;
 
+    const daysInRangeEstimation: number = isAmbient ? 365 : rangeWidthPercentage;
+
     if (rangeWidthPercentage === 100) {
         minPriceDisplay = '0';
     } else {
@@ -537,6 +539,7 @@ export default function Range(props: RangePropsIF) {
         quoteTokenIsBuy: true,
         displayForBase: tradeData.isDenomBase,
         isTokenABase: isTokenABase,
+        daysInRangeEstimation: daysInRangeEstimation,
     };
 
     const baseModeContent = (
