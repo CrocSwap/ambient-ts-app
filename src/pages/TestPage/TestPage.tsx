@@ -2,17 +2,17 @@ import { TokenListIF } from '../../utils/interfaces/exports';
 
 export default function TestPage() {
 
+    const { activeTokenLists } = JSON.parse(localStorage.getItem('user') as string);
+
     const allTokenListMeta = JSON.parse(localStorage.getItem('allTokenLists') as string)
         .map((list:TokenListIF) => (
             {
                 name: list.name,
                 uri: list.uri,
-                isDefault: list.default
+                isActive: activeTokenLists.includes(list.uri)
             }
         ));
-
-        const { activeTokenLists } = JSON.parse(localStorage.getItem('user') as string);
-        console.log(activeTokenLists);
+    console.log(allTokenListMeta);
 
     return (
         <main>
