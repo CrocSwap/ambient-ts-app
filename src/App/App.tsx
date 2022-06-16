@@ -46,8 +46,6 @@ import { setDenomInBase } from '../utils/state/tradeDataSlice';
 
 /** ***** React Function *******/
 export default function App() {
-    console.log('rendered App.tsx file');
-
     const { chainId, isWeb3Enabled, account, logout, isAuthenticated } = useMoralis();
 
     const dispatch = useAppDispatch();
@@ -67,7 +65,7 @@ export default function App() {
     }
 
     useEffect(() => {
-        initializeUserLocalStorage(tokenListsReceived);
+        initializeUserLocalStorage();
         // see if there's a user object in local storage
         if (localStorage.user) {
             // if user object exists, pull it
@@ -123,7 +121,7 @@ export default function App() {
                 tokenPair.dataTokenA.address,
                 tokenPair.dataTokenB.address,
             );
-            console.log({ sortedTokens });
+            // console.log({ sortedTokens });
             setBaseTokenAddress(sortedTokens[0]);
             setQuoteTokenAddress(sortedTokens[1]);
             if (tokenPair.dataTokenA.address === sortedTokens[0]) {
