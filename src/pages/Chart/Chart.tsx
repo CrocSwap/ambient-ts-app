@@ -32,55 +32,51 @@ export default function Chart() {
             value: 97.2,
         },
     ]);
+    const [liquidityData, setLiquidityData] = useState([
+        {
+            tick: 98,
+            value: 45006,
+        },
+        {
+            tick: 98.5,
+            value: 128736,
+        },
+        {
+            tick: 99,
+            value: 678736,
+        },
+        {
+            tick: 99.5,
+            value: 736123,
+        },
+        {
+            tick: 100,
+            value: 999204,
+        },
+    ]);
     // console.log('Helooo');
 
     useEffect(() => {
         console.log('update chart');
-
-        // const createMarketProfile = (_data: any, _priceBuckets: any[]) => {
-        //     // find the price bucket size
-        //     const priceStep = _priceBuckets[1] - _priceBuckets[0];
-
-        //     // determine whether a datapoint is within a bucket
-        //     const inBucket = (datum: any, priceBucket: any) =>
-        //         datum.low < priceBucket && datum.high > (priceBucket - priceStep);
-
-        //     // the volume contribution for this range
-        //     const volumeInBucket = (datum: any, priceBucket: any) =>
-        //         // inBucket(datum, priceBucket) ? 1 : 0;
-        //         inBucket(datum, priceBucket) ? datum.volume / Math.ceil((datum.high - datum.low) / priceStep) : 0;
-
-        //     // map each point in our time series, to construct the market profile
-        //     const marketProfile = data.map(
-        //         (datum: any, index: number) => _priceBuckets.map(priceBucket => {
-        //             // determine how many points to the left are also within this time bucket
-        //             const base = d3.sum(data.slice(0, index)
-        //                 .map((d:any) => volumeInBucket(d, priceBucket)));
-        //             return {
-        //                 base,
-        //                 value: base + volumeInBucket(datum, priceBucket),
-        //                 price: priceBucket
-        //             };
-        //         })
-        //     );
-
-        //     // similar to d3-stack - cache the underlying data
-        //     marketProfile.data = data;
-        //     return marketProfile;
-        // };
 
         const priceRange = d3fc.extentLinear().accessors([(d: any) => d.high, (d: any) => d.low]);
         const xExtent = d3fc.extentDate().accessors([(d: any) => d.date]);
 
         const xScale = d3.scaleTime();
         const yScale = d3.scaleLinear();
+        const liquidityTickScale = d3.scaleLinear();
+        const liquidityScale = d3.scaleLinear();
+
         // bar chart
-        // const priceScale = d3.scaleLinear().domain(priceRange);
-        // const priceBuckets = priceScale.ticks(20);
-        // const marketProfile = createMarketProfile(data, priceBuckets);
+        const priceScale = d3.scaleLinear().domain(priceRange);
+        const liquidityExtent = d3fc
+            .extentLinear(liquidityData)
+            .include([0])
+            .accessors([(d: any) => d.value]);
 
         xScale.domain(xExtent(data));
         yScale.domain(priceRange(data));
+        liquidityScale.domain(liquidityExtent(liquidityData));
 
         // axes
         const xAxis = d3fc.axisBottom().scale(xScale);
@@ -100,13 +96,11 @@ export default function Chart() {
 
         const barSeries = d3fc
             .autoBandwidth(d3fc.seriesSvgBar())
-            .crossValue((d: any) => d.high)
-            .align('left')
             .orient('horizontal')
-            .key((d: any) => d.high)
-            .mainValue((d: any) => d.volume)
-            .xScale(yScale)
-            .yScale(xScale);
+            .mainValue((d: any) => d.value)
+            .crossValue((d: any) => d.tick)
+            .xScale(liquidityScale)
+            .yScale(yScale);
 
         const horizontalLine = d3fc
             .annotationSvgLine()
@@ -160,6 +154,8 @@ export default function Chart() {
         d3.select(d3PlotArea.current).on('measure', function (event: any) {
             xScale.range([0, event.detail.width]);
             yScale.range([event.detail.height, 0]);
+            liquidityTickScale.range([event.detail.height, 0]);
+            liquidityScale.range([event.detail.width, event.detail.width / 2]);
         });
 
         d3.select(d3PlotArea.current).on('draw', function (event: any) {
@@ -167,7 +163,7 @@ export default function Chart() {
 
             gridJoin(svg, [data]).call(gridlines);
             candleJoin(svg, [data]).call(candlestick);
-            barJoin(svg, [data]).call(barSeries);
+            barJoin(svg, [liquidityData]).call(barSeries);
             targetsJoin(svg, [targets]).call(horizontalLine);
         });
 
@@ -180,10 +176,6 @@ export default function Chart() {
         });
         const nd = d3.select('#group').node() as any;
         nd.requestRedraw();
-        // const chart = d3fc.chartCartesian(xScale, yScale).svgPlotArea(multi);
-        // chart.xDomain(xExtent(data));
-        // chart.yDomain(yExtent(data));
-        // d3.select(d3Container.current).datum(data).call(chart);
     }, [targets, data]);
 
     return (
