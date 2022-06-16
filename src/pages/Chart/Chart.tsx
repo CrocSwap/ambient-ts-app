@@ -32,7 +32,7 @@ export default function Chart() {
             value: 97.2,
         },
     ]);
-    const [liquidityData, setLiquidityData] = useState([
+    const [liquidityData] = useState([
         {
             tick: 98,
             value: 45006,
@@ -68,7 +68,6 @@ export default function Chart() {
         const liquidityScale = d3.scaleLinear();
 
         // bar chart
-        const priceScale = d3.scaleLinear().domain(priceRange);
         const liquidityExtent = d3fc
             .extentLinear(liquidityData)
             .include([0])
