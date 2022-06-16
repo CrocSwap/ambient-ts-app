@@ -284,10 +284,6 @@ export default function Range(props: RangePropsIF) {
               false,
           );
 
-    useEffect(() => {
-        console.log({ rangeLowBoundDisplayPrice });
-    }, [rangeLowBoundDisplayPrice]);
-
     const rangeHighBoundDisplayPrice = denominationsInBase
         ? 1 /
           toDisplayPrice(rangeLowBoundNonDisplayPrice, baseTokenDecimals, quoteTokenDecimals, false)
@@ -298,9 +294,62 @@ export default function Range(props: RangePropsIF) {
               false,
           );
 
+    const [rangeLowBoundFieldBlurred, setRangeLowBoundFieldBlurred] = useState(false);
+    const lowBoundOnBlur = () => setRangeLowBoundFieldBlurred(true);
+
+    const [rangeHighBoundFieldBlurred, setRangeHighBoundFieldBlurred] = useState(false);
+    const highBoundOnBlur = () => setRangeHighBoundFieldBlurred(true);
+
+    const [initializationComplete, setInitializationComplete] = useState(false);
+
+    useEffect(() => {
+        if (!initializationComplete) {
+            const rangeLowBoundDisplayField = document.getElementById(
+                'min-price-input-quantity',
+            ) as HTMLInputElement;
+            if (rangeLowBoundDisplayField) {
+                setRangeLowBoundFieldBlurred(true);
+                const rangeHighBoundDisplayField = document.getElementById(
+                    'max-price-input-quantity',
+                ) as HTMLInputElement;
+                if (rangeHighBoundDisplayField) {
+                    setRangeHighBoundFieldBlurred(true);
+                    setInitializationComplete(true);
+                }
+            }
+        }
+    }, [rangeHighBoundDisplayPrice, rangeLowBoundDisplayPrice, initializationComplete]);
+
+    useEffect(() => {
+        console.log({ rangeLowBoundDisplayPrice });
+        if (rangeLowBoundFieldBlurred) {
+            console.log('low bound blurred');
+            const rangeLowBoundDisplayField = document.getElementById(
+                'min-price-input-quantity',
+            ) as HTMLInputElement;
+            if (rangeLowBoundDisplayField) {
+                rangeLowBoundDisplayField.value = rangeLowBoundDisplayPrice.toString();
+            }
+            console.log('low bound field not found');
+            setRangeLowBoundFieldBlurred(false);
+        }
+    }, [rangeLowBoundDisplayPrice, rangeLowBoundFieldBlurred]);
+
     useEffect(() => {
         console.log({ rangeHighBoundDisplayPrice });
-    }, [rangeHighBoundDisplayPrice]);
+        if (rangeHighBoundFieldBlurred) {
+            console.log('high bound blurred');
+            const rangeHighBoundDisplayField = document.getElementById(
+                'max-price-input-quantity',
+            ) as HTMLInputElement;
+            if (rangeHighBoundDisplayField) {
+                rangeHighBoundDisplayField.value = rangeHighBoundDisplayPrice.toString();
+            } else {
+                console.log('high bound field not found');
+            }
+            setRangeHighBoundFieldBlurred(false);
+        }
+    }, [rangeHighBoundDisplayPrice, rangeHighBoundFieldBlurred]);
 
     const depositSkew = concDepositSkew(
         poolPriceNonDisplay,
@@ -598,6 +647,9 @@ export default function Range(props: RangePropsIF) {
                 setMinPriceInputString={setMinPriceInputString}
                 setMaxPriceInputString={setMaxPriceInputString}
                 isDenomBase={denominationsInBase}
+                // highBoundOnFocus={highBoundOnFocus}
+                highBoundOnBlur={highBoundOnBlur}
+                lowBoundOnBlur={lowBoundOnBlur}
             />
             <AdvancedPriceInfo
                 tokenPair={tokenPair}

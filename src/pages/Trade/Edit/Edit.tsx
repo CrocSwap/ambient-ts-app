@@ -9,7 +9,7 @@ import Divider from '../../../components/Global/Divider/Divider';
 import Modal from '../../../components/Global/Modal/Modal';
 import ConfirmEditModal from '../../../components/Trade/Edit/ConfirmEditModal/ConfirmEditModal';
 import { useModal } from '../../../components/Global/Modal/useModal';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 // interface EditProps {
 //     children: React.ReactNode;
 // }
@@ -24,6 +24,42 @@ export default function Edit() {
 
     const [minPriceInputString, setMinPriceInputString] = useState<string>('');
     const [maxPriceInputString, setMaxPriceInputString] = useState<string>('');
+
+    const [rangeLowBoundFieldBlurred, setRangeLowBoundFieldBlurred] = useState(true);
+
+    const lowBoundOnBlur = () => setRangeLowBoundFieldBlurred(true);
+
+    const rangeLowBoundDisplayPrice = 1;
+    const rangeHighBoundDisplayPrice = 1;
+
+    const [rangeHighBoundFieldBlurred, setRangeHighBoundFieldBlurred] = useState(true);
+    const highBoundOnBlur = () => setRangeHighBoundFieldBlurred(true);
+
+    useEffect(() => {
+        console.log('low bound blurred');
+        if (rangeLowBoundFieldBlurred) {
+            const rangeLowBoundDisplayField = document.getElementById(
+                'min-price-input-quantity',
+            ) as HTMLInputElement;
+            if (rangeLowBoundDisplayField) {
+                rangeLowBoundDisplayField.value = rangeLowBoundDisplayPrice.toString();
+            }
+            setRangeLowBoundFieldBlurred(false);
+        }
+    }, [rangeLowBoundDisplayPrice, rangeLowBoundFieldBlurred]);
+
+    useEffect(() => {
+        console.log('high bound blurred');
+        if (rangeHighBoundFieldBlurred) {
+            const rangeHighBoundDisplayField = document.getElementById(
+                'max-price-input-quantity',
+            ) as HTMLInputElement;
+            if (rangeHighBoundDisplayField) {
+                rangeHighBoundDisplayField.value = rangeHighBoundDisplayPrice.toString();
+            }
+            setRangeHighBoundFieldBlurred(false);
+        }
+    }, [rangeHighBoundDisplayPrice, rangeHighBoundFieldBlurred]);
 
     const { positionHash } = useParams();
     console.log(positionHash);
@@ -47,6 +83,9 @@ export default function Edit() {
                     setMinPriceInputString={setMinPriceInputString}
                     setMaxPriceInputString={setMaxPriceInputString}
                     isDenomBase={isDenomBase}
+                    // highBoundOnFocus={highBoundOnFocus}
+                    highBoundOnBlur={highBoundOnBlur}
+                    lowBoundOnBlur={lowBoundOnBlur}
                 />
                 <EditPriceInfo />
                 <EditButton onClickFn={openModal} />

@@ -11,6 +11,9 @@ interface IMinMaxPrice {
     setMaxPriceInputString: React.Dispatch<React.SetStateAction<string>>;
     disabled?: boolean;
     isDenomBase: boolean;
+    // highBoundOnFocus: () => void;
+    lowBoundOnBlur: () => void;
+    highBoundOnBlur: () => void;
 }
 
 export default function MinMaxPrice(props: IMinMaxPrice) {
@@ -20,6 +23,9 @@ export default function MinMaxPrice(props: IMinMaxPrice) {
         setMinPriceInputString,
         setMaxPriceInputString,
         isDenomBase,
+        // highBoundOnFocus,
+        lowBoundOnBlur,
+        highBoundOnBlur,
     } = props;
 
     const handleMinPriceChangeEvent = (evt?: ChangeEvent<HTMLInputElement>) => {
@@ -66,6 +72,8 @@ export default function MinMaxPrice(props: IMinMaxPrice) {
                     handleChangeEvent={
                         !isDenomBase ? handleMaxPriceChangeEvent : handleMinPriceChangeEvent
                     }
+                    // onFocus={highBoundOnFocus}
+                    onBlur={lowBoundOnBlur}
                 />
                 <PriceInput
                     fieldId='max'
@@ -74,6 +82,8 @@ export default function MinMaxPrice(props: IMinMaxPrice) {
                     handleChangeEvent={
                         !isDenomBase ? handleMinPriceChangeEvent : handleMaxPriceChangeEvent
                     }
+                    // onFocus={highBoundOnFocus}
+                    onBlur={highBoundOnBlur}
                 />
             </div>
             {props.disabled && disableInputContent}
