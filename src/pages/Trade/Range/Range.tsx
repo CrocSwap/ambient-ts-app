@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useMoralis, useNewMoralisObject } from 'react-moralis';
 import { motion } from 'framer-motion';
 import { BigNumber } from 'ethers';
@@ -160,37 +160,53 @@ export default function Range(props: RangePropsIF) {
     const [minPriceInputString, setMinPriceInputString] = useState<string>('');
     const [maxPriceInputString, setMaxPriceInputString] = useState<string>('');
 
-    const minPriceNonDisplay = denominationsInBase
-        ? fromDisplayPrice(parseFloat(minPriceInputString), baseTokenDecimals, quoteTokenDecimals)
-        : fromDisplayPrice(parseFloat(maxPriceInputString), baseTokenDecimals, quoteTokenDecimals);
-
-    const maxPriceNonDisplay = denominationsInBase
-        ? fromDisplayPrice(parseFloat(maxPriceInputString), baseTokenDecimals, quoteTokenDecimals)
-        : fromDisplayPrice(parseFloat(minPriceInputString), baseTokenDecimals, quoteTokenDecimals);
-
-    // useEffect(() => {
-    //     console.log({ minPriceInputString });
-    // }, [minPriceInputString]);
-
-    // useEffect(() => {
-    //     console.log({ maxPriceInputString });
-    // }, [maxPriceInputString]);
-
-    // useEffect(() => {
-    //     console.log({ denominationsInBase });
-    // }, [denominationsInBase]);
-
     const defaultMinPriceDifferencePercentage = -15;
     const defaultMaxPriceDifferencePercentage = 15;
+
+    const minPriceNonDisplay = denominationsInBase
+        ? fromDisplayPrice(
+              1 / parseFloat(maxPriceInputString),
+              baseTokenDecimals,
+              quoteTokenDecimals,
+          )
+        : fromDisplayPrice(parseFloat(minPriceInputString), baseTokenDecimals, quoteTokenDecimals);
+
+    const maxPriceNonDisplay = denominationsInBase
+        ? fromDisplayPrice(
+              1 / parseFloat(minPriceInputString),
+              baseTokenDecimals,
+              quoteTokenDecimals,
+          )
+        : fromDisplayPrice(parseFloat(maxPriceInputString), baseTokenDecimals, quoteTokenDecimals);
+
+    useEffect(() => {
+        console.log({ maxPriceNonDisplay });
+    }, [maxPriceNonDisplay]);
+
+    useEffect(() => {
+        console.log({ minPriceNonDisplay });
+    }, [minPriceNonDisplay]);
+
+    useEffect(() => {
+        console.log({ minPriceInputString });
+    }, [minPriceInputString]);
+
+    useEffect(() => {
+        console.log({ maxPriceInputString });
+    }, [maxPriceInputString]);
+
+    useEffect(() => {
+        console.log({ denominationsInBase });
+    }, [denominationsInBase]);
 
     let minPriceDifferencePercentage = defaultMinPriceDifferencePercentage;
     let maxPriceDifferencePercentage = defaultMaxPriceDifferencePercentage;
 
     let rangeLowTick: number, rangeHighTick: number, isAmbient: boolean;
 
-    // useEffect(() => {
-    //     console.log({ currentPoolPriceTick });
-    // }, [currentPoolPriceTick]);
+    useEffect(() => {
+        console.log({ currentPoolPriceTick });
+    }, [currentPoolPriceTick]);
 
     if (!isAdvancedModeActive) {
         isAmbient = rangeWidthPercentage === 100;
@@ -211,8 +227,9 @@ export default function Range(props: RangePropsIF) {
             );
 
             denominationsInBase
-                ? (minPriceDifferencePercentage = geometricDifferencePercentage)
+                ? (maxPriceDifferencePercentage = -geometricDifferencePercentage)
                 : (maxPriceDifferencePercentage = geometricDifferencePercentage);
+            // maxPriceDifferencePercentage = geometricDifferencePercentage;
         }
         if (isNaN(maxPriceNonDisplay)) {
             rangeHighTick = currentPoolPriceTick + defaultMaxPriceDifferencePercentage * 100;
@@ -223,48 +240,67 @@ export default function Range(props: RangePropsIF) {
                 2,
             );
             denominationsInBase
-                ? (maxPriceDifferencePercentage = geometricDifferencePercentage)
+                ? (minPriceDifferencePercentage = -geometricDifferencePercentage)
                 : (minPriceDifferencePercentage = geometricDifferencePercentage);
+            // minPriceDifferencePercentage = geometricDifferencePercentage;
         }
     }
-
-    // useEffect(() => {
-    //     console.log({ rangeLowTick });
-    // }, [rangeLowTick]);
-
-    // useEffect(() => {
-    //     console.log({ rangeHighTick });
-    // }, [rangeHighTick]);
 
     const roundedLowTick = roundDownTick(rangeLowTick);
 
     const roundedHighTick = roundUpTick(rangeHighTick);
+    useEffect(() => {
+        console.log({ roundedLowTick });
+    }, [roundedLowTick]);
+
+    useEffect(() => {
+        console.log({ roundedHighTick });
+    }, [roundedHighTick]);
 
     const rangeLowBoundNonDisplayPrice = tickToPrice(roundedLowTick);
 
+    useEffect(() => {
+        console.log({ rangeLowBoundNonDisplayPrice });
+    }, [rangeLowBoundNonDisplayPrice]);
+
     const rangeHighBoundNonDisplayPrice = tickToPrice(roundedHighTick);
 
-    const rangeLowBoundDisplayPrice = toDisplayPrice(
-        rangeLowBoundNonDisplayPrice,
-        baseTokenDecimals,
-        quoteTokenDecimals,
-        false,
-    );
+    useEffect(() => {
+        console.log({ rangeHighBoundNonDisplayPrice });
+    }, [rangeHighBoundNonDisplayPrice]);
 
-    // useEffect(() => {
-    //     console.log({ rangeLowBoundDisplayPrice });
-    // }, [rangeLowBoundDisplayPrice]);
+    const rangeLowBoundDisplayPrice = denominationsInBase
+        ? 1 /
+          toDisplayPrice(
+              rangeHighBoundNonDisplayPrice,
+              baseTokenDecimals,
+              quoteTokenDecimals,
+              false,
+          )
+        : toDisplayPrice(
+              rangeLowBoundNonDisplayPrice,
+              baseTokenDecimals,
+              quoteTokenDecimals,
+              false,
+          );
 
-    const rangeHighBoundDisplayPrice = toDisplayPrice(
-        rangeHighBoundNonDisplayPrice,
-        baseTokenDecimals,
-        quoteTokenDecimals,
-        false,
-    );
+    useEffect(() => {
+        console.log({ rangeLowBoundDisplayPrice });
+    }, [rangeLowBoundDisplayPrice]);
 
-    // useEffect(() => {
-    //     console.log({ rangeHighBoundDisplayPrice });
-    // }, [rangeHighBoundDisplayPrice]);
+    const rangeHighBoundDisplayPrice = denominationsInBase
+        ? 1 /
+          toDisplayPrice(rangeLowBoundNonDisplayPrice, baseTokenDecimals, quoteTokenDecimals, false)
+        : toDisplayPrice(
+              rangeHighBoundNonDisplayPrice,
+              baseTokenDecimals,
+              quoteTokenDecimals,
+              false,
+          );
+
+    useEffect(() => {
+        console.log({ rangeHighBoundDisplayPrice });
+    }, [rangeHighBoundDisplayPrice]);
 
     const depositSkew = concDepositSkew(
         poolPriceNonDisplay,
@@ -277,9 +313,11 @@ export default function Range(props: RangePropsIF) {
     if (isAmbient) {
         maxPriceDisplay = 'Infinity';
     } else {
-        maxPriceDisplay = !denominationsInBase
-            ? truncateDecimals(rangeHighBoundDisplayPrice, 4).toString()
-            : truncateDecimals(1 / rangeLowBoundDisplayPrice, 4).toString();
+        maxPriceDisplay = truncateDecimals(rangeHighBoundDisplayPrice, 4).toString();
+
+        // maxPriceDisplay = !denominationsInBase
+        //     ? truncateDecimals(rangeHighBoundDisplayPrice, 4).toString()
+        //     : truncateDecimals(1 / rangeLowBoundDisplayPrice, 4).toString();
     }
 
     let minPriceDisplay: string;
@@ -290,9 +328,10 @@ export default function Range(props: RangePropsIF) {
     if (rangeWidthPercentage === 100) {
         minPriceDisplay = '0';
     } else {
-        minPriceDisplay = !denominationsInBase
-            ? truncateDecimals(rangeLowBoundDisplayPrice, 4).toString()
-            : truncateDecimals(1 / rangeHighBoundDisplayPrice, 4).toString();
+        minPriceDisplay = truncateDecimals(rangeLowBoundDisplayPrice, 4).toString();
+        // minPriceDisplay = !denominationsInBase
+        //     ? truncateDecimals(rangeLowBoundDisplayPrice, 4).toString()
+        //     : truncateDecimals(1 / rangeHighBoundDisplayPrice, 4).toString();
     }
 
     const truncatedTokenABalance = truncateDecimals(parseFloat(tokenABalance), 4).toString();
@@ -534,7 +573,7 @@ export default function Range(props: RangePropsIF) {
         tokenPair: tokenPair,
         gasPriceinGwei: gasPriceinGwei,
         poolPriceDisplay: Number(poolPriceDisplay),
-        slippageTolerance: 5,
+        slippageTolerance: 0.05,
         liquidityProviderFee: 0.3,
         quoteTokenIsBuy: true,
         displayForBase: tradeData.isDenomBase,
@@ -552,20 +591,13 @@ export default function Range(props: RangePropsIF) {
     const advancedModeContent = (
         <>
             <MinMaxPrice
-                minPricePercentage={
-                    denominationsInBase
-                        ? minPriceDifferencePercentage
-                        : maxPriceDifferencePercentage
-                }
-                maxPricePercentage={
-                    denominationsInBase
-                        ? maxPriceDifferencePercentage
-                        : minPriceDifferencePercentage
-                }
+                minPricePercentage={minPriceDifferencePercentage}
+                maxPricePercentage={maxPriceDifferencePercentage}
                 minPriceInputString={minPriceInputString}
                 maxPriceInputString={maxPriceInputString}
                 setMinPriceInputString={setMinPriceInputString}
                 setMaxPriceInputString={setMaxPriceInputString}
+                isDenomBase={denominationsInBase}
             />
             <AdvancedPriceInfo
                 tokenPair={tokenPair}

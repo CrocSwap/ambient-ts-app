@@ -20,6 +20,8 @@ export default function Edit() {
     const minPricePercentage = -15;
     const maxPricePercentage = 15;
 
+    const isDenomBase = false;
+
     const [minPriceInputString, setMinPriceInputString] = useState<string>('');
     const [maxPriceInputString, setMaxPriceInputString] = useState<string>('');
 
@@ -44,6 +46,7 @@ export default function Edit() {
                     maxPriceInputString={maxPriceInputString}
                     setMinPriceInputString={setMinPriceInputString}
                     setMaxPriceInputString={setMaxPriceInputString}
+                    isDenomBase={isDenomBase}
                 />
                 <EditPriceInfo />
                 <EditButton onClickFn={openModal} />
