@@ -15,7 +15,7 @@ export function fetchTokenLists(
                 {
                     ...response,
                     uri,
-                    dateRetrieved: Date.now()
+                    dateRetrieved: new Date().toISOString()
                 }
             )),
     );
