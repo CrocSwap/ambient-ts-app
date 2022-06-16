@@ -47,34 +47,34 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
 
     if (isDenomBase) {
         if (isTokenABase) {
-            reverseSlippage = true;
-        } else {
             reverseSlippage = false;
+        } else {
+            reverseSlippage = true;
         }
     } else {
         if (isTokenABase) {
-            reverseSlippage = false;
-        } else {
             reverseSlippage = true;
+        } else {
+            reverseSlippage = false;
         }
     }
 
     const displayPriceString = isDenomBase
-        ? truncateDecimals(1 / poolPriceDisplay, 6).toString()
-        : truncateDecimals(poolPriceDisplay, 6).toString();
+        ? truncateDecimals(1 / poolPriceDisplay, 4).toString()
+        : truncateDecimals(poolPriceDisplay, 4).toString();
 
     const priceLimitAfterSlippageAndFee = reverseSlippage
         ? truncateDecimals(
               parseFloat(displayPriceString) *
                   (1 + slippageTolerance / 100) *
                   (1 + liquidityProviderFee / 100),
-              6,
+              4,
           )
         : truncateDecimals(
               parseFloat(displayPriceString) *
                   (1 - slippageTolerance / 100) *
                   (1 - liquidityProviderFee / 100),
-              6,
+              4,
           );
 
     const extraInfoData = [

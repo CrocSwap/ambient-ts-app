@@ -45,24 +45,35 @@ export default function LimitExtraInfo(props: LimitExtraInfoPropsIF) {
 
     const reverseDisplay = (isTokenABase && !isDenomBase) || (!isTokenABase && isDenomBase);
 
+    let reverseSlippage: boolean;
+
+    if (isDenomBase) {
+        if (isTokenABase) {
+            reverseSlippage = false;
+        } else {
+            reverseSlippage = true;
+        }
+    } else {
+        if (isTokenABase) {
+            reverseSlippage = true;
+        } else {
+            reverseSlippage = false;
+        }
+    }
+
     const limitRateNum = truncateDecimals(parseFloat(limitRate), 4);
 
     const displayPriceString = isDenomBase
         ? truncateDecimals(1 / poolPriceDisplay, 4).toString()
         : truncateDecimals(poolPriceDisplay, 4).toString();
 
-    // console.log({ limitRateNum });
-    // const limitPriceString = isDenomBase
-    //     ? truncateDecimals(1 / limitRateNum, 4).toString()
-    //     : truncateDecimals(limitRateNum, 4).toString();
-
-    const priceLimitAfterSlippageAndFee = isDenomBase
+    const priceLimitAfterSlippageAndFee = reverseSlippage
         ? truncateDecimals(
-              limitRateNum * (1 - slippageTolerance / 100) * (1 - liquidityProviderFee / 100),
+              limitRateNum * (1 + slippageTolerance / 100) * (1 + liquidityProviderFee / 100),
               4,
           )
         : truncateDecimals(
-              limitRateNum * (1 + slippageTolerance / 100) * (1 + liquidityProviderFee / 100),
+              limitRateNum * (1 - slippageTolerance / 100) * (1 - liquidityProviderFee / 100),
               4,
           );
 
@@ -71,21 +82,21 @@ export default function LimitExtraInfo(props: LimitExtraInfoPropsIF) {
     const extraInfoData = [
         {
             title: 'Spot Price',
-            tooltipTitle: 'spot price explanation',
+            tooltipTitle: 'Current Price of the Selected Token Pool',
             data: reverseDisplay
                 ? `${displayPriceString} ${tokenPair.dataTokenA.symbol} per ${tokenPair.dataTokenB.symbol}`
                 : `${displayPriceString} ${tokenPair.dataTokenB.symbol} per ${tokenPair.dataTokenA.symbol}`,
         },
+        // {
+        //     title: 'Limit Price',
+        //     tooltipTitle: 'limit price explanation',
+        //     data: reverseDisplay
+        //         ? `${limitRateNum} ${tokenPair.dataTokenA.symbol} per ${tokenPair.dataTokenB.symbol}`
+        //         : `${limitRateNum} ${tokenPair.dataTokenB.symbol} per ${tokenPair.dataTokenA.symbol}`,
+        // },
         {
             title: 'Limit Price',
-            tooltipTitle: 'limit price explanation',
-            data: reverseDisplay
-                ? `${limitRateNum} ${tokenPair.dataTokenA.symbol} per ${tokenPair.dataTokenB.symbol}`
-                : `${limitRateNum} ${tokenPair.dataTokenB.symbol} per ${tokenPair.dataTokenA.symbol}`,
-        },
-        {
-            title: 'Limit Price after Slippage',
-            tooltipTitle: 'price limit explanation',
+            tooltipTitle: 'Price Limit After Maximum Slippage',
             data: reverseDisplay
                 ? `${priceLimitAfterSlippageAndFee} ${tokenPair.dataTokenA.symbol} per ${tokenPair.dataTokenB.symbol}`
                 : `${priceLimitAfterSlippageAndFee} ${tokenPair.dataTokenB.symbol} per ${tokenPair.dataTokenA.symbol}`,
@@ -108,7 +119,7 @@ export default function LimitExtraInfo(props: LimitExtraInfoPropsIF) {
                 <div className={styles.extra_row} key={idx}>
                     <div className={styles.align_center}>
                         <div>{item.title}</div>
-                        <TooltipComponent title={item.title} />
+                        <TooltipComponent title={item.tooltipTitle} />
                     </div>
                     <div className={styles.data}>{item.data}</div>
                 </div>
