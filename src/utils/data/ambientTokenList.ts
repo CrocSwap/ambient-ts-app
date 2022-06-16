@@ -1,5 +1,6 @@
 export const ambientTokenList = {
     name: 'Ambient Token List',
+    default: true,
     timestamp: '2022-03-17T15:02:53.363Z',
     version: {
         major: 1,

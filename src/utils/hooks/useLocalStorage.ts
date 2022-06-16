@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-// to inputs: (1) storage key and (2) fallback value
+// two inputs: (1) storage key and (2) fallback value
 export const useLocalStorage = (storageKey: string, fallbackState: string) => {
     // local state initializes with value from local storage
     // uses key provided in first argument for local storage

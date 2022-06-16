@@ -32,14 +32,16 @@ import Edit from '../pages/Trade/Edit/Edit';
 import TestPage from '../pages/TestPage/TestPage';
 import NotFound from '../pages/NotFound/NotFound';
 import Trade from '../pages/Trade/Trade';
+
 /** * **** Import Local Files *******/
 import './App.css';
 import { useAppDispatch, useAppSelector } from '../utils/hooks/reduxToolkit';
 import { validateChain } from './validateChain';
 import { IParsedPosition, parsePositionArray } from './parsePositions';
 import { defaultTokens } from '../utils/data/defaultTokens';
-import initializeLocalStorage from './functions/initializeLocalStorage';
+import initializeUserLocalStorage from './functions/initializeUserLocalStorage';
 import { TokenIF } from '../utils/interfaces/exports';
+import { fetchTokenLists } from './functions/fetchTokenLists';
 import { setDenomInBase } from '../utils/state/tradeDataSlice';
 
 /** ***** React Function *******/
@@ -49,14 +51,21 @@ export default function App() {
     const dispatch = useAppDispatch();
 
     const [importedTokens, setImportedTokens] = useState(defaultTokens);
+    
+    // prevent multiple fetch requests to external URIs for token lists
+    const [needTokenLists, setNeedTokenLists] = useState(true);
+
+    // trigger a useEffect() which needs to run when new token lists are received
+    // true vs false is an arbitrary distinction here
+    const [tokenListsReceived, indicateTokenListsReceived] = useState(false);
+
+    if (needTokenLists) {
+        setNeedTokenLists(false);
+        fetchTokenLists(tokenListsReceived, indicateTokenListsReceived);
+    }
 
     useEffect(() => {
-        // check if app needs local storage initialized post-render
-        // if so, initialize local storage
-        if (!localStorage.isAppInitialized) {
-            localStorage.setItem('isAppInitialized', 'true');
-            initializeLocalStorage();
-        }
+        initializeUserLocalStorage();
         // see if there's a user object in local storage
         if (localStorage.user) {
             // if user object exists, pull it
@@ -71,7 +80,7 @@ export default function App() {
                 );
             }
         }
-    }, []);
+    }, [tokenListsReceived]);
 
     const [showSidebar, setShowSidebar] = useState<boolean>(false);
     const location = useLocation();
@@ -641,9 +650,7 @@ export default function App() {
                         <Route path='swap' element={<Swap {...swapProps} />} />
                         <Route path='chart' element={<Chart />} />
                         <Route path='testpage' element={<TestPage />} />
-
                         <Route path='*' element={<Navigate to='/404' replace />} />
-
                         <Route path='/404' element={<NotFound />} />
                     </Routes>
                 </div>
