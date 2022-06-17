@@ -78,6 +78,7 @@ export default function TokenList() {
                     list={list}
                     activeLists={activeLists}
                     listIsActive={activeLists.includes(list.uri)}
+                    toggleActiveState={() => toggleList(list.uri as string)}
                 />
             ))}
         </motion.div>
