@@ -1,9 +1,21 @@
 import styles from './TokenListCard.module.css';
 import { useState } from 'react';
 import Toggle from '../../Global/Toggle/Toggle';
+import { TokenListIF } from '../../../utils/interfaces/exports';
 
-export default function TokenListCard() {
-    const listIsActive = false;
+interface TokenListProps {
+    list: TokenListIF;
+    activeLists: [];
+    listIsActive: boolean;
+}
+
+export default function TokenListCard(props: TokenListProps) {
+    const { list, activeLists, listIsActive } = props;
+
+    console.log({ activeLists });
+
+    console.log({ list });
+
     const [isChecked, setIsChecked] = useState(listIsActive);
 
     const cardBackground = isChecked ? '#7371FC ' : '';
@@ -26,8 +38,8 @@ export default function TokenListCard() {
                         width='40px'
                     />
                     <div className={styles.token_list_card_name}>
-                        <span> CrocSwap Interface</span>
-                        <div className={styles.token_count}>{21} tokens</div>
+                        <span> {list?.name}</span>
+                        <div className={styles.token_count}>{list?.tokens?.length} tokens</div>
                     </div>
                 </div>
                 <div className={styles.right_content}>

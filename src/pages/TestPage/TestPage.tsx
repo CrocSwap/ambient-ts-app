@@ -20,6 +20,8 @@ export default function TestPage() {
     // initialize local state with an array of active lists from local storage
     const [activeLists, setActiveLists] = useState(userData.activeTokenLists);
 
+    console.log({ activeLists });
+
     // click handler for toggle button on each token list <li>
     const toggleList = (list: string) => {
         // check if toggled list is currently in the active list

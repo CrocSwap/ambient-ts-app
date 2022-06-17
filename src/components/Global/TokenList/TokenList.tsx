@@ -73,7 +73,12 @@ export default function TokenList() {
             className={styles.token_list_content}
         >
             {tokenListElements.map((list: TokenListIF) => (
-                <TokenListCard key={`token-list-toggle-${list.uri}`} />
+                <TokenListCard
+                    key={`token-list-toggle-${list.uri}`}
+                    list={list}
+                    activeLists={activeLists}
+                    listIsActive={activeLists.includes(list.uri)}
+                />
             ))}
         </motion.div>
     );
