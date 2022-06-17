@@ -11,9 +11,9 @@ export default function Toggle(props: TabContentProps) {
 
     return activeTab === id ? (
         <motion.div
-            initial={{ width: 0 }}
-            animate={{ width: '100%' }}
-            exit={{ x: innerWidth, transition: { duration: 0.4 } }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
             className={styles.TabContent}
         >
             {children}

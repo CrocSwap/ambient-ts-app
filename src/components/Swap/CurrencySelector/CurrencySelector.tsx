@@ -2,11 +2,7 @@ import styles from './CurrencySelector.module.css';
 import CurrencyQuantity from '../CurrencyQuantity/CurrencyQuantity';
 import { RiArrowDownSLine } from 'react-icons/ri';
 import Toggle from '../../Global/Toggle/Toggle';
-import {
-    // useState,
-    ChangeEvent,
-    SetStateAction,
-} from 'react';
+import { useState, ChangeEvent, SetStateAction } from 'react';
 import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import Modal from '../../../components/Global/Modal/Modal';
@@ -48,6 +44,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
     } = props;
     // const [isChecked, setIsChecked] = useState<boolean>(false);
     const [isModalOpen, openModal, closeModal] = useModal();
+    const [showManageTokenListContent, setShowManageTokenListContent] = useState(false);
 
     const thisToken = fieldId === 'sell' ? tokenPair.dataTokenA : tokenPair.dataTokenB;
 
@@ -93,7 +90,12 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
     const tokenToUpdate = fieldId === 'sell' ? 'A' : 'B';
 
     const tokenSelectModalOrNull = isModalOpen ? (
-        <Modal onClose={closeModal} title='Select Token'>
+        <Modal
+            onClose={closeModal}
+            title='Select Token'
+            handleBack={() => setShowManageTokenListContent(false)}
+            showBackButton={showManageTokenListContent}
+        >
             <TokenSelectContainer
                 tokenPair={tokenPair}
                 tokensBank={tokensBank}
@@ -102,6 +104,8 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                 tokenList={tokensBank}
                 closeModal={closeModal}
                 reverseTokens={reverseTokens}
+                showManageTokenListContent={showManageTokenListContent}
+                setShowManageTokenListContent={setShowManageTokenListContent}
             />
         </Modal>
     ) : null;

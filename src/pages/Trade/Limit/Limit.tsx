@@ -342,9 +342,9 @@ export default function Limit(props: LimitPropsIF) {
     );
     return (
         <motion.section
-            initial={{ width: 0 }}
-            animate={{ width: '100%' }}
-            exit={{ x: window.innerWidth, transition: { duration: 0.6 } }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
             data-testid={'limit'}
         >
             <ContentContainer isOnTradeRoute>

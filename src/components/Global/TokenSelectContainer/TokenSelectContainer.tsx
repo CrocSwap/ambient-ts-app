@@ -1,7 +1,9 @@
 import styles from './TokenSelectContainer.module.css';
-import { useState } from 'react';
+import { useState, SetStateAction } from 'react';
 import TokenSelect from '../TokenSelect/TokenSelect';
 import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
+import Button from '../../Global/Button/Button';
+import TokenList from '../../Global/TokenList/TokenList';
 
 interface TokenSelectContainerPropsIF {
     tokenPair: TokenPairIF;
@@ -11,10 +13,21 @@ interface TokenSelectContainerPropsIF {
     tokenToUpdate: string;
     closeModal: () => void;
     reverseTokens: () => void;
+    showManageTokenListContent: boolean;
+    setShowManageTokenListContent: React.Dispatch<SetStateAction<boolean>>;
 }
 
 export default function TokenSelectContainer(props: TokenSelectContainerPropsIF) {
-    const { tokenPair, tokensBank, tokenToUpdate, closeModal, reverseTokens } = props;
+    const {
+        tokenPair,
+        tokensBank,
+        tokenToUpdate,
+        closeModal,
+        reverseTokens,
+        showManageTokenListContent,
+        setShowManageTokenListContent,
+    } = props;
+    // const [ showManageTokenListContent, setShowManageTokenListContent] = useState(false)
 
     // console.log(tokenToUpdate);
     const [searchTerm, setSearchTerm] = useState('');
@@ -57,10 +70,27 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
         </>
     );
 
-    return (
-        <div className={styles.token_select_container}>
+    const tokenListContainer = (
+        <>
             {searchInput}
             {tokenListContent}
+        </>
+    );
+
+    const manageTokenListContainer = (
+        <>
+            <TokenList />
+        </>
+    );
+
+    const manageTokenListButton = (
+        <Button title='Manage Token List' action={() => setShowManageTokenListContent(true)} />
+    );
+
+    return (
+        <div className={styles.token_select_container}>
+            {showManageTokenListContent ? manageTokenListContainer : tokenListContainer}
+            {showManageTokenListContent ? null : manageTokenListButton}
         </div>
     );
 }

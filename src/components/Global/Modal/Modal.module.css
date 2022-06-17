@@ -16,6 +16,7 @@ backdrop-filter: blur( 15px );
 -webkit-backdrop-filter: blur( 15px );
 border-radius: 10px;
 transition: all 350ms ease-in-out;
+
    
   }
   
