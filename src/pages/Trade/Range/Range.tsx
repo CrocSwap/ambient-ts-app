@@ -254,8 +254,6 @@ export default function Range(props: RangePropsIF) {
     // initialize based on MinPriceDifferencePercentage & MaxPriceDifferencePercentage
     useEffect(() => {
         if (!initializationComplete) {
-            console.log({ defaultLowTick });
-            console.log({ defaultHighTick });
             const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
                 denominationsInBase,
                 baseTokenDecimals,
@@ -291,7 +289,7 @@ export default function Range(props: RangePropsIF) {
                 ? setMinPriceDifferencePercentage(-highGeometricDifferencePercentage)
                 : setMinPriceDifferencePercentage(lowGeometricDifferencePercentage);
 
-            console.log({ pinnedDisplayPrices });
+            // console.log({ pinnedDisplayPrices });
 
             const rangeLowBoundDisplayField = document.getElementById(
                 'min-price-input-quantity',
@@ -319,7 +317,7 @@ export default function Range(props: RangePropsIF) {
 
     useEffect(() => {
         if (rangeLowBoundFieldBlurred) {
-            console.log('low bound blurred');
+            // console.log('low bound blurred');
             const rangeLowBoundDisplayField = document.getElementById(
                 'min-price-input-quantity',
             ) as HTMLInputElement;
@@ -331,7 +329,7 @@ export default function Range(props: RangePropsIF) {
                 rangeLowBoundDisplayField.value,
                 pinnedMaxPriceDisplay,
             );
-            console.log({ pinnedDisplayPrices });
+            // console.log({ pinnedDisplayPrices });
 
             setRangeLowBoundNonDisplayPrice(pinnedDisplayPrices.pinnedMinPriceNonDisplay);
             setRangeHighBoundNonDisplayPrice(pinnedDisplayPrices.pinnedMaxPriceNonDisplay);
@@ -363,7 +361,7 @@ export default function Range(props: RangePropsIF) {
 
     useEffect(() => {
         if (rangeHighBoundFieldBlurred) {
-            console.log('high bound blurred');
+            // console.log('high bound blurred');
             const rangeHighBoundDisplayField = document.getElementById(
                 'max-price-input-quantity',
             ) as HTMLInputElement;
@@ -375,7 +373,7 @@ export default function Range(props: RangePropsIF) {
                 pinnedMinPriceDisplay,
                 rangeHighBoundDisplayField.value,
             );
-            console.log({ pinnedDisplayPrices });
+            // console.log({ pinnedDisplayPrices });
             denominationsInBase
                 ? dispatch(setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick))
                 : dispatch(setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick));

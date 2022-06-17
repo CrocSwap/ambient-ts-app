@@ -63,11 +63,21 @@ export function getPinnedPriceValuesFromTicks(
         ? 1 / toDisplayPrice(pinnedMinPriceNonDisplay, baseTokenDecimals, quoteTokenDecimals, false)
         : toDisplayPrice(pinnedMaxPriceNonDisplay, baseTokenDecimals, quoteTokenDecimals, false);
 
+    const pinnedMinPriceDisplayTruncated =
+        pinnedMinPriceDisplay < 1
+            ? truncateDecimals(pinnedMinPriceDisplay, 4).toString()
+            : truncateDecimals(pinnedMinPriceDisplay, 0).toString();
+
+    const pinnedMaxPriceDisplayTruncated =
+        pinnedMaxPriceDisplay < 1
+            ? truncateDecimals(pinnedMaxPriceDisplay, 4).toString()
+            : truncateDecimals(pinnedMaxPriceDisplay, 0).toString();
+
     return {
         pinnedMinPriceDisplay: pinnedMinPriceDisplay.toString(),
         pinnedMaxPriceDisplay: pinnedMaxPriceDisplay.toString(),
-        pinnedMinPriceDisplayTruncated: truncateDecimals(pinnedMinPriceDisplay, 4).toString(),
-        pinnedMaxPriceDisplayTruncated: truncateDecimals(pinnedMaxPriceDisplay, 4).toString(),
+        pinnedMinPriceDisplayTruncated: pinnedMinPriceDisplayTruncated,
+        pinnedMaxPriceDisplayTruncated: pinnedMaxPriceDisplayTruncated,
         pinnedLowTick: pinnedLowTick,
         pinnedHighTick: pinnedHighTick,
         pinnedMinPriceNonDisplay: pinnedMinPriceNonDisplay,
