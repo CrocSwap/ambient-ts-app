@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useMoralis, useNewMoralisObject } from 'react-moralis';
 import { motion } from 'framer-motion';
 import { BigNumber } from 'ethers';
@@ -179,72 +179,105 @@ export default function Range(props: RangePropsIF) {
           )
         : fromDisplayPrice(parseFloat(maxPriceInputString), baseTokenDecimals, quoteTokenDecimals);
 
-    useEffect(() => {
-        console.log({ maxPriceNonDisplay });
-    }, [maxPriceNonDisplay]);
+    // useEffect(() => {
+    //     console.log({ maxPriceNonDisplay });
+    // }, [maxPriceNonDisplay]);
 
-    useEffect(() => {
-        console.log({ minPriceNonDisplay });
-    }, [minPriceNonDisplay]);
+    // useEffect(() => {
+    //     console.log({ minPriceNonDisplay });
+    // }, [minPriceNonDisplay]);
 
-    useEffect(() => {
-        console.log({ minPriceInputString });
-    }, [minPriceInputString]);
+    // useEffect(() => {
+    //     console.log({ minPriceInputString });
+    // }, [minPriceInputString]);
 
-    useEffect(() => {
-        console.log({ maxPriceInputString });
-    }, [maxPriceInputString]);
+    // useEffect(() => {
+    //     console.log({ maxPriceInputString });
+    // }, [maxPriceInputString]);
 
-    useEffect(() => {
-        console.log({ denominationsInBase });
-    }, [denominationsInBase]);
+    // useEffect(() => {
+    //     console.log({ denominationsInBase });
+    // }, [denominationsInBase]);
 
-    let minPriceDifferencePercentage = defaultMinPriceDifferencePercentage;
-    let maxPriceDifferencePercentage = defaultMaxPriceDifferencePercentage;
+    const [minPriceDifferencePercentage, setMinPriceDifferencePercentage] = useState(
+        defaultMinPriceDifferencePercentage,
+    );
+    const [maxPriceDifferencePercentage, setMaxPriceDifferencePercentage] = useState(
+        defaultMaxPriceDifferencePercentage,
+    );
 
-    let rangeLowTick: number, rangeHighTick: number, isAmbient: boolean;
+    // let rangeLowTick: number, rangeHighTick: number, isAmbient: boolean;
+
+    const [isAmbient, setIsAmbient] = useState(false);
+
+    const [rangeLowTick, setRangeLowTick] = useState(0);
+    const [rangeHighTick, setRangeHighTick] = useState(0);
+
+    const [rangeLowBoundFieldBlurred, setRangeLowBoundFieldBlurred] = useState(false);
+    const lowBoundOnBlur = () => setRangeLowBoundFieldBlurred(true);
+
+    const [rangeHighBoundFieldBlurred, setRangeHighBoundFieldBlurred] = useState(false);
+    const highBoundOnBlur = () => setRangeHighBoundFieldBlurred(true);
 
     useEffect(() => {
         console.log({ currentPoolPriceTick });
     }, [currentPoolPriceTick]);
 
-    if (!isAdvancedModeActive) {
-        isAmbient = rangeWidthPercentage === 100;
+    // const handleLowRangeDisplayUpdate = () => {};
 
-        rangeLowTick = currentPoolPriceTick - rangeWidthPercentage * 100;
-        rangeHighTick = currentPoolPriceTick + rangeWidthPercentage * 100;
-    } else {
-        isAmbient = false;
+    // const handleHighRangeDisplayUpdate = () => {};
 
-        // const currentPoolPriceTick = Math.log(poolPriceNonDisplay) / Math.log(1.0001);
-        if (isNaN(minPriceNonDisplay)) {
-            rangeLowTick = currentPoolPriceTick + defaultMinPriceDifferencePercentage * 100;
+    useEffect(() => {
+        if (!isAdvancedModeActive) {
+            setIsAmbient(rangeWidthPercentage === 100);
+
+            setRangeLowTick(currentPoolPriceTick - rangeWidthPercentage * 100);
+            setRangeHighTick(currentPoolPriceTick + rangeWidthPercentage * 100);
         } else {
-            rangeLowTick = Math.log(minPriceNonDisplay) / Math.log(1.0001);
-            const geometricDifferencePercentage = truncateDecimals(
-                (rangeLowTick - currentPoolPriceTick) / 100,
-                2,
-            );
+            setIsAmbient(false);
 
-            denominationsInBase
-                ? (maxPriceDifferencePercentage = -geometricDifferencePercentage)
-                : (maxPriceDifferencePercentage = geometricDifferencePercentage);
-            // maxPriceDifferencePercentage = geometricDifferencePercentage;
+            // const currentPoolPriceTick = Math.log(poolPriceNonDisplay) / Math.log(1.0001);
+            if (isNaN(minPriceNonDisplay)) {
+                setRangeLowTick(currentPoolPriceTick + defaultMinPriceDifferencePercentage * 100);
+            } else {
+                const lowTick = Math.log(minPriceNonDisplay) / Math.log(1.0001);
+                setRangeLowTick(lowTick);
+                const geometricDifferencePercentage = truncateDecimals(
+                    (lowTick - currentPoolPriceTick) / 100,
+                    2,
+                );
+
+                denominationsInBase
+                    ? setMaxPriceDifferencePercentage(-geometricDifferencePercentage)
+                    : setMaxPriceDifferencePercentage(geometricDifferencePercentage);
+                // maxPriceDifferencePercentage = geometricDifferencePercentage;
+            }
+            if (isNaN(maxPriceNonDisplay)) {
+                setRangeHighTick(currentPoolPriceTick + defaultMaxPriceDifferencePercentage * 100);
+            } else {
+                const highTick = Math.log(maxPriceNonDisplay) / Math.log(1.0001);
+                setRangeHighTick(highTick);
+                const geometricDifferencePercentage = truncateDecimals(
+                    (highTick - currentPoolPriceTick) / 100,
+                    2,
+                );
+                denominationsInBase
+                    ? setMinPriceDifferencePercentage(-geometricDifferencePercentage)
+                    : setMinPriceDifferencePercentage(geometricDifferencePercentage);
+                // minPriceDifferencePercentage = geometricDifferencePercentage;
+            }
         }
-        if (isNaN(maxPriceNonDisplay)) {
-            rangeHighTick = currentPoolPriceTick + defaultMaxPriceDifferencePercentage * 100;
-        } else {
-            rangeHighTick = Math.log(maxPriceNonDisplay) / Math.log(1.0001);
-            const geometricDifferencePercentage = truncateDecimals(
-                (rangeHighTick - currentPoolPriceTick) / 100,
-                2,
-            );
-            denominationsInBase
-                ? (minPriceDifferencePercentage = -geometricDifferencePercentage)
-                : (minPriceDifferencePercentage = geometricDifferencePercentage);
-            // minPriceDifferencePercentage = geometricDifferencePercentage;
-        }
-    }
+    }, [
+        rangeWidthPercentage,
+        currentPoolPriceTick,
+        isAdvancedModeActive,
+        minPriceNonDisplay,
+        maxPriceNonDisplay,
+        defaultMinPriceDifferencePercentage,
+        defaultMaxPriceDifferencePercentage,
+        rangeLowBoundFieldBlurred,
+        rangeHighBoundFieldBlurred,
+    ]);
 
     const roundedLowTick = roundDownTick(rangeLowTick);
 
@@ -269,59 +302,99 @@ export default function Range(props: RangePropsIF) {
         console.log({ rangeHighBoundNonDisplayPrice });
     }, [rangeHighBoundNonDisplayPrice]);
 
-    const rangeLowBoundDisplayPrice = denominationsInBase
-        ? 1 /
-          toDisplayPrice(
-              rangeHighBoundNonDisplayPrice,
-              baseTokenDecimals,
-              quoteTokenDecimals,
-              false,
-          )
-        : toDisplayPrice(
-              rangeLowBoundNonDisplayPrice,
-              baseTokenDecimals,
-              quoteTokenDecimals,
-              false,
-          );
+    const rangeLowBoundDisplayPrice = useMemo(
+        () =>
+            denominationsInBase
+                ? 1 /
+                  toDisplayPrice(
+                      rangeHighBoundNonDisplayPrice,
+                      baseTokenDecimals,
+                      quoteTokenDecimals,
+                      false,
+                  )
+                : toDisplayPrice(
+                      rangeLowBoundNonDisplayPrice,
+                      baseTokenDecimals,
+                      quoteTokenDecimals,
+                      false,
+                  ),
+        [
+            denominationsInBase,
+            rangeHighBoundNonDisplayPrice,
+            rangeLowBoundNonDisplayPrice,
+            baseTokenDecimals,
+            quoteTokenDecimals,
+        ],
+    );
 
-    const rangeHighBoundDisplayPrice = denominationsInBase
-        ? 1 /
-          toDisplayPrice(rangeLowBoundNonDisplayPrice, baseTokenDecimals, quoteTokenDecimals, false)
-        : toDisplayPrice(
-              rangeHighBoundNonDisplayPrice,
-              baseTokenDecimals,
-              quoteTokenDecimals,
-              false,
-          );
-
-    const [rangeLowBoundFieldBlurred, setRangeLowBoundFieldBlurred] = useState(false);
-    const lowBoundOnBlur = () => setRangeLowBoundFieldBlurred(true);
-
-    const [rangeHighBoundFieldBlurred, setRangeHighBoundFieldBlurred] = useState(false);
-    const highBoundOnBlur = () => setRangeHighBoundFieldBlurred(true);
+    const rangeHighBoundDisplayPrice = useMemo(
+        () =>
+            denominationsInBase
+                ? 1 /
+                  toDisplayPrice(
+                      rangeLowBoundNonDisplayPrice,
+                      baseTokenDecimals,
+                      quoteTokenDecimals,
+                      false,
+                  )
+                : toDisplayPrice(
+                      rangeHighBoundNonDisplayPrice,
+                      baseTokenDecimals,
+                      quoteTokenDecimals,
+                      false,
+                  ),
+        [
+            denominationsInBase,
+            rangeHighBoundNonDisplayPrice,
+            rangeLowBoundNonDisplayPrice,
+            baseTokenDecimals,
+            quoteTokenDecimals,
+        ],
+    );
 
     const [initializationComplete, setInitializationComplete] = useState(false);
 
+    // initialize based on MinPriceDifferencePercentage & MaxPriceDifferencePercentage
     useEffect(() => {
         if (!initializationComplete) {
             const rangeLowBoundDisplayField = document.getElementById(
                 'min-price-input-quantity',
             ) as HTMLInputElement;
+
             if (rangeLowBoundDisplayField) {
-                setRangeLowBoundFieldBlurred(true);
+                rangeLowBoundDisplayField.value = rangeLowBoundDisplayPrice.toString();
                 const rangeHighBoundDisplayField = document.getElementById(
                     'max-price-input-quantity',
                 ) as HTMLInputElement;
+
                 if (rangeHighBoundDisplayField) {
-                    setRangeHighBoundFieldBlurred(true);
+                    rangeHighBoundDisplayField.value = rangeHighBoundDisplayPrice.toString();
                     setInitializationComplete(true);
+                } else {
+                    console.log('high bound field not found');
                 }
+            } else {
+                console.log('low bound field not found');
             }
         }
-    }, [rangeHighBoundDisplayPrice, rangeLowBoundDisplayPrice, initializationComplete]);
+    }, [rangeLowBoundDisplayPrice, rangeHighBoundDisplayPrice, initializationComplete]);
 
     useEffect(() => {
-        console.log({ rangeLowBoundDisplayPrice });
+        const rangeLowBoundDisplayPrice = denominationsInBase
+            ? 1 /
+              toDisplayPrice(
+                  rangeHighBoundNonDisplayPrice,
+                  baseTokenDecimals,
+                  quoteTokenDecimals,
+                  false,
+              )
+            : toDisplayPrice(
+                  rangeLowBoundNonDisplayPrice,
+                  baseTokenDecimals,
+                  quoteTokenDecimals,
+                  false,
+              );
+
         if (rangeLowBoundFieldBlurred) {
             console.log('low bound blurred');
             const rangeLowBoundDisplayField = document.getElementById(
@@ -329,14 +402,14 @@ export default function Range(props: RangePropsIF) {
             ) as HTMLInputElement;
             if (rangeLowBoundDisplayField) {
                 rangeLowBoundDisplayField.value = rangeLowBoundDisplayPrice.toString();
+            } else {
+                console.log('low bound field not found');
             }
-            console.log('low bound field not found');
             setRangeLowBoundFieldBlurred(false);
         }
-    }, [rangeLowBoundDisplayPrice, rangeLowBoundFieldBlurred]);
+    }, [rangeLowBoundFieldBlurred]);
 
     useEffect(() => {
-        console.log({ rangeHighBoundDisplayPrice });
         if (rangeHighBoundFieldBlurred) {
             console.log('high bound blurred');
             const rangeHighBoundDisplayField = document.getElementById(
