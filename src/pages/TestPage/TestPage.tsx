@@ -27,7 +27,6 @@ export default function TestPage() {
                 I am snackbar
             </SnackbarComponent>
             <TooltipComponent title='Snackbar title' />
-            <PoolCard />
             <Stats />
             <Carousel>
                 <CarouselItem>
