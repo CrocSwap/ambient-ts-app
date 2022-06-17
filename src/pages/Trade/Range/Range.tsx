@@ -168,21 +168,49 @@ export default function Range(props: RangePropsIF) {
     const defaultMinPriceDifferencePercentage = -15;
     const defaultMaxPriceDifferencePercentage = 15;
 
-    const minPriceNonDisplay = denominationsInBase
-        ? fromDisplayPrice(
-              1 / parseFloat(maxPriceInputString),
-              baseTokenDecimals,
-              quoteTokenDecimals,
-          )
-        : fromDisplayPrice(parseFloat(minPriceInputString), baseTokenDecimals, quoteTokenDecimals);
+    const minPriceNonDisplay = useMemo(
+        () =>
+            denominationsInBase
+                ? fromDisplayPrice(
+                      1 / parseFloat(maxPriceInputString),
+                      baseTokenDecimals,
+                      quoteTokenDecimals,
+                  )
+                : fromDisplayPrice(
+                      parseFloat(minPriceInputString),
+                      baseTokenDecimals,
+                      quoteTokenDecimals,
+                  ),
+        [
+            denominationsInBase,
+            maxPriceInputString,
+            minPriceInputString,
+            baseTokenDecimals,
+            quoteTokenDecimals,
+        ],
+    );
 
-    const maxPriceNonDisplay = denominationsInBase
-        ? fromDisplayPrice(
-              1 / parseFloat(minPriceInputString),
-              baseTokenDecimals,
-              quoteTokenDecimals,
-          )
-        : fromDisplayPrice(parseFloat(maxPriceInputString), baseTokenDecimals, quoteTokenDecimals);
+    const maxPriceNonDisplay = useMemo(
+        () =>
+            denominationsInBase
+                ? fromDisplayPrice(
+                      1 / parseFloat(minPriceInputString),
+                      baseTokenDecimals,
+                      quoteTokenDecimals,
+                  )
+                : fromDisplayPrice(
+                      parseFloat(maxPriceInputString),
+                      baseTokenDecimals,
+                      quoteTokenDecimals,
+                  ),
+        [
+            denominationsInBase,
+            maxPriceInputString,
+            minPriceInputString,
+            baseTokenDecimals,
+            quoteTokenDecimals,
+        ],
+    );
 
     // useEffect(() => {
     //     console.log({ maxPriceNonDisplay });
@@ -284,8 +312,8 @@ export default function Range(props: RangePropsIF) {
         rangeWidthPercentage,
         currentPoolPriceTick,
         isAdvancedModeActive,
-        minPriceNonDisplay,
-        maxPriceNonDisplay,
+        // minPriceNonDisplay,
+        // maxPriceNonDisplay,
         defaultMinPriceDifferencePercentage,
         defaultMaxPriceDifferencePercentage,
         rangeLowBoundFieldBlurred,
@@ -453,7 +481,7 @@ export default function Range(props: RangePropsIF) {
             }
             setRangeHighBoundFieldBlurred(false);
         }
-    }, [rangeHighBoundDisplayPrice, rangeHighBoundFieldBlurred]);
+    }, [rangeHighBoundFieldBlurred]);
 
     const depositSkew = concDepositSkew(
         poolPriceNonDisplay,
@@ -482,6 +510,7 @@ export default function Range(props: RangePropsIF) {
         minPriceDisplay = '0';
     } else {
         minPriceDisplay = truncateDecimals(rangeLowBoundDisplayPrice, 4).toString();
+
         // minPriceDisplay = !denominationsInBase
         //     ? truncateDecimals(rangeLowBoundDisplayPrice, 4).toString()
         //     : truncateDecimals(1 / rangeHighBoundDisplayPrice, 4).toString();
