@@ -2,9 +2,14 @@ import styles from './TokenList.module.css';
 import { useState } from 'react';
 import TokenListCard from '../TokenListCard/TokenListCard';
 import Divider from '../Divider/Divider';
+import { TokenListIF } from '../../../utils/interfaces/exports';
+
 import { motion } from 'framer-motion';
 
 export default function TokenList() {
+    // get the user object from local storage
+    const userData = JSON.parse(localStorage.getItem('user') as string);
+
     const [showImportedTokens, setShowImportedTokens] = useState(false);
     // eslint-disable-next-line
     const [searchTerm, setSearchTerm] = useState('');
