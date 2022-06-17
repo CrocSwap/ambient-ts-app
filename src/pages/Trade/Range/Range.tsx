@@ -26,6 +26,8 @@ import {
     fromDisplayPrice,
 } from '@crocswap-libs/sdk';
 
+import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
+
 // START: Import JSX Elements
 import ContentContainer from '../../../components/Global/ContentContainer/ContentContainer';
 import RangeButton from '../../../components/Trade/Range/RangeButton/RangeButton';
@@ -51,6 +53,7 @@ import { TokenIF } from '../../../utils/interfaces/exports';
 import { useTradeData } from '../Trade';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import RangeExtraInfo from '../../../components/Trade/Range/RangeExtraInfo/RangeExtraInfo';
+import { setAdvancedHighTick, setAdvancedLowTick } from '../../../utils/state/tradeDataSlice';
 
 interface RangePropsIF {
     importedTokens: Array<TokenIF>;
@@ -88,6 +91,8 @@ export default function Range(props: RangePropsIF) {
     const [isModalOpen, openModal, closeModal] = useModal();
 
     const { save } = useNewMoralisObject('UserPosition');
+
+    const dispatch = useAppDispatch();
 
     const [isWithdrawTokenAFromDexChecked, setIsWithdrawTokenAFromDexChecked] = useState(false);
     const [isWithdrawTokenBFromDexChecked, setIsWithdrawTokenBFromDexChecked] = useState(false);
@@ -210,8 +215,8 @@ export default function Range(props: RangePropsIF) {
 
     const [isAmbient, setIsAmbient] = useState(false);
 
-    const [rangeLowTick, setRangeLowTick] = useState(0);
-    const [rangeHighTick, setRangeHighTick] = useState(0);
+    const [rangeLowTick, setRangeLowTick] = useState(tradeData.advancedLowTick);
+    const [rangeHighTick, setRangeHighTick] = useState(tradeData.advancedHighTick);
 
     const [rangeLowBoundFieldBlurred, setRangeLowBoundFieldBlurred] = useState(false);
     const lowBoundOnBlur = () => setRangeLowBoundFieldBlurred(true);
@@ -231,17 +236,22 @@ export default function Range(props: RangePropsIF) {
         if (!isAdvancedModeActive) {
             setIsAmbient(rangeWidthPercentage === 100);
 
-            setRangeLowTick(currentPoolPriceTick - rangeWidthPercentage * 100);
-            setRangeHighTick(currentPoolPriceTick + rangeWidthPercentage * 100);
+            const lowTick = currentPoolPriceTick - rangeWidthPercentage * 100;
+            const highTick = currentPoolPriceTick + rangeWidthPercentage * 100;
+
+            setRangeLowTick(lowTick);
+            setRangeHighTick(highTick);
         } else {
             setIsAmbient(false);
-
             // const currentPoolPriceTick = Math.log(poolPriceNonDisplay) / Math.log(1.0001);
             if (isNaN(minPriceNonDisplay)) {
-                setRangeLowTick(currentPoolPriceTick + defaultMinPriceDifferencePercentage * 100);
+                const lowTick = currentPoolPriceTick + defaultMinPriceDifferencePercentage * 100;
+                setRangeLowTick(lowTick);
+                dispatch(setAdvancedLowTick(lowTick));
             } else {
                 const lowTick = Math.log(minPriceNonDisplay) / Math.log(1.0001);
                 setRangeLowTick(lowTick);
+                dispatch(setAdvancedLowTick(lowTick));
                 const geometricDifferencePercentage = truncateDecimals(
                     (lowTick - currentPoolPriceTick) / 100,
                     2,
@@ -253,10 +263,13 @@ export default function Range(props: RangePropsIF) {
                 // maxPriceDifferencePercentage = geometricDifferencePercentage;
             }
             if (isNaN(maxPriceNonDisplay)) {
-                setRangeHighTick(currentPoolPriceTick + defaultMaxPriceDifferencePercentage * 100);
+                const highTick = currentPoolPriceTick + defaultMaxPriceDifferencePercentage * 100;
+                setRangeHighTick(highTick);
+                dispatch(setAdvancedHighTick(highTick));
             } else {
                 const highTick = Math.log(maxPriceNonDisplay) / Math.log(1.0001);
                 setRangeHighTick(highTick);
+                dispatch(setAdvancedHighTick(highTick));
                 const geometricDifferencePercentage = truncateDecimals(
                     (highTick - currentPoolPriceTick) / 100,
                     2,
@@ -353,6 +366,24 @@ export default function Range(props: RangePropsIF) {
     );
 
     const [initializationComplete, setInitializationComplete] = useState(false);
+
+    useEffect(() => {
+        if (isAdvancedModeActive) {
+            const rangeLowBoundDisplayField = document.getElementById(
+                'min-price-input-quantity',
+            ) as HTMLInputElement;
+            if (rangeLowBoundDisplayField) {
+                // console.log(rangeLowBoundDisplayField.value);
+                setInitializationComplete(false);
+            }
+            const rangeHighBoundDisplayField = document.getElementById(
+                'max-price-input-quantity',
+            ) as HTMLInputElement;
+            if (rangeHighBoundDisplayField) {
+                setInitializationComplete(false);
+            }
+        }
+    }, [isAdvancedModeActive]);
 
     // initialize based on MinPriceDifferencePercentage & MaxPriceDifferencePercentage
     useEffect(() => {
