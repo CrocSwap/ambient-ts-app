@@ -21,7 +21,253 @@ export default function Chart() {
     const d3Xaxis = useRef(null);
     const d3Yaxis = useRef(null);
 
-    const [data] = useState(d3fc.randomFinancial()(50));
+    // const generator = d3fc.randomFinancial()
+    //     .startDate(new Date(2021, 0, 1))
+    //     .startPrice(99);
+    // const [data] = useState(generator(30));
+    const [data] = useState([
+        {
+            date: new Date('2020-12-31T21:00:00.000Z'),
+            open: 99,
+            high: 99.17266879493313,
+            low: 98.68576124727899,
+            close: 99.11289180715468,
+            volume: 1126,
+        },
+        {
+            date: new Date('2021-01-01T21:00:00.000Z'),
+            open: 99.11289180715468,
+            high: 99.11289180715468,
+            low: 98.38094823218387,
+            close: 98.38094823218387,
+            volume: 1214,
+        },
+        {
+            date: new Date('2021-01-02T21:00:00.000Z'),
+            open: 98.38094823218387,
+            high: 98.38899623931027,
+            low: 97.94515973922842,
+            close: 98.03210336736818,
+            volume: 1063,
+        },
+        {
+            date: new Date('2021-01-03T21:00:00.000Z'),
+            open: 98.03210336736818,
+            high: 98.03210336736818,
+            low: 97.29170793728635,
+            close: 97.29170793728635,
+            volume: 1082,
+        },
+        {
+            date: new Date('2021-01-04T21:00:00.000Z'),
+            open: 97.29170793728635,
+            high: 97.78720047054037,
+            low: 97.12570376472861,
+            close: 97.78720047054037,
+            volume: 1042,
+        },
+        {
+            date: new Date('2021-01-05T21:00:00.000Z'),
+            open: 97.78720047054037,
+            high: 98.02675494366058,
+            low: 97.34455781908238,
+            close: 97.34455781908238,
+            volume: 1079,
+        },
+        {
+            date: new Date('2021-01-06T21:00:00.000Z'),
+            open: 97.34455781908238,
+            high: 97.92644606990005,
+            low: 97.34455781908238,
+            close: 97.80471529575736,
+            volume: 994,
+        },
+        {
+            date: new Date('2021-01-07T21:00:00.000Z'),
+            open: 97.80471529575736,
+            high: 97.81858287875707,
+            low: 97.14209174399105,
+            close: 97.15666341152085,
+            volume: 1101,
+        },
+        {
+            date: new Date('2021-01-08T21:00:00.000Z'),
+            open: 97.15666341152085,
+            high: 97.17026116123341,
+            low: 96.69597932759751,
+            close: 96.69597932759751,
+            volume: 1205,
+        },
+        {
+            date: new Date('2021-01-09T21:00:00.000Z'),
+            open: 96.69597932759751,
+            high: 96.94731644133094,
+            low: 95.92121490439148,
+            close: 95.93846758936876,
+            volume: 1105,
+        },
+        {
+            date: new Date('2021-01-10T21:00:00.000Z'),
+            open: 95.93846758936876,
+            high: 96.69483018175475,
+            low: 95.93846758936876,
+            close: 96.27274625349257,
+            volume: 1057,
+        },
+        {
+            date: new Date('2021-01-11T21:00:00.000Z'),
+            open: 96.27274625349257,
+            high: 96.27274625349257,
+            low: 95.34313636858965,
+            close: 95.34313636858965,
+            volume: 978,
+        },
+        {
+            date: new Date('2021-01-12T21:00:00.000Z'),
+            open: 95.34313636858965,
+            high: 95.45880666372278,
+            low: 94.95805988665121,
+            close: 95.40529463754531,
+            volume: 926,
+        },
+        {
+            date: new Date('2021-01-13T21:00:00.000Z'),
+            open: 95.40529463754531,
+            high: 95.57623720403276,
+            low: 94.67589443381303,
+            close: 94.89194831878045,
+            volume: 1224,
+        },
+        {
+            date: new Date('2021-01-14T21:00:00.000Z'),
+            open: 94.89194831878045,
+            high: 95.17525047194249,
+            low: 94.82047125329441,
+            close: 95.03691831654177,
+            volume: 828,
+        },
+        {
+            date: new Date('2021-01-15T21:00:00.000Z'),
+            open: 95.03691831654177,
+            high: 95.03691831654177,
+            low: 94.30919838336993,
+            close: 94.51369190034856,
+            volume: 1048,
+        },
+        {
+            date: new Date('2021-01-16T21:00:00.000Z'),
+            open: 94.51369190034856,
+            high: 95.41161487896201,
+            low: 94.46470019932677,
+            close: 95.12563298751766,
+            volume: 999,
+        },
+        {
+            date: new Date('2021-01-17T21:00:00.000Z'),
+            open: 95.12563298751766,
+            high: 95.12563298751766,
+            low: 94.51782472749765,
+            close: 94.8701424055532,
+            volume: 904,
+        },
+        {
+            date: new Date('2021-01-18T21:00:00.000Z'),
+            open: 94.8701424055532,
+            high: 95.56820744841899,
+            low: 94.81094188242002,
+            close: 95.12700911814602,
+            volume: 976,
+        },
+        {
+            date: new Date('2021-01-19T21:00:00.000Z'),
+            open: 95.12700911814602,
+            high: 95.33945671897365,
+            low: 94.91793588062043,
+            close: 95.33945671897365,
+            volume: 928,
+        },
+        {
+            date: new Date('2021-01-20T21:00:00.000Z'),
+            open: 95.33945671897365,
+            high: 95.37819302325853,
+            low: 94.60251425936559,
+            close: 94.61931308356769,
+            volume: 931,
+        },
+        {
+            date: new Date('2021-01-21T21:00:00.000Z'),
+            open: 94.61931308356769,
+            high: 95.2677901122447,
+            low: 94.61931308356769,
+            close: 94.93790102096116,
+            volume: 1062,
+        },
+        {
+            date: new Date('2021-01-22T21:00:00.000Z'),
+            open: 94.93790102096116,
+            high: 95.59934247132743,
+            low: 94.93790102096116,
+            close: 95.50706448910168,
+            volume: 921,
+        },
+        {
+            date: new Date('2021-01-23T21:00:00.000Z'),
+            open: 95.50706448910168,
+            high: 96.04760857400342,
+            low: 95.40593556735499,
+            close: 96.03066750137036,
+            volume: 940,
+        },
+        {
+            date: new Date('2021-01-24T21:00:00.000Z'),
+            open: 96.03066750137036,
+            high: 97.11141642485443,
+            low: 95.93810359984609,
+            close: 97.05929568282836,
+            volume: 986,
+        },
+        {
+            date: new Date('2021-01-25T21:00:00.000Z'),
+            open: 97.05929568282836,
+            high: 97.31634328242373,
+            low: 96.8244648735381,
+            close: 97.0329859838135,
+            volume: 763,
+        },
+        {
+            date: new Date('2021-01-26T21:00:00.000Z'),
+            open: 97.0329859838135,
+            high: 97.0329859838135,
+            low: 96.13394713400355,
+            close: 96.22006592720184,
+            volume: 962,
+        },
+        {
+            date: new Date('2021-01-27T21:00:00.000Z'),
+            open: 96.22006592720184,
+            high: 97.19403155351475,
+            low: 96.22006592720184,
+            close: 97.19403155351475,
+            volume: 1208,
+        },
+        {
+            date: new Date('2021-01-28T21:00:00.000Z'),
+            open: 97.19403155351475,
+            high: 97.19403155351475,
+            low: 96.05280745900902,
+            close: 96.10946054741967,
+            volume: 962,
+        },
+        {
+            date: new Date('2021-01-29T21:00:00.000Z'),
+            open: 96.10946054741967,
+            high: 96.18093827017171,
+            low: 95.75387647980443,
+            close: 95.96447478420912,
+            volume: 931,
+        },
+    ]);
+
     const [targets, setTargets] = useState([
         {
             name: 'high',
@@ -33,6 +279,30 @@ export default function Chart() {
         },
     ]);
     const [liquidityData] = useState([
+        {
+            tick: 95,
+            value: 435006,
+        },
+        {
+            tick: 95.5,
+            value: 345006,
+        },
+        {
+            tick: 96,
+            value: 200006,
+        },
+        {
+            tick: 96.5,
+            value: 150006,
+        },
+        {
+            tick: 97,
+            value: 67006,
+        },
+        {
+            tick: 97.5,
+            value: 49006,
+        },
         {
             tick: 98,
             value: 45006,
@@ -54,18 +324,25 @@ export default function Chart() {
             value: 999204,
         },
     ]);
-    // console.log('Helooo');
+    // console.log(Helooo);
 
     useEffect(() => {
         console.log('update chart');
 
+        const millisPerDay = 24 * 60 * 60 * 1000;
         const priceRange = d3fc.extentLinear().accessors([(d: any) => d.high, (d: any) => d.low]);
-        const xExtent = d3fc.extentDate().accessors([(d: any) => d.date]);
+        const xExtent = d3fc
+            .extentDate()
+            .accessors([(d: any) => d.date])
+            .padUnit('domain')
+            // ensure that the scale is padded by one day in either direction
+            .pad([millisPerDay, millisPerDay]);
 
         const xScale = d3.scaleTime();
         const yScale = d3.scaleLinear();
-        const liquidityTickScale = d3.scaleLinear();
+        const liquidityTickScale = d3.scaleBand();
         const liquidityScale = d3.scaleLinear();
+        const barThreshold = 98.5;
 
         // bar chart
         const liquidityExtent = d3fc
@@ -83,7 +360,7 @@ export default function Chart() {
 
         const gridlines = d3fc.annotationSvgGridline().xScale(xScale).yScale(yScale);
         const candlestick = d3fc
-            .seriesSvgCandlestick()
+            .autoBandwidth(d3fc.seriesSvgCandlestick())
             .decorate((selection: any) => {
                 selection
                     .enter()
@@ -95,11 +372,22 @@ export default function Chart() {
 
         const barSeries = d3fc
             .autoBandwidth(d3fc.seriesSvgBar())
+            .widthFraction(1)
             .orient('horizontal')
             .mainValue((d: any) => d.value)
             .crossValue((d: any) => d.tick)
             .xScale(liquidityScale)
-            .yScale(yScale);
+            .yScale(yScale)
+            .decorate((selection: any) => {
+                // The selection passed to decorate is the one which the component creates
+                // within its internal data join, here we use the update selection to
+                // apply a style to path elements created by the bar series
+                selection.select('.bar > path').style('fill', (d: any) => {
+                    return d.tick < barThreshold
+                        ? 'rgba(205, 193, 255, 0.25)'
+                        : 'rgba(115, 113, 252, 0.25)';
+                });
+            });
 
         const horizontalLine = d3fc
             .annotationSvgLine()
@@ -110,9 +398,6 @@ export default function Chart() {
         const valueFormatter = d3.format('.2f');
 
         const drag = d3.drag().on('drag', function (event, d: any) {
-            const plotY = d3.pointer(event, d3.select('.plot-chart').select('svg'))[1];
-            console.log('y: ', plotY, ' invert: ', yScale.invert(d3.pointer(event)[1] - 90));
-
             const newValue = yScale.invert(d3.pointer(event)[1] - 90);
             setTargets((prevState) => {
                 const newTargets = [...prevState];
