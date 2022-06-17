@@ -12,6 +12,21 @@ export default function TokenList() {
     // initialize local state with an array of active lists from local storage
     const [activeLists, setActiveLists] = useState(userData.activeTokenLists);
 
+    // click handler for toggle button on each token list <li>
+    const toggleList = (list: string) => {
+        // check if toggled list is currently in the active list
+        const newActiveTokenList = userData.activeTokenLists.includes(list)
+            ? // if URI is in active list, remove it
+              userData.activeTokenLists.filter((uri: string) => uri !== list)
+            : // if URI is not in active list, add it
+              [...userData.activeTokenLists, list];
+        // overwrite the old activeTokenLists value with the new one
+        userData.activeTokenLists = newActiveTokenList;
+        // send the updated user object to local storage
+        localStorage.setItem('user', JSON.stringify(userData));
+        setActiveLists(newActiveTokenList);
+    };
+
     const [showImportedTokens, setShowImportedTokens] = useState(false);
     // eslint-disable-next-line
     const [searchTerm, setSearchTerm] = useState('');
