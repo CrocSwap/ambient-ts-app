@@ -63,7 +63,6 @@ export default function TokenList() {
     // get allTokenLists value from local storage
     const tokenListElements = JSON.parse(localStorage.getItem('allTokenLists') as string);
     // map over the array and make a bank of <li> for the DOM
-    const searchedList = [1, 2, 3, 4, 5];
 
     const TokenListContent = (
         <motion.div
