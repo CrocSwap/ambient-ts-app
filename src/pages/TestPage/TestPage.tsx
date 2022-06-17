@@ -17,8 +17,6 @@ export default function TestPage() {
     // get the user object from local storage
     const userData = JSON.parse(localStorage.getItem('user') as string);
 
-    console.log({ userData });
-
     // initialize local state with an array of active lists from local storage
     const [activeLists, setActiveLists] = useState(userData.activeTokenLists);
 

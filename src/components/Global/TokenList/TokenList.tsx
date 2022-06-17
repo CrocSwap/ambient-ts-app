@@ -9,6 +9,8 @@ import { motion } from 'framer-motion';
 export default function TokenList() {
     // get the user object from local storage
     const userData = JSON.parse(localStorage.getItem('user') as string);
+    // initialize local state with an array of active lists from local storage
+    const [activeLists, setActiveLists] = useState(userData.activeTokenLists);
 
     const [showImportedTokens, setShowImportedTokens] = useState(false);
     // eslint-disable-next-line
