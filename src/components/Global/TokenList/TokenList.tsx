@@ -1,26 +1,25 @@
 import styles from './TokenList.module.css';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import TokenListCard from '../TokenListCard/TokenListCard';
+import Divider from '../Divider/Divider';
+import { motion } from 'framer-motion';
 
-interface TokenListProps {
-    children: React.ReactNode;
-}
-
-export default function TokenList(props: TokenListProps) {
+export default function TokenList() {
     const [showImportedTokens, setShowImportedTokens] = useState(false);
+    // eslint-disable-next-line
     const [searchTerm, setSearchTerm] = useState('');
 
     const TokenListContainerHeader = (
         <div className={styles.header_container}>
             <div className={styles.header_content}>
                 <div
-                    className={showImportedTokens ? styles.active_button : styles.inactive_button}
+                    className={!showImportedTokens ? styles.active_button : styles.inactive_button}
                     onClick={() => setShowImportedTokens(!showImportedTokens)}
                 >
                     Lists
                 </div>
                 <div
-                    className={!showImportedTokens ? styles.active_button : styles.inactive_button}
+                    className={showImportedTokens ? styles.active_button : styles.inactive_button}
                     onClick={() => setShowImportedTokens(!showImportedTokens)}
                 >
                     Tokens
@@ -42,18 +41,23 @@ export default function TokenList(props: TokenListProps) {
     const searchedList = [1, 2, 3, 4, 5];
 
     const TokenListContent = (
-        <div className={styles.token_list_content}>
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
+            className={styles.token_list_content}
+        >
             {searchedList.map((list, idx) => (
                 <TokenListCard key={idx} />
             ))}
-        </div>
+        </motion.div>
     );
 
     const TokenListDisplay = (
         <div className={styles.token_list_container}>
             {TokenListContainerHeader}
             {TokenListInput}
-            <div className={styles.divider}></div>
+            <Divider />
             {TokenListContent}
         </div>
     );
@@ -61,13 +65,18 @@ export default function TokenList(props: TokenListProps) {
     const ImportedTokensDisplay = (
         <div className={styles.custom_tokens}>
             {TokenListContainerHeader}
-            <div className={styles.search_input}>
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.3 }}
+                className={styles.search_input}
+            >
                 <input
                     type='text'
                     placeholder='0x000'
                     //   onChange={(event) => setSearchTerm(event.target.value)}
                 />
-                <div className={styles.divider}></div>
+                <Divider />
                 <div className={styles.custom_tokens_header}>
                     <span>0 Custom Tokens</span>
                     <span className={styles.clear_all_button}>Clear all</span>
@@ -75,9 +84,13 @@ export default function TokenList(props: TokenListProps) {
                 <div className={styles.custom_tokens_footer}>
                     Tip: Custom tokens are stored locally in your browser
                 </div>
-            </div>
+            </motion.div>
         </div>
     );
 
-    return <>{!showImportedTokens ? ImportedTokensDisplay : TokenListDisplay}</>;
+    return (
+        <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ duration: 0.3 }}>
+            {showImportedTokens ? ImportedTokensDisplay : TokenListDisplay}
+        </motion.div>
+    );
 }

@@ -1,13 +1,12 @@
 import styles from './TokenListCard.module.css';
 import { useState } from 'react';
-import { MdOutlineSettings } from 'react-icons/md';
 import Toggle from '../../Global/Toggle/Toggle';
 
 export default function TokenListCard() {
     const listIsActive = false;
     const [isChecked, setIsChecked] = useState(listIsActive);
 
-    const cardBackground = isChecked ? 'red' : '#363535';
+    const cardBackground = isChecked ? '#7371FC ' : '';
 
     function handleToggleAction() {
         // handleAlert()
@@ -35,10 +34,10 @@ export default function TokenListCard() {
                     <Toggle
                         isOn={isChecked}
                         handleToggle={handleToggleAction}
-                        buttonColor={isChecked ? 'blue' : '#565a69'}
+                        // buttonColor={isChecked ? '#7371FC ' : '#565a69'}
                         Width={50}
                         id='ambientId'
-                        onColor={isChecked ? 'black' : '#212429'}
+                        // onColor={isChecked ? '#CDC1FF' : '#212429'}
                     />
                 </div>
             </div>

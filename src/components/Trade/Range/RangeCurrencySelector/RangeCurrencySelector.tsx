@@ -1,4 +1,4 @@
-import { ChangeEvent, SetStateAction } from 'react';
+import { ChangeEvent, SetStateAction, useState } from 'react';
 import styles from './RangeCurrencySelector.module.css';
 import RangeCurrencyQuantity from '../RangeCurrencyQuantity/RangeCurrencyQuantity';
 import { RiArrowDownSLine } from 'react-icons/ri';
@@ -42,6 +42,7 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
     } = props;
 
     const thisToken = fieldId === 'A' ? tokenPair.dataTokenA : tokenPair.dataTokenB;
+    const [showManageTokenListContent, setShowManageTokenListContent] = useState(false);
 
     const [isModalOpen, openModal, closeModal] = useModal();
 
@@ -55,6 +56,8 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                 tokenList={tokensBank}
                 closeModal={closeModal}
                 reverseTokens={reverseTokens}
+                showManageTokenListContent={showManageTokenListContent}
+                setShowManageTokenListContent={setShowManageTokenListContent}
             />
         </Modal>
     ) : null;
