@@ -51,7 +51,7 @@ export default function App() {
     const dispatch = useAppDispatch();
 
     const [importedTokens, setImportedTokens] = useState(defaultTokens);
-    
+
     // prevent multiple fetch requests to external URIs for token lists
     const [needTokenLists, setNeedTokenLists] = useState(true);
 
@@ -616,7 +616,9 @@ export default function App() {
 
     useEffect(() => {
         const isDenomBase = updateDenomIsInBase();
-        dispatch(setDenomInBase(isDenomBase));
+        if (tradeData.isDenomBase !== isDenomBase) {
+            dispatch(setDenomInBase(isDenomBase));
+        }
     }, [tradeData.didUserFlipDenom, tokenPair]);
 
     const mainLayoutStyle = showSidebar ? 'main-layout-2' : 'main-layout';

@@ -259,7 +259,6 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
 
     useEffect(() => {
         isTokenAPrimaryLocal ? handleTokenAQtyFieldUpdate() : handleTokenBQtyFieldUpdate();
-        // }
     }, [
         poolPriceNonDisplay,
         depositSkew,
