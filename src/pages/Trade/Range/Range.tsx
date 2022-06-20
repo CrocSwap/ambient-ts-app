@@ -329,11 +329,11 @@ export default function Range(props: RangePropsIF) {
 
             const highGeometricDifferencePercentage = truncateDecimals(
                 (pinnedDisplayPrices.pinnedHighTick - currentPoolPriceTick) / 100,
-                2,
+                0,
             );
             const lowGeometricDifferencePercentage = truncateDecimals(
                 (pinnedDisplayPrices.pinnedLowTick - currentPoolPriceTick) / 100,
-                2,
+                0,
             );
             denominationsInBase
                 ? setMaxPriceDifferencePercentage(-lowGeometricDifferencePercentage)
@@ -405,11 +405,11 @@ export default function Range(props: RangePropsIF) {
 
             const highGeometricDifferencePercentage = truncateDecimals(
                 (pinnedDisplayPrices.pinnedHighTick - currentPoolPriceTick) / 100,
-                2,
+                0,
             );
             const lowGeometricDifferencePercentage = truncateDecimals(
                 (pinnedDisplayPrices.pinnedLowTick - currentPoolPriceTick) / 100,
-                2,
+                0,
             );
             denominationsInBase
                 ? setMinPriceDifferencePercentage(-highGeometricDifferencePercentage)
@@ -456,11 +456,11 @@ export default function Range(props: RangePropsIF) {
 
             const highGeometricDifferencePercentage = truncateDecimals(
                 (pinnedDisplayPrices.pinnedHighTick - currentPoolPriceTick) / 100,
-                2,
+                0,
             );
             const lowGeometricDifferencePercentage = truncateDecimals(
                 (pinnedDisplayPrices.pinnedLowTick - currentPoolPriceTick) / 100,
-                2,
+                0,
             );
             denominationsInBase
                 ? setMaxPriceDifferencePercentage(-lowGeometricDifferencePercentage)
@@ -781,6 +781,7 @@ export default function Range(props: RangePropsIF) {
                 // highBoundOnFocus={highBoundOnFocus}
                 highBoundOnBlur={highBoundOnBlur}
                 lowBoundOnBlur={lowBoundOnBlur}
+                // disabled={true}
             />
             <AdvancedPriceInfo
                 tokenPair={tokenPair}
