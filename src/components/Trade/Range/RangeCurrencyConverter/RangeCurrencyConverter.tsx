@@ -40,6 +40,8 @@ interface RangeCurrencyConverterPropsIF {
     setTokenBInputQty: React.Dispatch<React.SetStateAction<string>>;
     setRangeButtonErrorMessage: React.Dispatch<React.SetStateAction<string>>;
     setRangeAllowed: React.Dispatch<SetStateAction<boolean>>;
+    isTokenADisabled: boolean;
+    isTokenBDisabled: boolean;
 }
 
 // central React functional component
@@ -65,6 +67,8 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         setTokenBInputQty,
         setRangeButtonErrorMessage,
         setRangeAllowed,
+        isTokenADisabled,
+        isTokenBDisabled,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -280,6 +284,8 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         reverseTokens: reverseTokens,
         truncatedTokenABalance: truncatedTokenABalance,
         truncatedTokenBBalance: truncatedTokenBBalance,
+        isTokenADisabled: isTokenADisabled,
+        isTokenBDisabled: isTokenBDisabled,
     };
 
     return (

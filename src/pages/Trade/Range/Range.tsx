@@ -213,6 +213,18 @@ export default function Range(props: RangePropsIF) {
     const [rangeLowTick, setRangeLowTick] = useState(tradeData.advancedLowTick);
     const [rangeHighTick, setRangeHighTick] = useState(tradeData.advancedHighTick);
 
+    const [isTokenADisabled, setIsTokenADisabled] = useState(false);
+    const [isTokenBDisabled, setIsTokenBDisabled] = useState(false);
+
+    useEffect(() => {
+        if (denominationsInBase) {
+            if (rangeHighTick < currentPoolPriceTick) {
+                setIsTokenBDisabled(true);
+            }
+        }
+        setIsTokenADisabled(false);
+    }, [currentPoolPriceTick, rangeLowTick, rangeHighTick, denominationsInBase]);
+
     const [rangeLowBoundNonDisplayPrice, setRangeLowBoundNonDisplayPrice] = useState(0);
     const [rangeHighBoundNonDisplayPrice, setRangeHighBoundNonDisplayPrice] = useState(0);
 
@@ -231,6 +243,14 @@ export default function Range(props: RangePropsIF) {
     useEffect(() => {
         console.log({ currentPoolPriceTick });
     }, [currentPoolPriceTick]);
+
+    useEffect(() => {
+        console.log({ rangeLowTick });
+    }, [rangeLowTick]);
+
+    useEffect(() => {
+        console.log({ rangeHighTick });
+    }, [rangeHighTick]);
 
     const [initializationComplete, setInitializationComplete] = useState(false);
 
@@ -435,6 +455,13 @@ export default function Range(props: RangePropsIF) {
             ),
         [poolPriceNonDisplay, rangeLowBoundNonDisplayPrice, rangeHighBoundNonDisplayPrice],
     );
+
+    useEffect(() => {
+        console.log({ depositSkew });
+        console.log({ currentPoolPriceTick });
+        console.log({ rangeLowTick });
+        console.log({ rangeHighTick });
+    }, [depositSkew]);
 
     let maxPriceDisplay: string;
 
@@ -686,6 +713,8 @@ export default function Range(props: RangePropsIF) {
         setTokenBInputQty: setTokenBInputQty,
         setRangeButtonErrorMessage: setRangeButtonErrorMessage,
         setRangeAllowed: setRangeAllowed,
+        isTokenADisabled: isTokenADisabled,
+        isTokenBDisabled: isTokenBDisabled,
     };
 
     // props for <RangeWidth/> React element

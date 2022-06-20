@@ -22,6 +22,8 @@ interface RangeCurrencySelectorProps {
     reverseTokens: () => void;
     truncatedTokenABalance: string;
     truncatedTokenBBalance: string;
+    isTokenADisabled: boolean;
+    isTokenBDisabled: boolean;
 }
 
 export default function RangeCurrencySelector(props: RangeCurrencySelectorProps) {
@@ -39,6 +41,8 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
         reverseTokens,
         truncatedTokenABalance,
         truncatedTokenBBalance,
+        isTokenADisabled,
+        isTokenBDisabled,
     } = props;
 
     const thisToken = fieldId === 'A' ? tokenPair.dataTokenA : tokenPair.dataTokenB;
@@ -93,6 +97,11 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
             ? truncatedTokenBBalance
             : '0';
 
+    // console.log({ fieldId });
+    // console.log({ isTokenADisabled });
+    const isFieldDisabled =
+        (fieldId === 'A' && isTokenADisabled) || (fieldId === 'B' && isTokenBDisabled);
+
     return (
         <div className={styles.swapbox}>
             {sellToken && <span className={styles.direction}>Amounts</span>}
@@ -101,6 +110,7 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                     <RangeCurrencyQuantity
                         fieldId={fieldId}
                         updateOtherQuantity={updateOtherQuantity}
+                        disable={isFieldDisabled}
                     />
                 </div>
                 <div className={styles.token_select} onClick={openModal}>
