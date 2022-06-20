@@ -64,12 +64,12 @@ export function getPinnedPriceValuesFromTicks(
         : toDisplayPrice(pinnedMaxPriceNonDisplay, baseTokenDecimals, quoteTokenDecimals, false);
 
     const pinnedMinPriceDisplayTruncated =
-        pinnedMinPriceDisplay < 1
+        pinnedMinPriceDisplay < 2
             ? truncateDecimals(pinnedMinPriceDisplay, 4).toString()
             : truncateDecimals(pinnedMinPriceDisplay, 0).toString();
 
     const pinnedMaxPriceDisplayTruncated =
-        pinnedMaxPriceDisplay < 1
+        pinnedMaxPriceDisplay < 2
             ? truncateDecimals(pinnedMaxPriceDisplay, 4).toString()
             : truncateDecimals(pinnedMaxPriceDisplay, 0).toString();
 
@@ -131,11 +131,11 @@ export function getPinnedPriceValuesFromDisplayPrices(
         : toDisplayPrice(pinnedMaxPriceNonDisplay, baseTokenDecimals, quoteTokenDecimals, false);
 
     const pinnedMinPriceDisplayTruncated =
-        pinnedMinPriceDisplay < 1
+        pinnedMinPriceDisplay < 2
             ? truncateDecimals(pinnedMinPriceDisplay, 4).toString()
             : truncateDecimals(pinnedMinPriceDisplay, 0).toString();
     const pinnedMaxPriceDisplayTruncated =
-        pinnedMaxPriceDisplay < 1
+        pinnedMaxPriceDisplay < 2
             ? truncateDecimals(pinnedMaxPriceDisplay, 4).toString()
             : truncateDecimals(pinnedMaxPriceDisplay, 0).toString();
 
