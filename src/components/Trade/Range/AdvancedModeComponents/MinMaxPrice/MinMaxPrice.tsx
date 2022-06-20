@@ -5,6 +5,8 @@ import { ChangeEvent } from 'react';
 import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
 import { setAdvancedHighTick, setAdvancedLowTick } from '../../../../../utils/state/tradeDataSlice';
 
+import { GRID_SIZE_DFLT } from '@crocswap-libs/sdk';
+
 interface IMinMaxPrice {
     minPricePercentage: number;
     maxPricePercentage: number;
@@ -76,21 +78,23 @@ export default function MinMaxPrice(props: IMinMaxPrice) {
         </div>
     );
 
+    const tickSize = GRID_SIZE_DFLT;
+
     const increaseLowTick = () => {
-        setRangeLowTick(rangeLowTick + 100);
-        dispatch(setAdvancedLowTick(rangeLowTick + 100));
+        setRangeLowTick(rangeLowTick + tickSize);
+        dispatch(setAdvancedLowTick(rangeLowTick + tickSize));
     };
     const increaseHighTick = () => {
-        setRangeHighTick(rangeHighTick + 100);
-        dispatch(setAdvancedHighTick(rangeHighTick + 100));
+        setRangeHighTick(rangeHighTick + tickSize);
+        dispatch(setAdvancedHighTick(rangeHighTick + tickSize));
     };
     const decreaseLowTick = () => {
-        setRangeLowTick(rangeLowTick - 100);
-        dispatch(setAdvancedLowTick(rangeLowTick - 100));
+        setRangeLowTick(rangeLowTick - tickSize);
+        dispatch(setAdvancedLowTick(rangeLowTick - tickSize));
     };
     const decreaseHighTick = () => {
-        setRangeHighTick(rangeHighTick - 100);
-        dispatch(setAdvancedHighTick(rangeHighTick - 100));
+        setRangeHighTick(rangeHighTick - tickSize);
+        dispatch(setAdvancedHighTick(rangeHighTick - tickSize));
     };
 
     return (

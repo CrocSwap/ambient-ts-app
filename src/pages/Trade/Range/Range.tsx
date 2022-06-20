@@ -220,6 +220,17 @@ export default function Range(props: RangePropsIF) {
     //     console.log({ rangeHighTick });
     // }, [rangeHighTick]);
 
+    const rangeSpanAboveCurrentPrice = rangeHighTick - currentPoolPriceTick;
+    const rangeSpanBelowCurrentPrice = currentPoolPriceTick - rangeLowTick;
+
+    const isOutOfRange = rangeSpanAboveCurrentPrice < 0 || rangeSpanBelowCurrentPrice < 0;
+    const isInvalidRange = rangeHighTick <= rangeLowTick;
+    // const inRangeSpan = isOutOfRange ? 0 : rangeSpanAboveCurrentPrice + rangeSpanBelowCurrentPrice;
+    const minimumSpan =
+        rangeSpanAboveCurrentPrice < rangeSpanBelowCurrentPrice
+            ? rangeSpanAboveCurrentPrice
+            : rangeSpanBelowCurrentPrice;
+
     const [isTokenADisabled, setIsTokenADisabled] = useState(false);
     const [isTokenBDisabled, setIsTokenBDisabled] = useState(false);
 
@@ -795,13 +806,15 @@ export default function Range(props: RangePropsIF) {
                 rangeHighTick={rangeHighTick}
                 setRangeLowTick={setRangeLowTick}
                 setRangeHighTick={setRangeHighTick}
-                // disabled={true}
+                disabled={isInvalidRange}
             />
             <AdvancedPriceInfo
                 tokenPair={tokenPair}
                 poolPriceDisplay={poolPriceDisplay}
                 isDenomBase={denominationsInBase}
                 isTokenABase={isTokenABase}
+                minimumSpan={minimumSpan}
+                isOutOfRange={isOutOfRange}
             />
             <RangeExtraInfo {...rangeExtraInfoProps} />
         </>
@@ -936,7 +949,7 @@ export default function Range(props: RangePropsIF) {
                 ) : (
                     <RangeButton
                         onClickFn={openModal}
-                        rangeAllowed={rangeAllowed}
+                        rangeAllowed={rangeAllowed && !isInvalidRange}
                         rangeButtonErrorMessage={rangeButtonErrorMessage}
                     />
                 )}
