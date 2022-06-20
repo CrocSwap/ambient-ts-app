@@ -348,7 +348,7 @@ export default function Limit(props: LimitPropsIF) {
             data-testid={'limit'}
         >
             <ContentContainer isOnTradeRoute>
-                <LimitHeader tokenPair={tokenPair} />
+                <LimitHeader tokenPair={tokenPair} isDenomBase={tradeData.isDenomBase} />
                 <DenominationSwitch
                     tokenPair={tokenPair}
                     displayForBase={tradeData.isDenomBase}
