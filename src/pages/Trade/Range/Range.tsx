@@ -949,7 +949,7 @@ export default function Range(props: RangePropsIF) {
                 ) : (
                     <RangeButton
                         onClickFn={openModal}
-                        rangeAllowed={rangeAllowed}
+                        rangeAllowed={rangeAllowed && !isInvalidRange}
                         rangeButtonErrorMessage={rangeButtonErrorMessage}
                     />
                 )}
