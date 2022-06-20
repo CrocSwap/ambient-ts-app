@@ -1,0 +1,24 @@
+.test_page_main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.token_list_selects_ul {
+    display: flex;
+    flex-direction: column;
+    padding: 4px;
+    width: 280px;
+    outline: 3px solid green;
+}
+
+.token_list_li {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    margin: 8px;
+    list-style-type: none;
+    outline: 2px solid yellow;
+}

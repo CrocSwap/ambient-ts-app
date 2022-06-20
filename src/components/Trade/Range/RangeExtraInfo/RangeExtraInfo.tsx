@@ -47,9 +47,11 @@ export default function RangeExtraInfo(props: RangeExtraInfoPropsIF) {
     // console.log({ invertPrice });
     // console.log({ poolPriceDisplay });
 
-    const displayPriceString = invertPrice
-        ? truncateDecimals(1 / poolPriceDisplay, 4).toString()
-        : truncateDecimals(poolPriceDisplay, 4).toString();
+    const displayPrice = invertPrice ? 1 / poolPriceDisplay : poolPriceDisplay;
+    const displayPriceStringTruncated =
+        displayPrice < 2
+            ? truncateDecimals(displayPrice, 4).toString()
+            : truncateDecimals(displayPrice, 0).toString();
 
     // const priceLimitAfterSlippageAndFee = quoteTokenIsBuy
     //     ? truncateDecimals(
@@ -69,8 +71,8 @@ export default function RangeExtraInfo(props: RangeExtraInfoPropsIF) {
             title: 'Spot Price',
             tooltipTitle: 'spot price explanation',
             data: reverseDisplay
-                ? `${displayPriceString} ${tokenPair.dataTokenA.symbol} per ${tokenPair.dataTokenB.symbol}`
-                : `${displayPriceString} ${tokenPair.dataTokenB.symbol} per ${tokenPair.dataTokenA.symbol}`,
+                ? `${displayPriceStringTruncated} ${tokenPair.dataTokenA.symbol} per ${tokenPair.dataTokenB.symbol}`
+                : `${displayPriceStringTruncated} ${tokenPair.dataTokenB.symbol} per ${tokenPair.dataTokenA.symbol}`,
         },
         {
             title: 'Slippage Tolerance',
@@ -109,9 +111,9 @@ export default function RangeExtraInfo(props: RangeExtraInfoPropsIF) {
     //     ? [tokenPair.dataTokenA, tokenPair.dataTokenB]
     //     : [tokenPair.dataTokenB, tokenPair.dataTokenA];
 
-    const defaultDisplay = `1 ${tokenPair.dataTokenA.symbol} ≈ ${displayPriceString} ${tokenPair.dataTokenB.symbol}`;
+    const defaultDisplay = `1 ${tokenPair.dataTokenA.symbol} ≈ ${displayPriceStringTruncated} ${tokenPair.dataTokenB.symbol}`;
 
-    const flippedDisplay = `1 ${tokenPair.dataTokenB.symbol} ≈ ${displayPriceString} ${tokenPair.dataTokenA.symbol}`;
+    const flippedDisplay = `1 ${tokenPair.dataTokenB.symbol} ≈ ${displayPriceStringTruncated} ${tokenPair.dataTokenA.symbol}`;
 
     return (
         <div className={styles.extra_info_container}>

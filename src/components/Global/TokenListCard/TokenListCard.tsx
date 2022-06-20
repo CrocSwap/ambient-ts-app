@@ -1,17 +1,18 @@
 import styles from './TokenListCard.module.css';
-import { useState } from 'react';
 import Toggle from '../../Global/Toggle/Toggle';
+import { TokenListIF } from '../../../utils/interfaces/exports';
 
-export default function TokenListCard() {
-    const listIsActive = false;
-    const [isChecked, setIsChecked] = useState(listIsActive);
+interface TokenListProps {
+    list: TokenListIF;
+    activeLists: [];
+    listIsActive: boolean;
+    toggleActiveState: () => void;
+}
 
-    const cardBackground = isChecked ? '#7371FC ' : '';
+export default function TokenListCard(props: TokenListProps) {
+    const { list, listIsActive, toggleActiveState } = props;
 
-    function handleToggleAction() {
-        // handleAlert()
-        setIsChecked(!isChecked);
-    }
+    const cardBackground = listIsActive ? '#7371FC ' : '';
 
     return (
         <div className={styles.token_list_card_container}>
@@ -20,23 +21,19 @@ export default function TokenListCard() {
                 style={{ backgroundColor: cardBackground }}
             >
                 <div className={styles.left_content}>
-                    <img
-                        src='https://cdn2.iconfinder.com/data/icons/animals-nature-2/50/1F40A-crocodile-512.png'
-                        alt='token list icon'
-                        width='40px'
-                    />
+                    <img src={list.logoURI} alt='' width='40px' />
                     <div className={styles.token_list_card_name}>
-                        <span> CrocSwap Interface</span>
-                        <div className={styles.token_count}>{21} tokens</div>
+                        <span> {list?.name}</span>
+                        <div className={styles.token_count}>{list?.tokens?.length} tokens</div>
                     </div>
                 </div>
                 <div className={styles.right_content}>
                     <Toggle
-                        isOn={isChecked}
-                        handleToggle={handleToggleAction}
+                        isOn={listIsActive}
+                        handleToggle={toggleActiveState}
                         // buttonColor={isChecked ? '#7371FC ' : '#565a69'}
                         Width={50}
-                        id='ambientId'
+                        id={`token-list-toggle-${list.uri}`}
                         // onColor={isChecked ? '#CDC1FF' : '#212429'}
                     />
                 </div>

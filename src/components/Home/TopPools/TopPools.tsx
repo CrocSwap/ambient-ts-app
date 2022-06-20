@@ -1,6 +1,6 @@
 import PoolCard from '../../Global/PoolCard/PoolCard';
 import styles from './TopPools.module.css';
-import { motion, AnimateSharedLayout, useViewportScroll, useTransform } from 'framer-motion';
+import { motion, AnimateSharedLayout } from 'framer-motion';
 import { useState } from 'react';
 
 export default function TopPools() {

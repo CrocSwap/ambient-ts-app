@@ -2,6 +2,8 @@ import styles from './TokenList.module.css';
 import { useState } from 'react';
 import TokenListCard from '../TokenListCard/TokenListCard';
 import Divider from '../Divider/Divider';
+import { TokenListIF } from '../../../utils/interfaces/exports';
+
 import { motion } from 'framer-motion';
 
 export default function TokenList() {
@@ -38,7 +40,29 @@ export default function TokenList() {
         </div>
     );
 
-    const searchedList = [1, 2, 3, 4, 5];
+    // get the user object from local storage
+    const userData = JSON.parse(localStorage.getItem('user') as string);
+    // initialize local state with an array of active lists from local storage
+    const [activeLists, setActiveLists] = useState(userData.activeTokenLists);
+
+    // click handler for toggle button on each token list <li>
+    const toggleList = (list: string) => {
+        // check if toggled list is currently in the active list
+        const newActiveTokenList = userData.activeTokenLists.includes(list)
+            ? // if URI is in active list, remove it
+              userData.activeTokenLists.filter((uri: string) => uri !== list)
+            : // if URI is not in active list, add it
+              [...userData.activeTokenLists, list];
+        // overwrite the old activeTokenLists value with the new one
+        userData.activeTokenLists = newActiveTokenList;
+        // send the updated user object to local storage
+        localStorage.setItem('user', JSON.stringify(userData));
+        setActiveLists(newActiveTokenList);
+    };
+
+    // get allTokenLists value from local storage
+    const tokenListElements = JSON.parse(localStorage.getItem('allTokenLists') as string);
+    // map over the array and make a bank of <li> for the DOM
 
     const TokenListContent = (
         <motion.div
@@ -47,8 +71,14 @@ export default function TokenList() {
             transition={{ duration: 0.3 }}
             className={styles.token_list_content}
         >
-            {searchedList.map((list, idx) => (
-                <TokenListCard key={idx} />
+            {tokenListElements.map((list: TokenListIF) => (
+                <TokenListCard
+                    key={`token-list-toggle-${list.uri}`}
+                    list={list}
+                    activeLists={activeLists}
+                    listIsActive={activeLists.includes(list.uri)}
+                    toggleActiveState={() => toggleList(list.uri as string)}
+                />
             ))}
         </motion.div>
     );
