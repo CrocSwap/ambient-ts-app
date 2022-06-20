@@ -14,8 +14,8 @@ interface IMinMaxPrice {
     maxPriceInputString: string;
     setMinPriceInputString: React.Dispatch<React.SetStateAction<string>>;
     setMaxPriceInputString: React.Dispatch<React.SetStateAction<string>>;
+    // disable?: boolean;
     disable?: boolean;
-    disabled?: boolean;
     isDenomBase: boolean;
     // highBoundOnFocus: () => void;
     lowBoundOnBlur: () => void;
@@ -105,7 +105,6 @@ export default function MinMaxPrice(props: IMinMaxPrice) {
                     fieldId='min'
                     title='Min Price'
                     percentageDifference={minPricePercentage}
-                    disable
                     handleChangeEvent={
                         !isDenomBase ? handleMaxPriceChangeEvent : handleMinPriceChangeEvent
                     }

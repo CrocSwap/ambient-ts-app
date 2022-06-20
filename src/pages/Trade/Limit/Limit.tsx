@@ -161,7 +161,7 @@ export default function Limit(props: LimitPropsIF) {
             let pinnedInitialDisplayPrice: string;
 
             if (isDenomBase) {
-                const offset = 100;
+                const offset = GRID_SIZE_DFLT;
                 isTokenABase
                     ? (roundedTickInsideCurrentPrice = roundDownTick(currentPoolPriceTick - offset))
                     : (roundedTickInsideCurrentPrice = roundUpTick(currentPoolPriceTick + offset));
@@ -179,7 +179,7 @@ export default function Limit(props: LimitPropsIF) {
                     limitRateInputField.value = pinnedInitialDisplayPrice;
                 }
             } else {
-                const offset = 100;
+                const offset = GRID_SIZE_DFLT;
                 // roundedTickInsideCurrentPrice = roundDownTick(currentPoolPriceTick - offset);
                 // roundedTickInsideCurrentPrice = roundUpTick(currentPoolPriceTick + offset);
                 isTokenABase
