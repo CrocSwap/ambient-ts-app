@@ -105,7 +105,6 @@ export default function MinMaxPrice(props: IMinMaxPrice) {
                     fieldId='min'
                     title='Min Price'
                     percentageDifference={minPricePercentage}
-                    disable
                     handleChangeEvent={
                         !isDenomBase ? handleMaxPriceChangeEvent : handleMinPriceChangeEvent
                     }
