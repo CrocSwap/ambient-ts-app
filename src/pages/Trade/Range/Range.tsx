@@ -164,6 +164,7 @@ export default function Range(props: RangePropsIF) {
         tradeData.advancedLowTick === 0
             ? currentPoolPriceTick + defaultMinPriceDifferencePercentage * 100
             : tradeData.advancedLowTick;
+
     const defaultHighTick =
         tradeData.advancedHighTick === 0
             ? currentPoolPriceTick + defaultMaxPriceDifferencePercentage * 100
@@ -249,7 +250,7 @@ export default function Range(props: RangePropsIF) {
                 setInitializationComplete(false);
             }
         }
-    }, [isAdvancedModeActive]);
+    }, [isAdvancedModeActive, denominationsInBase]);
 
     // initialize based on MinPriceDifferencePercentage & MaxPriceDifferencePercentage
     useEffect(() => {
@@ -313,7 +314,14 @@ export default function Range(props: RangePropsIF) {
                 console.log('low bound field not found');
             }
         }
-    }, [currentPoolPriceTick, initializationComplete, isAdvancedModeActive]);
+    }, [
+        currentPoolPriceTick,
+        initializationComplete,
+        isAdvancedModeActive,
+        denominationsInBase,
+        baseTokenDecimals,
+        quoteTokenDecimals,
+    ]);
 
     useEffect(() => {
         if (rangeLowBoundFieldBlurred) {
