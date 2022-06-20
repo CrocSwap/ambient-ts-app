@@ -327,9 +327,9 @@ export default function Range(props: RangePropsIF) {
                 baseTokenDecimals,
                 quoteTokenDecimals,
                 rangeLowBoundDisplayField.value,
-                pinnedMaxPriceDisplay,
+                pinnedMaxPriceDisplayTruncated,
             );
-            // console.log({ pinnedDisplayPrices });
+            console.log({ pinnedDisplayPrices });
 
             setRangeLowBoundNonDisplayPrice(pinnedDisplayPrices.pinnedMinPriceNonDisplay);
             setRangeHighBoundNonDisplayPrice(pinnedDisplayPrices.pinnedMaxPriceNonDisplay);
@@ -378,7 +378,7 @@ export default function Range(props: RangePropsIF) {
                 denominationsInBase,
                 baseTokenDecimals,
                 quoteTokenDecimals,
-                pinnedMinPriceDisplay,
+                pinnedMinPriceDisplayTruncated,
                 rangeHighBoundDisplayField.value,
             );
             // console.log({ pinnedDisplayPrices });
