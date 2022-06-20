@@ -780,43 +780,53 @@ export default function Range(props: RangePropsIF) {
     };
 
     const baseModeContent = (
-        <>
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+        >
             <RangeCurrencyConverter {...rangeCurrencyConverterProps} isAdvancedMode={false} />
+
             <RangeWidth {...rangeWidthProps} />
             <RangePriceInfo {...rangePriceInfoProps} />
             <RangeExtraInfo {...rangeExtraInfoProps} />
-        </>
+        </motion.div>
     );
     const advancedModeContent = (
         <>
             <RangeCurrencyConverter {...rangeCurrencyConverterProps} isAdvancedMode />
-
-            <MinMaxPrice
-                minPricePercentage={minPriceDifferencePercentage}
-                maxPricePercentage={maxPriceDifferencePercentage}
-                minPriceInputString={minPriceInputString}
-                maxPriceInputString={maxPriceInputString}
-                setMinPriceInputString={setMinPriceInputString}
-                setMaxPriceInputString={setMaxPriceInputString}
-                isDenomBase={denominationsInBase}
-                // highBoundOnFocus={highBoundOnFocus}
-                highBoundOnBlur={highBoundOnBlur}
-                lowBoundOnBlur={lowBoundOnBlur}
-                rangeLowTick={rangeLowTick}
-                rangeHighTick={rangeHighTick}
-                setRangeLowTick={setRangeLowTick}
-                setRangeHighTick={setRangeHighTick}
-                disabled={isInvalidRange}
-            />
-            <AdvancedPriceInfo
-                tokenPair={tokenPair}
-                poolPriceDisplay={poolPriceDisplay}
-                isDenomBase={denominationsInBase}
-                isTokenABase={isTokenABase}
-                minimumSpan={minimumSpan}
-                isOutOfRange={isOutOfRange}
-            />
-            <RangeExtraInfo {...rangeExtraInfoProps} />
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+            >
+                <MinMaxPrice
+                    minPricePercentage={minPriceDifferencePercentage}
+                    maxPricePercentage={maxPriceDifferencePercentage}
+                    minPriceInputString={minPriceInputString}
+                    maxPriceInputString={maxPriceInputString}
+                    setMinPriceInputString={setMinPriceInputString}
+                    setMaxPriceInputString={setMaxPriceInputString}
+                    isDenomBase={denominationsInBase}
+                    // highBoundOnFocus={highBoundOnFocus}
+                    highBoundOnBlur={highBoundOnBlur}
+                    lowBoundOnBlur={lowBoundOnBlur}
+                    rangeLowTick={rangeLowTick}
+                    rangeHighTick={rangeHighTick}
+                    setRangeLowTick={setRangeLowTick}
+                    setRangeHighTick={setRangeHighTick}
+                    disabled={isInvalidRange}
+                />
+                <AdvancedPriceInfo
+                    tokenPair={tokenPair}
+                    poolPriceDisplay={poolPriceDisplay}
+                    isDenomBase={denominationsInBase}
+                    isTokenABase={isTokenABase}
+                    minimumSpan={minimumSpan}
+                    isOutOfRange={isOutOfRange}
+                />
+                <RangeExtraInfo {...rangeExtraInfoProps} />
+            </motion.div>
         </>
     );
     const confirmSwapModalOrNull = isModalOpen ? (
