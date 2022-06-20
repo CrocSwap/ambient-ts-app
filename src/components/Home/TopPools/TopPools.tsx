@@ -1,11 +1,63 @@
 import PoolCard from '../../Global/PoolCard/PoolCard';
 import styles from './TopPools.module.css';
-import { motion, AnimateSharedLayout } from 'framer-motion';
+import { motion, AnimateSharedLayout, useViewportScroll, useTransform } from 'framer-motion';
 import { useState } from 'react';
 
 export default function TopPools() {
-    const examplePools = [1, 2, 3, 4, 5, 6, 7, 8];
-    const [selected, setSelected] = useState(examplePools[-1]);
+    const [selected, setSelected] = useState(-2);
+
+    const statCardData = [
+        {
+            title: 'Total TVL',
+            value: '1,000,000,000',
+            speed: -2,
+            id: 1,
+        },
+        {
+            title: 'Total Volume',
+            value: '1,000,000,000',
+            speed: 0,
+            id: 2,
+        },
+        {
+            title: 'Total Fees',
+            value: '1,000,000,000',
+            speed: 0,
+            id: 3,
+        },
+
+        {
+            title: 'Total Fees',
+            value: '1,000,000,000',
+            speed: -1,
+            id: 4,
+        },
+        {
+            title: 'Total Fees',
+            value: '1,000,000,000',
+            speed: 0.5,
+            id: 5,
+        },
+
+        {
+            title: 'Total Fees',
+            value: '1,000,000,000',
+            speed: 0,
+            id: 8,
+        },
+        {
+            title: 'Total Fees',
+            value: '1,000,000,000',
+            speed: 0,
+            id: 6,
+        },
+        {
+            title: 'Total Fees',
+            value: '1,000,000,000',
+            speed: 0.5,
+            id: 7,
+        },
+    ];
 
     return (
         <AnimateSharedLayout>
@@ -17,11 +69,12 @@ export default function TopPools() {
             >
                 <div className={styles.title}>Top Pools</div>
                 <div className={styles.content}>
-                    {examplePools.map((pool, idx) => (
+                    {statCardData.map((pool, idx) => (
                         <PoolCard
+                            speed={pool.speed}
                             key={idx}
-                            isSelected={selected === pool}
-                            onClick={() => setSelected(pool)}
+                            isSelected={selected === pool.id}
+                            onClick={() => setSelected(pool.id ? pool.id : -2)}
                         />
                     ))}
                 </div>

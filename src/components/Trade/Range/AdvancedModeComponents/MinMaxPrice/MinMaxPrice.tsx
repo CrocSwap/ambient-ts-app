@@ -9,7 +9,7 @@ interface IMinMaxPrice {
     maxPriceInputString: string;
     setMinPriceInputString: React.Dispatch<React.SetStateAction<string>>;
     setMaxPriceInputString: React.Dispatch<React.SetStateAction<string>>;
-    disabled?: boolean;
+    disable?: boolean;
 }
 
 export default function MinMaxPrice(props: IMinMaxPrice) {
@@ -62,6 +62,7 @@ export default function MinMaxPrice(props: IMinMaxPrice) {
                     title='Min Price'
                     percentageDifference={minPricePercentage}
                     handleChangeEvent={handleMinPriceChangeEvent}
+                    disable
                 />
                 <PriceInput
                     fieldId='max'
@@ -70,7 +71,7 @@ export default function MinMaxPrice(props: IMinMaxPrice) {
                     handleChangeEvent={handleMaxPriceChangeEvent}
                 />
             </div>
-            {props.disabled && disableInputContent}
+            {props.disable && disableInputContent}
         </div>
     );
 }
