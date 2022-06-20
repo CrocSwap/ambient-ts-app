@@ -734,6 +734,7 @@ export default function Range(props: RangePropsIF) {
         closeModal: closeModal,
         newRangeTransactionHash: newRangeTransactionHash,
         setNewRangeTransactionHash: setNewRangeTransactionHash,
+        isInRange: !isOutOfRange,
     };
 
     // props for <RangeCurrencyConverter/> React element
