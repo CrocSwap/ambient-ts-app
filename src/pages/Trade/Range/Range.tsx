@@ -781,12 +781,17 @@ export default function Range(props: RangePropsIF) {
     };
 
     const baseModeContent = (
-        <>
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+        >
             <RangeCurrencyConverter {...rangeCurrencyConverterProps} isAdvancedMode={false} />
+
             <RangeWidth {...rangeWidthProps} />
             <RangePriceInfo {...rangePriceInfoProps} />
             <RangeExtraInfo {...rangeExtraInfoProps} />
-        </>
+        </motion.div>
     );
     const advancedModeContent = (
         <>
