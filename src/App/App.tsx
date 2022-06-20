@@ -42,7 +42,11 @@ import { defaultTokens } from '../utils/data/defaultTokens';
 import initializeUserLocalStorage from './functions/initializeUserLocalStorage';
 import { TokenIF } from '../utils/interfaces/exports';
 import { fetchTokenLists } from './functions/fetchTokenLists';
-import { setDenomInBase } from '../utils/state/tradeDataSlice';
+import {
+    setAdvancedHighTick,
+    setAdvancedLowTick,
+    setDenomInBase,
+} from '../utils/state/tradeDataSlice';
 
 /** ***** React Function *******/
 export default function App() {
@@ -620,6 +624,12 @@ export default function App() {
             dispatch(setDenomInBase(isDenomBase));
         }
     }, [tradeData.didUserFlipDenom, tokenPair]);
+
+    useEffect(() => {
+        console.log({ tokenPair });
+        dispatch(setAdvancedLowTick(0));
+        dispatch(setAdvancedHighTick(0));
+    }, [JSON.stringify(tokenPair)]);
 
     const mainLayoutStyle = showSidebar ? 'main-layout-2' : 'main-layout';
     // take away margin from left if we are on homepage or swap
