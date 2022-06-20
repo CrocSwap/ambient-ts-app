@@ -217,7 +217,7 @@ export default function Range(props: RangePropsIF) {
     const [isTokenBDisabled, setIsTokenBDisabled] = useState(false);
 
     useEffect(() => {
-        if (denominationsInBase) {
+        if (isTokenABase) {
             if (rangeHighTick < currentPoolPriceTick) {
                 setIsTokenBDisabled(true);
                 if (rangeHighTick > rangeLowTick) {
@@ -231,6 +231,21 @@ export default function Range(props: RangePropsIF) {
             } else {
                 setIsTokenADisabled(false);
                 setIsTokenBDisabled(false);
+            }
+        } else {
+            if (rangeHighTick < currentPoolPriceTick) {
+                setIsTokenADisabled(true);
+                if (rangeHighTick > rangeLowTick) {
+                    setIsTokenBDisabled(false);
+                } else setIsTokenBDisabled(true);
+            } else if (rangeLowTick > currentPoolPriceTick) {
+                setIsTokenBDisabled(true);
+                if (rangeLowTick < rangeHighTick) {
+                    setIsTokenADisabled(false);
+                } else setIsTokenBDisabled(true);
+            } else {
+                setIsTokenBDisabled(false);
+                setIsTokenADisabled(false);
             }
         }
     }, [currentPoolPriceTick, rangeLowTick, rangeHighTick, denominationsInBase]);
