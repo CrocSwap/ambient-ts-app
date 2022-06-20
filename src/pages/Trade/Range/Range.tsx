@@ -224,6 +224,7 @@ export default function Range(props: RangePropsIF) {
     const rangeSpanBelowCurrentPrice = currentPoolPriceTick - rangeLowTick;
 
     const isOutOfRange = rangeSpanAboveCurrentPrice < 0 || rangeSpanBelowCurrentPrice < 0;
+    const isInvalidRange = rangeHighTick <= rangeLowTick;
     // const inRangeSpan = isOutOfRange ? 0 : rangeSpanAboveCurrentPrice + rangeSpanBelowCurrentPrice;
     const minimumSpan =
         rangeSpanAboveCurrentPrice < rangeSpanBelowCurrentPrice
@@ -805,7 +806,7 @@ export default function Range(props: RangePropsIF) {
                 rangeHighTick={rangeHighTick}
                 setRangeLowTick={setRangeLowTick}
                 setRangeHighTick={setRangeHighTick}
-                // disabled={true}
+                disabled={isInvalidRange}
             />
             <AdvancedPriceInfo
                 tokenPair={tokenPair}
