@@ -265,25 +265,25 @@ export default function Range(props: RangePropsIF) {
     const [rangeHighBoundFieldBlurred, setRangeHighBoundFieldBlurred] = useState(false);
     const highBoundOnBlur = () => setRangeHighBoundFieldBlurred(true);
 
-    useEffect(() => {
-        console.log({ currentPoolPriceTick });
-    }, [currentPoolPriceTick]);
+    // useEffect(() => {
+    //     console.log({ currentPoolPriceTick });
+    // }, [currentPoolPriceTick]);
 
-    useEffect(() => {
-        console.log({ rangeLowTick });
-    }, [rangeLowTick]);
+    // useEffect(() => {
+    //     console.log({ rangeLowTick });
+    // }, [rangeLowTick]);
 
-    useEffect(() => {
-        console.log({ rangeHighTick });
-    }, [rangeHighTick]);
+    // useEffect(() => {
+    //     console.log({ rangeHighTick });
+    // }, [rangeHighTick]);
 
-    useEffect(() => {
-        console.log({ isTokenADisabled });
-    }, [isTokenADisabled]);
+    // useEffect(() => {
+    //     console.log({ isTokenADisabled });
+    // }, [isTokenADisabled]);
 
-    useEffect(() => {
-        console.log({ isTokenBDisabled });
-    }, [isTokenBDisabled]);
+    // useEffect(() => {
+    //     console.log({ isTokenBDisabled });
+    // }, [isTokenBDisabled]);
 
     const [initializationComplete, setInitializationComplete] = useState(false);
 
@@ -361,10 +361,10 @@ export default function Range(props: RangePropsIF) {
                         pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated;
                     setInitializationComplete(true);
                 } else {
-                    console.log('high bound field not found');
+                    // console.log('high bound field not found');
                 }
             } else {
-                console.log('low bound field not found');
+                // console.log('low bound field not found');
             }
         }
     }, [
@@ -488,13 +488,6 @@ export default function Range(props: RangePropsIF) {
             ),
         [poolPriceNonDisplay, rangeLowBoundNonDisplayPrice, rangeHighBoundNonDisplayPrice],
     );
-
-    useEffect(() => {
-        console.log({ depositSkew });
-        console.log({ currentPoolPriceTick });
-        console.log({ rangeLowTick });
-        console.log({ rangeHighTick });
-    }, [depositSkew]);
 
     let maxPriceDisplay: string;
 
