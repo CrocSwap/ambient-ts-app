@@ -7,12 +7,14 @@ interface AdvancedPriceInfoIF {
     poolPriceDisplay: string;
     isDenomBase: boolean;
     isTokenABase: boolean;
-    inRangeSpan: number;
+    minimumSpan: number;
+    isOutOfRange: boolean;
 }
 
 export default function AdvancedPriceInfo(props: AdvancedPriceInfoIF) {
     // JSX frag to display the pool price for the current pair
-    const { tokenPair, poolPriceDisplay, isDenomBase, isTokenABase, inRangeSpan } = props;
+    const { tokenPair, poolPriceDisplay, isDenomBase, isTokenABase, minimumSpan, isOutOfRange } =
+        props;
 
     const reverseDisplay = (isTokenABase && !isDenomBase) || (!isTokenABase && isDenomBase);
 
@@ -34,7 +36,9 @@ export default function AdvancedPriceInfo(props: AdvancedPriceInfoIF) {
     // JSX frag to display the estimated APY of the position
     const estimatedAPY = (
         <div className={styles.apy_display}>
-            <div>Est. APY | {truncateDecimals(inRangeSpan / 100, 0)}%</div>
+            <div>
+                Est. APY | {isOutOfRange ? 0 : truncateDecimals(100 - minimumSpan / 100 + 10, 0)}%
+            </div>
         </div>
     );
 

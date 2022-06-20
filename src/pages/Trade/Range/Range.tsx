@@ -224,7 +224,11 @@ export default function Range(props: RangePropsIF) {
     const rangeSpanBelowCurrentPrice = currentPoolPriceTick - rangeLowTick;
 
     const isOutOfRange = rangeSpanAboveCurrentPrice < 0 || rangeSpanBelowCurrentPrice < 0;
-    const inRangeSpan = isOutOfRange ? 0 : rangeSpanAboveCurrentPrice + rangeSpanBelowCurrentPrice;
+    // const inRangeSpan = isOutOfRange ? 0 : rangeSpanAboveCurrentPrice + rangeSpanBelowCurrentPrice;
+    const minimumSpan =
+        rangeSpanAboveCurrentPrice < rangeSpanBelowCurrentPrice
+            ? rangeSpanAboveCurrentPrice
+            : rangeSpanBelowCurrentPrice;
 
     const [isTokenADisabled, setIsTokenADisabled] = useState(false);
     const [isTokenBDisabled, setIsTokenBDisabled] = useState(false);
@@ -808,7 +812,8 @@ export default function Range(props: RangePropsIF) {
                 poolPriceDisplay={poolPriceDisplay}
                 isDenomBase={denominationsInBase}
                 isTokenABase={isTokenABase}
-                inRangeSpan={inRangeSpan}
+                minimumSpan={minimumSpan}
+                isOutOfRange={isOutOfRange}
             />
             <RangeExtraInfo {...rangeExtraInfoProps} />
         </>
