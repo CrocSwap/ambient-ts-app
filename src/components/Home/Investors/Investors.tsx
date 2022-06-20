@@ -13,6 +13,29 @@ import susaImage from '../../../assets/images/Investors/susa.svg';
 import hypotenuseImage from '../../../assets/images/Investors/hypotenuse.svg';
 import grugImage from '../../../assets/images/Investors/grug.svg';
 
+import { motion, useViewportScroll, useTransform } from 'framer-motion';
+
+interface RowAnimateProps {
+    children?: React.ReactNode;
+    speed: number;
+}
+
+function RowAnimate(props: RowAnimateProps) {
+    const { scrollYProgress } = useViewportScroll();
+    const yValue = useTransform(scrollYProgress, [0, 0.5, 1], [0, 50, 100 * props.speed]);
+
+    return (
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.2 }}
+            style={{ y: yValue }}
+        >
+            {props.children}
+        </motion.div>
+    );
+}
+
 export default function Investors() {
     const blockTower = (
         <div className={styles.center}>
@@ -105,29 +128,40 @@ export default function Investors() {
 
             <div className={styles.title}>Our Investors</div>
             <div className={styles.content}>
-                <div className={styles.row1}>{blockTower}</div>
-                <div className={styles.row2}>
-                    {amber}
-                    {arthur}
-                </div>
-                <div className={styles.row2}>
-                    {tensai}
-                    {naval}
-                </div>
-                <div className={styles.row5}>
-                    {yunt}
-                    {zachxbt}
-                    {berachain}
-                    {susa}
-                    {hypotenuse}
-                </div>
-                <div className={styles.row5}>
-                    {julian}
-                    {llllvvuu}
-                    {grug}
-                    {dogetoshi}
-                    {afkbyte}
-                </div>
+                <RowAnimate speed={-1.2}>
+                    <div className={styles.row1}>{blockTower}</div>
+                </RowAnimate>
+
+                <RowAnimate speed={-1.6}>
+                    <div className={styles.row2}>
+                        {amber}
+                        {arthur}
+                    </div>
+                </RowAnimate>
+                <RowAnimate speed={-1.4}>
+                    <div className={styles.row2}>
+                        {tensai}
+                        {naval}
+                    </div>
+                </RowAnimate>
+                <RowAnimate speed={-1.2}>
+                    <div className={styles.row5}>
+                        {yunt}
+                        {zachxbt}
+                        {berachain}
+                        {susa}
+                        {hypotenuse}
+                    </div>
+                </RowAnimate>
+                <RowAnimate speed={-1}>
+                    <div className={styles.row5}>
+                        {julian}
+                        {llllvvuu}
+                        {grug}
+                        {dogetoshi}
+                        {afkbyte}
+                    </div>
+                </RowAnimate>
             </div>
             <div className={styles.investor}></div>
         </div>

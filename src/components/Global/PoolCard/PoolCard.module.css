@@ -1,8 +1,10 @@
 .pool_card{
+    position: relative;
     width: 268px;
     height: 125px;
     background: var(--dark3);
     padding: 8px;
+    z-index: 1;
 }
 
 .row{
@@ -88,3 +90,29 @@ color: #15BE6F;
     letter-spacing: -0.02em; 
     color: #FFFFFF;
 }
+
+.outline {
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+
+    
+  z-index: -1;
+  margin: -5px;
+
+
+box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 );
+backdrop-filter: blur( 4px );
+-webkit-backdrop-filter: blur( 4px );
+border-radius: 10px;
+
+background-image:
+    linear-gradient(to bottom, rgba(205, 193, 255, 0.32), rgba(115, 113, 252, 0.53)),
+    url('../../../assets/images/waveform.svg');
+
+  
+  }
+  
+
