@@ -20,6 +20,9 @@ export default function Edit() {
     const minPricePercentage = -15;
     const maxPricePercentage = 15;
 
+    const [rangeLowTick, setRangeLowTick] = useState(0);
+    const [rangeHighTick, setRangeHighTick] = useState(0);
+
     const isDenomBase = false;
 
     const [minPriceInputString, setMinPriceInputString] = useState<string>('');
@@ -86,6 +89,10 @@ export default function Edit() {
                     // highBoundOnFocus={highBoundOnFocus}
                     highBoundOnBlur={highBoundOnBlur}
                     lowBoundOnBlur={lowBoundOnBlur}
+                    rangeLowTick={rangeLowTick}
+                    rangeHighTick={rangeHighTick}
+                    setRangeLowTick={setRangeLowTick}
+                    setRangeHighTick={setRangeHighTick}
                 />
                 <EditPriceInfo />
                 <EditButton onClickFn={openModal} />
