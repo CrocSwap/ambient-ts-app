@@ -213,12 +213,12 @@ export default function Range(props: RangePropsIF) {
     const [rangeLowTick, setRangeLowTick] = useState(tradeData.advancedLowTick);
     const [rangeHighTick, setRangeHighTick] = useState(tradeData.advancedHighTick);
 
-    useEffect(() => {
-        console.log({ rangeLowTick });
-    }, [rangeLowTick]);
-    useEffect(() => {
-        console.log({ rangeHighTick });
-    }, [rangeHighTick]);
+    // useEffect(() => {
+    //     console.log({ rangeLowTick });
+    // }, [rangeLowTick]);
+    // useEffect(() => {
+    //     console.log({ rangeHighTick });
+    // }, [rangeHighTick]);
 
     const [isTokenADisabled, setIsTokenADisabled] = useState(false);
     const [isTokenBDisabled, setIsTokenBDisabled] = useState(false);
@@ -310,7 +310,7 @@ export default function Range(props: RangePropsIF) {
                 setInitializationComplete(false);
             }
         }
-    }, [isAdvancedModeActive, denominationsInBase]);
+    }, [isAdvancedModeActive, denominationsInBase, rangeLowTick, rangeHighTick]);
 
     // initialize based on MinPriceDifferencePercentage & MaxPriceDifferencePercentage
     useEffect(() => {

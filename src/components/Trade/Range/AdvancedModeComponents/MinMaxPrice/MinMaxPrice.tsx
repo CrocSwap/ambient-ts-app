@@ -2,6 +2,9 @@ import styles from './MinMaxPrice.module.css';
 import PriceInput from '../PriceInput/PriceInput';
 import { ChangeEvent } from 'react';
 
+import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
+import { setAdvancedHighTick, setAdvancedLowTick } from '../../../../../utils/state/tradeDataSlice';
+
 interface IMinMaxPrice {
     minPricePercentage: number;
     maxPricePercentage: number;
@@ -35,6 +38,8 @@ export default function MinMaxPrice(props: IMinMaxPrice) {
         setRangeLowTick,
         setRangeHighTick,
     } = props;
+
+    const dispatch = useAppDispatch();
 
     const handleMinPriceChangeEvent = (evt?: ChangeEvent<HTMLInputElement>) => {
         if (evt) {
@@ -73,19 +78,19 @@ export default function MinMaxPrice(props: IMinMaxPrice) {
 
     const increaseLowTick = () => {
         setRangeLowTick(rangeLowTick + 100);
-        console.log('increasing low tick from ' + rangeLowTick);
+        dispatch(setAdvancedLowTick(rangeLowTick + 100));
     };
     const increaseHighTick = () => {
         setRangeHighTick(rangeHighTick + 100);
-        console.log('increasing high tick from ' + rangeHighTick);
+        dispatch(setAdvancedHighTick(rangeHighTick + 100));
     };
     const decreaseLowTick = () => {
         setRangeLowTick(rangeLowTick - 100);
-        console.log('decreasing low tick from ' + rangeLowTick);
+        dispatch(setAdvancedLowTick(rangeLowTick - 100));
     };
     const decreaseHighTick = () => {
         setRangeHighTick(rangeHighTick - 100);
-        console.log('decreasing high tick from ' + rangeHighTick);
+        dispatch(setAdvancedHighTick(rangeHighTick - 100));
     };
 
     return (
@@ -100,8 +105,8 @@ export default function MinMaxPrice(props: IMinMaxPrice) {
                     }
                     // onFocus={highBoundOnFocus}
                     onBlur={lowBoundOnBlur}
-                    increaseTick={isDenomBase ? increaseLowTick : increaseHighTick}
-                    decreaseTick={isDenomBase ? decreaseLowTick : decreaseHighTick}
+                    increaseTick={!isDenomBase ? increaseLowTick : decreaseHighTick}
+                    decreaseTick={!isDenomBase ? decreaseLowTick : increaseHighTick}
                 />
                 <PriceInput
                     fieldId='max'
@@ -112,8 +117,8 @@ export default function MinMaxPrice(props: IMinMaxPrice) {
                     }
                     // onFocus={highBoundOnFocus}
                     onBlur={highBoundOnBlur}
-                    increaseTick={isDenomBase ? increaseHighTick : increaseLowTick}
-                    decreaseTick={isDenomBase ? decreaseHighTick : decreaseLowTick}
+                    increaseTick={!isDenomBase ? increaseHighTick : decreaseLowTick}
+                    decreaseTick={!isDenomBase ? decreaseHighTick : increaseLowTick}
                 />
             </div>
             {props.disabled && disableInputContent}
