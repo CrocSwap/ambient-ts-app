@@ -199,8 +199,8 @@ export default function Range(props: RangePropsIF) {
         setRangeLowBoundNonDisplayPrice(pinnedDisplayPrices.pinnedMinPriceNonDisplay);
         setRangeHighBoundNonDisplayPrice(pinnedDisplayPrices.pinnedMaxPriceNonDisplay);
 
-        setPinnedMinPriceDisplay(pinnedDisplayPrices.pinnedMinPriceDisplay);
-        setPinnedMaxPriceDisplay(pinnedDisplayPrices.pinnedMaxPriceDisplay);
+        // setPinnedMinPriceDisplay(pinnedDisplayPrices.pinnedMinPriceDisplay);
+        // setPinnedMaxPriceDisplay(pinnedDisplayPrices.pinnedMaxPriceDisplay);
 
         setPinnedMinPriceDisplayTruncated(pinnedDisplayPrices.pinnedMinPriceDisplayTruncated);
         setPinnedMaxPriceDisplayTruncated(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated);
@@ -220,16 +220,26 @@ export default function Range(props: RangePropsIF) {
         if (denominationsInBase) {
             if (rangeHighTick < currentPoolPriceTick) {
                 setIsTokenBDisabled(true);
+                if (rangeHighTick > rangeLowTick) {
+                    setIsTokenADisabled(false);
+                } else setIsTokenADisabled(true);
+            } else if (rangeLowTick > currentPoolPriceTick) {
+                setIsTokenADisabled(true);
+                if (rangeLowTick < rangeHighTick) {
+                    setIsTokenBDisabled(false);
+                } else setIsTokenBDisabled(true);
+            } else {
+                setIsTokenADisabled(false);
+                setIsTokenBDisabled(false);
             }
         }
-        setIsTokenADisabled(false);
     }, [currentPoolPriceTick, rangeLowTick, rangeHighTick, denominationsInBase]);
 
     const [rangeLowBoundNonDisplayPrice, setRangeLowBoundNonDisplayPrice] = useState(0);
     const [rangeHighBoundNonDisplayPrice, setRangeHighBoundNonDisplayPrice] = useState(0);
 
-    const [pinnedMinPriceDisplay, setPinnedMinPriceDisplay] = useState('');
-    const [pinnedMaxPriceDisplay, setPinnedMaxPriceDisplay] = useState('');
+    // const [pinnedMinPriceDisplay, setPinnedMinPriceDisplay] = useState('');
+    // const [pinnedMaxPriceDisplay, setPinnedMaxPriceDisplay] = useState('');
 
     const [pinnedMinPriceDisplayTruncated, setPinnedMinPriceDisplayTruncated] = useState('');
     const [pinnedMaxPriceDisplayTruncated, setPinnedMaxPriceDisplayTruncated] = useState('');
@@ -251,6 +261,14 @@ export default function Range(props: RangePropsIF) {
     useEffect(() => {
         console.log({ rangeHighTick });
     }, [rangeHighTick]);
+
+    useEffect(() => {
+        console.log({ isTokenADisabled });
+    }, [isTokenADisabled]);
+
+    useEffect(() => {
+        console.log({ isTokenBDisabled });
+    }, [isTokenBDisabled]);
 
     const [initializationComplete, setInitializationComplete] = useState(false);
 
@@ -285,8 +303,8 @@ export default function Range(props: RangePropsIF) {
             setRangeLowBoundNonDisplayPrice(pinnedDisplayPrices.pinnedMinPriceNonDisplay);
             setRangeHighBoundNonDisplayPrice(pinnedDisplayPrices.pinnedMaxPriceNonDisplay);
 
-            setPinnedMinPriceDisplay(pinnedDisplayPrices.pinnedMinPriceDisplay);
-            setPinnedMaxPriceDisplay(pinnedDisplayPrices.pinnedMaxPriceDisplay);
+            // setPinnedMinPriceDisplay(pinnedDisplayPrices.pinnedMinPriceDisplay);
+            // setPinnedMaxPriceDisplay(pinnedDisplayPrices.pinnedMaxPriceDisplay);
 
             setPinnedMinPriceDisplayTruncated(pinnedDisplayPrices.pinnedMinPriceDisplayTruncated);
             setPinnedMaxPriceDisplayTruncated(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated);
