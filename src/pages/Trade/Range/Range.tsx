@@ -770,6 +770,7 @@ export default function Range(props: RangePropsIF) {
 
     const baseModeContent = (
         <>
+            <RangeCurrencyConverter {...rangeCurrencyConverterProps} isAdvancedMode={false} />
             <RangeWidth {...rangeWidthProps} />
             <RangePriceInfo {...rangePriceInfoProps} />
             <RangeExtraInfo {...rangeExtraInfoProps} />
@@ -777,6 +778,8 @@ export default function Range(props: RangePropsIF) {
     );
     const advancedModeContent = (
         <>
+            <RangeCurrencyConverter {...rangeCurrencyConverterProps} isAdvancedMode />
+
             <MinMaxPrice
                 minPricePercentage={minPriceDifferencePercentage}
                 maxPricePercentage={maxPriceDifferencePercentage}
@@ -918,7 +921,7 @@ export default function Range(props: RangePropsIF) {
                 <RangeHeader tokenPair={tokenPair} isDenomBase={tradeData.isDenomBase} />
                 {denominationSwitch}
                 <DividerDark />
-                <RangeCurrencyConverter {...rangeCurrencyConverterProps} />
+                {/* <RangeCurrencyConverter {...rangeCurrencyConverterProps} /> */}
                 {isAdvancedModeActive ? advancedModeContent : baseModeContent}
                 {!isAuthenticated || !isWeb3Enabled ? (
                     loginButton

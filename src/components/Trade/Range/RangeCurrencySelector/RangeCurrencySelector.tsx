@@ -24,6 +24,8 @@ interface RangeCurrencySelectorProps {
     truncatedTokenBBalance: string;
     isTokenADisabled: boolean;
     isTokenBDisabled: boolean;
+    isAdvancedMode: boolean;
+    disable?: boolean;
 }
 
 export default function RangeCurrencySelector(props: RangeCurrencySelectorProps) {
@@ -43,6 +45,7 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
         truncatedTokenBBalance,
         isTokenADisabled,
         isTokenBDisabled,
+        isAdvancedMode,
     } = props;
 
     const thisToken = fieldId === 'A' ? tokenPair.dataTokenA : tokenPair.dataTokenB;
@@ -114,6 +117,7 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                         fieldId={fieldId}
                         updateOtherQuantity={updateOtherQuantity}
                         disable={isFieldDisabled}
+                        isAdvancedMode={isAdvancedMode}
                     />
                 </div>
                 <div className={styles.token_select} onClick={openModal}>

@@ -1,7 +1,6 @@
 import styles from './PriceInput.module.css';
 import { FaMinus, FaPlus } from 'react-icons/fa';
 import { ChangeEvent } from 'react';
-import { GoCircleSlash } from 'react-icons/go';
 
 interface priceInputProps {
     disable?: boolean;
@@ -47,22 +46,22 @@ export default function PriceInput(props: priceInputProps) {
         />
     );
 
-    const disabledContent = (
-        <div className={styles.overlay_container}>
-            <GoCircleSlash size={15} />
-            <div className={styles.disabled_text}>
-                The market is outside your specified range.
-                <span className={styles.warning_text}>Single-asset deposit only.</span>
-            </div>
-        </div>
-    );
+    // const disabledContent = (
+    //     <div className={styles.overlay_container}>
+    //         <GoCircleSlash size={15} />
+    //         <div className={styles.disabled_text}>
+    //             The market is outside your specified range.
+    //             <span className={styles.warning_text}>Single-asset deposit only.</span>
+    //         </div>
+    //     </div>
+    // );
 
     const percentageDifferenceString =
         percentageDifference > 0 ? '+' + percentageDifference : percentageDifference.toString();
 
     return (
         <div className={styles.minMax_container}>
-            {disable && disabledContent}
+            {/* {disable && disabledContent} */}
             <span className={styles.title}>{title}</span>
             <div className={styles.price_input_container}>
                 <span className={styles.sign} onClick={decreaseTick}>

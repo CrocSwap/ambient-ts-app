@@ -24,6 +24,7 @@ interface RangeCurrencyConverterPropsIF {
     setIsWithdrawTokenBFromDexChecked: React.Dispatch<SetStateAction<boolean>>;
     isLiq?: boolean;
     poolPriceNonDisplay: number;
+    isAdvancedMode: boolean;
     tokenPair: {
         dataTokenA: TokenIF;
         dataTokenB: TokenIF;
@@ -69,6 +70,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         setRangeAllowed,
         isTokenADisabled,
         isTokenBDisabled,
+        isAdvancedMode,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -294,6 +296,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
                 fieldId='A'
                 updateOtherQuantity={handleTokenAQtyFieldUpdate}
                 {...rangeCurrencySelectorCommonProps}
+                isAdvancedMode={isAdvancedMode}
             />
             <div className={styles.arrow_container}>
                 {isLiq ? null : <span className={styles.arrow} />}
@@ -302,6 +305,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
                 fieldId='B'
                 updateOtherQuantity={handleTokenBQtyFieldUpdate}
                 {...rangeCurrencySelectorCommonProps}
+                isAdvancedMode={isAdvancedMode}
             />
         </section>
     );
