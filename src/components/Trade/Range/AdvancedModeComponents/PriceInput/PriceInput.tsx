@@ -9,10 +9,12 @@ interface priceInputProps {
     title: string;
     percentageDifference: number;
     handleChangeEvent: (evt: ChangeEvent<HTMLInputElement>) => void;
+    // onFocus: () => void;
+    onBlur: () => void;
 }
 
 export default function PriceInput(props: priceInputProps) {
-    const { disable, fieldId, title, percentageDifference, handleChangeEvent } = props;
+    const { disable, fieldId, title, percentageDifference, handleChangeEvent, onBlur } = props;
 
     const priceInput = (
         <input
@@ -20,6 +22,8 @@ export default function PriceInput(props: priceInputProps) {
             className={styles.price_quantity}
             type='text'
             onChange={(event) => handleChangeEvent(event)}
+            // onFocus={onFocus}
+            onBlur={() => onBlur()}
             inputMode='decimal'
             autoComplete='off'
             autoCorrect='off'

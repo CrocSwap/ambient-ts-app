@@ -6,9 +6,9 @@ interface RangeCurrencyQuantityProps {
     fieldId: string;
     updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
 }
-
 export default function RangeCurrencyQuantity(props: RangeCurrencyQuantityProps) {
     const { disable, updateOtherQuantity, fieldId } = props;
+    // console.log({ disable });
 
     return (
         <div className={styles.token_amount}>

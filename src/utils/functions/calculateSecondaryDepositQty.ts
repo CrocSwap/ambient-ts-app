@@ -64,9 +64,17 @@ export const calculateSecondaryDepositQty = (
             }
         }
     }
-
-    // if function calculates NaN or zero, return null instead
-    const output = secondaryQuantity || null;
-    // return secondary quantity
-    return output;
+    if (secondaryQuantity) {
+        if (
+            secondaryQuantity === Infinity ||
+            secondaryQuantity === -Infinity ||
+            isNaN(secondaryQuantity)
+        ) {
+            return 0;
+        } else {
+            return secondaryQuantity;
+        }
+    } else {
+        return null;
+    }
 };
