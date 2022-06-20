@@ -807,7 +807,7 @@ export default function Range(props: RangePropsIF) {
                 rangeHighTick={rangeHighTick}
                 setRangeLowTick={setRangeLowTick}
                 setRangeHighTick={setRangeHighTick}
-                disabled={isInvalidRange}
+                disable={isInvalidRange}
             />
             <AdvancedPriceInfo
                 tokenPair={tokenPair}

@@ -14,8 +14,8 @@ interface IMinMaxPrice {
     maxPriceInputString: string;
     setMinPriceInputString: React.Dispatch<React.SetStateAction<string>>;
     setMaxPriceInputString: React.Dispatch<React.SetStateAction<string>>;
+    // disable?: boolean;
     disable?: boolean;
-    disabled?: boolean;
     isDenomBase: boolean;
     // highBoundOnFocus: () => void;
     lowBoundOnBlur: () => void;
