@@ -35,7 +35,9 @@ export default function AdvancedPriceInfo(props: AdvancedPriceInfoIF) {
 
     // JSX frag to display the estimated APY of the position
     const estimatedAPY = (
-        <div className={styles.apy_display}>
+        <div
+            className={isOutOfRange ? styles.apy_display_out_of_range : styles.apy_display_in_range}
+        >
             <div>
                 Est. APY | {isOutOfRange ? 0 : truncateDecimals(100 - minimumSpan / 100 + 10, 0)}%
             </div>
