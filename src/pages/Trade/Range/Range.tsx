@@ -207,7 +207,7 @@ export default function Range(props: RangePropsIF) {
         setRangeLowTick(pinnedDisplayPrices.pinnedLowTick);
         setRangeHighTick(pinnedDisplayPrices.pinnedHighTick);
         // console.log({ rangeWidthPercentage });
-    }, [rangeWidthPercentage, isAdvancedModeActive]);
+    }, [rangeWidthPercentage, isAdvancedModeActive, denominationsInBase]);
 
     const [rangeLowTick, setRangeLowTick] = useState(tradeData.advancedLowTick);
     const [rangeHighTick, setRangeHighTick] = useState(tradeData.advancedHighTick);
