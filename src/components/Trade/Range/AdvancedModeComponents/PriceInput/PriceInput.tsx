@@ -11,10 +11,21 @@ interface priceInputProps {
     handleChangeEvent: (evt: ChangeEvent<HTMLInputElement>) => void;
     // onFocus: () => void;
     onBlur: () => void;
+    increaseTick: () => void;
+    decreaseTick: () => void;
 }
 
 export default function PriceInput(props: priceInputProps) {
-    const { disable, fieldId, title, percentageDifference, handleChangeEvent, onBlur } = props;
+    const {
+        disable,
+        fieldId,
+        title,
+        percentageDifference,
+        handleChangeEvent,
+        onBlur,
+        increaseTick,
+        decreaseTick,
+    } = props;
 
     const priceInput = (
         <input
@@ -54,11 +65,11 @@ export default function PriceInput(props: priceInputProps) {
             {disable && disabledContent}
             <span className={styles.title}>{title}</span>
             <div className={styles.price_input_container}>
-                <span className={styles.sign}>
+                <span className={styles.sign} onClick={decreaseTick}>
                     <FaMinus size={16} />
                 </span>
                 <span>{priceInput}</span>
-                <span className={styles.sign}>
+                <span className={styles.sign} onClick={increaseTick}>
                     <FaPlus size={16} />
                 </span>
             </div>

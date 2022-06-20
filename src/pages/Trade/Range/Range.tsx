@@ -213,6 +213,13 @@ export default function Range(props: RangePropsIF) {
     const [rangeLowTick, setRangeLowTick] = useState(tradeData.advancedLowTick);
     const [rangeHighTick, setRangeHighTick] = useState(tradeData.advancedHighTick);
 
+    useEffect(() => {
+        console.log({ rangeLowTick });
+    }, [rangeLowTick]);
+    useEffect(() => {
+        console.log({ rangeHighTick });
+    }, [rangeHighTick]);
+
     const [isTokenADisabled, setIsTokenADisabled] = useState(false);
     const [isTokenBDisabled, setIsTokenBDisabled] = useState(false);
 
@@ -781,6 +788,10 @@ export default function Range(props: RangePropsIF) {
                 // highBoundOnFocus={highBoundOnFocus}
                 highBoundOnBlur={highBoundOnBlur}
                 lowBoundOnBlur={lowBoundOnBlur}
+                rangeLowTick={rangeLowTick}
+                rangeHighTick={rangeHighTick}
+                setRangeLowTick={setRangeLowTick}
+                setRangeHighTick={setRangeHighTick}
                 // disabled={true}
             />
             <AdvancedPriceInfo
