@@ -16,11 +16,12 @@ import { TokenPairIF } from '../../../utils/interfaces/exports';
 interface swapHeaderPropsIF {
     tokenPair: TokenPairIF;
     isOnTradeRoute?: boolean;
+    isDenomBase: boolean;
 }
 
 // main react functional component
 export default function SwapHeader(props: swapHeaderPropsIF) {
-    const { tokenPair, isOnTradeRoute } = props;
+    const { tokenPair, isOnTradeRoute, isDenomBase } = props;
     const [isModalOpen, openModal, closeModal] = useModal();
 
     const settingsModalOrNull = isModalOpen ? (
@@ -33,7 +34,8 @@ export default function SwapHeader(props: swapHeaderPropsIF) {
         <ContentHeader>
             <span />
             <div className={styles.token_info}>
-                {tokenPair.dataTokenA.symbol} / {tokenPair.dataTokenB.symbol}
+                {isDenomBase ? tokenPair.dataTokenA.symbol : tokenPair.dataTokenB.symbol} /{' '}
+                {isDenomBase ? tokenPair.dataTokenB.symbol : tokenPair.dataTokenA.symbol}
             </div>
             <div onClick={openModal}>
                 <img src={settingsIcon} alt='settings' />

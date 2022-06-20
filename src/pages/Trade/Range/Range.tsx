@@ -903,7 +903,7 @@ export default function Range(props: RangePropsIF) {
             data-testid={'range'}
         >
             <ContentContainer isOnTradeRoute>
-                <RangeHeader tokenPair={tokenPair} />
+                <RangeHeader tokenPair={tokenPair} isDenomBase={tradeData.isDenomBase} />
                 {denominationSwitch}
                 <DividerDark />
                 <RangeCurrencyConverter {...rangeCurrencyConverterProps} />
