@@ -517,7 +517,14 @@ export default function Range(props: RangePropsIF) {
 
     const apyPercentage: number = 100 - rangeWidthPercentage + 10;
 
-    const daysInRangeEstimation: number = isAmbient ? 365 : rangeWidthPercentage;
+    const advancedDaysInRangeEstimation =
+        minimumSpan < 0 ? 0 : truncateDecimals(minimumSpan / 100, 0);
+
+    const daysInRangeEstimation: number = isAmbient
+        ? 365
+        : isAdvancedModeActive
+        ? advancedDaysInRangeEstimation
+        : rangeWidthPercentage;
 
     let minPriceDisplay: string;
 
