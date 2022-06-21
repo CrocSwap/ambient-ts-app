@@ -60,6 +60,7 @@ import RangeExtraInfo from '../../../components/Trade/Range/RangeExtraInfo/Range
 import {
     setAdvancedHighTick,
     setAdvancedLowTick,
+    setSimpleRangeWidth,
     // setIsTokenAPrimaryRange,
 } from '../../../utils/state/tradeDataSlice';
 
@@ -156,7 +157,15 @@ export default function Range(props: RangePropsIF) {
         useState<string>('Enter an Amount');
 
     const currentPoolPriceTick = Math.log(poolPriceNonDisplay) / Math.log(1.0001);
-    const [rangeWidthPercentage, setRangeWidthPercentage] = useState<number>(100);
+    const [rangeWidthPercentage, setRangeWidthPercentage] = useState<number>(
+        tradeData.simpleRangeWidth,
+    );
+
+    useEffect(() => {
+        if (tradeData.simpleRangeWidth !== rangeWidthPercentage) {
+            dispatch(setSimpleRangeWidth(rangeWidthPercentage));
+        }
+    }, [rangeWidthPercentage]);
 
     const [minPriceInputString, setMinPriceInputString] = useState<string>('');
     const [maxPriceInputString, setMaxPriceInputString] = useState<string>('');
