@@ -271,28 +271,37 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
             if (!isOutOfRange) {
                 if (tokenAQtyLocal) setTokenAQtyValue(tokenAQtyLocal);
             } else {
+                // console.log({ rangeSpanAboveCurrentPrice });
                 if (rangeSpanAboveCurrentPrice < 0) {
                     if (isTokenABase) {
                         if (tokenAQtyLocal && tokenAQtyLocal !== 0) {
-                            dispatch(setIsTokenAPrimaryRange(true));
+                            if (!tradeData.isTokenAPrimaryRange) {
+                                dispatch(setIsTokenAPrimaryRange(true));
+                            }
                             setTokenAQtyValue(tokenAQtyLocal);
                         }
                         // setTokenAQtyValue(0);
                     } else {
-                        if (tokenAQtyLocal && tokenAQtyLocal !== 0) {
-                            dispatch(setIsTokenAPrimaryRange(true));
-                            setTokenAQtyValue(tokenAQtyLocal);
+                        if (tokenBQtyLocal && tokenBQtyLocal !== 0) {
+                            if (tradeData.isTokenAPrimaryRange) {
+                                dispatch(setIsTokenAPrimaryRange(false));
+                            }
+                            setTokenBQtyValue(tokenBQtyLocal);
                         }
                     }
                 } else {
                     if (isTokenABase) {
-                        if (tokenAQtyLocal && tokenAQtyLocal !== 0) {
-                            dispatch(setIsTokenAPrimaryRange(true));
-                            setTokenAQtyValue(tokenAQtyLocal);
+                        if (tokenBQtyLocal && tokenBQtyLocal !== 0) {
+                            if (tradeData.isTokenAPrimaryRange) {
+                                dispatch(setIsTokenAPrimaryRange(false));
+                            }
+                            setTokenBQtyValue(tokenBQtyLocal);
                         }
                     } else {
                         if (tokenAQtyLocal && tokenAQtyLocal !== 0) {
-                            dispatch(setIsTokenAPrimaryRange(true));
+                            if (!tradeData.isTokenAPrimaryRange) {
+                                dispatch(setIsTokenAPrimaryRange(true));
+                            }
                             setTokenAQtyValue(tokenAQtyLocal);
                         }
                     }
@@ -314,27 +323,37 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
             if (!isOutOfRange) {
                 if (tokenBQtyLocal) setTokenBQtyValue(tokenBQtyLocal);
             } else {
+                // console.log({ rangeSpanAboveCurrentPrice });
                 if (rangeSpanAboveCurrentPrice < 0) {
                     if (isTokenABase) {
-                        if (tokenAQtyLocal) {
-                            dispatch(setIsTokenAPrimaryRange(true));
+                        if (tokenAQtyLocal && tokenAQtyLocal !== 0) {
+                            if (!tradeData.isTokenAPrimaryRange) {
+                                dispatch(setIsTokenAPrimaryRange(true));
+                            }
                             setTokenAQtyValue(tokenAQtyLocal);
                         }
+                        // setTokenAQtyValue(0);
                     } else {
-                        if (tokenBQtyLocal) {
-                            dispatch(setIsTokenAPrimaryRange(false));
+                        if (tokenBQtyLocal && tokenBQtyLocal !== 0) {
+                            if (tradeData.isTokenAPrimaryRange) {
+                                dispatch(setIsTokenAPrimaryRange(false));
+                            }
                             setTokenBQtyValue(tokenBQtyLocal);
                         }
                     }
                 } else {
                     if (isTokenABase) {
-                        if (tokenBQtyLocal) {
-                            dispatch(setIsTokenAPrimaryRange(false));
+                        if (tokenBQtyLocal && tokenBQtyLocal !== 0) {
+                            if (tradeData.isTokenAPrimaryRange) {
+                                dispatch(setIsTokenAPrimaryRange(false));
+                            }
                             setTokenBQtyValue(tokenBQtyLocal);
                         }
                     } else {
-                        if (tokenAQtyLocal) {
-                            dispatch(setIsTokenAPrimaryRange(true));
+                        if (tokenAQtyLocal && tokenAQtyLocal !== 0) {
+                            if (!tradeData.isTokenAPrimaryRange) {
+                                dispatch(setIsTokenAPrimaryRange(true));
+                            }
                             setTokenAQtyValue(tokenAQtyLocal);
                         }
                     }
@@ -376,7 +395,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         <section className={styles.currency_converter}>
             <RangeCurrencySelector
                 fieldId='A'
-                updateOtherQuantity={handleTokenAQtyFieldUpdate}
+                updateOtherQuantity={(event) => handleTokenAQtyFieldUpdate(event)}
                 {...rangeCurrencySelectorCommonProps}
                 isAdvancedMode={isAdvancedMode}
             />
@@ -385,7 +404,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
             </div>
             <RangeCurrencySelector
                 fieldId='B'
-                updateOtherQuantity={handleTokenBQtyFieldUpdate}
+                updateOtherQuantity={(event) => handleTokenBQtyFieldUpdate(event)}
                 {...rangeCurrencySelectorCommonProps}
                 isAdvancedMode={isAdvancedMode}
             />
