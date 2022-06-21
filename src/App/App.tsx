@@ -1,5 +1,5 @@
 /** ***** Import React and Dongles *******/
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { setPositionsByUser } from '../utils/state/graphDataSlice';
 import { utils, ethers } from 'ethers';
@@ -118,8 +118,14 @@ export default function App() {
         dataTokenB: tradeData.tokenB,
     };
 
+    const tokenPairStringified = useMemo(() => JSON.stringify(tokenPair), [tokenPair]);
+
     // useEffect to set baseTokenAddress and quoteTokenAddress when pair changes
     useEffect(() => {
+        console.log({ tokenPair });
+        // reset rtk values for user specified range in ticks
+        dispatch(setAdvancedLowTick(0));
+        dispatch(setAdvancedHighTick(0));
         if (tokenPair.dataTokenA.address && tokenPair.dataTokenB.address) {
             const sortedTokens = sortBaseQuoteTokens(
                 tokenPair.dataTokenA.address,
@@ -134,7 +140,7 @@ export default function App() {
                 setIsTokenABase(false);
             }
         }
-    }, [JSON.stringify(tokenPair)]);
+    }, [tokenPairStringified]);
 
     const [tokenABalance, setTokenABalance] = useState<string>('');
     const [tokenBBalance, setTokenBBalance] = useState<string>('');
@@ -624,12 +630,6 @@ export default function App() {
             dispatch(setDenomInBase(isDenomBase));
         }
     }, [tradeData.didUserFlipDenom, tokenPair]);
-
-    useEffect(() => {
-        console.log({ tokenPair });
-        dispatch(setAdvancedLowTick(0));
-        dispatch(setAdvancedHighTick(0));
-    }, [JSON.stringify(tokenPair)]);
 
     const mainLayoutStyle = showSidebar ? 'main-layout-2' : 'main-layout';
     // take away margin from left if we are on homepage or swap
