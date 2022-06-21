@@ -402,7 +402,6 @@ export default function Range(props: RangePropsIF) {
         baseTokenDecimals,
         quoteTokenDecimals,
     ]);
-
     useEffect(() => {
         if (rangeLowBoundFieldBlurred) {
             // console.log('low bound blurred');
@@ -454,19 +453,20 @@ export default function Range(props: RangePropsIF) {
                 } else {
                     console.log('low bound field not found');
                 }
-                setRangeLowBoundFieldBlurred(false);
             }
+            setRangeLowBoundFieldBlurred(false);
         }
     }, [rangeLowBoundFieldBlurred]);
 
     useEffect(() => {
         if (rangeHighBoundFieldBlurred) {
-            // console.log('high bound blurred');
             const rangeHighBoundDisplayField = document.getElementById(
                 'max-price-input-quantity',
             ) as HTMLInputElement;
 
             if (rangeHighBoundDisplayField.value !== pinnedMaxPriceDisplayTruncated) {
+                console.log('high bound blurred');
+
                 const pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
                     denominationsInBase,
                     baseTokenDecimals,
@@ -509,8 +509,8 @@ export default function Range(props: RangePropsIF) {
                 } else {
                     console.log('high bound field not found');
                 }
-                setRangeHighBoundFieldBlurred(false);
             }
+            setRangeHighBoundFieldBlurred(false);
         }
     }, [rangeHighBoundFieldBlurred]);
 
