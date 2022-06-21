@@ -57,7 +57,11 @@ import { TokenIF } from '../../../utils/interfaces/exports';
 import { useTradeData } from '../Trade';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import RangeExtraInfo from '../../../components/Trade/Range/RangeExtraInfo/RangeExtraInfo';
-import { setAdvancedHighTick, setAdvancedLowTick } from '../../../utils/state/tradeDataSlice';
+import {
+    setAdvancedHighTick,
+    setAdvancedLowTick,
+    setIsTokenAPrimaryRange,
+} from '../../../utils/state/tradeDataSlice';
 
 interface RangePropsIF {
     importedTokens: Array<TokenIF>;
@@ -226,6 +230,28 @@ export default function Range(props: RangePropsIF) {
     const isOutOfRange = rangeSpanAboveCurrentPrice < 0 || rangeSpanBelowCurrentPrice < 0;
     const isInvalidRange = rangeHighTick <= rangeLowTick;
     // const inRangeSpan = isOutOfRange ? 0 : rangeSpanAboveCurrentPrice + rangeSpanBelowCurrentPrice;
+
+    useEffect(() => {
+        if (isOutOfRange) {
+            if (rangeSpanAboveCurrentPrice < 0) {
+                if (isTokenABase) {
+                    dispatch(setIsTokenAPrimaryRange(true));
+                    setIsTokenAPrimaryLocal(true);
+                } else {
+                    dispatch(setIsTokenAPrimaryRange(false));
+                    setIsTokenAPrimaryLocal(false);
+                }
+            } else {
+                if (isTokenABase) {
+                    dispatch(setIsTokenAPrimaryRange(false));
+                    setIsTokenAPrimaryLocal(false);
+                } else {
+                    dispatch(setIsTokenAPrimaryRange(true));
+                    setIsTokenAPrimaryLocal(true);
+                }
+            }
+        }
+    }, [isOutOfRange]);
 
     useEffect(() => {
         if (isInvalidRange) {
@@ -738,6 +764,10 @@ export default function Range(props: RangePropsIF) {
         </div>
     );
 
+    const [isTokenAPrimaryLocal, setIsTokenAPrimaryLocal] = useState<boolean>(
+        tradeData.isTokenAPrimaryRange,
+    );
+
     // props for <RangePriceInfo/> React element
     const rangePriceInfoProps = {
         tokenPair: tokenPair,
@@ -773,8 +803,8 @@ export default function Range(props: RangePropsIF) {
         isAmbient: isAmbient,
         isTokenABase: isTokenABase,
         depositSkew: depositSkew,
-        // isTokenAPrimary: isTokenAPrimary,
-        // setIsTokenAPrimary: setIsTokenAPrimary,
+        isTokenAPrimaryLocal: isTokenAPrimaryLocal,
+        setIsTokenAPrimaryLocal: setIsTokenAPrimaryLocal,
         isWithdrawTokenAFromDexChecked: isWithdrawTokenAFromDexChecked,
         setIsWithdrawTokenAFromDexChecked: setIsWithdrawTokenAFromDexChecked,
         isWithdrawTokenBFromDexChecked: isWithdrawTokenBFromDexChecked,
