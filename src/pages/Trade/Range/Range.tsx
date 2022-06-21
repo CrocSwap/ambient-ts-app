@@ -226,6 +226,15 @@ export default function Range(props: RangePropsIF) {
     const isOutOfRange = rangeSpanAboveCurrentPrice < 0 || rangeSpanBelowCurrentPrice < 0;
     const isInvalidRange = rangeHighTick <= rangeLowTick;
     // const inRangeSpan = isOutOfRange ? 0 : rangeSpanAboveCurrentPrice + rangeSpanBelowCurrentPrice;
+
+    useEffect(() => {
+        if (isInvalidRange) {
+            setRangeButtonErrorMessage('Please Enter a Valid Range');
+        } else {
+            setRangeButtonErrorMessage('Enter an Amount');
+        }
+    }, [isInvalidRange]);
+
     const minimumSpan =
         rangeSpanAboveCurrentPrice < rangeSpanBelowCurrentPrice
             ? rangeSpanAboveCurrentPrice
