@@ -354,14 +354,17 @@ export default function Range(props: RangePropsIF) {
             setRangeLowTick(pinnedDisplayPrices.pinnedLowTick);
             setRangeHighTick(pinnedDisplayPrices.pinnedHighTick);
 
-            const highGeometricDifferencePercentage = truncateDecimals(
-                (pinnedDisplayPrices.pinnedHighTick - currentPoolPriceTick) / 100,
-                0,
-            );
-            const lowGeometricDifferencePercentage = truncateDecimals(
-                (pinnedDisplayPrices.pinnedLowTick - currentPoolPriceTick) / 100,
-                0,
-            );
+            const highTickDiff = pinnedDisplayPrices.pinnedHighTick - currentPoolPriceTick;
+            const lowTickDiff = pinnedDisplayPrices.pinnedLowTick - currentPoolPriceTick;
+
+            const highGeometricDifferencePercentage =
+                Math.abs(highTickDiff) < 200
+                    ? truncateDecimals(highTickDiff / 100, 2)
+                    : truncateDecimals(highTickDiff / 100, 0);
+            const lowGeometricDifferencePercentage =
+                Math.abs(lowTickDiff) < 200
+                    ? truncateDecimals(lowTickDiff / 100, 2)
+                    : truncateDecimals(lowTickDiff / 100, 0);
             denominationsInBase
                 ? setMaxPriceDifferencePercentage(-lowGeometricDifferencePercentage)
                 : setMaxPriceDifferencePercentage(highGeometricDifferencePercentage);
