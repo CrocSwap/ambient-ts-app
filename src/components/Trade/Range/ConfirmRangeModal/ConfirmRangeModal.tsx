@@ -45,8 +45,8 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalProps) {
     // console.log(tokenPair);
     const [confirmDetails, setConfirmDetails] = useState(true);
     const transactionApproved = newRangeTransactionHash !== '';
-    const sellTokenQty = (document.getElementById('A-range-quantity') as HTMLInputElement)?.value;
-    const buyTokenQty = (document.getElementById('B-range-quantity') as HTMLInputElement)?.value;
+    const tokenAQty = (document.getElementById('A-range-quantity') as HTMLInputElement)?.value;
+    const tokenBQty = (document.getElementById('B-range-quantity') as HTMLInputElement)?.value;
 
     // const dataTokenA = {
     //     icon: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png',
@@ -88,14 +88,14 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalProps) {
                         <img src={dataTokenA.logoURI} alt={dataTokenA.name} />
                         <span>{dataTokenA.symbol}</span>
                     </div>
-                    <span>{sellTokenQty}</span>
+                    <span>{tokenAQty !== '' ? tokenAQty : '0'}</span>
                 </div>
                 <div className={styles.detail_line}>
                     <div>
                         <img src={dataTokenB.logoURI} alt={dataTokenB.name} />
                         <span>{dataTokenB.symbol}</span>
                     </div>
-                    <span>{buyTokenQty}</span>
+                    <span>{tokenBQty !== '' ? tokenBQty : '0'}</span>
                 </div>
                 <Divider />
                 <div className={styles.detail_line}>
@@ -138,7 +138,7 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalProps) {
     // CONFIRMATION LOGIC STARTS HERE
     const confirmSendMessage = (
         <WaitingConfirmation
-            content={`Depositing Swapping ${sellTokenQty} ${tokenA.symbol} for ${buyTokenQty} ${tokenB.symbol}`}
+            content={`Depositing Swapping ${tokenAQty} ${tokenA.symbol} for ${tokenBQty} ${tokenB.symbol}`}
         />
     );
 
@@ -148,8 +148,12 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalProps) {
         <Button
             title='Send to Metamask'
             action={() => {
-                console.log(`Sell Token Full name: ${tokenA.symbol} and quantity: ${sellTokenQty}`);
-                console.log(`Buy Token Full name: ${tokenB.symbol} and quantity: ${buyTokenQty}`);
+                console.log(`Sell Token Full name: ${tokenA.symbol} and quantity: ${tokenAQty}`);
+                console.log(
+                    `Buy Token Full name: ${tokenB.symbol} and quantity: ${
+                        tokenBQty !== '' ? tokenBQty : '0'
+                    }`,
+                );
                 sendTransaction();
                 setConfirmDetails(false);
             }}

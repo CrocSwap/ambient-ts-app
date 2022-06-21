@@ -29,8 +29,8 @@ interface RangeCurrencyConverterPropsIF {
         dataTokenA: TokenIF;
         dataTokenB: TokenIF;
     };
-    // isTokenAPrimaryLocal: boolean;
-    // setIsTokenAPrimaryLocal: React.Dispatch<SetStateAction<boolean>>;
+    isTokenAPrimaryLocal: boolean;
+    setIsTokenAPrimaryLocal: React.Dispatch<SetStateAction<boolean>>;
     isTokenABase: boolean;
     isAmbient: boolean;
     depositSkew: number;
@@ -54,8 +54,8 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         poolPriceNonDisplay,
         tokenPair,
         isTokenABase,
-        // isTokenAPrimaryLocal,
-        // setIsTokenAPrimaryLocal,
+        isTokenAPrimaryLocal,
+        setIsTokenAPrimaryLocal,
         isAmbient,
         depositSkew,
         isWithdrawTokenAFromDexChecked,
@@ -79,9 +79,24 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
     const [tokenBQtyLocal, setTokenBQtyLocal] = useState<number>(0);
 
     const tradeData = useAppSelector((state) => state.tradeData);
-    const [isTokenAPrimaryLocal, setIsTokenAPrimaryLocal] = useState<boolean>(
-        tradeData.isTokenAPrimaryRange,
-    );
+    // const [isTokenAPrimaryLocal, setIsTokenAPrimaryLocal] = useState<boolean>(
+    //     tradeData.isTokenAPrimaryRange,
+    // );
+
+    useEffect(() => {
+        // console.log(tradeData.isTokenAPrimaryRange);
+        // console.log({ isTokenAPrimaryLocal });
+        if (tradeData.isTokenAPrimaryRange !== isTokenAPrimaryLocal) {
+            if (tradeData.isTokenAPrimaryRange === true) {
+                setIsTokenAPrimaryLocal(true);
+                // console.log({ tokenAQtyLocal });
+                dispatch(setPrimaryQuantityRange(tokenAQtyLocal.toString()));
+            } else {
+                setIsTokenAPrimaryLocal(false);
+                dispatch(setPrimaryQuantityRange(tokenBQtyLocal.toString()));
+            }
+        }
+    }, [tradeData.isTokenAPrimaryRange]);
 
     const primaryQuantityRange = tradeData.primaryQuantityRange;
 
@@ -264,11 +279,13 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
     };
 
     useEffect(() => {
-        isTokenAPrimaryLocal ? handleTokenAQtyFieldUpdate() : handleTokenBQtyFieldUpdate();
+        tradeData.isTokenAPrimaryRange
+            ? handleTokenAQtyFieldUpdate()
+            : handleTokenBQtyFieldUpdate();
     }, [
         poolPriceNonDisplay,
         depositSkew,
-        isTokenAPrimaryLocal,
+        tradeData.isTokenAPrimaryRange,
         truncatedTokenABalance,
         truncatedTokenBBalance,
         tokenPair,
