@@ -60,7 +60,7 @@ import RangeExtraInfo from '../../../components/Trade/Range/RangeExtraInfo/Range
 import {
     setAdvancedHighTick,
     setAdvancedLowTick,
-    setIsTokenAPrimaryRange,
+    // setIsTokenAPrimaryRange,
 } from '../../../utils/state/tradeDataSlice';
 
 interface RangePropsIF {
@@ -230,28 +230,6 @@ export default function Range(props: RangePropsIF) {
     const isOutOfRange = rangeSpanAboveCurrentPrice < 0 || rangeSpanBelowCurrentPrice < 0;
     const isInvalidRange = rangeHighTick <= rangeLowTick;
     // const inRangeSpan = isOutOfRange ? 0 : rangeSpanAboveCurrentPrice + rangeSpanBelowCurrentPrice;
-
-    useEffect(() => {
-        if (isOutOfRange) {
-            if (rangeSpanAboveCurrentPrice < 0) {
-                if (isTokenABase) {
-                    dispatch(setIsTokenAPrimaryRange(true));
-                    setIsTokenAPrimaryLocal(true);
-                } else {
-                    dispatch(setIsTokenAPrimaryRange(false));
-                    setIsTokenAPrimaryLocal(false);
-                }
-            } else {
-                if (isTokenABase) {
-                    dispatch(setIsTokenAPrimaryRange(false));
-                    setIsTokenAPrimaryLocal(false);
-                } else {
-                    dispatch(setIsTokenAPrimaryRange(true));
-                    setIsTokenAPrimaryLocal(true);
-                }
-            }
-        }
-    }, [isOutOfRange]);
 
     useEffect(() => {
         if (isInvalidRange) {
@@ -817,6 +795,9 @@ export default function Range(props: RangePropsIF) {
         setRangeAllowed: setRangeAllowed,
         isTokenADisabled: isTokenADisabled,
         isTokenBDisabled: isTokenBDisabled,
+        isOutOfRange: isOutOfRange,
+        rangeSpanAboveCurrentPrice: rangeSpanAboveCurrentPrice,
+        rangeSpanBelowCurrentPrice: rangeSpanBelowCurrentPrice,
     };
 
     // props for <RangeWidth/> React element
