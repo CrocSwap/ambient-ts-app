@@ -273,37 +273,27 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
             } else {
                 if (rangeSpanAboveCurrentPrice < 0) {
                     if (isTokenABase) {
-                        // console.log({ tokenAQtyLocal });
                         if (tokenAQtyLocal && tokenAQtyLocal !== 0) {
-                            // console.log('firing 1');
                             dispatch(setIsTokenAPrimaryRange(true));
                             setTokenAQtyValue(tokenAQtyLocal);
-                            // dispatch(setPrimaryQuantityRange(tokenAQtyLocal.toString()));
                         }
                         // setTokenAQtyValue(0);
                     } else {
-                        // console.log('firing 2');
-                        if (tokenBQtyLocal && tokenBQtyLocal !== 0) {
-                            // console.log('firing 1');
-                            dispatch(setIsTokenAPrimaryRange(false));
-                            setTokenBQtyValue(tokenBQtyLocal);
-                            // dispatch(setPrimaryQuantityRange(tokenBQtyLocal.toString()));
+                        if (tokenAQtyLocal && tokenAQtyLocal !== 0) {
+                            dispatch(setIsTokenAPrimaryRange(true));
+                            setTokenAQtyValue(tokenAQtyLocal);
                         }
                     }
                 } else {
                     if (isTokenABase) {
-                        // console.log('firing 3');
-                        if (tokenBQtyLocal) {
-                            dispatch(setIsTokenAPrimaryRange(false));
-                            setTokenBQtyValue(tokenBQtyLocal);
-                            // dispatch(setPrimaryQuantityRange(tokenBQtyLocal.toString()));
-                        }
-                    } else {
-                        // console.log('firing 4');
-                        if (tokenAQtyLocal) {
+                        if (tokenAQtyLocal && tokenAQtyLocal !== 0) {
                             dispatch(setIsTokenAPrimaryRange(true));
                             setTokenAQtyValue(tokenAQtyLocal);
-                            // dispatch(setPrimaryQuantityRange(tokenAQtyLocal.toString()));
+                        }
+                    } else {
+                        if (tokenAQtyLocal && tokenAQtyLocal !== 0) {
+                            dispatch(setIsTokenAPrimaryRange(true));
+                            setTokenAQtyValue(tokenAQtyLocal);
                         }
                     }
                 }
@@ -326,33 +316,24 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
             } else {
                 if (rangeSpanAboveCurrentPrice < 0) {
                     if (isTokenABase) {
-                        // console.log({ tokenAQtyLocal });
                         if (tokenAQtyLocal) {
-                            // console.log('firing 1');
                             dispatch(setIsTokenAPrimaryRange(true));
                             setTokenAQtyValue(tokenAQtyLocal);
                         }
-                        // setTokenAQtyValue(0);
                     } else {
-                        // console.log('firing 2');
                         if (tokenBQtyLocal) {
-                            // console.log('firing 1');
                             dispatch(setIsTokenAPrimaryRange(false));
                             setTokenBQtyValue(tokenBQtyLocal);
                         }
                     }
                 } else {
                     if (isTokenABase) {
-                        // console.log('firing 3');
                         if (tokenBQtyLocal) {
-                            // console.log('firing 1');
                             dispatch(setIsTokenAPrimaryRange(false));
                             setTokenBQtyValue(tokenBQtyLocal);
                         }
                     } else {
-                        // console.log('firing 4');
                         if (tokenAQtyLocal) {
-                            // console.log('firing 1');
                             dispatch(setIsTokenAPrimaryRange(true));
                             setTokenAQtyValue(tokenAQtyLocal);
                         }
