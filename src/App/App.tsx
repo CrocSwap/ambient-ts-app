@@ -381,7 +381,46 @@ export default function App() {
                 // requestHeaders: headers,
             ).then((data) => {
                 if (JSON.stringify(graphData.positionsByUser) !== JSON.stringify(data.user)) {
-                    dispatch(setPositionsByUser(data.user));
+                    const userData = data.user;
+                    const allPositions = userData.positions;
+
+                    const updatedAllPositionsArray = [];
+
+                    for (let index = 0; index < allPositions.length; index++) {
+                        const position = allPositions[index];
+                        const baseTokenAddress = position.pool.base;
+                        if (baseTokenAddress === contractAddresses.ZERO_ADDR) {
+                            position.baseTokenSymbol = 'ETH';
+                            position.quoteTokenSymbol = 'DAI';
+                            position.tokenAQtyDisplay = '1';
+                            position.tokenBQtyDisplay = '2000';
+                            if (!position.ambient) {
+                                position.lowRangeDisplay = '1500';
+                                position.highRangeDisplay = '2500';
+                            }
+                        } else if (
+                            baseTokenAddress.toLowerCase() ===
+                            '0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa'.toLowerCase()
+                        ) {
+                            position.baseTokenSymbol = 'DAI';
+                            position.quoteTokenSymbol = 'USDC';
+                            position.tokenAQtyDisplay = '101';
+                            position.tokenBQtyDisplay = '100';
+                            if (!position.ambient) {
+                                position.lowRangeDisplay = '0.9';
+                                position.highRangeDisplay = '1.1';
+                            }
+                        } else {
+                            position.baseTokenSymbol = 'unknownBase';
+                            position.quoteTokenSymbol = 'unknownQuote';
+                        }
+
+                        updatedAllPositionsArray.push(position);
+                    }
+                    userData.positions = updatedAllPositionsArray;
+                    if (JSON.stringify(graphData.positionsByUser) !== JSON.stringify(userData)) {
+                        dispatch(setPositionsByUser(userData));
+                    }
                 }
             });
         }
