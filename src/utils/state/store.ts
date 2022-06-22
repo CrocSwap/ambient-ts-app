@@ -1,11 +1,15 @@
 import { configureStore } from '@reduxjs/toolkit';
 import tradeDataReducer from './tradeDataSlice';
 import graphDataReducer from './graphDataSlice';
+import tokens from '../../state/tokens/reducer';
+import pools from '../../state/pools/reducer';
 
 export const store = configureStore({
     reducer: {
         tradeData: tradeDataReducer,
         graphData: graphDataReducer,
+        tokens,
+        pools,
     },
 });
 

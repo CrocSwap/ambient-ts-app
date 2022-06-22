@@ -1,9 +1,14 @@
 import styles from './AnalyticsTabs.module.css';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import TabContent from '../../Global/Tabs/TabContent/TabContent';
 import TabNavItem from '../../Global/Tabs/TabNavItem/TabNavItem';
-import Positions from '../../Trade/Positions/Positions';
 import { BiSearch } from 'react-icons/bi';
+import TopTokens from '../../TopTokens/TopTokens';
+import Pools from '../../Pools/Pools';
+import TopRanges from '../../TopRanges/TopRanges';
+import { useAllTokenData } from '../../../state/tokens/hooks';
+import { notEmpty } from '../../../utils';
+import { useAllPoolData } from '../../../state/pools/hooks';
 
 export default function AnalyticsTabs() {
     const [activeTab, setActiveTab] = useState('tab1');
@@ -14,6 +19,21 @@ export default function AnalyticsTabs() {
         { title: 'Trending Pools', id: 'tab3' },
         { title: 'Top Ranges', id: 'tab4' },
     ];
+
+    const allTokens = useAllTokenData();
+
+    const tokens = useMemo(() => {
+        return Object.values(allTokens)
+            .map((t) => t.data)
+            .filter(notEmpty);
+    }, [allTokens]);
+
+    const allPoolData = useAllPoolData();
+    const pools = useMemo(() => {
+        return Object.values(allPoolData)
+            .map((p) => p.data)
+            .filter(notEmpty);
+    }, [allPoolData]);
 
     const searchContainer = (
         <div className={styles.search_container}>
@@ -42,16 +62,16 @@ export default function AnalyticsTabs() {
             </div>
             <div className={styles.tabs_outlet}>
                 <TabContent id='tab1' activeTab={activeTab}>
-                    <Positions portfolio />
+                    <TopTokens tokens={tokens} />
                 </TabContent>
                 <TabContent id='tab2' activeTab={activeTab}>
-                    {/* <p>Exchange Component</p> */}
+                    <Pools pools={pools} propType='top' />
                 </TabContent>
                 <TabContent id='tab3' activeTab={activeTab}>
-                    {/* <p>Position component</p> */}
+                    <Pools pools={pools} propType='trend' />
                 </TabContent>
                 <TabContent id='tab4' activeTab={activeTab}>
-                    {/* <p>Limit Orders component</p> */}
+                    <TopRanges />
                 </TabContent>
             </div>
         </div>
