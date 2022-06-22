@@ -34,7 +34,7 @@ export default function SnackbarComponent(props: SnackbarProps) {
     };
     return (
         <motion.div>
-            <Snackbar open={props.openSnackbar} autoHideDuration={4000} onClose={handleClose}>
+            <Snackbar open={props.openSnackbar} autoHideDuration={8000} onClose={handleClose}>
                 <motion.div
                     initial={{ scale: 0.5 }}
                     animate={{ scale: 1 }}

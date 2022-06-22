@@ -17,6 +17,10 @@ import {
     getTokenAllowance,
 } from '@crocswap-libs/sdk';
 
+import { receiptData } from '../utils/state/receiptDataSlice';
+
+import SnackbarComponent from '../components/Global/SnackbarComponent/SnackbarComponent';
+
 /** ***** Import JSX Files *******/
 import PageHeader from './components/PageHeader/PageHeader';
 import Sidebar from './components/Sidebar/Sidebar';
@@ -93,6 +97,40 @@ export default function App() {
     const [lastBlockNumber, setLastBlockNumber] = useState<number>(0);
 
     const tradeData = useAppSelector((state) => state.tradeData);
+
+    const receiptData = useAppSelector((state) => state.receiptData) as receiptData;
+
+    const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
+
+    const lastReceipt = receiptData?.sessionReceipts[receiptData.sessionReceipts.length - 1];
+
+    const isLastReceiptSuccess = lastReceipt?.isTxSuccess?.toString();
+
+    let snackMessage = '';
+
+    if (lastReceipt) {
+        if (lastReceipt.receiptType === 'swap') {
+            snackMessage = `You Successfully Swapped ${lastReceipt.tokenAQtyUnscaled} ${lastReceipt.tokenASymbol} for ${lastReceipt.tokenBQtyUnscaled} ${lastReceipt.tokenBSymbol}`;
+        } else {
+            snackMessage = 'unknown';
+        }
+    }
+
+    const snackbarContent = (
+        <SnackbarComponent
+            severity={isLastReceiptSuccess ? 'info' : 'warning'}
+            setOpenSnackbar={setOpenSnackbar}
+            openSnackbar={openSnackbar}
+        >
+            {snackMessage}
+        </SnackbarComponent>
+    );
+
+    useEffect(() => {
+        if (lastReceipt) {
+            setOpenSnackbar(true);
+        }
+    }, [JSON.stringify(lastReceipt)]);
 
     useEffect(() => {
         (async () => {
@@ -666,6 +704,7 @@ export default function App() {
                         <Route path='/404' element={<NotFound />} />
                     </Routes>
                 </div>
+                {snackbarContent}
             </div>
             <PageFooter lastBlockNumber={lastBlockNumber} />
         </>
