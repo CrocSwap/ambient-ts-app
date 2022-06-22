@@ -39,19 +39,14 @@ export default function initializeUserLocalStorage() {
         userUpdated = true;
     }
 
-    // // if user object does not have imported tokens, initialize with tokens
-    // // ... from default lists (see defaultTokenLists.ts file)
+    // if there is an array of active token lists in local storage but no array
+    // of tokens on the user object, then create an array of tokens from any
+    // lists which are marked as default in defaultTokenLists.ts
     if ((!user.tokens || !user.tokens.length) && user.activeTokenLists) {
-
-    // get the active token lists
-    // iterate over the .tokens value in each list
-    // filter out the ones which match the current chain
-
-    const tokenLists = JSON.parse(localStorage.getItem('allTokenLists') as string)
-        .filter((tokenList:TokenListIF) => user.activeTokenLists.includes(tokenList.uri))
-        .map((tokenList:TokenListIF) => tokenList.tokens).flat();
-    console.log(tokenLists);
-    //     userUpdated = true;
+        user.tokens = JSON.parse(localStorage.getItem('allTokenLists') as string)
+            .filter((tokenList:TokenListIF) => user.activeTokenLists.includes(tokenList.uri))
+            .map((tokenList:TokenListIF) => tokenList.tokens).flat();
+        userUpdated = true;
     }
 
     if (userUpdated) {

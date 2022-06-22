@@ -82,7 +82,7 @@ export default function App() {
             if (user.tokens) {
                 // if imported tokens are listed, hold in local state
                 setImportedTokens(
-                    user.importedTokens.filter(
+                    user.tokens.filter(
                         (tkn: TokenIF) => tkn.chainId === parseInt(chainId ?? '0x2a'),
                     ),
                 );
