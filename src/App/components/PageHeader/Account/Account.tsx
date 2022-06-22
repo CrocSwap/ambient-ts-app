@@ -11,6 +11,8 @@ import { BsBook } from 'react-icons/bs';
 import { HiOutlineDocumentText } from 'react-icons/hi';
 import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
 import SnackbarComponent from '../../../../components/Global/SnackbarComponent/SnackbarComponent';
+import DropdownMenu from '../DropdownMenu/DropdownMenu';
+import NavItem from '../NavItem/NavItem';
 
 interface IAccountProps {
     nativeBalance: string;
@@ -130,6 +132,9 @@ export default function Account(props: IAccountProps): React.ReactElement<IAccou
             <div className={styles.more} aria-describedby={popoverId} onClick={handlePopoverClick}>
                 <FiMoreHorizontal size={20} color='#CDC1FF' />
             </div>
+            <NavItem icon={<FiMoreHorizontal />}>
+                <DropdownMenu />
+            </NavItem>
 
             <Popover
                 id={popoverId}
