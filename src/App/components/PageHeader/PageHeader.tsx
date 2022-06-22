@@ -170,6 +170,7 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
                 {isAuthenticated && isWeb3Enabled && <NetworkSelector />}
                 <Account {...accountProps} />
             </div>
+
             {modalOrNull}
         </header>
     );
