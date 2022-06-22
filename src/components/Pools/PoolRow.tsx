@@ -54,9 +54,7 @@ export default function PoolRow(props: PoolProps) {
             </td>
             <td></td>
             <td></td>
-            <td data-column='symbol' className={styles.apy}>
-                {formatDollarAmount(poolData.tvlUSD)}
-            </td>
+            <td data-column='symbol'>{formatDollarAmount(poolData.tvlUSD)}</td>
             <td data-column='Range Status'>{formatDollarAmount(poolData.volumeUSD)}</td>
             <td data-column='Range Status'>{formatDollarAmount(poolData.volumeUSDWeek)}</td>
         </tr>
