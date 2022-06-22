@@ -42,7 +42,11 @@ export default function initializeUserLocalStorage() {
     // if there is an array of active token lists in local storage but no array
     // of tokens on the user object, then create an array of tokens from any
     // lists which are marked as default in defaultTokenLists.ts
-    if ((!user.tokens || !user.tokens.length) && user.activeTokenLists) {
+    if (
+        (!user.tokens || !user.tokens.length)
+        && user.activeTokenLists
+        && localStorage.allTokenLists
+    ) {
         user.tokens = JSON.parse(localStorage.getItem('allTokenLists') as string)
             .filter((tokenList:TokenListIF) => user.activeTokenLists.includes(tokenList.uri))
             .map((tokenList:TokenListIF) => tokenList.tokens).flat();
