@@ -1,7 +1,7 @@
 import { defaultTokenLists } from '../../utils/data/defaultTokenLists';
 import { tokenListURIs } from '../../utils/data/tokenURIs';
 // import { ambientTokenList } from '../../utils/data/ambientTokenList';
-// import { TokenListIF } from '../../utils/interfaces/exports';
+import { TokenListIF } from '../../utils/interfaces/exports';
 
 export default function initializeUserLocalStorage() {
     // boolean to control whether local storage for user data needs updating
@@ -41,10 +41,18 @@ export default function initializeUserLocalStorage() {
 
     // // if user object does not have imported tokens, initialize with tokens
     // // ... from default lists (see defaultTokenLists.ts file)
-    // if (!user.importedTokens && user.activeTokenLists) {
-    //     user.importedTokens = user.activeTokenLists.map((list: TokenListIF) => list.tokens).flat();
+    if ((!user.tokens || !user.tokens.length) && user.activeTokenLists) {
+
+    // get the active token lists
+    // iterate over the .tokens value in each list
+    // filter out the ones which match the current chain
+
+    const tokenLists = JSON.parse(localStorage.getItem('allTokenLists') as string)
+        .filter((tokenList:TokenListIF) => user.activeTokenLists.includes(tokenList.uri))
+        .map((tokenList:TokenListIF) => tokenList.tokens).flat();
+    console.log(tokenLists);
     //     userUpdated = true;
-    // }
+    }
 
     if (userUpdated) {
         localStorage.setItem('user', JSON.stringify(user));

@@ -79,7 +79,7 @@ export default function App() {
             // if user object exists, pull it
             const user = JSON.parse(localStorage.getItem('user') as string);
             // see if user object has a list of imported tokens
-            if (user.importedTokens) {
+            if (user.tokens) {
                 // if imported tokens are listed, hold in local state
                 setImportedTokens(
                     user.importedTokens.filter(
@@ -162,7 +162,7 @@ export default function App() {
 
     // useEffect to set baseTokenAddress and quoteTokenAddress when pair changes
     useEffect(() => {
-        console.log({ tokenPair });
+        // console.log({ tokenPair });
         // reset rtk values for user specified range in ticks
         dispatch(setAdvancedLowTick(0));
         dispatch(setAdvancedHighTick(0));

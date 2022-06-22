@@ -4,6 +4,7 @@ import TokenSelect from '../TokenSelect/TokenSelect';
 import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
 import Button from '../../Global/Button/Button';
 import TokenList from '../../Global/TokenList/TokenList';
+import searchTokens from './searchTokens';
 
 interface TokenSelectContainerPropsIF {
     tokenPair: TokenPairIF;
@@ -30,14 +31,14 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
     // const [ showManageTokenListContent, setShowManageTokenListContent] = useState(false)
 
     // console.log(tokenToUpdate);
-    const [searchTerm, setSearchTerm] = useState('');
+    const [searchTerm] = useState('');
 
     const searchInput = (
         <div className={styles.search_input}>
             <input
                 type='text'
                 placeholder='Search name or paste address'
-                onChange={(event) => setSearchTerm(event.target.value)}
+                onChange={(event) => searchTokens(event.target.value)}
             />
         </div>
     );
