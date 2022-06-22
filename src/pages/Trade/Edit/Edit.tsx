@@ -10,6 +10,7 @@ import Modal from '../../../components/Global/Modal/Modal';
 import ConfirmEditModal from '../../../components/Trade/Edit/ConfirmEditModal/ConfirmEditModal';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import { useState, useEffect } from 'react';
+import EditDenominationSwitch from '../../../components/Trade/Edit/EditDenominationSwitch/EditDenominationSwitch';
 // interface EditProps {
 //     children: React.ReactNode;
 // }
@@ -76,6 +77,7 @@ export default function Edit() {
         <div className={styles.editContainer}>
             <EditHeader positionHash={positionHash} />
             <div className={styles.edit_content}>
+                <EditDenominationSwitch />
                 <CurrencyDisplayContainer />
                 <Divider />
                 <MinMaxPrice
