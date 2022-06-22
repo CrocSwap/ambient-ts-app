@@ -31,11 +31,12 @@ import styles from './Swap.module.css';
 import { handleParsedReceipt } from '../../utils/HandleParsedReceipt';
 import truncateDecimals from '../../utils/data/truncateDecimals';
 import { isTransactionReplacedError, TransactionError } from '../../utils/TransactionError';
-import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { useTradeData } from '../Trade/Trade';
+import { useAppSelector, useAppDispatch } from '../../utils/hooks/reduxToolkit';
 import { TokenIF } from '../../utils/interfaces/exports';
 import { useModal } from '../../components/Global/Modal/useModal';
 import { useRelativeModal } from '../../components/Global/RelativeModal/useRelativeModal';
+import { addReceipt } from '../../utils/state/receiptDataSlice';
 
 interface ISwapProps {
     importedTokens: Array<TokenIF>;
@@ -72,6 +73,8 @@ export default function Swap(props: ISwapProps) {
         setRecheckTokenAApproval,
     } = props;
     const [isModalOpen, openModal, closeModal] = useModal();
+
+    const dispatch = useAppDispatch();
 
     const [isRelativeModalOpen, closeRelativeModal] = useRelativeModal();
 
@@ -246,8 +249,18 @@ export default function Swap(props: ISwapProps) {
                     );
                 }
             }
-            if (parsedReceipt)
-                handleParsedReceipt(Moralis, 'swap', newTransactionHash, parsedReceipt);
+            if (parsedReceipt) {
+                const unifiedReceipt = await handleParsedReceipt(
+                    Moralis,
+                    'swap',
+                    newTransactionHash,
+                    parsedReceipt,
+                );
+                if (unifiedReceipt) {
+                    dispatch(addReceipt(unifiedReceipt));
+                    console.log({ unifiedReceipt });
+                }
+            }
         }
     }
 

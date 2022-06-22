@@ -1,11 +1,13 @@
 import { configureStore } from '@reduxjs/toolkit';
 import tradeDataReducer from './tradeDataSlice';
 import graphDataReducer from './graphDataSlice';
+import receiptDataReducer from './receiptDataSlice';
 
 export const store = configureStore({
     reducer: {
         tradeData: tradeDataReducer,
         graphData: graphDataReducer,
+        receiptData: receiptDataReducer,
     },
 });
 
