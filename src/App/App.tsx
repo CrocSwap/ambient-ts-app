@@ -111,6 +111,8 @@ export default function App() {
     if (lastReceipt) {
         if (lastReceipt.receiptType === 'swap') {
             snackMessage = `You Successfully Swapped ${lastReceipt.tokenAQtyUnscaled} ${lastReceipt.tokenASymbol} for ${lastReceipt.tokenBQtyUnscaled} ${lastReceipt.tokenBSymbol}`;
+        } else if (lastReceipt.receiptType === 'mint') {
+            snackMessage = `You Successfully Minted a Position with ${lastReceipt.tokenAQtyUnscaled} ${lastReceipt.tokenASymbol} and ${lastReceipt.tokenBQtyUnscaled} ${lastReceipt.tokenBSymbol}`;
         } else {
             snackMessage = 'unknown';
         }

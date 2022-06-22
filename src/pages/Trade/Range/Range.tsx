@@ -63,6 +63,7 @@ import {
     setSimpleRangeWidth,
     // setIsTokenAPrimaryRange,
 } from '../../../utils/state/tradeDataSlice';
+import { addReceipt } from '../../../utils/state/receiptDataSlice';
 
 interface RangePropsIF {
     importedTokens: Array<TokenIF>;
@@ -711,8 +712,18 @@ export default function Range(props: RangePropsIF) {
                     );
                 }
             } finally {
-                if (parsedReceipt)
-                    handleParsedReceipt(Moralis, 'mint', newTransactionHash, parsedReceipt);
+                if (parsedReceipt) {
+                    const unifiedReceipt = await handleParsedReceipt(
+                        Moralis,
+                        'mint',
+                        newTransactionHash,
+                        parsedReceipt,
+                    );
+                    if (unifiedReceipt) {
+                        dispatch(addReceipt(unifiedReceipt));
+                        console.log({ unifiedReceipt });
+                    }
+                }
                 let posHash;
                 if (isAmbient) {
                     posHash = ambientPosSlot(
