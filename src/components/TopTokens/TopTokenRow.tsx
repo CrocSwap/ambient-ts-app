@@ -37,7 +37,10 @@ export default function TopTokenRow(props: TokenProps) {
             <td data-column='APY' className={styles.topToken_range}>
                 {formatDollarAmount(tokenData.priceUSD)}
             </td>
-            <td data-column='Range Status' className={styles.apy}>
+            <td
+                data-column='Range Status'
+                className={tokenData.priceUSDChange < 0 ? styles.lowPriceChange : styles.apy}
+            >
                 {Math.abs(tokenData.priceUSDChange).toFixed(2)}%
             </td>
             <td data-column='Range Status'>{formatDollarAmount(tokenData.volumeUSD)}</td>
