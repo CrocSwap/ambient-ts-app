@@ -1,5 +1,4 @@
 // START: Import React and Dongles
-import { FiSettings } from 'react-icons/fi';
 
 // START: Import React Functional Components
 import ContentHeader from '../../../Global/ContentHeader/ContentHeader';
