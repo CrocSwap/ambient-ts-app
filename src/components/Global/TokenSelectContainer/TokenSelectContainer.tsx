@@ -22,24 +22,21 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
     const {
         tokenPair,
         tokensBank,
-        chainId,
+        // chainId,
         tokenToUpdate,
         closeModal,
         reverseTokens,
         showManageTokenListContent,
         setShowManageTokenListContent,
     } = props;
-    console.log(chainId);
     
     const [searchTerm] = useState('');
 
     // TODO:  @Emily add the setter function back in to the useState() call
-    const [tL] = useState(
-        JSON.parse(localStorage.getItem('user') as string).tokens
-            .filter((tkn:TokenIF) => tkn.chainId === parseInt(chainId))
-    );
-
-    console.log(tL);
+    // const [tL] = useState(
+    //     JSON.parse(localStorage.getItem('user') as string).tokens
+    //         .filter((tkn:TokenIF) => tkn.chainId === parseInt(chainId))
+    // );
 
     const searchInput = (
         <div className={styles.search_input}>
