@@ -11,19 +11,23 @@ interface TokenProps {
 export default function TopTokenRow(props: TokenProps) {
     const tokenData: TokenData = props.token;
 
-    const getTokenLogoURL = () => {
+    function getTokenLogoURL() {
         const checkSummed = isAddress(tokenData.address);
-        if (checkSummed && tokenData.address) {
-            return `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/${checkSummed}/logo.png`;
-        }
-
-        return 'http://www.w3.org/2000/svg';
-    };
+        return `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/${checkSummed}/logo.png`;
+    }
 
     const tokenImages = (
         <>
             <td data-column='tokens' className={styles.tokens}>
-                <img src={getTokenLogoURL()} alt='token' width='30px' />
+                <img
+                    src={getTokenLogoURL()}
+                    onError={({ currentTarget }) => {
+                        currentTarget.onerror = null;
+                        currentTarget.src = '/static/media/ambient_logo.55c57a31.svg';
+                    }}
+                    alt='token'
+                    width='30px'
+                />
                 {tokenData.name} ({tokenData.symbol})
             </td>
         </>
