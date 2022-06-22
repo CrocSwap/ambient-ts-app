@@ -7,6 +7,7 @@ import ContentHeader from '../../../Global/ContentHeader/ContentHeader';
 // START: Import Local Files
 import styles from './LimitHeader.module.css';
 import { TokenPairIF } from '../../../../utils/interfaces/exports';
+import settingsIcon from '../../../../assets/images/icons/settings.svg';
 
 // interface for component props
 interface LimitHeaderPropsIF {
@@ -25,7 +26,9 @@ export default function LimitHeader(props: LimitHeaderPropsIF) {
                 {isDenomBase ? tokenPair.dataTokenA.symbol : tokenPair.dataTokenB.symbol} /{' '}
                 {isDenomBase ? tokenPair.dataTokenB.symbol : tokenPair.dataTokenA.symbol}
             </div>
-            <FiSettings />
+            <div>
+                <img src={settingsIcon} alt='settings' />
+            </div>
         </ContentHeader>
     );
 }
