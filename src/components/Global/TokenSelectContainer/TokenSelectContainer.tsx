@@ -10,7 +10,7 @@ interface TokenSelectContainerPropsIF {
     tokenPair: TokenPairIF;
     tokensBank: Array<TokenIF>;
     tokenList?: Array<TokenIF>;
-    chainId?: string;
+    chainId: string;
     tokenToUpdate: string;
     closeModal: () => void;
     reverseTokens: () => void;
@@ -22,16 +22,24 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
     const {
         tokenPair,
         tokensBank,
+        chainId,
         tokenToUpdate,
         closeModal,
         reverseTokens,
         showManageTokenListContent,
         setShowManageTokenListContent,
     } = props;
-    // const [ showManageTokenListContent, setShowManageTokenListContent] = useState(false)
-
-    // console.log(tokenToUpdate);
+    console.log(chainId);
+    
     const [searchTerm] = useState('');
+
+    // TODO:  @Emily add the setter function back in to the useState() call
+    const [tL] = useState(
+        JSON.parse(localStorage.getItem('user') as string).tokens
+            .filter((tkn:TokenIF) => tkn.chainId === parseInt(chainId))
+    );
+
+    console.log(tL);
 
     const searchInput = (
         <div className={styles.search_input}>
