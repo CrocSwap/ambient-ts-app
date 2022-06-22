@@ -55,6 +55,7 @@ interface ISwapProps {
     poolPriceDisplay: number;
     tokenAAllowance: string;
     setRecheckTokenAApproval: React.Dispatch<React.SetStateAction<boolean>>;
+    chainId: string;
 }
 
 export default function Swap(props: ISwapProps) {
@@ -71,6 +72,7 @@ export default function Swap(props: ISwapProps) {
         poolPriceDisplay,
         tokenAAllowance,
         setRecheckTokenAApproval,
+        chainId
     } = props;
     const [isModalOpen, openModal, closeModal] = useModal();
 
@@ -78,7 +80,7 @@ export default function Swap(props: ISwapProps) {
 
     const [isRelativeModalOpen, closeRelativeModal] = useRelativeModal();
 
-    const { Moralis, chainId, enableWeb3, isWeb3Enabled, authenticate, isAuthenticated } =
+    const { Moralis, enableWeb3, isWeb3Enabled, authenticate, isAuthenticated } =
         useMoralis();
     // get URL pathway for user relative to index
     const { pathname } = useLocation();

@@ -80,6 +80,7 @@ interface RangePropsIF {
     setRecheckTokenAApproval: React.Dispatch<React.SetStateAction<boolean>>;
     tokenBAllowance: string;
     setRecheckTokenBApproval: React.Dispatch<React.SetStateAction<boolean>>;
+    chainId: string;
 }
 
 export default function Range(props: RangePropsIF) {
@@ -97,6 +98,7 @@ export default function Range(props: RangePropsIF) {
         tokenBAllowance,
         setRecheckTokenBApproval,
         gasPriceinGwei,
+        chainId
     } = props;
     const [isModalOpen, openModal, closeModal] = useModal();
 
@@ -111,7 +113,6 @@ export default function Range(props: RangePropsIF) {
         Moralis,
         user,
         account,
-        chainId,
         isAuthenticated,
         isWeb3Enabled,
         authenticate,

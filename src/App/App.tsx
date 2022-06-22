@@ -578,6 +578,7 @@ export default function App() {
         tokenAAllowance: tokenAAllowance,
         setRecheckTokenAApproval: setRecheckTokenAApproval,
         // tokenBAllowance: tokenBAllowance,
+        chainId: chainId ?? '0x2a'
     };
 
     // props for <Swap/> React element on trade route
@@ -596,6 +597,7 @@ export default function App() {
         setRecheckTokenAApproval: setRecheckTokenAApproval,
         tokenAAllowance: tokenAAllowance,
         // tokenBAllowance: tokenBAllowance,
+        chainId: chainId ?? '0x2a'
     };
 
     // props for <Limit/> React element on trade route
@@ -615,6 +617,7 @@ export default function App() {
         poolPriceNonDisplay: poolPriceNonDisplay,
         setRecheckTokenAApproval: setRecheckTokenAApproval,
         tokenAAllowance: tokenAAllowance,
+        chainId: chainId ?? '0x2a'
     };
 
     // props for <Range/> React element
@@ -633,6 +636,7 @@ export default function App() {
         tokenBBalance: tokenBBalance,
         tokenBAllowance: tokenBAllowance,
         setRecheckTokenBApproval: setRecheckTokenBApproval,
+        chainId: chainId ?? '0x2a'
     };
 
     // props for <Sidebar/> React element

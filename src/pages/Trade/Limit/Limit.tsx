@@ -56,6 +56,7 @@ interface LimitPropsIF {
     poolPriceNonDisplay: number;
     tokenAAllowance: string;
     setRecheckTokenAApproval: React.Dispatch<React.SetStateAction<boolean>>;
+    chainId: string,
 }
 
 export default function Limit(props: LimitPropsIF) {
@@ -72,10 +73,11 @@ export default function Limit(props: LimitPropsIF) {
         poolPriceNonDisplay,
         tokenAAllowance,
         setRecheckTokenAApproval,
+        chainId
     } = props;
     const { tradeData } = useTradeData();
     const dispatch = useAppDispatch();
-    const { chainId, enableWeb3, isWeb3Enabled, authenticate, isAuthenticated } = useMoralis();
+    const { enableWeb3, isWeb3Enabled, authenticate, isAuthenticated } = useMoralis();
     const [isModalOpen, openModal, closeModal] = useModal();
     const [limitAllowed, setLimitAllowed] = useState<boolean>(false);
 
