@@ -19,20 +19,23 @@ export default function TopTokenRow(props: TokenProps) {
     const tokenImages = (
         <>
             <td data-column='tokens' className={styles.tokens}>
-                <img
-                    className={styles.token_list}
-                    src={getTokenLogoURL()}
-                    onError={({ currentTarget }) => {
-                        currentTarget.onerror = null;
-                        currentTarget.src = '/static/media/ambient_logo.55c57a31.svg';
-                    }}
-                    alt='token'
-                    width='30px'
-                />
-
-                <span className={styles.token_list_text}>
-                    {tokenData.name} ({tokenData.symbol})
-                </span>
+                <td>
+                    <img
+                        className={styles.token_list}
+                        src={getTokenLogoURL()}
+                        onError={({ currentTarget }) => {
+                            currentTarget.onerror = null;
+                            currentTarget.src = '/static/media/ambient_logo.55c57a31.svg';
+                        }}
+                        alt='token'
+                        width='30px'
+                    />
+                </td>
+                <td>
+                    <span className={styles.token_list_text}>
+                        {tokenData.name} ({tokenData.symbol})
+                    </span>
+                </td>
             </td>
         </>
     );
