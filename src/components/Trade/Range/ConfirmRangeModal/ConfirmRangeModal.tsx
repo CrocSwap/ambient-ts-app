@@ -160,7 +160,7 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalProps) {
     // CONFIRMATION LOGIC STARTS HERE
     const confirmSendMessage = (
         <WaitingConfirmation
-            content={`Depositing Swapping ${tokenAQty} ${tokenA.symbol} for ${tokenBQty} ${tokenB.symbol}`}
+            content={`Minting a Position with ${tokenAQty} ${tokenA.symbol} and ${tokenBQty} ${tokenB.symbol}`}
         />
     );
 
