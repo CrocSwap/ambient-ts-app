@@ -1,5 +1,6 @@
 import styles from './EditPriceInput.module.css';
 import { FaMinus, FaPlus } from 'react-icons/fa';
+import { ChangeEvent } from 'react';
 
 interface EditPriceInputProps {
     disable?: boolean;
@@ -7,16 +8,31 @@ interface EditPriceInputProps {
     title: string;
     percentageDifference: number;
     value: string;
+    handleChangeEvent: (evt: ChangeEvent<HTMLInputElement>) => void;
+    onBlur: () => void;
+    increaseTick: () => void;
+    decreaseTick: () => void;
 }
 
 export default function EditPriceInput(props: EditPriceInputProps) {
-    const { disable, fieldId, title, percentageDifference, value } = props;
+    const {
+        disable,
+        fieldId,
+        title,
+        percentageDifference,
+        value,
+        onBlur,
+        increaseTick,
+        decreaseTick,
+        handleChangeEvent,
+    } = props;
 
     const priceInput = (
         <input
             id={`${fieldId}-price-input-quantity`}
             className={styles.price_quantity}
             type='text'
+            onChange={(event) => handleChangeEvent(event)}
             inputMode='decimal'
             autoComplete='off'
             autoCorrect='off'
