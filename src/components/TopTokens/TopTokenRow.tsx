@@ -18,7 +18,7 @@ export default function TopTokenRow(props: TokenProps) {
 
     const tokenImages = (
         <>
-            <td data-column='tokens' className={styles.tokens}>
+            <td data-column='name' className={styles.tokens} width={300}>
                 <td>
                     <img
                         className={styles.token_list}
