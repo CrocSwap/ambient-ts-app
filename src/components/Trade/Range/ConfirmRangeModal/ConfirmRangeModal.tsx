@@ -75,7 +75,7 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalProps) {
                     {dataTokenA.symbol}/{dataTokenB.symbol}
                 </span>
             </div>
-            <RangeStatus isInRange={isInRange} />
+            <RangeStatus isInRange={isInRange} isAmbient={isAmbient} />
         </section>
     );
     // FEE TIER DISPLAY
@@ -107,19 +107,23 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalProps) {
         </section>
     );
 
+    const selectedRangeOrNull = !isAmbient ? (
+        <SelectedRange
+            minPriceDisplay={minPriceDisplay}
+            maxPriceDisplay={maxPriceDisplay}
+            spotPriceDisplay={spotPriceDisplay}
+            tokenPair={tokenPair}
+            denominationsInBase={denominationsInBase}
+            isTokenABase={isTokenABase}
+            isAmbient={isAmbient}
+        />
+    ) : null;
+
     const fullTxDetails = (
         <>
             {rangeHeader}
             {feeTierDisplay}
-            <SelectedRange
-                minPriceDisplay={minPriceDisplay}
-                maxPriceDisplay={maxPriceDisplay}
-                spotPriceDisplay={spotPriceDisplay}
-                tokenPair={tokenPair}
-                denominationsInBase={denominationsInBase}
-                isTokenABase={isTokenABase}
-                isAmbient={isAmbient}
-            />
+            {selectedRangeOrNull}
         </>
     );
 

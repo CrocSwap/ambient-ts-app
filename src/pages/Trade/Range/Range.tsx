@@ -884,7 +884,10 @@ export default function Range(props: RangePropsIF) {
         </>
     );
     const confirmSwapModalOrNull = isModalOpen ? (
-        <Modal onClose={closeModal} title='Range Confirmation'>
+        <Modal
+            onClose={closeModal}
+            title={isAmbient ? 'Ambient Confirmation' : 'Range Confirmation'}
+        >
             <ConfirmRangeModal {...rangeModalProps} />
         </Modal>
     ) : null;

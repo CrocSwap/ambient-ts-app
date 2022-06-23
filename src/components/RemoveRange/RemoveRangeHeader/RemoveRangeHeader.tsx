@@ -12,7 +12,7 @@ export default function RemoveRangeHeader() {
                 <img src='https://cryptologos.cc/logos/usd-coin-usdc-logo.png' alt='' />
                 <span>ETH / USDC</span>
             </div>
-            <RangeStatus isInRange />
+            <RangeStatus isInRange isAmbient />
         </div>
     );
 }
