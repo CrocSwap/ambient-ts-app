@@ -103,6 +103,24 @@ export default function Edit() {
         minPrice: position?.lowRangeDisplay,
         maxPrice: position?.highRangeDisplay,
     };
+    // Props for <CurrencyDisplayContainer/> React element
+
+    const currencyDisplayContainerProps = {
+        quoteTokenSymbol: position.quoteTokenSymbol,
+        baseTokenSymbol: position.baseTokenSymbol,
+        tokenAQtyDisplay: position.tokenAQtyDisplay,
+        tokenBQtyDisplay: position.tokenBQtyDisplay,
+    };
+
+    const editPriceInfoProps = {
+        quoteTokenSymbol: position.quoteTokenSymbol,
+        baseTokenSymbol: position.baseTokenSymbol,
+        tokenAQtyDisplay: position.tokenAQtyDisplay,
+        tokenBQtyDisplay: position.tokenBQtyDisplay,
+        ambient: position.ambient,
+        lowRangeDisplay: position.lowRangeDisplay,
+        highRangeDisplay: position.highRangeDisplay,
+    };
 
     const minMaxPriceContent = <EditMinMaxPrice {...editMinMaxPriceProps} />;
     return (
@@ -110,23 +128,10 @@ export default function Edit() {
             <EditHeader positionHash={positionHash} />
             <div className={styles.edit_content}>
                 <EditDenominationSwitch />
-                <CurrencyDisplayContainer
-                    quoteTokenSymbol={position.quoteTokenSymbol}
-                    baseTokenSymbol={position.baseTokenSymbol}
-                    tokenAQtyDisplay={position.tokenAQtyDisplay}
-                    tokenBQtyDisplay={position.tokenBQtyDisplay}
-                />
+                <CurrencyDisplayContainer {...currencyDisplayContainerProps} />
                 <Divider />
                 {position.ambient == false && minMaxPriceContent}
-                <EditPriceInfo
-                    quoteTokenSymbol={position.quoteTokenSymbol}
-                    baseTokenSymbol={position.baseTokenSymbol}
-                    tokenAQtyDisplay={position.tokenAQtyDisplay}
-                    tokenBQtyDisplay={position.tokenBQtyDisplay}
-                    ambient={position.ambient}
-                    lowRangeDisplay={position.lowRangeDisplay}
-                    highRangeDisplay={position.highRangeDisplay}
-                />
+                <EditPriceInfo {...editPriceInfoProps} />
                 <EditButton onClickFn={openModal} />
             </div>
             {confirmEditModal}
