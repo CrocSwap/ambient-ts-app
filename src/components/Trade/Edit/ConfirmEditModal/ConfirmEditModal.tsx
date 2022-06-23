@@ -3,29 +3,34 @@ import Button from '../../../Global/Button/Button';
 import CurrencyDisplayContainer from '../CurrencyDisplayContainer/CurrencyDisplayContainer';
 import Divider from '../../../Global/Divider/Divider';
 import EditPriceInfo from '../EditPriceInfo/EditPriceInfo';
-
+import { PositionIF } from '../../../../utils/interfaces/PositionIF';
 interface ConfirmEditModalProps {
     onClose: () => void;
-
-    quoteTokenSymbol: string;
-    tokenAQtyDisplay: string;
-    tokenBQtyDisplay: string;
-    baseTokenSymbol: string;
+    position: PositionIF;
 }
 
 export default function ConfirmEditModal(props: ConfirmEditModalProps) {
     const closeButton = <Button title='Close' action={props.onClose} />;
+    const { position } = props;
 
     const fullTxDetails = (
         <div>
             <CurrencyDisplayContainer
-                quoteTokenSymbol={props.quoteTokenSymbol}
-                baseTokenSymbol={props.baseTokenSymbol}
-                tokenAQtyDisplay={props.tokenAQtyDisplay}
-                tokenBQtyDisplay={props.tokenBQtyDisplay}
+                quoteTokenSymbol={position.quoteTokenSymbol}
+                baseTokenSymbol={position.baseTokenSymbol}
+                tokenAQtyDisplay={position.tokenAQtyDisplay}
+                tokenBQtyDisplay={position.tokenBQtyDisplay}
             />
             <Divider />
-            {/* <EditPriceInfo /> */}
+            <EditPriceInfo
+                quoteTokenSymbol={position.quoteTokenSymbol}
+                baseTokenSymbol={position.baseTokenSymbol}
+                tokenAQtyDisplay={position.tokenAQtyDisplay}
+                tokenBQtyDisplay={position.tokenBQtyDisplay}
+                ambient={position.ambient}
+                lowRangeDisplay={position.lowRangeDisplay}
+                highRangeDisplay={position.highRangeDisplay}
+            />
         </div>
     );
 
