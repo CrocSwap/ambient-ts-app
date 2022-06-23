@@ -141,6 +141,36 @@ export default function Range(props: RangePropsIF) {
     const poolWeiPriceLowLimit = poolPriceNonDisplay * (1 - maxSlippage / 100);
     const poolWeiPriceHighLimit = poolPriceNonDisplay * (1 + maxSlippage / 100);
 
+    const poolPriceDisplayNum = parseFloat(poolPriceDisplay);
+
+    const poolPriceTruncatedInQuote =
+        poolPriceDisplayNum < 2
+            ? poolPriceDisplayNum > 0.1
+                ? truncateDecimals(poolPriceDisplayNum, 4)
+                : truncateDecimals(poolPriceDisplayNum, 6)
+            : truncateDecimals(poolPriceDisplayNum, 2);
+
+    // console.log({ poolPriceDisplayNum });
+
+    const invertedPoolPrice = 1 / poolPriceDisplayNum;
+
+    const poolPriceTruncatedInBase =
+        invertedPoolPrice < 2
+            ? invertedPoolPrice > 0.1
+                ? truncateDecimals(invertedPoolPrice, 4)
+                : truncateDecimals(invertedPoolPrice, 6)
+            : truncateDecimals(invertedPoolPrice, 2);
+
+    // console.log({ denominationsInBase });
+
+    const poolPriceTruncated = denominationsInBase
+        ? poolPriceTruncatedInBase
+        : poolPriceTruncatedInQuote;
+
+    // console.log({ poolPriceTruncatedInBase });
+    // console.log({ poolPriceTruncatedInQuote });
+    // console.log({ poolPriceTruncated });
+
     const signer = provider?.getSigner();
     const tokenA = tokenPair.dataTokenA;
     const tokenB = tokenPair.dataTokenB;
@@ -755,7 +785,7 @@ export default function Range(props: RangePropsIF) {
             <DenominationSwitch
                 tokenPair={tokenPair}
                 displayForBase={tradeData.isDenomBase}
-                poolPriceDisplay={parseFloat(poolPriceDisplay)}
+                poolPriceDisplay={poolPriceDisplayNum}
                 isTokenABase={isTokenABase}
                 didUserFlipDenom={tradeData.didUserFlipDenom}
             />
@@ -769,17 +799,68 @@ export default function Range(props: RangePropsIF) {
     // props for <RangePriceInfo/> React element
     const rangePriceInfoProps = {
         tokenPair: tokenPair,
-        spotPriceDisplay: poolPriceDisplay,
+        spotPriceDisplay: poolPriceTruncated.toString(),
+        poolPriceTruncatedInBase: poolPriceTruncatedInBase.toString(),
+        poolPriceTruncatedInQuote: poolPriceTruncatedInQuote.toString(),
         maxPriceDisplay: maxPriceDisplay,
         minPriceDisplay: minPriceDisplay,
         apyPercentage: apyPercentage,
         isTokenABase: isTokenABase,
         didUserFlipDenom: tradeData.didUserFlipDenom,
     };
+
+    const pinnedMinPriceDisplayTruncatedInBase = useMemo(
+        () =>
+            getPinnedPriceValuesFromTicks(
+                true,
+                baseTokenDecimals,
+                quoteTokenDecimals,
+                rangeLowTick,
+                rangeHighTick,
+            ).pinnedMinPriceDisplayTruncated,
+        [baseTokenDecimals, quoteTokenDecimals, rangeLowTick, rangeHighTick],
+    );
+
+    const pinnedMinPriceDisplayTruncatedInQuote = useMemo(
+        () =>
+            getPinnedPriceValuesFromTicks(
+                false,
+                baseTokenDecimals,
+                quoteTokenDecimals,
+                rangeLowTick,
+                rangeHighTick,
+            ).pinnedMinPriceDisplayTruncated,
+        [baseTokenDecimals, quoteTokenDecimals, rangeLowTick, rangeHighTick],
+    );
+
+    const pinnedMaxPriceDisplayTruncatedInBase = useMemo(
+        () =>
+            getPinnedPriceValuesFromTicks(
+                true,
+                baseTokenDecimals,
+                quoteTokenDecimals,
+                rangeLowTick,
+                rangeHighTick,
+            ).pinnedMaxPriceDisplayTruncated,
+        [baseTokenDecimals, quoteTokenDecimals, rangeLowTick, rangeHighTick],
+    );
+
+    const pinnedMaxPriceDisplayTruncatedInQuote = useMemo(
+        () =>
+            getPinnedPriceValuesFromTicks(
+                false,
+                baseTokenDecimals,
+                quoteTokenDecimals,
+                rangeLowTick,
+                rangeHighTick,
+            ).pinnedMaxPriceDisplayTruncated,
+        [baseTokenDecimals, quoteTokenDecimals, rangeLowTick, rangeHighTick],
+    );
+
     // props for <ConfirmRangeModal/> React element
     const rangeModalProps = {
         tokenPair: tokenPair,
-        spotPriceDisplay: poolPriceDisplay,
+        spotPriceDisplay: poolPriceTruncated.toString(),
         denominationsInBase: denominationsInBase,
         isTokenABase: isTokenABase,
         isAmbient: isAmbient,
@@ -790,6 +871,12 @@ export default function Range(props: RangePropsIF) {
         newRangeTransactionHash: newRangeTransactionHash,
         setNewRangeTransactionHash: setNewRangeTransactionHash,
         isInRange: !isOutOfRange,
+        pinnedMinPriceDisplayTruncatedInBase: pinnedMinPriceDisplayTruncatedInBase,
+        pinnedMinPriceDisplayTruncatedInQuote: pinnedMinPriceDisplayTruncatedInQuote,
+        pinnedMaxPriceDisplayTruncatedInBase: pinnedMaxPriceDisplayTruncatedInBase,
+        pinnedMaxPriceDisplayTruncatedInQuote: pinnedMaxPriceDisplayTruncatedInQuote,
+        poolPriceTruncatedInBase: poolPriceTruncatedInBase.toString(),
+        poolPriceTruncatedInQuote: poolPriceTruncatedInQuote.toString(),
     };
 
     // props for <RangeCurrencyConverter/> React element
@@ -874,7 +961,7 @@ export default function Range(props: RangePropsIF) {
             />
             <AdvancedPriceInfo
                 tokenPair={tokenPair}
-                poolPriceDisplay={poolPriceDisplay}
+                poolPriceDisplay={poolPriceTruncated.toString()}
                 isDenomBase={denominationsInBase}
                 isTokenABase={isTokenABase}
                 minimumSpan={minimumSpan}
@@ -884,7 +971,10 @@ export default function Range(props: RangePropsIF) {
         </>
     );
     const confirmSwapModalOrNull = isModalOpen ? (
-        <Modal onClose={closeModal} title='Range Confirmation'>
+        <Modal
+            onClose={closeModal}
+            title={isAmbient ? 'Ambient Confirmation' : 'Range Confirmation'}
+        >
             <ConfirmRangeModal {...rangeModalProps} />
         </Modal>
     ) : null;

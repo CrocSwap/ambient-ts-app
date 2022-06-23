@@ -18,17 +18,17 @@ export default function AdvancedPriceInfo(props: AdvancedPriceInfoIF) {
 
     const reverseDisplay = (isTokenABase && !isDenomBase) || (!isTokenABase && isDenomBase);
 
-    const displayPriceString = isDenomBase
-        ? truncateDecimals(1 / parseFloat(poolPriceDisplay), 4).toString()
-        : truncateDecimals(parseFloat(poolPriceDisplay), 4).toString();
+    // const displayPriceString = isDenomBase
+    //     ? truncateDecimals(1 / parseFloat(poolPriceDisplay), 4).toString()
+    //     : truncateDecimals(parseFloat(poolPriceDisplay), 4).toString();
 
     const currentPrice = (
         <div className={styles.price_info_row}>
             <div>Current Price: </div>
             <div className={styles.current_price}>
                 {reverseDisplay
-                    ? `${displayPriceString} ${tokenPair.dataTokenA.symbol} per ${tokenPair.dataTokenB.symbol}`
-                    : `${displayPriceString} ${tokenPair.dataTokenB.symbol} per ${tokenPair.dataTokenA.symbol}`}
+                    ? `${poolPriceDisplay} ${tokenPair.dataTokenA.symbol} per ${tokenPair.dataTokenB.symbol}`
+                    : `${poolPriceDisplay} ${tokenPair.dataTokenB.symbol} per ${tokenPair.dataTokenA.symbol}`}
             </div>
         </div>
     );
