@@ -24,6 +24,7 @@ export default function Position(props: PositionProps) {
 
     const { portfolio } = props;
     const [isModalOpen, openModal, closeModal] = useModal();
+    const [inRange, setInRange] = useState<boolean>(false);
 
     const [currentModal, setCurrentModal] = useState<string>('edit');
 
@@ -93,6 +94,33 @@ export default function Position(props: PositionProps) {
     );
     const positionId = truncateAddress(position.id, 18);
 
+    // function handleInRange() {
+    //     let range;
+    //     if (position.ambient ) {
+    //       range = true;
+    //       setInRange(true);
+    //     } else if (scanPosition?.lowerPrice && scanPosition?.upperPrice) {
+    //       if (
+    //         scanPosition?.poolPrice > scanPosition?.lowerPrice &&
+    //         scanPosition?.poolPrice < scanPosition?.upperPrice
+    //       ) {
+    //         range = true;
+    //         setInRange(true);
+    //       } else setInRange(false);
+    //     }
+    //     return range;
+    //   }
+    //   // console.log(inRange);
+
+    //   useEffect(() => {
+    //     handleInRange();
+    //     //eslint-disable-next-line
+    //   }, [scanPosition]);
+
+    const positionData = {
+        position: position,
+    };
+
     return (
         <tr>
             {portfolio && tokenImages}
@@ -114,7 +142,9 @@ export default function Position(props: PositionProps) {
                     Harvest
                 </button>
                 <button className={styles.option_button}>
-                    <Link to={`/trade/edit/${positionId}`}>Edit</Link>
+                    <Link to={`/trade/edit/${positionId}`} state={positionData}>
+                        Edit
+                    </Link>
                 </button>
                 <button className={styles.option_button} onClick={openRemoveModal}>
                     Remove
