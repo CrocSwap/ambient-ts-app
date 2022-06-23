@@ -12,7 +12,7 @@ export default function Tabs() {
 
     const positionsOnlyToggle = (
         <span className={styles.options_toggle}>
-            My positions only
+            All Positions
             <div className={styles.toggle_container}>
                 <Toggle
                     isOn={isChecked}
