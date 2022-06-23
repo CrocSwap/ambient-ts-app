@@ -1,70 +1,141 @@
-import styles from './LimitExtraInfo.module.css';
+// START: Import React and Dongles
 import { useState } from 'react';
 import { FaGasPump } from 'react-icons/fa';
 import { RiArrowDownSLine } from 'react-icons/ri';
-// import truncateDecimals from '../../../utils/data/truncateDecimals';
 
-// interface LimitExtraInfoProps {
-//     poolPriceDisplay: number;
-//     slippageTolerance: number;
-//     liquidityProviderFee: number;
-//     quoteTokenIsBuy: boolean;
-//     gasPriceinGwei: string;
-// }
+// START: Import Local Files
+import styles from './LimitExtraInfo.module.css';
+import { TokenPairIF } from '../../../../utils/interfaces/exports';
+import TooltipComponent from '../../../Global/TooltipComponent/TooltipComponent';
+import truncateDecimals from '../../../../utils/data/truncateDecimals';
+import makePriceDisplay from './makePriceDisplay';
 
-export default function LimitExtraInfo() {
+// interface for component props
+interface LimitExtraInfoPropsIF {
+    tokenPair: TokenPairIF;
+    poolPriceDisplay: number;
+    slippageTolerance: number;
+    liquidityProviderFee: number;
+    quoteTokenIsBuy?: boolean;
+    gasPriceinGwei: string;
+    didUserFlipDenom: boolean;
+    isTokenABase: boolean;
+    isDenomBase: boolean;
+    limitRate: string;
+}
+
+// central react functional component
+export default function LimitExtraInfo(props: LimitExtraInfoPropsIF) {
+    const {
+        tokenPair,
+        gasPriceinGwei,
+        // quoteTokenIsBuy,
+        poolPriceDisplay,
+        slippageTolerance,
+        liquidityProviderFee,
+        didUserFlipDenom,
+        isTokenABase,
+        isDenomBase,
+        limitRate,
+    } = props;
     const [showExtraDetails, setShowExtraDetails] = useState<boolean>(false);
 
-    // const spotPriceDisplayQuoteForBase = truncateDecimals(1 / props.poolPriceDisplay, 4);
-
-    // const truncatedGasInGwei = truncateDecimals(parseFloat(props.gasPriceinGwei), 2);
-
-    // const slippageTolerance = props.slippageTolerance;
-    // const liquidityProviderFee = props.liquidityProviderFee;
-
-    // const priceLimitAfterSlippageAndFee = props.quoteTokenIsBuy
-    //     ? truncateDecimals(
-    //           (1 / props.poolPriceDisplay) *
-    //               (1 - slippageTolerance / 100) *
-    //               (1 - liquidityProviderFee / 100),
-    //           4,
-    //       )
-    //     : truncateDecimals(
-    //           (1 / props.poolPriceDisplay) *
-    //               (1 + slippageTolerance) *
-    //               (1 + liquidityProviderFee / 100),
-    //           4,
-    //       );
-
     // TEMP DATA TO RENDER UI
-    const spotPriceDisplayQuoteForBase = 1310.7276;
-    const priceLimitAfterSlippageAndFee = 1241.4556;
-    const slippageTolerance = 5;
-    const liquidityProviderFee = 0.3;
-    const truncatedGasInGwei = 2.5;
+    // const spotPriceDisplayQuoteForBase = truncateDecimals(1 / poolPriceDisplay, 4);
 
-    const LimitExtraInfoDetails = (
+    const reverseDisplay = (isTokenABase && !isDenomBase) || (!isTokenABase && isDenomBase);
+
+    let reverseSlippage: boolean;
+
+    if (isDenomBase) {
+        if (isTokenABase) {
+            reverseSlippage = false;
+        } else {
+            reverseSlippage = true;
+        }
+    } else {
+        if (isTokenABase) {
+            reverseSlippage = true;
+        } else {
+            reverseSlippage = false;
+        }
+    }
+
+    const limitRateNum = truncateDecimals(parseFloat(limitRate), 4);
+
+    const displayPriceString = isDenomBase
+        ? truncateDecimals(1 / poolPriceDisplay, 4).toString()
+        : truncateDecimals(poolPriceDisplay, 4).toString();
+
+    const priceLimitAfterSlippageAndFee = reverseSlippage
+        ? truncateDecimals(
+              limitRateNum * (1 + slippageTolerance / 100) * (1 + liquidityProviderFee / 100),
+              4,
+          )
+        : truncateDecimals(
+              limitRateNum * (1 - slippageTolerance / 100) * (1 - liquidityProviderFee / 100),
+              4,
+          );
+
+    const truncatedGasInGwei = truncateDecimals(parseFloat(gasPriceinGwei), 2);
+
+    const extraInfoData = [
+        {
+            title: 'Spot Price',
+            tooltipTitle: 'Current Price of the Selected Token Pool',
+            data: reverseDisplay
+                ? `${displayPriceString} ${tokenPair.dataTokenA.symbol} per ${tokenPair.dataTokenB.symbol}`
+                : `${displayPriceString} ${tokenPair.dataTokenB.symbol} per ${tokenPair.dataTokenA.symbol}`,
+        },
+        // {
+        //     title: 'Limit Price',
+        //     tooltipTitle: 'limit price explanation',
+        //     data: reverseDisplay
+        //         ? `${limitRateNum} ${tokenPair.dataTokenA.symbol} per ${tokenPair.dataTokenB.symbol}`
+        //         : `${limitRateNum} ${tokenPair.dataTokenB.symbol} per ${tokenPair.dataTokenA.symbol}`,
+        // },
+        {
+            title: 'Limit Price',
+            tooltipTitle: 'Price Limit After Maximum Slippage',
+            data: reverseDisplay
+                ? `${priceLimitAfterSlippageAndFee} ${tokenPair.dataTokenA.symbol} per ${tokenPair.dataTokenB.symbol}`
+                : `${priceLimitAfterSlippageAndFee} ${tokenPair.dataTokenB.symbol} per ${tokenPair.dataTokenA.symbol}`,
+        },
+        {
+            title: 'Slippage Tolerance',
+            tooltipTitle: 'slippage tolerance explanation',
+            data: `${slippageTolerance}%`,
+        },
+        {
+            title: 'Liquidity Provider Fee',
+            tooltipTitle: 'liquidity provider fee explanation',
+            data: `${liquidityProviderFee}%`,
+        },
+    ];
+
+    const limitExtraInfoDetails = (
         <div className={styles.extra_details}>
-            <div className={styles.extra_row}>
-                <span>Spot Price</span>
-                <span>{spotPriceDisplayQuoteForBase} DAI per ETH</span>
-            </div>
-            <div className={styles.extra_row}>
-                <span>Price Limit after Slippage and Fee</span>
-                <span>{priceLimitAfterSlippageAndFee} DAI per ETH</span>
-            </div>
-            <div className={styles.extra_row}>
-                <span>Slippage Tolerance</span>
-                <span>{slippageTolerance}%</span>
-            </div>
-            <div className={styles.extra_row}>
-                <span>Liquidity Provider Fee</span>
-                <span>{liquidityProviderFee}%</span>
-            </div>
+            {extraInfoData.map((item, idx) => (
+                <div className={styles.extra_row} key={idx}>
+                    <div className={styles.align_center}>
+                        <div>{item.title}</div>
+                        <TooltipComponent title={item.tooltipTitle} />
+                    </div>
+                    <div className={styles.data}>{item.data}</div>
+                </div>
+            ))}
         </div>
     );
 
-    const ExtraDetailsOrNull = showExtraDetails ? LimitExtraInfoDetails : null;
+    const extraDetailsOrNull = showExtraDetails ? limitExtraInfoDetails : null;
+
+    const priceDisplay = makePriceDisplay(
+        tokenPair.dataTokenA,
+        tokenPair.dataTokenB,
+        isTokenABase,
+        poolPriceDisplay,
+        didUserFlipDenom,
+    );
 
     return (
         <div className={styles.extra_info_container}>
@@ -76,11 +147,11 @@ export default function LimitExtraInfo() {
                     <FaGasPump size={15} /> {truncatedGasInGwei} gwei
                 </div>
                 <div className={styles.token_amount}>
-                    1 ETH = {spotPriceDisplayQuoteForBase} DAI
+                    {priceDisplay}
                     <RiArrowDownSLine size={27} />{' '}
                 </div>
             </div>
-            {ExtraDetailsOrNull}
+            {extraDetailsOrNull}
         </div>
     );
 }

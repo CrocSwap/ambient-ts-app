@@ -1,0 +1,143 @@
+
+
+  .modalSwapbox {
+    padding: 0.7rem 0;
+  
+    color: white;
+    /* display: flex;
+    flex-direction: column;
+    overflow: auto; */
+    background-color: var(--dark2);
+    /* border: 1px solid white; */
+  }
+  .limit_modalSwapbox {
+    padding: 0.1rem 0;
+  
+    color: white;
+    /* display: flex;
+    flex-direction: column;
+    overflow: auto; */
+    background-color: var(--dark2);
+    /* border: 1px solid white; */
+  }
+  
+  .swapbox_top {
+    display: flex;
+  
+    width: 100%;
+  
+    align-items: center;
+  }
+  
+  .token_select {
+    display: flex;
+    float: left;
+  
+    width: 45%;
+    padding: 0 0.4rem;
+  
+    cursor: pointer;
+  
+    align-items: center;
+  }
+  .limit_token_select {
+    display: flex;
+    float: left;
+  
+    width: 45%;
+    padding: 0 0.4rem;
+  
+    cursor: pointer;
+  
+    align-items: center;
+    color: var(--text-grey-light);
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+  }
+  .text_grey{
+    color: var(--text-grey-light);
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    margin: 0 5px;
+  }
+  .token_select img {
+    margin: 0 10px;
+  }
+  /* bottom info */
+  .swapbox_bottom {
+    display: flex;
+  
+    margin-top: 1rem;
+  
+    justify-content: flex-start;
+  }
+  
+  .token_select_button {
+    cursor: pointer;
+  }
+  
+  .buy_token {
+    display: none;
+  }
+  
+  /* Currency Quantity */
+  
+  .token_amount {
+    display: flex;
+  
+    width: 75%;
+  
+    word-wrap: break-word;
+  
+    align-items: flex-end;
+    justify-content: flex-end;
+  }
+  
+  .currency_quantity {
+    
+font-size: var(--header2-size);
+line-height: var(--header2-lh);
+color: var(--text-grey-white);
+
+  
+    width: 100%;
+    height: calc(1.5em + 0.75rem + 2px);
+    padding: 0.395rem 0.75rem;
+  
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    text-align: end;
+  
+    border: none;
+    border-radius: 0.25rem;
+    outline: 0;
+    background-color: transparent;
+    background-clip: padding-box;
+  }
+  .currency_quantity::placeholder {
+    color: rgb(219, 210, 210);
+  }
+  
+  /* arrow */
+  
+  .arrow {
+    position: relative;
+    z-index: 1;
+    left: calc(50% - 16px);
+  
+    width: 32px;
+    height: 32px;
+    margin-top: -14px;
+    margin-bottom: -14px;
+    padding: 4px;
+  
+    border: 4px solid var(--header-color);
+    border-radius: 6px;
+    background-color: rgb(33, 36, 41);
+  }
+  
+  .token_list_text{
+    font-size: var(--header2-size);
+    line-height: var(--header2-lh);
+    color: var(--text-grey-light);
+    font-weight: 200;
+}

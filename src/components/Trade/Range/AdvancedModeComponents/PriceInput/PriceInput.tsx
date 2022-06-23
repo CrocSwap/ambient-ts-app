@@ -1,21 +1,39 @@
 import styles from './PriceInput.module.css';
 import { FaMinus, FaPlus } from 'react-icons/fa';
+import { ChangeEvent } from 'react';
 
 interface priceInputProps {
     disable?: boolean;
     fieldId: string | number;
     title: string;
     percentageDifference: number;
+    handleChangeEvent: (evt: ChangeEvent<HTMLInputElement>) => void;
+    // onFocus: () => void;
+    onBlur: () => void;
+    increaseTick: () => void;
+    decreaseTick: () => void;
 }
 
 export default function PriceInput(props: priceInputProps) {
-    const { disable, fieldId, title, percentageDifference } = props;
+    const {
+        disable,
+        fieldId,
+        title,
+        percentageDifference,
+        handleChangeEvent,
+        onBlur,
+        increaseTick,
+        decreaseTick,
+    } = props;
 
     const priceInput = (
         <input
             id={`${fieldId}-price-input-quantity`}
             className={styles.price_quantity}
             type='text'
+            onChange={(event) => handleChangeEvent(event)}
+            // onFocus={onFocus}
+            onBlur={() => onBlur()}
             inputMode='decimal'
             autoComplete='off'
             autoCorrect='off'
@@ -28,19 +46,33 @@ export default function PriceInput(props: priceInputProps) {
         />
     );
 
+    // const disabledContent = (
+    //     <div className={styles.overlay_container}>
+    //         <GoCircleSlash size={15} />
+    //         <div className={styles.disabled_text}>
+    //             The market is outside your specified range.
+    //             <span className={styles.warning_text}>Single-asset deposit only.</span>
+    //         </div>
+    //     </div>
+    // );
+
+    const percentageDifferenceString =
+        percentageDifference > 0 ? '+' + percentageDifference : percentageDifference.toString();
+
     return (
         <div className={styles.minMax_container}>
+            {/* {disable && disabledContent} */}
             <span className={styles.title}>{title}</span>
             <div className={styles.price_input_container}>
-                <span className={styles.sign}>
+                <span className={styles.sign} onClick={decreaseTick}>
                     <FaMinus size={16} />
                 </span>
                 <span>{priceInput}</span>
-                <span className={styles.sign}>
+                <span className={styles.sign} onClick={increaseTick}>
                     <FaPlus size={16} />
                 </span>
             </div>
-            <span className={styles.percentage}>{percentageDifference}% difference</span>
+            <span className={styles.percentage}>{percentageDifferenceString}%</span>
         </div>
     );
 }

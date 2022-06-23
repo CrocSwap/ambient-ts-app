@@ -3,11 +3,20 @@ import styles from './Position.module.css';
 import { useModal } from '../Modal/useModal';
 import Modal from '../Modal/Modal';
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 import RemoveRange from '../../RemoveRange/RemoveRange';
 import RangeDetails from '../../RangeDetails/RangeDetails';
 import RangeDetailsHeader from '../../RangeDetails/RangeDetailsHeader/RangeDetailsHeader';
-export default function Position() {
+
+interface PositionProps {
+    portfolio?: boolean;
+    notOnTradeRoute?: boolean;
+}
+export default function Position(props: PositionProps) {
+    // const navigate = useNavigate();
+
+    const { portfolio } = props;
     const [isModalOpen, openModal, closeModal] = useModal();
 
     const [currentModal, setCurrentModal] = useState<string>('edit');
@@ -49,10 +58,7 @@ export default function Position() {
         setCurrentModal('remove');
         openModal();
     }
-    function openEditModal() {
-        setCurrentModal('edit');
-        openModal();
-    }
+
     function openHarvestModal() {
         setCurrentModal('harvest');
         openModal();
@@ -63,8 +69,27 @@ export default function Position() {
     }
     //  END OF MODAL FUNCTIONALITY
 
+    const tokenImages = (
+        <>
+            <td data-column='tokens' className={styles.tokens}>
+                <img
+                    src='https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png'
+                    alt='token'
+                    width='30px'
+                />
+                <img
+                    src='https://cryptologos.cc/logos/usd-coin-usdc-logo.png'
+                    alt='token'
+                    width='30px'
+                />
+            </td>
+        </>
+    );
+    const positionId = '0xfd05fss3da3ff';
+
     return (
         <tr>
+            {portfolio && tokenImages}
             <td data-column='Position ID' className={styles.position_id}>
                 0xfs05...db35
             </td>
@@ -82,8 +107,8 @@ export default function Position() {
                 <button className={styles.option_button} onClick={openHarvestModal}>
                     Harvest
                 </button>
-                <button className={styles.option_button} onClick={openEditModal}>
-                    Edit
+                <button className={styles.option_button}>
+                    <Link to={`/trade/edit/${positionId}`}>Edit</Link>
                 </button>
                 <button className={styles.option_button} onClick={openRemoveModal}>
                     Remove

@@ -1,124 +1,217 @@
+// START: Import React and Dongles
+import { useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import { useMoralis } from 'react-moralis';
+import { motion } from 'framer-motion';
+import { JsonRpcProvider } from '@ethersproject/providers';
+import {
+    contractAddresses,
+    POOL_PRIMARY,
+    sendSwap,
+    parseSwapEthersReceipt,
+    EthersNativeReceipt,
+    approveToken,
+} from '@crocswap-libs/sdk';
+
+// START: Import React Components
 import CurrencyConverter from '../../components/Swap/CurrencyConverter/CurrencyConverter';
 import ExtraInfo from '../../components/Swap/ExtraInfo/ExtraInfo';
 import ContentContainer from '../../components/Global/ContentContainer/ContentContainer';
 import SwapHeader from '../../components/Swap/SwapHeader/SwapHeader';
 import SwapButton from '../../components/Swap/SwapButton/SwapButton';
+import DenominationSwitch from '../../components/Swap/DenominationSwitch/DenominationSwitch';
+import DividerDark from '../../components/Global/DividerDark/DividerDark';
+import Modal from '../../components/Global/Modal/Modal';
+import RelativeModal from '../../components/Global/RelativeModal/RelativeModal';
+import ConfirmSwapModal from '../../components/Swap/ConfirmSwapModal/ConfirmSwapModal';
+import Button from '../../components/Global/Button/Button';
+
+// START: Import Local Files
 import styles from './Swap.module.css';
-import { motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
-import {
-    contractAddresses,
-    getSpotPrice,
-    getSpotPriceDisplay,
-    POOL_PRIMARY,
-    sendSwap,
-    parseSwapEthersReceipt,
-    // toFixedNumber,
-    EthersNativeReceipt,
-    // ParsedSwapReceipt,
-} from '@crocswap-libs/sdk';
-
-import { JsonRpcProvider } from '@ethersproject/providers';
-
-import { useMoralis } from 'react-moralis';
-// import { logger } from 'ethers';
-
-// import getContractEthDiff from '../../utils/EthDiff';
 import { handleParsedReceipt } from '../../utils/HandleParsedReceipt';
 import truncateDecimals from '../../utils/data/truncateDecimals';
-
-import {
-    // isTransactionFailedError,
-    isTransactionReplacedError,
-    TransactionError,
-} from '../../utils/TransactionError';
-import DenominationSwitch from '../../components/Swap/DenominationSwitch/DenomicationSwitch';
-import DividerDark from '../../components/Global/DividerDark/DividerDark';
+import { isTransactionReplacedError, TransactionError } from '../../utils/TransactionError';
+import { useAppSelector } from '../../utils/hooks/reduxToolkit';
+import { useTradeData } from '../Trade/Trade';
+import { TokenIF } from '../../utils/interfaces/exports';
+import { useModal } from '../../components/Global/Modal/useModal';
+import { useRelativeModal } from '../../components/Global/RelativeModal/useRelativeModal';
 
 interface ISwapProps {
+    importedTokens: Array<TokenIF>;
     provider: JsonRpcProvider;
     isOnTradeRoute?: boolean;
     gasPriceinGwei: string;
     nativeBalance: string;
     lastBlockNumber: number;
+    tokenABalance: string;
+    tokenBBalance: string;
+    isSellTokenBase: boolean;
+    tokenPair: {
+        dataTokenA: TokenIF;
+        dataTokenB: TokenIF;
+    };
+    poolPriceDisplay: number;
+    tokenAAllowance: string;
+    setRecheckTokenAApproval: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function Swap(props: ISwapProps) {
-    const { provider, isOnTradeRoute } = props;
+    const {
+        importedTokens,
+        provider,
+        isOnTradeRoute,
+        nativeBalance,
+        gasPriceinGwei,
+        tokenABalance,
+        tokenBBalance,
+        isSellTokenBase,
+        tokenPair,
+        poolPriceDisplay,
+        tokenAAllowance,
+        setRecheckTokenAApproval,
+    } = props;
+    const [isModalOpen, openModal, closeModal] = useModal();
 
-    // console.log(props);
+    const [isRelativeModalOpen, closeRelativeModal] = useRelativeModal();
 
-    const { Moralis } = useMoralis();
+    const { Moralis, chainId, enableWeb3, isWeb3Enabled, authenticate, isAuthenticated } =
+        useMoralis();
+    // get URL pathway for user relative to index
+    const { pathname } = useLocation();
 
-    const [isSellTokenPrimary, setIsSellTokenPrimary] = useState<boolean>(true);
+    // use URL pathway to determine if user is in swap or market page
+    // depending on location we pull data on the tx in progress differently
+    const { tradeData } = pathname.includes('/trade')
+        ? useTradeData()
+        : useAppSelector((state) => state);
 
-    // const sellTokenAddress = contractAddresses.ZERO_ADDR;
-    const daiKovanAddress = '0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa';
-    // const usdcKovanAddress = '0xb7a4F3E9097C08dA09517b5aB877F7a917224ede';
-    // const buyTokenAddress = daiKovanAddress;
+    const { tokenA, tokenB } = tradeData;
 
-    const [poolPriceNonDisplay, setPoolPriceNonDisplay] = useState(0);
+    // login functionality
+    const clickLogin = () => {
+        console.log('user clicked Login');
+        if (!isAuthenticated || !isWeb3Enabled) {
+            authenticate({
+                provider: 'metamask',
+                signingMessage: 'Ambient API Authentication.',
+                onSuccess: () => {
+                    enableWeb3();
+                },
+                onError: () => {
+                    authenticate({
+                        provider: 'metamask',
+                        signingMessage: 'Ambient API Authentication.',
+                        onSuccess: () => {
+                            enableWeb3;
+                            // alert('🎉');
+                        },
+                    });
+                },
+            });
+        }
+    };
 
-    useEffect(() => {
-        (async () => {
-            const spotPrice = await getSpotPrice(
-                contractAddresses.ZERO_ADDR,
-                daiKovanAddress,
-                // usdcKovanAddress,
-                POOL_PRIMARY,
-                provider,
-            );
-            if (poolPriceNonDisplay !== spotPrice) {
-                setPoolPriceNonDisplay(spotPrice);
+    const loginButton = <Button title='Login' action={clickLogin} />;
+
+    const [isApprovalPending, setIsApprovalPending] = useState(false);
+
+    const approve = async (tokenAddress: string) => {
+        // console.log(`allow button clicked for ${tokenAddress}`);
+        setIsApprovalPending(true);
+        let tx;
+        try {
+            tx = await approveToken(tokenAddress, signer);
+        } catch (error) {
+            setIsApprovalPending(false);
+            setRecheckTokenAApproval(true);
+        }
+        if (tx.hash) {
+            console.log('approval transaction hash: ' + tx.hash);
+            // setApprovalButtonText('Approval Pending...');
+            // dispatch(setCurrentTxHash(tx.hash));
+            // dispatch(addPendingTx(tx.hash));
+        }
+
+        try {
+            const receipt = await tx.wait();
+            // console.log({ receipt });
+            if (receipt) {
+                // console.log('approval receipt: ' + JSON.stringify(receipt));
+                // setShouldRecheckApproval(true);
+                // parseSwapEthersTxReceipt(receipt).then((val) => {
+                //   val.conversionRateString = `${val.sellSymbol} Approval Successful`;
+                //   dispatch(addApprovalReceipt(val));
             }
-        })();
-    }, [props.lastBlockNumber]);
+        } catch (error) {
+            console.log({ error });
+        } finally {
+            setIsApprovalPending(false);
+            setRecheckTokenAApproval(true);
+        }
+    };
 
-    const [poolPriceDisplay, setPoolPriceDisplay] = useState(0);
-
-    useEffect(() => {
-        (async () => {
-            const spotPriceDisplay = await getSpotPriceDisplay(
-                contractAddresses.ZERO_ADDR,
-                daiKovanAddress,
-                // usdcKovanAddress,
-                POOL_PRIMARY,
-                provider,
-            );
-            if (poolPriceDisplay !== spotPriceDisplay) {
-                setPoolPriceDisplay(spotPriceDisplay);
+    const approvalButton = (
+        <Button
+            title={
+                !isApprovalPending
+                    ? `Click to Approve ${tokenPair.dataTokenA.symbol}`
+                    : `${tokenPair.dataTokenA.symbol} Approval Pending`
             }
-        })();
-    }, [props.lastBlockNumber]);
+            disabled={isApprovalPending}
+            action={async () => {
+                await approve(tokenA.address);
+            }}
+        />
+    );
+
+    const [tokenAInputQty, setTokenAInputQty] = useState<string>('');
+    const [tokenBInputQty, setTokenBInputQty] = useState<string>('');
+
+    const [swapAllowed, setSwapAllowed] = useState<boolean>(false);
+
+    const [swapButtonErrorMessage, setSwapButtonErrorMessage] = useState<string>('');
+
+    // const [isTokenAPrimary, setIsTokenAPrimary] = useState<boolean>(tradeData.isTokenAPrimary);
+    const isTokenAPrimary = tradeData.isTokenAPrimary;
+    const [isWithdrawFromDexChecked, setIsWithdrawFromDexChecked] = useState(false);
+    const [isWithdrawToWalletChecked, setIsWithdrawToWalletChecked] = useState(true);
+
+    const [newSwapTransactionHash, setNewSwapTransactionHash] = useState('');
 
     const signer = provider?.getSigner();
 
+    // TODO:  @Emily refactor this function to remove sellTokenAddress
+    // TODO:  ... and buyTokenAddress references
     async function initiateSwap() {
-        const sellTokenAddress = contractAddresses.ZERO_ADDR;
-        const buyTokenAddress = daiKovanAddress;
+        const sellTokenAddress = tokenA.address;
+        const buyTokenAddress = tokenB.address;
         const poolId = POOL_PRIMARY;
         const slippageTolerancePercentage = 5;
         const sellTokenQty = (document.getElementById('sell-quantity') as HTMLInputElement)?.value;
         const buyTokenQty = (document.getElementById('buy-quantity') as HTMLInputElement)?.value;
-        const qty = isSellTokenPrimary ? sellTokenQty : buyTokenQty;
+        const qty = isTokenAPrimary ? sellTokenQty : buyTokenQty;
 
-        let ethValue = '0'; // Overwritten by a non-zero value when the user is selling ETH for another token
+        console.log({ isTokenAPrimary });
+
+        // overwritten by a non-zero value when selling ETH for another token
+        let ethValue = '0';
 
         // if the user is selling ETH and requesting an exact output quantity
-        // then pad the amount of ETH sent to the contract by 2% (the remainder will be automatically returned)
+        // then pad the ETH sent to the contract by 2% (remainder will be returned)
         if (sellTokenAddress === contractAddresses.ZERO_ADDR) {
             const roundedUpEthValue = truncateDecimals(
                 parseFloat(sellTokenQty) * 1.02,
                 18,
             ).toString();
-            isSellTokenPrimary ? (ethValue = sellTokenQty) : (ethValue = roundedUpEthValue);
+            isTokenAPrimary ? (ethValue = sellTokenQty) : (ethValue = roundedUpEthValue);
         }
 
         if (signer) {
             const tx = await sendSwap(
                 sellTokenAddress,
                 buyTokenAddress,
-                isSellTokenPrimary,
+                isTokenAPrimary,
                 qty,
                 ethValue,
                 slippageTolerancePercentage,
@@ -127,6 +220,7 @@ export default function Swap(props: ISwapProps) {
             );
 
             let newTransactionHash = tx.hash;
+            setNewSwapTransactionHash(newTransactionHash);
             let parsedReceipt;
 
             console.log({ newTransactionHash });
@@ -143,14 +237,9 @@ export default function Swap(props: ISwapProps) {
                 if (isTransactionReplacedError(error)) {
                     // The user used "speed up" or something similar
                     // in their client, but we now have the updated info
-
-                    // dispatch(removePendingTx(tx.hash));
                     console.log('repriced');
                     newTransactionHash = error.replacement.hash;
                     console.log({ newTransactionHash });
-                    // dispatch(setCurrentTxHash(replacementTxHash));
-                    // dispatch(addPendingTx(replacementTxHash));
-
                     parsedReceipt = await parseSwapEthersReceipt(
                         provider,
                         error.receipt as EthersNativeReceipt,
@@ -162,33 +251,100 @@ export default function Swap(props: ISwapProps) {
         }
     }
 
+    // TODO:  @Emily refactor this Modal and later elements such that
+    // TODO:  ... tradeData is passed to directly instead of tokenPair
+    const confirmSwapModalOrNull = isModalOpen ? (
+        <Modal onClose={closeModal} title='Swap Confirmation'>
+            <ConfirmSwapModal
+                tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
+                initiateSwapMethod={initiateSwap}
+                onClose={closeModal}
+                newSwapTransactionHash={newSwapTransactionHash}
+                setNewSwapTransactionHash={setNewSwapTransactionHash}
+            />
+        </Modal>
+    ) : null;
+
+    const relativeModalOrNull = isRelativeModalOpen ? (
+        <RelativeModal onClose={closeRelativeModal} title='Relative Modal'>
+            You are about to do something that will lose you a lot of money. If you think you are
+            smarter than the awesome team that programmed this, press dismiss.
+        </RelativeModal>
+    ) : null;
+
+    const isTokenAAllowanceSufficient = parseFloat(tokenAAllowance) >= parseFloat(tokenAInputQty);
+
     return (
         <motion.main
-            initial={{ width: 0 }}
-            animate={{ width: '100%' }}
-            exit={{ x: window.innerWidth, transition: { duration: 0.7 } }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
             data-testid={'swap'}
             className={styles.swap}
         >
             <ContentContainer isOnTradeRoute={isOnTradeRoute}>
-                <SwapHeader isOnTradeRoute={isOnTradeRoute} />
-                <DenominationSwitch />
+                <SwapHeader
+                    tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
+                    isOnTradeRoute={isOnTradeRoute}
+                    isDenomBase={tradeData.isDenomBase}
+                />
+                <DenominationSwitch
+                    tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
+                    isTokenABase={isSellTokenBase}
+                    displayForBase={tradeData.isDenomBase}
+                    poolPriceDisplay={poolPriceDisplay}
+                    didUserFlipDenom={tradeData.didUserFlipDenom}
+                />
                 <DividerDark />
                 <CurrencyConverter
+                    tokenPair={tokenPair}
+                    tokensBank={importedTokens}
+                    chainId={chainId as string}
                     isLiq={false}
-                    poolPrice={poolPriceNonDisplay}
-                    setIsSellTokenPrimary={setIsSellTokenPrimary}
-                    nativeBalance={truncateDecimals(parseFloat(props.nativeBalance), 4).toString()}
+                    poolPriceDisplay={poolPriceDisplay}
+                    isTokenAPrimary={isTokenAPrimary}
+                    isSellTokenBase={isSellTokenBase}
+                    nativeBalance={truncateDecimals(parseFloat(nativeBalance), 4).toString()}
+                    tokenABalance={truncateDecimals(parseFloat(tokenABalance), 4).toString()}
+                    tokenBBalance={truncateDecimals(parseFloat(tokenBBalance), 4).toString()}
+                    tokenAInputQty={tokenAInputQty}
+                    tokenBInputQty={tokenBInputQty}
+                    setTokenAInputQty={setTokenAInputQty}
+                    setTokenBInputQty={setTokenBInputQty}
+                    isWithdrawFromDexChecked={isWithdrawFromDexChecked}
+                    setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
+                    isWithdrawToWalletChecked={isWithdrawToWalletChecked}
+                    setIsWithdrawToWalletChecked={setIsWithdrawToWalletChecked}
+                    setSwapAllowed={setSwapAllowed}
+                    setSwapButtonErrorMessage={setSwapButtonErrorMessage}
                 />
                 <ExtraInfo
+                    tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
+                    isTokenABase={isSellTokenBase}
                     poolPriceDisplay={poolPriceDisplay}
                     slippageTolerance={5}
                     liquidityProviderFee={0.3}
                     quoteTokenIsBuy={true}
-                    gasPriceinGwei={props.gasPriceinGwei}
+                    gasPriceinGwei={gasPriceinGwei}
+                    didUserFlipDenom={tradeData.didUserFlipDenom}
+                    isDenomBase={tradeData.isDenomBase}
                 />
-                <SwapButton onClickFn={initiateSwap} />
+                {isAuthenticated && isWeb3Enabled ? (
+                    !isTokenAAllowanceSufficient && parseFloat(tokenAInputQty) > 0 ? (
+                        approvalButton
+                    ) : (
+                        <SwapButton
+                            onClickFn={openModal}
+                            swapAllowed={swapAllowed}
+                            swapButtonErrorMessage={swapButtonErrorMessage}
+                        />
+                    )
+                ) : (
+                    loginButton
+                )}
             </ContentContainer>
+            {confirmSwapModalOrNull}
+            {relativeModalOrNull}
         </motion.main>
     );
 }

@@ -1,3 +1,4 @@
+require('jest-canvas-mock');
 // jest-dom adds custom jest matchers for asserting on DOM nodes.
 // allows you to do things like:
 // expect(element).toHaveTextContent(/react/i)
@@ -5,30 +6,30 @@
 import '@testing-library/jest-dom';
 
 window.IntersectionObserver = class IntersectionObserver {
-  readonly root: Element | null;
+    readonly root: Element | null;
 
-  readonly rootMargin: string;
+    readonly rootMargin: string;
 
-  readonly thresholds: ReadonlyArray<number>;
+    readonly thresholds: ReadonlyArray<number>;
 
-  constructor() {
-    this.root = null;
-    this.rootMargin = '';
-    this.thresholds = [];
-  }
+    constructor() {
+        this.root = null;
+        this.rootMargin = '';
+        this.thresholds = [];
+    }
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  disconnect() {}
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    disconnect() {}
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  observe() {}
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    observe() {}
 
-  takeRecords(): IntersectionObserverEntry[] {
-    return [];
-  }
+    takeRecords(): IntersectionObserverEntry[] {
+        return [];
+    }
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  unobserve() {}
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    unobserve() {}
 };
 
 // jest.mock('@rive-app/canvas', () => ({

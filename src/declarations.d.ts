@@ -5,6 +5,11 @@ declare module '*.svg' {
     export default content;
 }
 
+declare module '*.png' {
+    const content: any;
+    export default content;
+}
+
 declare module 'd3fc' {
     export * from '@d3fc/d3fc-chart';
 

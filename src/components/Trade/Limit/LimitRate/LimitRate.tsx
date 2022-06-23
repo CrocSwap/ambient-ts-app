@@ -1,31 +1,73 @@
 import styles from './LimitRate.module.css';
-import { RiArrowDownSLine } from 'react-icons/ri';
-import Toggle from '../../../Global/Toggle/Toggle';
-import {
-    useState,
-    // ChangeEvent
-} from 'react';
+// import { RiArrowDownSLine } from 'react-icons/ri';
+// import Toggle from '../../../Global/Toggle/Toggle';
+import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
+
+import { TokenIF, TokenPairIF } from '../../../../utils/interfaces/exports';
+// import { useState, useEffect } from 'react';
+// import Modal from '../../../../components/Global/Modal/Modal';
+// import TokenSelectContainer from '../../../Global/TokenSelectContainer/TokenSelectContainer';
+// import { useModal } from '../../../../components/Global/Modal/useModal';
+// import { getAmbientTokens } from '../../../../tempdata';
+import { setLimitPrice } from '../../../../utils/state/tradeDataSlice';
 
 interface LimitRateProps {
+    tokenPair: TokenPairIF;
+    tokensBank: Array<TokenIF>;
     fieldId: string;
-
+    chainId: string;
     sellToken?: boolean;
     disable?: boolean;
-
+    reverseTokens: () => void;
+    setLimitRate: React.Dispatch<React.SetStateAction<string>>;
+    poolPriceNonDisplay: number;
+    insideTickDisplayPrice: number;
     // updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
 }
 
 export default function LimitRate(props: LimitRateProps) {
-    const { fieldId, disable } = props;
-    const [isChecked, setIsChecked] = useState<boolean>(false);
+    const {
+        fieldId,
+        //  tokenPair,
+        //   tokensBank,
+        //   chainId,
+        disable,
+        setLimitRate,
+        // insideTickDisplayPrice,
+        //   reverseTokens
+    } = props;
+    const dispatch = useAppDispatch();
+    // const [isChecked, setIsChecked] = useState<boolean>(false);
+
+    // const [isModalOpen, openModal, closeModal] = useModal();
+    // const tempTokenList = getAmbientTokens();
+
+    // const tokenSelectModalOrNull = isModalOpen ? (
+    //     <Modal onClose={closeModal} title='Select Token'>
+    //         <TokenSelectContainer
+    //             tokenPair={tokenPair}
+    //             tokensBank={tokensBank}
+    //             tokenToUpdate={'B'}
+    //             chainId={chainId}
+    //             tokenList={tempTokenList}
+    //             closeModal={closeModal}
+    //             reverseTokens={reverseTokens}
+    //         />
+    //     </Modal>
+    // ) : null;
+
+    const handleLimitChange = (value: string) => {
+        dispatch(setLimitPrice(value));
+        setLimitRate(value);
+    };
 
     const rateInput = (
         <div className={styles.token_amount}>
             <input
-                id={`${fieldId}-limit-rate-quantity`}
+                id={`${fieldId}-quantity`}
                 className={styles.currency_quantity}
                 placeholder='0.0'
-                // onChange={(event) => updateOtherQuantity(event)}
+                onChange={(event) => handleLimitChange(event.target.value)}
                 type='string'
                 inputMode='decimal'
                 autoComplete='off'
@@ -39,41 +81,40 @@ export default function LimitRate(props: LimitRateProps) {
         </div>
     );
 
-    const withdrawTokensContent = (
-        <span className={styles.surplus_toggle}>
-            Withdraw tokens
-            <div className={styles.toggle_container}>
-                <Toggle
-                    isOn={isChecked}
-                    handleToggle={() => setIsChecked(!isChecked)}
-                    Width={36}
-                    id='tokens_withdrawal'
-                />
-            </div>
-        </span>
-    );
+    // const withdrawTokensContent = (
+    //     <span className={styles.surplus_toggle}>
+    //         Withdraw tokens
+    //         <div className={styles.toggle_container}>
+    //             <Toggle
+    //                 isOn={isChecked}
+    //                 handleToggle={() => setIsChecked(!isChecked)}
+    //                 Width={36}
+    //                 id='tokens_withdrawal'
+    //             />
+    //         </div>
+    //     </span>
+    // );
 
     return (
         <div className={styles.swapbox}>
-            <span className={styles.direction}>You Receive</span>
+            <span className={styles.direction}>Limit Price</span>
             <div className={styles.swapbox_top}>
                 <div className={styles.swap_input}>{rateInput}</div>
-                <div className={styles.token_select}>
+                {/* <div className={styles.token_select} onClick={openModal}>
                     <img
                         className={styles.token_list_img}
-                        src='https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png'
-                        alt='ethreum'
+                        src={tokenPair.dataTokenB.logoURI}
                         width='30px'
                     />
-                    <span className={styles.token_list_text}>ETH</span>
+                    <span className={styles.token_list_text}>{tokenPair.dataTokenB.symbol}</span>
                     <RiArrowDownSLine size={27} />
-                </div>
+                </div> */}
             </div>
-            <div className={styles.swapbox_bottom}>
+            {/* <div className={styles.swapbox_bottom}>
                 <span>Wallet: 69.420 | DEX: 0.00</span>
-
                 {withdrawTokensContent}
             </div>
+            {tokenSelectModalOrNull} */}
         </div>
     );
 }

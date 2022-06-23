@@ -1,0 +1,118 @@
+.pool_card{
+    position: relative;
+    width: 268px;
+    height: 125px;
+    background: var(--dark3);
+    padding: 8px;
+    z-index: 1;
+}
+
+.row{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.row div{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+}
+
+.row img{
+    width: 30px;
+}
+.tokens_name{
+    font-family: var(--font-logo);
+    font-weight: 100;
+font-size: 18px;
+line-height: 22px;
+
+}
+
+.row_title{
+    font-family: 'Lexend Deca';
+    font-style: normal;
+    font-weight: 300;
+    font-size: 12px;
+    line-height: 15px;
+    /* identical to box height */
+    
+    display: flex;
+    align-items: center;
+    
+    /* text/grey light */
+    
+    color: #BDBDBD;   
+}
+
+.apy{
+    font-weight: 200;
+font-size: 18px;
+line-height: 22px;
+letter-spacing: -0.02em;
+
+background: linear-gradient(90deg, #15BE6F 32.38%, #8FE9BF 51.39%, #15BE6F 68.17%);
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+background-clip: text;
+text-fill-color: transparent;
+
+}
+.vol{
+    font-weight: 200;
+font-size: 18px;
+line-height: 22px;
+letter-spacing: -0.02em;
+
+/* text/white */
+
+color: #FFFFFF;
+}
+.hours{
+
+    font-weight: 200;
+font-size: 18px;
+line-height: 22px;
+
+    letter-spacing: -0.02em;
+
+/* other/positive */
+
+color: #15BE6F;
+}
+.price{
+    font-weight: 300;
+    font-size: 24px;
+    line-height: 30px;
+    
+    letter-spacing: -0.02em; 
+    color: #FFFFFF;
+}
+
+.outline {
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+
+    
+  z-index: -1;
+  margin: -5px;
+
+
+box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 );
+backdrop-filter: blur( 4px );
+-webkit-backdrop-filter: blur( 4px );
+border-radius: 10px;
+
+background-image:
+    linear-gradient(to bottom, rgba(205, 193, 255, 0.32), rgba(115, 113, 252, 0.53)),
+    url('../../../assets/images/waveform.svg');
+
+  
+  }
+  
+

@@ -1,22 +1,17 @@
-
-.advanced_toggle{
-    width: 100%;
-   
-   
+.advanced_toggle {
     display: flex;
     flex-direction: row;
     align-items: center;
+    width: 100%;
     color: var(--text-grey-light);
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    /* margin-bottom: 10px; */
 }
 
-.advanced_toggle_title, .advanced_toggle_container{
+.advanced_toggle_title, .advanced_toggle_container {
     margin: 0 3px;
 }
 
-.advanced_toggle_container{
+.advanced_toggle_container {
     margin-bottom: 14px;
 }
-

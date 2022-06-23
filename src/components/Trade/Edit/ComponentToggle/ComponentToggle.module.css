@@ -1,0 +1,43 @@
+
+
+.liqtype_buttons_container {
+    font-size: 0;
+  
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+   
+  }
+  .liqtype_buttons_container button {
+    font-size: var(--header2-size);
+    line-height: var(--header2-lh);
+   
+   
+    width: 48%;
+    cursor: pointer;
+    transition: all 0.5s ease-in-out;
+    padding: 3px 0;
+  
+    border: none;
+   
+    outline: none;
+    border-radius: 4px;
+  }
+  
+ 
+  .liqtype_buttons_container button:hover {
+    color: var(--text-grey-light);
+  }
+  .active_button {
+    color: var(--dark1);
+
+    background: var(--title-gradient)
+
+  }
+  .non_active_button {
+    color: var(--text-grey-white);
+    background: var(--dark3);
+  }
+  

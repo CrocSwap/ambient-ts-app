@@ -34,6 +34,7 @@ body::-webkit-scrollbar-thumb {
 html{
   background: var(--body-bg);
   color: var(--text-grey-white); 
+   
 }
 
 svg{
@@ -53,6 +54,7 @@ a {
 body{
   overflow-x: hidden;
   padding: 0 1rem;
+ 
 
 }
  
@@ -72,6 +74,7 @@ footer {
   margin-left: 5rem;
   /* padding: 1rem; */
 
+
 }
 
 .no-sidebar{
@@ -83,6 +86,7 @@ footer {
   transition: all 700ms ease-in-out;
   /* background: var(--dark3); */
   /* min-height: calc(100vh - 5rem); */
+ 
   
 }
 .swap-body{
@@ -152,6 +156,7 @@ footer {
 @media only screen and (min-width: 600px) {
   .main-layout-2{
     margin-left: 16rem;
+    
    
   }
 

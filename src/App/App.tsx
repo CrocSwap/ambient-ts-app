@@ -1,24 +1,20 @@
 /** ***** Import React and Dongles *******/
 import { useEffect, useState } from 'react';
-import { useAppDispatch } from '../utils/hooks/reduxToolkit';
+import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { setPositionsByUser } from '../utils/state/graphDataSlice';
-import {
-    // Signer,
-    utils,
-    ethers,
-} from 'ethers';
-
+import { utils, ethers } from 'ethers';
+import { JsonRpcProvider } from '@ethersproject/providers';
 import { request, gql } from 'graphql-request';
-
-import { Routes, Route, useLocation } from 'react-router-dom';
 import { useMoralis, useMoralisQuery, useMoralisSubscription } from 'react-moralis';
 import Moralis from 'moralis/types';
-
-import { JsonRpcProvider } from '@ethersproject/providers';
 import {
     contractAddresses,
     getTokenBalanceDisplay,
-    // queryPos,
+    sortBaseQuoteTokens,
+    POOL_PRIMARY,
+    getSpotPrice,
+    getSpotPriceDisplay,
+    getTokenAllowance,
 } from '@crocswap-libs/sdk';
 
 /** ***** Import JSX Files *******/
@@ -26,32 +22,77 @@ import PageHeader from './components/PageHeader/PageHeader';
 import Sidebar from './components/Sidebar/Sidebar';
 import PageFooter from './components/PageFooter/PageFooter';
 import Home from '../pages/Home/Home';
-import Trade from '../pages/Trade/Trade';
 import Analytics from '../pages/Analytics/Analytics';
 import Portfolio from '../pages/Portfolio/Portfolio';
-// import Market from '../pages/Trade/Market/Market';
 import Limit from '../pages/Trade/Limit/Limit';
 import Range from '../pages/Trade/Range/Range';
 import Swap from '../pages/Swap/Swap';
 import Chart from '../pages/Chart/Chart';
+import Edit from '../pages/Trade/Edit/Edit';
 import TestPage from '../pages/TestPage/TestPage';
+import NotFound from '../pages/NotFound/NotFound';
+import Trade from '../pages/Trade/Trade';
 
 /** * **** Import Local Files *******/
 import './App.css';
-import initializeLocalStorage from './functions/initializeLocalStorage';
+import { useAppDispatch, useAppSelector } from '../utils/hooks/reduxToolkit';
 import { validateChain } from './validateChain';
 import { IParsedPosition, parsePositionArray } from './parsePositions';
+import { defaultTokens } from '../utils/data/defaultTokens';
+import initializeUserLocalStorage from './functions/initializeUserLocalStorage';
+import { TokenIF } from '../utils/interfaces/exports';
+import { fetchTokenLists } from './functions/fetchTokenLists';
+import {
+    setAdvancedHighTick,
+    setAdvancedLowTick,
+    setDenomInBase,
+} from '../utils/state/tradeDataSlice';
 
 /** ***** React Function *******/
 export default function App() {
     const { chainId, isWeb3Enabled, account, logout, isAuthenticated } = useMoralis();
-    const [showSidebar, setShowSidebar] = useState<boolean>(false);
-    const location = useLocation();
 
     const dispatch = useAppDispatch();
 
+    const [importedTokens, setImportedTokens] = useState(defaultTokens);
+
+    // prevent multiple fetch requests to external URIs for token lists
+    const [needTokenLists, setNeedTokenLists] = useState(true);
+
+    // trigger a useEffect() which needs to run when new token lists are received
+    // true vs false is an arbitrary distinction here
+    const [tokenListsReceived, indicateTokenListsReceived] = useState(false);
+
+    if (needTokenLists) {
+        setNeedTokenLists(false);
+        fetchTokenLists(tokenListsReceived, indicateTokenListsReceived);
+    }
+
+    useEffect(() => {
+        initializeUserLocalStorage();
+        // see if there's a user object in local storage
+        if (localStorage.user) {
+            // if user object exists, pull it
+            const user = JSON.parse(localStorage.getItem('user') as string);
+            // see if user object has a list of imported tokens
+            if (user.importedTokens) {
+                // if imported tokens are listed, hold in local state
+                setImportedTokens(
+                    user.importedTokens.filter(
+                        (tkn: TokenIF) => tkn.chainId === parseInt(chainId ?? '0x2a'),
+                    ),
+                );
+            }
+        }
+    }, [tokenListsReceived]);
+
+    const [showSidebar, setShowSidebar] = useState<boolean>(false);
+    const location = useLocation();
+
     const [metamaskLocked, setMetamaskLocked] = useState<boolean>(true);
     const [lastBlockNumber, setLastBlockNumber] = useState<number>(0);
+
+    const tradeData = useAppSelector((state) => state.tradeData);
 
     useEffect(() => {
         (async () => {
@@ -66,6 +107,201 @@ export default function App() {
             }
         })();
     }, [window.ethereum, account]);
+
+    const [baseTokenAddress, setBaseTokenAddress] = useState<string>('');
+    const [quoteTokenAddress, setQuoteTokenAddress] = useState<string>('');
+
+    const [isTokenABase, setIsTokenABase] = useState<boolean>(true);
+
+    const tokenPair = {
+        dataTokenA: tradeData.tokenA,
+        dataTokenB: tradeData.tokenB,
+    };
+
+    // useEffect to set baseTokenAddress and quoteTokenAddress when pair changes
+    useEffect(() => {
+        if (tokenPair.dataTokenA.address && tokenPair.dataTokenB.address) {
+            const sortedTokens = sortBaseQuoteTokens(
+                tokenPair.dataTokenA.address,
+                tokenPair.dataTokenB.address,
+            );
+            // console.log({ sortedTokens });
+            setBaseTokenAddress(sortedTokens[0]);
+            setQuoteTokenAddress(sortedTokens[1]);
+            if (tokenPair.dataTokenA.address === sortedTokens[0]) {
+                setIsTokenABase(true);
+            } else {
+                setIsTokenABase(false);
+            }
+        }
+    }, [JSON.stringify(tokenPair)]);
+
+    const [tokenABalance, setTokenABalance] = useState<string>('');
+    const [tokenBBalance, setTokenBBalance] = useState<string>('');
+    const [poolPriceNonDisplay, setPoolPriceNonDisplay] = useState(0);
+
+    // useEffect to get non-display spot price when tokens change and block updates
+    useEffect(() => {
+        if (baseTokenAddress && quoteTokenAddress) {
+            (async () => {
+                const spotPrice = await getSpotPrice(
+                    baseTokenAddress,
+                    quoteTokenAddress,
+                    POOL_PRIMARY,
+                    provider,
+                );
+                if (poolPriceNonDisplay !== spotPrice) {
+                    setPoolPriceNonDisplay(spotPrice);
+                }
+            })();
+        }
+    }, [lastBlockNumber, baseTokenAddress, quoteTokenAddress]);
+
+    const [poolPriceDisplay, setPoolPriceDisplay] = useState(0);
+
+    // useEffect to get display spot price when tokens change and block updates
+    useEffect(() => {
+        if (baseTokenAddress && quoteTokenAddress) {
+            (async () => {
+                const spotPriceDisplay = await getSpotPriceDisplay(
+                    baseTokenAddress,
+                    quoteTokenAddress,
+                    POOL_PRIMARY,
+                    provider,
+                );
+                if (poolPriceDisplay !== spotPriceDisplay) {
+                    setPoolPriceDisplay(spotPriceDisplay);
+                }
+            })();
+        }
+    }, [lastBlockNumber, baseTokenAddress, quoteTokenAddress]);
+
+    // useEffect to update selected token balances
+    useEffect(() => {
+        (async () => {
+            if (
+                provider &&
+                account &&
+                isAuthenticated &&
+                isWeb3Enabled
+                // && provider.connection?.url === 'metamask'
+            ) {
+                const signer = provider.getSigner();
+                const tokenABal = await getTokenBalanceDisplay(
+                    tokenPair.dataTokenA.address,
+                    account,
+                    signer,
+                );
+                // make sure a balance was returned, initialized as null
+                if (tokenABal) {
+                    // send value to local state
+                    setTokenABalance(tokenABal);
+                }
+                const tokenBBal = await getTokenBalanceDisplay(
+                    tokenPair.dataTokenB.address,
+                    account,
+                    signer,
+                );
+                // make sure a balance was returned, initialized as null
+                if (tokenBBal) {
+                    // send value to local state
+                    setTokenBBalance(tokenBBal);
+                }
+            }
+        })();
+    }, [chainId, account, isWeb3Enabled, isAuthenticated, tokenPair, lastBlockNumber]);
+
+    const [tokenAAllowance, setTokenAAllowance] = useState<string>('');
+    const [tokenBAllowance, setTokenBAllowance] = useState<string>('');
+
+    const [recheckTokenAApproval, setRecheckTokenAApproval] = useState<boolean>(false);
+    const [recheckTokenBApproval, setRecheckTokenBApproval] = useState<boolean>(false);
+
+    // useEffect to check if user has approved CrocSwap to sell the token A
+    // (hardcoded for native Ether)
+    useEffect(() => {
+        (async () => {
+            try {
+                const tokenAAddress = tokenPair.dataTokenA.address;
+                if (isWeb3Enabled && account !== null) {
+                    if (!tokenAAddress) {
+                        return;
+                    }
+                    if (tokenAAddress === contractAddresses.ZERO_ADDR) {
+                        setTokenAAllowance((Number.MAX_SAFE_INTEGER - 1).toString());
+                        return;
+                    }
+                    if (provider) {
+                        const signer = provider.getSigner();
+                        getTokenAllowance(tokenAAddress, account, signer)
+                            .then(function (result) {
+                                const allowance = result.lt(Number.MAX_SAFE_INTEGER - 1)
+                                    ? result.toNumber()
+                                    : Number.MAX_SAFE_INTEGER - 1;
+                                setTokenAAllowance(allowance.toString());
+                            })
+                            .catch((e) => {
+                                console.log(e);
+                            });
+                    }
+                }
+            } catch (err) {
+                console.log(err);
+            }
+            setRecheckTokenAApproval(false);
+        })();
+    }, [
+        tokenPair.dataTokenA.address,
+        lastBlockNumber,
+        account,
+        chainId,
+        isWeb3Enabled,
+        recheckTokenAApproval,
+    ]);
+
+    // useEffect to check if user has approved CrocSwap to sell token B
+    // (hardcoded for native Ether)
+    useEffect(() => {
+        (async () => {
+            try {
+                const tokenBAddress = tokenPair.dataTokenB.address;
+                if (isWeb3Enabled && account !== null) {
+                    if (!tokenBAddress) {
+                        return;
+                    }
+                    if (tokenBAddress === contractAddresses.ZERO_ADDR) {
+                        setTokenBAllowance((Number.MAX_SAFE_INTEGER - 1).toString());
+                        return;
+                    }
+                    if (provider) {
+                        const signer = provider.getSigner();
+                        getTokenAllowance(tokenBAddress, account, signer)
+                            .then(function (result) {
+                                // console.log({ result });
+                                const allowance = result.lt(Number.MAX_SAFE_INTEGER - 1)
+                                    ? result.toNumber()
+                                    : Number.MAX_SAFE_INTEGER - 1;
+                                setTokenBAllowance(allowance.toString());
+                            })
+                            .catch((e) => {
+                                console.log(e);
+                            });
+                    }
+                }
+            } catch (err) {
+                console.log(err);
+            }
+        })();
+    }, [
+        tokenPair.dataTokenB.address,
+        account,
+        chainId,
+        isWeb3Enabled,
+        recheckTokenBApproval,
+        lastBlockNumber,
+    ]);
+
+    const graphData = useAppSelector((state) => state.graphData);
 
     useEffect(() => {
         if (account) {
@@ -98,18 +334,16 @@ export default function App() {
                 variables,
                 // requestHeaders: headers,
             ).then((data) => {
-                dispatch(setPositionsByUser(data.user));
+                if (JSON.stringify(graphData.positionsByUser) !== JSON.stringify(data.user)) {
+                    dispatch(setPositionsByUser(data.user));
+                }
             });
         }
-    }, [account]);
+    }, [account, lastBlockNumber]);
 
-    // const graphData = useAppSelector((state) => state.graphData);
-
-    // useEffect(() => {
-    //     console.log({ graphData });
-    // }, [graphData]);
-
-    initializeLocalStorage();
+    // run function to initialize local storage
+    // internal controls will only initialize values that don't exist
+    // existing values will not be overwritten
 
     // determine whether the user is connected to a supported chain
     // the user being connected to a non-supported chain or not being
@@ -133,10 +367,6 @@ export default function App() {
     }, [location]);
 
     const [provider, setProvider] = useState<ethers.providers.JsonRpcProvider>();
-
-    // useEffect(() => {
-    //     console.log({ provider });
-    // }, [provider]);
 
     useEffect(() => {
         try {
@@ -221,6 +451,8 @@ export default function App() {
     // function to sever connection between user wallet and Moralis server
     const clickLogout = async () => {
         setNativeBalance('');
+        setTokenABalance('0');
+        setTokenBBalance('0');
         await logout();
     };
 
@@ -228,7 +460,13 @@ export default function App() {
     // this is how we run the function to pull back balances asynchronously
     useEffect(() => {
         (async () => {
-            if (provider && account && isAuthenticated && provider.connection?.url === 'metamask') {
+            if (
+                provider &&
+                account &&
+                isAuthenticated &&
+                isWeb3Enabled
+                // && provider.connection?.url === 'metamask'
+            ) {
                 const signer = provider.getSigner();
                 const nativeEthBalance = await getTokenBalanceDisplay(
                     contractAddresses.ZERO_ADDR,
@@ -281,25 +519,74 @@ export default function App() {
 
     // props for <Swap/> React element
     const swapProps = {
+        importedTokens: importedTokens,
         provider: provider as JsonRpcProvider,
         gasPriceinGwei: gasPriceinGwei,
         nativeBalance: nativeBalance,
         lastBlockNumber: lastBlockNumber,
+        tokenABalance: tokenABalance,
+        tokenBBalance: tokenBBalance,
+        isSellTokenBase: isTokenABase,
+        tokenPair: tokenPair,
+        poolPriceDisplay: poolPriceDisplay,
+        tokenAAllowance: tokenAAllowance,
+        setRecheckTokenAApproval: setRecheckTokenAApproval,
+        // tokenBAllowance: tokenBAllowance,
     };
 
     // props for <Swap/> React element on trade route
     const swapPropsTrade = {
+        importedTokens: importedTokens,
         provider: provider as JsonRpcProvider,
         isOnTradeRoute: true,
         gasPriceinGwei: gasPriceinGwei,
         nativeBalance: nativeBalance,
         lastBlockNumber: lastBlockNumber,
+        tokenABalance: tokenABalance,
+        tokenBBalance: tokenBBalance,
+        isSellTokenBase: isTokenABase,
+        tokenPair: tokenPair,
+        poolPriceDisplay: poolPriceDisplay,
+        setRecheckTokenAApproval: setRecheckTokenAApproval,
+        tokenAAllowance: tokenAAllowance,
+        // tokenBAllowance: tokenBAllowance,
+    };
+
+    // props for <Limit/> React element on trade route
+    const limitPropsTrade = {
+        importedTokens: importedTokens,
+        provider: provider as JsonRpcProvider,
+        isOnTradeRoute: true,
+        gasPriceinGwei: gasPriceinGwei,
+        nativeBalance: nativeBalance,
+        lastBlockNumber: lastBlockNumber,
+        tokenABalance: tokenABalance,
+        tokenBBalance: tokenBBalance,
+        isSellTokenBase: isTokenABase,
+        tokenPair: tokenPair,
+        isTokenABase: isTokenABase,
+        poolPriceDisplay: poolPriceDisplay,
+        poolPriceNonDisplay: poolPriceNonDisplay,
+        setRecheckTokenAApproval: setRecheckTokenAApproval,
+        tokenAAllowance: tokenAAllowance,
     };
 
     // props for <Range/> React element
     const rangeProps = {
+        importedTokens: importedTokens,
         provider: provider as JsonRpcProvider,
         lastBlockNumber: lastBlockNumber,
+        gasPriceinGwei: gasPriceinGwei,
+        baseTokenAddress: baseTokenAddress,
+        quoteTokenAddress: quoteTokenAddress,
+        poolPriceNonDisplay: poolPriceNonDisplay,
+        poolPriceDisplay: poolPriceDisplay.toString(),
+        tokenABalance: tokenABalance,
+        tokenAAllowance: tokenAAllowance,
+        setRecheckTokenAApproval: setRecheckTokenAApproval,
+        tokenBBalance: tokenBBalance,
+        tokenBAllowance: tokenBAllowance,
+        setRecheckTokenBApproval: setRecheckTokenBApproval,
     };
 
     // props for <Sidebar/> React element
@@ -311,34 +598,72 @@ export default function App() {
         toggleSidebar: toggleSidebar,
     };
 
+    function updateDenomIsInBase() {
+        // console.log('------------');
+        // we need to know if the denom token is base or quote
+        // currently the denom token is the cheaper one by default
+        // ergo we need to know if the cheaper token is base or quote
+        // whether pool price is greater or less than 1 indicates which is more expensive
+        // if pool price is < 0.1 then denom token will be quote (cheaper one)
+        // if pool price is > 0.1 then denom token will be base (also cheaper one)
+        // then reverse if didUserToggleDenom === true
+        const isDenomInBase =
+            poolPriceDisplay < 1
+                ? tradeData.didUserFlipDenom
+                    ? false
+                    : true
+                : tradeData.didUserFlipDenom
+                ? true
+                : false;
+        return isDenomInBase;
+    }
+
+    useEffect(() => {
+        const isDenomBase = updateDenomIsInBase();
+        if (tradeData.isDenomBase !== isDenomBase) {
+            dispatch(setDenomInBase(isDenomBase));
+        }
+    }, [tradeData.didUserFlipDenom, tokenPair]);
+
+    useEffect(() => {
+        console.log({ tokenPair });
+        dispatch(setAdvancedLowTick(0));
+        dispatch(setAdvancedHighTick(0));
+    }, [JSON.stringify(tokenPair)]);
+
     const mainLayoutStyle = showSidebar ? 'main-layout-2' : 'main-layout';
     // take away margin from left if we are on homepage or swap
     const noSidebarStyle =
-        currentLocation == '/' || currentLocation == '/swap' ? 'no-sidebar' : mainLayoutStyle;
+        currentLocation == '/' || currentLocation == '/swap' || currentLocation == '/404'
+            ? 'no-sidebar'
+            : mainLayoutStyle;
     const swapBodyStyle = currentLocation == '/swap' ? 'swap-body' : null;
 
     return (
         <>
             <div className='content-container'>
-                <PageHeader {...headerProps} />
-                {currentLocation !== '/' && currentLocation !== '/swap' && (
-                    <Sidebar {...sidebarProps} />
-                )}
+                {currentLocation !== '/404' && <PageHeader {...headerProps} />}
+                {currentLocation !== '/' &&
+                    currentLocation !== '/swap' &&
+                    currentLocation !== '/404' && <Sidebar {...sidebarProps} />}
                 <div className={`${noSidebarStyle} ${swapBodyStyle}`}>
                     <Routes>
                         <Route index element={<Home />} />
                         <Route path='trade' element={<Trade />}>
                             <Route path='' element={<Swap {...swapPropsTrade} />} />
                             <Route path='market' element={<Swap {...swapPropsTrade} />} />
-                            <Route path='limit' element={<Limit />} />
+                            <Route path='limit' element={<Limit {...limitPropsTrade} />} />
                             <Route path='range' element={<Range {...rangeProps} />} />
+                            <Route path='edit/:positionHash' element={<Edit />} />
                         </Route>
                         <Route path='analytics' element={<Analytics />} />
                         <Route path='range2' element={<Range {...rangeProps} />} />
-                        <Route path='portfolio' element={<Portfolio />} />
+                        <Route path='account' element={<Portfolio />} />
                         <Route path='swap' element={<Swap {...swapProps} />} />
                         <Route path='chart' element={<Chart />} />
                         <Route path='testpage' element={<TestPage />} />
+                        <Route path='*' element={<Navigate to='/404' replace />} />
+                        <Route path='/404' element={<NotFound />} />
                     </Routes>
                 </div>
             </div>

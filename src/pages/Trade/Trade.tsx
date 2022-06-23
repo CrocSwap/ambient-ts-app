@@ -1,10 +1,17 @@
-import { Outlet, NavLink } from 'react-router-dom';
+import { Outlet, useOutletContext, NavLink, useLocation } from 'react-router-dom';
 import styles from './Trade.module.css';
 import chart from '../../assets/images/Temporary/chart.svg';
 import Tabs from '../../components/Global/Tabs/Tabs';
 import { motion } from 'framer-motion';
+import { useAppSelector } from '../../utils/hooks/reduxToolkit';
+import { tradeData as TradeDataIF } from '../../utils/state/tradeDataSlice';
 
 export default function Trade() {
+    const location = useLocation();
+    const currentLocation = location.pathname;
+
+    // console.log(currentLocation);
+
     const routes = [
         {
             path: '/market',
@@ -19,6 +26,8 @@ export default function Trade() {
             name: 'Range',
         },
     ];
+
+    const tradeData = useAppSelector((state) => state.tradeData);
 
     // These would be move to their own components, presumably the graph component
     const tokenInfo = (
@@ -71,7 +80,22 @@ export default function Trade() {
         </div>
     );
 
-    //
+    const navigationMenu = (
+        <div className={styles.navigation_menu}>
+            {routes.map((route, idx) => (
+                <div className={`${styles.nav_container} trade_route`} key={idx}>
+                    <NavLink to={`/trade${route.path}`}>{route.name}</NavLink>
+                </div>
+            ))}
+        </div>
+    );
+
+    const mainContent = (
+        <div className={styles.right_col}>
+            {currentLocation.slice(0, 11) !== '/trade/edit' && navigationMenu}
+            <Outlet context={{ tradeData }} />
+        </div>
+    );
 
     return (
         <motion.main
@@ -80,27 +104,21 @@ export default function Trade() {
             exit={{ x: window.innerWidth, transition: { duration: 0.4 } }}
             data-testid={'trade'}
         >
-            {/* <h1>This is Trade.tsx</h1> */}
             <main className={styles.main_layout}>
                 <div className={`${styles.middle_col} ${styles.graph_container}`}>
                     {tokenInfo}
                     {timeFrameContent}
                     {chartImage}
-
-                    {/* tabs */}
                     <Tabs />
                 </div>
-                <div className={styles.right_col}>
-                    <div className={styles.navigation_menu}>
-                        {routes.map((route, idx) => (
-                            <div className={`${styles.nav_container} trade_route`} key={idx}>
-                                <NavLink to={`/trade${route.path}`}>{route.name}</NavLink>
-                            </div>
-                        ))}
-                    </div>
-                    <Outlet />
-                </div>
+                {mainContent}
             </main>
         </motion.main>
     );
+}
+
+type ContextType = { tradeData: TradeDataIF };
+
+export function useTradeData() {
+    return useOutletContext<ContextType>();
 }
