@@ -2,6 +2,8 @@ import styles from './EditMinMaxPrice.module.css';
 import EditPriceInput from '../EditPriceInput/EditPriceInput';
 import MinMaxPrice from '../../Range/AdvancedModeComponents/MinMaxPrice/MinMaxPrice';
 import { motion } from 'framer-motion';
+import { ChangeEvent } from 'react';
+import { GRID_SIZE_DFLT } from '@crocswap-libs/sdk';
 
 interface EditMinMaxPriceProps {
     minPrice: string;
@@ -26,6 +28,52 @@ interface EditMinMaxPriceProps {
 }
 export default function EditMinMaxPrice(props: EditMinMaxPriceProps) {
     console.log('HERE', props.minPrice);
+
+    const {
+        minPricePercentage,
+        maxPricePercentage,
+        setMinPriceInputString,
+        setMaxPriceInputString,
+        isDenomBase,
+        // highBoundOnFocus,
+        lowBoundOnBlur,
+        highBoundOnBlur,
+        rangeLowTick,
+        rangeHighTick,
+        setRangeLowTick,
+        setRangeHighTick,
+    } = props;
+
+    const handleMinPriceChangeEvent = (evt?: ChangeEvent<HTMLInputElement>) => {
+        if (evt) {
+            const minPriceInput = evt.target.value;
+            setMinPriceInputString(minPriceInput);
+        } else {
+            console.log('no event');
+        }
+
+        //   const buyQtyField = document.getElementById('buy-limit-quantity') as HTMLInputElement;
+
+        //   if (buyQtyField) {
+        //       buyQtyField.value = truncatedTokenBQty === 'NaN' ? '' : truncatedTokenBQty;
+        //   }
+    };
+    const handleMaxPriceChangeEvent = (evt?: ChangeEvent<HTMLInputElement>) => {
+        if (evt) {
+            const maxPriceInput = evt.target.value;
+            setMaxPriceInputString(maxPriceInput);
+        } else {
+            console.log('no event');
+        }
+
+        //   const buyQtyField = document.getElementById('buy-limit-quantity') as HTMLInputElement;
+
+        //   if (buyQtyField) {
+        //       buyQtyField.value = truncatedTokenBQty === 'NaN' ? '' : truncatedTokenBQty;
+        //   }
+    };
+
+    const tickSize = GRID_SIZE_DFLT;
 
     return (
         <motion.div
