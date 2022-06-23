@@ -9,13 +9,13 @@ export default function Landing4() {
                 <span className={styles.ambient_text}>ambient </span>
                 combines liquidity in the
                 <span className={styles.highlight_text}>same pool</span>
-            </div>
-            <div className={styles.amm_pools}>
+                {/* <div className={styles.amm_pools}>
                 Meaning greater rewards for liquidity providers, and less price impact for traders
+            </div> */}
             </div>
         </div>
     );
-
+    // eslint-disable-next-line
     const ambientLiquidityContent = (
         <div className={styles.liquidity_content}>
             <div className={styles.content_title}>Ambient Liquidity</div>
@@ -26,6 +26,7 @@ export default function Landing4() {
             <img src={ambientImage} alt='ambient liquidity' />
         </div>
     );
+    // eslint-disable-next-line
     const concentratedLiquidityContent = (
         <div className={styles.liquidity_content}>
             <div className={styles.content_title}>Concentrated Liquidity</div>
@@ -36,6 +37,7 @@ export default function Landing4() {
             <img src={concentratedImage} alt='concentrated liquidity' />
         </div>
     );
+    // eslint-disable-next-line
     const combinedLiquidityContent = (
         <div className={`${styles.liquidity_content} ${styles.liquidity_content_combined}`}>
             <div className={styles.content_title}>Combined Liquidity</div>
@@ -49,13 +51,13 @@ export default function Landing4() {
     return (
         <div className={styles.main_container}>
             {headerText}
-            <div className={styles.content_container}>
+            {/* <div className={styles.content_container}>
                 <div className={styles.row}>
                     {ambientLiquidityContent}
                     {concentratedLiquidityContent}
                 </div>
                 {combinedLiquidityContent}
-            </div>
+            </div> */}
         </div>
     );
 }

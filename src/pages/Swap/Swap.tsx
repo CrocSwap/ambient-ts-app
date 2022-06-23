@@ -276,9 +276,9 @@ export default function Swap(props: ISwapProps) {
 
     return (
         <motion.main
-            initial={{ width: 0 }}
-            animate={{ width: '100%' }}
-            exit={{ x: window.innerWidth, transition: { duration: 0.7 } }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
             data-testid={'swap'}
             className={styles.swap}
         >
@@ -286,6 +286,7 @@ export default function Swap(props: ISwapProps) {
                 <SwapHeader
                     tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
                     isOnTradeRoute={isOnTradeRoute}
+                    isDenomBase={tradeData.isDenomBase}
                 />
                 <DenominationSwitch
                     tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
@@ -326,6 +327,7 @@ export default function Swap(props: ISwapProps) {
                     quoteTokenIsBuy={true}
                     gasPriceinGwei={gasPriceinGwei}
                     didUserFlipDenom={tradeData.didUserFlipDenom}
+                    isDenomBase={tradeData.isDenomBase}
                 />
                 {isAuthenticated && isWeb3Enabled ? (
                     !isTokenAAllowanceSufficient && parseFloat(tokenAInputQty) > 0 ? (

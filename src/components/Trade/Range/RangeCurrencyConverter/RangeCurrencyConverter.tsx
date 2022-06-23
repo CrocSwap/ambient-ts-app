@@ -24,6 +24,7 @@ interface RangeCurrencyConverterPropsIF {
     setIsWithdrawTokenBFromDexChecked: React.Dispatch<SetStateAction<boolean>>;
     isLiq?: boolean;
     poolPriceNonDisplay: number;
+    isAdvancedMode: boolean;
     tokenPair: {
         dataTokenA: TokenIF;
         dataTokenB: TokenIF;
@@ -40,6 +41,8 @@ interface RangeCurrencyConverterPropsIF {
     setTokenBInputQty: React.Dispatch<React.SetStateAction<string>>;
     setRangeButtonErrorMessage: React.Dispatch<React.SetStateAction<string>>;
     setRangeAllowed: React.Dispatch<SetStateAction<boolean>>;
+    isTokenADisabled: boolean;
+    isTokenBDisabled: boolean;
 }
 
 // central React functional component
@@ -65,6 +68,9 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         setTokenBInputQty,
         setRangeButtonErrorMessage,
         setRangeAllowed,
+        isTokenADisabled,
+        isTokenBDisabled,
+        isAdvancedMode,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -259,7 +265,6 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
 
     useEffect(() => {
         isTokenAPrimaryLocal ? handleTokenAQtyFieldUpdate() : handleTokenBQtyFieldUpdate();
-        // }
     }, [
         poolPriceNonDisplay,
         depositSkew,
@@ -281,6 +286,8 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         reverseTokens: reverseTokens,
         truncatedTokenABalance: truncatedTokenABalance,
         truncatedTokenBBalance: truncatedTokenBBalance,
+        isTokenADisabled: isTokenADisabled,
+        isTokenBDisabled: isTokenBDisabled,
     };
 
     return (
@@ -289,6 +296,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
                 fieldId='A'
                 updateOtherQuantity={handleTokenAQtyFieldUpdate}
                 {...rangeCurrencySelectorCommonProps}
+                isAdvancedMode={isAdvancedMode}
             />
             <div className={styles.arrow_container}>
                 {isLiq ? null : <span className={styles.arrow} />}
@@ -297,6 +305,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
                 fieldId='B'
                 updateOtherQuantity={handleTokenBQtyFieldUpdate}
                 {...rangeCurrencySelectorCommonProps}
+                isAdvancedMode={isAdvancedMode}
             />
         </section>
     );

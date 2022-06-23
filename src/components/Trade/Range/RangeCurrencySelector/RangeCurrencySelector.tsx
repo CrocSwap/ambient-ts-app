@@ -1,4 +1,4 @@
-import { ChangeEvent, SetStateAction } from 'react';
+import { ChangeEvent, SetStateAction, useState } from 'react';
 import styles from './RangeCurrencySelector.module.css';
 import RangeCurrencyQuantity from '../RangeCurrencyQuantity/RangeCurrencyQuantity';
 import { RiArrowDownSLine } from 'react-icons/ri';
@@ -22,6 +22,10 @@ interface RangeCurrencySelectorProps {
     reverseTokens: () => void;
     truncatedTokenABalance: string;
     truncatedTokenBBalance: string;
+    isTokenADisabled: boolean;
+    isTokenBDisabled: boolean;
+    isAdvancedMode: boolean;
+    disable?: boolean;
 }
 
 export default function RangeCurrencySelector(props: RangeCurrencySelectorProps) {
@@ -39,9 +43,13 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
         reverseTokens,
         truncatedTokenABalance,
         truncatedTokenBBalance,
+        isTokenADisabled,
+        isTokenBDisabled,
+        isAdvancedMode,
     } = props;
 
     const thisToken = fieldId === 'A' ? tokenPair.dataTokenA : tokenPair.dataTokenB;
+    const [showManageTokenListContent, setShowManageTokenListContent] = useState(false);
 
     const [isModalOpen, openModal, closeModal] = useModal();
 
@@ -55,6 +63,8 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                 tokenList={tokensBank}
                 closeModal={closeModal}
                 reverseTokens={reverseTokens}
+                showManageTokenListContent={showManageTokenListContent}
+                setShowManageTokenListContent={setShowManageTokenListContent}
             />
         </Modal>
     ) : null;
@@ -93,6 +103,11 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
             ? truncatedTokenBBalance
             : '0';
 
+    // console.log({ fieldId });
+    // console.log({ isTokenADisabled });
+    const isFieldDisabled =
+        (fieldId === 'A' && isTokenADisabled) || (fieldId === 'B' && isTokenBDisabled);
+
     return (
         <div className={styles.swapbox}>
             {sellToken && <span className={styles.direction}>Amounts</span>}
@@ -101,6 +116,8 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                     <RangeCurrencyQuantity
                         fieldId={fieldId}
                         updateOtherQuantity={updateOtherQuantity}
+                        disable={isFieldDisabled}
+                        isAdvancedMode={isAdvancedMode}
                     />
                 </div>
                 <div className={styles.token_select} onClick={openModal}>

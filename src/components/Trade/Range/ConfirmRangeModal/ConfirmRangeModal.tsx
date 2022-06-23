@@ -20,6 +20,7 @@ interface ConfirmRangeModalProps {
     denominationsInBase: boolean;
     isTokenABase: boolean;
     isAmbient: boolean;
+    isInRange: boolean;
 }
 
 export default function ConfirmRangeModal(props: ConfirmRangeModalProps) {
@@ -35,6 +36,7 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalProps) {
         denominationsInBase,
         isTokenABase,
         isAmbient,
+        isInRange,
     } = props;
 
     const tokenA = tokenPair.dataTokenA;
@@ -73,7 +75,7 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalProps) {
                     {dataTokenA.symbol}/{dataTokenB.symbol}
                 </span>
             </div>
-            <RangeStatus isInRange />
+            <RangeStatus isInRange={isInRange} />
         </section>
     );
     // FEE TIER DISPLAY

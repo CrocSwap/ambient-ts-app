@@ -27,7 +27,7 @@ export default function Carousel(props: CarouselProps) {
             if (!paused) {
                 updateIndex(activeIndex + 1);
             }
-        }, 1000);
+        }, 4000);
 
         return () => {
             if (interval) {

@@ -1,5 +1,6 @@
 import { Snackbar } from '@material-ui/core';
 import { Alert, AlertProps, AlertColor } from '@mui/material';
+import { motion } from 'framer-motion';
 
 import { forwardRef, SetStateAction } from 'react';
 
@@ -32,12 +33,18 @@ export default function SnackbarComponent(props: SnackbarProps) {
         props.setOpenSnackbar(false);
     };
     return (
-        <>
+        <motion.div>
             <Snackbar open={props.openSnackbar} autoHideDuration={4000} onClose={handleClose}>
-                <SnackbarAlert onClose={handleClose} severity={props.severity}>
-                    {props.children}
-                </SnackbarAlert>
+                <motion.div
+                    initial={{ scale: 0.5 }}
+                    animate={{ scale: 1 }}
+                    transition={{ duration: 0.3 }}
+                >
+                    <SnackbarAlert onClose={handleClose} severity={props.severity}>
+                        {props.children}
+                    </SnackbarAlert>
+                </motion.div>
             </Snackbar>
-        </>
+        </motion.div>
     );
 }

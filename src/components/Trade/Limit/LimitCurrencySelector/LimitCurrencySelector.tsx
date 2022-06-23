@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { ChangeEvent, SetStateAction } from 'react';
+import { ChangeEvent, SetStateAction, useState } from 'react';
 import { RiArrowDownSLine } from 'react-icons/ri';
 
 // START: Import React Functional Components
@@ -50,6 +50,7 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
     } = props;
 
     const thisToken = fieldId === 'sell' ? tokenPair.dataTokenA : tokenPair.dataTokenB;
+    const [showManageTokenListContent, setShowManageTokenListContent] = useState(false);
 
     const [isModalOpen, openModal, closeModal] = useModal();
 
@@ -65,6 +66,8 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
                 tokenList={tokensBank}
                 closeModal={closeModal}
                 reverseTokens={reverseTokens}
+                showManageTokenListContent={showManageTokenListContent}
+                setShowManageTokenListContent={setShowManageTokenListContent}
             />
         </Modal>
     ) : null;

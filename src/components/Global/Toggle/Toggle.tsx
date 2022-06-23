@@ -6,13 +6,16 @@ interface ToggleProps {
     Width?: boolean | number;
     id: string;
     handleToggle: React.ChangeEventHandler<HTMLElement>;
+    buttonColor?: string;
 }
 export default function Toggle(props: ToggleProps) {
-    const { isOn, handleToggle, onColor, Width, id } = props;
+    const { isOn, handleToggle, onColor, Width, id, buttonColor } = props;
 
     const labelStyle = Width ? `${Width}px` : '100px';
     const labelHeight = `${parseInt(labelStyle) / 2}px`;
     const buttonStyle = labelStyle ? `${parseInt(labelStyle) / 2 - 5}px` : '45px';
+    const buttonColorStyle = buttonColor ? buttonColor : '#ffffff';
+
     const onColorStyle = onColor
         ? onColor
         : 'linear-gradient(90deg, #AF99FF 0%, #46B7DB 49.48%, #F13D70 100%)';
@@ -37,7 +40,11 @@ export default function Toggle(props: ToggleProps) {
             >
                 <span
                     className={styles.switch_button}
-                    style={{ width: buttonStyle, height: buttonStyle }}
+                    style={{
+                        width: buttonStyle,
+                        height: buttonStyle,
+                        background: buttonColorStyle,
+                    }}
                 />
             </label>
         </div>

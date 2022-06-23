@@ -161,7 +161,7 @@ export default function Limit(props: LimitPropsIF) {
             let pinnedInitialDisplayPrice: string;
 
             if (isDenomBase) {
-                const offset = 100;
+                const offset = GRID_SIZE_DFLT;
                 isTokenABase
                     ? (roundedTickInsideCurrentPrice = roundDownTick(currentPoolPriceTick - offset))
                     : (roundedTickInsideCurrentPrice = roundUpTick(currentPoolPriceTick + offset));
@@ -179,7 +179,7 @@ export default function Limit(props: LimitPropsIF) {
                     limitRateInputField.value = pinnedInitialDisplayPrice;
                 }
             } else {
-                const offset = 100;
+                const offset = GRID_SIZE_DFLT;
                 // roundedTickInsideCurrentPrice = roundDownTick(currentPoolPriceTick - offset);
                 // roundedTickInsideCurrentPrice = roundUpTick(currentPoolPriceTick + offset);
                 isTokenABase
@@ -342,13 +342,13 @@ export default function Limit(props: LimitPropsIF) {
     );
     return (
         <motion.section
-            initial={{ width: 0 }}
-            animate={{ width: '100%' }}
-            exit={{ x: window.innerWidth, transition: { duration: 0.6 } }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
             data-testid={'limit'}
         >
             <ContentContainer isOnTradeRoute>
-                <LimitHeader tokenPair={tokenPair} />
+                <LimitHeader tokenPair={tokenPair} isDenomBase={tradeData.isDenomBase} />
                 <DenominationSwitch
                     tokenPair={tokenPair}
                     displayForBase={tradeData.isDenomBase}
@@ -386,10 +386,12 @@ export default function Limit(props: LimitPropsIF) {
                     gasPriceinGwei={gasPriceinGwei}
                     poolPriceDisplay={poolPriceDisplay}
                     slippageTolerance={5}
-                    liquidityProviderFee={0.3}
+                    liquidityProviderFee={0}
                     quoteTokenIsBuy={true}
                     didUserFlipDenom={tradeData.didUserFlipDenom}
                     isTokenABase={isSellTokenBase}
+                    isDenomBase={isDenomBase}
+                    limitRate={limitRate}
                 />
                 {isAuthenticated && isWeb3Enabled ? (
                     !isTokenAAllowanceSufficient && parseFloat(tokenAInputQty) > 0 ? (

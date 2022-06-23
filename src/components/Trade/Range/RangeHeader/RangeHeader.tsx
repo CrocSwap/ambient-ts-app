@@ -11,17 +11,19 @@ import { TokenPairIF } from '../../../../utils/interfaces/exports';
 // interface for component props
 interface RangeHeaderPropsIF {
     tokenPair: TokenPairIF;
+    isDenomBase: boolean;
 }
 
 // central react functional component
 export default function RangeHeader(props: RangeHeaderPropsIF) {
-    const { tokenPair } = props;
+    const { tokenPair, isDenomBase } = props;
 
     return (
         <ContentHeader>
             <span />
             <div className={styles.token_info}>
-                {tokenPair.dataTokenA.symbol} / {tokenPair.dataTokenB.symbol}
+                {isDenomBase ? tokenPair.dataTokenA.symbol : tokenPair.dataTokenB.symbol} /{' '}
+                {isDenomBase ? tokenPair.dataTokenB.symbol : tokenPair.dataTokenA.symbol}
             </div>
             <FiSettings />
         </ContentHeader>

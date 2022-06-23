@@ -2,6 +2,11 @@ import styles from './MinMaxPrice.module.css';
 import PriceInput from '../PriceInput/PriceInput';
 import { ChangeEvent } from 'react';
 
+import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
+import { setAdvancedHighTick, setAdvancedLowTick } from '../../../../../utils/state/tradeDataSlice';
+
+import { GRID_SIZE_DFLT } from '@crocswap-libs/sdk';
+
 interface IMinMaxPrice {
     minPricePercentage: number;
     maxPricePercentage: number;
@@ -9,7 +14,16 @@ interface IMinMaxPrice {
     maxPriceInputString: string;
     setMinPriceInputString: React.Dispatch<React.SetStateAction<string>>;
     setMaxPriceInputString: React.Dispatch<React.SetStateAction<string>>;
-    disabled?: boolean;
+    // disable?: boolean;
+    disable?: boolean;
+    isDenomBase: boolean;
+    // highBoundOnFocus: () => void;
+    lowBoundOnBlur: () => void;
+    highBoundOnBlur: () => void;
+    rangeLowTick: number;
+    rangeHighTick: number;
+    setRangeLowTick: React.Dispatch<React.SetStateAction<number>>;
+    setRangeHighTick: React.Dispatch<React.SetStateAction<number>>;
 }
 
 export default function MinMaxPrice(props: IMinMaxPrice) {
@@ -18,7 +32,17 @@ export default function MinMaxPrice(props: IMinMaxPrice) {
         maxPricePercentage,
         setMinPriceInputString,
         setMaxPriceInputString,
+        isDenomBase,
+        // highBoundOnFocus,
+        lowBoundOnBlur,
+        highBoundOnBlur,
+        rangeLowTick,
+        rangeHighTick,
+        setRangeLowTick,
+        setRangeHighTick,
     } = props;
+
+    const dispatch = useAppDispatch();
 
     const handleMinPriceChangeEvent = (evt?: ChangeEvent<HTMLInputElement>) => {
         if (evt) {
@@ -54,6 +78,26 @@ export default function MinMaxPrice(props: IMinMaxPrice) {
             Invalid range selected. The min price must be lower than the max price.
         </div>
     );
+
+    const tickSize = GRID_SIZE_DFLT;
+
+    const increaseLowTick = () => {
+        setRangeLowTick(rangeLowTick + tickSize);
+        dispatch(setAdvancedLowTick(rangeLowTick + tickSize));
+    };
+    const increaseHighTick = () => {
+        setRangeHighTick(rangeHighTick + tickSize);
+        dispatch(setAdvancedHighTick(rangeHighTick + tickSize));
+    };
+    const decreaseLowTick = () => {
+        setRangeLowTick(rangeLowTick - tickSize);
+        dispatch(setAdvancedLowTick(rangeLowTick - tickSize));
+    };
+    const decreaseHighTick = () => {
+        setRangeHighTick(rangeHighTick - tickSize);
+        dispatch(setAdvancedHighTick(rangeHighTick - tickSize));
+    };
+
     return (
         <div className={styles.min_max_container}>
             <div className={styles.min_max_content}>
@@ -61,16 +105,28 @@ export default function MinMaxPrice(props: IMinMaxPrice) {
                     fieldId='min'
                     title='Min Price'
                     percentageDifference={minPricePercentage}
-                    handleChangeEvent={handleMinPriceChangeEvent}
+                    handleChangeEvent={
+                        !isDenomBase ? handleMaxPriceChangeEvent : handleMinPriceChangeEvent
+                    }
+                    // onFocus={highBoundOnFocus}
+                    onBlur={lowBoundOnBlur}
+                    increaseTick={!isDenomBase ? increaseLowTick : decreaseHighTick}
+                    decreaseTick={!isDenomBase ? decreaseLowTick : increaseHighTick}
                 />
                 <PriceInput
                     fieldId='max'
                     title='Max Price'
                     percentageDifference={maxPricePercentage}
-                    handleChangeEvent={handleMaxPriceChangeEvent}
+                    handleChangeEvent={
+                        !isDenomBase ? handleMinPriceChangeEvent : handleMaxPriceChangeEvent
+                    }
+                    // onFocus={highBoundOnFocus}
+                    onBlur={highBoundOnBlur}
+                    increaseTick={!isDenomBase ? increaseHighTick : decreaseLowTick}
+                    decreaseTick={!isDenomBase ? decreaseHighTick : increaseLowTick}
                 />
             </div>
-            {props.disabled && disableInputContent}
+            {props.disable && disableInputContent}
         </div>
     );
 }
