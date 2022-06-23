@@ -90,7 +90,13 @@ export default function Edit() {
 
     const confirmEditModal = isModalOpen ? (
         <Modal onClose={closeModal} title='Edit Position'>
-            <ConfirmEditModal onClose={closeModal} />
+            <ConfirmEditModal
+                onClose={closeModal}
+                quoteTokenSymbol={position.quoteTokenSymbol}
+                baseTokenSymbol={position.baseTokenSymbol}
+                tokenAQtyDisplay={position.tokenAQtyDisplay}
+                tokenBQtyDisplay={position.tokenBQtyDisplay}
+            />
         </Modal>
     ) : null;
 

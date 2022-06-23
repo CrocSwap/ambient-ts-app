@@ -6,6 +6,11 @@ import EditPriceInfo from '../EditPriceInfo/EditPriceInfo';
 
 interface ConfirmEditModalProps {
     onClose: () => void;
+
+    quoteTokenSymbol: string;
+    tokenAQtyDisplay: string;
+    tokenBQtyDisplay: string;
+    baseTokenSymbol: string;
 }
 
 export default function ConfirmEditModal(props: ConfirmEditModalProps) {
@@ -13,7 +18,12 @@ export default function ConfirmEditModal(props: ConfirmEditModalProps) {
 
     const fullTxDetails = (
         <div>
-            {/* <CurrencyDisplayContainer /> */}
+            <CurrencyDisplayContainer
+                quoteTokenSymbol={props.quoteTokenSymbol}
+                baseTokenSymbol={props.baseTokenSymbol}
+                tokenAQtyDisplay={props.tokenAQtyDisplay}
+                tokenBQtyDisplay={props.tokenBQtyDisplay}
+            />
             <Divider />
             {/* <EditPriceInfo /> */}
         </div>
