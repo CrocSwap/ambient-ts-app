@@ -48,8 +48,7 @@ export default function initializeUserLocalStorage() {
         && localStorage.allTokenLists
     ) {
         user.tokens = JSON.parse(localStorage.getItem('allTokenLists') as string)
-            .filter((tokenList:TokenListIF) => user.activeTokenLists.includes(tokenList.uri))
-            .map((tokenList:TokenListIF) => tokenList.tokens).flat();
+            .find((tokenList:TokenListIF) => tokenList.uri === tokenListURIs.ambient).tokens;
         userUpdated = true;
     }
 

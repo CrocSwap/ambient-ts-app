@@ -1,7 +1,7 @@
 import styles from './TokenSelectContainer.module.css';
-import { useState, SetStateAction } from 'react';
+import { useState, SetStateAction, useEffect } from 'react';
 import TokenSelect from '../TokenSelect/TokenSelect';
-import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
+import { TokenIF, TokenPairIF, TokenListIF } from '../../../utils/interfaces/exports';
 import Button from '../../Global/Button/Button';
 import TokenList from '../../Global/TokenList/TokenList';
 import searchTokens from './searchTokens';
@@ -22,7 +22,7 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
     const {
         tokenPair,
         tokensBank,
-        // chainId,
+        chainId,
         tokenToUpdate,
         closeModal,
         reverseTokens,
@@ -31,6 +31,25 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
     } = props;
     
     const [searchTerm] = useState('');
+
+    const [selectableTokens, setSelectableTokens] = useState(tokensBank);
+    const [searchableTokens, setSearchableTokens] = useState(tokensBank);
+
+    useEffect(() => {
+        const { activeTokenLists } = JSON.parse(localStorage.getItem('user') as string);
+        const selectableTokenAddresses = selectableTokens.map((tkn:TokenIF) => tkn.address);
+        setSearchableTokens(
+            JSON.parse(localStorage.getItem('allTokenLists') as string)
+                // return only active token lists
+                .filter((tokenList:TokenListIF) => activeTokenLists.includes(tokenList.uri))
+                // make an array of all tokens from those lists
+                .map((tokenList:TokenListIF) => tokenList.tokens).flat()
+                // return only tokens on active lists
+                .filter((tkn:TokenIF) => tkn.chainId === parseInt(chainId))
+                // return only tokens not already imported
+                .filter((tkn:TokenIF) => !selectableTokenAddresses.includes(tkn.address))
+        );
+    }, []);
 
     // TODO:  @Emily add the setter function back in to the useState() call
     // const [tL] = useState(
@@ -50,7 +69,7 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
 
     const tokenListContent = (
         <>
-            {tokensBank
+            {selectableTokens
                 .filter((val) => {
                     if (searchTerm === '') {
                         return val;
