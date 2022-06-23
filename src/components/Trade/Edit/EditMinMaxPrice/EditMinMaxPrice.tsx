@@ -1,6 +1,5 @@
 import styles from './EditMinMaxPrice.module.css';
 import EditPriceInput from '../EditPriceInput/EditPriceInput';
-import MinMaxPrice from '../../Range/AdvancedModeComponents/MinMaxPrice/MinMaxPrice';
 import { motion } from 'framer-motion';
 import { ChangeEvent } from 'react';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
@@ -30,8 +29,6 @@ interface EditMinMaxPriceProps {
     setRangeHighTick: React.Dispatch<React.SetStateAction<number>>;
 }
 export default function EditMinMaxPrice(props: EditMinMaxPriceProps) {
-    console.log('HERE', props.minPrice);
-
     const dispatch = useAppDispatch();
 
     const {
@@ -107,7 +104,7 @@ export default function EditMinMaxPrice(props: EditMinMaxPriceProps) {
             <EditPriceInput
                 fieldId='edit-base'
                 title='Min Price'
-                percentageDifference={-15}
+                percentageDifference={minPricePercentage}
                 value={props.minPrice}
                 handleChangeEvent={
                     !isDenomBase ? handleMaxPriceChangeEvent : handleMinPriceChangeEvent
@@ -120,7 +117,7 @@ export default function EditMinMaxPrice(props: EditMinMaxPriceProps) {
             <EditPriceInput
                 fieldId='edit-quote'
                 title='Max Price'
-                percentageDifference={15}
+                percentageDifference={maxPricePercentage}
                 value={props.maxPrice}
                 handleChangeEvent={
                     !isDenomBase ? handleMinPriceChangeEvent : handleMaxPriceChangeEvent

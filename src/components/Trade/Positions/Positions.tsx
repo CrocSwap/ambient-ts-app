@@ -13,11 +13,6 @@ export default function Positions(props: PositionsProps) {
     const graphData = useAppSelector((state) => state?.graphData);
 
     const userPositions = graphData?.positionsByUser?.positions;
-    console.log({ userPositions });
-
-    const examplePositions = [1, 2, 3];
-
-    userPositions.map((position) => console.log(position));
 
     const positionsDisplay = userPositions.map((position, idx) => (
         <Position

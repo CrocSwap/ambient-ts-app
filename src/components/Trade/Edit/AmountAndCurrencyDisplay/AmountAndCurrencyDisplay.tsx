@@ -10,7 +10,7 @@ interface AmountAndCurrencyDisplayProps {
 }
 
 export default function AmountAndCurrencyDisplay(props: AmountAndCurrencyDisplayProps) {
-    const { value, tokenImg, qty, symbol, fieldId, disable } = props;
+    const { tokenImg, qty, symbol, fieldId, disable } = props;
     const currencyQuantity = (
         <div className={styles.token_amount}>
             <input
@@ -27,7 +27,7 @@ export default function AmountAndCurrencyDisplay(props: AmountAndCurrencyDisplay
                 pattern='^[0-9]*[.,]?[0-9]*$'
                 disabled={disable}
                 required
-                value={qty}
+                defaultValue={qty}
             />
         </div>
     );

@@ -20,11 +20,8 @@ export default function Position(props: PositionProps) {
     // const navigate = useNavigate();
     const { position } = props;
 
-    console.log('this is it', props.position);
-
     const { portfolio } = props;
     const [isModalOpen, openModal, closeModal] = useModal();
-    const [inRange, setInRange] = useState<boolean>(false);
 
     const [currentModal, setCurrentModal] = useState<string>('edit');
 
@@ -94,29 +91,6 @@ export default function Position(props: PositionProps) {
     );
     const positionId = truncateAddress(position.id, 18);
 
-    // function handleInRange() {
-    //     let range;
-    //     if (position.ambient ) {
-    //       range = true;
-    //       setInRange(true);
-    //     } else if (scanPosition?.lowerPrice && scanPosition?.upperPrice) {
-    //       if (
-    //         scanPosition?.poolPrice > scanPosition?.lowerPrice &&
-    //         scanPosition?.poolPrice < scanPosition?.upperPrice
-    //       ) {
-    //         range = true;
-    //         setInRange(true);
-    //       } else setInRange(false);
-    //     }
-    //     return range;
-    //   }
-    //   // console.log(inRange);
-
-    //   useEffect(() => {
-    //     handleInRange();
-    //     //eslint-disable-next-line
-    //   }, [scanPosition]);
-
     const positionData = {
         position: position,
     };
@@ -127,9 +101,20 @@ export default function Position(props: PositionProps) {
             <td data-column='Position ID' className={styles.position_id}>
                 {positionId}
             </td>
-            <td data-column='Range' className={styles.position_range}>
-                2100.00 3200.00
-            </td>
+            {position.ambient == false && (
+                <td data-column='Range' className={styles.position_range}>
+                    2100.00 3200.00
+                </td>
+            )}
+
+            {position.ambient == true && (
+                <td
+                    data-column='Range'
+                    className={`${styles.position_range} ${styles.ambient_text}`}
+                >
+                    ambient
+                </td>
+            )}
             <td data-column='APY' className={styles.apy}>
                 35.65%
             </td>

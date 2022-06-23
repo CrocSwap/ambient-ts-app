@@ -10,7 +10,6 @@ interface CurrencyDisplayProps {
 }
 
 export default function CurrencyDisplayContainer(props: CurrencyDisplayProps) {
-    console.log(props);
     const ethereumIcon =
         'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png';
 
