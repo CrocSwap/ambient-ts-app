@@ -6,6 +6,7 @@ import { updateVersion } from './global/actions';
 
 import tokens from './tokens/reducer';
 import pools from './pools/reducer';
+import protocol from './protocol/reducer';
 
 const PERSISTED_KEYS: string[] = ['user', 'lists'];
 
@@ -14,6 +15,7 @@ const store = configureStore({
         application,
         tokens,
         pools,
+        protocol,
     },
     middleware: [
         ...getDefaultMiddleware({ thunk: false, immutableCheck: false }),

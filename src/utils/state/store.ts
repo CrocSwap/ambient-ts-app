@@ -3,6 +3,7 @@ import tradeDataReducer from './tradeDataSlice';
 import graphDataReducer from './graphDataSlice';
 import tokens from '../../state/tokens/reducer';
 import pools from '../../state/pools/reducer';
+import protocol from '../../state/protocol/reducer';
 
 export const store = configureStore({
     reducer: {
@@ -10,6 +11,7 @@ export const store = configureStore({
         graphData: graphDataReducer,
         tokens,
         pools,
+        protocol,
     },
 });
 

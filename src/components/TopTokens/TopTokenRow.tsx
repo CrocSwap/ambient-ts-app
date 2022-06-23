@@ -20,6 +20,7 @@ export default function TopTokenRow(props: TokenProps) {
         <>
             <td data-column='tokens' className={styles.tokens}>
                 <img
+                    className={styles.token_list}
                     src={getTokenLogoURL()}
                     onError={({ currentTarget }) => {
                         currentTarget.onerror = null;
@@ -28,7 +29,10 @@ export default function TopTokenRow(props: TokenProps) {
                     alt='token'
                     width='30px'
                 />
-                {tokenData.name} ({tokenData.symbol})
+
+                <span className={styles.token_list_text}>
+                    {tokenData.name} ({tokenData.symbol})
+                </span>
             </td>
         </>
     );

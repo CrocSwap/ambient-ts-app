@@ -9,6 +9,7 @@ import reportWebVitals from './reportWebVitals';
 import { MoralisProvider } from 'react-moralis';
 import TokenUpdater from './state/tokens/updater';
 import PoolUpdater from './state/pools/updater';
+import ProtocolUpdater from './state/protocol/updater';
 
 // const APP_ID = process.env.REACT_APP_MORALIS_APPLICATION_ID;
 const APP_ID = 'mVXmmaPDkP1oWs7YcGSqnP3U7qmK7BwUHyrLlqJe';
@@ -22,6 +23,7 @@ function Updaters() {
         <>
             <TokenUpdater />
             <PoolUpdater />
+            <ProtocolUpdater />
             {/* <ApplicationUpdater /> */}
         </>
     );

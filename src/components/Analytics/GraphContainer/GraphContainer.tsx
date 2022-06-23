@@ -1,8 +1,26 @@
 import styles from './GraphContainer.module.css';
 import chartImage from '../../../assets/images/Temporary/Analytics/chart.svg';
 import { motion } from 'framer-motion';
+import { useProtocolData } from '../../../state/protocol/hooks';
+import { useEffect, useState } from 'react';
+import { formatDollarAmount } from '../../../utils/numbers';
 
 export default function GraphContainer() {
+    const [protocolData] = useProtocolData();
+    const [volumeHover, setVolumeHover] = useState<number | undefined>();
+    const [liquidityHover, setLiquidityHover] = useState<number | undefined>();
+
+    useEffect(() => {
+        if (volumeHover === undefined && protocolData) {
+            setVolumeHover(protocolData.volumeUSD);
+        }
+    }, [protocolData, volumeHover]);
+    useEffect(() => {
+        if (liquidityHover === undefined && protocolData) {
+            setLiquidityHover(protocolData.tvlUSD);
+        }
+    }, [liquidityHover, protocolData]);
+
     const timeFrame = (
         <div className={styles.time_frame_container}>
             <div className={styles.title}>Ambient Analytics</div>
@@ -51,17 +69,19 @@ export default function GraphContainer() {
         <div className={styles.info_container}>
             <div className={styles.info_content}>
                 <div className={styles.info_title}>Total TVL</div>
-                <div className={styles.info_value}>$1,000,000</div>
+                <div className={styles.info_value}>
+                    {formatDollarAmount(liquidityHover, 2, true)}{' '}
+                </div>
             </div>
 
             <div className={styles.info_content}>
                 <div className={styles.info_title}>24h Volume</div>
-                <div className={styles.info_value}>$1,000,000</div>
+                <div className={styles.info_value}>{formatDollarAmount(volumeHover, 2)}</div>
             </div>
 
             <div className={styles.info_content}>
                 <div className={styles.info_title}>24h Fees</div>
-                <div className={styles.info_value}>$1,000,000</div>
+                <div className={styles.info_value}>{formatDollarAmount(protocolData?.feesUSD)}</div>
             </div>
         </div>
     );
