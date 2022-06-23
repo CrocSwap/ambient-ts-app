@@ -4,6 +4,8 @@ import { ChangeEvent, SetStateAction, useState, useEffect } from 'react';
 // START: Import React Functional Components
 import RangeCurrencySelector from '../RangeCurrencySelector/RangeCurrencySelector';
 
+import truncateDecimals from '../../../../utils/data/truncateDecimals';
+
 // START: Import Local Files
 import styles from './RangeCurrencyConverter.module.css';
 import { calculateSecondaryDepositQty } from '../../../../utils/functions/calculateSecondaryDepositQty';
@@ -139,27 +141,33 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         setTokenAInputQty(value.toString());
         handleRangeButtonMessageTokenA(value);
 
-        const qtyTokenB = calculateSecondaryDepositQty(
-            poolPriceNonDisplay,
-            tokenPair.dataTokenA.decimals,
-            tokenPair.dataTokenB.decimals,
-            value.toString(),
-            true,
-            isTokenABase,
-            isAmbient,
-            depositSkew,
-        );
+        const qtyTokenB =
+            calculateSecondaryDepositQty(
+                poolPriceNonDisplay,
+                tokenPair.dataTokenA.decimals,
+                tokenPair.dataTokenB.decimals,
+                value.toString(),
+                true,
+                isTokenABase,
+                isAmbient,
+                depositSkew,
+            ) ?? 0;
+
+        const truncatedTokenBQty = truncateDecimals(
+            qtyTokenB,
+            tokenPair.dataTokenB.decimals > 10 ? 10 : tokenPair.dataTokenB.decimals,
+        ).toString();
 
         const tokenBQtyField = document.getElementById('B-range-quantity') as HTMLInputElement;
 
-        if (qtyTokenB) {
-            tokenBQtyField.value = typeof qtyTokenB === 'string' ? qtyTokenB : qtyTokenB.toString();
+        if (truncatedTokenBQty !== '0') {
+            tokenBQtyField.value = truncatedTokenBQty;
             if (primaryQuantityRange !== value.toString()) {
                 dispatch(setPrimaryQuantityRange(value.toString()));
             }
             setIsTokenAPrimaryLocal(true);
-            setTokenBQtyLocal(qtyTokenB);
-            setTokenBInputQty(qtyTokenB.toString());
+            setTokenBQtyLocal(parseFloat(truncatedTokenBQty));
+            setTokenBInputQty(truncatedTokenBQty);
         } else {
             tokenBQtyField.value = '';
             // dispatch(setPrimaryQuantityRange('0'));
@@ -175,27 +183,33 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
 
         handleRangeButtonMessageTokenB(value);
 
-        const qtyTokenA = calculateSecondaryDepositQty(
-            poolPriceNonDisplay,
-            tokenPair.dataTokenA.decimals,
-            tokenPair.dataTokenB.decimals,
-            value.toString(),
-            false,
-            isTokenABase,
-            isAmbient,
-            depositSkew,
-        );
+        const qtyTokenA =
+            calculateSecondaryDepositQty(
+                poolPriceNonDisplay,
+                tokenPair.dataTokenA.decimals,
+                tokenPair.dataTokenB.decimals,
+                value.toString(),
+                false,
+                isTokenABase,
+                isAmbient,
+                depositSkew,
+            ) ?? 0;
+
+        const truncatedTokenAQty = truncateDecimals(
+            qtyTokenA,
+            tokenPair.dataTokenA.decimals > 10 ? 10 : tokenPair.dataTokenA.decimals,
+        ).toString();
 
         const tokenAQtyField = document.getElementById('A-range-quantity') as HTMLInputElement;
-        if (qtyTokenA) {
-            tokenAQtyField.value = typeof qtyTokenA === 'string' ? qtyTokenA : qtyTokenA.toString();
+        if (truncatedTokenAQty !== '0') {
+            tokenAQtyField.value = truncatedTokenAQty;
             if (primaryQuantityRange !== value.toString()) {
                 dispatch(setPrimaryQuantityRange(value.toString()));
             }
             setIsTokenAPrimaryLocal(false);
             // console.log({ qtyTokenA });
-            setTokenAQtyLocal(qtyTokenA);
-            setTokenAInputQty(qtyTokenA.toString());
+            setTokenAQtyLocal(parseFloat(truncatedTokenAQty));
+            setTokenAInputQty(truncatedTokenAQty);
         } else {
             tokenAQtyField.value = '';
             // dispatch(setPrimaryQuantityRange('0'));
