@@ -145,17 +145,31 @@ export default function Range(props: RangePropsIF) {
 
     const poolPriceTruncatedInQuote =
         poolPriceDisplayNum < 2
-            ? truncateDecimals(poolPriceDisplayNum, 6)
+            ? poolPriceDisplayNum > 0.1
+                ? truncateDecimals(poolPriceDisplayNum, 4)
+                : truncateDecimals(poolPriceDisplayNum, 6)
             : truncateDecimals(poolPriceDisplayNum, 2);
 
+    // console.log({ poolPriceDisplayNum });
+
+    const invertedPoolPrice = 1 / poolPriceDisplayNum;
+
     const poolPriceTruncatedInBase =
-        1 / poolPriceDisplayNum < 2
-            ? truncateDecimals(1 / poolPriceDisplayNum, 6)
-            : truncateDecimals(1 / poolPriceDisplayNum, 2);
+        invertedPoolPrice < 2
+            ? invertedPoolPrice > 0.1
+                ? truncateDecimals(invertedPoolPrice, 4)
+                : truncateDecimals(invertedPoolPrice, 6)
+            : truncateDecimals(invertedPoolPrice, 2);
+
+    // console.log({ denominationsInBase });
 
     const poolPriceTruncated = denominationsInBase
         ? poolPriceTruncatedInBase
         : poolPriceTruncatedInQuote;
+
+    // console.log({ poolPriceTruncatedInBase });
+    // console.log({ poolPriceTruncatedInQuote });
+    // console.log({ poolPriceTruncated });
 
     const signer = provider?.getSigner();
     const tokenA = tokenPair.dataTokenA;
@@ -947,7 +961,7 @@ export default function Range(props: RangePropsIF) {
             />
             <AdvancedPriceInfo
                 tokenPair={tokenPair}
-                poolPriceDisplay={poolPriceDisplay}
+                poolPriceDisplay={poolPriceTruncated.toString()}
                 isDenomBase={denominationsInBase}
                 isTokenABase={isTokenABase}
                 minimumSpan={minimumSpan}

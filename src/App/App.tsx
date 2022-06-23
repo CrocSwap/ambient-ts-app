@@ -255,7 +255,14 @@ export default function App() {
                 }
             }
         })();
-    }, [chainId, account, isWeb3Enabled, isAuthenticated, tokenPair, lastBlockNumber]);
+    }, [
+        chainId,
+        account,
+        isWeb3Enabled,
+        isAuthenticated,
+        JSON.stringify(tokenPair),
+        lastBlockNumber,
+    ]);
 
     const [tokenAAllowance, setTokenAAllowance] = useState<string>('');
     const [tokenBAllowance, setTokenBAllowance] = useState<string>('');
