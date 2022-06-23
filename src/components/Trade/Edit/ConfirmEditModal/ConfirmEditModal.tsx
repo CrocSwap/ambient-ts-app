@@ -13,9 +13,9 @@ export default function ConfirmEditModal(props: ConfirmEditModalProps) {
 
     const fullTxDetails = (
         <div>
-            <CurrencyDisplayContainer />
+            {/* <CurrencyDisplayContainer /> */}
             <Divider />
-            <EditPriceInfo />
+            {/* <EditPriceInfo /> */}
         </div>
     );
 

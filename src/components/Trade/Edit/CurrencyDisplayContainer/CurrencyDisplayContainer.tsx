@@ -1,7 +1,15 @@
 import styles from './CurrencyDisplayContainer.module.css';
 import AmountAndCurrencyDisplay from '../AmountAndCurrencyDisplay/AmountAndCurrencyDisplay';
 
-export default function CurrencyDisplayContainer() {
+interface CurrencyDisplayProps {
+    quoteTokenSymbol: string;
+    tokenAQtyDisplay: string;
+    tokenBQtyDisplay: string;
+    baseTokenSymbol: string;
+}
+
+export default function CurrencyDisplayContainer(props: CurrencyDisplayProps) {
+    console.log(props);
     const ethereumIcon =
         'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png';
 
@@ -9,9 +17,19 @@ export default function CurrencyDisplayContainer() {
 
     return (
         <div className={styles.container}>
-            <AmountAndCurrencyDisplay value={2343} tokenImg={ethereumIcon} />
+            <AmountAndCurrencyDisplay
+                value={2343}
+                tokenImg={ethereumIcon}
+                qty={props.tokenAQtyDisplay}
+                symbol={props.baseTokenSymbol}
+            />
 
-            <AmountAndCurrencyDisplay value={126432} tokenImg={diaIcon} />
+            <AmountAndCurrencyDisplay
+                value={126432}
+                tokenImg={diaIcon}
+                qty={props.tokenBQtyDisplay}
+                symbol={props.quoteTokenSymbol}
+            />
         </div>
     );
 }

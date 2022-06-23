@@ -6,10 +6,11 @@ interface EditPriceInputProps {
     fieldId: string | number;
     title: string;
     percentageDifference: number;
+    value: string;
 }
 
 export default function EditPriceInput(props: EditPriceInputProps) {
-    const { disable, fieldId, title, percentageDifference } = props;
+    const { disable, fieldId, title, percentageDifference, value } = props;
 
     const priceInput = (
         <input
@@ -25,6 +26,7 @@ export default function EditPriceInput(props: EditPriceInputProps) {
             placeholder='0.0'
             disabled={disable}
             required
+            value={value}
         />
     );
 

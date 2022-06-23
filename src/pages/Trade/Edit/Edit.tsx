@@ -1,8 +1,9 @@
 import EditHeader from '../../../components/Trade/Edit/EditHeader/EditHeader';
 import styles from './Edit.module.css';
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
 import CurrencyDisplayContainer from '../../../components/Trade/Edit/CurrencyDisplayContainer/CurrencyDisplayContainer';
 import MinMaxPrice from '../../../components/Trade/Range/AdvancedModeComponents/MinMaxPrice/MinMaxPrice';
+import EditMinMaxPrice from '../../../components/Trade/Edit/EditMinMaxPrice/EditMinMaxPrice';
 import EditPriceInfo from '../../../components/Trade/Edit/EditPriceInfo/EditPriceInfo';
 import EditButton from '../../../components/Trade/Edit/EditButton/EditButton';
 import Divider from '../../../components/Global/Divider/Divider';
@@ -14,9 +15,29 @@ import EditDenominationSwitch from '../../../components/Trade/Edit/EditDenominat
 // interface EditProps {
 //     children: React.ReactNode;
 // }
+import { PositionIF } from '../../../utils/interfaces/PositionIF';
+
+interface PositionState {
+    position: PositionIF;
+}
 
 export default function Edit() {
     const [isModalOpen, openModal, closeModal] = useModal();
+    // const [positionData, setPositionData] = useState<PositionPoolIF>)
+
+    const location = useLocation();
+    // const position = location.state
+
+    const state = location.state as PositionState;
+
+    const { position } = state;
+
+    console.log('this is the one', position);
+    // useEffect(() => {
+    //     setPositionData(position)
+    // }, [position])
+
+    console.log({ position });
 
     const minPricePercentage = -15;
     const maxPricePercentage = 15;
@@ -66,37 +87,58 @@ export default function Edit() {
     }, [rangeHighBoundDisplayPrice, rangeHighBoundFieldBlurred]);
 
     const { positionHash } = useParams();
-    console.log(positionHash);
 
     const confirmEditModal = isModalOpen ? (
         <Modal onClose={closeModal} title='Edit Position'>
             <ConfirmEditModal onClose={closeModal} />
         </Modal>
     ) : null;
+
+    if (position.ambient == false) {
+        console.log(position?.lowRangeDisplay);
+    }
+
+    const minMaxPriceContent = (
+        <EditMinMaxPrice
+            // minPricePercentage={minPricePercentage}
+            // maxPricePercentage={maxPricePercentage}
+            // minPriceInputString={minPriceInputString}
+            // maxPriceInputString={maxPriceInputString}
+            // setMinPriceInputString={setMinPriceInputString}
+            // setMaxPriceInputString={setMaxPriceInputString}
+            // isDenomBase={isDenomBase}
+            // highBoundOnBlur={highBoundOnBlur}
+            // lowBoundOnBlur={lowBoundOnBlur}
+            // rangeLowTick={rangeLowTick}
+            // rangeHighTick={rangeHighTick}
+            // setRangeLowTick={setRangeLowTick}
+            //     setRangeHighTick={setRangeHighTick}
+            minPrice={position?.lowRangeDisplay}
+            maxPrice={position?.highRangeDisplay}
+        />
+    );
     return (
         <div className={styles.editContainer}>
             <EditHeader positionHash={positionHash} />
             <div className={styles.edit_content}>
                 <EditDenominationSwitch />
-                <CurrencyDisplayContainer />
-                <Divider />
-                <MinMaxPrice
-                    minPricePercentage={minPricePercentage}
-                    maxPricePercentage={maxPricePercentage}
-                    minPriceInputString={minPriceInputString}
-                    maxPriceInputString={maxPriceInputString}
-                    setMinPriceInputString={setMinPriceInputString}
-                    setMaxPriceInputString={setMaxPriceInputString}
-                    isDenomBase={isDenomBase}
-                    // highBoundOnFocus={highBoundOnFocus}
-                    highBoundOnBlur={highBoundOnBlur}
-                    lowBoundOnBlur={lowBoundOnBlur}
-                    rangeLowTick={rangeLowTick}
-                    rangeHighTick={rangeHighTick}
-                    setRangeLowTick={setRangeLowTick}
-                    setRangeHighTick={setRangeHighTick}
+                <CurrencyDisplayContainer
+                    quoteTokenSymbol={position.quoteTokenSymbol}
+                    baseTokenSymbol={position.baseTokenSymbol}
+                    tokenAQtyDisplay={position.tokenAQtyDisplay}
+                    tokenBQtyDisplay={position.tokenBQtyDisplay}
                 />
-                <EditPriceInfo />
+                <Divider />
+                {position.ambient == false && minMaxPriceContent}
+                <EditPriceInfo
+                    quoteTokenSymbol={position.quoteTokenSymbol}
+                    baseTokenSymbol={position.baseTokenSymbol}
+                    tokenAQtyDisplay={position.tokenAQtyDisplay}
+                    tokenBQtyDisplay={position.tokenBQtyDisplay}
+                    ambient={position.ambient}
+                    lowRangeDisplay={position.lowRangeDisplay}
+                    highRangeDisplay={position.highRangeDisplay}
+                />
                 <EditButton onClickFn={openModal} />
             </div>
             {confirmEditModal}
