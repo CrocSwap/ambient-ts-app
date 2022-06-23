@@ -141,6 +141,22 @@ export default function Range(props: RangePropsIF) {
     const poolWeiPriceLowLimit = poolPriceNonDisplay * (1 - maxSlippage / 100);
     const poolWeiPriceHighLimit = poolPriceNonDisplay * (1 + maxSlippage / 100);
 
+    const poolPriceDisplayNum = parseFloat(poolPriceDisplay);
+
+    const poolPriceTruncatedInQuote =
+        poolPriceDisplayNum < 2
+            ? truncateDecimals(poolPriceDisplayNum, 6)
+            : truncateDecimals(poolPriceDisplayNum, 2);
+
+    const poolPriceTruncatedInBase =
+        1 / poolPriceDisplayNum < 2
+            ? truncateDecimals(1 / poolPriceDisplayNum, 6)
+            : truncateDecimals(1 / poolPriceDisplayNum, 2);
+
+    const poolPriceTruncated = denominationsInBase
+        ? poolPriceTruncatedInBase
+        : poolPriceTruncatedInQuote;
+
     const signer = provider?.getSigner();
     const tokenA = tokenPair.dataTokenA;
     const tokenB = tokenPair.dataTokenB;
@@ -755,7 +771,7 @@ export default function Range(props: RangePropsIF) {
             <DenominationSwitch
                 tokenPair={tokenPair}
                 displayForBase={tradeData.isDenomBase}
-                poolPriceDisplay={parseFloat(poolPriceDisplay)}
+                poolPriceDisplay={poolPriceDisplayNum}
                 isTokenABase={isTokenABase}
                 didUserFlipDenom={tradeData.didUserFlipDenom}
             />
@@ -769,7 +785,9 @@ export default function Range(props: RangePropsIF) {
     // props for <RangePriceInfo/> React element
     const rangePriceInfoProps = {
         tokenPair: tokenPair,
-        spotPriceDisplay: poolPriceDisplay,
+        spotPriceDisplay: poolPriceTruncated.toString(),
+        poolPriceTruncatedInBase: poolPriceTruncatedInBase.toString(),
+        poolPriceTruncatedInQuote: poolPriceTruncatedInQuote.toString(),
         maxPriceDisplay: maxPriceDisplay,
         minPriceDisplay: minPriceDisplay,
         apyPercentage: apyPercentage,
@@ -828,7 +846,7 @@ export default function Range(props: RangePropsIF) {
     // props for <ConfirmRangeModal/> React element
     const rangeModalProps = {
         tokenPair: tokenPair,
-        spotPriceDisplay: poolPriceDisplay,
+        spotPriceDisplay: poolPriceTruncated.toString(),
         denominationsInBase: denominationsInBase,
         isTokenABase: isTokenABase,
         isAmbient: isAmbient,
@@ -843,6 +861,8 @@ export default function Range(props: RangePropsIF) {
         pinnedMinPriceDisplayTruncatedInQuote: pinnedMinPriceDisplayTruncatedInQuote,
         pinnedMaxPriceDisplayTruncatedInBase: pinnedMaxPriceDisplayTruncatedInBase,
         pinnedMaxPriceDisplayTruncatedInQuote: pinnedMaxPriceDisplayTruncatedInQuote,
+        poolPriceTruncatedInBase: poolPriceTruncatedInBase.toString(),
+        poolPriceTruncatedInQuote: poolPriceTruncatedInQuote.toString(),
     };
 
     // props for <RangeCurrencyConverter/> React element

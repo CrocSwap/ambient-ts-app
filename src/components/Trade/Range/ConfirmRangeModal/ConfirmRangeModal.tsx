@@ -25,6 +25,8 @@ interface ConfirmRangeModalProps {
     pinnedMinPriceDisplayTruncatedInQuote: string;
     pinnedMaxPriceDisplayTruncatedInBase: string;
     pinnedMaxPriceDisplayTruncatedInQuote: string;
+    poolPriceTruncatedInBase: string;
+    poolPriceTruncatedInQuote: string;
 }
 
 export default function ConfirmRangeModal(props: ConfirmRangeModalProps) {
@@ -45,6 +47,8 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalProps) {
         pinnedMinPriceDisplayTruncatedInQuote,
         pinnedMaxPriceDisplayTruncatedInBase,
         pinnedMaxPriceDisplayTruncatedInQuote,
+        poolPriceTruncatedInBase,
+        poolPriceTruncatedInQuote,
     } = props;
 
     const tokenA = tokenPair.dataTokenA;
@@ -128,6 +132,8 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalProps) {
             pinnedMinPriceDisplayTruncatedInQuote={pinnedMinPriceDisplayTruncatedInQuote}
             pinnedMaxPriceDisplayTruncatedInBase={pinnedMaxPriceDisplayTruncatedInBase}
             pinnedMaxPriceDisplayTruncatedInQuote={pinnedMaxPriceDisplayTruncatedInQuote}
+            poolPriceTruncatedInBase={poolPriceTruncatedInBase}
+            poolPriceTruncatedInQuote={poolPriceTruncatedInQuote}
         />
     ) : null;
 
