@@ -776,6 +776,55 @@ export default function Range(props: RangePropsIF) {
         isTokenABase: isTokenABase,
         didUserFlipDenom: tradeData.didUserFlipDenom,
     };
+
+    const pinnedMinPriceDisplayTruncatedInBase = useMemo(
+        () =>
+            getPinnedPriceValuesFromTicks(
+                true,
+                baseTokenDecimals,
+                quoteTokenDecimals,
+                rangeLowTick,
+                rangeHighTick,
+            ).pinnedMinPriceDisplayTruncated,
+        [baseTokenDecimals, quoteTokenDecimals, rangeLowTick, rangeHighTick],
+    );
+
+    const pinnedMinPriceDisplayTruncatedInQuote = useMemo(
+        () =>
+            getPinnedPriceValuesFromTicks(
+                false,
+                baseTokenDecimals,
+                quoteTokenDecimals,
+                rangeLowTick,
+                rangeHighTick,
+            ).pinnedMinPriceDisplayTruncated,
+        [baseTokenDecimals, quoteTokenDecimals, rangeLowTick, rangeHighTick],
+    );
+
+    const pinnedMaxPriceDisplayTruncatedInBase = useMemo(
+        () =>
+            getPinnedPriceValuesFromTicks(
+                true,
+                baseTokenDecimals,
+                quoteTokenDecimals,
+                rangeLowTick,
+                rangeHighTick,
+            ).pinnedMaxPriceDisplayTruncated,
+        [baseTokenDecimals, quoteTokenDecimals, rangeLowTick, rangeHighTick],
+    );
+
+    const pinnedMaxPriceDisplayTruncatedInQuote = useMemo(
+        () =>
+            getPinnedPriceValuesFromTicks(
+                false,
+                baseTokenDecimals,
+                quoteTokenDecimals,
+                rangeLowTick,
+                rangeHighTick,
+            ).pinnedMaxPriceDisplayTruncated,
+        [baseTokenDecimals, quoteTokenDecimals, rangeLowTick, rangeHighTick],
+    );
+
     // props for <ConfirmRangeModal/> React element
     const rangeModalProps = {
         tokenPair: tokenPair,
@@ -790,6 +839,10 @@ export default function Range(props: RangePropsIF) {
         newRangeTransactionHash: newRangeTransactionHash,
         setNewRangeTransactionHash: setNewRangeTransactionHash,
         isInRange: !isOutOfRange,
+        pinnedMinPriceDisplayTruncatedInBase: pinnedMinPriceDisplayTruncatedInBase,
+        pinnedMinPriceDisplayTruncatedInQuote: pinnedMinPriceDisplayTruncatedInQuote,
+        pinnedMaxPriceDisplayTruncatedInBase: pinnedMaxPriceDisplayTruncatedInBase,
+        pinnedMaxPriceDisplayTruncatedInQuote: pinnedMaxPriceDisplayTruncatedInQuote,
     };
 
     // props for <RangeCurrencyConverter/> React element

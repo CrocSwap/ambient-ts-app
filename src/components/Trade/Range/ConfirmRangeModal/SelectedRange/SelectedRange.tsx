@@ -1,5 +1,5 @@
 import styles from './SelectedRange.module.css';
-// import { useState } from 'react';
+import { useState } from 'react';
 import { TokenPairIF } from '../../../../../utils/interfaces/exports';
 
 interface SelectedRangeProps {
@@ -10,23 +10,41 @@ interface SelectedRangeProps {
     isTokenABase: boolean;
     tokenPair: TokenPairIF;
     isAmbient: boolean;
+    pinnedMinPriceDisplayTruncatedInBase: string;
+    pinnedMinPriceDisplayTruncatedInQuote: string;
+    pinnedMaxPriceDisplayTruncatedInBase: string;
+    pinnedMaxPriceDisplayTruncatedInQuote: string;
 }
 export default function SelectedRange(props: SelectedRangeProps) {
     const {
-        minPriceDisplay,
-        maxPriceDisplay,
+        // minPriceDisplay,
+        // maxPriceDisplay,
         spotPriceDisplay,
         denominationsInBase,
         isTokenABase,
         tokenPair,
         isAmbient,
+        pinnedMinPriceDisplayTruncatedInBase,
+        pinnedMinPriceDisplayTruncatedInQuote,
+        pinnedMaxPriceDisplayTruncatedInBase,
+        pinnedMaxPriceDisplayTruncatedInQuote,
     } = props;
-    // const [reverseDisplay, setReverseDisplay] = useState(false);
 
-    const reverseDisplay =
+    // const reverseDisplayDefault = denominationsInBase;
+
+    const reverseDisplayDefault =
         (isTokenABase && denominationsInBase) || (!isTokenABase && !denominationsInBase);
 
-    const invertPrice = denominationsInBase;
+    const [denomInBase, setDenomInBase] = useState(denominationsInBase);
+    const [reverseDisplay, setReverseDisplay] = useState(reverseDisplayDefault);
+
+    const minPrice = denomInBase
+        ? pinnedMinPriceDisplayTruncatedInBase
+        : pinnedMinPriceDisplayTruncatedInQuote;
+
+    const maxPrice = denomInBase
+        ? pinnedMaxPriceDisplayTruncatedInBase
+        : pinnedMaxPriceDisplayTruncatedInQuote;
 
     const tokenAShortName = tokenPair.dataTokenA.symbol;
     const tokenBShortName = tokenPair.dataTokenB.symbol;
@@ -35,8 +53,9 @@ export default function SelectedRange(props: SelectedRangeProps) {
         <div className={styles.button_container}>
             <button
                 onClick={() => {
-                    null;
-                    // setReverseDisplay(!reverseDisplay);
+                    // null;
+                    setReverseDisplay(!reverseDisplay);
+                    setDenomInBase(!denomInBase);
                 }}
                 className={reverseDisplay ? styles.active_button : styles.non_active_button}
             >
@@ -44,8 +63,9 @@ export default function SelectedRange(props: SelectedRangeProps) {
             </button>
             <button
                 onClick={() => {
-                    null;
-                    // setReverseDisplay(!reverseDisplay);
+                    // null;
+                    setReverseDisplay(!reverseDisplay);
+                    setDenomInBase(!denomInBase);
                 }}
                 className={reverseDisplay ? styles.non_active_button : styles.active_button}
             >
@@ -81,7 +101,7 @@ export default function SelectedRange(props: SelectedRangeProps) {
         <div className={styles.selected_range_display}>
             <PriceRangeDisplay
                 title='Min Price'
-                value={minPriceDisplay}
+                value={minPrice}
                 tokens={
                     reverseDisplay
                         ? `${tokenPair.dataTokenB.symbol} per ${tokenPair.dataTokenA.symbol}`
@@ -93,7 +113,7 @@ export default function SelectedRange(props: SelectedRangeProps) {
             />
             <PriceRangeDisplay
                 title='Max Price'
-                value={maxPriceDisplay}
+                value={maxPrice}
                 tokens={
                     reverseDisplay
                         ? `${tokenPair.dataTokenB.symbol} per ${tokenPair.dataTokenA.symbol}`
@@ -111,7 +131,7 @@ export default function SelectedRange(props: SelectedRangeProps) {
             <div className={styles.currentPrice_container}>
                 <span className={styles.currentPrice_title}>Current price</span>
                 <span className={styles.currentPrice_amount}>
-                    {invertPrice ? 1 / parseFloat(spotPriceDisplay) : spotPriceDisplay}
+                    {denomInBase ? 1 / parseFloat(spotPriceDisplay) : spotPriceDisplay}
                 </span>
                 <span className={styles.currentPrice_info}>
                     {reverseDisplay

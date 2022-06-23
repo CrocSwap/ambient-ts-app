@@ -21,6 +21,10 @@ interface ConfirmRangeModalProps {
     isTokenABase: boolean;
     isAmbient: boolean;
     isInRange: boolean;
+    pinnedMinPriceDisplayTruncatedInBase: string;
+    pinnedMinPriceDisplayTruncatedInQuote: string;
+    pinnedMaxPriceDisplayTruncatedInBase: string;
+    pinnedMaxPriceDisplayTruncatedInQuote: string;
 }
 
 export default function ConfirmRangeModal(props: ConfirmRangeModalProps) {
@@ -37,6 +41,10 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalProps) {
         isTokenABase,
         isAmbient,
         isInRange,
+        pinnedMinPriceDisplayTruncatedInBase,
+        pinnedMinPriceDisplayTruncatedInQuote,
+        pinnedMaxPriceDisplayTruncatedInBase,
+        pinnedMaxPriceDisplayTruncatedInQuote,
     } = props;
 
     const tokenA = tokenPair.dataTokenA;
@@ -116,6 +124,10 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalProps) {
             denominationsInBase={denominationsInBase}
             isTokenABase={isTokenABase}
             isAmbient={isAmbient}
+            pinnedMinPriceDisplayTruncatedInBase={pinnedMinPriceDisplayTruncatedInBase}
+            pinnedMinPriceDisplayTruncatedInQuote={pinnedMinPriceDisplayTruncatedInQuote}
+            pinnedMaxPriceDisplayTruncatedInBase={pinnedMaxPriceDisplayTruncatedInBase}
+            pinnedMaxPriceDisplayTruncatedInQuote={pinnedMaxPriceDisplayTruncatedInQuote}
         />
     ) : null;
 
