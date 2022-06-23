@@ -4,7 +4,7 @@ import '../../../App.css';
 import { BiArrowBack } from 'react-icons/bi';
 import { FiSettings, FiMoreHorizontal } from 'react-icons/fi';
 import { CSSTransition } from 'react-transition-group';
-import { FaNetworkWired, FaDiscord, FaSun, FaGithub } from 'react-icons/fa';
+import { FaNetworkWired, FaDiscord, FaSun, FaGithub, FaDotCircle } from 'react-icons/fa';
 import { MdHelp, MdArrowForwardIos, MdLanguage, MdReportProblem } from 'react-icons/md';
 import { motion } from 'framer-motion';
 import arbitrumImage from '../../../../assets/images/networks/arbitrum.svg';
@@ -90,7 +90,12 @@ export default function DropdownMenu(props: DropdownMenuProps) {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
         >
-            <DropdownItem imageIcon={kovanImage}>Kovan</DropdownItem>
+            <DropdownItem
+                imageIcon={kovanImage}
+                rightIcon={<FaDotCircle color='#CDC1FF' size={10} />}
+            >
+                Kovan
+            </DropdownItem>
             <DropdownItem imageIcon={ethereumImage}>Ropsten</DropdownItem>
             <DropdownItem imageIcon={ethereumImage}>Ethereum</DropdownItem>
             <DropdownItem imageIcon={polygonImage}>Polygon</DropdownItem>
