@@ -5940,32 +5940,6 @@ cyclist@^1.0.1:
   resolved "https://registry.yarnpkg.com/cyclist/-/cyclist-1.0.1.tgz#596e9698fd0c80e12038c2b82d6eb1b35b6224d9"
   integrity sha1-WW6WmP0MgOEgOMK4LW6xs1tiJNk=
 
-d3fc@^15.2.4:
-  version "15.2.4"
-  resolved "https://registry.yarnpkg.com/d3fc/-/d3fc-15.2.4.tgz#17e444e765e43b8a07efffa402f02a0d05090d6b"
-  integrity sha512-0AVkhh65O1EYKSo30LGdCJUfnt02pCFdrcS6RSzDScOAZdSEEDo+2aA+ILex3capvHxYUj4I12g6N1LUtVPm9g==
-  dependencies:
-    "@d3fc/d3fc-annotation" "^3.0.11"
-    "@d3fc/d3fc-axis" "^3.0.6"
-    "@d3fc/d3fc-brush" "^3.0.3"
-    "@d3fc/d3fc-chart" "^5.1.4"
-    "@d3fc/d3fc-data-join" "^6.0.3"
-    "@d3fc/d3fc-discontinuous-scale" "^4.0.1"
-    "@d3fc/d3fc-element" "^6.2.0"
-    "@d3fc/d3fc-extent" "^4.0.2"
-    "@d3fc/d3fc-financial-feed" "^7.1.0"
-    "@d3fc/d3fc-group" "^3.0.1"
-    "@d3fc/d3fc-label-layout" "^7.0.3"
-    "@d3fc/d3fc-pointer" "^3.0.2"
-    "@d3fc/d3fc-random-data" "^4.0.1"
-    "@d3fc/d3fc-rebind" "^6.0.1"
-    "@d3fc/d3fc-sample" "^5.0.1"
-    "@d3fc/d3fc-series" "^6.0.4"
-    "@d3fc/d3fc-shape" "^6.0.1"
-    "@d3fc/d3fc-technical-indicator" "^8.1.0"
-    "@d3fc/d3fc-webgl" "^3.1.0"
-    "@d3fc/d3fc-zoom" "^1.1.1"
-
 d@1, d@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/d/-/d-1.0.1.tgz#8698095372d58dbee346ffd0c7093f99f8f9eb5a"
@@ -13487,11 +13461,6 @@ secp256k1@^4.0.1, secp256k1@^4.0.2:
     elliptic "^6.5.4"
     node-addon-api "^2.0.0"
     node-gyp-build "^4.2.0"
-
-seedrandom@^3.0.5:
-  version "3.0.5"
-  resolved "https://registry.yarnpkg.com/seedrandom/-/seedrandom-3.0.5.tgz#54edc85c95222525b0c7a6f6b3543d8e0b3aa0a7"
-  integrity sha512-8OwmbklUNzwezjGInmZ+2clQmExQPvomqjL7LFqOYqtmuxRgQYqOD3mHaU+MvZn5FLUeVxVfQjwLZW/n/JFuqg==
 
 select-hose@^2.0.0:
   version "2.0.0"
