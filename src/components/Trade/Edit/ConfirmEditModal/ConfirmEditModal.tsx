@@ -20,6 +20,7 @@ export default function ConfirmEditModal(props: ConfirmEditModalProps) {
                 baseTokenSymbol={position.baseTokenSymbol}
                 tokenAQtyDisplay={position.tokenAQtyDisplay}
                 tokenBQtyDisplay={position.tokenBQtyDisplay}
+                disable
             />
             <Divider />
             <EditPriceInfo

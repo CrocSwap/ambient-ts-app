@@ -6,6 +6,7 @@ interface CurrencyDisplayProps {
     tokenAQtyDisplay: string;
     tokenBQtyDisplay: string;
     baseTokenSymbol: string;
+    disable?: boolean;
 }
 
 export default function CurrencyDisplayContainer(props: CurrencyDisplayProps) {
@@ -22,6 +23,8 @@ export default function CurrencyDisplayContainer(props: CurrencyDisplayProps) {
                 tokenImg={ethereumIcon}
                 qty={props.tokenAQtyDisplay}
                 symbol={props.baseTokenSymbol}
+                fieldId={'sell'}
+                disable={props.disable}
             />
 
             <AmountAndCurrencyDisplay
@@ -29,6 +32,8 @@ export default function CurrencyDisplayContainer(props: CurrencyDisplayProps) {
                 tokenImg={diaIcon}
                 qty={props.tokenBQtyDisplay}
                 symbol={props.quoteTokenSymbol}
+                fieldId={'buy'}
+                disable={props.disable}
             />
         </div>
     );

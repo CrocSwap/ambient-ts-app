@@ -5,14 +5,16 @@ interface AmountAndCurrencyDisplayProps {
     tokenImg: string;
     qty: string;
     symbol: string;
+    fieldId: string;
+    disable?: boolean;
 }
 
 export default function AmountAndCurrencyDisplay(props: AmountAndCurrencyDisplayProps) {
-    const { value, tokenImg, qty, symbol } = props;
+    const { value, tokenImg, qty, symbol, fieldId, disable } = props;
     const currencyQuantity = (
         <div className={styles.token_amount}>
             <input
-                // id={`${fieldId}-range-quantity`}
+                id={`${fieldId}-edit-range-quantity`}
                 className={styles.currency_quantity}
                 placeholder='0.0'
                 // onChange={(e) => updateOtherQuantity(e)}
@@ -23,7 +25,7 @@ export default function AmountAndCurrencyDisplay(props: AmountAndCurrencyDisplay
                 min='0'
                 minLength={1}
                 pattern='^[0-9]*[.,]?[0-9]*$'
-                // disabled
+                disabled={disable}
                 required
                 value={qty}
             />
