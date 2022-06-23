@@ -17,8 +17,15 @@ export default function Positions(props: PositionsProps) {
 
     const examplePositions = [1, 2, 3];
 
-    const positionsDisplay = examplePositions.map((position, idx) => (
-        <Position key={idx} portfolio={portfolio} notOnTradeRoute={notOnTradeRoute} />
+    userPositions.map((position) => console.log(position));
+
+    const positionsDisplay = userPositions.map((position, idx) => (
+        <Position
+            key={idx}
+            portfolio={portfolio}
+            notOnTradeRoute={notOnTradeRoute}
+            position={position}
+        />
     ));
 
     const positionsHeader = (
