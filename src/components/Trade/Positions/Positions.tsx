@@ -1,4 +1,6 @@
 import Position from '../../Global/Position/Position';
+import { useAppSelector } from './../../../utils/hooks/reduxToolkit';
+
 import styles from './Positions.module.css';
 
 interface PositionsProps {
@@ -8,6 +10,11 @@ interface PositionsProps {
 
 export default function Positions(props: PositionsProps) {
     const { portfolio, notOnTradeRoute } = props;
+    const graphData = useAppSelector((state) => state?.graphData);
+
+    const userPositions = graphData?.positionsByUser?.positions;
+    console.log({ userPositions });
+
     const examplePositions = [1, 2, 3];
 
     const positionsDisplay = examplePositions.map((position, idx) => (
