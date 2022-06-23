@@ -1,6 +1,7 @@
 import styles from './EditMinMaxPrice.module.css';
 import EditPriceInput from '../EditPriceInput/EditPriceInput';
 import MinMaxPrice from '../../Range/AdvancedModeComponents/MinMaxPrice/MinMaxPrice';
+import { motion } from 'framer-motion';
 
 interface EditMinMaxPriceProps {
     minPrice: string;
@@ -10,7 +11,12 @@ export default function EditMinMaxPrice(props: EditMinMaxPriceProps) {
     console.log('HERE', props.minPrice);
 
     return (
-        <div className={styles.min_max_container}>
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.1 }}
+            className={styles.min_max_container}
+        >
             <EditPriceInput
                 fieldId='edit-base'
                 title='Min Price'
@@ -23,6 +29,6 @@ export default function EditMinMaxPrice(props: EditMinMaxPriceProps) {
                 percentageDifference={15}
                 value={props.maxPrice}
             />
-        </div>
+        </motion.div>
     );
 }

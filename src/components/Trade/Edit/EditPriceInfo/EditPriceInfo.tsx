@@ -1,5 +1,6 @@
 import styles from './EditPriceInfo.module.css';
 // import { TokenPairIF } from '../../../../../utils/interfaces/exports';
+import { motion } from 'framer-motion';
 
 interface EditPriceInfoIF {
     quoteTokenSymbol: string;
@@ -86,7 +87,6 @@ export default function EditPriceInfo(props: EditPriceInfoIF) {
                         <tbody>
                             {balanceTokenA}
                             {balanceTokenB}
-
                             {props.ambient == false && rangeUpperLimit}
                             {props.ambient == false && rangeLowerLimit}
                         </tbody>
