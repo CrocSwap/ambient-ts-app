@@ -6,6 +6,23 @@ import { motion } from 'framer-motion';
 interface EditMinMaxPriceProps {
     minPrice: string;
     maxPrice: string;
+
+    minPricePercentage: number;
+    maxPricePercentage: number;
+    minPriceInputString: string;
+    maxPriceInputString: string;
+    setMinPriceInputString: React.Dispatch<React.SetStateAction<string>>;
+    setMaxPriceInputString: React.Dispatch<React.SetStateAction<string>>;
+    // disable?: boolean;
+    disable?: boolean;
+    isDenomBase: boolean;
+    // highBoundOnFocus: () => void;
+    lowBoundOnBlur: () => void;
+    highBoundOnBlur: () => void;
+    rangeLowTick: number;
+    rangeHighTick: number;
+    setRangeLowTick: React.Dispatch<React.SetStateAction<number>>;
+    setRangeHighTick: React.Dispatch<React.SetStateAction<number>>;
 }
 export default function EditMinMaxPrice(props: EditMinMaxPriceProps) {
     console.log('HERE', props.minPrice);

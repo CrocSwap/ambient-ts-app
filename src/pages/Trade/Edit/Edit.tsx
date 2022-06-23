@@ -100,19 +100,19 @@ export default function Edit() {
 
     const minMaxPriceContent = (
         <EditMinMaxPrice
-            // minPricePercentage={minPricePercentage}
-            // maxPricePercentage={maxPricePercentage}
-            // minPriceInputString={minPriceInputString}
-            // maxPriceInputString={maxPriceInputString}
-            // setMinPriceInputString={setMinPriceInputString}
-            // setMaxPriceInputString={setMaxPriceInputString}
-            // isDenomBase={isDenomBase}
-            // highBoundOnBlur={highBoundOnBlur}
-            // lowBoundOnBlur={lowBoundOnBlur}
-            // rangeLowTick={rangeLowTick}
-            // rangeHighTick={rangeHighTick}
-            // setRangeLowTick={setRangeLowTick}
-            //     setRangeHighTick={setRangeHighTick}
+            minPricePercentage={minPricePercentage}
+            maxPricePercentage={maxPricePercentage}
+            minPriceInputString={minPriceInputString}
+            maxPriceInputString={maxPriceInputString}
+            setMinPriceInputString={setMinPriceInputString}
+            setMaxPriceInputString={setMaxPriceInputString}
+            isDenomBase={isDenomBase}
+            highBoundOnBlur={highBoundOnBlur}
+            lowBoundOnBlur={lowBoundOnBlur}
+            rangeLowTick={rangeLowTick}
+            rangeHighTick={rangeHighTick}
+            setRangeLowTick={setRangeLowTick}
+            setRangeHighTick={setRangeHighTick}
             minPrice={position?.lowRangeDisplay}
             maxPrice={position?.highRangeDisplay}
         />
