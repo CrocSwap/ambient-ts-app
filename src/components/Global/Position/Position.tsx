@@ -119,7 +119,7 @@ export default function Position(props: PositionProps) {
                 35.65%
             </td>
             <td data-column='Range Status'>
-                <RangeStatus isInRange isAmbient />
+                <RangeStatus isInRange isAmbient={position.ambient} />
                 {/* In Range */}
             </td>
             <td data-column='' className={styles.option_buttons}>
