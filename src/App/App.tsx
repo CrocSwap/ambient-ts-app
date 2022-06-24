@@ -356,6 +356,45 @@ export default function App() {
 
     const graphData = useAppSelector((state) => state.graphData);
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const getPositionData = async (position: any): Promise<any> => {
+        const baseTokenAddress = position.pool.base;
+        const quoteTokenAddress = position.pool.quote;
+        const poolPriceDisplay = await getSpotPriceDisplay(
+            baseTokenAddress,
+            quoteTokenAddress,
+            POOL_PRIMARY,
+            provider,
+        );
+        position.poolPriceDisplay = poolPriceDisplay;
+        if (baseTokenAddress === contractAddresses.ZERO_ADDR) {
+            position.baseTokenSymbol = 'ETH';
+            position.quoteTokenSymbol = 'DAI';
+            position.tokenAQtyDisplay = '1';
+            position.tokenBQtyDisplay = '2000';
+            if (!position.ambient) {
+                position.lowRangeDisplay = '1500';
+                position.highRangeDisplay = '2500';
+            }
+        } else if (
+            baseTokenAddress.toLowerCase() ===
+            '0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa'.toLowerCase()
+        ) {
+            position.baseTokenSymbol = 'DAI';
+            position.quoteTokenSymbol = 'USDC';
+            position.tokenAQtyDisplay = '101';
+            position.tokenBQtyDisplay = '100';
+            if (!position.ambient) {
+                position.lowRangeDisplay = '0.9';
+                position.highRangeDisplay = '1.1';
+            }
+        } else {
+            position.baseTokenSymbol = 'unknownBase';
+            position.quoteTokenSymbol = 'unknownQuote';
+        }
+        return position;
+    };
+
     useEffect(() => {
         if (account) {
             const endpoint = 'https://api.thegraph.com/subgraphs/name/a0910841082130913312/croc22';
@@ -387,50 +426,18 @@ export default function App() {
                 variables,
                 // requestHeaders: headers,
             ).then((data) => {
-                if (JSON.stringify(graphData.positionsByUser) !== JSON.stringify(data.user)) {
-                    const userData = data.user;
-                    const allPositions = userData.positions;
+                // if (JSON.stringify(graphData.positionsByUser) !== JSON.stringify(data.user)) {
+                const userData = data.user;
+                const allPositions = userData.positions;
 
-                    const updatedAllPositionsArray = [];
+                // let updatedAllPositionsArray = [];
 
-                    for (let index = 0; index < allPositions.length; index++) {
-                        const position = allPositions[index];
-                        const baseTokenAddress = position.pool.base;
-                        if (baseTokenAddress === contractAddresses.ZERO_ADDR) {
-                            position.baseTokenSymbol = 'ETH';
-                            position.quoteTokenSymbol = 'DAI';
-                            position.tokenAQtyDisplay = '1';
-                            position.tokenBQtyDisplay = '2000';
-                            if (!position.ambient) {
-                                position.lowRangeDisplay = '1500';
-                                position.highRangeDisplay = '2500';
-                            }
-                            position.poolPriceDisplay = '1700';
-                        } else if (
-                            baseTokenAddress.toLowerCase() ===
-                            '0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa'.toLowerCase()
-                        ) {
-                            position.baseTokenSymbol = 'DAI';
-                            position.quoteTokenSymbol = 'USDC';
-                            position.tokenAQtyDisplay = '101';
-                            position.tokenBQtyDisplay = '100';
-                            if (!position.ambient) {
-                                position.lowRangeDisplay = '0.9';
-                                position.highRangeDisplay = '1.1';
-                            }
-                            position.poolPriceDisplay = '1.01';
-                        } else {
-                            position.baseTokenSymbol = 'unknownBase';
-                            position.quoteTokenSymbol = 'unknownQuote';
-                        }
-
-                        updatedAllPositionsArray.push(position);
-                    }
-                    userData.positions = updatedAllPositionsArray;
+                Promise.all(allPositions.map(getPositionData)).then((updatedPositions) => {
+                    userData.positions = updatedPositions;
                     if (JSON.stringify(graphData.positionsByUser) !== JSON.stringify(userData)) {
                         dispatch(setPositionsByUser(userData));
                     }
-                }
+                });
             });
         }
     }, [account, lastBlockNumber]);
