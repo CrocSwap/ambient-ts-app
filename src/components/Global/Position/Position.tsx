@@ -127,7 +127,7 @@ export default function Position(props: PositionProps) {
                     Harvest
                 </button>
                 <button className={styles.option_button}>
-                    <Link to={`/trade/edit/${positionId}`} state={positionData}>
+                    <Link to={`/trade/edit/${position.id}`} state={positionData}>
                         Edit
                     </Link>
                 </button>
