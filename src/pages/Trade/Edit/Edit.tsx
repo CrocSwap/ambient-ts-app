@@ -122,7 +122,6 @@ export default function Edit() {
         highRangeDisplay: position.highRangeDisplay,
     };
 
-    const minMaxPriceContent = <EditMinMaxPrice {...editMinMaxPriceProps} />;
     return (
         <div className={styles.editContainer}>
             <EditHeader positionHash={positionHash} />
@@ -130,7 +129,7 @@ export default function Edit() {
                 <EditDenominationSwitch />
                 <CurrencyDisplayContainer {...currencyDisplayContainerProps} />
                 <Divider />
-                {position.ambient == false && minMaxPriceContent}
+                {position.ambient == false && <EditMinMaxPrice {...editMinMaxPriceProps} />}
                 <EditPriceInfo {...editPriceInfoProps} />
                 <EditButton onClickFn={openModal} />
             </div>
