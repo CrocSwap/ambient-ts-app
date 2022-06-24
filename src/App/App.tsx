@@ -405,6 +405,7 @@ export default function App() {
                                 position.lowRangeDisplay = '1500';
                                 position.highRangeDisplay = '2500';
                             }
+                            position.poolPriceDisplay = '1700';
                         } else if (
                             baseTokenAddress.toLowerCase() ===
                             '0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa'.toLowerCase()
@@ -417,6 +418,7 @@ export default function App() {
                                 position.lowRangeDisplay = '0.9';
                                 position.highRangeDisplay = '1.1';
                             }
+                            position.poolPriceDisplay = '1.01';
                         } else {
                             position.baseTokenSymbol = 'unknownBase';
                             position.quoteTokenSymbol = 'unknownQuote';
