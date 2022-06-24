@@ -1,6 +1,7 @@
 import styles from './TokenSelectContainer.module.css';
 import { useState, SetStateAction, useEffect } from 'react';
 import TokenSelect from '../TokenSelect/TokenSelect';
+import TokenSelectSearchable from '../TokenSelect/TokenSelectSearchable';
 import { TokenIF, TokenPairIF, TokenListIF } from '../../../utils/interfaces/exports';
 import Button from '../../Global/Button/Button';
 import TokenList from '../../Global/TokenList/TokenList';
@@ -92,6 +93,13 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
                         />
                     );
                 })}
+                {searchableTokens.map((tkn:TokenIF, idx) => (
+                    <TokenSelectSearchable
+                        key={`tss_${idx}`}
+                        token={tkn}
+                        closeModal={closeModal}
+                    />
+                ))}
         </>
     );
 
