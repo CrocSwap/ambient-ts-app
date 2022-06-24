@@ -88,7 +88,7 @@ export default function TokenList() {
             {TokenListContainerHeader}
             {TokenListInput}
             <Divider />
-            {TokenListContent}
+            <div className={styles.token_list_content_container}>{TokenListContent}</div>
         </div>
     );
 
