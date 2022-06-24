@@ -95,6 +95,23 @@ export default function Position(props: PositionProps) {
         position: position,
     };
 
+    let isPositionInRange = true;
+
+    if (position.poolPriceInTicks) {
+        if (position.ambient) {
+            isPositionInRange = true;
+        } else if (
+            position.bidTick <= position.poolPriceInTicks &&
+            position.poolPriceInTicks <= position.askTick
+        ) {
+            isPositionInRange = true;
+        } else {
+            isPositionInRange = false;
+        }
+    }
+
+    //  isPositionInRange = position.ambient ? true :  false;
+
     return (
         <tr>
             {portfolio && tokenImages}
@@ -119,7 +136,7 @@ export default function Position(props: PositionProps) {
                 35.65%
             </td>
             <td data-column='Range Status'>
-                <RangeStatus isInRange isAmbient={position.ambient} />
+                <RangeStatus isInRange={isPositionInRange} isAmbient={position.ambient} />
                 {/* In Range */}
             </td>
             <td data-column='' className={styles.option_buttons}>

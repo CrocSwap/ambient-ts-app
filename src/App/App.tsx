@@ -360,21 +360,23 @@ export default function App() {
     const getPositionData = async (position: any): Promise<any> => {
         const baseTokenAddress = position.pool.base;
         const quoteTokenAddress = position.pool.quote;
-        const poolPriceDisplay = await getSpotPriceDisplay(
+        const poolPriceNonDisplay = await getSpotPrice(
             baseTokenAddress,
             quoteTokenAddress,
             POOL_PRIMARY,
             provider,
         );
-        position.poolPriceDisplay = poolPriceDisplay;
+        const poolPriceInTicks = Math.log(poolPriceNonDisplay) / Math.log(1.0001);
+
+        position.poolPriceInTicks = poolPriceInTicks;
         if (baseTokenAddress === contractAddresses.ZERO_ADDR) {
             position.baseTokenSymbol = 'ETH';
             position.quoteTokenSymbol = 'DAI';
             position.tokenAQtyDisplay = '1';
             position.tokenBQtyDisplay = '2000';
             if (!position.ambient) {
-                position.lowRangeDisplay = '1500';
-                position.highRangeDisplay = '2500';
+                position.lowRangeDisplay = '.001';
+                position.highRangeDisplay = '.002';
             }
         } else if (
             baseTokenAddress.toLowerCase() ===

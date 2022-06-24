@@ -16,4 +16,5 @@ export interface PositionIF {
     quoteTokenSymbol: string;
     tokenAQtyDisplay: string;
     tokenBQtyDisplay: string;
+    poolPriceInTicks?: number;
 }
