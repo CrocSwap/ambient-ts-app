@@ -28,7 +28,7 @@ export default function LimitHeader(props: LimitHeaderPropsIF) {
 
     const settingsModalOrNull = isModalOpen ? (
         <Modal noHeader title='modal' onClose={closeModal}>
-            <TransactionSettings />
+            <TransactionSettings onClose={closeModal} />
         </Modal>
     ) : null;
 
