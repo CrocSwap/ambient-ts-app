@@ -4,17 +4,21 @@ import { useModal } from '../Modal/useModal';
 import Modal from '../Modal/Modal';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { PositionIF } from '../../../utils/interfaces/PositionIF';
 
 import RemoveRange from '../../RemoveRange/RemoveRange';
 import RangeDetails from '../../RangeDetails/RangeDetails';
 import RangeDetailsHeader from '../../RangeDetails/RangeDetailsHeader/RangeDetailsHeader';
+import truncateAddress from '../../../utils/truncateAddress';
 
 interface PositionProps {
     portfolio?: boolean;
     notOnTradeRoute?: boolean;
+    position: PositionIF;
 }
 export default function Position(props: PositionProps) {
     // const navigate = useNavigate();
+    const { position } = props;
 
     const { portfolio } = props;
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -85,17 +89,32 @@ export default function Position(props: PositionProps) {
             </td>
         </>
     );
-    const positionId = '0xfd05fss3da3ff';
+    const positionId = truncateAddress(position.id, 18);
+
+    const positionData = {
+        position: position,
+    };
 
     return (
         <tr>
             {portfolio && tokenImages}
             <td data-column='Position ID' className={styles.position_id}>
-                0xfs05...db35
+                {positionId}
             </td>
-            <td data-column='Range' className={styles.position_range}>
-                2100.00 3200.00
-            </td>
+            {position.ambient == false && (
+                <td data-column='Range' className={styles.position_range}>
+                    2100.00 3200.00
+                </td>
+            )}
+
+            {position.ambient == true && (
+                <td
+                    data-column='Range'
+                    className={`${styles.position_range} ${styles.ambient_text}`}
+                >
+                    ambient
+                </td>
+            )}
             <td data-column='APY' className={styles.apy}>
                 35.65%
             </td>
@@ -108,7 +127,9 @@ export default function Position(props: PositionProps) {
                     Harvest
                 </button>
                 <button className={styles.option_button}>
-                    <Link to={`/trade/edit/${positionId}`}>Edit</Link>
+                    <Link to={`/trade/edit/${positionId}`} state={positionData}>
+                        Edit
+                    </Link>
                 </button>
                 <button className={styles.option_button} onClick={openRemoveModal}>
                     Remove
