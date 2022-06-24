@@ -136,10 +136,10 @@ export default function Range(props: RangePropsIF) {
 
     const isTokenABase = tokenPair?.dataTokenA.address === baseTokenAddress;
 
-    const maxSlippage = 5;
+    const slippageTolerancePercentage = tradeData.slippageTolerance;
 
-    const poolWeiPriceLowLimit = poolPriceNonDisplay * (1 - maxSlippage / 100);
-    const poolWeiPriceHighLimit = poolPriceNonDisplay * (1 + maxSlippage / 100);
+    const poolWeiPriceLowLimit = poolPriceNonDisplay * (1 - slippageTolerancePercentage / 100);
+    const poolWeiPriceHighLimit = poolPriceNonDisplay * (1 + slippageTolerancePercentage / 100);
 
     const poolPriceDisplayNum = parseFloat(poolPriceDisplay);
 
@@ -908,7 +908,7 @@ export default function Range(props: RangePropsIF) {
         tokenPair: tokenPair,
         gasPriceinGwei: gasPriceinGwei,
         poolPriceDisplay: Number(poolPriceDisplay),
-        slippageTolerance: 0.05,
+        slippageTolerance: slippageTolerancePercentage,
         liquidityProviderFee: 0.3,
         quoteTokenIsBuy: true,
         displayForBase: tradeData.isDenomBase,
