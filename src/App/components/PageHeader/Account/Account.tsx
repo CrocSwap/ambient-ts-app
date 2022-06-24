@@ -21,6 +21,7 @@ interface IAccountProps {
     isAuthenticated?: boolean;
     isWeb3Enabled?: boolean;
     clickLogout: () => void;
+    ensName: string;
 }
 
 export default function Account(props: IAccountProps): React.ReactElement<IAccountProps> {
@@ -28,7 +29,7 @@ export default function Account(props: IAccountProps): React.ReactElement<IAccou
     // const [anchorEl, setAnchorEl] = useState(null);
     const [value, copy] = useCopyToClipboard();
 
-    const { isAuthenticated, isWeb3Enabled, clickLogout } = props;
+    const { isAuthenticated, isWeb3Enabled, clickLogout, ensName } = props;
     // eslint-disable-next-line
     // const handlePopoverClick = (event: React.ChangeEvent<any>) => {
     //     setAnchorEl(event.currentTarget);
@@ -114,7 +115,7 @@ export default function Account(props: IAccountProps): React.ReactElement<IAccou
             </span>
             {/* TODO : REFACTOR THIS TO POPUP ALERT ON COPY - USE VALUE */}
             <div className={styles.title_gradient} onClick={handleCopyAddress}>
-                {props.accountAddress}
+                {ensName !== '' ? ensName : props.accountAddress}
             </div>
 
             {/* <AiOutlineQuestionCircle size={20} color='#CDC1FF' /> */}
