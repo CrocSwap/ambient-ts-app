@@ -29,7 +29,7 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
         showManageTokenListContent,
         setShowManageTokenListContent,
     } = props;
-    
+
     const [searchTerm] = useState('');
 
     const [selectableTokens, setSelectableTokens] = useState(tokensBank);

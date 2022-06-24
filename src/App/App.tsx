@@ -79,10 +79,10 @@ export default function App() {
             // if user object exists, pull it
             const user = JSON.parse(localStorage.getItem('user') as string);
             // see if user object has a list of imported tokens
-            if (user.tokens) {
+            if (user.importedTokens) {
                 // if imported tokens are listed, hold in local state
                 setImportedTokens(
-                    user.tokens.filter(
+                    user.importedTokens.filter(
                         (tkn: TokenIF) => tkn.chainId === parseInt(chainId ?? '0x2a'),
                     ),
                 );
