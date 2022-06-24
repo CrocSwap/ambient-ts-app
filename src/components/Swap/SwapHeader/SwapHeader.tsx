@@ -29,7 +29,7 @@ export default function SwapHeader(props: swapHeaderPropsIF) {
 
     const settingsModalOrNull = isModalOpen ? (
         <Modal noHeader title='modal' onClose={closeModal}>
-            <TransactionSettings />
+            <TransactionSettings onClose={closeModal} />
         </Modal>
     ) : null;
 

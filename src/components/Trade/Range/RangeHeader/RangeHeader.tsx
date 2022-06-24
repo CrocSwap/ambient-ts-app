@@ -28,7 +28,7 @@ export default function RangeHeader(props: RangeHeaderPropsIF) {
 
     const settingsModalOrNull = isModalOpen ? (
         <Modal noHeader title='modal' onClose={closeModal}>
-            <TransactionSettings />
+            <TransactionSettings onClose={closeModal} />
         </Modal>
     ) : null;
 
