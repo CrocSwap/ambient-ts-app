@@ -56,6 +56,20 @@ import {
 export default function App() {
     const { chainId, isWeb3Enabled, account, logout, isAuthenticated } = useMoralis();
 
+    const [ensName, setEnsName] = useState('');
+    useEffect(() => {
+        (async () => {
+            const provider = new ethers.providers.JsonRpcProvider(
+                'https://speedy-nodes-nyc.moralis.io/015fffb61180886c9708499e/eth/goerli',
+            );
+            if (account) {
+                const name = await provider.lookupAddress(account);
+                if (name) setEnsName(name);
+                else setEnsName('');
+            }
+        })();
+    }, [account]);
+
     const dispatch = useAppDispatch();
 
     const [importedTokens, setImportedTokens] = useState(defaultTokens);
@@ -618,6 +632,7 @@ export default function App() {
         nativeBalance: nativeBalance,
         clickLogout: clickLogout,
         metamaskLocked: metamaskLocked,
+        ensName: ensName,
     };
 
     // props for <Swap/> React element

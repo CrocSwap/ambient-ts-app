@@ -22,9 +22,12 @@ interface IHeaderProps {
     nativeBalance: string;
     clickLogout: () => void;
     metamaskLocked: boolean;
+    ensName: string;
 }
 
 export default function PageHeader(props: IHeaderProps): React.ReactElement<IHeaderProps> {
+    const { ensName } = props;
+
     const { user, account, enableWeb3, isWeb3Enabled, authenticate, isAuthenticated } =
         useMoralis();
 
@@ -115,7 +118,7 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
         nativeBalance: props.nativeBalance,
         accountAddress: accountAddress,
         accountAddressFull: isAuthenticated && account ? account : '',
-
+        ensName: ensName,
         isAuthenticated: isAuthenticated,
         isWeb3Enabled: isWeb3Enabled,
         clickLogout: props.clickLogout,
