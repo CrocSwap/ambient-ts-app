@@ -27,7 +27,7 @@ export default function TransactionSettings(props: TransactionSettingsProps) {
     return (
         <div className={styles.settings_container}>
             <div className={styles.settings_title}>Settings</div>
-            <SlippageTolerance setSlippageInput={setSlippageInput} />
+            <SlippageTolerance setSlippageInput={setSlippageInput} slippageInput={slippageInput} />
             <button onClick={handleClose}>Submit</button>
         </div>
     );
