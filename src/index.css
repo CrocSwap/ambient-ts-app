@@ -54,6 +54,8 @@
 
   /* border */
   --border-radius: 4px;
+  /* animations */
+  --animation-speed: 300ms
 
 
 

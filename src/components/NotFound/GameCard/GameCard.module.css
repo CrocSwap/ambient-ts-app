@@ -9,7 +9,7 @@
     width: 100%;
     display: block;
 
-    border-radius: 6px;
+    border-radius: var(--border-radius);
 }
 
 .card .front{

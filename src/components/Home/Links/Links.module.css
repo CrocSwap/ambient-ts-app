@@ -5,7 +5,7 @@
    
      height: 500px;
      padding: 1rem;
-     border-radius: 4px;
+     border-radius: var(--border-radius);
     
      background: url('../../../assets/images/home/ambient_logo2.png') 
      no-repeat

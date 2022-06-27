@@ -28,7 +28,7 @@
     padding: 0.1rem 0.6rem;
   
     cursor: pointer;
-    transition: all 0.3s ease-in-out;
+    transition: all var(--animation-speed) ease-in-out;
   
     border: none;
     /* border: 1px solid var(--border-color); */

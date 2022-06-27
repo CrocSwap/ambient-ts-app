@@ -40,7 +40,7 @@
     justify-content: space-between;
     align-items: center;
     margin: 1rem 0;
-    transition: all 4s ease-in-out;
+    transition: all var(--animation-speed)ease-in-out;
 }
 
 .graph_container{

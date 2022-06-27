@@ -45,7 +45,7 @@
     left: 2px;
   
     content: "";
-    transition: 0.2s;
+    transition: all var(--animation-speed) ease;
     /* width: 20px;
       height: 20px; */
   
