@@ -705,7 +705,7 @@ export default function Range(props: RangePropsIF) {
         }
         if (tx) {
             let newTransactionHash = tx.hash;
-            setNewRangeTransactionHash(newRangeTransactionHash);
+            setNewRangeTransactionHash(newTransactionHash);
             console.log({ newTransactionHash });
             let parsedReceipt;
 
