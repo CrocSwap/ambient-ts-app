@@ -33,7 +33,7 @@ export default function PortfolioTabs() {
             </div>
             <div className={styles.tabs_outlet}>
                 <TabContent id='tab1' activeTab={activeTab}>
-                    <Positions portfolio isAllPositionsEnabled={false} />
+                    <Positions portfolio isAllPositionsEnabled={false} notOnTradeRoute={true} />
                 </TabContent>
                 <TabContent id='tab2' activeTab={activeTab}>
                     {/* <p>Exchange Component</p> */}

@@ -17,10 +17,20 @@ interface PositionProps {
     notOnTradeRoute?: boolean;
     position: PositionIF;
     isAllPositionsEnabled: boolean;
+    tokenAAddress: string;
+    tokenBAddress: string;
+    account?: string;
 }
 export default function Position(props: PositionProps) {
     // const navigate = useNavigate();
-    const { position, isAllPositionsEnabled } = props;
+    const {
+        position,
+        isAllPositionsEnabled,
+        tokenAAddress,
+        tokenBAddress,
+        account,
+        notOnTradeRoute,
+    } = props;
 
     const { portfolio } = props;
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -91,7 +101,8 @@ export default function Position(props: PositionProps) {
             </td>
         </>
     );
-    const ownerId = truncateAddress(position.id, 18);
+    const ownerId = position ? position.accountId : null;
+    const ownerIdTruncated = position ? truncateAddress(position.accountId, 18) : null;
 
     const positionData = {
         position: position,
@@ -127,62 +138,80 @@ export default function Position(props: PositionProps) {
         }
     }
 
-    //  isPositionInRange = position.ambient ? true :  false;
+    const positionBaseAddressLowerCase = position.pool.base.toLowerCase();
+    const positionQuoteAddressLowerCase = position.pool.quote.toLowerCase();
 
-    return (
-        <tr>
-            {portfolio && tokenImages}
-            {isAllPositionsEnabled && (
-                <td data-column='Owner ID' className={styles.position_id}>
-                    {ownerId}
-                </td>
-            )}
-            <td data-column='Position ID' className={styles.position_id}>
-                {truncatedPosHash}
-            </td>
-            {position.ambient == false && (
-                <td data-column='Range' className={styles.position_range}>
-                    2100.00 3200.00
-                </td>
-            )}
-            {position.ambient == true && (
-                <td
-                    data-column='Range'
-                    className={`${styles.position_range} ${styles.ambient_text}`}
-                >
-                    ambient
-                </td>
-            )}
-            <td data-column='APY' className={styles.apy}>
-                35.65%
-            </td>
-            <td data-column='Range Status'>
-                <RangeStatus isInRange={isPositionInRange} isAmbient={position.ambient} />
-                {/* In Range */}
-            </td>
-            <td data-column='' className={styles.option_buttons}>
-                {!isAllPositionsEnabled && (
-                    <button className={styles.option_button} onClick={openHarvestModal}>
-                        Harvest
-                    </button>
+    const tokenAAddressLowerCase = tokenAAddress.toLowerCase();
+    const tokenBAddressLowerCase = tokenBAddress.toLowerCase();
+
+    const positionMatchesSelectedTokens =
+        (positionBaseAddressLowerCase === tokenAAddressLowerCase ||
+            positionQuoteAddressLowerCase === tokenAAddressLowerCase) &&
+        (positionBaseAddressLowerCase === tokenBAddressLowerCase ||
+            positionQuoteAddressLowerCase === tokenBAddressLowerCase);
+
+    const accountAddress = account ? account.toLowerCase() : null;
+
+    const displayAllOrOwned = isAllPositionsEnabled || ownerId === accountAddress;
+    const notDisplayAllOrOwned = !isAllPositionsEnabled || ownerId === accountAddress;
+
+    const positionRowOrNull =
+        notOnTradeRoute || (positionMatchesSelectedTokens && displayAllOrOwned) ? (
+            <tr>
+                {portfolio && tokenImages}
+                {isAllPositionsEnabled && (
+                    <td data-column='Owner ID' className={styles.position_id}>
+                        {ownerIdTruncated}
+                    </td>
                 )}
-                {!isAllPositionsEnabled && (
-                    <button className={styles.option_button}>
-                        <Link to={`/trade/edit/${ownerId}`} state={positionData}>
-                            Edit
-                        </Link>
-                    </button>
+                <td data-column='Position ID' className={styles.position_id}>
+                    {truncatedPosHash}
+                </td>
+                {position.ambient == false && (
+                    <td data-column='Range' className={styles.position_range}>
+                        2100.00 3200.00
+                    </td>
                 )}
-                {!isAllPositionsEnabled && (
-                    <button className={styles.option_button} onClick={openRemoveModal}>
-                        Remove
-                    </button>
+                {position.ambient == true && (
+                    <td
+                        data-column='Range'
+                        className={`${styles.position_range} ${styles.ambient_text}`}
+                    >
+                        ambient
+                    </td>
                 )}
-                <button className={styles.option_button} onClick={openDetailsModal}>
-                    Details
-                </button>
-            </td>
-            {modalOrNull}
-        </tr>
-    );
+                <td data-column='APY' className={styles.apy}>
+                    35.65%
+                </td>
+                <td data-column='Range Status'>
+                    <RangeStatus isInRange={isPositionInRange} isAmbient={position.ambient} />
+                    {/* In Range */}
+                </td>
+                <td data-column='' className={styles.option_buttons}>
+                    {notDisplayAllOrOwned && (
+                        <button className={styles.option_button} onClick={openHarvestModal}>
+                            Harvest
+                        </button>
+                    )}
+                    {notDisplayAllOrOwned && (
+                        <button className={styles.option_button}>
+                            <Link to={`/trade/edit/${ownerId}`} state={positionData}>
+                                Edit
+                            </Link>
+                        </button>
+                    )}
+                    {notDisplayAllOrOwned && (
+                        <button className={styles.option_button} onClick={openRemoveModal}>
+                            Remove
+                        </button>
+                    )}
+                    <button className={styles.option_button} onClick={openDetailsModal}>
+                        Details
+                    </button>
+                </td>
+                {modalOrNull}
+            </tr>
+        ) : null;
+
+    return positionRowOrNull;
 }

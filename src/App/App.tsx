@@ -380,6 +380,8 @@ export default function App() {
             POOL_PRIMARY,
             provider,
         );
+
+        position.accountId = position.id.substring(0, 42);
         const poolPriceInTicks = Math.log(poolPriceNonDisplay) / Math.log(1.0001);
 
         position.poolPriceInTicks = poolPriceInTicks;

@@ -50,7 +50,10 @@ export default function Tabs() {
             </div>
             <div className={styles.tabs_outlet}>
                 <TabContent id='tab1' activeTab={activeTab}>
-                    <Positions isAllPositionsEnabled={isAllPositionsEnabled} />
+                    <Positions
+                        isAllPositionsEnabled={isAllPositionsEnabled}
+                        notOnTradeRoute={false}
+                    />
                 </TabContent>
                 <TabContent id='tab2' activeTab={activeTab}>
                     <LimitOrders />
