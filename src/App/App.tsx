@@ -51,6 +51,7 @@ import {
     setAdvancedLowTick,
     setDenomInBase,
 } from '../utils/state/tradeDataSlice';
+import PositionDetails from '../pages/Trade/Range/PositionDetails';
 
 /** ***** React Function *******/
 export default function App() {
@@ -771,6 +772,7 @@ export default function App() {
                             <Route path='edit/:positionHash' element={<Edit />} />
                         </Route>
                         <Route path='analytics' element={<Analytics />} />
+                        <Route path='details' element={<PositionDetails />} />
                         <Route path='range2' element={<Range {...rangeProps} />} />
                         <Route path='account' element={<Portfolio />} />
                         <Route path='swap' element={<Swap {...swapProps} />} />
