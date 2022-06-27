@@ -10,15 +10,17 @@ import RemoveRange from '../../RemoveRange/RemoveRange';
 import RangeDetails from '../../RangeDetails/RangeDetails';
 import RangeDetailsHeader from '../../RangeDetails/RangeDetailsHeader/RangeDetailsHeader';
 import truncateAddress from '../../../utils/truncateAddress';
+import { ambientPosSlot, concPosSlot } from '@crocswap-libs/sdk';
 
 interface PositionProps {
     portfolio?: boolean;
     notOnTradeRoute?: boolean;
     position: PositionIF;
+    isAllPositionsEnabled: boolean;
 }
 export default function Position(props: PositionProps) {
     // const navigate = useNavigate();
-    const { position } = props;
+    const { position, isAllPositionsEnabled } = props;
 
     const { portfolio } = props;
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -89,11 +91,26 @@ export default function Position(props: PositionProps) {
             </td>
         </>
     );
-    const positionId = truncateAddress(position.id, 18);
+    const ownerId = truncateAddress(position.id, 18);
 
     const positionData = {
         position: position,
     };
+
+    let posHash;
+    if (position.ambient) {
+        posHash = ambientPosSlot(position.id as string, position.pool.base, position.pool.quote);
+    } else {
+        posHash = concPosSlot(
+            position.id as string,
+            position.pool.base,
+            position.pool.quote,
+            position.bidTick,
+            position.askTick,
+        );
+    }
+
+    const truncatedPosHash = truncateAddress(posHash as string, 18);
 
     let isPositionInRange = true;
 
@@ -115,15 +132,19 @@ export default function Position(props: PositionProps) {
     return (
         <tr>
             {portfolio && tokenImages}
+            {isAllPositionsEnabled && (
+                <td data-column='Owner ID' className={styles.position_id}>
+                    {ownerId}
+                </td>
+            )}
             <td data-column='Position ID' className={styles.position_id}>
-                {positionId}
+                {truncatedPosHash}
             </td>
             {position.ambient == false && (
                 <td data-column='Range' className={styles.position_range}>
                     2100.00 3200.00
                 </td>
             )}
-
             {position.ambient == true && (
                 <td
                     data-column='Range'
@@ -140,17 +161,23 @@ export default function Position(props: PositionProps) {
                 {/* In Range */}
             </td>
             <td data-column='' className={styles.option_buttons}>
-                <button className={styles.option_button} onClick={openHarvestModal}>
-                    Harvest
-                </button>
-                <button className={styles.option_button}>
-                    <Link to={`/trade/edit/${positionId}`} state={positionData}>
-                        Edit
-                    </Link>
-                </button>
-                <button className={styles.option_button} onClick={openRemoveModal}>
-                    Remove
-                </button>
+                {!isAllPositionsEnabled && (
+                    <button className={styles.option_button} onClick={openHarvestModal}>
+                        Harvest
+                    </button>
+                )}
+                {!isAllPositionsEnabled && (
+                    <button className={styles.option_button}>
+                        <Link to={`/trade/edit/${ownerId}`} state={positionData}>
+                            Edit
+                        </Link>
+                    </button>
+                )}
+                {!isAllPositionsEnabled && (
+                    <button className={styles.option_button} onClick={openRemoveModal}>
+                        Remove
+                    </button>
+                )}
                 <button className={styles.option_button} onClick={openDetailsModal}>
                     Details
                 </button>
