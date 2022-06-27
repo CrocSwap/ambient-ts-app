@@ -1,5 +1,5 @@
 import styles from './AnalyticsTabs.module.css';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import TabContent from '../../Global/Tabs/TabContent/TabContent';
 import TabNavItem from '../../Global/Tabs/TabNavItem/TabNavItem';
 import { BiSearch } from 'react-icons/bi';
@@ -11,7 +11,6 @@ import { notEmpty } from '../../../utils';
 import { useAllPoolData } from '../../../state/pools/hooks';
 import { TokenData } from '../../../state/tokens/reducer';
 import { PoolData } from '../../../state/pools/reducer';
-
 
 export default function AnalyticsTabs() {
     const [activeTab, setActiveTab] = useState('tab1');
@@ -25,9 +24,9 @@ export default function AnalyticsTabs() {
 
     const allTokens = useAllTokenData();
     const allPoolData = useAllPoolData();
-    
-    const [tokens, setTokens] = useState<TokenData[]>([])
-    const [pools, setPools] = useState<PoolData[]>([])
+
+    const [tokens, setTokens] = useState<TokenData[]>([]);
+    const [pools, setPools] = useState<PoolData[]>([]);
     const [searchWord, setSearchWord] = useState('');
 
     const tokensResult = useMemo(() => {
@@ -42,28 +41,34 @@ export default function AnalyticsTabs() {
             .filter(notEmpty);
     }, [allPoolData]);
 
-    
-    const search =(value:string)=>{
-
+    const search = (value: string) => {
         setSearchWord(value);
-        if (value.length>0){
-            setTokens(tokensResult.filter(item=>item.name.includes(value)));
-            setPools(poolsResult.filter(item=>item.token0.name.includes(value) || item.token1.name.includes(value)))
-        } 
-         
-    }
+        if (value.length > 0) {
+            setTokens(tokensResult.filter((item) => item.name.includes(value)));
+            setPools(
+                poolsResult.filter(
+                    (item) => item.token0.name.includes(value) || item.token1.name.includes(value),
+                ),
+            );
+        }
+    };
     const searchContainer = (
         <div className={styles.search_container}>
             <div className={styles.search_icon}>
                 <BiSearch size={20} color='#bdbdbd' />
             </div>
-            <input type='text' id='box' style={{height:40}} size={20}  onChange={(e) => search(e.target.value)}
-                  
-            placeholder='Search...' className={styles.search__box} />
+            <input
+                type='text'
+                id='box'
+                style={{ height: 40 }}
+                size={20}
+                onChange={(e) => search(e.target.value)}
+                placeholder='Search...'
+                className={styles.search__box}
+            />
         </div>
     );
-   
-  
+
     return (
         <div className={styles.tabs_container}>
             <div className={styles.tabs}>
@@ -82,13 +87,13 @@ export default function AnalyticsTabs() {
             </div>
             <div className={styles.tabs_outlet}>
                 <TabContent id='tab1' activeTab={activeTab}>
-                    <TopTokens tokens={searchWord.length>0 ? tokens : tokensResult} />
+                    <TopTokens tokens={searchWord.length > 0 ? tokens : tokensResult} />
                 </TabContent>
                 <TabContent id='tab2' activeTab={activeTab}>
-                    <Pools pools={searchWord.length>0 ? pools : poolsResult} propType='top' />
+                    <Pools pools={searchWord.length > 0 ? pools : poolsResult} propType='top' />
                 </TabContent>
                 <TabContent id='tab3' activeTab={activeTab}>
-                    <Pools pools={searchWord.length>0 ? pools : poolsResult} propType='trend' />
+                    <Pools pools={searchWord.length > 0 ? pools : poolsResult} propType='trend' />
                 </TabContent>
                 <TabContent id='tab4' activeTab={activeTab}>
                     <TopRanges />
