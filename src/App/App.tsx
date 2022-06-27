@@ -772,7 +772,15 @@ export default function App() {
                         </Route>
                         <Route path='analytics' element={<Analytics />} />
                         <Route path='range2' element={<Range {...rangeProps} />} />
-                        <Route path='account' element={<Portfolio />} />
+                        <Route
+                            path='account'
+                            element={
+                                <Portfolio
+                                    ensName={ensName}
+                                    connectedAccount={account ? account : ''}
+                                />
+                            }
+                        />
                         <Route path='swap' element={<Swap {...swapProps} />} />
                         <Route path='chart' element={<Chart />} />
                         <Route path='testpage' element={<TestPage />} />

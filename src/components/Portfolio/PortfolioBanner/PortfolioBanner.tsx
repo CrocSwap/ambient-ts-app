@@ -4,15 +4,30 @@ import nft2 from '../../../assets/images/Temporary/nft/nft2.png';
 import nft3 from '../../../assets/images/Temporary/nft/nft3.png';
 import avatarImage from '../../../assets/images/Temporary/nft/avatar.png';
 
-export default function PortfolioBanner() {
+import truncateAddress from '../../../utils/truncateAddress';
+
+interface PortfolioBannerPropsIF {
+    ensName: string;
+    connectedAccount: string;
+}
+
+export default function PortfolioBanner(props: PortfolioBannerPropsIF) {
+    const { ensName, connectedAccount } = props;
+    const ensNameAvailable = ensName !== '';
+
+    const truncatedAccountAddress = truncateAddress(connectedAccount, 18);
+
     return (
         <div className={styles.rectangle_container}>
             {/* <div className={styles.background}></div> */}
             <div className={styles.account_container}>
                 <img src={avatarImage} alt='avatar' />
                 <div className={styles.account_names}>
-                    <span className={styles.name}>Username.eth</span>
-                    <span className={styles.hash}>0x284c...Ec38</span>
+                    <span className={styles.name}>
+                        {ensNameAvailable ? ensName : truncatedAccountAddress}
+                    </span>
+                    <span className={styles.hash}>{connectedAccount}</span>
+                    {/* <span className={styles.hash}>0x284c...Ec38</span> */}
                 </div>
             </div>
 
