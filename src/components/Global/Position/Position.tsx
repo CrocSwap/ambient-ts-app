@@ -159,7 +159,7 @@ export default function Position(props: PositionProps) {
 
     const positionRowOrNull =
         notOnTradeRoute || (positionMatchesSelectedTokens && displayAllOrOwned) ? (
-            <tr>
+            <tr className={styles.position_tr}>
                 {portfolio && tokenImages}
                 {isAllPositionsEnabled && (
                     <td data-column='Owner ID' className={styles.position_id}>
