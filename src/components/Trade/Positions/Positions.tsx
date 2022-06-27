@@ -9,11 +9,23 @@ interface PositionsProps {
     notOnTradeRoute?: boolean;
 }
 
+import { useMoralis } from 'react-moralis';
+
 export default function Positions(props: PositionsProps) {
     const { portfolio, notOnTradeRoute, isAllPositionsEnabled } = props;
+
+    const { account } = useMoralis();
+
+    const tradeData = useAppSelector((state) => state.tradeData);
+
+    const tokenAAddress = tradeData.tokenA.address;
+    const tokenBAddress = tradeData.tokenB.address;
+
     const graphData = useAppSelector((state) => state?.graphData);
 
     const userPositions = graphData?.positionsByUser?.positions;
+
+    const positionAccount = graphData?.positionsByUser.id;
 
     const positionsDisplay = userPositions.map((position, idx) => (
         <Position
@@ -22,6 +34,10 @@ export default function Positions(props: PositionsProps) {
             notOnTradeRoute={notOnTradeRoute}
             position={position}
             isAllPositionsEnabled={isAllPositionsEnabled}
+            tokenAAddress={tokenAAddress}
+            tokenBAddress={tokenBAddress}
+            account={account ?? undefined}
+            positionAccount={positionAccount}
         />
     ));
 

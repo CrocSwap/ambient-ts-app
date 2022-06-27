@@ -733,18 +733,6 @@ export default function Range(props: RangePropsIF) {
                     );
                 }
             } finally {
-                if (parsedReceipt) {
-                    const unifiedReceipt = await handleParsedReceipt(
-                        Moralis,
-                        'mint',
-                        newTransactionHash,
-                        parsedReceipt,
-                    );
-                    if (unifiedReceipt) {
-                        dispatch(addReceipt(unifiedReceipt));
-                        console.log({ unifiedReceipt });
-                    }
-                }
                 let posHash;
                 if (isAmbient) {
                     posHash = ambientPosSlot(
@@ -764,6 +752,19 @@ export default function Range(props: RangePropsIF) {
                 const txHash = newTransactionHash;
 
                 save({ txHash, posHash, user, account, chainId });
+
+                if (parsedReceipt) {
+                    const unifiedReceipt = await handleParsedReceipt(
+                        Moralis,
+                        'mint',
+                        newTransactionHash,
+                        parsedReceipt,
+                    );
+                    if (unifiedReceipt) {
+                        dispatch(addReceipt(unifiedReceipt));
+                        console.log({ unifiedReceipt });
+                    }
+                }
             }
         }
     };
