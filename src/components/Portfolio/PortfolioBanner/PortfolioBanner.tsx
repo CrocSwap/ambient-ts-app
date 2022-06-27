@@ -26,7 +26,9 @@ export default function PortfolioBanner(props: PortfolioBannerPropsIF) {
                     <span className={styles.name}>
                         {ensNameAvailable ? ensName : truncatedAccountAddress}
                     </span>
-                    <span className={styles.hash}>{connectedAccount}</span>
+                    <span className={styles.hash}>
+                        {ensNameAvailable ? truncatedAccountAddress : connectedAccount}
+                    </span>
                     {/* <span className={styles.hash}>0x284c...Ec38</span> */}
                 </div>
             </div>
