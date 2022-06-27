@@ -23,10 +23,11 @@ interface IHeaderProps {
     clickLogout: () => void;
     metamaskLocked: boolean;
     ensName: string;
+    shouldDisplayAccountTab: boolean;
 }
 
 export default function PageHeader(props: IHeaderProps): React.ReactElement<IHeaderProps> {
-    const { ensName } = props;
+    const { ensName, shouldDisplayAccountTab } = props;
 
     const { user, account, enableWeb3, isWeb3Enabled, authenticate, isAuthenticated } =
         useMoralis();
@@ -163,7 +164,7 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
                 {/* <NavLink to='/range2'>Range</NavLink> */}
                 <NavLink to='/trade/market'>Trade</NavLink>
                 <NavLink to='/analytics'>Analytics</NavLink>
-                <NavLink to='/account'>Account</NavLink>
+                {shouldDisplayAccountTab ? <NavLink to='/account'>Account</NavLink> : null}
             </nav>
             {/* <div className={styles.account}>Account Info</div> */}
             {/* <div className={styles.account}>{accountAddress}</div> */}
