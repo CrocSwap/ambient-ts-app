@@ -1,7 +1,7 @@
 /** ***** Import React and Dongles *******/
 import { useEffect, useState, useMemo } from 'react';
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
-import { setPositionsByUser } from '../utils/state/graphDataSlice';
+import { resetGraphData, setPositionsByUser } from '../utils/state/graphDataSlice';
 import { utils, ethers } from 'ethers';
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { request, gql } from 'graphql-request';
@@ -17,7 +17,7 @@ import {
     getTokenAllowance,
 } from '@crocswap-libs/sdk';
 
-import { receiptData } from '../utils/state/receiptDataSlice';
+import { receiptData, resetReceiptData } from '../utils/state/receiptDataSlice';
 
 import SnackbarComponent from '../components/Global/SnackbarComponent/SnackbarComponent';
 
@@ -47,6 +47,7 @@ import initializeUserLocalStorage from './functions/initializeUserLocalStorage';
 import { TokenIF } from '../utils/interfaces/exports';
 import { fetchTokenLists } from './functions/fetchTokenLists';
 import {
+    resetTradeData,
     setAdvancedHighTick,
     setAdvancedLowTick,
     setDenomInBase,
@@ -415,7 +416,7 @@ export default function App() {
     };
 
     useEffect(() => {
-        if (account) {
+        if (isAuthenticated && account) {
             const endpoint = 'https://api.thegraph.com/subgraphs/name/a0910841082130913312/croc22';
             const query = gql`
                 query ($userAddress: Bytes) {
@@ -459,7 +460,7 @@ export default function App() {
                 });
             });
         }
-    }, [account, lastBlockNumber]);
+    }, [isAuthenticated, account, lastBlockNumber]);
 
     // run function to initialize local storage
     // internal controls will only initialize values that don't exist
@@ -573,6 +574,10 @@ export default function App() {
         setNativeBalance('');
         setTokenABalance('0');
         setTokenBBalance('0');
+        dispatch(resetTradeData());
+        dispatch(resetGraphData());
+        dispatch(resetReceiptData());
+
         await logout();
     };
 

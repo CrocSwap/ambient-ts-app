@@ -38,10 +38,11 @@ export const receiptDataSlice = createSlice({
         addReceipt: (state, action: PayloadAction<unifiedReceipt>) => {
             state.sessionReceipts.push(action.payload);
         },
+        resetReceiptData: () => initialState,
     },
 });
 
 // action creators are generated for each case reducer function
-export const { addReceipt } = receiptDataSlice.actions;
+export const { addReceipt, resetReceiptData } = receiptDataSlice.actions;
 
 export default receiptDataSlice.reducer;

@@ -55,10 +55,11 @@ export const graphDataSlice = createSlice({
         setPositionsByUser: (state, action: PayloadAction<positionsByUser>) => {
             state.positionsByUser = action.payload;
         },
+        resetGraphData: () => initialState,
     },
 });
 
 // action creators are generated for each case reducer function
-export const { setPositionsByUser } = graphDataSlice.actions;
+export const { setPositionsByUser, resetGraphData } = graphDataSlice.actions;
 
 export default graphDataSlice.reducer;
