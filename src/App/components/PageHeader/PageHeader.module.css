@@ -6,7 +6,7 @@
     align-items: center;
     padding: 1rem 0;
 }
-.header_gradient{
+/* .header_gradient{
     position: absolute;
     width: 1440px;
     height: 873px;
@@ -15,7 +15,7 @@
     background: radial-gradient(50% 50% at 50% 50%, rgba(205, 193, 255, 0.2) 0.01%, rgba(205, 193, 255, 0.116) 19.79%, rgba(205, 193, 255, 0.02) 59.38%, rgba(205, 193, 255, 0) 100%);
     pointer-events: none;
     
-}
+} */
 
 .primary_navigation{
     display: flex;

@@ -141,7 +141,7 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
 
     return (
         <header data-testid={'page-header'} className={styles.primary_header}>
-            <div className={styles.header_gradient}> </div>
+            {/* <div className={styles.header_gradient}> </div> */}
             <div className={styles.logo_container}>
                 <img src={ambientLogo} alt='ambient' />
                 <h1>ambient</h1>
