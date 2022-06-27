@@ -59,13 +59,24 @@ export default function App() {
     const { chainId, isWeb3Enabled, account, logout, isAuthenticated } = useMoralis();
 
     const [ensName, setEnsName] = useState('');
+
+    const [goerliSpeedyNodeProvider, setGoerliSpeedyNodeProvider] =
+        useState<ethers.providers.JsonRpcProvider>();
+
+    useEffect(() => {
+        const goerliProvider = new ethers.providers.JsonRpcProvider(
+            'https://speedy-nodes-nyc.moralis.io/015fffb61180886c9708499e/eth/goerli',
+        );
+        console.log('getting goerli provider');
+        setGoerliSpeedyNodeProvider(goerliProvider);
+    }, []);
+
     useEffect(() => {
         (async () => {
-            const provider = new ethers.providers.JsonRpcProvider(
-                'https://speedy-nodes-nyc.moralis.io/015fffb61180886c9708499e/eth/goerli',
-            );
-            if (account) {
-                const name = await provider.lookupAddress(account);
+            console.log('getting ens name');
+
+            if (account && goerliSpeedyNodeProvider) {
+                const name = await goerliSpeedyNodeProvider.lookupAddress(account);
                 if (name) setEnsName(name);
                 else setEnsName('');
             }
@@ -372,12 +383,6 @@ export default function App() {
 
     const graphData = useAppSelector((state) => state.graphData);
 
-    const [goerliProvider] = useState(
-        new ethers.providers.JsonRpcProvider(
-            'https://speedy-nodes-nyc.moralis.io/015fffb61180886c9708499e/eth/goerli',
-        ),
-    );
-
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const getPositionData = async (position: any): Promise<any> => {
         const baseTokenAddress = position.pool.base;
@@ -392,8 +397,8 @@ export default function App() {
         const positionAccountId = position.id.substring(0, 42);
 
         position.accountId = positionAccountId;
-
-        position.ensName = await goerliProvider.lookupAddress(positionAccountId);
+        // if (goerliSpeedyNodeProvider)
+        //     position.ensName = await goerliSpeedyNodeProvider.lookupAddress(positionAccountId);
         const poolPriceInTicks = Math.log(poolPriceNonDisplay) / Math.log(1.0001);
 
         position.poolPriceInTicks = poolPriceInTicks;
