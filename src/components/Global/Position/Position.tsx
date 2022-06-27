@@ -23,7 +23,14 @@ interface PositionProps {
 }
 export default function Position(props: PositionProps) {
     // const navigate = useNavigate();
-    const { position, isAllPositionsEnabled, tokenAAddress, tokenBAddress, account } = props;
+    const {
+        position,
+        isAllPositionsEnabled,
+        tokenAAddress,
+        tokenBAddress,
+        account,
+        notOnTradeRoute,
+    } = props;
 
     const { portfolio } = props;
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -149,7 +156,7 @@ export default function Position(props: PositionProps) {
     const notDisplayAllOrOwned = !isAllPositionsEnabled || ownerId === accountAddress;
 
     const positionRowOrNull =
-        positionMatchesSelectedTokens && displayAllOrOwned ? (
+        notOnTradeRoute || (positionMatchesSelectedTokens && displayAllOrOwned) ? (
             <tr>
                 {portfolio && tokenImages}
                 {isAllPositionsEnabled && (
