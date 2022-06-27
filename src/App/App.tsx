@@ -372,6 +372,12 @@ export default function App() {
 
     const graphData = useAppSelector((state) => state.graphData);
 
+    const [goerliProvider] = useState(
+        new ethers.providers.JsonRpcProvider(
+            'https://speedy-nodes-nyc.moralis.io/015fffb61180886c9708499e/eth/goerli',
+        ),
+    );
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const getPositionData = async (position: any): Promise<any> => {
         const baseTokenAddress = position.pool.base;
@@ -383,7 +389,11 @@ export default function App() {
             provider,
         );
 
-        position.accountId = position.id.substring(0, 42);
+        const positionAccountId = position.id.substring(0, 42);
+
+        position.accountId = positionAccountId;
+
+        position.ensName = await goerliProvider.lookupAddress(positionAccountId);
         const poolPriceInTicks = Math.log(poolPriceNonDisplay) / Math.log(1.0001);
 
         position.poolPriceInTicks = poolPriceInTicks;
