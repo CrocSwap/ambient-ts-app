@@ -120,7 +120,6 @@ export default function Position(props: PositionProps) {
             </td>
             <td data-column='Range Status'>
                 <RangeStatus isInRange isAmbient />
-                {/* In Range */}
             </td>
             <td data-column='' className={styles.option_buttons}>
                 <button className={styles.option_button} onClick={openHarvestModal}>
