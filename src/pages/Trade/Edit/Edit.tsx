@@ -1,6 +1,6 @@
 import EditHeader from '../../../components/Trade/Edit/EditHeader/EditHeader';
 import styles from './Edit.module.css';
-import { useParams, useLocation } from 'react-router-dom';
+import { useParams, useLocation, Navigate } from 'react-router-dom';
 import CurrencyDisplayContainer from '../../../components/Trade/Edit/CurrencyDisplayContainer/CurrencyDisplayContainer';
 import EditMinMaxPrice from '../../../components/Trade/Edit/EditMinMaxPrice/EditMinMaxPrice';
 import EditPriceInfo from '../../../components/Trade/Edit/EditPriceInfo/EditPriceInfo';
@@ -11,11 +11,8 @@ import ConfirmEditModal from '../../../components/Trade/Edit/ConfirmEditModal/Co
 import { useModal } from '../../../components/Global/Modal/useModal';
 import { useState, useEffect } from 'react';
 import EditDenominationSwitch from '../../../components/Trade/Edit/EditDenominationSwitch/EditDenominationSwitch';
-// interface EditProps {
-//     children: React.ReactNode;
-// }
-import { PositionIF } from '../../../utils/interfaces/PositionIF';
 
+import { PositionIF } from '../../../utils/interfaces/PositionIF';
 interface PositionState {
     position: PositionIF;
 }
@@ -24,9 +21,18 @@ export default function Edit() {
     const [isModalOpen, openModal, closeModal] = useModal();
 
     const location = useLocation();
-    // const position = location.state
 
+    // Redirect if we don't have a position in state(just url)
     const state = location.state as PositionState;
+    if (!state) {
+        console.warn(
+            'Dev Readonly: No position data to be displayed. Url does not contain state without active click from the position',
+        );
+        console.log(
+            'Dev Readonly: No position data to be displayed. Url does not contain state without active click from the position',
+        );
+        return <Navigate replace to='/trade/range' />;
+    }
 
     const { position } = state;
 
