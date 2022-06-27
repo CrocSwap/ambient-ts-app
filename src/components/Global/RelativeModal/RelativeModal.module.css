@@ -19,7 +19,7 @@ backdrop-filter: blur( 9.5px );
 border-radius: var(--border-radius);
 border: 1px solid rgba( 255, 255, 255, 0.18 );
 
-transition: all 350ms ease-in-out;
+transition: all var(--animation-speed) ease-in-out;
 
    
   }
@@ -28,12 +28,7 @@ transition: all 350ms ease-in-out;
   
 
   border: solid 1px transparent;
-    /* background-image: linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, 0)), linear-gradient(101deg, #7371FC, #CDC1FF, #7371FC
-    );
-    background-origin: border-box;
-    background-clip: content-box, border-box;
-    box-shadow: 2px 1000px 1px var(--dark1) inset;
-    transition: box-shadow 250ms ease-in-out; */
+    
     background: var(--dark3);
     cursor: pointer;
 
@@ -116,7 +111,7 @@ transition: all 350ms ease-in-out;
   font-size: 14px;
   font-weight: 400;
   cursor: pointer;
-  transition: background .3s ease-in-out;
+  transition: background var(--animation-speed) ease-in-out;
 }
 .footer_button:hover{
   background: #EC3434;

@@ -6,7 +6,7 @@
     border: 1px solid var(--border-color);
     border-radius: 16px;
     background-color: var(--content-bg);
-    transition: all 450ms ease-in-out;
+    transition: all var(--animation-speed) ease-in-out;
 }
 
 .range_width_content {

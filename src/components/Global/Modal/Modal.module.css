@@ -15,7 +15,7 @@ box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 );
 backdrop-filter: blur( 15px );
 -webkit-backdrop-filter: blur( 15px );
 border-radius: var(--border-radius);
-transition: all 350ms ease-in-out;
+transition: all var(--animation-speed) ease-in-out;
 
    
   }
@@ -28,7 +28,7 @@ transition: all 350ms ease-in-out;
     background-origin: border-box;
     background-clip: content-box, border-box;
     box-shadow: 2px 1000px 1px var(--dark1) inset;
-    transition: box-shadow 250ms ease-in-out;
+    transition: box-shadow var(--animation-speed) ease-in-out;
     cursor: pointer;
 
 

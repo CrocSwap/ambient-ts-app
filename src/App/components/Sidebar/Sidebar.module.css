@@ -1,18 +1,10 @@
-:root {
-    font-size: 16px;
-    --text-primary: #b6b6b6;
-    --text-secondary: #ececec;
-    --bg-primary: #23232e;
-    --bg-secondary: #141418;
-    --transition-speed: 600ms;
-  }
-  
+
 
   
   .sidebar {
     position: fixed;
     background-color: var(--dark1);
-    transition: width 600ms ease;
+    transition: width var(--animation-speed) ease;
     overflow: scroll;
     /* margin-top: 4rem; */
   }
@@ -64,12 +56,12 @@
   
   .sidebar_item{
 
-    transition: all 4s ease-out;
+    transition: all var(--animation-speed)ease-out;
   }
  
   .sidebar_item:hover{
     background: var(--title-gradient);
-    transition: all 4s ease-out;
+    transition: all var(--animation-speed) ease-out;
 
 
 
@@ -79,7 +71,7 @@
   
   .link_text {
     color: var(--text-highlight);
-    transition: all 0.3s ease-out;
+    transition: all var(--animation-speed) ease-out;
     font-weight: 500;
 font-size: 12px;
 line-height: 15px;
@@ -116,7 +108,7 @@ line-height: 15px;
   
   .logo svg {
     transform: rotate(0deg);
-    transition: var(--transition-speed);
+    transition: var(--animation-speed);
   }
   
   .logo_text
@@ -124,7 +116,7 @@ line-height: 15px;
     display: inline;
     position: absolute;
     left: -999px;
-    transition: var(--transition-speed);
+    transition: var(--animation-speed);
   }
   
   .sidebar:hover .logo svg {
@@ -154,7 +146,7 @@ line-height: 15px;
   outline: none;
   border: none;
   opacity: 1;
-  transition: all .75s ease-in;
+  transition: all var(--animation-speed) ease-in;
   cursor: pointer;
 
 }
@@ -165,7 +157,7 @@ line-height: 15px;
   margin-top: 0;
   cursor: pointer;
   color: #fa983a;
-  transition: all .25s ease-in;
+  transition: all var(--animation-speed) ease-in;
 
 }
 

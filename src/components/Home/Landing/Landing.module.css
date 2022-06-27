@@ -77,7 +77,7 @@
      
      
       color: #CDC1FF;
-      transition: all 0.7s ease-out;
+      transition: all var(--animation-speed) ease-out;
       background: linear-gradient(270deg, #5a58c7, #b2a8dd, #4947a1 , rgba(34,34,34,0), rgba(34,34,34,0));
       background-position: 1% 50%;
       background-size: 300% 300%;

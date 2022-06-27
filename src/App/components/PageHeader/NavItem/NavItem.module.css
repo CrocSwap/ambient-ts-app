@@ -24,13 +24,13 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: filter 300ms;
+    transition: filter var(--animation-speed);
   }
   
   .icon_button:hover {
     filter: brightness(1.2);
     background: var(--dark3);
-    transition: all 500ms ease;
+    transition: all var(--animation-speed) ease;
   }
   
   .icon_button svg { 

@@ -28,7 +28,7 @@
     padding: 1px;
     
     /* one line box shadow */
-    transition: 0.5s ease;  
+    transition: var(--animation-speed) ease;  
 
     
 
@@ -67,7 +67,7 @@
   } */
   
   .main_content:hover, .main_content:focus-within{
-    transition: all 250ms ease-in-out;
+    transition: all var(--animation-speed) ease-in-out;
 
 
   }

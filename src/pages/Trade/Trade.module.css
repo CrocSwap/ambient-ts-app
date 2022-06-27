@@ -1,12 +1,12 @@
 .main_layout{
-    transition: all 600ms ease-in-out;
+    transition: all var(--animation-speed) ease-in-out;
     border-top: 1px solid var(--dark3);
 
     
 }
 
 .middle_col, .right_col{
-    transition: all 600ms ease-in-out;
+    transition: all var(--animation-speed) ease-in-out;
     
     width: 100%;
 }

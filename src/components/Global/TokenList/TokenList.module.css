@@ -10,7 +10,7 @@
     max-height: 250px;
     overflow-y: scroll;
     overflow-x: hidden;
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: all var(--animation-speed) cubic-bezier(0.175, 0.885, 0.32, 1.275);
 position: relative;
 }
 .token_list_content_container{
@@ -81,7 +81,7 @@ display: none;
       /* padding: 10px; */
       border-radius: var(--border-radius);
 
-      transition: all 0.6s ease-in-out;
+      transition: all var(--animation-speed) ease-in-out;
     
   }
 
@@ -113,7 +113,7 @@ display: none;
     color: var(--text-grey-light);
       cursor: pointer;
       background: linear-gradient(#7371FC 0 0) var(--p, 0) / var(--p, 0) no-repeat;
-      transition: 0.4s, background-position 0s;
+      transition: var(--animation-speed), background-position 0s;
       padding: 0 5px;
 
      

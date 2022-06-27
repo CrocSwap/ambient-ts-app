@@ -1,11 +1,11 @@
 .price_info_container {
     padding: 0 5%;
-    transition: all 450ms ease-in-out;
+    transition: all var(--animation-speed) ease-in-out;
     margin-bottom: 1rem;
 }
 
 .price_info_content {
-    transition: all 450ms ease-in-out;
+    transition: all var(--animation-speed) ease-in-out;
     /* background: var(--dark2); */
     margin-top: 10px;
     padding: 0 16px;

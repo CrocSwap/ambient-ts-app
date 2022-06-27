@@ -3,5 +3,5 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    transition: all 450ms ease-in-out;
+    transition: all var(--animation-speed) ease-in-out;
 }
