@@ -1172,7 +1172,7 @@
     exec-sh "^0.3.2"
     minimist "^1.2.0"
 
-"@crocswap-libs/sdk@^0.1.27-6":
+"@crocswap-libs/sdk@^0.1.27-7":
   version "0.1.27-7"
   resolved "http://nexus.ext.proven.com/repository/npm-group/@crocswap-libs/sdk/-/sdk-0.1.27-7.tgz#98a02049de5d92d2c3520fa0b5048e2ef56a5f13"
   integrity sha1-mKAgSd5dktLDUg+gtQSOLvVqXxM=

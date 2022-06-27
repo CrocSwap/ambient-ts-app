@@ -20,6 +20,12 @@ export interface position {
     bidTick: number;
     id: string;
     pool: pool;
+    baseTokenSymbol: string;
+    quoteTokenSymbol: string;
+    lowRangeDisplay: string;
+    highRangeDisplay: string;
+    tokenAQtyDisplay: string;
+    tokenBQtyDisplay: string;
 }
 
 export interface pool {

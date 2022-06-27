@@ -16,6 +16,8 @@ export interface tradeData {
     limitPrice: string;
     advancedLowTick: number;
     advancedHighTick: number;
+    simpleRangeWidth: number;
+    slippageTolerance: number;
 }
 
 const initialState: tradeData = {
@@ -48,6 +50,8 @@ const initialState: tradeData = {
     limitPrice: '',
     advancedLowTick: 0,
     advancedHighTick: 0,
+    simpleRangeWidth: 100,
+    slippageTolerance: 0.05,
 };
 
 export const tradeDataSlice = createSlice({
@@ -108,6 +112,12 @@ export const tradeDataSlice = createSlice({
         setAdvancedHighTick: (state, action: PayloadAction<number>) => {
             state.advancedHighTick = action.payload;
         },
+        setSimpleRangeWidth: (state, action: PayloadAction<number>) => {
+            state.simpleRangeWidth = action.payload;
+        },
+        setSlippageTolerance: (state, action: PayloadAction<number>) => {
+            state.slippageTolerance = action.payload;
+        },
     },
 });
 
@@ -131,6 +141,8 @@ export const {
     setLimitPrice,
     setAdvancedLowTick,
     setAdvancedHighTick,
+    setSimpleRangeWidth,
+    setSlippageTolerance,
 } = tradeDataSlice.actions;
 
 export default tradeDataSlice.reducer;

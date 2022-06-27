@@ -1,11 +1,17 @@
 import styles from './EditPriceInfo.module.css';
 // import { TokenPairIF } from '../../../../../utils/interfaces/exports';
 
-// interface EditPriceInfoIF {
-//     tokenPair: TokenPairIF;
-// }
+interface EditPriceInfoIF {
+    quoteTokenSymbol: string;
+    tokenAQtyDisplay: string;
+    tokenBQtyDisplay: string;
+    baseTokenSymbol: string;
+    ambient: boolean;
+    lowRangeDisplay: string;
+    highRangeDisplay: string;
+}
 
-export default function EditPriceInfo() {
+export default function EditPriceInfo(props: EditPriceInfoIF) {
     // JSX frag to display the pool price for the current pair
     const currentPrice = (
         <div className={styles.price_info_row}>
@@ -36,8 +42,8 @@ export default function EditPriceInfo() {
     // JSX frag to display the balance of Token A
     const balanceTokenA = (
         <tr>
-            <td data-column='Target: '>{'ETH'} Balance</td>
-            <td data-column='Current'>0.00</td>
+            <td data-column='Target: '>{props.baseTokenSymbol} Balance</td>
+            <td data-column='Current'>{props.tokenAQtyDisplay}</td>
             <td data-column='Repositioned To'>0.69</td>
         </tr>
     );
@@ -45,8 +51,8 @@ export default function EditPriceInfo() {
     // JSX frag to display the balance of Token B
     const balanceTokenB = (
         <tr>
-            <td data-column='Target: '>{'DAI'} Balance</td>
-            <td data-column='Current'>1,000.0</td>
+            <td data-column='Target: '>{props.quoteTokenSymbol} Balance</td>
+            <td data-column='Current'>{props.tokenBQtyDisplay}</td>
             <td data-column='Repositioned To'>500.0</td>
         </tr>
     );
@@ -55,7 +61,7 @@ export default function EditPriceInfo() {
     const rangeUpperLimit = (
         <tr>
             <td data-column='Target: '>Range Upper Limit</td>
-            <td data-column='Current'>2,000.0</td>
+            <td data-column='Current'>{props.highRangeDisplay}</td>
             <td data-column='Repositioned To'>2,1210.0</td>
         </tr>
     );
@@ -64,7 +70,7 @@ export default function EditPriceInfo() {
     const rangeLowerLimit = (
         <tr>
             <td data-column='Target: '>Range Lower Limit</td>
-            <td data-column='Current'>1,000.0</td>
+            <td data-column='Current'>{props.lowRangeDisplay}</td>
             <td data-column='Repositioned To'>3,200.0</td>
         </tr>
     );
@@ -80,8 +86,8 @@ export default function EditPriceInfo() {
                         <tbody>
                             {balanceTokenA}
                             {balanceTokenB}
-                            {rangeUpperLimit}
-                            {rangeLowerLimit}
+                            {props.ambient == false && rangeUpperLimit}
+                            {props.ambient == false && rangeLowerLimit}
                         </tbody>
                     </table>
                 </div>

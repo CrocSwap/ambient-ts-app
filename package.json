@@ -4,8 +4,8 @@
     "private": true,
     "dependencies": {
         "@apollo/client": "^3.6.8",
+        "@crocswap-libs/sdk": "^0.1.27-7",
         "@d3fc/d3fc-extent": "^4.0.2",
-        "@crocswap-libs/sdk": "^0.1.27-6",
         "@emotion/react": "^11.9.0",
         "@emotion/style": "^0.8.0",
         "@emotion/styled": "^11.8.1",
@@ -43,6 +43,7 @@
         "react-redux": "^8.0.1",
         "react-router-dom": "^6.3.0",
         "react-scripts": "4.0.3",
+        "react-transition-group": "^4.4.2",
         "redux-localstorage-simple": "^2.5.1",
         "rive-react": "^3.0.1",
         "seedrandom": "^3.0.5",
@@ -97,6 +98,8 @@
         "prettier": "^2.6.2"
     },
     "jest": {
-        "transformIgnorePatterns": ["/node_modules/(?!d3|d3-array|internmap|delaunator|robust-predicates)"]
+        "transformIgnorePatterns": [
+            "/node_modules/(?!d3|d3-array|internmap|delaunator|robust-predicates)"
+        ]
     }
 }

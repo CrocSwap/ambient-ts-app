@@ -7,9 +7,10 @@ interface ToggleProps {
     id: string;
     handleToggle: React.ChangeEventHandler<HTMLElement>;
     buttonColor?: string;
+    disabled?: boolean;
 }
 export default function Toggle(props: ToggleProps) {
-    const { isOn, handleToggle, onColor, Width, id, buttonColor } = props;
+    const { isOn, handleToggle, onColor, Width, id, buttonColor, disabled } = props;
 
     const labelStyle = Width ? `${Width}px` : '100px';
     const labelHeight = `${parseInt(labelStyle) / 2}px`;
@@ -21,7 +22,7 @@ export default function Toggle(props: ToggleProps) {
         : 'linear-gradient(90deg, #AF99FF 0%, #46B7DB 49.48%, #F13D70 100%)';
 
     return (
-        <div>
+        <div className={disabled ? styles.disabled : ''}>
             <input
                 checked={isOn}
                 onChange={handleToggle}
