@@ -630,12 +630,15 @@ export default function App() {
         }
     }, [provider, chainId, lastBlockNumber]);
 
+    const shouldDisplayAccountTab = isAuthenticated && account != '';
+
     // props for <PageHeader/> React element
     const headerProps = {
         nativeBalance: nativeBalance,
         clickLogout: clickLogout,
         metamaskLocked: metamaskLocked,
         ensName: ensName,
+        shouldDisplayAccountTab: shouldDisplayAccountTab,
     };
 
     // props for <Swap/> React element
@@ -774,7 +777,17 @@ export default function App() {
                         <Route path='analytics' element={<Analytics />} />
                         <Route path='details' element={<PositionDetails />} />
                         <Route path='range2' element={<Range {...rangeProps} />} />
-                        <Route path='account' element={<Portfolio />} />
+
+                        <Route
+                            path='account'
+                            element={
+                                <Portfolio
+                                    ensName={ensName}
+                                    connectedAccount={account ? account : ''}
+                                />
+                            }
+                        />
+
                         <Route path='swap' element={<Swap {...swapProps} />} />
                         <Route path='chart' element={<Chart />} />
                         <Route path='testpage' element={<TestPage />} />

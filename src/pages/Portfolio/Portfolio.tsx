@@ -3,10 +3,15 @@ import PortfolioBanner from '../../components/Portfolio/PortfolioBanner/Portfoli
 import PortfolioTabs from '../../components/Portfolio/PortfolioTabs/PortfolioTabs';
 import styles from './Portfolio.module.css';
 
-export default function Portfolio() {
+interface PortfolioPropsIF {
+    ensName: string;
+    connectedAccount: string;
+}
+
+export default function Portfolio(props: PortfolioPropsIF) {
     return (
         <main data-testid={'portfolio'} className={styles.portfolio_container}>
-            <PortfolioBanner />
+            <PortfolioBanner ensName={props.ensName} connectedAccount={props.connectedAccount} />
             <PortfolioTabs />
             <div className={styles.title}>Exchange Balance</div>
             <div className={styles.exchange_balance}>
