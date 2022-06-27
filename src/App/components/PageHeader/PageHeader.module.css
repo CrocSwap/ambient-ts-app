@@ -66,13 +66,7 @@
     gap: var(--gap, 1rem);
 }
 
-.logo_container img{
-    animation: logo-spin infinite 20s linear;
-}
-@keyframes logo-spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-}
+
 .logo_container h1{
     background: var(--title-gradient);
     font-family: var(--font-logo);
