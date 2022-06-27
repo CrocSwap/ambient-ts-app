@@ -1,3 +1,9 @@
+
+.position_tr:hover{
+  background: var(--dark3);
+  transition: all 500ms ease-in-out;
+}
+
 .position_info, .options_container{
     display: flex;
     flex-direction: row;
