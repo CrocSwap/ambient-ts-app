@@ -19,8 +19,8 @@ export default function PoolRow(props: PoolProps) {
 
     const tokenImages = (
         <>
-            <td data-column='tokens' className={styles.tokens}>
-                <div className={styles.slippage_content}>
+            <td data-column='name' className={styles.tokens} width={300}>
+                <td>
                     <img
                         src={getTokenLogoURL(poolData.token0.address)}
                         onError={({ currentTarget }) => {
@@ -39,9 +39,17 @@ export default function PoolRow(props: PoolProps) {
                         alt='token'
                         width='30px'
                     />
-                    {poolData.token0.symbol}/{poolData.token1.symbol}
-                    <Badge>{feeTierPercent(poolData.feeTier)}</Badge>
-                </div>
+                </td>
+                <td>
+                    <span className={styles.token_list_text}>
+                        {poolData.token0.symbol}/{poolData.token1.symbol}
+                    </span>
+                </td>
+                <td>
+                    <div className={styles.in_range_display}>
+                        {feeTierPercent(poolData.feeTier)}
+                    </div>
+                </td>
             </td>
         </>
     );

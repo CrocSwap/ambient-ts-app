@@ -81,5 +81,30 @@ text-shadow: 0px 0px 10px rgba(21, 190, 111, 0.75);
   }
 
   
+  .in_range_display{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+   -webkit-box-align: center;
+   align-items: center;
+   background: var(--dark2);
+   border: unset;
+   min-width: 6rem;
+   padding: 4px 6px;
+   border-radius: 100px;
+   color: var(--text-grey-white);
+   display: inline-flex;
+   font-size: var(--body-size);
+   line-height: var(--body-lh);
+   border-radius: 12px;
+   -webkit-box-pack: center;
+   justify-content: center;
+
+  
+  
+  }
+
+  
 
 
