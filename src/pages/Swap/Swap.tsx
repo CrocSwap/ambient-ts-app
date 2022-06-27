@@ -93,6 +93,8 @@ export default function Swap(props: ISwapProps) {
 
     const { tokenA, tokenB } = tradeData;
 
+    const slippageTolerancePercentage = tradeData.slippageTolerance;
+
     // login functionality
     const clickLogin = () => {
         console.log('user clicked Login');
@@ -192,7 +194,6 @@ export default function Swap(props: ISwapProps) {
         const sellTokenAddress = tokenA.address;
         const buyTokenAddress = tokenB.address;
         const poolId = POOL_PRIMARY;
-        const slippageTolerancePercentage = 5;
         const sellTokenQty = (document.getElementById('sell-quantity') as HTMLInputElement)?.value;
         const buyTokenQty = (document.getElementById('buy-quantity') as HTMLInputElement)?.value;
         const qty = isTokenAPrimary ? sellTokenQty : buyTokenQty;
@@ -302,6 +303,7 @@ export default function Swap(props: ISwapProps) {
                     tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
                     isOnTradeRoute={isOnTradeRoute}
                     isDenomBase={tradeData.isDenomBase}
+                    isTokenABase={isSellTokenBase}
                 />
                 <DenominationSwitch
                     tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
@@ -337,7 +339,7 @@ export default function Swap(props: ISwapProps) {
                     tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
                     isTokenABase={isSellTokenBase}
                     poolPriceDisplay={poolPriceDisplay}
-                    slippageTolerance={5}
+                    slippageTolerance={slippageTolerancePercentage}
                     liquidityProviderFee={0.3}
                     quoteTokenIsBuy={true}
                     gasPriceinGwei={gasPriceinGwei}

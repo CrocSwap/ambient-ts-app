@@ -7,6 +7,8 @@
   scroll-behavior: smooth;
   font-family: var(--font-family);
   font-weight: 200;
+
+  /* outline: 1px solid red; */
 }
 
 /* ===== Scrollbar CSS ===== */
@@ -135,7 +137,38 @@ footer {
 
 }
 
+/* CSSTransition classes  */
+.menu-primary-enter {
+  position: absolute;
+  transform: translateX(-110%);
+}
+.menu-primary-enter-active {
+  transform: translateX(0%);
+  transition: all 500ms ease;
+}
+.menu-primary-exit {
+  position: absolute;
+}
+.menu-primary-exit-active {
+  transform: translateX(-110%);
+  transition: all 500ms ease;
+}
 
+
+.menu-secondary-enter {
+  transform: translateX(110%);
+}
+.menu-secondary-enter-active {
+  transform: translateX(0%);
+  transition: all 500ms ease;
+}
+.menu-secondary-exit {
+
+}
+.menu-secondary-exit-active {
+  transform: translateX(110%);
+  transition: all 500ms ease;
+}
 
 
 
@@ -161,3 +194,6 @@ footer {
   }
 
 }
+
+
+

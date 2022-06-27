@@ -21,6 +21,12 @@ interface ConfirmRangeModalProps {
     isTokenABase: boolean;
     isAmbient: boolean;
     isInRange: boolean;
+    pinnedMinPriceDisplayTruncatedInBase: string;
+    pinnedMinPriceDisplayTruncatedInQuote: string;
+    pinnedMaxPriceDisplayTruncatedInBase: string;
+    pinnedMaxPriceDisplayTruncatedInQuote: string;
+    poolPriceTruncatedInBase: string;
+    poolPriceTruncatedInQuote: string;
 }
 
 export default function ConfirmRangeModal(props: ConfirmRangeModalProps) {
@@ -37,6 +43,12 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalProps) {
         isTokenABase,
         isAmbient,
         isInRange,
+        pinnedMinPriceDisplayTruncatedInBase,
+        pinnedMinPriceDisplayTruncatedInQuote,
+        pinnedMaxPriceDisplayTruncatedInBase,
+        pinnedMaxPriceDisplayTruncatedInQuote,
+        poolPriceTruncatedInBase,
+        poolPriceTruncatedInQuote,
     } = props;
 
     const tokenA = tokenPair.dataTokenA;
@@ -75,7 +87,7 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalProps) {
                     {dataTokenA.symbol}/{dataTokenB.symbol}
                 </span>
             </div>
-            <RangeStatus isInRange={isInRange} />
+            <RangeStatus isInRange={isInRange} isAmbient={isAmbient} />
         </section>
     );
     // FEE TIER DISPLAY
@@ -107,19 +119,29 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalProps) {
         </section>
     );
 
+    const selectedRangeOrNull = !isAmbient ? (
+        <SelectedRange
+            minPriceDisplay={minPriceDisplay}
+            maxPriceDisplay={maxPriceDisplay}
+            spotPriceDisplay={spotPriceDisplay}
+            tokenPair={tokenPair}
+            denominationsInBase={denominationsInBase}
+            isTokenABase={isTokenABase}
+            isAmbient={isAmbient}
+            pinnedMinPriceDisplayTruncatedInBase={pinnedMinPriceDisplayTruncatedInBase}
+            pinnedMinPriceDisplayTruncatedInQuote={pinnedMinPriceDisplayTruncatedInQuote}
+            pinnedMaxPriceDisplayTruncatedInBase={pinnedMaxPriceDisplayTruncatedInBase}
+            pinnedMaxPriceDisplayTruncatedInQuote={pinnedMaxPriceDisplayTruncatedInQuote}
+            poolPriceTruncatedInBase={poolPriceTruncatedInBase}
+            poolPriceTruncatedInQuote={poolPriceTruncatedInQuote}
+        />
+    ) : null;
+
     const fullTxDetails = (
         <>
             {rangeHeader}
             {feeTierDisplay}
-            <SelectedRange
-                minPriceDisplay={minPriceDisplay}
-                maxPriceDisplay={maxPriceDisplay}
-                spotPriceDisplay={spotPriceDisplay}
-                tokenPair={tokenPair}
-                denominationsInBase={denominationsInBase}
-                isTokenABase={isTokenABase}
-                isAmbient={isAmbient}
-            />
+            {selectedRangeOrNull}
         </>
     );
 
@@ -138,7 +160,7 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalProps) {
     // CONFIRMATION LOGIC STARTS HERE
     const confirmSendMessage = (
         <WaitingConfirmation
-            content={`Depositing Swapping ${tokenAQty} ${tokenA.symbol} for ${tokenBQty} ${tokenB.symbol}`}
+            content={`Minting a Position with ${tokenAQty} ${tokenA.symbol} and ${tokenBQty} ${tokenB.symbol}`}
         />
     );
 

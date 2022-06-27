@@ -8,15 +8,15 @@ import LimitOrders from '../../Trade/LimitOrders/LimitOrders';
 
 export default function Tabs() {
     const [activeTab, setActiveTab] = useState('tab1');
-    const [isChecked, setIsChecked] = useState<boolean>(false);
+    const [isAllPositionsEnabled, setIsAllPositionsEnabled] = useState<boolean>(false);
 
     const positionsOnlyToggle = (
         <span className={styles.options_toggle}>
-            My positions only
+            All Positions
             <div className={styles.toggle_container}>
                 <Toggle
-                    isOn={isChecked}
-                    handleToggle={() => setIsChecked(!isChecked)}
+                    isOn={isAllPositionsEnabled}
+                    handleToggle={() => setIsAllPositionsEnabled(!isAllPositionsEnabled)}
                     Width={36}
                     id='positions_only_toggle'
                 />
@@ -50,7 +50,7 @@ export default function Tabs() {
             </div>
             <div className={styles.tabs_outlet}>
                 <TabContent id='tab1' activeTab={activeTab}>
-                    <Positions />
+                    <Positions isAllPositionsEnabled={isAllPositionsEnabled} />
                 </TabContent>
                 <TabContent id='tab2' activeTab={activeTab}>
                     <LimitOrders />

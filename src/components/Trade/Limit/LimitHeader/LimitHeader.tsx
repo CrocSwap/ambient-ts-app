@@ -15,17 +15,20 @@ import { useModal } from '../../../../components/Global/Modal/useModal';
 interface LimitHeaderPropsIF {
     tokenPair: TokenPairIF;
     isDenomBase: boolean;
+    isTokenABase: boolean;
 }
 
 // central react functional component
 export default function LimitHeader(props: LimitHeaderPropsIF) {
-    const { tokenPair, isDenomBase } = props;
+    const { tokenPair, isDenomBase, isTokenABase } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
 
+    const reverseDisplay = (isTokenABase && isDenomBase) || (!isTokenABase && !isDenomBase);
+
     const settingsModalOrNull = isModalOpen ? (
         <Modal noHeader title='modal' onClose={closeModal}>
-            <TransactionSettings />
+            <TransactionSettings onClose={closeModal} />
         </Modal>
     ) : null;
 
@@ -33,8 +36,8 @@ export default function LimitHeader(props: LimitHeaderPropsIF) {
         <ContentHeader>
             <span />
             <div className={styles.token_info}>
-                {isDenomBase ? tokenPair.dataTokenA.symbol : tokenPair.dataTokenB.symbol} /{' '}
-                {isDenomBase ? tokenPair.dataTokenB.symbol : tokenPair.dataTokenA.symbol}
+                {reverseDisplay ? tokenPair.dataTokenA.symbol : tokenPair.dataTokenB.symbol} /{' '}
+                {reverseDisplay ? tokenPair.dataTokenB.symbol : tokenPair.dataTokenA.symbol}
             </div>
             <div onClick={openModal}>
                 <img src={settingsIcon} alt='settings' />

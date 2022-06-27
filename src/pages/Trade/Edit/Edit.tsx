@@ -1,8 +1,8 @@
 import EditHeader from '../../../components/Trade/Edit/EditHeader/EditHeader';
 import styles from './Edit.module.css';
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation, Navigate } from 'react-router-dom';
 import CurrencyDisplayContainer from '../../../components/Trade/Edit/CurrencyDisplayContainer/CurrencyDisplayContainer';
-import MinMaxPrice from '../../../components/Trade/Range/AdvancedModeComponents/MinMaxPrice/MinMaxPrice';
+import EditMinMaxPrice from '../../../components/Trade/Edit/EditMinMaxPrice/EditMinMaxPrice';
 import EditPriceInfo from '../../../components/Trade/Edit/EditPriceInfo/EditPriceInfo';
 import EditButton from '../../../components/Trade/Edit/EditButton/EditButton';
 import Divider from '../../../components/Global/Divider/Divider';
@@ -11,12 +11,30 @@ import ConfirmEditModal from '../../../components/Trade/Edit/ConfirmEditModal/Co
 import { useModal } from '../../../components/Global/Modal/useModal';
 import { useState, useEffect } from 'react';
 import EditDenominationSwitch from '../../../components/Trade/Edit/EditDenominationSwitch/EditDenominationSwitch';
-// interface EditProps {
-//     children: React.ReactNode;
-// }
+
+import { PositionIF } from '../../../utils/interfaces/PositionIF';
+interface PositionState {
+    position: PositionIF;
+}
 
 export default function Edit() {
     const [isModalOpen, openModal, closeModal] = useModal();
+
+    const location = useLocation();
+
+    // Redirect if we don't have a position in state(just url)
+    const state = location.state as PositionState;
+    if (!state) {
+        console.warn(
+            'Dev Readonly: No position data to be displayed. Url does not contain state without active click from the position',
+        );
+        console.log(
+            'Dev Readonly: No position data to be displayed. Url does not contain state without active click from the position',
+        );
+        return <Navigate replace to='/trade/range' />;
+    }
+
+    const { position } = state;
 
     const minPricePercentage = -15;
     const maxPricePercentage = 15;
@@ -66,37 +84,59 @@ export default function Edit() {
     }, [rangeHighBoundDisplayPrice, rangeHighBoundFieldBlurred]);
 
     const { positionHash } = useParams();
-    console.log(positionHash);
 
     const confirmEditModal = isModalOpen ? (
         <Modal onClose={closeModal} title='Edit Position'>
-            <ConfirmEditModal onClose={closeModal} />
+            <ConfirmEditModal onClose={closeModal} position={position} />
         </Modal>
     ) : null;
+
+    // Props for <EditMinMaxPrice/> React element
+    const editMinMaxPriceProps = {
+        minPricePercentage: minPricePercentage,
+        maxPricePercentage: maxPricePercentage,
+        minPriceInputString: minPriceInputString,
+        maxPriceInputString: maxPriceInputString,
+        setMinPriceInputString: setMinPriceInputString,
+        setMaxPriceInputString: setMaxPriceInputString,
+        isDenomBase: isDenomBase,
+        highBoundOnBlur: highBoundOnBlur,
+        lowBoundOnBlur: lowBoundOnBlur,
+        rangeLowTick: rangeLowTick,
+        rangeHighTick: rangeHighTick,
+        setRangeLowTick: setRangeLowTick,
+        setRangeHighTick: setRangeHighTick,
+        minPrice: position?.lowRangeDisplay,
+        maxPrice: position?.highRangeDisplay,
+    };
+    // Props for <CurrencyDisplayContainer/> React element
+
+    const currencyDisplayContainerProps = {
+        quoteTokenSymbol: position.quoteTokenSymbol,
+        baseTokenSymbol: position.baseTokenSymbol,
+        tokenAQtyDisplay: position.tokenAQtyDisplay,
+        tokenBQtyDisplay: position.tokenBQtyDisplay,
+    };
+
+    const editPriceInfoProps = {
+        quoteTokenSymbol: position.quoteTokenSymbol,
+        baseTokenSymbol: position.baseTokenSymbol,
+        tokenAQtyDisplay: position.tokenAQtyDisplay,
+        tokenBQtyDisplay: position.tokenBQtyDisplay,
+        ambient: position.ambient,
+        lowRangeDisplay: position.lowRangeDisplay,
+        highRangeDisplay: position.highRangeDisplay,
+    };
+
     return (
         <div className={styles.editContainer}>
             <EditHeader positionHash={positionHash} />
             <div className={styles.edit_content}>
                 <EditDenominationSwitch />
-                <CurrencyDisplayContainer />
+                <CurrencyDisplayContainer {...currencyDisplayContainerProps} />
                 <Divider />
-                <MinMaxPrice
-                    minPricePercentage={minPricePercentage}
-                    maxPricePercentage={maxPricePercentage}
-                    minPriceInputString={minPriceInputString}
-                    maxPriceInputString={maxPriceInputString}
-                    setMinPriceInputString={setMinPriceInputString}
-                    setMaxPriceInputString={setMaxPriceInputString}
-                    isDenomBase={isDenomBase}
-                    // highBoundOnFocus={highBoundOnFocus}
-                    highBoundOnBlur={highBoundOnBlur}
-                    lowBoundOnBlur={lowBoundOnBlur}
-                    rangeLowTick={rangeLowTick}
-                    rangeHighTick={rangeHighTick}
-                    setRangeLowTick={setRangeLowTick}
-                    setRangeHighTick={setRangeHighTick}
-                />
-                <EditPriceInfo />
+                {position.ambient == false && <EditMinMaxPrice {...editMinMaxPriceProps} />}
+                <EditPriceInfo {...editPriceInfoProps} />
                 <EditButton onClickFn={openModal} />
             </div>
             {confirmEditModal}

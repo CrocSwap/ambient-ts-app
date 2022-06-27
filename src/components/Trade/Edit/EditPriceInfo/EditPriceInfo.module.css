@@ -1,7 +1,8 @@
 .price_info_container{
     padding: 0 5%;
-    transition: all 450ms ease-in-out;
+    transition: all 500ms ease;
 	margin-bottom: 1rem;
+    transition: height 500ms ease
 }
 
 .price_info_content{
@@ -74,6 +75,7 @@ text-shadow: 0px 0px 10px rgba(21, 190, 111, 0.75);
        
     }
 
+ 
 /* 
 Max width before this PARTICULAR table gets nasty
 This query will take effect for any screen smaller than 760px

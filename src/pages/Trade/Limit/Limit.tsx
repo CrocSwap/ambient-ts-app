@@ -126,6 +126,8 @@ export default function Limit(props: LimitPropsIF) {
 
     const isTokenAPrimary = tradeData.isTokenAPrimary;
 
+    const slippageTolerancePercentage = tradeData.slippageTolerance;
+
     const [limitRate, setLimitRate] = useState<string>(tradeData.limitPrice);
     const [insideTickDisplayPrice, setInsideTickDisplayPrice] = useState<number>(0);
 
@@ -213,7 +215,6 @@ export default function Limit(props: LimitPropsIF) {
         const sellTokenAddress = tokenA.address;
         const buyTokenAddress = tokenB.address;
         const poolId = POOL_PRIMARY;
-        const slippageTolerancePercentage = 5;
         const sellTokenQty = tokenAInputQty;
         const buyTokenQty = tokenBInputQty;
         const qty = isTokenAPrimary ? sellTokenQty : buyTokenQty;
@@ -350,7 +351,11 @@ export default function Limit(props: LimitPropsIF) {
             data-testid={'limit'}
         >
             <ContentContainer isOnTradeRoute>
-                <LimitHeader tokenPair={tokenPair} isDenomBase={tradeData.isDenomBase} />
+                <LimitHeader
+                    tokenPair={tokenPair}
+                    isDenomBase={tradeData.isDenomBase}
+                    isTokenABase={isTokenABase}
+                />
                 <DenominationSwitch
                     tokenPair={tokenPair}
                     displayForBase={tradeData.isDenomBase}
@@ -387,7 +392,7 @@ export default function Limit(props: LimitPropsIF) {
                     tokenPair={tokenPair}
                     gasPriceinGwei={gasPriceinGwei}
                     poolPriceDisplay={poolPriceDisplay}
-                    slippageTolerance={5}
+                    slippageTolerance={slippageTolerancePercentage}
                     liquidityProviderFee={0}
                     quoteTokenIsBuy={true}
                     didUserFlipDenom={tradeData.didUserFlipDenom}

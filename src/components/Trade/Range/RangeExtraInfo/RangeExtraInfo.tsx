@@ -50,8 +50,8 @@ export default function RangeExtraInfo(props: RangeExtraInfoPropsIF) {
     const displayPrice = invertPrice ? 1 / poolPriceDisplay : poolPriceDisplay;
     const displayPriceStringTruncated =
         displayPrice < 2
-            ? truncateDecimals(displayPrice, 4).toString()
-            : truncateDecimals(displayPrice, 0).toString();
+            ? truncateDecimals(displayPrice, 6).toString()
+            : truncateDecimals(displayPrice, 2).toString();
 
     // const priceLimitAfterSlippageAndFee = quoteTokenIsBuy
     //     ? truncateDecimals(

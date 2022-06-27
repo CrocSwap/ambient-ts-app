@@ -56,6 +56,20 @@ import {
 export default function App() {
     const { chainId, isWeb3Enabled, account, logout, isAuthenticated } = useMoralis();
 
+    const [ensName, setEnsName] = useState('');
+    useEffect(() => {
+        (async () => {
+            const provider = new ethers.providers.JsonRpcProvider(
+                'https://speedy-nodes-nyc.moralis.io/015fffb61180886c9708499e/eth/goerli',
+            );
+            if (account) {
+                const name = await provider.lookupAddress(account);
+                if (name) setEnsName(name);
+                else setEnsName('');
+            }
+        })();
+    }, [account]);
+
     const dispatch = useAppDispatch();
 
     const [importedTokens, setImportedTokens] = useState(defaultTokens);
@@ -255,7 +269,14 @@ export default function App() {
                 }
             }
         })();
-    }, [chainId, account, isWeb3Enabled, isAuthenticated, tokenPair, lastBlockNumber]);
+    }, [
+        chainId,
+        account,
+        isWeb3Enabled,
+        isAuthenticated,
+        JSON.stringify(tokenPair),
+        lastBlockNumber,
+    ]);
 
     const [tokenAAllowance, setTokenAAllowance] = useState<string>('');
     const [tokenBAllowance, setTokenBAllowance] = useState<string>('');
@@ -349,6 +370,47 @@ export default function App() {
 
     const graphData = useAppSelector((state) => state.graphData);
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const getPositionData = async (position: any): Promise<any> => {
+        const baseTokenAddress = position.pool.base;
+        const quoteTokenAddress = position.pool.quote;
+        const poolPriceNonDisplay = await getSpotPrice(
+            baseTokenAddress,
+            quoteTokenAddress,
+            POOL_PRIMARY,
+            provider,
+        );
+        const poolPriceInTicks = Math.log(poolPriceNonDisplay) / Math.log(1.0001);
+
+        position.poolPriceInTicks = poolPriceInTicks;
+        if (baseTokenAddress === contractAddresses.ZERO_ADDR) {
+            position.baseTokenSymbol = 'ETH';
+            position.quoteTokenSymbol = 'DAI';
+            position.tokenAQtyDisplay = '1';
+            position.tokenBQtyDisplay = '2000';
+            if (!position.ambient) {
+                position.lowRangeDisplay = '.001';
+                position.highRangeDisplay = '.002';
+            }
+        } else if (
+            baseTokenAddress.toLowerCase() ===
+            '0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa'.toLowerCase()
+        ) {
+            position.baseTokenSymbol = 'DAI';
+            position.quoteTokenSymbol = 'USDC';
+            position.tokenAQtyDisplay = '101';
+            position.tokenBQtyDisplay = '100';
+            if (!position.ambient) {
+                position.lowRangeDisplay = '0.9';
+                position.highRangeDisplay = '1.1';
+            }
+        } else {
+            position.baseTokenSymbol = 'unknownBase';
+            position.quoteTokenSymbol = 'unknownQuote';
+        }
+        return position;
+    };
+
     useEffect(() => {
         if (account) {
             const endpoint = 'https://api.thegraph.com/subgraphs/name/a0910841082130913312/croc22';
@@ -380,9 +442,18 @@ export default function App() {
                 variables,
                 // requestHeaders: headers,
             ).then((data) => {
-                if (JSON.stringify(graphData.positionsByUser) !== JSON.stringify(data.user)) {
-                    dispatch(setPositionsByUser(data.user));
-                }
+                // if (JSON.stringify(graphData.positionsByUser) !== JSON.stringify(data.user)) {
+                const userData = data.user;
+                const allPositions = userData.positions;
+
+                // let updatedAllPositionsArray = [];
+
+                Promise.all(allPositions.map(getPositionData)).then((updatedPositions) => {
+                    userData.positions = updatedPositions;
+                    if (JSON.stringify(graphData.positionsByUser) !== JSON.stringify(userData)) {
+                        dispatch(setPositionsByUser(userData));
+                    }
+                });
             });
         }
     }, [account, lastBlockNumber]);
@@ -561,6 +632,7 @@ export default function App() {
         nativeBalance: nativeBalance,
         clickLogout: clickLogout,
         metamaskLocked: metamaskLocked,
+        ensName: ensName,
     };
 
     // props for <Swap/> React element
