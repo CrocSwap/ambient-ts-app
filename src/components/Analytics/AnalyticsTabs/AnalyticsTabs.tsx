@@ -42,7 +42,7 @@ export default function AnalyticsTabs() {
             </div>
             <div className={styles.tabs_outlet}>
                 <TabContent id='tab1' activeTab={activeTab}>
-                    <Positions portfolio />
+                    <Positions portfolio isAllPositionsEnabled={false} />
                 </TabContent>
                 <TabContent id='tab2' activeTab={activeTab}>
                     {/* <p>Exchange Component</p> */}
