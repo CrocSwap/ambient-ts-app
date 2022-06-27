@@ -118,6 +118,7 @@ export const tradeDataSlice = createSlice({
         setSlippageTolerance: (state, action: PayloadAction<number>) => {
             state.slippageTolerance = action.payload;
         },
+        resetTradeData: () => initialState,
     },
 });
 
@@ -143,6 +144,7 @@ export const {
     setAdvancedHighTick,
     setSimpleRangeWidth,
     setSlippageTolerance,
+    resetTradeData,
 } = tradeDataSlice.actions;
 
 export default tradeDataSlice.reducer;
