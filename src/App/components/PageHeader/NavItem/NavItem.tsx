@@ -17,9 +17,9 @@ export default function NavItem(props: NavItemProps) {
     UseOnClickOutside(navItemRef, clickOutsideHandler);
     return (
         <div className={styles.nav_item} ref={navItemRef}>
-            <a href='#' className={styles.icon_button} onClick={() => setOpen(!open)}>
+            <div className={styles.icon_button} onClick={() => setOpen(!open)}>
                 {props.icon}
-            </a>
+            </div>
 
             {open && props.children}
         </div>

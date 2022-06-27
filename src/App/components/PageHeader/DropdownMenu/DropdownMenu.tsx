@@ -70,8 +70,7 @@ export default function DropdownMenu(props: DropdownMenuProps) {
 
         return (
             <>
-                <a
-                    href='#'
+                <div
                     className={`${styles.menu_item} ${topLevelItemStyle} ${goBackItemStyle}`}
                     onClick={() => props.goToMenu && setActiveMenu(props.goToMenu)}
                 >
@@ -79,7 +78,7 @@ export default function DropdownMenu(props: DropdownMenuProps) {
                     {props.leftIcon && itemIcon}
                     {props.children}
                     <span className={styles.icon_right}>{props.rightIcon}</span>
-                </a>
+                </div>
             </>
         );
     }
