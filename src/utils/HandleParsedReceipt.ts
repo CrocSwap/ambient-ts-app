@@ -12,7 +12,12 @@ export async function handleParsedReceipt(
     txHash: string,
     parsedReceipt: parsedReceipt,
 ): Promise<unifiedReceipt> {
-    const ethDiff = await getContractEthDiff(Moralis, txHash);
+    let ethDiff = '';
+    try {
+        ethDiff = await getContractEthDiff(Moralis, txHash);
+    } catch (error) {
+        console.log({ error });
+    }
     console.log({ ethDiff });
     console.log({ txType });
 
