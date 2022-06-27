@@ -20,25 +20,28 @@ export default function PoolRow(props: PoolProps) {
     const tokenImages = (
         <>
             <td data-column='tokens' className={styles.tokens}>
-                <img
-                    src={getTokenLogoURL(poolData.token0.address)}
-                    onError={({ currentTarget }) => {
-                        currentTarget.onerror = null;
-                        currentTarget.src = '/static/media/ambient_logo.55c57a31.svg';
-                    }}
-                    alt='token'
-                    width='30px'
-                />
-                <img
-                    src={getTokenLogoURL(poolData.token1.address)}
-                    onError={({ currentTarget }) => {
-                        currentTarget.onerror = null;
-                        currentTarget.src = '/static/media/ambient_logo.55c57a31.svg';
-                    }}
-                    alt='token'
-                    width='30px'
-                />
-                {poolData.token0.symbol}/{poolData.token1.symbol}
+                <div className={styles.slippage_content}>
+                    <img
+                        src={getTokenLogoURL(poolData.token0.address)}
+                        onError={({ currentTarget }) => {
+                            currentTarget.onerror = null;
+                            currentTarget.src = '/static/media/ambient_logo.55c57a31.svg';
+                        }}
+                        alt='token'
+                        width='30px'
+                    />
+                    <img
+                        src={getTokenLogoURL(poolData.token1.address)}
+                        onError={({ currentTarget }) => {
+                            currentTarget.onerror = null;
+                            currentTarget.src = '/static/media/ambient_logo.55c57a31.svg';
+                        }}
+                        alt='token'
+                        width='30px'
+                    />
+                    {poolData.token0.symbol}/{poolData.token1.symbol}
+                    <Badge>{feeTierPercent(poolData.feeTier)}</Badge>
+                </div>
             </td>
         </>
     );
@@ -48,10 +51,8 @@ export default function PoolRow(props: PoolProps) {
             <td data-column='id' className={styles.pool_id}>
                 {props.index}
             </td>
-            <td data-column='name' className={styles.pool_range}>
-                {tokenImages}
-                <Badge>{feeTierPercent(poolData.feeTier)}</Badge>
-            </td>
+            {tokenImages}
+
             <td></td>
             <td></td>
             <td data-column='symbol'>{formatDollarAmount(poolData.tvlUSD)}</td>
