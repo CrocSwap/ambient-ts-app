@@ -19,19 +19,11 @@ interface PositionProps {
     isAllPositionsEnabled: boolean;
     tokenAAddress: string;
     tokenBAddress: string;
-    positionAccount: string;
     account?: string;
 }
 export default function Position(props: PositionProps) {
     // const navigate = useNavigate();
-    const {
-        position,
-        isAllPositionsEnabled,
-        tokenAAddress,
-        tokenBAddress,
-        account,
-        positionAccount,
-    } = props;
+    const { position, isAllPositionsEnabled, tokenAAddress, tokenBAddress, account } = props;
 
     const { portfolio } = props;
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -102,7 +94,8 @@ export default function Position(props: PositionProps) {
             </td>
         </>
     );
-    const ownerId = truncateAddress(position.id, 18);
+    const ownerId = position ? position.accountId : null;
+    const ownerIdTruncated = position ? truncateAddress(position.accountId, 18) : null;
 
     const positionData = {
         position: position,
@@ -152,7 +145,8 @@ export default function Position(props: PositionProps) {
 
     const accountAddress = account ? account.toLowerCase() : null;
 
-    const displayAllOrOwned = isAllPositionsEnabled || positionAccount === accountAddress;
+    const displayAllOrOwned = isAllPositionsEnabled || ownerId === accountAddress;
+    const notDisplayAllOrOwned = !isAllPositionsEnabled || ownerId === accountAddress;
 
     const positionRowOrNull =
         positionMatchesSelectedTokens && displayAllOrOwned ? (
@@ -160,7 +154,7 @@ export default function Position(props: PositionProps) {
                 {portfolio && tokenImages}
                 {isAllPositionsEnabled && (
                     <td data-column='Owner ID' className={styles.position_id}>
-                        {ownerId}
+                        {ownerIdTruncated}
                     </td>
                 )}
                 <td data-column='Position ID' className={styles.position_id}>
@@ -187,19 +181,19 @@ export default function Position(props: PositionProps) {
                     {/* In Range */}
                 </td>
                 <td data-column='' className={styles.option_buttons}>
-                    {!isAllPositionsEnabled && (
+                    {notDisplayAllOrOwned && (
                         <button className={styles.option_button} onClick={openHarvestModal}>
                             Harvest
                         </button>
                     )}
-                    {!isAllPositionsEnabled && (
+                    {notDisplayAllOrOwned && (
                         <button className={styles.option_button}>
                             <Link to={`/trade/edit/${ownerId}`} state={positionData}>
                                 Edit
                             </Link>
                         </button>
                     )}
-                    {!isAllPositionsEnabled && (
+                    {notDisplayAllOrOwned && (
                         <button className={styles.option_button} onClick={openRemoveModal}>
                             Remove
                         </button>

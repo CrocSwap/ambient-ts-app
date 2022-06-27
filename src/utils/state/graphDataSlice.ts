@@ -19,6 +19,7 @@ export interface position {
     askTick: number;
     bidTick: number;
     id: string;
+    accountId: string;
     pool: pool;
     baseTokenSymbol: string;
     quoteTokenSymbol: string;

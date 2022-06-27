@@ -25,8 +25,6 @@ export default function Positions(props: PositionsProps) {
 
     const userPositions = graphData?.positionsByUser?.positions;
 
-    const positionAccount = graphData?.positionsByUser.id;
-
     const positionsDisplay = userPositions.map((position, idx) => (
         <Position
             key={idx}
@@ -37,7 +35,6 @@ export default function Positions(props: PositionsProps) {
             tokenAAddress={tokenAAddress}
             tokenBAddress={tokenBAddress}
             account={account ?? undefined}
-            positionAccount={positionAccount}
         />
     ));
 
@@ -45,8 +42,8 @@ export default function Positions(props: PositionsProps) {
         <thead>
             <tr>
                 {portfolio && <th />}
-                {isAllPositionsEnabled && <th>Owner</th>}
-                <th>Position Id</th>
+                {isAllPositionsEnabled && <th>Owner ID</th>}
+                <th>Position ID</th>
                 <th>Range</th>
                 <th>APY</th>
                 <th></th>
