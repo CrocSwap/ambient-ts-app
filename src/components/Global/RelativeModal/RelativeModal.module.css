@@ -16,7 +16,7 @@ background: rgba(6, 30, 118, 0.35);
 box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 );
 backdrop-filter: blur( 9.5px );
 -webkit-backdrop-filter: blur( 9.5px );
-border-radius: 10px;
+border-radius: var(--border-radius);
 border: 1px solid rgba( 255, 255, 255, 0.18 );
 
 transition: all 350ms ease-in-out;
@@ -40,7 +40,7 @@ transition: all 350ms ease-in-out;
 
   width: 300px;
   height: 300px;
-  border-radius: 4px;
+  border-radius: var(--border-radius);
   position: relative;
   color: white;
  

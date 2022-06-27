@@ -17,7 +17,7 @@
     /* margin-top: 50px; */
     
     color: var(--text-grey-light);
-    border-radius: 4px;
+    border-radius: var(--border-radius);
     
     background-color: var(--dark1);
     background: linear-gradient(to right, #0E131A, #CDC1FF, #13122d);
@@ -41,7 +41,7 @@
   .main_content{
     background-color: var(--dark1);
     padding: 1rem;
-    border-radius: 4px;
+    border-radius: var(--border-radius);
     
    
 

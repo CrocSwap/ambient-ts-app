@@ -15,7 +15,7 @@
 
 .remove_position_info{
     
-    border-radius: 24px;
+    border-radius: var(--border-radius);
     padding: 1rem;
     width: 48%;
     
