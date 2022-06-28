@@ -16,7 +16,7 @@ import { graphData } from '../../../utils/state/graphDataSlice';
 export default function Positions(props: PositionsProps) {
     const { portfolio, notOnTradeRoute, isAllPositionsEnabled, graphData } = props;
 
-    const { account } = useMoralis();
+    const { account, isAuthenticated } = useMoralis();
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
@@ -39,6 +39,7 @@ export default function Positions(props: PositionsProps) {
                   tokenAAddress={tokenAAddress}
                   tokenBAddress={tokenBAddress}
                   account={account ?? undefined}
+                  isAuthenticated={isAuthenticated}
               />
           ))
         : userPositions.map((position, idx) => (
@@ -51,6 +52,7 @@ export default function Positions(props: PositionsProps) {
                   tokenAAddress={tokenAAddress}
                   tokenBAddress={tokenBAddress}
                   account={account ?? undefined}
+                  isAuthenticated={isAuthenticated}
               />
           ));
 

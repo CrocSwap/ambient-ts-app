@@ -19,6 +19,7 @@ interface PositionProps {
     isAllPositionsEnabled: boolean;
     tokenAAddress: string;
     tokenBAddress: string;
+    isAuthenticated: boolean;
     account?: string;
 }
 export default function Position(props: PositionProps) {
@@ -30,6 +31,7 @@ export default function Position(props: PositionProps) {
         tokenBAddress,
         account,
         notOnTradeRoute,
+        isAuthenticated,
     } = props;
 
     const { portfolio } = props;
@@ -152,8 +154,10 @@ export default function Position(props: PositionProps) {
 
     const accountAddress = account ? account.toLowerCase() : null;
 
-    const displayAllOrOwned = isAllPositionsEnabled || ownerId === accountAddress;
-    const notDisplayAllOrOwned = !isAllPositionsEnabled || ownerId === accountAddress;
+    const displayAllOrOwned =
+        isAllPositionsEnabled || (ownerId === accountAddress && isAuthenticated);
+    const notDisplayAllOrOwned =
+        !isAllPositionsEnabled || (ownerId === accountAddress && isAuthenticated);
 
     const positionRowOrNull =
         notOnTradeRoute || (positionMatchesSelectedTokens && displayAllOrOwned) ? (
