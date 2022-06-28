@@ -34,7 +34,6 @@ export default function Tabs(props: ITabsProps) {
         // console.log({ userPositions });
         if (!hasInitialized) {
             if (!isAllPositionsEnabled && userPositions.length < 1) {
-                console.log('firing');
                 setIsAllPositionsEnabled(true);
             } else if (userPositions.length < 1) {
                 return;
@@ -57,6 +56,7 @@ export default function Tabs(props: ITabsProps) {
                     }}
                     Width={36}
                     id='positions_only_toggle'
+                    disabled={!props.isAuthenticated}
                 />
             </div>
         </span>
