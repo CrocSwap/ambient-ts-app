@@ -195,6 +195,54 @@ export default function App() {
             } else {
                 setIsTokenABase(false);
             }
+
+            const endpoint = 'https://api.thegraph.com/subgraphs/name/a0910841082130913312/croc43';
+
+            const queryForPositionsByPool = gql`
+                query ($baseString: Bytes!, $quoteString: Bytes!) {
+                    pools(base: $baseString, quote: $quoteString) {
+                        id
+                        positions {
+                            id
+                            ambient
+                            pool {
+                                id
+                                base
+                                quote
+                                poolIdx
+                            }
+                            bidTick
+                            askTick
+                        }
+                    }
+                }
+            `;
+
+            const positionsByPoolVariables = {
+                baseString: sortedTokens[0].toLowerCase(),
+                quoteString: sortedTokens[1].toLowerCase(),
+                // poolIdx: POOL_PRIMARY,
+            };
+            console.log({ positionsByPoolVariables });
+            request(
+                endpoint,
+                queryForPositionsByPool,
+                positionsByPoolVariables,
+                // requestHeaders: headers,
+            ).then((data) => {
+                // if (JSON.stringify(graphData.positionsByUser) !== JSON.stringify(data.user)) {
+                const pools = data.pools;
+                // const allPositions = pools.positions;
+                console.log({ data });
+                // let updatedAllPositionsArray = [];
+
+                // Promise.all(allPositions.map(getPositionData)).then((updatedPositions) => {
+                //     userData.positions = updatedPositions;
+                //     if (JSON.stringify(graphData.positionsByUser) !== JSON.stringify(userData)) {
+                //         dispatch(setPositionsByUser(userData));
+                //     }
+                // });
+            });
         }
     }, [tokenPairStringified]);
 
@@ -418,7 +466,7 @@ export default function App() {
     useEffect(() => {
         if (isAuthenticated && account) {
             const endpoint = 'https://api.thegraph.com/subgraphs/name/a0910841082130913312/croc22';
-            const query = gql`
+            const queryForPositionsByUser = gql`
                 query ($userAddress: Bytes) {
                     user(id: $userAddress) {
                         id
@@ -437,13 +485,13 @@ export default function App() {
                     }
                 }
             `;
-            const variables = {
+            const positionByUserVariables = {
                 userAddress: account,
             };
             request(
                 endpoint,
-                query,
-                variables,
+                queryForPositionsByUser,
+                positionByUserVariables,
                 // requestHeaders: headers,
             ).then((data) => {
                 // if (JSON.stringify(graphData.positionsByUser) !== JSON.stringify(data.user)) {
