@@ -1,4 +1,3 @@
-import { Badge } from '@material-ui/core';
 import { PoolData } from '../../state/pools/reducer';
 import { feeTierPercent, isAddress } from '../../utils';
 import { formatDollarAmount } from '../../utils/numbers';
@@ -19,13 +18,13 @@ export default function PoolRow(props: PoolProps) {
 
     const tokenImages = (
         <>
-            <td data-column='name' className={styles.tokens} width={300}>
+            <td data-column='name' width={350}>
                 <td>
                     <img
                         src={getTokenLogoURL(poolData.token0.address)}
                         onError={({ currentTarget }) => {
                             currentTarget.onerror = null;
-                            currentTarget.src = '/static/media/ambient_logo.55c57a31.svg';
+                            currentTarget.src = '/question.svg';
                         }}
                         alt='token'
                         width='30px'
@@ -34,7 +33,7 @@ export default function PoolRow(props: PoolProps) {
                         src={getTokenLogoURL(poolData.token1.address)}
                         onError={({ currentTarget }) => {
                             currentTarget.onerror = null;
-                            currentTarget.src = '/static/media/ambient_logo.55c57a31.svg';
+                            currentTarget.src = '/question.svg';
                         }}
                         alt='token'
                         width='30px'
@@ -57,7 +56,7 @@ export default function PoolRow(props: PoolProps) {
     return (
         <tr>
             <td data-column='id' className={styles.pool_id}>
-                {props.index}
+                {props.index + 1}
             </td>
             {tokenImages}
 

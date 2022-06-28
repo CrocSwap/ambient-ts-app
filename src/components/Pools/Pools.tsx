@@ -1,4 +1,5 @@
-import { useCallback, useMemo, useState } from 'react';
+import { Pagination } from '@mui/material';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { TOKEN_HIDE } from '../../constants';
 import { PoolData } from '../../state/pools/reducer';
 import PoolRow from './PoolRow';
@@ -7,6 +8,7 @@ import styles from './Pools.module.css';
 interface PoolProps {
     propType: string;
     pools: PoolData[];
+    maxItems?: number;
 }
 
 export default function Pools(props: PoolProps) {
@@ -19,8 +21,19 @@ export default function Pools(props: PoolProps) {
 
     const [sortField, setSortField] = useState(SORT_FIELD.tvlUSD);
     const [sortDirection, setSortDirection] = useState<boolean>(true);
-
+    const [page, setPage] = useState(1);
+    const [maxPage, setMaxPage] = useState(1);
     const pools = props.pools;
+    const maxItems = props.maxItems ? props.maxItems : pools.length;
+
+    useEffect(() => {
+        let extraPages = 1;
+        if (pools.length % maxItems === 0) {
+            extraPages = 0;
+        }
+        setMaxPage(Math.floor(pools.length / maxItems) + extraPages);
+    }, [maxItems, pools]);
+
     const sortedPools = useMemo(() => {
         return pools
             ? pools
@@ -34,8 +47,9 @@ export default function Pools(props: PoolProps) {
                           return -1;
                       }
                   })
+                  .slice(maxItems * (page - 1), page * maxItems)
             : [];
-    }, [pools, sortDirection, sortField]);
+    }, [pools, sortDirection, sortField, page]);
 
     const handleSort = useCallback(
         (newField: string) => {
@@ -53,7 +67,7 @@ export default function Pools(props: PoolProps) {
     );
 
     const poolsDisplay = sortedPools.map((pool, idx) => (
-        <PoolRow pool={pool} index={idx + 1} key={idx} />
+        <PoolRow pool={pool} index={(page - 1) * maxItems + idx} key={idx} />
     ));
 
     const poolsHeader = (
@@ -87,6 +101,10 @@ export default function Pools(props: PoolProps) {
         </thead>
     );
 
+    const handleChange = (event: any, value: number) => {
+        setPage(value);
+    };
+
     return (
         <div className={styles.pool_table_display}>
             <table>
@@ -94,6 +112,20 @@ export default function Pools(props: PoolProps) {
 
                 <tbody>{poolsDisplay}</tbody>
             </table>
+
+            {maxItems !== pools.length ? (
+                <Pagination
+                    count={maxPage}
+                    size='large'
+                    page={page}
+                    variant='outlined'
+                    shape='rounded'
+                    onChange={handleChange}
+                    color='primary'
+                />
+            ) : (
+                <></>
+            )}
         </div>
     );
 }

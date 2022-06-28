@@ -60,8 +60,8 @@ export default function TopTokens(props: TokenProps) {
     const topTokensHeader = (
         <thead>
             <tr>
-                <th></th>
-                <th>
+                <th>#</th>
+                <th style={{ width: 350 }}>
                     <label onClick={() => handleSort(SORT_FIELD.name)}>
                         Name {arrow(SORT_FIELD.name)}
                     </label>

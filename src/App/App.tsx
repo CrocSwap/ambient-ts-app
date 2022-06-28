@@ -41,6 +41,7 @@ import { defaultTokens } from '../utils/data/defaultTokens';
 import initializeLocalStorage from './functions/initializeLocalStorage';
 import { TokenIF } from '../utils/interfaces/exports';
 import { setDenomInBase } from '../utils/state/tradeDataSlice';
+import TokenPage from '../pages/TokenPage/TokenPage';
 
 /** ***** React Function *******/
 export default function App() {
@@ -636,6 +637,8 @@ export default function App() {
                             <Route path='edit/:positionHash' element={<Edit />} />
                         </Route>
                         <Route path='analytics' element={<Analytics />} />
+                        <Route path='tokens/:address' element={<TokenPage />} />
+
                         <Route path='range2' element={<Range {...rangeProps} />} />
                         <Route path='account' element={<Portfolio />} />
                         <Route path='swap' element={<Swap {...swapProps} />} />
