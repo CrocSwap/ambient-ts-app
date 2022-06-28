@@ -33,6 +33,12 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
 
     const [searchTerm] = useState('');
 
+    const { activeTokenLists } = JSON.parse(localStorage.getItem('user') as string);
+    // TODO: Note to self, use the below logic to get a central list of all tokens in active lists and initialize searchableTokens on it
+    const activeTokens = JSON.parse(localStorage.getItem('allTokenLists') as string);
+
+    console.log(activeTokens);
+
     const [selectableTokens, setSelectableTokens] = useState(tokensBank);
     const [searchableTokens, setSearchableTokens] = useState(tokensBank);
 

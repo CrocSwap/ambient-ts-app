@@ -9,7 +9,10 @@ interface TokenSelectProps {
 }
 
 export default function TokenSelect(props: TokenSelectProps) {
-    const { token, closeModal } = props;
+    const {
+        token,
+        // closeModal
+    } = props;
 
     const getRandomInt = () => Math.floor(Math.random() * 18000);
 
