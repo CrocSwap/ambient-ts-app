@@ -24,19 +24,33 @@ export default function Positions(props: PositionsProps) {
     const graphData = useAppSelector((state) => state?.graphData);
 
     const userPositions = graphData?.positionsByUser?.positions;
+    const poolPositions = graphData?.positionsByPool?.positions;
 
-    const positionsDisplay = userPositions.map((position, idx) => (
-        <Position
-            key={idx}
-            portfolio={portfolio}
-            notOnTradeRoute={notOnTradeRoute}
-            position={position}
-            isAllPositionsEnabled={isAllPositionsEnabled}
-            tokenAAddress={tokenAAddress}
-            tokenBAddress={tokenBAddress}
-            account={account ?? undefined}
-        />
-    ));
+    const positionsDisplay = isAllPositionsEnabled
+        ? poolPositions.map((position, idx) => (
+              <Position
+                  key={idx}
+                  portfolio={portfolio}
+                  notOnTradeRoute={notOnTradeRoute}
+                  position={position}
+                  isAllPositionsEnabled={isAllPositionsEnabled}
+                  tokenAAddress={tokenAAddress}
+                  tokenBAddress={tokenBAddress}
+                  account={account ?? undefined}
+              />
+          ))
+        : userPositions.map((position, idx) => (
+              <Position
+                  key={idx}
+                  portfolio={portfolio}
+                  notOnTradeRoute={notOnTradeRoute}
+                  position={position}
+                  isAllPositionsEnabled={isAllPositionsEnabled}
+                  tokenAAddress={tokenAAddress}
+                  tokenBAddress={tokenBAddress}
+                  account={account ?? undefined}
+              />
+          ));
 
     const positionsHeader = (
         <thead>
