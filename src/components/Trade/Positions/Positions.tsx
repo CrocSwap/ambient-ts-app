@@ -7,36 +7,54 @@ interface PositionsProps {
     isAllPositionsEnabled: boolean;
     portfolio?: boolean;
     notOnTradeRoute?: boolean;
+    graphData: graphData;
 }
 
 import { useMoralis } from 'react-moralis';
+import { graphData } from '../../../utils/state/graphDataSlice';
 
 export default function Positions(props: PositionsProps) {
-    const { portfolio, notOnTradeRoute, isAllPositionsEnabled } = props;
+    const { portfolio, notOnTradeRoute, isAllPositionsEnabled, graphData } = props;
 
-    const { account } = useMoralis();
+    const { account, isAuthenticated } = useMoralis();
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
     const tokenAAddress = tradeData.tokenA.address;
     const tokenBAddress = tradeData.tokenB.address;
 
-    const graphData = useAppSelector((state) => state?.graphData);
+    // const graphData = useAppSelector((state) => state?.graphData);
 
     const userPositions = graphData?.positionsByUser?.positions;
+    const poolPositions = graphData?.positionsByPool?.positions;
 
-    const positionsDisplay = userPositions.map((position, idx) => (
-        <Position
-            key={idx}
-            portfolio={portfolio}
-            notOnTradeRoute={notOnTradeRoute}
-            position={position}
-            isAllPositionsEnabled={isAllPositionsEnabled}
-            tokenAAddress={tokenAAddress}
-            tokenBAddress={tokenBAddress}
-            account={account ?? undefined}
-        />
-    ));
+    const positionsDisplay = isAllPositionsEnabled
+        ? poolPositions.map((position, idx) => (
+              <Position
+                  key={idx}
+                  portfolio={portfolio}
+                  notOnTradeRoute={notOnTradeRoute}
+                  position={position}
+                  isAllPositionsEnabled={isAllPositionsEnabled}
+                  tokenAAddress={tokenAAddress}
+                  tokenBAddress={tokenBAddress}
+                  account={account ?? undefined}
+                  isAuthenticated={isAuthenticated}
+              />
+          ))
+        : userPositions.map((position, idx) => (
+              <Position
+                  key={idx}
+                  portfolio={portfolio}
+                  notOnTradeRoute={notOnTradeRoute}
+                  position={position}
+                  isAllPositionsEnabled={isAllPositionsEnabled}
+                  tokenAAddress={tokenAAddress}
+                  tokenBAddress={tokenBAddress}
+                  account={account ?? undefined}
+                  isAuthenticated={isAuthenticated}
+              />
+          ));
 
     const positionsHeader = (
         <thead>

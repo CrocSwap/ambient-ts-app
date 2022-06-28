@@ -1,7 +1,11 @@
 /** ***** Import React and Dongles *******/
 import { useEffect, useState, useMemo } from 'react';
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
-import { resetGraphData, setPositionsByUser } from '../utils/state/graphDataSlice';
+import {
+    resetGraphData,
+    setPositionsByPool,
+    setPositionsByUser,
+} from '../utils/state/graphDataSlice';
 import { utils, ethers } from 'ethers';
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { request, gql } from 'graphql-request';
@@ -195,6 +199,54 @@ export default function App() {
             } else {
                 setIsTokenABase(false);
             }
+
+            const endpoint = 'https://api.thegraph.com/subgraphs/name/a0910841082130913312/croc43';
+
+            const queryForPositionsByPool = gql`
+                query ($base: Bytes, $quote: Bytes, $poolIdx: BigInt) {
+                    pools(where: { base: $base, quote: $quote, poolIdx: $poolIdx }) {
+                        id
+                        positions {
+                            id
+                            pool {
+                                id
+                                base
+                                quote
+                                poolIdx
+                            }
+                            ambient
+                            bidTick
+                            askTick
+                        }
+                    }
+                }
+            `;
+
+            const positionsByPoolVariables = {
+                base: sortedTokens[0],
+                quote: sortedTokens[1],
+                poolIdx: 36000,
+            };
+
+            // console.log({ positionsByPoolVariables });
+            request(
+                endpoint,
+                queryForPositionsByPool,
+                positionsByPoolVariables,
+                // requestHeaders: headers,
+            ).then((data) => {
+                // if (JSON.stringify(graphData.positionsByUser) !== JSON.stringify(data.user)) {
+                const pool = data.pools[0];
+
+                Promise.all(pool.positions.map(getPositionData)).then((updatedPositions) => {
+                    pool.positions = updatedPositions;
+                    // const positionArray = updatedPositions as positionsByPool
+                    // console.log(pool.positions);
+                    if (JSON.stringify(graphData.positionsByPool) !== JSON.stringify(pool)) {
+                        dispatch(setPositionsByPool(pool));
+                    }
+                });
+            });
         }
     }, [tokenPairStringified]);
 
@@ -418,7 +470,7 @@ export default function App() {
     useEffect(() => {
         if (isAuthenticated && account) {
             const endpoint = 'https://api.thegraph.com/subgraphs/name/a0910841082130913312/croc22';
-            const query = gql`
+            const queryForPositionsByUser = gql`
                 query ($userAddress: Bytes) {
                     user(id: $userAddress) {
                         id
@@ -437,13 +489,13 @@ export default function App() {
                     }
                 }
             `;
-            const variables = {
+            const positionByUserVariables = {
                 userAddress: account,
             };
             request(
                 endpoint,
-                query,
-                variables,
+                queryForPositionsByUser,
+                positionByUserVariables,
                 // requestHeaders: headers,
             ).then((data) => {
                 // if (JSON.stringify(graphData.positionsByUser) !== JSON.stringify(data.user)) {
@@ -772,7 +824,12 @@ export default function App() {
                 <div className={`${noSidebarStyle} ${swapBodyStyle}`}>
                     <Routes>
                         <Route index element={<Home />} />
-                        <Route path='trade' element={<Trade />}>
+                        <Route
+                            path='trade'
+                            element={
+                                <Trade account={account ?? ''} isAuthenticated={isAuthenticated} />
+                            }
+                        >
                             <Route path='' element={<Swap {...swapPropsTrade} />} />
                             <Route path='market' element={<Swap {...swapPropsTrade} />} />
                             <Route path='limit' element={<Limit {...limitPropsTrade} />} />
