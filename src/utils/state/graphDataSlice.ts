@@ -14,6 +14,16 @@ export interface positionsByUser {
     dexBalTokenB: boolean;
 }
 
+export interface positionsByPool {
+    id: string;
+    positions: Array<position>;
+    denomInBase: boolean;
+    primQty: string;
+    isTokenABase: boolean;
+    dexBalTokenA: boolean;
+    dexBalTokenB: boolean;
+}
+
 export interface position {
     ambient: boolean;
     askTick: number;
