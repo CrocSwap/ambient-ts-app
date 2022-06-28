@@ -1,7 +1,11 @@
 /** ***** Import React and Dongles *******/
 import { useEffect, useState, useMemo } from 'react';
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
-import { resetGraphData, setPositionsByUser } from '../utils/state/graphDataSlice';
+import {
+    resetGraphData,
+    setPositionsByPool,
+    setPositionsByUser,
+} from '../utils/state/graphDataSlice';
 import { utils, ethers } from 'ethers';
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { request, gql } from 'graphql-request';
@@ -199,18 +203,18 @@ export default function App() {
             const endpoint = 'https://api.thegraph.com/subgraphs/name/a0910841082130913312/croc43';
 
             const queryForPositionsByPool = gql`
-                query ($baseString: Bytes!, $quoteString: Bytes!) {
-                    pools(base: $baseString, quote: $quoteString) {
+                query ($base: Bytes, $quote: Bytes, $poolIdx: BigInt) {
+                    pools(where: { base: $base, quote: $quote, poolIdx: $poolIdx }) {
                         id
                         positions {
                             id
-                            ambient
                             pool {
                                 id
                                 base
                                 quote
                                 poolIdx
                             }
+                            ambient
                             bidTick
                             askTick
                         }
@@ -219,10 +223,11 @@ export default function App() {
             `;
 
             const positionsByPoolVariables = {
-                baseString: sortedTokens[0].toLowerCase(),
-                quoteString: sortedTokens[1].toLowerCase(),
-                // poolIdx: POOL_PRIMARY,
+                base: sortedTokens[0],
+                quote: sortedTokens[1],
+                poolIdx: 36000,
             };
+
             console.log({ positionsByPoolVariables });
             request(
                 endpoint,
@@ -231,17 +236,16 @@ export default function App() {
                 // requestHeaders: headers,
             ).then((data) => {
                 // if (JSON.stringify(graphData.positionsByUser) !== JSON.stringify(data.user)) {
-                const pools = data.pools;
-                // const allPositions = pools.positions;
-                console.log({ data });
-                // let updatedAllPositionsArray = [];
+                const pool = data.pools[0];
 
-                // Promise.all(allPositions.map(getPositionData)).then((updatedPositions) => {
-                //     userData.positions = updatedPositions;
-                //     if (JSON.stringify(graphData.positionsByUser) !== JSON.stringify(userData)) {
-                //         dispatch(setPositionsByUser(userData));
-                //     }
-                // });
+                Promise.all(pool.positions.map(getPositionData)).then((updatedPositions) => {
+                    pool.positions = updatedPositions;
+                    // const positionArray = updatedPositions as positionsByPool
+                    console.log(pool.positions);
+                    if (JSON.stringify(graphData.positionsByPool) !== JSON.stringify(pool)) {
+                        dispatch(setPositionsByPool(pool));
+                    }
+                });
             });
         }
     }, [tokenPairStringified]);

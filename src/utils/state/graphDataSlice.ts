@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export interface graphData {
     positionsByUser: positionsByUser;
+    positionsByPool: positionsByPool;
 }
 
 export interface positionsByUser {
@@ -17,11 +18,6 @@ export interface positionsByUser {
 export interface positionsByPool {
     id: string;
     positions: Array<position>;
-    denomInBase: boolean;
-    primQty: string;
-    isTokenABase: boolean;
-    dexBalTokenA: boolean;
-    dexBalTokenB: boolean;
 }
 
 export interface position {
@@ -56,6 +52,10 @@ const initialState: graphData = {
         dexBalTokenA: false,
         dexBalTokenB: false,
     },
+    positionsByPool: {
+        id: '',
+        positions: [],
+    },
 };
 
 export const graphDataSlice = createSlice({
@@ -65,11 +65,14 @@ export const graphDataSlice = createSlice({
         setPositionsByUser: (state, action: PayloadAction<positionsByUser>) => {
             state.positionsByUser = action.payload;
         },
+        setPositionsByPool: (state, action: PayloadAction<positionsByPool>) => {
+            state.positionsByPool = action.payload;
+        },
         resetGraphData: () => initialState,
     },
 });
 
 // action creators are generated for each case reducer function
-export const { setPositionsByUser, resetGraphData } = graphDataSlice.actions;
+export const { setPositionsByUser, setPositionsByPool, resetGraphData } = graphDataSlice.actions;
 
 export default graphDataSlice.reducer;
