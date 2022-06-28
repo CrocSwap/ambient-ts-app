@@ -134,11 +134,11 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
         </button>
     );
 
-    const magicButton = (
-        <button className={styles.authenticate_button} onClick={openModal}>
-            Log in with Email
-        </button>
-    );
+    // const magicButton = (
+    //     <button className={styles.authenticate_button} onClick={openModal}>
+    //         Log in with Email
+    //     </button>
+    // );
 
     return (
         <header data-testid={'page-header'} className={styles.primary_header}>
@@ -198,7 +198,7 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
             {/* <div className={styles.account}>{accountAddress}</div> */}
             <div className={styles.account}>
                 {(!isAuthenticated || !isWeb3Enabled) && metamaskButton}
-                {(!isAuthenticated || !isWeb3Enabled) && magicButton}
+                {/* {(!isAuthenticated || !isWeb3Enabled) && magicButton} */}
                 {isAuthenticated && isWeb3Enabled && <NetworkSelector />}
                 <Account {...accountProps} />
             </div>

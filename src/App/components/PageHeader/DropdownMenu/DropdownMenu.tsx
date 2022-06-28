@@ -37,10 +37,12 @@ interface DropdownMenuProps {
     isWeb3Enabled?: boolean;
     clickLogout: () => void;
     openModal: () => void;
+    closeMenu?: () => void;
 }
 
 export default function DropdownMenu(props: DropdownMenuProps) {
-    const { isAuthenticated, isWeb3Enabled, clickLogout, openModal } = props;
+    const { isAuthenticated, isWeb3Enabled, clickLogout, openModal, closeMenu } = props;
+    console.log(props.closeMenu);
 
     const [activeMenu, setActiveMenu] = useState('main');
     // eslint-disable-next-line
@@ -113,13 +115,22 @@ export default function DropdownMenu(props: DropdownMenuProps) {
         </>
     );
 
+    function handleLogout() {
+        clickLogout();
+        closeMenu ? closeMenu() : null;
+    }
+    function handleLoginWithEmail() {
+        openModal();
+        closeMenu ? closeMenu() : null;
+    }
+
     const logoutButton = (
-        <div className={styles.button_container} onClick={clickLogout}>
+        <div className={styles.button_container} onClick={handleLogout}>
             <button className={styles.authenticate_button}>Logout</button>
         </div>
     );
     const magicButton = (
-        <div className={styles.button_container} onClick={openModal}>
+        <div className={styles.button_container} onClick={handleLoginWithEmail}>
             <button className={styles.authenticate_button}>Log in with Email</button>
         </div>
     );
@@ -134,7 +145,7 @@ export default function DropdownMenu(props: DropdownMenuProps) {
 
             {isAuthenticated && isWeb3Enabled && logoutButton}
 
-            {!isAuthenticated && !isWeb3Enabled && magicButton}
+            {(!isAuthenticated || !isWeb3Enabled) && magicButton}
         </>
     );
 
