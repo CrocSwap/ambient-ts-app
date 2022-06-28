@@ -21,6 +21,7 @@ interface IAccountProps {
     isAuthenticated?: boolean;
     isWeb3Enabled?: boolean;
     clickLogout: () => void;
+    openModal: () => void;
     ensName: string;
 }
 
@@ -29,7 +30,7 @@ export default function Account(props: IAccountProps): React.ReactElement<IAccou
     // const [anchorEl, setAnchorEl] = useState(null);
     const [value, copy] = useCopyToClipboard();
 
-    const { isAuthenticated, isWeb3Enabled, clickLogout, ensName } = props;
+    const { isAuthenticated, isWeb3Enabled, clickLogout, ensName, openModal } = props;
     // eslint-disable-next-line
     // const handlePopoverClick = (event: React.ChangeEvent<any>) => {
     //     setAnchorEl(event.currentTarget);
@@ -128,6 +129,7 @@ export default function Account(props: IAccountProps): React.ReactElement<IAccou
                     isAuthenticated={isAuthenticated}
                     isWeb3Enabled={isWeb3Enabled}
                     clickLogout={clickLogout}
+                    openModal={openModal}
                 />
             </NavItem>
 
