@@ -6,7 +6,7 @@ import {
     setPositionsByPool,
     setPositionsByUser,
 } from '../utils/state/graphDataSlice';
-import { utils, ethers } from 'ethers';
+import { ethers } from 'ethers';
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { request, gql } from 'graphql-request';
 import { useMoralis, useMoralisQuery, useMoralisSubscription } from 'react-moralis';
@@ -682,13 +682,15 @@ export default function App() {
     const [gasPriceinGwei, setGasPriceinGwei] = useState<string>('');
 
     useEffect(() => {
-        (async () => {
-            if (provider) {
-                const gasPriceInWei = await provider.getGasPrice();
-                if (gasPriceInWei)
-                    setGasPriceinGwei(utils.formatUnits(gasPriceInWei.toString(), 'gwei'));
-            }
-        })();
+        fetch(
+            'https://api.etherscan.io/api?module=gastracker&action=gasoracle&apikey=3UGY5173DQXPSPSVAUNZIVXVN4XI3YEE2N',
+        )
+            .then((response) => response.json())
+            .then((response) => {
+                if (response.result.ProposeGasPrice) {
+                    setGasPriceinGwei(response.result.ProposeGasPrice);
+                }
+            });
     }, [provider, chainId, lastBlockNumber]);
 
     // useEffect to get current block number
@@ -707,7 +709,7 @@ export default function App() {
             if (currentBlock !== lastBlockNumber) {
                 setLastBlockNumber(currentBlock);
             }
-        }, 3000);
+        }, 10000);
 
         return () => clearInterval(interval);
         // }
