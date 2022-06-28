@@ -56,7 +56,7 @@ import PositionDetails from '../pages/Trade/Range/PositionDetails';
 
 /** ***** React Function *******/
 export default function App() {
-    const { chainId, isWeb3Enabled, account, logout, isAuthenticated } = useMoralis();
+    const { Moralis, chainId, isWeb3Enabled, account, logout, isAuthenticated } = useMoralis();
 
     const [ensName, setEnsName] = useState('');
     useEffect(() => {
@@ -204,6 +204,7 @@ export default function App() {
 
     // useEffect to get non-display spot price when tokens change and block updates
     useEffect(() => {
+        console.log({ provider });
         if (baseTokenAddress && quoteTokenAddress) {
             (async () => {
                 const spotPrice = await getSpotPrice(
@@ -448,16 +449,20 @@ export default function App() {
             ).then((data) => {
                 // if (JSON.stringify(graphData.positionsByUser) !== JSON.stringify(data.user)) {
                 const userData = data.user;
-                const allPositions = userData.positions;
+                if (userData) {
+                    const allPositions = userData.positions;
 
-                // let updatedAllPositionsArray = [];
+                    // let updatedAllPositionsArray = [];
 
-                Promise.all(allPositions.map(getPositionData)).then((updatedPositions) => {
-                    userData.positions = updatedPositions;
-                    if (JSON.stringify(graphData.positionsByUser) !== JSON.stringify(userData)) {
-                        dispatch(setPositionsByUser(userData));
-                    }
-                });
+                    Promise.all(allPositions.map(getPositionData)).then((updatedPositions) => {
+                        userData.positions = updatedPositions;
+                        if (
+                            JSON.stringify(graphData.positionsByUser) !== JSON.stringify(userData)
+                        ) {
+                            dispatch(setPositionsByUser(userData));
+                        }
+                    });
+                }
             });
         }
     }, [isAuthenticated, account, lastBlockNumber]);
@@ -503,11 +508,12 @@ export default function App() {
                 return;
             } else {
                 // console.log('making new kovan speedy node provider');
-                setProvider(
-                    new ethers.providers.JsonRpcProvider(
-                        'https://speedy-nodes-nyc.moralis.io/015fffb61180886c9708499e/eth/kovan',
-                    ),
-                );
+                // setProvider(
+                //     new ethers.providers.JsonRpcProvider(
+                //         'https://speedy-nodes-nyc.moralis.io/015fffb61180886c9708499e/eth/kovan',
+                //     ),
+                // );
+                setProvider(undefined);
             }
         } catch (error) {
             console.log(error);
@@ -624,16 +630,23 @@ export default function App() {
     // on a 3 second interval
     // currently displayed in footer
     useEffect(() => {
-        if (provider) {
-            const interval = setInterval(async () => {
-                const currentBlock = await provider.getBlockNumber();
-                if (currentBlock !== lastBlockNumber) {
-                    setLastBlockNumber(currentBlock);
-                }
-            }, 3000);
-            return () => clearInterval(interval);
-        }
-    }, [provider, chainId, lastBlockNumber]);
+        const interval = setInterval(async () => {
+            const currentDateTime = new Date().toISOString();
+            const chain = chainId ?? '0x2a';
+            // console.log({ chainId });
+            const options: { chain: '0x2a' | 'kovan'; date: string } = {
+                chain: chain as '0x2a' | 'kovan',
+                date: currentDateTime,
+            };
+            const currentBlock = (await Moralis.Web3API.native.getDateToBlock(options)).block;
+            if (currentBlock !== lastBlockNumber) {
+                setLastBlockNumber(currentBlock);
+            }
+        }, 3000);
+
+        return () => clearInterval(interval);
+        // }
+    }, [chainId, lastBlockNumber]);
 
     const shouldDisplayAccountTab = isAuthenticated && account != '';
 
