@@ -1,5 +1,5 @@
 /** ***** START: Import React and Dongles *******/
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, Link } from 'react-router-dom';
 import { useEffect, useState, useCallback } from 'react';
 import { useMoralis } from 'react-moralis';
 /** ***** END: Import React and Dongles *********/
@@ -142,10 +142,10 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
     return (
         <header data-testid={'page-header'} className={styles.primary_header}>
             {/* <div className={styles.header_gradient}> </div> */}
-            <div className={styles.logo_container}>
+            <Link to='/' className={styles.logo_container}>
                 <img src={ambientLogo} alt='ambient' />
                 <h1>ambient</h1>
-            </div>
+            </Link>
             <div
                 className={styles.mobile_nav_toggle}
                 aria-controls='primary_navigation'
