@@ -81,7 +81,7 @@
     padding: 1rem;
   
     border: 1px solid var(--border-color);
-    border-radius: 16px;
+    border-radius: var(--border-radius);
     background-color: var(--dark3);
   }
   .fee_tier_container {

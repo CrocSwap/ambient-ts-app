@@ -6,7 +6,12 @@ import { motion } from 'framer-motion';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { tradeData as TradeDataIF } from '../../utils/state/tradeDataSlice';
 
-export default function Trade() {
+interface ITradeProps {
+    account: string;
+    isAuthenticated: boolean;
+}
+
+export default function Trade(props: ITradeProps) {
     const location = useLocation();
     const currentLocation = location.pathname;
 
@@ -109,7 +114,7 @@ export default function Trade() {
                     {tokenInfo}
                     {timeFrameContent}
                     {chartImage}
-                    <Tabs />
+                    <Tabs account={props.account} isAuthenticated={props.isAuthenticated} />
                 </div>
                 {mainContent}
             </main>

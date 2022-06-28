@@ -45,17 +45,25 @@ svg{
 
 svg:hover{
   color: var(--text-grey-white);
-  transition: all 450ms ease-in-out;
+  transition: all var(--animation-speed) ease-in-out;
 }
 
 a {
   color: unset;
   text-decoration: none;
-  position: relative; 
+  /* position: relative;  */
 }
+ /* .active{
+
+  transition: opacity ease-in-out var(--animation-speed);
+  color: blue;
+  font-size: 20px;
+  position: relative;
+} */
+
 body{
   overflow-x: hidden;
-  padding: 0 1rem;
+  /* padding: 0 1rem; */
  
 
 }
@@ -69,9 +77,11 @@ footer {
   bottom: 0;
 }
 
+
+
+
 .main-layout{
-  transition: all 600ms ease-in-out;
-  /* background: var(--dark3); */
+  transition: all var(--animation-speed) ease-in-out;  /* background: var(--dark3); */
   /* min-height: calc(100vh - 5rem); */
   margin-left: 5rem;
   /* padding: 1rem; */
@@ -81,12 +91,10 @@ footer {
 
 .no-sidebar{
   margin-left: 0;
-  transition: all 10ms ease-in-out;
-  /* min-height: calc(100vh - 5rem); */
+  transition: all var(--animation-speed) ease-in-out;  /* min-height: calc(100vh - 5rem); */
 }
 .main-layout-2{
-  transition: all 700ms ease-in-out;
-  /* background: var(--dark3); */
+  transition: all var(--animation-speed) ease-in-out;  /* background: var(--dark3); */
   /* min-height: calc(100vh - 5rem); */
  
   
@@ -144,14 +152,14 @@ footer {
 }
 .menu-primary-enter-active {
   transform: translateX(0%);
-  transition: all 500ms ease;
+  transition: all var(--animation-speed) ease;
 }
 .menu-primary-exit {
   position: absolute;
 }
 .menu-primary-exit-active {
   transform: translateX(-110%);
-  transition: all 500ms ease;
+  transition: all var(--animation-speed) ease;
 }
 
 
@@ -160,14 +168,14 @@ footer {
 }
 .menu-secondary-enter-active {
   transform: translateX(0%);
-  transition: all 500ms ease;
+  transition: all var(--animation-speed) ease;
 }
 .menu-secondary-exit {
 
 }
 .menu-secondary-exit-active {
   transform: translateX(110%);
-  transition: all 500ms ease;
+  transition: all var(--animation-speed) ease;
 }
 
 
