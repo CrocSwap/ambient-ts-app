@@ -5,7 +5,12 @@ import { resetGraphData, setPositionsByUser } from '../utils/state/graphDataSlic
 import { utils, ethers } from 'ethers';
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { request, gql } from 'graphql-request';
-import { useMoralis, useMoralisQuery, useMoralisSubscription } from 'react-moralis';
+import {
+    useMoralis,
+    useMoralisQuery,
+    useMoralisSubscription,
+    // useMoralisWeb3Api,
+} from 'react-moralis';
 import Moralis from 'moralis/types';
 import {
     contractAddresses,
@@ -56,32 +61,7 @@ import PositionDetails from '../pages/Trade/Range/PositionDetails';
 
 /** ***** React Function *******/
 export default function App() {
-    const { chainId, isWeb3Enabled, account, logout, isAuthenticated } = useMoralis();
-
-    const [ensName, setEnsName] = useState('');
-
-    const [goerliSpeedyNodeProvider, setGoerliSpeedyNodeProvider] =
-        useState<ethers.providers.JsonRpcProvider>();
-
-    useEffect(() => {
-        const goerliProvider = new ethers.providers.JsonRpcProvider(
-            'https://speedy-nodes-nyc.moralis.io/015fffb61180886c9708499e/eth/goerli',
-        );
-        console.log('getting goerli provider');
-        setGoerliSpeedyNodeProvider(goerliProvider);
-    }, []);
-
-    useEffect(() => {
-        (async () => {
-            console.log('getting ens name');
-
-            if (account && goerliSpeedyNodeProvider) {
-                const name = await goerliSpeedyNodeProvider.lookupAddress(account);
-                if (name) setEnsName(name);
-                else setEnsName('');
-            }
-        })();
-    }, [account]);
+    const { Moralis, chainId, isWeb3Enabled, account, logout, isAuthenticated } = useMoralis();
 
     const dispatch = useAppDispatch();
 
@@ -174,6 +154,37 @@ export default function App() {
             }
         })();
     }, [window.ethereum, account]);
+
+    const fetchAddress = async (address: string) => {
+        // get ENS domain of an address
+        const options = { address: address };
+        try {
+            const ensName = (await Moralis.Web3API.resolve.resolveAddress(options)).name;
+            console.log({ ensName });
+            return ensName;
+        } catch (error) {
+            return null;
+        }
+    };
+
+    const [ensName, setEnsName] = useState('');
+
+    useEffect(() => {
+        (async () => {
+            console.log('getting ens name');
+
+            if (account) {
+                try {
+                    const ensName = await fetchAddress(account);
+                    if (ensName) setEnsName(ensName);
+                    else setEnsName('');
+                } catch (error) {
+                    setEnsName('');
+                    console.log({ error });
+                }
+            }
+        })();
+    }, [account]);
 
     const [baseTokenAddress, setBaseTokenAddress] = useState<string>('');
     const [quoteTokenAddress, setQuoteTokenAddress] = useState<string>('');
@@ -397,8 +408,11 @@ export default function App() {
         const positionAccountId = position.id.substring(0, 42);
 
         position.accountId = positionAccountId;
-        // if (goerliSpeedyNodeProvider)
-        //     position.ensName = await goerliSpeedyNodeProvider.lookupAddress(positionAccountId);
+        // try {
+        //     position.ensName = await fetchAddress(positionAccountId);
+        // } catch (error) {
+        //     console.log(error);
+        // }
         const poolPriceInTicks = Math.log(poolPriceNonDisplay) / Math.log(1.0001);
 
         position.poolPriceInTicks = poolPriceInTicks;
@@ -463,16 +477,20 @@ export default function App() {
             ).then((data) => {
                 // if (JSON.stringify(graphData.positionsByUser) !== JSON.stringify(data.user)) {
                 const userData = data.user;
-                const allPositions = userData.positions;
+                if (userData?.positions) {
+                    const allPositions = userData.positions;
 
-                // let updatedAllPositionsArray = [];
+                    // let updatedAllPositionsArray = [];
 
-                Promise.all(allPositions.map(getPositionData)).then((updatedPositions) => {
-                    userData.positions = updatedPositions;
-                    if (JSON.stringify(graphData.positionsByUser) !== JSON.stringify(userData)) {
-                        dispatch(setPositionsByUser(userData));
-                    }
-                });
+                    Promise.all(allPositions.map(getPositionData)).then((updatedPositions) => {
+                        userData.positions = updatedPositions;
+                        if (
+                            JSON.stringify(graphData.positionsByUser) !== JSON.stringify(userData)
+                        ) {
+                            dispatch(setPositionsByUser(userData));
+                        }
+                    });
+                }
             });
         }
     }, [isAuthenticated, account, lastBlockNumber]);
