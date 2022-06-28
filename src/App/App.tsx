@@ -1,7 +1,11 @@
 /** ***** Import React and Dongles *******/
 import { useEffect, useState, useMemo } from 'react';
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
-import { setPositionsByUser } from '../utils/state/graphDataSlice';
+import {
+    resetGraphData,
+    setPositionsByPool,
+    setPositionsByUser,
+} from '../utils/state/graphDataSlice';
 import { utils, ethers } from 'ethers';
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { request, gql } from 'graphql-request';
@@ -17,7 +21,7 @@ import {
     getTokenAllowance,
 } from '@crocswap-libs/sdk';
 
-import { receiptData } from '../utils/state/receiptDataSlice';
+import { receiptData, resetReceiptData } from '../utils/state/receiptDataSlice';
 
 import SnackbarComponent from '../components/Global/SnackbarComponent/SnackbarComponent';
 
@@ -47,10 +51,12 @@ import initializeUserLocalStorage from './functions/initializeUserLocalStorage';
 import { TokenIF } from '../utils/interfaces/exports';
 import { fetchTokenLists } from './functions/fetchTokenLists';
 import {
+    resetTradeData,
     setAdvancedHighTick,
     setAdvancedLowTick,
     setDenomInBase,
 } from '../utils/state/tradeDataSlice';
+import PositionDetails from '../pages/Trade/Range/PositionDetails';
 
 /** ***** React Function *******/
 export default function App() {
@@ -193,6 +199,54 @@ export default function App() {
             } else {
                 setIsTokenABase(false);
             }
+
+            const endpoint = 'https://api.thegraph.com/subgraphs/name/a0910841082130913312/croc43';
+
+            const queryForPositionsByPool = gql`
+                query ($base: Bytes, $quote: Bytes, $poolIdx: BigInt) {
+                    pools(where: { base: $base, quote: $quote, poolIdx: $poolIdx }) {
+                        id
+                        positions {
+                            id
+                            pool {
+                                id
+                                base
+                                quote
+                                poolIdx
+                            }
+                            ambient
+                            bidTick
+                            askTick
+                        }
+                    }
+                }
+            `;
+
+            const positionsByPoolVariables = {
+                base: sortedTokens[0],
+                quote: sortedTokens[1],
+                poolIdx: 36000,
+            };
+
+            // console.log({ positionsByPoolVariables });
+            request(
+                endpoint,
+                queryForPositionsByPool,
+                positionsByPoolVariables,
+                // requestHeaders: headers,
+            ).then((data) => {
+                // if (JSON.stringify(graphData.positionsByUser) !== JSON.stringify(data.user)) {
+                const pool = data.pools[0];
+
+                Promise.all(pool.positions.map(getPositionData)).then((updatedPositions) => {
+                    pool.positions = updatedPositions;
+                    // const positionArray = updatedPositions as positionsByPool
+                    // console.log(pool.positions);
+                    if (JSON.stringify(graphData.positionsByPool) !== JSON.stringify(pool)) {
+                        dispatch(setPositionsByPool(pool));
+                    }
+                });
+            });
         }
     }, [tokenPairStringified]);
 
@@ -380,6 +434,8 @@ export default function App() {
             POOL_PRIMARY,
             provider,
         );
+
+        position.accountId = position.id.substring(0, 42);
         const poolPriceInTicks = Math.log(poolPriceNonDisplay) / Math.log(1.0001);
 
         position.poolPriceInTicks = poolPriceInTicks;
@@ -412,9 +468,9 @@ export default function App() {
     };
 
     useEffect(() => {
-        if (account) {
+        if (isAuthenticated && account) {
             const endpoint = 'https://api.thegraph.com/subgraphs/name/a0910841082130913312/croc22';
-            const query = gql`
+            const queryForPositionsByUser = gql`
                 query ($userAddress: Bytes) {
                     user(id: $userAddress) {
                         id
@@ -433,13 +489,13 @@ export default function App() {
                     }
                 }
             `;
-            const variables = {
+            const positionByUserVariables = {
                 userAddress: account,
             };
             request(
                 endpoint,
-                query,
-                variables,
+                queryForPositionsByUser,
+                positionByUserVariables,
                 // requestHeaders: headers,
             ).then((data) => {
                 // if (JSON.stringify(graphData.positionsByUser) !== JSON.stringify(data.user)) {
@@ -456,7 +512,7 @@ export default function App() {
                 });
             });
         }
-    }, [account, lastBlockNumber]);
+    }, [isAuthenticated, account, lastBlockNumber]);
 
     // run function to initialize local storage
     // internal controls will only initialize values that don't exist
@@ -570,6 +626,10 @@ export default function App() {
         setNativeBalance('');
         setTokenABalance('0');
         setTokenBBalance('0');
+        dispatch(resetTradeData());
+        dispatch(resetGraphData());
+        dispatch(resetReceiptData());
+
         await logout();
     };
 
@@ -627,12 +687,15 @@ export default function App() {
         }
     }, [provider, chainId, lastBlockNumber]);
 
+    const shouldDisplayAccountTab = isAuthenticated && account != '';
+
     // props for <PageHeader/> React element
     const headerProps = {
         nativeBalance: nativeBalance,
         clickLogout: clickLogout,
         metamaskLocked: metamaskLocked,
         ensName: ensName,
+        shouldDisplayAccountTab: shouldDisplayAccountTab,
     };
 
     // props for <Swap/> React element
@@ -765,7 +828,12 @@ export default function App() {
                 <div className={`${noSidebarStyle} ${swapBodyStyle}`}>
                     <Routes>
                         <Route index element={<Home />} />
-                        <Route path='trade' element={<Trade />}>
+                        <Route
+                            path='trade'
+                            element={
+                                <Trade account={account ?? ''} isAuthenticated={isAuthenticated} />
+                            }
+                        >
                             <Route path='' element={<Swap {...swapPropsTrade} />} />
                             <Route path='market' element={<Swap {...swapPropsTrade} />} />
                             <Route path='limit' element={<Limit {...limitPropsTrade} />} />
@@ -773,8 +841,19 @@ export default function App() {
                             <Route path='edit/:positionHash' element={<Edit />} />
                         </Route>
                         <Route path='analytics' element={<Analytics />} />
+                        <Route path='details' element={<PositionDetails />} />
                         <Route path='range2' element={<Range {...rangeProps} />} />
-                        <Route path='account' element={<Portfolio />} />
+
+                        <Route
+                            path='account'
+                            element={
+                                <Portfolio
+                                    ensName={ensName}
+                                    connectedAccount={account ? account : ''}
+                                />
+                            }
+                        />
+
                         <Route path='swap' element={<Swap {...swapProps} />} />
                         <Route path='chart' element={<Chart />} />
                         <Route path='testpage' element={<TestPage />} />

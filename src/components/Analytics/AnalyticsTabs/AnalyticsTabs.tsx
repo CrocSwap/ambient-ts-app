@@ -4,9 +4,12 @@ import TabContent from '../../Global/Tabs/TabContent/TabContent';
 import TabNavItem from '../../Global/Tabs/TabNavItem/TabNavItem';
 import Positions from '../../Trade/Positions/Positions';
 import { BiSearch } from 'react-icons/bi';
+import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 
 export default function AnalyticsTabs() {
     const [activeTab, setActiveTab] = useState('tab1');
+
+    const graphData = useAppSelector((state) => state?.graphData);
 
     const tabData = [
         { title: 'Top Tokens', id: 'tab1' },
@@ -42,7 +45,12 @@ export default function AnalyticsTabs() {
             </div>
             <div className={styles.tabs_outlet}>
                 <TabContent id='tab1' activeTab={activeTab}>
-                    <Positions portfolio isAllPositionsEnabled={false} />
+                    <Positions
+                        portfolio
+                        isAllPositionsEnabled={false}
+                        notOnTradeRoute={true}
+                        graphData={graphData}
+                    />
                 </TabContent>
                 <TabContent id='tab2' activeTab={activeTab}>
                     {/* <p>Exchange Component</p> */}

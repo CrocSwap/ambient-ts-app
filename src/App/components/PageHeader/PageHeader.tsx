@@ -1,5 +1,5 @@
 /** ***** START: Import React and Dongles *******/
-import { NavLink } from 'react-router-dom';
+import { NavLink, Link } from 'react-router-dom';
 import { useEffect, useState, useCallback } from 'react';
 import { useMoralis } from 'react-moralis';
 /** ***** END: Import React and Dongles *********/
@@ -23,10 +23,11 @@ interface IHeaderProps {
     clickLogout: () => void;
     metamaskLocked: boolean;
     ensName: string;
+    shouldDisplayAccountTab: boolean;
 }
 
 export default function PageHeader(props: IHeaderProps): React.ReactElement<IHeaderProps> {
-    const { ensName } = props;
+    const { ensName, shouldDisplayAccountTab } = props;
 
     const { user, account, enableWeb3, isWeb3Enabled, authenticate, isAuthenticated } =
         useMoralis();
@@ -122,6 +123,7 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
         isAuthenticated: isAuthenticated,
         isWeb3Enabled: isWeb3Enabled,
         clickLogout: props.clickLogout,
+        openModal: openModal,
     };
 
     // End of Page Header Functions
@@ -132,19 +134,19 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
         </button>
     );
 
-    const magicButton = (
-        <button className={styles.authenticate_button} onClick={openModal}>
-            Log in with Email
-        </button>
-    );
+    // const magicButton = (
+    //     <button className={styles.authenticate_button} onClick={openModal}>
+    //         Log in with Email
+    //     </button>
+    // );
 
     return (
         <header data-testid={'page-header'} className={styles.primary_header}>
-            <div className={styles.header_gradient}> </div>
-            <div className={styles.logo_container}>
+            {/* <div className={styles.header_gradient}> </div> */}
+            <Link to='/' className={styles.logo_container}>
                 <img src={ambientLogo} alt='ambient' />
                 <h1>ambient</h1>
-            </div>
+            </Link>
             <div
                 className={styles.mobile_nav_toggle}
                 aria-controls='primary_navigation'
@@ -158,18 +160,45 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
                 id='primary_navigation'
                 data-visible={mobileNavToggle}
             >
-                <NavLink to='/'>Home</NavLink>
-                <NavLink to='/swap'>Swap</NavLink>
+                <NavLink
+                    to='/'
+                    className={({ isActive }) => (isActive ? styles.active : styles.inactive)}
+                >
+                    Home
+                </NavLink>
+                <NavLink
+                    to='/swap'
+                    className={({ isActive }) => (isActive ? styles.active : styles.inactive)}
+                >
+                    Swap
+                </NavLink>
                 {/* <NavLink to='/range2'>Range</NavLink> */}
-                <NavLink to='/trade/market'>Trade</NavLink>
-                <NavLink to='/analytics'>Analytics</NavLink>
-                <NavLink to='/account'>Account</NavLink>
+                <NavLink
+                    to='/trade/market'
+                    className={({ isActive }) => (isActive ? styles.active : styles.inactive)}
+                >
+                    Trade
+                </NavLink>
+                <NavLink
+                    to='/analytics'
+                    className={({ isActive }) => (isActive ? styles.active : styles.inactive)}
+                >
+                    Analytics
+                </NavLink>
+                {shouldDisplayAccountTab ? (
+                    <NavLink
+                        to='/account'
+                        className={({ isActive }) => (isActive ? styles.active : styles.inactive)}
+                    >
+                        Account
+                    </NavLink>
+                ) : null}
             </nav>
             {/* <div className={styles.account}>Account Info</div> */}
             {/* <div className={styles.account}>{accountAddress}</div> */}
             <div className={styles.account}>
                 {(!isAuthenticated || !isWeb3Enabled) && metamaskButton}
-                {(!isAuthenticated || !isWeb3Enabled) && magicButton}
+                {/* {(!isAuthenticated || !isWeb3Enabled) && magicButton} */}
                 {isAuthenticated && isWeb3Enabled && <NetworkSelector />}
                 <Account {...accountProps} />
             </div>

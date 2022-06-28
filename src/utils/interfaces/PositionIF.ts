@@ -6,6 +6,7 @@ export interface PositionIF {
     bidTick: number;
     highRangeDisplay: string;
     id: string;
+    accountId: string;
     lowRangeDisplay: string;
     pool: {
         base: string;

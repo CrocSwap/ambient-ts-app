@@ -2,7 +2,7 @@
     color: #7371FC;
     position: relative;
     border-bottom: 1px solid #7371FC;
-    transition: all ease-in-out 200ms;
+    transition: all ease-in-out var(--animation-speed);
     font-size: 14px;
 line-height: 18px;
     
@@ -36,7 +36,7 @@ line-height: 18px;
     left: 0;
     right: 0;
     transform: scale(0, 1);
-    transition: transform ease-in-out 250ms;
+    transition: transform ease-in-out var(--animation-speed);
     
 }
 

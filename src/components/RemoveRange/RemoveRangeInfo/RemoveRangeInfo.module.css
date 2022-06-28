@@ -1,7 +1,7 @@
 
 .remove_position_info{
 background: var(--dark3);
-border-radius: 24px;
+border-radius: var(--border-radius);
 padding: 1rem;
 
 display: flex;

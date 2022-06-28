@@ -3,7 +3,7 @@
   
     color: white;
     border: 0;
-    border-radius: 5px;
+    border-radius: var(--border-radius);
     background: transparent;
     font-family: var(--font-family);
     font-weight: 300;

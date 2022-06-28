@@ -169,7 +169,7 @@
     padding: 4px;
   
     border: 4px solid var(--header-color);
-    border-radius: 6px;
+    border-radius: var(--border-radius);
     background-color: rgb(33, 36, 41);
   }
   
@@ -195,5 +195,5 @@
 
   border-image-source: linear-gradient(90deg, #7371FC 0%, #CDC1FF 49.48%, #7371FC 100%);
   transform: rotate(45deg);
-  transition: border-width 150ms ease-in-out;
+  transition: border-width var(--animation-speed) ease-in-out;
 }
