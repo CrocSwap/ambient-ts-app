@@ -35,7 +35,6 @@ export default function NavItem(props: NavItemProps) {
 
             {/* {open && props.children} */}
             {open && childrenWithProps}
-            {/* <div>{React.cloneElement(props.children as React.ReactElement<any>, {attributeToAddOrReplace})}</div> */}
         </div>
     );
 }
