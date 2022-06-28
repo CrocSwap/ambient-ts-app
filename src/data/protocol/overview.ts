@@ -1,5 +1,5 @@
 import { getPercentChange } from '../../utils/data';
-import { ProtocolData } from '../../state/protocol/reducer';
+import { ProtocolData } from '../../state/protocol/models';
 import gql from 'graphql-tag';
 import { useQuery, ApolloClient, NormalizedCacheObject } from '@apollo/client';
 

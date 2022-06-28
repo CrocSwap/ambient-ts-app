@@ -1,4 +1,4 @@
-import { PoolData } from '../../state/pools/reducer';
+import { PoolData } from '../../state/pools/models';
 import PoolRow from './PoolRow';
 import styles from './Pools.module.css';
 

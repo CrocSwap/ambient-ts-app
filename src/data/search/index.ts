@@ -2,9 +2,9 @@ import gql from 'graphql-tag';
 import { useState, useEffect, useMemo } from 'react';
 import { client } from '../../apollo/client';
 import { useAllPoolData, usePoolDatas } from '../../state/pools/hooks';
-import { PoolData } from '../../state/pools/reducer';
+import { PoolData } from '../../state/pools/models';
 import { useAllTokenData } from '../../state/tokens/hooks';
-import { TokenData } from '../../state/tokens/reducer';
+import { TokenData } from '../../state/tokens/models';
 import { escapeRegExp, notEmpty } from '../../utils';
 import { useFetchedTokenDatas } from '../tokens/tokenData';
 

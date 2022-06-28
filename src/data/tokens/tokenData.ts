@@ -3,7 +3,7 @@ import { useQuery } from '@apollo/client';
 import gql from 'graphql-tag';
 import { useDeltaTimestamps } from '../../utils/queries';
 import { useBlocksFromTimestamps } from '../../hooks/useBlocksFromTimestamps';
-import { TokenData } from '../../state/tokens/reducer';
+import { TokenData } from '../../state/tokens/models';
 import { useEthPrices } from '../../hooks/useEthPrices';
 import { formatTokenName, formatTokenSymbol } from '../../utils/tokens';
 import { useActiveNetworkVersion, useClients } from '../../state/application/hooks';

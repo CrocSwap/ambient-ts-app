@@ -1,5 +1,5 @@
 import { Badge } from '@material-ui/core';
-import { PoolData } from '../../state/pools/reducer';
+import { PoolData } from '../../state/pools/models';
 import { feeTierPercent, isAddress } from '../../utils';
 import { formatDollarAmount } from '../../utils/numbers';
 import styles from './Pool.module.css';

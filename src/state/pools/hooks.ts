@@ -1,7 +1,7 @@
 import { AppState, AppDispatch } from './../index';
 import { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { PoolData, PoolChartEntry } from './reducer';
+import { PoolData, PoolChartEntry } from './models';
 import {
     addPoolKeys,
     updatePoolChartData,

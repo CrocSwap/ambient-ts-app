@@ -1,4 +1,4 @@
-import { TokenData } from '../../state/tokens/reducer';
+import { TokenData } from '../../state/tokens/models';
 import TopTokenRow from './TopTokenRow';
 import styles from './TopTokens.module.css';
 

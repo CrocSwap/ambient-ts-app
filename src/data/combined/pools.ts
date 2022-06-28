@@ -2,7 +2,7 @@ import { useQuery } from '@apollo/client';
 import gql from 'graphql-tag';
 import { useBlocksFromTimestamps } from '../../hooks/useBlocksFromTimestamps';
 import { useActiveNetworkVersion, useClients } from '../../state/application/hooks';
-import { PoolData } from '../../state/pools/reducer';
+import { PoolData } from '../../state/pools/models';
 import { get2DayChange } from '../../utils/data';
 import { useDeltaTimestamps } from '../../utils/queries';
 import { formatTokenName, formatTokenSymbol } from '../../utils/tokens';
