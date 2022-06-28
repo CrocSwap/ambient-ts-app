@@ -13,8 +13,11 @@ import {
     sortBaseQuoteTokens,
     POOL_PRIMARY,
     getSpotPrice,
-    getSpotPriceDisplay,
+    // getSpotPriceDisplay,
     getTokenAllowance,
+    QUERY_ABI,
+    decodeCrocPrice,
+    toDisplayPrice,
 } from '@crocswap-libs/sdk';
 
 import { receiptData, resetReceiptData } from '../utils/state/receiptDataSlice';
@@ -167,6 +170,9 @@ export default function App() {
     const [baseTokenAddress, setBaseTokenAddress] = useState<string>('');
     const [quoteTokenAddress, setQuoteTokenAddress] = useState<string>('');
 
+    const [baseTokenDecimals, setBaseTokenDecimals] = useState<number>(0);
+    const [quoteTokenDecimals, setQuoteTokenDecimals] = useState<number>(0);
+
     const [isTokenABase, setIsTokenABase] = useState<boolean>(true);
 
     const tokenPair = {
@@ -178,7 +184,7 @@ export default function App() {
 
     // useEffect to set baseTokenAddress and quoteTokenAddress when pair changes
     useEffect(() => {
-        console.log({ tokenPair });
+        // console.log({ tokenPair });
         // reset rtk values for user specified range in ticks
         dispatch(setAdvancedLowTick(0));
         dispatch(setAdvancedHighTick(0));
@@ -192,8 +198,12 @@ export default function App() {
             setQuoteTokenAddress(sortedTokens[1]);
             if (tokenPair.dataTokenA.address === sortedTokens[0]) {
                 setIsTokenABase(true);
+                setBaseTokenDecimals(tokenPair.dataTokenA.decimals);
+                setQuoteTokenDecimals(tokenPair.dataTokenB.decimals);
             } else {
                 setIsTokenABase(false);
+                setBaseTokenDecimals(tokenPair.dataTokenB.decimals);
+                setQuoteTokenDecimals(tokenPair.dataTokenA.decimals);
             }
         }
     }, [tokenPairStringified]);
@@ -201,39 +211,41 @@ export default function App() {
     const [tokenABalance, setTokenABalance] = useState<string>('');
     const [tokenBBalance, setTokenBBalance] = useState<string>('');
     const [poolPriceNonDisplay, setPoolPriceNonDisplay] = useState(0);
-
-    // useEffect to get non-display spot price when tokens change and block updates
-    useEffect(() => {
-        console.log({ provider });
-        if (baseTokenAddress && quoteTokenAddress) {
-            (async () => {
-                const spotPrice = await getSpotPrice(
-                    baseTokenAddress,
-                    quoteTokenAddress,
-                    POOL_PRIMARY,
-                    provider,
-                );
-                if (poolPriceNonDisplay !== spotPrice) {
-                    setPoolPriceNonDisplay(spotPrice);
-                }
-            })();
-        }
-    }, [lastBlockNumber, baseTokenAddress, quoteTokenAddress]);
-
     const [poolPriceDisplay, setPoolPriceDisplay] = useState(0);
 
-    // useEffect to get display spot price when tokens change and block updates
+    const querySpotPrice = async (baseTokenAddress: string, quoteTokenAddress: string) => {
+        const options = {
+            chain: 'kovan' as '0x2a' | 'kovan',
+            address: contractAddresses.QUERY_ADDR,
+            // eslint-disable-next-line camelcase
+            function_name: 'queryPrice',
+            abi: QUERY_ABI,
+            params: {
+                base: baseTokenAddress,
+                quote: quoteTokenAddress,
+                poolIdx: POOL_PRIMARY,
+            },
+        };
+        const crocPrice = await Moralis.Web3API.native.runContractFunction(options);
+        const spotPrice = decodeCrocPrice(ethers.BigNumber.from(crocPrice));
+        return spotPrice;
+    };
+
+    // useEffect to get spot price when tokens change and block updates
     useEffect(() => {
         if (baseTokenAddress && quoteTokenAddress) {
             (async () => {
-                const spotPriceDisplay = await getSpotPriceDisplay(
-                    baseTokenAddress,
-                    quoteTokenAddress,
-                    POOL_PRIMARY,
-                    provider,
-                );
-                if (poolPriceDisplay !== spotPriceDisplay) {
-                    setPoolPriceDisplay(spotPriceDisplay);
+                const spotPrice = await querySpotPrice(baseTokenAddress, quoteTokenAddress);
+                if (poolPriceNonDisplay !== spotPrice) {
+                    console.log({ spotPrice });
+                    setPoolPriceNonDisplay(spotPrice);
+                    const displayPrice = toDisplayPrice(
+                        spotPrice,
+                        baseTokenDecimals,
+                        quoteTokenDecimals,
+                    );
+                    console.log({ displayPrice });
+                    setPoolPriceDisplay(displayPrice);
                 }
             })();
         }
@@ -383,6 +395,7 @@ export default function App() {
             POOL_PRIMARY,
             provider,
         );
+        // await querySpotPrice(baseTokenAddress, quoteTokenAddress);
 
         position.accountId = position.id.substring(0, 42);
         const poolPriceInTicks = Math.log(poolPriceNonDisplay) / Math.log(1.0001);
