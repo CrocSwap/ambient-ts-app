@@ -1,5 +1,7 @@
 import { useMoralis } from 'react-moralis';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import styles from './MagicLogin.module.css';
+import Button from '../../../components/Global/Button/Button';
 
 interface IMagicLoginProps {
     closeModal: () => void;
@@ -9,6 +11,8 @@ export default function MagicLogin(props: IMagicLoginProps) {
     const { authenticate, authError, isAuthenticating } = useMoralis();
 
     const [email, setEmail] = useState('');
+    const [message, setMessage] = useState('Please enter a valid email address');
+    const [disable, setDisable] = useState(true);
 
     // Magic Authentication
     const handleCustomLogin = async () => {
@@ -21,25 +25,45 @@ export default function MagicLogin(props: IMagicLoginProps) {
         props.closeModal();
     };
 
+    const handleEmailValidation = () => {
+        const regEx = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+        if (regEx.test(email)) {
+            setMessage('Send Login Link');
+            setDisable(false);
+        } else if (!regEx.test(email) && email !== '') {
+            setMessage('Please enter a valid email address');
+            setDisable(true);
+        } else if (email == '') {
+            setDisable(true);
+        } else {
+            setMessage('Please enter a valid email address');
+            setDisable(true);
+        }
+    };
+
+    useEffect(() => {
+        handleEmailValidation();
+    }, [email]);
+
     return (
-        <div className='card'>
+        <div className={styles.card_container}>
             {/* <img alt='logo' className='img' src={Logo} width={80} height={80} /> */}
             {isAuthenticating && <p className='green'>Authenticating</p>}
             {authError && <p className='error'>{JSON.stringify(authError.message)}</p>}
-            <div className='buttonCard'>
+
+            <div className={styles.user_box}>
                 <input
                     type={'email'}
                     className='input'
-                    placeholder='Email'
+                    // placeholder='Email'
+                    required
                     value={email}
                     onChange={(e) => {
                         setEmail(e.target.value);
                     }}
                 />
-
-                <button className='loginButton' onClick={handleCustomLogin}>
-                    Send Login Link
-                </button>
+                <label>Email</label>
+                <Button title={message} action={handleCustomLogin} disabled={disable} />
             </div>
         </div>
     );
