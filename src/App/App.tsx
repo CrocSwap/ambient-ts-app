@@ -9,7 +9,12 @@ import {
 import { ethers } from 'ethers';
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { request, gql } from 'graphql-request';
-import { useMoralis, useMoralisQuery, useMoralisSubscription } from 'react-moralis';
+import {
+    useMoralis,
+    useMoralisQuery,
+    useMoralisSubscription,
+    // useMoralisWeb3Api,
+} from 'react-moralis';
 import Moralis from 'moralis/types';
 import {
     contractAddresses,
@@ -64,20 +69,6 @@ import PositionDetails from '../pages/Trade/Range/PositionDetails';
 /** ***** React Function *******/
 export default function App() {
     const { Moralis, chainId, isWeb3Enabled, account, logout, isAuthenticated } = useMoralis();
-
-    const [ensName, setEnsName] = useState('');
-    useEffect(() => {
-        (async () => {
-            const provider = new ethers.providers.JsonRpcProvider(
-                'https://speedy-nodes-nyc.moralis.io/015fffb61180886c9708499e/eth/goerli',
-            );
-            if (account) {
-                const name = await provider.lookupAddress(account);
-                if (name) setEnsName(name);
-                else setEnsName('');
-            }
-        })();
-    }, [account]);
 
     const dispatch = useAppDispatch();
 
@@ -170,6 +161,37 @@ export default function App() {
             }
         })();
     }, [window.ethereum, account]);
+
+    const fetchAddress = async (address: string) => {
+        // get ENS domain of an address
+        const options = { address: address };
+        try {
+            const ensName = (await Moralis.Web3API.resolve.resolveAddress(options)).name;
+            console.log({ ensName });
+            return ensName;
+        } catch (error) {
+            return null;
+        }
+    };
+
+    const [ensName, setEnsName] = useState('');
+
+    useEffect(() => {
+        (async () => {
+            console.log('getting ens name');
+
+            if (account) {
+                try {
+                    const ensName = await fetchAddress(account);
+                    if (ensName) setEnsName(ensName);
+                    else setEnsName('');
+                } catch (error) {
+                    setEnsName('');
+                    console.log({ error });
+                }
+            }
+        })();
+    }, [account]);
 
     const [baseTokenAddress, setBaseTokenAddress] = useState<string>('');
     const [quoteTokenAddress, setQuoteTokenAddress] = useState<string>('');
@@ -449,7 +471,14 @@ export default function App() {
         );
         // await querySpotPrice(baseTokenAddress, quoteTokenAddress);
 
-        position.accountId = position.id.substring(0, 42);
+        const positionAccountId = position.id.substring(0, 42);
+
+        position.accountId = positionAccountId;
+        // try {
+        //     position.ensName = await fetchAddress(positionAccountId);
+        // } catch (error) {
+        //     console.log(error);
+        // }
         const poolPriceInTicks = Math.log(poolPriceNonDisplay) / Math.log(1.0001);
 
         position.poolPriceInTicks = poolPriceInTicks;

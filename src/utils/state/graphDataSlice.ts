@@ -26,6 +26,7 @@ export interface position {
     bidTick: number;
     id: string;
     accountId: string;
+    ensName: string;
     pool: pool;
     baseTokenSymbol: string;
     quoteTokenSymbol: string;
