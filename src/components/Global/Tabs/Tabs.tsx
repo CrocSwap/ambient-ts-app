@@ -1,14 +1,49 @@
 import styles from './Tabs.module.css';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import TabNavItem from './TabNavItem/TabNavItem';
 import TabContent from './TabContent/TabContent';
 import Toggle from '../Toggle/Toggle';
 import Positions from '../../Trade/Positions/Positions';
 import LimitOrders from '../../Trade/LimitOrders/LimitOrders';
 
-export default function Tabs() {
+import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+
+interface ITabsProps {
+    account: string;
+    isAuthenticated: boolean;
+}
+
+export default function Tabs(props: ITabsProps) {
     const [activeTab, setActiveTab] = useState('tab1');
-    const [isAllPositionsEnabled, setIsAllPositionsEnabled] = useState<boolean>(false);
+    const [isAllPositionsEnabled, setIsAllPositionsEnabled] = useState<boolean>(true);
+
+    const graphData = useAppSelector((state) => state?.graphData);
+
+    const userPositions = graphData?.positionsByUser?.positions;
+    // const poolPositions = graphData?.positionsByPool?.positions;
+
+    const [hasInitialized, setHasInitialized] = useState(false);
+
+    useEffect(() => {
+        setHasInitialized(false);
+    }, [props.account, props.isAuthenticated]);
+
+    useEffect(() => {
+        // console.log({ hasInitialized });
+        // console.log({ isAllPositionsEnabled });
+        // console.log({ userPositions });
+        if (!hasInitialized) {
+            if (!isAllPositionsEnabled && userPositions.length < 1) {
+                console.log('firing');
+                setIsAllPositionsEnabled(true);
+            } else if (userPositions.length < 1) {
+                return;
+            } else if (isAllPositionsEnabled && userPositions.length >= 1) {
+                setIsAllPositionsEnabled(false);
+            }
+            setHasInitialized(true);
+        }
+    }, [hasInitialized, isAllPositionsEnabled, JSON.stringify(userPositions)]);
 
     const positionsOnlyToggle = (
         <span className={styles.options_toggle}>
@@ -16,7 +51,10 @@ export default function Tabs() {
             <div className={styles.toggle_container}>
                 <Toggle
                     isOn={isAllPositionsEnabled}
-                    handleToggle={() => setIsAllPositionsEnabled(!isAllPositionsEnabled)}
+                    handleToggle={() => {
+                        setHasInitialized(true);
+                        setIsAllPositionsEnabled(!isAllPositionsEnabled);
+                    }}
                     Width={36}
                     id='positions_only_toggle'
                 />
@@ -53,6 +91,7 @@ export default function Tabs() {
                     <Positions
                         isAllPositionsEnabled={isAllPositionsEnabled}
                         notOnTradeRoute={false}
+                        graphData={graphData}
                     />
                 </TabContent>
                 <TabContent id='tab2' activeTab={activeTab}>

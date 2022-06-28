@@ -228,7 +228,7 @@ export default function App() {
                 poolIdx: 36000,
             };
 
-            console.log({ positionsByPoolVariables });
+            // console.log({ positionsByPoolVariables });
             request(
                 endpoint,
                 queryForPositionsByPool,
@@ -241,7 +241,7 @@ export default function App() {
                 Promise.all(pool.positions.map(getPositionData)).then((updatedPositions) => {
                     pool.positions = updatedPositions;
                     // const positionArray = updatedPositions as positionsByPool
-                    console.log(pool.positions);
+                    // console.log(pool.positions);
                     if (JSON.stringify(graphData.positionsByPool) !== JSON.stringify(pool)) {
                         dispatch(setPositionsByPool(pool));
                     }
@@ -824,7 +824,12 @@ export default function App() {
                 <div className={`${noSidebarStyle} ${swapBodyStyle}`}>
                     <Routes>
                         <Route index element={<Home />} />
-                        <Route path='trade' element={<Trade />}>
+                        <Route
+                            path='trade'
+                            element={
+                                <Trade account={account ?? ''} isAuthenticated={isAuthenticated} />
+                            }
+                        >
                             <Route path='' element={<Swap {...swapPropsTrade} />} />
                             <Route path='market' element={<Swap {...swapPropsTrade} />} />
                             <Route path='limit' element={<Limit {...limitPropsTrade} />} />

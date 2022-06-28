@@ -68,7 +68,9 @@ export const graphDataSlice = createSlice({
         setPositionsByPool: (state, action: PayloadAction<positionsByPool>) => {
             state.positionsByPool = action.payload;
         },
-        resetGraphData: () => initialState,
+        resetGraphData: (state) => {
+            state.positionsByUser = initialState.positionsByUser;
+        },
     },
 });
 
