@@ -51,8 +51,16 @@ svg:hover{
 a {
   color: unset;
   text-decoration: none;
-  position: relative; 
+  /* position: relative;  */
 }
+ /* .active{
+
+  transition: opacity ease-in-out var(--animation-speed);
+  color: blue;
+  font-size: 20px;
+  position: relative;
+} */
+
 body{
   overflow-x: hidden;
   /* padding: 0 1rem; */
@@ -68,6 +76,9 @@ footer {
   right: 0;
   bottom: 0;
 }
+
+
+
 
 .main-layout{
   transition: all var(--animation-speed) ease-in-out;  /* background: var(--dark3); */

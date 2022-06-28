@@ -1,5 +1,5 @@
 /** ***** START: Import React and Dongles *******/
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import { useEffect, useState, useCallback } from 'react';
 import { useMoralis } from 'react-moralis';
 /** ***** END: Import React and Dongles *********/
@@ -159,12 +159,39 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
                 id='primary_navigation'
                 data-visible={mobileNavToggle}
             >
-                <NavLink to='/'>Home</NavLink>
-                <NavLink to='/swap'>Swap</NavLink>
+                <NavLink
+                    to='/'
+                    className={({ isActive }) => (isActive ? styles.active : styles.inactive)}
+                >
+                    Home
+                </NavLink>
+                <NavLink
+                    to='/swap'
+                    className={({ isActive }) => (isActive ? styles.active : styles.inactive)}
+                >
+                    Swap
+                </NavLink>
                 {/* <NavLink to='/range2'>Range</NavLink> */}
-                <NavLink to='/trade/market'>Trade</NavLink>
-                <NavLink to='/analytics'>Analytics</NavLink>
-                {shouldDisplayAccountTab ? <NavLink to='/account'>Account</NavLink> : null}
+                <NavLink
+                    to='/trade/market'
+                    className={({ isActive }) => (isActive ? styles.active : styles.inactive)}
+                >
+                    Trade
+                </NavLink>
+                <NavLink
+                    to='/analytics'
+                    className={({ isActive }) => (isActive ? styles.active : styles.inactive)}
+                >
+                    Analytics
+                </NavLink>
+                {shouldDisplayAccountTab ? (
+                    <NavLink
+                        to='/account'
+                        className={({ isActive }) => (isActive ? styles.active : styles.inactive)}
+                    >
+                        Account
+                    </NavLink>
+                ) : null}
             </nav>
             {/* <div className={styles.account}>Account Info</div> */}
             {/* <div className={styles.account}>{accountAddress}</div> */}
