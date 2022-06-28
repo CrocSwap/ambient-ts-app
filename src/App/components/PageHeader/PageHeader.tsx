@@ -123,6 +123,7 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
         isAuthenticated: isAuthenticated,
         isWeb3Enabled: isWeb3Enabled,
         clickLogout: props.clickLogout,
+        openModal: openModal,
     };
 
     // End of Page Header Functions
