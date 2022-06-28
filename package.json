@@ -53,7 +53,7 @@
     "scripts": {
         "start": "yarn && react-scripts start",
         "start-only": "react-scripts start",
-        "build": "react-scripts build",
+        "build": "react-scripts --max_old_space_size=4096 build",
         "test": "react-scripts test",
         "test:nowatch": "react-scripts test --watchAll=false",
         "eject": "react-scripts eject",
