@@ -863,7 +863,7 @@ export default function App() {
                 </div>
                 {snackbarContent}
             </div>
-            {/* <PageFooter lastBlockNumber={lastBlockNumber} /> */}
+            <PageFooter lastBlockNumber={lastBlockNumber} />
         </>
     );
 }

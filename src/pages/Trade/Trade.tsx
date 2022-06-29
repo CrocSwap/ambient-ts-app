@@ -5,7 +5,6 @@ import Tabs from '../../components/Global/Tabs/Tabs';
 import { motion } from 'framer-motion';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { tradeData as TradeDataIF } from '../../utils/state/tradeDataSlice';
-import PageFooter from '../../App/components/PageFooter/PageFooter';
 
 interface ITradeProps {
     account: string;
@@ -101,7 +100,7 @@ export default function Trade(props: ITradeProps) {
         <div className={styles.right_col}>
             {currentLocation.slice(0, 11) !== '/trade/edit' && navigationMenu}
             <Outlet context={{ tradeData }} />
-            <PageFooter lastBlockNumber={props.lastBlockNumber} />
+            {/* <PageFooter lastBlockNumber={props.lastBlockNumber} /> */}
         </div>
     );
 
