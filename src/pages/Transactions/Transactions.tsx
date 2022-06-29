@@ -32,7 +32,7 @@ export default function Transactions(props: TransactionsProps) {
         [sortDirection, sortField],
     );
 
-    const trancationsDisplay = props.transactions.map((transaction, idx) => (
+    const trancationsDisplay = props.transactions!.map((transaction, idx) => (
         <TransactionRow transaction={transaction} key={idx} />
     ));
 

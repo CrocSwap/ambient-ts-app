@@ -101,6 +101,7 @@ export default function Pools(props: PoolProps) {
         </thead>
     );
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleChange = (event: any, value: number) => {
         setPage(value);
     };
