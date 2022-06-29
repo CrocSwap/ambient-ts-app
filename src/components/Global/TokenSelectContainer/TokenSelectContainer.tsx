@@ -34,13 +34,23 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
     } = props;
     console.log(chainId)
 
-    const [searchTerm] = useState('');
-
+    const [matchingImportedTokens, setMatchingImportedTokens] = useState(tokensBank);
     const [matchingSearchableTokens, setMatchingSearchableTokens] = useState<Array<TokenIF>>([]);
 
     useEffect(() => {console.log(matchingSearchableTokens);}, [matchingSearchableTokens]);
 
     function searchTokens(searchStr:string) {
+        const filteredImportedTokens = () => (
+            tokensBank.filter((token:TokenIF) => 
+                token.symbol.toLowerCase().includes(searchStr.toLowerCase())
+                || token.name.toLowerCase().includes(searchStr.toLowerCase())
+                || token.address.toLowerCase().includes(searchStr.toLowerCase()))
+        );
+        const matchingImported = searchStr.length >= 3
+            ? filteredImportedTokens()
+            : tokensBank;
+        setMatchingImportedTokens(matchingImported);
+
         const filteredSearchableTokens = () => (
             searchableTokens.filter((token:TokenIF) => 
                 token.symbol.toLowerCase().includes(searchStr.toLowerCase())
@@ -48,26 +58,16 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
                 || token.address.toLowerCase().includes(searchStr.toLowerCase())
             )
         );
-        const matchingSearchableTokens = searchStr.length >= 3
+        const matchingSearchable = searchStr.length >= 3
             ? filteredSearchableTokens()
             : [];
-        setMatchingSearchableTokens(matchingSearchableTokens);
+        setMatchingSearchableTokens(matchingSearchable);
     }
 
     const tokenListContent = (
         <>
             <h3>Your Tokens</h3>
-            {tokensBank
-                .filter((val) => {
-                    if (searchTerm === '') {
-                        return val;
-                    } else if (
-                        val.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                        val.symbol.toLowerCase().includes(searchTerm.toLowerCase())
-                    ) {
-                        return val;
-                    }
-                })
+            {matchingImportedTokens
                 .map((token, idx) => {
                     return (
                         <TokenSelect
@@ -79,15 +79,15 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
                             reverseTokens={reverseTokens}
                         />
                     );
-                })}
-                {matchingSearchableTokens.length >=3 ? <h3>Searched Tokens</h3> : null}
-                {matchingSearchableTokens.map((tkn:TokenIF, idx:number) => (
-                    <TokenSelectSearchable
-                        key={`tss_${idx}`}
-                        token={tkn}
-                        closeModal={closeModal}
-                    />
-                ))}
+            })}
+            {matchingSearchableTokens.length >=3 ? <h3>Searched Tokens</h3> : null}
+            {matchingSearchableTokens.map((tkn:TokenIF, idx:number) => (
+                <TokenSelectSearchable
+                    key={`tss_${idx}`}
+                    token={tkn}
+                    closeModal={closeModal}
+                />
+            ))}
         </>
     );
 
