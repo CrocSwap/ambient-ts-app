@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import { PoolData } from '../../state/pools/reducer';
 import { feeTierPercent, isAddress } from '../../utils';
 import { formatDollarAmount } from '../../utils/numbers';
@@ -10,6 +11,7 @@ interface PoolProps {
 
 export default function PoolRow(props: PoolProps) {
     const poolData = props.pool;
+    const navigate = useNavigate();
 
     function getTokenLogoURL(address: string) {
         const checkSummed = isAddress(address);
@@ -53,8 +55,11 @@ export default function PoolRow(props: PoolProps) {
         </>
     );
 
+    function handleRowClick() {
+        navigate('/pools/' + poolData.address);
+    }
     return (
-        <tr>
+        <tr onClick={handleRowClick}>
             <td data-column='id' className={styles.pool_id}>
                 {props.index + 1}
             </td>

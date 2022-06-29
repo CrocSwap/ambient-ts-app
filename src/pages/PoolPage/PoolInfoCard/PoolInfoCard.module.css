@@ -126,7 +126,7 @@ margin-bottom:10%;
 text-shadow: 0px 0px 10px rgba(21, 190, 111, 0.75);
 }
 
-.token_info_container{
+.pool_info_container{
     margin-right: auto;
     margin-left: auto;
     
@@ -134,7 +134,7 @@ text-shadow: 0px 0px 10px rgba(21, 190, 111, 0.75);
     padding-left: 15 px;
 }
 
-.token_info_window {
+.pool_info_window {
     position: relative;
     /* margin-top: 50px; */
     

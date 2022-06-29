@@ -10,11 +10,12 @@ import {
     useTokenTransactions,
 } from '../../state/tokens/hooks';
 
-import TotalCardInfo from './TokenInfoCard/TokenInfoCard';
+import TokenCardInfo from './TokenInfoCard/TokenInfoCard';
 import styles from './TokenPage.module.css';
 import { usePoolDatas } from '../../state/pools/hooks';
 import Transactions from '../Transactions/Transactions';
 import { isAddress } from '../../utils';
+import { TokenData } from '../../state/tokens/reducer';
 
 export default function TokenPage() {
     const { address } = useParams();
@@ -59,7 +60,7 @@ export default function TokenPage() {
     return (
         <main data-testid={'token-page'} className={styles.pools_container}>
             {tokenInfo}
-            <TotalCardInfo token={tokenData} />
+            <TokenCardInfo token={tokenData} />
             <Divider />
             <h2>Pools</h2>
             <Pools pools={poolDatas} propType='all' maxItems={10} />

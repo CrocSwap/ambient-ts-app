@@ -48,6 +48,7 @@ import {
     setAdvancedLowTick,
     setDenomInBase,
 } from '../utils/state/tradeDataSlice';
+import PoolPage from '../pages/PoolPage/PoolPage';
 
 /** ***** React Function *******/
 export default function App() {
@@ -659,6 +660,7 @@ export default function App() {
                         </Route>
                         <Route path='analytics' element={<Analytics />} />
                         <Route path='tokens/:address' element={<TokenPage />} />
+                        <Route path='pools/:address' element={<PoolPage />} />
 
                         <Route path='range2' element={<Range {...rangeProps} />} />
                         <Route path='account' element={<Portfolio />} />
