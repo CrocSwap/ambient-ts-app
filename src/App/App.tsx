@@ -79,7 +79,7 @@ export default function App() {
     const dispatch = useAppDispatch();
 
     const [importedTokens, setImportedTokens] = useState(defaultTokens);
-    const [searchableTokens, setSearchableTokens] = useState();
+    const [searchableTokens, setSearchableTokens] = useState(defaultTokens);
 
     // prevent multiple fetch requests to external URIs for token lists
     const [needTokenLists, setNeedTokenLists] = useState(true);
@@ -95,6 +95,10 @@ export default function App() {
 
     useEffect(() => {
         initializeUserLocalStorage();
+        getImportedTokens();
+    }, [tokenListsReceived]);
+
+    function getImportedTokens() {
         // see if there's a user object in local storage
         if (localStorage.user) {
             // if user object exists, pull it
@@ -109,7 +113,7 @@ export default function App() {
                 );
             }
         }
-    }, [tokenListsReceived]);
+    }
 
     const [showSidebar, setShowSidebar] = useState<boolean>(false);
     const location = useLocation();
