@@ -39,18 +39,26 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
 
     useEffect(() => {console.log(matchingSearchableTokens);}, [matchingSearchableTokens]);
 
+    // change handler to run on user input in text input field
     function searchTokens(searchStr:string) {
+        // gatekeeper value to only apply search if search string is three or more characters
+        const validSearch = searchStr.length >= 3;
+
+        // function to filter imported tokens list for matches with user search input
         const filteredImportedTokens = () => (
             tokensBank.filter((token:TokenIF) => 
                 token.symbol.toLowerCase().includes(searchStr.toLowerCase())
                 || token.name.toLowerCase().includes(searchStr.toLowerCase())
                 || token.address.toLowerCase().includes(searchStr.toLowerCase()))
         );
-        const matchingImported = searchStr.length >= 3
-            ? filteredImportedTokens()
-            : tokensBank;
+
+        // filter imported tokens if user input string is validated
+        const matchingImported = validSearch ? filteredImportedTokens() : tokensBank;
+        
+        // update local state with array of imported tokens to be rendered in DOM
         setMatchingImportedTokens(matchingImported);
 
+        // function to filter searchable tokens list for matches with user search input
         const filteredSearchableTokens = () => (
             searchableTokens.filter((token:TokenIF) => 
                 token.symbol.toLowerCase().includes(searchStr.toLowerCase())
@@ -58,9 +66,11 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
                 || token.address.toLowerCase().includes(searchStr.toLowerCase())
             )
         );
-        const matchingSearchable = searchStr.length >= 3
-            ? filteredSearchableTokens()
-            : [];
+
+        // filter searchable tokens if user input string is validated
+        const matchingSearchable = validSearch ? filteredSearchableTokens() : [];
+
+        // update local state with array of searchable tokens to be rendered in DOM
         setMatchingSearchableTokens(matchingSearchable);
     }
 
