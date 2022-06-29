@@ -9,6 +9,7 @@ import { tradeData as TradeDataIF } from '../../utils/state/tradeDataSlice';
 interface ITradeProps {
     account: string;
     isAuthenticated: boolean;
+    lastBlockNumber: number;
 }
 
 export default function Trade(props: ITradeProps) {
@@ -99,6 +100,7 @@ export default function Trade(props: ITradeProps) {
         <div className={styles.right_col}>
             {currentLocation.slice(0, 11) !== '/trade/edit' && navigationMenu}
             <Outlet context={{ tradeData }} />
+            {/* <PageFooter lastBlockNumber={props.lastBlockNumber} /> */}
         </div>
     );
 
