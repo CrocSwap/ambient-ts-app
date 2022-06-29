@@ -40,12 +40,12 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
     useEffect(() => {console.log(matchingSearchableTokens);}, [matchingSearchableTokens]);
 
     // change handler to run on user input in text input field
-    function searchTokens(searchStr:string) {
+    function handleSearch(searchStr:string) {
         // gatekeeper value to only apply search if search string is three or more characters
         const validSearch = searchStr.length >= 3;
 
         // function to filter an array of tokens for string matches by symbol, name, and address
-        const matchTokens = (listOfTokens:Array<TokenIF>) => (
+        const searchTokens = (listOfTokens:Array<TokenIF>) => (
             listOfTokens.filter((token:TokenIF) => 
                 token.symbol.toLowerCase().includes(searchStr.toLowerCase())
                 || token.name.toLowerCase().includes(searchStr.toLowerCase())
@@ -53,13 +53,13 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
         );
 
         // filter imported tokens if user input string is validated
-        const matchingImported = validSearch ? matchTokens(tokensBank) : tokensBank;
+        const matchingImported = validSearch ? searchTokens(tokensBank) : tokensBank;
         
         // update local state with array of imported tokens to be rendered in DOM
         setMatchingImportedTokens(matchingImported);
 
         // filter searchable tokens if user input string is validated
-        const matchingSearchable = validSearch ? matchTokens(searchableTokens) : [];
+        const matchingSearchable = validSearch ? searchTokens(searchableTokens) : [];
 
         // update local state with array of searchable tokens to be rendered in DOM
         setMatchingSearchableTokens(matchingSearchable);
@@ -98,7 +98,7 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
                 <input
                     type='text'
                     placeholder='Search name or paste address'
-                    onChange={(event) => searchTokens(event.target.value)}
+                    onChange={(event) => handleSearch(event.target.value)}
                 />
             </div>
             {tokenListContent}
