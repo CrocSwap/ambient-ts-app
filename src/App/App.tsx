@@ -83,10 +83,6 @@ export default function App() {
     // all tokens from active token lists
     const [searchableTokens, setSearchableTokens] = useState(defaultTokens);
 
-    useEffect(() => {
-        console.log(searchableTokens);
-    }, [searchableTokens]);
-
     // prevent multiple fetch requests to external URIs for token lists
     const [needTokenLists, setNeedTokenLists] = useState(true);
 

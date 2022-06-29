@@ -25,6 +25,7 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
     const {
         tokenPair,
         tokensBank,
+        setImportedTokens,
         searchableTokens,
         chainId,
         tokenToUpdate,
@@ -33,8 +34,6 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
         showManageTokenListContent,
         setShowManageTokenListContent,
     } = props;
-
-    console.log(chainId);
 
     const [
         matchingImportedTokens,
@@ -55,8 +54,9 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
         // sync local storage and local state inside App.tsx with new array
         const userData = JSON.parse(localStorage.getItem('user') as string);
         userData.tokens = newImportedTokensArray;
-        localStorage.setItem('user', userData);
-        setImportedTokens()
+        localStorage.setItem('user', JSON.stringify(userData));
+        console.log({newImportedTokensArray});
+        setImportedTokens(newImportedTokensArray);
     }
 
     const tokenListContent = (
