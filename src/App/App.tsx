@@ -21,6 +21,7 @@ import {
     contractAddresses,
     getTokenBalanceDisplay,
     sortBaseQuoteTokens,
+    getTokenDecimals,
     // POOL_PRIMARY,
     // getSpotPrice,
     // getSpotPriceDisplay,
@@ -28,6 +29,7 @@ import {
     // QUERY_ABI,
     // decodeCrocPrice,
     toDisplayPrice,
+    tickToPrice,
 } from '@crocswap-libs/sdk';
 
 import { receiptData, resetReceiptData } from '../utils/state/receiptDataSlice';
@@ -69,9 +71,11 @@ import PositionDetails from '../pages/Trade/Range/PositionDetails';
 import { memoizePromiseFn } from './functions/memoizePromiseFn';
 import { querySpotPrice } from './functions/querySpotPrice';
 import { fetchAddress } from './functions/fetchAddress';
+import truncateDecimals from '../utils/data/truncateDecimals';
 
 const cachedQuerySpotPrice = memoizePromiseFn(querySpotPrice);
 const cachedFetchAddress = memoizePromiseFn(fetchAddress);
+const cachedGetTokenDecimals = memoizePromiseFn(getTokenDecimals);
 
 /** ***** React Function *******/
 export default function App() {
@@ -480,16 +484,39 @@ export default function App() {
         }
         const poolPriceInTicks = Math.log(poolPriceNonDisplay) / Math.log(1.0001);
 
+        const baseTokenDecimals = await cachedGetTokenDecimals(baseTokenAddress);
+        const quoteTokenDecimals = await cachedGetTokenDecimals(quoteTokenAddress);
+
+        const lowerPriceNonDisplay = tickToPrice(position.bidTick);
+        const upperPriceNonDisplay = tickToPrice(position.askTick);
+
+        const lowerPriceDisplay =
+            1 / toDisplayPrice(upperPriceNonDisplay, baseTokenDecimals, quoteTokenDecimals);
+
+        const upperPriceDisplay =
+            1 / toDisplayPrice(lowerPriceNonDisplay, baseTokenDecimals, quoteTokenDecimals);
+
+        if (!position.ambient) {
+            position.lowRangeDisplay =
+                lowerPriceDisplay < 2
+                    ? truncateDecimals(lowerPriceDisplay, 2).toString()
+                    : truncateDecimals(lowerPriceDisplay, 0).toString();
+            position.highRangeDisplay =
+                lowerPriceDisplay < 2
+                    ? truncateDecimals(upperPriceDisplay, 2).toString()
+                    : truncateDecimals(upperPriceDisplay, 0).toString();
+        }
+
         position.poolPriceInTicks = poolPriceInTicks;
         if (baseTokenAddress === contractAddresses.ZERO_ADDR) {
             position.baseTokenSymbol = 'ETH';
             position.quoteTokenSymbol = 'DAI';
             position.tokenAQtyDisplay = '1';
             position.tokenBQtyDisplay = '2000';
-            if (!position.ambient) {
-                position.lowRangeDisplay = '.001';
-                position.highRangeDisplay = '.002';
-            }
+            // if (!position.ambient) {
+            //     position.lowRangeDisplay = '.001';
+            //     position.highRangeDisplay = '.002';
+            // }
         } else if (
             baseTokenAddress.toLowerCase() ===
             '0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa'.toLowerCase()
@@ -498,10 +525,10 @@ export default function App() {
             position.quoteTokenSymbol = 'USDC';
             position.tokenAQtyDisplay = '101';
             position.tokenBQtyDisplay = '100';
-            if (!position.ambient) {
-                position.lowRangeDisplay = '0.9';
-                position.highRangeDisplay = '1.1';
-            }
+            // if (!position.ambient) {
+            //     position.lowRangeDisplay = '0.9';
+            //     position.highRangeDisplay = '1.1';
+            // }
         } else {
             position.baseTokenSymbol = 'unknownBase';
             position.quoteTokenSymbol = 'unknownQuote';
