@@ -62,7 +62,8 @@
   }
  
   .sidebar_item:hover{
-    background: var(--title-gradient);
+    background: var(--dark2);
+    color: var(--text-grey-white);
     transition: all var(--animation-speed) ease-out;
 
 
@@ -90,7 +91,7 @@ line-height: 15px;
   }
 
   .sidebar_link:hover > .link_text{
-    color: black;
+    color: var(--text-grey-white);
   }
 
 
