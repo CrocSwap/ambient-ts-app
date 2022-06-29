@@ -45,6 +45,7 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
         // gatekeeper value to only apply search if search string is three or more characters
         const validSearch = searchStr.length >= 3;
 
+        // function to determine if a string includes a given search input
         const checkMatchLowerCase = (text:string) => text.toLowerCase().includes(searchStr.toLowerCase());
 
         // function to filter an array of tokens for string matches by symbol, name, and address
