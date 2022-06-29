@@ -827,7 +827,11 @@ export default function App() {
                         <Route
                             path='trade'
                             element={
-                                <Trade account={account ?? ''} isAuthenticated={isAuthenticated} />
+                                <Trade
+                                    account={account ?? ''}
+                                    isAuthenticated={isAuthenticated}
+                                    lastBlockNumber={lastBlockNumber}
+                                />
                             }
                         >
                             <Route path='' element={<Swap {...swapPropsTrade} />} />
