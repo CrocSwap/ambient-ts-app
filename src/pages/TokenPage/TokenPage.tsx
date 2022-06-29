@@ -16,6 +16,7 @@ import { usePoolDatas } from '../../state/pools/hooks';
 import Transactions from '../Transactions/Transactions';
 import { isAddress } from '../../utils';
 import { TokenData } from '../../state/tokens/reducer';
+import TokenPageChart from './Chart/TokenPageChart';
 
 export default function TokenPage() {
     const { address } = useParams();
@@ -58,9 +59,13 @@ export default function TokenPage() {
     );
 
     return (
-        <main data-testid={'token-page'} className={styles.pools_container}>
+        <main data-testid={'token-page'} className={styles.container}>
             {tokenInfo}
-            <TokenCardInfo token={tokenData} />
+            <div className={styles.hsPAQl}>
+                <TokenCardInfo token={tokenData} />
+                <TokenPageChart />
+            </div>
+
             <Divider />
             <h2>Pools</h2>
             <Pools pools={poolDatas} propType='all' maxItems={10} />
