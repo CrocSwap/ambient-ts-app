@@ -4,14 +4,16 @@ import PriceInfo from './PriceInfo/PriceInfo';
 import styles from './RangeDetails.module.css';
 import TokenInfo from './TokenInfo/TokenInfo';
 
-interface IRemoveRangeProps {
+interface IRangeDetailsProps {
     isPositionInRange: boolean;
     isAmbient: boolean;
     baseTokenSymbol: string;
     quoteTokenSymbol: string;
+    lowRangeDisplay: string;
+    highRangeDisplay: string;
 }
 
-export default function RangeDetails(props: IRemoveRangeProps) {
+export default function RangeDetails(props: IRangeDetailsProps) {
     return (
         <div className={styles.range_details_container}>
             <RemoveRangeHeader
@@ -24,7 +26,10 @@ export default function RangeDetails(props: IRemoveRangeProps) {
                 <TokenInfo />
                 <Divider />
             </div>
-            <PriceInfo />
+            <PriceInfo
+                lowRangeDisplay={props.lowRangeDisplay}
+                highRangeDisplay={props.highRangeDisplay}
+            />
         </div>
     );
 }
