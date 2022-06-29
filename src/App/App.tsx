@@ -102,17 +102,17 @@ export default function App() {
         getImportedTokens();
     }, [tokenListsReceived]);
 
+    // update local state with searchable tokens once after initial load of app
     useEffect(() => {
+        // pull activeTokenLists from local storage and parse
+        // do we need to add gatekeeping in case there is not a valid value?
         const { activeTokenLists } = JSON.parse(localStorage.getItem('user') as string);
+        // update local state with array of all tokens from searchable lists
         setSearchableTokens(
             JSON.parse(localStorage.getItem('allTokenLists') as string)
                 .filter((tokenList:TokenListIF) => activeTokenLists.includes(tokenList.uri))
                 .map((tokenList:TokenListIF) => tokenList.tokens).flat()
         );
-        // const allTokenLists = JSON.parse(localStorage.getItem('allTokenLists') as string)
-        //     .filter((tokenList:TokenListIF) => activeTokenLists.includes(tokenList.uri))
-        //     .map((tokenList:TokenListIF) => tokenList.tokens).flat();
-        // console.log(allTokenLists);
     }, []);
 
     // function getTokensFromLists(tokenListURIs:Array<TokenIF>) {
