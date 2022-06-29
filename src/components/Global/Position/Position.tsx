@@ -140,6 +140,8 @@ export default function Position(props: PositionProps) {
         isAmbient: position.ambient,
         baseTokenSymbol: position.baseTokenSymbol,
         quoteTokenSymbol: position.quoteTokenSymbol,
+        lowRangeDisplay: position.lowRangeDisplay,
+        highRangeDisplay: position.highRangeDisplay,
     };
 
     switch (currentModal) {

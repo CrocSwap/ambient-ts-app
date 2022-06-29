@@ -9,6 +9,8 @@ interface IRemoveRangeProps {
     isAmbient: boolean;
     baseTokenSymbol: string;
     quoteTokenSymbol: string;
+    lowRangeDisplay: string;
+    highRangeDisplay: string;
 }
 
 export default function RangeDetails(props: IRemoveRangeProps) {
@@ -24,7 +26,10 @@ export default function RangeDetails(props: IRemoveRangeProps) {
                 <TokenInfo />
                 <Divider />
             </div>
-            <PriceInfo />
+            <PriceInfo
+                lowRangeDisplay={props.lowRangeDisplay}
+                highRangeDisplay={props.highRangeDisplay}
+            />
         </div>
     );
 }

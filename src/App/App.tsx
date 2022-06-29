@@ -67,7 +67,7 @@ import {
     setAdvancedLowTick,
     setDenomInBase,
 } from '../utils/state/tradeDataSlice';
-import PositionDetails from '../pages/Trade/Range/PositionDetails';
+// import PositionDetails from '../pages/Trade/Range/PositionDetails';
 import { memoizePromiseFn } from './functions/memoizePromiseFn';
 import { querySpotPrice } from './functions/querySpotPrice';
 import { fetchAddress } from './functions/fetchAddress';
@@ -500,11 +500,11 @@ export default function App() {
             position.lowRangeDisplay =
                 lowerPriceDisplay < 2
                     ? truncateDecimals(lowerPriceDisplay, 2).toString()
-                    : truncateDecimals(lowerPriceDisplay, 0).toString();
+                    : truncateDecimals(lowerPriceDisplay, 2).toString();
             position.highRangeDisplay =
                 lowerPriceDisplay < 2
                     ? truncateDecimals(upperPriceDisplay, 2).toString()
-                    : truncateDecimals(upperPriceDisplay, 0).toString();
+                    : truncateDecimals(upperPriceDisplay, 2).toString();
         }
 
         position.poolPriceInTicks = poolPriceInTicks;
@@ -922,7 +922,7 @@ export default function App() {
                             <Route path='edit/:positionHash' element={<Edit />} />
                         </Route>
                         <Route path='analytics' element={<Analytics />} />
-                        <Route path='details' element={<PositionDetails />} />
+                        {/* <Route path='details' element={<PositionDetails />} /> */}
                         <Route path='range2' element={<Range {...rangeProps} />} />
 
                         <Route
