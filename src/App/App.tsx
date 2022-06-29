@@ -78,7 +78,9 @@ export default function App() {
 
     const dispatch = useAppDispatch();
 
+    // tokens specifically imported by the end user
     const [importedTokens, setImportedTokens] = useState(defaultTokens);
+    // all tokens from active token lists
     const [searchableTokens, setSearchableTokens] = useState(defaultTokens);
 
     useEffect(() => {
@@ -109,6 +111,8 @@ export default function App() {
         const { activeTokenLists } = JSON.parse(localStorage.getItem('user') as string);
         // update local state with array of all tokens from searchable lists
         setSearchableTokens(getTokensFromLists(activeTokenLists));
+        // TODO:  this hook runs once after the initial load of the app, we may need to add
+        // TODO:  additional triggers for DOM interactions
     }, []);
 
     function getTokensFromLists(tokenListURIs:Array<string>) {
