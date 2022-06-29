@@ -1,8 +1,8 @@
 import styles from './TokenSelectContainer.module.css';
 import { useState, SetStateAction, useEffect } from 'react';
 import TokenSelect from '../TokenSelect/TokenSelect';
-// import TokenSelectSearchable from '../TokenSelect/TokenSelectSearchable';
-import { TokenIF, TokenPairIF, TokenListIF } from '../../../utils/interfaces/exports';
+import TokenSelectSearchable from '../TokenSelect/TokenSelectSearchable';
+import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
 import Button from '../../Global/Button/Button';
 import TokenList from '../../Global/TokenList/TokenList';
 // import searchTokens from './searchTokens';
@@ -38,12 +38,25 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
 
     const [matchingSearchableTokens, setMatchingSearchableTokens] = useState<Array<TokenIF>>([]);
 
-    useEffect(() => {
-        console.log(matchingSearchableTokens);
-    }, [matchingSearchableTokens]);
+    useEffect(() => {console.log(matchingSearchableTokens);}, [matchingSearchableTokens]);
+
+    function searchTokens(searchStr:string) {
+        const filteredTokens = () => (
+            searchableTokens.filter((token:TokenIF) => 
+                token.symbol.toLowerCase().includes(searchStr.toLowerCase())
+                || token.name.toLowerCase().includes(searchStr.toLowerCase())
+                || token.address.toLowerCase().includes(searchStr.toLowerCase())
+            )
+        );
+        const matchingTokens = searchStr.length >= 3
+            ? filteredTokens()
+            : [];
+        setMatchingSearchableTokens(matchingTokens);
+    }
 
     const tokenListContent = (
         <>
+            <h3>Your Tokens</h3>
             {tokensBank
                 .filter((val) => {
                     if (searchTerm === '') {
@@ -67,23 +80,16 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
                         />
                     );
                 })}
-                {/* {searchableTokens.map((tkn:TokenIF, idx:number) => (
+                {matchingSearchableTokens.length >=3 ? <h3>Searched Tokens</h3> : null}
+                {matchingSearchableTokens.map((tkn:TokenIF, idx:number) => (
                     <TokenSelectSearchable
                         key={`tss_${idx}`}
                         token={tkn}
                         closeModal={closeModal}
                     />
-                ))} */}
+                ))}
         </>
     );
-
-    function searchTokens(searchStr:string) {
-        console.log('trigger func searchTokens() for: ' + searchStr);
-        const matchingTokens = searchableTokens.filter((token:TokenIF) => 
-                token.symbol.toLowerCase().includes(searchStr.toLowerCase())
-        );
-        setMatchingSearchableTokens(matchingTokens);
-    }
 
     const tokenListContainer = (
         <>
