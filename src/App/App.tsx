@@ -108,21 +108,21 @@ export default function App() {
         // do we need to add gatekeeping in case there is not a valid value?
         const { activeTokenLists } = JSON.parse(localStorage.getItem('user') as string);
         // update local state with array of all tokens from searchable lists
-        setSearchableTokens(
-            JSON.parse(localStorage.getItem('allTokenLists') as string)
-                .filter((tokenList:TokenListIF) => activeTokenLists.includes(tokenList.uri))
-                .map((tokenList:TokenListIF) => tokenList.tokens).flat()
-        );
+        setSearchableTokens(getTokensFromLists(activeTokenLists));
     }, []);
 
-    // function getTokensFromLists(tokenListURIs:Array<TokenIF>) {
-    //     const tokensFromLists = JSON.parse(localStorage.getItem('allTokenLists') as string)
-    //         // .filter((tokenList:TokenListIF) => tokenListURIs.includes(tokenList.uri))
-    //         // .map((tokenList:TokenListIF) => tokenList.tokens).flat();
-    //     console.log(tokensFromLists);
-    //     return tokensFromLists;
-    // }
+    function getTokensFromLists(tokenListURIs:Array<string>) {
+        // retrieve and parse all token lists held in local storage
+        const tokensFromLists = JSON.parse(localStorage.getItem('allTokenLists') as string)
+            // remove all lists with URIs not included in the URIs array passed as argument
+            .filter((tokenList:TokenListIF) => tokenListURIs.includes(tokenList.uri ?? ''))
+            // extract array of tokens from active lists and flatten into single array
+            .map((tokenList:TokenListIF) => tokenList.tokens).flat();
+        // return array of all tokens from lists as specified by token list URI
+        return tokensFromLists;
+    }
 
+    // function to return array of all tokens on lists as specified by URI
     function getImportedTokens() {
         // see if there's a user object in local storage
         if (localStorage.user) {
