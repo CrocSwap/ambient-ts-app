@@ -46,32 +46,6 @@ export default function Position(props: PositionProps) {
     let modalContent: React.ReactNode;
     let modalTitle;
 
-    switch (currentModal) {
-        case 'remove':
-            modalContent = <RemoveRange />;
-            modalTitle = 'Remove Position';
-            break;
-        case 'edit':
-            modalContent = editContent;
-            modalTitle = 'Edit Position';
-            break;
-        case 'details':
-            modalContent = <RangeDetails />;
-            modalTitle = <RangeDetailsHeader />;
-            break;
-        case 'harvest':
-            modalContent = harvestContent;
-            modalTitle = 'Harvest Position';
-            break;
-    }
-    const mainModal = (
-        <Modal onClose={closeModal} title={modalTitle}>
-            {modalContent}
-        </Modal>
-    );
-
-    const modalOrNull = isModalOpen ? mainModal : null;
-
     function openRemoveModal() {
         setCurrentModal('remove');
         openModal();
@@ -161,6 +135,39 @@ export default function Position(props: PositionProps) {
     const notDisplayAllOrOwned =
         !isAllPositionsEnabled || (ownerId === accountAddress && isAuthenticated);
 
+    const removeRangeProps = {
+        isPositionInRange: isPositionInRange,
+        isAmbient: position.ambient,
+        baseTokenSymbol: position.baseTokenSymbol,
+        quoteTokenSymbol: position.quoteTokenSymbol,
+    };
+
+    switch (currentModal) {
+        case 'remove':
+            modalContent = <RemoveRange {...removeRangeProps} />;
+            modalTitle = 'Remove Position';
+            break;
+        case 'edit':
+            modalContent = editContent;
+            modalTitle = 'Edit Position';
+            break;
+        case 'details':
+            modalContent = <RangeDetails {...removeRangeProps} />;
+            modalTitle = <RangeDetailsHeader />;
+            break;
+        case 'harvest':
+            modalContent = harvestContent;
+            modalTitle = 'Harvest Position';
+            break;
+    }
+    const mainModal = (
+        <Modal onClose={closeModal} title={modalTitle}>
+            {modalContent}
+        </Modal>
+    );
+
+    const modalOrNull = isModalOpen ? mainModal : null;
+
     const positionRowOrNull =
         notOnTradeRoute || (positionMatchesSelectedTokens && displayAllOrOwned) ? (
             <tr className={styles.position_tr}>
@@ -201,7 +208,7 @@ export default function Position(props: PositionProps) {
                     )}
                     {notDisplayAllOrOwned && (
                         <button className={styles.option_button}>
-                            <Link to={`/trade/edit/${ownerId}`} state={positionData}>
+                            <Link to={`/trade/edit/${posHash}`} state={positionData}>
                                 Edit
                             </Link>
                         </button>
