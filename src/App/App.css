@@ -83,7 +83,7 @@ footer {
 .main-layout{
   transition: all var(--animation-speed) ease-in-out;  /* background: var(--dark3); */
   /* min-height: calc(100vh - 5rem); */
-  margin-left: 5rem;
+  /* margin-left: 5rem; */
   /* padding: 1rem; */
 
 

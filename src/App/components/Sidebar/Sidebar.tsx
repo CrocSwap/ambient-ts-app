@@ -36,8 +36,8 @@ export default function Sidebar(props: SidebarProps): React.ReactElement<Sidebar
                 placeholder='Search anything...'
                 className={styles.search__box}
             />
-            <div className={styles.search_icon}>
-                <BiSearch size={20} color='#ffffff' />
+            <div className={styles.search__icon}>
+                <BiSearch size={20} color='#CDC1FF' />
             </div>
         </div>
     );
@@ -48,7 +48,7 @@ export default function Sidebar(props: SidebarProps): React.ReactElement<Sidebar
             <nav className={`${styles.sidebar} ${sidebarStyle}`}>
                 <ul className={styles.sidebar_nav}>
                     <li className={styles.logo}>
-                        <div className={styles.sidebar_link}>
+                        <div className={`${styles.sidebar_link} ${styles.toggle_sidebar_icon}`}>
                             <div onClick={toggleSidebar}>
                                 <MdDoubleArrow size={20} color='#7371FC' />
                                 {/* <img src={sidebarExpandImage} alt="" /> */}
@@ -61,7 +61,7 @@ export default function Sidebar(props: SidebarProps): React.ReactElement<Sidebar
                         <li key={idx} className={styles.sidebar_item}>
                             <div className={styles.sidebar_link}>
                                 {showSidebar && <MdPlayArrow size={12} color='#ffffff' />}
-                                <img src={item.icon} alt={item.name} />
+                                <img src={item.icon} alt={item.name} width='20px' />
 
                                 <span className={styles.link_text}>{item.name}</span>
                             </div>
