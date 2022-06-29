@@ -2,10 +2,10 @@ import styles from './TokenSelectContainer.module.css';
 import { useState, SetStateAction, useEffect } from 'react';
 import TokenSelect from '../TokenSelect/TokenSelect';
 import TokenSelectSearchable from '../TokenSelect/TokenSelectSearchable';
-import { TokenIF, TokenListIF, TokenPairIF } from '../../../utils/interfaces/exports';
+import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
 import Button from '../../Global/Button/Button';
 import TokenList from '../../Global/TokenList/TokenList';
-// import searchTokens from './searchTokens';
+import handleSearch from './handleSearch';
 
 interface TokenSelectContainerPropsIF {
     tokenPair: TokenPairIF;
@@ -40,34 +40,14 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
     const [matchingSearchableTokens, setMatchingSearchableTokens] = useState<Array<TokenIF>>([]);
     useEffect(() => {console.log({matchingSearchableTokens});}, [matchingSearchableTokens]);
 
-    // change handler to run on user input in text input field
-    function handleSearch(searchStr:string) {
-        // gatekeeper value to only apply search if search string is three or more characters
-        const validSearch = searchStr.length >= 3;
-
-        // function to determine if a string includes a given search input
-        const checkMatchLowerCase = (text:string) => text.toLowerCase().includes(searchStr.toLowerCase());
-
-        // function to filter an array of tokens for string matches by symbol, name, and address
-        const searchTokens = (listOfTokens:Array<TokenIF>) => (
-                listOfTokens.filter((token:TokenIF) => 
-                    checkMatchLowerCase(token.symbol)
-                    || checkMatchLowerCase(token.name)
-                    || checkMatchLowerCase(token.address)
-                )
+    function searchHandler(userInput:string) {
+        handleSearch(
+            userInput,
+            tokensBank,
+            searchableTokens,
+            setMatchingImportedTokens,
+            setMatchingSearchableTokens
         );
-
-        // filter imported tokens if user input string is validated
-        const matchingImported = validSearch ? searchTokens(tokensBank) : tokensBank;
-        
-        // update local state with array of imported tokens to be rendered in DOM
-        setMatchingImportedTokens(matchingImported);
-
-        // filter searchable tokens if user input string is validated
-        const matchingSearchable = validSearch ? searchTokens(searchableTokens) : [];
-
-        // update local state with array of searchable tokens to be rendered in DOM
-        setMatchingSearchableTokens(matchingSearchable);
     }
 
     const tokenListContent = (
@@ -103,7 +83,7 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
                 <input
                     type='text'
                     placeholder='Search name or paste address'
-                    onChange={(event) => handleSearch(event.target.value)}
+                    onChange={(event) => searchHandler(event.target.value)}
                 />
             </div>
             {tokenListContent}
