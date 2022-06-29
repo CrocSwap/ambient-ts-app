@@ -2,7 +2,7 @@ import styles from './TokenSelectContainer.module.css';
 import { useState, SetStateAction, useEffect } from 'react';
 import TokenSelect from '../TokenSelect/TokenSelect';
 import TokenSelectSearchable from '../TokenSelect/TokenSelectSearchable';
-import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
+import { TokenIF, TokenListIF, TokenPairIF } from '../../../utils/interfaces/exports';
 import Button from '../../Global/Button/Button';
 import TokenList from '../../Global/TokenList/TokenList';
 // import searchTokens from './searchTokens';
@@ -44,31 +44,22 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
         // gatekeeper value to only apply search if search string is three or more characters
         const validSearch = searchStr.length >= 3;
 
-        // function to filter imported tokens list for matches with user search input
-        const filteredImportedTokens = () => (
-            tokensBank.filter((token:TokenIF) => 
+        // function to filter an array of tokens for string matches by symbol, name, and address
+        const matchTokens = (listOfTokens:Array<TokenIF>) => (
+            listOfTokens.filter((token:TokenIF) => 
                 token.symbol.toLowerCase().includes(searchStr.toLowerCase())
                 || token.name.toLowerCase().includes(searchStr.toLowerCase())
                 || token.address.toLowerCase().includes(searchStr.toLowerCase()))
         );
 
         // filter imported tokens if user input string is validated
-        const matchingImported = validSearch ? filteredImportedTokens() : tokensBank;
+        const matchingImported = validSearch ? matchTokens(tokensBank) : tokensBank;
         
         // update local state with array of imported tokens to be rendered in DOM
         setMatchingImportedTokens(matchingImported);
 
-        // function to filter searchable tokens list for matches with user search input
-        const filteredSearchableTokens = () => (
-            searchableTokens.filter((token:TokenIF) => 
-                token.symbol.toLowerCase().includes(searchStr.toLowerCase())
-                || token.name.toLowerCase().includes(searchStr.toLowerCase())
-                || token.address.toLowerCase().includes(searchStr.toLowerCase())
-            )
-        );
-
         // filter searchable tokens if user input string is validated
-        const matchingSearchable = validSearch ? filteredSearchableTokens() : [];
+        const matchingSearchable = validSearch ? matchTokens(searchableTokens) : [];
 
         // update local state with array of searchable tokens to be rendered in DOM
         setMatchingSearchableTokens(matchingSearchable);
