@@ -104,6 +104,8 @@ export default function Position(props: PositionProps) {
         </>
     );
     const ownerId = position ? position.accountId : null;
+
+    const ensName = position?.ensName !== '' ? position.ensName : null;
     const ownerIdTruncated = position ? truncateAddress(position.accountId, 18) : null;
 
     const positionData = {
@@ -165,7 +167,7 @@ export default function Position(props: PositionProps) {
                 {portfolio && tokenImages}
                 {isAllPositionsEnabled && (
                     <td data-column='Owner ID' className={styles.position_id}>
-                        {ownerIdTruncated}
+                        {ensName ? ensName : ownerIdTruncated}
                     </td>
                 )}
                 <td data-column='Position ID' className={styles.position_id}>
