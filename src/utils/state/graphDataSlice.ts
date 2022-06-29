@@ -34,6 +34,7 @@ export interface position {
     highRangeDisplay: string;
     tokenAQtyDisplay: string;
     tokenBQtyDisplay: string;
+    poolPriceInTicks: number;
 }
 
 export interface pool {

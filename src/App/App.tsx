@@ -2,6 +2,7 @@
 import { useEffect, useState, useMemo } from 'react';
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import {
+    position,
     resetGraphData,
     setPositionsByPool,
     setPositionsByUser,
@@ -15,13 +16,13 @@ import {
     useMoralisSubscription,
     // useMoralisWeb3Api,
 } from 'react-moralis';
-import Moralis from 'moralis/types';
+import Moralis from 'moralis';
 import {
     contractAddresses,
     getTokenBalanceDisplay,
     sortBaseQuoteTokens,
     POOL_PRIMARY,
-    getSpotPrice,
+    // getSpotPrice,
     // getSpotPriceDisplay,
     getTokenAllowance,
     QUERY_ABI,
@@ -65,6 +66,49 @@ import {
     setDenomInBase,
 } from '../utils/state/tradeDataSlice';
 import PositionDetails from '../pages/Trade/Range/PositionDetails';
+
+const memoizePromiseFn = (fn: any) => {
+    const cache = new Map();
+
+    return (...args: any[]) => {
+        const key = JSON.stringify(args);
+
+        if (cache.has(key)) {
+            return cache.get(key);
+        }
+
+        cache.set(
+            key,
+            fn(...args).catch((error: any) => {
+                // Delete cache entry if api call fails
+                cache.delete(key);
+                return Promise.reject(error);
+            }),
+        );
+
+        return cache.get(key);
+    };
+};
+
+const querySpotPrice = async (baseTokenAddress: string, quoteTokenAddress: string) => {
+    const options = {
+        chain: 'kovan' as '0x2a' | 'kovan',
+        address: contractAddresses.QUERY_ADDR,
+        // eslint-disable-next-line camelcase
+        function_name: 'queryPrice',
+        abi: QUERY_ABI,
+        params: {
+            base: baseTokenAddress,
+            quote: quoteTokenAddress,
+            poolIdx: POOL_PRIMARY,
+        },
+    };
+    const crocPrice = await Moralis.Web3API.native.runContractFunction(options);
+    const spotPrice = decodeCrocPrice(ethers.BigNumber.from(crocPrice));
+    return spotPrice;
+};
+
+const cachedQuerySpotPrice = memoizePromiseFn(querySpotPrice);
 
 /** ***** React Function *******/
 export default function App() {
@@ -266,18 +310,32 @@ export default function App() {
                 queryForPositionsByPool,
                 positionsByPoolVariables,
                 // requestHeaders: headers,
-            ).then((data) => {
+            ).then(async (data) => {
                 // if (JSON.stringify(graphData.positionsByUser) !== JSON.stringify(data.user)) {
-                const pool = data.pools[0];
-
-                Promise.all(pool.positions.map(getPositionData)).then((updatedPositions) => {
-                    pool.positions = updatedPositions;
-                    // const positionArray = updatedPositions as positionsByPool
-                    // console.log(pool.positions);
-                    if (JSON.stringify(graphData.positionsByPool) !== JSON.stringify(pool)) {
-                        dispatch(setPositionsByPool(pool));
-                    }
-                });
+                const poolData = data.pools[0];
+                const poolPositions = poolData.positions;
+                console.log({ poolPositions });
+                // poolPositions.reduce(
+                //     (p: position, fn: (position: any) => Promise<any>) => p.then(fn),
+                //     Promise.resolve(),
+                // );
+                const updatedPositions: position[] = [];
+                for (const position of poolPositions) {
+                    const updatedPosition = await getPositionData(position);
+                    updatedPositions.push(updatedPosition);
+                }
+                poolData.positions = updatedPositions;
+                if (JSON.stringify(graphData.positionsByPool) !== JSON.stringify(poolData)) {
+                    dispatch(setPositionsByPool(poolData));
+                }
+                // Promise.all(poolPositions.map(getPositionData)).then((updatedPositions) => {
+                //     poolData.positions = updatedPositions;
+                //     // const positionArray = updatedPositions as positionsByPool
+                //     // console.log(pool.positions);
+                //     if (JSON.stringify(graphData.positionsByPool) !== JSON.stringify(poolData)) {
+                //         dispatch(setPositionsByPool(poolData));
+                //     }
+                // });
             });
         }
     }, [tokenPairStringified]);
@@ -287,29 +345,11 @@ export default function App() {
     const [poolPriceNonDisplay, setPoolPriceNonDisplay] = useState(0);
     const [poolPriceDisplay, setPoolPriceDisplay] = useState(0);
 
-    const querySpotPrice = async (baseTokenAddress: string, quoteTokenAddress: string) => {
-        const options = {
-            chain: 'kovan' as '0x2a' | 'kovan',
-            address: contractAddresses.QUERY_ADDR,
-            // eslint-disable-next-line camelcase
-            function_name: 'queryPrice',
-            abi: QUERY_ABI,
-            params: {
-                base: baseTokenAddress,
-                quote: quoteTokenAddress,
-                poolIdx: POOL_PRIMARY,
-            },
-        };
-        const crocPrice = await Moralis.Web3API.native.runContractFunction(options);
-        const spotPrice = decodeCrocPrice(ethers.BigNumber.from(crocPrice));
-        return spotPrice;
-    };
-
     // useEffect to get spot price when tokens change and block updates
     useEffect(() => {
         if (baseTokenAddress && quoteTokenAddress) {
             (async () => {
-                const spotPrice = await querySpotPrice(baseTokenAddress, quoteTokenAddress);
+                const spotPrice = await cachedQuerySpotPrice(baseTokenAddress, quoteTokenAddress);
                 if (poolPriceNonDisplay !== spotPrice) {
                     console.log({ spotPrice });
                     setPoolPriceNonDisplay(spotPrice);
@@ -459,17 +499,17 @@ export default function App() {
 
     const graphData = useAppSelector((state) => state.graphData);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const getPositionData = async (position: any): Promise<any> => {
+    const getPositionData = async (position: position): Promise<position> => {
         const baseTokenAddress = position.pool.base;
         const quoteTokenAddress = position.pool.quote;
-        const poolPriceNonDisplay = await getSpotPrice(
-            baseTokenAddress,
-            quoteTokenAddress,
-            POOL_PRIMARY,
-            provider,
-        );
-        // await querySpotPrice(baseTokenAddress, quoteTokenAddress);
+        // console.log({ provider });
+        // const poolPriceNonDisplay = await getSpotPrice(
+        //     baseTokenAddress,
+        //     quoteTokenAddress,
+        //     POOL_PRIMARY,
+        //     provider,
+        // );
+        const poolPriceNonDisplay = await cachedQuerySpotPrice(baseTokenAddress, quoteTokenAddress);
 
         const positionAccountId = position.id.substring(0, 42);
 
@@ -543,12 +583,10 @@ export default function App() {
             ).then((data) => {
                 // if (JSON.stringify(graphData.positionsByUser) !== JSON.stringify(data.user)) {
                 const userData = data.user;
-                if (userData) {
-                    const allPositions = userData.positions;
-
-                    // let updatedAllPositionsArray = [];
-
-                    Promise.all(allPositions.map(getPositionData)).then((updatedPositions) => {
+                const userPositions = userData.positions;
+                console.log({ userPositions });
+                if (userPositions) {
+                    Promise.all(userPositions.map(getPositionData)).then((updatedPositions) => {
                         userData.positions = updatedPositions;
                         if (
                             JSON.stringify(graphData.positionsByUser) !== JSON.stringify(userData)
@@ -601,13 +639,12 @@ export default function App() {
             } else if (provider) {
                 return;
             } else {
-                // console.log('making new kovan speedy node provider');
-                // setProvider(
-                //     new ethers.providers.JsonRpcProvider(
-                //         'https://speedy-nodes-nyc.moralis.io/015fffb61180886c9708499e/eth/kovan',
-                //     ),
-                // );
-                setProvider(undefined);
+                console.log('making new kovan speedy node provider');
+                setProvider(
+                    new ethers.providers.JsonRpcProvider(
+                        'https://speedy-nodes-nyc.moralis.io/015fffb61180886c9708499e/eth/kovan',
+                    ),
+                );
             }
         } catch (error) {
             console.log(error);
