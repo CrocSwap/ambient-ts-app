@@ -543,7 +543,7 @@ export default function App() {
                 // if (JSON.stringify(graphData.positionsByUser) !== JSON.stringify(data.user)) {
                 const userData = data.user;
                 const userPositions = userData.positions;
-                console.log({ userPositions });
+                // console.log({ userPositions });
                 if (userPositions) {
                     Promise.all(userPositions.map(getPositionData)).then((updatedPositions) => {
                         userData.positions = updatedPositions;
