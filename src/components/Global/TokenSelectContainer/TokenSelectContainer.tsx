@@ -30,17 +30,20 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
         showManageTokenListContent,
         setShowManageTokenListContent,
     } = props;
+    console.log(chainId)
 
     const [searchTerm] = useState('');
 
     const { activeTokenLists } = JSON.parse(localStorage.getItem('user') as string);
     // TODO: Note to self, use the below logic to get a central list of all tokens in active lists and initialize searchableTokens on it
-    const activeTokens = JSON.parse(localStorage.getItem('allTokenLists') as string);
+    const tokensFromActiveLists = JSON.parse(localStorage.getItem('allTokenLists') as string)
+        .filter((tokenList:TokenListIF) => activeTokenLists.includes(tokenList.uri))
+        .map((tokenList:TokenListIF) => tokenList.tokens).flat();
 
-    console.log(activeTokens);
+    console.log(tokensFromActiveLists);
 
     const [selectableTokens, setSelectableTokens] = useState(tokensBank);
-    const [searchableTokens, setSearchableTokens] = useState(tokensBank);
+    const [searchableTokens, setSearchableTokens] = useState(tokensFromActiveLists);
 
     useEffect(() => {
         const { activeTokenLists } = JSON.parse(localStorage.getItem('user') as string);
@@ -99,7 +102,7 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
                         />
                     );
                 })}
-                {searchableTokens.map((tkn:TokenIF, idx) => (
+                {searchableTokens.map((tkn:TokenIF, idx:number) => (
                     <TokenSelectSearchable
                         key={`tss_${idx}`}
                         token={tkn}

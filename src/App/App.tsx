@@ -79,6 +79,7 @@ export default function App() {
     const dispatch = useAppDispatch();
 
     const [importedTokens, setImportedTokens] = useState(defaultTokens);
+    const [searchableTokens, setSearchableTokens] = useState();
 
     // prevent multiple fetch requests to external URIs for token lists
     const [needTokenLists, setNeedTokenLists] = useState(true);
