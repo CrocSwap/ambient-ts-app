@@ -14,6 +14,7 @@ import TotalCardInfo from './TokenInfoCard/TokenInfoCard';
 import styles from './TokenPage.module.css';
 import { usePoolDatas } from '../../state/pools/hooks';
 import Transactions from '../Transactions/Transactions';
+import { isAddress } from '../../utils';
 
 export default function TokenPage() {
     const { address } = useParams();
@@ -27,8 +28,37 @@ export default function TokenPage() {
     const transactions = useTokenTransactions(address!);
     const chartData = useTokenChartData(address!);
 
+    function getTokenLogoURL() {
+        const checkSummed = isAddress(tokenData!.address);
+        return `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/${checkSummed}/logo.png`;
+    }
+
+    const tokenInfo = (
+        <div className={styles.token_info_container}>
+            <div className={styles.tokens_info}>
+                <div className={styles.tokens_images}>
+                    <img
+                        className={styles.token_list}
+                        src={getTokenLogoURL()}
+                        onError={({ currentTarget }) => {
+                            currentTarget.onerror = null;
+                            currentTarget.src = '/question.svg';
+                        }}
+                        alt='token'
+                        width='30px'
+                    />
+                </div>
+                <span className={styles.tokens_name}>
+                    {' '}
+                    {tokenData!.name} ({tokenData!.symbol})
+                </span>
+            </div>
+        </div>
+    );
+
     return (
         <main data-testid={'token-page'} className={styles.pools_container}>
+            {tokenInfo}
             <TotalCardInfo token={tokenData} />
             <Divider />
             <h2>Pools</h2>

@@ -3,3 +3,56 @@
   padding: 2rem;
   background: var(--dark3);
 }
+
+.token_info_container, .time_frame_container{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.3rem 0;
+  
+}
+
+.token_info_container, .time_frame_container{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.3rem 0;
+  
+}
+
+.tokens_info{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
+}
+
+.tokens_images{
+  display: flex;
+  flex-direction: row;
+  gap: 7px;
+}
+
+.token_names{
+  letter-spacing: -0.02em;
+  font-size: var(--header1-size);
+  line-height: var(--header1-lh);
+  color: white;
+}
+
+@media only screen 
+  and (min-device-width: 320px) 
+  and (max-device-width: 568px)
+  and (-webkit-min-device-pixel-ratio: 2) {
+ 
+    .graph_container{
+       /* display: none; */
+       margin-bottom: 35px;
+    }
+
+    .chart_image, .time_frame_container, .token_info_container{
+        display: none;
+    }
+}
