@@ -48,7 +48,7 @@ import { validateChain } from './validateChain';
 import { IParsedPosition, parsePositionArray } from './parsePositions';
 import { defaultTokens } from '../utils/data/defaultTokens';
 import initializeUserLocalStorage from './functions/initializeUserLocalStorage';
-import { TokenIF } from '../utils/interfaces/exports';
+import { TokenIF, TokenListIF } from '../utils/interfaces/exports';
 import { fetchTokenLists } from './functions/fetchTokenLists';
 import {
     resetTradeData,
@@ -97,6 +97,14 @@ export default function App() {
         initializeUserLocalStorage();
         getImportedTokens();
     }, [tokenListsReceived]);
+
+    useEffect(() => {
+        const { activeTokenLists } = JSON.parse(localStorage.getItem('user') as string);
+        const allTokenLists = JSON.parse(localStorage.getItem('allTokenLists') as string)
+            .filter((tokenList:TokenListIF) => activeTokenLists.includes(tokenList.uri))
+            .map((tokenList:TokenListIF) => tokenList.tokens).flat();
+        console.log(allTokenLists);
+    }, []);
 
     function getImportedTokens() {
         // see if there's a user object in local storage
