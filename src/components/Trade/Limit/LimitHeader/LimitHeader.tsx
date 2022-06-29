@@ -11,17 +11,19 @@ import { TokenPairIF } from '../../../../utils/interfaces/exports';
 // interface for component props
 interface LimitHeaderPropsIF {
     tokenPair: TokenPairIF;
+    isDenomBase: boolean;
 }
 
 // central react functional component
 export default function LimitHeader(props: LimitHeaderPropsIF) {
-    const { tokenPair } = props;
+    const { tokenPair, isDenomBase } = props;
 
     return (
         <ContentHeader>
             <span />
             <div className={styles.token_info}>
-                {tokenPair.dataTokenA.symbol} / {tokenPair.dataTokenB.symbol}
+                {isDenomBase ? tokenPair.dataTokenA.symbol : tokenPair.dataTokenB.symbol} /{' '}
+                {isDenomBase ? tokenPair.dataTokenB.symbol : tokenPair.dataTokenA.symbol}
             </div>
             <FiSettings />
         </ContentHeader>

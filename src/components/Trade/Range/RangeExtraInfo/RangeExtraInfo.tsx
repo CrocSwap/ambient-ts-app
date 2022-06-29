@@ -19,6 +19,7 @@ interface RangeExtraInfoPropsIF {
     gasPriceinGwei: string;
     displayForBase: boolean;
     isTokenABase: boolean;
+    daysInRangeEstimation: number;
 }
 
 // central react functional component
@@ -26,12 +27,13 @@ export default function RangeExtraInfo(props: RangeExtraInfoPropsIF) {
     const {
         tokenPair,
         gasPriceinGwei,
-        quoteTokenIsBuy,
+        // quoteTokenIsBuy,
         poolPriceDisplay,
         slippageTolerance,
         liquidityProviderFee,
         displayForBase,
         isTokenABase,
+        daysInRangeEstimation,
     } = props;
 
     const [showExtraDetails, setShowExtraDetails] = useState<boolean>(false);
@@ -45,33 +47,32 @@ export default function RangeExtraInfo(props: RangeExtraInfoPropsIF) {
     // console.log({ invertPrice });
     // console.log({ poolPriceDisplay });
 
-    const displayPriceString = invertPrice
-        ? truncateDecimals(1 / poolPriceDisplay, 4).toString()
-        : truncateDecimals(poolPriceDisplay, 4).toString();
+    const displayPrice = invertPrice ? 1 / poolPriceDisplay : poolPriceDisplay;
+    const displayPriceStringTruncated =
+        displayPrice < 2
+            ? truncateDecimals(displayPrice, 4).toString()
+            : truncateDecimals(displayPrice, 0).toString();
 
-    const priceLimitAfterSlippageAndFee = quoteTokenIsBuy
-        ? truncateDecimals(
-              (1 / poolPriceDisplay) *
-                  (1 - slippageTolerance / 100) *
-                  (1 - liquidityProviderFee / 100),
-              4,
-          )
-        : truncateDecimals(
-              (1 / poolPriceDisplay) * (1 + slippageTolerance) * (1 + liquidityProviderFee / 100),
-              4,
-          );
+    // const priceLimitAfterSlippageAndFee = quoteTokenIsBuy
+    //     ? truncateDecimals(
+    //           (1 / poolPriceDisplay) *
+    //               (1 - slippageTolerance / 100) *
+    //               (1 - liquidityProviderFee / 100),
+    //           4,
+    //       )
+    //     : truncateDecimals(
+    //           (1 / poolPriceDisplay) * (1 + slippageTolerance) * (1 + liquidityProviderFee / 100),
+    //           4,
+    //       );
     const truncatedGasInGwei = truncateDecimals(parseFloat(gasPriceinGwei), 2);
 
     const extraInfoData = [
         {
             title: 'Spot Price',
             tooltipTitle: 'spot price explanation',
-            data: `${displayPriceString} ${tokenPair.dataTokenB.symbol} per ${tokenPair.dataTokenA.symbol}`,
-        },
-        {
-            title: 'Price Limit after Slippage and Fee',
-            tooltipTitle: 'price limit explanation',
-            data: `${priceLimitAfterSlippageAndFee} ${tokenPair.dataTokenB.symbol} per ${tokenPair.dataTokenA.symbol}`,
+            data: reverseDisplay
+                ? `${displayPriceStringTruncated} ${tokenPair.dataTokenA.symbol} per ${tokenPair.dataTokenB.symbol}`
+                : `${displayPriceStringTruncated} ${tokenPair.dataTokenB.symbol} per ${tokenPair.dataTokenA.symbol}`,
         },
         {
             title: 'Slippage Tolerance',
@@ -79,9 +80,14 @@ export default function RangeExtraInfo(props: RangeExtraInfoPropsIF) {
             data: `${slippageTolerance}%`,
         },
         {
-            title: 'Liquidity Provider Fee',
+            title: 'Current Provider Fee',
             tooltipTitle: 'liquidity provider fee explanation',
             data: `${liquidityProviderFee}%`,
+        },
+        {
+            title: 'Estimated Range Duration',
+            tooltipTitle: 'range duration explanation',
+            data: `${daysInRangeEstimation} Days`,
         },
     ];
 
@@ -105,9 +111,9 @@ export default function RangeExtraInfo(props: RangeExtraInfoPropsIF) {
     //     ? [tokenPair.dataTokenA, tokenPair.dataTokenB]
     //     : [tokenPair.dataTokenB, tokenPair.dataTokenA];
 
-    const defaultDisplay = `1 ${tokenPair.dataTokenA.symbol} ≈ ${displayPriceString} ${tokenPair.dataTokenB.symbol}`;
+    const defaultDisplay = `1 ${tokenPair.dataTokenA.symbol} ≈ ${displayPriceStringTruncated} ${tokenPair.dataTokenB.symbol}`;
 
-    const flippedDisplay = `1 ${tokenPair.dataTokenB.symbol} ≈ ${displayPriceString} ${tokenPair.dataTokenA.symbol}`;
+    const flippedDisplay = `1 ${tokenPair.dataTokenB.symbol} ≈ ${displayPriceStringTruncated} ${tokenPair.dataTokenA.symbol}`;
 
     return (
         <div className={styles.extra_info_container}>

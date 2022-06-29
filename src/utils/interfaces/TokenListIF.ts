@@ -15,4 +15,5 @@ export interface TokenListIF {
     tags?: any;
     default?: boolean;
     uri?: string;
+    dateRetrieved?: string | number;
 }

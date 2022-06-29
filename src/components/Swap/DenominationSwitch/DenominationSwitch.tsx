@@ -27,22 +27,18 @@ export default function DenominationSwitch(props: denominationSwitchPropsIF) {
     // TODO:  ... value of `toggleDenomination`, let's do just one button with two
     // TODO   ... <div> elements nested inside of it
 
-    const moreExpensiveToken = poolPriceDisplay < 1
-        ? (isTokenABase ? 'A' : 'B')
-        : (isTokenABase ? 'B' : 'A');
+    const moreExpensiveToken =
+        poolPriceDisplay < 1 ? (isTokenABase ? 'A' : 'B') : isTokenABase ? 'B' : 'A';
 
-    const tokenToHighlight = moreExpensiveToken === 'A'
-        ? (didUserFlipDenom ? 'B' : 'A')
-        : (didUserFlipDenom ? 'A' : 'B');
+    const tokenToHighlight =
+        moreExpensiveToken === 'A' ? (didUserFlipDenom ? 'B' : 'A') : didUserFlipDenom ? 'A' : 'B';
 
     return (
         <div className={styles.denomination_switch}>
             <div>Denomination</div>
             <button
                 className={
-                    tokenToHighlight === 'A'
-                        ? styles.active_button
-                        : styles.non_active_button
+                    tokenToHighlight === 'A' ? styles.active_button : styles.non_active_button
                 }
                 onClick={() => dispatch(toggleDidUserFlipDenom())}
             >
@@ -50,9 +46,7 @@ export default function DenominationSwitch(props: denominationSwitchPropsIF) {
             </button>
             <button
                 className={
-                    tokenToHighlight === 'B'
-                        ? styles.active_button
-                        : styles.non_active_button
+                    tokenToHighlight === 'B' ? styles.active_button : styles.non_active_button
                 }
                 onClick={() => dispatch(toggleDidUserFlipDenom())}
             >

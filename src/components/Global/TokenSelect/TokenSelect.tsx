@@ -1,11 +1,7 @@
 import styles from './TokenSelect.module.css';
 import { RiStarFill, RiStarLine } from 'react-icons/ri';
 import { CgUnavailable } from 'react-icons/cg';
-import {
-    setTokenA,
-    setTokenB,
-    setDidUserFlipDenom
-} from '../../../utils/state/tradeDataSlice';
+import { setTokenA, setTokenB, setDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
 

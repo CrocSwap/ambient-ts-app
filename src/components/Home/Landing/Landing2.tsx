@@ -6,14 +6,14 @@ export default function Landing2() {
             <div className={styles.content_container}>
                 <div className={styles.on_chain}>
                     The on-chain exchange designed{' '}
-                    <span className={styles.highlight_text}>for traders</span>
+                    <div className={styles.highlight_text}>for traders</div>
                 </div>
-                <div className={styles.ambient}>ambient</div>
+                {/* <div className={styles.ambient}>ambient</div>
                 <div className={styles.architecture}>
-                    Our <span className={styles.highlight_text}>unique architecture</span> provides
+                    Our <div className={styles.highlight_text}> unique architecture</div> provides
                     low fee transactions, greater liquidity rewards, and a fairer trading
                     experience.
-                </div>
+                </div> */}
             </div>
         </div>
     );
