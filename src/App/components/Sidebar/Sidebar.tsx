@@ -15,6 +15,7 @@ interface SidebarProps {
 
 export default function Sidebar(props: SidebarProps): React.ReactElement<SidebarProps> {
     const { toggleSidebar, showSidebar } = props;
+
     const navItems1 = [
         { name: 'Top Tokens', icon: topTokensImage },
         { name: 'Top Pools', icon: topPoolsImage },
@@ -59,7 +60,7 @@ export default function Sidebar(props: SidebarProps): React.ReactElement<Sidebar
                     {navItems1.map((item, idx) => (
                         <li key={idx} className={styles.sidebar_item}>
                             <div className={styles.sidebar_link}>
-                                <MdPlayArrow size={12} color='#ffffff' />
+                                {showSidebar && <MdPlayArrow size={12} color='#ffffff' />}
                                 <img src={item.icon} alt={item.name} />
 
                                 <span className={styles.link_text}>{item.name}</span>
