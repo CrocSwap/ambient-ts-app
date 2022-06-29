@@ -24,6 +24,7 @@ import { TokenIF, TokenPairIF } from '../../../../utils/interfaces/exports';
 interface LimitCurrencyConverterProps {
     tokenPair: TokenPairIF;
     tokensBank: Array<TokenIF>;
+    searchableTokens: Array<TokenIF>;
     chainId: string;
     poolPriceNonDisplay: number;
     insideTickDisplayPrice: number;
@@ -51,6 +52,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
     const {
         tokenPair,
         tokensBank,
+        searchableTokens,
         chainId,
         poolPriceNonDisplay,
         insideTickDisplayPrice,
@@ -270,6 +272,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
             <LimitCurrencySelector
                 tokenPair={tokenPair}
                 tokensBank={tokensBank}
+                searchableTokens={searchableTokens}
                 chainId={chainId}
                 fieldId='sell'
                 sellToken
@@ -289,6 +292,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
             <LimitCurrencySelector
                 tokenPair={tokenPair}
                 tokensBank={tokensBank}
+                searchableTokens={searchableTokens}
                 chainId={chainId}
                 fieldId='buy'
                 direction='To: '

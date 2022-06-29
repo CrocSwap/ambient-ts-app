@@ -10,6 +10,7 @@ import searchTokens from './searchTokens';
 interface TokenSelectContainerPropsIF {
     tokenPair: TokenPairIF;
     tokensBank: Array<TokenIF>;
+    searchableTokens: Array<TokenIF>;
     tokenList?: Array<TokenIF>;
     chainId: string;
     tokenToUpdate: string;
@@ -23,6 +24,7 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
     const {
         tokenPair,
         tokensBank,
+        searchableTokens,
         chainId,
         tokenToUpdate,
         closeModal,
@@ -33,39 +35,6 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
     console.log(chainId)
 
     const [searchTerm] = useState('');
-
-    const { activeTokenLists } = JSON.parse(localStorage.getItem('user') as string);
-    // TODO: Note to self, use the below logic to get a central list of all tokens in active lists and initialize searchableTokens on it
-    const tokensFromActiveLists = JSON.parse(localStorage.getItem('allTokenLists') as string)
-        .filter((tokenList:TokenListIF) => activeTokenLists.includes(tokenList.uri))
-        .map((tokenList:TokenListIF) => tokenList.tokens).flat();
-
-    console.log(tokensFromActiveLists);
-
-    const [selectableTokens, setSelectableTokens] = useState(tokensBank);
-    const [searchableTokens, setSearchableTokens] = useState(tokensFromActiveLists);
-
-    useEffect(() => {
-        const { activeTokenLists } = JSON.parse(localStorage.getItem('user') as string);
-        const selectableTokenAddresses = selectableTokens.map((tkn:TokenIF) => tkn.address);
-        setSearchableTokens(
-            JSON.parse(localStorage.getItem('allTokenLists') as string)
-                // return only active token lists
-                .filter((tokenList:TokenListIF) => activeTokenLists.includes(tokenList.uri))
-                // make an array of all tokens from those lists
-                .map((tokenList:TokenListIF) => tokenList.tokens).flat()
-                // return only tokens on active lists
-                .filter((tkn:TokenIF) => tkn.chainId === parseInt(chainId))
-                // return only tokens not already imported
-                .filter((tkn:TokenIF) => !selectableTokenAddresses.includes(tkn.address))
-        );
-    }, []);
-
-    // TODO:  @Emily add the setter function back in to the useState() call
-    // const [tL] = useState(
-    //     JSON.parse(localStorage.getItem('user') as string).tokens
-    //         .filter((tkn:TokenIF) => tkn.chainId === parseInt(chainId))
-    // );
 
     const searchInput = (
         <div className={styles.search_input}>
@@ -79,7 +48,7 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
 
     const tokenListContent = (
         <>
-            {selectableTokens
+            {tokensBank
                 .filter((val) => {
                     if (searchTerm === '') {
                         return val;

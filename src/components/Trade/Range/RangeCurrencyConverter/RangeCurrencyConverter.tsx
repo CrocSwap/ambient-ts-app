@@ -19,6 +19,7 @@ import {
 // interface for component props
 interface RangeCurrencyConverterPropsIF {
     tokensBank: Array<TokenIF>;
+    searchableTokens: Array<TokenIF>;
     chainId: string;
     isWithdrawTokenAFromDexChecked: boolean;
     setIsWithdrawTokenAFromDexChecked: React.Dispatch<SetStateAction<boolean>>;
@@ -56,6 +57,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         chainId,
         isLiq,
         tokensBank,
+        searchableTokens,
         poolPriceNonDisplay,
         tokenPair,
         isTokenABase,
@@ -394,6 +396,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         chainId: chainId,
         tokenPair: tokenPair,
         tokensBank: tokensBank,
+        searchableTokens: searchableTokens,
         isWithdrawTokenAFromDexChecked: isWithdrawTokenAFromDexChecked,
         setIsWithdrawTokenAFromDexChecked: setIsWithdrawTokenAFromDexChecked,
         isWithdrawTokenBFromDexChecked: isWithdrawTokenBFromDexChecked,

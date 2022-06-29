@@ -38,8 +38,9 @@ import { useModal } from '../../components/Global/Modal/useModal';
 import { useRelativeModal } from '../../components/Global/RelativeModal/useRelativeModal';
 import { addReceipt } from '../../utils/state/receiptDataSlice';
 
-interface ISwapProps {
+interface SwapPropsIF {
     importedTokens: Array<TokenIF>;
+    searchableTokens: Array<TokenIF>;
     provider: JsonRpcProvider;
     isOnTradeRoute?: boolean;
     gasPriceinGwei: string;
@@ -58,9 +59,10 @@ interface ISwapProps {
     chainId: string;
 }
 
-export default function Swap(props: ISwapProps) {
+export default function Swap(props: SwapPropsIF) {
     const {
         importedTokens,
+        searchableTokens,
         provider,
         isOnTradeRoute,
         nativeBalance,
@@ -316,6 +318,7 @@ export default function Swap(props: ISwapProps) {
                 <CurrencyConverter
                     tokenPair={tokenPair}
                     tokensBank={importedTokens}
+                    searchableTokens={searchableTokens}
                     chainId={chainId as string}
                     isLiq={false}
                     poolPriceDisplay={poolPriceDisplay}

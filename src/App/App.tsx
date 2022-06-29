@@ -735,6 +735,7 @@ export default function App() {
     // props for <Swap/> React element
     const swapProps = {
         importedTokens: importedTokens,
+        searchableTokens: searchableTokens,
         provider: provider as JsonRpcProvider,
         gasPriceinGwei: gasPriceinGwei,
         nativeBalance: nativeBalance,
@@ -753,6 +754,7 @@ export default function App() {
     // props for <Swap/> React element on trade route
     const swapPropsTrade = {
         importedTokens: importedTokens,
+        searchableTokens: searchableTokens,
         provider: provider as JsonRpcProvider,
         isOnTradeRoute: true,
         gasPriceinGwei: gasPriceinGwei,
@@ -772,6 +774,7 @@ export default function App() {
     // props for <Limit/> React element on trade route
     const limitPropsTrade = {
         importedTokens: importedTokens,
+        searchableTokens: searchableTokens,
         provider: provider as JsonRpcProvider,
         isOnTradeRoute: true,
         gasPriceinGwei: gasPriceinGwei,
@@ -792,6 +795,7 @@ export default function App() {
     // props for <Range/> React element
     const rangeProps = {
         importedTokens: importedTokens,
+        searchableTokens: searchableTokens,
         provider: provider as JsonRpcProvider,
         lastBlockNumber: lastBlockNumber,
         gasPriceinGwei: gasPriceinGwei,

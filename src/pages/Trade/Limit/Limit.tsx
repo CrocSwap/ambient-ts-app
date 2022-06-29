@@ -39,6 +39,7 @@ import { setLimitPrice } from '../../../utils/state/tradeDataSlice';
 
 interface LimitPropsIF {
     importedTokens: Array<TokenIF>;
+    searchableTokens: Array<TokenIF>;
     provider: JsonRpcProvider;
     isOnTradeRoute?: boolean;
     gasPriceinGwei: string;
@@ -62,6 +63,7 @@ interface LimitPropsIF {
 export default function Limit(props: LimitPropsIF) {
     const {
         importedTokens,
+        searchableTokens,
         provider,
         isSellTokenBase,
         tokenABalance,
@@ -366,7 +368,7 @@ export default function Limit(props: LimitPropsIF) {
                 <DividerDark />
                 <LimitCurrencyConverter
                     tokenPair={tokenPair}
-                    // poolPriceDisplay={poolPriceDisplay}
+                    searchableTokens={searchableTokens}
                     poolPriceNonDisplay={poolPriceNonDisplay}
                     isSellTokenBase={isSellTokenBase}
                     tokensBank={importedTokens}

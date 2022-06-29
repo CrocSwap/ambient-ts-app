@@ -67,6 +67,7 @@ import { addReceipt } from '../../../utils/state/receiptDataSlice';
 
 interface RangePropsIF {
     importedTokens: Array<TokenIF>;
+    searchableTokens: Array<TokenIF>;
     provider: JsonRpcProvider;
     gasPriceinGwei: string;
     lastBlockNumber: number;
@@ -86,6 +87,7 @@ interface RangePropsIF {
 export default function Range(props: RangePropsIF) {
     const {
         importedTokens,
+        searchableTokens,
         provider,
         baseTokenAddress,
         quoteTokenAddress,
@@ -877,6 +879,7 @@ export default function Range(props: RangePropsIF) {
         poolPriceNonDisplay: poolPriceNonDisplay,
         chainId: chainId ?? '0x2a',
         tokensBank: importedTokens,
+        searchableTokens: searchableTokens,
         tokenPair: tokenPair,
         isAmbient: isAmbient,
         isTokenABase: isTokenABase,
@@ -1085,7 +1088,6 @@ export default function Range(props: RangePropsIF) {
                 />
                 {denominationSwitch}
                 <DividerDark />
-                {/* <RangeCurrencyConverter {...rangeCurrencyConverterProps} /> */}
                 {isAdvancedModeActive ? advancedModeContent : baseModeContent}
                 {!isAuthenticated || !isWeb3Enabled ? (
                     loginButton

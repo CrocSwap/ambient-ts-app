@@ -17,6 +17,7 @@ import { useModal } from '../../../../components/Global/Modal/useModal';
 interface LimitCurrencySelectorProps {
     tokenPair: TokenPairIF;
     tokensBank: Array<TokenIF>;
+    searchableTokens: Array<TokenIF>;
     chainId: string;
     fieldId: string;
     direction: string;
@@ -36,6 +37,7 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
     const {
         tokenPair,
         tokensBank,
+        searchableTokens,
         chainId,
         fieldId,
         direction,
@@ -61,6 +63,7 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
             <TokenSelectContainer
                 tokenPair={tokenPair}
                 tokensBank={tokensBank}
+                searchableTokens={searchableTokens}
                 tokenToUpdate={tokenToUpdate}
                 chainId={chainId}
                 tokenList={tokensBank}

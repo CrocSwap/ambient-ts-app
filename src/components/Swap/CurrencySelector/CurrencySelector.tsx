@@ -11,6 +11,7 @@ import TokenSelectContainer from '../../Global/TokenSelectContainer/TokenSelectC
 interface CurrencySelectorProps {
     tokenPair: TokenPairIF;
     tokensBank: Array<TokenIF>;
+    searchableTokens: Array<TokenIF>;
     chainId: string;
     fieldId: string;
     direction: string;
@@ -30,6 +31,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
     const {
         tokenPair,
         tokensBank,
+        searchableTokens,
         chainId,
         direction,
         fieldId,
@@ -47,20 +49,6 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
     const [showManageTokenListContent, setShowManageTokenListContent] = useState(false);
 
     const thisToken = fieldId === 'sell' ? tokenPair.dataTokenA : tokenPair.dataTokenB;
-
-    // const DexBalanceContent = (
-    //     <span className={styles.surplus_toggle}>
-    //         {fieldId === 'sell' ? 'Withdraw from DEX balance' : 'Withdraw to Wallet'}
-    //         <div className={styles.toggle_container}>
-    //             <Toggle
-    //                 isOn={isChecked}
-    //                 handleToggle={() => setIsChecked(!isChecked)}
-    //                 Width={36}
-    //                 id='surplus_liquidity'
-    //             />
-    //         </div>
-    //     </span>
-    // );
 
     const WithdrawTokensContent = (
         <span className={styles.surplus_toggle}>
@@ -99,6 +87,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
             <TokenSelectContainer
                 tokenPair={tokenPair}
                 tokensBank={tokensBank}
+                searchableTokens={searchableTokens}
                 tokenToUpdate={tokenToUpdate}
                 chainId={chainId}
                 tokenList={tokensBank}
