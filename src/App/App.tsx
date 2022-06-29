@@ -708,7 +708,8 @@ export default function App() {
 
     useEffect(() => {
         fetch(
-            'https://api.etherscan.io/api?module=gastracker&action=gasoracle&apikey=3UGY5173DQXPSPSVAUNZIVXVN4XI3YEE2N',
+            'https://api.etherscan.io/api?module=gastracker&action=gasoracle&apikey=KNJM7A9ST1Q1EESYXPPQITIP7I8EFSY456',
+            // 'https://api.etherscan.io/api?module=gastracker&action=gasoracle&apikey=3UGY5173DQXPSPSVAUNZIVXVN4XI3YEE2N',
         )
             .then((response) => response.json())
             .then((response) => {
@@ -716,7 +717,7 @@ export default function App() {
                     setGasPriceinGwei(response.result.ProposeGasPrice);
                 }
             });
-    }, [provider, chainId, lastBlockNumber]);
+    }, [lastBlockNumber]);
 
     // useEffect to get current block number
     // on a 3 second interval
