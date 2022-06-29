@@ -1,4 +1,4 @@
-import { ChangeEvent, SetStateAction, useState } from 'react';
+import { ChangeEvent, Dispatch, SetStateAction, useState } from 'react';
 import styles from './RangeCurrencySelector.module.css';
 import RangeCurrencyQuantity from '../RangeCurrencyQuantity/RangeCurrencyQuantity';
 import { RiArrowDownSLine } from 'react-icons/ri';
@@ -13,12 +13,13 @@ interface RangeCurrencySelectorProps {
     chainId: string;
     tokenPair: TokenPairIF;
     tokensBank: Array<TokenIF>;
+    setImportedTokens: Dispatch<SetStateAction<{ name: string; address: string; symbol: string; decimals: number; chainId: number; logoURI: string; fromList: string; }[]>>;
     searchableTokens: Array<TokenIF>;
     updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
     isWithdrawTokenAFromDexChecked: boolean;
-    setIsWithdrawTokenAFromDexChecked: React.Dispatch<SetStateAction<boolean>>;
+    setIsWithdrawTokenAFromDexChecked: Dispatch<SetStateAction<boolean>>;
     isWithdrawTokenBFromDexChecked: boolean;
-    setIsWithdrawTokenBFromDexChecked: React.Dispatch<SetStateAction<boolean>>;
+    setIsWithdrawTokenBFromDexChecked: Dispatch<SetStateAction<boolean>>;
     sellToken?: boolean;
     reverseTokens: () => void;
     truncatedTokenABalance: string;
@@ -33,6 +34,7 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
     const {
         tokenPair,
         tokensBank,
+        setImportedTokens,
         searchableTokens,
         chainId,
         isWithdrawTokenAFromDexChecked,
@@ -61,6 +63,7 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                 tokenPair={tokenPair}
                 searchableTokens={searchableTokens}
                 tokensBank={tokensBank}
+                setImportedTokens={setImportedTokens}
                 tokenToUpdate={fieldId}
                 chainId={chainId}
                 tokenList={tokensBank}

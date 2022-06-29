@@ -2,7 +2,7 @@ import styles from './CurrencySelector.module.css';
 import CurrencyQuantity from '../CurrencyQuantity/CurrencyQuantity';
 import { RiArrowDownSLine } from 'react-icons/ri';
 import Toggle from '../../Global/Toggle/Toggle';
-import { useState, ChangeEvent, SetStateAction } from 'react';
+import { useState, ChangeEvent, Dispatch, SetStateAction } from 'react';
 import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import Modal from '../../../components/Global/Modal/Modal';
@@ -11,6 +11,7 @@ import TokenSelectContainer from '../../Global/TokenSelectContainer/TokenSelectC
 interface CurrencySelectorProps {
     tokenPair: TokenPairIF;
     tokensBank: Array<TokenIF>;
+    setImportedTokens: Dispatch<SetStateAction<{ name: string; address: string; symbol: string; decimals: number; chainId: number; logoURI: string; fromList: string; }[]>>;
     searchableTokens: Array<TokenIF>;
     chainId: string;
     fieldId: string;
@@ -31,6 +32,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
     const {
         tokenPair,
         tokensBank,
+        setImportedTokens,
         searchableTokens,
         chainId,
         direction,
@@ -87,6 +89,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
             <TokenSelectContainer
                 tokenPair={tokenPair}
                 tokensBank={tokensBank}
+                setImportedTokens={setImportedTokens}
                 searchableTokens={searchableTokens}
                 tokenToUpdate={tokenToUpdate}
                 chainId={chainId}
@@ -126,7 +129,6 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
             </div>
             <div className={styles.swapbox_bottom}>
                 <span>Wallet: {walletBalance} | Surplus: 0</span>
-                {/* {fieldId === 'limit-sell' ? DexBalanceContent : WithdrawTokensContent} */}
                 {WithdrawTokensContent}
             </div>
             {tokenSelectModalOrNull}

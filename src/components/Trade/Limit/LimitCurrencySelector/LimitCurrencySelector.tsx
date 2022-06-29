@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { ChangeEvent, SetStateAction, useState } from 'react';
+import { ChangeEvent, Dispatch, SetStateAction, useState } from 'react';
 import { RiArrowDownSLine } from 'react-icons/ri';
 
 // START: Import React Functional Components
@@ -17,6 +17,7 @@ import { useModal } from '../../../../components/Global/Modal/useModal';
 interface LimitCurrencySelectorProps {
     tokenPair: TokenPairIF;
     tokensBank: Array<TokenIF>;
+    setImportedTokens: Dispatch<SetStateAction<{ name: string; address: string; symbol: string; decimals: number; chainId: number; logoURI: string; fromList: string; }[]>>;
     searchableTokens: Array<TokenIF>;
     chainId: string;
     fieldId: string;
@@ -37,6 +38,7 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
     const {
         tokenPair,
         tokensBank,
+        setImportedTokens,
         searchableTokens,
         chainId,
         fieldId,
@@ -63,6 +65,7 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
             <TokenSelectContainer
                 tokenPair={tokenPair}
                 tokensBank={tokensBank}
+                setImportedTokens={setImportedTokens}
                 searchableTokens={searchableTokens}
                 tokenToUpdate={tokenToUpdate}
                 chainId={chainId}

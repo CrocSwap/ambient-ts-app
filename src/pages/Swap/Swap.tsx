@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useState } from 'react';
+import { useState, Dispatch, SetStateAction } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useMoralis } from 'react-moralis';
 import { motion } from 'framer-motion';
@@ -40,6 +40,7 @@ import { addReceipt } from '../../utils/state/receiptDataSlice';
 
 interface SwapPropsIF {
     importedTokens: Array<TokenIF>;
+    setImportedTokens: Dispatch<SetStateAction<{ name: string; address: string; symbol: string; decimals: number; chainId: number; logoURI: string; fromList: string; }[]>>;
     searchableTokens: Array<TokenIF>;
     provider: JsonRpcProvider;
     isOnTradeRoute?: boolean;
@@ -55,13 +56,14 @@ interface SwapPropsIF {
     };
     poolPriceDisplay: number;
     tokenAAllowance: string;
-    setRecheckTokenAApproval: React.Dispatch<React.SetStateAction<boolean>>;
+    setRecheckTokenAApproval: Dispatch<SetStateAction<boolean>>;
     chainId: string;
 }
 
 export default function Swap(props: SwapPropsIF) {
     const {
         importedTokens,
+        setImportedTokens,
         searchableTokens,
         provider,
         isOnTradeRoute,
@@ -318,6 +320,7 @@ export default function Swap(props: SwapPropsIF) {
                 <CurrencyConverter
                     tokenPair={tokenPair}
                     tokensBank={importedTokens}
+                    setImportedTokens={setImportedTokens}
                     searchableTokens={searchableTokens}
                     chainId={chainId as string}
                     isLiq={false}

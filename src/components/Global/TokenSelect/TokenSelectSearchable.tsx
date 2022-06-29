@@ -5,6 +5,7 @@ import { TokenIF } from '../../../utils/interfaces/exports';
 
 interface TokenSelectProps {
     token: TokenIF;
+    clickHandler: (tkn: TokenIF) => void;
     closeModal: () => void;
 }
 
@@ -12,16 +13,15 @@ export default function TokenSelect(props: TokenSelectProps) {
     const {
         token,
         // closeModal
+        clickHandler
     } = props;
 
     const getRandomInt = () => Math.floor(Math.random() * 18000);
 
-    const handleClick = () => console.log('clicked');
-
     const noTokenImage = <CgUnavailable size={20} />;
 
     return (
-        <div className={styles.modal_content} onClick={handleClick}>
+        <div className={styles.modal_content} onClick={() => clickHandler(token)}>
             <div className={styles.modal_tokens_info}>
                 <RiStarFill size={20} className={styles.star_filled} />
                 <RiStarLine size={20} className={styles.star_line} />

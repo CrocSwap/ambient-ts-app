@@ -1,5 +1,5 @@
 import styles from './TokenSelectContainer.module.css';
-import { SetStateAction } from 'react';
+import { Dispatch, SetStateAction } from 'react';
 import TokenSelect from '../TokenSelect/TokenSelect';
 import TokenSelectSearchable from '../TokenSelect/TokenSelectSearchable';
 import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
@@ -10,6 +10,7 @@ import { useSearch } from './useSearch';
 interface TokenSelectContainerPropsIF {
     tokenPair: TokenPairIF;
     tokensBank: Array<TokenIF>;
+    setImportedTokens: Dispatch<SetStateAction<{ name: string; address: string; symbol: string; decimals: number; chainId: number; logoURI: string; fromList: string; }[]>>;
     searchableTokens: Array<TokenIF>;
     tokenList?: Array<TokenIF>;
     chainId: string;
@@ -17,7 +18,7 @@ interface TokenSelectContainerPropsIF {
     closeModal: () => void;
     reverseTokens: () => void;
     showManageTokenListContent: boolean;
-    setShowManageTokenListContent: React.Dispatch<SetStateAction<boolean>>;
+    setShowManageTokenListContent: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function TokenSelectContainer(props: TokenSelectContainerPropsIF) {
@@ -39,7 +40,24 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
         matchingImportedTokens,
         matchingSearchableTokens,
         setSearchInput
-    ] = useSearch(tokensBank, searchableTokens);
+    ] = useSearch(tokensBank, searchableTokens, chainId);
+
+    const handleClickSearchable = (tkn:TokenIF) => {
+        console.log(tokensBank);
+        console.log(tkn);
+        // look inside tokensBank to see if clicked token is already imported
+        const importedTokenAddresses = tokensBank.map((token: TokenIF) => token.address)
+        const newImportedTokensArray = importedTokenAddresses.includes(tkn.address)
+            // TRUE: make new array with it removed
+            ? tokensBank.filter((token:TokenIF) => token.address !== tkn.address)
+            // FALSE: make new array with it added
+            : [tkn, ...tokensBank];
+        // sync local storage and local state inside App.tsx with new array
+        const userData = JSON.parse(localStorage.getItem('user') as string);
+        userData.tokens = newImportedTokensArray;
+        localStorage.setItem('user', userData);
+        setImportedTokens()
+    }
 
     const tokenListContent = (
         <>
@@ -62,6 +80,7 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
                 <TokenSelectSearchable
                     key={`tss_${idx}`}
                     token={tkn}
+                    clickHandler={handleClickSearchable}
                     closeModal={closeModal}
                 />
             ))}

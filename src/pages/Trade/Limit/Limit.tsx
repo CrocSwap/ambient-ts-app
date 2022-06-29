@@ -1,7 +1,7 @@
 // START: Import React and Dongles
 import { useMoralis } from 'react-moralis';
 import { motion } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Dispatch, SetStateAction } from 'react';
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import Button from '../../../components/Global/Button/Button';
 
@@ -40,6 +40,7 @@ import { setLimitPrice } from '../../../utils/state/tradeDataSlice';
 interface LimitPropsIF {
     importedTokens: Array<TokenIF>;
     searchableTokens: Array<TokenIF>;
+    setImportedTokens: Dispatch<SetStateAction<{ name: string; address: string; symbol: string; decimals: number; chainId: number; logoURI: string; fromList: string; }[]>>;
     provider: JsonRpcProvider;
     isOnTradeRoute?: boolean;
     gasPriceinGwei: string;
@@ -64,6 +65,7 @@ export default function Limit(props: LimitPropsIF) {
     const {
         importedTokens,
         searchableTokens,
+        setImportedTokens,
         provider,
         isSellTokenBase,
         tokenABalance,
@@ -372,6 +374,7 @@ export default function Limit(props: LimitPropsIF) {
                     poolPriceNonDisplay={poolPriceNonDisplay}
                     isSellTokenBase={isSellTokenBase}
                     tokensBank={importedTokens}
+                    setImportedTokens={setImportedTokens}
                     chainId={chainId ?? '0x2a'}
                     setLimitAllowed={setLimitAllowed}
                     tokenABalance={truncateDecimals(parseFloat(tokenABalance), 4).toString()}

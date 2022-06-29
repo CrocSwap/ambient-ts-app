@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, Dispatch, SetStateAction } from 'react';
 import { useMoralis, useNewMoralisObject } from 'react-moralis';
 import { motion } from 'framer-motion';
 import { BigNumber } from 'ethers';
@@ -67,6 +67,7 @@ import { addReceipt } from '../../../utils/state/receiptDataSlice';
 
 interface RangePropsIF {
     importedTokens: Array<TokenIF>;
+    setImportedTokens: Dispatch<SetStateAction<{ name: string; address: string; symbol: string; decimals: number; chainId: number; logoURI: string; fromList: string; }[]>>;
     searchableTokens: Array<TokenIF>;
     provider: JsonRpcProvider;
     gasPriceinGwei: string;
@@ -78,15 +79,16 @@ interface RangePropsIF {
     tokenABalance: string;
     tokenBBalance: string;
     tokenAAllowance: string;
-    setRecheckTokenAApproval: React.Dispatch<React.SetStateAction<boolean>>;
+    setRecheckTokenAApproval: Dispatch<SetStateAction<boolean>>;
     tokenBAllowance: string;
-    setRecheckTokenBApproval: React.Dispatch<React.SetStateAction<boolean>>;
+    setRecheckTokenBApproval: Dispatch<SetStateAction<boolean>>;
     chainId: string;
 }
 
 export default function Range(props: RangePropsIF) {
     const {
         importedTokens,
+        setImportedTokens,
         searchableTokens,
         provider,
         baseTokenAddress,
@@ -879,6 +881,7 @@ export default function Range(props: RangePropsIF) {
         poolPriceNonDisplay: poolPriceNonDisplay,
         chainId: chainId ?? '0x2a',
         tokensBank: importedTokens,
+        setImportedTokens: setImportedTokens,
         searchableTokens: searchableTokens,
         tokenPair: tokenPair,
         isAmbient: isAmbient,
@@ -937,7 +940,6 @@ export default function Range(props: RangePropsIF) {
     const advancedModeContent = (
         <>
             <RangeCurrencyConverter {...rangeCurrencyConverterProps} isAdvancedMode />
-
             <MinMaxPrice
                 minPricePercentage={minPriceDifferencePercentage}
                 maxPricePercentage={maxPriceDifferencePercentage}
@@ -946,7 +948,6 @@ export default function Range(props: RangePropsIF) {
                 setMinPriceInputString={setMinPriceInputString}
                 setMaxPriceInputString={setMaxPriceInputString}
                 isDenomBase={denominationsInBase}
-                // highBoundOnFocus={highBoundOnFocus}
                 highBoundOnBlur={highBoundOnBlur}
                 lowBoundOnBlur={lowBoundOnBlur}
                 rangeLowTick={rangeLowTick}

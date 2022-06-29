@@ -4,6 +4,7 @@ import { TokenIF } from '../../../utils/interfaces/exports';
 export const useSearch = (
     tokensBank:Array<TokenIF>,
     searchableTokens:Array<TokenIF>,
+    chainId: string
 ): [ TokenIF[], TokenIF[], Dispatch<SetStateAction<string>> ] => {
     const [searchInput, setSearchInput] = useState('');
     const [matchingImportedTokens, setMatchingImportedTokens] = useState<Array<TokenIF>>(tokensBank);
@@ -17,11 +18,12 @@ export const useSearch = (
 
     // function to filter an array of tokens for string matches by symbol, name, and address
     const searchTokens = (listOfTokens:Array<TokenIF>) => (
-            listOfTokens.filter((token:TokenIF) => 
-                checkMatchLowerCase(token.symbol)
-                || checkMatchLowerCase(token.name)
-                || checkMatchLowerCase(token.address)
-            )
+        listOfTokens.filter((token:TokenIF) => 
+            checkMatchLowerCase(token.symbol)
+            || checkMatchLowerCase(token.name)
+            || checkMatchLowerCase(token.address)
+        )
+        .filter((token:TokenIF) => token.chainId === parseInt(chainId))
     );
 
     useEffect(() => {
