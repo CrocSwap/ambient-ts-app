@@ -209,11 +209,9 @@ export default function Position(props: PositionProps) {
                         </button>
                     )}
                     {notDisplayAllOrOwned && (
-                        <button className={styles.option_button}>
-                            <Link to={`/trade/edit/${posHash}`} state={positionData}>
-                                Edit
-                            </Link>
-                        </button>
+                        <Link to={`/trade/edit/${posHash}`} state={positionData}>
+                            <button className={styles.option_button}>Edit</button>
+                        </Link>
                     )}
                     {notDisplayAllOrOwned && (
                         <button className={styles.option_button} onClick={openRemoveModal}>
