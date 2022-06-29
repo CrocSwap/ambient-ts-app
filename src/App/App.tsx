@@ -68,8 +68,10 @@ import {
 import PositionDetails from '../pages/Trade/Range/PositionDetails';
 import { memoizePromiseFn } from './functions/memoizePromiseFn';
 import { querySpotPrice } from './functions/querySpotPrice';
+import { fetchAddress } from './functions/fetchAddress';
 
 const cachedQuerySpotPrice = memoizePromiseFn(querySpotPrice);
+const cachedFetchAddress = memoizePromiseFn(fetchAddress);
 
 /** ***** React Function *******/
 export default function App() {
@@ -167,18 +169,6 @@ export default function App() {
         })();
     }, [window.ethereum, account]);
 
-    const fetchAddress = async (address: string) => {
-        // get ENS domain of an address
-        const options = { address: address };
-        try {
-            const ensName = (await Moralis.Web3API.resolve.resolveAddress(options)).name;
-            console.log({ ensName });
-            return ensName;
-        } catch (error) {
-            return null;
-        }
-    };
-
     const [ensName, setEnsName] = useState('');
 
     useEffect(() => {
@@ -187,7 +177,7 @@ export default function App() {
 
             if (account) {
                 try {
-                    const ensName = await fetchAddress(account);
+                    const ensName = await cachedFetchAddress(account);
                     if (ensName) setEnsName(ensName);
                     else setEnsName('');
                 } catch (error) {
@@ -483,11 +473,11 @@ export default function App() {
         const positionAccountId = position.id.substring(0, 42);
 
         position.accountId = positionAccountId;
-        // try {
-        //     position.ensName = await fetchAddress(positionAccountId);
-        // } catch (error) {
-        //     console.log(error);
-        // }
+        try {
+            position.ensName = await cachedFetchAddress(positionAccountId);
+        } catch (error) {
+            console.log(error);
+        }
         const poolPriceInTicks = Math.log(poolPriceNonDisplay) / Math.log(1.0001);
 
         position.poolPriceInTicks = poolPriceInTicks;
