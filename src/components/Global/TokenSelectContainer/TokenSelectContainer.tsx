@@ -35,21 +35,25 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
     console.log(chainId)
 
     const [matchingImportedTokens, setMatchingImportedTokens] = useState(tokensBank);
-    const [matchingSearchableTokens, setMatchingSearchableTokens] = useState<Array<TokenIF>>([]);
+    useEffect(() => {console.log({matchingImportedTokens});}, [matchingImportedTokens]);
 
-    useEffect(() => {console.log(matchingSearchableTokens);}, [matchingSearchableTokens]);
+    const [matchingSearchableTokens, setMatchingSearchableTokens] = useState<Array<TokenIF>>([]);
+    useEffect(() => {console.log({matchingSearchableTokens});}, [matchingSearchableTokens]);
 
     // change handler to run on user input in text input field
     function handleSearch(searchStr:string) {
         // gatekeeper value to only apply search if search string is three or more characters
         const validSearch = searchStr.length >= 3;
 
+        const checkMatchLowerCase = (text:string) => text.toLowerCase().includes(searchStr.toLowerCase());
+
         // function to filter an array of tokens for string matches by symbol, name, and address
         const searchTokens = (listOfTokens:Array<TokenIF>) => (
-            listOfTokens.filter((token:TokenIF) => 
-                token.symbol.toLowerCase().includes(searchStr.toLowerCase())
-                || token.name.toLowerCase().includes(searchStr.toLowerCase())
-                || token.address.toLowerCase().includes(searchStr.toLowerCase()))
+                listOfTokens.filter((token:TokenIF) => 
+                    checkMatchLowerCase(token.symbol)
+                    || checkMatchLowerCase(token.name)
+                    || checkMatchLowerCase(token.address)
+                )
         );
 
         // filter imported tokens if user input string is validated
