@@ -8,6 +8,7 @@
     
     overflow: scroll;
     padding: 0 4px;
+    
     /* margin-top: 4rem; */
   }
   .sidebar::-webkit-scrollbar {
@@ -42,6 +43,7 @@
 .bottom_elements{
     margin-top: auto;
     width: 100%;
+  
   }
   
   
@@ -188,6 +190,8 @@ line-height: 15px;
       bottom: 0;
       width: 100vw;
       height: 5rem;
+     background: var(--dark2);
+     z-index: 2;
     }
   
     .logo {
@@ -217,7 +221,7 @@ line-height: 15px;
       width: 1.938rem;
       height: 100vh;
       margin-top: 4rem;
-      
+     
     }
 
     .sidebar::-webkit-scrollbar-track {

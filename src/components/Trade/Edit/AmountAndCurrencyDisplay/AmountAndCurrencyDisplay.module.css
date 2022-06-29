@@ -52,7 +52,7 @@
   
   .swapbox_top {
     border-radius: var(--border-radius);
-    background-color: var(--dark1);
+    background-color: var(--dark2);
     display: flex;
     justify-content: space-between;
     flex-direction: row;
