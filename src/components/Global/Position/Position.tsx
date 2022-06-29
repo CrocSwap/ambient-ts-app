@@ -182,7 +182,7 @@ export default function Position(props: PositionProps) {
                 </td>
                 {position.ambient == false && (
                     <td data-column='Range' className={styles.position_range}>
-                        2100.00 3200.00
+                        {position.lowRangeDisplay} - {position.highRangeDisplay}
                     </td>
                 )}
                 {position.ambient == true && (
