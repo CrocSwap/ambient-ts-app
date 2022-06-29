@@ -4,7 +4,7 @@ import PriceInfo from './PriceInfo/PriceInfo';
 import styles from './RangeDetails.module.css';
 import TokenInfo from './TokenInfo/TokenInfo';
 
-interface IRemoveRangeProps {
+interface IRangeDetailsProps {
     isPositionInRange: boolean;
     isAmbient: boolean;
     baseTokenSymbol: string;
@@ -13,7 +13,7 @@ interface IRemoveRangeProps {
     highRangeDisplay: string;
 }
 
-export default function RangeDetails(props: IRemoveRangeProps) {
+export default function RangeDetails(props: IRangeDetailsProps) {
     return (
         <div className={styles.range_details_container}>
             <RemoveRangeHeader
