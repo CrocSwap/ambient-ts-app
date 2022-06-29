@@ -21,12 +21,12 @@ import {
     contractAddresses,
     getTokenBalanceDisplay,
     sortBaseQuoteTokens,
-    POOL_PRIMARY,
+    // POOL_PRIMARY,
     // getSpotPrice,
     // getSpotPriceDisplay,
     getTokenAllowance,
-    QUERY_ABI,
-    decodeCrocPrice,
+    // QUERY_ABI,
+    // decodeCrocPrice,
     toDisplayPrice,
 } from '@crocswap-libs/sdk';
 
@@ -66,47 +66,8 @@ import {
     setDenomInBase,
 } from '../utils/state/tradeDataSlice';
 import PositionDetails from '../pages/Trade/Range/PositionDetails';
-
-const memoizePromiseFn = (fn: any) => {
-    const cache = new Map();
-
-    return (...args: any[]) => {
-        const key = JSON.stringify(args);
-
-        if (cache.has(key)) {
-            return cache.get(key);
-        }
-
-        cache.set(
-            key,
-            fn(...args).catch((error: any) => {
-                // Delete cache entry if api call fails
-                cache.delete(key);
-                return Promise.reject(error);
-            }),
-        );
-
-        return cache.get(key);
-    };
-};
-
-const querySpotPrice = async (baseTokenAddress: string, quoteTokenAddress: string) => {
-    const options = {
-        chain: 'kovan' as '0x2a' | 'kovan',
-        address: contractAddresses.QUERY_ADDR,
-        // eslint-disable-next-line camelcase
-        function_name: 'queryPrice',
-        abi: QUERY_ABI,
-        params: {
-            base: baseTokenAddress,
-            quote: quoteTokenAddress,
-            poolIdx: POOL_PRIMARY,
-        },
-    };
-    const crocPrice = await Moralis.Web3API.native.runContractFunction(options);
-    const spotPrice = decodeCrocPrice(ethers.BigNumber.from(crocPrice));
-    return spotPrice;
-};
+import { memoizePromiseFn } from './functions/memoizePromiseFn';
+import { querySpotPrice } from './functions/querySpotPrice';
 
 const cachedQuerySpotPrice = memoizePromiseFn(querySpotPrice);
 
@@ -324,18 +285,18 @@ export default function App() {
                     const updatedPosition = await getPositionData(position);
                     updatedPositions.push(updatedPosition);
                 }
-                poolData.positions = updatedPositions;
-                if (JSON.stringify(graphData.positionsByPool) !== JSON.stringify(poolData)) {
-                    dispatch(setPositionsByPool(poolData));
-                }
-                // Promise.all(poolPositions.map(getPositionData)).then((updatedPositions) => {
-                //     poolData.positions = updatedPositions;
-                //     // const positionArray = updatedPositions as positionsByPool
-                //     // console.log(pool.positions);
-                //     if (JSON.stringify(graphData.positionsByPool) !== JSON.stringify(poolData)) {
-                //         dispatch(setPositionsByPool(poolData));
-                //     }
-                // });
+                // poolData.positions = updatedPositions;
+                // if (JSON.stringify(graphData.positionsByPool) !== JSON.stringify(poolData)) {
+                //     dispatch(setPositionsByPool(poolData));
+                // }
+                Promise.all(poolPositions.map(getPositionData)).then((updatedPositions) => {
+                    poolData.positions = updatedPositions;
+                    // const positionArray = updatedPositions as positionsByPool
+                    // console.log(pool.positions);
+                    if (JSON.stringify(graphData.positionsByPool) !== JSON.stringify(poolData)) {
+                        dispatch(setPositionsByPool(poolData));
+                    }
+                });
             });
         }
     }, [tokenPairStringified]);
@@ -349,7 +310,11 @@ export default function App() {
     useEffect(() => {
         if (baseTokenAddress && quoteTokenAddress) {
             (async () => {
-                const spotPrice = await cachedQuerySpotPrice(baseTokenAddress, quoteTokenAddress);
+                const spotPrice = await cachedQuerySpotPrice(
+                    baseTokenAddress,
+                    quoteTokenAddress,
+                    lastBlockNumber,
+                );
                 if (poolPriceNonDisplay !== spotPrice) {
                     console.log({ spotPrice });
                     setPoolPriceNonDisplay(spotPrice);
@@ -509,7 +474,11 @@ export default function App() {
         //     POOL_PRIMARY,
         //     provider,
         // );
-        const poolPriceNonDisplay = await cachedQuerySpotPrice(baseTokenAddress, quoteTokenAddress);
+        const poolPriceNonDisplay = await cachedQuerySpotPrice(
+            baseTokenAddress,
+            quoteTokenAddress,
+            lastBlockNumber,
+        );
 
         const positionAccountId = position.id.substring(0, 42);
 
@@ -552,7 +521,7 @@ export default function App() {
 
     useEffect(() => {
         if (isAuthenticated && account) {
-            const endpoint = 'https://api.thegraph.com/subgraphs/name/a0910841082130913312/croc22';
+            const endpoint = 'https://api.thegraph.com/subgraphs/name/a0910841082130913312/croc43';
             const queryForPositionsByUser = gql`
                 query ($userAddress: Bytes) {
                     user(id: $userAddress) {
