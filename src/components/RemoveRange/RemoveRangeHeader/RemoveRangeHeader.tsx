@@ -1,7 +1,14 @@
 import RangeStatus from '../../Global/RangeStatus/RangeStatus';
 import styles from './RemoveRangeHeader.module.css';
 
-export default function RemoveRangeHeader() {
+interface IRemoveRangeHeaderProps {
+    isPositionInRange: boolean;
+    isAmbient: boolean;
+    baseTokenSymbol: string;
+    quoteTokenSymbol: string;
+}
+
+export default function RemoveRangeHeader(props: IRemoveRangeHeaderProps) {
     return (
         <div className={styles.container}>
             <div className={styles.token_info}>
@@ -10,9 +17,11 @@ export default function RemoveRangeHeader() {
                     alt=''
                 />
                 <img src='https://cryptologos.cc/logos/usd-coin-usdc-logo.png' alt='' />
-                <span>ETH / USDC</span>
+                <span>
+                    {props.baseTokenSymbol} / {props.quoteTokenSymbol}
+                </span>
             </div>
-            <RangeStatus isInRange isAmbient />
+            <RangeStatus isInRange={props.isPositionInRange} isAmbient={props.isAmbient} />
         </div>
     );
 }
