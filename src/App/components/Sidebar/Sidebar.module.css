@@ -104,15 +104,16 @@ line-height: 15px;
   
 
   .logo {
-    font-weight: bold;
-    text-transform: uppercase;
+ 
     margin-bottom: 1rem;
     text-align: center;
     color: var(--text-secondary);
     background: var(--bg-secondary);
     font-size: 1.5rem;
-    letter-spacing: 0.3ch;
     width: 100%;
+
+    display: flex;
+    justify-content: center;
   }
   
   .logo svg {
@@ -120,21 +121,21 @@ line-height: 15px;
     transition: var(--animation-speed);
   }
   
-  .logo_text
-  {
-    display: inline;
-    position: absolute;
-    left: -999px;
-    transition: var(--animation-speed);
-  }
+
   
   .sidebar:hover .logo svg {
-    transform: scale(1.2);
-    transition: scale var(--animation-speed) ease-in-out;
+    transform: scale(1.09);
+    transition: all var(--animation-speed) ease-in-out;
   }
 
   .sidebar_active .logo svg{
     transform: rotate(-180deg);
+
+  }
+
+  .sidebar_active .logo{
+    display: flex;
+    justify-content: flex-end;
   }
 
   /* SEARCH CONTAINER */
@@ -273,6 +274,8 @@ line-height: 15px;
       left: 0px;
     }
 
+ 
+
 
 
 
@@ -290,9 +293,9 @@ line-height: 15px;
         padding: 0 1rem;
       } */
 
-      .sidebar:hover .search__icon {
-      transform: scale(1.1);
-      transition: scale var(--animation-speed) ease-in-out
+      .search_container:hover .search__icon {
+      transform: scale(1.03);
+      transition: all var(--animation-speed) ease-in-out
       }
   
     /* .sidebar:hover .link_text {

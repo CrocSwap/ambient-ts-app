@@ -72,8 +72,8 @@ export default function Sidebar(props: SidebarProps): React.ReactElement<Sidebar
                         {navItems2.map((item, idx) => (
                             <li key={idx} className={styles.sidebar_item} id='themeButton'>
                                 <div className={styles.sidebar_link}>
-                                    <MdPlayArrow size={12} color='#ffffff' />
-                                    <img src={item.icon} alt={item.name} />
+                                    {showSidebar && <MdPlayArrow size={12} color='#ffffff' />}
+                                    <img src={item.icon} alt={item.name} width='20px' />
 
                                     <span className={styles.link_text}>{item.name}</span>
                                 </div>
