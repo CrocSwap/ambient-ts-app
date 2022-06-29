@@ -81,6 +81,10 @@ export default function App() {
     const [importedTokens, setImportedTokens] = useState(defaultTokens);
     const [searchableTokens, setSearchableTokens] = useState(defaultTokens);
 
+    useEffect(() => {
+        console.log(searchableTokens);
+    }, [searchableTokens]);
+
     // prevent multiple fetch requests to external URIs for token lists
     const [needTokenLists, setNeedTokenLists] = useState(true);
 
@@ -100,11 +104,24 @@ export default function App() {
 
     useEffect(() => {
         const { activeTokenLists } = JSON.parse(localStorage.getItem('user') as string);
-        const allTokenLists = JSON.parse(localStorage.getItem('allTokenLists') as string)
-            .filter((tokenList:TokenListIF) => activeTokenLists.includes(tokenList.uri))
-            .map((tokenList:TokenListIF) => tokenList.tokens).flat();
-        console.log(allTokenLists);
+        setSearchableTokens(
+            JSON.parse(localStorage.getItem('allTokenLists') as string)
+                .filter((tokenList:TokenListIF) => activeTokenLists.includes(tokenList.uri))
+                .map((tokenList:TokenListIF) => tokenList.tokens).flat()
+        );
+        // const allTokenLists = JSON.parse(localStorage.getItem('allTokenLists') as string)
+        //     .filter((tokenList:TokenListIF) => activeTokenLists.includes(tokenList.uri))
+        //     .map((tokenList:TokenListIF) => tokenList.tokens).flat();
+        // console.log(allTokenLists);
     }, []);
+
+    // function getTokensFromLists(tokenListURIs:Array<TokenIF>) {
+    //     const tokensFromLists = JSON.parse(localStorage.getItem('allTokenLists') as string)
+    //         // .filter((tokenList:TokenListIF) => tokenListURIs.includes(tokenList.uri))
+    //         // .map((tokenList:TokenListIF) => tokenList.tokens).flat();
+    //     console.log(tokensFromLists);
+    //     return tokensFromLists;
+    // }
 
     function getImportedTokens() {
         // see if there's a user object in local storage
