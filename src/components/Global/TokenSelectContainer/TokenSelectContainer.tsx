@@ -1,5 +1,5 @@
 import styles from './TokenSelectContainer.module.css';
-import { useState, SetStateAction } from 'react';
+import { SetStateAction } from 'react';
 import TokenSelect from '../TokenSelect/TokenSelect';
 import TokenSelectSearchable from '../TokenSelect/TokenSelectSearchable';
 import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
@@ -32,7 +32,8 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
         showManageTokenListContent,
         setShowManageTokenListContent,
     } = props;
-    console.log(chainId)
+
+    console.log(chainId);
 
     const [
         matchingImportedTokens,
@@ -80,19 +81,13 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
         </>
     );
 
-    const manageTokenListContainer = (
-        <>
-            <TokenList />
-        </>
-    );
-
     const manageTokenListButton = (
         <Button title='Manage Token List' action={() => setShowManageTokenListContent(true)} />
     );
 
     return (
         <div className={styles.token_select_container}>
-            {showManageTokenListContent ? manageTokenListContainer : tokenListContainer}
+            {showManageTokenListContent ? <TokenList /> : tokenListContainer}
             {showManageTokenListContent ? null : manageTokenListButton}
         </div>
     );

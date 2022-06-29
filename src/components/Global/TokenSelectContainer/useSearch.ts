@@ -27,13 +27,10 @@ export const useSearch = (
     useEffect(() => {
         // filter imported tokens if user input string is validated
         const matchingImported = validSearch ? searchTokens(tokensBank) : tokensBank;
-        
         // update local state with array of imported tokens to be rendered in DOM
         setMatchingImportedTokens(matchingImported);
-
         // filter searchable tokens if user input string is validated
         const matchingSearchable = validSearch ? searchTokens(searchableTokens) : [];
-
         // update local state with array of searchable tokens to be rendered in DOM
         setMatchingSearchableTokens(matchingSearchable);
     }, [searchInput, tokensBank, searchableTokens]);
