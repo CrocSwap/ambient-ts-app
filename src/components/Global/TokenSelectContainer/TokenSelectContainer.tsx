@@ -1,11 +1,11 @@
 import styles from './TokenSelectContainer.module.css';
 import { useState, SetStateAction, useEffect } from 'react';
 import TokenSelect from '../TokenSelect/TokenSelect';
-import TokenSelectSearchable from '../TokenSelect/TokenSelectSearchable';
+// import TokenSelectSearchable from '../TokenSelect/TokenSelectSearchable';
 import { TokenIF, TokenPairIF, TokenListIF } from '../../../utils/interfaces/exports';
 import Button from '../../Global/Button/Button';
 import TokenList from '../../Global/TokenList/TokenList';
-import searchTokens from './searchTokens';
+// import searchTokens from './searchTokens';
 
 interface TokenSelectContainerPropsIF {
     tokenPair: TokenPairIF;
@@ -36,15 +36,11 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
 
     const [searchTerm] = useState('');
 
-    const searchInput = (
-        <div className={styles.search_input}>
-            <input
-                type='text'
-                placeholder='Search name or paste address'
-                onChange={(event) => searchTokens(event.target.value)}
-            />
-        </div>
-    );
+    const [matchingSearchableTokens, setMatchingSearchableTokens] = useState<Array<TokenIF>>([]);
+
+    useEffect(() => {
+        console.log(matchingSearchableTokens);
+    }, [matchingSearchableTokens]);
 
     const tokenListContent = (
         <>
@@ -71,19 +67,33 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
                         />
                     );
                 })}
-                {searchableTokens.map((tkn:TokenIF, idx:number) => (
+                {/* {searchableTokens.map((tkn:TokenIF, idx:number) => (
                     <TokenSelectSearchable
                         key={`tss_${idx}`}
                         token={tkn}
                         closeModal={closeModal}
                     />
-                ))}
+                ))} */}
         </>
     );
 
+    function searchTokens(searchStr:string) {
+        console.log('trigger func searchTokens() for: ' + searchStr);
+        const matchingTokens = searchableTokens.filter((token:TokenIF) => 
+                token.symbol.toLowerCase().includes(searchStr.toLowerCase())
+        );
+        setMatchingSearchableTokens(matchingTokens);
+    }
+
     const tokenListContainer = (
         <>
-            {searchInput}
+            <div className={styles.search_input}>
+                <input
+                    type='text'
+                    placeholder='Search name or paste address'
+                    onChange={(event) => searchTokens(event.target.value)}
+                />
+            </div>
             {tokenListContent}
         </>
     );
