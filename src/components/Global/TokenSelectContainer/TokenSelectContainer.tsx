@@ -41,17 +41,17 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
     useEffect(() => {console.log(matchingSearchableTokens);}, [matchingSearchableTokens]);
 
     function searchTokens(searchStr:string) {
-        const filteredTokens = () => (
+        const filteredSearchableTokens = () => (
             searchableTokens.filter((token:TokenIF) => 
                 token.symbol.toLowerCase().includes(searchStr.toLowerCase())
                 || token.name.toLowerCase().includes(searchStr.toLowerCase())
                 || token.address.toLowerCase().includes(searchStr.toLowerCase())
             )
         );
-        const matchingTokens = searchStr.length >= 3
-            ? filteredTokens()
+        const matchingSearchableTokens = searchStr.length >= 3
+            ? filteredSearchableTokens()
             : [];
-        setMatchingSearchableTokens(matchingTokens);
+        setMatchingSearchableTokens(matchingSearchableTokens);
     }
 
     const tokenListContent = (
