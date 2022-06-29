@@ -34,23 +34,11 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
     } = props;
     console.log(chainId)
 
-    // const [matchingImportedTokens, setMatchingImportedTokens] = useState(tokensBank);
-    // useEffect(() => {console.log({matchingImportedTokens});}, [matchingImportedTokens]);
-
-    // const [matchingSearchableTokens, setMatchingSearchableTokens] = useState<Array<TokenIF>>([]);
-    // useEffect(() => {console.log({matchingSearchableTokens});}, [matchingSearchableTokens]);
-
-    // function searchHandler(userInput:string) {
-    //     handleSearch(
-    //         userInput,
-    //         tokensBank,
-    //         searchableTokens,
-    //         setMatchingImportedTokens,
-    //         setMatchingSearchableTokens
-    //     );
-    // }
-
-    const [matchingImportedTokens, matchingSearchableTokens, setSearchInput] = useSearch(tokensBank, searchableTokens);
+    const [
+        matchingImportedTokens,
+        matchingSearchableTokens,
+        setSearchInput
+    ] = useSearch(tokensBank, searchableTokens);
 
     const tokenListContent = (
         <>
