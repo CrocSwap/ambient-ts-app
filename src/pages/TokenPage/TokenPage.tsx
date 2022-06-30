@@ -51,16 +51,20 @@ export default function TokenPage() {
                     <label className={styles.token_price}>
                         {formatDollarAmount(tokenData?.priceUSD)}
                     </label>
-                    (
-                    <label
-                        className={
-                            tokenData!.priceUSDChange > 0
-                                ? styles.token_priceChange
-                                : styles.low_token_priceChange
-                        }
-                    >
-                        {Math.abs(tokenData!.priceUSDChange).toFixed(2)}%
-                    </label>
+                    ({' '}
+                    {tokenData ? (
+                        <label
+                            className={
+                                tokenData.priceUSDChange > 0
+                                    ? styles.token_priceChange
+                                    : styles.low_token_priceChange
+                            }
+                        >
+                            {Math.abs(tokenData.priceUSDChange).toFixed(2)}%
+                        </label>
+                    ) : (
+                        <></>
+                    )}
                     )
                 </div>
             </div>
