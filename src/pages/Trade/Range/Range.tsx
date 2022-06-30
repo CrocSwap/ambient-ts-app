@@ -399,12 +399,12 @@ export default function Range(props: RangePropsIF) {
 
             const highGeometricDifferencePercentage =
                 Math.abs(highTickDiff) < 200
-                    ? truncateDecimals(highTickDiff / 100, 2)
-                    : truncateDecimals(highTickDiff / 100, 0);
+                    ? parseFloat(truncateDecimals(highTickDiff / 100, 2))
+                    : parseFloat(truncateDecimals(highTickDiff / 100, 0));
             const lowGeometricDifferencePercentage =
                 Math.abs(lowTickDiff) < 200
-                    ? truncateDecimals(lowTickDiff / 100, 2)
-                    : truncateDecimals(lowTickDiff / 100, 0);
+                    ? parseFloat(truncateDecimals(lowTickDiff / 100, 2))
+                    : parseFloat(truncateDecimals(lowTickDiff / 100, 0));
             denominationsInBase
                 ? setMaxPriceDifferencePercentage(-lowGeometricDifferencePercentage)
                 : setMaxPriceDifferencePercentage(highGeometricDifferencePercentage);
@@ -473,13 +473,17 @@ export default function Range(props: RangePropsIF) {
                     ? setRangeLowTick(pinnedDisplayPrices.pinnedLowTick)
                     : setRangeHighTick(pinnedDisplayPrices.pinnedHighTick);
 
-                const highGeometricDifferencePercentage = truncateDecimals(
-                    (pinnedDisplayPrices.pinnedHighTick - currentPoolPriceTick) / 100,
-                    0,
+                const highGeometricDifferencePercentage = parseFloat(
+                    truncateDecimals(
+                        (pinnedDisplayPrices.pinnedHighTick - currentPoolPriceTick) / 100,
+                        0,
+                    ),
                 );
-                const lowGeometricDifferencePercentage = truncateDecimals(
-                    (pinnedDisplayPrices.pinnedLowTick - currentPoolPriceTick) / 100,
-                    0,
+                const lowGeometricDifferencePercentage = parseFloat(
+                    truncateDecimals(
+                        (pinnedDisplayPrices.pinnedLowTick - currentPoolPriceTick) / 100,
+                        0,
+                    ),
                 );
                 denominationsInBase
                     ? setMinPriceDifferencePercentage(-highGeometricDifferencePercentage)
@@ -529,13 +533,17 @@ export default function Range(props: RangePropsIF) {
                 setRangeLowBoundNonDisplayPrice(pinnedDisplayPrices.pinnedMinPriceNonDisplay);
                 setRangeHighBoundNonDisplayPrice(pinnedDisplayPrices.pinnedMaxPriceNonDisplay);
 
-                const highGeometricDifferencePercentage = truncateDecimals(
-                    (pinnedDisplayPrices.pinnedHighTick - currentPoolPriceTick) / 100,
-                    0,
+                const highGeometricDifferencePercentage = parseFloat(
+                    truncateDecimals(
+                        (pinnedDisplayPrices.pinnedHighTick - currentPoolPriceTick) / 100,
+                        0,
+                    ),
                 );
-                const lowGeometricDifferencePercentage = truncateDecimals(
-                    (pinnedDisplayPrices.pinnedLowTick - currentPoolPriceTick) / 100,
-                    0,
+                const lowGeometricDifferencePercentage = parseFloat(
+                    truncateDecimals(
+                        (pinnedDisplayPrices.pinnedLowTick - currentPoolPriceTick) / 100,
+                        0,
+                    ),
                 );
                 denominationsInBase
                     ? setMaxPriceDifferencePercentage(-lowGeometricDifferencePercentage)
@@ -578,7 +586,7 @@ export default function Range(props: RangePropsIF) {
     const apyPercentage: number = 100 - rangeWidthPercentage + 10;
 
     const advancedDaysInRangeEstimation =
-        minimumSpan < 0 ? 0 : truncateDecimals(minimumSpan / 100, 0);
+        minimumSpan < 0 ? 0 : parseFloat(truncateDecimals(minimumSpan / 100, 0));
 
     const daysInRangeEstimation: number = isAmbient
         ? 365

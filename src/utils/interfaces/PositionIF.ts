@@ -7,6 +7,7 @@ export interface PositionIF {
     highRangeDisplay: string;
     id: string;
     accountId: string;
+    ensName: string;
     lowRangeDisplay: string;
     pool: {
         base: string;

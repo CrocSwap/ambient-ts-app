@@ -70,9 +70,9 @@ body{
  
 
 footer {
-  position: relative;
+  /* position: relative; */
   position: absolute;
-  position: sticky;
+  /* position: sticky; */
   right: 0;
   bottom: 0;
 }
@@ -83,7 +83,7 @@ footer {
 .main-layout{
   transition: all var(--animation-speed) ease-in-out;  /* background: var(--dark3); */
   /* min-height: calc(100vh - 5rem); */
-  margin-left: 5rem;
+  /* margin-left: 5rem; */
   /* padding: 1rem; */
 
 
@@ -101,7 +101,8 @@ footer {
 }
 .swap-body{
   background: #171D27;
-   min-height: calc(100vh - 8rem); 
+   height: calc(100vh - 3.5rem); 
+   /* height: 100vh; */
 
    display: flex;
    justify-content: center;
@@ -109,7 +110,8 @@ footer {
  
 }
 .content-container {
-  min-height: calc(100vh - 4rem);
+  height: calc(100vh - 4rem); 
+
 
 }
 
