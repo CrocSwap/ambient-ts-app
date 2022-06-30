@@ -59,6 +59,8 @@ interface LimitPropsIF {
     tokenAAllowance: string;
     setRecheckTokenAApproval: React.Dispatch<React.SetStateAction<boolean>>;
     chainId: string,
+    activeTokenListsChanged: boolean,
+    indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function Limit(props: LimitPropsIF) {
@@ -77,7 +79,9 @@ export default function Limit(props: LimitPropsIF) {
         poolPriceNonDisplay,
         tokenAAllowance,
         setRecheckTokenAApproval,
-        chainId
+        chainId,
+        activeTokenListsChanged,
+        indicateActiveTokenListsChanged
     } = props;
     const { tradeData } = useTradeData();
     const dispatch = useAppDispatch();
@@ -392,6 +396,8 @@ export default function Limit(props: LimitPropsIF) {
                     setLimitRate={setLimitRate}
                     insideTickDisplayPrice={insideTickDisplayPrice}
                     isDenominationInBase={tradeData.isDenomBase}
+                    activeTokenListsChanged={activeTokenListsChanged}
+                    indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
                 />
                 <LimitExtraInfo
                     tokenPair={tokenPair}

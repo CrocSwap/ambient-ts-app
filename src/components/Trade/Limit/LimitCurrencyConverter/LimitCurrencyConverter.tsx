@@ -46,6 +46,8 @@ interface LimitCurrencyConverterProps {
     setLimitRate: Dispatch<SetStateAction<string>>;
     limitRate: string;
     isDenominationInBase: boolean;
+    activeTokenListsChanged: boolean;
+    indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
 }
 
 // central react functional component
@@ -72,6 +74,8 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
         setLimitRate,
         limitRate,
         isDenominationInBase,
+        activeTokenListsChanged,
+        indicateActiveTokenListsChanged
     } = props;
 
     const dispatch = useAppDispatch();
@@ -288,6 +292,8 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
                 isWithdrawToWalletChecked={isWithdrawToWalletChecked}
                 setIsWithdrawToWalletChecked={setIsWithdrawToWalletChecked}
+                activeTokenListsChanged={activeTokenListsChanged}
+                indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
             />
             <div className={styles.arrow_container} onClick={handleArrowClick}>
                 <span className={styles.arrow} />
@@ -308,6 +314,8 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
                 isWithdrawToWalletChecked={isWithdrawToWalletChecked}
                 setIsWithdrawToWalletChecked={setIsWithdrawToWalletChecked}
+                activeTokenListsChanged={activeTokenListsChanged}
+                indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
             />
             <LimitRate
                 tokenPair={tokenPair}
