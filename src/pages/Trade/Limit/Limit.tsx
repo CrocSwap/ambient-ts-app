@@ -1,7 +1,7 @@
 // START: Import React and Dongles
 import { useMoralis } from 'react-moralis';
 import { motion } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Dispatch, SetStateAction } from 'react';
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import Button from '../../../components/Global/Button/Button';
 
@@ -39,6 +39,8 @@ import { setLimitPrice } from '../../../utils/state/tradeDataSlice';
 
 interface LimitPropsIF {
     importedTokens: Array<TokenIF>;
+    searchableTokens: Array<TokenIF>;
+    setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     provider: JsonRpcProvider;
     isOnTradeRoute?: boolean;
     gasPriceinGwei: string;
@@ -56,11 +58,14 @@ interface LimitPropsIF {
     poolPriceNonDisplay: number;
     tokenAAllowance: string;
     setRecheckTokenAApproval: React.Dispatch<React.SetStateAction<boolean>>;
+    chainId: string,
 }
 
 export default function Limit(props: LimitPropsIF) {
     const {
         importedTokens,
+        searchableTokens,
+        setImportedTokens,
         provider,
         isSellTokenBase,
         tokenABalance,
@@ -72,10 +77,11 @@ export default function Limit(props: LimitPropsIF) {
         poolPriceNonDisplay,
         tokenAAllowance,
         setRecheckTokenAApproval,
+        chainId
     } = props;
     const { tradeData } = useTradeData();
     const dispatch = useAppDispatch();
-    const { chainId, enableWeb3, isWeb3Enabled, authenticate, isAuthenticated } = useMoralis();
+    const { enableWeb3, isWeb3Enabled, authenticate, isAuthenticated } = useMoralis();
     const [isModalOpen, openModal, closeModal] = useModal();
     const [limitAllowed, setLimitAllowed] = useState<boolean>(false);
 
@@ -364,10 +370,11 @@ export default function Limit(props: LimitPropsIF) {
                 <DividerDark />
                 <LimitCurrencyConverter
                     tokenPair={tokenPair}
-                    // poolPriceDisplay={poolPriceDisplay}
+                    searchableTokens={searchableTokens}
                     poolPriceNonDisplay={poolPriceNonDisplay}
                     isSellTokenBase={isSellTokenBase}
                     tokensBank={importedTokens}
+                    setImportedTokens={setImportedTokens}
                     chainId={chainId ?? '0x2a'}
                     setLimitAllowed={setLimitAllowed}
                     tokenABalance={truncateDecimals(parseFloat(tokenABalance), 4).toString()}

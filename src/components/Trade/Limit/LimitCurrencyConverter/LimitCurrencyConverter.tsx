@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { ChangeEvent, SetStateAction, useEffect, useState } from 'react';
+import { ChangeEvent, Dispatch, SetStateAction, useEffect, useState } from 'react';
 
 import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 
@@ -24,24 +24,26 @@ import { TokenIF, TokenPairIF } from '../../../../utils/interfaces/exports';
 interface LimitCurrencyConverterProps {
     tokenPair: TokenPairIF;
     tokensBank: Array<TokenIF>;
+    setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
+    searchableTokens: Array<TokenIF>;
     chainId: string;
     poolPriceNonDisplay: number;
     insideTickDisplayPrice: number;
-    setIsSellTokenPrimary?: React.Dispatch<SetStateAction<boolean>>;
-    setLimitAllowed: React.Dispatch<React.SetStateAction<boolean>>;
+    setIsSellTokenPrimary?: Dispatch<SetStateAction<boolean>>;
+    setLimitAllowed: Dispatch<SetStateAction<boolean>>;
     isSellTokenBase: boolean;
     tokenABalance: string;
     tokenBBalance: string;
     tokenAInputQty: string;
     tokenBInputQty: string;
-    setTokenAInputQty: React.Dispatch<React.SetStateAction<string>>;
-    setTokenBInputQty: React.Dispatch<React.SetStateAction<string>>;
-    setLimitButtonErrorMessage: React.Dispatch<React.SetStateAction<string>>;
+    setTokenAInputQty: Dispatch<SetStateAction<string>>;
+    setTokenBInputQty: Dispatch<SetStateAction<string>>;
+    setLimitButtonErrorMessage: Dispatch<SetStateAction<string>>;
     isWithdrawFromDexChecked: boolean;
-    setIsWithdrawFromDexChecked: React.Dispatch<SetStateAction<boolean>>;
+    setIsWithdrawFromDexChecked: Dispatch<SetStateAction<boolean>>;
     isWithdrawToWalletChecked: boolean;
-    setIsWithdrawToWalletChecked: React.Dispatch<SetStateAction<boolean>>;
-    setLimitRate: React.Dispatch<React.SetStateAction<string>>;
+    setIsWithdrawToWalletChecked: Dispatch<SetStateAction<boolean>>;
+    setLimitRate: Dispatch<SetStateAction<string>>;
     limitRate: string;
     isDenominationInBase: boolean;
 }
@@ -51,6 +53,8 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
     const {
         tokenPair,
         tokensBank,
+        setImportedTokens,
+        searchableTokens,
         chainId,
         poolPriceNonDisplay,
         insideTickDisplayPrice,
@@ -270,6 +274,8 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
             <LimitCurrencySelector
                 tokenPair={tokenPair}
                 tokensBank={tokensBank}
+                setImportedTokens={setImportedTokens}
+                searchableTokens={searchableTokens}
                 chainId={chainId}
                 fieldId='sell'
                 sellToken
@@ -289,6 +295,8 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
             <LimitCurrencySelector
                 tokenPair={tokenPair}
                 tokensBank={tokensBank}
+                setImportedTokens={setImportedTokens}
+                searchableTokens={searchableTokens}
                 chainId={chainId}
                 fieldId='buy'
                 direction='To: '

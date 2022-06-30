@@ -59,7 +59,7 @@ import { validateChain } from './validateChain';
 import { IParsedPosition, parsePositionArray } from './parsePositions';
 import { defaultTokens } from '../utils/data/defaultTokens';
 import initializeUserLocalStorage from './functions/initializeUserLocalStorage';
-import { TokenIF } from '../utils/interfaces/exports';
+import { TokenIF, TokenListIF } from '../utils/interfaces/exports';
 import { fetchTokenLists } from './functions/fetchTokenLists';
 import {
     resetTradeData,
@@ -83,7 +83,10 @@ export default function App() {
 
     const dispatch = useAppDispatch();
 
-    const [importedTokens, setImportedTokens] = useState(defaultTokens);
+    // tokens specifically imported by the end user
+    const [importedTokens, setImportedTokens] = useState<TokenIF[]>(defaultTokens);
+    // all tokens from active token lists
+    const [searchableTokens, setSearchableTokens] = useState<TokenIF[]>(defaultTokens);
 
     // prevent multiple fetch requests to external URIs for token lists
     const [needTokenLists, setNeedTokenLists] = useState(true);
@@ -99,21 +102,48 @@ export default function App() {
 
     useEffect(() => {
         initializeUserLocalStorage();
+        getImportedTokens();
+    }, [tokenListsReceived]);
+
+    // update local state with searchable tokens once after initial load of app
+    useEffect(() => {
+        // pull activeTokenLists from local storage and parse
+        // do we need to add gatekeeping in case there is not a valid value?
+        const { activeTokenLists } = JSON.parse(localStorage.getItem('user') as string);
+        // update local state with array of all tokens from searchable lists
+        setSearchableTokens(getTokensFromLists(activeTokenLists));
+        // TODO:  this hook runs once after the initial load of the app, we may need to add
+        // TODO:  additional triggers for DOM interactions
+    }, [tokenListsReceived]);
+
+    function getTokensFromLists(tokenListURIs:Array<string>) {
+        // retrieve and parse all token lists held in local storage
+        const tokensFromLists = localStorage.allTokenLists
+            ? JSON.parse(localStorage.getItem('allTokenLists') as string)
+                // remove all lists with URIs not included in the URIs array passed as argument
+                .filter((tokenList:TokenListIF) => tokenListURIs.includes(tokenList.uri ?? ''))
+                // extract array of tokens from active lists and flatten into single array
+                .map((tokenList:TokenListIF) => tokenList.tokens).flat()
+            : defaultTokens;
+        // return array of all tokens from lists as specified by token list URI
+        return tokensFromLists;
+    }
+
+    // function to return array of all tokens on lists as specified by URI
+    function getImportedTokens() {
         // see if there's a user object in local storage
         if (localStorage.user) {
             // if user object exists, pull it
             const user = JSON.parse(localStorage.getItem('user') as string);
             // see if user object has a list of imported tokens
-            if (user.importedTokens) {
+            if (user.tokens) {
                 // if imported tokens are listed, hold in local state
                 setImportedTokens(
-                    user.importedTokens.filter(
-                        (tkn: TokenIF) => tkn.chainId === parseInt(chainId ?? '0x2a'),
-                    ),
+                    user.tokens.filter((tkn: TokenIF) => tkn.chainId === parseInt(chainId ?? '0x2a'))
                 );
             }
         }
-    }, [tokenListsReceived]);
+    }
 
     const [showSidebar, setShowSidebar] = useState<boolean>(false);
     const location = useLocation();
@@ -782,6 +812,8 @@ export default function App() {
     // props for <Swap/> React element
     const swapProps = {
         importedTokens: importedTokens,
+        setImportedTokens: setImportedTokens,
+        searchableTokens: searchableTokens,
         provider: provider as JsonRpcProvider,
         gasPriceinGwei: gasPriceinGwei,
         nativeBalance: nativeBalance,
@@ -793,12 +825,14 @@ export default function App() {
         poolPriceDisplay: poolPriceDisplay,
         tokenAAllowance: tokenAAllowance,
         setRecheckTokenAApproval: setRecheckTokenAApproval,
-        // tokenBAllowance: tokenBAllowance,
+        chainId: chainId ?? '0x2a'
     };
 
     // props for <Swap/> React element on trade route
     const swapPropsTrade = {
         importedTokens: importedTokens,
+        setImportedTokens: setImportedTokens,
+        searchableTokens: searchableTokens,
         provider: provider as JsonRpcProvider,
         isOnTradeRoute: true,
         gasPriceinGwei: gasPriceinGwei,
@@ -812,11 +846,14 @@ export default function App() {
         setRecheckTokenAApproval: setRecheckTokenAApproval,
         tokenAAllowance: tokenAAllowance,
         // tokenBAllowance: tokenBAllowance,
+        chainId: chainId ?? '0x2a'
     };
 
     // props for <Limit/> React element on trade route
     const limitPropsTrade = {
         importedTokens: importedTokens,
+        setImportedTokens: setImportedTokens,
+        searchableTokens: searchableTokens,
         provider: provider as JsonRpcProvider,
         isOnTradeRoute: true,
         gasPriceinGwei: gasPriceinGwei,
@@ -831,11 +868,14 @@ export default function App() {
         poolPriceNonDisplay: poolPriceNonDisplay,
         setRecheckTokenAApproval: setRecheckTokenAApproval,
         tokenAAllowance: tokenAAllowance,
+        chainId: chainId ?? '0x2a'
     };
 
     // props for <Range/> React element
     const rangeProps = {
         importedTokens: importedTokens,
+        setImportedTokens: setImportedTokens,
+        searchableTokens: searchableTokens,
         provider: provider as JsonRpcProvider,
         lastBlockNumber: lastBlockNumber,
         gasPriceinGwei: gasPriceinGwei,
@@ -849,6 +889,7 @@ export default function App() {
         tokenBBalance: tokenBBalance,
         tokenBAllowance: tokenBAllowance,
         setRecheckTokenBApproval: setRecheckTokenBApproval,
+        chainId: chainId ?? '0x2a'
     };
 
     // props for <Sidebar/> React element

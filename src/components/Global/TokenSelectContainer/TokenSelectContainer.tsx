@@ -1,61 +1,66 @@
 import styles from './TokenSelectContainer.module.css';
-import { useState, SetStateAction } from 'react';
+import { Dispatch, SetStateAction } from 'react';
 import TokenSelect from '../TokenSelect/TokenSelect';
+import TokenSelectSearchable from '../TokenSelect/TokenSelectSearchable';
 import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
 import Button from '../../Global/Button/Button';
 import TokenList from '../../Global/TokenList/TokenList';
+import { useSearch } from './useSearch';
 
 interface TokenSelectContainerPropsIF {
     tokenPair: TokenPairIF;
     tokensBank: Array<TokenIF>;
+    setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
+    searchableTokens: Array<TokenIF>;
     tokenList?: Array<TokenIF>;
-    chainId?: string;
+    chainId: string;
     tokenToUpdate: string;
     closeModal: () => void;
     reverseTokens: () => void;
     showManageTokenListContent: boolean;
-    setShowManageTokenListContent: React.Dispatch<SetStateAction<boolean>>;
+    setShowManageTokenListContent: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function TokenSelectContainer(props: TokenSelectContainerPropsIF) {
     const {
         tokenPair,
         tokensBank,
+        setImportedTokens,
+        searchableTokens,
+        chainId,
         tokenToUpdate,
         closeModal,
         reverseTokens,
         showManageTokenListContent,
         setShowManageTokenListContent,
     } = props;
-    // const [ showManageTokenListContent, setShowManageTokenListContent] = useState(false)
 
-    // console.log(tokenToUpdate);
-    const [searchTerm, setSearchTerm] = useState('');
+    const [
+        matchingImportedTokens,
+        matchingSearchableTokens,
+        setSearchInput
+    ] = useSearch(tokensBank, searchableTokens, chainId);
 
-    const searchInput = (
-        <div className={styles.search_input}>
-            <input
-                type='text'
-                placeholder='Search name or paste address'
-                onChange={(event) => setSearchTerm(event.target.value)}
-            />
-        </div>
-    );
+    const handleClickSearchable = (tkn:TokenIF) => {
+        // look inside tokensBank to see if clicked token is already imported
+        const importedTokenAddresses = tokensBank.map((token: TokenIF) => token.address)
+        const newImportedTokensArray = importedTokenAddresses.includes(tkn.address)
+            // TRUE: make new array with it removed
+            ? tokensBank.filter((token:TokenIF) => token.address !== tkn.address)
+            // FALSE: make new array with it added
+            : [tkn, ...tokensBank];
+        // sync local storage and local state inside App.tsx with new array
+        const userData = JSON.parse(localStorage.getItem('user') as string);
+        userData.tokens = newImportedTokensArray;
+        localStorage.setItem('user', JSON.stringify(userData));
+        setImportedTokens(newImportedTokensArray);
+    }
 
     const tokenListContent = (
         <>
-            {tokensBank
-                .filter((val) => {
-                    if (searchTerm === '') {
-                        return val;
-                    } else if (
-                        val.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                        val.symbol.toLowerCase().includes(searchTerm.toLowerCase())
-                    ) {
-                        return val;
-                    }
-                })
-                .map((token, idx) => {
+            <h3>Your Tokens</h3>
+            {matchingImportedTokens
+                .map((token:TokenIF, idx:number) => {
                     return (
                         <TokenSelect
                             key={idx}
@@ -66,31 +71,36 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
                             reverseTokens={reverseTokens}
                         />
                     );
-                })}
+            })}
+            {matchingSearchableTokens.length ? <h3>Searched Tokens</h3> : null}
+            {matchingSearchableTokens.map((tkn:TokenIF, idx:number) => (
+                <TokenSelectSearchable
+                    key={`tss_${idx}`}
+                    token={tkn}
+                    clickHandler={handleClickSearchable}
+                    closeModal={closeModal}
+                />
+            ))}
         </>
     );
 
     const tokenListContainer = (
         <>
-            {searchInput}
+            <div className={styles.search_input}>
+                <input
+                    type='text'
+                    placeholder='Search name or paste address'
+                    onChange={(event) => setSearchInput(event.target.value)}
+                />
+            </div>
             {tokenListContent}
+            <Button title='Manage Token List' action={() => setShowManageTokenListContent(true)} />
         </>
-    );
-
-    const manageTokenListContainer = (
-        <>
-            <TokenList />
-        </>
-    );
-
-    const manageTokenListButton = (
-        <Button title='Manage Token List' action={() => setShowManageTokenListContent(true)} />
     );
 
     return (
         <div className={styles.token_select_container}>
-            {showManageTokenListContent ? manageTokenListContainer : tokenListContainer}
-            {showManageTokenListContent ? null : manageTokenListButton}
+            {showManageTokenListContent ? <TokenList /> : tokenListContainer}
         </div>
     );
 }

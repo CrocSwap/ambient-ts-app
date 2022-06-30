@@ -1,4 +1,4 @@
-import { ChangeEvent, SetStateAction, useEffect, useState } from 'react';
+import { ChangeEvent, Dispatch, SetStateAction, useEffect, useState } from 'react';
 import styles from './CurrencyConverter.module.css';
 import CurrencySelector from '../CurrencySelector/CurrencySelector';
 import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
@@ -15,6 +15,8 @@ interface CurrencyConverterPropsIF {
     isSellTokenBase: boolean;
     tokenPair: TokenPairIF;
     tokensBank: Array<TokenIF>;
+    setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
+    searchableTokens: Array<TokenIF>;
     chainId: string;
     isLiq: boolean;
     poolPriceDisplay: number;
@@ -24,14 +26,14 @@ interface CurrencyConverterPropsIF {
     tokenBBalance: string;
     tokenAInputQty: string;
     tokenBInputQty: string;
-    setTokenAInputQty: React.Dispatch<React.SetStateAction<string>>;
-    setTokenBInputQty: React.Dispatch<React.SetStateAction<string>>;
+    setTokenAInputQty: Dispatch<SetStateAction<string>>;
+    setTokenBInputQty: Dispatch<SetStateAction<string>>;
     isWithdrawFromDexChecked: boolean;
-    setIsWithdrawFromDexChecked: React.Dispatch<SetStateAction<boolean>>;
+    setIsWithdrawFromDexChecked: Dispatch<SetStateAction<boolean>>;
     isWithdrawToWalletChecked: boolean;
-    setIsWithdrawToWalletChecked: React.Dispatch<SetStateAction<boolean>>;
-    setSwapAllowed: React.Dispatch<React.SetStateAction<boolean>>;
-    setSwapButtonErrorMessage: React.Dispatch<React.SetStateAction<string>>;
+    setIsWithdrawToWalletChecked: Dispatch<SetStateAction<boolean>>;
+    setSwapAllowed: Dispatch<SetStateAction<boolean>>;
+    setSwapButtonErrorMessage: Dispatch<SetStateAction<string>>;
 }
 
 export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
@@ -39,6 +41,8 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         tokenPair,
         isSellTokenBase,
         tokensBank,
+        setImportedTokens,
+        searchableTokens,
         chainId,
         isLiq,
         poolPriceDisplay,
@@ -218,6 +222,8 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
             <CurrencySelector
                 tokenPair={tokenPair}
                 tokensBank={tokensBank}
+                searchableTokens={searchableTokens}
+                setImportedTokens={setImportedTokens}
                 chainId={chainId}
                 direction={isLiq ? 'Select Pair' : 'From:'}
                 fieldId='sell'
@@ -238,6 +244,8 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
             <CurrencySelector
                 tokenPair={tokenPair}
                 tokensBank={tokensBank}
+                setImportedTokens={setImportedTokens}
+                searchableTokens={searchableTokens}
                 chainId={chainId}
                 direction={isLiq ? '' : 'To:'}
                 fieldId='buy'

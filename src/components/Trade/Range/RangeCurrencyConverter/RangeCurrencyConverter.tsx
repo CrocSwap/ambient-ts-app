@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { ChangeEvent, SetStateAction, useState, useEffect } from 'react';
+import { ChangeEvent, Dispatch, SetStateAction, useState, useEffect } from 'react';
 
 // START: Import React Functional Components
 import RangeCurrencySelector from '../RangeCurrencySelector/RangeCurrencySelector';
@@ -19,11 +19,13 @@ import {
 // interface for component props
 interface RangeCurrencyConverterPropsIF {
     tokensBank: Array<TokenIF>;
+    setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
+    searchableTokens: Array<TokenIF>;
     chainId: string;
     isWithdrawTokenAFromDexChecked: boolean;
-    setIsWithdrawTokenAFromDexChecked: React.Dispatch<SetStateAction<boolean>>;
+    setIsWithdrawTokenAFromDexChecked: Dispatch<SetStateAction<boolean>>;
     isWithdrawTokenBFromDexChecked: boolean;
-    setIsWithdrawTokenBFromDexChecked: React.Dispatch<SetStateAction<boolean>>;
+    setIsWithdrawTokenBFromDexChecked: Dispatch<SetStateAction<boolean>>;
     isLiq?: boolean;
     poolPriceNonDisplay: number;
     isAdvancedMode: boolean;
@@ -32,17 +34,17 @@ interface RangeCurrencyConverterPropsIF {
         dataTokenB: TokenIF;
     };
     isTokenAPrimaryLocal: boolean;
-    setIsTokenAPrimaryLocal: React.Dispatch<SetStateAction<boolean>>;
+    setIsTokenAPrimaryLocal: Dispatch<SetStateAction<boolean>>;
     isTokenABase: boolean;
     isAmbient: boolean;
     depositSkew: number;
-    setIsSellTokenPrimary?: React.Dispatch<SetStateAction<boolean>>;
+    setIsSellTokenPrimary?: Dispatch<SetStateAction<boolean>>;
     truncatedTokenABalance: string;
     truncatedTokenBBalance: string;
-    setTokenAInputQty: React.Dispatch<React.SetStateAction<string>>;
-    setTokenBInputQty: React.Dispatch<React.SetStateAction<string>>;
-    setRangeButtonErrorMessage: React.Dispatch<React.SetStateAction<string>>;
-    setRangeAllowed: React.Dispatch<SetStateAction<boolean>>;
+    setTokenAInputQty: Dispatch<SetStateAction<string>>;
+    setTokenBInputQty: Dispatch<SetStateAction<string>>;
+    setRangeButtonErrorMessage: Dispatch<SetStateAction<string>>;
+    setRangeAllowed: Dispatch<SetStateAction<boolean>>;
     isTokenADisabled: boolean;
     isTokenBDisabled: boolean;
     isOutOfRange: boolean;
@@ -56,6 +58,8 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         chainId,
         isLiq,
         tokensBank,
+        setImportedTokens,
+        searchableTokens,
         poolPriceNonDisplay,
         tokenPair,
         isTokenABase,
@@ -394,6 +398,8 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         chainId: chainId,
         tokenPair: tokenPair,
         tokensBank: tokensBank,
+        setImportedTokens: setImportedTokens,
+        searchableTokens: searchableTokens,
         isWithdrawTokenAFromDexChecked: isWithdrawTokenAFromDexChecked,
         setIsWithdrawTokenAFromDexChecked: setIsWithdrawTokenAFromDexChecked,
         isWithdrawTokenBFromDexChecked: isWithdrawTokenBFromDexChecked,
