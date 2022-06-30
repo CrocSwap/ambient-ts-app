@@ -9,6 +9,8 @@ import TopRanges from '../../TopRanges/TopRanges';
 import { useAllTokenData } from '../../../state/tokens/hooks';
 import { notEmpty } from '../../../utils';
 import { useAllPoolData } from '../../../state/pools/hooks';
+import { TokenData } from '../../../state/tokens/models';
+import { PoolData } from '../../../state/pools/models';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 
 export default function AnalyticsTabs() {
@@ -24,26 +26,49 @@ export default function AnalyticsTabs() {
     ];
 
     const allTokens = useAllTokenData();
+    const allPoolData = useAllPoolData();
 
-    const tokens = useMemo(() => {
+    const [tokens, setTokens] = useState<TokenData[]>([]);
+    const [pools, setPools] = useState<PoolData[]>([]);
+    const [searchWord, setSearchWord] = useState('');
+
+    const tokensResult = useMemo(() => {
         return Object.values(allTokens)
             .map((t) => t.data)
             .filter(notEmpty);
     }, [allTokens]);
 
-    const allPoolData = useAllPoolData();
-    const pools = useMemo(() => {
+    const poolsResult = useMemo(() => {
         return Object.values(allPoolData)
             .map((p) => p.data)
             .filter(notEmpty);
     }, [allPoolData]);
 
+    const search = (value: string) => {
+        setSearchWord(value);
+        if (value.length > 0) {
+            setTokens(tokensResult.filter((item) => item.name.includes(value)));
+            setPools(
+                poolsResult.filter(
+                    (item) => item.token0.name.includes(value) || item.token1.name.includes(value),
+                ),
+            );
+        }
+    };
     const searchContainer = (
         <div className={styles.search_container}>
             <div className={styles.search_icon}>
-                <BiSearch size={15} color='#bdbdbd' />
+                <BiSearch size={20} color='#bdbdbd' />
             </div>
-            <input type='text' id='box' placeholder='Search...' className={styles.search__box} />
+            <input
+                type='text'
+                id='box'
+                style={{ height: 40 }}
+                size={20}
+                onChange={(e) => search(e.target.value)}
+                placeholder='Search...'
+                className={styles.search__box}
+            />
         </div>
     );
 
@@ -65,13 +90,13 @@ export default function AnalyticsTabs() {
             </div>
             <div className={styles.tabs_outlet}>
                 <TabContent id='tab1' activeTab={activeTab}>
-                    <TopTokens tokens={tokens} />
+                    <TopTokens tokens={searchWord.length > 0 ? tokens : tokensResult} />
                 </TabContent>
                 <TabContent id='tab2' activeTab={activeTab}>
-                    <Pools pools={pools} propType='top' />
+                    <Pools pools={searchWord.length > 0 ? pools : poolsResult} propType='top' />
                 </TabContent>
                 <TabContent id='tab3' activeTab={activeTab}>
-                    <Pools pools={pools} propType='trend' />
+                    <Pools pools={searchWord.length > 0 ? pools : poolsResult} propType='trend' />
                 </TabContent>
                 <TabContent id='tab4' activeTab={activeTab}>
                     <TopRanges />

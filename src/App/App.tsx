@@ -60,6 +60,7 @@ import { IParsedPosition, parsePositionArray } from './parsePositions';
 import { defaultTokens } from '../utils/data/defaultTokens';
 import initializeUserLocalStorage from './functions/initializeUserLocalStorage';
 import { TokenIF } from '../utils/interfaces/exports';
+import TokenPage from '../pages/TokenPage/TokenPage';
 import { fetchTokenLists } from './functions/fetchTokenLists';
 import {
     resetTradeData,
@@ -67,6 +68,7 @@ import {
     setAdvancedLowTick,
     setDenomInBase,
 } from '../utils/state/tradeDataSlice';
+import PoolPage from '../pages/PoolPage/PoolPage';
 // import PositionDetails from '../pages/Trade/Range/PositionDetails';
 import { memoizePromiseFn } from './functions/memoizePromiseFn';
 import { querySpotPrice } from './functions/querySpotPrice';
@@ -922,6 +924,9 @@ export default function App() {
                             <Route path='edit/:positionHash' element={<Edit />} />
                         </Route>
                         <Route path='analytics' element={<Analytics />} />
+                        <Route path='tokens/:address' element={<TokenPage />} />
+                        <Route path='pools/:address' element={<PoolPage />} />
+
                         {/* <Route path='details' element={<PositionDetails />} /> */}
                         <Route path='range2' element={<Range {...rangeProps} />} />
 

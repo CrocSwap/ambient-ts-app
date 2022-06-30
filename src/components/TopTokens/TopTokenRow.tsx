@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import { TokenData } from '../../state/tokens/models';
 import { isAddress } from '../../utils';
 import { formatDollarAmount } from '../../utils/numbers';
@@ -10,6 +11,7 @@ interface TokenProps {
 
 export default function TopTokenRow(props: TokenProps) {
     const tokenData: TokenData = props.token;
+    const navigate = useNavigate();
 
     function getTokenLogoURL() {
         const checkSummed = isAddress(tokenData.address);
@@ -17,32 +19,33 @@ export default function TopTokenRow(props: TokenProps) {
     }
 
     const tokenImages = (
-        <>
-            <td data-column='name' className={styles.tokens} width={300}>
-                <td>
-                    <img
-                        className={styles.token_list}
-                        src={getTokenLogoURL()}
-                        onError={({ currentTarget }) => {
-                            currentTarget.onerror = null;
-                            currentTarget.src = '/static/media/ambient_logo.55c57a31.svg';
-                        }}
-                        alt='token'
-                        width='30px'
-                    />
-                </td>
-                <td>
-                    <span className={styles.token_list_text}>
-                        {tokenData.name} ({tokenData.symbol})
-                    </span>
-                </td>
+        <td data-column='name' width={350}>
+            <td>
+                <img
+                    className={styles.token_list}
+                    src={getTokenLogoURL()}
+                    onError={({ currentTarget }) => {
+                        currentTarget.onerror = null;
+                        currentTarget.src = '/question.svg';
+                    }}
+                    alt='token'
+                    width='30px'
+                />
             </td>
-        </>
+            <td>
+                <span className={styles.token_list_text}>
+                    {tokenData.name} ({tokenData.symbol})
+                </span>
+            </td>
+        </td>
     );
 
+    function handleRowClick() {
+        navigate('/tokens/' + tokenData.address);
+    }
     return (
-        <tr>
-            <td>{props.index}</td>
+        <tr onClick={handleRowClick} style={{ cursor: 'pointer' }}>
+            <td className={styles.topToken_id}>{props.index}</td>
             {tokenImages}
 
             <td data-column='APY' className={styles.topToken_range}>

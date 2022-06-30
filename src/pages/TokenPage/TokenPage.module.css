@@ -1,0 +1,90 @@
+.hsPAQl {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 1em;
+  margin: 30px;
+  
+}
+
+.container{
+  min-height: 86vh;
+  padding: 2rem;
+}
+
+.token_info_container {
+  display: grid;
+  grid-auto-rows: auto;
+  row-gap: 12px;
+}
+
+.tokens_info {
+  box-sizing: border-box;
+  margin: 0px;
+  min-width: 0px;
+  display: flex;
+  padding: 0px;
+  -webkit-box-align: center;
+  align-items: center;
+  -webkit-box-pack: start;
+  justify-content: flex-start;
+  width: fit-content;
+}
+
+.token_image {
+    width: 24px;
+    height: 24px;
+    border-radius: 24px;
+    box-shadow: rgb(0 0 0 / 8%) 0px 6px 10px;
+    background-color: rgb(255, 255, 255);
+    color: rgb(86, 90, 105);
+}
+
+.token_name {
+  box-sizing: border-box;
+  margin: 0px 0px 0px 10px;
+  min-width: 0px;
+  font-weight: 500;
+  font-size: 20px;
+}
+
+.token_symbol {
+  box-sizing: border-box;
+  margin: 0px 0px 0px 6px;
+  min-width: 0px;
+  font-weight: 500;
+  font-size: 20px;
+  color: rgb(195, 197, 203);
+}
+
+
+.token_price_info {
+  margin-top: 8px;
+  display: flex;
+  align-items: flex-end;
+}
+
+.token_price {
+  box-sizing: border-box;
+    margin: 0px 10px 0px 0px;
+    min-width: 0px;
+    font-weight: 500;
+}
+
+.token_priceChange {
+  background: linear-gradient(90deg, #15BE6F 32.38%, #8FE9BF 51.39%, #15BE6F 68.17%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 500;
+    margin-bottom:10%;
+    text-shadow: 0px 0px 10px rgba(21, 190, 111, 0.75);
+}
+
+.low_token_priceChange {
+  background: linear-gradient(90deg, red 32.38%, red 51.39%, red 68.17%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 500;
+  text-shadow: 0px 0px 10px rgba(243, 5, 5, 0.75);
+}

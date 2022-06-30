@@ -1,0 +1,119 @@
+.cqwlBw {
+    box-sizing: border-box;
+    margin: 0px;
+    min-width: 0px;
+    width: 100%;
+    border-radius: 16px;
+    padding: 1rem;
+    background: var(--dark3);
+  }
+  
+  .title{
+
+    box-sizing: border-box;
+    margin: 0px;
+    min-width: 0px;
+    font-weight: 400;
+    color: rgb(195, 197, 203);
+  
+
+}
+.body{
+    box-sizing: border-box;
+    margin: 0px;
+    min-width: 0px;
+    font-weight: 500;
+    font-size: 24px;
+    color: rgb(255, 255, 255);
+    
+}
+
+
+.lowPriceChange{
+    background: linear-gradient(90deg, red 32.38%, red 51.39%, red 68.17%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 500;
+    text-shadow: 0px 0px 10px rgba(243, 5, 5, 0.75);
+  }
+  
+.apy{
+    background: linear-gradient(90deg, #15BE6F 32.38%, #8FE9BF 51.39%, #15BE6F 68.17%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 500;
+    margin-bottom:10%;
+    text-shadow: 0px 0px 10px rgba(21, 190, 111, 0.75);
+}
+
+.totalTokensLocked {
+    box-sizing: border-box;
+    margin: 0px;
+    min-width: 0px;
+    width: 100%;
+    border-radius: 16px;
+    padding: 16px;
+    background-color: rgb(44, 47, 54);
+    margin-bottom: 2%;
+}
+
+.dbhmjy {
+    display: grid;
+    grid-auto-rows: auto;
+    row-gap: 12px;
+}
+
+.tokenImage {
+    width: 20px;
+    height: 20px;
+    border-radius: 20px;
+    box-shadow: rgb(0 0 0 / 8%) 0px 6px 10px;
+    background-color: rgb(255, 255, 255);
+    color: rgb(86, 90, 105);
+    box-sizing: border-box;
+}
+
+.tokenName {
+    box-sizing: border-box;
+    margin: 0px 0px 0px 8px;
+    min-width: 0px;
+    font-weight: 500;
+    font-size: 14px;
+    color: rgb(255, 255, 255);
+}
+
+.totalTokensLockedText  {
+    box-sizing: border-box;
+    margin: 0px;
+    min-width: 0px;
+    font-weight: 500;
+}
+
+.tokenLockedRow {
+    box-sizing: border-box;
+    margin: 0px;
+    min-width: 0px;
+    width: 100%;
+    display: flex;
+    padding: 0px;
+    -webkit-box-align: center;
+    align-items: center;
+    -webkit-box-pack: justify;
+    justify-content: space-between;
+}
+
+
+.tokenImageWithName {
+    box-sizing: border-box;
+    margin: 0px;
+    min-width: 0px;
+    display: flex;
+    padding: 0px;
+    -webkit-box-align: center;
+    align-items: center;
+    -webkit-box-pack: start;
+    justify-content: flex-start;
+    width: fit-content;
+}

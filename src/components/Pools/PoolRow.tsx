@@ -1,4 +1,4 @@
-import { Badge } from '@material-ui/core';
+import { useNavigate } from 'react-router-dom';
 import { PoolData } from '../../state/pools/models';
 import { feeTierPercent, isAddress } from '../../utils';
 import { formatDollarAmount } from '../../utils/numbers';
@@ -11,6 +11,7 @@ interface PoolProps {
 
 export default function PoolRow(props: PoolProps) {
     const poolData = props.pool;
+    const navigate = useNavigate();
 
     function getTokenLogoURL(address: string) {
         const checkSummed = isAddress(address);
@@ -19,39 +20,51 @@ export default function PoolRow(props: PoolProps) {
 
     const tokenImages = (
         <>
-            <td data-column='tokens' className={styles.tokens}>
-                <img
-                    src={getTokenLogoURL(poolData.token0.address)}
-                    onError={({ currentTarget }) => {
-                        currentTarget.onerror = null;
-                        currentTarget.src = '/static/media/ambient_logo.55c57a31.svg';
-                    }}
-                    alt='token'
-                    width='30px'
-                />
-                <img
-                    src={getTokenLogoURL(poolData.token1.address)}
-                    onError={({ currentTarget }) => {
-                        currentTarget.onerror = null;
-                        currentTarget.src = '/static/media/ambient_logo.55c57a31.svg';
-                    }}
-                    alt='token'
-                    width='30px'
-                />
-                {poolData.token0.symbol}/{poolData.token1.symbol}
+            <td data-column='name' width={350}>
+                <td>
+                    <img
+                        src={getTokenLogoURL(poolData.token0.address)}
+                        onError={({ currentTarget }) => {
+                            currentTarget.onerror = null;
+                            currentTarget.src = '/question.svg';
+                        }}
+                        alt='token'
+                        width='30px'
+                    />
+                    <img
+                        src={getTokenLogoURL(poolData.token1.address)}
+                        onError={({ currentTarget }) => {
+                            currentTarget.onerror = null;
+                            currentTarget.src = '/question.svg';
+                        }}
+                        alt='token'
+                        width='30px'
+                    />
+                </td>
+                <td>
+                    <span className={styles.token_list_text}>
+                        {poolData.token0.symbol}/{poolData.token1.symbol}
+                    </span>
+                </td>
+                <td>
+                    <div className={styles.in_range_display}>
+                        {feeTierPercent(poolData.feeTier)}
+                    </div>
+                </td>
             </td>
         </>
     );
 
+    function handleRowClick() {
+        navigate('/pools/' + poolData.address);
+    }
     return (
-        <tr>
+        <tr onClick={handleRowClick} style={{ cursor: 'pointer' }}>
             <td data-column='id' className={styles.pool_id}>
-                {props.index}
+                {props.index + 1}
             </td>
-            <td data-column='name' className={styles.pool_range}>
-                {tokenImages}
-                <Badge>{feeTierPercent(poolData.feeTier)}</Badge>
-            </td>
+            {tokenImages}
+
             <td></td>
             <td></td>
             <td data-column='symbol'>{formatDollarAmount(poolData.tvlUSD)}</td>
