@@ -9,7 +9,7 @@
     height: 100%;
 
      
-     border-radius: 4px;
+    border-radius: var(--border-radius);
     
  
      background: url('../../../assets/images/home/landing4.png') 
@@ -95,13 +95,10 @@ font-weight: 100;
     background: rgba(23, 29, 39, 0.3);
     backdrop-filter: blur(20px);
     
-    border-radius: 4px;
+    border-radius: var(--border-radius);
 
 }
-.liquidity_content_combined{
-    /* width: 892.29px;
-height: 147px; */
-}
+
 
 .liquidity_content img{
     max-width: 100%;

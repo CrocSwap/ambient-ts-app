@@ -26,7 +26,10 @@ export default function makePriceDisplay(
             ? poolPrice
             : 1 / poolPrice;
 
-    const truncPrice = truncateDecimals(priceRelationship, 4);
+    const truncPrice =
+        priceRelationship < 0.01
+            ? truncateDecimals(priceRelationship, 4)
+            : truncateDecimals(priceRelationship, 2);
 
     return '1 ' + firstSymbol + ' ≈ ' + truncPrice + ' ' + secondSymbol;
 }

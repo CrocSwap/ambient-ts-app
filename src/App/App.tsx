@@ -1,23 +1,38 @@
 /** ***** Import React and Dongles *******/
 import { useEffect, useState, useMemo } from 'react';
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
-import { setPositionsByUser } from '../utils/state/graphDataSlice';
-import { utils, ethers } from 'ethers';
+import {
+    position,
+    resetGraphData,
+    setPositionsByPool,
+    setPositionsByUser,
+} from '../utils/state/graphDataSlice';
+import { ethers } from 'ethers';
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { request, gql } from 'graphql-request';
-import { useMoralis, useMoralisQuery, useMoralisSubscription } from 'react-moralis';
-import Moralis from 'moralis/types';
+import {
+    useMoralis,
+    useMoralisQuery,
+    useMoralisSubscription,
+    // useMoralisWeb3Api,
+} from 'react-moralis';
+import Moralis from 'moralis';
 import {
     contractAddresses,
     getTokenBalanceDisplay,
     sortBaseQuoteTokens,
-    POOL_PRIMARY,
-    getSpotPrice,
-    getSpotPriceDisplay,
+    getTokenDecimals,
+    // POOL_PRIMARY,
+    // getSpotPrice,
+    // getSpotPriceDisplay,
     getTokenAllowance,
+    // QUERY_ABI,
+    // decodeCrocPrice,
+    toDisplayPrice,
+    tickToPrice,
 } from '@crocswap-libs/sdk';
 
-import { receiptData } from '../utils/state/receiptDataSlice';
+import { receiptData, resetReceiptData } from '../utils/state/receiptDataSlice';
 
 import SnackbarComponent from '../components/Global/SnackbarComponent/SnackbarComponent';
 
@@ -47,28 +62,24 @@ import initializeUserLocalStorage from './functions/initializeUserLocalStorage';
 import { TokenIF } from '../utils/interfaces/exports';
 import { fetchTokenLists } from './functions/fetchTokenLists';
 import {
+    resetTradeData,
     setAdvancedHighTick,
     setAdvancedLowTick,
     setDenomInBase,
 } from '../utils/state/tradeDataSlice';
+// import PositionDetails from '../pages/Trade/Range/PositionDetails';
+import { memoizePromiseFn } from './functions/memoizePromiseFn';
+import { querySpotPrice } from './functions/querySpotPrice';
+import { fetchAddress } from './functions/fetchAddress';
+import truncateDecimals from '../utils/data/truncateDecimals';
+
+const cachedQuerySpotPrice = memoizePromiseFn(querySpotPrice);
+const cachedFetchAddress = memoizePromiseFn(fetchAddress);
+const cachedGetTokenDecimals = memoizePromiseFn(getTokenDecimals);
 
 /** ***** React Function *******/
 export default function App() {
-    const { chainId, isWeb3Enabled, account, logout, isAuthenticated } = useMoralis();
-
-    const [ensName, setEnsName] = useState('');
-    useEffect(() => {
-        (async () => {
-            const provider = new ethers.providers.JsonRpcProvider(
-                'https://speedy-nodes-nyc.moralis.io/015fffb61180886c9708499e/eth/goerli',
-            );
-            if (account) {
-                const name = await provider.lookupAddress(account);
-                if (name) setEnsName(name);
-                else setEnsName('');
-            }
-        })();
-    }, [account]);
+    const { Moralis, chainId, isWeb3Enabled, account, logout, isAuthenticated } = useMoralis();
 
     const dispatch = useAppDispatch();
 
@@ -162,8 +173,30 @@ export default function App() {
         })();
     }, [window.ethereum, account]);
 
+    const [ensName, setEnsName] = useState('');
+
+    useEffect(() => {
+        (async () => {
+            console.log('getting ens name');
+
+            if (account) {
+                try {
+                    const ensName = await cachedFetchAddress(account);
+                    if (ensName) setEnsName(ensName);
+                    else setEnsName('');
+                } catch (error) {
+                    setEnsName('');
+                    console.log({ error });
+                }
+            }
+        })();
+    }, [account]);
+
     const [baseTokenAddress, setBaseTokenAddress] = useState<string>('');
     const [quoteTokenAddress, setQuoteTokenAddress] = useState<string>('');
+
+    const [baseTokenDecimals, setBaseTokenDecimals] = useState<number>(0);
+    const [quoteTokenDecimals, setQuoteTokenDecimals] = useState<number>(0);
 
     const [isTokenABase, setIsTokenABase] = useState<boolean>(true);
 
@@ -176,7 +209,7 @@ export default function App() {
 
     // useEffect to set baseTokenAddress and quoteTokenAddress when pair changes
     useEffect(() => {
-        console.log({ tokenPair });
+        // console.log({ tokenPair });
         // reset rtk values for user specified range in ticks
         dispatch(setAdvancedLowTick(0));
         dispatch(setAdvancedHighTick(0));
@@ -190,47 +223,102 @@ export default function App() {
             setQuoteTokenAddress(sortedTokens[1]);
             if (tokenPair.dataTokenA.address === sortedTokens[0]) {
                 setIsTokenABase(true);
+                setBaseTokenDecimals(tokenPair.dataTokenA.decimals);
+                setQuoteTokenDecimals(tokenPair.dataTokenB.decimals);
             } else {
                 setIsTokenABase(false);
+                setBaseTokenDecimals(tokenPair.dataTokenB.decimals);
+                setQuoteTokenDecimals(tokenPair.dataTokenA.decimals);
             }
+
+            const endpoint = 'https://api.thegraph.com/subgraphs/name/a0910841082130913312/croc43';
+
+            const queryForPositionsByPool = gql`
+                query ($base: Bytes, $quote: Bytes, $poolIdx: BigInt) {
+                    pools(where: { base: $base, quote: $quote, poolIdx: $poolIdx }) {
+                        id
+                        positions {
+                            id
+                            pool {
+                                id
+                                base
+                                quote
+                                poolIdx
+                            }
+                            ambient
+                            bidTick
+                            askTick
+                        }
+                    }
+                }
+            `;
+
+            const positionsByPoolVariables = {
+                base: sortedTokens[0],
+                quote: sortedTokens[1],
+                poolIdx: 36000,
+            };
+
+            // console.log({ positionsByPoolVariables });
+            request(
+                endpoint,
+                queryForPositionsByPool,
+                positionsByPoolVariables,
+                // requestHeaders: headers,
+            ).then(async (data) => {
+                // if (JSON.stringify(graphData.positionsByUser) !== JSON.stringify(data.user)) {
+                const poolData = data.pools[0];
+                const poolPositions = poolData.positions;
+                console.log({ poolPositions });
+                // poolPositions.reduce(
+                //     (p: position, fn: (position: any) => Promise<any>) => p.then(fn),
+                //     Promise.resolve(),
+                // );
+                const updatedPositions: position[] = [];
+                for (const position of poolPositions) {
+                    const updatedPosition = await getPositionData(position);
+                    updatedPositions.push(updatedPosition);
+                }
+                // poolData.positions = updatedPositions;
+                // if (JSON.stringify(graphData.positionsByPool) !== JSON.stringify(poolData)) {
+                //     dispatch(setPositionsByPool(poolData));
+                // }
+                Promise.all(poolPositions.map(getPositionData)).then((updatedPositions) => {
+                    poolData.positions = updatedPositions;
+                    // const positionArray = updatedPositions as positionsByPool
+                    // console.log(pool.positions);
+                    if (JSON.stringify(graphData.positionsByPool) !== JSON.stringify(poolData)) {
+                        dispatch(setPositionsByPool(poolData));
+                    }
+                });
+            });
         }
     }, [tokenPairStringified]);
 
     const [tokenABalance, setTokenABalance] = useState<string>('');
     const [tokenBBalance, setTokenBBalance] = useState<string>('');
     const [poolPriceNonDisplay, setPoolPriceNonDisplay] = useState(0);
-
-    // useEffect to get non-display spot price when tokens change and block updates
-    useEffect(() => {
-        if (baseTokenAddress && quoteTokenAddress) {
-            (async () => {
-                const spotPrice = await getSpotPrice(
-                    baseTokenAddress,
-                    quoteTokenAddress,
-                    POOL_PRIMARY,
-                    provider,
-                );
-                if (poolPriceNonDisplay !== spotPrice) {
-                    setPoolPriceNonDisplay(spotPrice);
-                }
-            })();
-        }
-    }, [lastBlockNumber, baseTokenAddress, quoteTokenAddress]);
-
     const [poolPriceDisplay, setPoolPriceDisplay] = useState(0);
 
-    // useEffect to get display spot price when tokens change and block updates
+    // useEffect to get spot price when tokens change and block updates
     useEffect(() => {
         if (baseTokenAddress && quoteTokenAddress) {
             (async () => {
-                const spotPriceDisplay = await getSpotPriceDisplay(
+                const spotPrice = await cachedQuerySpotPrice(
                     baseTokenAddress,
                     quoteTokenAddress,
-                    POOL_PRIMARY,
-                    provider,
+                    lastBlockNumber,
                 );
-                if (poolPriceDisplay !== spotPriceDisplay) {
-                    setPoolPriceDisplay(spotPriceDisplay);
+                if (poolPriceNonDisplay !== spotPrice) {
+                    console.log({ spotPrice });
+                    setPoolPriceNonDisplay(spotPrice);
+                    const displayPrice = toDisplayPrice(
+                        spotPrice,
+                        baseTokenDecimals,
+                        quoteTokenDecimals,
+                    );
+                    console.log({ displayPrice });
+                    setPoolPriceDisplay(displayPrice);
                 }
             })();
         }
@@ -370,17 +458,54 @@ export default function App() {
 
     const graphData = useAppSelector((state) => state.graphData);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const getPositionData = async (position: any): Promise<any> => {
+    const getPositionData = async (position: position): Promise<position> => {
         const baseTokenAddress = position.pool.base;
         const quoteTokenAddress = position.pool.quote;
-        const poolPriceNonDisplay = await getSpotPrice(
+        // console.log({ provider });
+        // const poolPriceNonDisplay = await getSpotPrice(
+        //     baseTokenAddress,
+        //     quoteTokenAddress,
+        //     POOL_PRIMARY,
+        //     provider,
+        // );
+        const poolPriceNonDisplay = await cachedQuerySpotPrice(
             baseTokenAddress,
             quoteTokenAddress,
-            POOL_PRIMARY,
-            provider,
+            lastBlockNumber,
         );
+
+        const positionAccountId = position.id.substring(0, 42);
+
+        position.accountId = positionAccountId;
+        try {
+            position.ensName = await cachedFetchAddress(positionAccountId);
+        } catch (error) {
+            console.log(error);
+        }
         const poolPriceInTicks = Math.log(poolPriceNonDisplay) / Math.log(1.0001);
+
+        const baseTokenDecimals = await cachedGetTokenDecimals(baseTokenAddress);
+        const quoteTokenDecimals = await cachedGetTokenDecimals(quoteTokenAddress);
+
+        const lowerPriceNonDisplay = tickToPrice(position.bidTick);
+        const upperPriceNonDisplay = tickToPrice(position.askTick);
+
+        const lowerPriceDisplay =
+            1 / toDisplayPrice(upperPriceNonDisplay, baseTokenDecimals, quoteTokenDecimals);
+
+        const upperPriceDisplay =
+            1 / toDisplayPrice(lowerPriceNonDisplay, baseTokenDecimals, quoteTokenDecimals);
+
+        if (!position.ambient) {
+            position.lowRangeDisplay =
+                lowerPriceDisplay < 2
+                    ? truncateDecimals(lowerPriceDisplay, 2).toString()
+                    : truncateDecimals(lowerPriceDisplay, 2).toString();
+            position.highRangeDisplay =
+                lowerPriceDisplay < 2
+                    ? truncateDecimals(upperPriceDisplay, 2).toString()
+                    : truncateDecimals(upperPriceDisplay, 2).toString();
+        }
 
         position.poolPriceInTicks = poolPriceInTicks;
         if (baseTokenAddress === contractAddresses.ZERO_ADDR) {
@@ -388,10 +513,10 @@ export default function App() {
             position.quoteTokenSymbol = 'DAI';
             position.tokenAQtyDisplay = '1';
             position.tokenBQtyDisplay = '2000';
-            if (!position.ambient) {
-                position.lowRangeDisplay = '.001';
-                position.highRangeDisplay = '.002';
-            }
+            // if (!position.ambient) {
+            //     position.lowRangeDisplay = '.001';
+            //     position.highRangeDisplay = '.002';
+            // }
         } else if (
             baseTokenAddress.toLowerCase() ===
             '0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa'.toLowerCase()
@@ -400,10 +525,10 @@ export default function App() {
             position.quoteTokenSymbol = 'USDC';
             position.tokenAQtyDisplay = '101';
             position.tokenBQtyDisplay = '100';
-            if (!position.ambient) {
-                position.lowRangeDisplay = '0.9';
-                position.highRangeDisplay = '1.1';
-            }
+            // if (!position.ambient) {
+            //     position.lowRangeDisplay = '0.9';
+            //     position.highRangeDisplay = '1.1';
+            // }
         } else {
             position.baseTokenSymbol = 'unknownBase';
             position.quoteTokenSymbol = 'unknownQuote';
@@ -412,9 +537,9 @@ export default function App() {
     };
 
     useEffect(() => {
-        if (account) {
-            const endpoint = 'https://api.thegraph.com/subgraphs/name/a0910841082130913312/croc22';
-            const query = gql`
+        if (isAuthenticated && account) {
+            const endpoint = 'https://api.thegraph.com/subgraphs/name/a0910841082130913312/croc43';
+            const queryForPositionsByUser = gql`
                 query ($userAddress: Bytes) {
                     user(id: $userAddress) {
                         id
@@ -433,30 +558,32 @@ export default function App() {
                     }
                 }
             `;
-            const variables = {
+            const positionByUserVariables = {
                 userAddress: account,
             };
             request(
                 endpoint,
-                query,
-                variables,
+                queryForPositionsByUser,
+                positionByUserVariables,
                 // requestHeaders: headers,
             ).then((data) => {
                 // if (JSON.stringify(graphData.positionsByUser) !== JSON.stringify(data.user)) {
                 const userData = data.user;
-                const allPositions = userData.positions;
-
-                // let updatedAllPositionsArray = [];
-
-                Promise.all(allPositions.map(getPositionData)).then((updatedPositions) => {
-                    userData.positions = updatedPositions;
-                    if (JSON.stringify(graphData.positionsByUser) !== JSON.stringify(userData)) {
-                        dispatch(setPositionsByUser(userData));
-                    }
-                });
+                const userPositions = userData.positions;
+                // console.log({ userPositions });
+                if (userPositions) {
+                    Promise.all(userPositions.map(getPositionData)).then((updatedPositions) => {
+                        userData.positions = updatedPositions;
+                        if (
+                            JSON.stringify(graphData.positionsByUser) !== JSON.stringify(userData)
+                        ) {
+                            dispatch(setPositionsByUser(userData));
+                        }
+                    });
+                }
             });
         }
-    }, [account, lastBlockNumber]);
+    }, [isAuthenticated, account, lastBlockNumber]);
 
     // run function to initialize local storage
     // internal controls will only initialize values that don't exist
@@ -498,7 +625,7 @@ export default function App() {
             } else if (provider) {
                 return;
             } else {
-                // console.log('making new kovan speedy node provider');
+                console.log('making new kovan speedy node provider');
                 setProvider(
                     new ethers.providers.JsonRpcProvider(
                         'https://speedy-nodes-nyc.moralis.io/015fffb61180886c9708499e/eth/kovan',
@@ -570,6 +697,10 @@ export default function App() {
         setNativeBalance('');
         setTokenABalance('0');
         setTokenBBalance('0');
+        dispatch(resetTradeData());
+        dispatch(resetGraphData());
+        dispatch(resetReceiptData());
+
         await logout();
     };
 
@@ -603,29 +734,41 @@ export default function App() {
     const [gasPriceinGwei, setGasPriceinGwei] = useState<string>('');
 
     useEffect(() => {
-        (async () => {
-            if (provider) {
-                const gasPriceInWei = await provider.getGasPrice();
-                if (gasPriceInWei)
-                    setGasPriceinGwei(utils.formatUnits(gasPriceInWei.toString(), 'gwei'));
-            }
-        })();
-    }, [provider, chainId, lastBlockNumber]);
+        fetch(
+            'https://api.etherscan.io/api?module=gastracker&action=gasoracle&apikey=KNJM7A9ST1Q1EESYXPPQITIP7I8EFSY456',
+            // 'https://api.etherscan.io/api?module=gastracker&action=gasoracle&apikey=3UGY5173DQXPSPSVAUNZIVXVN4XI3YEE2N',
+        )
+            .then((response) => response.json())
+            .then((response) => {
+                if (response.result.ProposeGasPrice) {
+                    setGasPriceinGwei(response.result.ProposeGasPrice);
+                }
+            });
+    }, [lastBlockNumber]);
 
     // useEffect to get current block number
     // on a 3 second interval
     // currently displayed in footer
     useEffect(() => {
-        if (provider) {
-            const interval = setInterval(async () => {
-                const currentBlock = await provider.getBlockNumber();
-                if (currentBlock !== lastBlockNumber) {
-                    setLastBlockNumber(currentBlock);
-                }
-            }, 3000);
-            return () => clearInterval(interval);
-        }
-    }, [provider, chainId, lastBlockNumber]);
+        const interval = setInterval(async () => {
+            const currentDateTime = new Date().toISOString();
+            const chain = chainId ?? '0x2a';
+            // console.log({ chainId });
+            const options: { chain: '0x2a' | 'kovan'; date: string } = {
+                chain: chain as '0x2a' | 'kovan',
+                date: currentDateTime,
+            };
+            const currentBlock = (await Moralis.Web3API.native.getDateToBlock(options)).block;
+            if (currentBlock !== lastBlockNumber) {
+                setLastBlockNumber(currentBlock);
+            }
+        }, 10000);
+
+        return () => clearInterval(interval);
+        // }
+    }, [chainId, lastBlockNumber]);
+
+    const shouldDisplayAccountTab = isAuthenticated && account != '';
 
     // props for <PageHeader/> React element
     const headerProps = {
@@ -633,6 +776,7 @@ export default function App() {
         clickLogout: clickLogout,
         metamaskLocked: metamaskLocked,
         ensName: ensName,
+        shouldDisplayAccountTab: shouldDisplayAccountTab,
     };
 
     // props for <Swap/> React element
@@ -761,7 +905,16 @@ export default function App() {
                 <div className={`${noSidebarStyle} ${swapBodyStyle}`}>
                     <Routes>
                         <Route index element={<Home />} />
-                        <Route path='trade' element={<Trade />}>
+                        <Route
+                            path='trade'
+                            element={
+                                <Trade
+                                    account={account ?? ''}
+                                    isAuthenticated={isAuthenticated}
+                                    lastBlockNumber={lastBlockNumber}
+                                />
+                            }
+                        >
                             <Route path='' element={<Swap {...swapPropsTrade} />} />
                             <Route path='market' element={<Swap {...swapPropsTrade} />} />
                             <Route path='limit' element={<Limit {...limitPropsTrade} />} />
@@ -769,8 +922,19 @@ export default function App() {
                             <Route path='edit/:positionHash' element={<Edit />} />
                         </Route>
                         <Route path='analytics' element={<Analytics />} />
+                        {/* <Route path='details' element={<PositionDetails />} /> */}
                         <Route path='range2' element={<Range {...rangeProps} />} />
-                        <Route path='account' element={<Portfolio />} />
+
+                        <Route
+                            path='account'
+                            element={
+                                <Portfolio
+                                    ensName={ensName}
+                                    connectedAccount={account ? account : ''}
+                                />
+                            }
+                        />
+
                         <Route path='swap' element={<Swap {...swapProps} />} />
                         <Route path='chart' element={<Chart />} />
                         <Route path='testpage' element={<TestPage />} />

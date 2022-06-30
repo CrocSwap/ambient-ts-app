@@ -36,7 +36,7 @@
     overflow-y: hidden;
     color: white;
 
-    border-radius: 8px;
+    border-radius: var(--border-radius);
     background: rgba( 18, 23, 31, 0.5 );
     /* box-shadow: 0 1px 32px 0 rgba(13, 17, 70, 0.37); */
     backdrop-filter: blur( 8.5px );

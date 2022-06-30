@@ -3,5 +3,5 @@
 }
 .icon svg:hover{
     color: white;
-    transition: all 0.3s ease-in-out;
+    transition: all var(--animation-speed) ease-in-out;
 }

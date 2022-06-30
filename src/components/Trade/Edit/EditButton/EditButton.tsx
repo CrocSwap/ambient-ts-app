@@ -11,7 +11,7 @@ export default function EditButton(props: IEditButtonProps) {
     const ButtonDisplay = (
         <div className={styles.button_container}>
             <Button
-                title={allowedButton ? 'Open Confirmation' : 'Enter an amount'}
+                title={allowedButton ? 'Open Edit Confirmation' : 'Enter an amount'}
                 action={props.onClickFn}
                 disabled={!allowedButton}
             />

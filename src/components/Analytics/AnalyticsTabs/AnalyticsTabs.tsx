@@ -9,9 +9,12 @@ import TopRanges from '../../TopRanges/TopRanges';
 import { useAllTokenData } from '../../../state/tokens/hooks';
 import { notEmpty } from '../../../utils';
 import { useAllPoolData } from '../../../state/pools/hooks';
+import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 
 export default function AnalyticsTabs() {
     const [activeTab, setActiveTab] = useState('tab1');
+
+    const graphData = useAppSelector((state) => state?.graphData);
 
     const tabData = [
         { title: 'Top Tokens', id: 'tab1' },

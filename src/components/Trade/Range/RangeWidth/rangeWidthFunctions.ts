@@ -12,7 +12,7 @@ export function updateRangeWithButton(
     const truncatedValue = truncateDecimals(value, 2);
     // const humanReadableValue = transformValue(value);
 
-    setRangeWidthPercentage(truncatedValue);
+    setRangeWidthPercentage(parseFloat(truncatedValue));
 }
 
 export function handleRangeSlider(
@@ -22,5 +22,5 @@ export function handleRangeSlider(
     const { value } = event.target as HTMLInputElement;
     const truncatedValue = truncateDecimals(parseFloat(value), 2);
 
-    setRangeWidthPercentage(truncatedValue);
+    setRangeWidthPercentage(parseFloat(truncatedValue));
 }
