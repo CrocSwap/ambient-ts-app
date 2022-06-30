@@ -17,6 +17,7 @@ import Transactions from '../Transactions/Transactions';
 import { isAddress } from '../../utils';
 import { TokenData } from '../../state/tokens/reducer';
 import TokenPageChart from './Chart/TokenPageChart';
+import { formatDollarAmount } from '../../utils/numbers';
 
 export default function TokenPage() {
     const { address } = useParams();
@@ -36,11 +37,11 @@ export default function TokenPage() {
     }
 
     const tokenInfo = (
-        <div className={styles.token_info_container}>
-            <div className={styles.tokens_info}>
-                <div className={styles.tokens_images}>
+        <div className={styles.hsPAQl}>
+            <div className={styles.token_info_container}>
+                <div className={styles.tokens_info}>
                     <img
-                        className={styles.token_list}
+                        className={styles.token_image}
                         src={getTokenLogoURL()}
                         onError={({ currentTarget }) => {
                             currentTarget.onerror = null;
@@ -49,11 +50,25 @@ export default function TokenPage() {
                         alt='token'
                         width='30px'
                     />
+                    <span className={styles.token_name}>{tokenData?.name}</span>
+                    <span className={styles.token_symbol}>({tokenData?.symbol})</span>
                 </div>
-                <span className={styles.tokens_name}>
-                    {' '}
-                    {tokenData!.name} ({tokenData!.symbol})
-                </span>
+                <div className={styles.token_price_info}>
+                    <label className={styles.token_price}>
+                        {formatDollarAmount(tokenData?.priceUSD)}
+                    </label>
+                    (
+                    <label
+                        className={
+                            tokenData!.priceUSDChange > 0
+                                ? styles.token_priceChange
+                                : styles.low_token_priceChange
+                        }
+                    >
+                        {Math.abs(tokenData!.priceUSDChange).toFixed(2)}%
+                    </label>
+                    )
+                </div>
             </div>
         </div>
     );
@@ -68,6 +83,7 @@ export default function TokenPage() {
 
             <Divider />
             <h2>Pools</h2>
+
             <Pools pools={poolDatas} propType='all' maxItems={10} />
             {/* <Transactions transactions={transactions!} /> */}
         </main>
