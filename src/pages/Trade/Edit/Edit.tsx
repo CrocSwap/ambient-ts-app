@@ -12,9 +12,10 @@ import { useModal } from '../../../components/Global/Modal/useModal';
 import { useState, useEffect } from 'react';
 import EditDenominationSwitch from '../../../components/Trade/Edit/EditDenominationSwitch/EditDenominationSwitch';
 
-import { PositionIF } from '../../../utils/interfaces/PositionIF';
+// import { PositionIF } from '../../../utils/interfaces/PositionIF';
+import { Position2 } from '../../../utils/state/graphDataSlice';
 interface PositionState {
-    position: PositionIF;
+    position: Position2;
 }
 
 export default function Edit() {

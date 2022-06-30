@@ -2,14 +2,14 @@
 import { useEffect, useState, useMemo } from 'react';
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import {
-    position,
+    Position2,
     resetGraphData,
     setPositionsByPool,
     setPositionsByUser,
 } from '../utils/state/graphDataSlice';
 import { ethers } from 'ethers';
 import { JsonRpcProvider } from '@ethersproject/providers';
-import { request, gql } from 'graphql-request';
+// import { request, gql } from 'graphql-request';
 import {
     useMoralis,
     useMoralisQuery,
@@ -30,6 +30,7 @@ import {
     // decodeCrocPrice,
     toDisplayPrice,
     tickToPrice,
+    POOL_PRIMARY,
 } from '@crocswap-libs/sdk';
 
 import { receiptData, resetReceiptData } from '../utils/state/receiptDataSlice';
@@ -207,9 +208,8 @@ export default function App() {
 
     const tokenPairStringified = useMemo(() => JSON.stringify(tokenPair), [tokenPair]);
 
-    // useEffect to set baseTokenAddress and quoteTokenAddress when pair changes
+    // useEffect to set baseTokenAddress and quoteTokenAddress and retrieve all pool positions when pair changes
     useEffect(() => {
-        // console.log({ tokenPair });
         // reset rtk values for user specified range in ticks
         dispatch(setAdvancedLowTick(0));
         dispatch(setAdvancedHighTick(0));
@@ -231,67 +231,32 @@ export default function App() {
                 setQuoteTokenDecimals(tokenPair.dataTokenA.decimals);
             }
 
-            const endpoint = 'https://api.thegraph.com/subgraphs/name/a0910841082130913312/croc43';
+            const allPositionsCacheEndpoint =
+                'http://ec2-18-233-99-51.compute-1.amazonaws.com:5000/positions?';
 
-            const queryForPositionsByPool = gql`
-                query ($base: Bytes, $quote: Bytes, $poolIdx: BigInt) {
-                    pools(where: { base: $base, quote: $quote, poolIdx: $poolIdx }) {
-                        id
-                        positions {
-                            id
-                            pool {
-                                id
-                                base
-                                quote
-                                poolIdx
+            fetch(
+                allPositionsCacheEndpoint +
+                    new URLSearchParams({
+                        base: sortedTokens[0].toLowerCase(),
+                        quote: sortedTokens[1].toLowerCase(),
+                        poolIdx: POOL_PRIMARY.toString(),
+                    }),
+            )
+                .then((response) => response.json())
+                .then((json) => {
+                    const poolPositions = json.data;
+
+                    if (poolPositions) {
+                        Promise.all(poolPositions.map(getPositionData)).then((updatedPositions) => {
+                            if (
+                                JSON.stringify(graphData.positionsByUser.positions) !==
+                                JSON.stringify(updatedPositions)
+                            ) {
+                                dispatch(setPositionsByPool({ positions: updatedPositions }));
                             }
-                            ambient
-                            bidTick
-                            askTick
-                        }
-                    }
-                }
-            `;
-
-            const positionsByPoolVariables = {
-                base: sortedTokens[0],
-                quote: sortedTokens[1],
-                poolIdx: 36000,
-            };
-
-            // console.log({ positionsByPoolVariables });
-            request(
-                endpoint,
-                queryForPositionsByPool,
-                positionsByPoolVariables,
-                // requestHeaders: headers,
-            ).then(async (data) => {
-                // if (JSON.stringify(graphData.positionsByUser) !== JSON.stringify(data.user)) {
-                const poolData = data.pools[0];
-                const poolPositions = poolData.positions;
-                console.log({ poolPositions });
-                // poolPositions.reduce(
-                //     (p: position, fn: (position: any) => Promise<any>) => p.then(fn),
-                //     Promise.resolve(),
-                // );
-                const updatedPositions: position[] = [];
-                for (const position of poolPositions) {
-                    const updatedPosition = await getPositionData(position);
-                    updatedPositions.push(updatedPosition);
-                }
-                // poolData.positions = updatedPositions;
-                // if (JSON.stringify(graphData.positionsByPool) !== JSON.stringify(poolData)) {
-                //     dispatch(setPositionsByPool(poolData));
-                // }
-                Promise.all(poolPositions.map(getPositionData)).then((updatedPositions) => {
-                    poolData.positions = updatedPositions;
-                    // const positionArray = updatedPositions as positionsByPool
-                    // console.log(pool.positions);
-                    if (JSON.stringify(graphData.positionsByPool) !== JSON.stringify(poolData)) {
-                        dispatch(setPositionsByPool(poolData));
+                        });
                     }
                 });
-            });
         }
     }, [tokenPairStringified]);
 
@@ -458,30 +423,26 @@ export default function App() {
 
     const graphData = useAppSelector((state) => state.graphData);
 
-    const getPositionData = async (position: position): Promise<position> => {
-        const baseTokenAddress = position.pool.base;
-        const quoteTokenAddress = position.pool.quote;
-        // console.log({ provider });
-        // const poolPriceNonDisplay = await getSpotPrice(
-        //     baseTokenAddress,
-        //     quoteTokenAddress,
-        //     POOL_PRIMARY,
-        //     provider,
-        // );
+    const getPositionData = async (position: Position2): Promise<Position2> => {
+        position.base = position.base.startsWith('0x') ? position.base : '0x' + position.base;
+        position.quote = position.quote.startsWith('0x') ? position.quote : '0x' + position.quote;
+        position.user = position.user.startsWith('0x') ? position.user : '0x' + position.user;
+
+        const baseTokenAddress = position.base;
+        const quoteTokenAddress = position.quote;
+
         const poolPriceNonDisplay = await cachedQuerySpotPrice(
             baseTokenAddress,
             quoteTokenAddress,
             lastBlockNumber,
         );
 
-        const positionAccountId = position.id.substring(0, 42);
-
-        position.accountId = positionAccountId;
         try {
-            position.ensName = await cachedFetchAddress(positionAccountId);
+            position.userEnsName = await cachedFetchAddress(position.user);
         } catch (error) {
             console.log(error);
         }
+
         const poolPriceInTicks = Math.log(poolPriceNonDisplay) / Math.log(1.0001);
 
         const baseTokenDecimals = await cachedGetTokenDecimals(baseTokenAddress);
@@ -508,6 +469,7 @@ export default function App() {
         }
 
         position.poolPriceInTicks = poolPriceInTicks;
+
         if (baseTokenAddress === contractAddresses.ZERO_ADDR) {
             position.baseTokenSymbol = 'ETH';
             position.quoteTokenSymbol = 'DAI';
@@ -538,50 +500,30 @@ export default function App() {
 
     useEffect(() => {
         if (isAuthenticated && account) {
-            const endpoint = 'https://api.thegraph.com/subgraphs/name/a0910841082130913312/croc43';
-            const queryForPositionsByUser = gql`
-                query ($userAddress: Bytes) {
-                    user(id: $userAddress) {
-                        id
-                        positions {
-                            id
-                            pool {
-                                id
-                                base
-                                quote
-                                poolIdx
+            const allUserPositionsCacheEndpoint =
+                'http://ec2-18-233-99-51.compute-1.amazonaws.com:5000/user_positions?';
+
+            fetch(
+                allUserPositionsCacheEndpoint +
+                    new URLSearchParams({
+                        user: account,
+                    }),
+            )
+                .then((response) => response.json())
+                .then((json) => {
+                    const userPositions = json.data;
+
+                    if (userPositions) {
+                        Promise.all(userPositions.map(getPositionData)).then((updatedPositions) => {
+                            if (
+                                JSON.stringify(graphData.positionsByUser.positions) !==
+                                JSON.stringify(updatedPositions)
+                            ) {
+                                dispatch(setPositionsByUser({ positions: updatedPositions }));
                             }
-                            ambient
-                            bidTick
-                            askTick
-                        }
+                        });
                     }
-                }
-            `;
-            const positionByUserVariables = {
-                userAddress: account,
-            };
-            request(
-                endpoint,
-                queryForPositionsByUser,
-                positionByUserVariables,
-                // requestHeaders: headers,
-            ).then((data) => {
-                // if (JSON.stringify(graphData.positionsByUser) !== JSON.stringify(data.user)) {
-                const userData = data.user;
-                const userPositions = userData.positions;
-                // console.log({ userPositions });
-                if (userPositions) {
-                    Promise.all(userPositions.map(getPositionData)).then((updatedPositions) => {
-                        userData.positions = updatedPositions;
-                        if (
-                            JSON.stringify(graphData.positionsByUser) !== JSON.stringify(userData)
-                        ) {
-                            dispatch(setPositionsByUser(userData));
-                        }
-                    });
-                }
-            });
+                });
         }
     }, [isAuthenticated, account, lastBlockNumber]);
 

@@ -3,10 +3,11 @@ import Button from '../../../Global/Button/Button';
 import CurrencyDisplayContainer from '../CurrencyDisplayContainer/CurrencyDisplayContainer';
 import Divider from '../../../Global/Divider/Divider';
 import EditPriceInfo from '../EditPriceInfo/EditPriceInfo';
-import { PositionIF } from '../../../../utils/interfaces/PositionIF';
+// import { PositionIF } from '../../../../utils/interfaces/PositionIF';
+import { Position2 } from '../../../../utils/state/graphDataSlice';
 interface ConfirmEditModalProps {
     onClose: () => void;
-    position: PositionIF;
+    position: Position2;
 }
 
 export default function ConfirmEditModal(props: ConfirmEditModalProps) {

@@ -4,7 +4,8 @@ import { useModal } from '../Modal/useModal';
 import Modal from '../Modal/Modal';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { PositionIF } from '../../../utils/interfaces/PositionIF';
+// import { PositionIF } from '../../../utils/interfaces/PositionIF';
+import { Position2 } from '../../../utils/state/graphDataSlice';
 
 import RemoveRange from '../../RemoveRange/RemoveRange';
 import RangeDetails from '../../RangeDetails/RangeDetails';
@@ -15,7 +16,7 @@ import { ambientPosSlot, concPosSlot } from '@crocswap-libs/sdk';
 interface PositionProps {
     portfolio?: boolean;
     notOnTradeRoute?: boolean;
-    position: PositionIF;
+    position: Position2;
     isAllPositionsEnabled: boolean;
     tokenAAddress: string;
     tokenBAddress: string;
@@ -77,10 +78,10 @@ export default function Position(props: PositionProps) {
             </td>
         </>
     );
-    const ownerId = position ? position.accountId : null;
+    const ownerId = position ? position.user : null;
 
-    const ensName = position?.ensName !== '' ? position.ensName : null;
-    const ownerIdTruncated = position ? truncateAddress(position.accountId, 18) : null;
+    const ensName = position?.userEnsName !== '' ? position.userEnsName : null;
+    const ownerIdTruncated = position ? truncateAddress(position.user, 18) : null;
 
     const positionData = {
         position: position,
@@ -88,12 +89,12 @@ export default function Position(props: PositionProps) {
 
     let posHash;
     if (position.ambient) {
-        posHash = ambientPosSlot(position.id as string, position.pool.base, position.pool.quote);
+        posHash = ambientPosSlot(position.user, position.base, position.quote);
     } else {
         posHash = concPosSlot(
-            position.id as string,
-            position.pool.base,
-            position.pool.quote,
+            position.user,
+            position.base,
+            position.quote,
             position.bidTick,
             position.askTick,
         );
@@ -116,8 +117,8 @@ export default function Position(props: PositionProps) {
         }
     }
 
-    const positionBaseAddressLowerCase = position.pool.base.toLowerCase();
-    const positionQuoteAddressLowerCase = position.pool.quote.toLowerCase();
+    const positionBaseAddressLowerCase = position.base.toLowerCase();
+    const positionQuoteAddressLowerCase = position.quote.toLowerCase();
 
     const tokenAAddressLowerCase = tokenAAddress.toLowerCase();
     const tokenBAddressLowerCase = tokenBAddress.toLowerCase();
