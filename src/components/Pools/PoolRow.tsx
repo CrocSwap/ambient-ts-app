@@ -59,7 +59,7 @@ export default function PoolRow(props: PoolProps) {
         navigate('/pools/' + poolData.address);
     }
     return (
-        <tr onClick={handleRowClick}>
+        <tr onClick={handleRowClick} style={{ cursor: 'pointer' }}>
             <td data-column='id' className={styles.pool_id}>
                 {props.index + 1}
             </td>

@@ -44,7 +44,7 @@ export default function TopTokenRow(props: TokenProps) {
         navigate('/tokens/' + tokenData.address);
     }
     return (
-        <tr onClick={handleRowClick}>
+        <tr onClick={handleRowClick} style={{ cursor: 'pointer' }}>
             <td className={styles.topToken_id}>{props.index}</td>
             {tokenImages}
 
