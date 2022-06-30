@@ -24,7 +24,7 @@ import { TokenIF, TokenPairIF } from '../../../../utils/interfaces/exports';
 interface LimitCurrencyConverterProps {
     tokenPair: TokenPairIF;
     tokensBank: Array<TokenIF>;
-    setImportedTokens: Dispatch<SetStateAction<{ name: string; address: string; symbol: string; decimals: number; chainId: number; logoURI: string; fromList: string; }[]>>;
+    setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     searchableTokens: Array<TokenIF>;
     chainId: string;
     poolPriceNonDisplay: number;

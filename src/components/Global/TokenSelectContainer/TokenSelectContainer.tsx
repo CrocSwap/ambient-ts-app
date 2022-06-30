@@ -10,7 +10,7 @@ import { useSearch } from './useSearch';
 interface TokenSelectContainerPropsIF {
     tokenPair: TokenPairIF;
     tokensBank: Array<TokenIF>;
-    setImportedTokens: Dispatch<SetStateAction<{ name: string; address: string; symbol: string; decimals: number; chainId: number; logoURI: string; fromList: string; }[]>>;
+    setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     searchableTokens: Array<TokenIF>;
     tokenList?: Array<TokenIF>;
     chainId: string;
@@ -42,8 +42,6 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
     ] = useSearch(tokensBank, searchableTokens, chainId);
 
     const handleClickSearchable = (tkn:TokenIF) => {
-        console.log(tokensBank);
-        console.log(tkn);
         // look inside tokensBank to see if clicked token is already imported
         const importedTokenAddresses = tokensBank.map((token: TokenIF) => token.address)
         const newImportedTokensArray = importedTokenAddresses.includes(tkn.address)
@@ -55,7 +53,6 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
         const userData = JSON.parse(localStorage.getItem('user') as string);
         userData.tokens = newImportedTokensArray;
         localStorage.setItem('user', JSON.stringify(userData));
-        console.log({newImportedTokensArray});
         setImportedTokens(newImportedTokensArray);
     }
 
@@ -75,7 +72,7 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
                         />
                     );
             })}
-            {matchingSearchableTokens.length >=3 ? <h3>Searched Tokens</h3> : null}
+            {matchingSearchableTokens.length ? <h3>Searched Tokens</h3> : null}
             {matchingSearchableTokens.map((tkn:TokenIF, idx:number) => (
                 <TokenSelectSearchable
                     key={`tss_${idx}`}
@@ -97,17 +94,13 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
                 />
             </div>
             {tokenListContent}
+            <Button title='Manage Token List' action={() => setShowManageTokenListContent(true)} />
         </>
-    );
-
-    const manageTokenListButton = (
-        <Button title='Manage Token List' action={() => setShowManageTokenListContent(true)} />
     );
 
     return (
         <div className={styles.token_select_container}>
             {showManageTokenListContent ? <TokenList /> : tokenListContainer}
-            {showManageTokenListContent ? null : manageTokenListButton}
         </div>
     );
 }

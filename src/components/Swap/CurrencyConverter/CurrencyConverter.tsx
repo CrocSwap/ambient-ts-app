@@ -15,7 +15,7 @@ interface CurrencyConverterPropsIF {
     isSellTokenBase: boolean;
     tokenPair: TokenPairIF;
     tokensBank: Array<TokenIF>;
-    setImportedTokens: Dispatch<SetStateAction<{ name: string; address: string; symbol: string; decimals: number; chainId: number; logoURI: string; fromList: string; }[]>>;
+    setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     searchableTokens: Array<TokenIF>;
     chainId: string;
     isLiq: boolean;

@@ -19,7 +19,7 @@ import {
 // interface for component props
 interface RangeCurrencyConverterPropsIF {
     tokensBank: Array<TokenIF>;
-    setImportedTokens: Dispatch<SetStateAction<{ name: string; address: string; symbol: string; decimals: number; chainId: number; logoURI: string; fromList: string; }[]>>;
+    setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     searchableTokens: Array<TokenIF>;
     chainId: string;
     isWithdrawTokenAFromDexChecked: boolean;

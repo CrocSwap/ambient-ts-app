@@ -40,7 +40,7 @@ import { addReceipt } from '../../utils/state/receiptDataSlice';
 
 interface SwapPropsIF {
     importedTokens: Array<TokenIF>;
-    setImportedTokens: Dispatch<SetStateAction<{ name: string; address: string; symbol: string; decimals: number; chainId: number; logoURI: string; fromList: string; }[]>>;
+    setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     searchableTokens: Array<TokenIF>;
     provider: JsonRpcProvider;
     isOnTradeRoute?: boolean;

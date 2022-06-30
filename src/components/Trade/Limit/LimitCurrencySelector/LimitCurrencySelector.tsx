@@ -17,7 +17,7 @@ import { useModal } from '../../../../components/Global/Modal/useModal';
 interface LimitCurrencySelectorProps {
     tokenPair: TokenPairIF;
     tokensBank: Array<TokenIF>;
-    setImportedTokens: Dispatch<SetStateAction<{ name: string; address: string; symbol: string; decimals: number; chainId: number; logoURI: string; fromList: string; }[]>>;
+    setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     searchableTokens: Array<TokenIF>;
     chainId: string;
     fieldId: string;

@@ -79,9 +79,9 @@ export default function App() {
     const dispatch = useAppDispatch();
 
     // tokens specifically imported by the end user
-    const [importedTokens, setImportedTokens] = useState(defaultTokens);
+    const [importedTokens, setImportedTokens] = useState<TokenIF[]>(defaultTokens);
     // all tokens from active token lists
-    const [searchableTokens, setSearchableTokens] = useState(defaultTokens);
+    const [searchableTokens, setSearchableTokens] = useState<TokenIF[]>(defaultTokens);
 
     // prevent multiple fetch requests to external URIs for token lists
     const [needTokenLists, setNeedTokenLists] = useState(true);
@@ -109,15 +109,17 @@ export default function App() {
         setSearchableTokens(getTokensFromLists(activeTokenLists));
         // TODO:  this hook runs once after the initial load of the app, we may need to add
         // TODO:  additional triggers for DOM interactions
-    }, []);
+    }, [tokenListsReceived]);
 
     function getTokensFromLists(tokenListURIs:Array<string>) {
         // retrieve and parse all token lists held in local storage
-        const tokensFromLists = JSON.parse(localStorage.getItem('allTokenLists') as string)
-            // remove all lists with URIs not included in the URIs array passed as argument
-            .filter((tokenList:TokenListIF) => tokenListURIs.includes(tokenList.uri ?? ''))
-            // extract array of tokens from active lists and flatten into single array
-            .map((tokenList:TokenListIF) => tokenList.tokens).flat();
+        const tokensFromLists = localStorage.allTokenLists
+            ? JSON.parse(localStorage.getItem('allTokenLists') as string)
+                // remove all lists with URIs not included in the URIs array passed as argument
+                .filter((tokenList:TokenListIF) => tokenListURIs.includes(tokenList.uri ?? ''))
+                // extract array of tokens from active lists and flatten into single array
+                .map((tokenList:TokenListIF) => tokenList.tokens).flat()
+            : defaultTokens;
         // return array of all tokens from lists as specified by token list URI
         return tokensFromLists;
     }

@@ -40,7 +40,7 @@ import { setLimitPrice } from '../../../utils/state/tradeDataSlice';
 interface LimitPropsIF {
     importedTokens: Array<TokenIF>;
     searchableTokens: Array<TokenIF>;
-    setImportedTokens: Dispatch<SetStateAction<{ name: string; address: string; symbol: string; decimals: number; chainId: number; logoURI: string; fromList: string; }[]>>;
+    setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     provider: JsonRpcProvider;
     isOnTradeRoute?: boolean;
     gasPriceinGwei: string;

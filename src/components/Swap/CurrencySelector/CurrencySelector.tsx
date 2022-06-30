@@ -11,7 +11,7 @@ import TokenSelectContainer from '../../Global/TokenSelectContainer/TokenSelectC
 interface CurrencySelectorProps {
     tokenPair: TokenPairIF;
     tokensBank: Array<TokenIF>;
-    setImportedTokens: Dispatch<SetStateAction<{ name: string; address: string; symbol: string; decimals: number; chainId: number; logoURI: string; fromList: string; }[]>>;
+    setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     searchableTokens: Array<TokenIF>;
     chainId: string;
     fieldId: string;
@@ -21,9 +21,9 @@ interface CurrencySelectorProps {
     tokenABalance: string;
     tokenBBalance: string;
     isWithdrawFromDexChecked: boolean;
-    setIsWithdrawFromDexChecked: React.Dispatch<SetStateAction<boolean>>;
+    setIsWithdrawFromDexChecked: Dispatch<SetStateAction<boolean>>;
     isWithdrawToWalletChecked: boolean;
-    setIsWithdrawToWalletChecked: React.Dispatch<SetStateAction<boolean>>;
+    setIsWithdrawToWalletChecked: Dispatch<SetStateAction<boolean>>;
     handleChangeEvent: (evt: ChangeEvent<HTMLInputElement>) => void;
     reverseTokens: () => void;
 }
