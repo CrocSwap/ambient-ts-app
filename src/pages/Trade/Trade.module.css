@@ -68,10 +68,14 @@
     
 
    
+    transition: all var(--animation-speed) ease-in-out;
 }
-.navigation_menu a[class="active"] {
+
+
+.navigation_menu a[class="active"], .navigation_menu a:hover {
     background: var(--title-gradient);
     color: var(--dark3);
+   
 }
 
  
