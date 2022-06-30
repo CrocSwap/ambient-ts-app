@@ -1,5 +1,5 @@
 import Divider from '../../../components/Global/Divider/Divider';
-import { TokenData } from '../../../state/tokens/reducer';
+import { TokenData } from '../../../state/tokens/models';
 import { formatDollarAmount } from '../../../utils/numbers';
 import styles from './TokenInfoCard.module.css';
 interface TokenProps {

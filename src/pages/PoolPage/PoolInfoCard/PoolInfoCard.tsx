@@ -1,5 +1,5 @@
 import Divider from '../../../components/Global/Divider/Divider';
-import { PoolData } from '../../../state/pools/reducer';
+import { PoolData } from '../../../state/pools/models';
 import { isAddress } from '../../../utils';
 import { formatAmount, formatDollarAmount } from '../../../utils/numbers';
 import styles from './PoolInfoCard.module.css';

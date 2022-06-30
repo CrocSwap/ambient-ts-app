@@ -3,36 +3,30 @@ import { useParams } from 'react-router-dom';
 import Divider from '../../components/Global/Divider/Divider';
 import Pools from '../../components/Pools/Pools';
 
-import {
-    usePoolsForToken,
-    useTokenChartData,
-    useTokenData,
-    useTokenTransactions,
-} from '../../state/tokens/hooks';
+import { usePoolsForToken, useTokenData } from '../../state/tokens/hooks';
 
 import TokenCardInfo from './TokenInfoCard/TokenInfoCard';
 import styles from './TokenPage.module.css';
 import { usePoolDatas } from '../../state/pools/hooks';
-import Transactions from '../Transactions/Transactions';
 import { isAddress } from '../../utils';
-import { TokenData } from '../../state/tokens/reducer';
 import TokenPageChart from './Chart/TokenPageChart';
 import { formatDollarAmount } from '../../utils/numbers';
 
 export default function TokenPage() {
-    const { address } = useParams();
+    const { address } = useParams() ?? '';
     useEffect(() => {
         window.scrollTo(0, 0);
     }, []);
 
     const tokenData = useTokenData(address);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const poolsForToken = usePoolsForToken(address!);
     const poolDatas = usePoolDatas(poolsForToken ?? []);
-    const transactions = useTokenTransactions(address!);
-    const chartData = useTokenChartData(address!);
+    // const transactions = useTokenTransactions(address!);
+    // const chartData = useTokenChartData(address!);
 
     function getTokenLogoURL() {
-        const checkSummed = isAddress(tokenData!.address);
+        const checkSummed = isAddress(tokenData?.address);
         return `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/${checkSummed}/logo.png`;
     }
 

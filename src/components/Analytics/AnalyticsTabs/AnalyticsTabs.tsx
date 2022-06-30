@@ -9,8 +9,8 @@ import TopRanges from '../../TopRanges/TopRanges';
 import { useAllTokenData } from '../../../state/tokens/hooks';
 import { notEmpty } from '../../../utils';
 import { useAllPoolData } from '../../../state/pools/hooks';
-import { TokenData } from '../../../state/tokens/reducer';
-import { PoolData } from '../../../state/pools/reducer';
+import { TokenData } from '../../../state/tokens/models';
+import { PoolData } from '../../../state/pools/models';
 
 export default function AnalyticsTabs() {
     const [activeTab, setActiveTab] = useState('tab1');

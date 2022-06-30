@@ -15,9 +15,10 @@ export default function PoolPage() {
         window.scrollTo(0, 0);
     }, []);
 
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const poolData = usePoolDatas([address!])[0];
-    const chartData = usePoolChartData(address!);
-    const transactions = usePoolTransactions(address!);
+    // const chartData = usePoolChartData(address);
+    // const transactions = usePoolTransactions(address);
 
     function getPoolLogoURL(address: string) {
         const checkSummed = isAddress(address);
