@@ -63,7 +63,8 @@
   .switch_label:active .switch_button {
     width: 60px;
   }
-  
+
+
 
   .disabled{
     pointer-events: none;

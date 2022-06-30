@@ -93,7 +93,7 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
 
     const DexBalanceContent = (
         <span className={styles.surplus_toggle}>
-            {fieldId === 'sell' ? 'Use DEX balance' : 'Withdraw to Wallet'}
+            {fieldId === 'sell' ? 'Use exchange balance' : 'Withdraw to Wallet'}
             <div className={styles.toggle_container}>
                 {fieldId === 'sell' ? (
                     <Toggle

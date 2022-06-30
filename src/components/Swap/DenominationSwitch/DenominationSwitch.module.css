@@ -28,6 +28,12 @@
     padding: 5px 8px;
 }
 
+.denomination_switch button:hover{
+    background: var(--title-gradient);
+    transition: all var(--animation-speed) ease-in-out;
+    color: var(--dark2)
+}
+
 .denomination_switch .active_button{
     border: solid 0.2px transparent;
     background-image: linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, 0)), linear-gradient(101deg, #7371FC, #CDC1FF, #7371FC
