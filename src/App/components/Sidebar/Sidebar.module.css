@@ -1,19 +1,14 @@
-:root {
-    font-size: 16px;
-    --text-primary: #b6b6b6;
-    --text-secondary: #ececec;
-    --bg-primary: #23232e;
-    --bg-secondary: #141418;
-    --transition-speed: 600ms;
-  }
-  
+
 
   
   .sidebar {
     position: fixed;
     background-color: var(--dark1);
-    transition: width 600ms ease;
+    transition: width var(--animation-speed) ease;
+    
     overflow: scroll;
+    padding: 0 4px;
+    
     /* margin-top: 4rem; */
   }
   .sidebar::-webkit-scrollbar {
@@ -48,6 +43,7 @@
 .bottom_elements{
     margin-top: auto;
     width: 100%;
+  
   }
   
   
@@ -55,7 +51,7 @@
   .sidebar_link {
     display: flex;
     align-items: center;
-    height: 1.4375rem;
+    height: 1.438rem;
     padding: 1.4375rem 0;
     border-bottom: 1px solid #171D27;
 
@@ -64,22 +60,29 @@
   
   .sidebar_item{
 
-    transition: all 4s ease-out;
+    transition: all var(--animation-speed)ease-out;
   }
  
   .sidebar_item:hover{
-    background: var(--title-gradient);
-    transition: all 4s ease-out;
+    background: var(--dark2);
+    color: var(--text-grey-white);
+    transition: all var(--animation-speed) ease-out;
 
 
 
   }
 
+  .toggle_sidebar_icon{
+    padding: 0;
+    max-height: 2rem;
+    transition: all var(--animation-speed) ease-out;
+   
+  }
 
   
   .link_text {
     color: var(--text-highlight);
-    transition: all 0.3s ease-out;
+    transition: all var(--animation-speed) ease-out;
     font-weight: 500;
 font-size: 12px;
 line-height: 15px;
@@ -90,7 +93,7 @@ line-height: 15px;
   }
 
   .sidebar_link:hover > .link_text{
-    color: black;
+    color: var(--text-grey-white);
   }
 
 
@@ -103,36 +106,38 @@ line-height: 15px;
   
 
   .logo {
-    font-weight: bold;
-    text-transform: uppercase;
+ 
     margin-bottom: 1rem;
     text-align: center;
     color: var(--text-secondary);
     background: var(--bg-secondary);
     font-size: 1.5rem;
-    letter-spacing: 0.3ch;
     width: 100%;
+
+    display: flex;
+    justify-content: center;
   }
   
   .logo svg {
     transform: rotate(0deg);
-    transition: var(--transition-speed);
+    transition: var(--animation-speed);
   }
   
-  .logo_text
-  {
-    display: inline;
-    position: absolute;
-    left: -999px;
-    transition: var(--transition-speed);
-  }
+
   
   .sidebar:hover .logo svg {
-    transform: rotate(-180deg);
+    transform: scale(1.09);
+    transition: all var(--animation-speed) ease-in-out;
   }
 
   .sidebar_active .logo svg{
     transform: rotate(-180deg);
+
+  }
+
+  .sidebar_active .logo{
+    display: flex;
+    justify-content: flex-end;
   }
 
   /* SEARCH CONTAINER */
@@ -154,7 +159,7 @@ line-height: 15px;
   outline: none;
   border: none;
   opacity: 1;
-  transition: all .75s ease-in;
+  transition: all var(--animation-speed) ease-in;
   cursor: pointer;
 
 }
@@ -165,7 +170,9 @@ line-height: 15px;
   margin-top: 0;
   cursor: pointer;
   color: #fa983a;
-  transition: all .25s ease-in;
+  transition: all var(--animation-speed) ease-in;
+
+
 
 }
 
@@ -183,6 +190,8 @@ line-height: 15px;
       bottom: 0;
       width: 100vw;
       height: 5rem;
+     background: var(--dark2);
+     z-index: 2;
     }
   
     .logo {
@@ -197,6 +206,7 @@ line-height: 15px;
       justify-content: center;
     }
   
+   
     main {
       margin: 0;
     }
@@ -208,10 +218,10 @@ line-height: 15px;
   @media only screen and (min-width: 600px) {
     .sidebar {
       top: 0;
-      width: 5rem;
+      width: 1.938rem;
       height: 100vh;
       margin-top: 4rem;
-      
+     
     }
 
     .sidebar::-webkit-scrollbar-track {
@@ -222,9 +232,9 @@ line-height: 15px;
         background: transparent;
       }
   
-    .sidebar:hover {
+    /* .sidebar:hover {
       width: 16rem;
-    }
+    } */
 
     .sidebar_active{
         width: 16rem;
@@ -233,16 +243,27 @@ line-height: 15px;
 
     .sidebar_active .search_container{
         background-color: var(--dark3);
-    }
-    .sidebar_active  .search__box {
+        border-radius: var(--border-radius);
+        height: 24px;
+
+      }
+      .sidebar_active  .search__box {
         width: 100%;
         padding: 0 1rem;
+        
+      
       }
 
       .sidebar_active .search__icon {
-        background-color: #eee;
+    
+        display: flex;
+       
+        justify-content: center;
+        align-items: center;
+       
       }
   
+   
     .sidebar_active .link_text {
       display: inline;
     }
@@ -257,6 +278,8 @@ line-height: 15px;
       left: 0px;
     }
 
+ 
+
 
 
 
@@ -269,16 +292,17 @@ line-height: 15px;
     .sidebar:hover .search_container{
         background-color: var(--dark3);
     }
-    .sidebar:hover  .search__box {
+    /* .sidebar:hover  .search__box {
         width: 100%;
         padding: 0 1rem;
-      }
+      } */
 
-      .sidebar:hover .search__icon {
-        background-color: #eee;
+      .search_container:hover .search__icon {
+      transform: scale(1.03);
+      transition: all var(--animation-speed) ease-in-out
       }
   
-    .sidebar:hover .link_text {
+    /* .sidebar:hover .link_text {
       display: inline;
     }
   
@@ -290,7 +314,7 @@ line-height: 15px;
     .sidebar:hover .logo_text
     {
       left: 0px;
-    }
+    } */
   
     .sidebar_nav {
   
@@ -298,6 +322,10 @@ line-height: 15px;
     }
     .search_container{
         display:flex;
+       
+        justify-content: center;
+        align-items: center;
+        width: 100%;
     }
   }
   

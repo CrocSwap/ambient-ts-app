@@ -6,7 +6,7 @@
 }
 .inner{
     white-space: nowrap;
-    transition: transform 0.3s;
+    transition: transform var(--animation-speed);
 }
 
 

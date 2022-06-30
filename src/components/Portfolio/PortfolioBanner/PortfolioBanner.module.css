@@ -14,7 +14,7 @@
     justify-content: space-between;
     align-items: flex-end;
 
-    border-radius: 24px;
+    border-radius: var(--border-radius);
 
 
 padding: 1rem;

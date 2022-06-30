@@ -3,7 +3,12 @@ import Row from '../../Global/Row/Row';
 import DividerDark from '../../Global/DividerDark/DividerDark';
 import graphImage from '../../../assets/images/Temporary/chart.svg';
 
-export default function PriceInfo() {
+interface IPriceInfoProps {
+    lowRangeDisplay: string;
+    highRangeDisplay: string;
+}
+
+export default function PriceInfo(props: IPriceInfoProps) {
     const removePositionInfo = (
         <div className={styles.remove_position_info}>
             <Row>
@@ -57,11 +62,11 @@ export default function PriceInfo() {
             <div className={styles.min_max_price}>
                 <div className={styles.min_max_content}>
                     Min Price
-                    <span className={styles.min_price}>$2100.00</span>
+                    <span className={styles.min_price}>{props.lowRangeDisplay ?? 0}</span>
                 </div>
                 <div className={styles.min_max_content}>
                     Max Price
-                    <span className={styles.max_price}>$4000.00</span>
+                    <span className={styles.max_price}>{props.highRangeDisplay ?? 'Infinity'}</span>
                 </div>
             </div>
         </div>

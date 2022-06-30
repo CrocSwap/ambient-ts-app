@@ -108,7 +108,7 @@ color: var(--text-grey-white);
     text-align: end;
   
     border: none;
-    border-radius: 0.25rem;
+    border-radius: var(--border-radius);
     outline: 0;
     background-color: transparent;
     background-clip: padding-box;

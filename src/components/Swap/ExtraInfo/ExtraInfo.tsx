@@ -77,6 +77,14 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
               4,
           );
 
+    const priceDisplay = makePriceDisplay(
+        tokenPair.dataTokenA,
+        tokenPair.dataTokenB,
+        isTokenABase,
+        poolPriceDisplay,
+        didUserFlipDenom,
+    );
+
     const extraInfoData = [
         {
             title: 'Spot Price',
@@ -118,14 +126,6 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
     );
 
     const extraDetailsOrNull = showExtraDetails ? extraInfoDetails : null;
-
-    const priceDisplay = makePriceDisplay(
-        tokenPair.dataTokenA,
-        tokenPair.dataTokenB,
-        isTokenABase,
-        poolPriceDisplay,
-        didUserFlipDenom,
-    );
 
     return (
         <div className={styles.extra_info_container}>

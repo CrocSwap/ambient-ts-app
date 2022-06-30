@@ -61,19 +61,23 @@ export default function LimitExtraInfo(props: LimitExtraInfoPropsIF) {
         }
     }
 
-    const limitRateNum = truncateDecimals(parseFloat(limitRate), 4);
+    const limitRateString = truncateDecimals(parseFloat(limitRate), 2);
 
     const displayPriceString = isDenomBase
-        ? truncateDecimals(1 / poolPriceDisplay, 4).toString()
-        : truncateDecimals(poolPriceDisplay, 4).toString();
+        ? truncateDecimals(1 / poolPriceDisplay, 2)
+        : truncateDecimals(poolPriceDisplay, 2);
 
     const priceLimitAfterSlippageAndFee = reverseSlippage
         ? truncateDecimals(
-              limitRateNum * (1 + slippageTolerance / 100) * (1 + liquidityProviderFee / 100),
+              parseFloat(limitRateString) *
+                  (1 + slippageTolerance / 100) *
+                  (1 + liquidityProviderFee / 100),
               4,
           )
         : truncateDecimals(
-              limitRateNum * (1 - slippageTolerance / 100) * (1 - liquidityProviderFee / 100),
+              parseFloat(limitRateString) *
+                  (1 - slippageTolerance / 100) *
+                  (1 - liquidityProviderFee / 100),
               4,
           );
 

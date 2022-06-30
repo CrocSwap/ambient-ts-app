@@ -15,7 +15,7 @@
     background-color: transparent;
     background-clip: padding-box;
   
-    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    transition: border-color var(--animation-speed) ease-in-out, box-shadow var(--animation-speed) ease-in-out;
   
   }
   .currency_quantity::placeholder {
@@ -52,7 +52,7 @@
   
   .swapbox_top {
     border-radius: var(--border-radius);
-    background-color: var(--dark1);
+    background-color: var(--dark2);
     display: flex;
     justify-content: space-between;
     flex-direction: row;
@@ -103,7 +103,7 @@
   
   .sellAllButton {
     cursor: pointer;
-    transition: all 0.3s ease-out;
+    transition: all var(--animation-speed) ease-out;
   
     color: green;
   }
@@ -128,7 +128,7 @@
     max-height: 400px;
     overflow-y: scroll;
   overflow-x: hidden;
-  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transition: all var(--animation-speed) cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
 
   .pool_modal::-webkit-scrollbar {

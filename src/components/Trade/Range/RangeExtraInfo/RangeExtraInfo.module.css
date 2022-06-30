@@ -31,7 +31,7 @@
 .extra_details{
     background-color: var(--dark2);
     margin-top: 10px;
-    border-radius: 24px;
+    border-radius: var(--border-radius);
 
     color: var(--text-grey-light);
     font-size: var(--body-size);

@@ -7,30 +7,61 @@ interface PositionsProps {
     isAllPositionsEnabled: boolean;
     portfolio?: boolean;
     notOnTradeRoute?: boolean;
+    graphData: graphData;
 }
 
+import { useMoralis } from 'react-moralis';
+import { graphData } from '../../../utils/state/graphDataSlice';
+
 export default function Positions(props: PositionsProps) {
-    const { portfolio, notOnTradeRoute, isAllPositionsEnabled } = props;
-    const graphData = useAppSelector((state) => state?.graphData);
+    const { portfolio, notOnTradeRoute, isAllPositionsEnabled, graphData } = props;
+
+    const { account, isAuthenticated } = useMoralis();
+
+    const tradeData = useAppSelector((state) => state.tradeData);
+
+    const tokenAAddress = tradeData.tokenA.address;
+    const tokenBAddress = tradeData.tokenB.address;
+
+    // const graphData = useAppSelector((state) => state?.graphData);
 
     const userPositions = graphData?.positionsByUser?.positions;
+    const poolPositions = graphData?.positionsByPool?.positions;
 
-    const positionsDisplay = userPositions.map((position, idx) => (
-        <Position
-            key={idx}
-            portfolio={portfolio}
-            notOnTradeRoute={notOnTradeRoute}
-            position={position}
-            isAllPositionsEnabled={isAllPositionsEnabled}
-        />
-    ));
+    const positionsDisplay = isAllPositionsEnabled
+        ? poolPositions.map((position, idx) => (
+              <Position
+                  key={idx}
+                  portfolio={portfolio}
+                  notOnTradeRoute={notOnTradeRoute}
+                  position={position}
+                  isAllPositionsEnabled={isAllPositionsEnabled}
+                  tokenAAddress={tokenAAddress}
+                  tokenBAddress={tokenBAddress}
+                  account={account ?? undefined}
+                  isAuthenticated={isAuthenticated}
+              />
+          ))
+        : userPositions.map((position, idx) => (
+              <Position
+                  key={idx}
+                  portfolio={portfolio}
+                  notOnTradeRoute={notOnTradeRoute}
+                  position={position}
+                  isAllPositionsEnabled={isAllPositionsEnabled}
+                  tokenAAddress={tokenAAddress}
+                  tokenBAddress={tokenBAddress}
+                  account={account ?? undefined}
+                  isAuthenticated={isAuthenticated}
+              />
+          ));
 
     const positionsHeader = (
         <thead>
             <tr>
                 {portfolio && <th />}
-                {isAllPositionsEnabled && <th>Owner</th>}
-                <th>Position Id</th>
+                {isAllPositionsEnabled && <th>Owner ID</th>}
+                <th>Position ID</th>
                 <th>Range</th>
                 <th>APY</th>
                 <th></th>

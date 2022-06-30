@@ -7,10 +7,10 @@
     transform: translateX(-45%);
     background-color: blue;
     border:  none;
-    border-radius: 4px;
+    border-radius: var(--border-radius);
     padding: 1rem;
     overflow: hidden;
-    transition: height 500ms ease;
+    transition: height var(--animation-speed) ease;
     z-index: 99;
 
 
@@ -18,7 +18,7 @@ background: rgba( 14, 19, 26, 0.5 );
 box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 );
 backdrop-filter: blur( 16.5px );
 -webkit-backdrop-filter: blur( 16.5px );
-border-radius: 10px;
+border-radius: var(--border-radius);
 border: 1px solid rgba( 255, 255, 255, 0.18 );
     
 
@@ -31,8 +31,8 @@ border: 1px solid rgba( 255, 255, 255, 0.18 );
     height: 50px;
     display: flex;
     align-items: center;
-    border-radius: 4px;
-    transition: background 500ms;
+    border-radius: var(--border-radius);
+    transition: background var(--animation-speed);
     padding: 0.5rem;
 
    cursor: pointer;
@@ -43,16 +43,12 @@ border: 1px solid rgba( 255, 255, 255, 0.18 );
    font-size: 15px;
    line-height: var(--body-lh);
 
-   /* transition: all 0.7s ease-out;
-   background: linear-gradient(270deg, #7371FC, #CDC1FF, #7371FC , rgba(34,34,34,0), rgba(34,34,34,0));
-   background-position: 1% 50%;
-   background-size: 400% 300%;
-   text-decoration: none; */
+
 
    
   }
   .topLevelContainer{
-    transition: all 0.7s ease-out;
+    transition: all var(--animation-speed) ease-out;
     background: linear-gradient(270deg, #7371FC, #CDC1FF, #7371FC , rgba(34,34,34,0), rgba(34,34,34,0));
     background-position: 1% 50%;
     background-size: 400% 300%;
@@ -98,7 +94,7 @@ background: #28364a;
 
   .goBackStyle:hover .icon_button svg{
     color: black;
-    transition: all 600ms ease;
+    transition: all var(--animation-speed) ease;
   
   }
   .icon_right {
@@ -119,12 +115,12 @@ background: #28364a;
     font-size: 14px;
     cursor: pointer;
     
-    border-radius: 4px;
+    border-radius: var(--border-radius);
     width: 100%;
     height: 30px;
     color: #CDC1FF;
     border-radius: 0;
-    transition: all 0.7s ease-out;
+    transition: all var(--animation-speed) ease-out;
     background: linear-gradient(270deg, #7371FC, #CDC1FF, #7371FC , rgba(34,34,34,0), rgba(34,34,34,0));
     background-position: 1% 50%;
     background-size: 300% 300%;

@@ -360,6 +360,10 @@ export default function Swap(props: ISwapProps) {
             </ContentContainer>
             {confirmSwapModalOrNull}
             {relativeModalOrNull}
+            {/* <div className={styles.footer}>
+            <PageFooter lastBlockNumber={2}/>
+
+            </div> */}
         </motion.main>
     );
 }
