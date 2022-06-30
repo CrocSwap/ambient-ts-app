@@ -17,8 +17,8 @@ import {
     // toDisplayPrice,
     concDepositSkew,
     // GRID_SIZE_DFLT,
-    // MIN_TICK,
-    // MAX_TICK,
+    MIN_TICK,
+    MAX_TICK,
     concPosSlot,
     approveToken,
     contractAddresses,
@@ -57,7 +57,13 @@ import { TokenIF } from '../../../utils/interfaces/exports';
 import { useTradeData } from '../Trade';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import RangeExtraInfo from '../../../components/Trade/Range/RangeExtraInfo/RangeExtraInfo';
-import { setAdvancedHighTick, setAdvancedLowTick } from '../../../utils/state/tradeDataSlice';
+import {
+    setAdvancedHighTick,
+    setAdvancedLowTick,
+    setSimpleRangeWidth,
+    // setIsTokenAPrimaryRange,
+} from '../../../utils/state/tradeDataSlice';
+import { addReceipt } from '../../../utils/state/receiptDataSlice';
 
 interface RangePropsIF {
     importedTokens: Array<TokenIF>;
@@ -130,10 +136,32 @@ export default function Range(props: RangePropsIF) {
 
     const isTokenABase = tokenPair?.dataTokenA.address === baseTokenAddress;
 
-    const maxSlippage = 5;
+    const slippageTolerancePercentage = tradeData.slippageTolerance;
 
-    const poolWeiPriceLowLimit = poolPriceNonDisplay * (1 - maxSlippage / 100);
-    const poolWeiPriceHighLimit = poolPriceNonDisplay * (1 + maxSlippage / 100);
+    const poolWeiPriceLowLimit = poolPriceNonDisplay * (1 - slippageTolerancePercentage / 100);
+    const poolWeiPriceHighLimit = poolPriceNonDisplay * (1 + slippageTolerancePercentage / 100);
+
+    const poolPriceDisplayNum = parseFloat(poolPriceDisplay);
+
+    const poolPriceTruncatedInQuote =
+        poolPriceDisplayNum < 2
+            ? poolPriceDisplayNum > 0.1
+                ? truncateDecimals(poolPriceDisplayNum, 4)
+                : truncateDecimals(poolPriceDisplayNum, 6)
+            : truncateDecimals(poolPriceDisplayNum, 2);
+
+    const invertedPoolPrice = 1 / poolPriceDisplayNum;
+
+    const poolPriceTruncatedInBase =
+        invertedPoolPrice < 2
+            ? invertedPoolPrice > 0.1
+                ? truncateDecimals(invertedPoolPrice, 4)
+                : truncateDecimals(invertedPoolPrice, 6)
+            : truncateDecimals(invertedPoolPrice, 2);
+
+    const poolPriceTruncated = denominationsInBase
+        ? poolPriceTruncatedInBase
+        : poolPriceTruncatedInQuote;
 
     const signer = provider?.getSigner();
     const tokenA = tokenPair.dataTokenA;
@@ -150,9 +178,18 @@ export default function Range(props: RangePropsIF) {
 
     const [rangeButtonErrorMessage, setRangeButtonErrorMessage] =
         useState<string>('Enter an Amount');
+    // console.log({ poolPriceNonDisplay });
+    const currentPoolPriceTick =
+        poolPriceNonDisplay === 0 ? 0 : Math.log(poolPriceNonDisplay) / Math.log(1.0001);
+    const [rangeWidthPercentage, setRangeWidthPercentage] = useState<number>(
+        tradeData.simpleRangeWidth,
+    );
 
-    const currentPoolPriceTick = Math.log(poolPriceNonDisplay) / Math.log(1.0001);
-    const [rangeWidthPercentage, setRangeWidthPercentage] = useState<number>(100);
+    useEffect(() => {
+        if (tradeData.simpleRangeWidth !== rangeWidthPercentage) {
+            dispatch(setSimpleRangeWidth(rangeWidthPercentage));
+        }
+    }, [rangeWidthPercentage]);
 
     const [minPriceInputString, setMinPriceInputString] = useState<string>('');
     const [maxPriceInputString, setMaxPriceInputString] = useState<string>('');
@@ -182,43 +219,37 @@ export default function Range(props: RangePropsIF) {
     useEffect(() => {
         if (rangeWidthPercentage === 100 && !isAdvancedModeActive) {
             setIsAmbient(true);
+            setRangeLowTick(MIN_TICK);
+            setRangeHighTick(MAX_TICK);
+            setRangeLowBoundNonDisplayPrice(0);
+            setRangeHighBoundNonDisplayPrice(Infinity);
         } else {
             setIsAmbient(false);
+            const lowTick = currentPoolPriceTick - rangeWidthPercentage * 100;
+            const highTick = currentPoolPriceTick + rangeWidthPercentage * 100;
+
+            const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
+                denominationsInBase,
+                baseTokenDecimals,
+                quoteTokenDecimals,
+                lowTick,
+                highTick,
+            );
+            setRangeLowBoundNonDisplayPrice(pinnedDisplayPrices.pinnedMinPriceNonDisplay);
+            setRangeHighBoundNonDisplayPrice(pinnedDisplayPrices.pinnedMaxPriceNonDisplay);
+
+            setPinnedMinPriceDisplayTruncated(pinnedDisplayPrices.pinnedMinPriceDisplayTruncated);
+            setPinnedMaxPriceDisplayTruncated(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated);
+
+            setRangeLowTick(pinnedDisplayPrices.pinnedLowTick);
+            setRangeHighTick(pinnedDisplayPrices.pinnedHighTick);
         }
-        const lowTick = currentPoolPriceTick - rangeWidthPercentage * 100;
-        const highTick = currentPoolPriceTick + rangeWidthPercentage * 100;
-        // console.log({ defaultLowTick });
-        // console.log({ defaultHighTick });
-        const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
-            denominationsInBase,
-            baseTokenDecimals,
-            quoteTokenDecimals,
-            lowTick,
-            highTick,
-        );
-        setRangeLowBoundNonDisplayPrice(pinnedDisplayPrices.pinnedMinPriceNonDisplay);
-        setRangeHighBoundNonDisplayPrice(pinnedDisplayPrices.pinnedMaxPriceNonDisplay);
 
-        // setPinnedMinPriceDisplay(pinnedDisplayPrices.pinnedMinPriceDisplay);
-        // setPinnedMaxPriceDisplay(pinnedDisplayPrices.pinnedMaxPriceDisplay);
-
-        setPinnedMinPriceDisplayTruncated(pinnedDisplayPrices.pinnedMinPriceDisplayTruncated);
-        setPinnedMaxPriceDisplayTruncated(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated);
-
-        setRangeLowTick(pinnedDisplayPrices.pinnedLowTick);
-        setRangeHighTick(pinnedDisplayPrices.pinnedHighTick);
         // console.log({ rangeWidthPercentage });
     }, [rangeWidthPercentage, isAdvancedModeActive, denominationsInBase]);
 
     const [rangeLowTick, setRangeLowTick] = useState(tradeData.advancedLowTick);
     const [rangeHighTick, setRangeHighTick] = useState(tradeData.advancedHighTick);
-
-    // useEffect(() => {
-    //     console.log({ rangeLowTick });
-    // }, [rangeLowTick]);
-    // useEffect(() => {
-    //     console.log({ rangeHighTick });
-    // }, [rangeHighTick]);
 
     const rangeSpanAboveCurrentPrice = rangeHighTick - currentPoolPriceTick;
     const rangeSpanBelowCurrentPrice = currentPoolPriceTick - rangeLowTick;
@@ -226,6 +257,15 @@ export default function Range(props: RangePropsIF) {
     const isOutOfRange = rangeSpanAboveCurrentPrice < 0 || rangeSpanBelowCurrentPrice < 0;
     const isInvalidRange = rangeHighTick <= rangeLowTick;
     // const inRangeSpan = isOutOfRange ? 0 : rangeSpanAboveCurrentPrice + rangeSpanBelowCurrentPrice;
+
+    useEffect(() => {
+        if (isInvalidRange) {
+            setRangeButtonErrorMessage('Please Enter a Valid Range');
+        } else {
+            setRangeButtonErrorMessage('Enter an Amount');
+        }
+    }, [isInvalidRange]);
+
     const minimumSpan =
         rangeSpanAboveCurrentPrice < rangeSpanBelowCurrentPrice
             ? rangeSpanAboveCurrentPrice
@@ -305,6 +345,10 @@ export default function Range(props: RangePropsIF) {
 
     const [initializationComplete, setInitializationComplete] = useState(false);
 
+    // useEffect(() => {
+    //     console.log({ initializationComplete });
+    // }, [initializationComplete]);
+
     useEffect(() => {
         if (isAdvancedModeActive) {
             const rangeLowBoundDisplayField = document.getElementById(
@@ -325,7 +369,7 @@ export default function Range(props: RangePropsIF) {
 
     // initialize based on MinPriceDifferencePercentage & MaxPriceDifferencePercentage
     useEffect(() => {
-        if (!initializationComplete) {
+        if (!initializationComplete && isAdvancedModeActive) {
             const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
                 denominationsInBase,
                 baseTokenDecimals,
@@ -345,14 +389,17 @@ export default function Range(props: RangePropsIF) {
             setRangeLowTick(pinnedDisplayPrices.pinnedLowTick);
             setRangeHighTick(pinnedDisplayPrices.pinnedHighTick);
 
-            const highGeometricDifferencePercentage = truncateDecimals(
-                (pinnedDisplayPrices.pinnedHighTick - currentPoolPriceTick) / 100,
-                0,
-            );
-            const lowGeometricDifferencePercentage = truncateDecimals(
-                (pinnedDisplayPrices.pinnedLowTick - currentPoolPriceTick) / 100,
-                0,
-            );
+            const highTickDiff = pinnedDisplayPrices.pinnedHighTick - currentPoolPriceTick;
+            const lowTickDiff = pinnedDisplayPrices.pinnedLowTick - currentPoolPriceTick;
+
+            const highGeometricDifferencePercentage =
+                Math.abs(highTickDiff) < 200
+                    ? truncateDecimals(highTickDiff / 100, 2)
+                    : truncateDecimals(highTickDiff / 100, 0);
+            const lowGeometricDifferencePercentage =
+                Math.abs(lowTickDiff) < 200
+                    ? truncateDecimals(lowTickDiff / 100, 2)
+                    : truncateDecimals(lowTickDiff / 100, 0);
             denominationsInBase
                 ? setMaxPriceDifferencePercentage(-lowGeometricDifferencePercentage)
                 : setMaxPriceDifferencePercentage(highGeometricDifferencePercentage);
@@ -393,7 +440,6 @@ export default function Range(props: RangePropsIF) {
         baseTokenDecimals,
         quoteTokenDecimals,
     ]);
-
     useEffect(() => {
         if (rangeLowBoundFieldBlurred) {
             // console.log('low bound blurred');
@@ -401,46 +447,50 @@ export default function Range(props: RangePropsIF) {
                 'min-price-input-quantity',
             ) as HTMLInputElement;
 
-            const pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
-                denominationsInBase,
-                baseTokenDecimals,
-                quoteTokenDecimals,
-                rangeLowBoundDisplayField.value,
-                pinnedMaxPriceDisplayTruncated,
-            );
-            console.log({ pinnedDisplayPrices });
+            if (rangeLowBoundDisplayField.value !== pinnedMinPriceDisplayTruncated) {
+                const pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
+                    denominationsInBase,
+                    baseTokenDecimals,
+                    quoteTokenDecimals,
+                    rangeLowBoundDisplayField.value,
+                    pinnedMaxPriceDisplayTruncated,
+                );
+                console.log({ pinnedDisplayPrices });
 
-            setRangeLowBoundNonDisplayPrice(pinnedDisplayPrices.pinnedMinPriceNonDisplay);
-            setRangeHighBoundNonDisplayPrice(pinnedDisplayPrices.pinnedMaxPriceNonDisplay);
+                setRangeLowBoundNonDisplayPrice(pinnedDisplayPrices.pinnedMinPriceNonDisplay);
+                setRangeHighBoundNonDisplayPrice(pinnedDisplayPrices.pinnedMaxPriceNonDisplay);
 
-            !denominationsInBase
-                ? dispatch(setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick))
-                : dispatch(setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick));
+                !denominationsInBase
+                    ? dispatch(setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick))
+                    : dispatch(setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick));
 
-            !denominationsInBase
-                ? setRangeLowTick(pinnedDisplayPrices.pinnedLowTick)
-                : setRangeHighTick(pinnedDisplayPrices.pinnedHighTick);
+                !denominationsInBase
+                    ? setRangeLowTick(pinnedDisplayPrices.pinnedLowTick)
+                    : setRangeHighTick(pinnedDisplayPrices.pinnedHighTick);
 
-            const highGeometricDifferencePercentage = truncateDecimals(
-                (pinnedDisplayPrices.pinnedHighTick - currentPoolPriceTick) / 100,
-                0,
-            );
-            const lowGeometricDifferencePercentage = truncateDecimals(
-                (pinnedDisplayPrices.pinnedLowTick - currentPoolPriceTick) / 100,
-                0,
-            );
-            denominationsInBase
-                ? setMinPriceDifferencePercentage(-highGeometricDifferencePercentage)
-                : setMinPriceDifferencePercentage(lowGeometricDifferencePercentage);
+                const highGeometricDifferencePercentage = truncateDecimals(
+                    (pinnedDisplayPrices.pinnedHighTick - currentPoolPriceTick) / 100,
+                    0,
+                );
+                const lowGeometricDifferencePercentage = truncateDecimals(
+                    (pinnedDisplayPrices.pinnedLowTick - currentPoolPriceTick) / 100,
+                    0,
+                );
+                denominationsInBase
+                    ? setMinPriceDifferencePercentage(-highGeometricDifferencePercentage)
+                    : setMinPriceDifferencePercentage(lowGeometricDifferencePercentage);
 
-            setPinnedMinPriceDisplayTruncated(pinnedDisplayPrices.pinnedMinPriceDisplayTruncated);
-            // setPinnedMaxPriceDisplayTruncated(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated);
+                setPinnedMinPriceDisplayTruncated(
+                    pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+                );
+                // setPinnedMaxPriceDisplayTruncated(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated);
 
-            if (rangeLowBoundDisplayField) {
-                rangeLowBoundDisplayField.value =
-                    pinnedDisplayPrices.pinnedMinPriceDisplayTruncated;
-            } else {
-                console.log('low bound field not found');
+                if (rangeLowBoundDisplayField) {
+                    rangeLowBoundDisplayField.value =
+                        pinnedDisplayPrices.pinnedMinPriceDisplayTruncated;
+                } else {
+                    console.log('low bound field not found');
+                }
             }
             setRangeLowBoundFieldBlurred(false);
         }
@@ -448,50 +498,55 @@ export default function Range(props: RangePropsIF) {
 
     useEffect(() => {
         if (rangeHighBoundFieldBlurred) {
-            // console.log('high bound blurred');
             const rangeHighBoundDisplayField = document.getElementById(
                 'max-price-input-quantity',
             ) as HTMLInputElement;
 
-            const pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
-                denominationsInBase,
-                baseTokenDecimals,
-                quoteTokenDecimals,
-                pinnedMinPriceDisplayTruncated,
-                rangeHighBoundDisplayField.value,
-            );
-            // console.log({ pinnedDisplayPrices });
-            denominationsInBase
-                ? dispatch(setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick))
-                : dispatch(setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick));
+            if (rangeHighBoundDisplayField.value !== pinnedMaxPriceDisplayTruncated) {
+                console.log('high bound blurred');
 
-            denominationsInBase
-                ? setRangeLowTick(pinnedDisplayPrices.pinnedLowTick)
-                : setRangeHighTick(pinnedDisplayPrices.pinnedHighTick);
+                const pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
+                    denominationsInBase,
+                    baseTokenDecimals,
+                    quoteTokenDecimals,
+                    pinnedMinPriceDisplayTruncated,
+                    rangeHighBoundDisplayField.value,
+                );
+                // console.log({ pinnedDisplayPrices });
+                denominationsInBase
+                    ? dispatch(setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick))
+                    : dispatch(setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick));
 
-            setRangeLowBoundNonDisplayPrice(pinnedDisplayPrices.pinnedMinPriceNonDisplay);
-            setRangeHighBoundNonDisplayPrice(pinnedDisplayPrices.pinnedMaxPriceNonDisplay);
+                denominationsInBase
+                    ? setRangeLowTick(pinnedDisplayPrices.pinnedLowTick)
+                    : setRangeHighTick(pinnedDisplayPrices.pinnedHighTick);
 
-            const highGeometricDifferencePercentage = truncateDecimals(
-                (pinnedDisplayPrices.pinnedHighTick - currentPoolPriceTick) / 100,
-                0,
-            );
-            const lowGeometricDifferencePercentage = truncateDecimals(
-                (pinnedDisplayPrices.pinnedLowTick - currentPoolPriceTick) / 100,
-                0,
-            );
-            denominationsInBase
-                ? setMaxPriceDifferencePercentage(-lowGeometricDifferencePercentage)
-                : setMaxPriceDifferencePercentage(highGeometricDifferencePercentage);
+                setRangeLowBoundNonDisplayPrice(pinnedDisplayPrices.pinnedMinPriceNonDisplay);
+                setRangeHighBoundNonDisplayPrice(pinnedDisplayPrices.pinnedMaxPriceNonDisplay);
 
-            // setPinnedMinPriceDisplayTruncated(pinnedDisplayPrices.pinnedMinPriceDisplayTruncated);
-            setPinnedMaxPriceDisplayTruncated(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated);
+                const highGeometricDifferencePercentage = truncateDecimals(
+                    (pinnedDisplayPrices.pinnedHighTick - currentPoolPriceTick) / 100,
+                    0,
+                );
+                const lowGeometricDifferencePercentage = truncateDecimals(
+                    (pinnedDisplayPrices.pinnedLowTick - currentPoolPriceTick) / 100,
+                    0,
+                );
+                denominationsInBase
+                    ? setMaxPriceDifferencePercentage(-lowGeometricDifferencePercentage)
+                    : setMaxPriceDifferencePercentage(highGeometricDifferencePercentage);
 
-            if (rangeHighBoundDisplayField) {
-                rangeHighBoundDisplayField.value =
-                    pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated;
-            } else {
-                console.log('high bound field not found');
+                // setPinnedMinPriceDisplayTruncated(pinnedDisplayPrices.pinnedMinPriceDisplayTruncated);
+                setPinnedMaxPriceDisplayTruncated(
+                    pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+                );
+
+                if (rangeHighBoundDisplayField) {
+                    rangeHighBoundDisplayField.value =
+                        pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated;
+                } else {
+                    console.log('high bound field not found');
+                }
             }
             setRangeHighBoundFieldBlurred(false);
         }
@@ -517,7 +572,14 @@ export default function Range(props: RangePropsIF) {
 
     const apyPercentage: number = 100 - rangeWidthPercentage + 10;
 
-    const daysInRangeEstimation: number = isAmbient ? 365 : rangeWidthPercentage;
+    const advancedDaysInRangeEstimation =
+        minimumSpan < 0 ? 0 : truncateDecimals(minimumSpan / 100, 0);
+
+    const daysInRangeEstimation: number = isAmbient
+        ? 365
+        : isAdvancedModeActive
+        ? advancedDaysInRangeEstimation
+        : rangeWidthPercentage;
 
     let minPriceDisplay: string;
 
@@ -643,7 +705,7 @@ export default function Range(props: RangePropsIF) {
         }
         if (tx) {
             let newTransactionHash = tx.hash;
-            setNewRangeTransactionHash(newRangeTransactionHash);
+            setNewRangeTransactionHash(newTransactionHash);
             console.log({ newTransactionHash });
             let parsedReceipt;
 
@@ -671,8 +733,18 @@ export default function Range(props: RangePropsIF) {
                     );
                 }
             } finally {
-                if (parsedReceipt)
-                    handleParsedReceipt(Moralis, 'mint', newTransactionHash, parsedReceipt);
+                if (parsedReceipt) {
+                    const unifiedReceipt = await handleParsedReceipt(
+                        Moralis,
+                        'mint',
+                        newTransactionHash,
+                        parsedReceipt,
+                    );
+                    if (unifiedReceipt) {
+                        dispatch(addReceipt(unifiedReceipt));
+                        console.log({ unifiedReceipt });
+                    }
+                }
                 let posHash;
                 if (isAmbient) {
                     posHash = ambientPosSlot(
@@ -704,27 +776,82 @@ export default function Range(props: RangePropsIF) {
             <DenominationSwitch
                 tokenPair={tokenPair}
                 displayForBase={tradeData.isDenomBase}
-                poolPriceDisplay={parseFloat(poolPriceDisplay)}
+                poolPriceDisplay={poolPriceDisplayNum}
                 isTokenABase={isTokenABase}
                 didUserFlipDenom={tradeData.didUserFlipDenom}
             />
         </div>
     );
 
+    const [isTokenAPrimaryLocal, setIsTokenAPrimaryLocal] = useState<boolean>(
+        tradeData.isTokenAPrimaryRange,
+    );
+
     // props for <RangePriceInfo/> React element
     const rangePriceInfoProps = {
         tokenPair: tokenPair,
-        spotPriceDisplay: poolPriceDisplay,
+        spotPriceDisplay: poolPriceTruncated.toString(),
+        poolPriceTruncatedInBase: poolPriceTruncatedInBase.toString(),
+        poolPriceTruncatedInQuote: poolPriceTruncatedInQuote.toString(),
         maxPriceDisplay: maxPriceDisplay,
         minPriceDisplay: minPriceDisplay,
         apyPercentage: apyPercentage,
         isTokenABase: isTokenABase,
         didUserFlipDenom: tradeData.didUserFlipDenom,
     };
+
+    const pinnedMinPriceDisplayTruncatedInBase = useMemo(
+        () =>
+            getPinnedPriceValuesFromTicks(
+                true,
+                baseTokenDecimals,
+                quoteTokenDecimals,
+                rangeLowTick,
+                rangeHighTick,
+            ).pinnedMinPriceDisplayTruncated,
+        [baseTokenDecimals, quoteTokenDecimals, rangeLowTick, rangeHighTick],
+    );
+
+    const pinnedMinPriceDisplayTruncatedInQuote = useMemo(
+        () =>
+            getPinnedPriceValuesFromTicks(
+                false,
+                baseTokenDecimals,
+                quoteTokenDecimals,
+                rangeLowTick,
+                rangeHighTick,
+            ).pinnedMinPriceDisplayTruncated,
+        [baseTokenDecimals, quoteTokenDecimals, rangeLowTick, rangeHighTick],
+    );
+
+    const pinnedMaxPriceDisplayTruncatedInBase = useMemo(
+        () =>
+            getPinnedPriceValuesFromTicks(
+                true,
+                baseTokenDecimals,
+                quoteTokenDecimals,
+                rangeLowTick,
+                rangeHighTick,
+            ).pinnedMaxPriceDisplayTruncated,
+        [baseTokenDecimals, quoteTokenDecimals, rangeLowTick, rangeHighTick],
+    );
+
+    const pinnedMaxPriceDisplayTruncatedInQuote = useMemo(
+        () =>
+            getPinnedPriceValuesFromTicks(
+                false,
+                baseTokenDecimals,
+                quoteTokenDecimals,
+                rangeLowTick,
+                rangeHighTick,
+            ).pinnedMaxPriceDisplayTruncated,
+        [baseTokenDecimals, quoteTokenDecimals, rangeLowTick, rangeHighTick],
+    );
+
     // props for <ConfirmRangeModal/> React element
     const rangeModalProps = {
         tokenPair: tokenPair,
-        spotPriceDisplay: poolPriceDisplay,
+        spotPriceDisplay: poolPriceTruncated.toString(),
         denominationsInBase: denominationsInBase,
         isTokenABase: isTokenABase,
         isAmbient: isAmbient,
@@ -735,6 +862,12 @@ export default function Range(props: RangePropsIF) {
         newRangeTransactionHash: newRangeTransactionHash,
         setNewRangeTransactionHash: setNewRangeTransactionHash,
         isInRange: !isOutOfRange,
+        pinnedMinPriceDisplayTruncatedInBase: pinnedMinPriceDisplayTruncatedInBase,
+        pinnedMinPriceDisplayTruncatedInQuote: pinnedMinPriceDisplayTruncatedInQuote,
+        pinnedMaxPriceDisplayTruncatedInBase: pinnedMaxPriceDisplayTruncatedInBase,
+        pinnedMaxPriceDisplayTruncatedInQuote: pinnedMaxPriceDisplayTruncatedInQuote,
+        poolPriceTruncatedInBase: poolPriceTruncatedInBase.toString(),
+        poolPriceTruncatedInQuote: poolPriceTruncatedInQuote.toString(),
     };
 
     // props for <RangeCurrencyConverter/> React element
@@ -746,8 +879,8 @@ export default function Range(props: RangePropsIF) {
         isAmbient: isAmbient,
         isTokenABase: isTokenABase,
         depositSkew: depositSkew,
-        // isTokenAPrimary: isTokenAPrimary,
-        // setIsTokenAPrimary: setIsTokenAPrimary,
+        isTokenAPrimaryLocal: isTokenAPrimaryLocal,
+        setIsTokenAPrimaryLocal: setIsTokenAPrimaryLocal,
         isWithdrawTokenAFromDexChecked: isWithdrawTokenAFromDexChecked,
         setIsWithdrawTokenAFromDexChecked: setIsWithdrawTokenAFromDexChecked,
         isWithdrawTokenBFromDexChecked: isWithdrawTokenBFromDexChecked,
@@ -760,6 +893,9 @@ export default function Range(props: RangePropsIF) {
         setRangeAllowed: setRangeAllowed,
         isTokenADisabled: isTokenADisabled,
         isTokenBDisabled: isTokenBDisabled,
+        isOutOfRange: isOutOfRange,
+        rangeSpanAboveCurrentPrice: rangeSpanAboveCurrentPrice,
+        rangeSpanBelowCurrentPrice: rangeSpanBelowCurrentPrice,
     };
 
     // props for <RangeWidth/> React element
@@ -772,7 +908,7 @@ export default function Range(props: RangePropsIF) {
         tokenPair: tokenPair,
         gasPriceinGwei: gasPriceinGwei,
         poolPriceDisplay: Number(poolPriceDisplay),
-        slippageTolerance: 0.05,
+        slippageTolerance: slippageTolerancePercentage,
         liquidityProviderFee: 0.3,
         quoteTokenIsBuy: true,
         displayForBase: tradeData.isDenomBase,
@@ -816,7 +952,7 @@ export default function Range(props: RangePropsIF) {
             />
             <AdvancedPriceInfo
                 tokenPair={tokenPair}
-                poolPriceDisplay={poolPriceDisplay}
+                poolPriceDisplay={poolPriceTruncated.toString()}
                 isDenomBase={denominationsInBase}
                 isTokenABase={isTokenABase}
                 minimumSpan={minimumSpan}
@@ -826,7 +962,10 @@ export default function Range(props: RangePropsIF) {
         </>
     );
     const confirmSwapModalOrNull = isModalOpen ? (
-        <Modal onClose={closeModal} title='Range Confirmation'>
+        <Modal
+            onClose={closeModal}
+            title={isAmbient ? 'Ambient Confirmation' : 'Range Confirmation'}
+        >
             <ConfirmRangeModal {...rangeModalProps} />
         </Modal>
     ) : null;
@@ -937,7 +1076,11 @@ export default function Range(props: RangePropsIF) {
             data-testid={'range'}
         >
             <ContentContainer isOnTradeRoute>
-                <RangeHeader tokenPair={tokenPair} isDenomBase={tradeData.isDenomBase} />
+                <RangeHeader
+                    tokenPair={tokenPair}
+                    isDenomBase={tradeData.isDenomBase}
+                    isTokenABase={isTokenABase}
+                />
                 {denominationSwitch}
                 <DividerDark />
                 {/* <RangeCurrencyConverter {...rangeCurrencyConverterProps} /> */}

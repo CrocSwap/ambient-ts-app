@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 import { TOKEN_HIDE } from '../../constants';
-import { TokenData } from '../../state/tokens/reducer';
+import { TokenData } from '../../state/tokens/models';
 import TopTokenRow from './TopTokenRow';
 import styles from './TopTokens.module.css';
 

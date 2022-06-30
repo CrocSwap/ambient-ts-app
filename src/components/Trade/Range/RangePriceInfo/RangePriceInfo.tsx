@@ -1,7 +1,7 @@
 // START: Import Local Files
 import styles from './RangePriceInfo.module.css';
-import truncateDecimals from '../../../../utils/data/truncateDecimals';
-import makeCurrentPrice from './makeCurrentPrice';
+// import truncateDecimals from '../../../../utils/data/truncateDecimals';
+// import makeCurrentPrice from './makeCurrentPrice';
 import { TokenPairIF } from '../../../../utils/interfaces/exports';
 
 // interface for component props
@@ -16,8 +16,9 @@ interface IRangePriceInfoPropsIF {
 
 // central react functional component
 export default function RangePriceInfo(props: IRangePriceInfoPropsIF) {
-    const { spotPriceDisplay, maxPriceDisplay, minPriceDisplay, apyPercentage, didUserFlipDenom } =
-        props;
+    const { spotPriceDisplay, maxPriceDisplay, minPriceDisplay, apyPercentage } = props;
+
+    // console.log({ spotPriceDisplay });
 
     // JSX frag for estimated APY of position
     const apy = <span className={styles.apy}> Est. APY | {apyPercentage}%</span>;
@@ -27,19 +28,22 @@ export default function RangePriceInfo(props: IRangePriceInfoPropsIF) {
         <div className={styles.price_display}>
             <h4 className={styles.price_title}>Min Price</h4>
             <span className={styles.min_price}>
-                {truncateDecimals(parseFloat(minPriceDisplay), 4).toString()}
+                {minPriceDisplay}
+                {/* {truncateDecimals(parseFloat(minPriceDisplay), 4).toString()} */}
             </span>
         </div>
     );
 
-    const currentPrice = makeCurrentPrice(parseFloat(spotPriceDisplay), didUserFlipDenom);
+    // const currentPrice = makeCurrentPrice(parseFloat(spotPriceDisplay), didUserFlipDenom);
+    const currentPrice = spotPriceDisplay;
 
     // JSX frag for highest price in range
     const maximumPrice = (
         <div className={styles.price_display}>
             <h4 className={styles.price_title}>Max Price</h4>
             <span className={styles.max_price}>
-                {truncateDecimals(parseFloat(maxPriceDisplay), 4).toString()}
+                {maxPriceDisplay}
+                {/* {truncateDecimals(parseFloat(maxPriceDisplay), 4).toString()} */}
             </span>
         </div>
     );

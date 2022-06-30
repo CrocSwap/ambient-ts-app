@@ -1,6 +1,6 @@
 import { updateProtocolData, updateChartData, updateTransactions } from './actions';
 import { AppState, AppDispatch } from './../index';
-import { ProtocolData } from './reducer';
+import { ProtocolData } from './models';
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useActiveNetworkVersion } from '../application/hooks';

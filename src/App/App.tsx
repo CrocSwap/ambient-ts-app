@@ -1,5 +1,5 @@
 /** ***** Import React and Dongles *******/
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { setPositionsByUser } from '../utils/state/graphDataSlice';
 import { utils, ethers } from 'ethers';
@@ -16,6 +16,10 @@ import {
     getSpotPriceDisplay,
     getTokenAllowance,
 } from '@crocswap-libs/sdk';
+
+import { receiptData } from '../utils/state/receiptDataSlice';
+
+import SnackbarComponent from '../components/Global/SnackbarComponent/SnackbarComponent';
 
 /** ***** Import JSX Files *******/
 import PageHeader from './components/PageHeader/PageHeader';
@@ -53,6 +57,20 @@ import PoolPage from '../pages/PoolPage/PoolPage';
 /** ***** React Function *******/
 export default function App() {
     const { chainId, isWeb3Enabled, account, logout, isAuthenticated } = useMoralis();
+
+    const [ensName, setEnsName] = useState('');
+    useEffect(() => {
+        (async () => {
+            const provider = new ethers.providers.JsonRpcProvider(
+                'https://speedy-nodes-nyc.moralis.io/015fffb61180886c9708499e/eth/goerli',
+            );
+            if (account) {
+                const name = await provider.lookupAddress(account);
+                if (name) setEnsName(name);
+                else setEnsName('');
+            }
+        })();
+    }, [account]);
 
     const dispatch = useAppDispatch();
 
@@ -96,6 +114,42 @@ export default function App() {
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
+    const receiptData = useAppSelector((state) => state.receiptData) as receiptData;
+
+    const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
+
+    const lastReceipt = receiptData?.sessionReceipts[receiptData.sessionReceipts.length - 1];
+
+    const isLastReceiptSuccess = lastReceipt?.isTxSuccess?.toString();
+
+    let snackMessage = '';
+
+    if (lastReceipt) {
+        if (lastReceipt.receiptType === 'swap') {
+            snackMessage = `You Successfully Swapped ${lastReceipt.tokenAQtyUnscaled} ${lastReceipt.tokenASymbol} for ${lastReceipt.tokenBQtyUnscaled} ${lastReceipt.tokenBSymbol}`;
+        } else if (lastReceipt.receiptType === 'mint') {
+            snackMessage = `You Successfully Minted a Position with ${lastReceipt.tokenAQtyUnscaled} ${lastReceipt.tokenASymbol} and ${lastReceipt.tokenBQtyUnscaled} ${lastReceipt.tokenBSymbol}`;
+        } else {
+            snackMessage = 'unknown';
+        }
+    }
+
+    const snackbarContent = (
+        <SnackbarComponent
+            severity={isLastReceiptSuccess ? 'info' : 'warning'}
+            setOpenSnackbar={setOpenSnackbar}
+            openSnackbar={openSnackbar}
+        >
+            {snackMessage}
+        </SnackbarComponent>
+    );
+
+    useEffect(() => {
+        if (lastReceipt) {
+            setOpenSnackbar(true);
+        }
+    }, [JSON.stringify(lastReceipt)]);
+
     useEffect(() => {
         (async () => {
             if (window.ethereum) {
@@ -120,8 +174,14 @@ export default function App() {
         dataTokenB: tradeData.tokenB,
     };
 
+    const tokenPairStringified = useMemo(() => JSON.stringify(tokenPair), [tokenPair]);
+
     // useEffect to set baseTokenAddress and quoteTokenAddress when pair changes
     useEffect(() => {
+        console.log({ tokenPair });
+        // reset rtk values for user specified range in ticks
+        dispatch(setAdvancedLowTick(0));
+        dispatch(setAdvancedHighTick(0));
         if (tokenPair.dataTokenA.address && tokenPair.dataTokenB.address) {
             const sortedTokens = sortBaseQuoteTokens(
                 tokenPair.dataTokenA.address,
@@ -136,7 +196,7 @@ export default function App() {
                 setIsTokenABase(false);
             }
         }
-    }, [JSON.stringify(tokenPair)]);
+    }, [tokenPairStringified]);
 
     const [tokenABalance, setTokenABalance] = useState<string>('');
     const [tokenBBalance, setTokenBBalance] = useState<string>('');
@@ -211,7 +271,14 @@ export default function App() {
                 }
             }
         })();
-    }, [chainId, account, isWeb3Enabled, isAuthenticated, tokenPair, lastBlockNumber]);
+    }, [
+        chainId,
+        account,
+        isWeb3Enabled,
+        isAuthenticated,
+        JSON.stringify(tokenPair),
+        lastBlockNumber,
+    ]);
 
     const [tokenAAllowance, setTokenAAllowance] = useState<string>('');
     const [tokenBAllowance, setTokenBAllowance] = useState<string>('');
@@ -305,6 +372,47 @@ export default function App() {
 
     const graphData = useAppSelector((state) => state.graphData);
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const getPositionData = async (position: any): Promise<any> => {
+        const baseTokenAddress = position.pool.base;
+        const quoteTokenAddress = position.pool.quote;
+        const poolPriceNonDisplay = await getSpotPrice(
+            baseTokenAddress,
+            quoteTokenAddress,
+            POOL_PRIMARY,
+            provider,
+        );
+        const poolPriceInTicks = Math.log(poolPriceNonDisplay) / Math.log(1.0001);
+
+        position.poolPriceInTicks = poolPriceInTicks;
+        if (baseTokenAddress === contractAddresses.ZERO_ADDR) {
+            position.baseTokenSymbol = 'ETH';
+            position.quoteTokenSymbol = 'DAI';
+            position.tokenAQtyDisplay = '1';
+            position.tokenBQtyDisplay = '2000';
+            if (!position.ambient) {
+                position.lowRangeDisplay = '.001';
+                position.highRangeDisplay = '.002';
+            }
+        } else if (
+            baseTokenAddress.toLowerCase() ===
+            '0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa'.toLowerCase()
+        ) {
+            position.baseTokenSymbol = 'DAI';
+            position.quoteTokenSymbol = 'USDC';
+            position.tokenAQtyDisplay = '101';
+            position.tokenBQtyDisplay = '100';
+            if (!position.ambient) {
+                position.lowRangeDisplay = '0.9';
+                position.highRangeDisplay = '1.1';
+            }
+        } else {
+            position.baseTokenSymbol = 'unknownBase';
+            position.quoteTokenSymbol = 'unknownQuote';
+        }
+        return position;
+    };
+
     useEffect(() => {
         if (account) {
             const endpoint = 'https://api.thegraph.com/subgraphs/name/a0910841082130913312/croc22';
@@ -336,9 +444,18 @@ export default function App() {
                 variables,
                 // requestHeaders: headers,
             ).then((data) => {
-                if (JSON.stringify(graphData.positionsByUser) !== JSON.stringify(data.user)) {
-                    dispatch(setPositionsByUser(data.user));
-                }
+                // if (JSON.stringify(graphData.positionsByUser) !== JSON.stringify(data.user)) {
+                const userData = data.user;
+                const allPositions = userData.positions;
+
+                // let updatedAllPositionsArray = [];
+
+                Promise.all(allPositions.map(getPositionData)).then((updatedPositions) => {
+                    userData.positions = updatedPositions;
+                    if (JSON.stringify(graphData.positionsByUser) !== JSON.stringify(userData)) {
+                        dispatch(setPositionsByUser(userData));
+                    }
+                });
             });
         }
     }, [account, lastBlockNumber]);
@@ -517,6 +634,7 @@ export default function App() {
         nativeBalance: nativeBalance,
         clickLogout: clickLogout,
         metamaskLocked: metamaskLocked,
+        ensName: ensName,
     };
 
     // props for <Swap/> React element
@@ -627,12 +745,6 @@ export default function App() {
         }
     }, [tradeData.didUserFlipDenom, tokenPair]);
 
-    useEffect(() => {
-        console.log({ tokenPair });
-        dispatch(setAdvancedLowTick(0));
-        dispatch(setAdvancedHighTick(0));
-    }, [JSON.stringify(tokenPair)]);
-
     const mainLayoutStyle = showSidebar ? 'main-layout-2' : 'main-layout';
     // take away margin from left if we are on homepage or swap
     const noSidebarStyle =
@@ -671,6 +783,7 @@ export default function App() {
                         <Route path='/404' element={<NotFound />} />
                     </Routes>
                 </div>
+                {snackbarContent}
             </div>
             <PageFooter lastBlockNumber={lastBlockNumber} />
         </>

@@ -3,14 +3,18 @@ import styles from './AmountAndCurrencyDisplay.module.css';
 interface AmountAndCurrencyDisplayProps {
     value: string | number;
     tokenImg: string;
+    qty: string;
+    symbol: string;
+    fieldId: string;
+    disable?: boolean;
 }
 
 export default function AmountAndCurrencyDisplay(props: AmountAndCurrencyDisplayProps) {
-    const { value, tokenImg } = props;
+    const { tokenImg, qty, symbol, fieldId, disable } = props;
     const currencyQuantity = (
         <div className={styles.token_amount}>
             <input
-                // id={`${fieldId}-range-quantity`}
+                id={`${fieldId}-edit-range-quantity`}
                 className={styles.currency_quantity}
                 placeholder='0.0'
                 // onChange={(e) => updateOtherQuantity(e)}
@@ -21,9 +25,9 @@ export default function AmountAndCurrencyDisplay(props: AmountAndCurrencyDisplay
                 min='0'
                 minLength={1}
                 pattern='^[0-9]*[.,]?[0-9]*$'
-                disabled
+                disabled={disable}
                 required
-                value={value}
+                defaultValue={qty}
             />
         </div>
     );
@@ -35,10 +39,10 @@ export default function AmountAndCurrencyDisplay(props: AmountAndCurrencyDisplay
                     <img
                         className={styles.token_list_img}
                         src={tokenImg}
-                        alt='ethreum'
+                        alt={symbol}
                         width='30px'
                     />
-                    <span className={styles.token_list_text}>ETH</span>
+                    <span className={styles.token_list_text}>{symbol}</span>
                 </div>
             </div>
             <div className={styles.swapbox_bottom}>

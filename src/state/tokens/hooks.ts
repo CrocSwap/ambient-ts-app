@@ -1,5 +1,5 @@
 import { AppState, AppDispatch } from './../index';
-import { TokenData, TokenChartEntry } from './reducer';
+import { TokenData, TokenChartEntry } from './models';
 import { useCallback, useEffect, useState, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {

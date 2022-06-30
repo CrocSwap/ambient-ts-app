@@ -3,7 +3,7 @@ import utc from 'dayjs/plugin/utc';
 import weekOfYear from 'dayjs/plugin/weekOfYear';
 import gql from 'graphql-tag';
 import { ApolloClient, NormalizedCacheObject } from '@apollo/client';
-import { PoolChartEntry } from '../../state/pools/reducer';
+import { PoolChartEntry } from '../../state/pools/models';
 
 // format dayjs with the libraries that we need
 dayjs.extend(utc);

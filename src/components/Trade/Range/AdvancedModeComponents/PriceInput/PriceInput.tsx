@@ -57,7 +57,7 @@ export default function PriceInput(props: priceInputProps) {
     // );
 
     const percentageDifferenceString =
-        percentageDifference > 0 ? '+' + percentageDifference : percentageDifference.toString();
+        percentageDifference >= 0 ? '+' + percentageDifference : percentageDifference.toString();
 
     return (
         <div className={styles.minMax_container}>

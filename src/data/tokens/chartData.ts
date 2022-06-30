@@ -3,7 +3,7 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import weekOfYear from 'dayjs/plugin/weekOfYear';
 import gql from 'graphql-tag';
-import { TokenChartEntry } from '../../state/tokens/reducer';
+import { TokenChartEntry } from '../../state/tokens/models';
 
 // format dayjs with the libraries that we need
 dayjs.extend(utc);

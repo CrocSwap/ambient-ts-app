@@ -9,6 +9,6 @@ export default function makeCurrentPrice(spotPrice: number, didUserFlipDenom: bo
             : !didUserFlipDenom
             ? spotPrice
             : 1 / spotPrice;
-    const truncPrice = truncateDecimals(rawPrice, 4);
+    const truncPrice = rawPrice < 2 ? truncateDecimals(rawPrice, 6) : truncateDecimals(rawPrice, 2);
     return truncPrice;
 }

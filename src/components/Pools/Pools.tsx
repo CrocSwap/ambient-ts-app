@@ -1,7 +1,7 @@
 import { Pagination } from '@mui/material';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { TOKEN_HIDE } from '../../constants';
-import { PoolData } from '../../state/pools/reducer';
+import { PoolData } from '../../state/pools/models';
 import PoolRow from './PoolRow';
 import styles from './Pools.module.css';
 

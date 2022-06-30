@@ -1,7 +1,7 @@
-import { ProtocolData } from './reducer';
 import { createAction } from '@reduxjs/toolkit';
 import { SupportedNetwork } from '../../constants/networks';
 import { ChartDayData, Transaction } from '../../types';
+import { ProtocolData } from './models';
 
 // protocol wide info
 export const updateProtocolData = createAction<{

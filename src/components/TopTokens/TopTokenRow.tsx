@@ -1,6 +1,5 @@
-import { Link } from '@material-ui/core';
 import { useNavigate } from 'react-router-dom';
-import { TokenData } from '../../state/tokens/reducer';
+import { TokenData } from '../../state/tokens/models';
 import { isAddress } from '../../utils';
 import { formatDollarAmount } from '../../utils/numbers';
 import styles from './TopToken.module.css';
