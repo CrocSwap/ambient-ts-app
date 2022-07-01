@@ -10,7 +10,7 @@ import {
 } from '../../../utils/state/tradeDataSlice';
 import { useAppDispatch, useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import truncateDecimals from '../../../utils/data/truncateDecimals';
-
+import TokensArrow from '../../Global/TokensArrow/TokensArrow';
 interface CurrencyConverterPropsIF {
     isSellTokenBase: boolean;
     tokenPair: TokenPairIF;
@@ -239,7 +239,9 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                 reverseTokens={reverseTokens}
             />
             <div className={styles.arrow_container} onClick={handleArrowClick}>
-                {isLiq ? null : <span className={styles.arrow} />}
+                {/* <img src={tokensArrowImage} alt="arrow pointing down" /> */}
+                {/* {isLiq ? null : <span className={styles.arrow} />} */}
+                {isLiq ? null : <TokensArrow />}
             </div>
             <CurrencySelector
                 tokenPair={tokenPair}

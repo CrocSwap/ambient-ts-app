@@ -2,11 +2,11 @@ import styles from './Tabs.module.css';
 import { useState, useEffect } from 'react';
 import TabNavItem from './TabNavItem/TabNavItem';
 import TabContent from './TabContent/TabContent';
-import Toggle from '../Toggle/Toggle';
 import Positions from '../../Trade/Positions/Positions';
 import LimitOrders from '../../Trade/LimitOrders/LimitOrders';
 
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import Toggle2 from '../Toggle/Toggle2';
 
 interface ITabsProps {
     account: string;
@@ -47,18 +47,16 @@ export default function Tabs(props: ITabsProps) {
     const positionsOnlyToggle = (
         <span className={styles.options_toggle}>
             {isAllPositionsEnabled ? 'All Positions' : 'My Positions'}
-            <div className={styles.toggle_container}>
-                <Toggle
-                    isOn={isAllPositionsEnabled}
-                    handleToggle={() => {
-                        setHasInitialized(true);
-                        setIsAllPositionsEnabled(!isAllPositionsEnabled);
-                    }}
-                    Width={36}
-                    id='positions_only_toggle'
-                    disabled={!props.isAuthenticated}
-                />
-            </div>
+
+            <Toggle2
+                isOn={isAllPositionsEnabled}
+                handleToggle={() => {
+                    setHasInitialized(true);
+                    setIsAllPositionsEnabled(!isAllPositionsEnabled);
+                }}
+                id='positions_only_toggle'
+                disabled={!props.isAuthenticated}
+            />
         </span>
     );
 

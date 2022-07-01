@@ -76,7 +76,7 @@ export default function Swap(props: SwapPropsIF) {
         poolPriceDisplay,
         tokenAAllowance,
         setRecheckTokenAApproval,
-        chainId
+        chainId,
     } = props;
     const [isModalOpen, openModal, closeModal] = useModal();
 
@@ -84,8 +84,7 @@ export default function Swap(props: SwapPropsIF) {
 
     const [isRelativeModalOpen, closeRelativeModal] = useRelativeModal();
 
-    const { Moralis, enableWeb3, isWeb3Enabled, authenticate, isAuthenticated } =
-        useMoralis();
+    const { Moralis, enableWeb3, isWeb3Enabled, authenticate, isAuthenticated } = useMoralis();
     // get URL pathway for user relative to index
     const { pathname } = useLocation();
 
@@ -309,14 +308,16 @@ export default function Swap(props: SwapPropsIF) {
                     isDenomBase={tradeData.isDenomBase}
                     isTokenABase={isSellTokenBase}
                 />
-                <DenominationSwitch
-                    tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
-                    isTokenABase={isSellTokenBase}
-                    displayForBase={tradeData.isDenomBase}
-                    poolPriceDisplay={poolPriceDisplay}
-                    didUserFlipDenom={tradeData.didUserFlipDenom}
-                />
-                <DividerDark />
+                <div className={styles.header_container}>
+                    <DenominationSwitch
+                        tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
+                        isTokenABase={isSellTokenBase}
+                        displayForBase={tradeData.isDenomBase}
+                        poolPriceDisplay={poolPriceDisplay}
+                        didUserFlipDenom={tradeData.didUserFlipDenom}
+                    />
+                    <DividerDark addMarginTop />
+                </div>
                 <CurrencyConverter
                     tokenPair={tokenPair}
                     tokensBank={importedTokens}
@@ -341,6 +342,7 @@ export default function Swap(props: SwapPropsIF) {
                     setSwapAllowed={setSwapAllowed}
                     setSwapButtonErrorMessage={setSwapButtonErrorMessage}
                 />
+
                 <ExtraInfo
                     tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
                     isTokenABase={isSellTokenBase}

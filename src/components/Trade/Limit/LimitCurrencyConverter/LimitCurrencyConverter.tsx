@@ -19,6 +19,8 @@ import LimitRate from '../LimitRate/LimitRate';
 // START: Import Local Files
 import styles from './LimitCurrencyConverter.module.css';
 import { TokenIF, TokenPairIF } from '../../../../utils/interfaces/exports';
+import TokensArrow from '../../../Global/TokensArrow/TokensArrow';
+import DividerDark from '../../../Global/DividerDark/DividerDark';
 
 // interface for component props
 interface LimitCurrencyConverterProps {
@@ -290,7 +292,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 setIsWithdrawToWalletChecked={setIsWithdrawToWalletChecked}
             />
             <div className={styles.arrow_container} onClick={handleArrowClick}>
-                <span className={styles.arrow} />
+                <TokensArrow />
             </div>
             <LimitCurrencySelector
                 tokenPair={tokenPair}
@@ -309,6 +311,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 isWithdrawToWalletChecked={isWithdrawToWalletChecked}
                 setIsWithdrawToWalletChecked={setIsWithdrawToWalletChecked}
             />
+            <DividerDark addMarginTop />
             <LimitRate
                 tokenPair={tokenPair}
                 tokensBank={tokensBank}

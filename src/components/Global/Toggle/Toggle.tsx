@@ -14,7 +14,7 @@ export default function Toggle(props: ToggleProps) {
 
     const labelStyle = Width ? `${Width}px` : '100px';
     const labelHeight = `${parseInt(labelStyle) / 2}px`;
-    const buttonStyle = labelStyle ? `${parseInt(labelStyle) / 2 - 5}px` : '45px';
+    const buttonStyle = labelStyle ? `${parseInt(labelStyle) / 2 - 3.3}px` : '45px';
     const buttonColorStyle = buttonColor ? buttonColor : '#ffffff';
 
     const onColorStyle = onColor
@@ -22,7 +22,7 @@ export default function Toggle(props: ToggleProps) {
         : 'linear-gradient(90deg, #AF99FF 0%, #46B7DB 49.48%, #F13D70 100%)';
 
     return (
-        <div className={disabled ? styles.disabled : ''}>
+        <div className={disabled ? styles.disabled : styles.container}>
             <input
                 checked={isOn}
                 onChange={handleToggle}
