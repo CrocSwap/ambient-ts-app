@@ -22,6 +22,7 @@ import {
     concPosSlot,
     approveToken,
     contractAddresses,
+    POOL_PRIMARY,
     // pinTickLower,
     // fromDisplayPrice,
 } from '@crocswap-libs/sdk';
@@ -760,6 +761,28 @@ export default function Range(props: RangePropsIF) {
                 const txHash = newTransactionHash;
 
                 save({ txHash, posHash, user, account, chainId });
+
+                const newPositionCacheEndpoint =
+                    'http://ec2-18-233-99-51.compute-1.amazonaws.com:5000/new_position?';
+
+                fetch(
+                    newPositionCacheEndpoint +
+                        new URLSearchParams({
+                            tx: txHash,
+                            base: baseTokenAddress,
+                            quote: quoteTokenAddress,
+                            poolIdx: POOL_PRIMARY.toString(),
+                            user: account ?? '',
+                            ambient: isAmbient.toString(),
+                            bidTick: rangeLowTick.toString(),
+                            askTick: rangeHighTick.toString(),
+                            knockout: 'false',
+                            isBid: 'false',
+                        }),
+                    // { method: 'POST' },
+                )
+                    .then((response) => response.json())
+                    .then(console.log);
 
                 if (parsedReceipt) {
                     const unifiedReceipt = await handleParsedReceipt(
