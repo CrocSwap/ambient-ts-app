@@ -164,7 +164,15 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalProps) {
         />
     );
 
-    const transactionSubmitted = <TransactionSubmitted hash={newRangeTransactionHash} />;
+    const transactionSubmitted = (
+        <TransactionSubmitted
+            hash={newRangeTransactionHash}
+            tokenBSymbol={tokenB.symbol}
+            tokenBAddress={tokenB.address}
+            tokenBDecimals={tokenB.decimals}
+            tokenBImage={tokenB.logoURI}
+        />
+    );
 
     const confirmTradeButton = (
         <Button
