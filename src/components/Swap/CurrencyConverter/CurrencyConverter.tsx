@@ -59,7 +59,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         setTokenAInputQty,
         setTokenBInputQty,
         activeTokenListsChanged,
-        indicateActiveTokenListsChanged
+        indicateActiveTokenListsChanged,
     } = props;
 
     // TODO: update name of functions with 'handle' verbiage
@@ -190,11 +190,82 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
             buyQtyField.value = truncatedTokenBQty === 'NaN' ? '' : truncatedTokenBQty;
         }
     };
+
+    const handleTokenAChangeClick = (value: string) => {
+        let rawTokenBQty;
+        const tokenAInputField = document.getElementById('sell-quantity');
+        if (tokenAInputField) {
+            (tokenAInputField as HTMLInputElement).value = value;
+        }
+        if (value) {
+            const input = value;
+            setTokenAQtyLocal(input);
+            setTokenAInputQty(input);
+            setIsTokenAPrimaryLocal(true);
+            dispatch(setIsTokenAPrimary(true));
+            dispatch(setPrimaryQuantity(input));
+
+            rawTokenBQty = isSellTokenBase
+                ? (1 / poolPriceDisplay) * parseFloat(input)
+                : poolPriceDisplay * parseFloat(input);
+
+            handleSwapButtonMessage(parseFloat(input));
+        } else {
+            rawTokenBQty = isSellTokenBase
+                ? (1 / poolPriceDisplay) * parseFloat(tokenAQtyLocal)
+                : poolPriceDisplay * parseFloat(tokenAQtyLocal);
+            handleSwapButtonMessage(parseFloat(tokenAQtyLocal));
+        }
+        const truncatedTokenBQty = truncateDecimals(rawTokenBQty, tokenBDecimals).toString();
+
+        setTokenBQtyLocal(truncatedTokenBQty);
+        setTokenBInputQty(truncatedTokenBQty);
+        const buyQtyField = document.getElementById('buy-quantity') as HTMLInputElement;
+
+        if (buyQtyField) {
+            buyQtyField.value = truncatedTokenBQty === 'NaN' ? '' : truncatedTokenBQty;
+        }
+    };
+
     const handleTokenBChangeEvent = (evt?: ChangeEvent<HTMLInputElement>) => {
         let rawTokenAQty;
 
         if (evt) {
             const input = evt.target.value;
+            setTokenBQtyLocal(input);
+            setTokenBInputQty(input);
+            setIsTokenAPrimaryLocal(false);
+            dispatch(setIsTokenAPrimary(false));
+            dispatch(setPrimaryQuantity(input));
+
+            rawTokenAQty = isSellTokenBase
+                ? poolPriceDisplay * parseFloat(input)
+                : (1 / poolPriceDisplay) * parseFloat(input);
+        } else {
+            rawTokenAQty = isSellTokenBase
+                ? poolPriceDisplay * parseFloat(tokenBQtyLocal)
+                : (1 / poolPriceDisplay) * parseFloat(tokenBQtyLocal);
+        }
+        handleSwapButtonMessage(rawTokenAQty);
+
+        const truncatedTokenAQty = truncateDecimals(rawTokenAQty, tokenADecimals).toString();
+
+        setTokenAQtyLocal(truncatedTokenAQty);
+        setTokenAInputQty(truncatedTokenAQty);
+        const sellQtyField = document.getElementById('sell-quantity') as HTMLInputElement;
+        if (sellQtyField) {
+            sellQtyField.value = truncatedTokenAQty === 'NaN' ? '' : truncatedTokenAQty;
+        }
+    };
+
+    const handleTokenBChangeClick = (value: string) => {
+        let rawTokenAQty;
+        const tokenBInputField = document.getElementById('buy-quantity');
+        if (tokenBInputField) {
+            (tokenBInputField as HTMLInputElement).value = value;
+        }
+        if (value) {
+            const input = value;
             setTokenBQtyLocal(input);
             setTokenBInputQty(input);
             setIsTokenAPrimaryLocal(false);
@@ -233,6 +304,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                 fieldId='sell'
                 sellToken
                 handleChangeEvent={handleTokenAChangeEvent}
+                handleChangeClick={handleTokenAChangeClick}
                 nativeBalance={props.nativeBalance}
                 tokenABalance={tokenABalance}
                 tokenBBalance={tokenBBalance}
@@ -258,6 +330,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                 direction={isLiq ? '' : 'To:'}
                 fieldId='buy'
                 handleChangeEvent={handleTokenBChangeEvent}
+                handleChangeClick={handleTokenBChangeClick}
                 nativeBalance={props.nativeBalance}
                 tokenABalance={tokenABalance}
                 tokenBBalance={tokenBBalance}

@@ -26,6 +26,7 @@ interface CurrencySelectorProps {
     isWithdrawToWalletChecked: boolean;
     setIsWithdrawToWalletChecked: Dispatch<SetStateAction<boolean>>;
     handleChangeEvent: (evt: ChangeEvent<HTMLInputElement>) => void;
+    handleChangeClick: (value: string) => void;
     reverseTokens: () => void;
     activeTokenListsChanged: boolean;
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
@@ -41,6 +42,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
         direction,
         fieldId,
         handleChangeEvent,
+        handleChangeClick,
         isWithdrawFromDexChecked,
         setIsWithdrawFromDexChecked,
         isWithdrawToWalletChecked,
@@ -49,7 +51,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
         tokenBBalance,
         reverseTokens,
         activeTokenListsChanged,
-        indicateActiveTokenListsChanged
+        indicateActiveTokenListsChanged,
     } = props;
     // const [isChecked, setIsChecked] = useState<boolean>(false);
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -150,10 +152,20 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                 </div>
             </div>
             <div className={styles.swapbox_bottom}>
-                <div>Wallet: {walletBalance} | Surplus: 0</div>
+                <div>
+                    <div
+                        onClick={() => {
+                            handleChangeClick(walletBalance);
+                        }}
+                    >
+                        Wallet: {walletBalance}{' '}
+                    </div>{' '}
+                    | <div>Surplus: 0</div>
+                </div>
                 {/* {fieldId === 'limit-sell' ? DexBalanceContent : WithdrawTokensContent} */}
                 {WithdrawTokensContent}
             </div>
+
             {tokenSelectModalOrNull}
         </div>
     );
