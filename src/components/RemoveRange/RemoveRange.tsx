@@ -3,6 +3,7 @@ import RemoveRangeWidth from './RemoveRangeWidth/RemoveRangeWidth';
 import RemoveRangeHeader from './RemoveRangeHeader/RemoveRangeHeader';
 import RemoveRangeInfo from './RemoveRangeInfo/RemoveRangInfo';
 import RemoveRangeButton from './RemoveRangeButton/RemoveRangeButton';
+import { useState } from 'react';
 
 interface IRemoveRangeProps {
     isPositionInRange: boolean;
@@ -12,6 +13,8 @@ interface IRemoveRangeProps {
 }
 
 export default function RemoveRange(props: IRemoveRangeProps) {
+    const [removalPercentage, setRemovalPercentage] = useState(100);
+
     return (
         <div className={styles.remove_Range_container}>
             <RemoveRangeHeader
@@ -21,7 +24,10 @@ export default function RemoveRange(props: IRemoveRangeProps) {
                 quoteTokenSymbol={props.quoteTokenSymbol}
             />
             <div className={styles.main_content}>
-                <RemoveRangeWidth />
+                <RemoveRangeWidth
+                    removalPercentage={removalPercentage}
+                    setRemovalPercentage={setRemovalPercentage}
+                />
                 <RemoveRangeInfo />
                 <RemoveRangeButton />
             </div>
