@@ -82,7 +82,6 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
                     key={`tss_${idx}`}
                     token={tkn}
                     clickHandler={handleClickSearchable}
-                    closeModal={closeModal}
                 />
             ))}
         </>
