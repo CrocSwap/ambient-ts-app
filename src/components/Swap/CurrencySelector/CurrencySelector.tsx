@@ -7,6 +7,7 @@ import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import Modal from '../../../components/Global/Modal/Modal';
 import TokenSelectContainer from '../../Global/TokenSelectContainer/TokenSelectContainer';
+import Toggle2 from '../../Global/Toggle/Toggle2';
 
 interface CurrencySelectorProps {
     tokenPair: TokenPairIF;
@@ -49,7 +50,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
     const thisToken = fieldId === 'sell' ? tokenPair.dataTokenA : tokenPair.dataTokenB;
 
     // const DexBalanceContent = (
-    //     <span className={styles.surplus_toggle}>
+    //     <div className={styles.surplus_toggle}>
     //         {fieldId === 'sell' ? 'Withdraw from DEX balance' : 'Withdraw to Wallet'}
     //         <div className={styles.toggle_container}>
     //             <Toggle
@@ -59,32 +60,33 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
     //                 id='surplus_liquidity'
     //             />
     //         </div>
-    //     </span>
+    //     </div>
     // );
 
     const WithdrawTokensContent = (
-        <span className={styles.surplus_toggle}>
+        <div className={styles.surplus_toggle}>
             {fieldId === 'sell' ? 'Use exchange balance' : 'Withdraw to Wallet'}
-            <div className={styles.toggle_container}>
-                {fieldId === 'sell' ? (
-                    <Toggle
-                        isOn={isWithdrawFromDexChecked}
-                        handleToggle={() => setIsWithdrawFromDexChecked(!isWithdrawFromDexChecked)}
-                        Width={36}
-                        id='sell_token_withdrawal'
-                    />
-                ) : (
-                    <Toggle
-                        isOn={isWithdrawToWalletChecked}
-                        handleToggle={() =>
-                            setIsWithdrawToWalletChecked(!isWithdrawToWalletChecked)
-                        }
-                        Width={36}
-                        id='buy_token_withdrawal'
-                    />
-                )}
-            </div>
-        </span>
+
+            {fieldId === 'sell' ? (
+                // <Toggle
+                //     isOn={isWithdrawFromDexChecked}
+                //     handleToggle={() => setIsWithdrawFromDexChecked(!isWithdrawFromDexChecked)}
+                //     Width={36}
+                //     id='sell_token_withdrawal'
+                // />
+                <Toggle2
+                    isOn={isWithdrawFromDexChecked}
+                    handleToggle={() => setIsWithdrawFromDexChecked(!isWithdrawFromDexChecked)}
+                    id='sell_token_withdrawal'
+                />
+            ) : (
+                <Toggle2
+                    isOn={isWithdrawToWalletChecked}
+                    handleToggle={() => setIsWithdrawToWalletChecked(!isWithdrawToWalletChecked)}
+                    id='buy_token_withdrawal'
+                />
+            )}
+        </div>
     );
 
     const tokenToUpdate = fieldId === 'sell' ? 'A' : 'B';
@@ -119,7 +121,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
 
     return (
         <div className={styles.swapbox}>
-            <span className={styles.direction}>{direction}</span>
+            <div className={styles.direction}>{direction}</div>
             <div className={styles.swapbox_top}>
                 <div className={styles.swap_input}>
                     <CurrencyQuantity fieldId={fieldId} handleChangeEvent={handleChangeEvent} />
@@ -131,12 +133,12 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                         alt={thisToken.name}
                         width='30px'
                     />
-                    <span className={styles.token_list_text}>{thisToken.symbol}</span>
+                    <div className={styles.token_list_text}>{thisToken.symbol}</div>
                     <RiArrowDownSLine size={27} />
                 </div>
             </div>
             <div className={styles.swapbox_bottom}>
-                <span>Wallet: {walletBalance} | Surplus: 0</span>
+                <div>Wallet: {walletBalance} | Surplus: 0</div>
                 {/* {fieldId === 'limit-sell' ? DexBalanceContent : WithdrawTokensContent} */}
                 {WithdrawTokensContent}
             </div>

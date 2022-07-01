@@ -3,7 +3,7 @@
     justify-content: flex-end;
     align-items: center;
     gap: 0.5rem;
-
+    min-height: 33px;
     font-weight: 300;
     font-size: var(--body-size);
     line-height: var(--body-lh);

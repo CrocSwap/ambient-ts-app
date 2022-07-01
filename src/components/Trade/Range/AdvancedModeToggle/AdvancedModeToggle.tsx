@@ -2,6 +2,7 @@ import styles from './AdvancedModeToggle.module.css';
 import Toggle from '../../../Global/Toggle/Toggle';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import { toggleAdvancedMode } from '../../../../utils/state/tradeDataSlice';
+import Toggle2 from '../../../Global/Toggle/Toggle2';
 
 interface advancedModePropsIF {
     advancedMode: boolean;
@@ -15,15 +16,8 @@ export default function AdvancedModeToggle(props: advancedModePropsIF) {
 
     return (
         <div className={styles.advanced_toggle}>
+            <Toggle2 isOn={advancedMode} handleToggle={handleToggle} id='advanced_reposition' />
             <h4 className={styles.advanced_toggle_title}>Advanced Mode</h4>
-            <div className={styles.advanced_toggle_container}>
-                <Toggle
-                    isOn={advancedMode}
-                    handleToggle={handleToggle}
-                    Width={36}
-                    id='advanced_reposition'
-                />
-            </div>
         </div>
     );
 }

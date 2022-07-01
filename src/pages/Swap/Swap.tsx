@@ -303,14 +303,16 @@ export default function Swap(props: ISwapProps) {
                     isDenomBase={tradeData.isDenomBase}
                     isTokenABase={isSellTokenBase}
                 />
-                <DenominationSwitch
-                    tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
-                    isTokenABase={isSellTokenBase}
-                    displayForBase={tradeData.isDenomBase}
-                    poolPriceDisplay={poolPriceDisplay}
-                    didUserFlipDenom={tradeData.didUserFlipDenom}
-                />
-                <DividerDark />
+                <div className={styles.header_container}>
+                    <DenominationSwitch
+                        tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
+                        isTokenABase={isSellTokenBase}
+                        displayForBase={tradeData.isDenomBase}
+                        poolPriceDisplay={poolPriceDisplay}
+                        didUserFlipDenom={tradeData.didUserFlipDenom}
+                    />
+                    <DividerDark addMarginTop />
+                </div>
                 <CurrencyConverter
                     tokenPair={tokenPair}
                     tokensBank={importedTokens}
@@ -333,6 +335,7 @@ export default function Swap(props: ISwapProps) {
                     setSwapAllowed={setSwapAllowed}
                     setSwapButtonErrorMessage={setSwapButtonErrorMessage}
                 />
+
                 <ExtraInfo
                     tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
                     isTokenABase={isSellTokenBase}

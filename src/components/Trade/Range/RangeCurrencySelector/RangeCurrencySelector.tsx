@@ -7,6 +7,7 @@ import { TokenIF, TokenPairIF } from '../../../../utils/interfaces/exports';
 import { useModal } from '../../../../components/Global/Modal/useModal';
 import Modal from '../../../../components/Global/Modal/Modal';
 import TokenSelectContainer from '../../../Global/TokenSelectContainer/TokenSelectContainer';
+import Toggle2 from '../../../Global/Toggle/Toggle2';
 
 interface RangeCurrencySelectorProps {
     fieldId: string;
@@ -72,27 +73,23 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
     const DexBalanceContent = (
         <span className={styles.surplus_toggle}>
             {'Use exchange Balance'}
-            <div className={styles.toggle_container}>
-                {fieldId === 'A' ? (
-                    <Toggle
-                        isOn={isWithdrawTokenAFromDexChecked}
-                        handleToggle={() =>
-                            setIsWithdrawTokenAFromDexChecked(!isWithdrawTokenAFromDexChecked)
-                        }
-                        Width={36}
-                        id='withdraw_from_dex'
-                    />
-                ) : (
-                    <Toggle
-                        isOn={isWithdrawTokenBFromDexChecked}
-                        handleToggle={() =>
-                            setIsWithdrawTokenBFromDexChecked(!isWithdrawTokenBFromDexChecked)
-                        }
-                        Width={36}
-                        id='withdraw_to_wallet'
-                    />
-                )}
-            </div>
+            {fieldId === 'A' ? (
+                <Toggle2
+                    isOn={isWithdrawTokenAFromDexChecked}
+                    handleToggle={() =>
+                        setIsWithdrawTokenAFromDexChecked(!isWithdrawTokenAFromDexChecked)
+                    }
+                    id='withdraw_from_dex'
+                />
+            ) : (
+                <Toggle2
+                    isOn={isWithdrawTokenBFromDexChecked}
+                    handleToggle={() =>
+                        setIsWithdrawTokenBFromDexChecked(!isWithdrawTokenBFromDexChecked)
+                    }
+                    id='withdraw_to_wallet'
+                />
+            )}
         </span>
     );
 

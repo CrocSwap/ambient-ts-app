@@ -9,13 +9,14 @@
     position: relative;
   
     display: flex;
-  
+
+    
     cursor: pointer;
     transition: background-color 0.2s;
-  
+    
     border-radius: 100px;
     /* width: 50px;
-      height: 25px; */
+    height: 25px; */
     background: transparent;
   
     align-items: center;
@@ -70,3 +71,5 @@
     pointer-events: none;
     opacity: 0.5;
   }
+
+ 

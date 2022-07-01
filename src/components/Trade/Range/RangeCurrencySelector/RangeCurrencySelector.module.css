@@ -17,7 +17,7 @@
   }
 
   .direction{
-      padding: 12px;
+    padding: 4px 12px;
   }
   .direction, .swapbox_bottom{
       font-size: var(--body-size);
@@ -64,7 +64,8 @@
   .swapbox_bottom {
     display: flex;
     flex-direction: row;
-    justify-content: space-evenly;
+    justify-content: space-between;
+
     align-items: center;
   }
   
@@ -86,15 +87,12 @@
   .sellAllButton:hover {
     color: hotpink;
   }
-  .toggle_container{
-    margin-bottom: 10px;
-    margin-left: 10px;
-  }
 
   .surplus_toggle{
     display: flex;
     flex-direction: row;
     align-items: center;
+    gap: 8px;
   }
 
   /* modal */
