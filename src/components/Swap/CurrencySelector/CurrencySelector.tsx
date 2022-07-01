@@ -75,7 +75,13 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
 
     const WithdrawTokensContent = (
         <div className={styles.surplus_toggle}>
-            {fieldId === 'sell' ? 'Use exchange balance' : 'Withdraw to Wallet'}
+            {fieldId === 'sell'
+                ? isWithdrawFromDexChecked
+                    ? 'Use exchange surplus'
+                    : 'Use wallet balance'
+                : isWithdrawToWalletChecked
+                ? 'Withdraw to Wallet'
+                : 'Save as exchange surplus'}
 
             {fieldId === 'sell' ? (
                 // <Toggle
@@ -160,7 +166,14 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                     >
                         Wallet: {walletBalance}{' '}
                     </div>{' '}
-                    | <div>Surplus: 0</div>
+                    |{' '}
+                    <div
+                        onClick={() => {
+                            handleChangeClick('0');
+                        }}
+                    >
+                        Surplus: 0
+                    </div>
                 </div>
                 {/* {fieldId === 'limit-sell' ? DexBalanceContent : WithdrawTokensContent} */}
                 {WithdrawTokensContent}
