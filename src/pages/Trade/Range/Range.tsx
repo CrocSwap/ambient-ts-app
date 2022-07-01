@@ -933,6 +933,7 @@ export default function Range(props: RangePropsIF) {
         >
             <RangeCurrencyConverter {...rangeCurrencyConverterProps} isAdvancedMode={false} />
 
+            <DividerDark addMarginTop />
             <RangeWidth {...rangeWidthProps} />
             <RangePriceInfo {...rangePriceInfoProps} />
             <RangeExtraInfo {...rangeExtraInfoProps} />
@@ -941,6 +942,7 @@ export default function Range(props: RangePropsIF) {
     const advancedModeContent = (
         <>
             <RangeCurrencyConverter {...rangeCurrencyConverterProps} isAdvancedMode />
+            <DividerDark addMarginTop />
 
             <MinMaxPrice
                 minPricePercentage={minPriceDifferencePercentage}
@@ -959,6 +961,8 @@ export default function Range(props: RangePropsIF) {
                 setRangeHighTick={setRangeHighTick}
                 disable={isInvalidRange}
             />
+            <DividerDark addMarginTop />
+
             <AdvancedPriceInfo
                 tokenPair={tokenPair}
                 poolPriceDisplay={poolPriceTruncated.toString()}
@@ -1095,7 +1099,9 @@ export default function Range(props: RangePropsIF) {
                     <DividerDark addMarginTop />
                 </div>
                 {/* <RangeCurrencyConverter {...rangeCurrencyConverterProps} /> */}
+
                 {isAdvancedModeActive ? advancedModeContent : baseModeContent}
+
                 {!isAuthenticated || !isWeb3Enabled ? (
                     loginButton
                 ) : poolPriceNonDisplay !== 0 &&
