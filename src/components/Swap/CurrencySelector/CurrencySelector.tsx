@@ -1,7 +1,6 @@
 import styles from './CurrencySelector.module.css';
 import CurrencyQuantity from '../CurrencyQuantity/CurrencyQuantity';
 import { RiArrowDownSLine } from 'react-icons/ri';
-import Toggle from '../../Global/Toggle/Toggle';
 import { useState, ChangeEvent, SetStateAction } from 'react';
 import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
 import { useModal } from '../../../components/Global/Modal/useModal';

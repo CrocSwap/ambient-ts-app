@@ -2,7 +2,6 @@ import styles from './Tabs.module.css';
 import { useState, useEffect } from 'react';
 import TabNavItem from './TabNavItem/TabNavItem';
 import TabContent from './TabContent/TabContent';
-import Toggle from '../Toggle/Toggle';
 import Positions from '../../Trade/Positions/Positions';
 import LimitOrders from '../../Trade/LimitOrders/LimitOrders';
 

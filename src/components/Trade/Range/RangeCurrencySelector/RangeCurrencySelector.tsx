@@ -2,7 +2,6 @@ import { ChangeEvent, SetStateAction, useState } from 'react';
 import styles from './RangeCurrencySelector.module.css';
 import RangeCurrencyQuantity from '../RangeCurrencyQuantity/RangeCurrencyQuantity';
 import { RiArrowDownSLine } from 'react-icons/ri';
-import Toggle from '../../../Global/Toggle/Toggle';
 import { TokenIF, TokenPairIF } from '../../../../utils/interfaces/exports';
 import { useModal } from '../../../../components/Global/Modal/useModal';
 import Modal from '../../../../components/Global/Modal/Modal';

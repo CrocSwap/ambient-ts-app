@@ -10,7 +10,6 @@ import {
 } from '../../../utils/state/tradeDataSlice';
 import { useAppDispatch, useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import truncateDecimals from '../../../utils/data/truncateDecimals';
-import tokensArrowImage from '../../../assets/images/icons/TokensArrow.svg';
 import TokensArrow from '../../Global/TokensArrow/TokensArrow';
 interface CurrencyConverterPropsIF {
     isSellTokenBase: boolean;

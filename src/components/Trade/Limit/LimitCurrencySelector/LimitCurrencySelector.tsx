@@ -4,7 +4,6 @@ import { RiArrowDownSLine } from 'react-icons/ri';
 
 // START: Import React Functional Components
 import LimitCurrencyQuantity from '../LimitCurrencyQuantity/LimitCurrencyQuantity';
-import Toggle from '../../../Global/Toggle/Toggle';
 
 // START: Import Local Files
 import styles from './LimitCurrencySelector.module.css';

@@ -1,5 +1,4 @@
 import styles from './AdvancedModeToggle.module.css';
-import Toggle from '../../../Global/Toggle/Toggle';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import { toggleAdvancedMode } from '../../../../utils/state/tradeDataSlice';
 import Toggle2 from '../../../Global/Toggle/Toggle2';
