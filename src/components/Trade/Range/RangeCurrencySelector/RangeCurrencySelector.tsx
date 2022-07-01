@@ -2,11 +2,11 @@ import { ChangeEvent, Dispatch, SetStateAction, useState } from 'react';
 import styles from './RangeCurrencySelector.module.css';
 import RangeCurrencyQuantity from '../RangeCurrencyQuantity/RangeCurrencyQuantity';
 import { RiArrowDownSLine } from 'react-icons/ri';
-import Toggle from '../../../Global/Toggle/Toggle';
 import { TokenIF, TokenPairIF } from '../../../../utils/interfaces/exports';
 import { useModal } from '../../../../components/Global/Modal/useModal';
 import Modal from '../../../../components/Global/Modal/Modal';
 import TokenSelectContainer from '../../../Global/TokenSelectContainer/TokenSelectContainer';
+import Toggle2 from '../../../Global/Toggle/Toggle2';
 
 interface RangeCurrencySelectorProps {
     fieldId: string;
@@ -83,28 +83,24 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
 
     const DexBalanceContent = (
         <span className={styles.surplus_toggle}>
-            {'Use DEX Balance'}
-            <div className={styles.toggle_container}>
-                {fieldId === 'A' ? (
-                    <Toggle
-                        isOn={isWithdrawTokenAFromDexChecked}
-                        handleToggle={() =>
-                            setIsWithdrawTokenAFromDexChecked(!isWithdrawTokenAFromDexChecked)
-                        }
-                        Width={36}
-                        id='withdraw_from_dex'
-                    />
-                ) : (
-                    <Toggle
-                        isOn={isWithdrawTokenBFromDexChecked}
-                        handleToggle={() =>
-                            setIsWithdrawTokenBFromDexChecked(!isWithdrawTokenBFromDexChecked)
-                        }
-                        Width={36}
-                        id='withdraw_to_wallet'
-                    />
-                )}
-            </div>
+            {'Use exchange Balance'}
+            {fieldId === 'A' ? (
+                <Toggle2
+                    isOn={isWithdrawTokenAFromDexChecked}
+                    handleToggle={() =>
+                        setIsWithdrawTokenAFromDexChecked(!isWithdrawTokenAFromDexChecked)
+                    }
+                    id='withdraw_from_dex'
+                />
+            ) : (
+                <Toggle2
+                    isOn={isWithdrawTokenBFromDexChecked}
+                    handleToggle={() =>
+                        setIsWithdrawTokenBFromDexChecked(!isWithdrawTokenBFromDexChecked)
+                    }
+                    id='withdraw_to_wallet'
+                />
+            )}
         </span>
     );
 

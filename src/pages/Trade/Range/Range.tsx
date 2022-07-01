@@ -99,8 +99,10 @@ export default function Range(props: RangePropsIF) {
         setRecheckTokenBApproval,
         gasPriceinGwei,
         chainId,
+
         activeTokenListsChanged,
         indicateActiveTokenListsChanged
+
     } = props;
     const [isModalOpen, openModal, closeModal] = useModal();
 
@@ -111,15 +113,8 @@ export default function Range(props: RangePropsIF) {
     const [isWithdrawTokenAFromDexChecked, setIsWithdrawTokenAFromDexChecked] = useState(false);
     const [isWithdrawTokenBFromDexChecked, setIsWithdrawTokenBFromDexChecked] = useState(false);
     const [newRangeTransactionHash, setNewRangeTransactionHash] = useState('');
-    const {
-        Moralis,
-        user,
-        account,
-        isAuthenticated,
-        isWeb3Enabled,
-        authenticate,
-        enableWeb3,
-    } = useMoralis();
+    const { Moralis, user, account, isAuthenticated, isWeb3Enabled, authenticate, enableWeb3 } =
+        useMoralis();
 
     const { tradeData } = useTradeData();
 
@@ -916,6 +911,7 @@ export default function Range(props: RangePropsIF) {
         >
             <RangeCurrencyConverter {...rangeCurrencyConverterProps} isAdvancedMode={false} />
 
+            <DividerDark addMarginTop />
             <RangeWidth {...rangeWidthProps} />
             <RangePriceInfo {...rangePriceInfoProps} />
             <RangeExtraInfo {...rangeExtraInfoProps} />
@@ -924,6 +920,8 @@ export default function Range(props: RangePropsIF) {
     const advancedModeContent = (
         <>
             <RangeCurrencyConverter {...rangeCurrencyConverterProps} isAdvancedMode />
+            <DividerDark addMarginTop />
+
             <MinMaxPrice
                 minPricePercentage={minPriceDifferencePercentage}
                 maxPricePercentage={maxPriceDifferencePercentage}
@@ -940,6 +938,8 @@ export default function Range(props: RangePropsIF) {
                 setRangeHighTick={setRangeHighTick}
                 disable={isInvalidRange}
             />
+            <DividerDark addMarginTop />
+
             <AdvancedPriceInfo
                 tokenPair={tokenPair}
                 poolPriceDisplay={poolPriceTruncated.toString()}
@@ -1071,9 +1071,15 @@ export default function Range(props: RangePropsIF) {
                     isDenomBase={tradeData.isDenomBase}
                     isTokenABase={isTokenABase}
                 />
-                {denominationSwitch}
                 <DividerDark />
+                <div className={styles.header_container}>
+                    {denominationSwitch}
+                    <DividerDark addMarginTop />
+                </div>
+                {/* <RangeCurrencyConverter {...rangeCurrencyConverterProps} /> */}
+
                 {isAdvancedModeActive ? advancedModeContent : baseModeContent}
+
                 {!isAuthenticated || !isWeb3Enabled ? (
                     loginButton
                 ) : poolPriceNonDisplay !== 0 &&

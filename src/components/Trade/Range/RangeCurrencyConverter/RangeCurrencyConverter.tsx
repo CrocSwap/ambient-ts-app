@@ -420,6 +420,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
 
     return (
         <section className={styles.currency_converter}>
+            <div className={styles.title}>Collateral</div>
             <RangeCurrencySelector
                 fieldId='A'
                 updateOtherQuantity={(event) => handleTokenAQtyFieldUpdate(event)}

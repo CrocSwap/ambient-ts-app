@@ -95,8 +95,9 @@
   
   .currency_quantity {
     
-font-size: var(--header2-size);
-line-height: var(--header2-lh);
+    font-weight: 200;
+    font-size: 18px;
+    line-height: 22px;
 color: var(--text-grey-white);
 
   

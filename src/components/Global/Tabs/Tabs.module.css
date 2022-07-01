@@ -50,16 +50,12 @@ ul.tab_navs{
     
 }
 
-.toggle_container{
-   
-    margin-left: 10px;
-    margin-bottom: 14px;
-   
-  }
+
 
   .options_toggle{
       
     display: flex;
+    gap: 6px;
     justify-content: flex-end;
     margin-right: 0.5rem;
     flex-direction: row;

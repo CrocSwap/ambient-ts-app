@@ -28,7 +28,7 @@ import DividerDark from '../../../components/Global/DividerDark/DividerDark';
 import Modal from '../../../components/Global/Modal/Modal';
 import ConfirmLimitModal from '../../../components/Trade/Limit/ConfirmLimitModal/ConfirmLimitModal';
 import { JsonRpcProvider } from '@ethersproject/providers';
-
+import styles from './Limit.module.css';
 import truncateDecimals from '../../../utils/data/truncateDecimals';
 
 // START: Import Local Files
@@ -58,6 +58,7 @@ interface LimitPropsIF {
     poolPriceNonDisplay: number;
     tokenAAllowance: string;
     setRecheckTokenAApproval: React.Dispatch<React.SetStateAction<boolean>>;
+
     chainId: string,
     activeTokenListsChanged: boolean,
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
@@ -80,8 +81,10 @@ export default function Limit(props: LimitPropsIF) {
         tokenAAllowance,
         setRecheckTokenAApproval,
         chainId,
+
         activeTokenListsChanged,
         indicateActiveTokenListsChanged
+
     } = props;
     const { tradeData } = useTradeData();
     const dispatch = useAppDispatch();
@@ -364,14 +367,16 @@ export default function Limit(props: LimitPropsIF) {
                     isDenomBase={tradeData.isDenomBase}
                     isTokenABase={isTokenABase}
                 />
-                <DenominationSwitch
-                    tokenPair={tokenPair}
-                    displayForBase={tradeData.isDenomBase}
-                    poolPriceDisplay={poolPriceDisplay}
-                    isTokenABase={isSellTokenBase}
-                    didUserFlipDenom={tradeData.didUserFlipDenom}
-                />
-                <DividerDark />
+                <div className={styles.header_container}>
+                    <DenominationSwitch
+                        tokenPair={tokenPair}
+                        displayForBase={tradeData.isDenomBase}
+                        poolPriceDisplay={poolPriceDisplay}
+                        isTokenABase={isSellTokenBase}
+                        didUserFlipDenom={tradeData.didUserFlipDenom}
+                    />
+                    <DividerDark addMarginTop />
+                </div>
                 <LimitCurrencyConverter
                     tokenPair={tokenPair}
                     searchableTokens={searchableTokens}
