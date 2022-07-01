@@ -14,7 +14,6 @@ import {
     useMoralis,
     useMoralisQuery,
     useMoralisSubscription,
-    // useMoralisWeb3Api,
 } from 'react-moralis';
 import Moralis from 'moralis';
 import {
@@ -22,12 +21,7 @@ import {
     getTokenBalanceDisplay,
     sortBaseQuoteTokens,
     getTokenDecimals,
-    // POOL_PRIMARY,
-    // getSpotPrice,
-    // getSpotPriceDisplay,
     getTokenAllowance,
-    // QUERY_ABI,
-    // decodeCrocPrice,
     toDisplayPrice,
     tickToPrice,
 } from '@crocswap-libs/sdk';
@@ -95,6 +89,10 @@ export default function App() {
     // true vs false is an arbitrary distinction here
     const [tokenListsReceived, indicateTokenListsReceived] = useState(false);
 
+    // this is another case where true vs false is an arbitrary distinction
+    const [activeTokenListsChanged, indicateActiveTokenListsChanged] = useState(false);
+    useEffect(() => {console.log('changed activeTokensList')}, [activeTokenListsChanged]);
+
     if (needTokenLists) {
         setNeedTokenLists(false);
         fetchTokenLists(tokenListsReceived, indicateTokenListsReceived);
@@ -114,7 +112,7 @@ export default function App() {
         setSearchableTokens(getTokensFromLists(activeTokenLists));
         // TODO:  this hook runs once after the initial load of the app, we may need to add
         // TODO:  additional triggers for DOM interactions
-    }, [tokenListsReceived]);
+    }, [tokenListsReceived, activeTokenListsChanged]);
 
     function getTokensFromLists(tokenListURIs:Array<string>) {
         // retrieve and parse all token lists held in local storage
@@ -825,7 +823,9 @@ export default function App() {
         poolPriceDisplay: poolPriceDisplay,
         tokenAAllowance: tokenAAllowance,
         setRecheckTokenAApproval: setRecheckTokenAApproval,
-        chainId: chainId ?? '0x2a'
+        chainId: chainId ?? '0x2a',
+        activeTokenListsChanged: activeTokenListsChanged,
+        indicateActiveTokenListsChanged: indicateActiveTokenListsChanged
     };
 
     // props for <Swap/> React element on trade route
@@ -845,8 +845,9 @@ export default function App() {
         poolPriceDisplay: poolPriceDisplay,
         setRecheckTokenAApproval: setRecheckTokenAApproval,
         tokenAAllowance: tokenAAllowance,
-        // tokenBAllowance: tokenBAllowance,
-        chainId: chainId ?? '0x2a'
+        chainId: chainId ?? '0x2a',
+        activeTokenListsChanged: activeTokenListsChanged,
+        indicateActiveTokenListsChanged: indicateActiveTokenListsChanged
     };
 
     // props for <Limit/> React element on trade route
@@ -868,7 +869,9 @@ export default function App() {
         poolPriceNonDisplay: poolPriceNonDisplay,
         setRecheckTokenAApproval: setRecheckTokenAApproval,
         tokenAAllowance: tokenAAllowance,
-        chainId: chainId ?? '0x2a'
+        chainId: chainId ?? '0x2a',
+        activeTokenListsChanged: activeTokenListsChanged,
+        indicateActiveTokenListsChanged: indicateActiveTokenListsChanged
     };
 
     // props for <Range/> React element
@@ -889,7 +892,9 @@ export default function App() {
         tokenBBalance: tokenBBalance,
         tokenBAllowance: tokenBAllowance,
         setRecheckTokenBApproval: setRecheckTokenBApproval,
-        chainId: chainId ?? '0x2a'
+        chainId: chainId ?? '0x2a',
+        activeTokenListsChanged: activeTokenListsChanged,
+        indicateActiveTokenListsChanged: indicateActiveTokenListsChanged
     };
 
     // props for <Sidebar/> React element

@@ -1,12 +1,18 @@
 import styles from './TokenList.module.css';
-import { useState } from 'react';
+import { useState, Dispatch, SetStateAction } from 'react';
 import TokenListCard from '../TokenListCard/TokenListCard';
 import Divider from '../Divider/Divider';
 import { TokenListIF } from '../../../utils/interfaces/exports';
 
 import { motion } from 'framer-motion';
 
-export default function TokenList() {
+interface TokenListPropsIF {
+    activeTokenListsChanged: boolean;
+    indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
+}
+
+export default function TokenList(props: TokenListPropsIF) {
+    const { activeTokenListsChanged, indicateActiveTokenListsChanged } = props;
     const [showImportedTokens, setShowImportedTokens] = useState(false);
     // eslint-disable-next-line
     const [searchTerm, setSearchTerm] = useState('');
@@ -58,6 +64,7 @@ export default function TokenList() {
         // send the updated user object to local storage
         localStorage.setItem('user', JSON.stringify(userData));
         setActiveLists(newActiveTokenList);
+        indicateActiveTokenListsChanged(!activeTokenListsChanged);
     };
 
     // get allTokenLists value from local storage

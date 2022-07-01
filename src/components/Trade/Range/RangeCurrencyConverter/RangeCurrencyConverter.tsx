@@ -50,6 +50,8 @@ interface RangeCurrencyConverterPropsIF {
     isOutOfRange: boolean;
     rangeSpanAboveCurrentPrice: number;
     rangeSpanBelowCurrentPrice: number;
+    activeTokenListsChanged: boolean;
+    indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
 }
 
 // central React functional component
@@ -82,6 +84,9 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         isAdvancedMode,
         isOutOfRange,
         rangeSpanAboveCurrentPrice,
+        activeTokenListsChanged,
+        indicateActiveTokenListsChanged
+
     } = props;
 
     const dispatch = useAppDispatch();
@@ -409,6 +414,8 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         truncatedTokenBBalance: truncatedTokenBBalance,
         isTokenADisabled: isTokenADisabled,
         isTokenBDisabled: isTokenBDisabled,
+        activeTokenListsChanged: activeTokenListsChanged,
+        indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
     };
 
     return (
