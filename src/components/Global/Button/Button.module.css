@@ -17,7 +17,7 @@
    
    
     color: #CDC1FF;
-    border-radius: 0;
+    border-radius: 4px;
     transition: all var(--animation-speed) ease-out;
     background: linear-gradient(270deg, #7371FC, #CDC1FF, #7371FC , rgba(34,34,34,0), rgba(34,34,34,0));
     background-position: 1% 50%;
