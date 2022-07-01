@@ -1,7 +1,8 @@
 
   .currency_quantity {
-    font-size: var(--header1-size);
-    line-height: var(--header1-lh);
+    font-weight: 200;
+font-size: 18px;
+line-height: 22px;
     color: #fffefd;
     text-align: start;
     width: 100%;
@@ -21,7 +22,8 @@
   }
   .currency_quantity::placeholder {
     color: var(--text-grey-dark);
-    font-size: var(--header1-size);
-    line-height: var(--header1-lh);
+    font-weight: 200;
+    font-size: 18px;
+    line-height: 22px;
   }
   
