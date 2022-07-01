@@ -22,6 +22,14 @@ export default function TransactionSubmitted(props: TransactionSubmittedProps) {
         await addTokenToWallet(tokenBAddress, tokenBSymbol, tokenBDecimals, logoURI);
     };
 
+    const addToMetamaskButton = (
+        <Button
+            title={`Add ${tokenBSymbol} to Metamask`}
+            // action={props.onClickFn}
+            action={handleAddToMetamask}
+            disabled={false}
+        ></Button>
+    );
     return (
         <div className={styles.transaction_submitted}>
             <div className={styles.completed_animation}>
@@ -32,12 +40,7 @@ export default function TransactionSubmitted(props: TransactionSubmittedProps) {
                 <a href={EthersanTx} target='_blank' rel='noreferrer'>
                     View on Etherscan
                 </a>
-                <Button
-                    title={`Add ${tokenBSymbol} to Metamask`}
-                    // action={props.onClickFn}
-                    action={handleAddToMetamask}
-                    disabled={false}
-                ></Button>
+                {tokenBSymbol === 'ETH' ? null : addToMetamaskButton}
             </p>
         </div>
     );
