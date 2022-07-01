@@ -33,7 +33,6 @@ interface LimitCurrencySelectorProps {
     setIsWithdrawToWalletChecked: Dispatch<SetStateAction<boolean>>;
     activeTokenListsChanged: boolean;
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
-
 }
 
 // central react functional component
@@ -55,7 +54,7 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
         isWithdrawToWalletChecked,
         setIsWithdrawToWalletChecked,
         activeTokenListsChanged,
-        indicateActiveTokenListsChanged
+        indicateActiveTokenListsChanged,
     } = props;
 
     const thisToken = fieldId === 'sell' ? tokenPair.dataTokenA : tokenPair.dataTokenB;
@@ -66,7 +65,7 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
     const tokenToUpdate = fieldId === 'sell' ? 'A' : 'B';
 
     const tokenSelectModalOrNull = isModalOpen ? (
-        <Modal onClose={closeModal} title='Select Token'>
+        <Modal onClose={closeModal} title='Select Token' centeredTitle>
             <TokenSelectContainer
                 tokenPair={tokenPair}
                 tokensBank={tokensBank}

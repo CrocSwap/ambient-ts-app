@@ -1,4 +1,8 @@
 /* search input */
+
+.search_input{
+ margin-bottom: 4px;
+}
 .search_input input{
     width: 100%;
     background: var(--dark2);
@@ -7,7 +11,8 @@
     color: var(--text-grey-light);
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    padding: 1rem 0;
+    /* padding: 1rem 0; */
+    height: 30px;
     border-radius: var(--border-radius);
     border: none;
     outline: none;

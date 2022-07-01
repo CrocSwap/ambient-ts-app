@@ -4,7 +4,8 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem 0;
+    padding: 10.5px 5px;
+    border-radius: var(--border-radius);
   }
 
   .modal_content:hover{

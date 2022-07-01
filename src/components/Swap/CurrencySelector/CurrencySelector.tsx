@@ -49,7 +49,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
         tokenBBalance,
         reverseTokens,
         activeTokenListsChanged,
-        indicateActiveTokenListsChanged
+        indicateActiveTokenListsChanged,
     } = props;
     // const [isChecked, setIsChecked] = useState<boolean>(false);
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -103,6 +103,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
         <Modal
             onClose={closeModal}
             title='Select Token'
+            centeredTitle
             handleBack={() => setShowManageTokenListContent(false)}
             showBackButton={showManageTokenListContent}
         >
