@@ -1,3 +1,11 @@
+
+.title{
+  font-size: var(--header2-size);
+  line-height: var(--header2-lh);
+  color: var(--text-grey-light);
+  margin: 4px ;
+
+}
 .tokens_container{
   /* background: yellow; */
   max-height: 303px;

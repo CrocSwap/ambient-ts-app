@@ -62,7 +62,7 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
 
     const tokenListContent = (
         <>
-            <h3>Your Tokens</h3>
+            <div className={styles.title}>Your Tokens</div>
             <div className={styles.tokens_container}>
                 {matchingImportedTokens.map((token: TokenIF, idx: number) => {
                     return (
