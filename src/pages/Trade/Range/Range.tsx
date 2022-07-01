@@ -1090,8 +1090,10 @@ export default function Range(props: RangePropsIF) {
                     isDenomBase={tradeData.isDenomBase}
                     isTokenABase={isTokenABase}
                 />
-                {denominationSwitch}
-                <DividerDark />
+                <div className={styles.header_container}>
+                    {denominationSwitch}
+                    <DividerDark addMarginTop />
+                </div>
                 {/* <RangeCurrencyConverter {...rangeCurrencyConverterProps} /> */}
                 {isAdvancedModeActive ? advancedModeContent : baseModeContent}
                 {!isAuthenticated || !isWeb3Enabled ? (

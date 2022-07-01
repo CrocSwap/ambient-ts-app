@@ -116,7 +116,7 @@ export default function RangeExtraInfo(props: RangeExtraInfoPropsIF) {
     const flippedDisplay = `1 ${tokenPair.dataTokenB.symbol} ≈ ${displayPriceStringTruncated} ${tokenPair.dataTokenA.symbol}`;
 
     return (
-        <div className={styles.extra_info_container}>
+        <>
             <div
                 className={styles.extra_info_content}
                 onClick={() => setShowExtraDetails(!showExtraDetails)}
@@ -130,6 +130,6 @@ export default function RangeExtraInfo(props: RangeExtraInfoPropsIF) {
                 </div>
             </div>
             {extraDetailsOrNull}
-        </div>
+        </>
     );
 }

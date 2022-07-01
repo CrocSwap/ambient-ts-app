@@ -40,9 +40,11 @@
   }
 
   .direction{
-     font-weight: 300;
-    margin-bottom: 0.5rem;
-  }
+    padding: 0.4.5px 0;
+    margin: 4px 0;
+    font-weight: 300;
+   
+}
   .direction, .swapbox_bottom{
       font-size: var(--body-size);
       line-height: var(--body-lh);
@@ -56,10 +58,10 @@
     justify-content: space-between;
     flex-direction: row;
     align-items: center;
-    padding: 0.5rem 0;
-    max-height: 3rem;
+    /* padding: 0.5rem 0; */
+    min-height: 40px;
+    /* height: 40px; */
   }
-
   .swap_input{
 width: 70%;
   }

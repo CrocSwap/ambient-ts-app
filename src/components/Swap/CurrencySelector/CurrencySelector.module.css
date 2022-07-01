@@ -15,7 +15,7 @@
   .direction{
       padding: 0.4.5px 0;
       margin: 4px 0;
-      /* background: red; */
+     
   }
   .direction, .swapbox_bottom{
       font-size: var(--body-size);
@@ -70,7 +70,6 @@ width: 70%;
     align-items: center;
  min-height: 33px;
    margin: 4px 0;
-    /* background: yellow; */
   }
   
   .token_select_button {
