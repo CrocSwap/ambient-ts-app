@@ -27,6 +27,8 @@ interface CurrencySelectorProps {
     setIsWithdrawToWalletChecked: Dispatch<SetStateAction<boolean>>;
     handleChangeEvent: (evt: ChangeEvent<HTMLInputElement>) => void;
     reverseTokens: () => void;
+    activeTokenListsChanged: boolean;
+    indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function CurrencySelector(props: CurrencySelectorProps) {
@@ -46,6 +48,8 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
         tokenABalance,
         tokenBBalance,
         reverseTokens,
+        activeTokenListsChanged,
+        indicateActiveTokenListsChanged
     } = props;
     // const [isChecked, setIsChecked] = useState<boolean>(false);
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -114,6 +118,8 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                 reverseTokens={reverseTokens}
                 showManageTokenListContent={showManageTokenListContent}
                 setShowManageTokenListContent={setShowManageTokenListContent}
+                activeTokenListsChanged={activeTokenListsChanged}
+                indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
             />
         </Modal>
     ) : null;

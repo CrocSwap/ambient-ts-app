@@ -34,6 +34,8 @@ interface CurrencyConverterPropsIF {
     setIsWithdrawToWalletChecked: Dispatch<SetStateAction<boolean>>;
     setSwapAllowed: Dispatch<SetStateAction<boolean>>;
     setSwapButtonErrorMessage: Dispatch<SetStateAction<string>>;
+    activeTokenListsChanged: boolean;
+    indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
@@ -56,6 +58,8 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         setSwapButtonErrorMessage,
         setTokenAInputQty,
         setTokenBInputQty,
+        activeTokenListsChanged,
+        indicateActiveTokenListsChanged
     } = props;
 
     // TODO: update name of functions with 'handle' verbiage
@@ -237,6 +241,8 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                 isWithdrawToWalletChecked={isWithdrawToWalletChecked}
                 setIsWithdrawToWalletChecked={setIsWithdrawToWalletChecked}
                 reverseTokens={reverseTokens}
+                activeTokenListsChanged={activeTokenListsChanged}
+                indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
             />
             <div className={styles.arrow_container} onClick={handleArrowClick}>
                 {/* <img src={tokensArrowImage} alt="arrow pointing down" /> */}
@@ -260,6 +266,8 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                 isWithdrawToWalletChecked={isWithdrawToWalletChecked}
                 reverseTokens={reverseTokens}
                 setIsWithdrawToWalletChecked={setIsWithdrawToWalletChecked}
+                activeTokenListsChanged={activeTokenListsChanged}
+                indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
             />
         </section>
     );

@@ -13,17 +13,12 @@ import {
     parseMintEthersReceipt,
     EthersNativeReceipt,
     ambientPosSlot,
-    // tickToPrice,
-    // toDisplayPrice,
     concDepositSkew,
-    // GRID_SIZE_DFLT,
     MIN_TICK,
     MAX_TICK,
     concPosSlot,
     approveToken,
     contractAddresses,
-    // pinTickLower,
-    // fromDisplayPrice,
 } from '@crocswap-libs/sdk';
 
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
@@ -61,7 +56,6 @@ import {
     setAdvancedHighTick,
     setAdvancedLowTick,
     setSimpleRangeWidth,
-    // setIsTokenAPrimaryRange,
 } from '../../../utils/state/tradeDataSlice';
 import { addReceipt } from '../../../utils/state/receiptDataSlice';
 
@@ -83,6 +77,8 @@ interface RangePropsIF {
     tokenBAllowance: string;
     setRecheckTokenBApproval: Dispatch<SetStateAction<boolean>>;
     chainId: string;
+    activeTokenListsChanged: boolean;
+    indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function Range(props: RangePropsIF) {
@@ -103,6 +99,10 @@ export default function Range(props: RangePropsIF) {
         setRecheckTokenBApproval,
         gasPriceinGwei,
         chainId,
+
+        activeTokenListsChanged,
+        indicateActiveTokenListsChanged
+
     } = props;
     const [isModalOpen, openModal, closeModal] = useModal();
 
@@ -321,31 +321,7 @@ export default function Range(props: RangePropsIF) {
     const [rangeHighBoundFieldBlurred, setRangeHighBoundFieldBlurred] = useState(false);
     const highBoundOnBlur = () => setRangeHighBoundFieldBlurred(true);
 
-    // useEffect(() => {
-    //     console.log({ currentPoolPriceTick });
-    // }, [currentPoolPriceTick]);
-
-    // useEffect(() => {
-    //     console.log({ rangeLowTick });
-    // }, [rangeLowTick]);
-
-    // useEffect(() => {
-    //     console.log({ rangeHighTick });
-    // }, [rangeHighTick]);
-
-    // useEffect(() => {
-    //     console.log({ isTokenADisabled });
-    // }, [isTokenADisabled]);
-
-    // useEffect(() => {
-    //     console.log({ isTokenBDisabled });
-    // }, [isTokenBDisabled]);
-
     const [initializationComplete, setInitializationComplete] = useState(false);
-
-    // useEffect(() => {
-    //     console.log({ initializationComplete });
-    // }, [initializationComplete]);
 
     useEffect(() => {
         if (isAdvancedModeActive) {
@@ -905,6 +881,8 @@ export default function Range(props: RangePropsIF) {
         isOutOfRange: isOutOfRange,
         rangeSpanAboveCurrentPrice: rangeSpanAboveCurrentPrice,
         rangeSpanBelowCurrentPrice: rangeSpanBelowCurrentPrice,
+        activeTokenListsChanged: activeTokenListsChanged,
+        indicateActiveTokenListsChanged: indicateActiveTokenListsChanged
     };
 
     // props for <RangeWidth/> React element

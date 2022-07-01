@@ -19,6 +19,8 @@ interface TokenSelectContainerPropsIF {
     reverseTokens: () => void;
     showManageTokenListContent: boolean;
     setShowManageTokenListContent: Dispatch<SetStateAction<boolean>>;
+    activeTokenListsChanged: boolean;
+    indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function TokenSelectContainer(props: TokenSelectContainerPropsIF) {
@@ -33,6 +35,8 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
         reverseTokens,
         showManageTokenListContent,
         setShowManageTokenListContent,
+        activeTokenListsChanged,
+        indicateActiveTokenListsChanged
     } = props;
 
     const [
@@ -78,7 +82,6 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
                     key={`tss_${idx}`}
                     token={tkn}
                     clickHandler={handleClickSearchable}
-                    closeModal={closeModal}
                 />
             ))}
         </>
@@ -100,7 +103,12 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
 
     return (
         <div className={styles.token_select_container}>
-            {showManageTokenListContent ? <TokenList /> : tokenListContainer}
+            {showManageTokenListContent
+                ? <TokenList
+                    activeTokenListsChanged={activeTokenListsChanged}
+                    indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
+                    />
+                : tokenListContainer}
         </div>
     );
 }

@@ -28,6 +28,8 @@ interface RangeCurrencySelectorProps {
     isTokenBDisabled: boolean;
     isAdvancedMode: boolean;
     disable?: boolean;
+    activeTokenListsChanged: boolean;
+    indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function RangeCurrencySelector(props: RangeCurrencySelectorProps) {
@@ -50,6 +52,8 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
         isTokenADisabled,
         isTokenBDisabled,
         isAdvancedMode,
+        activeTokenListsChanged,
+        indicateActiveTokenListsChanged
     } = props;
 
     const thisToken = fieldId === 'A' ? tokenPair.dataTokenA : tokenPair.dataTokenB;
@@ -71,6 +75,8 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                 reverseTokens={reverseTokens}
                 showManageTokenListContent={showManageTokenListContent}
                 setShowManageTokenListContent={setShowManageTokenListContent}
+                activeTokenListsChanged={activeTokenListsChanged}
+                indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}            
             />
         </Modal>
     ) : null;

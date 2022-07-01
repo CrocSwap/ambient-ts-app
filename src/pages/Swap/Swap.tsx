@@ -58,6 +58,9 @@ interface SwapPropsIF {
     tokenAAllowance: string;
     setRecheckTokenAApproval: Dispatch<SetStateAction<boolean>>;
     chainId: string;
+    activeTokenListsChanged: boolean;
+    indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
+
 }
 
 export default function Swap(props: SwapPropsIF) {
@@ -77,6 +80,10 @@ export default function Swap(props: SwapPropsIF) {
         tokenAAllowance,
         setRecheckTokenAApproval,
         chainId,
+
+        activeTokenListsChanged,
+        indicateActiveTokenListsChanged
+
     } = props;
     const [isModalOpen, openModal, closeModal] = useModal();
 
@@ -341,6 +348,8 @@ export default function Swap(props: SwapPropsIF) {
                     setIsWithdrawToWalletChecked={setIsWithdrawToWalletChecked}
                     setSwapAllowed={setSwapAllowed}
                     setSwapButtonErrorMessage={setSwapButtonErrorMessage}
+                    activeTokenListsChanged={activeTokenListsChanged}
+                    indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
                 />
 
                 <ExtraInfo

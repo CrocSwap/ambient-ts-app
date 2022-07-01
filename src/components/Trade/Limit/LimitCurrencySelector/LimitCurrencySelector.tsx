@@ -28,9 +28,12 @@ interface LimitCurrencySelectorProps {
     tokenBBalance: string;
     handleChangeEvent: (evt: ChangeEvent<HTMLInputElement>) => void;
     isWithdrawFromDexChecked: boolean;
-    setIsWithdrawFromDexChecked: React.Dispatch<SetStateAction<boolean>>;
+    setIsWithdrawFromDexChecked: Dispatch<SetStateAction<boolean>>;
     isWithdrawToWalletChecked: boolean;
-    setIsWithdrawToWalletChecked: React.Dispatch<SetStateAction<boolean>>;
+    setIsWithdrawToWalletChecked: Dispatch<SetStateAction<boolean>>;
+    activeTokenListsChanged: boolean;
+    indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
+
 }
 
 // central react functional component
@@ -51,6 +54,8 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
         setIsWithdrawFromDexChecked,
         isWithdrawToWalletChecked,
         setIsWithdrawToWalletChecked,
+        activeTokenListsChanged,
+        indicateActiveTokenListsChanged
     } = props;
 
     const thisToken = fieldId === 'sell' ? tokenPair.dataTokenA : tokenPair.dataTokenB;
@@ -74,6 +79,8 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
                 reverseTokens={reverseTokens}
                 showManageTokenListContent={showManageTokenListContent}
                 setShowManageTokenListContent={setShowManageTokenListContent}
+                activeTokenListsChanged={activeTokenListsChanged}
+                indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
             />
         </Modal>
     ) : null;
