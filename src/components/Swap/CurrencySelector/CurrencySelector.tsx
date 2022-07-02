@@ -111,6 +111,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
         <Modal
             onClose={closeModal}
             title='Select Token'
+            centeredTitle
             handleBack={() => setShowManageTokenListContent(false)}
             showBackButton={showManageTokenListContent}
         >

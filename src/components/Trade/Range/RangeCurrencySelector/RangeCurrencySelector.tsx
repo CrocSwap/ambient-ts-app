@@ -53,7 +53,7 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
         isTokenBDisabled,
         isAdvancedMode,
         activeTokenListsChanged,
-        indicateActiveTokenListsChanged
+        indicateActiveTokenListsChanged,
     } = props;
 
     const thisToken = fieldId === 'A' ? tokenPair.dataTokenA : tokenPair.dataTokenB;
@@ -62,7 +62,7 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
     const [isModalOpen, openModal, closeModal] = useModal();
 
     const tokenSelectModalOrNull = isModalOpen ? (
-        <Modal onClose={closeModal} title='Select Token'>
+        <Modal onClose={closeModal} title='Select Token' centeredTitle>
             <TokenSelectContainer
                 tokenPair={tokenPair}
                 searchableTokens={searchableTokens}
@@ -76,7 +76,7 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                 showManageTokenListContent={showManageTokenListContent}
                 setShowManageTokenListContent={setShowManageTokenListContent}
                 activeTokenListsChanged={activeTokenListsChanged}
-                indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}            
+                indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
             />
         </Modal>
     ) : null;

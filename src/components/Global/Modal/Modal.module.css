@@ -32,7 +32,7 @@ transition: all var(--animation-speed) ease-in-out;
     cursor: pointer;
 
 
-  min-width: 400px;
+  min-width: 450px;
   min-height: 350px;
   border-radius: var(--border-radius);
   position: relative;

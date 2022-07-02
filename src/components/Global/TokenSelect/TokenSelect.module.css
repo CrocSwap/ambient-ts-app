@@ -4,7 +4,8 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem 0;
+    padding: 10.5px 5px;
+    border-radius: var(--border-radius);
   }
 
   .modal_content:hover{
@@ -28,19 +29,18 @@
     border-radius: 50%;
   }
  
-
-  .star_filled{
-    display: none;
-  }
-
-  .modal_tokens_info:hover .star_filled{
-    display: block;
+  .star_svg{
+    cursor: pointer;
     
   }
-  .modal_tokens_info:hover .star_line{
-    display: none;
+  
+  .star_svg:hover {
+    fill: var(--text-grey-light);
+    cursor: pointer;
+    transition: all var(--animation-speed) ease-in-out
   }
 
+ 
   .modal_token_symbol,   .modal_tokens_amount{
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
