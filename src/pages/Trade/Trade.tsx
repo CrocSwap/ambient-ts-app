@@ -1,4 +1,9 @@
-import { Outlet, useOutletContext, NavLink, useLocation } from 'react-router-dom';
+import {
+    Outlet,
+    useOutletContext,
+    NavLink,
+    // useLocation
+} from 'react-router-dom';
 import styles from './Trade.module.css';
 import chart from '../../assets/images/Temporary/chart.svg';
 import Tabs from '../../components/Global/Tabs/Tabs';
@@ -13,8 +18,8 @@ interface ITradeProps {
 }
 
 export default function Trade(props: ITradeProps) {
-    const location = useLocation();
-    const currentLocation = location.pathname;
+    // const location = useLocation();
+    // const currentLocation = location.pathname;
 
     // console.log(currentLocation);
 
@@ -98,8 +103,8 @@ export default function Trade(props: ITradeProps) {
 
     const mainContent = (
         <div className={styles.right_col}>
-            {currentLocation.slice(0, 11) !== '/trade/edit' && navigationMenu}
-            <Outlet context={{ tradeData }} />
+            {/* {currentLocation.slice(0, 11) !== '/trade/edit' && navigationMenu} */}
+            <Outlet context={{ tradeData: tradeData, navigationMenu: navigationMenu }} />
             {/* <PageFooter lastBlockNumber={props.lastBlockNumber} /> */}
         </div>
     );
@@ -124,7 +129,7 @@ export default function Trade(props: ITradeProps) {
     );
 }
 
-type ContextType = { tradeData: TradeDataIF };
+type ContextType = { tradeData: TradeDataIF; navigationMenu: JSX.Element };
 
 export function useTradeData() {
     return useOutletContext<ContextType>();

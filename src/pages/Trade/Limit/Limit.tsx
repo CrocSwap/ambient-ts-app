@@ -59,8 +59,8 @@ interface LimitPropsIF {
     tokenAAllowance: string;
     setRecheckTokenAApproval: React.Dispatch<React.SetStateAction<boolean>>;
 
-    chainId: string,
-    activeTokenListsChanged: boolean,
+    chainId: string;
+    activeTokenListsChanged: boolean;
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
 }
 
@@ -83,10 +83,10 @@ export default function Limit(props: LimitPropsIF) {
         chainId,
 
         activeTokenListsChanged,
-        indicateActiveTokenListsChanged
-
+        indicateActiveTokenListsChanged,
     } = props;
     const { tradeData } = useTradeData();
+    const { navigationMenu } = useTradeData();
     const dispatch = useAppDispatch();
     const { enableWeb3, isWeb3Enabled, authenticate, isAuthenticated } = useMoralis();
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -367,6 +367,7 @@ export default function Limit(props: LimitPropsIF) {
                     isDenomBase={tradeData.isDenomBase}
                     isTokenABase={isTokenABase}
                 />
+                {navigationMenu}
                 <div className={styles.header_container}>
                     <DenominationSwitch
                         tokenPair={tokenPair}

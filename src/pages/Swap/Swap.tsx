@@ -60,7 +60,6 @@ interface SwapPropsIF {
     chainId: string;
     activeTokenListsChanged: boolean;
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
-
 }
 
 export default function Swap(props: SwapPropsIF) {
@@ -82,8 +81,7 @@ export default function Swap(props: SwapPropsIF) {
         chainId,
 
         activeTokenListsChanged,
-        indicateActiveTokenListsChanged
-
+        indicateActiveTokenListsChanged,
     } = props;
     const [isModalOpen, openModal, closeModal] = useModal();
 
@@ -100,6 +98,10 @@ export default function Swap(props: SwapPropsIF) {
     const { tradeData } = pathname.includes('/trade')
         ? useTradeData()
         : useAppSelector((state) => state);
+
+    const { navigationMenu } = pathname.includes('/trade')
+        ? useTradeData()
+        : { navigationMenu: null };
 
     const { tokenA, tokenB } = tradeData;
 
@@ -315,6 +317,7 @@ export default function Swap(props: SwapPropsIF) {
                     isDenomBase={tradeData.isDenomBase}
                     isTokenABase={isSellTokenBase}
                 />
+                {navigationMenu}
                 <div className={styles.header_container}>
                     <DenominationSwitch
                         tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
@@ -351,7 +354,6 @@ export default function Swap(props: SwapPropsIF) {
                     activeTokenListsChanged={activeTokenListsChanged}
                     indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
                 />
-
                 <ExtraInfo
                     tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
                     isTokenABase={isSellTokenBase}

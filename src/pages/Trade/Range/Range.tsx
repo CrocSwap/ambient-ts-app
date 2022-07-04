@@ -101,8 +101,7 @@ export default function Range(props: RangePropsIF) {
         chainId,
 
         activeTokenListsChanged,
-        indicateActiveTokenListsChanged
-
+        indicateActiveTokenListsChanged,
     } = props;
     const [isModalOpen, openModal, closeModal] = useModal();
 
@@ -117,6 +116,7 @@ export default function Range(props: RangePropsIF) {
         useMoralis();
 
     const { tradeData } = useTradeData();
+    const { navigationMenu } = useTradeData();
 
     const tokenPair = {
         dataTokenA: tradeData.tokenA,
@@ -882,7 +882,7 @@ export default function Range(props: RangePropsIF) {
         rangeSpanAboveCurrentPrice: rangeSpanAboveCurrentPrice,
         rangeSpanBelowCurrentPrice: rangeSpanBelowCurrentPrice,
         activeTokenListsChanged: activeTokenListsChanged,
-        indicateActiveTokenListsChanged: indicateActiveTokenListsChanged
+        indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
     };
 
     // props for <RangeWidth/> React element
@@ -1071,6 +1071,7 @@ export default function Range(props: RangePropsIF) {
                     isDenomBase={tradeData.isDenomBase}
                     isTokenABase={isTokenABase}
                 />
+                {navigationMenu}
                 <DividerDark />
                 <div className={styles.header_container}>
                     {denominationSwitch}
