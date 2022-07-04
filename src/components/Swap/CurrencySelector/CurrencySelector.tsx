@@ -159,7 +159,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                 </div>
             </div>
             <div className={styles.swapbox_bottom}>
-                <div>
+                <div className={styles.surplus_container}>
                     <div
                         onClick={() => {
                             handleChangeClick(walletBalance);
