@@ -17,21 +17,23 @@ export const useSearch = (
     const checkMatchLowerCase = (text:string) => text.toLowerCase().includes(searchInput.toLowerCase());
 
     // function to filter an array of tokens for string matches by symbol, name, and address
-    const searchTokens = (listOfTokens:Array<TokenIF>) => (
-        listOfTokens.filter((token:TokenIF) => 
+    const searchTokens = (listOfTokens:Array<TokenIF>) => {
+        const matchingTokens = listOfTokens.filter((token:TokenIF) => 
             checkMatchLowerCase(token.symbol)
             || checkMatchLowerCase(token.name)
             || checkMatchLowerCase(token.address)
         )
-        // .filter((token:TokenIF) => token.chainId === parseInt(chainId))
-    );
+        const matchingTokensOnChain = filterOnChain(matchingTokens);
+        return matchingTokensOnChain;
+    };
 
-    // this line is just here to make the linter happy
-    console.assert(true, chainId);
+    const filterOnChain = (tokens:Array<TokenIF>) => (
+        tokens.filter((token:TokenIF) => token.chainId === parseInt(chainId))
+    );
 
     useEffect(() => {
         // filter imported tokens if user input string is validated
-        const matchingImported = validSearch ? searchTokens(tokensBank) : tokensBank;
+        const matchingImported = validSearch ? searchTokens(tokensBank) : filterOnChain(tokensBank);
         // update local state with array of imported tokens to be rendered in DOM
         setMatchingImportedTokens(matchingImported);
         // filter searchable tokens if user input string is validated

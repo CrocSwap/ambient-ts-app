@@ -48,7 +48,6 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
     const handleClickSearchable = (tkn: TokenIF) => {
         // look inside tokensBank to see if clicked token is already imported
         const importedTokenAddresses = tokensBank.map((token: TokenIF) => token.address);
-        console.log(importedTokenAddresses);
         const newImportedTokensArray = importedTokenAddresses.includes(tkn.address)
             // TRUE: make new array with it removed
             ? tokensBank.filter((token: TokenIF) => token.address !== tkn.address)
@@ -67,18 +66,16 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
         <>
             <div className={styles.title}>Your Tokens</div>
             <div className={styles.tokens_container}>
-                {matchingImportedTokens.map((token: TokenIF, idx: number) => {
-                    return (
-                        <TokenSelect
-                            key={idx}
-                            token={token}
-                            tokenToUpdate={tokenToUpdate}
-                            closeModal={closeModal}
-                            tokenPair={tokenPair}
-                            reverseTokens={reverseTokens}
-                        />
-                    );
-                })}
+                {matchingImportedTokens.map((token: TokenIF, idx: number) => (
+                    <TokenSelect
+                        key={idx}
+                        token={token}
+                        tokenToUpdate={tokenToUpdate}
+                        closeModal={closeModal}
+                        tokenPair={tokenPair}
+                        reverseTokens={reverseTokens}
+                    />
+                ))}
             </div>
             {matchingSearchableTokens.length ? <h3>Searched Tokens</h3> : null}
             {matchingSearchableTokens.map((tkn: TokenIF, idx: number) => (
