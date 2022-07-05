@@ -11,6 +11,7 @@ import Toggle2 from '../Toggle/Toggle2';
 interface ITabsProps {
     account: string;
     isAuthenticated: boolean;
+    isWeb3Enabled: boolean;
 }
 
 export default function Tabs(props: ITabsProps) {
@@ -55,7 +56,7 @@ export default function Tabs(props: ITabsProps) {
                     setIsAllPositionsEnabled(!isAllPositionsEnabled);
                 }}
                 id='positions_only_toggle'
-                disabled={!props.isAuthenticated}
+                disabled={!props.isAuthenticated || !props.isWeb3Enabled}
             />
         </span>
     );
