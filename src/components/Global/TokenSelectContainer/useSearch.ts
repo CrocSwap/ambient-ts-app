@@ -23,10 +23,12 @@ export const useSearch = (
             || checkMatchLowerCase(token.name)
             || checkMatchLowerCase(token.address)
         )
+        // remove off-chain tokens from the search results
         const matchingTokensOnChain = filterOnChain(matchingTokens);
         return matchingTokensOnChain;
     };
 
+    // function to filter an array of tokens as matching the current chain
     const filterOnChain = (tokens:Array<TokenIF>) => (
         tokens.filter((token:TokenIF) => token.chainId === parseInt(chainId))
     );
