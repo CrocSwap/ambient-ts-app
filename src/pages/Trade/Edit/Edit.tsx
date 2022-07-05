@@ -58,7 +58,7 @@ export default function Edit() {
     const highBoundOnBlur = () => setRangeHighBoundFieldBlurred(true);
 
     useEffect(() => {
-        console.log('low bound blurred');
+        // console.log('low bound blurred');
         if (rangeLowBoundFieldBlurred) {
             const rangeLowBoundDisplayField = document.getElementById(
                 'min-price-input-quantity',
@@ -71,7 +71,7 @@ export default function Edit() {
     }, [rangeLowBoundDisplayPrice, rangeLowBoundFieldBlurred]);
 
     useEffect(() => {
-        console.log('high bound blurred');
+        // console.log('high bound blurred');
         if (rangeHighBoundFieldBlurred) {
             const rangeHighBoundDisplayField = document.getElementById(
                 'max-price-input-quantity',
