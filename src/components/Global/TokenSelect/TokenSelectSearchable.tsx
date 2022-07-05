@@ -8,10 +8,7 @@ interface TokenSelectProps {
 }
 
 export default function TokenSelect(props: TokenSelectProps) {
-    const {
-        token,
-        clickHandler
-    } = props;
+    const { token, clickHandler } = props;
 
     const noTokenImage = <CgUnavailable size={20} />;
 
@@ -22,7 +19,6 @@ export default function TokenSelect(props: TokenSelectProps) {
                 <span className={styles.modal_token_symbol}>{token.symbol}</span>
                 <span className={styles.modal_token_name}>{token.name}</span>
             </div>
-            <button>Add/Remove Token</button>
         </div>
     );
 }

@@ -87,6 +87,7 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
         const userData = JSON.parse(localStorage.getItem('user') as string);
         userData.tokens = newImportedTokensArray;
         localStorage.setItem('user', JSON.stringify(userData));
+        chooseToken(tkn);
     };
 
     const tokenListContent = (
