@@ -14,7 +14,9 @@ export default function EditHeader(props: EditHeaderProps) {
     return (
         <ContentHeader>
             <div></div>
-            <div>Edit: {positionHash ? truncateAddress(positionHash, 12) : ' 0xFD05...A3FF'}</div>
+            <div>
+                Edit Position: {positionHash ? truncateAddress(positionHash, 12) : ' 0xFD05...A3FF'}
+            </div>
             <div onClick={() => navigate(-1)}>
                 <RiCloseFill />
             </div>
