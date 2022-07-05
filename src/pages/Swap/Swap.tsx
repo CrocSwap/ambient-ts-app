@@ -318,16 +318,6 @@ export default function Swap(props: SwapPropsIF) {
                     isTokenABase={isSellTokenBase}
                 />
                 {navigationMenu}
-                <div className={styles.header_container}>
-                    <DenominationSwitch
-                        tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
-                        isTokenABase={isSellTokenBase}
-                        displayForBase={tradeData.isDenomBase}
-                        poolPriceDisplay={poolPriceDisplay}
-                        didUserFlipDenom={tradeData.didUserFlipDenom}
-                    />
-                    <DividerDark addMarginTop />
-                </div>
                 <CurrencyConverter
                     tokenPair={tokenPair}
                     tokensBank={importedTokens}
@@ -354,6 +344,16 @@ export default function Swap(props: SwapPropsIF) {
                     activeTokenListsChanged={activeTokenListsChanged}
                     indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
                 />
+                <div className={styles.header_container}>
+                    <DividerDark addMarginTop />
+                    <DenominationSwitch
+                        tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
+                        isTokenABase={isSellTokenBase}
+                        displayForBase={tradeData.isDenomBase}
+                        poolPriceDisplay={poolPriceDisplay}
+                        didUserFlipDenom={tradeData.didUserFlipDenom}
+                    />
+                </div>
                 <ExtraInfo
                     tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
                     isTokenABase={isSellTokenBase}

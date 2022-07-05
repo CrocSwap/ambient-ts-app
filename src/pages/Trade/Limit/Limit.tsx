@@ -368,16 +368,6 @@ export default function Limit(props: LimitPropsIF) {
                     isTokenABase={isTokenABase}
                 />
                 {navigationMenu}
-                <div className={styles.header_container}>
-                    <DenominationSwitch
-                        tokenPair={tokenPair}
-                        displayForBase={tradeData.isDenomBase}
-                        poolPriceDisplay={poolPriceDisplay}
-                        isTokenABase={isSellTokenBase}
-                        didUserFlipDenom={tradeData.didUserFlipDenom}
-                    />
-                    <DividerDark addMarginTop />
-                </div>
                 <LimitCurrencyConverter
                     tokenPair={tokenPair}
                     searchableTokens={searchableTokens}
@@ -405,6 +395,16 @@ export default function Limit(props: LimitPropsIF) {
                     activeTokenListsChanged={activeTokenListsChanged}
                     indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
                 />
+                <div className={styles.header_container}>
+                    <DividerDark addMarginTop />
+                    <DenominationSwitch
+                        tokenPair={tokenPair}
+                        displayForBase={tradeData.isDenomBase}
+                        poolPriceDisplay={poolPriceDisplay}
+                        isTokenABase={isSellTokenBase}
+                        didUserFlipDenom={tradeData.didUserFlipDenom}
+                    />
+                </div>
                 <LimitExtraInfo
                     tokenPair={tokenPair}
                     gasPriceinGwei={gasPriceinGwei}
