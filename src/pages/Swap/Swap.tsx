@@ -60,7 +60,6 @@ interface SwapPropsIF {
     chainId: string;
     activeTokenListsChanged: boolean;
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
-
 }
 
 export default function Swap(props: SwapPropsIF) {
@@ -82,8 +81,7 @@ export default function Swap(props: SwapPropsIF) {
         chainId,
 
         activeTokenListsChanged,
-        indicateActiveTokenListsChanged
-
+        indicateActiveTokenListsChanged,
     } = props;
     const [isModalOpen, openModal, closeModal] = useModal();
 

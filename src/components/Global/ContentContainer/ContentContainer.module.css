@@ -167,6 +167,11 @@
   @media (min-width: 576px) {
     .container {
       max-width: 420px;
+      
+    }
+    .swap_route{
+      min-width: 430px;
+      max-width: 440px;;
     }
     .customWidth_container{
       max-width: 640px;

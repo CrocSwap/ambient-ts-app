@@ -9,6 +9,7 @@ import { tradeData as TradeDataIF } from '../../utils/state/tradeDataSlice';
 interface ITradeProps {
     account: string;
     isAuthenticated: boolean;
+    isWeb3Enabled: boolean;
     lastBlockNumber: number;
 }
 
@@ -116,7 +117,11 @@ export default function Trade(props: ITradeProps) {
                     {tokenInfo}
                     {timeFrameContent}
                     {chartImage}
-                    <Tabs account={props.account} isAuthenticated={props.isAuthenticated} />
+                    <Tabs
+                        account={props.account}
+                        isAuthenticated={props.isAuthenticated}
+                        isWeb3Enabled={props.isWeb3Enabled}
+                    />
                 </div>
                 {mainContent}
             </main>
