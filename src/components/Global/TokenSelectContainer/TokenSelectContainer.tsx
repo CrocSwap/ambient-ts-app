@@ -1,5 +1,7 @@
-import styles from './TokenSelectContainer.module.css';
 import { Dispatch, SetStateAction } from 'react';
+import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
+import { setTokenA, setTokenB, setDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
+import styles from './TokenSelectContainer.module.css';
 import TokenSelect from '../TokenSelect/TokenSelect';
 import TokenSelectSearchable from '../TokenSelect/TokenSelectSearchable';
 import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
@@ -39,11 +41,38 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
         indicateActiveTokenListsChanged,
     } = props;
 
+    const dispatch = useAppDispatch();
+
     const [matchingImportedTokens, matchingSearchableTokens, setSearchInput] = useSearch(
         tokensBank,
         searchableTokens,
         chainId,
     );
+    
+    const chooseToken = (tok:TokenIF) => {
+        if (tokenToUpdate === 'A') {
+            if (tokenPair.dataTokenB.address === tok.address) {
+                reverseTokens();
+                dispatch(setTokenA(tok));
+                dispatch(setTokenB(tokenPair.dataTokenA));
+            } else {
+                dispatch(setTokenA(tok));
+                dispatch(setDidUserFlipDenom(false));
+            }
+        } else if (tokenToUpdate === 'B') {
+            if (tokenPair.dataTokenA.address === tok.address) {
+                reverseTokens();
+                dispatch(setTokenB(tok));
+                dispatch(setTokenA(tokenPair.dataTokenB));
+            } else {
+                dispatch(setTokenB(tok));
+                dispatch(setDidUserFlipDenom(false));
+            }
+        } else {
+            console.warn('Error in TokenSelectContainer.tsx, failed to find proper dispatch function.');
+        }
+        closeModal();
+    };
 
     const handleClickSearchable = (tkn: TokenIF) => {
         // look inside tokensBank to see if clicked token is already imported
@@ -68,10 +97,7 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
                     <TokenSelect
                         key={idx}
                         token={token}
-                        tokenToUpdate={tokenToUpdate}
-                        closeModal={closeModal}
-                        tokenPair={tokenPair}
-                        reverseTokens={reverseTokens}
+                        chooseToken={chooseToken}
                     />
                 ))}
             </div>
