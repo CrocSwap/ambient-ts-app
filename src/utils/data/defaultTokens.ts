@@ -91,7 +91,7 @@ export const kovanUSDC = {
 };
 
 export const kovanDAI = {
-    name: 'Dai',
+    name: 'Dai Stablecoin',
     address: '0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa',
     symbol: 'DAI',
     decimals: 18,
