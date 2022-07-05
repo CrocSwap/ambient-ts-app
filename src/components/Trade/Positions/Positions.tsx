@@ -29,32 +29,36 @@ export default function Positions(props: PositionsProps) {
     const poolPositions = graphData?.positionsByPool?.positions;
 
     const positionsDisplay = isAllPositionsEnabled
-        ? poolPositions.map((position, idx) => (
-              <Position
-                  key={idx}
-                  portfolio={portfolio}
-                  notOnTradeRoute={notOnTradeRoute}
-                  position={position}
-                  isAllPositionsEnabled={isAllPositionsEnabled}
-                  tokenAAddress={tokenAAddress}
-                  tokenBAddress={tokenBAddress}
-                  account={account ?? undefined}
-                  isAuthenticated={isAuthenticated}
-              />
-          ))
-        : userPositions.map((position, idx) => (
-              <Position
-                  key={idx}
-                  portfolio={portfolio}
-                  notOnTradeRoute={notOnTradeRoute}
-                  position={position}
-                  isAllPositionsEnabled={isAllPositionsEnabled}
-                  tokenAAddress={tokenAAddress}
-                  tokenBAddress={tokenBAddress}
-                  account={account ?? undefined}
-                  isAuthenticated={isAuthenticated}
-              />
-          ));
+        ? poolPositions
+              .map((position, idx) => (
+                  <Position
+                      key={idx}
+                      portfolio={portfolio}
+                      notOnTradeRoute={notOnTradeRoute}
+                      position={position}
+                      isAllPositionsEnabled={isAllPositionsEnabled}
+                      tokenAAddress={tokenAAddress}
+                      tokenBAddress={tokenBAddress}
+                      account={account ?? undefined}
+                      isAuthenticated={isAuthenticated}
+                  />
+              ))
+              .reverse()
+        : userPositions
+              .map((position, idx) => (
+                  <Position
+                      key={idx}
+                      portfolio={portfolio}
+                      notOnTradeRoute={notOnTradeRoute}
+                      position={position}
+                      isAllPositionsEnabled={isAllPositionsEnabled}
+                      tokenAAddress={tokenAAddress}
+                      tokenBAddress={tokenBAddress}
+                      account={account ?? undefined}
+                      isAuthenticated={isAuthenticated}
+                  />
+              ))
+              .reverse();
 
     const positionsHeader = (
         <thead>
