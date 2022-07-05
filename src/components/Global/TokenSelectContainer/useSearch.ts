@@ -30,8 +30,7 @@ export const useSearch = (
             || checkMatchLowerCase(token.address)
         )
         // remove off-chain tokens from the search results
-        const matchingTokensOnChain = filterOnChain(matchingTokens);
-        return matchingTokensOnChain;
+        return filterOnChain(matchingTokens);
     };
 
     // function to filter an array of tokens as matching the current chain
