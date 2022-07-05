@@ -6,8 +6,14 @@ export const useSearch = (
     searchableTokens:Array<TokenIF>,
     chainId: string
 ): [ TokenIF[], TokenIF[], Dispatch<SetStateAction<string>> ] => {
+
+    // current value of search input field
     const [searchInput, setSearchInput] = useState('');
+
+    // filtered array of tokens for the user's imported tokens list 
     const [matchingImportedTokens, setMatchingImportedTokens] = useState<Array<TokenIF>>(tokensBank);
+
+    // filtered array of all tokens from all active token lists
     const [matchingSearchableTokens, setMatchingSearchableTokens] = useState<Array<TokenIF>>([]);
 
     // gatekeeper value to only apply search if search string is three or more characters
