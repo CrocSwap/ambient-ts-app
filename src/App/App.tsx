@@ -10,11 +10,7 @@ import {
 import { ethers } from 'ethers';
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { request, gql } from 'graphql-request';
-import {
-    useMoralis,
-    useMoralisQuery,
-    useMoralisSubscription,
-} from 'react-moralis';
+import { useMoralis, useMoralisQuery, useMoralisSubscription } from 'react-moralis';
 import Moralis from 'moralis';
 import {
     contractAddresses,
@@ -91,7 +87,9 @@ export default function App() {
 
     // this is another case where true vs false is an arbitrary distinction
     const [activeTokenListsChanged, indicateActiveTokenListsChanged] = useState(false);
-    useEffect(() => {console.log('changed activeTokensList')}, [activeTokenListsChanged]);
+    useEffect(() => {
+        console.log('changed activeTokensList');
+    }, [activeTokenListsChanged]);
 
     if (needTokenLists) {
         setNeedTokenLists(false);
@@ -114,14 +112,15 @@ export default function App() {
         // TODO:  additional triggers for DOM interactions
     }, [tokenListsReceived, activeTokenListsChanged]);
 
-    function getTokensFromLists(tokenListURIs:Array<string>) {
+    function getTokensFromLists(tokenListURIs: Array<string>) {
         // retrieve and parse all token lists held in local storage
         const tokensFromLists = localStorage.allTokenLists
             ? JSON.parse(localStorage.getItem('allTokenLists') as string)
-                // remove all lists with URIs not included in the URIs array passed as argument
-                .filter((tokenList:TokenListIF) => tokenListURIs.includes(tokenList.uri ?? ''))
-                // extract array of tokens from active lists and flatten into single array
-                .map((tokenList:TokenListIF) => tokenList.tokens).flat()
+                  // remove all lists with URIs not included in the URIs array passed as argument
+                  .filter((tokenList: TokenListIF) => tokenListURIs.includes(tokenList.uri ?? ''))
+                  // extract array of tokens from active lists and flatten into single array
+                  .map((tokenList: TokenListIF) => tokenList.tokens)
+                  .flat()
             : defaultTokens;
         // return array of all tokens from lists as specified by token list URI
         return tokensFromLists;
@@ -137,7 +136,9 @@ export default function App() {
             if (user.tokens) {
                 // if imported tokens are listed, hold in local state
                 setImportedTokens(
-                    user.tokens.filter((tkn: TokenIF) => tkn.chainId === parseInt(chainId ?? '0x2a'))
+                    user.tokens.filter(
+                        (tkn: TokenIF) => tkn.chainId === parseInt(chainId ?? '0x2a'),
+                    ),
                 );
             }
         }
@@ -796,7 +797,7 @@ export default function App() {
         // }
     }, [chainId, lastBlockNumber]);
 
-    const shouldDisplayAccountTab = isAuthenticated && account != '';
+    const shouldDisplayAccountTab = isAuthenticated && isWeb3Enabled && account != '';
 
     // props for <PageHeader/> React element
     const headerProps = {
@@ -825,7 +826,7 @@ export default function App() {
         setRecheckTokenAApproval: setRecheckTokenAApproval,
         chainId: chainId ?? '0x2a',
         activeTokenListsChanged: activeTokenListsChanged,
-        indicateActiveTokenListsChanged: indicateActiveTokenListsChanged
+        indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
     };
 
     // props for <Swap/> React element on trade route
@@ -847,7 +848,7 @@ export default function App() {
         tokenAAllowance: tokenAAllowance,
         chainId: chainId ?? '0x2a',
         activeTokenListsChanged: activeTokenListsChanged,
-        indicateActiveTokenListsChanged: indicateActiveTokenListsChanged
+        indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
     };
 
     // props for <Limit/> React element on trade route
@@ -871,7 +872,7 @@ export default function App() {
         tokenAAllowance: tokenAAllowance,
         chainId: chainId ?? '0x2a',
         activeTokenListsChanged: activeTokenListsChanged,
-        indicateActiveTokenListsChanged: indicateActiveTokenListsChanged
+        indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
     };
 
     // props for <Range/> React element
@@ -894,7 +895,7 @@ export default function App() {
         setRecheckTokenBApproval: setRecheckTokenBApproval,
         chainId: chainId ?? '0x2a',
         activeTokenListsChanged: activeTokenListsChanged,
-        indicateActiveTokenListsChanged: indicateActiveTokenListsChanged
+        indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
     };
 
     // props for <Sidebar/> React element
