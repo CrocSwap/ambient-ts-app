@@ -49,33 +49,33 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
         // look inside tokensBank to see if clicked token is already imported
         const importedTokenAddresses = tokensBank.map((token: TokenIF) => token.address);
         const newImportedTokensArray = importedTokenAddresses.includes(tkn.address)
-            ? // TRUE: make new array with it removed
-              tokensBank.filter((token: TokenIF) => token.address !== tkn.address)
-            : // FALSE: make new array with it added
-              [tkn, ...tokensBank];
+            // TRUE: make new array with it removed
+            ? tokensBank.filter((token: TokenIF) => token.address !== tkn.address)
+            // FALSE: make new array with it added
+            : [tkn, ...tokensBank];
+        setImportedTokens(newImportedTokensArray);
         // sync local storage and local state inside App.tsx with new array
         const userData = JSON.parse(localStorage.getItem('user') as string);
         userData.tokens = newImportedTokensArray;
+        // console.log('before', JSON.parse(localStorage.getItem('user') as string));
         localStorage.setItem('user', JSON.stringify(userData));
-        setImportedTokens(newImportedTokensArray);
+        // console.log('after', JSON.parse(localStorage.getItem('user') as string));
     };
 
     const tokenListContent = (
         <>
             <div className={styles.title}>Your Tokens</div>
             <div className={styles.tokens_container}>
-                {matchingImportedTokens.map((token: TokenIF, idx: number) => {
-                    return (
-                        <TokenSelect
-                            key={idx}
-                            token={token}
-                            tokenToUpdate={tokenToUpdate}
-                            closeModal={closeModal}
-                            tokenPair={tokenPair}
-                            reverseTokens={reverseTokens}
-                        />
-                    );
-                })}
+                {matchingImportedTokens.map((token: TokenIF, idx: number) => (
+                    <TokenSelect
+                        key={idx}
+                        token={token}
+                        tokenToUpdate={tokenToUpdate}
+                        closeModal={closeModal}
+                        tokenPair={tokenPair}
+                        reverseTokens={reverseTokens}
+                    />
+                ))}
             </div>
             {matchingSearchableTokens.length ? <h3>Searched Tokens</h3> : null}
             {matchingSearchableTokens.map((tkn: TokenIF, idx: number) => (
