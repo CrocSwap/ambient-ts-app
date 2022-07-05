@@ -70,11 +70,11 @@ body{
  
 
 footer {
-  /* position: relative; */
+  /* To make page 100vh, turn off footer position sticky and turn on absolute then style the footer based on route. */
   position: absolute;
-  /* position: sticky; */
+  position: sticky;
   right: 0;
-  bottom: 0;
+ bottom: 0;
 }
 
 
@@ -100,9 +100,9 @@ footer {
   
 }
 .swap-body{
+  /* height: 100vh; */
   background: #171D27;
    height: calc(100vh - 3.5rem); 
-   /* height: 100vh; */
 
    display: flex;
    justify-content: center;
@@ -110,7 +110,7 @@ footer {
  
 }
 .content-container {
-  height: calc(100vh - 4rem); 
+  /* height: calc(100vh - 4rem);  */
 
 
 }
