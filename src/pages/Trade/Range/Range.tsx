@@ -101,8 +101,7 @@ export default function Range(props: RangePropsIF) {
         chainId,
 
         activeTokenListsChanged,
-        indicateActiveTokenListsChanged
-
+        indicateActiveTokenListsChanged,
     } = props;
     const [isModalOpen, openModal, closeModal] = useModal();
 
@@ -339,7 +338,7 @@ export default function Range(props: RangePropsIF) {
                 setInitializationComplete(false);
             }
         }
-    }, [isAdvancedModeActive, denominationsInBase, rangeLowTick, rangeHighTick]);
+    }, [isAdvancedModeActive, rangeLowTick, rangeHighTick]);
 
     // initialize based on MinPriceDifferencePercentage & MaxPriceDifferencePercentage
     useEffect(() => {
@@ -882,7 +881,7 @@ export default function Range(props: RangePropsIF) {
         rangeSpanAboveCurrentPrice: rangeSpanAboveCurrentPrice,
         rangeSpanBelowCurrentPrice: rangeSpanBelowCurrentPrice,
         activeTokenListsChanged: activeTokenListsChanged,
-        indicateActiveTokenListsChanged: indicateActiveTokenListsChanged
+        indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
     };
 
     // props for <RangeWidth/> React element

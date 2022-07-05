@@ -960,7 +960,10 @@ export default function App() {
                             <Route path='market' element={<Swap {...swapPropsTrade} />} />
                             <Route path='limit' element={<Limit {...limitPropsTrade} />} />
                             <Route path='range' element={<Range {...rangeProps} />} />
-                            <Route path='edit/:positionHash' element={<Edit />} />
+                            <Route
+                                path='edit/:positionHash'
+                                element={<Edit poolPriceNonDisplay={poolPriceNonDisplay} />}
+                            />
                         </Route>
                         <Route path='analytics' element={<Analytics />} />
                         {/* <Route path='details' element={<PositionDetails />} /> */}
