@@ -317,6 +317,7 @@ export default function Swap(props: SwapPropsIF) {
                     isDenomBase={tradeData.isDenomBase}
                     isTokenABase={isSellTokenBase}
                 />
+                <DividerDark addMarginTop />
                 {navigationMenu}
                 <CurrencyConverter
                     tokenPair={tokenPair}

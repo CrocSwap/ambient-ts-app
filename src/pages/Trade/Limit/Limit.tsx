@@ -367,7 +367,9 @@ export default function Limit(props: LimitPropsIF) {
                     isDenomBase={tradeData.isDenomBase}
                     isTokenABase={isTokenABase}
                 />
+                <DividerDark addMarginTop />
                 {navigationMenu}
+
                 <LimitCurrencyConverter
                     tokenPair={tokenPair}
                     searchableTokens={searchableTokens}

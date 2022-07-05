@@ -756,13 +756,13 @@ export default function Range(props: RangePropsIF) {
     const denominationSwitch = (
         <div className={styles.denomination_switch_container}>
             <AdvancedModeToggle advancedMode={tradeData.advancedMode} />
-            {/* <DenominationSwitch
+            <DenominationSwitch
                 tokenPair={tokenPair}
                 displayForBase={tradeData.isDenomBase}
                 poolPriceDisplay={poolPriceDisplayNum}
                 isTokenABase={isTokenABase}
                 didUserFlipDenom={tradeData.didUserFlipDenom}
-            /> */}
+            />
         </div>
     );
 
@@ -910,16 +910,9 @@ export default function Range(props: RangePropsIF) {
             transition={{ duration: 0.5 }}
         >
             <RangeCurrencyConverter {...rangeCurrencyConverterProps} isAdvancedMode={false} />
-
             <DividerDark addMarginTop />
+            {denominationSwitch}
             <RangeWidth {...rangeWidthProps} />
-            <DenominationSwitch
-                tokenPair={tokenPair}
-                displayForBase={tradeData.isDenomBase}
-                poolPriceDisplay={poolPriceDisplayNum}
-                isTokenABase={isTokenABase}
-                didUserFlipDenom={tradeData.didUserFlipDenom}
-            />
             <RangePriceInfo {...rangePriceInfoProps} />
             <RangeExtraInfo {...rangeExtraInfoProps} />
         </motion.div>
@@ -929,13 +922,7 @@ export default function Range(props: RangePropsIF) {
             <RangeCurrencyConverter {...rangeCurrencyConverterProps} isAdvancedMode />
             <DividerDark addMarginTop />
 
-            <DenominationSwitch
-                tokenPair={tokenPair}
-                displayForBase={tradeData.isDenomBase}
-                poolPriceDisplay={poolPriceDisplayNum}
-                isTokenABase={isTokenABase}
-                didUserFlipDenom={tradeData.didUserFlipDenom}
-            />
+            {denominationSwitch}
 
             <MinMaxPrice
                 minPricePercentage={minPriceDifferencePercentage}
@@ -1086,14 +1073,15 @@ export default function Range(props: RangePropsIF) {
                     isDenomBase={tradeData.isDenomBase}
                     isTokenABase={isTokenABase}
                 />
+                <DividerDark addMarginTop />
                 {navigationMenu}
                 <DividerDark />
                 {/* <RangeCurrencyConverter {...rangeCurrencyConverterProps} /> */}
 
-                <div className={styles.header_container}>
+                {/* <div className={styles.header_container}>
                     {denominationSwitch}
                     <DividerDark addMarginTop />
-                </div>
+                </div> */}
                 {isAdvancedModeActive ? advancedModeContent : baseModeContent}
 
                 {!isAuthenticated || !isWeb3Enabled ? (
