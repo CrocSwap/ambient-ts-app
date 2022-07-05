@@ -958,6 +958,7 @@ export default function App() {
                                 <Trade
                                     account={account ?? ''}
                                     isAuthenticated={isAuthenticated}
+                                    isWeb3Enabled={isWeb3Enabled}
                                     lastBlockNumber={lastBlockNumber}
                                 />
                             }
