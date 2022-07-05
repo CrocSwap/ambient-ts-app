@@ -14,11 +14,21 @@ interface ModalProps {
     noHeader?: boolean;
     noBackground?: boolean;
     children: React.ReactNode;
+    centeredTitle?: boolean;
 }
 
 export default function Modal(props: ModalProps) {
-    const { onClose, handleBack, title, footer, noHeader, noBackground, children, showBackButton } =
-        props;
+    const {
+        onClose,
+        handleBack,
+        title,
+        footer,
+        noHeader,
+        noBackground,
+        children,
+        showBackButton,
+        centeredTitle,
+    } = props;
 
     const escFunction = useCallback((event: KeyboardEvent) => {
         if (event.key === 'Escape') {
@@ -44,6 +54,7 @@ export default function Modal(props: ModalProps) {
     const headerJSX = (
         <header className={styles.modal_header}>
             {showBackButton && backElement}
+            {centeredTitle && <div></div>}
             <h2 className={styles.modal_title}>{title}</h2>
             <RiCloseFill size={27} className={styles.close_button} onClick={onClose} />
         </header>

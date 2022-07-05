@@ -97,24 +97,8 @@ export default function LimitRate(props: LimitRateProps) {
 
     return (
         <div className={styles.swapbox}>
-            <span className={styles.direction}>Limit Price</span>
-            <div className={styles.swapbox_top}>
-                <div className={styles.swap_input}>{rateInput}</div>
-                {/* <div className={styles.token_select} onClick={openModal}>
-                    <img
-                        className={styles.token_list_img}
-                        src={tokenPair.dataTokenB.logoURI}
-                        width='30px'
-                    />
-                    <span className={styles.token_list_text}>{tokenPair.dataTokenB.symbol}</span>
-                    <RiArrowDownSLine size={27} />
-                </div> */}
-            </div>
-            {/* <div className={styles.swapbox_bottom}>
-                <span>Wallet: 69.420 | DEX: 0.00</span>
-                {withdrawTokensContent}
-            </div>
-            {tokenSelectModalOrNull} */}
+            <span className={styles.direction}>Price</span>
+            <div className={styles.swap_input}>{rateInput}</div>
         </div>
     );
 }

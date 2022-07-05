@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useState } from 'react';
+import { useState, Dispatch, SetStateAction } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useMoralis } from 'react-moralis';
 import { motion } from 'framer-motion';
@@ -38,8 +38,10 @@ import { useModal } from '../../components/Global/Modal/useModal';
 import { useRelativeModal } from '../../components/Global/RelativeModal/useRelativeModal';
 import { addReceipt } from '../../utils/state/receiptDataSlice';
 
-interface ISwapProps {
+interface SwapPropsIF {
     importedTokens: Array<TokenIF>;
+    setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
+    searchableTokens: Array<TokenIF>;
     provider: JsonRpcProvider;
     isOnTradeRoute?: boolean;
     gasPriceinGwei: string;
@@ -54,12 +56,17 @@ interface ISwapProps {
     };
     poolPriceDisplay: number;
     tokenAAllowance: string;
-    setRecheckTokenAApproval: React.Dispatch<React.SetStateAction<boolean>>;
+    setRecheckTokenAApproval: Dispatch<SetStateAction<boolean>>;
+    chainId: string;
+    activeTokenListsChanged: boolean;
+    indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
 }
 
-export default function Swap(props: ISwapProps) {
+export default function Swap(props: SwapPropsIF) {
     const {
         importedTokens,
+        setImportedTokens,
+        searchableTokens,
         provider,
         isOnTradeRoute,
         nativeBalance,
@@ -71,6 +78,10 @@ export default function Swap(props: ISwapProps) {
         poolPriceDisplay,
         tokenAAllowance,
         setRecheckTokenAApproval,
+        chainId,
+
+        activeTokenListsChanged,
+        indicateActiveTokenListsChanged,
     } = props;
     const [isModalOpen, openModal, closeModal] = useModal();
 
@@ -78,8 +89,7 @@ export default function Swap(props: ISwapProps) {
 
     const [isRelativeModalOpen, closeRelativeModal] = useRelativeModal();
 
-    const { Moralis, chainId, enableWeb3, isWeb3Enabled, authenticate, isAuthenticated } =
-        useMoralis();
+    const { Moralis, enableWeb3, isWeb3Enabled, authenticate, isAuthenticated } = useMoralis();
     // get URL pathway for user relative to index
     const { pathname } = useLocation();
 
@@ -303,17 +313,21 @@ export default function Swap(props: ISwapProps) {
                     isDenomBase={tradeData.isDenomBase}
                     isTokenABase={isSellTokenBase}
                 />
-                <DenominationSwitch
-                    tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
-                    isTokenABase={isSellTokenBase}
-                    displayForBase={tradeData.isDenomBase}
-                    poolPriceDisplay={poolPriceDisplay}
-                    didUserFlipDenom={tradeData.didUserFlipDenom}
-                />
-                <DividerDark />
+                <div className={styles.header_container}>
+                    <DenominationSwitch
+                        tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
+                        isTokenABase={isSellTokenBase}
+                        displayForBase={tradeData.isDenomBase}
+                        poolPriceDisplay={poolPriceDisplay}
+                        didUserFlipDenom={tradeData.didUserFlipDenom}
+                    />
+                    <DividerDark addMarginTop />
+                </div>
                 <CurrencyConverter
                     tokenPair={tokenPair}
                     tokensBank={importedTokens}
+                    setImportedTokens={setImportedTokens}
+                    searchableTokens={searchableTokens}
                     chainId={chainId as string}
                     isLiq={false}
                     poolPriceDisplay={poolPriceDisplay}
@@ -332,7 +346,10 @@ export default function Swap(props: ISwapProps) {
                     setIsWithdrawToWalletChecked={setIsWithdrawToWalletChecked}
                     setSwapAllowed={setSwapAllowed}
                     setSwapButtonErrorMessage={setSwapButtonErrorMessage}
+                    activeTokenListsChanged={activeTokenListsChanged}
+                    indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
                 />
+
                 <ExtraInfo
                     tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
                     isTokenABase={isSellTokenBase}

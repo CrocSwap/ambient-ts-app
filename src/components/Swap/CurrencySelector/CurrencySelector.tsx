@@ -1,16 +1,19 @@
 import styles from './CurrencySelector.module.css';
 import CurrencyQuantity from '../CurrencyQuantity/CurrencyQuantity';
 import { RiArrowDownSLine } from 'react-icons/ri';
-import Toggle from '../../Global/Toggle/Toggle';
-import { useState, ChangeEvent, SetStateAction } from 'react';
+// import Toggle from '../../Global/Toggle/Toggle';
+import { useState, ChangeEvent, Dispatch, SetStateAction } from 'react';
 import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import Modal from '../../../components/Global/Modal/Modal';
 import TokenSelectContainer from '../../Global/TokenSelectContainer/TokenSelectContainer';
+import Toggle2 from '../../Global/Toggle/Toggle2';
 
 interface CurrencySelectorProps {
     tokenPair: TokenPairIF;
     tokensBank: Array<TokenIF>;
+    setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
+    searchableTokens: Array<TokenIF>;
     chainId: string;
     fieldId: string;
     direction: string;
@@ -19,21 +22,27 @@ interface CurrencySelectorProps {
     tokenABalance: string;
     tokenBBalance: string;
     isWithdrawFromDexChecked: boolean;
-    setIsWithdrawFromDexChecked: React.Dispatch<SetStateAction<boolean>>;
+    setIsWithdrawFromDexChecked: Dispatch<SetStateAction<boolean>>;
     isWithdrawToWalletChecked: boolean;
-    setIsWithdrawToWalletChecked: React.Dispatch<SetStateAction<boolean>>;
+    setIsWithdrawToWalletChecked: Dispatch<SetStateAction<boolean>>;
     handleChangeEvent: (evt: ChangeEvent<HTMLInputElement>) => void;
+    handleChangeClick: (value: string) => void;
     reverseTokens: () => void;
+    activeTokenListsChanged: boolean;
+    indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function CurrencySelector(props: CurrencySelectorProps) {
     const {
         tokenPair,
         tokensBank,
+        setImportedTokens,
+        searchableTokens,
         chainId,
         direction,
         fieldId,
         handleChangeEvent,
+        handleChangeClick,
         isWithdrawFromDexChecked,
         setIsWithdrawFromDexChecked,
         isWithdrawToWalletChecked,
@@ -41,6 +50,8 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
         tokenABalance,
         tokenBBalance,
         reverseTokens,
+        activeTokenListsChanged,
+        indicateActiveTokenListsChanged,
     } = props;
     // const [isChecked, setIsChecked] = useState<boolean>(false);
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -49,7 +60,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
     const thisToken = fieldId === 'sell' ? tokenPair.dataTokenA : tokenPair.dataTokenB;
 
     // const DexBalanceContent = (
-    //     <span className={styles.surplus_toggle}>
+    //     <div className={styles.surplus_toggle}>
     //         {fieldId === 'sell' ? 'Withdraw from DEX balance' : 'Withdraw to Wallet'}
     //         <div className={styles.toggle_container}>
     //             <Toggle
@@ -59,32 +70,39 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
     //                 id='surplus_liquidity'
     //             />
     //         </div>
-    //     </span>
+    //     </div>
     // );
 
     const WithdrawTokensContent = (
-        <span className={styles.surplus_toggle}>
-            {fieldId === 'sell' ? 'Use DEX balance' : 'Withdraw to Wallet'}
-            <div className={styles.toggle_container}>
-                {fieldId === 'sell' ? (
-                    <Toggle
-                        isOn={isWithdrawFromDexChecked}
-                        handleToggle={() => setIsWithdrawFromDexChecked(!isWithdrawFromDexChecked)}
-                        Width={36}
-                        id='sell_token_withdrawal'
-                    />
-                ) : (
-                    <Toggle
-                        isOn={isWithdrawToWalletChecked}
-                        handleToggle={() =>
-                            setIsWithdrawToWalletChecked(!isWithdrawToWalletChecked)
-                        }
-                        Width={36}
-                        id='buy_token_withdrawal'
-                    />
-                )}
-            </div>
-        </span>
+        <div className={styles.surplus_toggle}>
+            {fieldId === 'sell'
+                ? isWithdrawFromDexChecked
+                    ? 'Use exchange surplus'
+                    : 'Use wallet balance'
+                : isWithdrawToWalletChecked
+                ? 'Withdraw to Wallet'
+                : 'Save as exchange surplus'}
+
+            {fieldId === 'sell' ? (
+                // <Toggle
+                //     isOn={isWithdrawFromDexChecked}
+                //     handleToggle={() => setIsWithdrawFromDexChecked(!isWithdrawFromDexChecked)}
+                //     Width={36}
+                //     id='sell_token_withdrawal'
+                // />
+                <Toggle2
+                    isOn={isWithdrawFromDexChecked}
+                    handleToggle={() => setIsWithdrawFromDexChecked(!isWithdrawFromDexChecked)}
+                    id='sell_token_withdrawal'
+                />
+            ) : (
+                <Toggle2
+                    isOn={isWithdrawToWalletChecked}
+                    handleToggle={() => setIsWithdrawToWalletChecked(!isWithdrawToWalletChecked)}
+                    id='buy_token_withdrawal'
+                />
+            )}
+        </div>
     );
 
     const tokenToUpdate = fieldId === 'sell' ? 'A' : 'B';
@@ -93,12 +111,15 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
         <Modal
             onClose={closeModal}
             title='Select Token'
+            centeredTitle
             handleBack={() => setShowManageTokenListContent(false)}
             showBackButton={showManageTokenListContent}
         >
             <TokenSelectContainer
                 tokenPair={tokenPair}
                 tokensBank={tokensBank}
+                setImportedTokens={setImportedTokens}
+                searchableTokens={searchableTokens}
                 tokenToUpdate={tokenToUpdate}
                 chainId={chainId}
                 tokenList={tokensBank}
@@ -106,6 +127,8 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                 reverseTokens={reverseTokens}
                 showManageTokenListContent={showManageTokenListContent}
                 setShowManageTokenListContent={setShowManageTokenListContent}
+                activeTokenListsChanged={activeTokenListsChanged}
+                indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
             />
         </Modal>
     ) : null;
@@ -119,7 +142,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
 
     return (
         <div className={styles.swapbox}>
-            <span className={styles.direction}>{direction}</span>
+            <div className={styles.direction}>{direction}</div>
             <div className={styles.swapbox_top}>
                 <div className={styles.swap_input}>
                     <CurrencyQuantity fieldId={fieldId} handleChangeEvent={handleChangeEvent} />
@@ -131,15 +154,32 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                         alt={thisToken.name}
                         width='30px'
                     />
-                    <span className={styles.token_list_text}>{thisToken.symbol}</span>
+                    <div className={styles.token_list_text}>{thisToken.symbol}</div>
                     <RiArrowDownSLine size={27} />
                 </div>
             </div>
             <div className={styles.swapbox_bottom}>
-                <span>Wallet: {walletBalance} | Surplus: 0</span>
+                <div className={styles.surplus_container}>
+                    <div
+                        onClick={() => {
+                            handleChangeClick(walletBalance);
+                        }}
+                    >
+                        Wallet: {walletBalance}{' '}
+                    </div>{' '}
+                    |{' '}
+                    <div
+                        onClick={() => {
+                            handleChangeClick('0');
+                        }}
+                    >
+                        Surplus: 0
+                    </div>
+                </div>
                 {/* {fieldId === 'limit-sell' ? DexBalanceContent : WithdrawTokensContent} */}
                 {WithdrawTokensContent}
             </div>
+
             {tokenSelectModalOrNull}
         </div>
     );

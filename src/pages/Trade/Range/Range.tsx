@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, Dispatch, SetStateAction } from 'react';
 import { useMoralis, useNewMoralisObject } from 'react-moralis';
 import { motion } from 'framer-motion';
 import { BigNumber } from 'ethers';
@@ -13,10 +13,7 @@ import {
     parseMintEthersReceipt,
     EthersNativeReceipt,
     ambientPosSlot,
-    // tickToPrice,
-    // toDisplayPrice,
     concDepositSkew,
-    // GRID_SIZE_DFLT,
     MIN_TICK,
     MAX_TICK,
     concPosSlot,
@@ -62,12 +59,13 @@ import {
     setAdvancedHighTick,
     setAdvancedLowTick,
     setSimpleRangeWidth,
-    // setIsTokenAPrimaryRange,
 } from '../../../utils/state/tradeDataSlice';
 import { addReceipt } from '../../../utils/state/receiptDataSlice';
 
 interface RangePropsIF {
     importedTokens: Array<TokenIF>;
+    setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
+    searchableTokens: Array<TokenIF>;
     provider: JsonRpcProvider;
     gasPriceinGwei: string;
     lastBlockNumber: number;
@@ -78,14 +76,19 @@ interface RangePropsIF {
     tokenABalance: string;
     tokenBBalance: string;
     tokenAAllowance: string;
-    setRecheckTokenAApproval: React.Dispatch<React.SetStateAction<boolean>>;
+    setRecheckTokenAApproval: Dispatch<SetStateAction<boolean>>;
     tokenBAllowance: string;
-    setRecheckTokenBApproval: React.Dispatch<React.SetStateAction<boolean>>;
+    setRecheckTokenBApproval: Dispatch<SetStateAction<boolean>>;
+    chainId: string;
+    activeTokenListsChanged: boolean;
+    indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function Range(props: RangePropsIF) {
     const {
         importedTokens,
+        setImportedTokens,
+        searchableTokens,
         provider,
         baseTokenAddress,
         quoteTokenAddress,
@@ -98,6 +101,10 @@ export default function Range(props: RangePropsIF) {
         tokenBAllowance,
         setRecheckTokenBApproval,
         gasPriceinGwei,
+        chainId,
+
+        activeTokenListsChanged,
+        indicateActiveTokenListsChanged,
     } = props;
     const [isModalOpen, openModal, closeModal] = useModal();
 
@@ -108,16 +115,8 @@ export default function Range(props: RangePropsIF) {
     const [isWithdrawTokenAFromDexChecked, setIsWithdrawTokenAFromDexChecked] = useState(false);
     const [isWithdrawTokenBFromDexChecked, setIsWithdrawTokenBFromDexChecked] = useState(false);
     const [newRangeTransactionHash, setNewRangeTransactionHash] = useState('');
-    const {
-        Moralis,
-        user,
-        account,
-        chainId,
-        isAuthenticated,
-        isWeb3Enabled,
-        authenticate,
-        enableWeb3,
-    } = useMoralis();
+    const { Moralis, user, account, isAuthenticated, isWeb3Enabled, authenticate, enableWeb3 } =
+        useMoralis();
 
     const { tradeData } = useTradeData();
 
@@ -324,31 +323,7 @@ export default function Range(props: RangePropsIF) {
     const [rangeHighBoundFieldBlurred, setRangeHighBoundFieldBlurred] = useState(false);
     const highBoundOnBlur = () => setRangeHighBoundFieldBlurred(true);
 
-    // useEffect(() => {
-    //     console.log({ currentPoolPriceTick });
-    // }, [currentPoolPriceTick]);
-
-    // useEffect(() => {
-    //     console.log({ rangeLowTick });
-    // }, [rangeLowTick]);
-
-    // useEffect(() => {
-    //     console.log({ rangeHighTick });
-    // }, [rangeHighTick]);
-
-    // useEffect(() => {
-    //     console.log({ isTokenADisabled });
-    // }, [isTokenADisabled]);
-
-    // useEffect(() => {
-    //     console.log({ isTokenBDisabled });
-    // }, [isTokenBDisabled]);
-
     const [initializationComplete, setInitializationComplete] = useState(false);
-
-    // useEffect(() => {
-    //     console.log({ initializationComplete });
-    // }, [initializationComplete]);
 
     useEffect(() => {
         if (isAdvancedModeActive) {
@@ -907,6 +882,8 @@ export default function Range(props: RangePropsIF) {
         poolPriceNonDisplay: poolPriceNonDisplay,
         chainId: chainId ?? '0x2a',
         tokensBank: importedTokens,
+        setImportedTokens: setImportedTokens,
+        searchableTokens: searchableTokens,
         tokenPair: tokenPair,
         isAmbient: isAmbient,
         isTokenABase: isTokenABase,
@@ -928,6 +905,8 @@ export default function Range(props: RangePropsIF) {
         isOutOfRange: isOutOfRange,
         rangeSpanAboveCurrentPrice: rangeSpanAboveCurrentPrice,
         rangeSpanBelowCurrentPrice: rangeSpanBelowCurrentPrice,
+        activeTokenListsChanged: activeTokenListsChanged,
+        indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
     };
 
     // props for <RangeWidth/> React element
@@ -956,6 +935,7 @@ export default function Range(props: RangePropsIF) {
         >
             <RangeCurrencyConverter {...rangeCurrencyConverterProps} isAdvancedMode={false} />
 
+            <DividerDark addMarginTop />
             <RangeWidth {...rangeWidthProps} />
             <RangePriceInfo {...rangePriceInfoProps} />
             <RangeExtraInfo {...rangeExtraInfoProps} />
@@ -964,6 +944,7 @@ export default function Range(props: RangePropsIF) {
     const advancedModeContent = (
         <>
             <RangeCurrencyConverter {...rangeCurrencyConverterProps} isAdvancedMode />
+            <DividerDark addMarginTop />
 
             <MinMaxPrice
                 minPricePercentage={minPriceDifferencePercentage}
@@ -973,7 +954,6 @@ export default function Range(props: RangePropsIF) {
                 setMinPriceInputString={setMinPriceInputString}
                 setMaxPriceInputString={setMaxPriceInputString}
                 isDenomBase={denominationsInBase}
-                // highBoundOnFocus={highBoundOnFocus}
                 highBoundOnBlur={highBoundOnBlur}
                 lowBoundOnBlur={lowBoundOnBlur}
                 rangeLowTick={rangeLowTick}
@@ -982,6 +962,8 @@ export default function Range(props: RangePropsIF) {
                 setRangeHighTick={setRangeHighTick}
                 disable={isInvalidRange}
             />
+            <DividerDark addMarginTop />
+
             <AdvancedPriceInfo
                 tokenPair={tokenPair}
                 poolPriceDisplay={poolPriceTruncated.toString()}
@@ -1113,10 +1095,15 @@ export default function Range(props: RangePropsIF) {
                     isDenomBase={tradeData.isDenomBase}
                     isTokenABase={isTokenABase}
                 />
-                {denominationSwitch}
                 <DividerDark />
+                <div className={styles.header_container}>
+                    {denominationSwitch}
+                    <DividerDark addMarginTop />
+                </div>
                 {/* <RangeCurrencyConverter {...rangeCurrencyConverterProps} /> */}
+
                 {isAdvancedModeActive ? advancedModeContent : baseModeContent}
+
                 {!isAuthenticated || !isWeb3Enabled ? (
                     loginButton
                 ) : poolPriceNonDisplay !== 0 &&

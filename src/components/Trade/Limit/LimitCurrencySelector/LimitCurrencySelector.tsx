@@ -1,10 +1,9 @@
 // START: Import React and Dongles
-import { ChangeEvent, SetStateAction, useState } from 'react';
+import { ChangeEvent, Dispatch, SetStateAction, useState } from 'react';
 import { RiArrowDownSLine } from 'react-icons/ri';
 
 // START: Import React Functional Components
 import LimitCurrencyQuantity from '../LimitCurrencyQuantity/LimitCurrencyQuantity';
-import Toggle from '../../../Global/Toggle/Toggle';
 
 // START: Import Local Files
 import styles from './LimitCurrencySelector.module.css';
@@ -12,11 +11,14 @@ import { TokenIF, TokenPairIF } from '../../../../utils/interfaces/exports';
 import Modal from '../../../../components/Global/Modal/Modal';
 import TokenSelectContainer from '../../../Global/TokenSelectContainer/TokenSelectContainer';
 import { useModal } from '../../../../components/Global/Modal/useModal';
+import Toggle2 from '../../../Global/Toggle/Toggle2';
 
 // interface for component props
 interface LimitCurrencySelectorProps {
     tokenPair: TokenPairIF;
     tokensBank: Array<TokenIF>;
+    setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
+    searchableTokens: Array<TokenIF>;
     chainId: string;
     fieldId: string;
     direction: string;
@@ -26,9 +28,11 @@ interface LimitCurrencySelectorProps {
     tokenBBalance: string;
     handleChangeEvent: (evt: ChangeEvent<HTMLInputElement>) => void;
     isWithdrawFromDexChecked: boolean;
-    setIsWithdrawFromDexChecked: React.Dispatch<SetStateAction<boolean>>;
+    setIsWithdrawFromDexChecked: Dispatch<SetStateAction<boolean>>;
     isWithdrawToWalletChecked: boolean;
-    setIsWithdrawToWalletChecked: React.Dispatch<SetStateAction<boolean>>;
+    setIsWithdrawToWalletChecked: Dispatch<SetStateAction<boolean>>;
+    activeTokenListsChanged: boolean;
+    indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
 }
 
 // central react functional component
@@ -36,6 +40,8 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
     const {
         tokenPair,
         tokensBank,
+        setImportedTokens,
+        searchableTokens,
         chainId,
         fieldId,
         direction,
@@ -47,6 +53,8 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
         setIsWithdrawFromDexChecked,
         isWithdrawToWalletChecked,
         setIsWithdrawToWalletChecked,
+        activeTokenListsChanged,
+        indicateActiveTokenListsChanged,
     } = props;
 
     const thisToken = fieldId === 'sell' ? tokenPair.dataTokenA : tokenPair.dataTokenB;
@@ -57,10 +65,12 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
     const tokenToUpdate = fieldId === 'sell' ? 'A' : 'B';
 
     const tokenSelectModalOrNull = isModalOpen ? (
-        <Modal onClose={closeModal} title='Select Token'>
+        <Modal onClose={closeModal} title='Select Token' centeredTitle>
             <TokenSelectContainer
                 tokenPair={tokenPair}
                 tokensBank={tokensBank}
+                setImportedTokens={setImportedTokens}
+                searchableTokens={searchableTokens}
                 tokenToUpdate={tokenToUpdate}
                 chainId={chainId}
                 tokenList={tokensBank}
@@ -68,6 +78,8 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
                 reverseTokens={reverseTokens}
                 showManageTokenListContent={showManageTokenListContent}
                 setShowManageTokenListContent={setShowManageTokenListContent}
+                activeTokenListsChanged={activeTokenListsChanged}
+                indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
             />
         </Modal>
     ) : null;
@@ -93,26 +105,27 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
 
     const DexBalanceContent = (
         <span className={styles.surplus_toggle}>
-            {fieldId === 'sell' ? 'Use DEX balance' : 'Withdraw to Wallet'}
-            <div className={styles.toggle_container}>
-                {fieldId === 'sell' ? (
-                    <Toggle
-                        isOn={isWithdrawFromDexChecked}
-                        handleToggle={() => setIsWithdrawFromDexChecked(!isWithdrawFromDexChecked)}
-                        Width={36}
-                        id='sell_token_withdrawal'
-                    />
-                ) : (
-                    <Toggle
-                        isOn={isWithdrawToWalletChecked}
-                        handleToggle={() =>
-                            setIsWithdrawToWalletChecked(!isWithdrawToWalletChecked)
-                        }
-                        Width={36}
-                        id='buy_token_withdrawal'
-                    />
-                )}
-            </div>
+            {fieldId === 'sell' ? 'Use exchange balance' : 'Withdraw to Wallet'}
+
+            {fieldId === 'sell' ? (
+                // <Toggle
+                //     isOn={isWithdrawFromDexChecked}
+                //     handleToggle={() => setIsWithdrawFromDexChecked(!isWithdrawFromDexChecked)}
+                //     Width={36}
+                //     id='sell_token_withdrawal'
+                // />
+                <Toggle2
+                    isOn={isWithdrawFromDexChecked}
+                    handleToggle={() => setIsWithdrawFromDexChecked(!isWithdrawFromDexChecked)}
+                    id='sell_token_withdrawal'
+                />
+            ) : (
+                <Toggle2
+                    isOn={isWithdrawToWalletChecked}
+                    handleToggle={() => setIsWithdrawToWalletChecked(!isWithdrawToWalletChecked)}
+                    id='buy_token_withdrawal'
+                />
+            )}
         </span>
     );
 

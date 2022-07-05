@@ -1,7 +1,7 @@
 import { defaultTokenLists } from '../../utils/data/defaultTokenLists';
 import { tokenListURIs } from '../../utils/data/tokenURIs';
 // import { ambientTokenList } from '../../utils/data/ambientTokenList';
-// import { TokenListIF } from '../../utils/interfaces/exports';
+import { TokenListIF } from '../../utils/interfaces/exports';
 
 export default function initializeUserLocalStorage() {
     // boolean to control whether local storage for user data needs updating
@@ -30,7 +30,7 @@ export default function initializeUserLocalStorage() {
     // ... build the value in local storage if there is not one already, this
     // ... is necessary to prevent overwrites once the user has updated which
     // ... lists are active in the app
-    if ((!user.activeTokenLists || !user.activeTokenLists.length)) {
+    if (!user.activeTokenLists || !user.activeTokenLists.length) {
         user.activeTokenLists = defaultTokenLists.map((listName: string) => {
             type tokenListURIsKey = keyof typeof tokenListURIs;
             const list = listName as tokenListURIsKey;
@@ -39,12 +39,19 @@ export default function initializeUserLocalStorage() {
         userUpdated = true;
     }
 
-    // // if user object does not have imported tokens, initialize with tokens
-    // // ... from default lists (see defaultTokenLists.ts file)
-    // if (!user.importedTokens && user.activeTokenLists) {
-    //     user.importedTokens = user.activeTokenLists.map((list: TokenListIF) => list.tokens).flat();
-    //     userUpdated = true;
-    // }
+    // if there is an array of active token lists in local storage but no array
+    // of tokens on the user object, then create an array of tokens from any
+    // lists which are marked as default in defaultTokenLists.ts
+    if (
+        (!user.tokens || !user.tokens.length) &&
+        user.activeTokenLists &&
+        localStorage.allTokenLists
+    ) {
+        user.tokens = JSON.parse(localStorage.getItem('allTokenLists') as string).find(
+            (tokenList: TokenListIF) => tokenList.uri === tokenListURIs.ambient,
+        ).tokens;
+        userUpdated = true;
+    }
 
     if (userUpdated) {
         localStorage.setItem('user', JSON.stringify(user));

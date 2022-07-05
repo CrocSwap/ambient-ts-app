@@ -1,4 +1,4 @@
-import { ChangeEvent, SetStateAction, useEffect, useState } from 'react';
+import { ChangeEvent, Dispatch, SetStateAction, useEffect, useState } from 'react';
 import styles from './CurrencyConverter.module.css';
 import CurrencySelector from '../CurrencySelector/CurrencySelector';
 import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
@@ -10,11 +10,13 @@ import {
 } from '../../../utils/state/tradeDataSlice';
 import { useAppDispatch, useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import truncateDecimals from '../../../utils/data/truncateDecimals';
-
+import TokensArrow from '../../Global/TokensArrow/TokensArrow';
 interface CurrencyConverterPropsIF {
     isSellTokenBase: boolean;
     tokenPair: TokenPairIF;
     tokensBank: Array<TokenIF>;
+    setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
+    searchableTokens: Array<TokenIF>;
     chainId: string;
     isLiq: boolean;
     poolPriceDisplay: number;
@@ -24,14 +26,16 @@ interface CurrencyConverterPropsIF {
     tokenBBalance: string;
     tokenAInputQty: string;
     tokenBInputQty: string;
-    setTokenAInputQty: React.Dispatch<React.SetStateAction<string>>;
-    setTokenBInputQty: React.Dispatch<React.SetStateAction<string>>;
+    setTokenAInputQty: Dispatch<SetStateAction<string>>;
+    setTokenBInputQty: Dispatch<SetStateAction<string>>;
     isWithdrawFromDexChecked: boolean;
-    setIsWithdrawFromDexChecked: React.Dispatch<SetStateAction<boolean>>;
+    setIsWithdrawFromDexChecked: Dispatch<SetStateAction<boolean>>;
     isWithdrawToWalletChecked: boolean;
-    setIsWithdrawToWalletChecked: React.Dispatch<SetStateAction<boolean>>;
-    setSwapAllowed: React.Dispatch<React.SetStateAction<boolean>>;
-    setSwapButtonErrorMessage: React.Dispatch<React.SetStateAction<string>>;
+    setIsWithdrawToWalletChecked: Dispatch<SetStateAction<boolean>>;
+    setSwapAllowed: Dispatch<SetStateAction<boolean>>;
+    setSwapButtonErrorMessage: Dispatch<SetStateAction<string>>;
+    activeTokenListsChanged: boolean;
+    indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
@@ -39,6 +43,8 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         tokenPair,
         isSellTokenBase,
         tokensBank,
+        setImportedTokens,
+        searchableTokens,
         chainId,
         isLiq,
         poolPriceDisplay,
@@ -52,6 +58,8 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         setSwapButtonErrorMessage,
         setTokenAInputQty,
         setTokenBInputQty,
+        activeTokenListsChanged,
+        indicateActiveTokenListsChanged,
     } = props;
 
     // TODO: update name of functions with 'handle' verbiage
@@ -182,6 +190,43 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
             buyQtyField.value = truncatedTokenBQty === 'NaN' ? '' : truncatedTokenBQty;
         }
     };
+
+    const handleTokenAChangeClick = (value: string) => {
+        let rawTokenBQty;
+        const tokenAInputField = document.getElementById('sell-quantity');
+        if (tokenAInputField) {
+            (tokenAInputField as HTMLInputElement).value = value;
+        }
+        if (value) {
+            const input = value;
+            setTokenAQtyLocal(input);
+            setTokenAInputQty(input);
+            setIsTokenAPrimaryLocal(true);
+            dispatch(setIsTokenAPrimary(true));
+            dispatch(setPrimaryQuantity(input));
+
+            rawTokenBQty = isSellTokenBase
+                ? (1 / poolPriceDisplay) * parseFloat(input)
+                : poolPriceDisplay * parseFloat(input);
+
+            handleSwapButtonMessage(parseFloat(input));
+        } else {
+            rawTokenBQty = isSellTokenBase
+                ? (1 / poolPriceDisplay) * parseFloat(tokenAQtyLocal)
+                : poolPriceDisplay * parseFloat(tokenAQtyLocal);
+            handleSwapButtonMessage(parseFloat(tokenAQtyLocal));
+        }
+        const truncatedTokenBQty = truncateDecimals(rawTokenBQty, tokenBDecimals).toString();
+
+        setTokenBQtyLocal(truncatedTokenBQty);
+        setTokenBInputQty(truncatedTokenBQty);
+        const buyQtyField = document.getElementById('buy-quantity') as HTMLInputElement;
+
+        if (buyQtyField) {
+            buyQtyField.value = truncatedTokenBQty === 'NaN' ? '' : truncatedTokenBQty;
+        }
+    };
+
     const handleTokenBChangeEvent = (evt?: ChangeEvent<HTMLInputElement>) => {
         let rawTokenAQty;
 
@@ -213,16 +258,53 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         }
     };
 
+    const handleTokenBChangeClick = (value: string) => {
+        let rawTokenAQty;
+        const tokenBInputField = document.getElementById('buy-quantity');
+        if (tokenBInputField) {
+            (tokenBInputField as HTMLInputElement).value = value;
+        }
+        if (value) {
+            const input = value;
+            setTokenBQtyLocal(input);
+            setTokenBInputQty(input);
+            setIsTokenAPrimaryLocal(false);
+            dispatch(setIsTokenAPrimary(false));
+            dispatch(setPrimaryQuantity(input));
+
+            rawTokenAQty = isSellTokenBase
+                ? poolPriceDisplay * parseFloat(input)
+                : (1 / poolPriceDisplay) * parseFloat(input);
+        } else {
+            rawTokenAQty = isSellTokenBase
+                ? poolPriceDisplay * parseFloat(tokenBQtyLocal)
+                : (1 / poolPriceDisplay) * parseFloat(tokenBQtyLocal);
+        }
+        handleSwapButtonMessage(rawTokenAQty);
+
+        const truncatedTokenAQty = truncateDecimals(rawTokenAQty, tokenADecimals).toString();
+
+        setTokenAQtyLocal(truncatedTokenAQty);
+        setTokenAInputQty(truncatedTokenAQty);
+        const sellQtyField = document.getElementById('sell-quantity') as HTMLInputElement;
+        if (sellQtyField) {
+            sellQtyField.value = truncatedTokenAQty === 'NaN' ? '' : truncatedTokenAQty;
+        }
+    };
+
     return (
         <section className={styles.currency_converter}>
             <CurrencySelector
                 tokenPair={tokenPair}
                 tokensBank={tokensBank}
+                searchableTokens={searchableTokens}
+                setImportedTokens={setImportedTokens}
                 chainId={chainId}
                 direction={isLiq ? 'Select Pair' : 'From:'}
                 fieldId='sell'
                 sellToken
                 handleChangeEvent={handleTokenAChangeEvent}
+                handleChangeClick={handleTokenAChangeClick}
                 nativeBalance={props.nativeBalance}
                 tokenABalance={tokenABalance}
                 tokenBBalance={tokenBBalance}
@@ -231,17 +313,24 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                 isWithdrawToWalletChecked={isWithdrawToWalletChecked}
                 setIsWithdrawToWalletChecked={setIsWithdrawToWalletChecked}
                 reverseTokens={reverseTokens}
+                activeTokenListsChanged={activeTokenListsChanged}
+                indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
             />
             <div className={styles.arrow_container} onClick={handleArrowClick}>
-                {isLiq ? null : <span className={styles.arrow} />}
+                {/* <img src={tokensArrowImage} alt="arrow pointing down" /> */}
+                {/* {isLiq ? null : <span className={styles.arrow} />} */}
+                {isLiq ? null : <TokensArrow />}
             </div>
             <CurrencySelector
                 tokenPair={tokenPair}
                 tokensBank={tokensBank}
+                setImportedTokens={setImportedTokens}
+                searchableTokens={searchableTokens}
                 chainId={chainId}
                 direction={isLiq ? '' : 'To:'}
                 fieldId='buy'
                 handleChangeEvent={handleTokenBChangeEvent}
+                handleChangeClick={handleTokenBChangeClick}
                 nativeBalance={props.nativeBalance}
                 tokenABalance={tokenABalance}
                 tokenBBalance={tokenBBalance}
@@ -250,6 +339,8 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                 isWithdrawToWalletChecked={isWithdrawToWalletChecked}
                 reverseTokens={reverseTokens}
                 setIsWithdrawToWalletChecked={setIsWithdrawToWalletChecked}
+                activeTokenListsChanged={activeTokenListsChanged}
+                indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
             />
         </section>
     );
