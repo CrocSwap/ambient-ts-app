@@ -57,9 +57,7 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
         // sync local storage and local state inside App.tsx with new array
         const userData = JSON.parse(localStorage.getItem('user') as string);
         userData.tokens = newImportedTokensArray;
-        // console.log('before', JSON.parse(localStorage.getItem('user') as string));
         localStorage.setItem('user', JSON.stringify(userData));
-        // console.log('after', JSON.parse(localStorage.getItem('user') as string));
     };
 
     const tokenListContent = (
