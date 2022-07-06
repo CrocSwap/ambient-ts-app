@@ -23,7 +23,7 @@ export default function TokenSelect(props: TokenSelectProps) {
     const [toggleDeleteOn, setToggleDeleteOn] = useState(false);
 
     const dispatch = useAppDispatch();
-    const { token, chooseToken } = props;
+    const { token, chooseToken, tokensBank, chainId, setImportedTokens } = props;
 
     const getRandomInt = () => Math.floor(Math.random() * 18000);
 
@@ -60,6 +60,7 @@ export default function TokenSelect(props: TokenSelectProps) {
     function handleToggleDelete() {
         if (toggleDeleteOn) {
             console.log('you have deleted this token');
+            removeToken(token, tokensBank, chainId, setImportedTokens);
             // functionality to delete from Emily's branch
             setShowDelete(false);
         } else {
