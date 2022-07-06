@@ -45,11 +45,14 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
 
     const dispatch = useAppDispatch();
 
-    const [matchingImportedTokens, matchingSearchableTokens, setSearchInput] = useSearch(
-        tokensBank,
-        searchableTokens,
-        chainId,
-    );
+    console.log({tokensBank});
+    console.log({searchableTokens});
+
+    const [
+        matchingImportedTokens,
+        matchingSearchableTokens,
+        setSearchInput
+    ] = useSearch(tokensBank, searchableTokens, chainId);
 
     const importedTokensAddresses = tokensBank.map((token: TokenIF) => token.address);
     
