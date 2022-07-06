@@ -99,6 +99,10 @@ export default function Swap(props: SwapPropsIF) {
         ? useTradeData()
         : useAppSelector((state) => state);
 
+    const { navigationMenu } = pathname.includes('/trade')
+        ? useTradeData()
+        : { navigationMenu: null };
+
     const { tokenA, tokenB } = tradeData;
 
     const slippageTolerancePercentage = tradeData.slippageTolerance;
@@ -313,16 +317,8 @@ export default function Swap(props: SwapPropsIF) {
                     isDenomBase={tradeData.isDenomBase}
                     isTokenABase={isSellTokenBase}
                 />
-                <div className={styles.header_container}>
-                    <DenominationSwitch
-                        tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
-                        isTokenABase={isSellTokenBase}
-                        displayForBase={tradeData.isDenomBase}
-                        poolPriceDisplay={poolPriceDisplay}
-                        didUserFlipDenom={tradeData.didUserFlipDenom}
-                    />
-                    <DividerDark addMarginTop />
-                </div>
+                <DividerDark addMarginTop />
+                {navigationMenu}
                 <CurrencyConverter
                     tokenPair={tokenPair}
                     tokensBank={importedTokens}
@@ -349,7 +345,16 @@ export default function Swap(props: SwapPropsIF) {
                     activeTokenListsChanged={activeTokenListsChanged}
                     indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
                 />
-
+                <div className={styles.header_container}>
+                    <DividerDark addMarginTop />
+                    <DenominationSwitch
+                        tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
+                        isTokenABase={isSellTokenBase}
+                        displayForBase={tradeData.isDenomBase}
+                        poolPriceDisplay={poolPriceDisplay}
+                        didUserFlipDenom={tradeData.didUserFlipDenom}
+                    />
+                </div>
                 <ExtraInfo
                     tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
                     isTokenABase={isSellTokenBase}

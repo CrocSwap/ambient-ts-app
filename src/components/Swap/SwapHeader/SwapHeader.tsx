@@ -29,7 +29,10 @@ export default function SwapHeader(props: swapHeaderPropsIF) {
 
     const settingsModalOrNull = isModalOpen ? (
         <Modal noHeader title='modal' onClose={closeModal}>
-            <TransactionSettings onClose={closeModal} />
+            <TransactionSettings
+                module={isOnTradeRoute ? 'Market Order' : 'Swap'}
+                onClose={closeModal}
+            />
         </Modal>
     ) : null;
 
