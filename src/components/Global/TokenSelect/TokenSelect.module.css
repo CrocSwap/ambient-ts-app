@@ -5,7 +5,6 @@
   justify-content: space-between;
 
 
-  background: blue;
 
   position: relative;
 }
@@ -31,21 +30,10 @@
 }
 
 
-.delete_container{
-  position: absolute;
-  bottom: 0;
-  left: 100%;
-  right: 0;
-  background-color: #008CBA;
-  overflow: hidden;
-  width: 0;
-  height: 100%;
-  transition: .5s ease;
-}
-.main_container:hover .delete_container{
+/* .main_container:hover .delete_container{
   width: 100%;
   left: 0;
-}
+} */
 .close_icon_svg:hover{
     color: #f6385b;
     transition: all var(--animation-speed) ease-in-out
@@ -94,3 +82,85 @@
     color: var(--text-grey-light);
     /* font-weight: 400; */
   }
+
+  /* toggle buttons */
+  .delete_main{
+    background: yellow;
+  }
+
+  .delete_container{
+    position: absolute;
+   border-radius: var(--border-radius);
+    bottom: 0;
+    right: 0;
+    background-color: var(--dark3);
+    overflow: hidden;
+    height: 100%;
+    transition: .5s ease;
+  
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+  }
+  
+  .delete_active{
+    left: 100%;
+    width: 0;
+    
+  }
+  
+  .delete_inactive{
+    width: 100%;
+    left: 0;
+  }
+
+  .toggle_container{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+  }
+
+.liqtype_buttons_container {
+  font-size: 0;
+
+  /* width: 100%; */
+ 
+}
+.liqtype_buttons_container button {
+  font-size: 14px;
+  padding: 5px 0;
+  /* width: 50%; */
+  cursor: pointer;
+  transition: all var(--animation-speed) ease-in-out;
+  padding: 5px 12px;
+
+  border: none;
+  border: 1px solid #f6385b;
+  outline: none;
+}
+
+.liqtype_buttons_container button:first-child{
+  border-top-left-radius: var(--border-radius);
+  border-bottom-left-radius: var(--border-radius);
+}
+
+.liqtype_buttons_container button:nth-child(2){
+  border-top-right-radius: var(--border-radius);
+  border-bottom-right-radius: var(--border-radius);
+}
+.liqtype_buttons_container button:hover {
+  color: grey;
+}
+.active_button {
+  color: #fff;
+  background-color: #f6385b
+}
+.non_active_button {
+  color: white;
+  background-color: transparent;
+}

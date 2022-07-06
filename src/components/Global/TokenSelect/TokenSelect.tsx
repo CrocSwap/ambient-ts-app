@@ -17,6 +17,7 @@ interface TokenSelectProps {
 export default function TokenSelect(props: TokenSelectProps) {
     const { token, tokenToUpdate, closeModal, tokenPair, reverseTokens } = props;
     const [showDelete, setShowDelete] = useState(false);
+    const [toggleDeleteOn, setToggleDeleteOn] = useState(false);
 
     const dispatch = useAppDispatch();
 
@@ -74,13 +75,42 @@ export default function TokenSelect(props: TokenSelectProps) {
         </div>
     );
 
-    const closeIcon = (
-        <div className={styles.close_icon}>
+    const deleteIcon = (
+        <div className={styles.close_icon} onClick={() => setShowDelete(true)}>
             <AiFillCloseSquare size={20} className={styles.close_icon_svg} />
         </div>
     );
 
-    const deleteContainer = <div className={styles.delete_container}>Delete me</div>;
+    const toggleButtons = (
+        <div className={styles.toggle_container}>
+            <div className={styles.liqtype_buttons_container}>
+                <button
+                    className={toggleDeleteOn ? styles.active_button : styles.non_active_button}
+                    onClick={() => setToggleDeleteOn(!toggleDeleteOn)}
+                >
+                    Yes
+                </button>
+                <button
+                    className={!toggleDeleteOn ? styles.active_button : styles.non_active_button}
+                    onClick={() => setToggleDeleteOn(!toggleDeleteOn)}
+                >
+                    No
+                </button>
+            </div>
+            <div>Confirm</div>
+        </div>
+    );
+
+    const deleteStateStyle = !showDelete ? styles.delete_active : styles.delete_inactive;
+
+    const deleteContainer = (
+        <div className={styles.delete_main}>
+            <div className={`${styles.delete_container} ${deleteStateStyle}`}>
+                Remove {token.symbol} from your list
+                {toggleButtons}
+            </div>
+        </div>
+    );
 
     return (
         <div className={styles.main_container}>
@@ -94,7 +124,7 @@ export default function TokenSelect(props: TokenSelectProps) {
                 </div>
                 <div className={styles.modal_tokens_amount}>{getRandomInt()}</div>
             </div>
-            {closeIcon}
+            {deleteIcon}
         </div>
     );
 }
