@@ -78,8 +78,11 @@ export default function TokenSelect(props: TokenSelectProps) {
         </div>
     );
 
+    const deleteContainer = <div className={styles.delete_container}>Delete me</div>;
+
     return (
         <div className={styles.main_container}>
+            {deleteContainer}
             {starIcon}
             <div className={styles.modal_content} onClick={handleClick}>
                 <div className={styles.modal_tokens_info}>
