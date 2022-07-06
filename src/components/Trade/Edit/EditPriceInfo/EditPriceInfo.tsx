@@ -2,6 +2,7 @@ import styles from './EditPriceInfo.module.css';
 // import { TokenPairIF } from '../../../../../utils/interfaces/exports';
 
 interface EditPriceInfoIF {
+    currentPoolPriceDisplay: string;
     quoteTokenSymbol: string;
     tokenAQtyDisplay: string;
     tokenBQtyDisplay: string;
@@ -16,7 +17,7 @@ export default function EditPriceInfo(props: EditPriceInfoIF) {
     const currentPrice = (
         <div className={styles.price_info_row}>
             <span>Current Price</span>
-            <span>2,800</span>
+            <span>{props.currentPoolPriceDisplay}</span>
         </div>
     );
 

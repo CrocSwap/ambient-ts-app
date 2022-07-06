@@ -339,7 +339,7 @@ export default function Range(props: RangePropsIF) {
                 setInitializationComplete(false);
             }
         }
-    }, [isAdvancedModeActive, denominationsInBase, rangeLowTick, rangeHighTick]);
+    }, [isAdvancedModeActive, rangeLowTick, rangeHighTick]);
 
     // initialize based on MinPriceDifferencePercentage & MaxPriceDifferencePercentage
     useEffect(() => {

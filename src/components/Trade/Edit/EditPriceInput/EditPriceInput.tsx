@@ -48,12 +48,9 @@ export default function EditPriceInput(props: EditPriceInputProps) {
             defaultValue={convertedValue}
         />
     );
-    //  Juniors notes:
-    // Currently I am accessing the decreaseTick and increaseTick as props from EditMinMaxPrice, which is the same workflow as adding a new position.
 
-    // I don't think we need all of that here. We could simply retrieve the tick in this component and increase or decrease the default value(from the position) by the tick when the user clicks the plus or minus icon. We can also do something similar witht he onChange
-
-    // Once we change the value, we simply dispatch it as the new values.
+    const percentageDifferenceString =
+        percentageDifference >= 0 ? '+' + percentageDifference : percentageDifference.toString();
 
     return (
         <div className={styles.minMax_container}>
@@ -67,7 +64,7 @@ export default function EditPriceInput(props: EditPriceInputProps) {
                     <FaPlus size={16} />
                 </span>
             </div>
-            <span className={styles.percentage}>{percentageDifference}% difference</span>
+            <span className={styles.percentage}>{percentageDifferenceString}%</span>
         </div>
     );
 }

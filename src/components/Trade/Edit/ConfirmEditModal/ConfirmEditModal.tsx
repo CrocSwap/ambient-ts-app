@@ -7,6 +7,7 @@ import { PositionIF } from '../../../../utils/interfaces/PositionIF';
 interface ConfirmEditModalProps {
     onClose: () => void;
     position: PositionIF;
+    currentPoolPriceDisplay: string;
 }
 
 export default function ConfirmEditModal(props: ConfirmEditModalProps) {
@@ -24,6 +25,7 @@ export default function ConfirmEditModal(props: ConfirmEditModalProps) {
             />
             <Divider />
             <EditPriceInfo
+                currentPoolPriceDisplay={props.currentPoolPriceDisplay}
                 quoteTokenSymbol={position.quoteTokenSymbol}
                 baseTokenSymbol={position.baseTokenSymbol}
                 tokenAQtyDisplay={position.tokenAQtyDisplay}

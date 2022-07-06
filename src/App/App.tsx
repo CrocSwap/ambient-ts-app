@@ -292,7 +292,7 @@ export default function App() {
                 // if (JSON.stringify(graphData.positionsByUser) !== JSON.stringify(data.user)) {
                 const poolData = data.pools[0];
                 const poolPositions = poolData.positions;
-                console.log({ poolPositions });
+                // console.log({ poolPositions });
                 // poolPositions.reduce(
                 //     (p: position, fn: (position: any) => Promise<any>) => p.then(fn),
                 //     Promise.resolve(),
@@ -333,14 +333,14 @@ export default function App() {
                     lastBlockNumber,
                 );
                 if (poolPriceNonDisplay !== spotPrice) {
-                    console.log({ spotPrice });
+                    // console.log({ spotPrice });
                     setPoolPriceNonDisplay(spotPrice);
                     const displayPrice = toDisplayPrice(
                         spotPrice,
                         baseTokenDecimals,
                         quoteTokenDecimals,
                     );
-                    console.log({ displayPrice });
+                    // console.log({ displayPrice });
                     setPoolPriceDisplay(displayPrice);
                 }
             })();
@@ -509,6 +509,9 @@ export default function App() {
 
         const baseTokenDecimals = await cachedGetTokenDecimals(baseTokenAddress);
         const quoteTokenDecimals = await cachedGetTokenDecimals(quoteTokenAddress);
+
+        if (baseTokenDecimals) position.baseTokenDecimals = baseTokenDecimals;
+        if (quoteTokenDecimals) position.quoteTokenDecimals = quoteTokenDecimals;
 
         const lowerPriceNonDisplay = tickToPrice(position.bidTick);
         const upperPriceNonDisplay = tickToPrice(position.askTick);
