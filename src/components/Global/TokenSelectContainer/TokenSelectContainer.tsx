@@ -76,7 +76,7 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
         closeModal();
     };
 
-    const handleClickSearchable = (tkn: TokenIF) => {
+    const importToken = (tkn: TokenIF) => {
         // look inside tokensBank to see if clicked token is already imported
         const newImportedTokensArray = [tkn, ...tokensBank];
         setImportedTokens(newImportedTokensArray);
@@ -130,7 +130,7 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
                     <TokenSelectSearchable
                         key={`tss_${idx}`}
                         token={tkn}
-                        clickHandler={handleClickSearchable}
+                        clickHandler={importToken}
                     />
                 ))
             }
