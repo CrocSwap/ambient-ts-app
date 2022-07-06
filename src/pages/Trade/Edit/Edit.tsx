@@ -17,11 +17,12 @@ import {
 } from '../Range/rangeFunctions';
 import truncateDecimals from '../../../utils/data/truncateDecimals';
 import { PositionIF } from '../../../utils/interfaces/PositionIF';
+import { tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 interface PositionState {
     position: PositionIF;
 }
 
-export default function Edit(props: { poolPriceNonDisplay: number }) {
+export default function Edit() {
     const [isModalOpen, openModal, closeModal] = useModal();
 
     const location = useLocation();
@@ -82,10 +83,33 @@ export default function Edit(props: { poolPriceNonDisplay: number }) {
         position.highRangeDisplay,
     );
 
-    const currentPoolPriceTick =
-        props.poolPriceNonDisplay === 0
-            ? 0
-            : Math.log(props.poolPriceNonDisplay) / Math.log(1.0001);
+    const currentPoolPriceTick = position.poolPriceInTicks ?? 0;
+    const currentPoolPriceNonDisplay = tickToPrice(currentPoolPriceTick);
+
+    const currentPoolDisplayPriceInQuote = toDisplayPrice(
+        currentPoolPriceNonDisplay,
+        baseTokenDecimals,
+        quoteTokenDecimals,
+    );
+
+    const currentPoolDisplayPriceInBase =
+        1 / toDisplayPrice(currentPoolPriceNonDisplay, baseTokenDecimals, quoteTokenDecimals);
+
+    const truncatedCurrentPoolDisplayPriceInQuote =
+        currentPoolDisplayPriceInQuote < 2
+            ? truncateDecimals(currentPoolDisplayPriceInQuote, 4)
+            : truncateDecimals(currentPoolDisplayPriceInQuote, 2);
+    const truncatedCurrentPoolDisplayPriceInBase =
+        currentPoolDisplayPriceInBase < 2
+            ? truncateDecimals(currentPoolDisplayPriceInBase, 4)
+            : truncateDecimals(currentPoolDisplayPriceInBase, 2);
+
+    const currentPoolPriceDisplay =
+        currentPoolPriceNonDisplay === 0
+            ? '0'
+            : denominationsInBase
+            ? truncatedCurrentPoolDisplayPriceInBase
+            : truncatedCurrentPoolDisplayPriceInQuote;
 
     const defaultMinPriceDifferencePercentage = -15;
     const defaultMaxPriceDifferencePercentage = 15;
@@ -247,7 +271,11 @@ export default function Edit(props: { poolPriceNonDisplay: number }) {
 
     const confirmEditModal = isModalOpen ? (
         <Modal onClose={closeModal} title='Edit Position'>
-            <ConfirmEditModal onClose={closeModal} position={position} />
+            <ConfirmEditModal
+                onClose={closeModal}
+                position={position}
+                currentPoolPriceDisplay={currentPoolPriceDisplay}
+            />
         </Modal>
     ) : null;
 
@@ -279,6 +307,7 @@ export default function Edit(props: { poolPriceNonDisplay: number }) {
     };
 
     const editPriceInfoProps = {
+        currentPoolPriceDisplay: currentPoolPriceDisplay,
         quoteTokenSymbol: position.quoteTokenSymbol,
         baseTokenSymbol: position.baseTokenSymbol,
         tokenAQtyDisplay: position.tokenAQtyDisplay,

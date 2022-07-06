@@ -292,7 +292,7 @@ export default function App() {
                 // if (JSON.stringify(graphData.positionsByUser) !== JSON.stringify(data.user)) {
                 const poolData = data.pools[0];
                 const poolPositions = poolData.positions;
-                console.log({ poolPositions });
+                // console.log({ poolPositions });
                 // poolPositions.reduce(
                 //     (p: position, fn: (position: any) => Promise<any>) => p.then(fn),
                 //     Promise.resolve(),
@@ -333,14 +333,14 @@ export default function App() {
                     lastBlockNumber,
                 );
                 if (poolPriceNonDisplay !== spotPrice) {
-                    console.log({ spotPrice });
+                    // console.log({ spotPrice });
                     setPoolPriceNonDisplay(spotPrice);
                     const displayPrice = toDisplayPrice(
                         spotPrice,
                         baseTokenDecimals,
                         quoteTokenDecimals,
                     );
-                    console.log({ displayPrice });
+                    // console.log({ displayPrice });
                     setPoolPriceDisplay(displayPrice);
                 }
             })();
@@ -975,10 +975,7 @@ export default function App() {
                             <Route path='market' element={<Swap {...swapPropsTrade} />} />
                             <Route path='limit' element={<Limit {...limitPropsTrade} />} />
                             <Route path='range' element={<Range {...rangeProps} />} />
-                            <Route
-                                path='edit/:positionHash'
-                                element={<Edit poolPriceNonDisplay={poolPriceNonDisplay} />}
-                            />
+                            <Route path='edit/:positionHash' element={<Edit />} />
                         </Route>
                         <Route path='analytics' element={<Analytics />} />
                         {/* <Route path='details' element={<PositionDetails />} /> */}
