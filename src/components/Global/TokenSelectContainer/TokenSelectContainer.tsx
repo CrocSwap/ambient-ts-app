@@ -1,10 +1,14 @@
-import styles from './TokenSelectContainer.module.css';
 import { Dispatch, SetStateAction } from 'react';
+import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
+import { setTokenA, setTokenB, setDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
+import styles from './TokenSelectContainer.module.css';
 import TokenSelect from '../TokenSelect/TokenSelect';
 import TokenSelectSearchable from '../TokenSelect/TokenSelectSearchable';
 import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
 import TokenList from '../../Global/TokenList/TokenList';
 import { useSearch } from './useSearch';
+import { importToken } from './importToken';
+import { removeToken } from './removeToken';
 
 interface TokenSelectContainerPropsIF {
     tokenPair: TokenPairIF;
@@ -38,27 +42,57 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
         indicateActiveTokenListsChanged,
     } = props;
 
+    const dispatch = useAppDispatch();
+
     const [matchingImportedTokens, matchingSearchableTokens, setSearchInput] = useSearch(
         tokensBank,
         searchableTokens,
         chainId,
     );
 
-    const handleClickSearchable = (tkn: TokenIF) => {
-        // look inside tokensBank to see if clicked token is already imported
-        const importedTokenAddresses = tokensBank.map((token: TokenIF) => token.address);
-        const newImportedTokensArray = importedTokenAddresses.includes(tkn.address)
-            ? // TRUE: make new array with it removed
-              tokensBank.filter((token: TokenIF) => token.address !== tkn.address)
-            : // FALSE: make new array with it added
-              [tkn, ...tokensBank];
-        setImportedTokens(newImportedTokensArray);
-        // sync local storage and local state inside App.tsx with new array
-        const userData = JSON.parse(localStorage.getItem('user') as string);
-        userData.tokens = newImportedTokensArray;
-        // console.log('before', JSON.parse(localStorage.getItem('user') as string));
-        localStorage.setItem('user', JSON.stringify(userData));
-        // console.log('after', JSON.parse(localStorage.getItem('user') as string));
+    // const handleClickSearchable = (tkn: TokenIF) => {
+    //     // look inside tokensBank to see if clicked token is already imported
+    //     const importedTokenAddresses = tokensBank.map((token: TokenIF) => token.address);
+    //     const newImportedTokensArray = importedTokenAddresses.includes(tkn.address)
+    //         ? // TRUE: make new array with it removed
+    //           tokensBank.filter((token: TokenIF) => token.address !== tkn.address)
+    //         : // FALSE: make new array with it added
+    //           [tkn, ...tokensBank];
+    //     setImportedTokens(newImportedTokensArray);
+    //     // sync local storage and local state inside App.tsx with new array
+    //     const userData = JSON.parse(localStorage.getItem('user') as string);
+    //     userData.tokens = newImportedTokensArray;
+    //     // console.log('before', JSON.parse(localStorage.getItem('user') as string));
+    //     localStorage.setItem('user', JSON.stringify(userData));
+    //     // console.log('after', JSON.parse(localStorage.getItem('user') as string));
+
+    const importedTokensAddresses = tokensBank.map((token: TokenIF) => token.address);
+
+    const chooseToken = (tok: TokenIF) => {
+        if (tokenToUpdate === 'A') {
+            if (tokenPair.dataTokenB.address === tok.address) {
+                reverseTokens();
+                dispatch(setTokenA(tok));
+                dispatch(setTokenB(tokenPair.dataTokenA));
+            } else {
+                dispatch(setTokenA(tok));
+                dispatch(setDidUserFlipDenom(false));
+            }
+        } else if (tokenToUpdate === 'B') {
+            if (tokenPair.dataTokenA.address === tok.address) {
+                reverseTokens();
+                dispatch(setTokenB(tok));
+                dispatch(setTokenA(tokenPair.dataTokenB));
+            } else {
+                dispatch(setTokenB(tok));
+                dispatch(setDidUserFlipDenom(false));
+            }
+        } else {
+            console.warn(
+                'Error in TokenSelectContainer.tsx, failed to find proper dispatch function.',
+            );
+        }
+        closeModal();
     };
 
     const tokenListContent = (
@@ -66,24 +100,31 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
             <div className={styles.title}>Your Tokens</div>
             <div className={styles.tokens_container}>
                 {matchingImportedTokens.map((token: TokenIF, idx: number) => (
-                    <TokenSelect
-                        key={idx}
-                        token={token}
-                        tokenToUpdate={tokenToUpdate}
-                        closeModal={closeModal}
-                        tokenPair={tokenPair}
-                        reverseTokens={reverseTokens}
-                    />
+                    <>
+                        <TokenSelect key={idx} token={token} chooseToken={chooseToken} />
+                        <button
+                            key={idx + 'remove'}
+                            onClick={() =>
+                                removeToken(token, tokensBank, chainId, setImportedTokens)
+                            }
+                        >
+                            Remove {token.name}
+                        </button>
+                    </>
                 ))}
             </div>
             {matchingSearchableTokens.length ? <h3>Searched Tokens</h3> : null}
-            {matchingSearchableTokens.map((tkn: TokenIF, idx: number) => (
-                <TokenSelectSearchable
-                    key={`tss_${idx}`}
-                    token={tkn}
-                    clickHandler={handleClickSearchable}
-                />
-            ))}
+            {matchingSearchableTokens
+                .filter((token: TokenIF) => !importedTokensAddresses.includes(token.address))
+                .map((tkn: TokenIF, idx: number) => (
+                    <TokenSelectSearchable
+                        key={`tss_${idx}`}
+                        token={tkn}
+                        clickHandler={() =>
+                            importToken(tkn, tokensBank, setImportedTokens, () => chooseToken(tkn))
+                        }
+                    />
+                ))}
         </>
     );
 
@@ -97,10 +138,6 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
                 />
             </div>
             {tokenListContent}
-            {/* <div className={styles.manage_token_list_container} onClick={() => setShowManageTokenListContent(true)}>
-                Manage Token List
-            </div> */}
-            {/* <Button title='Manage Token List' action={() => setShowManageTokenListContent(true)} /> */}
         </>
     );
 
