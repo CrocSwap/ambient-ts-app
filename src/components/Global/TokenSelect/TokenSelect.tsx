@@ -1,16 +1,18 @@
 import styles from './TokenSelect.module.css';
 import { CgUnavailable } from 'react-icons/cg';
 import { setTokenA, setTokenB, setDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
+import { Dispatch, SetStateAction, useState } from 'react';
+
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 // import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
 import { AiFillCloseSquare } from 'react-icons/ai';
-import { useState } from 'react';
 import { TokenIF } from '../../../utils/interfaces/exports';
 import { removeToken } from '../../Global/TokenSelectContainer/removeToken';
 interface TokenSelectProps {
     token: TokenIF;
     tokensBank: Array<TokenIF>;
     chainId: string;
+    setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
 
     chooseToken: (tok: TokenIF) => void;
 }
