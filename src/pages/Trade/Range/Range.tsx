@@ -116,6 +116,7 @@ export default function Range(props: RangePropsIF) {
         useMoralis();
 
     const { tradeData } = useTradeData();
+    const { navigationMenu } = useTradeData();
 
     const tokenPair = {
         dataTokenA: tradeData.tokenA,
@@ -909,8 +910,8 @@ export default function Range(props: RangePropsIF) {
             transition={{ duration: 0.5 }}
         >
             <RangeCurrencyConverter {...rangeCurrencyConverterProps} isAdvancedMode={false} />
-
             <DividerDark addMarginTop />
+            {denominationSwitch}
             <RangeWidth {...rangeWidthProps} />
             <RangePriceInfo {...rangePriceInfoProps} />
             <RangeExtraInfo {...rangeExtraInfoProps} />
@@ -920,6 +921,8 @@ export default function Range(props: RangePropsIF) {
         <>
             <RangeCurrencyConverter {...rangeCurrencyConverterProps} isAdvancedMode />
             <DividerDark addMarginTop />
+
+            {denominationSwitch}
 
             <MinMaxPrice
                 minPricePercentage={minPriceDifferencePercentage}
@@ -1070,13 +1073,15 @@ export default function Range(props: RangePropsIF) {
                     isDenomBase={tradeData.isDenomBase}
                     isTokenABase={isTokenABase}
                 />
+                <DividerDark addMarginTop />
+                {navigationMenu}
                 <DividerDark />
-                <div className={styles.header_container}>
-                    {denominationSwitch}
-                    <DividerDark addMarginTop />
-                </div>
                 {/* <RangeCurrencyConverter {...rangeCurrencyConverterProps} /> */}
 
+                {/* <div className={styles.header_container}>
+                    {denominationSwitch}
+                    <DividerDark addMarginTop />
+                </div> */}
                 {isAdvancedModeActive ? advancedModeContent : baseModeContent}
 
                 {!isAuthenticated || !isWeb3Enabled ? (

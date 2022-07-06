@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { setSlippageTolerance } from '../../../utils/state/tradeDataSlice';
 
 interface TransactionSettingsProps {
+    module: 'Swap' | 'Market Order' | 'Limit Order' | 'Range Order';
     onClose: () => void;
 }
 
@@ -24,11 +25,18 @@ export default function TransactionSettings(props: TransactionSettingsProps) {
         dispatch(setSlippageTolerance(slippageInput));
     };
 
+    const shouldDisplaySlippageTolerance = props.module !== 'Limit Order';
+
     return (
         <div className={styles.settings_container}>
-            <div className={styles.settings_title}>Settings</div>
-            <SlippageTolerance setSlippageInput={setSlippageInput} slippageInput={slippageInput} />
-            <button onClick={handleClose}>Submit</button>
+            <div className={styles.settings_title}>{props.module + ' Settings'}</div>
+            {shouldDisplaySlippageTolerance ? (
+                <SlippageTolerance
+                    setSlippageInput={setSlippageInput}
+                    slippageInput={slippageInput}
+                />
+            ) : null}
+            {shouldDisplaySlippageTolerance ? <button onClick={handleClose}>Submit</button> : null}
         </div>
     );
 }
