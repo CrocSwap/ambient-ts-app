@@ -88,10 +88,8 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
     };
 
     const removeToken = (token: TokenIF) => {
-        console.log(`called removeToken() on: ${token.symbol}`);
-        const { tokens } = JSON.parse(localStorage.getItem('user') as string)
-        console.log({tokens});
-        const newTokensList = tokens.filter((tkn: TokenIF) =>
+        console.log({tokensBank});
+        const newTokensList = tokensBank.filter((tkn: TokenIF) =>
                 (tkn.address !== token.address)
                 || ((tkn.address === token.address) && (tkn.chainId !== parseInt(chainId)))
             );
