@@ -62,6 +62,7 @@ import { memoizePromiseFn } from './functions/memoizePromiseFn';
 import { querySpotPrice } from './functions/querySpotPrice';
 import { fetchAddress } from './functions/fetchAddress';
 import truncateDecimals from '../utils/data/truncateDecimals';
+import { getNFTs } from './functions/getNFTs';
 
 const cachedQuerySpotPrice = memoizePromiseFn(querySpotPrice);
 const cachedFetchAddress = memoizePromiseFn(fetchAddress);
@@ -938,6 +939,17 @@ export default function App() {
             : mainLayoutStyle;
     const swapBodyStyle = currentLocation == '/swap' ? 'swap-body' : null;
 
+    const [imageData, setImageData] = useState<string[]>([]);
+
+    useEffect(() => {
+        (async () => {
+            if (account) {
+                const imageLocalURLs = await getNFTs(account);
+                if (imageLocalURLs) setImageData(imageLocalURLs);
+            }
+        })();
+    }, [account]);
+
     return (
         <>
             <div className='content-container'>
@@ -978,6 +990,7 @@ export default function App() {
                                 <Portfolio
                                     ensName={ensName}
                                     connectedAccount={account ? account : ''}
+                                    imageData={imageData}
                                 />
                             }
                         />

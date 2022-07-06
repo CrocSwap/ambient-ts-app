@@ -1,6 +1,6 @@
 import styles from './CurrencySelector.module.css';
 import CurrencyQuantity from '../CurrencyQuantity/CurrencyQuantity';
-import { RiArrowDownSLine } from 'react-icons/ri';
+import { RiArrowDownSLine, RiListCheck } from 'react-icons/ri';
 // import Toggle from '../../Global/Toggle/Toggle';
 import { useState, ChangeEvent, Dispatch, SetStateAction } from 'react';
 import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
@@ -107,6 +107,17 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
 
     const tokenToUpdate = fieldId === 'sell' ? 'A' : 'B';
 
+    const footer = (
+        <div
+            className={styles.manage_token_list_container}
+            onClick={() => setShowManageTokenListContent(true)}
+        >
+            <RiListCheck size={20} color='#CDC1FF' />
+            Manage Token List
+        </div>
+    );
+    const footerOrNull = !showManageTokenListContent ? footer : null;
+
     const tokenSelectModalOrNull = isModalOpen ? (
         <Modal
             onClose={closeModal}
@@ -114,6 +125,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
             centeredTitle
             handleBack={() => setShowManageTokenListContent(false)}
             showBackButton={showManageTokenListContent}
+            footer={footerOrNull}
         >
             <TokenSelectContainer
                 tokenPair={tokenPair}

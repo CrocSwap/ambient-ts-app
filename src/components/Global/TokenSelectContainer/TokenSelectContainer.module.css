@@ -9,25 +9,35 @@
 .tokens_container{
   /* background: yellow; */
   max-height: 303px;
-  min-height: 250px;
+  /* min-height: 50px; */
     overflow-y: scroll;
   overflow-x: hidden;
   transition: all var(--animation-speed) cubic-bezier(0.175, 0.885, 0.32, 1.275);
   position: relative;
 }
 
+.manage_token_list_container{
+  width: 100%;
+    padding: 20px;
+    background-color: var(--dark3);
+    border-top: 1px solid rgb(44, 47, 54);
+}
+
+/* .token_select_container{
+  background: yellow;
+} */
 
 .tokens_container::-webkit-scrollbar {
   display: none;
 }
-.tokens_container:after {
+
+/* .tokens_container:after {
   content: "";
   position: absolute;
   z-index: 1;
   bottom: 0;
   left: 0;
   pointer-events: none;
-  /* background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.1), rgb(53, 51, 108) 90%); */
   width: 100%;
   height: 3.7em;
   background:linear-gradient(
@@ -35,7 +45,7 @@
   rgba(0,0,0,0),
   rgba(13, 17, 23, 0.90) 50%
 );
-}
+} */
 
 /* search input */
 
@@ -61,6 +71,7 @@
 
   .token_select_container{
     max-height: 400px;
+    padding-bottom: 11rem;
     
  
   transition: all var(--animation-speed) cubic-bezier(0.175, 0.885, 0.32, 1.275);
