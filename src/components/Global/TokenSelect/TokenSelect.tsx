@@ -4,6 +4,7 @@ import { setTokenA, setTokenB, setDidUserFlipDenom } from '../../../utils/state/
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
 import { AiFillCloseSquare } from 'react-icons/ai';
+import { useState } from 'react';
 
 interface TokenSelectProps {
     token: TokenIF;
@@ -15,6 +16,8 @@ interface TokenSelectProps {
 
 export default function TokenSelect(props: TokenSelectProps) {
     const { token, tokenToUpdate, closeModal, tokenPair, reverseTokens } = props;
+    const [showDelete, setShowDelete] = useState(false);
+    const [toggleDeleteOn, setToggleDeleteOn] = useState(false);
 
     const dispatch = useAppDispatch();
 
@@ -72,14 +75,59 @@ export default function TokenSelect(props: TokenSelectProps) {
         </div>
     );
 
-    const closeIcon = (
-        <div className={styles.close_icon}>
+    const deleteIcon = (
+        <div className={styles.close_icon} onClick={() => setShowDelete(true)}>
             <AiFillCloseSquare size={20} className={styles.close_icon_svg} />
+        </div>
+    );
+
+    function handleToggleDelete() {
+        if (toggleDeleteOn) {
+            console.log('you have deleted this token');
+            // functionality to delete from Emily's branch
+            setShowDelete(false);
+        } else {
+            console.log('going back');
+            setShowDelete(false);
+        }
+    }
+
+    const toggleButtons = (
+        <div className={styles.toggle_container}>
+            <div className={styles.liqtype_buttons_container}>
+                <button
+                    className={toggleDeleteOn ? styles.active_button : styles.non_active_button}
+                    onClick={() => setToggleDeleteOn(!toggleDeleteOn)}
+                >
+                    Yes
+                </button>
+                <button
+                    className={!toggleDeleteOn ? styles.active_button : styles.non_active_button}
+                    onClick={() => setToggleDeleteOn(!toggleDeleteOn)}
+                >
+                    No
+                </button>
+            </div>
+            <div className={styles.confirm} onClick={() => handleToggleDelete()}>
+                CONFIRM
+            </div>
+        </div>
+    );
+
+    console.log(toggleDeleteOn);
+
+    const deleteStateStyle = !showDelete ? styles.delete_active : styles.delete_inactive;
+
+    const deleteContainer = (
+        <div className={`${styles.delete_container} ${deleteStateStyle}`}>
+            Remove {token.symbol} from your list
+            {toggleButtons}
         </div>
     );
 
     return (
         <div className={styles.main_container}>
+            {deleteContainer}
             {starIcon}
             <div className={styles.modal_content} onClick={handleClick}>
                 <div className={styles.modal_tokens_info}>
@@ -89,7 +137,7 @@ export default function TokenSelect(props: TokenSelectProps) {
                 </div>
                 <div className={styles.modal_tokens_amount}>{getRandomInt()}</div>
             </div>
-            {closeIcon}
+            {deleteIcon}
         </div>
     );
 }
