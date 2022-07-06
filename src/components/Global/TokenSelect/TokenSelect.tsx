@@ -4,6 +4,7 @@ import { setTokenA, setTokenB, setDidUserFlipDenom } from '../../../utils/state/
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
 import { AiFillCloseSquare } from 'react-icons/ai';
+import { useState } from 'react';
 
 interface TokenSelectProps {
     token: TokenIF;
@@ -15,6 +16,7 @@ interface TokenSelectProps {
 
 export default function TokenSelect(props: TokenSelectProps) {
     const { token, tokenToUpdate, closeModal, tokenPair, reverseTokens } = props;
+    const [showDelete, setShowDelete] = useState(false);
 
     const dispatch = useAppDispatch();
 
