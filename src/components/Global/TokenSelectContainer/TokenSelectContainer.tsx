@@ -49,10 +49,10 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
         // look inside tokensBank to see if clicked token is already imported
         const importedTokenAddresses = tokensBank.map((token: TokenIF) => token.address);
         const newImportedTokensArray = importedTokenAddresses.includes(tkn.address)
-            // TRUE: make new array with it removed
-            ? tokensBank.filter((token: TokenIF) => token.address !== tkn.address)
-            // FALSE: make new array with it added
-            : [tkn, ...tokensBank];
+            ? // TRUE: make new array with it removed
+              tokensBank.filter((token: TokenIF) => token.address !== tkn.address)
+            : // FALSE: make new array with it added
+              [tkn, ...tokensBank];
         setImportedTokens(newImportedTokensArray);
         // sync local storage and local state inside App.tsx with new array
         const userData = JSON.parse(localStorage.getItem('user') as string);
@@ -98,7 +98,10 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
                 />
             </div>
             {tokenListContent}
-            <Button title='Manage Token List' action={() => setShowManageTokenListContent(true)} />
+            {/* <div className={styles.manage_token_list_container} onClick={() => setShowManageTokenListContent(true)}>
+                Manage Token List
+            </div> */}
+            {/* <Button title='Manage Token List' action={() => setShowManageTokenListContent(true)} /> */}
         </>
     );
 
