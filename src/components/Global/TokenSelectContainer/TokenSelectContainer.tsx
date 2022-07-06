@@ -3,7 +3,6 @@ import { Dispatch, SetStateAction } from 'react';
 import TokenSelect from '../TokenSelect/TokenSelect';
 import TokenSelectSearchable from '../TokenSelect/TokenSelectSearchable';
 import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
-import Button from '../../Global/Button/Button';
 import TokenList from '../../Global/TokenList/TokenList';
 import { useSearch } from './useSearch';
 
@@ -34,7 +33,7 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
         closeModal,
         reverseTokens,
         showManageTokenListContent,
-        setShowManageTokenListContent,
+        // setShowManageTokenListContent,
         activeTokenListsChanged,
         indicateActiveTokenListsChanged,
     } = props;

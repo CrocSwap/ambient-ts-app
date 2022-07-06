@@ -1,7 +1,6 @@
 import styles from './CurrencySelector.module.css';
 import CurrencyQuantity from '../CurrencyQuantity/CurrencyQuantity';
 import { RiArrowDownSLine, RiListCheck } from 'react-icons/ri';
-import { GrList } from 'react-icons/gr';
 // import Toggle from '../../Global/Toggle/Toggle';
 import { useState, ChangeEvent, Dispatch, SetStateAction } from 'react';
 import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
