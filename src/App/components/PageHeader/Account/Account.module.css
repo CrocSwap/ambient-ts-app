@@ -4,77 +4,72 @@
     align-items: center;
     background: transparent;
     border-radius: var(--border-radius);
-    gap: var(--gap, 0.5rem)
-  }
-  .account_container div{
-     
-      font-size: var(--body-size);
-  }
+    gap: var(--gap, 0.5rem);
+}
+.account_container div {
+    font-size: var(--body-size);
+}
 
-  .ethereum_icon{
-      padding:0  10px;
-  }
-  .account_container p, .account_container div{
+.ethereum_icon {
+    padding: 0 10px;
+}
+.account_container p,
+.account_container div {
     color: var(--text-grey-light);
     font-family: var(--font-deca);
     font-weight: 300;
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    text-transform: capitalize;
     text-align: center;
-  
-   
     cursor: pointer;
-  }
+}
 
-  .white{
+.white {
     font-family: var(--font-deca);
     font-weight: 300;
     font-size: var(--body-size);
     line-height: var(--body-lh);
-      color: white;
-  }
+    color: white;
+}
 
-  .title_gradient{
+.title_gradient {
     background: var(--title-gradient);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-  }
+    text-transform: lowercase;
+}
 
-  .more{
+.more {
     display: flex;
     align-items: center;
     cursor: pointer;
     margin-left: 10px;
 }
-  .more span{
-      
-      font-size: 18px;
-      /* font-weight: 800; */
-      margin: 0 1.5px;
-  }
+.more span {
+    font-size: 18px;
+    /* font-weight: 800; */
+    margin: 0 1.5px;
+}
 
-  .popperContent{
- 
-     width: 100%;
+.popperContent {
+    width: 100%;
     min-width: 196px;
     max-height: 450px;
-   
+
     background-color: var(--dark1);
-    box-shadow: rgba(80, 70, 114, 0.01) 0px 0px 1px, rgb(0 0 0 / 4%) 0px 4px 8px, rgb(0 0 0 / 4%) 0px 16px 24px, rgb(0 0 0 / 1%) 0px 24px 32px;
+    box-shadow: rgba(80, 70, 114, 0.01) 0px 0px 1px, rgb(0 0 0 / 4%) 0px 4px 8px,
+        rgb(0 0 0 / 4%) 0px 16px 24px, rgb(0 0 0 / 1%) 0px 24px 32px;
     /* border: 1px solid rgb(25, 27, 31); */
     padding: 0.5rem;
     display: flex;
     flex-direction: column;
     font-size: 16px;
-   
-    color: var(--text-grey-light);
-   
-      
-  }
 
-  .more_row{
+    color: var(--text-grey-light);
+}
+
+.more_row {
     display: flex;
     flex: 1 1 0%;
     flex-direction: row;
@@ -85,25 +80,21 @@
     -webkit-box-pack: justify;
     justify-content: space-between;
     color: rgb(195, 197, 203);
-  }
+}
 
-  .authenticate_button{
+.authenticate_button {
     background: var(--title-gradient);
     border: none;
     outline: none;
     color: var(--dark3);
     font-weight: 200;
-    
+
     border-radius: var(--border-radius);
     width: 155px;
     height: 25px;
 }
-  @media screen and (max-width: 550px) {
-   
+@media screen and (max-width: 550px) {
     .account_container {
-      display: none;
+        display: none;
     }
-  
-  
-  }
-  
+}
