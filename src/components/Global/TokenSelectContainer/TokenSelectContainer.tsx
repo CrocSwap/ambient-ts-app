@@ -89,6 +89,13 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
 
     const removeToken = (token: TokenIF) => {
         console.log(`called removeToken() on: ${token.symbol}`);
+        const { tokens } = JSON.parse(localStorage.getItem('user') as string)
+        console.log({tokens});
+        const newTokensList = tokens.filter((tkn: TokenIF) =>
+                (tkn.address !== token.address)
+                || ((tkn.address === token.address) && (tkn.chainId !== parseInt(chainId)))
+            );
+        console.log({newTokensList});
     }
 
     const tokenListContent = (
@@ -103,7 +110,7 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
                                 token={token}
                                 chooseToken={chooseToken}
                             />
-                            <button onClick={() => removeToken(token)}>Remove {token.name}</button>
+                            <button key={idx+'remove'} onClick={() => removeToken(token)}>Remove {token.name}</button>
                         </>
                     )
                 )}
