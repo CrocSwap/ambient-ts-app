@@ -8,6 +8,7 @@ import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
 import Button from '../../Global/Button/Button';
 import TokenList from '../../Global/TokenList/TokenList';
 import { useSearch } from './useSearch';
+import { importToken } from './importToken';
 import { removeToken } from './removeToken';
 
 interface TokenSelectContainerPropsIF {
@@ -77,17 +78,6 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
         closeModal();
     };
 
-    const importToken = (tkn: TokenIF) => {
-        // look inside tokensBank to see if clicked token is already imported
-        const newImportedTokensArray = [tkn, ...tokensBank];
-        setImportedTokens(newImportedTokensArray);
-        // sync local storage and local state inside App.tsx with new array
-        const userData = JSON.parse(localStorage.getItem('user') as string);
-        userData.tokens = newImportedTokensArray;
-        localStorage.setItem('user', JSON.stringify(userData));
-        chooseToken(tkn);
-    };
-
     const tokenListContent = (
         <>
             <div className={styles.title}>Your Tokens</div>
@@ -117,7 +107,7 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
                     <TokenSelectSearchable
                         key={`tss_${idx}`}
                         token={tkn}
-                        clickHandler={importToken}
+                        clickHandler={() => importToken(tkn, tokensBank, setImportedTokens, () => chooseToken(tkn))}
                     />
                 ))
             }
