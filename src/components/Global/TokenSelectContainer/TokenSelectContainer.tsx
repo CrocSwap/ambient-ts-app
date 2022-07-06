@@ -45,9 +45,6 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
 
     const dispatch = useAppDispatch();
 
-    console.log({tokensBank});
-    console.log({searchableTokens});
-
     const [
         matchingImportedTokens,
         matchingSearchableTokens,
