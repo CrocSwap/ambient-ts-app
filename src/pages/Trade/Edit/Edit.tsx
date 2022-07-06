@@ -69,8 +69,8 @@ export default function Edit(props: { poolPriceNonDisplay: number }) {
         }
     }, [denominationsInBase, isAdvancedModeActive, rangeLowTick, rangeHighTick, location.pathname]);
 
-    const baseTokenDecimals = 18;
-    const quoteTokenDecimals = 18;
+    const baseTokenDecimals = position.baseTokenDecimals;
+    const quoteTokenDecimals = position.quoteTokenDecimals;
 
     // const [rangeLowBoundNonDisplayPrice, setRangeLowBoundNonDisplayPrice] = useState(0);
     // const [rangeHighBoundNonDisplayPrice, setRangeHighBoundNonDisplayPrice] = useState(0);

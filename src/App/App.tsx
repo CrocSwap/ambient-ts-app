@@ -509,6 +509,9 @@ export default function App() {
         const baseTokenDecimals = await cachedGetTokenDecimals(baseTokenAddress);
         const quoteTokenDecimals = await cachedGetTokenDecimals(quoteTokenAddress);
 
+        if (baseTokenDecimals) position.baseTokenDecimals = baseTokenDecimals;
+        if (quoteTokenDecimals) position.quoteTokenDecimals = quoteTokenDecimals;
+
         const lowerPriceNonDisplay = tickToPrice(position.bidTick);
         const upperPriceNonDisplay = tickToPrice(position.askTick);
 
