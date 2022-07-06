@@ -8,7 +8,7 @@ import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
 import TokenList from '../../Global/TokenList/TokenList';
 import { useSearch } from './useSearch';
 import { importToken } from './importToken';
-import { removeToken } from './removeToken';
+// import { removeToken } from './removeToken';
 
 interface TokenSelectContainerPropsIF {
     tokenPair: TokenPairIF;
@@ -109,14 +109,14 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
                             chainId={chainId}
                             setImportedTokens={setImportedTokens}
                         />
-                        <button
+                        {/* <button
                             key={idx + 'remove'}
                             onClick={() =>
                                 removeToken(token, tokensBank, chainId, setImportedTokens)
                             }
                         >
                             Remove {token.name}
-                        </button>
+                        </button> */}
                     </>
                 ))}
             </div>
