@@ -96,7 +96,7 @@ export default function Limit(props: LimitPropsIF) {
     const [tokenBInputQty, setTokenBInputQty] = useState<string>('');
     const [isWithdrawFromDexChecked, setIsWithdrawFromDexChecked] = useState(false);
 
-    const [isWithdrawToWalletChecked, setIsWithdrawToWalletChecked] = useState(true);
+    const [isSaveAsDexSurplusChecked, setIsSaveAsDexSurplusChecked] = useState(false);
 
     const [limitButtonErrorMessage, setLimitButtonErrorMessage] = useState<string>('');
 
@@ -384,9 +384,9 @@ export default function Limit(props: LimitPropsIF) {
                     tokenAInputQty={tokenAInputQty}
                     tokenBInputQty={tokenBInputQty}
                     setTokenAInputQty={setTokenAInputQty}
-                    isWithdrawToWalletChecked={isWithdrawToWalletChecked}
+                    isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
                     setTokenBInputQty={setTokenBInputQty}
-                    setIsWithdrawToWalletChecked={setIsWithdrawToWalletChecked}
+                    setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
                     setLimitButtonErrorMessage={setLimitButtonErrorMessage}
                     isWithdrawFromDexChecked={isWithdrawFromDexChecked}
                     setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
