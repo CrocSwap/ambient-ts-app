@@ -6,7 +6,7 @@ import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import { AiFillCloseSquare } from 'react-icons/ai';
 import { useState } from 'react';
 import { TokenIF } from '../../../utils/interfaces/exports';
-
+import { removeToken } from '../../Global/TokenSelectContainer/removeToken';
 interface TokenSelectProps {
     token: TokenIF;
     chooseToken: (tok: TokenIF) => void;
