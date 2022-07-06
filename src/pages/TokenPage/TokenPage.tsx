@@ -1,9 +1,9 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import Divider from '../../components/Global/Divider/Divider';
 import Pools from '../../components/Pools/Pools';
 
-import { usePoolsForToken, useTokenData } from '../../state/tokens/hooks';
+import { usePoolsForToken, useTokenChartData, useTokenData } from '../../state/tokens/hooks';
 
 import TokenCardInfo from './TokenInfoCard/TokenInfoCard';
 import styles from './TokenPage.module.css';
@@ -11,6 +11,7 @@ import { usePoolDatas } from '../../state/pools/hooks';
 import { isAddress } from '../../utils';
 import TokenPageChart from './Chart/TokenPageChart';
 import { formatDollarAmount } from '../../utils/numbers';
+import { unixToDate } from '../../utils/date';
 
 export default function TokenPage() {
     const { address } = useParams() ?? '';
@@ -23,8 +24,20 @@ export default function TokenPage() {
     const poolsForToken = usePoolsForToken(address!);
     const poolDatas = usePoolDatas(poolsForToken ?? []);
     // const transactions = useTokenTransactions(address!);
-    // const chartData = useTokenChartData(address!);
+    const chartData = useTokenChartData(address!);
 
+    const formattedTvlData = useMemo(() => {
+        if (chartData) {
+            return chartData.map((day) => {
+                return {
+                    time: unixToDate(day.date),
+                    value: day.totalValueLockedUSD,
+                };
+            });
+        } else {
+            return [];
+        }
+    }, [chartData]);
     function getTokenLogoURL() {
         const checkSummed = isAddress(tokenData?.address);
         return `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/${checkSummed}/logo.png`;
@@ -76,7 +89,7 @@ export default function TokenPage() {
             {tokenInfo}
             <div className={styles.hsPAQl}>
                 <TokenCardInfo token={tokenData} />
-                <TokenPageChart />
+                <TokenPageChart chartData={formattedTvlData} />
             </div>
 
             <Divider />
