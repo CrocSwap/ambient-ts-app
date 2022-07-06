@@ -87,17 +87,24 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
         chooseToken(tkn);
     };
 
+    const removeToken = (token: TokenIF) => {
+        console.log(`called removeToken() on: ${token.symbol}`);
+    }
+
     const tokenListContent = (
         <>
             <div className={styles.title}>Your Tokens</div>
             <div className={styles.tokens_container}>
                 {matchingImportedTokens
                     .map((token: TokenIF, idx: number) => (
-                        <TokenSelect
-                            key={idx}
-                            token={token}
-                            chooseToken={chooseToken}
-                        />
+                        <>
+                            <TokenSelect
+                                key={idx}
+                                token={token}
+                                chooseToken={chooseToken}
+                            />
+                            <button onClick={() => removeToken(token)}>Remove {token.name}</button>
+                        </>
                     )
                 )}
             </div>
