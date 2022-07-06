@@ -43,8 +43,8 @@ interface LimitCurrencyConverterProps {
     setLimitButtonErrorMessage: Dispatch<SetStateAction<string>>;
     isWithdrawFromDexChecked: boolean;
     setIsWithdrawFromDexChecked: Dispatch<SetStateAction<boolean>>;
-    isWithdrawToWalletChecked: boolean;
-    setIsWithdrawToWalletChecked: Dispatch<SetStateAction<boolean>>;
+    isSaveAsDexSurplusChecked: boolean;
+    setIsSaveAsDexSurplusChecked: Dispatch<SetStateAction<boolean>>;
     setLimitRate: Dispatch<SetStateAction<string>>;
     limitRate: string;
     isDenominationInBase: boolean;
@@ -71,13 +71,13 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
         setLimitButtonErrorMessage,
         isWithdrawFromDexChecked,
         setIsWithdrawFromDexChecked,
-        isWithdrawToWalletChecked,
-        setIsWithdrawToWalletChecked,
+        isSaveAsDexSurplusChecked,
+        setIsSaveAsDexSurplusChecked,
         setLimitRate,
         limitRate,
         isDenominationInBase,
         activeTokenListsChanged,
-        indicateActiveTokenListsChanged
+        indicateActiveTokenListsChanged,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -292,8 +292,8 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 tokenBBalance={tokenBBalance}
                 isWithdrawFromDexChecked={isWithdrawFromDexChecked}
                 setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
-                isWithdrawToWalletChecked={isWithdrawToWalletChecked}
-                setIsWithdrawToWalletChecked={setIsWithdrawToWalletChecked}
+                isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
+                setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
                 activeTokenListsChanged={activeTokenListsChanged}
                 indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
             />
@@ -314,8 +314,8 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 tokenBBalance={tokenBBalance}
                 isWithdrawFromDexChecked={isWithdrawFromDexChecked}
                 setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
-                isWithdrawToWalletChecked={isWithdrawToWalletChecked}
-                setIsWithdrawToWalletChecked={setIsWithdrawToWalletChecked}
+                isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
+                setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
                 activeTokenListsChanged={activeTokenListsChanged}
                 indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
             />

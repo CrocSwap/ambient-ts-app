@@ -23,8 +23,8 @@ interface CurrencySelectorProps {
     tokenBBalance: string;
     isWithdrawFromDexChecked: boolean;
     setIsWithdrawFromDexChecked: Dispatch<SetStateAction<boolean>>;
-    isWithdrawToWalletChecked: boolean;
-    setIsWithdrawToWalletChecked: Dispatch<SetStateAction<boolean>>;
+    isSaveAsDexSurplusChecked: boolean;
+    setIsSaveAsDexSurplusChecked: Dispatch<SetStateAction<boolean>>;
     handleChangeEvent: (evt: ChangeEvent<HTMLInputElement>) => void;
     handleChangeClick: (value: string) => void;
     reverseTokens: () => void;
@@ -45,8 +45,8 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
         handleChangeClick,
         isWithdrawFromDexChecked,
         setIsWithdrawFromDexChecked,
-        isWithdrawToWalletChecked,
-        setIsWithdrawToWalletChecked,
+        isSaveAsDexSurplusChecked,
+        setIsSaveAsDexSurplusChecked,
         tokenABalance,
         tokenBBalance,
         reverseTokens,
@@ -77,11 +77,11 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
         <div className={styles.surplus_toggle}>
             {fieldId === 'sell'
                 ? isWithdrawFromDexChecked
-                    ? 'Use exchange surplus'
-                    : 'Use wallet balance'
-                : isWithdrawToWalletChecked
-                ? 'Withdraw to Wallet'
-                : 'Save as exchange surplus'}
+                    ? 'Use Exchange Surplus'
+                    : 'Use Wallet Balance'
+                : isSaveAsDexSurplusChecked
+                ? 'Save as Exchange Surplus'
+                : 'Withdraw to Wallet'}
 
             {fieldId === 'sell' ? (
                 // <Toggle
@@ -97,8 +97,8 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                 />
             ) : (
                 <Toggle2
-                    isOn={isWithdrawToWalletChecked}
-                    handleToggle={() => setIsWithdrawToWalletChecked(!isWithdrawToWalletChecked)}
+                    isOn={isSaveAsDexSurplusChecked}
+                    handleToggle={() => setIsSaveAsDexSurplusChecked(!isSaveAsDexSurplusChecked)}
                     id='buy_token_withdrawal'
                 />
             )}

@@ -29,8 +29,8 @@ interface LimitCurrencySelectorProps {
     handleChangeEvent: (evt: ChangeEvent<HTMLInputElement>) => void;
     isWithdrawFromDexChecked: boolean;
     setIsWithdrawFromDexChecked: Dispatch<SetStateAction<boolean>>;
-    isWithdrawToWalletChecked: boolean;
-    setIsWithdrawToWalletChecked: Dispatch<SetStateAction<boolean>>;
+    isSaveAsDexSurplusChecked: boolean;
+    setIsSaveAsDexSurplusChecked: Dispatch<SetStateAction<boolean>>;
     activeTokenListsChanged: boolean;
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
 }
@@ -51,8 +51,8 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
         tokenBBalance,
         isWithdrawFromDexChecked,
         setIsWithdrawFromDexChecked,
-        isWithdrawToWalletChecked,
-        setIsWithdrawToWalletChecked,
+        isSaveAsDexSurplusChecked,
+        setIsSaveAsDexSurplusChecked,
         activeTokenListsChanged,
         indicateActiveTokenListsChanged,
     } = props;
@@ -105,7 +105,13 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
 
     const DexBalanceContent = (
         <span className={styles.surplus_toggle}>
-            {fieldId === 'sell' ? 'Use exchange balance' : 'Withdraw to Wallet'}
+            {fieldId === 'sell'
+                ? isWithdrawFromDexChecked
+                    ? 'Use Exchange Surplus'
+                    : 'Use Wallet Balance'
+                : isSaveAsDexSurplusChecked
+                ? 'Save as Exchange Surplus'
+                : 'Withdraw to Wallet'}
 
             {fieldId === 'sell' ? (
                 // <Toggle
@@ -121,8 +127,8 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
                 />
             ) : (
                 <Toggle2
-                    isOn={isWithdrawToWalletChecked}
-                    handleToggle={() => setIsWithdrawToWalletChecked(!isWithdrawToWalletChecked)}
+                    isOn={isSaveAsDexSurplusChecked}
+                    handleToggle={() => setIsSaveAsDexSurplusChecked(!isSaveAsDexSurplusChecked)}
                     id='buy_token_withdrawal'
                 />
             )}
@@ -150,9 +156,9 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
             </div>
             <div className={styles.swapbox_bottom}>
                 {fieldId === 'sell' ? (
-                    <span>Wallet: {walletBalance} | DEX: 0.00</span>
+                    <span>Wallet: {walletBalance} | Surplus: 0</span>
                 ) : (
-                    <span>Wallet: {walletBalance} | DEX: 0.00</span>
+                    <span>Wallet: {walletBalance} | Surplus: 0</span>
                 )}
                 {fieldId === 'buy' || fieldId === 'sell' ? DexBalanceContent : null}
             </div>

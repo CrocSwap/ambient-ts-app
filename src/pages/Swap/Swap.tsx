@@ -194,7 +194,7 @@ export default function Swap(props: SwapPropsIF) {
     // const [isTokenAPrimary, setIsTokenAPrimary] = useState<boolean>(tradeData.isTokenAPrimary);
     const isTokenAPrimary = tradeData.isTokenAPrimary;
     const [isWithdrawFromDexChecked, setIsWithdrawFromDexChecked] = useState(false);
-    const [isWithdrawToWalletChecked, setIsWithdrawToWalletChecked] = useState(true);
+    const [isSaveAsDexSurplusChecked, setIsSaveAsDexSurplusChecked] = useState(false);
 
     const [newSwapTransactionHash, setNewSwapTransactionHash] = useState('');
 
@@ -338,8 +338,8 @@ export default function Swap(props: SwapPropsIF) {
                     setTokenBInputQty={setTokenBInputQty}
                     isWithdrawFromDexChecked={isWithdrawFromDexChecked}
                     setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
-                    isWithdrawToWalletChecked={isWithdrawToWalletChecked}
-                    setIsWithdrawToWalletChecked={setIsWithdrawToWalletChecked}
+                    isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
+                    setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
                     setSwapAllowed={setSwapAllowed}
                     setSwapButtonErrorMessage={setSwapButtonErrorMessage}
                     activeTokenListsChanged={activeTokenListsChanged}
