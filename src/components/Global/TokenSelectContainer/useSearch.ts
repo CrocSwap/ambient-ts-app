@@ -22,13 +22,17 @@ export const useSearch = (
     // function to determine if a string includes a given search input
     const checkMatchLowerCase = (text:string) => text.toLowerCase().includes(searchInput.toLowerCase());
 
+    // IMPORTANT!  In the search algorithm, we need to make the .filter() step the first method applied
+    //             ... to all searchable tokens, so that later methods of looking for duplicates and such
+    //             ... such have a smaller array of tokens to run time-consuming processes
+
     // function to filter an array of tokens for string matches by symbol, name, and address
     const searchTokens = (listOfTokens:Array<TokenIF>) => {
         const matchingTokens = listOfTokens.filter((token:TokenIF) => 
             checkMatchLowerCase(token.symbol)
             || checkMatchLowerCase(token.name)
             || checkMatchLowerCase(token.address)
-        )
+        );
         // remove off-chain tokens from the search results
         return filterOnChain(matchingTokens);
     };

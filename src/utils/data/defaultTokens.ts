@@ -109,6 +109,6 @@ export const defaultTokens = [
     mainnetUSDC,
     mainnetWBTC,
     kovanDAI,
-    // kovanUSDC,
+    kovanUSDC,
     kovanETH
 ];

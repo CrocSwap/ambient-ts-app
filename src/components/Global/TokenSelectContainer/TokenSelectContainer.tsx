@@ -48,6 +48,8 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
         searchableTokens,
         chainId,
     );
+
+    const importedTokensAddresses = tokensBank.map((token: TokenIF) => token.address);
     
     const chooseToken = (tok:TokenIF) => {
         if (tokenToUpdate === 'A') {
@@ -76,12 +78,7 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
 
     const handleClickSearchable = (tkn: TokenIF) => {
         // look inside tokensBank to see if clicked token is already imported
-        const importedTokenAddresses = tokensBank.map((token: TokenIF) => token.address);
-        const newImportedTokensArray = importedTokenAddresses.includes(tkn.address)
-            // TRUE: make new array with it removed
-            ? tokensBank.filter((token: TokenIF) => token.address !== tkn.address)
-            // FALSE: make new array with it added
-            : [tkn, ...tokensBank];
+        const newImportedTokensArray = [tkn, ...tokensBank];
         setImportedTokens(newImportedTokensArray);
         // sync local storage and local state inside App.tsx with new array
         const userData = JSON.parse(localStorage.getItem('user') as string);
@@ -94,22 +91,27 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
         <>
             <div className={styles.title}>Your Tokens</div>
             <div className={styles.tokens_container}>
-                {matchingImportedTokens.map((token: TokenIF, idx: number) => (
-                    <TokenSelect
-                        key={idx}
-                        token={token}
-                        chooseToken={chooseToken}
-                    />
-                ))}
+                {matchingImportedTokens
+                    .map((token: TokenIF, idx: number) => (
+                        <TokenSelect
+                            key={idx}
+                            token={token}
+                            chooseToken={chooseToken}
+                        />
+                    )
+                )}
             </div>
             {matchingSearchableTokens.length ? <h3>Searched Tokens</h3> : null}
-            {matchingSearchableTokens.map((tkn: TokenIF, idx: number) => (
-                <TokenSelectSearchable
-                    key={`tss_${idx}`}
-                    token={tkn}
-                    clickHandler={handleClickSearchable}
-                />
-            ))}
+            {matchingSearchableTokens
+                .filter((token: TokenIF) => !importedTokensAddresses.includes(token.address))
+                .map((tkn: TokenIF, idx: number) => (
+                    <TokenSelectSearchable
+                        key={`tss_${idx}`}
+                        token={tkn}
+                        clickHandler={handleClickSearchable}
+                    />
+                ))
+            }
         </>
     );
 
