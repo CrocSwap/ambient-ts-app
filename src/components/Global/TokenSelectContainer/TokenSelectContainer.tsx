@@ -106,6 +106,7 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
                             token={token}
                             chooseToken={chooseToken}
                             tokensBank={tokensBank}
+                            chainId={chainId}
                         />
                         <button
                             key={idx + 'remove'}

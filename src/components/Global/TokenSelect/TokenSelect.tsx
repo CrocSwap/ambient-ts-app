@@ -10,6 +10,7 @@ import { removeToken } from '../../Global/TokenSelectContainer/removeToken';
 interface TokenSelectProps {
     token: TokenIF;
     tokensBank: Array<TokenIF>;
+    chainId: string;
 
     chooseToken: (tok: TokenIF) => void;
 }
