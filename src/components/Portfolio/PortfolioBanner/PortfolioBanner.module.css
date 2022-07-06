@@ -46,6 +46,7 @@
     max-width: 100%;
     width: 56px;
     aspect-ratio: 1;
+    border-radius: 20%;
 }
 
 .account_names {
