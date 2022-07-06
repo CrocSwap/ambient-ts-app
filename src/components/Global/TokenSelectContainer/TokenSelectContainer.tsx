@@ -101,7 +101,12 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
             <div className={styles.tokens_container}>
                 {matchingImportedTokens.map((token: TokenIF, idx: number) => (
                     <>
-                        <TokenSelect key={idx} token={token} chooseToken={chooseToken} />
+                        <TokenSelect
+                            key={idx}
+                            token={token}
+                            chooseToken={chooseToken}
+                            tokensBank={tokensBank}
+                        />
                         <button
                             key={idx + 'remove'}
                             onClick={() =>

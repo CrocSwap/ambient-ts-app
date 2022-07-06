@@ -9,6 +9,8 @@ import { TokenIF } from '../../../utils/interfaces/exports';
 import { removeToken } from '../../Global/TokenSelectContainer/removeToken';
 interface TokenSelectProps {
     token: TokenIF;
+    tokensBank: Array<TokenIF>;
+
     chooseToken: (tok: TokenIF) => void;
 }
 
