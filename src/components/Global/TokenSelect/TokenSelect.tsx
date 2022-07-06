@@ -81,6 +81,17 @@ export default function TokenSelect(props: TokenSelectProps) {
         </div>
     );
 
+    function handleToggleDelete() {
+        if (toggleDeleteOn) {
+            console.log('you have deleted this token');
+            // functionality to delete from Emily's branch
+            setShowDelete(false);
+        } else {
+            console.log('going back');
+            setShowDelete(false);
+        }
+    }
+
     const toggleButtons = (
         <div className={styles.toggle_container}>
             <div className={styles.liqtype_buttons_container}>
@@ -97,18 +108,20 @@ export default function TokenSelect(props: TokenSelectProps) {
                     No
                 </button>
             </div>
-            <div>Confirm</div>
+            <div className={styles.confirm} onClick={() => handleToggleDelete()}>
+                CONFIRM
+            </div>
         </div>
     );
+
+    console.log(toggleDeleteOn);
 
     const deleteStateStyle = !showDelete ? styles.delete_active : styles.delete_inactive;
 
     const deleteContainer = (
-        <div className={styles.delete_main}>
-            <div className={`${styles.delete_container} ${deleteStateStyle}`}>
-                Remove {token.symbol} from your list
-                {toggleButtons}
-            </div>
+        <div className={`${styles.delete_container} ${deleteStateStyle}`}>
+            Remove {token.symbol} from your list
+            {toggleButtons}
         </div>
     );
 

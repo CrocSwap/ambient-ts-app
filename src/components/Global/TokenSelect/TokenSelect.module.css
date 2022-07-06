@@ -84,11 +84,9 @@
   }
 
   /* toggle buttons */
-  .delete_main{
-    background: yellow;
-  }
 
   .delete_container{
+    padding: 0 10px;
     position: absolute;
    border-radius: var(--border-radius);
     bottom: 0;
@@ -104,7 +102,9 @@
     align-items: center;
 
     font-size: var(--body-size);
+    font-size: 13px;
     line-height: var(--body-lh);
+    
   }
   
   .delete_active{
@@ -132,8 +132,10 @@
  
 }
 .liqtype_buttons_container button {
-  font-size: 14px;
-  padding: 5px 0;
+  font-size: var(--body-size);
+ 
+  line-height: var(--body-lh);
+  /* padding: 5px 0; */
   /* width: 50%; */
   cursor: pointer;
   transition: all var(--animation-speed) ease-in-out;
@@ -163,4 +165,13 @@
 .non_active_button {
   color: white;
   background-color: transparent;
+}
+
+.confirm{
+  color: var(--text-highlight);
+  cursor: pointer;
+}
+.confirm:hover{
+transform: scale(1.03);
+transition: all var(--animation-speed) ease
 }
