@@ -179,7 +179,10 @@ export default function Position(props: PositionProps) {
             <tr className={styles.position_tr}>
                 {portfolio && tokenImages}
                 {isAllPositionsEnabled && (
-                    <td data-column='Owner ID' className={styles.position_id}>
+                    <td
+                        data-column='Owner ID'
+                        className={`${styles.position_id} ${ensName ? styles.ambient_text : null}`}
+                    >
                         {ensName ? ensName : ownerIdTruncated}
                     </td>
                 )}
