@@ -1,18 +1,26 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Divider from '../../components/Global/Divider/Divider';
 import Pools from '../../components/Pools/Pools';
 
-import { usePoolsForToken, useTokenChartData, useTokenData } from '../../state/tokens/hooks';
+import {
+    usePoolsForToken,
+    useTokenChartData,
+    useTokenData,
+    useTokenPriceData,
+} from '../../state/tokens/hooks';
 
 import TokenCardInfo from './TokenInfoCard/TokenInfoCard';
 import styles from './TokenPage.module.css';
 import { usePoolDatas } from '../../state/pools/hooks';
-import { isAddress } from '../../utils';
+import { currentTimestamp, isAddress } from '../../utils';
 import TokenPageChart from './Chart/TokenPageChart';
 import { formatDollarAmount } from '../../utils/numbers';
 import { unixToDate } from '../../utils/date';
+import { ONE_HOUR_SECONDS, TimeWindow } from '../../constants/intervals';
+
+const DEFAULT_TIME_WINDOW = TimeWindow.WEEK;
 
 export default function TokenPage() {
     const { address } = useParams() ?? '';
@@ -29,7 +37,7 @@ export default function TokenPage() {
 
     const formattedTvlData = useMemo(() => {
         if (chartData) {
-            return chartData.map((day) => {
+            return chartData.map((day: any) => {
                 return {
                     time: unixToDate(day.date),
                     value: day.totalValueLockedUSD,
@@ -39,6 +47,27 @@ export default function TokenPage() {
             return [];
         }
     }, [chartData]);
+
+    const [timeWindow] = useState(DEFAULT_TIME_WINDOW);
+
+    // pricing data
+    const priceData = useTokenPriceData(address!, ONE_HOUR_SECONDS, timeWindow);
+    const adjustedToCurrent = useMemo(() => {
+        if (priceData && tokenData && priceData.length > 0) {
+            const adjusted = Object.assign([], priceData);
+            adjusted.push({
+                time: currentTimestamp() / 1000,
+                open: priceData[priceData.length - 1].close,
+                close: tokenData?.priceUSD,
+                high: tokenData?.priceUSD,
+                low: priceData[priceData.length - 1].close,
+            });
+            return adjusted;
+        } else {
+            return undefined;
+        }
+    }, [priceData, tokenData]);
+
     function getTokenLogoURL() {
         const checkSummed = isAddress(tokenData?.address);
         return `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/${checkSummed}/logo.png`;
@@ -90,7 +119,11 @@ export default function TokenPage() {
             {tokenInfo}
             <div className={styles.hsPAQl}>
                 <TokenCardInfo token={tokenData} />
-                <TokenPageChart chartData={formattedTvlData} token={tokenData} />
+                <TokenPageChart
+                    tvlData={formattedTvlData}
+                    priceData={adjustedToCurrent}
+                    token={tokenData}
+                />
             </div>
 
             <Divider />
