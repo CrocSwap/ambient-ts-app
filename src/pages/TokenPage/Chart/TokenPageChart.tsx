@@ -84,9 +84,6 @@ export default function TokenPageChart(props: TokenPageChartProps) {
                         setLatestValue(y0);
                         const formattedTime = dayjs(x0).format('MMM D, YYYY');
                         setValueLabel(formattedTime);
-
-                        console.error('valueLabel :' + valueLabel);
-                        console.error('valueLabeljs :' + dayjs(valueLabel).format('YYYY-MM-DD'));
                         setTargets([{ time: dayjs(valueLabel).format('YYYY-MM-DD'), value: y0 }]);
                     });
             });
@@ -105,8 +102,11 @@ export default function TokenPageChart(props: TokenPageChartProps) {
                     .on('mouseover', (event: any) => {
                         const x0 = xScale.invert(d3.pointer(event)[0]);
                         const y0 = yScale.invert(d3.pointer(event)[1]);
-                        setVerticalLabelText(dayjs(x0).format('YYYY-MM-DD'));
-                        setTargets([{ time: dayjs(x0).format('YYYY-MM-DD'), value: y0 }]);
+
+                        setLatestValue(y0);
+                        const formattedTime = dayjs(x0).format('MMM D, YYYY');
+                        setValueLabel(formattedTime);
+                        setTargets([{ time: dayjs(valueLabel).format('YYYY-MM-DD'), value: y0 }]);
                     });
             });
 
@@ -154,7 +154,7 @@ export default function TokenPageChart(props: TokenPageChartProps) {
         });
         const nd = d3.select('#group').node() as any;
         nd.requestRedraw();
-    }, [verticalLabelText, data]);
+    }, [valueLabel, latestValue, targets, data]);
 
     return (
         <div className={styles.cqwlBw}>
