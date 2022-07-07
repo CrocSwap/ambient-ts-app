@@ -18,6 +18,8 @@ export default function TokenListCard(props: TokenListProps) {
     const { list, listIsActive, toggleActiveState } = props;
     const classes = useStyles();
 
+    console.log(list);
+
     const cardBackground = listIsActive ? '#7371FC ' : '';
 
     const handleClick = (
@@ -65,7 +67,13 @@ export default function TokenListCard(props: TokenListProps) {
                             className={classes.menu}
                         >
                             <MenuItem onClick={handleClose} className={classes.menuItem}>
-                                View List
+                                <a
+                                    href={'https://tokenlists.org/token-list?url=' + list.uri}
+                                    target='_blank'
+                                    rel='noreferrer'
+                                >
+                                    View List
+                                </a>
                             </MenuItem>
                             <MenuItem onClick={handleClose} className={classes.menuItem}>
                                 Remove List
