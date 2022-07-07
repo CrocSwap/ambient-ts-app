@@ -70,23 +70,23 @@ export default function TokenSelect(props: TokenSelectProps) {
         <div className={styles.toggle_container}>
             <div className={styles.liqtype_buttons_container}>
                 <button
-                    className={toggleDeleteOn ? styles.active_button : styles.non_active_button}
-                    onClick={() => setToggleDeleteOn(!toggleDeleteOn)}
-                >
-                    Yes
-                </button>
-                <button
                     className={!toggleDeleteOn ? styles.active_button : styles.non_active_button}
                     onClick={() => setToggleDeleteOn(!toggleDeleteOn)}
                 >
                     No
+                </button>
+                <button
+                    className={toggleDeleteOn ? styles.active_button : styles.non_active_button}
+                    onClick={() => setToggleDeleteOn(!toggleDeleteOn)}
+                >
+                    Yes
                 </button>
             </div>
             <div
                 className={`${styles.confirm} ${confirmStyle}`}
                 onClick={() => handleToggleDelete()}
             >
-                CONFIRM
+                {toggleDeleteOn ? 'REMOVE' : 'CANCEL'}
             </div>
         </div>
     );
