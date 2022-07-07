@@ -71,6 +71,13 @@ background-position 0.3s calc(0.3s - var(--t, 0s));
     cursor: pointer;
 }
 
+.bottom_container_menu{
+    display: flex;
+   flex-direction: row;
+   align-items: center;
+   gap: 10px;
+}
+
 .popover_container{
     background: #17191c;
     padding: 10px;

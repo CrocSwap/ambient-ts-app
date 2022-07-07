@@ -3,6 +3,7 @@ import Toggle from '../../Global/Toggle/Toggle';
 import { TokenListIF } from '../../../utils/interfaces/exports';
 import { MenuItem, Menu } from '@material-ui/core';
 import { useState } from 'react';
+import { RiFileList2Fill } from 'react-icons/ri';
 
 interface TokenListProps {
     list: TokenListIF;
@@ -12,12 +13,14 @@ interface TokenListProps {
 }
 
 export default function TokenListCard(props: TokenListProps) {
-    const [anchorEl, setAnchorEl] = useState(null);
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const { list, listIsActive, toggleActiveState } = props;
 
     const cardBackground = listIsActive ? '#7371FC ' : '';
 
-    const handleClick = (event: React.ChangeEvent<any>) => {
+    const handleClick = (
+        event: React.MouseEvent<HTMLButtonElement> | React.MouseEvent<HTMLDivElement>,
+    ) => {
         console.log('handleClick', event.currentTarget);
         setAnchorEl(event.currentTarget);
     };
@@ -36,27 +39,32 @@ export default function TokenListCard(props: TokenListProps) {
                     <img src={list.logoURI} alt='' width='40px' />
                     <div className={styles.token_list_card_name}>
                         <span> {list?.name}</span>
-                        <div className={styles.token_count}>{list?.tokens?.length} tokens</div>
+                        <div className={styles.bottom_container_menu}>
+                            <div className={styles.token_count}>{list?.tokens?.length} tokens</div>
 
-                        <div
-                            aria-controls='list settings'
-                            aria-haspopup='true'
-                            onClick={handleClick}
-                            className={styles.menu}
-                        >
-                            Open Menu
+                            <div
+                                aria-controls='list settings'
+                                aria-haspopup='true'
+                                onClick={handleClick}
+                                className={styles.menu}
+                            >
+                                <div>
+                                    {' '}
+                                    <RiFileList2Fill size={15} />
+                                </div>
+                            </div>
                         </div>
+                        <Menu
+                            id='simple-menu'
+                            anchorEl={anchorEl}
+                            keepMounted
+                            open={Boolean(anchorEl)}
+                            onClose={handleClose}
+                        >
+                            <MenuItem onClick={handleClose}>Item 1</MenuItem>
+                            <MenuItem onClick={handleClose}>Item 2</MenuItem>
+                        </Menu>
                     </div>
-                    <Menu
-                        id='simple-menu'
-                        anchorEl={anchorEl}
-                        keepMounted
-                        open={Boolean(anchorEl)}
-                        onClose={handleClose}
-                    >
-                        <MenuItem onClick={handleClose}>Item 1</MenuItem>
-                        <MenuItem onClick={handleClose}>Item 2</MenuItem>
-                    </Menu>
                 </div>
                 <div className={styles.right_content}>
                     <Toggle
