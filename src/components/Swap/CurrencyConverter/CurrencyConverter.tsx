@@ -30,8 +30,8 @@ interface CurrencyConverterPropsIF {
     setTokenBInputQty: Dispatch<SetStateAction<string>>;
     isWithdrawFromDexChecked: boolean;
     setIsWithdrawFromDexChecked: Dispatch<SetStateAction<boolean>>;
-    isWithdrawToWalletChecked: boolean;
-    setIsWithdrawToWalletChecked: Dispatch<SetStateAction<boolean>>;
+    isSaveAsDexSurplusChecked: boolean;
+    setIsSaveAsDexSurplusChecked: Dispatch<SetStateAction<boolean>>;
     setSwapAllowed: Dispatch<SetStateAction<boolean>>;
     setSwapButtonErrorMessage: Dispatch<SetStateAction<string>>;
     activeTokenListsChanged: boolean;
@@ -50,8 +50,8 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         poolPriceDisplay,
         isWithdrawFromDexChecked,
         setIsWithdrawFromDexChecked,
-        isWithdrawToWalletChecked,
-        setIsWithdrawToWalletChecked,
+        isSaveAsDexSurplusChecked,
+        setIsSaveAsDexSurplusChecked,
         setSwapAllowed,
         tokenABalance,
         tokenBBalance,
@@ -310,8 +310,8 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                 tokenBBalance={tokenBBalance}
                 isWithdrawFromDexChecked={isWithdrawFromDexChecked}
                 setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
-                isWithdrawToWalletChecked={isWithdrawToWalletChecked}
-                setIsWithdrawToWalletChecked={setIsWithdrawToWalletChecked}
+                isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
+                setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
                 reverseTokens={reverseTokens}
                 activeTokenListsChanged={activeTokenListsChanged}
                 indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
@@ -336,9 +336,9 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                 tokenBBalance={tokenBBalance}
                 isWithdrawFromDexChecked={isWithdrawFromDexChecked}
                 setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
-                isWithdrawToWalletChecked={isWithdrawToWalletChecked}
+                isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
                 reverseTokens={reverseTokens}
-                setIsWithdrawToWalletChecked={setIsWithdrawToWalletChecked}
+                setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
                 activeTokenListsChanged={activeTokenListsChanged}
                 indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
             />

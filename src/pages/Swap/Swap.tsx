@@ -99,6 +99,10 @@ export default function Swap(props: SwapPropsIF) {
         ? useTradeData()
         : useAppSelector((state) => state);
 
+    const { navigationMenu } = pathname.includes('/trade')
+        ? useTradeData()
+        : { navigationMenu: null };
+
     const { tokenA, tokenB } = tradeData;
 
     const slippageTolerancePercentage = tradeData.slippageTolerance;
@@ -190,7 +194,7 @@ export default function Swap(props: SwapPropsIF) {
     // const [isTokenAPrimary, setIsTokenAPrimary] = useState<boolean>(tradeData.isTokenAPrimary);
     const isTokenAPrimary = tradeData.isTokenAPrimary;
     const [isWithdrawFromDexChecked, setIsWithdrawFromDexChecked] = useState(false);
-    const [isWithdrawToWalletChecked, setIsWithdrawToWalletChecked] = useState(true);
+    const [isSaveAsDexSurplusChecked, setIsSaveAsDexSurplusChecked] = useState(false);
 
     const [newSwapTransactionHash, setNewSwapTransactionHash] = useState('');
 
@@ -313,16 +317,8 @@ export default function Swap(props: SwapPropsIF) {
                     isDenomBase={tradeData.isDenomBase}
                     isTokenABase={isSellTokenBase}
                 />
-                <div className={styles.header_container}>
-                    <DenominationSwitch
-                        tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
-                        isTokenABase={isSellTokenBase}
-                        displayForBase={tradeData.isDenomBase}
-                        poolPriceDisplay={poolPriceDisplay}
-                        didUserFlipDenom={tradeData.didUserFlipDenom}
-                    />
-                    <DividerDark addMarginTop />
-                </div>
+                <DividerDark addMarginTop />
+                {navigationMenu}
                 <CurrencyConverter
                     tokenPair={tokenPair}
                     tokensBank={importedTokens}
@@ -342,14 +338,23 @@ export default function Swap(props: SwapPropsIF) {
                     setTokenBInputQty={setTokenBInputQty}
                     isWithdrawFromDexChecked={isWithdrawFromDexChecked}
                     setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
-                    isWithdrawToWalletChecked={isWithdrawToWalletChecked}
-                    setIsWithdrawToWalletChecked={setIsWithdrawToWalletChecked}
+                    isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
+                    setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
                     setSwapAllowed={setSwapAllowed}
                     setSwapButtonErrorMessage={setSwapButtonErrorMessage}
                     activeTokenListsChanged={activeTokenListsChanged}
                     indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
                 />
-
+                <div className={styles.header_container}>
+                    <DividerDark addMarginTop />
+                    <DenominationSwitch
+                        tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
+                        isTokenABase={isSellTokenBase}
+                        displayForBase={tradeData.isDenomBase}
+                        poolPriceDisplay={poolPriceDisplay}
+                        didUserFlipDenom={tradeData.didUserFlipDenom}
+                    />
+                </div>
                 <ExtraInfo
                     tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
                     isTokenABase={isSellTokenBase}

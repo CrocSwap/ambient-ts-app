@@ -86,6 +86,7 @@ export default function Limit(props: LimitPropsIF) {
         indicateActiveTokenListsChanged,
     } = props;
     const { tradeData } = useTradeData();
+    const { navigationMenu } = useTradeData();
     const dispatch = useAppDispatch();
     const { enableWeb3, isWeb3Enabled, authenticate, isAuthenticated } = useMoralis();
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -95,7 +96,7 @@ export default function Limit(props: LimitPropsIF) {
     const [tokenBInputQty, setTokenBInputQty] = useState<string>('');
     const [isWithdrawFromDexChecked, setIsWithdrawFromDexChecked] = useState(false);
 
-    const [isWithdrawToWalletChecked, setIsWithdrawToWalletChecked] = useState(true);
+    const [isSaveAsDexSurplusChecked, setIsSaveAsDexSurplusChecked] = useState(false);
 
     const [limitButtonErrorMessage, setLimitButtonErrorMessage] = useState<string>('');
 
@@ -366,16 +367,9 @@ export default function Limit(props: LimitPropsIF) {
                     isDenomBase={tradeData.isDenomBase}
                     isTokenABase={isTokenABase}
                 />
-                <div className={styles.header_container}>
-                    <DenominationSwitch
-                        tokenPair={tokenPair}
-                        displayForBase={tradeData.isDenomBase}
-                        poolPriceDisplay={poolPriceDisplay}
-                        isTokenABase={isSellTokenBase}
-                        didUserFlipDenom={tradeData.didUserFlipDenom}
-                    />
-                    <DividerDark addMarginTop />
-                </div>
+                <DividerDark addMarginTop />
+                {navigationMenu}
+
                 <LimitCurrencyConverter
                     tokenPair={tokenPair}
                     searchableTokens={searchableTokens}
@@ -390,9 +384,9 @@ export default function Limit(props: LimitPropsIF) {
                     tokenAInputQty={tokenAInputQty}
                     tokenBInputQty={tokenBInputQty}
                     setTokenAInputQty={setTokenAInputQty}
-                    isWithdrawToWalletChecked={isWithdrawToWalletChecked}
+                    isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
                     setTokenBInputQty={setTokenBInputQty}
-                    setIsWithdrawToWalletChecked={setIsWithdrawToWalletChecked}
+                    setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
                     setLimitButtonErrorMessage={setLimitButtonErrorMessage}
                     isWithdrawFromDexChecked={isWithdrawFromDexChecked}
                     setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
@@ -403,6 +397,16 @@ export default function Limit(props: LimitPropsIF) {
                     activeTokenListsChanged={activeTokenListsChanged}
                     indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
                 />
+                <div className={styles.header_container}>
+                    <DividerDark addMarginTop />
+                    <DenominationSwitch
+                        tokenPair={tokenPair}
+                        displayForBase={tradeData.isDenomBase}
+                        poolPriceDisplay={poolPriceDisplay}
+                        isTokenABase={isSellTokenBase}
+                        didUserFlipDenom={tradeData.didUserFlipDenom}
+                    />
+                </div>
                 <LimitExtraInfo
                     tokenPair={tokenPair}
                     gasPriceinGwei={gasPriceinGwei}

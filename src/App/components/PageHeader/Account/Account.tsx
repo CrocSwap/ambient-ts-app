@@ -115,7 +115,7 @@ export default function Account(props: IAccountProps): React.ReactElement<IAccou
                     : ''}
             </span>
             {/* TODO : REFACTOR THIS TO POPUP ALERT ON COPY - USE VALUE */}
-            <div className={styles.title_gradient} onClick={handleCopyAddress}>
+            <div className={`${styles.title_gradient}`} onClick={handleCopyAddress}>
                 {ensName !== '' && isAuthenticated ? ensName : props.accountAddress}
             </div>
 

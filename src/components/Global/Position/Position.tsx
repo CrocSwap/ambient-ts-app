@@ -3,9 +3,10 @@ import styles from './Position.module.css';
 import { useModal } from '../Modal/useModal';
 import Modal from '../Modal/Modal';
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
 // import { PositionIF } from '../../../utils/interfaces/PositionIF';
 import { Position2 } from '../../../utils/state/graphDataSlice';
+import { Link, useLocation } from 'react-router-dom';
+// import { PositionIF } from '../../../utils/interfaces/PositionIF';
 
 import RemoveRange from '../../RemoveRange/RemoveRange';
 import RangeDetails from '../../RangeDetails/RangeDetails';
@@ -25,6 +26,10 @@ interface PositionProps {
 }
 export default function Position(props: PositionProps) {
     // const navigate = useNavigate();
+    const location = useLocation();
+
+    const currentLocation = location.pathname;
+
     const {
         position,
         isAllPositionsEnabled,
@@ -176,7 +181,10 @@ export default function Position(props: PositionProps) {
             <tr className={styles.position_tr}>
                 {portfolio && tokenImages}
                 {isAllPositionsEnabled && (
-                    <td data-column='Owner ID' className={styles.position_id}>
+                    <td
+                        data-column='Owner ID'
+                        className={`${styles.position_id} ${ensName ? styles.ambient_text : null}`}
+                    >
                         {ensName ? ensName : ownerIdTruncated}
                     </td>
                 )}
@@ -210,7 +218,11 @@ export default function Position(props: PositionProps) {
                         </button>
                     )}
                     {notDisplayAllOrOwned && (
-                        <Link to={`/trade/edit/${posHash}`} state={positionData}>
+                        <Link
+                            to={`/trade/edit/${posHash}`}
+                            state={positionData}
+                            replace={currentLocation.startsWith('/trade/edit')}
+                        >
                             <button className={styles.option_button}>Edit</button>
                         </Link>
                     )}

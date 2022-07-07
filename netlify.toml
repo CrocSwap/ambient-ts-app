@@ -3,3 +3,8 @@
   from = "/*"
   to = "/index.html"
   status = 200
+
+[[headers]]
+  for = "/ambient-token-list.json"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"

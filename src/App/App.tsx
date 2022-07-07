@@ -63,6 +63,7 @@ import { memoizePromiseFn } from './functions/memoizePromiseFn';
 import { querySpotPrice } from './functions/querySpotPrice';
 import { fetchAddress } from './functions/fetchAddress';
 import truncateDecimals from '../utils/data/truncateDecimals';
+import { getNFTs } from './functions/getNFTs';
 
 const cachedQuerySpotPrice = memoizePromiseFn(querySpotPrice);
 const cachedFetchAddress = memoizePromiseFn(fetchAddress);
@@ -133,15 +134,8 @@ export default function App() {
         if (localStorage.user) {
             // if user object exists, pull it
             const user = JSON.parse(localStorage.getItem('user') as string);
-            // see if user object has a list of imported tokens
-            if (user.tokens) {
-                // if imported tokens are listed, hold in local state
-                setImportedTokens(
-                    user.tokens.filter(
-                        (tkn: TokenIF) => tkn.chainId === parseInt(chainId ?? '0x2a'),
-                    ),
-                );
-            }
+            // if imported tokens are listed, hold in local state
+            user.tokens && setImportedTokens(user.tokens);
         }
     }
 
@@ -304,14 +298,14 @@ export default function App() {
                     lastBlockNumber,
                 );
                 if (poolPriceNonDisplay !== spotPrice) {
-                    console.log({ spotPrice });
+                    // console.log({ spotPrice });
                     setPoolPriceNonDisplay(spotPrice);
                     const displayPrice = toDisplayPrice(
                         spotPrice,
                         baseTokenDecimals,
                         quoteTokenDecimals,
                     );
-                    console.log({ displayPrice });
+                    // console.log({ displayPrice });
                     setPoolPriceDisplay(displayPrice);
                 }
             })();
@@ -476,6 +470,9 @@ export default function App() {
 
         const baseTokenDecimals = await cachedGetTokenDecimals(baseTokenAddress);
         const quoteTokenDecimals = await cachedGetTokenDecimals(quoteTokenAddress);
+
+        if (baseTokenDecimals) position.baseTokenDecimals = baseTokenDecimals;
+        if (quoteTokenDecimals) position.quoteTokenDecimals = quoteTokenDecimals;
 
         const lowerPriceNonDisplay = tickToPrice(position.bidTick);
         const upperPriceNonDisplay = tickToPrice(position.askTick);
@@ -884,6 +881,17 @@ export default function App() {
             : mainLayoutStyle;
     const swapBodyStyle = currentLocation == '/swap' ? 'swap-body' : null;
 
+    const [imageData, setImageData] = useState<string[]>([]);
+
+    useEffect(() => {
+        (async () => {
+            if (account) {
+                const imageLocalURLs = await getNFTs(account);
+                if (imageLocalURLs) setImageData(imageLocalURLs);
+            }
+        })();
+    }, [account]);
+
     return (
         <>
             <div className='content-container'>
@@ -921,6 +929,7 @@ export default function App() {
                                 <Portfolio
                                     ensName={ensName}
                                     connectedAccount={account ? account : ''}
+                                    imageData={imageData}
                                 />
                             }
                         />

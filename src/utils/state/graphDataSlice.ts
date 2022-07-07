@@ -59,7 +59,9 @@ export interface position {
     ensName: string;
     pool: pool;
     baseTokenSymbol: string;
+    baseTokenDecimals: number;
     quoteTokenSymbol: string;
+    quoteTokenDecimals: number;
     lowRangeDisplay: string;
     highRangeDisplay: string;
     tokenAQtyDisplay: string;
