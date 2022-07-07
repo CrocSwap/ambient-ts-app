@@ -48,6 +48,8 @@ export interface Position2 {
     highRangeDisplay: string;
     tokenAQtyDisplay: string;
     tokenBQtyDisplay: string;
+    baseTokenDecimals: number;
+    quoteTokenDecimals: number;
 }
 
 export interface position {
