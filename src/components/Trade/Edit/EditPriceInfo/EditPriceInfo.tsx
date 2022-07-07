@@ -10,6 +10,7 @@ interface EditPriceInfoIF {
     ambient: boolean;
     lowRangeDisplay: string;
     highRangeDisplay: string;
+    denominationsInBase: boolean;
 }
 
 export default function EditPriceInfo(props: EditPriceInfoIF) {
@@ -17,7 +18,11 @@ export default function EditPriceInfo(props: EditPriceInfoIF) {
     const currentPrice = (
         <div className={styles.price_info_row}>
             <span>Current Price</span>
-            <span>{props.currentPoolPriceDisplay}</span>
+            <span>
+                {props.currentPoolPriceDisplay}{' '}
+                {props.denominationsInBase ? props.quoteTokenSymbol : props.baseTokenSymbol} per{' '}
+                {props.denominationsInBase ? props.baseTokenSymbol : props.quoteTokenSymbol}
+            </span>
         </div>
     );
 

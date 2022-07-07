@@ -275,6 +275,7 @@ export default function Edit() {
                 onClose={closeModal}
                 position={position}
                 currentPoolPriceDisplay={currentPoolPriceDisplay}
+                denominationsInBase={denominationsInBase}
             />
         </Modal>
     ) : null;
@@ -308,6 +309,7 @@ export default function Edit() {
 
     const editPriceInfoProps = {
         currentPoolPriceDisplay: currentPoolPriceDisplay,
+        denominationsInBase: denominationsInBase,
         quoteTokenSymbol: position.quoteTokenSymbol,
         baseTokenSymbol: position.baseTokenSymbol,
         tokenAQtyDisplay: position.tokenAQtyDisplay,
