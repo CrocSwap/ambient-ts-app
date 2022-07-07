@@ -18,6 +18,7 @@ import {
 import truncateDecimals from '../../../utils/data/truncateDecimals';
 import { PositionIF } from '../../../utils/interfaces/PositionIF';
 import { tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
+import { TokenIF } from '../../../utils/interfaces/TokenIF';
 interface PositionState {
     position: PositionIF;
 }
@@ -269,6 +270,19 @@ export default function Edit() {
 
     const { positionHash } = useParams();
 
+    const baseTokenOfPosition = position.pool.base;
+    const quoteTokenOfPosition = position.pool.quote;
+    const userLocalStorage = localStorage.getItem('user');
+    const tokens = userLocalStorage ? JSON.parse(userLocalStorage).tokens : null;
+
+    const baseTokenImageURL = tokens.find(
+        (token: TokenIF) => token.address.toLowerCase() === baseTokenOfPosition.toLowerCase(),
+    ).logoURI;
+
+    const quoteTokenImageURL = tokens.find(
+        (token: TokenIF) => token.address.toLowerCase() === quoteTokenOfPosition.toLowerCase(),
+    ).logoURI;
+
     const confirmEditModal = isModalOpen ? (
         <Modal onClose={closeModal} title='Edit Position'>
             <ConfirmEditModal
@@ -276,6 +290,8 @@ export default function Edit() {
                 position={position}
                 currentPoolPriceDisplay={currentPoolPriceDisplay}
                 denominationsInBase={denominationsInBase}
+                baseTokenImageURL={baseTokenImageURL}
+                quoteTokenImageURL={quoteTokenImageURL}
             />
         </Modal>
     ) : null;
@@ -303,6 +319,8 @@ export default function Edit() {
     const currencyDisplayContainerProps = {
         quoteTokenSymbol: position.quoteTokenSymbol,
         baseTokenSymbol: position.baseTokenSymbol,
+        baseTokenImageURL: baseTokenImageURL,
+        quoteTokenImageURL: quoteTokenImageURL,
         tokenAQtyDisplay: position.tokenAQtyDisplay,
         tokenBQtyDisplay: position.tokenBQtyDisplay,
     };

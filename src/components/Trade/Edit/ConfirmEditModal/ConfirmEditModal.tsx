@@ -9,11 +9,13 @@ interface ConfirmEditModalProps {
     position: PositionIF;
     currentPoolPriceDisplay: string;
     denominationsInBase: boolean;
+    baseTokenImageURL: string;
+    quoteTokenImageURL: string;
 }
 
 export default function ConfirmEditModal(props: ConfirmEditModalProps) {
     const closeButton = <Button title='Close' action={props.onClose} />;
-    const { position, denominationsInBase } = props;
+    const { position, denominationsInBase, baseTokenImageURL, quoteTokenImageURL } = props;
 
     const fullTxDetails = (
         <div>
@@ -22,6 +24,8 @@ export default function ConfirmEditModal(props: ConfirmEditModalProps) {
                 baseTokenSymbol={position.baseTokenSymbol}
                 tokenAQtyDisplay={position.tokenAQtyDisplay}
                 tokenBQtyDisplay={position.tokenBQtyDisplay}
+                baseTokenImageURL={baseTokenImageURL}
+                quoteTokenImageURL={quoteTokenImageURL}
                 disable
             />
             <Divider />
