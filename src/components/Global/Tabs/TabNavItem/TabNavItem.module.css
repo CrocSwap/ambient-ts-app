@@ -5,6 +5,7 @@
     transition: all ease-in-out var(--animation-speed);
     font-size: 14px;
 line-height: 18px;
+background: var(--dark3);
     
 }
 
@@ -32,7 +33,7 @@ line-height: 18px;
     display: block;
     height: 1px;
     background: #7371FC;
-    bottom: -.15em;
+    bottom: -0.7px;
     left: 0;
     right: 0;
     transform: scale(0, 1);
