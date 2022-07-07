@@ -319,14 +319,18 @@ export default function Edit() {
         highRangeDisplay: position.highRangeDisplay,
     };
 
+    const editDenominationSwitchProps = {
+        denominationsInBase: denominationsInBase,
+        setDenominationsInBase: setDenominationsInBase,
+        quoteTokenSymbol: position.quoteTokenSymbol,
+        baseTokenSymbol: position.baseTokenSymbol,
+    };
+
     return (
         <div className={styles.editContainer}>
             <EditHeader positionHash={positionHash} />
             <div className={styles.edit_content}>
-                <EditDenominationSwitch
-                    denominationsInBase={denominationsInBase}
-                    setDenominationsInBase={setDenominationsInBase}
-                />
+                <EditDenominationSwitch {...editDenominationSwitchProps} />
                 <CurrencyDisplayContainer {...currencyDisplayContainerProps} />
                 <Divider />
                 {position.ambient == false && <EditMinMaxPrice {...editMinMaxPriceProps} />}
