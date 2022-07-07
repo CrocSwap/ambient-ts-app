@@ -1,5 +1,6 @@
 import styles from './TokenListCard.module.css';
 import Toggle from '../../Global/Toggle/Toggle';
+import { useStyles } from '../../../utils/functions/styles';
 import { TokenListIF } from '../../../utils/interfaces/exports';
 import { MenuItem, Menu } from '@material-ui/core';
 import { useState } from 'react';
@@ -15,6 +16,7 @@ interface TokenListProps {
 export default function TokenListCard(props: TokenListProps) {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const { list, listIsActive, toggleActiveState } = props;
+    const classes = useStyles();
 
     const cardBackground = listIsActive ? '#7371FC ' : '';
 
@@ -60,9 +62,14 @@ export default function TokenListCard(props: TokenListProps) {
                             keepMounted
                             open={Boolean(anchorEl)}
                             onClose={handleClose}
+                            className={classes.menu}
                         >
-                            <MenuItem onClick={handleClose}>Item 1</MenuItem>
-                            <MenuItem onClick={handleClose}>Item 2</MenuItem>
+                            <MenuItem onClick={handleClose} className={classes.menuItem}>
+                                View List
+                            </MenuItem>
+                            <MenuItem onClick={handleClose} className={classes.menuItem}>
+                                Remove List
+                            </MenuItem>
                         </Menu>
                     </div>
                 </div>
