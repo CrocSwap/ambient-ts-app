@@ -98,3 +98,9 @@ background-position 0.3s calc(0.3s - var(--t, 0s));
     cursor: pointer;
     margin: 5px 0;
 }
+
+
+
+.menu{
+    color: white;
+}
