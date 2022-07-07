@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
@@ -71,6 +72,7 @@ export default function TokenPageChart(props: TokenPageChartProps) {
             .decorate((selection: any) => {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 selection
+                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
                     .style('fill', (d: any) => {
                         return 'rgba(115, 113, 252, 0.25)';
                     })

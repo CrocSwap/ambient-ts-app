@@ -11,12 +11,12 @@ import { notEmpty } from '../../../utils';
 import { useAllPoolData } from '../../../state/pools/hooks';
 import { TokenData } from '../../../state/tokens/models';
 import { PoolData } from '../../../state/pools/models';
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+// import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 
 export default function AnalyticsTabs() {
     const [activeTab, setActiveTab] = useState('tab1');
 
-    const graphData = useAppSelector((state) => state?.graphData);
+    // const graphData = useAppSelector((state) => state?.graphData);
 
     const tabData = [
         { title: 'Top Tokens', id: 'tab1' },
