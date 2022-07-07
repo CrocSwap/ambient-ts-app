@@ -1,14 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as d3 from 'd3';
+
 import * as d3fc from 'd3fc';
 import dayjs from 'dayjs';
 import { DetailedHTMLProps, HTMLAttributes, useEffect, useRef, useState } from 'react';
-import { TokenData } from '../../../state/tokens/models';
-import { formatDollarAmount } from '../../../utils/numbers';
-import PriceChart from './PriceChart/PriceChart';
-import styles from './TokenPageChart.module.css';
+import { TokenData } from '../../../../state/tokens/models';
+import { formatDollarAmount } from '../../../../utils/numbers';
 
-interface TokenPageChartProps {
+import styles from './PriceChart.module.css';
+
+interface PriceChartProps {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     chartData?: any;
     token?: TokenData;
@@ -24,7 +25,7 @@ declare global {
     }
 }
 
-export default function TokenPageChart(props: TokenPageChartProps) {
+export default function PriceChart(props: PriceChartProps) {
     const d3Container = useRef(null);
     const d3PlotArea = useRef(null);
     const d3Xaxis = useRef(null);
@@ -71,6 +72,7 @@ export default function TokenPageChart(props: TokenPageChartProps) {
             .decorate((selection: any) => {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 selection
+                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
                     .style('fill', (d: any) => {
                         return 'rgba(115, 113, 252, 0.25)';
                     })
@@ -99,6 +101,7 @@ export default function TokenPageChart(props: TokenPageChartProps) {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 selection
                     .enter()
+                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
                     .style('stroke', (d: any) => '#7371FC')
                     .on('mouseover', (event: any) => {
                         const x0 = xScale.invert(d3.pointer(event)[0]);
