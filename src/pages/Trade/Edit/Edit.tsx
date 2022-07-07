@@ -283,6 +283,36 @@ export default function Edit() {
         (token: TokenIF) => token.address.toLowerCase() === quoteTokenOfPosition.toLowerCase(),
     ).logoURI;
 
+    const lowPriceNonDisplay = tickToPrice(position.bidTick);
+    const highPriceNonDisplay = tickToPrice(position.askTick);
+    const lowPriceDisplayInQuote = toDisplayPrice(
+        lowPriceNonDisplay,
+        baseTokenDecimals,
+        quoteTokenDecimals,
+    );
+
+    const highPriceDisplayInQuote = toDisplayPrice(
+        highPriceNonDisplay,
+        baseTokenDecimals,
+        quoteTokenDecimals,
+    );
+
+    const lowPriceDisplayInBase = 1 / highPriceDisplayInQuote;
+    const highPriceDisplayInBase = 1 / lowPriceDisplayInQuote;
+
+    const lowPriceDisplay = denominationsInBase ? lowPriceDisplayInBase : lowPriceDisplayInQuote;
+    const highPriceDisplay = denominationsInBase ? highPriceDisplayInBase : highPriceDisplayInQuote;
+
+    const lowPriceDisplayTruncated =
+        lowPriceDisplay < 2
+            ? truncateDecimals(lowPriceDisplay, 4)
+            : truncateDecimals(lowPriceDisplay, 2);
+
+    const highPriceDisplayTruncated =
+        highPriceDisplay < 2
+            ? truncateDecimals(highPriceDisplay, 4)
+            : truncateDecimals(highPriceDisplay, 2);
+
     const confirmEditModal = isModalOpen ? (
         <Modal onClose={closeModal} title='Edit Position'>
             <ConfirmEditModal
@@ -294,6 +324,8 @@ export default function Edit() {
                 quoteTokenImageURL={quoteTokenImageURL}
                 pinnedMinPriceDisplayTruncated={pinnedMinPriceDisplayTruncated}
                 pinnedMaxPriceDisplayTruncated={pinnedMaxPriceDisplayTruncated}
+                lowPriceDisplayTruncated={lowPriceDisplayTruncated}
+                highPriceDisplayTruncated={highPriceDisplayTruncated}
             />
         </Modal>
     ) : null;
@@ -335,10 +367,14 @@ export default function Edit() {
         tokenAQtyDisplay: position.tokenAQtyDisplay,
         tokenBQtyDisplay: position.tokenBQtyDisplay,
         ambient: position.ambient,
+        lowTick: position.bidTick,
+        highTick: position.askTick,
         lowRangeDisplay: position.lowRangeDisplay,
         highRangeDisplay: position.highRangeDisplay,
         pinnedMinPriceDisplayTruncated: pinnedMinPriceDisplayTruncated,
         pinnedMaxPriceDisplayTruncated: pinnedMaxPriceDisplayTruncated,
+        lowPriceDisplayTruncated: lowPriceDisplayTruncated,
+        highPriceDisplayTruncated: highPriceDisplayTruncated,
     };
 
     const editDenominationSwitchProps = {

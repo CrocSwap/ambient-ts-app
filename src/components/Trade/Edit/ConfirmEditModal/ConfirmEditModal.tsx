@@ -13,10 +13,17 @@ interface ConfirmEditModalProps {
     quoteTokenImageURL: string;
     pinnedMinPriceDisplayTruncated: string;
     pinnedMaxPriceDisplayTruncated: string;
+    lowPriceDisplayTruncated: string;
+    highPriceDisplayTruncated: string;
 }
 
 export default function ConfirmEditModal(props: ConfirmEditModalProps) {
-    const { pinnedMinPriceDisplayTruncated, pinnedMaxPriceDisplayTruncated } = props;
+    const {
+        pinnedMinPriceDisplayTruncated,
+        pinnedMaxPriceDisplayTruncated,
+        lowPriceDisplayTruncated,
+        highPriceDisplayTruncated,
+    } = props;
     const closeButton = <Button title='Close' action={props.onClose} />;
     const { position, denominationsInBase, baseTokenImageURL, quoteTokenImageURL } = props;
 
@@ -44,6 +51,8 @@ export default function ConfirmEditModal(props: ConfirmEditModalProps) {
                 highRangeDisplay={position.highRangeDisplay}
                 pinnedMinPriceDisplayTruncated={pinnedMinPriceDisplayTruncated}
                 pinnedMaxPriceDisplayTruncated={pinnedMaxPriceDisplayTruncated}
+                lowPriceDisplayTruncated={lowPriceDisplayTruncated}
+                highPriceDisplayTruncated={highPriceDisplayTruncated}
             />
         </div>
     );

@@ -1,3 +1,4 @@
+// import { tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 import styles from './EditPriceInfo.module.css';
 // import { TokenPairIF } from '../../../../../utils/interfaces/exports';
 
@@ -13,10 +14,18 @@ interface EditPriceInfoIF {
     denominationsInBase: boolean;
     pinnedMinPriceDisplayTruncated: string;
     pinnedMaxPriceDisplayTruncated: string;
+    lowPriceDisplayTruncated: string;
+    highPriceDisplayTruncated: string;
 }
 
 export default function EditPriceInfo(props: EditPriceInfoIF) {
-    const { pinnedMinPriceDisplayTruncated, pinnedMaxPriceDisplayTruncated } = props;
+    const {
+        pinnedMinPriceDisplayTruncated,
+        pinnedMaxPriceDisplayTruncated,
+        lowPriceDisplayTruncated,
+        highPriceDisplayTruncated,
+    } = props;
+
     // JSX frag to display the pool price for the current pair
     const currentPrice = (
         <div className={styles.price_info_row}>
@@ -70,7 +79,7 @@ export default function EditPriceInfo(props: EditPriceInfoIF) {
     const rangeUpperLimit = (
         <tr>
             <td data-column='Target: '>Range Upper Limit</td>
-            <td data-column='Current'>{props.highRangeDisplay}</td>
+            <td data-column='Current'>{highPriceDisplayTruncated}</td>
             <td data-column='Repositioned To'>{pinnedMaxPriceDisplayTruncated}</td>
         </tr>
     );
@@ -79,7 +88,7 @@ export default function EditPriceInfo(props: EditPriceInfoIF) {
     const rangeLowerLimit = (
         <tr>
             <td data-column='Target: '>Range Lower Limit</td>
-            <td data-column='Current'>{props.lowRangeDisplay}</td>
+            <td data-column='Current'>{lowPriceDisplayTruncated}</td>
             <td data-column='Repositioned To'>{pinnedMinPriceDisplayTruncated}</td>
         </tr>
     );
