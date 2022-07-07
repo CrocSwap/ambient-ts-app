@@ -35,11 +35,13 @@ color: #BDBDBD;
     display: flex;
     justify-content: space-between;
     align-items: center;
+   
     background-color: #26272b;
-    box-shadow: 0px 0px 12px #18191b;
     border-radius: 8px;
     margin: 2rem 1rem;
-    padding: .7rem 1rem;
+    /* padding: .7rem 1rem; */
+    padding: 0 8px;
+    min-height: 35px;
    
 }
 
@@ -73,6 +75,7 @@ line-height: 15px;
     color: #5FFFF2;
     font-family: var(--font-family);
     font-weight: 300;
+    
 
  
 }
@@ -110,7 +113,12 @@ text-shadow: 0px 0px 10px rgba(21, 190, 111, 0.75);
     line-height: var(--body-lh);
     color: var(--text-grey-light); 
 
-    padding: .5rem 1rem;
+    /* padding: .5rem 1rem; */
+    height: 23px;
+    padding: 5px 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     
     border: solid 1px transparent;
     background-image: linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, 0)), linear-gradient(101deg, #7371FC, #CDC1FF, #7371FC
@@ -118,32 +126,45 @@ text-shadow: 0px 0px 10px rgba(21, 190, 111, 0.75);
     background-origin: border-box;
     background-clip: content-box, border-box;
     box-shadow: 2px 1000px 1px var(--dark3) inset;
-    transition: box-shadowvar(--animation-speed) ease-in-out;
+    transition: box-shadow var(--animation-speed) ease-in-out;
     cursor: pointer;
   }
 
-  .option_button:hover {
-    box-shadow: none;
-    color: black;
-    
-  }
+
 
   .option_button{
     color: var(--text-grey-white);
     border-radius:6.25rem;
     transition: all var(--animation-speed) ease-out;
-    background: linear-gradient(270deg, #7371FC, #CDC1FF, #7371FC , rgba(34,34,34,0), rgba(34,34,34,0));
+    background: linear-gradient(270deg, #7371FC, #CDC1FF, #7371FC , rgba(215, 6, 6, 0), rgba(34,34,34,0));
     background-position: 1% 50%;
+    
     background-size: 300% 300%;
     
     text-decoration: none;
     border: 1px solid #7371FC;
   }
   .option_button:hover{
+    box-shadow: none;
+    color: black;
     color: var(--text-grey-white);
     border: 1px solid rgba(223,190,106,0);
     color: white;
     background-position: 99% 50%;
+  }
+
+  .menu{
+    display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+padding: 5px 8px;
+height: 22px;
+background: #0D1117;
+/* dark/tertiary */
+
+border: 1px solid #242F3F;
+border-radius: 50px;
   }
   
 /* Conversely, using max-width, is desktop-first then adds queries to make styles mobile-friendly

@@ -1,17 +1,36 @@
 import styles from './PositionCard.module.css';
+import { useState } from 'react';
+import { MenuItem, Menu } from '@material-ui/core';
+import { useStyles } from '../../../utils/functions/styles';
+import { FiMoreHorizontal } from 'react-icons/fi';
+import RangeStatus from '../RangeStatus/RangeStatus';
 
 export default function PositionCard() {
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+    const handleClick = (
+        event: React.MouseEvent<HTMLButtonElement> | React.MouseEvent<HTMLDivElement>,
+    ) => {
+        console.log('handleClick', event.currentTarget);
+        setAnchorEl(event.currentTarget);
+    };
+    const handleClose = () => {
+        console.log('handleClose');
+        setAnchorEl(null);
+    };
+    const classes = useStyles();
+
     const heading2 = (
         <div className={styles.heading}>
-            <p className={styles.hide_ipad}>ID SPACING.....</p>
-            <p className={styles.hide_ipad}>Wallet SPACING.....</p>
+            <p className={styles.hide_ipad}>ID </p>
+            <p className={styles.hide_ipad}>Wallet </p>
             <div className={styles.hide_desktop}>
                 <p>ID</p>
                 <p>Wallet</p>
             </div>
 
             <p className={styles.hide_ipad}>Range Min</p>
-            <p className={styles.hide_ipad}>Range Max</p>
+            <p className={styles.hide_ipad}>Range Max </p>
 
             <p className={styles.hide_desktop}>Range</p>
 
@@ -24,8 +43,11 @@ export default function PositionCard() {
             <p className={styles.hide_mobile}>APY</p>
 
             <p>Status</p>
-            <p className={styles.hide_mobile}>Reposition</p>
-            <p>Menu</p>
+            <p className={styles.hide_mobile}>
+                {' '}
+                &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+            </p>
+            <p> &nbsp; &nbsp; &nbsp; &nbsp;</p>
             {/* <p className='hide-mobile'>Volume</p>
         <p className='hide-mobile'>Mkt Cap</p> */}
         </div>
@@ -42,7 +64,7 @@ export default function PositionCard() {
             </div>
 
             <p className={`${styles.hide_ipad} ${styles.min_max}`}>Min</p>
-            <p className={`${styles.hide_ipad} ${styles.min_max}`}>Max</p>
+            <p className={`${styles.hide_ipad} ${styles.min_max}`}> Max </p>
 
             <div className={styles.hide_desktop}>
                 <p className={styles.min_max}>Min</p>
@@ -55,9 +77,38 @@ export default function PositionCard() {
                 <p className={styles.qty}>T2 Qty</p>
             </div>
             <p className={`${styles.hide_mobile} ${styles.apy}`}>APY</p>
-            <p>In Range</p>
+
+            <RangeStatus isInRange isAmbient={false} />
             <button className={`${styles.option_button} ${styles.hide_mobile}`}>Reposition</button>
-            <div>Menu</div>
+            <div
+                aria-controls='list settings'
+                aria-haspopup='true'
+                onClick={handleClick}
+                className={styles.menu}
+            >
+                <FiMoreHorizontal size={30} />
+            </div>
+            <Menu
+                id='simple-menu'
+                anchorEl={anchorEl}
+                keepMounted
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
+                className={classes.menu}
+            >
+                <MenuItem onClick={handleClose} className={classes.menuItem}>
+                    Harvest
+                </MenuItem>
+                <MenuItem onClick={handleClose} className={classes.menuItem}>
+                    Edit
+                </MenuItem>
+                <MenuItem onClick={handleClose} className={classes.menuItem}>
+                    Remove
+                </MenuItem>
+                <MenuItem onClick={handleClose} className={classes.menuItem}>
+                    Details
+                </MenuItem>
+            </Menu>
         </div>
     );
 

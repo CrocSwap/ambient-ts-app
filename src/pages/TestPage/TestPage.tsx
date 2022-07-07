@@ -54,6 +54,8 @@ export default function TestPage() {
             </li>
         ));
 
+    const mapItems = [1, 2, 4, 4, 5, 6, 7, 8, 9];
+
     return (
         // <main>
         //     <button onClick={() => setOpenSnackbar(true)}>open me</button>
@@ -92,7 +94,10 @@ export default function TestPage() {
 
         <main className={styles.test_page_main}>
             {/* <ul className={styles.token_list_selects_ul}>{tokenListElements}</ul> */}
-            <PositionCard />
+
+            {mapItems.map((item, idx) => (
+                <PositionCard key={idx} />
+            ))}
         </main>
     );
 }

@@ -1,0 +1,72 @@
+
+
+.heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #26272b;
+    box-shadow: 0px 0px 12px #18191b;
+    border-radius: 8px;
+    margin: 2rem 1rem;
+    padding: .7rem 1rem;
+    font-weight: 700;
+
+    font-style: normal;
+font-weight: 300;
+font-size: 12px;
+line-height: 15px;
+display: flex;
+align-items: center;
+text-align: right;
+
+/* text/grey light */
+
+color: #BDBDBD;
+
+}
+
+
+
+.hide_desktop{
+    display: none;
+}
+
+
+
+
+
+
+
+
+
+/* Conversely, using max-width, is desktop-first then adds queries to make styles mobile-friendly
+
+ */
+
+/* THIS IS FOR TABLETS */
+@media screen and (max-width: 800px) {
+
+    /* .hide_mobile {
+        display: none;
+    } */
+
+    .hide_desktop{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .hide_ipad{
+        display: none;
+    }
+}
+/* THIS IS FOR PHONES */
+/* Mobile Landscape Screen Sizes */
+@media only screen and (max-width: 480px)  {
+
+.hide_mobile{
+    display: none;
+}
+ 
+    }
