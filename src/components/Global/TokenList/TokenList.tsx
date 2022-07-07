@@ -15,7 +15,6 @@ interface TokenListPropsIF {
 export default function TokenList(props: TokenListPropsIF) {
     const { activeTokenListsChanged, indicateActiveTokenListsChanged } = props;
     const [showImportedTokens, setShowImportedTokens] = useState(false);
-    // eslint-disable-next-line
     const [searchString, setSearchString] = useState('');
 
     const TokenListContainerHeader = (
