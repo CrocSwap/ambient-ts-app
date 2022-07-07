@@ -15,7 +15,8 @@ export async function getNFTs(account: string) {
                 const parsedMetadata = JSON.parse(metadata);
                 const imageURL = parsedMetadata.image;
                 const imageUrlNoProtocol = imageURL.substring(12);
-                const imageGatewayURL = 'https://ipfs.io/ipfs/' + imageUrlNoProtocol;
+                const imageGatewayURL = 'https://cloudflare-ipfs.com/ipfs/' + imageUrlNoProtocol;
+                // const imageGatewayURL = 'https://ipfs.io/ipfs/' + imageUrlNoProtocol;
                 // console.log({ imageGatewayURL });
                 fetch(imageGatewayURL)
                     .then((response) => response.blob())
