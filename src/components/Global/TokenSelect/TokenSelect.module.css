@@ -142,7 +142,8 @@
   padding: 5px 12px;
 
   border: none;
-  border: 1px solid #f6385b;
+  /* border: 1px solid #f6385b; */
+  border: 1px solid var(--text-highlight);
   outline: none;
 }
 
@@ -156,11 +157,12 @@
   border-bottom-right-radius: var(--border-radius);
 }
 .liqtype_buttons_container button:hover {
-  color: grey;
+  color: var(--text-grey-light);
 }
 .active_button {
-  color: #fff;
-  background-color: #f6385b
+  color: rgb(0, 0, 0);
+  /* background-color: #f6385b; */
+  background: var(--title-gradient)
 }
 .non_active_button {
   color: white;
@@ -168,9 +170,17 @@
 }
 
 .confirm{
-  color: var(--text-highlight);
   cursor: pointer;
 }
+.primary_style{
+  color: var(--text-highlight);
+
+}
+
+.danger_style{
+color: #f6385b;
+}
+
 .confirm:hover{
 transform: scale(1.03);
 transition: all var(--animation-speed) ease

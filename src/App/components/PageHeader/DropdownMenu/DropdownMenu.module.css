@@ -14,7 +14,7 @@
     z-index: 99;
 
     background: rgba(14, 19, 26, 0.5);
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    /* box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37); */
     backdrop-filter: blur(16.5px);
     -webkit-backdrop-filter: blur(16.5px);
     border-radius: var(--border-radius);

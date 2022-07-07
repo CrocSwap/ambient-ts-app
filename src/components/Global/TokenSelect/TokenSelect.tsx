@@ -56,15 +56,15 @@ export default function TokenSelect(props: TokenSelectProps) {
 
     function handleToggleDelete() {
         if (toggleDeleteOn) {
-            console.log('you have deleted this token');
             removeToken(token, tokensBank, chainId, setImportedTokens);
-            // functionality to delete from Emily's branch
+
             setShowDelete(false);
         } else {
-            console.log('going back');
             setShowDelete(false);
         }
     }
+
+    const confirmStyle = toggleDeleteOn ? styles.danger_style : styles.primary_style;
 
     const toggleButtons = (
         <div className={styles.toggle_container}>
@@ -82,7 +82,10 @@ export default function TokenSelect(props: TokenSelectProps) {
                     No
                 </button>
             </div>
-            <div className={styles.confirm} onClick={() => handleToggleDelete()}>
+            <div
+                className={`${styles.confirm} ${confirmStyle}`}
+                onClick={() => handleToggleDelete()}
+            >
                 CONFIRM
             </div>
         </div>
