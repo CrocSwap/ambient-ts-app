@@ -3,6 +3,7 @@ import { useState, Dispatch, SetStateAction } from 'react';
 import TokenListCard from '../TokenListCard/TokenListCard';
 import Divider from '../Divider/Divider';
 import { TokenListIF } from '../../../utils/interfaces/exports';
+import fetchList from './fetchList';
 
 import { motion } from 'framer-motion';
 
@@ -15,7 +16,7 @@ export default function TokenList(props: TokenListPropsIF) {
     const { activeTokenListsChanged, indicateActiveTokenListsChanged } = props;
     const [showImportedTokens, setShowImportedTokens] = useState(false);
     // eslint-disable-next-line
-    const [searchTerm, setSearchTerm] = useState('');
+    const [searchString, setSearchString] = useState('');
 
     const TokenListContainerHeader = (
         <div className={styles.header_container}>
@@ -41,8 +42,9 @@ export default function TokenList(props: TokenListPropsIF) {
             <input
                 type='text'
                 placeholder='https:// pr ipfs:// or ENS name'
-                onChange={(event) => setSearchTerm(event.target.value)}
+                onChange={(event) => setSearchString(event.target.value)}
             />
+            <button onClick={() => fetchList(searchString)}>Get List</button>
         </div>
     );
 
