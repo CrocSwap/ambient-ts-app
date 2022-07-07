@@ -7,7 +7,8 @@ export default function getList(listURI:string) {
                 ...response,
                 listURI,
                 dateRetrieved: new Date().toISOString(),
-                default: false
+                default: false,
+                userImported: true,
             }
         ));
     Promise.resolve(list)
