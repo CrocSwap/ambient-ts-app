@@ -1,0 +1,183 @@
+.container {
+    max-width: 1140px;
+    margin: auto;
+    z-index: 1;
+}
+
+.heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #26272b;
+    box-shadow: 0px 0px 12px #18191b;
+    border-radius: 8px;
+    margin: 2rem 1rem;
+    padding: .7rem 1rem;
+    font-weight: 700;
+
+    font-style: normal;
+font-weight: 300;
+font-size: 12px;
+line-height: 15px;
+display: flex;
+align-items: center;
+text-align: right;
+
+/* text/grey light */
+
+color: #BDBDBD;
+
+}
+
+
+
+.coin_row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #26272b;
+    box-shadow: 0px 0px 12px #18191b;
+    border-radius: 8px;
+    margin: 2rem 1rem;
+    padding: .7rem 1rem;
+   
+}
+
+.coin_row:hover {
+    /* transform: scale(1.04); */
+    transition: .3s ease-in-out;
+    cursor: pointer;
+}
+
+
+.hide_desktop{
+    display: none;
+}
+
+/* position card */
+
+.account_style{
+    font-family: var(--roboto);
+    font-style: normal;
+font-weight: 300;
+font-size: 12px;
+line-height: 16px;
+color: #BDBDBD;
+font-size: 12px;
+line-height: 15px;
+}
+
+.min_max{
+    font-size: 12px;
+line-height: 15px;
+    color: #5FFFF2;
+    font-family: var(--font-family);
+    font-weight: 300;
+
+ 
+}
+
+.qty{
+    font-weight: 300;
+    font-size: 12px;
+    line-height: 15px;  
+    color: #BDBDBD;
+}
+.apy{
+    font-family: 'Lexend Deca';
+font-style: normal;
+font-weight: 200;
+font-size: 18px;
+line-height: 22px;
+
+letter-spacing: -0.02em;
+
+/* apy/green */
+
+background: linear-gradient(90deg, #15BE6F 32.38%, #8FE9BF 51.39%, #15BE6F 68.17%);
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+background-clip: text;
+text-fill-color: transparent;
+
+text-shadow: 0px 0px 10px rgba(21, 190, 111, 0.75);
+}
+
+
+.option_button{
+    border-radius:6.25rem;
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    color: var(--text-grey-light); 
+
+    padding: .5rem 1rem;
+    
+    border: solid 1px transparent;
+    background-image: linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, 0)), linear-gradient(101deg, #7371FC, #CDC1FF, #7371FC
+    );
+    background-origin: border-box;
+    background-clip: content-box, border-box;
+    box-shadow: 2px 1000px 1px var(--dark3) inset;
+    transition: box-shadowvar(--animation-speed) ease-in-out;
+    cursor: pointer;
+  }
+
+  .option_button:hover {
+    box-shadow: none;
+    color: black;
+    
+  }
+
+  .option_button{
+    color: var(--text-grey-white);
+    border-radius:6.25rem;
+    transition: all var(--animation-speed) ease-out;
+    background: linear-gradient(270deg, #7371FC, #CDC1FF, #7371FC , rgba(34,34,34,0), rgba(34,34,34,0));
+    background-position: 1% 50%;
+    background-size: 300% 300%;
+    
+    text-decoration: none;
+    border: 1px solid #7371FC;
+  }
+  .option_button:hover{
+    color: var(--text-grey-white);
+    border: 1px solid rgba(223,190,106,0);
+    color: white;
+    background-position: 99% 50%;
+  }
+  
+/* Conversely, using max-width, is desktop-first then adds queries to make styles mobile-friendly
+
+ */
+
+/* THIS IS FOR TABLETS */
+@media screen and (max-width: 800px) {
+    .container{
+        background: blue;
+     }
+    /* .hide_mobile {
+        display: none;
+    } */
+
+    .hide_desktop{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .hide_ipad{
+        display: none;
+    }
+}
+/* THIS IS FOR PHONES */
+/* Mobile Landscape Screen Sizes */
+@media only screen and (max-width: 480px)  {
+ .container{
+    background: red;
+ }
+.hide_mobile{
+    display: none;
+}
+ 
+    }

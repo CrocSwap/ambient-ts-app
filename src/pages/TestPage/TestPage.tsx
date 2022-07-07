@@ -10,6 +10,7 @@ import { useState } from 'react';
 // import Landing4 from '../../components/Home/Landing/Landing4';
 // import Landing5 from '../../components/Home/Landing/Landing5';
 // import Landing6 from '../../components/Home/Landing/Landing6';
+import PositionCard from '../../components/Global/Position/PositionCard';
 import { TokenListIF } from '../../utils/interfaces/exports';
 import styles from './TestPage.module.css';
 
@@ -90,7 +91,8 @@ export default function TestPage() {
         //     </main>
 
         <main className={styles.test_page_main}>
-            <ul className={styles.token_list_selects_ul}>{tokenListElements}</ul>
+            {/* <ul className={styles.token_list_selects_ul}>{tokenListElements}</ul> */}
+            <PositionCard />
         </main>
     );
 }
