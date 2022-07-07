@@ -72,6 +72,7 @@ export default function PriceChart(props: PriceChartProps) {
             .decorate((selection: any) => {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 selection
+                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
                     .style('fill', (d: any) => {
                         return 'rgba(115, 113, 252, 0.25)';
                     })
@@ -100,6 +101,7 @@ export default function PriceChart(props: PriceChartProps) {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 selection
                     .enter()
+                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
                     .style('stroke', (d: any) => '#7371FC')
                     .on('mouseover', (event: any) => {
                         const x0 = xScale.invert(d3.pointer(event)[0]);
