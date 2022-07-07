@@ -22,6 +22,8 @@ export default function getList(listURI:string) {
                 .includes(resolvedList.uri);
             if (listExistsInLocalStorage) {
                 console.log('already got it, boss!');
+                const otherLists = allTokenLists.filter((tokenList: TokenListIF) => tokenList.uri !== resolvedList.uri);
+                localStorage.setItem('allTokenLists', JSON.stringify([...otherLists, resolvedList]));
             } else if (!listExistsInLocalStorage) {
                 console.log('nope, new to me!');
                 localStorage.setItem('allTokenLists', JSON.stringify([...allTokenLists, resolvedList]));
