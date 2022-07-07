@@ -739,7 +739,7 @@ export default function Range(props: RangePropsIF) {
                 save({ txHash, posHash, user, account, chainId });
 
                 const newPositionCacheEndpoint =
-                    'http://ec2-18-233-99-51.compute-1.amazonaws.com:5000/new_position?';
+                    'https://ec2-18-233-99-51.compute-1.amazonaws.com:5000/new_position?';
 
                 fetch(
                     newPositionCacheEndpoint +

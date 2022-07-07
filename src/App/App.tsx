@@ -255,7 +255,7 @@ export default function App() {
             }
 
             const allPositionsCacheEndpoint =
-                'http://ec2-18-233-99-51.compute-1.amazonaws.com:5000/positions?';
+                'https://ec2-18-233-99-51.compute-1.amazonaws.com:5000/positions?';
 
             fetch(
                 allPositionsCacheEndpoint +
@@ -527,7 +527,7 @@ export default function App() {
     useEffect(() => {
         if (isAuthenticated && account) {
             const allUserPositionsCacheEndpoint =
-                'http://ec2-18-233-99-51.compute-1.amazonaws.com:5000/user_positions?';
+                'https://ec2-18-233-99-51.compute-1.amazonaws.com:5000/user_positions?';
 
             fetch(
                 allUserPositionsCacheEndpoint +
