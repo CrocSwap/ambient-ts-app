@@ -2,16 +2,16 @@ import { useEffect, useState, SetStateAction, Dispatch } from 'react';
 import { TokenIF } from '../../../utils/interfaces/exports';
 
 export const useSearch = (
-    tokensBank:Array<TokenIF>,
-    searchableTokens:Array<TokenIF>,
-    chainId: string
-): [ TokenIF[], TokenIF[], Dispatch<SetStateAction<string>> ] => {
-
+    tokensBank: Array<TokenIF>,
+    searchableTokens: Array<TokenIF>,
+    chainId: string,
+): [TokenIF[], TokenIF[], Dispatch<SetStateAction<string>>] => {
     // current value of search input field
     const [searchInput, setSearchInput] = useState('');
 
-    // filtered array of tokens for the user's imported tokens list 
-    const [matchingImportedTokens, setMatchingImportedTokens] = useState<Array<TokenIF>>(tokensBank);
+    // filtered array of tokens for the user's imported tokens list
+    const [matchingImportedTokens, setMatchingImportedTokens] =
+        useState<Array<TokenIF>>(tokensBank);
 
     // filtered array of all tokens from all active token lists
     const [matchingSearchableTokens, setMatchingSearchableTokens] = useState<Array<TokenIF>>([]);
@@ -20,23 +20,28 @@ export const useSearch = (
     const validSearch = searchInput.length >= 3;
 
     // function to determine if a string includes a given search input
-    const checkMatchLowerCase = (text:string) => text.toLowerCase().includes(searchInput.toLowerCase());
+    const checkMatchLowerCase = (text: string) =>
+        text.toLowerCase().includes(searchInput.toLowerCase());
+
+    // IMPORTANT!  In the search algorithm, we need to make the .filter() step the first method applied
+    //             ... to all searchable tokens, so that later methods of looking for duplicates and such
+    //             ... such have a smaller array of tokens to run time-consuming processes
 
     // function to filter an array of tokens for string matches by symbol, name, and address
-    const searchTokens = (listOfTokens:Array<TokenIF>) => {
-        const matchingTokens = listOfTokens.filter((token:TokenIF) => 
-            checkMatchLowerCase(token.symbol)
-            || checkMatchLowerCase(token.name)
-            || checkMatchLowerCase(token.address)
-        )
+    const searchTokens = (listOfTokens: Array<TokenIF>) => {
+        const matchingTokens = listOfTokens.filter(
+            (token: TokenIF) =>
+                checkMatchLowerCase(token.symbol) ||
+                checkMatchLowerCase(token.name) ||
+                checkMatchLowerCase(token.address),
+        );
         // remove off-chain tokens from the search results
         return filterOnChain(matchingTokens);
     };
 
     // function to filter an array of tokens as matching the current chain
-    const filterOnChain = (tokens:Array<TokenIF>) => (
-        tokens.filter((token:TokenIF) => token.chainId === parseInt(chainId))
-    );
+    const filterOnChain = (tokens: Array<TokenIF>) =>
+        tokens.filter((token: TokenIF) => token.chainId === parseInt(chainId));
 
     useEffect(() => {
         // filter imported tokens if user input string is validated
@@ -50,4 +55,4 @@ export const useSearch = (
     }, [searchInput, tokensBank, searchableTokens]);
 
     return [matchingImportedTokens, matchingSearchableTokens, setSearchInput];
-}
+};
