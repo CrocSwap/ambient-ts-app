@@ -11,9 +11,12 @@ interface ConfirmEditModalProps {
     denominationsInBase: boolean;
     baseTokenImageURL: string;
     quoteTokenImageURL: string;
+    pinnedMinPriceDisplayTruncated: string;
+    pinnedMaxPriceDisplayTruncated: string;
 }
 
 export default function ConfirmEditModal(props: ConfirmEditModalProps) {
+    const { pinnedMinPriceDisplayTruncated, pinnedMaxPriceDisplayTruncated } = props;
     const closeButton = <Button title='Close' action={props.onClose} />;
     const { position, denominationsInBase, baseTokenImageURL, quoteTokenImageURL } = props;
 
@@ -39,6 +42,8 @@ export default function ConfirmEditModal(props: ConfirmEditModalProps) {
                 ambient={position.ambient}
                 lowRangeDisplay={position.lowRangeDisplay}
                 highRangeDisplay={position.highRangeDisplay}
+                pinnedMinPriceDisplayTruncated={pinnedMinPriceDisplayTruncated}
+                pinnedMaxPriceDisplayTruncated={pinnedMaxPriceDisplayTruncated}
             />
         </div>
     );

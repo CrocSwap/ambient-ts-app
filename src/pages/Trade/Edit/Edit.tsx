@@ -292,6 +292,8 @@ export default function Edit() {
                 denominationsInBase={denominationsInBase}
                 baseTokenImageURL={baseTokenImageURL}
                 quoteTokenImageURL={quoteTokenImageURL}
+                pinnedMinPriceDisplayTruncated={pinnedMinPriceDisplayTruncated}
+                pinnedMaxPriceDisplayTruncated={pinnedMaxPriceDisplayTruncated}
             />
         </Modal>
     ) : null;
@@ -335,6 +337,8 @@ export default function Edit() {
         ambient: position.ambient,
         lowRangeDisplay: position.lowRangeDisplay,
         highRangeDisplay: position.highRangeDisplay,
+        pinnedMinPriceDisplayTruncated: pinnedMinPriceDisplayTruncated,
+        pinnedMaxPriceDisplayTruncated: pinnedMaxPriceDisplayTruncated,
     };
 
     const editDenominationSwitchProps = {

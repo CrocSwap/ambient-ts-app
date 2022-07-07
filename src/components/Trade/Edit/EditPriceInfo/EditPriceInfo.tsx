@@ -11,9 +11,12 @@ interface EditPriceInfoIF {
     lowRangeDisplay: string;
     highRangeDisplay: string;
     denominationsInBase: boolean;
+    pinnedMinPriceDisplayTruncated: string;
+    pinnedMaxPriceDisplayTruncated: string;
 }
 
 export default function EditPriceInfo(props: EditPriceInfoIF) {
+    const { pinnedMinPriceDisplayTruncated, pinnedMaxPriceDisplayTruncated } = props;
     // JSX frag to display the pool price for the current pair
     const currentPrice = (
         <div className={styles.price_info_row}>
@@ -68,7 +71,7 @@ export default function EditPriceInfo(props: EditPriceInfoIF) {
         <tr>
             <td data-column='Target: '>Range Upper Limit</td>
             <td data-column='Current'>{props.highRangeDisplay}</td>
-            <td data-column='Repositioned To'>2,1210.0</td>
+            <td data-column='Repositioned To'>{pinnedMaxPriceDisplayTruncated}</td>
         </tr>
     );
 
@@ -77,7 +80,7 @@ export default function EditPriceInfo(props: EditPriceInfoIF) {
         <tr>
             <td data-column='Target: '>Range Lower Limit</td>
             <td data-column='Current'>{props.lowRangeDisplay}</td>
-            <td data-column='Repositioned To'>3,200.0</td>
+            <td data-column='Repositioned To'>{pinnedMinPriceDisplayTruncated}</td>
         </tr>
     );
 
