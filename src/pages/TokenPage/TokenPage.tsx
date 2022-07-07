@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import Divider from '../../components/Global/Divider/Divider';
@@ -89,7 +90,7 @@ export default function TokenPage() {
             {tokenInfo}
             <div className={styles.hsPAQl}>
                 <TokenCardInfo token={tokenData} />
-                <TokenPageChart chartData={formattedTvlData} />
+                <TokenPageChart chartData={formattedTvlData} token={tokenData} />
             </div>
 
             <Divider />

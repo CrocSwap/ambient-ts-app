@@ -1,14 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as d3 from 'd3';
+
 import * as d3fc from 'd3fc';
 import dayjs from 'dayjs';
 import { DetailedHTMLProps, HTMLAttributes, useEffect, useRef, useState } from 'react';
-import { TokenData } from '../../../state/tokens/models';
-import { formatDollarAmount } from '../../../utils/numbers';
-import PriceChart from './PriceChart/PriceChart';
-import styles from './TokenPageChart.module.css';
+import { TokenData } from '../../../../state/tokens/models';
+import { formatDollarAmount } from '../../../../utils/numbers';
 
-interface TokenPageChartProps {
+import styles from './PriceChart.module.css';
+
+interface PriceChartProps {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     chartData?: any;
     token?: TokenData;
@@ -24,7 +25,7 @@ declare global {
     }
 }
 
-export default function TokenPageChart(props: TokenPageChartProps) {
+export default function PriceChart(props: PriceChartProps) {
     const d3Container = useRef(null);
     const d3PlotArea = useRef(null);
     const d3Xaxis = useRef(null);
