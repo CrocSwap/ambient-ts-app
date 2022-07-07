@@ -8,11 +8,24 @@ interface ConfirmEditModalProps {
     onClose: () => void;
     position: PositionIF;
     currentPoolPriceDisplay: string;
+    denominationsInBase: boolean;
+    baseTokenImageURL: string;
+    quoteTokenImageURL: string;
+    pinnedMinPriceDisplayTruncated: string;
+    pinnedMaxPriceDisplayTruncated: string;
+    lowPriceDisplayTruncated: string;
+    highPriceDisplayTruncated: string;
 }
 
 export default function ConfirmEditModal(props: ConfirmEditModalProps) {
+    const {
+        pinnedMinPriceDisplayTruncated,
+        pinnedMaxPriceDisplayTruncated,
+        lowPriceDisplayTruncated,
+        highPriceDisplayTruncated,
+    } = props;
     const closeButton = <Button title='Close' action={props.onClose} />;
-    const { position } = props;
+    const { position, denominationsInBase, baseTokenImageURL, quoteTokenImageURL } = props;
 
     const fullTxDetails = (
         <div>
@@ -21,11 +34,14 @@ export default function ConfirmEditModal(props: ConfirmEditModalProps) {
                 baseTokenSymbol={position.baseTokenSymbol}
                 tokenAQtyDisplay={position.tokenAQtyDisplay}
                 tokenBQtyDisplay={position.tokenBQtyDisplay}
+                baseTokenImageURL={baseTokenImageURL}
+                quoteTokenImageURL={quoteTokenImageURL}
                 disable
             />
             <Divider />
             <EditPriceInfo
                 currentPoolPriceDisplay={props.currentPoolPriceDisplay}
+                denominationsInBase={denominationsInBase}
                 quoteTokenSymbol={position.quoteTokenSymbol}
                 baseTokenSymbol={position.baseTokenSymbol}
                 tokenAQtyDisplay={position.tokenAQtyDisplay}
@@ -33,6 +49,10 @@ export default function ConfirmEditModal(props: ConfirmEditModalProps) {
                 ambient={position.ambient}
                 lowRangeDisplay={position.lowRangeDisplay}
                 highRangeDisplay={position.highRangeDisplay}
+                pinnedMinPriceDisplayTruncated={pinnedMinPriceDisplayTruncated}
+                pinnedMaxPriceDisplayTruncated={pinnedMaxPriceDisplayTruncated}
+                lowPriceDisplayTruncated={lowPriceDisplayTruncated}
+                highPriceDisplayTruncated={highPriceDisplayTruncated}
             />
         </div>
     );

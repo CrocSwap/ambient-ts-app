@@ -13,6 +13,8 @@ interface EditDenominationSwitchPropsIF {
     // isTokenABase: boolean;
     denominationsInBase: boolean;
     setDenominationsInBase: React.Dispatch<React.SetStateAction<boolean>>;
+    quoteTokenSymbol: string;
+    baseTokenSymbol: string;
 }
 
 // TODO:  @Emily poolPriceDisplay is passed here as a prop for the purpose of managing
@@ -21,7 +23,8 @@ interface EditDenominationSwitchPropsIF {
 
 export default function EditDenominationSwitch(props: EditDenominationSwitchPropsIF) {
     // const { tokenPair, isTokenABase, poolPriceDisplay, didUserFlipDenom } = props;
-    const { denominationsInBase, setDenominationsInBase } = props;
+    const { denominationsInBase, setDenominationsInBase, baseTokenSymbol, quoteTokenSymbol } =
+        props;
     // const dispatch = useAppDispatch();
 
     // TODO:  @Junior, if both buttons have the same action of reversing the current
@@ -53,13 +56,13 @@ export default function EditDenominationSwitch(props: EditDenominationSwitchProp
                 onClick={() => setDenominationsInBase(!denominationsInBase)}
                 // onClick={() => dispatch(toggleDidUserFlipDenom())}
             >
-                {'ETH'}
+                {baseTokenSymbol}
             </button>
             <button
                 className={!denominationsInBase ? styles.active_button : styles.non_active_button}
                 onClick={() => setDenominationsInBase(!denominationsInBase)}
             >
-                {'DAI'}
+                {quoteTokenSymbol}
             </button>
         </div>
     );

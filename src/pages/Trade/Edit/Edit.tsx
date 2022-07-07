@@ -18,6 +18,7 @@ import {
 import truncateDecimals from '../../../utils/data/truncateDecimals';
 import { PositionIF } from '../../../utils/interfaces/PositionIF';
 import { tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
+import { TokenIF } from '../../../utils/interfaces/TokenIF';
 interface PositionState {
     position: PositionIF;
 }
@@ -269,12 +270,62 @@ export default function Edit() {
 
     const { positionHash } = useParams();
 
+    const baseTokenOfPosition = position.pool.base;
+    const quoteTokenOfPosition = position.pool.quote;
+    const userLocalStorage = localStorage.getItem('user');
+    const tokens = userLocalStorage ? JSON.parse(userLocalStorage).tokens : null;
+
+    const baseTokenImageURL = tokens.find(
+        (token: TokenIF) => token.address.toLowerCase() === baseTokenOfPosition.toLowerCase(),
+    ).logoURI;
+
+    const quoteTokenImageURL = tokens.find(
+        (token: TokenIF) => token.address.toLowerCase() === quoteTokenOfPosition.toLowerCase(),
+    ).logoURI;
+
+    const lowPriceNonDisplay = tickToPrice(position.bidTick);
+    const highPriceNonDisplay = tickToPrice(position.askTick);
+    const lowPriceDisplayInQuote = toDisplayPrice(
+        lowPriceNonDisplay,
+        baseTokenDecimals,
+        quoteTokenDecimals,
+    );
+
+    const highPriceDisplayInQuote = toDisplayPrice(
+        highPriceNonDisplay,
+        baseTokenDecimals,
+        quoteTokenDecimals,
+    );
+
+    const lowPriceDisplayInBase = 1 / highPriceDisplayInQuote;
+    const highPriceDisplayInBase = 1 / lowPriceDisplayInQuote;
+
+    const lowPriceDisplay = denominationsInBase ? lowPriceDisplayInBase : lowPriceDisplayInQuote;
+    const highPriceDisplay = denominationsInBase ? highPriceDisplayInBase : highPriceDisplayInQuote;
+
+    const lowPriceDisplayTruncated =
+        lowPriceDisplay < 2
+            ? truncateDecimals(lowPriceDisplay, 4)
+            : truncateDecimals(lowPriceDisplay, 2);
+
+    const highPriceDisplayTruncated =
+        highPriceDisplay < 2
+            ? truncateDecimals(highPriceDisplay, 4)
+            : truncateDecimals(highPriceDisplay, 2);
+
     const confirmEditModal = isModalOpen ? (
         <Modal onClose={closeModal} title='Edit Position'>
             <ConfirmEditModal
                 onClose={closeModal}
                 position={position}
                 currentPoolPriceDisplay={currentPoolPriceDisplay}
+                denominationsInBase={denominationsInBase}
+                baseTokenImageURL={baseTokenImageURL}
+                quoteTokenImageURL={quoteTokenImageURL}
+                pinnedMinPriceDisplayTruncated={pinnedMinPriceDisplayTruncated}
+                pinnedMaxPriceDisplayTruncated={pinnedMaxPriceDisplayTruncated}
+                lowPriceDisplayTruncated={lowPriceDisplayTruncated}
+                highPriceDisplayTruncated={highPriceDisplayTruncated}
             />
         </Modal>
     ) : null;
@@ -302,29 +353,42 @@ export default function Edit() {
     const currencyDisplayContainerProps = {
         quoteTokenSymbol: position.quoteTokenSymbol,
         baseTokenSymbol: position.baseTokenSymbol,
+        baseTokenImageURL: baseTokenImageURL,
+        quoteTokenImageURL: quoteTokenImageURL,
         tokenAQtyDisplay: position.tokenAQtyDisplay,
         tokenBQtyDisplay: position.tokenBQtyDisplay,
     };
 
     const editPriceInfoProps = {
         currentPoolPriceDisplay: currentPoolPriceDisplay,
+        denominationsInBase: denominationsInBase,
         quoteTokenSymbol: position.quoteTokenSymbol,
         baseTokenSymbol: position.baseTokenSymbol,
         tokenAQtyDisplay: position.tokenAQtyDisplay,
         tokenBQtyDisplay: position.tokenBQtyDisplay,
         ambient: position.ambient,
+        lowTick: position.bidTick,
+        highTick: position.askTick,
         lowRangeDisplay: position.lowRangeDisplay,
         highRangeDisplay: position.highRangeDisplay,
+        pinnedMinPriceDisplayTruncated: pinnedMinPriceDisplayTruncated,
+        pinnedMaxPriceDisplayTruncated: pinnedMaxPriceDisplayTruncated,
+        lowPriceDisplayTruncated: lowPriceDisplayTruncated,
+        highPriceDisplayTruncated: highPriceDisplayTruncated,
+    };
+
+    const editDenominationSwitchProps = {
+        denominationsInBase: denominationsInBase,
+        setDenominationsInBase: setDenominationsInBase,
+        quoteTokenSymbol: position.quoteTokenSymbol,
+        baseTokenSymbol: position.baseTokenSymbol,
     };
 
     return (
         <div className={styles.editContainer}>
             <EditHeader positionHash={positionHash} />
             <div className={styles.edit_content}>
-                <EditDenominationSwitch
-                    denominationsInBase={denominationsInBase}
-                    setDenominationsInBase={setDenominationsInBase}
-                />
+                <EditDenominationSwitch {...editDenominationSwitchProps} />
                 <CurrencyDisplayContainer {...currencyDisplayContainerProps} />
                 <Divider />
                 {position.ambient == false && <EditMinMaxPrice {...editMinMaxPriceProps} />}

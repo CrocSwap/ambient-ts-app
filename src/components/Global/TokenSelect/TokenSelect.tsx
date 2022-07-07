@@ -114,7 +114,7 @@ export default function TokenSelect(props: TokenSelectProps) {
         </div>
     );
 
-    console.log(toggleDeleteOn);
+    // console.log(toggleDeleteOn);
 
     const deleteStateStyle = !showDelete ? styles.delete_active : styles.delete_inactive;
 
