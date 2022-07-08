@@ -288,8 +288,10 @@ export default function App() {
         () =>
             'wss://809821320828123.de:5000/subscribe_pool_positions?' +
             new URLSearchParams({
-                base: baseTokenAddress.toLowerCase(),
-                quote: quoteTokenAddress.toLowerCase(),
+                base:
+                    baseTokenAddress.toLowerCase() || '0x0000000000000000000000000000000000000000',
+                quote:
+                    quoteTokenAddress.toLowerCase() || '0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa',
                 poolIdx: POOL_PRIMARY.toString(),
             }),
         [baseTokenAddress, quoteTokenAddress, POOL_PRIMARY],
@@ -299,7 +301,12 @@ export default function App() {
         //  sendMessage,
         lastMessage: lastAllPositionsMessage,
         //  readyState
-    } = useWebSocket(allPositionsCacheSubscriptionEndpoint);
+    } = useWebSocket(allPositionsCacheSubscriptionEndpoint, {
+        // onOpen: () => console.log('opened'),
+        // onClose: () => console.log('closed'),
+        // Will attempt to reconnect on all close events, such as server shutting down
+        shouldReconnect: () => true,
+    });
 
     useEffect(() => {
         if (lastAllPositionsMessage !== null) {
@@ -329,7 +336,7 @@ export default function App() {
         () =>
             'wss://809821320828123.de:5000/subscribe_user_positions?' +
             new URLSearchParams({
-                user: account || '',
+                user: account || '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc',
             }),
         // new URLSearchParams({
         //     base: baseTokenAddress.toLowerCase(),
@@ -343,7 +350,12 @@ export default function App() {
         //  sendMessage,
         lastMessage: lastUserPositionsMessage,
         //  readyState
-    } = useWebSocket(userPositionsCacheSubscriptionEndpoint);
+    } = useWebSocket(userPositionsCacheSubscriptionEndpoint, {
+        // onOpen: () => console.log('opened'),
+        // onClose: () => console.log('closed'),
+        // Will attempt to reconnect on all close events, such as server shutting down
+        shouldReconnect: () => true,
+    });
 
     useEffect(() => {
         if (lastUserPositionsMessage !== null) {
