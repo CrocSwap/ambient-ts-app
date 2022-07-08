@@ -254,8 +254,7 @@ export default function App() {
                 setQuoteTokenDecimals(tokenPair.dataTokenA.decimals);
             }
 
-            const allPositionsCacheEndpoint =
-                'https://ec2-18-233-99-51.compute-1.amazonaws.com:5000/positions?';
+            const allPositionsCacheEndpoint = 'https://809821320828123.de:5000/pool_positions?';
 
             fetch(
                 allPositionsCacheEndpoint +
@@ -526,8 +525,7 @@ export default function App() {
 
     useEffect(() => {
         if (isAuthenticated && account) {
-            const allUserPositionsCacheEndpoint =
-                'https://ec2-18-233-99-51.compute-1.amazonaws.com:5000/user_positions?';
+            const allUserPositionsCacheEndpoint = 'https://809821320828123.de:5000/user_positions?';
 
             fetch(
                 allUserPositionsCacheEndpoint +
