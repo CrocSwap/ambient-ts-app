@@ -121,6 +121,10 @@ line-height: 15px;
 
    
   }
+
+  .accordion_container{
+    width: 100%;
+  }
   
 
   .logo {
@@ -336,7 +340,15 @@ line-height: 15px;
         justify-content: center;
         align-items: center;
         width: 100%;
+    } 
+
+    .sidebar_item_content{
+
+     width: 100%;
+
+    
     }
+    
   }
   
 

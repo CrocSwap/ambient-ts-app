@@ -9,6 +9,7 @@ import topPoolsImage from '../../../assets/images/sidebarImages/topPools.svg';
 import topTokensImage from '../../../assets/images/sidebarImages/topTokens.svg';
 import SidebarAccordion from './SidebarAccordion';
 
+import TopTokens from '../../../components/Global/TopTokens/TopTokens';
 interface SidebarProps {
     showSidebar: boolean;
     toggleSidebar: (event: React.MouseEvent<HTMLDivElement>) => void;
@@ -18,15 +19,15 @@ export default function Sidebar(props: SidebarProps): React.ReactElement<Sidebar
     const { toggleSidebar, showSidebar } = props;
 
     const navItems1 = [
-        { name: 'Top Tokens', icon: topTokensImage },
-        { name: 'Top Pools', icon: topPoolsImage },
-        { name: 'Range Positions', icon: rangePositionsImage },
-        { name: 'Open Orders', icon: openOrdersImage },
+        { name: 'Top Tokens', icon: topTokensImage, data: <TopTokens /> },
+        { name: 'Top Pools', icon: topPoolsImage, data: <TopTokens /> },
+        { name: 'Range Positions', icon: rangePositionsImage, data: <TopTokens /> },
+        { name: 'Open Orders', icon: openOrdersImage, data: <TopTokens /> },
     ];
 
     const navItems2 = [
-        { name: 'Favorite Pools', icon: favouritePoolsImage },
-        { name: 'Recent Transactions', icon: recentTransactionsImage },
+        { name: 'Favorite Pools', icon: favouritePoolsImage, data: <TopTokens /> },
+        { name: 'Recent Transactions', icon: recentTransactionsImage, data: <TopTokens /> },
     ];
 
     const searchContainer = (
