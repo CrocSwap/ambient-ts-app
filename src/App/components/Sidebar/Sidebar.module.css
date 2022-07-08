@@ -125,7 +125,7 @@ line-height: 15px;
   
 
   
-  .sidebar:hover .logo svg {
+  .logo svg:hover {
     transform: scale(1.09);
     transition: all var(--animation-speed) ease-in-out;
   }
