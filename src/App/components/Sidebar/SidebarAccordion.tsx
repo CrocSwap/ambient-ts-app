@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 interface Item {
     name: string;
     icon: string;
+    data: React.ReactNode;
 }
 
 interface SidebarAccordionProps {
@@ -24,6 +25,7 @@ export default function SidebarAccordion(props: SidebarAccordionProps) {
     console.log(showSidebar);
     const openStateContent = (
         <motion.div
+            className={styles.accordion_container}
             key='content'
             initial='collapsed'
             animate='open'
@@ -34,11 +36,7 @@ export default function SidebarAccordion(props: SidebarAccordionProps) {
             }}
             transition={{ duration: 0.8, ease: [0.04, 0.62, 0.23, 0.98] }}
         >
-            <div style={{ fontSize: '10px' }} className={styles.sidebar_item_content}>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Debitis unde cumque, dicta
-                maxime sequi ad? Minus explicabo accusamus dignissimos neque impedit autem nemo sint
-                adipisci dolore ipsam
-            </div>
+            <div className={styles.sidebar_item_content}>{item.data}</div>
         </motion.div>
     );
 
