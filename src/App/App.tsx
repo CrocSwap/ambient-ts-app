@@ -11,6 +11,8 @@ import { ethers } from 'ethers';
 import { JsonRpcProvider } from '@ethersproject/providers';
 // import { request, gql } from 'graphql-request';
 import { useMoralis, useMoralisQuery, useMoralisSubscription } from 'react-moralis';
+import useWebSocket from 'react-use-websocket';
+// import { ReadyState } from 'react-use-websocket';
 import Moralis from 'moralis';
 import {
     contractAddresses,
@@ -282,6 +284,116 @@ export default function App() {
         }
     }, [tokenPairStringified]);
 
+    const allPositionsCacheSubscriptionEndpoint = useMemo(
+        () =>
+            'wss://809821320828123.de:5000/subscribe_pool_positions?' +
+            new URLSearchParams({
+                base: baseTokenAddress.toLowerCase(),
+                // baseTokenAddress.toLowerCase() || '0x0000000000000000000000000000000000000000',
+                quote: quoteTokenAddress.toLowerCase(),
+                // quoteTokenAddress.toLowerCase() || '0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa',
+                poolIdx: POOL_PRIMARY.toString(),
+            }),
+        [baseTokenAddress, quoteTokenAddress, POOL_PRIMARY],
+    );
+
+    const {
+        //  sendMessage,
+        lastMessage: lastAllPositionsMessage,
+        //  readyState
+    } = useWebSocket(
+        allPositionsCacheSubscriptionEndpoint,
+        {
+            // share:  true,
+            // onOpen: () => console.log('opened'),
+            onClose: () => console.log('allPositions websocket connection closed'),
+            // Will attempt to reconnect on all close events, such as server shutting down
+            shouldReconnect: () => true,
+        },
+        // only connect if base/quote token addresses are available
+        baseTokenAddress !== '' && quoteTokenAddress !== '',
+    );
+
+    useEffect(() => {
+        if (lastAllPositionsMessage !== null) {
+            //    setMessageHistory((prev) => prev.concat(lastMessage));
+            const lastMessageData = JSON.parse(lastAllPositionsMessage.data).data;
+
+            if (lastMessageData) {
+                Promise.all(lastMessageData.map(getPositionData)).then((updatedPositions) => {
+                    // if (
+                    // JSON.stringify(graphData.positionsByUser.positions) !==
+                    // JSON.stringify(updatedPositions)
+                    // ) {
+                    dispatch(
+                        setPositionsByPool({
+                            positions: graphData.positionsByPool.positions.concat(updatedPositions),
+                        }),
+                    );
+                    // }
+                });
+            }
+
+            // console.log({ lastMessageData });
+        }
+    }, [lastAllPositionsMessage]);
+
+    const userPositionsCacheSubscriptionEndpoint = useMemo(
+        () =>
+            'wss://809821320828123.de:5000/subscribe_user_positions?' +
+            new URLSearchParams({
+                user: account || '',
+                // user: account || '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc',
+            }),
+        // new URLSearchParams({
+        //     base: baseTokenAddress.toLowerCase(),
+        //     quote: quoteTokenAddress.toLowerCase(),
+        //     poolIdx: POOL_PRIMARY.toString(),
+        // }),
+        [account],
+    );
+
+    const {
+        //  sendMessage,
+        lastMessage: lastUserPositionsMessage,
+        //  readyState
+    } = useWebSocket(
+        userPositionsCacheSubscriptionEndpoint,
+        {
+            // share: true,
+            // onOpen: () => console.log('opened'),
+            onClose: () => console.log('userPositions websocket connection closed'),
+            // Will attempt to reconnect on all close events, such as server shutting down
+            shouldReconnect: () => true,
+        },
+        // only connect is account is available
+        account !== null && account !== '',
+    );
+
+    useEffect(() => {
+        if (lastUserPositionsMessage !== null) {
+            //    setMessageHistory((prev) => prev.concat(lastMessage));
+            const lastMessageData = JSON.parse(lastUserPositionsMessage.data).data;
+
+            if (lastMessageData) {
+                Promise.all(lastMessageData.map(getPositionData)).then((updatedPositions) => {
+                    // if (
+                    // JSON.stringify(graphData.positionsByUser.positions) !==
+                    // JSON.stringify(updatedPositions)
+                    // ) {
+                    dispatch(
+                        setPositionsByUser({
+                            positions: graphData.positionsByUser.positions.concat(updatedPositions),
+                        }),
+                    );
+                    // }
+                });
+            }
+
+            // console.log({ lastMessageData });
+        }
+    }, [lastUserPositionsMessage]);
+
     const [tokenABalance, setTokenABalance] = useState<string>('');
     const [tokenBBalance, setTokenBBalance] = useState<string>('');
     const [poolPriceNonDisplay, setPoolPriceNonDisplay] = useState(0);
@@ -549,7 +661,7 @@ export default function App() {
                     }
                 });
         }
-    }, [isAuthenticated, account, lastBlockNumber]);
+    }, [isAuthenticated, account]);
 
     // run function to initialize local storage
     // internal controls will only initialize values that don't exist
