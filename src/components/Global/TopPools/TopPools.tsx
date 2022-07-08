@@ -4,8 +4,8 @@ export default function TopPools() {
     const header = (
         <div className={styles.header}>
             <div>Pool</div>
-            <div>Price</div>
-            <div>Change</div>
+            <div>Volume</div>
+            <div>TVL</div>
         </div>
     );
 
