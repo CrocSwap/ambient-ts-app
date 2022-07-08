@@ -62,8 +62,8 @@ export default function Tabs(props: ITabsProps) {
     );
 
     const tabData = [
-        { title: 'Positions', id: 'tab1' },
-        { title: 'Limit Orders', id: 'tab2' },
+        { title: 'Ranges', id: 'tab1' },
+        { title: 'Orders', id: 'tab2' },
         { title: 'Transactions', id: 'tab3' },
         { title: 'Leaderboard', id: 'tab4' },
         { title: 'Info', id: 'tab5' },
