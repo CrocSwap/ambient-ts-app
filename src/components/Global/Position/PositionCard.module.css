@@ -1,8 +1,8 @@
-.container {
+/* .container {
     max-width: 1140px;
     margin: auto;
     z-index: 1;
-}
+} */
 
 .heading {
     display: flex;
@@ -31,7 +31,7 @@ color: #BDBDBD;
 
 
 
-.coin_row {
+.position_row {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -45,7 +45,7 @@ color: #BDBDBD;
    
 }
 
-.coin_row:hover {
+.position_row:hover {
     /* transform: scale(1.04); */
     transition: .3s ease-in-out;
     cursor: pointer;
