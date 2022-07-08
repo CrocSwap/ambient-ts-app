@@ -5,6 +5,11 @@
   status = 200
 
 [[headers]]
-  for = "/ambient-token-list.json"
+  for = "/ambient-token-list.json" 
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+
+[[headers]]
+  for = "/rings_192.png"
   [headers.values]
     Access-Control-Allow-Origin = "*"
