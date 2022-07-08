@@ -1,4 +1,5 @@
 import { TokenListIF } from '../../../utils/interfaces/exports';
+import validateTokenList from '../../../utils/functions/validateTokenList';
 
 export default function getList(listURI:string) {
     // trim whitespace from start and end of input string
@@ -7,6 +8,10 @@ export default function getList(listURI:string) {
     const list = fetch(sanitizedInput)
         // format response object as a JSON
         .then(response => response.json())
+        .then(response => {
+            validateTokenList(response);
+            return response;
+        })
         // middleware to add metadata to the list used by the Ambient app
         .then(response => (
             {
