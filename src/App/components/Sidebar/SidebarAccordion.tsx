@@ -22,14 +22,35 @@ export default function SidebarAccordion(props: SidebarAccordionProps) {
     const [isOpen, setIsOpen] = useState(false);
 
     console.log(item);
-    return (
-        <motion.li key={idx} className={styles.sidebar_item} onClick={() => setIsOpen(!isOpen)}>
-            <div className={styles.sidebar_link}>
-                {showSidebar && <MdPlayArrow size={12} color='#ffffff' />}
-                <img src={item.icon} alt={item.name} width='20px' />
-
-                <span className={styles.link_text}>{item.name}</span>
+    const openStateContent = (
+        <motion.div
+            key='content'
+            initial='collapsed'
+            animate='open'
+            exit='collapsed'
+            variants={{
+                open: { opacity: 1, height: 'auto' },
+                collapsed: { opacity: 0, height: 0 },
+            }}
+            transition={{ duration: 0.8, ease: [0.04, 0.62, 0.23, 0.98] }}
+        >
+            <div style={{ fontSize: '10px' }}>
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Debitis unde cumque, dicta
+                maxime sequi ad? Minus explicabo accusamus dignissimos neque impedit autem nemo sint
+                adipisci dolore ipsam
             </div>
-        </motion.li>
+        </motion.div>
+    );
+    return (
+        <>
+            <motion.li key={idx} className={styles.sidebar_item} onClick={() => setIsOpen(!isOpen)}>
+                <div className={styles.sidebar_link}>
+                    {showSidebar && <MdPlayArrow size={12} color='#ffffff' />}
+                    <img src={item.icon} alt={item.name} width='20px' />
+
+                    <span className={styles.link_text}>{item.name}</span>
+                </div>
+            </motion.li>
+        </>
     );
 }
