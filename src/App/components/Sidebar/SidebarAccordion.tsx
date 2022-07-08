@@ -1,5 +1,5 @@
 // import styles from './SidebarAccordion.module.css';
-import { MdPlayArrow, MdOutlineArrowDropDown } from 'react-icons/md';
+import { MdPlayArrow } from 'react-icons/md';
 import styles from './Sidebar.module.css';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -18,7 +18,7 @@ interface SidebarAccordionProps {
 }
 
 export default function SidebarAccordion(props: SidebarAccordionProps) {
-    const { children, showSidebar, idx, item } = props;
+    const { showSidebar, idx, item } = props;
     const [isOpen, setIsOpen] = useState(false);
 
     console.log(showSidebar);
@@ -34,7 +34,7 @@ export default function SidebarAccordion(props: SidebarAccordionProps) {
             }}
             transition={{ duration: 0.8, ease: [0.04, 0.62, 0.23, 0.98] }}
         >
-            <div style={{ fontSize: '10px' }}>
+            <div style={{ fontSize: '10px' }} className={styles.sidebar_item_content}>
                 Lorem ipsum dolor sit amet consectetur adipisicing elit. Debitis unde cumque, dicta
                 maxime sequi ad? Minus explicabo accusamus dignissimos neque impedit autem nemo sint
                 adipisci dolore ipsam

@@ -1,6 +1,6 @@
 import styles from './Sidebar.module.css';
 import { BiSearch } from 'react-icons/bi';
-import { MdPlayArrow, MdDoubleArrow } from 'react-icons/md';
+import { MdDoubleArrow } from 'react-icons/md';
 import favouritePoolsImage from '../../../assets/images/sidebarImages/favouritePools.svg';
 import openOrdersImage from '../../../assets/images/sidebarImages/openOrders.svg';
 import rangePositionsImage from '../../../assets/images/sidebarImages/rangePositions.svg';
