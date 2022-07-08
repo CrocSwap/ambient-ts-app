@@ -7,6 +7,7 @@ import rangePositionsImage from '../../../assets/images/sidebarImages/rangePosit
 import recentTransactionsImage from '../../../assets/images/sidebarImages/recentTransactions.svg';
 import topPoolsImage from '../../../assets/images/sidebarImages/topPools.svg';
 import topTokensImage from '../../../assets/images/sidebarImages/topTokens.svg';
+import SidebarAccordion from './SidebarAccordion';
 
 interface SidebarProps {
     showSidebar: boolean;
@@ -58,14 +59,17 @@ export default function Sidebar(props: SidebarProps): React.ReactElement<Sidebar
                     {searchContainer}
 
                     {navItems1.map((item, idx) => (
-                        <li key={idx} className={styles.sidebar_item}>
+                        <>
+                            {/* <li key={idx} className={styles.sidebar_item}>
                             <div className={styles.sidebar_link}>
                                 {showSidebar && <MdPlayArrow size={12} color='#ffffff' />}
                                 <img src={item.icon} alt={item.name} width='20px' />
 
                                 <span className={styles.link_text}>{item.name}</span>
                             </div>
-                        </li>
+                        </li> */}
+                            <SidebarAccordion showSidebar={showSidebar} idx={idx} item={item} />
+                        </>
                     ))}
 
                     <div className={styles.bottom_elements}>
