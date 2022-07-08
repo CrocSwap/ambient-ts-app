@@ -58,6 +58,16 @@
     cursor: pointer;
   }
   
+
+  .open_link{
+    color: #bdbdbd;
+    width: 20px;
+
+    transform: rotate(90deg);
+    transition: var(--animation-speed);
+  }
+
+
   .sidebar_item{
 
     transition: all var(--animation-speed)ease-out;
@@ -101,6 +111,7 @@ line-height: 15px;
   .sidebar_link svg {
     width: 2rem;
     min-width: 2rem;
+
    
   }
   

@@ -1,5 +1,5 @@
 // import styles from './SidebarAccordion.module.css';
-import { MdPlayArrow } from 'react-icons/md';
+import { MdPlayArrow, MdOutlineArrowDropDown } from 'react-icons/md';
 import styles from './Sidebar.module.css';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -21,7 +21,7 @@ export default function SidebarAccordion(props: SidebarAccordionProps) {
     const { children, showSidebar, idx, item } = props;
     const [isOpen, setIsOpen] = useState(false);
 
-    console.log(item);
+    console.log(showSidebar);
     const openStateContent = (
         <motion.div
             key='content'
@@ -41,17 +41,25 @@ export default function SidebarAccordion(props: SidebarAccordionProps) {
             </div>
         </motion.div>
     );
+
+    // This is to prevent the sidebar items from rendering their contents when the sidebar is closed
+    const showOpenContentOrNull = showSidebar ? openStateContent : '';
+
+    const sidebarIconStyle = isOpen ? styles.open_link : null;
+
     return (
         <>
             <motion.li key={idx} className={styles.sidebar_item} onClick={() => setIsOpen(!isOpen)}>
                 <div className={styles.sidebar_link}>
-                    {showSidebar && <MdPlayArrow size={12} color='#ffffff' />}
+                    {showSidebar && (
+                        <MdPlayArrow size={12} color='#ffffff' className={sidebarIconStyle} />
+                    )}
                     <img src={item.icon} alt={item.name} width='20px' />
 
                     <span className={styles.link_text}>{item.name}</span>
                 </div>
             </motion.li>
-            <AnimatePresence>{isOpen && openStateContent}</AnimatePresence>
+            <AnimatePresence>{isOpen && showOpenContentOrNull}</AnimatePresence>
         </>
     );
 }
