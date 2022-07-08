@@ -9,14 +9,15 @@ export default function TopTokens() {
         </div>
     );
 
-    const mapItems = [1, 2, 3, 4, 5, 6];
+    const mapItems = [1, 2, 3, 4, 5, 6, 7];
     return (
         <div className={styles.container}>
             {header}
-
-            {mapItems.map((item, idx) => (
-                <TopTokensCard key={idx} />
-            ))}
+            <div className={styles.content}>
+                {mapItems.map((item, idx) => (
+                    <TopTokensCard key={idx} />
+                ))}
+            </div>
         </div>
     );
 }
