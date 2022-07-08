@@ -11,16 +11,19 @@ import ConfirmEditModal from '../../../components/Trade/Edit/ConfirmEditModal/Co
 import { useModal } from '../../../components/Global/Modal/useModal';
 import { useState, useEffect } from 'react';
 import EditDenominationSwitch from '../../../components/Trade/Edit/EditDenominationSwitch/EditDenominationSwitch';
+
+// import { PositionIF } from '../../../utils/interfaces/PositionIF';
+import { Position2 } from '../../../utils/state/graphDataSlice';
 import {
     getPinnedPriceValuesFromTicks,
     getPinnedPriceValuesFromDisplayPrices,
 } from '../Range/rangeFunctions';
 import truncateDecimals from '../../../utils/data/truncateDecimals';
-import { PositionIF } from '../../../utils/interfaces/PositionIF';
+// import { PositionIF } from '../../../utils/interfaces/PositionIF';
 import { tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
 interface PositionState {
-    position: PositionIF;
+    position: Position2;
 }
 
 export default function Edit() {
@@ -270,8 +273,8 @@ export default function Edit() {
 
     const { positionHash } = useParams();
 
-    const baseTokenOfPosition = position.pool.base;
-    const quoteTokenOfPosition = position.pool.quote;
+    const baseTokenOfPosition = position.base;
+    const quoteTokenOfPosition = position.quote;
     const userLocalStorage = localStorage.getItem('user');
     const tokens = userLocalStorage ? JSON.parse(userLocalStorage).tokens : null;
 

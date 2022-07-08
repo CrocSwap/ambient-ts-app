@@ -85,8 +85,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         isOutOfRange,
         rangeSpanAboveCurrentPrice,
         activeTokenListsChanged,
-        indicateActiveTokenListsChanged
-
+        indicateActiveTokenListsChanged,
     } = props;
 
     const dispatch = useAppDispatch();

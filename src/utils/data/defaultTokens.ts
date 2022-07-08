@@ -3,7 +3,8 @@ export const ropstenETH = {
     chainId: 3,
     decimals: 18,
     fromList: '/ambient-token-list.json',
-    logoURI: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
+    logoURI:
+        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
     name: 'Native Ether',
     symbol: 'ETH',
 };
@@ -13,7 +14,8 @@ export const ropstenWBTC = {
     chainId: 3,
     decimals: 8,
     fromList: '/ambient-token-list.json',
-    logoURI: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599/logo.png',
+    logoURI:
+        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599/logo.png',
     name: 'Wrapped BTC',
     symbol: 'WBTC',
 };
@@ -33,7 +35,8 @@ export const ropstenUSDC = {
     chainId: 3,
     decimals: 6,
     fromList: '/ambient-token-list.json',
-    logoURI: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
+    logoURI:
+        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
     name: 'USDCoin',
     symbol: 'USDC',
 };
@@ -53,7 +56,8 @@ export const mainnetUSDC = {
     chainId: 1,
     decimals: 6,
     fromList: '/ambient-token-list.json',
-    logoURI: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
+    logoURI:
+        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
     name: 'USDCoin',
     symbol: 'USDC',
 };
@@ -63,7 +67,8 @@ export const mainnetWBTC = {
     chainId: 1,
     decimals: 8,
     fromList: '/ambient-token-list.json',
-    logoURI: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599/logo.png',
+    logoURI:
+        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599/logo.png',
     name: 'Wrapped BTC',
     symbol: 'WBTC',
 };
@@ -110,5 +115,5 @@ export const defaultTokens = [
     mainnetWBTC,
     kovanDAI,
     kovanUSDC,
-    kovanETH
+    kovanETH,
 ];
