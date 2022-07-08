@@ -67,6 +67,13 @@
     transition: var(--animation-speed);
   }
 
+  .sidebar_link:hover svg{
+    color: white;
+    cursor: pointer;
+    transition: all var(--animation-speed) ease-in-out;
+  
+  }
+
 
   .sidebar_item{
 
