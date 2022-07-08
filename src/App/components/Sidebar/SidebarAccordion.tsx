@@ -1,0 +1,65 @@
+// import styles from './SidebarAccordion.module.css';
+import { MdPlayArrow } from 'react-icons/md';
+import styles from './Sidebar.module.css';
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+
+interface Item {
+    name: string;
+    icon: string;
+}
+
+interface SidebarAccordionProps {
+    children?: React.ReactNode;
+    showSidebar: boolean;
+
+    item: Item;
+    idx: number;
+}
+
+export default function SidebarAccordion(props: SidebarAccordionProps) {
+    const { showSidebar, idx, item } = props;
+    const [isOpen, setIsOpen] = useState(false);
+
+    console.log(showSidebar);
+    const openStateContent = (
+        <motion.div
+            key='content'
+            initial='collapsed'
+            animate='open'
+            exit='collapsed'
+            variants={{
+                open: { opacity: 1, height: 'auto' },
+                collapsed: { opacity: 0, height: 0 },
+            }}
+            transition={{ duration: 0.8, ease: [0.04, 0.62, 0.23, 0.98] }}
+        >
+            <div style={{ fontSize: '10px' }} className={styles.sidebar_item_content}>
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Debitis unde cumque, dicta
+                maxime sequi ad? Minus explicabo accusamus dignissimos neque impedit autem nemo sint
+                adipisci dolore ipsam
+            </div>
+        </motion.div>
+    );
+
+    // This is to prevent the sidebar items from rendering their contents when the sidebar is closed
+    const showOpenContentOrNull = showSidebar ? openStateContent : '';
+
+    const sidebarIconStyle = isOpen ? styles.open_link : null;
+
+    return (
+        <>
+            <motion.li key={idx} className={styles.sidebar_item} onClick={() => setIsOpen(!isOpen)}>
+                <div className={styles.sidebar_link}>
+                    {showSidebar && (
+                        <MdPlayArrow size={12} color='#ffffff' className={sidebarIconStyle} />
+                    )}
+                    <img src={item.icon} alt={item.name} width='20px' />
+
+                    <span className={styles.link_text}>{item.name}</span>
+                </div>
+            </motion.li>
+            <AnimatePresence>{isOpen && showOpenContentOrNull}</AnimatePresence>
+        </>
+    );
+}

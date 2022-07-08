@@ -1,12 +1,13 @@
 import styles from './Sidebar.module.css';
 import { BiSearch } from 'react-icons/bi';
-import { MdPlayArrow, MdDoubleArrow } from 'react-icons/md';
+import { MdDoubleArrow } from 'react-icons/md';
 import favouritePoolsImage from '../../../assets/images/sidebarImages/favouritePools.svg';
 import openOrdersImage from '../../../assets/images/sidebarImages/openOrders.svg';
 import rangePositionsImage from '../../../assets/images/sidebarImages/rangePositions.svg';
 import recentTransactionsImage from '../../../assets/images/sidebarImages/recentTransactions.svg';
 import topPoolsImage from '../../../assets/images/sidebarImages/topPools.svg';
 import topTokensImage from '../../../assets/images/sidebarImages/topTokens.svg';
+import SidebarAccordion from './SidebarAccordion';
 
 interface SidebarProps {
     showSidebar: boolean;
@@ -58,26 +59,35 @@ export default function Sidebar(props: SidebarProps): React.ReactElement<Sidebar
                     {searchContainer}
 
                     {navItems1.map((item, idx) => (
-                        <li key={idx} className={styles.sidebar_item}>
+                        <>
+                            {/* <li key={idx} className={styles.sidebar_item}>
                             <div className={styles.sidebar_link}>
                                 {showSidebar && <MdPlayArrow size={12} color='#ffffff' />}
                                 <img src={item.icon} alt={item.name} width='20px' />
 
                                 <span className={styles.link_text}>{item.name}</span>
                             </div>
-                        </li>
+                        </li> */}
+                            <SidebarAccordion showSidebar={showSidebar} idx={idx} item={item} />
+                        </>
                     ))}
 
                     <div className={styles.bottom_elements}>
                         {navItems2.map((item, idx) => (
-                            <li key={idx} className={styles.sidebar_item} id='themeButton'>
-                                <div className={styles.sidebar_link}>
-                                    {showSidebar && <MdPlayArrow size={12} color='#ffffff' />}
-                                    <img src={item.icon} alt={item.name} width='20px' />
+                            // <li key={idx} className={styles.sidebar_item} >
+                            //     <div className={styles.sidebar_link}>
+                            //         {showSidebar && <MdPlayArrow size={12} color='#ffffff' />}
+                            //         <img src={item.icon} alt={item.name} width='20px' />
 
-                                    <span className={styles.link_text}>{item.name}</span>
-                                </div>
-                            </li>
+                            //         <span className={styles.link_text}>{item.name}</span>
+                            //     </div>
+                            // </li>
+                            <SidebarAccordion
+                                showSidebar={showSidebar}
+                                idx={idx}
+                                item={item}
+                                key={idx}
+                            />
                         ))}
                     </div>
                 </ul>

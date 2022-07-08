@@ -92,13 +92,14 @@ export default function TestPage() {
         //         </CarouselItem>
         //     </Carousel>
         //     </main>
-
-        <main className={styles.container}>
-            {/* <ul className={styles.token_list_selects_ul}>{tokenListElements}</ul> */}
-            <PositionHeader />
-            {mapItems.map((item, idx) => (
-                <PositionCard key={idx} />
-            ))}
-        </main>
+        <>
+            <main className={styles.container}>
+                {/* <ul className={styles.token_list_selects_ul}>{tokenListElements}</ul> */}
+                <PositionHeader />
+                {mapItems.map((item, idx) => (
+                    <PositionCard key={idx} />
+                ))}
+            </main>
+        </>
     );
 }

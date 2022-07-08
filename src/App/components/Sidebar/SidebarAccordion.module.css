@@ -198,6 +198,8 @@ line-height: 15px;
 
 
 
+
+
   /* END OF SEARCH CONTAINER */
   
   /* Small screens */
@@ -221,11 +223,6 @@ line-height: 15px;
     .sidebar_link {
       justify-content: center;
     }
-    .sidebar_item_content{
-      display: none;
-    }
-    
-    
   
    
     main {
