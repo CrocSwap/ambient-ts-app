@@ -1,0 +1,10 @@
+.container{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    font-weight: 300;
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    color: #BDBDBD;
+}
