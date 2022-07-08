@@ -304,8 +304,9 @@ export default function App() {
     } = useWebSocket(
         allPositionsCacheSubscriptionEndpoint,
         {
+            // share:  true,
             // onOpen: () => console.log('opened'),
-            // onClose: () => console.log('closed'),
+            onClose: () => console.log('allPositions websocket connection closed'),
             // Will attempt to reconnect on all close events, such as server shutting down
             shouldReconnect: () => true,
         },
@@ -359,8 +360,9 @@ export default function App() {
     } = useWebSocket(
         userPositionsCacheSubscriptionEndpoint,
         {
+            // share: true,
             // onOpen: () => console.log('opened'),
-            // onClose: () => console.log('closed'),
+            onClose: () => console.log('userPositions websocket connection closed'),
             // Will attempt to reconnect on all close events, such as server shutting down
             shouldReconnect: () => true,
         },
