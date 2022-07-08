@@ -51,6 +51,7 @@ export default function SidebarAccordion(props: SidebarAccordionProps) {
                     <span className={styles.link_text}>{item.name}</span>
                 </div>
             </motion.li>
+            <AnimatePresence>{isOpen && openStateContent}</AnimatePresence>
         </>
     );
 }
