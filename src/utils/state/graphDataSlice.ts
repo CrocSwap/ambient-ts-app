@@ -44,8 +44,10 @@ export interface Position2 {
     baseTokenSymbol: string;
     quoteTokenSymbol: string;
     poolPriceInTicks: number;
-    lowRangeDisplay: string;
-    highRangeDisplay: string;
+    lowRangeDisplayInBase: string;
+    highRangeDisplayInBase: string;
+    lowRangeDisplayInQuote: string;
+    highRangeDisplayInQuote: string;
     tokenAQtyDisplay: string;
     tokenBQtyDisplay: string;
     baseTokenDecimals: number;

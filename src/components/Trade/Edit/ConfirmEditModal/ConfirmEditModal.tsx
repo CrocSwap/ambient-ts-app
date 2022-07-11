@@ -49,8 +49,8 @@ export default function ConfirmEditModal(props: ConfirmEditModalProps) {
                 tokenAQtyDisplay={position.tokenAQtyDisplay}
                 tokenBQtyDisplay={position.tokenBQtyDisplay}
                 ambient={position.ambient}
-                lowRangeDisplay={position.lowRangeDisplay}
-                highRangeDisplay={position.highRangeDisplay}
+                // lowRangeDisplay={position.lowRangeDisplayInBase}
+                // highRangeDisplay={position.highRangeDisplayInBase}
                 pinnedMinPriceDisplayTruncated={pinnedMinPriceDisplayTruncated}
                 pinnedMaxPriceDisplayTruncated={pinnedMaxPriceDisplayTruncated}
                 lowPriceDisplayTruncated={lowPriceDisplayTruncated}

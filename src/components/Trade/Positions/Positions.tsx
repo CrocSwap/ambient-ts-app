@@ -20,6 +20,8 @@ export default function Positions(props: PositionsProps) {
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
+    const isDenomBase = tradeData.isDenomBase;
+
     const tokenAAddress = tradeData.tokenA.address;
     const tokenBAddress = tradeData.tokenB.address;
 
@@ -41,6 +43,7 @@ export default function Positions(props: PositionsProps) {
                       tokenBAddress={tokenBAddress}
                       account={account ?? undefined}
                       isAuthenticated={isAuthenticated}
+                      isDenomBase={isDenomBase}
                   />
               ))
               .reverse()
@@ -56,6 +59,7 @@ export default function Positions(props: PositionsProps) {
                       tokenBAddress={tokenBAddress}
                       account={account ?? undefined}
                       isAuthenticated={isAuthenticated}
+                      isDenomBase={isDenomBase}
                   />
               ))
               .reverse();

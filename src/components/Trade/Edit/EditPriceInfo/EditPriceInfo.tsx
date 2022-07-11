@@ -9,8 +9,8 @@ interface EditPriceInfoIF {
     tokenBQtyDisplay: string;
     baseTokenSymbol: string;
     ambient: boolean;
-    lowRangeDisplay: string;
-    highRangeDisplay: string;
+    // lowRangeDisplay: string;
+    // highRangeDisplay: string;
     denominationsInBase: boolean;
     pinnedMinPriceDisplayTruncated: string;
     pinnedMaxPriceDisplayTruncated: string;

@@ -91,10 +91,10 @@ export default function Edit() {
     // const [rangeHighBoundNonDisplayPrice, setRangeHighBoundNonDisplayPrice] = useState(0);
 
     const [pinnedMinPriceDisplayTruncated, setPinnedMinPriceDisplayTruncated] = useState(
-        position.lowRangeDisplay,
+        position.lowRangeDisplayInBase,
     );
     const [pinnedMaxPriceDisplayTruncated, setPinnedMaxPriceDisplayTruncated] = useState(
-        position.highRangeDisplay,
+        position.highRangeDisplayInBase,
     );
 
     const currentPoolPriceTick = position.poolPriceInTicks ?? 0;
@@ -358,8 +358,8 @@ export default function Edit() {
         rangeHighTick: rangeHighTick,
         setRangeLowTick: setRangeLowTick,
         setRangeHighTick: setRangeHighTick,
-        minPrice: position?.lowRangeDisplay,
-        maxPrice: position?.highRangeDisplay,
+        minPrice: position?.lowRangeDisplayInBase,
+        maxPrice: position?.highRangeDisplayInBase,
     };
     // Props for <CurrencyDisplayContainer/> React element
 
@@ -382,8 +382,8 @@ export default function Edit() {
         ambient: position.ambient,
         lowTick: position.bidTick,
         highTick: position.askTick,
-        lowRangeDisplay: position.lowRangeDisplay,
-        highRangeDisplay: position.highRangeDisplay,
+        lowRangeDisplay: position.lowRangeDisplayInBase,
+        highRangeDisplay: position.highRangeDisplayInBase,
         pinnedMinPriceDisplayTruncated: pinnedMinPriceDisplayTruncated,
         pinnedMaxPriceDisplayTruncated: pinnedMaxPriceDisplayTruncated,
         lowPriceDisplayTruncated: lowPriceDisplayTruncated,
