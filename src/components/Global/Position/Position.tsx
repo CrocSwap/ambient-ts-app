@@ -151,6 +151,8 @@ export default function Position(props: PositionProps) {
         highRangeDisplayInBase: position.highRangeDisplayInBase,
         lowRangeDisplayInQuote: position.lowRangeDisplayInQuote,
         highRangeDisplayInQuote: position.highRangeDisplayInQuote,
+        baseTokenLogoURI: position.baseTokenLogoURI,
+        quoteTokenLogoURI: position.quoteTokenLogoURI,
         isDenomBase: props.isDenomBase,
     };
 

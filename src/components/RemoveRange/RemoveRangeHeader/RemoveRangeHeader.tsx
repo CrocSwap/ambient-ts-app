@@ -6,6 +6,9 @@ interface IRemoveRangeHeaderProps {
     isAmbient: boolean;
     baseTokenSymbol: string;
     quoteTokenSymbol: string;
+    baseTokenLogoURI: string;
+    quoteTokenLogoURI: string;
+    isDenomBase: boolean;
 }
 
 export default function RemoveRangeHeader(props: IRemoveRangeHeaderProps) {
@@ -13,12 +16,18 @@ export default function RemoveRangeHeader(props: IRemoveRangeHeaderProps) {
         <div className={styles.container}>
             <div className={styles.token_info}>
                 <img
-                    src='https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png'
+                    src={props.isDenomBase ? props.baseTokenLogoURI : props.quoteTokenLogoURI}
+                    // src='https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png'
                     alt=''
                 />
-                <img src='https://cryptologos.cc/logos/usd-coin-usdc-logo.png' alt='' />
+                <img
+                    src={props.isDenomBase ? props.quoteTokenLogoURI : props.baseTokenLogoURI}
+                    alt=''
+                />
+                {/* <img src='https://cryptologos.cc/logos/usd-coin-usdc-logo.png' alt='' /> */}
                 <span>
-                    {props.baseTokenSymbol} / {props.quoteTokenSymbol}
+                    {props.isDenomBase ? props.baseTokenSymbol : props.quoteTokenSymbol} /{' '}
+                    {props.isDenomBase ? props.quoteTokenSymbol : props.baseTokenSymbol}
                 </span>
             </div>
             <RangeStatus isInRange={props.isPositionInRange} isAmbient={props.isAmbient} />
