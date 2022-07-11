@@ -80,8 +80,8 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         !isTokenAPrimaryLocal ? tradeData?.primaryQuantity : '',
     );
 
-    const tokenADecimals = tokenPair.dataTokenA.decimals;
-    const tokenBDecimals = tokenPair.dataTokenB.decimals;
+    // const tokenADecimals = tokenPair.dataTokenA.decimals;
+    // const tokenBDecimals = tokenPair.dataTokenB.decimals;
 
     useEffect(() => {
         if (tradeData) {
@@ -180,7 +180,9 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                 : poolPriceDisplay * parseFloat(tokenAQtyLocal);
             handleSwapButtonMessage(parseFloat(tokenAQtyLocal));
         }
-        const truncatedTokenBQty = truncateDecimals(rawTokenBQty, tokenBDecimals).toString();
+        const truncatedTokenBQty =
+            rawTokenBQty < 100000 ? rawTokenBQty.toPrecision(6) : truncateDecimals(rawTokenBQty, 0);
+        // const truncatedTokenBQty = truncateDecimals(rawTokenBQty, tokenBDecimals).toString();
 
         setTokenBQtyLocal(truncatedTokenBQty);
         setTokenBInputQty(truncatedTokenBQty);
@@ -216,7 +218,9 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                 : poolPriceDisplay * parseFloat(tokenAQtyLocal);
             handleSwapButtonMessage(parseFloat(tokenAQtyLocal));
         }
-        const truncatedTokenBQty = truncateDecimals(rawTokenBQty, tokenBDecimals).toString();
+        const truncatedTokenBQty =
+            rawTokenBQty < 100000 ? rawTokenBQty.toPrecision(6) : truncateDecimals(rawTokenBQty, 0);
+        // const truncatedTokenBQty = truncateDecimals(rawTokenBQty, tokenBDecimals).toString();
 
         setTokenBQtyLocal(truncatedTokenBQty);
         setTokenBInputQty(truncatedTokenBQty);
@@ -248,7 +252,9 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         }
         handleSwapButtonMessage(rawTokenAQty);
 
-        const truncatedTokenAQty = truncateDecimals(rawTokenAQty, tokenADecimals).toString();
+        const truncatedTokenAQty =
+            rawTokenAQty < 100000 ? rawTokenAQty.toPrecision(6) : truncateDecimals(rawTokenAQty, 0);
+        // const truncatedTokenAQty = truncateDecimals(rawTokenAQty, tokenADecimals).toString();
 
         setTokenAQtyLocal(truncatedTokenAQty);
         setTokenAInputQty(truncatedTokenAQty);
@@ -282,7 +288,10 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         }
         handleSwapButtonMessage(rawTokenAQty);
 
-        const truncatedTokenAQty = truncateDecimals(rawTokenAQty, tokenADecimals).toString();
+        const truncatedTokenAQty =
+            rawTokenAQty < 100000 ? rawTokenAQty.toPrecision(6) : truncateDecimals(rawTokenAQty, 0);
+
+        // const truncatedTokenAQty = truncateDecimals(rawTokenAQty, tokenADecimals).toString();
 
         setTokenAQtyLocal(truncatedTokenAQty);
         setTokenAInputQty(truncatedTokenAQty);
