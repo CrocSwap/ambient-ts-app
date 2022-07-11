@@ -12,6 +12,7 @@ import SidebarAccordion from './SidebarAccordion';
 import TopTokens from '../../../components/Global/TopTokens/TopTokens';
 import TopPools from '../../../components/Global/TopPools/TopPools';
 import SidebarRangePositions from '../../../components/Global/SidebarRangePositions/SidebarRangePositions';
+import SidebarLimitOrders from '../../../components/Global/SidebarLimitOrders/SidebarLimitOrders';
 interface SidebarProps {
     showSidebar: boolean;
     toggleSidebar: (event: React.MouseEvent<HTMLDivElement>) => void;
@@ -24,7 +25,7 @@ export default function Sidebar(props: SidebarProps): React.ReactElement<Sidebar
         { name: 'Top Tokens', icon: topTokensImage, data: <TopTokens /> },
         { name: 'Top Pools', icon: topPoolsImage, data: <TopPools /> },
         { name: 'Range Positions', icon: rangePositionsImage, data: <SidebarRangePositions /> },
-        { name: 'Open Orders', icon: openOrdersImage, data: <TopTokens /> },
+        { name: 'Limit Orders', icon: openOrdersImage, data: <SidebarLimitOrders /> },
     ];
 
     const navItems2 = [
