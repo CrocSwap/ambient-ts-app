@@ -1,8 +1,8 @@
 // START: Import Local Files
 import styles from './EditDenominationSwitch.module.css';
 // import { TokenPairIF } from '../../../../utils/interfaces/exports';
-// import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
-// import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
+import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
+import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
 
 // interface for props
 interface EditDenominationSwitchPropsIF {
@@ -12,7 +12,7 @@ interface EditDenominationSwitchPropsIF {
     // isOnTradeRoute?: boolean;
     // isTokenABase: boolean;
     denominationsInBase: boolean;
-    setDenominationsInBase: React.Dispatch<React.SetStateAction<boolean>>;
+    // setDenominationsInBase: React.Dispatch<React.SetStateAction<boolean>>;
     quoteTokenSymbol: string;
     baseTokenSymbol: string;
 }
@@ -23,9 +23,8 @@ interface EditDenominationSwitchPropsIF {
 
 export default function EditDenominationSwitch(props: EditDenominationSwitchPropsIF) {
     // const { tokenPair, isTokenABase, poolPriceDisplay, didUserFlipDenom } = props;
-    const { denominationsInBase, setDenominationsInBase, baseTokenSymbol, quoteTokenSymbol } =
-        props;
-    // const dispatch = useAppDispatch();
+    const { denominationsInBase, baseTokenSymbol, quoteTokenSymbol } = props;
+    const dispatch = useAppDispatch();
 
     // TODO:  @Junior, if both buttons have the same action of reversing the current
     // TODO:  ... value of `toggleDenomination`, let's do just one button with two
@@ -53,14 +52,15 @@ export default function EditDenominationSwitch(props: EditDenominationSwitchProp
                     // tokenToHighlight === 'A' ? styles.active_button : styles.non_active_button
                     denominationsInBase ? styles.active_button : styles.non_active_button
                 }
-                onClick={() => setDenominationsInBase(!denominationsInBase)}
-                // onClick={() => dispatch(toggleDidUserFlipDenom())}
+                // onClick={() => setDenominationsInBase(!denominationsInBase)}
+                onClick={() => dispatch(toggleDidUserFlipDenom())}
             >
                 {baseTokenSymbol}
             </button>
             <button
                 className={!denominationsInBase ? styles.active_button : styles.non_active_button}
-                onClick={() => setDenominationsInBase(!denominationsInBase)}
+                // onClick={() => setDenominationsInBase(!denominationsInBase)}
+                onClick={() => dispatch(toggleDidUserFlipDenom())}
             >
                 {quoteTokenSymbol}
             </button>

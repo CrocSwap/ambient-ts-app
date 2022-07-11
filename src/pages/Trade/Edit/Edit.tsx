@@ -11,6 +11,11 @@ import ConfirmEditModal from '../../../components/Trade/Edit/ConfirmEditModal/Co
 import { useModal } from '../../../components/Global/Modal/useModal';
 import { useState, useEffect } from 'react';
 import EditDenominationSwitch from '../../../components/Trade/Edit/EditDenominationSwitch/EditDenominationSwitch';
+// import {
+//     tradeData as TradeDataIF,
+//     toggleDidUserFlipDenom,
+// } from '../../../utils/state/tradeDataSlice';
+import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 
 // import { PositionIF } from '../../../utils/interfaces/PositionIF';
 import { Position2 } from '../../../utils/state/graphDataSlice';
@@ -30,6 +35,10 @@ export default function Edit() {
     const [isModalOpen, openModal, closeModal] = useModal();
 
     const location = useLocation();
+
+    // const dispatch = useAppDispatch();
+
+    const tradeData = useAppSelector((state) => state.tradeData);
 
     // Redirect if we don't have a position in state(just url)
     const state = location.state as PositionState;
@@ -54,7 +63,8 @@ export default function Edit() {
     const [initializationComplete, setInitializationComplete] = useState(false);
 
     const isAdvancedModeActive = true;
-    const [denominationsInBase, setDenominationsInBase] = useState(true);
+    // const [denominationsInBase, setDenominationsInBase] = useState(true);
+    const denominationsInBase = tradeData.isDenomBase;
 
     useEffect(() => {
         if (isAdvancedModeActive) {
@@ -382,7 +392,7 @@ export default function Edit() {
 
     const editDenominationSwitchProps = {
         denominationsInBase: denominationsInBase,
-        setDenominationsInBase: setDenominationsInBase,
+        // setDenominationsInBase: dispatch(toggleDidUserFlipDenom),
         quoteTokenSymbol: position.quoteTokenSymbol,
         baseTokenSymbol: position.baseTokenSymbol,
     };
