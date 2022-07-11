@@ -4,7 +4,7 @@ export default function SidebarRecentTransactions() {
     const header = (
         <div className={styles.header}>
             <div>Pool</div>
-            <div>Price</div>
+            <div>Type</div>
             <div>Amount</div>
         </div>
     );

@@ -12,7 +12,7 @@ export default function SidebarRecentTransactionsCard() {
     return (
         <div className={styles.container}>
             <div>Pool</div>
-            <div>Price</div>
+            <div>Type</div>
             <div className={styles.status_display}>
                 Amount
                 {tokenDisplay}

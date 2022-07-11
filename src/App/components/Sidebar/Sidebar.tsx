@@ -14,6 +14,7 @@ import TopPools from '../../../components/Global/TopPools/TopPools';
 import FavoritePools from '../../../components/Global/FavoritePools/FavoritePools';
 import SidebarRangePositions from '../../../components/Global/SidebarRangePositions/SidebarRangePositions';
 import SidebarLimitOrders from '../../../components/Global/SidebarLimitOrders/SidebarLimitOrders';
+import SidebarRecentTransactions from '../../../components/Global/SidebarRecentTransactions/SidebarRecentTransactions';
 interface SidebarProps {
     showSidebar: boolean;
     toggleSidebar: (event: React.MouseEvent<HTMLDivElement>) => void;
@@ -31,7 +32,11 @@ export default function Sidebar(props: SidebarProps): React.ReactElement<Sidebar
 
     const navItems2 = [
         { name: 'Favorite Pools', icon: favouritePoolsImage, data: <FavoritePools /> },
-        { name: 'Recent Transactions', icon: recentTransactionsImage, data: <TopTokens /> },
+        {
+            name: 'Recent Transactions',
+            icon: recentTransactionsImage,
+            data: <SidebarRecentTransactions />,
+        },
     ];
 
     const searchContainer = (
