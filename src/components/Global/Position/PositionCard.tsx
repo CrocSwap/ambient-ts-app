@@ -185,7 +185,14 @@ export default function PositionCard(props: PositionCardProps) {
     return (
         <div className={styles.container}>
             <div className={styles.position_row}>
-                <p className={`${styles.hide_ipad} ${styles.account_style}`}>0xaBcD...1234</p>
+                <p
+                    className={`${styles.hide_ipad} ${styles.account_style} ${
+                        ensName ? styles.ambient_text : null
+                    }`}
+                >
+                    {' '}
+                    {ensName ? ensName : ownerIdTruncated}
+                </p>
                 <p className={`${styles.hide_ipad} ${styles.account_style}`}>0xAbCd...9876</p>
 
                 <div className={styles.hide_desktop}>

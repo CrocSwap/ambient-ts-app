@@ -87,6 +87,17 @@ line-height: 15px;
     line-height: 15px;  
     color: #BDBDBD;
 }
+
+.ambient_text{
+    background: var(--title-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+  }
+  
 .apy{
     font-family: 'Lexend Deca';
 font-style: normal;
