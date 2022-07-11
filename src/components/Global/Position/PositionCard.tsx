@@ -65,15 +65,18 @@ export default function PositionCard(props: PositionCardProps) {
     function openRemoveModal() {
         setCurrentModal('remove');
         openModal();
+        handleClose();
     }
 
     function openHarvestModal() {
         setCurrentModal('harvest');
         openModal();
+        handleClose();
     }
     function openDetailsModal() {
         setCurrentModal('details');
         openModal();
+        handleClose();
     }
     //  END OF MODAL FUNCTIONALITY
 
@@ -225,13 +228,13 @@ export default function PositionCard(props: PositionCardProps) {
                     onClose={handleClose}
                     className={classes.menu}
                 >
-                    <MenuItem onClick={handleClose} className={classes.menuItem}>
+                    <MenuItem onClick={openHarvestModal} className={classes.menuItem}>
                         Harvest
                     </MenuItem>
                     <MenuItem onClick={handleClose} className={classes.menuItem}>
                         Edit
                     </MenuItem>
-                    <MenuItem onClick={handleClose} className={classes.menuItem}>
+                    <MenuItem onClick={openRemoveModal} className={classes.menuItem}>
                         Remove
                     </MenuItem>
                     <MenuItem onClick={handleClose} className={classes.menuItem}>
@@ -239,6 +242,7 @@ export default function PositionCard(props: PositionCardProps) {
                     </MenuItem>
                 </Menu>
             </div>
+            {modalOrNull}
         </div>
     );
 }
