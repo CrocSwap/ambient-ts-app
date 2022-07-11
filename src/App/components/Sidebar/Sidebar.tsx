@@ -1,21 +1,22 @@
 import styles from './Sidebar.module.css';
 import React from 'react';
 import { BiSearch } from 'react-icons/bi';
-import { MdDoubleArrow } from 'react-icons/md';
+// import { MdDoubleArrow } from 'react-icons/md';
 import favouritePoolsImage from '../../../assets/images/sidebarImages/favouritePools.svg';
 import openOrdersImage from '../../../assets/images/sidebarImages/openOrders.svg';
 import rangePositionsImage from '../../../assets/images/sidebarImages/rangePositions.svg';
 import recentTransactionsImage from '../../../assets/images/sidebarImages/recentTransactions.svg';
 import topPoolsImage from '../../../assets/images/sidebarImages/topPools.svg';
 import topTokensImage from '../../../assets/images/sidebarImages/topTokens.svg';
+import closeSidebarImage from '../../../assets/images/sidebarImages/closeSidebar.svg';
 import SidebarAccordion from './SidebarAccordion';
 
-import TopTokens from '../../../components/Global/TopTokens/TopTokens';
-import TopPools from '../../../components/Global/TopPools/TopPools';
-import FavoritePools from '../../../components/Global/FavoritePools/FavoritePools';
-import SidebarRangePositions from '../../../components/Global/SidebarRangePositions/SidebarRangePositions';
-import SidebarLimitOrders from '../../../components/Global/SidebarLimitOrders/SidebarLimitOrders';
-import SidebarRecentTransactions from '../../../components/Global/SidebarRecentTransactions/SidebarRecentTransactions';
+import TopTokens from '../../../components/Global/Sidebar/TopTokens/TopTokens';
+import TopPools from '../../../components/Global/Sidebar/TopPools/TopPools';
+import FavoritePools from '../../../components/Global/Sidebar/FavoritePools/FavoritePools';
+import SidebarRangePositions from '../../../components/Global/Sidebar/SidebarRangePositions/SidebarRangePositions';
+import SidebarLimitOrders from '../../../components/Global/Sidebar/SidebarLimitOrders/SidebarLimitOrders';
+import SidebarRecentTransactions from '../../../components/Global/Sidebar/SidebarRecentTransactions/SidebarRecentTransactions';
 interface SidebarProps {
     // setShowSidebar: SetStateAction<boolean>;
     showSidebar: boolean;
@@ -44,16 +45,19 @@ export default function Sidebar(props: SidebarProps): React.ReactElement<Sidebar
     ];
 
     const searchContainer = (
-        <div className={styles.search_container}>
-            <input
-                type='text'
-                id='box'
-                placeholder='Search anything...'
-                className={styles.search__box}
-            />
-            <div className={styles.search__icon}>
-                <BiSearch size={20} color='#CDC1FF' />
+        <div className={styles.main_search_container}>
+            <div className={styles.search_container}>
+                <div className={styles.search__icon} onClick={toggleSidebar}>
+                    <BiSearch size={20} color='#CDC1FF' />
+                </div>
+                <input
+                    type='text'
+                    id='box'
+                    placeholder='Search anything...'
+                    className={styles.search__box}
+                />
             </div>
+            <img src={closeSidebarImage} alt='close sidebar' onClick={toggleSidebar} />
         </div>
     );
 
@@ -62,14 +66,14 @@ export default function Sidebar(props: SidebarProps): React.ReactElement<Sidebar
         <div>
             <nav className={`${styles.sidebar} ${sidebarStyle}`}>
                 <ul className={styles.sidebar_nav}>
-                    <li className={styles.logo}>
+                    {/* <li className={styles.logo}>
                         <div className={`${styles.sidebar_link} ${styles.toggle_sidebar_icon}`}>
                             <div onClick={toggleSidebar}>
                                 <MdDoubleArrow size={20} color='#7371FC' />
-                                {/* <img src={sidebarExpandImage} alt="" /> */}
+                                
                             </div>
                         </div>
-                    </li>
+                    </li> */}
                     {searchContainer}
 
                     {navItems1.map((item, idx) => (
@@ -87,6 +91,7 @@ export default function Sidebar(props: SidebarProps): React.ReactElement<Sidebar
                                 idx={idx}
                                 item={item}
                                 toggleSidebar={toggleSidebar}
+                                key={idx}
                             />
                         </>
                     ))}
