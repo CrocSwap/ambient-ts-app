@@ -1,10 +1,10 @@
-import styles from './SidebarLimtOrders.module.css';
-import SidebarLimtOrdersCard from './SidebarLimtOrdersCard';
-export default function SidebarLimtOrders() {
+import styles from './SidebarLimitOrders.module.css';
+import SidebarLimitOrdersCard from './SidebarLimitOrdersCard';
+export default function SidebarLimitOrders() {
     const header = (
         <div className={styles.header}>
             <div>Pool</div>
-            <div>Range</div>
+            <div>Price</div>
             <div>Amount</div>
         </div>
     );
@@ -15,7 +15,7 @@ export default function SidebarLimtOrders() {
             {header}
             <div className={styles.content}>
                 {mapItems.map((item, idx) => (
-                    <SidebarLimtOrdersCard key={idx} />
+                    <SidebarLimitOrdersCard key={idx} />
                 ))}
             </div>
         </div>

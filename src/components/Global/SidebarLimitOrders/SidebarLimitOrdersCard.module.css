@@ -25,34 +25,19 @@
     align-items: center;
     gap: 4px;
 }
-.range_status_container{
-    width: 10.5px;
-    height: 10.5px;
+.token_container{
+    width: 15px;
+    height: 15px;
     display: flex;
     justify-content: center;
     align-items: center;
     /* padding: 2px; */
    
 
-    background: rgba(235, 235, 255, 0.25);
+    background: #ffffff;
     border-radius: 50%;
 }
-.inner_circle_1{
-    width: 8.5px;
-    height: 8.5px;
 
-    display: flex;
-    justify-content: center;
-
-    background: #71d7ad;
-    border-radius: 50%;
-
-}
-
-.inner_circle_1{
-    width: 7.5px;
-    height: 7.5px;
-    background: #41D18E;;
-    border-radius: 50%;
-
+.token_container img{
+    width: 12.68px;
 }
