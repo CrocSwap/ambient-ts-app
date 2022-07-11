@@ -1,4 +1,5 @@
 import styles from './Sidebar.module.css';
+import React from 'react';
 import { BiSearch } from 'react-icons/bi';
 import { MdDoubleArrow } from 'react-icons/md';
 import favouritePoolsImage from '../../../assets/images/sidebarImages/favouritePools.svg';
@@ -16,8 +17,11 @@ import SidebarRangePositions from '../../../components/Global/SidebarRangePositi
 import SidebarLimitOrders from '../../../components/Global/SidebarLimitOrders/SidebarLimitOrders';
 import SidebarRecentTransactions from '../../../components/Global/SidebarRecentTransactions/SidebarRecentTransactions';
 interface SidebarProps {
+    // setShowSidebar: SetStateAction<boolean>;
     showSidebar: boolean;
-    toggleSidebar: (event: React.MouseEvent<HTMLDivElement>) => void;
+    toggleSidebar: (
+        event: React.MouseEvent<HTMLDivElement> | React.MouseEvent<HTMLLIElement>,
+    ) => void;
 }
 
 export default function Sidebar(props: SidebarProps): React.ReactElement<SidebarProps> {
@@ -78,7 +82,12 @@ export default function Sidebar(props: SidebarProps): React.ReactElement<Sidebar
                                 <span className={styles.link_text}>{item.name}</span>
                             </div>
                         </li> */}
-                            <SidebarAccordion showSidebar={showSidebar} idx={idx} item={item} />
+                            <SidebarAccordion
+                                showSidebar={showSidebar}
+                                idx={idx}
+                                item={item}
+                                toggleSidebar={toggleSidebar}
+                            />
                         </>
                     ))}
 
@@ -93,6 +102,7 @@ export default function Sidebar(props: SidebarProps): React.ReactElement<Sidebar
                             //     </div>
                             // </li>
                             <SidebarAccordion
+                                toggleSidebar={toggleSidebar}
                                 showSidebar={showSidebar}
                                 idx={idx}
                                 item={item}

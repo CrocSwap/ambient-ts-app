@@ -70,7 +70,7 @@
   .sidebar_link:hover svg{
     color: white;
     cursor: pointer;
-    transition: all var(--animation-speed) ease-in-out;
+    /* transition: all var(--animation-speed) ease-in-out; */
   
   }
 
@@ -148,7 +148,7 @@ line-height: 15px;
 
   
   .logo svg:hover {
-    transform: scale(1.09);
+    /* transform: scale(1.09); */
     transition: all var(--animation-speed) ease-in-out;
   }
 
@@ -312,7 +312,7 @@ line-height: 15px;
       } */
 
       .search_container:hover .search__icon {
-      transform: scale(1.03);
+      /* transform: scale(1.03); */
       transition: all var(--animation-speed) ease-in-out
       }
   
