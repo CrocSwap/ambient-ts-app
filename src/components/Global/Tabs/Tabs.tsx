@@ -45,9 +45,24 @@ export default function Tabs(props: ITabsProps) {
         }
     }, [hasInitialized, isAllPositionsEnabled, JSON.stringify(userPositions)]);
 
+    let label = '';
+    switch (activeTab) {
+        case 'tab1':
+            label = 'Positions';
+            break;
+        case 'tab2':
+            label = 'Orders';
+            break;
+        case 'tab3':
+            label = 'TXs';
+            break;
+        default:
+            break;
+    }
+
     const positionsOnlyToggle = (
         <span className={styles.options_toggle}>
-            {isAllPositionsEnabled ? 'All Positions' : 'My Positions'}
+            {isAllPositionsEnabled ? 'All ' + label : 'My ' + label}
 
             <Toggle2
                 isOn={isAllPositionsEnabled}
@@ -83,7 +98,7 @@ export default function Tabs(props: ITabsProps) {
                         />
                     ))}
                 </ul>
-                <div className={styles.option_toggles}>{positionsOnlyToggle}</div>
+                <div className={styles.option_toggles}>{label ? positionsOnlyToggle : null}</div>
             </div>
             <div className={styles.tabs_outlet}>
                 <TabContent id='tab1' activeTab={activeTab}>
