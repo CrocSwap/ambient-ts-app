@@ -77,6 +77,108 @@ export default function PositionCard(props: PositionCardProps) {
     }
     //  END OF MODAL FUNCTIONALITY
 
+    const ownerId = position ? position.user : null;
+
+    const ensName = position?.userEnsName !== '' ? position.userEnsName : null;
+    const ownerIdTruncated = position ? truncateAddress(position.user, 18) : null;
+
+    const positionData = {
+        position: position,
+    };
+
+    let posHash;
+    if (position.ambient) {
+        posHash = ambientPosSlot(position.user, position.base, position.quote);
+    } else {
+        posHash = concPosSlot(
+            position.user,
+            position.base,
+            position.quote,
+            position.bidTick,
+            position.askTick,
+        );
+    }
+
+    const truncatedPosHash = truncateAddress(posHash as string, 18);
+
+    let isPositionInRange = true;
+
+    if (position.poolPriceInTicks) {
+        if (position.ambient) {
+            isPositionInRange = true;
+        } else if (
+            position.bidTick <= position.poolPriceInTicks &&
+            position.poolPriceInTicks <= position.askTick
+        ) {
+            isPositionInRange = true;
+        } else {
+            isPositionInRange = false;
+        }
+    }
+
+    const positionBaseAddressLowerCase = position.base.toLowerCase();
+    const positionQuoteAddressLowerCase = position.quote.toLowerCase();
+
+    const tokenAAddressLowerCase = tokenAAddress.toLowerCase();
+    const tokenBAddressLowerCase = tokenBAddress.toLowerCase();
+
+    const positionMatchesSelectedTokens =
+        (positionBaseAddressLowerCase === tokenAAddressLowerCase ||
+            positionQuoteAddressLowerCase === tokenAAddressLowerCase) &&
+        (positionBaseAddressLowerCase === tokenBAddressLowerCase ||
+            positionQuoteAddressLowerCase === tokenBAddressLowerCase);
+
+    const accountAddress = account ? account.toLowerCase() : null;
+
+    const displayAllOrOwned =
+        isAllPositionsEnabled || (ownerId === accountAddress && isAuthenticated);
+    const notDisplayAllOrOwned =
+        !isAllPositionsEnabled || (ownerId === accountAddress && isAuthenticated);
+
+    const removeRangeProps = {
+        isPositionInRange: isPositionInRange,
+        isAmbient: position.ambient,
+        baseTokenSymbol: position.baseTokenSymbol,
+        quoteTokenSymbol: position.quoteTokenSymbol,
+        lowRangeDisplayInBase: position.lowRangeDisplayInBase,
+        highRangeDisplayInBase: position.highRangeDisplayInBase,
+        lowRangeDisplayInQuote: position.lowRangeDisplayInQuote,
+        highRangeDisplayInQuote: position.highRangeDisplayInQuote,
+        baseTokenLogoURI: position.baseTokenLogoURI,
+        quoteTokenLogoURI: position.quoteTokenLogoURI,
+        isDenomBase: props.isDenomBase,
+    };
+
+    switch (currentModal) {
+        case 'remove':
+            modalContent = <RemoveRange {...removeRangeProps} />;
+            modalTitle = 'Remove Position';
+            break;
+        case 'edit':
+            modalContent = editContent;
+            modalTitle = 'Edit Position';
+            break;
+        case 'details':
+            modalContent = <RangeDetails {...removeRangeProps} />;
+            modalTitle = <RangeDetailsHeader />;
+            break;
+        case 'harvest':
+            modalContent = harvestContent;
+            modalTitle = 'Harvest Position';
+            break;
+    }
+    const mainModal = (
+        <Modal onClose={closeModal} title={modalTitle}>
+            {modalContent}
+        </Modal>
+    );
+
+    const modalOrNull = isModalOpen ? mainModal : null;
+
+    const rangeDisplay = props.isDenomBase
+        ? `${position.lowRangeDisplayInBase} - ${position.highRangeDisplayInBase}`
+        : `${position.lowRangeDisplayInQuote} - ${position.highRangeDisplayInQuote}`;
+
     return (
         <div className={styles.container}>
             <div className={styles.position_row}>
