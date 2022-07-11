@@ -987,6 +987,7 @@ export default function App() {
     const sidebarProps = {
         showSidebar: showSidebar,
         toggleSidebar: toggleSidebar,
+        // setShowSidebar : setShowSidebar
     };
 
     function updateDenomIsInBase() {
