@@ -182,6 +182,34 @@ export default function PositionCard(props: PositionCardProps) {
         ? `${position.lowRangeDisplayInBase} - ${position.highRangeDisplayInBase}`
         : `${position.lowRangeDisplayInQuote} - ${position.highRangeDisplayInQuote}`;
 
+    const minRange = props.isDenomBase
+        ? position.lowRangeDisplayInBase
+        : position.highRangeDisplayInBase;
+    const maxRange = props.isDenomBase
+        ? position.lowRangeDisplayInQuote
+        : position.highRangeDisplayInQuote;
+
+    const loggedInUserButtons = (
+        <>
+            {!position.ambient && (
+                <MenuItem onClick={openHarvestModal} className={classes.menuItem}>
+                    Harvest
+                </MenuItem>
+            )}
+
+            <MenuItem onClick={handleClose} className={classes.menuItem}>
+                Edit
+            </MenuItem>
+
+            <MenuItem onClick={openRemoveModal} className={classes.menuItem}>
+                Remove
+            </MenuItem>
+
+            <MenuItem onClick={handleClose} className={classes.menuItem}>
+                Details
+            </MenuItem>
+        </>
+    );
     return (
         <div className={styles.container}>
             <div className={styles.position_row}>
@@ -193,15 +221,15 @@ export default function PositionCard(props: PositionCardProps) {
                     {' '}
                     {ensName ? ensName : ownerIdTruncated}
                 </p>
-                <p className={`${styles.hide_ipad} ${styles.account_style}`}>0xAbCd...9876</p>
+                <p className={`${styles.hide_ipad} ${styles.account_style}`}> {truncatedPosHash}</p>
 
                 <div className={styles.hide_desktop}>
                     <p className={styles.account_style}>0xaBcD...1234</p>
                     <p className={styles.account_style}>0xAbCd...9876</p>
                 </div>
 
-                <p className={`${styles.hide_ipad} ${styles.min_max}`}>Min</p>
-                <p className={`${styles.hide_ipad} ${styles.min_max}`}> Max </p>
+                <p className={`${styles.hide_ipad} ${styles.min_max}`}>{minRange}</p>
+                <p className={`${styles.hide_ipad} ${styles.min_max}`}> {maxRange} </p>
 
                 <div className={styles.hide_desktop}>
                     <p className={styles.min_max}>Min</p>
@@ -215,7 +243,7 @@ export default function PositionCard(props: PositionCardProps) {
                 </div>
                 <p className={`${styles.hide_mobile} ${styles.apy}`}>APY</p>
 
-                <RangeStatus isInRange isAmbient={false} justSymbol />
+                <RangeStatus isInRange={isPositionInRange} isAmbient={position.ambient} />
                 <button className={`${styles.option_button} ${styles.hide_mobile}`}>
                     Reposition
                 </button>
@@ -235,15 +263,21 @@ export default function PositionCard(props: PositionCardProps) {
                     onClose={handleClose}
                     className={classes.menu}
                 >
-                    <MenuItem onClick={openHarvestModal} className={classes.menuItem}>
-                        Harvest
-                    </MenuItem>
-                    <MenuItem onClick={handleClose} className={classes.menuItem}>
-                        Edit
-                    </MenuItem>
-                    <MenuItem onClick={openRemoveModal} className={classes.menuItem}>
-                        Remove
-                    </MenuItem>
+                    {notDisplayAllOrOwned && !position.ambient && (
+                        <MenuItem onClick={openHarvestModal} className={classes.menuItem}>
+                            Harvest
+                        </MenuItem>
+                    )}
+                    {notDisplayAllOrOwned && (
+                        <MenuItem onClick={handleClose} className={classes.menuItem}>
+                            Edit
+                        </MenuItem>
+                    )}
+                    {notDisplayAllOrOwned && (
+                        <MenuItem onClick={openRemoveModal} className={classes.menuItem}>
+                            Remove
+                        </MenuItem>
+                    )}
                     <MenuItem onClick={handleClose} className={classes.menuItem}>
                         Details
                     </MenuItem>
