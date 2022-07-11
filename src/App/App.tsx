@@ -1021,6 +1021,7 @@ export default function App() {
                                     isWeb3Enabled={isWeb3Enabled}
                                     lastBlockNumber={lastBlockNumber}
                                     isTokenABase={isTokenABase}
+                                    poolPriceDisplay={poolPriceDisplay}
                                 />
                             }
                         >

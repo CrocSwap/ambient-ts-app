@@ -10,6 +10,7 @@ import Tabs from '../../components/Global/Tabs/Tabs';
 import { motion } from 'framer-motion';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { tradeData as TradeDataIF } from '../../utils/state/tradeDataSlice';
+import truncateDecimals from '../../utils/data/truncateDecimals';
 
 interface ITradeProps {
     account: string;
@@ -17,6 +18,7 @@ interface ITradeProps {
     isWeb3Enabled: boolean;
     lastBlockNumber: number;
     isTokenABase: boolean;
+    poolPriceDisplay: number;
 }
 
 export default function Trade(props: ITradeProps) {
@@ -46,6 +48,11 @@ export default function Trade(props: ITradeProps) {
     const denomInTokenA = (denomInBase && isTokenABase) || (!denomInBase && !isTokenABase);
     const tokenASymbol = tradeData.tokenA.symbol;
     const tokenBSymbol = tradeData.tokenB.symbol;
+    const poolPriceDisplay = denomInBase ? 1 / props.poolPriceDisplay : props.poolPriceDisplay;
+    const truncatedPoolPrice =
+        poolPriceDisplay < 2
+            ? truncateDecimals(poolPriceDisplay, 4)
+            : truncateDecimals(poolPriceDisplay, 2);
 
     // These would be move to their own components, presumably the graph component
     const tokenInfo = (
@@ -82,7 +89,7 @@ export default function Trade(props: ITradeProps) {
     const timeFrameContent = (
         <div className={styles.time_frame_container}>
             <div className={styles.left_side}>
-                <span className={styles.amount}>$2,658.00</span>
+                <span className={styles.amount}>${truncatedPoolPrice}</span>
                 <span className={styles.change}>+8.57% | 24h</span>
             </div>
             <div className={styles.right_side}>
