@@ -22,7 +22,7 @@ export default function SidebarAccordion(props: SidebarAccordionProps) {
     const { showSidebar, idx, item } = props;
     const [isOpen, setIsOpen] = useState(false);
 
-    console.log(showSidebar);
+    // console.log(showSidebar);
     const openStateContent = (
         <motion.div
             className={styles.accordion_container}
