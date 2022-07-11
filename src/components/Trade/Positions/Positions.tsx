@@ -12,6 +12,8 @@ interface PositionsProps {
 
 import { useMoralis } from 'react-moralis';
 import { graphData } from '../../../utils/state/graphDataSlice';
+import PositionHeader from '../../Global/Position/PositionHeader';
+import PositionCard from '../../Global/Position/PositionCard';
 
 export default function Positions(props: PositionsProps) {
     const { portfolio, notOnTradeRoute, isAllPositionsEnabled, graphData } = props;
@@ -79,7 +81,11 @@ export default function Positions(props: PositionsProps) {
     );
 
     return (
-        <div className={styles.posiitons_table_display}>
+        <div className={styles.posiitonse_table_display}>
+            <PositionHeader />
+            {poolPositions.map((position, idx) => (
+                <PositionCard key={idx} />
+            ))}
             <table>
                 {positionsHeader}
 

@@ -48,7 +48,7 @@ export default function PositionCard() {
                 </div>
                 <p className={`${styles.hide_mobile} ${styles.apy}`}>APY</p>
 
-                <RangeStatus isInRange isAmbient={false} />
+                <RangeStatus isInRange isAmbient={false} justSymbol />
                 <button className={`${styles.option_button} ${styles.hide_mobile}`}>
                     Reposition
                 </button>
