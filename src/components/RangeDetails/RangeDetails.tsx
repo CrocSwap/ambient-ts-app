@@ -14,6 +14,8 @@ interface IRangeDetailsProps {
     lowRangeDisplayInQuote: string;
     highRangeDisplayInQuote: string;
     isDenomBase: boolean;
+    baseTokenLogoURI: string;
+    quoteTokenLogoURI: string;
 }
 
 export default function RangeDetails(props: IRangeDetailsProps) {
@@ -24,6 +26,9 @@ export default function RangeDetails(props: IRangeDetailsProps) {
                 isAmbient={props.isAmbient}
                 baseTokenSymbol={props.baseTokenSymbol}
                 quoteTokenSymbol={props.quoteTokenSymbol}
+                baseTokenLogoURI={props.baseTokenLogoURI}
+                quoteTokenLogoURI={props.quoteTokenLogoURI}
+                isDenomBase={props.isDenomBase}
             />
             <div className={styles.main_content}>
                 <TokenInfo />

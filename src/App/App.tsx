@@ -606,6 +606,16 @@ export default function App() {
             quoteTokenDecimals,
         );
 
+        const baseTokenLogoURI = importedTokens.find(
+            (token) => token.address.toLowerCase() === baseTokenAddress.toLowerCase(),
+        )?.logoURI;
+        const quoteTokenLogoURI = importedTokens.find(
+            (token) => token.address.toLowerCase() === quoteTokenAddress.toLowerCase(),
+        )?.logoURI;
+
+        position.baseTokenLogoURI = baseTokenLogoURI ?? '';
+        position.quoteTokenLogoURI = quoteTokenLogoURI ?? '';
+
         if (!position.ambient) {
             position.lowRangeDisplayInBase =
                 lowerPriceDisplayInBase < 2

@@ -38,6 +38,8 @@ export interface Position2 {
     knockout: boolean;
     poolIdx: number;
     base: string;
+    baseTokenLogoURI: string;
+    quoteTokenLogoURI: string;
     quote: string;
     user: string;
     userEnsName: string;

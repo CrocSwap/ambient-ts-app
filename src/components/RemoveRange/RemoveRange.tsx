@@ -10,6 +10,9 @@ interface IRemoveRangeProps {
     isAmbient: boolean;
     baseTokenSymbol: string;
     quoteTokenSymbol: string;
+    baseTokenLogoURI: string;
+    quoteTokenLogoURI: string;
+    isDenomBase: boolean;
 }
 
 export default function RemoveRange(props: IRemoveRangeProps) {
@@ -22,6 +25,9 @@ export default function RemoveRange(props: IRemoveRangeProps) {
                 isAmbient={props.isAmbient}
                 baseTokenSymbol={props.baseTokenSymbol}
                 quoteTokenSymbol={props.quoteTokenSymbol}
+                baseTokenLogoURI={props.baseTokenLogoURI}
+                quoteTokenLogoURI={props.quoteTokenLogoURI}
+                isDenomBase={props.isDenomBase}
             />
             <div className={styles.main_content}>
                 <RemoveRangeWidth
