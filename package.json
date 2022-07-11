@@ -1,6 +1,6 @@
 {
     "name": "ambient-ts-app",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "private": true,
     "dependencies": {
         "@crocswap-libs/sdk": "^0.1.27-7",
@@ -46,7 +46,7 @@
     "scripts": {
         "start": "yarn && react-scripts start",
         "start-only": "react-scripts start",
-        "build": "react-scripts build",
+        "build": "react-scripts --max_old_space_size=3072 build",
         "test": "react-scripts test",
         "test:nowatch": "react-scripts test --watchAll=false",
         "eject": "react-scripts eject",
