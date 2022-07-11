@@ -11,6 +11,8 @@ import TransactionSettings from '../../Global/TransactionSettings/TransactionSet
 import styles from './SwapHeader.module.css';
 import settingsIcon from '../../../assets/images/icons/settings.svg';
 import { TokenPairIF } from '../../../utils/interfaces/exports';
+import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
+import { toggleDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
 
 // interface for props
 interface swapHeaderPropsIF {
@@ -24,6 +26,8 @@ interface swapHeaderPropsIF {
 export default function SwapHeader(props: swapHeaderPropsIF) {
     const { tokenPair, isOnTradeRoute, isDenomBase, isTokenABase } = props;
     const [isModalOpen, openModal, closeModal] = useModal();
+
+    const dispatch = useAppDispatch();
 
     const reverseDisplay = (isTokenABase && isDenomBase) || (!isTokenABase && !isDenomBase);
 
@@ -39,7 +43,7 @@ export default function SwapHeader(props: swapHeaderPropsIF) {
     const tradeRouteHeader = (
         <ContentHeader>
             <span />
-            <div className={styles.token_info}>
+            <div className={styles.token_info} onClick={() => dispatch(toggleDidUserFlipDenom())}>
                 {reverseDisplay ? tokenPair.dataTokenA.symbol : tokenPair.dataTokenB.symbol} /{' '}
                 {reverseDisplay ? tokenPair.dataTokenB.symbol : tokenPair.dataTokenA.symbol}
             </div>

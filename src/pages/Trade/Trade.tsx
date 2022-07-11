@@ -8,8 +8,8 @@ import styles from './Trade.module.css';
 import chart from '../../assets/images/Temporary/chart.svg';
 import Tabs from '../../components/Global/Tabs/Tabs';
 import { motion } from 'framer-motion';
-import { useAppSelector } from '../../utils/hooks/reduxToolkit';
-import { tradeData as TradeDataIF } from '../../utils/state/tradeDataSlice';
+import { useAppSelector, useAppDispatch } from '../../utils/hooks/reduxToolkit';
+import { tradeData as TradeDataIF, toggleDidUserFlipDenom } from '../../utils/state/tradeDataSlice';
 import truncateDecimals from '../../utils/data/truncateDecimals';
 
 interface ITradeProps {
@@ -24,6 +24,7 @@ interface ITradeProps {
 export default function Trade(props: ITradeProps) {
     // const location = useLocation();
     // const currentLocation = location.pathname;
+    const dispatch = useAppDispatch();
 
     // console.log(currentLocation);
 
@@ -57,7 +58,7 @@ export default function Trade(props: ITradeProps) {
     // These would be move to their own components, presumably the graph component
     const tokenInfo = (
         <div className={styles.token_info_container}>
-            <div className={styles.tokens_info}>
+            <div className={styles.tokens_info} onClick={() => dispatch(toggleDidUserFlipDenom())}>
                 <div className={styles.tokens_images}>
                     <img
                         src={denomInTokenA ? tradeData.tokenA.logoURI : tradeData.tokenB.logoURI}
