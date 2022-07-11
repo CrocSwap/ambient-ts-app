@@ -1,5 +1,6 @@
 // Unfinished file - Currently not in used.
-
+import { useModal } from '../Modal/useModal';
+import Modal from '../Modal/Modal';
 import styles from './PositionCard.module.css';
 import { useState } from 'react';
 import { MenuItem, Menu } from '@material-ui/core';
@@ -26,6 +27,16 @@ interface PositionCardProps {
     isDenomBase: boolean;
 }
 export default function PositionCard(props: PositionCardProps) {
+    const {
+        position,
+        isAllPositionsEnabled,
+        tokenAAddress,
+        tokenBAddress,
+        account,
+        notOnTradeRoute,
+        isAuthenticated,
+        portfolio,
+    } = props;
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
     const handleClick = (
@@ -39,6 +50,32 @@ export default function PositionCard(props: PositionCardProps) {
         setAnchorEl(null);
     };
     const classes = useStyles();
+
+    const [isModalOpen, openModal, closeModal] = useModal();
+
+    const [currentModal, setCurrentModal] = useState<string>('edit');
+
+    const harvestContent = <div>I am harvest</div>;
+    const editContent = <div>I am edit</div>;
+
+    // MODAL FUNCTIONALITY
+    let modalContent: React.ReactNode;
+    let modalTitle;
+
+    function openRemoveModal() {
+        setCurrentModal('remove');
+        openModal();
+    }
+
+    function openHarvestModal() {
+        setCurrentModal('harvest');
+        openModal();
+    }
+    function openDetailsModal() {
+        setCurrentModal('details');
+        openModal();
+    }
+    //  END OF MODAL FUNCTIONALITY
 
     return (
         <div className={styles.container}>
