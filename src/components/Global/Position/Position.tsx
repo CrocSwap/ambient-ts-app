@@ -23,6 +23,7 @@ interface PositionProps {
     tokenBAddress: string;
     isAuthenticated: boolean;
     account?: string;
+    isDenomBase: boolean;
 }
 export default function Position(props: PositionProps) {
     // const navigate = useNavigate();
@@ -146,8 +147,11 @@ export default function Position(props: PositionProps) {
         isAmbient: position.ambient,
         baseTokenSymbol: position.baseTokenSymbol,
         quoteTokenSymbol: position.quoteTokenSymbol,
-        lowRangeDisplay: position.lowRangeDisplay,
-        highRangeDisplay: position.highRangeDisplay,
+        lowRangeDisplayInBase: position.lowRangeDisplayInBase,
+        highRangeDisplayInBase: position.highRangeDisplayInBase,
+        lowRangeDisplayInQuote: position.lowRangeDisplayInQuote,
+        highRangeDisplayInQuote: position.highRangeDisplayInQuote,
+        isDenomBase: props.isDenomBase,
     };
 
     switch (currentModal) {
@@ -176,6 +180,10 @@ export default function Position(props: PositionProps) {
 
     const modalOrNull = isModalOpen ? mainModal : null;
 
+    const rangeDisplay = props.isDenomBase
+        ? `${position.lowRangeDisplayInBase} - ${position.highRangeDisplayInBase}`
+        : `${position.lowRangeDisplayInQuote} - ${position.highRangeDisplayInQuote}`;
+
     const positionRowOrNull =
         notOnTradeRoute || (positionMatchesSelectedTokens && displayAllOrOwned) ? (
             <tr className={styles.position_tr}>
@@ -193,7 +201,7 @@ export default function Position(props: PositionProps) {
                 </td>
                 {position.ambient == false && (
                     <td data-column='Range' className={styles.position_range}>
-                        {position.lowRangeDisplay} - {position.highRangeDisplay}
+                        {rangeDisplay}
                     </td>
                 )}
                 {position.ambient == true && (

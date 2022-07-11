@@ -9,8 +9,11 @@ interface IRangeDetailsProps {
     isAmbient: boolean;
     baseTokenSymbol: string;
     quoteTokenSymbol: string;
-    lowRangeDisplay: string;
-    highRangeDisplay: string;
+    lowRangeDisplayInBase: string;
+    highRangeDisplayInBase: string;
+    lowRangeDisplayInQuote: string;
+    highRangeDisplayInQuote: string;
+    isDenomBase: boolean;
 }
 
 export default function RangeDetails(props: IRangeDetailsProps) {
@@ -27,8 +30,12 @@ export default function RangeDetails(props: IRangeDetailsProps) {
                 <Divider />
             </div>
             <PriceInfo
-                lowRangeDisplay={props.lowRangeDisplay}
-                highRangeDisplay={props.highRangeDisplay}
+                lowRangeDisplay={
+                    props.isDenomBase ? props.lowRangeDisplayInBase : props.lowRangeDisplayInQuote
+                }
+                highRangeDisplay={
+                    props.isDenomBase ? props.highRangeDisplayInBase : props.highRangeDisplayInQuote
+                }
             />
         </div>
     );

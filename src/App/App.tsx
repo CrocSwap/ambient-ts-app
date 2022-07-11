@@ -588,21 +588,44 @@ export default function App() {
         const lowerPriceNonDisplay = tickToPrice(position.bidTick);
         const upperPriceNonDisplay = tickToPrice(position.askTick);
 
-        const lowerPriceDisplay =
+        const lowerPriceDisplayInBase =
             1 / toDisplayPrice(upperPriceNonDisplay, baseTokenDecimals, quoteTokenDecimals);
 
-        const upperPriceDisplay =
+        const upperPriceDisplayInBase =
             1 / toDisplayPrice(lowerPriceNonDisplay, baseTokenDecimals, quoteTokenDecimals);
 
+        const lowerPriceDisplayInQuote = toDisplayPrice(
+            lowerPriceNonDisplay,
+            baseTokenDecimals,
+            quoteTokenDecimals,
+        );
+
+        const upperPriceDisplayInQuote = toDisplayPrice(
+            upperPriceNonDisplay,
+            baseTokenDecimals,
+            quoteTokenDecimals,
+        );
+
         if (!position.ambient) {
-            position.lowRangeDisplay =
-                lowerPriceDisplay < 2
-                    ? truncateDecimals(lowerPriceDisplay, 2).toString()
-                    : truncateDecimals(lowerPriceDisplay, 2).toString();
-            position.highRangeDisplay =
-                lowerPriceDisplay < 2
-                    ? truncateDecimals(upperPriceDisplay, 2).toString()
-                    : truncateDecimals(upperPriceDisplay, 2).toString();
+            position.lowRangeDisplayInBase =
+                lowerPriceDisplayInBase < 2
+                    ? truncateDecimals(lowerPriceDisplayInBase, 4).toString()
+                    : truncateDecimals(lowerPriceDisplayInBase, 2).toString();
+            position.highRangeDisplayInBase =
+                upperPriceDisplayInBase < 2
+                    ? truncateDecimals(upperPriceDisplayInBase, 4).toString()
+                    : truncateDecimals(upperPriceDisplayInBase, 2).toString();
+        }
+
+        if (!position.ambient) {
+            position.lowRangeDisplayInQuote =
+                lowerPriceDisplayInQuote < 2
+                    ? truncateDecimals(lowerPriceDisplayInQuote, 4).toString()
+                    : truncateDecimals(lowerPriceDisplayInQuote, 2).toString();
+            position.highRangeDisplayInQuote =
+                upperPriceDisplayInQuote < 2
+                    ? truncateDecimals(upperPriceDisplayInQuote, 4).toString()
+                    : truncateDecimals(upperPriceDisplayInQuote, 2).toString();
         }
 
         position.poolPriceInTicks = poolPriceInTicks;
