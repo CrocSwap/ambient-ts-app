@@ -96,9 +96,9 @@ export default function TestPage() {
             <main className={styles.container}>
                 {/* <ul className={styles.token_list_selects_ul}>{tokenListElements}</ul> */}
                 <PositionHeader />
-                {mapItems.map((item, idx) => (
+                {/* {mapItems.map((item, idx) => (
                     <PositionCard key={idx} />
-                ))}
+                ))} */}
             </main>
         </>
     );

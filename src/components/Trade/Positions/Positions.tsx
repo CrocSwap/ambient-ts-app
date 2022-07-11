@@ -84,7 +84,18 @@ export default function Positions(props: PositionsProps) {
         <div className={styles.posiitonse_table_display}>
             <PositionHeader />
             {poolPositions.map((position, idx) => (
-                <PositionCard key={idx} />
+                <PositionCard
+                    key={idx}
+                    portfolio={portfolio}
+                    notOnTradeRoute={notOnTradeRoute}
+                    position={position}
+                    isAllPositionsEnabled={isAllPositionsEnabled}
+                    tokenAAddress={tokenAAddress}
+                    tokenBAddress={tokenBAddress}
+                    account={account ?? undefined}
+                    isAuthenticated={isAuthenticated}
+                    isDenomBase={isDenomBase}
+                />
             ))}
             <table>
                 {positionsHeader}
