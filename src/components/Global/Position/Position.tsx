@@ -212,11 +212,9 @@ export default function Position(props: PositionProps) {
                     {/* In Range */}
                 </td>
                 <td data-column='' className={styles.option_buttons}>
-                    {notDisplayAllOrOwned && (
-                        <button className={styles.option_button} onClick={openHarvestModal}>
-                            Harvest
-                        </button>
-                    )}
+                    <button className={styles.option_button} onClick={openDetailsModal}>
+                        Details
+                    </button>
                     {notDisplayAllOrOwned && (
                         <Link
                             to={`/trade/edit/${posHash}`}
@@ -231,9 +229,12 @@ export default function Position(props: PositionProps) {
                             Remove
                         </button>
                     )}
-                    <button className={styles.option_button} onClick={openDetailsModal}>
-                        Details
-                    </button>
+
+                    {notDisplayAllOrOwned && !position.ambient && (
+                        <button className={styles.option_button} onClick={openHarvestModal}>
+                            Harvest
+                        </button>
+                    )}
                 </td>
                 {modalOrNull}
             </tr>
