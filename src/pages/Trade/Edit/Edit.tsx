@@ -401,9 +401,9 @@ export default function Edit() {
         <div className={styles.editContainer}>
             <EditHeader positionHash={positionHash} />
             <div className={styles.edit_content}>
-                <EditDenominationSwitch {...editDenominationSwitchProps} />
                 <CurrencyDisplayContainer {...currencyDisplayContainerProps} />
                 <Divider />
+                <EditDenominationSwitch {...editDenominationSwitchProps} />
                 {position.ambient == false && <EditMinMaxPrice {...editMinMaxPriceProps} />}
                 <EditPriceInfo {...editPriceInfoProps} />
                 <EditButton onClickFn={openModal} />
