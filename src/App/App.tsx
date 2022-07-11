@@ -1020,6 +1020,7 @@ export default function App() {
                                     isAuthenticated={isAuthenticated}
                                     isWeb3Enabled={isWeb3Enabled}
                                     lastBlockNumber={lastBlockNumber}
+                                    isTokenABase={isTokenABase}
                                 />
                             }
                         >
