@@ -6,8 +6,20 @@ import { MenuItem, Menu } from '@material-ui/core';
 import { useStyles } from '../../../utils/functions/styles';
 import { FiMoreHorizontal } from 'react-icons/fi';
 import RangeStatus from '../RangeStatus/RangeStatus';
+import { Position2 } from '../../../utils/state/graphDataSlice';
 
-export default function PositionCard() {
+interface PositionCardProps {
+    portfolio?: boolean;
+    notOnTradeRoute?: boolean;
+    position: Position2;
+    isAllPositionsEnabled: boolean;
+    tokenAAddress: string;
+    tokenBAddress: string;
+    isAuthenticated: boolean;
+    account?: string;
+    isDenomBase: boolean;
+}
+export default function PositionCard(props: PositionCardProps) {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
     const handleClick = (
