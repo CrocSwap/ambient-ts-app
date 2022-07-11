@@ -3,7 +3,6 @@ import { MdPlayArrow } from 'react-icons/md';
 import styles from './Sidebar.module.css';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-
 interface Item {
     name: string;
     icon: string;
@@ -13,13 +12,15 @@ interface Item {
 interface SidebarAccordionProps {
     children?: React.ReactNode;
     showSidebar: boolean;
-
+    toggleSidebar: (
+        event: React.MouseEvent<HTMLDivElement> | React.MouseEvent<HTMLLIElement>,
+    ) => void;
     item: Item;
     idx: number;
 }
 
 export default function SidebarAccordion(props: SidebarAccordionProps) {
-    const { showSidebar, idx, item } = props;
+    const { showSidebar, idx, item, toggleSidebar } = props;
     const [isOpen, setIsOpen] = useState(false);
 
     // console.log(showSidebar);
@@ -47,7 +48,11 @@ export default function SidebarAccordion(props: SidebarAccordionProps) {
 
     return (
         <>
-            <motion.li key={idx} className={styles.sidebar_item} onClick={() => setIsOpen(!isOpen)}>
+            <motion.li
+                key={idx}
+                className={styles.sidebar_item}
+                onClick={showSidebar ? () => setIsOpen(!isOpen) : toggleSidebar}
+            >
                 <div className={styles.sidebar_link}>
                     {showSidebar && (
                         <MdPlayArrow size={12} color='#ffffff' className={sidebarIconStyle} />

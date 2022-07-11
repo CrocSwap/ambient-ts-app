@@ -1,4 +1,5 @@
 import styles from './Sidebar.module.css';
+import React from 'react';
 import { BiSearch } from 'react-icons/bi';
 import { MdDoubleArrow } from 'react-icons/md';
 import favouritePoolsImage from '../../../assets/images/sidebarImages/favouritePools.svg';
@@ -14,9 +15,13 @@ import TopPools from '../../../components/Global/TopPools/TopPools';
 import FavoritePools from '../../../components/Global/FavoritePools/FavoritePools';
 import SidebarRangePositions from '../../../components/Global/SidebarRangePositions/SidebarRangePositions';
 import SidebarLimitOrders from '../../../components/Global/SidebarLimitOrders/SidebarLimitOrders';
+import SidebarRecentTransactions from '../../../components/Global/SidebarRecentTransactions/SidebarRecentTransactions';
 interface SidebarProps {
+    // setShowSidebar: SetStateAction<boolean>;
     showSidebar: boolean;
-    toggleSidebar: (event: React.MouseEvent<HTMLDivElement>) => void;
+    toggleSidebar: (
+        event: React.MouseEvent<HTMLDivElement> | React.MouseEvent<HTMLLIElement>,
+    ) => void;
 }
 
 export default function Sidebar(props: SidebarProps): React.ReactElement<SidebarProps> {
@@ -31,7 +36,11 @@ export default function Sidebar(props: SidebarProps): React.ReactElement<Sidebar
 
     const navItems2 = [
         { name: 'Favorite Pools', icon: favouritePoolsImage, data: <FavoritePools /> },
-        { name: 'Recent Transactions', icon: recentTransactionsImage, data: <TopTokens /> },
+        {
+            name: 'Recent Transactions',
+            icon: recentTransactionsImage,
+            data: <SidebarRecentTransactions />,
+        },
     ];
 
     const searchContainer = (
@@ -73,7 +82,12 @@ export default function Sidebar(props: SidebarProps): React.ReactElement<Sidebar
                                 <span className={styles.link_text}>{item.name}</span>
                             </div>
                         </li> */}
-                            <SidebarAccordion showSidebar={showSidebar} idx={idx} item={item} />
+                            <SidebarAccordion
+                                showSidebar={showSidebar}
+                                idx={idx}
+                                item={item}
+                                toggleSidebar={toggleSidebar}
+                            />
                         </>
                     ))}
 
@@ -88,6 +102,7 @@ export default function Sidebar(props: SidebarProps): React.ReactElement<Sidebar
                             //     </div>
                             // </li>
                             <SidebarAccordion
+                                toggleSidebar={toggleSidebar}
                                 showSidebar={showSidebar}
                                 idx={idx}
                                 item={item}

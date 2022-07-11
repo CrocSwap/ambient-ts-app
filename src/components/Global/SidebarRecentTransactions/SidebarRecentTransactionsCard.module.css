@@ -1,0 +1,43 @@
+.container{
+    width: 100%;
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    font-weight: 300;
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    color: #BDBDBD;
+    cursor: pointer;
+    padding: 5px;
+
+
+
+}
+
+.container div{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.status_display{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+}
+.token_container{
+    width: 15px;
+    height: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* padding: 2px; */
+   
+
+    background: #ffffff;
+    border-radius: 50%;
+}
+
+.token_container img{
+    width: 12.68px;
+}
