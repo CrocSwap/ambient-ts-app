@@ -89,7 +89,8 @@ export default function Swap(props: SwapPropsIF) {
 
     const [isRelativeModalOpen, closeRelativeModal] = useRelativeModal();
 
-    const { Moralis, enableWeb3, isWeb3Enabled, authenticate, isAuthenticated } = useMoralis();
+    const { Moralis, enableWeb3, isWeb3Enabled, authenticate, isAuthenticated, account } =
+        useMoralis();
     // get URL pathway for user relative to index
     const { pathname } = useLocation();
 
@@ -264,6 +265,33 @@ export default function Swap(props: SwapPropsIF) {
                     );
                 }
             }
+
+            const newSwapCacheEndpoint = 'https://809821320828123.de:5000/new_swap?';
+
+            const inBaseQty =
+                (isSellTokenBase && isTokenAPrimary) || (!isSellTokenBase && !isTokenAPrimary);
+            // const limitPrice = poolPrice
+
+            fetch(
+                newSwapCacheEndpoint +
+                    new URLSearchParams({
+                        tx: newTransactionHash,
+                        user: account ?? '',
+                        base: isSellTokenBase ? sellTokenAddress : buyTokenAddress,
+                        quote: isSellTokenBase ? buyTokenAddress : sellTokenAddress,
+                        poolIdx: POOL_PRIMARY.toString(),
+                        isBuy: isSellTokenBase.toString(),
+                        inBaseQty: inBaseQty.toString(),
+                        qty: qty,
+                        // limitPrice: ,
+                        // minOut: ,
+                        override: 'false',
+                    }),
+                // { method: 'POST' },
+            )
+                .then((response) => response.json())
+                .then(console.log);
+
             if (parsedReceipt) {
                 const unifiedReceipt = await handleParsedReceipt(
                     Moralis,

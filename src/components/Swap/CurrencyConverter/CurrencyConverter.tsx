@@ -283,6 +283,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         handleSwapButtonMessage(rawTokenAQty);
 
         const truncatedTokenAQty = truncateDecimals(rawTokenAQty, tokenADecimals).toString();
+        // const truncatedTokenAQty = truncateDecimals(rawTokenAQty, tokenADecimals).toString();
 
         setTokenAQtyLocal(truncatedTokenAQty);
         setTokenAInputQty(truncatedTokenAQty);
