@@ -4,8 +4,8 @@ export default function SidebarRangePositions() {
     const header = (
         <div className={styles.header}>
             <div>Pool</div>
-            <div>Price</div>
-            <div>Change</div>
+            <div>Range</div>
+            <div>Amount</div>
         </div>
     );
 
