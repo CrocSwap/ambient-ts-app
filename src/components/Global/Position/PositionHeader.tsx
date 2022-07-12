@@ -26,11 +26,8 @@ export default function PositionHeader() {
             <p className={styles.hide_mobile}>APY</p>
 
             <p>Status</p>
-            <p className={styles.hide_mobile}>
-                {' '}
-                &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-            </p>
-            <p> &nbsp; &nbsp; &nbsp; &nbsp;</p>
+            <p className={styles.hide_mobile}></p>
+            <p> </p>
             {/* <p className='hide-mobile'>Volume</p>
 <p className='hide-mobile'>Mkt Cap</p> */}
         </div>

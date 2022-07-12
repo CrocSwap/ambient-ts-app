@@ -15,9 +15,14 @@ font-weight: 300;
 font-size: 12px;
 line-height: 15px;
 display: flex;
+text-align: center;
 align-items: center;
-text-align: right;
+/* text-align: right; */
 padding-bottom: 8px;
+padding-left: 5px;
+
+display: grid;
+grid-template-columns: 1fr 1fr repeat(5, 0.5fr) 1fr 1fr 0.5fr;
 /* text/grey light */
 
 color: #BDBDBD;

@@ -6,7 +6,7 @@ interface Size {
     height: number | undefined;
 }
 
-export default function useWindowSize(): Size {
+function useWindowDimensions(): Size {
     // Initialize state with undefined width/height so server and client renders match
     // Learn more here: https://joshwcomeau.com/react/the-perils-of-rehydration/
     const [windowSize, setWindowSize] = useState<Size>({
@@ -31,5 +31,6 @@ export default function useWindowSize(): Size {
     }, []); // Empty array ensures that effect is only run on mount
     return windowSize;
 }
+export default useWindowDimensions;
 
 // Taken from https://usehooks.com/useWindowSize/: -Jr
