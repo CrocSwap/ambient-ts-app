@@ -11,6 +11,7 @@ import {
     parseSwapEthersReceipt,
     EthersNativeReceipt,
     approveToken,
+    getLimitPrice,
 } from '@crocswap-libs/sdk';
 
 // START: Import React Components
@@ -271,6 +272,11 @@ export default function Swap(props: SwapPropsIF) {
             const inBaseQty =
                 (isSellTokenBase && isTokenAPrimary) || (!isSellTokenBase && !isTokenAPrimary);
             // const limitPrice = poolPrice
+            const limitPrice = await getLimitPrice(
+                sellTokenAddress,
+                buyTokenAddress,
+                slippageTolerancePercentage,
+            );
 
             fetch(
                 newSwapCacheEndpoint +
@@ -283,9 +289,10 @@ export default function Swap(props: SwapPropsIF) {
                         isBuy: isSellTokenBase.toString(),
                         inBaseQty: inBaseQty.toString(),
                         qty: qty,
-                        // limitPrice: ,
-                        // minOut: ,
+                        limitPrice: limitPrice.toString(),
+                        minOut: '0', // integer	The minimum output the user expects from the swap.
                         override: 'false',
+                        // boolean	(Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
                     }),
                 // { method: 'POST' },
             )
