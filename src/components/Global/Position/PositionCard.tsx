@@ -197,7 +197,7 @@ export default function PositionCard(props: PositionCardProps) {
                 aria-controls='list settings'
                 aria-haspopup='true'
                 onClick={handleClick}
-                className={styles.menu}
+                className={`${styles.menu} ${styles.hide_mobile}`}
             >
                 <FiMoreHorizontal size={30} />
             </div>
