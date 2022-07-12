@@ -1,6 +1,6 @@
 export default function uriToHttp(uri: string): string {
     // get the prefix of the URI
-    const protocol = uri.split(':')[0].toLowerCase();
+    const protocol = uri.trim().split(':')[0].toLowerCase();
 
     // create hashes both for ipfs and ipns URIs
     const ipfsHash = uri.match(/^ipfs:(\/\/)?(.*)$/i)?.[2];
