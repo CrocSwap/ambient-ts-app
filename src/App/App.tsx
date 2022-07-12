@@ -6,6 +6,9 @@ import {
     resetGraphData,
     setPositionsByPool,
     setPositionsByUser,
+    setSwapsByUser,
+    ISwap,
+    setSwapsByPool,
 } from '../utils/state/graphDataSlice';
 import { ethers } from 'ethers';
 import { JsonRpcProvider } from '@ethersproject/providers';
@@ -281,6 +284,34 @@ export default function App() {
                         });
                     }
                 });
+
+            const poolSwapsCacheEndpoint = 'https://809821320828123.de:5000/pool_swaps?';
+
+            fetch(
+                poolSwapsCacheEndpoint +
+                    new URLSearchParams({
+                        base: sortedTokens[0].toLowerCase(),
+                        quote: sortedTokens[1].toLowerCase(),
+                        poolIdx: POOL_PRIMARY.toString(),
+                        // n: 10 // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
+                        // page: 0 // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
+                    }),
+            )
+                .then((response) => response.json())
+                .then((json) => {
+                    const poolSwaps = json.data;
+
+                    if (poolSwaps) {
+                        Promise.all(poolSwaps.map(getSwapData)).then((updatedSwaps) => {
+                            if (
+                                JSON.stringify(graphData.swapsByUser.swaps) !==
+                                JSON.stringify(updatedSwaps)
+                            ) {
+                                dispatch(setSwapsByPool({ swaps: updatedSwaps }));
+                            }
+                        });
+                    }
+                });
         }
     }, [tokenPairStringified]);
 
@@ -338,6 +369,54 @@ export default function App() {
         }
     }, [lastAllPositionsMessage]);
 
+    const poolSwapsCacheSubscriptionEndpoint = useMemo(
+        () =>
+            'wss://809821320828123.de:5000/subscribe_pool_swaps?' +
+            new URLSearchParams({
+                base: baseTokenAddress.toLowerCase(),
+                // baseTokenAddress.toLowerCase() || '0x0000000000000000000000000000000000000000',
+                quote: quoteTokenAddress.toLowerCase(),
+                // quoteTokenAddress.toLowerCase() || '0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa',
+                poolIdx: POOL_PRIMARY.toString(),
+            }),
+        [baseTokenAddress, quoteTokenAddress, POOL_PRIMARY],
+    );
+
+    const {
+        //  sendMessage,
+        lastMessage: lastPoolSwapsMessage,
+        //  readyState
+    } = useWebSocket(
+        poolSwapsCacheSubscriptionEndpoint,
+        {
+            // share:  true,
+            // onOpen: () => console.log('opened'),
+            onClose: () => console.log('poolSwaps websocket connection closed'),
+            // Will attempt to reconnect on all close events, such as server shutting down
+            shouldReconnect: () => true,
+        },
+        // only connect if base/quote token addresses are available
+        baseTokenAddress !== '' && quoteTokenAddress !== '',
+    );
+
+    useEffect(() => {
+        if (lastPoolSwapsMessage !== null) {
+            //    setMessageHistory((prev) => prev.concat(lastMessage));
+            const lastMessageData = JSON.parse(lastPoolSwapsMessage.data).data;
+
+            if (lastMessageData) {
+                Promise.all(lastMessageData.map(getSwapData)).then((updatedSwaps) => {
+                    dispatch(
+                        setSwapsByPool({
+                            swaps: graphData.swapsByPool.swaps.concat(updatedSwaps),
+                        }),
+                    );
+                });
+            }
+            // console.log({ lastMessageData });
+        }
+    }, [lastPoolSwapsMessage]);
+
     const userPositionsCacheSubscriptionEndpoint = useMemo(
         () =>
             'wss://809821320828123.de:5000/subscribe_user_positions?' +
@@ -393,6 +472,57 @@ export default function App() {
             // console.log({ lastMessageData });
         }
     }, [lastUserPositionsMessage]);
+
+    const userSwapsCacheSubscriptionEndpoint = useMemo(
+        () =>
+            'wss://809821320828123.de:5000/subscribe_user_swaps?' +
+            new URLSearchParams({
+                user: account || '',
+                // user: account || '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc',
+            }),
+        [account],
+    );
+
+    const {
+        //  sendMessage,
+        lastMessage: lastUserSwapsMessage,
+        //  readyState
+    } = useWebSocket(
+        userSwapsCacheSubscriptionEndpoint,
+        {
+            // share: true,
+            // onOpen: () => console.log('opened'),
+            onClose: () => console.log('userSwaps websocket connection closed'),
+            // Will attempt to reconnect on all close events, such as server shutting down
+            shouldReconnect: () => true,
+        },
+        // only connect is account is available
+        account !== null && account !== '',
+    );
+
+    useEffect(() => {
+        if (lastUserSwapsMessage !== null) {
+            //    setMessageHistory((prev) => prev.concat(lastMessage));
+            const lastMessageData = JSON.parse(lastUserSwapsMessage.data).data;
+
+            if (lastMessageData) {
+                Promise.all(lastMessageData.map(getSwapData)).then((updatedSwaps) => {
+                    // if (
+                    // JSON.stringify(graphData.positionsByUser.positions) !==
+                    // JSON.stringify(updatedPositions)
+                    // ) {
+                    dispatch(
+                        setSwapsByUser({
+                            swaps: graphData.swapsByUser.swaps.concat(updatedSwaps),
+                        }),
+                    );
+                    // }
+                });
+            }
+
+            // console.log({ lastMessageData });
+        }
+    }, [lastUserSwapsMessage]);
 
     const [tokenABalance, setTokenABalance] = useState<string>('');
     const [tokenBBalance, setTokenBBalance] = useState<string>('');
@@ -557,6 +687,14 @@ export default function App() {
 
     const graphData = useAppSelector((state) => state.graphData);
 
+    const getSwapData = async (swap: ISwap): Promise<ISwap> => {
+        swap.base = swap.base.startsWith('0x') ? swap.base : '0x' + swap.base;
+        swap.quote = swap.quote.startsWith('0x') ? swap.quote : '0x' + swap.quote;
+        swap.user = swap.user.startsWith('0x') ? swap.user : '0x' + swap.user;
+
+        return swap;
+    };
+
     const getPositionData = async (position: Position2): Promise<Position2> => {
         position.base = position.base.startsWith('0x') ? position.base : '0x' + position.base;
         position.quote = position.quote.startsWith('0x') ? position.quote : '0x' + position.quote;
@@ -689,6 +827,30 @@ export default function App() {
                                 JSON.stringify(updatedPositions)
                             ) {
                                 dispatch(setPositionsByUser({ positions: updatedPositions }));
+                            }
+                        });
+                    }
+                });
+
+            const allUserSwapsCacheEndpoint = 'https://809821320828123.de:5000/user_swaps?';
+
+            fetch(
+                allUserSwapsCacheEndpoint +
+                    new URLSearchParams({
+                        user: account,
+                    }),
+            )
+                .then((response) => response.json())
+                .then((json) => {
+                    const userSwaps = json.data;
+
+                    if (userSwaps) {
+                        Promise.all(userSwaps.map(getSwapData)).then((updatedSwaps) => {
+                            if (
+                                JSON.stringify(graphData.swapsByUser.swaps) !==
+                                JSON.stringify(updatedSwaps)
+                            ) {
+                                dispatch(setSwapsByUser({ swaps: updatedSwaps }));
                             }
                         });
                     }
