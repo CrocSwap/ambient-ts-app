@@ -241,31 +241,7 @@ export default function Swap(props: SwapPropsIF) {
 
             let newTransactionHash = tx.hash;
             setNewSwapTransactionHash(newTransactionHash);
-            let parsedReceipt;
-
             console.log({ newTransactionHash });
-
-            try {
-                const receipt = await tx.wait();
-                console.log({ receipt });
-                parsedReceipt = await parseSwapEthersReceipt(
-                    provider,
-                    receipt as EthersNativeReceipt,
-                );
-            } catch (e) {
-                const error = e as TransactionError;
-                if (isTransactionReplacedError(error)) {
-                    // The user used "speed up" or something similar
-                    // in their client, but we now have the updated info
-                    console.log('repriced');
-                    newTransactionHash = error.replacement.hash;
-                    console.log({ newTransactionHash });
-                    parsedReceipt = await parseSwapEthersReceipt(
-                        provider,
-                        error.receipt as EthersNativeReceipt,
-                    );
-                }
-            }
 
             const newSwapCacheEndpoint = 'https://809821320828123.de:5000/new_swap?';
 
@@ -298,6 +274,30 @@ export default function Swap(props: SwapPropsIF) {
             )
                 .then((response) => response.json())
                 .then(console.log);
+
+            let parsedReceipt;
+
+            try {
+                const receipt = await tx.wait();
+                console.log({ receipt });
+                parsedReceipt = await parseSwapEthersReceipt(
+                    provider,
+                    receipt as EthersNativeReceipt,
+                );
+            } catch (e) {
+                const error = e as TransactionError;
+                if (isTransactionReplacedError(error)) {
+                    // The user used "speed up" or something similar
+                    // in their client, but we now have the updated info
+                    console.log('repriced');
+                    newTransactionHash = error.replacement.hash;
+                    console.log({ newTransactionHash });
+                    parsedReceipt = await parseSwapEthersReceipt(
+                        provider,
+                        error.receipt as EthersNativeReceipt,
+                    );
+                }
+            }
 
             if (parsedReceipt) {
                 const unifiedReceipt = await handleParsedReceipt(
