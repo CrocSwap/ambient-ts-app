@@ -36,7 +36,7 @@ color: #BDBDBD;
     justify-content: space-between;
     align-items: center;
    
-    background-color: #26272b;
+    /* background-color: #26272b; */
     margin: 5px 0;
     /* border-radius: 8px; */
     /* margin: 2rem 1rem; */
@@ -79,6 +79,7 @@ line-height: 16px;
 color: #BDBDBD;
 font-size: 12px;
 line-height: 15px;
+/* text-align: start; */
 }
 
 .min_max{
@@ -159,10 +160,6 @@ transition: background var(--animation-speed) ease-in-out;
 
   }
 
-  .selected{
-    background: red;
-  }
-
 
 
 
@@ -201,6 +198,7 @@ transition: background var(--animation-speed) ease-in-out;
     
   }
 
+ 
 
   .menu{
     display: flex;
@@ -228,7 +226,7 @@ border-radius: 50px;
 
 @media screen and (max-width: 1600px){
     .position_row{
-        background: red;
+        /* background: red; */
         /* grid-template-columns: 1fr 1fr repeat(5, 0.5fr) 1fr 1fr 0.5fr; */
         grid-template-columns:repeat(2, 1fr) repeat(2, 100px)  repeat(2, 1fr) 100px;
     }
@@ -245,18 +243,18 @@ border-radius: 50px;
 
 @media screen and (max-width: 1080px){
     .position_row{
-        background: blue;
+        /* background: blue; */
 
         grid-template-columns :repeat(2, 1fr) 0.7fr 130px 70px 50px
     }
     .apy{
-        background: red;
+        /* background: red; */
         display: none;
     }
 }
 @media screen and (max-width: 840px){
     .position_row{
-        background: green;
+        /* background: green; */
       
 
          grid-template-columns :1fr repeat(2, 0.5fr) 10px 70px 50px
@@ -273,7 +271,7 @@ border-radius: 50px;
 }
 @media screen and (max-width: 670px){
     .position_row{
-        background: purple;
+        /* background: purple; */
 
 
     /* grid-template-columns :repeat(2, 0.5fr) 1fr 10px 70px 50px; */
@@ -292,7 +290,7 @@ border-radius: 50px;
 }
 @media screen and (max-width: 400px){
     .position_row{
-        background: rgb(2, 0, 2);
+        /* background: rgb(2, 0, 2); */
    
     grid-template-columns :repeat(3, 0.7fr) 10px 50px
     }

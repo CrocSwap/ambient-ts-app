@@ -15,14 +15,17 @@ export default function RangeStatus(props: RangeStatusProps) {
         </div>
     );
 
+    const ambientRange = <div className={styles.range_text_ambient}></div>;
+    const nonAmbientRange = (
+        <div className={isInRange ? styles.range_text_positive : styles.range_text_negative} />
+    );
+
     const rangeDisplay = (
         <div className={styles.in_range_display}>
             <div className={styles.range_container}>
-                <span
-                    className={isInRange ? styles.range_text_positive : styles.range_text_negative}
-                />
+                {isAmbient ? ambientRange : nonAmbientRange}
             </div>
-            {isAmbient ? 'Always In Range' : isInRange ? 'In Range' : 'Out of Range'}
+            {isInRange ? 'In Range' : 'Out of Range'}
         </div>
     );
 

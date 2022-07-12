@@ -17,7 +17,7 @@
     line-height: var(--body-lh);
     border-radius: 12px;
     -webkit-box-pack: center;
-    justify-content: center;
+    justify-content: space-between;
 
    
    
@@ -44,5 +44,12 @@
     height: 9px;
 
     background: #F7385B;
+    border-radius: 50%;
+   }
+   .range_text_ambient{
+    width: 9px;
+    height: 9px;
+
+    background: var(--title-gradient);
     border-radius: 50%;
    }

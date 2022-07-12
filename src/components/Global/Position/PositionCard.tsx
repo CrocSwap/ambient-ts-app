@@ -2,11 +2,10 @@
 import { useModal } from '../Modal/useModal';
 import Modal from '../Modal/Modal';
 import { Link, useLocation } from 'react-router-dom';
-import { motion } from 'framer-motion';
 
 import styles from './PositionCard.module.css';
 import { useState } from 'react';
-import { MenuItem, Menu, useRadioGroup } from '@material-ui/core';
+import { MenuItem, Menu } from '@material-ui/core';
 import { useStyles } from '../../../utils/functions/styles';
 import { FiMoreHorizontal } from 'react-icons/fi';
 import RangeStatus from '../RangeStatus/RangeStatus';
@@ -17,7 +16,6 @@ import RangeDetails from '../../RangeDetails/RangeDetails';
 import RangeDetailsHeader from '../../RangeDetails/RangeDetailsHeader/RangeDetailsHeader';
 import truncateAddress from '../../../utils/truncateAddress';
 import { ambientPosSlot, concPosSlot } from '@crocswap-libs/sdk';
-import TooltipComponent from '../TooltipComponent/TooltipComponent';
 
 interface PositionCardProps {
     portfolio?: boolean;
@@ -34,13 +32,13 @@ interface PositionCardProps {
 export default function PositionCard(props: PositionCardProps) {
     const {
         position,
-        isAllPositionsEnabled,
+        // isAllPositionsEnabled,
         tokenAAddress,
         tokenBAddress,
-        account,
-        notOnTradeRoute,
-        isAuthenticated,
-        portfolio,
+        // account,
+        // notOnTradeRoute,
+        // isAuthenticated,
+
         userPosition,
     } = props;
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -88,7 +86,7 @@ export default function PositionCard(props: PositionCardProps) {
     }
     //  END OF MODAL FUNCTIONALITY
 
-    const ownerId = position ? position.user : null;
+    // const ownerId = position ? position.user : null;
 
     const ensName = position?.userEnsName !== '' ? position.userEnsName : null;
     const ownerIdTruncated = position ? truncateAddress(position.user, 15) : null;
@@ -144,12 +142,12 @@ export default function PositionCard(props: PositionCardProps) {
         (positionBaseAddressLowerCase === tokenBAddressLowerCase ||
             positionQuoteAddressLowerCase === tokenBAddressLowerCase);
 
-    const accountAddress = account ? account.toLowerCase() : null;
+    // const accountAddress = account ? account.toLowerCase() : null;
 
-    const displayAllOrOwned =
-        isAllPositionsEnabled || (ownerId === accountAddress && isAuthenticated);
-    const notDisplayAllOrOwned =
-        !isAllPositionsEnabled || (ownerId === accountAddress && isAuthenticated);
+    // const displayAllOrOwned =
+    //     isAllPositionsEnabled || (ownerId === accountAddress && isAuthenticated);
+    // const notDisplayAllOrOwned =
+    //     !isAllPositionsEnabled || (ownerId === accountAddress && isAuthenticated);
 
     const removeRangeProps = {
         isPositionInRange: isPositionInRange,
@@ -191,9 +189,9 @@ export default function PositionCard(props: PositionCardProps) {
 
     const modalOrNull = isModalOpen ? mainModal : null;
 
-    const rangeDisplay = props.isDenomBase
-        ? `${position.lowRangeDisplayInBase} - ${position.highRangeDisplayInBase}`
-        : `${position.lowRangeDisplayInQuote} - ${position.highRangeDisplayInQuote}`;
+    // const rangeDisplay = props.isDenomBase
+    //     ? `${position.lowRangeDisplayInBase} - ${position.highRangeDisplayInBase}`
+    //     : `${position.lowRangeDisplayInQuote} - ${position.highRangeDisplayInQuote}`;
 
     const minRange = props.isDenomBase
         ? position.lowRangeDisplayInBase
@@ -260,7 +258,7 @@ export default function PositionCard(props: PositionCardProps) {
         </button>
     );
 
-    return (
+    const PositionRow = (
         <div className={`${styles.container} `}>
             <div
                 className={`${styles.position_row} ${userPosition ? styles.user_position : 'null'}`}
@@ -290,9 +288,9 @@ export default function PositionCard(props: PositionCardProps) {
                 {/* <p className={`${styles.hide_ipad} ${styles.min_max}`}> {maxRange} </p> */}
 
                 {/* <div className={''}>
-                    <p className={styles.min_max}>Min</p>
-                    <p className={styles.min_max}>Max</p>
-                </div> */}
+                <p className={styles.min_max}>Min</p>
+                <p className={styles.min_max}>Max</p>
+            </div> */}
                 <p className={`${styles.large_device} ${styles.qty}`}>T1 Qty</p>
                 <p className={`${styles.large_device} ${styles.qty}`}>T2 Qty</p>
                 <div className={styles.column_display}>
@@ -312,18 +310,70 @@ export default function PositionCard(props: PositionCardProps) {
                 </div>
                 <button className={`${styles.option_button} ${''}`}>Reposition</button>
 
-                {/* <div
-                    aria-controls='list settings'
-                    aria-haspopup='true'
-                    onClick={handleClick}
-                    className={styles.menu}
-                >
-                    <FiMoreHorizontal size={30} />
-                </div> */}
-
                 {userPosition ? loggedInUserButtons : detailsButton}
             </div>
-            {modalOrNull}
         </div>
+    );
+
+    return (
+        // <div className={`${styles.container} `}>
+        //     <div
+        //         className={`${styles.position_row} ${userPosition ? styles.user_position : 'null'}`}
+        //     >
+        //         <p
+        //             className={`${styles.large_device} ${styles.account_style} ${
+        //                 ensName ? styles.ambient_text : null
+        //             }`}
+        //         >
+        //             {ensName ? ensName : ownerIdTruncated}
+        //         </p>
+        //         <p className={`${styles.large_device} ${styles.account_style}`}>
+        //             {' '}
+        //             {truncatedPosHash}
+        //         </p>
+
+        //         <div className={`${styles.column_display} ${styles.account_displays}`}>
+        //             <p className={styles.account_style}>{ensName ? ensName : ownerIdTruncated}</p>
+        //             <p className={styles.account_style}> {truncatedPosHash}</p>
+        //         </div>
+        //         <div className={styles.mobile_display}>
+        //             <p className={styles.account_style}>{mobileOwnerId}</p>
+        //             <p className={styles.account_style}>{mobilePosHash}</p>
+        //         </div>
+
+        //         <p className={`${''} ${styles.min_max}`}>{ambientRangeOrNull}</p>
+        //         {/* <p className={`${styles.hide_ipad} ${styles.min_max}`}> {maxRange} </p> */}
+
+        //         {/* <div className={''}>
+        //             <p className={styles.min_max}>Min</p>
+        //             <p className={styles.min_max}>Max</p>
+        //         </div> */}
+        //         <p className={`${styles.large_device} ${styles.qty}`}>T1 Qty</p>
+        //         <p className={`${styles.large_device} ${styles.qty}`}>T2 Qty</p>
+        //         <div className={styles.column_display}>
+        //             <p className={styles.qty}>T1 Qty</p>
+        //             <p className={styles.qty}>T2 Qty</p>
+        //         </div>
+        //         <p className={`${''} ${styles.apy}`}>APY</p>
+        //         <div className={styles.full_range}>
+        //             <RangeStatus isInRange={isPositionInRange} isAmbient={position.ambient} />{' '}
+        //         </div>
+        //         <div className={styles.range_icon}>
+        //             <RangeStatus
+        //                 isInRange={isPositionInRange}
+        //                 isAmbient={position.ambient}
+        //                 justSymbol
+        //             />{' '}
+        //         </div>
+        //         <button className={`${styles.option_button} ${''}`}>Reposition</button>
+
+        //         {userPosition ? loggedInUserButtons : detailsButton}
+        //     </div>
+        //     {modalOrNull}
+        // </div>
+        <>
+            {PositionRow}
+            {modalOrNull}
+        </>
     );
 }

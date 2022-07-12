@@ -45,7 +45,7 @@ border-bottom: 1px solid rgb(42, 40, 40);
 
 @media screen and (max-width: 1600px){
     .heading{
-        background: red;
+        /* background: red; */
         /* grid-template-columns: 1fr 1fr repeat(5, 0.5fr) 1fr 1fr 0.5fr; */
         grid-template-columns:repeat(2, 1fr) repeat(2, 100px)  repeat(2, 1fr) 100px;
     }
@@ -62,18 +62,18 @@ border-bottom: 1px solid rgb(42, 40, 40);
 
 @media screen and (max-width: 1080px){
     .heading{
-        background: blue;
+        /* background: blue; */
 
         grid-template-columns :repeat(2, 1fr) 0.7fr 130px 70px 50px
     }
     .apy{
-        background: red;
+        /* background: red; */
         display: none;
     }
 }
 @media screen and (max-width: 840px){
     .heading{
-        background: green;
+        /* background: green; */
       
 
          grid-template-columns :1fr repeat(2, 0.5fr) 10px 70px 50px
@@ -90,7 +90,7 @@ border-bottom: 1px solid rgb(42, 40, 40);
 }
 @media screen and (max-width: 670px){
     .heading{
-        background: purple;
+        /* background: purple; */
 
 
     /* grid-template-columns :repeat(2, 0.5fr) 1fr 10px 70px 50px; */
@@ -109,7 +109,7 @@ border-bottom: 1px solid rgb(42, 40, 40);
 }
 @media screen and (max-width: 400px){
     .heading{
-        background: rgb(2, 0, 2);
+        /* background: rgb(2, 0, 2); */
    
     grid-template-columns :repeat(3, 0.7fr) 10px 50px
     }
