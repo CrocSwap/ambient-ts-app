@@ -3,7 +3,7 @@ import { useModal } from '../Modal/useModal';
 import Modal from '../Modal/Modal';
 import styles from './PositionCard.module.css';
 import { useState } from 'react';
-import { MenuItem, Menu } from '@material-ui/core';
+import { MenuItem, Menu, useRadioGroup } from '@material-ui/core';
 import { useStyles } from '../../../utils/functions/styles';
 import { FiMoreHorizontal } from 'react-icons/fi';
 import RangeStatus from '../RangeStatus/RangeStatus';
@@ -25,6 +25,7 @@ interface PositionCardProps {
     isAuthenticated: boolean;
     account?: string;
     isDenomBase: boolean;
+    userPosition?: boolean;
 }
 export default function PositionCard(props: PositionCardProps) {
     const {
@@ -36,6 +37,7 @@ export default function PositionCard(props: PositionCardProps) {
         notOnTradeRoute,
         isAuthenticated,
         portfolio,
+        userPosition,
     } = props;
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -191,28 +193,51 @@ export default function PositionCard(props: PositionCardProps) {
 
     const loggedInUserButtons = (
         <>
-            {!position.ambient && (
-                <MenuItem onClick={openHarvestModal} className={classes.menuItem}>
-                    Harvest
+            <div
+                aria-controls='list settings'
+                aria-haspopup='true'
+                onClick={handleClick}
+                className={styles.menu}
+            >
+                <FiMoreHorizontal size={30} />
+            </div>
+
+            <Menu
+                id='simple-menu'
+                anchorEl={anchorEl}
+                keepMounted
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
+                className={classes.menu}
+            >
+                {!position.ambient && (
+                    <MenuItem onClick={openHarvestModal} className={classes.menuItem}>
+                        Harvest
+                    </MenuItem>
+                )}
+
+                <MenuItem onClick={handleClose} className={classes.menuItem}>
+                    Edit
                 </MenuItem>
-            )}
 
-            <MenuItem onClick={handleClose} className={classes.menuItem}>
-                Edit
-            </MenuItem>
+                <MenuItem onClick={openRemoveModal} className={classes.menuItem}>
+                    Remove
+                </MenuItem>
 
-            <MenuItem onClick={openRemoveModal} className={classes.menuItem}>
-                Remove
-            </MenuItem>
-
-            <MenuItem onClick={handleClose} className={classes.menuItem}>
-                Details
-            </MenuItem>
+                <MenuItem onClick={handleClose} className={classes.menuItem}>
+                    Details
+                </MenuItem>
+            </Menu>
         </>
     );
+
+    const detailsButton = <button className={styles.details_button}>Details</button>;
+
     return (
         <div className={styles.container}>
-            <div className={styles.position_row}>
+            <div
+                className={`${styles.position_row} ${userPosition ? styles.user_position : 'null'}`}
+            >
                 <p
                     className={`${styles.hide_ipad} ${styles.account_style} ${
                         ensName ? styles.ambient_text : null
@@ -247,41 +272,17 @@ export default function PositionCard(props: PositionCardProps) {
                 <button className={`${styles.option_button} ${styles.hide_mobile}`}>
                     Reposition
                 </button>
-                <div
+
+                {/* <div
                     aria-controls='list settings'
                     aria-haspopup='true'
                     onClick={handleClick}
                     className={styles.menu}
                 >
                     <FiMoreHorizontal size={30} />
-                </div>
-                <Menu
-                    id='simple-menu'
-                    anchorEl={anchorEl}
-                    keepMounted
-                    open={Boolean(anchorEl)}
-                    onClose={handleClose}
-                    className={classes.menu}
-                >
-                    {notDisplayAllOrOwned && !position.ambient && (
-                        <MenuItem onClick={openHarvestModal} className={classes.menuItem}>
-                            Harvest
-                        </MenuItem>
-                    )}
-                    {notDisplayAllOrOwned && (
-                        <MenuItem onClick={handleClose} className={classes.menuItem}>
-                            Edit
-                        </MenuItem>
-                    )}
-                    {notDisplayAllOrOwned && (
-                        <MenuItem onClick={openRemoveModal} className={classes.menuItem}>
-                            Remove
-                        </MenuItem>
-                    )}
-                    <MenuItem onClick={handleClose} className={classes.menuItem}>
-                        Details
-                    </MenuItem>
-                </Menu>
+                </div> */}
+
+                {userPosition ? loggedInUserButtons : detailsButton}
             </div>
             {modalOrNull}
         </div>
