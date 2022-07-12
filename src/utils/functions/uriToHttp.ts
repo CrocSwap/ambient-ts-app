@@ -1,3 +1,12 @@
+// TODO:  Currently this function has logic to make two query URLs, a primary
+// TODO:  ... and a backup. The app is not configured to make use of this
+// TODO:  ... failsafe, so the code is modified to return only the primary
+// TODO:  ... URL to query. Later we should refactor the app to accept two
+// TODO:  ... an array of URL strings for all fetch() requests and query the
+// TODO:  ... secondary if querying the primary fails.  This file will need
+// TODO:  ... be modified to output the full output value instead of the first
+// TODO:  ... value only, and be given a return type of string[]
+
 export default function uriToHttp(uri: string): string {
     // get the prefix of the URI
     const protocol = uri.trim().split(':')[0].toLowerCase();
