@@ -49,7 +49,7 @@ color: #BDBDBD;
 
     display: grid;
     grid-template-columns: 1fr 1fr repeat(5, 0.5fr) 1fr 1fr 0.5fr;
-
+   grid-gap: 10px;
 }
 
 .position_row:hover {
@@ -212,7 +212,7 @@ background: #0D1117;
 border: 1px solid #242F3F;
 border-radius: 50px;
   }
-  
+
 /* Conversely, using max-width, is desktop-first then adds queries to make styles mobile-friendly
 
  */

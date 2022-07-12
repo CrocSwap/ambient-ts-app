@@ -23,6 +23,7 @@ padding-left: 5px;
 
 display: grid;
 grid-template-columns: 1fr 1fr repeat(5, 0.5fr) 1fr 1fr 0.5fr;
+grid-gap: 10px;
 /* text/grey light */
 
 color: #BDBDBD;
@@ -50,7 +51,10 @@ border-bottom: 1px solid rgb(42, 40, 40);
  */
 
 /* THIS IS FOR TABLETS */
-@media screen and (max-width: 800px) {
+@media only screen 
+  and (min-device-width: 768px) 
+  and (max-device-width: 1024px) 
+  and (-webkit-min-device-pixel-ratio: 1) {
 
     /* .hide_mobile {
         display: none;
@@ -66,13 +70,24 @@ border-bottom: 1px solid rgb(42, 40, 40);
     .hide_ipad{
         display: none;
     }
+
+    .position_row{
+        display: grid;
+        grid-template-columns: 1fr repeat(3, 0.5fr) 1fr 1fr 0.5fr;
+     }
 }
 /* THIS IS FOR PHONES */
 /* Mobile Landscape Screen Sizes */
-@media only screen and (max-width: 480px)  {
+@media only screen 
+  and (min-device-width: 320px) 
+  and (max-device-width: 480px)
+  and (-webkit-min-device-pixel-ratio: 2)  {
 
 .hide_mobile{
     display: none;
+}
+.position_row{
+    display: flex;
 }
  
     }
