@@ -1,6 +1,8 @@
 import Transaction from '../../Transaction/Transaction';
 import styles from './Transactions.module.css';
 import { graphData } from '../../../utils/state/graphDataSlice';
+import { useAppSelector } from './../../../utils/hooks/reduxToolkit';
+import { useMoralis } from 'react-moralis';
 
 interface TransactionsProps {
     isShowAllEnabled: boolean;
@@ -17,14 +19,45 @@ export default function Transactions(props: TransactionsProps) {
         graphData,
     } = props;
 
+    const tradeData = useAppSelector((state) => state.tradeData);
+
+    const { account, isAuthenticated } = useMoralis();
+
+    const tokenAAddress = tradeData.tokenA.address;
+    const tokenBAddress = tradeData.tokenB.address;
+
     // const exampleTransactions = [1, 2, 3];
 
     const swapsByUser = graphData?.swapsByUser?.swaps;
     const swapsByPool = graphData?.swapsByPool?.swaps;
 
     const TransactionsDisplay = isShowAllEnabled
-        ? swapsByPool.map((swap, idx) => <Transaction key={idx} swap={swap} />)
-        : swapsByUser.map((swap, idx) => <Transaction key={idx} swap={swap} />);
+        ? swapsByPool
+              .map((swap, idx) => (
+                  <Transaction
+                      key={idx}
+                      swap={swap}
+                      tokenAAddress={tokenAAddress}
+                      tokenBAddress={tokenBAddress}
+                      account={account ?? undefined}
+                      isAuthenticated={isAuthenticated}
+                      isShowAllEnabled={isShowAllEnabled}
+                  />
+              ))
+              .reverse()
+        : swapsByUser
+              .map((swap, idx) => (
+                  <Transaction
+                      key={idx}
+                      swap={swap}
+                      tokenAAddress={tokenAAddress}
+                      tokenBAddress={tokenBAddress}
+                      account={account ?? undefined}
+                      isAuthenticated={isAuthenticated}
+                      isShowAllEnabled={isShowAllEnabled}
+                  />
+              ))
+              .reverse();
 
     const TransactionsHeader = (
         <thead>
