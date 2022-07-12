@@ -13,6 +13,7 @@ interface ITabsProps {
     account: string;
     isAuthenticated: boolean;
     isWeb3Enabled: boolean;
+    lastBlockNumber: number;
 }
 
 export default function Tabs(props: ITabsProps) {
@@ -107,6 +108,7 @@ export default function Tabs(props: ITabsProps) {
                         isShowAllEnabled={isShowAllEnabled}
                         notOnTradeRoute={false}
                         graphData={graphData}
+                        lastBlockNumber={props.lastBlockNumber}
                     />
                 </TabContent>
                 <TabContent id='tab2' activeTab={activeTab}>

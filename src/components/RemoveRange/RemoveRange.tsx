@@ -13,6 +13,7 @@ interface IRemoveRangeProps {
     baseTokenLogoURI: string;
     quoteTokenLogoURI: string;
     isDenomBase: boolean;
+    lastBlockNumber: number;
 }
 
 export default function RemoveRange(props: IRemoveRangeProps) {

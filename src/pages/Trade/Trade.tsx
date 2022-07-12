@@ -145,6 +145,7 @@ export default function Trade(props: ITradeProps) {
                         account={props.account}
                         isAuthenticated={props.isAuthenticated}
                         isWeb3Enabled={props.isWeb3Enabled}
+                        lastBlockNumber={props.lastBlockNumber}
                     />
                 </div>
                 {mainContent}
