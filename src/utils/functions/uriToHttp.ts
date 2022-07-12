@@ -7,6 +7,8 @@
 // TODO:  ... be modified to output the full output value instead of the first
 // TODO:  ... value only, and be given a return type of string[]
 
+// this function takes an input URI and transforms it to a queryable URL
+// the URI must follow https, http, ipfs, or ipns standard
 export default function uriToHttp(uri: string): string {
     // get the prefix of the URI
     const protocol = uri.trim().split(':')[0].toLowerCase();
