@@ -37,7 +37,7 @@ export default function PortfolioTabs() {
                 <TabContent id='tab1' activeTab={activeTab}>
                     <Positions
                         portfolio
-                        isAllPositionsEnabled={false}
+                        isShowAllEnabled={false}
                         notOnTradeRoute={true}
                         graphData={graphData}
                     />

@@ -4,7 +4,7 @@ import { useAppSelector } from './../../../utils/hooks/reduxToolkit';
 import styles from './Positions.module.css';
 
 interface PositionsProps {
-    isAllPositionsEnabled: boolean;
+    isShowAllEnabled: boolean;
     portfolio?: boolean;
     notOnTradeRoute?: boolean;
     graphData: graphData;
@@ -14,7 +14,7 @@ import { useMoralis } from 'react-moralis';
 import { graphData } from '../../../utils/state/graphDataSlice';
 
 export default function Positions(props: PositionsProps) {
-    const { portfolio, notOnTradeRoute, isAllPositionsEnabled, graphData } = props;
+    const { portfolio, notOnTradeRoute, isShowAllEnabled, graphData } = props;
 
     const { account, isAuthenticated } = useMoralis();
 
@@ -30,7 +30,7 @@ export default function Positions(props: PositionsProps) {
     const userPositions = graphData?.positionsByUser?.positions;
     const poolPositions = graphData?.positionsByPool?.positions;
 
-    const positionsDisplay = isAllPositionsEnabled
+    const positionsDisplay = isShowAllEnabled
         ? poolPositions
               .map((position, idx) => (
                   <Position
@@ -38,7 +38,7 @@ export default function Positions(props: PositionsProps) {
                       portfolio={portfolio}
                       notOnTradeRoute={notOnTradeRoute}
                       position={position}
-                      isAllPositionsEnabled={isAllPositionsEnabled}
+                      isAllPositionsEnabled={isShowAllEnabled}
                       tokenAAddress={tokenAAddress}
                       tokenBAddress={tokenBAddress}
                       account={account ?? undefined}
@@ -54,7 +54,7 @@ export default function Positions(props: PositionsProps) {
                       portfolio={portfolio}
                       notOnTradeRoute={notOnTradeRoute}
                       position={position}
-                      isAllPositionsEnabled={isAllPositionsEnabled}
+                      isAllPositionsEnabled={isShowAllEnabled}
                       tokenAAddress={tokenAAddress}
                       tokenBAddress={tokenBAddress}
                       account={account ?? undefined}
@@ -68,7 +68,7 @@ export default function Positions(props: PositionsProps) {
         <thead>
             <tr>
                 {portfolio && <th />}
-                {isAllPositionsEnabled && <th>Owner ID</th>}
+                {isShowAllEnabled && <th>Owner ID</th>}
                 <th>Position ID</th>
                 <th>Range</th>
                 <th>APY</th>

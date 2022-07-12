@@ -47,7 +47,7 @@ export default function AnalyticsTabs() {
                 <TabContent id='tab1' activeTab={activeTab}>
                     <Positions
                         portfolio
-                        isAllPositionsEnabled={false}
+                        isShowAllEnabled={false}
                         notOnTradeRoute={true}
                         graphData={graphData}
                     />

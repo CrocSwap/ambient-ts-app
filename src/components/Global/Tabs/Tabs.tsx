@@ -4,6 +4,7 @@ import TabNavItem from './TabNavItem/TabNavItem';
 import TabContent from './TabContent/TabContent';
 import Positions from '../../Trade/Positions/Positions';
 import LimitOrders from '../../Trade/LimitOrders/LimitOrders';
+import Transactions from '../../Trade/Transactions/Transactions';
 
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import Toggle2 from '../Toggle/Toggle2';
@@ -16,7 +17,7 @@ interface ITabsProps {
 
 export default function Tabs(props: ITabsProps) {
     const [activeTab, setActiveTab] = useState('tab1');
-    const [isAllPositionsEnabled, setIsAllPositionsEnabled] = useState<boolean>(true);
+    const [isShowAllEnabled, setIsShowAllEnabled] = useState<boolean>(true);
 
     const graphData = useAppSelector((state) => state?.graphData);
 
@@ -31,19 +32,19 @@ export default function Tabs(props: ITabsProps) {
 
     useEffect(() => {
         // console.log({ hasInitialized });
-        // console.log({ isAllPositionsEnabled });
+        // console.log({ isShowAllEnabled });
         // console.log({ userPositions });
         if (!hasInitialized) {
-            if (!isAllPositionsEnabled && userPositions.length < 1) {
-                setIsAllPositionsEnabled(true);
+            if (!isShowAllEnabled && userPositions.length < 1) {
+                setIsShowAllEnabled(true);
             } else if (userPositions.length < 1) {
                 return;
-            } else if (isAllPositionsEnabled && userPositions.length >= 1) {
-                setIsAllPositionsEnabled(false);
+            } else if (isShowAllEnabled && userPositions.length >= 1) {
+                setIsShowAllEnabled(false);
             }
             setHasInitialized(true);
         }
-    }, [hasInitialized, isAllPositionsEnabled, JSON.stringify(userPositions)]);
+    }, [hasInitialized, isShowAllEnabled, JSON.stringify(userPositions)]);
 
     let label = '';
     switch (activeTab) {
@@ -54,7 +55,7 @@ export default function Tabs(props: ITabsProps) {
             label = 'Orders';
             break;
         case 'tab3':
-            label = 'TXs';
+            label = 'Transactions';
             break;
         default:
             break;
@@ -62,13 +63,13 @@ export default function Tabs(props: ITabsProps) {
 
     const positionsOnlyToggle = (
         <span className={styles.options_toggle}>
-            {isAllPositionsEnabled ? 'All ' + label : 'My ' + label}
+            {isShowAllEnabled ? 'All ' + label : 'My ' + label}
 
             <Toggle2
-                isOn={isAllPositionsEnabled}
+                isOn={isShowAllEnabled}
                 handleToggle={() => {
                     setHasInitialized(true);
-                    setIsAllPositionsEnabled(!isAllPositionsEnabled);
+                    setIsShowAllEnabled(!isShowAllEnabled);
                 }}
                 id='positions_only_toggle'
                 disabled={!props.isAuthenticated || !props.isWeb3Enabled}
@@ -103,7 +104,7 @@ export default function Tabs(props: ITabsProps) {
             <div className={styles.tabs_outlet}>
                 <TabContent id='tab1' activeTab={activeTab}>
                     <Positions
-                        isAllPositionsEnabled={isAllPositionsEnabled}
+                        isShowAllEnabled={isShowAllEnabled}
                         notOnTradeRoute={false}
                         graphData={graphData}
                     />
@@ -112,7 +113,11 @@ export default function Tabs(props: ITabsProps) {
                     <LimitOrders />
                 </TabContent>
                 <TabContent id='tab3' activeTab={activeTab}>
-                    <p>Tab 3 works!</p>
+                    <Transactions
+                        isShowAllEnabled={isShowAllEnabled}
+                        notOnTradeRoute={false}
+                        graphData={graphData}
+                    />
                 </TabContent>
                 <TabContent id='tab4' activeTab={activeTab}>
                     <p>tab4 works!</p>
