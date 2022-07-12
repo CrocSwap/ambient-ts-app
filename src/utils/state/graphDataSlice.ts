@@ -5,6 +5,7 @@ export interface graphData {
     // positionsByUser: positionsByUser;
     positionsByPool: PositionsByPool2;
     swapsByUser: SwapsByUser;
+    swapsByPool: SwapsByPool;
     // positionsByPool: PositionsByPool2;
 }
 
@@ -104,10 +105,15 @@ export interface SwapsByUser {
     swaps: Array<ISwap>;
 }
 
+export interface SwapsByPool {
+    swaps: Array<ISwap>;
+}
+
 const initialState: graphData = {
     positionsByUser: { positions: [] },
     positionsByPool: { positions: [] },
     swapsByUser: { swaps: [] },
+    swapsByPool: { swaps: [] },
 };
 
 // const initialState: graphData = {
@@ -139,6 +145,9 @@ export const graphDataSlice = createSlice({
         setSwapsByUser: (state, action: PayloadAction<SwapsByUser>) => {
             state.swapsByUser = action.payload;
         },
+        setSwapsByPool: (state, action: PayloadAction<SwapsByPool>) => {
+            state.swapsByPool = action.payload;
+        },
         resetGraphData: (state) => {
             state.positionsByUser = initialState.positionsByUser;
         },
@@ -146,7 +155,12 @@ export const graphDataSlice = createSlice({
 });
 
 // action creators are generated for each case reducer function
-export const { setPositionsByUser, setPositionsByPool, setSwapsByUser, resetGraphData } =
-    graphDataSlice.actions;
+export const {
+    setPositionsByUser,
+    setPositionsByPool,
+    setSwapsByUser,
+    setSwapsByPool,
+    resetGraphData,
+} = graphDataSlice.actions;
 
 export default graphDataSlice.reducer;
