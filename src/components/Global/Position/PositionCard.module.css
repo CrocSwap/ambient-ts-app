@@ -64,9 +64,9 @@ color: #BDBDBD;
 }
 
 
-.hide_desktop{
+/* .hide_desktop{
     display: none;
-}
+} */
 
 /* position card */
 
@@ -213,52 +213,89 @@ border: 1px solid #242F3F;
 border-radius: 50px;
   }
 
-/* Conversely, using max-width, is desktop-first then adds queries to make styles mobile-friendly
 
- */
-
-/* THIS IS FOR TABLETS */
-@media only screen 
-  and (min-device-width: 768px) 
-  and (max-device-width: 1024px) 
-  and (-webkit-min-device-pixel-ratio: 1) {
-    .container{
-        background: blue;
-     }
-    /* .hide_mobile {
-        display: none;
-    } */
-
-    .hide_desktop{
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .hide_ipad{
-        display: none;
-    }
-    
-    .position_row{
-       display: grid;
-       grid-template-columns: 1fr repeat(3, 0.5fr) 1fr 1fr 0.5fr;
-    }
+.position_row{
+    /* grid-template-columns: 1fr 1fr repeat(5, 0.5fr) 1fr 1fr 0.5fr; */
+    grid-template-columns:repeat(3, 1fr) repeat(3, 100px) 1fr repeat(2, 100px)
 }
-/* THIS IS FOR PHONES */
-/* Mobile Landscape Screen Sizes */
-@media only screen 
-  and (min-device-width: 320px) 
-  and (max-device-width: 480px)
-  and (-webkit-min-device-pixel-ratio: 2)   {
- .container{
-    background: red;
- }
-.hide_mobile{
+.column_display, .range_icon, .mobile_display{
     display: none;
 }
-.position_row{
-    display: flex;
-}
+
+
+@media screen and (max-width: 1600px){
+    .position_row{
+        background: red;
+        /* grid-template-columns: 1fr 1fr repeat(5, 0.5fr) 1fr 1fr 0.5fr; */
+        grid-template-columns:repeat(2, 1fr) repeat(2, 100px)  repeat(2, 1fr) 100px;
     }
 
+    .large_device{
+        display: none;
+    }
+
+    .column_display{
+        display: flex;
+        flex-direction: column;
+    } 
+}
+
+@media screen and (max-width: 1080px){
+    .position_row{
+        background: blue;
+
+        grid-template-columns :repeat(2, 1fr) 0.7fr 130px 70px 50px
+    }
+    .apy{
+        background: red;
+        display: none;
+    }
+}
+@media screen and (max-width: 840px){
+    .position_row{
+        background: green;
+      
+
+         grid-template-columns :1fr repeat(2, 0.5fr) 10px 70px 50px
+    }
+
+    .range_icon{
+        display: flex;
+    }
+    .full_range{
+        display: none;
+    }
+   
+   
+}
+@media screen and (max-width: 670px){
+    .position_row{
+        background: purple;
+
+
+    /* grid-template-columns :repeat(2, 0.5fr) 1fr 10px 70px 50px; */
+    grid-template-columns : 0.5fr repeat(2, 1fr) 10px 70px 50px
+    }
+
+    .mobile_display{
+        display: flex;
+        flex-direction: column;
+    }
+
+    .account_displays{
+        display: none;
+    }
+
+}
+@media screen and (max-width: 400px){
+    .position_row{
+        background: rgb(2, 0, 2);
+   
+    grid-template-columns :repeat(3, 0.7fr) 10px 50px
+    }
+
+    .option_button{
+        display: none;
+    }
+
+}

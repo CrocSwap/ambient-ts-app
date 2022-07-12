@@ -85,7 +85,8 @@ export default function PositionCard(props: PositionCardProps) {
     const ownerId = position ? position.user : null;
 
     const ensName = position?.userEnsName !== '' ? position.userEnsName : null;
-    const ownerIdTruncated = position ? truncateAddress(position.user, 18) : null;
+    const ownerIdTruncated = position ? truncateAddress(position.user, 15) : null;
+    const mobileOwnerId = position ? truncateAddress(position.user, 9) : null;
 
     const positionData = {
         position: position,
@@ -104,7 +105,11 @@ export default function PositionCard(props: PositionCardProps) {
         );
     }
 
-    const truncatedPosHash = truncateAddress(posHash as string, 18);
+    const truncatedPosHash = truncateAddress(posHash as string, 15);
+
+    const mobilePosHash = truncateAddress(posHash as string, 9);
+
+    console.log(mobilePosHash);
 
     let isPositionInRange = true;
 
@@ -231,6 +236,8 @@ export default function PositionCard(props: PositionCardProps) {
         </>
     );
 
+    const ambientRangeOrNull = position.ambient ? 'ambient' : `${minRange} - ${maxRange}`;
+
     const detailsButton = <button className={styles.details_button}>Details</button>;
 
     return (
@@ -239,39 +246,51 @@ export default function PositionCard(props: PositionCardProps) {
                 className={`${styles.position_row} ${userPosition ? styles.user_position : 'null'}`}
             >
                 <p
-                    className={`${styles.hide_ipad} ${styles.account_style} ${
+                    className={`${styles.large_device} ${styles.account_style} ${
                         ensName ? styles.ambient_text : null
                     }`}
                 >
-                    {' '}
                     {ensName ? ensName : ownerIdTruncated}
                 </p>
-                <p className={`${styles.hide_ipad} ${styles.account_style}`}> {truncatedPosHash}</p>
+                <p className={`${styles.large_device} ${styles.account_style}`}>
+                    {' '}
+                    {truncatedPosHash}
+                </p>
 
-                <div className={styles.hide_desktop}>
-                    <p className={styles.account_style}>0xaBcD...1234</p>
-                    <p className={styles.account_style}>0xAbCd...9876</p>
+                <div className={`${styles.column_display} ${styles.account_displays}`}>
+                    <p className={styles.account_style}>{ensName ? ensName : ownerIdTruncated}</p>
+                    <p className={styles.account_style}> {truncatedPosHash}</p>
+                </div>
+                <div className={styles.mobile_display}>
+                    <p className={styles.account_style}>{mobileOwnerId}</p>
+                    <p className={styles.account_style}>{mobilePosHash}</p>
                 </div>
 
-                <p className={`${styles.hide_ipad} ${styles.min_max}`}>{minRange}</p>
-                <p className={`${styles.hide_ipad} ${styles.min_max}`}> {maxRange} </p>
+                <p className={`${''} ${styles.min_max}`}>{ambientRangeOrNull}</p>
+                {/* <p className={`${styles.hide_ipad} ${styles.min_max}`}> {maxRange} </p> */}
 
-                <div className={styles.hide_desktop}>
+                {/* <div className={''}>
                     <p className={styles.min_max}>Min</p>
                     <p className={styles.min_max}>Max</p>
-                </div>
-                <p className={`${styles.hide_ipad} ${styles.qty}`}>T1 Qty</p>
-                <p className={`${styles.hide_ipad} ${styles.qty}`}>T2 Qty</p>
-                <div className={styles.hide_desktop}>
+                </div> */}
+                <p className={`${styles.large_device} ${styles.qty}`}>T1 Qty</p>
+                <p className={`${styles.large_device} ${styles.qty}`}>T2 Qty</p>
+                <div className={styles.column_display}>
                     <p className={styles.qty}>T1 Qty</p>
                     <p className={styles.qty}>T2 Qty</p>
                 </div>
-                <p className={`${styles.hide_mobile} ${styles.apy}`}>APY</p>
-
-                <RangeStatus isInRange={isPositionInRange} isAmbient={position.ambient} />
-                <button className={`${styles.option_button} ${styles.hide_mobile}`}>
-                    Reposition
-                </button>
+                <p className={`${''} ${styles.apy}`}>APY</p>
+                <div className={styles.full_range}>
+                    <RangeStatus isInRange={isPositionInRange} isAmbient={position.ambient} />{' '}
+                </div>
+                <div className={styles.range_icon}>
+                    <RangeStatus
+                        isInRange={isPositionInRange}
+                        isAmbient={position.ambient}
+                        justSymbol
+                    />{' '}
+                </div>
+                <button className={`${styles.option_button} ${''}`}>Reposition</button>
 
                 {/* <div
                     aria-controls='list settings'
