@@ -10,6 +10,10 @@
 // this function takes an input URI and transforms it to a queryable URL
 // the URI must follow https, http, ipfs, or ipns standard
 export default function uriToHttp(uri: string): string {
+    // handle special case where the URI is for the local-hosted Ambient token list
+    // this is a valid, queryable URL but will not be processed correctly by this function
+    if (uri.includes('/ambient-token-list.json')) return uri;
+
     // get the prefix of the URI
     const protocol = uri.trim().split(':')[0].toLowerCase();
 
