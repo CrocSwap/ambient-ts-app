@@ -1,6 +1,9 @@
 // Unfinished file - Currently not in used.
 import { useModal } from '../Modal/useModal';
 import Modal from '../Modal/Modal';
+import { Link, useLocation } from 'react-router-dom';
+import { motion } from 'framer-motion';
+
 import styles from './PositionCard.module.css';
 import { useState } from 'react';
 import { MenuItem, Menu, useRadioGroup } from '@material-ui/core';
@@ -14,6 +17,7 @@ import RangeDetails from '../../RangeDetails/RangeDetails';
 import RangeDetailsHeader from '../../RangeDetails/RangeDetailsHeader/RangeDetailsHeader';
 import truncateAddress from '../../../utils/truncateAddress';
 import { ambientPosSlot, concPosSlot } from '@crocswap-libs/sdk';
+import TooltipComponent from '../TooltipComponent/TooltipComponent';
 
 interface PositionCardProps {
     portfolio?: boolean;
@@ -40,7 +44,9 @@ export default function PositionCard(props: PositionCardProps) {
         userPosition,
     } = props;
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const location = useLocation();
 
+    const currentLocation = location.pathname;
     const handleClick = (
         event: React.MouseEvent<HTMLButtonElement> | React.MouseEvent<HTMLDivElement>,
     ) => {
@@ -222,26 +228,40 @@ export default function PositionCard(props: PositionCardProps) {
                 )}
 
                 <MenuItem onClick={handleClose} className={classes.menuItem}>
-                    Edit
+                    <Link
+                        to={`/trade/edit/${posHash}`}
+                        state={positionData}
+                        replace={currentLocation.startsWith('/trade/edit')}
+                    >
+                        Edit
+                    </Link>
                 </MenuItem>
 
                 <MenuItem onClick={openRemoveModal} className={classes.menuItem}>
                     Remove
                 </MenuItem>
 
-                <MenuItem onClick={handleClose} className={classes.menuItem}>
+                <MenuItem onClick={openDetailsModal} className={classes.menuItem}>
                     Details
                 </MenuItem>
             </Menu>
         </>
     );
 
-    const ambientRangeOrNull = position.ambient ? 'ambient' : `${minRange} - ${maxRange}`;
+    const ambientRangeOrNull = position.ambient ? (
+        <p className={styles.ambient_text}>ambient</p>
+    ) : (
+        `${minRange}- ${maxRange}`
+    );
 
-    const detailsButton = <button className={styles.details_button}>Details</button>;
+    const detailsButton = (
+        <button className={styles.details_button} onClick={openDetailsModal}>
+            Details
+        </button>
+    );
 
     return (
-        <div className={styles.container}>
+        <div className={`${styles.container} `}>
             <div
                 className={`${styles.position_row} ${userPosition ? styles.user_position : 'null'}`}
             >

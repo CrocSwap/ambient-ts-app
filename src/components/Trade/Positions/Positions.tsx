@@ -35,7 +35,7 @@ export default function Positions(props: PositionsProps) {
     const positionsDisplay = isAllPositionsEnabled
         ? poolPositions
               .map((position, idx) => (
-                  <Position
+                  <PositionCard
                       key={idx}
                       portfolio={portfolio}
                       notOnTradeRoute={notOnTradeRoute}
@@ -51,7 +51,7 @@ export default function Positions(props: PositionsProps) {
               .reverse()
         : userPositions
               .map((position, idx) => (
-                  <Position
+                  <PositionCard
                       key={idx}
                       portfolio={portfolio}
                       notOnTradeRoute={notOnTradeRoute}
@@ -62,61 +62,16 @@ export default function Positions(props: PositionsProps) {
                       account={account ?? undefined}
                       isAuthenticated={isAuthenticated}
                       isDenomBase={isDenomBase}
+                      userPosition
                   />
               ))
               .reverse();
 
-    const positionsHeader = (
-        <thead>
-            <tr>
-                {portfolio && <th />}
-                {isAllPositionsEnabled && <th>Owner ID</th>}
-                <th>Position ID</th>
-                <th>Range</th>
-                <th>APY</th>
-                <th></th>
-                <th></th>
-            </tr>
-        </thead>
-    );
-
     return (
         <div className={styles.posiitonse_table_display}>
             <PositionHeader />
-            {userPositions.map((position, idx) => (
-                <PositionCard
-                    key={idx}
-                    portfolio={portfolio}
-                    notOnTradeRoute={notOnTradeRoute}
-                    position={position}
-                    isAllPositionsEnabled={isAllPositionsEnabled}
-                    tokenAAddress={tokenAAddress}
-                    tokenBAddress={tokenBAddress}
-                    account={account ?? undefined}
-                    isAuthenticated={isAuthenticated}
-                    isDenomBase={isDenomBase}
-                    userPosition
-                />
-            ))}
-            {poolPositions.map((position, idx) => (
-                <PositionCard
-                    key={idx}
-                    portfolio={portfolio}
-                    notOnTradeRoute={notOnTradeRoute}
-                    position={position}
-                    isAllPositionsEnabled={isAllPositionsEnabled}
-                    tokenAAddress={tokenAAddress}
-                    tokenBAddress={tokenBAddress}
-                    account={account ?? undefined}
-                    isAuthenticated={isAuthenticated}
-                    isDenomBase={isDenomBase}
-                />
-            ))}
-            <table>
-                {positionsHeader}
 
-                <tbody>{positionsDisplay}</tbody>
-            </table>
+            <>{positionsDisplay}</>
         </div>
     );
 }

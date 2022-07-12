@@ -4,7 +4,7 @@ import { AiOutlineQuestionCircle } from 'react-icons/ai';
 
 interface TooltipComponentProps {
     title: string;
-    content?: JSX.Element;
+    children?: React.ReactNode;
     placement?:
         | 'right'
         | 'bottom-end'
@@ -22,12 +22,6 @@ interface TooltipComponentProps {
 }
 
 export default function TooltipComponent(props: TooltipComponentProps) {
-    const svgIcon = (
-        <div className={styles.icon}>
-            <AiOutlineQuestionCircle size={15} />
-        </div>
-    );
-
     return (
         <Tooltip
             title={props.title}
@@ -36,7 +30,9 @@ export default function TooltipComponent(props: TooltipComponentProps) {
             enterDelay={400}
             leaveDelay={200}
         >
-            {props.content ? props.content : svgIcon}
+            <div className={styles.icon}>
+                <AiOutlineQuestionCircle size={15} />
+            </div>
         </Tooltip>
     );
 }

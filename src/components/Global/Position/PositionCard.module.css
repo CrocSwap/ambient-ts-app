@@ -53,8 +53,8 @@ color: #BDBDBD;
 }
 
 .position_row:hover {
-    /* transform: scale(1.04); */
-    transition: .3s ease-in-out;
+    background: var(--dark3);
+    transition: all var(--animation-speed) ease-in-out;
     cursor: pointer;
 }
 
@@ -153,11 +153,15 @@ border: 1px solid #7371FC;
 border-radius: 50px;
 
 
+transition: background var(--animation-speed) ease-in-out;
 
 
 
   }
 
+  .selected{
+    background: red;
+  }
 
 
 
@@ -165,11 +169,10 @@ border-radius: 50px;
 
   .option_button:hover{
     box-shadow: none;
-    color: black;
-    color: var(--text-grey-white);
+   
     border: 1px solid rgba(223,190,106,0);
     color: white;
-    background-position: 99% 50%;
+    background: var(--title-gradient);
   }
 
   .details_button{
