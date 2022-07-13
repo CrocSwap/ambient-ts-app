@@ -238,18 +238,18 @@ export default function LimitOrderCard() {
                     T2 Qty
                     <img src='https://cryptologos.cc/logos/usd-coin-usdc-logo.png' alt='usdc' />
                 </p>
-                <div className={styles.qty_column_display}>
-                    <p className={styles.qty}>
-                        T1 Qty
+                <div className={`${styles.qty_column_display} ${styles.qty_display}`}>
+                    <div className={styles.qty}>
+                        <p>T1 Qty</p>
                         <img
                             src='https://icons.iconarchive.com/icons/cjdowner/cryptocurrency-flat/1024/Ethereum-ETH-icon.png'
                             alt='ethereum'
                         />
-                    </p>
-                    <p className={styles.qty}>
-                        T2 Qty
+                    </div>
+                    <div className={styles.qty}>
+                        <p>T2 Qty</p>
                         <img src='https://cryptologos.cc/logos/usd-coin-usdc-logo.png' alt='usdc' />
-                    </p>
+                    </div>
                 </div>
 
                 <OpenOrderStatus isFilled />

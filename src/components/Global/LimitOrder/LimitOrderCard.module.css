@@ -328,24 +328,26 @@ border-radius: 50px;
 }
 
 
-/* @media screen and (max-width: 670px){
+@media screen and (max-width: 670px){
     .position_row{
     
+background: blue;
 
+    /* grid-template-columns : 0.5fr repeat(2, 1fr) 10px 70px 50px */
+    grid-template-columns : 1fr repeat(4, 30px)  30px;
 
-    grid-template-columns : 0.5fr repeat(2, 1fr) 10px 70px 50px
     }
 
-    .mobile_display{
-        display: flex;
-        flex-direction: column;
-    }
-
-    .account_displays{
+    .qty p{
         display: none;
     }
+    .qty_display{
+        flex-direction: row;
+    }
 
-} */
+
+
+}
 /* @media screen and (max-width: 400px){
     .position_row{
    
