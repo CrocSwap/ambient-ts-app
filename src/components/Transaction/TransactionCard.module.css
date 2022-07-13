@@ -1,3 +1,13 @@
+
+.buttons_container{
+    /* background: blue; */
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+}
+
 .details_button{
     display: flex;
    justify-content: center;
