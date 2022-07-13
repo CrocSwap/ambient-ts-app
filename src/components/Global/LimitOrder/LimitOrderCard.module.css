@@ -1,33 +1,4 @@
-/* .container {
-    max-width: 1140px;
-    margin: auto;
-    z-index: 1;
-} */
 
-.heading {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    /* background-color: #26272b;
-    box-shadow: 0px 0px 12px #18191b; */
-    border-radius: 8px;
-    margin: 2rem 1rem;
-    padding: .7rem 1rem;
-    font-weight: 700;
-
-    font-style: normal;
-font-weight: 300;
-font-size: 12px;
-line-height: 15px;
-display: flex;
-align-items: center;
-text-align: right;
-
-/* text/grey light */
-
-color: #BDBDBD;
-
-}
 
 
 
@@ -225,13 +196,18 @@ border-radius: 50px;
   .container{
     width: 100%;
     display: flex;
-    justify-content: space-between;
+    /* justify-content: space-between; */
     align-items: center;
+
+    display: grid;
+    grid-template-columns:  1fr 279px;
   }
 
   .positions_container{
     /* background: red; */
+    
    
+  
   }
 
 .position_row{
@@ -243,6 +219,7 @@ border-radius: 50px;
     /* background: blue; */
     display: flex;
     flex-direction: row;
+    justify-content: flex-end;
     align-items: center;
     gap: 10px;
 }
@@ -266,19 +243,26 @@ border-radius: 50px;
 
 
 @media screen and (max-width: 1400px){
+
+    .container{
+     
+        display: grid;
+        grid-template-columns:  1fr 50px;
+      }
     .position_row{
-        background: rgb(73, 17, 17);
+        /* background: rgb(73, 17, 17); */
         /* grid-template-columns: 1fr 1fr repeat(5, 0.5fr) 1fr 1fr 0.5fr; */
         /* grid-template-columns:repeat(2, 1fr) repeat(5, 80px) 40px  */
         grid-template-columns: 1fr repeat(5, 60px) 40px 
 
     }
-    .container{
-       display: flex;
-    }
+  
     .menu_container{
         display: flex;
+        justify-content: flex-end;
     }
+
+  
     .buttons_container{
         display: none;
     }
@@ -297,7 +281,7 @@ border-radius: 50px;
 
 @media screen and (max-width: 900px){
     .position_row{
-     background: blue;
+     /* background: blue; */
 
         /* grid-template-columns :repeat(2, 1fr) 0.7fr 130px 70px 50px */
         grid-template-columns : 1fr repeat(3, 80px) 100px 40px;
@@ -313,11 +297,11 @@ border-radius: 50px;
 }
 @media screen and (max-width: 840px){
     .position_row{
-        background: rgb(255, 255, 0);
+        /* background: rgb(255, 255, 0); */
     
       
 
-         /* grid-template-columns :1fr repeat(2, 0.5fr) 10px 70px 50px */
+ 
          grid-template-columns : 1fr repeat(3, 40px) 100px 40px;
 
 
@@ -331,7 +315,7 @@ border-radius: 50px;
 @media screen and (max-width: 670px){
     .position_row{
     
-background: blue;
+/* background: blue; */
 
     /* grid-template-columns : 0.5fr repeat(2, 1fr) 10px 70px 50px */
     grid-template-columns : 1fr repeat(4, 30px)  30px;

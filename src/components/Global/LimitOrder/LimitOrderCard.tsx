@@ -1,36 +1,36 @@
 // Unfinished file - Currently not in used.
 import { useModal } from '../Modal/useModal';
 import Modal from '../Modal/Modal';
-import { Link, useLocation } from 'react-router-dom';
+// import { Link, useLocation } from 'react-router-dom';
 
 import styles from './LimitOrderCard.module.css';
 import { useState } from 'react';
 import { MenuItem, Menu } from '@material-ui/core';
 import { useStyles } from '../../../utils/functions/styles';
 import { FiMoreHorizontal } from 'react-icons/fi';
-import RangeStatus from '../RangeStatus/RangeStatus';
-import { Position2 } from '../../../utils/state/graphDataSlice';
+// import RangeStatus from '../RangeStatus/RangeStatus';
+// import { Position2 } from '../../../utils/state/graphDataSlice';
 
-import RemoveRange from '../../RemoveRange/RemoveRange';
-import RangeDetails from '../../RangeDetails/RangeDetails';
+// import RemoveRange from '../../RemoveRange/RemoveRange';
+// import RangeDetails from '../../RangeDetails/RangeDetails';
 import RangeDetailsHeader from '../../RangeDetails/RangeDetailsHeader/RangeDetailsHeader';
-import truncateAddress from '../../../utils/truncateAddress';
-import { ambientPosSlot, concPosSlot } from '@crocswap-libs/sdk';
+// import truncateAddress from '../../../utils/truncateAddress';
+// import { ambientPosSlot, concPosSlot } from '@crocswap-libs/sdk';
 import OpenOrderStatus from '../OpenOrderStatus/OpenOrderStatus';
 
-interface LimitOrderCardProps {
-    portfolio?: boolean;
-    notOnTradeRoute?: boolean;
-    position: Position2;
-    isAllPositionsEnabled: boolean;
-    tokenAAddress: string;
-    tokenBAddress: string;
-    isAuthenticated: boolean;
-    account?: string;
-    isDenomBase: boolean;
-    userPosition?: boolean;
-    lastBlockNumber: number;
-}
+// interface LimitOrderCardProps {
+//     portfolio?: boolean;
+//     notOnTradeRoute?: boolean;
+//     position: Position2;
+//     isAllPositionsEnabled: boolean;
+//     tokenAAddress: string;
+//     tokenBAddress: string;
+//     isAuthenticated: boolean;
+//     account?: string;
+//     isDenomBase: boolean;
+//     userPosition?: boolean;
+//     lastBlockNumber: number;
+// }
 export default function LimitOrderCard() {
     // const {
     //     position,
@@ -42,9 +42,9 @@ export default function LimitOrderCard() {
     //     lastBlockNumber,
     // } = props;
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    const location = useLocation();
+    // const location = useLocation();
 
-    const currentLocation = location.pathname;
+    // const currentLocation = location.pathname;
     const handleClick = (
         event: React.MouseEvent<HTMLButtonElement> | React.MouseEvent<HTMLDivElement>,
     ) => {

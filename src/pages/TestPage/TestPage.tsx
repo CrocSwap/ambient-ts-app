@@ -11,7 +11,6 @@
 // import Landing5 from '../../components/Home/Landing/Landing5';
 // import Landing6 from '../../components/Home/Landing/Landing6';
 // import PositionCard from '../../components/Global/Position/PositionCard';
-import PositionHeader from '../../components/Global/Position/PositionHeader';
 import LimitOrderHeader from '../../components/Global/LimitOrder/LimitOrderHeader';
 // import { TokenListIF } from '../../utils/interfaces/exports';
 import styles from './TestPage.module.css';
