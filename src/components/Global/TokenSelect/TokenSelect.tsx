@@ -103,7 +103,7 @@ export default function TokenSelect(props: TokenSelectProps) {
             {starIcon}
             <div className={styles.modal_content} onClick={() => chooseToken(token)}>
                 <div className={styles.modal_tokens_info}>
-                    {token.logoURI ? <img src={uriToHttp(token.logoURI)} alt='' width='27px' /> : noTokenImage}
+                    {token.logoURI ? <img src={uriToHttp(token.logoURI)} alt={`logo for token ${token.name}`} width='27px' /> : noTokenImage}
                     <span className={styles.modal_token_symbol}>{token.symbol}</span>
                     <span className={styles.modal_token_name}>{token.name}</span>
                 </div>
