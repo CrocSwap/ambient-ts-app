@@ -1,6 +1,7 @@
 import { tokenListURIs } from '../../utils/data/tokenURIs';
 import { defaultTokenLists } from '../../utils/data/defaultTokenLists';
 import { TokenIF } from '../../utils/interfaces/exports';
+import uriToHttp from '../../utils/functions/uriToHttp';
 
 export function fetchTokenLists(
     tokenListsReceived: boolean,
@@ -9,7 +10,7 @@ export function fetchTokenLists(
     // create an array of promises to fetch all token lists in the URIs file
     // middleware will add the source URI to every return
     const tokenLists = Object.values(tokenListURIs).map((uri) =>
-        fetch(uri)
+        fetch(uriToHttp(uri))
             .then((response) => response.json())
             .then((response) => (
                 {
