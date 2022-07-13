@@ -1,4 +1,4 @@
-import Position from '../../Global/Position/Position';
+// import Position from '../../Global/Position/Position';
 import { useAppSelector } from './../../../utils/hooks/reduxToolkit';
 
 import styles from './Positions.module.css';
@@ -13,6 +13,8 @@ interface PositionsProps {
 
 import { useMoralis } from 'react-moralis';
 import { graphData } from '../../../utils/state/graphDataSlice';
+import PositionHeader from '../../Global/Position/PositionHeader';
+import PositionCard from '../../Global/Position/PositionCard';
 
 export default function Positions(props: PositionsProps) {
     const { portfolio, notOnTradeRoute, isShowAllEnabled, graphData } = props;
@@ -34,7 +36,7 @@ export default function Positions(props: PositionsProps) {
     const positionsDisplay = isShowAllEnabled
         ? poolPositions
               .map((position, idx) => (
-                  <Position
+                  <PositionCard
                       key={idx}
                       portfolio={portfolio}
                       notOnTradeRoute={notOnTradeRoute}
@@ -51,7 +53,7 @@ export default function Positions(props: PositionsProps) {
               .reverse()
         : userPositions
               .map((position, idx) => (
-                  <Position
+                  <PositionCard
                       key={idx}
                       portfolio={portfolio}
                       notOnTradeRoute={notOnTradeRoute}
@@ -63,31 +65,16 @@ export default function Positions(props: PositionsProps) {
                       isAuthenticated={isAuthenticated}
                       isDenomBase={isDenomBase}
                       lastBlockNumber={props.lastBlockNumber}
+                      userPosition
                   />
               ))
               .reverse();
 
-    const positionsHeader = (
-        <thead>
-            <tr>
-                {portfolio && <th />}
-                {isShowAllEnabled && <th>Owner ID</th>}
-                <th>Position ID</th>
-                <th>Range</th>
-                <th>APY</th>
-                <th></th>
-                <th></th>
-            </tr>
-        </thead>
-    );
-
     return (
-        <div className={styles.posiitons_table_display}>
-            <table>
-                {positionsHeader}
+        <div className={styles.posiitonse_table_display}>
+            <PositionHeader />
 
-                <tbody>{positionsDisplay}</tbody>
-            </table>
+            <>{positionsDisplay}</>
         </div>
     );
 }

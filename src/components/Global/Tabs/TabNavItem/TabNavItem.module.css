@@ -21,12 +21,22 @@ background: var(--dark3);
     font-weight: 500;
     font-size: 12px;
     line-height: 15px;
+
+    position: relative;
     
     /* gradient/start */
     
     
     
 }
+.underline {
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: #7371FC;
+  }
 
 .tab_list:hover{
     color: #7371FC;
@@ -47,10 +57,10 @@ background: var(--dark3);
     opacity: 0;
     
 }
-
+/* 
 .active::after{
     opacity: 1;
-}
+} */
 
 .tab_list:hover:after{
     opacity: 1;
