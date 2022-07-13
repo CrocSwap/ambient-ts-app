@@ -88,16 +88,12 @@ export default function TokenSelect(props: TokenSelectProps) {
 
     const deleteStateStyle = !showDelete ? styles.delete_active : styles.delete_inactive;
 
-    const deleteContainer = (
-        <div className={`${styles.delete_container} ${deleteStateStyle}`}>
-            Remove {token.symbol} from your list
-            {toggleButtons}
-        </div>
-    );
-
     return (
         <div className={styles.main_container}>
-            {deleteContainer}
+            <div className={`${styles.delete_container} ${deleteStateStyle}`}>
+                Remove {token.symbol} from your list
+                {toggleButtons}
+            </div>
             {starIcon}
             <div className={styles.modal_content} onClick={() => chooseToken(token)}>
                 <div className={styles.modal_tokens_info}>
