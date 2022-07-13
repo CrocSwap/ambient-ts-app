@@ -36,7 +36,7 @@ export default function PositionCard(props: PositionCardProps) {
         // isAllPositionsEnabled,
         tokenAAddress,
         tokenBAddress,
-        // account,
+        account,
         // notOnTradeRoute,
         // isAuthenticated,
 
@@ -88,7 +88,7 @@ export default function PositionCard(props: PositionCardProps) {
     }
     //  END OF MODAL FUNCTIONALITY
 
-    // const ownerId = position ? position.user : null;
+    const ownerId = position ? position.user : null;
 
     const ensName = position?.userEnsName !== '' ? position.userEnsName : null;
     const ownerIdTruncated = position ? truncateAddress(position.user, 15) : null;
@@ -144,8 +144,9 @@ export default function PositionCard(props: PositionCardProps) {
         (positionBaseAddressLowerCase === tokenBAddressLowerCase ||
             positionQuoteAddressLowerCase === tokenBAddressLowerCase);
 
-    // const accountAddress = account ? account.toLowerCase() : null;
+    const accountAddress = account ? account.toLowerCase() : null;
 
+    const positionOwnedByConnectedAccount = ownerId === accountAddress;
     // const displayAllOrOwned =
     //     isAllPositionsEnabled || (ownerId === accountAddress && isAuthenticated);
     // const notDisplayAllOrOwned =
@@ -321,7 +322,7 @@ export default function PositionCard(props: PositionCardProps) {
                         justSymbol
                     />{' '}
                 </div>
-                {!isPositionInRange ? (
+                {!isPositionInRange && positionOwnedByConnectedAccount ? (
                     <button className={`${styles.option_button} ${''}`}>Reposition</button>
                 ) : (
                     <div></div>
