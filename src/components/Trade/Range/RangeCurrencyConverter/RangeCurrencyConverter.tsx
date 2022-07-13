@@ -161,6 +161,8 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
                 depositSkew,
             ) ?? 0;
 
+        handleRangeButtonMessageTokenB(qtyTokenB);
+
         const truncatedTokenBQty = truncateDecimals(
             qtyTokenB,
             tokenPair.dataTokenB.decimals > 10 ? 10 : tokenPair.dataTokenB.decimals,
@@ -202,6 +204,8 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
                 isAmbient,
                 depositSkew,
             ) ?? 0;
+
+        handleRangeButtonMessageTokenA(qtyTokenA);
 
         const truncatedTokenAQty = truncateDecimals(
             qtyTokenA,
