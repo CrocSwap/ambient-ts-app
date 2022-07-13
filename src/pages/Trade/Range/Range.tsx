@@ -692,6 +692,29 @@ export default function Range(props: RangePropsIF) {
             let newTransactionHash = tx.hash;
             setNewRangeTransactionHash(newTransactionHash);
             console.log({ newTransactionHash });
+
+            const newPositionCacheEndpoint = 'https://809821320828123.de:5000/new_position?';
+
+            fetch(
+                newPositionCacheEndpoint +
+                    new URLSearchParams({
+                        tx: newTransactionHash,
+                        base: baseTokenAddress,
+                        quote: quoteTokenAddress,
+                        poolIdx: POOL_PRIMARY.toString(),
+                        user: account ?? '',
+                        ambient: isAmbient.toString(),
+                        bidTick: rangeLowTick.toString(),
+                        askTick: rangeHighTick.toString(),
+                        knockout: 'false', // boolean Whether or not the liquidity position is knockout liquidity. If true, then ambient must be false.
+                        isBid: 'false', // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
+                        override: 'false', // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
+                    }),
+                // { method: 'POST' },
+            )
+                .then((response) => response.json())
+                .then(console.log);
+
             let parsedReceipt;
 
             try {
@@ -737,27 +760,6 @@ export default function Range(props: RangePropsIF) {
                 const txHash = newTransactionHash;
 
                 save({ txHash, posHash, user, account, chainId });
-
-                const newPositionCacheEndpoint = 'https://809821320828123.de:5000/new_position?';
-
-                fetch(
-                    newPositionCacheEndpoint +
-                        new URLSearchParams({
-                            tx: txHash,
-                            base: baseTokenAddress,
-                            quote: quoteTokenAddress,
-                            poolIdx: POOL_PRIMARY.toString(),
-                            user: account ?? '',
-                            ambient: isAmbient.toString(),
-                            bidTick: rangeLowTick.toString(),
-                            askTick: rangeHighTick.toString(),
-                            knockout: 'false',
-                            isBid: 'false',
-                        }),
-                    // { method: 'POST' },
-                )
-                    .then((response) => response.json())
-                    .then(console.log);
 
                 if (parsedReceipt) {
                     const unifiedReceipt = await handleParsedReceipt(
