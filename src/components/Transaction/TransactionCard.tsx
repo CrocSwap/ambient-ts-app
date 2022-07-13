@@ -17,6 +17,38 @@ export default function TransactionCard() {
     };
     const classes = useStyles();
 
+    const menuButtons = (
+        <div className={styles.menu_container}>
+            <div
+                aria-controls='list settings'
+                aria-haspopup='true'
+                onClick={handleClick}
+                className={`${styles.menu} `}
+            >
+                <FiMoreHorizontal size={30} />
+            </div>
+
+            <Menu
+                id='simple-menu'
+                anchorEl={anchorEl}
+                keepMounted
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
+                className={classes.menu}
+            >
+                <MenuItem onClick={handleClose} className={classes.menuItem}>
+                    Edit
+                </MenuItem>
+
+                <MenuItem className={classes.menuItem}>Copy</MenuItem>
+
+                <MenuItem onClick={openDetailsModal} className={classes.menuItem}>
+                    Details
+                </MenuItem>
+            </Menu>
+        </div>
+    );
+
     const buttonsDisplay = (
         <div className={styles.buttons_container}>
             <button className={styles.details_button}>Edit</button>
