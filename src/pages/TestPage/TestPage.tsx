@@ -12,8 +12,10 @@
 // import Landing6 from '../../components/Home/Landing/Landing6';
 // import PositionCard from '../../components/Global/Position/PositionCard';
 import PositionHeader from '../../components/Global/Position/PositionHeader';
+import LimitOrderHeader from '../../components/Global/LimitOrder/LimitOrderHeader';
 // import { TokenListIF } from '../../utils/interfaces/exports';
 import styles from './TestPage.module.css';
+import LimitOrderCard from '../../components/Global/LimitOrder/LimitOrderCard';
 
 export default function TestPage() {
     // // get the user object from local storage
@@ -55,7 +57,7 @@ export default function TestPage() {
     //         </li>
     //     ));
 
-    // const mapItems = [1, 2, 4, 4, 5, 6, 7, 8, 9];
+    const mapItems = [1, 2, 4, 4, 5, 6, 7, 8, 9];
 
     return (
         // <main>
@@ -95,10 +97,11 @@ export default function TestPage() {
         <>
             <main className={styles.container}>
                 {/* <ul className={styles.token_list_selects_ul}>{tokenListElements}</ul> */}
-                <PositionHeader />
-                {/* {mapItems.map((item, idx) => (
-                    <PositionCard key={idx} />
-                ))} */}
+                {/* <PositionHeader /> */}
+                <LimitOrderHeader />
+                {mapItems.map((item, idx) => (
+                    <LimitOrderCard key={idx} />
+                ))}
             </main>
         </>
     );

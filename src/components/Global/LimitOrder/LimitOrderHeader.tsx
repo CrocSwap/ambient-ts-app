@@ -1,8 +1,8 @@
 // Unfinished file - Currently not in used.
 
-import styles from './LimitOrderHeaderHeader.module.css';
+import styles from './LimitOrderHeader.module.css';
 
-export default function LimitOrderHeaderHeader() {
+export default function LimitOrderHeader() {
     return (
         <div className={styles.heading}>
             <p className={styles.large_device}>ID </p>
@@ -12,13 +12,13 @@ export default function LimitOrderHeaderHeader() {
                 <p>Wallet</p>
             </div>
 
-            <p className={`${styles.min_max}`}>Range </p>
+            <p className={`${styles.min_max}`}>Price </p>
 
-            <p className={styles.large_device}>ETH</p>
-            <p className={styles.large_device}>USDC</p>
+            <p className={styles.large_device}>T1 Qty</p>
+            <p className={styles.large_device}>T2 Qty</p>
             <div className={styles.column_display}>
-                <p>ETH</p>
-                <p>USDC</p>
+                <p>T1 Qty</p>
+                <p>T2 Qty</p>
             </div>
             <p className={styles.apy}>APY</p>
 
