@@ -55,12 +55,8 @@ export default function TokenSelect(props: TokenSelectProps) {
     );
 
     function handleToggleDelete() {
-        if (toggleDeleteOn) {
-            removeToken(token, tokensBank, chainId, setImportedTokens);
-            setShowDelete(false);
-        } else {
-            setShowDelete(false);
-        }
+        if (toggleDeleteOn) removeToken(token, tokensBank, chainId, setImportedTokens);
+        setShowDelete(false);
     }
 
     const confirmStyle = toggleDeleteOn ? styles.danger_style : styles.primary_style;
