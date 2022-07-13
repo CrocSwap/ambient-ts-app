@@ -13,6 +13,7 @@ export interface CandlesForAllPools {
 }
 
 export interface CandlesByPool {
+    pool: { baseAddress: string; quoteAddress: string; poolIdx: number };
     candles: Array<CandleData>;
 }
 
@@ -146,6 +147,9 @@ export const graphDataSlice = createSlice({
         setSwapsByPool: (state, action: PayloadAction<SwapsByPool>) => {
             state.swapsByPool = action.payload;
         },
+        setCandlesByPool: (state, action: PayloadAction<CandlesByPool>) => {
+            state.candlesForAllPools = { pools: [action.payload] };
+        },
         resetGraphData: (state) => {
             state.positionsByUser = initialState.positionsByUser;
         },
@@ -156,6 +160,7 @@ export const graphDataSlice = createSlice({
 export const {
     setPositionsByUser,
     setPositionsByPool,
+    setCandlesByPool,
     setSwapsByUser,
     setSwapsByPool,
     resetGraphData,

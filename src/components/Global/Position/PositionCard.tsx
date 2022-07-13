@@ -115,7 +115,7 @@ export default function PositionCard(props: PositionCardProps) {
 
     const mobilePosHash = truncateAddress(posHash as string, 9);
 
-    console.log(mobilePosHash);
+    // console.log(mobilePosHash);
 
     let isPositionInRange = true;
 
