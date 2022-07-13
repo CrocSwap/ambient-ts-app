@@ -1,7 +1,6 @@
 import { tokenListURIs } from '../../utils/data/tokenURIs';
 import { defaultTokenLists } from '../../utils/data/defaultTokenLists';
 import { TokenIF } from '../../utils/interfaces/exports';
-import validateTokenList from '../../utils/functions/validateTokenList';
 import uriToHttp from '../../utils/functions/uriToHttp';
 
 export function fetchTokenLists(
@@ -20,7 +19,7 @@ export function fetchTokenLists(
                     dateRetrieved: new Date().toISOString(),
                     userImported: false
                 }
-            )),
+            ))
     );
     // translate default token lists from a human-readable strings to URI
     // ... strings, this syntax is necessary to map over an array of
