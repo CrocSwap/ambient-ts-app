@@ -62,23 +62,23 @@ export default function Edit() {
 
     const [initializationComplete, setInitializationComplete] = useState(false);
 
-    const isAdvancedModeActive = true;
+    const [isAdvancedModeActive, setIsAdvancedModeActive] = useState(false);
     // const [denominationsInBase, setDenominationsInBase] = useState(true);
     const denominationsInBase = tradeData.isDenomBase;
 
     useEffect(() => {
-        if (isAdvancedModeActive) {
-            const rangeLowBoundDisplayField = document.getElementById(
-                'edit-base-price-input-quantity',
-            ) as HTMLInputElement;
-            if (rangeLowBoundDisplayField) {
-                // console.log(rangeLowBoundDisplayField.value);
-                setInitializationComplete(false);
-            }
+        // console.log({ rangeLowTick });
+        // console.log({ rangeHighTick });
+        const rangeLowBoundDisplayField = document.getElementById(
+            'edit-base-price-input-quantity',
+        ) as HTMLInputElement;
+        if (rangeLowBoundDisplayField) {
+            // console.log(rangeLowBoundDisplayField.value);
             const rangeHighBoundDisplayField = document.getElementById(
                 'edit-quote-price-input-quantity',
             ) as HTMLInputElement;
             if (rangeHighBoundDisplayField) {
+                setIsAdvancedModeActive(true);
                 setInitializationComplete(false);
             }
         }
