@@ -4,6 +4,7 @@ import { AiOutlineQuestionCircle } from 'react-icons/ai';
 
 interface TooltipComponentProps {
     title: string;
+    children?: React.ReactNode;
     placement?:
         | 'right'
         | 'bottom-end'
