@@ -49,3 +49,247 @@ background: #0D1117;
 border: 1px solid #242F3F;
 border-radius: 50px;
  }
+ .container{
+    width: 100%;
+    display: flex;
+    /* justify-content: space-between; */
+    align-items: center;
+
+    display: grid;
+    grid-template-columns:  1fr 279px;
+  
+  }
+
+ .position_row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+   
+    margin: 5px 0;
+
+    min-height: 35px;
+    padding-left: 5px;
+    text-align: center;
+   
+
+    display: grid;
+    grid-template-columns:repeat(2, 1fr) repeat(5, 80px)  ;
+   grid-gap: 10px;
+}
+.position_row:hover {
+    background: var(--dark3);
+    transition: all var(--animation-speed) ease-in-out;
+    cursor: pointer;
+}
+
+.qty img{
+    width: 12px;
+}
+
+
+.account_style{
+    font-family: var(--roboto);
+    font-style: normal;
+font-weight: 300;
+font-size: 12px;
+line-height: 16px;
+color: #BDBDBD;
+font-size: 12px;
+line-height: 15px;
+/* text-align: start; */
+}
+
+.min_max{
+    font-size: 12px;
+line-height: 15px;
+    color: #5FFFF2;
+    font-family: var(--font-family);
+    font-weight: 300;
+    
+
+ 
+}
+
+.qty{
+    font-weight: 300;
+    font-size: 12px;
+    line-height: 15px;  
+    color: #BDBDBD;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+}
+
+.ambient_text{
+    background: var(--title-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+  }
+  
+.apy{
+    font-family: 'Lexend Deca';
+font-style: normal;
+font-weight: 200;
+font-size: 18px;
+line-height: 22px;
+
+letter-spacing: -0.02em;
+
+/* apy/green */
+
+background: linear-gradient(90deg, #15BE6F 32.38%, #8FE9BF 51.39%, #15BE6F 68.17%);
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+background-clip: text;
+text-fill-color: transparent;
+
+text-shadow: 0px 0px 10px rgba(21, 190, 111, 0.75);
+}
+
+.price, .side, .type, .side_col, .type_col{
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    color: #7371fc;
+}
+
+.column_display, .range_icon, .mobile_display, .menu_container, .qty_column_display, .remove_range_wrapper{
+    display: none;
+}
+
+
+
+
+
+
+
+
+@media screen and (max-width: 1400px){
+
+    .container{
+     
+        display: grid;
+        grid-template-columns:  1fr 50px;
+      }
+    .position_row{
+        background: rgb(73, 17, 17);
+        /* grid-template-columns: 1fr 1fr repeat(5, 0.5fr) 1fr 1fr 0.5fr; */
+        /* grid-template-columns:repeat(2, 1fr) repeat(5, 80px) 40px  */
+        grid-template-columns: 1fr 1fr repeat(5, 60px) 
+
+    }
+  
+    .menu_container{
+        display: flex;
+        justify-content: flex-end;
+    }
+
+  
+    .buttons_container{
+        display: none;
+    }
+
+   
+
+    /* .large_device{
+        display: none;
+    } */
+
+    .column_display{
+        
+        display: none;
+    } 
+}
+
+@media screen and (max-width: 900px){
+    .position_row{
+     background: blue;
+
+        /* grid-template-columns :repeat(2, 1fr) 0.7fr 130px 70px 50px */
+        grid-template-columns : 1fr repeat(3, 80px) 100px ;
+    }
+
+  
+    .column_display{
+        
+        display: flex;
+        flex-direction: column;
+    } 
+
+    .large_device{
+        display: none;
+    }
+    .qty_column_display{
+        display: flex;
+        flex-direction: column;
+    }
+    .qty_large_screen{
+        display: none;
+    }
+   
+}
+@media screen and (max-width: 840px){
+    .position_row{
+        background: rgb(255, 255, 0);
+    
+      
+
+ 
+         grid-template-columns : 1fr repeat(3, 50px) 100px ;
+
+
+    }
+    /* .type{
+        display: none;
+    } */
+
+  
+   
+}
+
+
+@media screen and (max-width: 670px){
+    .position_row{
+    
+background: blue;
+
+    /* grid-template-columns : 0.5fr repeat(2, 1fr) 10px 70px 50px */
+    grid-template-columns : 1fr repeat(3, 50px) 100px ;
+
+    }
+
+ 
+
+    .qty p{
+        display: none;
+    }
+    .qty_display{
+        flex-direction: row;
+    }
+
+    .remove_range_wrapper{
+        display: flex;
+        flex-direction: column;
+    }
+.side, .col{
+    display: none;
+}
+
+
+}
+/* @media screen and (max-width: 400px){
+    .position_row{
+   
+    grid-template-columns :repeat(3, 0.7fr) 10px 50px
+    }
+
+    .option_button{
+        display: none;
+    }
+
+} */

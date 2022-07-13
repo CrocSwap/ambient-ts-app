@@ -203,12 +203,7 @@ border-radius: 50px;
     grid-template-columns:  1fr 279px;
   }
 
-  .positions_container{
-    /* background: red; */
-    
-   
-  
-  }
+
 
 .position_row{
     /* grid-template-columns: 1fr 1fr repeat(5, 0.5fr) 1fr 1fr 0.5fr; */

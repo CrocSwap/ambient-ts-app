@@ -3,6 +3,7 @@ import styles from './Transactions.module.css';
 import { graphData } from '../../../utils/state/graphDataSlice';
 import { useAppSelector } from './../../../utils/hooks/reduxToolkit';
 import { useMoralis } from 'react-moralis';
+import TransactionCard from '../../Transaction/TransactionCard';
 
 interface TransactionsProps {
     isShowAllEnabled: boolean;
@@ -34,28 +35,30 @@ export default function Transactions(props: TransactionsProps) {
     const TransactionsDisplay = isShowAllEnabled
         ? swapsByPool
               .map((swap, idx) => (
-                  <Transaction
-                      key={idx}
-                      swap={swap}
-                      tokenAAddress={tokenAAddress}
-                      tokenBAddress={tokenBAddress}
-                      account={account ?? undefined}
-                      isAuthenticated={isAuthenticated}
-                      isShowAllEnabled={isShowAllEnabled}
-                  />
+                  //   <Transaction
+                  //       key={idx}
+                  //       swap={swap}
+                  //       tokenAAddress={tokenAAddress}
+                  //       tokenBAddress={tokenBAddress}
+                  //       account={account ?? undefined}
+                  //       isAuthenticated={isAuthenticated}
+                  //       isShowAllEnabled={isShowAllEnabled}
+                  //   />
+                  <TransactionCard key={idx} />
               ))
               .reverse()
         : swapsByUser
               .map((swap, idx) => (
-                  <Transaction
-                      key={idx}
-                      swap={swap}
-                      tokenAAddress={tokenAAddress}
-                      tokenBAddress={tokenBAddress}
-                      account={account ?? undefined}
-                      isAuthenticated={isAuthenticated}
-                      isShowAllEnabled={isShowAllEnabled}
-                  />
+                  //   <Transaction
+                  //       key={idx}
+                  //       swap={swap}
+                  //       tokenAAddress={tokenAAddress}
+                  //       tokenBAddress={tokenBAddress}
+                  //       account={account ?? undefined}
+                  //       isAuthenticated={isAuthenticated}
+                  //       isShowAllEnabled={isShowAllEnabled}
+                  //   />
+                  <TransactionCard key={idx} />
               ))
               .reverse();
 
@@ -72,12 +75,10 @@ export default function Transactions(props: TransactionsProps) {
     );
 
     return (
-        <div className={styles.transactions_table_display}>
-            <table>
-                {TransactionsHeader}
+        <>
+            {TransactionsHeader}
 
-                <tbody>{TransactionsDisplay}</tbody>
-            </table>
-        </div>
+            <>{TransactionsDisplay}</>
+        </>
     );
 }
