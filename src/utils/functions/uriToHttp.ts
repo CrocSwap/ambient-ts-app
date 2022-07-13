@@ -13,7 +13,8 @@ export default function uriToHttp(uri: string): string {
     // special-case URIs which should not be processed by this function
     // any URIs in this array will be returned as-is
     const excludedURIs = [
-        '/ambient-token-list.json'
+        '/ambient-token-list.json',
+        '/broken-list.json'
     ];
 
     // if URI is in the excluded array, return it and terminate the function
