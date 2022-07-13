@@ -1,0 +1,18 @@
+.non_filled{
+    width: 24px;
+height: 24px;
+border-radius: 50%;
+border: 1px solid var(--text-grey-light);
+background: transparent
+}
+.filled{
+    width: 24px;
+height: 24px;
+border-radius: 50%;
+border: 1px solid #41D18E;;
+background: transparent;
+
+display: flex;
+justify-content: center;
+align-items: center;
+}
