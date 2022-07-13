@@ -8,7 +8,9 @@ interface IRangeDetailsProps {
     isPositionInRange: boolean;
     isAmbient: boolean;
     baseTokenSymbol: string;
+    baseTokenDecimals: number;
     quoteTokenSymbol: string;
+    quoteTokenDecimals: number;
     lowRangeDisplayInBase: string;
     highRangeDisplayInBase: string;
     lowRangeDisplayInQuote: string;
@@ -16,6 +18,9 @@ interface IRangeDetailsProps {
     isDenomBase: boolean;
     baseTokenLogoURI: string;
     quoteTokenLogoURI: string;
+    baseTokenAddress: string;
+    quoteTokenAddress: string;
+    lastBlockNumber: number;
 }
 
 export default function RangeDetails(props: IRangeDetailsProps) {
@@ -31,7 +36,14 @@ export default function RangeDetails(props: IRangeDetailsProps) {
                 isDenomBase={props.isDenomBase}
             />
             <div className={styles.main_content}>
-                <TokenInfo />
+                <TokenInfo
+                    baseTokenAddress={props.baseTokenAddress}
+                    baseTokenDecimals={props.baseTokenDecimals}
+                    quoteTokenAddress={props.quoteTokenAddress}
+                    quoteTokenDecimals={props.quoteTokenDecimals}
+                    lastBlockNumber={props.lastBlockNumber}
+                    isDenomBase={props.isDenomBase}
+                />
                 <Divider />
             </div>
             <PriceInfo

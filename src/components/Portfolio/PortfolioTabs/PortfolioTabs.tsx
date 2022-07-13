@@ -40,6 +40,7 @@ export default function PortfolioTabs() {
                         isShowAllEnabled={false}
                         notOnTradeRoute={true}
                         graphData={graphData}
+                        lastBlockNumber={0}
                     />
                 </TabContent>
                 <TabContent id='tab2' activeTab={activeTab}>

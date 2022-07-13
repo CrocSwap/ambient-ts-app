@@ -24,6 +24,7 @@ interface PositionProps {
     isAuthenticated: boolean;
     account?: string;
     isDenomBase: boolean;
+    lastBlockNumber: number;
 }
 export default function Position(props: PositionProps) {
     // const navigate = useNavigate();
@@ -39,6 +40,7 @@ export default function Position(props: PositionProps) {
         account,
         notOnTradeRoute,
         isAuthenticated,
+        lastBlockNumber,
     } = props;
 
     const { portfolio } = props;
@@ -146,7 +148,9 @@ export default function Position(props: PositionProps) {
         isPositionInRange: isPositionInRange,
         isAmbient: position.ambient,
         baseTokenSymbol: position.baseTokenSymbol,
+        baseTokenDecimals: position.baseTokenDecimals,
         quoteTokenSymbol: position.quoteTokenSymbol,
+        quoteTokenDecimals: position.quoteTokenDecimals,
         lowRangeDisplayInBase: position.lowRangeDisplayInBase,
         highRangeDisplayInBase: position.highRangeDisplayInBase,
         lowRangeDisplayInQuote: position.lowRangeDisplayInQuote,
@@ -154,6 +158,9 @@ export default function Position(props: PositionProps) {
         baseTokenLogoURI: position.baseTokenLogoURI,
         quoteTokenLogoURI: position.quoteTokenLogoURI,
         isDenomBase: props.isDenomBase,
+        baseTokenAddress: props.position.base,
+        quoteTokenAddress: props.position.quote,
+        lastBlockNumber: lastBlockNumber,
     };
 
     switch (currentModal) {

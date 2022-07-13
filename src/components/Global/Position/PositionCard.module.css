@@ -8,8 +8,8 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #26272b;
-    box-shadow: 0px 0px 12px #18191b;
+    /* background-color: #26272b;
+    box-shadow: 0px 0px 12px #18191b; */
     border-radius: 8px;
     margin: 2rem 1rem;
     padding: .7rem 1rem;
@@ -36,25 +36,37 @@ color: #BDBDBD;
     justify-content: space-between;
     align-items: center;
    
-    background-color: #26272b;
-    border-radius: 8px;
-    margin: 2rem 1rem;
+    /* background-color: #26272b; */
+    margin: 5px 0;
+    /* border-radius: 8px; */
+    /* margin: 2rem 1rem; */
     /* padding: .7rem 1rem; */
-    padding: 0 8px;
+    /* padding: 0 8px; */
     min-height: 35px;
+    padding-left: 5px;
+    text-align: center;
    
+
+    display: grid;
+    grid-template-columns: 1fr 1fr repeat(5, 0.5fr) 1fr 1fr 0.5fr;
+   grid-gap: 10px;
 }
 
 .position_row:hover {
-    /* transform: scale(1.04); */
-    transition: .3s ease-in-out;
+    background: var(--dark3);
+    transition: all var(--animation-speed) ease-in-out;
     cursor: pointer;
 }
 
-
-.hide_desktop{
-    display: none;
+.user_position{
+    border-left: 1px solid rgb(255, 255, 255);
+		padding-left: 5px;
 }
+
+
+/* .hide_desktop{
+    display: none;
+} */
 
 /* position card */
 
@@ -67,6 +79,7 @@ line-height: 16px;
 color: #BDBDBD;
 font-size: 12px;
 line-height: 15px;
+/* text-align: start; */
 }
 
 .min_max{
@@ -86,6 +99,17 @@ line-height: 15px;
     line-height: 15px;  
     color: #BDBDBD;
 }
+
+.ambient_text{
+    background: var(--title-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+  }
+  
 .apy{
     font-family: 'Lexend Deca';
 font-style: normal;
@@ -108,50 +132,73 @@ text-shadow: 0px 0px 10px rgba(21, 190, 111, 0.75);
 
 
 .option_button{
-    border-radius:6.25rem;
+   
+
+
+    cursor: pointer;
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-light); 
-
-    /* padding: .5rem 1rem; */
+    color: var(--text-grey-white); 
     height: 23px;
     padding: 5px 8px;
     display: flex;
     justify-content: center;
     align-items: center;
+
+
+
+
+background: linear-gradient(90deg, rgba(115, 113, 252, 0) 0%, rgba(115, 113, 252, 0) 71.21%, #7371FC 100%);
+
+border: 1px solid #7371FC;
+border-radius: 50px;
+
+
+transition: background var(--animation-speed) ease-in-out;
+
+
+
+  }
+
+
+
+
+
+  .option_button:hover{
+    box-shadow: none;
+   
+    border: 1px solid rgba(223,190,106,0);
+    color: rgb(0, 0, 0);
+    background: var(--title-gradient);
+  }
+
+  .details_button{
+     display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius:6.25rem;
+    cursor: pointer;
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    color: var(--text-grey-light); 
+    height: 23px;
+    padding: 5px 8px;
     
-    border: solid 1px transparent;
-    background-image: linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, 0)), linear-gradient(101deg, #7371FC, #CDC1FF, #7371FC
-    );
-    background-origin: border-box;
-    background-clip: content-box, border-box;
+   
+    background: #0D1117;
+    border: 1px solid #242F3F;
     box-shadow: 2px 1000px 1px var(--dark3) inset;
     transition: box-shadow var(--animation-speed) ease-in-out;
     cursor: pointer;
   }
 
-
-
-  .option_button{
-    color: var(--text-grey-white);
-    border-radius:6.25rem;
-    transition: all var(--animation-speed) ease-out;
-    background: linear-gradient(270deg, #7371FC, #CDC1FF, #7371FC , rgba(215, 6, 6, 0), rgba(34,34,34,0));
-    background-position: 1% 50%;
-    
-    background-size: 300% 300%;
-    
-    text-decoration: none;
-    border: 1px solid #7371FC;
-  }
-  .option_button:hover{
+  .details_button:hover {
     box-shadow: none;
-    color: black;
     color: var(--text-grey-white);
-    border: 1px solid rgba(223,190,106,0);
-    color: white;
-    background-position: 99% 50%;
+    
   }
+
+ 
 
   .menu{
     display: flex;
@@ -166,39 +213,94 @@ background: #0D1117;
 border: 1px solid #242F3F;
 border-radius: 50px;
   }
-  
-/* Conversely, using max-width, is desktop-first then adds queries to make styles mobile-friendly
 
- */
 
-/* THIS IS FOR TABLETS */
-@media screen and (max-width: 800px) {
-    .container{
-        background: blue;
-     }
-    /* .hide_mobile {
-        display: none;
-    } */
-
-    .hide_desktop{
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .hide_ipad{
-        display: none;
-    }
+.position_row{
+    /* grid-template-columns: 1fr 1fr repeat(5, 0.5fr) 1fr 1fr 0.5fr; */
+    grid-template-columns:repeat(3, 1fr) repeat(2, 100px) 50px 1fr 80px 50px
 }
-/* THIS IS FOR PHONES */
-/* Mobile Landscape Screen Sizes */
-@media only screen and (max-width: 480px)  {
- .container{
-    background: red;
- }
-.hide_mobile{
+.column_display, .range_icon, .mobile_display{
     display: none;
 }
- 
+
+
+
+
+@media screen and (max-width: 1400px){
+    .position_row{
+        /* background: red; */
+        /* grid-template-columns: 1fr 1fr repeat(5, 0.5fr) 1fr 1fr 0.5fr; */
+        grid-template-columns:repeat(2, 1fr) repeat(2, 100px)  1fr 80px 50px;
     }
+
+   
+
+    .large_device{
+        display: none;
+    }
+
+    .column_display{
+        display: flex;
+        flex-direction: column;
+    } 
+}
+
+@media screen and (max-width: 1180px){
+    .position_row{
+        /* background: blue; */
+
+        grid-template-columns :repeat(2, 1fr) 0.7fr 130px 70px 50px
+    }
+    .apy{
+        /* background: red; */
+        display: none;
+    }
+}
+@media screen and (max-width: 840px){
+    .position_row{
+        /* background: green; */
+      
+
+         grid-template-columns :1fr repeat(2, 0.5fr) 10px 70px 50px
+    }
+
+    .range_icon{
+        display: flex;
+    }
+    .full_range{
+        display: none;
+    }
+   
+   
+}
+@media screen and (max-width: 670px){
+    .position_row{
+        /* background: purple; */
+
+
+    /* grid-template-columns :repeat(2, 0.5fr) 1fr 10px 70px 50px; */
+    grid-template-columns : 0.5fr repeat(2, 1fr) 10px 70px 50px
+    }
+
+    .mobile_display{
+        display: flex;
+        flex-direction: column;
+    }
+
+    .account_displays{
+        display: none;
+    }
+
+}
+@media screen and (max-width: 400px){
+    .position_row{
+        /* background: rgb(2, 0, 2); */
+   
+    grid-template-columns :repeat(3, 0.7fr) 10px 50px
+    }
+
+    .option_button{
+        display: none;
+    }
+
+}

@@ -1,6 +1,7 @@
 import styles from './Transaction.module.css';
 
 import { ISwap } from '../../utils/state/graphDataSlice';
+import truncateAddress from '../../utils/truncateAddress';
 
 interface TransactionProps {
     // portfolio?: boolean;
@@ -34,6 +35,8 @@ export default function Transaction(props: TransactionProps) {
     const tokenAAddressLowerCase = tokenAAddress.toLowerCase();
     const tokenBAddressLowerCase = tokenBAddress.toLowerCase();
 
+    const truncatedSwapID = truncateAddress(props.swap.id, 16);
+
     const transactionMatchesSelectedTokens =
         (transactionBaseAddressLowerCase === tokenAAddressLowerCase ||
             transactionQuoteAddressLowerCase === tokenAAddressLowerCase) &&
@@ -47,7 +50,7 @@ export default function Transaction(props: TransactionProps) {
         transactionMatchesSelectedTokens && displayAllOrOwned ? (
             <tr>
                 <td data-column='Position ID' className={styles.position_id}>
-                    {props.swap.id}
+                    {truncatedSwapID}
                 </td>
                 <td data-column='Limit Price' className={styles.transaction_price}>
                     3200.00
