@@ -11,4 +11,5 @@ export default function validateTokenList(tokenList: TokenListIF) {
     const tokenListValidator = ajv.compile(tokenListSchema);
     const listPassesValidation = tokenListValidator(tokenList);
     console.log({ listPassesValidation });
+    return listPassesValidation;
 }
