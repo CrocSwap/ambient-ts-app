@@ -11,11 +11,17 @@ export default function RangeStatus(props: RangeStatusProps) {
 
     const symbolOnlyDisplay = (
         <div className={styles.range_container}>
-            <span className={isInRange ? styles.range_text_positive : styles.range_text_negative} />
+            {isAmbient ? (
+                <div className={styles.range_text_ambient} />
+            ) : (
+                <span
+                    className={isInRange ? styles.range_text_positive : styles.range_text_negative}
+                />
+            )}
         </div>
     );
 
-    const ambientRange = <div className={styles.range_text_ambient}></div>;
+    const ambientRange = <div className={styles.range_text_ambient} />;
     const nonAmbientRange = (
         <div className={isInRange ? styles.range_text_positive : styles.range_text_negative} />
     );

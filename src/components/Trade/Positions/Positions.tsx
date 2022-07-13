@@ -1,4 +1,4 @@
-import Position from '../../Global/Position/Position';
+// import Position from '../../Global/Position/Position';
 import { useAppSelector } from './../../../utils/hooks/reduxToolkit';
 
 import styles from './Positions.module.css';

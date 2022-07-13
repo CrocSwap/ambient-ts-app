@@ -258,7 +258,7 @@ export default function PositionCard(props: PositionCardProps) {
         </button>
     );
 
-    const PositionRow = (
+    const positionRow = (
         <div className={`${styles.container} `}>
             <div
                 className={`${styles.position_row} ${userPosition ? styles.user_position : 'null'}`}
@@ -276,7 +276,13 @@ export default function PositionCard(props: PositionCardProps) {
                 </p>
 
                 <div className={`${styles.column_display} ${styles.account_displays}`}>
-                    <p className={styles.account_style}>{ensName ? ensName : ownerIdTruncated}</p>
+                    <p
+                        className={`${styles.account_style} ${
+                            ensName ? styles.ambient_text : null
+                        }`}
+                    >
+                        {ensName ? ensName : ownerIdTruncated}
+                    </p>
                     <p className={styles.account_style}> {truncatedPosHash}</p>
                 </div>
                 <div className={styles.mobile_display}>
@@ -308,12 +314,18 @@ export default function PositionCard(props: PositionCardProps) {
                         justSymbol
                     />{' '}
                 </div>
-                <button className={`${styles.option_button} ${''}`}>Reposition</button>
+                {!isPositionInRange ? (
+                    <button className={`${styles.option_button} ${''}`}>Reposition</button>
+                ) : (
+                    <div></div>
+                )}
 
                 {userPosition ? loggedInUserButtons : detailsButton}
             </div>
         </div>
     );
+
+    const positionRowOrNull = positionMatchesSelectedTokens ? positionRow : null;
 
     return (
         // <div className={`${styles.container} `}>
@@ -372,7 +384,7 @@ export default function PositionCard(props: PositionCardProps) {
         //     {modalOrNull}
         // </div>
         <>
-            {PositionRow}
+            {positionRowOrNull}
             {modalOrNull}
         </>
     );
