@@ -202,9 +202,9 @@ export default function PositionCard(props: PositionCardProps) {
 
     const minRange = props.isDenomBase
         ? position.lowRangeDisplayInBase
-        : position.highRangeDisplayInBase;
+        : position.lowRangeDisplayInQuote;
     const maxRange = props.isDenomBase
-        ? position.lowRangeDisplayInQuote
+        ? position.highRangeDisplayInBase
         : position.highRangeDisplayInQuote;
 
     const loggedInUserButtons = (
