@@ -1,17 +1,19 @@
-import styles from './TokenSelect.module.css';
-import { CgUnavailable } from 'react-icons/cg';
+// START: Import React and Dongles
 import { Dispatch, SetStateAction, useState } from 'react';
-import uriToHttp from '../../../utils/functions/uriToHttp';
-
 import { AiFillCloseSquare } from 'react-icons/ai';
+import { CgUnavailable } from 'react-icons/cg';
+
+// START: Import Local Files
+import styles from './TokenSelect.module.css';
 import { TokenIF } from '../../../utils/interfaces/exports';
+import uriToHttp from '../../../utils/functions/uriToHttp';
 import { removeToken } from '../../Global/TokenSelectContainer/removeToken';
+
 interface TokenSelectProps {
     token: TokenIF;
     tokensBank: Array<TokenIF>;
     chainId: string;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
-
     chooseToken: (tok: TokenIF) => void;
 }
 

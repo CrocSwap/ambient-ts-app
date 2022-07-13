@@ -1,14 +1,17 @@
-import styles from './TokenSelect.module.css';
+// START: Import React and Dongles
 import { CgUnavailable } from 'react-icons/cg';
-import { TokenIF } from '../../../utils/interfaces/exports';
-import uriToHttp from '../../../utils/functions/uriToHttp';
 
-interface TokenSelectProps {
+// START: Import Local Files
+import styles from './TokenSelect.module.css';
+import uriToHttp from '../../../utils/functions/uriToHttp';
+import { TokenIF } from '../../../utils/interfaces/exports';
+
+interface TokenSelectPropsIF {
     token: TokenIF;
     clickHandler: (tkn: TokenIF) => void;
 }
 
-export default function TokenSelect(props: TokenSelectProps) {
+export default function TokenSelect(props: TokenSelectPropsIF) {
     const { token, clickHandler } = props;
 
     const noTokenImage = <CgUnavailable size={20} />;
