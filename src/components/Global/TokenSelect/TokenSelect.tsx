@@ -1,8 +1,8 @@
 import styles from './TokenSelect.module.css';
 import { CgUnavailable } from 'react-icons/cg';
 import { Dispatch, SetStateAction, useState } from 'react';
+import uriToHttp from '../../../utils/functions/uriToHttp';
 
-// import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
 import { AiFillCloseSquare } from 'react-icons/ai';
 import { TokenIF } from '../../../utils/interfaces/exports';
 import { removeToken } from '../../Global/TokenSelectContainer/removeToken';
@@ -16,11 +16,9 @@ interface TokenSelectProps {
 }
 
 export default function TokenSelect(props: TokenSelectProps) {
-    // const { token, tokenToUpdate, closeModal, tokenPair, reverseTokens } = props;
+    const { token, chooseToken, tokensBank, chainId, setImportedTokens } = props;
     const [showDelete, setShowDelete] = useState(false);
     const [toggleDeleteOn, setToggleDeleteOn] = useState(false);
-
-    const { token, chooseToken, tokensBank, chainId, setImportedTokens } = props;
 
     const getRandomInt = () => Math.floor(Math.random() * 18000);
 
@@ -57,7 +55,6 @@ export default function TokenSelect(props: TokenSelectProps) {
     function handleToggleDelete() {
         if (toggleDeleteOn) {
             removeToken(token, tokensBank, chainId, setImportedTokens);
-
             setShowDelete(false);
         } else {
             setShowDelete(false);
@@ -91,8 +88,6 @@ export default function TokenSelect(props: TokenSelectProps) {
         </div>
     );
 
-    // console.log(toggleDeleteOn);
-
     const deleteStateStyle = !showDelete ? styles.delete_active : styles.delete_inactive;
 
     const deleteContainer = (
@@ -108,7 +103,7 @@ export default function TokenSelect(props: TokenSelectProps) {
             {starIcon}
             <div className={styles.modal_content} onClick={() => chooseToken(token)}>
                 <div className={styles.modal_tokens_info}>
-                    {token.logoURI ? <img src={token.logoURI} alt='' width='27px' /> : noTokenImage}
+                    {token.logoURI ? <img src={uriToHttp(token.logoURI)} alt='' width='27px' /> : noTokenImage}
                     <span className={styles.modal_token_symbol}>{token.symbol}</span>
                     <span className={styles.modal_token_name}>{token.name}</span>
                 </div>
@@ -116,16 +111,5 @@ export default function TokenSelect(props: TokenSelectProps) {
             </div>
             {deleteIcon}
         </div>
-
-        // return (
-        //     <div className={styles.modal_content} onClick={() => chooseToken(token)}>
-        //         <div className={styles.modal_tokens_info}>
-        //             {starIcon}
-        //             {token.logoURI ? <img src={token.logoURI} alt='' width='27px' /> : noTokenImage}
-        //             <span className={styles.modal_token_symbol}>{token.symbol}</span>
-        //             <span className={styles.modal_token_name}>{token.name}</span>
-        //         </div>
-        //         {deleteIcon}
-        //     </div>
     );
 }
