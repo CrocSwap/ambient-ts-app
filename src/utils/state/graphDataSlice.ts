@@ -1,37 +1,50 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export interface graphData {
-    positionsByUser: PositionsByUser2;
-    // positionsByUser: positionsByUser;
-    positionsByPool: PositionsByPool2;
+    positionsByUser: PositionsByUser;
+    positionsByPool: PositionsByPool;
     swapsByUser: SwapsByUser;
     swapsByPool: SwapsByPool;
-    // positionsByPool: PositionsByPool2;
+    candlesForAllPools: CandlesForAllPools;
 }
 
-export interface PositionsByUser2 {
-    positions: Array<Position2>;
+export interface CandlesForAllPools {
+    pools: Array<CandlesByPool>;
 }
 
-// export interface positionsByUser {
-//     id: string;
-//     positions: Array<Position2>;
-//     denomInBase: boolean;
-//     primQty: string;
-//     isTokenABase: boolean;
-//     dexBalTokenA: boolean;
-//     dexBalTokenB: boolean;
-// }
+export interface CandlesByPool {
+    candles: Array<CandleData>;
+}
 
-export interface positionsByPool {
+export interface CandleData {
+    base: string;
+    firstBlock: number;
     id: string;
-    positions: Array<position>;
-}
-export interface PositionsByPool2 {
-    positions: Array<Position2>;
+    lastBlock: number;
+    numSwaps: number;
+    period: number;
+    poolHash: string;
+    poolIdx: number;
+    priceClose: number;
+    priceMax: number;
+    priceMin: number;
+    priceOpen: number;
+    quote: string;
+    source: string;
+    time: number;
+    totalBaseQty: number;
+    totalQuoteQty: number;
 }
 
-export interface Position2 {
+export interface PositionsByUser {
+    positions: Array<Position>;
+}
+
+export interface PositionsByPool {
+    positions: Array<Position>;
+}
+
+export interface Position {
     ambient: boolean;
     askTick: number;
     bidTick: number;
@@ -114,32 +127,17 @@ const initialState: graphData = {
     positionsByPool: { positions: [] },
     swapsByUser: { swaps: [] },
     swapsByPool: { swaps: [] },
+    candlesForAllPools: { pools: [] },
 };
-
-// const initialState: graphData = {
-//     positionsByUser: {
-//         id: '',
-//         positions: [],
-//         denomInBase: true,
-//         primQty: '',
-//         isTokenABase: true,
-//         dexBalTokenA: false,
-//         dexBalTokenB: false,
-//     },
-//     positionsByPool: {
-//         // id: '',
-//         positions: [],
-//     },
-// };
 
 export const graphDataSlice = createSlice({
     name: 'graphData',
     initialState,
     reducers: {
-        setPositionsByUser: (state, action: PayloadAction<PositionsByUser2>) => {
+        setPositionsByUser: (state, action: PayloadAction<PositionsByUser>) => {
             state.positionsByUser = action.payload;
         },
-        setPositionsByPool: (state, action: PayloadAction<PositionsByPool2>) => {
+        setPositionsByPool: (state, action: PayloadAction<PositionsByPool>) => {
             state.positionsByPool = action.payload;
         },
         setSwapsByUser: (state, action: PayloadAction<SwapsByUser>) => {
