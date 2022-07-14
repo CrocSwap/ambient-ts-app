@@ -10,7 +10,7 @@ interface CustomTokenPropsIF {
 export default function CustomTokens(props: CustomTokenPropsIF) {
     const { chainId } = props;
 
-    useCustomToken(chainId);
+    const [setSearchInput] = useCustomToken(chainId);
 
     return (
         <motion.div
@@ -19,7 +19,7 @@ export default function CustomTokens(props: CustomTokenPropsIF) {
             transition={{ duration: 0.3 }}
             className={styles.search_input}
         >
-            <input type='text' placeholder='0x000'/>
+            <input type='text' placeholder='0x000' onChange={(e) => setSearchInput(e.target.value)} />
             <Divider />
             <div className={styles.custom_tokens_header}>
                 <span>0 Custom Tokens</span>
