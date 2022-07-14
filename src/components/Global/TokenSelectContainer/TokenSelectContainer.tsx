@@ -8,7 +8,6 @@ import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
 import TokenList from '../../Global/TokenList/TokenList';
 import { useSearch } from './useSearch';
 import { importToken } from './importToken';
-// import { removeToken } from './removeToken';
 
 interface TokenSelectContainerPropsIF {
     tokenPair: TokenPairIF;
@@ -37,7 +36,6 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
         closeModal,
         reverseTokens,
         showManageTokenListContent,
-        // setShowManageTokenListContent,
         activeTokenListsChanged,
         indicateActiveTokenListsChanged,
     } = props;
@@ -84,24 +82,14 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
             <div className={styles.title}>Your Tokens</div>
             <div className={styles.tokens_container}>
                 {matchingImportedTokens.map((token: TokenIF, idx: number) => (
-                    <>
-                        <TokenSelect
-                            key={idx}
-                            token={token}
-                            chooseToken={chooseToken}
-                            tokensBank={tokensBank}
-                            chainId={chainId}
-                            setImportedTokens={setImportedTokens}
-                        />
-                        {/* <button
-                            key={idx + 'remove'}
-                            onClick={() =>
-                                removeToken(token, tokensBank, chainId, setImportedTokens)
-                            }
-                        >
-                            Remove {token.name}
-                        </button> */}
-                    </>
+                    <TokenSelect
+                        key={idx}
+                        token={token}
+                        chooseToken={chooseToken}
+                        tokensBank={tokensBank}
+                        chainId={chainId}
+                        setImportedTokens={setImportedTokens}
+                    />
                 ))}
             </div>
             {matchingSearchableTokens.length ? <h3>Searched Tokens</h3> : null}

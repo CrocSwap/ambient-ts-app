@@ -9,7 +9,11 @@ export default function getList(listURI:string) {
         // format response object as a JSON
         .then(response => response.json())
         .then(response => {
-            validateTokenList(response);
+            // determine whether the returned list conforms to standard token list schema
+            if (!validateTokenList(response)) {
+                // if the list does not match the standard schema, throw an error to disrupt function
+                throw new Error(`Token List retrieved from URI ${sanitizedInput} failed validation to conform to standard token list schema.  Refer to fetchList.ts for debugging.`);
+            }
             return response;
         })
         // middleware to add metadata to the list used by the Ambient app
@@ -23,7 +27,7 @@ export default function getList(listURI:string) {
             }
         ))
         // error logging in console
-        .catch(err => console.error(err));
+        .catch(err => console.warn(err));
 
     // resolve the promise object
     Promise.resolve(list)

@@ -18,8 +18,6 @@ export default function TokenListCard(props: TokenListProps) {
     const { list, listIsActive, toggleActiveState } = props;
     const classes = useStyles();
 
-    console.log(list);
-
     const cardBackground = listIsActive ? '#7371FC ' : '';
 
     const handleClick = (
