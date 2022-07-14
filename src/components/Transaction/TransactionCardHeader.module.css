@@ -1,0 +1,18 @@
+.header_container{
+    width: 100%;
+    display: flex;
+    /* justify-content: space-between; */
+    align-items: center;
+
+    display: grid;
+    grid-template-columns:  1fr 279px;
+  
+  }
+  @media screen and (max-width: 1400px){
+
+    .header_container{
+     
+        display: grid;
+        grid-template-columns:  1fr 50px;
+      }
+    }
