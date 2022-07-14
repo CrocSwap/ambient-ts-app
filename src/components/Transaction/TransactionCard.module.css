@@ -184,6 +184,12 @@ border-radius: 50px;
     gap: 10px;
 }
 
+.account_elements p, .min_max_elements p{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+}
 
 
 

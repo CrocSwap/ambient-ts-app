@@ -2,6 +2,9 @@ import styles from './TransactionCard.module.css';
 import { MenuItem, Menu } from '@material-ui/core';
 import { useStyles } from '../../utils/functions/styles';
 import { FiMoreHorizontal } from 'react-icons/fi';
+import { FaWallet } from 'react-icons/fa';
+import { BsPersonSquare } from 'react-icons/bs';
+import { ImArrowUp, ImArrowDown } from 'react-icons/im';
 import { useState } from 'react';
 export default function TransactionCard() {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -58,13 +61,21 @@ export default function TransactionCard() {
     const bottomElements = (
         <div className={styles.bottom_elements}>
             <div className={styles.account_elements}>
-                <p>0xaBcD...1234</p>
-                <p>0xAbCd...9876</p>
+                <p>
+                    0xaBcD...1234 <FaWallet size={10} />
+                </p>
+                <p>
+                    0xAbCd...9876 <BsPersonSquare size={10} />
+                </p>
             </div>
 
             <div className={styles.min_max_elements}>
-                <p>Min</p>
-                <p>Max</p>
+                <p>
+                    <ImArrowDown size={10} /> 2134.32{' '}
+                </p>
+                <p>
+                    86743.57 <ImArrowUp size={10} />
+                </p>
             </div>
         </div>
     );
