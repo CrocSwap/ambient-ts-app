@@ -25,11 +25,6 @@ export type PriceChartProps = {
     setLabel?: Dispatch<SetStateAction<string | undefined>>; // used for value label on hover
 };
 
-export type verticalLineCordinate = {
-    x: Date;
-    y: 0;
-};
-
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace JSX {
@@ -50,10 +45,13 @@ export default function PriceChart(props: PriceChartProps) {
 
     const timeFormat = d3.timeFormat('%m/%d %I.00 %p');
     const [data] = useState(props.data);
-    const [verticalLineChart, setVerticalLineChart] = useState<verticalLineCordinate>({
-        x: new Date(),
-        y: 0,
-    });
+    const [verticalLineChart, setVerticalLineChart] = useState([
+        {
+            x: new Date(),
+            y: 0,
+        },
+    ]);
+
     const xMin = d3.min(data, function (d) {
         return new Date(Math.min(d.time) * 1000);
     });
@@ -70,8 +68,10 @@ export default function PriceChart(props: PriceChartProps) {
             .padUnit('domain')
             .pad([millisPerDay, millisPerDay]);
 
-        console.error('1657180800 :' + new Date(1657180800 * 1000));
-        const result = { x: new Date(data[0].time * 1000), y: 0 };
+        setVerticalLineChart(() => {
+            verticalLineChart[0].x = new Date(data[0].time * 1000);
+            return verticalLineChart;
+        });
 
         const xScale = d3.scaleTime();
         const yScale = d3.scaleLinear();
@@ -81,50 +81,10 @@ export default function PriceChart(props: PriceChartProps) {
         // axes
         const xAxis = d3fc.axisBottom().scale(xScale).tickFormat(timeFormat);
         const yAxis = d3fc.axisRight().scale(yScale);
-
-        const candlestick = d3fc
-            .autoBandwidth(d3fc.seriesSvgCandlestick())
-            .crossValue((d: any) => new Date(d.time * 1000))
-            .decorate((selection: any) => {
-                selection
-                    .enter()
-                    .style('fill', (d: any) => (d.close > d.open ? '#7371FC' : '#CDC1FF'))
-                    .style('stroke', (d: any) => (d.close > d.open ? '#7371FC' : '#CDC1FF'))
-                    .on('mouseover', (event: any) => {
-                        const x0 = new Date(event.currentTarget['__data__'].time * 1000); // xScale.invert(d3.pointer(event)[0]);
-                        const result = { x: x0, y: 0 } as verticalLineCordinate;
-                        // onAllRowsSelected(result);
-                        // setVerticalLineChart(result);
-                        // const y0 = event.currentTarget['__data__'].open;
-
-                        // props.setValue!(y0);
-                        // // const formattedTime =  dayjs(x0).format('DD/MM h.00 A');
-                        // props.setLabel!(x0.toString());
-                        // setTargets([{ time: x0, value: y0 }]);
-                    })
-                    .on('mouseout', (event: any) => {
-                        const x0 = new Date(event.currentTarget['__data__'].time * 1000); // xScale.invert(d3.pointer(event)[0]);
-                        const result = { x: x0, y: 0 } as verticalLineCordinate;
-                        // onAllRowsSelected(result);
-                        // setVerticalLineChart(result);
-                        // const y0 = event.currentTarget['__data__'].open;
-
-                        // props.setValue!(y0);
-                        // // const formattedTime =  dayjs(x0).format('DD/MM h.00 A');
-                        // props.setLabel!(x0.toString());
-                        // setTargets([{ time: x0, value: y0 }]);
-                    });
-            })
-            .xScale(xScale)
-            .yScale(yScale);
-
-        const candleJoin = d3fc.dataJoin('g', 'candle');
-        const verticalLineJoin = d3fc.dataJoin('g', 'line');
-
         const verticalLine = d3fc
             .annotationSvgLine()
             .orient('vertical')
-            .value((d: any) => new Date(d.time * 1000))
+            .value((d: any) => d.x)
             .xScale(xScale)
             .yScale(yScale);
 
@@ -136,9 +96,43 @@ export default function PriceChart(props: PriceChartProps) {
                 .attr('class', 'line')
                 .attr('stroke', '#cdc1ff')
                 .attr('stroke-width', 0.5)
-                .style('stroke-dasharray', '6 6');
+                .style('stroke-dasharray', '6 6')
+                .style('pointer-events', 'all');
             selection.select('g.top-handle text').text('');
         });
+
+        const candlestick = d3fc
+            .autoBandwidth(d3fc.seriesSvgCandlestick())
+            .crossValue((d: any) => new Date(d.time * 1000))
+            .decorate((selection: any) => {
+                selection
+                    .enter()
+                    .style('fill', (d: any) => (d.close > d.open ? '#7371FC' : '#CDC1FF'))
+                    .style('stroke', (d: any) => (d.close > d.open ? '#7371FC' : '#CDC1FF'));
+                // .on('mouseover', (event: any) => {
+
+                //     const x0 = new Date(event.currentTarget['__data__'].time * 1000);
+                //     setVerticalLineChart(() => {
+                //         verticalLineChart[0].x = x0;
+                //         return verticalLineChart;
+                //     });
+
+                //     console.error(verticalLineChart);
+
+                // })
+                // .on('mouseout', (event: any) => {
+                //     const x0 = new Date(event.currentTarget['__data__'].time * 1000);
+                //     setVerticalLineChart(() => {
+                //         verticalLineChart[0].x = x0;
+                //         return verticalLineChart;
+                //     });
+                // });
+            })
+            .xScale(xScale)
+            .yScale(yScale);
+
+        const candleJoin = d3fc.dataJoin('g', 'candle');
+        const verticalLineJoin = d3fc.dataJoin('g', 'verticalLine');
 
         // handle the plot area measure event in order to compute the scale ranges
         d3.select(d3PlotArea.current).on('measure', function (event: any) {
@@ -149,12 +143,19 @@ export default function PriceChart(props: PriceChartProps) {
 
         d3.select(d3PlotArea.current).on('draw', function (event: any) {
             const svg = d3.select(event.target).select('svg');
-            verticalLineJoin(svg, [verticalLineChart]).call(verticalLine);
             candleJoin(svg, [data]).call(candlestick);
+
+            verticalLineJoin(svg, [verticalLineChart]).call(verticalLine);
         });
 
         d3.select(d3Xaxis.current).on('draw', function (event: any) {
             d3.select(event.target).select('svg').call(xAxis);
+        });
+
+        d3.select(d3PlotArea.current).on('mouseover', function (event: any) {
+            const x0 = xScale.invert(d3.pointer(event)[0]);
+            const result = { x: x0, y: 0 };
+            setVerticalLineChart([result]);
         });
 
         d3.select(d3Yaxis.current).on('draw', function (event: any) {
