@@ -91,7 +91,7 @@ export default function TransactionCard() {
                         0xAbCd...9876
                     </p>
 
-                    <p className={styles.price}>Min</p>
+                    <p className={styles.price}>Min - Max</p>
 
                     <p className={styles.side}>Remove</p>
                     <p className={styles.type}>Range</p>

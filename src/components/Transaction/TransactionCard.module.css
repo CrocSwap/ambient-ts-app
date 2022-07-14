@@ -60,8 +60,7 @@ border-radius: 50px;
         font-family: var(--roboto);
         font-style: normal;
         font-weight: 300;
-        font-size: 12px;
-        line-height: 16px;
+      
         color: #BDBDBD;
         font-size: 12px;
         line-height: 15px;
@@ -173,7 +172,7 @@ border-radius: 50px;
    }
 
 .bottom_elements{
-    font-size: 12px;
+    font-size: 10px;
 
     display: none;
 }
@@ -191,6 +190,18 @@ border-radius: 50px;
     gap: 4px;
 }
 
+.account_elements p{
+    font-family: var(--roboto);
+  
+  
+    color: #BDBDBD;
+  
+    color: #BDBDBD;
+}
+.min_max_elements p{
+    color: #7371fc;
+    
+}
 
 
 
@@ -202,7 +213,7 @@ border-radius: 50px;
         grid-template-columns:  1fr 50px;
       }
     .position_row{
-        background: rgb(73, 17, 17);
+        /* background: rgb(73, 17, 17); */
     
         grid-template-columns: 1fr 1fr repeat(5, 60px) 
 
@@ -221,11 +232,8 @@ border-radius: 50px;
 
 @media screen and (max-width: 900px){
     .position_row{
-     background: blue;
-
-        /* grid-template-columns :repeat(2, 1fr) 0.7fr 130px 70px 50px */
-        /* grid-template-columns : 1fr repeat(3, 80px) 100px ; */
-        grid-template-columns : repeat(3, 50px) repeat(2, 80px)
+     /* background: blue; */
+        grid-template-columns : repeat(4, 1fr) 
     }
     .bottom_elements{
 
@@ -233,21 +241,15 @@ border-radius: 50px;
     flex-direction: row;
     justify-content: space-between;
     }
-.qty{
-    background: red;
-}
-.side{
-    background: red;
-}
-    .account_style{
+
+    .account_style, .price{
         display: none;
     }
    
 }
-@media screen and (max-width: 840px){
+/* @media screen and (max-width: 840px){
     .position_row{
         background: rgb(255, 255, 0);
-        grid-template-columns : repeat(3, 50px) repeat(2, 70px)
 
 
    
@@ -266,7 +268,7 @@ grid-template-columns : repeat(3, 50px) repeat(2, 60px)
  
 
 
-}
+} */
 /* @media screen and (max-width: 400px){
     .position_row{
    

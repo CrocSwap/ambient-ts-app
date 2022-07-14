@@ -62,22 +62,8 @@ export default function Transactions(props: TransactionsProps) {
               ))
               .reverse();
 
-    const TransactionsHeader = (
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Price</th>
-                <th>From</th>
-                <th>To</th>
-                <th></th>
-            </tr>
-        </thead>
-    );
-
     return (
         <>
-            {TransactionsHeader}
-
             <>{TransactionsDisplay}</>
         </>
     );
