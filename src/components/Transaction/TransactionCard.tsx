@@ -55,55 +55,52 @@ export default function TransactionCard() {
         </div>
     );
 
+    const bottomElements = (
+        <div className={styles.bottom_elements}>
+            <div className={styles.account_elements}>
+                <p>0xaBcD...1234</p>
+                <p>0xAbCd...9876</p>
+            </div>
+
+            <div className={styles.min_max_elements}>
+                <p>Min</p>
+                <p>Max</p>
+            </div>
+        </div>
+    );
+
     const positionRow = (
         <div className={`${styles.container} `}>
-            <div className={`${styles.position_row}  ${styles.positions_container}`}>
-                <p className={`${styles.large_device} ${styles.account_style} `}>0xaBcD...1234</p>
-                <p className={`${styles.large_device} ${styles.account_style}`}>0xAbCd...9876</p>
+            <div className={styles.content_container}>
+                <div className={`${styles.position_row}  ${styles.positions_container}`}>
+                    <p className={`${styles.large_device} ${styles.account_style} `}>
+                        0xaBcD...1234
+                    </p>
+                    <p className={`${styles.large_device} ${styles.account_style}`}>
+                        0xAbCd...9876
+                    </p>
 
-                <div className={`${styles.column_display} ${styles.account_displays}`}>
-                    <p className={`${styles.account_style} `}>0xaBcD...1234</p>
-                    <p className={styles.account_style}> 0xAbCd...9876</p>
-                </div>
+                    <p className={styles.price}>Min</p>
 
-                <p className={styles.price}>Min</p>
+                    <p className={styles.side}>Remove</p>
+                    <p className={styles.type}>Range</p>
 
-                <p className={styles.side}>Remove</p>
-                <p className={styles.type}>Range</p>
-                <div className={` ${styles.remove_range_wrapper}`}>
-                    <p className={styles.side_col}>Remove</p>
-                    <p className={styles.type_col}>Range</p>
-                </div>
-
-                <p className={`${styles.qty_large_screen} ${styles.qty}`}>
-                    T1 Qty
-                    <img
-                        src='https://icons.iconarchive.com/icons/cjdowner/cryptocurrency-flat/1024/Ethereum-ETH-icon.png'
-                        alt='ethreum'
-                    />
-                </p>
-                <p className={`${styles.qty_large_screen} ${styles.qty}`}>
-                    T2 Qty
-                    <img src='https://cryptologos.cc/logos/usd-coin-usdc-logo.png' alt='usdc' />
-                </p>
-                <div className={`${styles.qty_column_display} ${styles.qty_display}`}>
-                    <div className={styles.qty}>
-                        <p>T1 Qty</p>
+                    <p className={`${styles.qty_large_screen} ${styles.qty}`}>
+                        T1 Qty
                         <img
                             src='https://icons.iconarchive.com/icons/cjdowner/cryptocurrency-flat/1024/Ethereum-ETH-icon.png'
-                            alt='ethereum'
+                            alt='ethreum'
                         />
-                    </div>
-                    <div className={styles.qty}>
-                        <p>T2 Qty</p>
+                    </p>
+                    <p className={`${styles.qty_large_screen} ${styles.qty}`}>
+                        T2 Qty
                         <img src='https://cryptologos.cc/logos/usd-coin-usdc-logo.png' alt='usdc' />
-                    </div>
+                    </p>
                 </div>
-
-                {/* <OpenOrderStatus isFilled /> */}
+                {buttonsDisplay}
+                {menuButtons}
             </div>
-            {buttonsDisplay}
-            {menuButtons}
+            {bottomElements}
         </div>
     );
     return <>{positionRow}</>;
