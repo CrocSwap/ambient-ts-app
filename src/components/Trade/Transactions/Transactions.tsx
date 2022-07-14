@@ -4,6 +4,7 @@ import { graphData } from '../../../utils/state/graphDataSlice';
 import { useAppSelector } from './../../../utils/hooks/reduxToolkit';
 import { useMoralis } from 'react-moralis';
 import TransactionCard from '../../Transaction/TransactionCard';
+import TransactionCardHeader from '../../Transaction/TransactionCardHeader';
 
 interface TransactionsProps {
     isShowAllEnabled: boolean;
@@ -64,6 +65,7 @@ export default function Transactions(props: TransactionsProps) {
 
     return (
         <>
+            <TransactionCardHeader />
             <>{TransactionsDisplay}</>
         </>
     );
