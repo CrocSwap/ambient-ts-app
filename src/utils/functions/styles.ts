@@ -28,4 +28,11 @@ export const useStyles = makeStyles(() => ({
             backgroundColor: '#12171f',
         },
     },
+    customTooltip: {
+        // I used the rgba color for the standard "secondary" color
+        backgroundColor: 'rgba(220, 0, 78, 0.8)',
+    },
+    customArrow: {
+        color: 'rgba(220, 0, 78, 0.8)',
+    },
 }));
