@@ -4,7 +4,8 @@ import { AiOutlineQuestionCircle } from 'react-icons/ai';
 
 interface TooltipComponentProps {
     title: string;
-    children?: React.ReactNode;
+
+    icon?: JSX.Element;
     placement?:
         | 'right'
         | 'bottom-end'
@@ -31,7 +32,7 @@ export default function TooltipComponent(props: TooltipComponentProps) {
             leaveDelay={200}
         >
             <div className={styles.icon}>
-                <AiOutlineQuestionCircle size={15} />
+                {props.icon ? props.icon : <AiOutlineQuestionCircle size={15} />}
             </div>
         </Tooltip>
     );
