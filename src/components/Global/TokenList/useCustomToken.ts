@@ -10,13 +10,18 @@ export const useCustomToken = (
             .map((tokenList: TokenListIF) => tokenList.tokens).flat();
     }, []);
     const [searchInput, setSearchInput] = useState('');
-    useEffect(() => {console.log({searchInput})}, [searchInput]);
+    // useEffect(() => {console.log({searchInput})}, [searchInput]);
     const [matchingLocalTokens, setLocalMatchingTokens] = useState([]);
     useEffect(() => {
-        setLocalMatchingTokens(
-            // TODO: expand logic in the filter to look for matching chain ID
-            allTokens.filter((token: TokenIF) => token.address.includes(searchInput))
-        );
+        if (searchInput.length >= 3) {
+            console.log(searchInput.length);
+            setLocalMatchingTokens(
+                // TODO: expand logic in the filter to look for matching chain ID
+                allTokens.filter((token: TokenIF) => token.address.includes(searchInput))
+            );
+        } else {
+            setLocalMatchingTokens([]);
+        }
     }, [searchInput]);
     useEffect(() => {console.log({matchingLocalTokens})}, [matchingLocalTokens]);
 

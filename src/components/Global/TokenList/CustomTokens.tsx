@@ -19,7 +19,7 @@ export default function CustomTokens(props: CustomTokenPropsIF) {
             transition={{ duration: 0.3 }}
             className={styles.search_input}
         >
-            <input type='text' placeholder='0x000' onChange={(e) => setSearchInput(e.target.value)} />
+            <input type='text' placeholder='0x000' onChange={(e) => setSearchInput(e.target.value.trim().toLowerCase())} />
             <Divider />
             <div className={styles.custom_tokens_header}>
                 <span>0 Custom Tokens</span>
