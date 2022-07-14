@@ -2,13 +2,15 @@
 import { useEffect, useState, useMemo } from 'react';
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import {
-    Position2,
+    Position,
     resetGraphData,
     setPositionsByPool,
     setPositionsByUser,
     setSwapsByUser,
     ISwap,
     setSwapsByPool,
+    CandleData,
+    setCandlesByPool,
 } from '../utils/state/graphDataSlice';
 import { ethers } from 'ethers';
 import { JsonRpcProvider } from '@ethersproject/providers';
@@ -236,7 +238,7 @@ export default function App() {
 
     const tokenPairStringified = useMemo(() => JSON.stringify(tokenPair), [tokenPair]);
 
-    // useEffect to set baseTokenAddress and quoteTokenAddress and retrieve all pool positions when pair changes
+    // useEffect that runs when token pair changes
     useEffect(() => {
         // reset rtk values for user specified range in ticks
         dispatch(setAdvancedLowTick(0));
@@ -308,6 +310,45 @@ export default function App() {
                                 JSON.stringify(updatedSwaps)
                             ) {
                                 dispatch(setSwapsByPool({ swaps: updatedSwaps }));
+                            }
+                        });
+                    }
+                });
+
+            const candleSeriesCacheEndpoint = 'https://809821320828123.de:5000/candle_series?';
+
+            fetch(
+                candleSeriesCacheEndpoint +
+                    new URLSearchParams({
+                        base: sortedTokens[0].toLowerCase(),
+                        quote: sortedTokens[1].toLowerCase(),
+                        poolIdx: POOL_PRIMARY.toString(),
+                        period: '86400',
+                        time: '1655769600',
+                        n: '10', // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
+                        page: '0', // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
+                    }),
+            )
+                .then((response) => response.json())
+                .then((json) => {
+                    const candles = json.data;
+
+                    if (candles) {
+                        Promise.all(candles.map(getCandleData)).then((updatedCandles) => {
+                            if (
+                                JSON.stringify(graphData.candlesForAllPools.pools) !==
+                                JSON.stringify(updatedCandles)
+                            ) {
+                                dispatch(
+                                    setCandlesByPool({
+                                        pool: {
+                                            baseAddress: sortedTokens[0].toLowerCase(),
+                                            quoteAddress: sortedTokens[1].toLowerCase(),
+                                            poolIdx: POOL_PRIMARY,
+                                        },
+                                        candles: updatedCandles,
+                                    }),
+                                );
                             }
                         });
                     }
@@ -695,7 +736,15 @@ export default function App() {
         return swap;
     };
 
-    const getPositionData = async (position: Position2): Promise<Position2> => {
+    const getCandleData = async (candle: CandleData): Promise<CandleData> => {
+        if (candle) {
+            candle.base = candle.base.startsWith('0x') ? candle.base : '0x' + candle.base;
+            candle.quote = candle.quote.startsWith('0x') ? candle.quote : '0x' + candle.quote;
+        }
+        return candle;
+    };
+
+    const getPositionData = async (position: Position): Promise<Position> => {
         position.base = position.base.startsWith('0x') ? position.base : '0x' + position.base;
         position.quote = position.quote.startsWith('0x') ? position.quote : '0x' + position.quote;
         position.user = position.user.startsWith('0x') ? position.user : '0x' + position.user;

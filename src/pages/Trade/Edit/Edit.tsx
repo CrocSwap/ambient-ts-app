@@ -18,7 +18,7 @@ import EditDenominationSwitch from '../../../components/Trade/Edit/EditDenominat
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 
 // import { PositionIF } from '../../../utils/interfaces/PositionIF';
-import { Position2 } from '../../../utils/state/graphDataSlice';
+import { Position } from '../../../utils/state/graphDataSlice';
 import {
     getPinnedPriceValuesFromTicks,
     getPinnedPriceValuesFromDisplayPrices,
@@ -28,7 +28,7 @@ import truncateDecimals from '../../../utils/data/truncateDecimals';
 import { tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
 interface PositionState {
-    position: Position2;
+    position: Position;
 }
 
 export default function Edit() {

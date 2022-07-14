@@ -9,7 +9,7 @@ import { MenuItem, Menu } from '@material-ui/core';
 import { useStyles } from '../../../utils/functions/styles';
 import { FiMoreHorizontal } from 'react-icons/fi';
 import RangeStatus from '../RangeStatus/RangeStatus';
-import { Position2 } from '../../../utils/state/graphDataSlice';
+import { Position } from '../../../utils/state/graphDataSlice';
 
 import RemoveRange from '../../RemoveRange/RemoveRange';
 import RangeDetails from '../../RangeDetails/RangeDetails';
@@ -20,7 +20,7 @@ import { ambientPosSlot, concPosSlot } from '@crocswap-libs/sdk';
 interface PositionCardProps {
     portfolio?: boolean;
     notOnTradeRoute?: boolean;
-    position: Position2;
+    position: Position;
     isAllPositionsEnabled: boolean;
     tokenAAddress: string;
     tokenBAddress: string;
@@ -115,7 +115,7 @@ export default function PositionCard(props: PositionCardProps) {
 
     const mobilePosHash = truncateAddress(posHash as string, 9);
 
-    console.log(mobilePosHash);
+    // console.log(mobilePosHash);
 
     let isPositionInRange = true;
 

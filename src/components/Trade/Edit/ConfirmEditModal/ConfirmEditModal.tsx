@@ -4,10 +4,10 @@ import CurrencyDisplayContainer from '../CurrencyDisplayContainer/CurrencyDispla
 import Divider from '../../../Global/Divider/Divider';
 import EditPriceInfo from '../EditPriceInfo/EditPriceInfo';
 // import { PositionIF } from '../../../../utils/interfaces/PositionIF';
-import { Position2 } from '../../../../utils/state/graphDataSlice';
+import { Position } from '../../../../utils/state/graphDataSlice';
 interface ConfirmEditModalProps {
     onClose: () => void;
-    position: Position2;
+    position: Position;
     // position: PositionIF;
     currentPoolPriceDisplay: string;
     denominationsInBase: boolean;
