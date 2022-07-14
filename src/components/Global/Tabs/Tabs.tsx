@@ -4,7 +4,7 @@ import TabNavItem from './TabNavItem/TabNavItem';
 import TabContent from './TabContent/TabContent';
 import Positions from '../../Trade/Positions/Positions';
 import LimitOrders from '../LimitOrder/LimitOrders';
-import Transactions from '../../Trade/Transactions/Transactions';
+import Transactions from '../Transactions/Transactions';
 
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import Toggle2 from '../Toggle/Toggle2';

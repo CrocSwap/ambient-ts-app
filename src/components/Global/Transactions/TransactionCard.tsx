@@ -1,13 +1,13 @@
 import styles from './TransactionCard.module.css';
 import { MenuItem, Menu } from '@material-ui/core';
-import { useStyles } from '../../utils/functions/styles';
+import { useStyles } from '../../../utils/functions/styles';
 import { FiMoreHorizontal } from 'react-icons/fi';
 import { FaWallet } from 'react-icons/fa';
 import { BsPersonSquare } from 'react-icons/bs';
 import { ImArrowUp, ImArrowDown } from 'react-icons/im';
 import { useState } from 'react';
-import { ISwap } from '../../utils/state/graphDataSlice';
-import truncateAddress from '../../utils/truncateAddress';
+import { ISwap } from '../../../utils/state/graphDataSlice';
+import truncateAddress from '../../../utils/truncateAddress';
 
 interface TransactionProps {
     // portfolio?: boolean;

@@ -1,10 +1,10 @@
-import Transaction from '../../Transaction/Transaction';
-import styles from './Transactions.module.css';
+// import Transaction from '../../Transaction/Transaction';
+// import styles from './Transactions.module.css';
 import { graphData } from '../../../utils/state/graphDataSlice';
-import { useAppSelector } from './../../../utils/hooks/reduxToolkit';
-import { useMoralis } from 'react-moralis';
-import TransactionCard from '../../Transaction/TransactionCard';
-import TransactionCardHeader from '../../Transaction/TransactionCardHeader';
+// import { useAppSelector } from './../../../utils/hooks/reduxToolkit';
+// import { useMoralis } from 'react-moralis';
+import TransactionCard from './TransactionCard';
+import TransactionCardHeader from './TransactionCardHeader';
 
 interface TransactionsProps {
     isShowAllEnabled: boolean;
@@ -21,12 +21,12 @@ export default function Transactions(props: TransactionsProps) {
         graphData,
     } = props;
 
-    const tradeData = useAppSelector((state) => state.tradeData);
+    // const tradeData = useAppSelector((state) => state.tradeData);
 
-    const { account, isAuthenticated } = useMoralis();
+    // const { account, isAuthenticated } = useMoralis();
 
-    const tokenAAddress = tradeData.tokenA.address;
-    const tokenBAddress = tradeData.tokenB.address;
+    // const tokenAAddress = tradeData.tokenA.address;
+    // const tokenBAddress = tradeData.tokenB.address;
 
     // const exampleTransactions = [1, 2, 3];
 
