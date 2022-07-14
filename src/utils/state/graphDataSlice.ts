@@ -163,6 +163,23 @@ export const graphDataSlice = createSlice({
                 state.candlesForAllPools.pools[index] = action.payload;
             }
         },
+        addCandlesByPool: (state, action: PayloadAction<CandlesByPool>) => {
+            const poolToFind = JSON.stringify(action.payload.pool);
+            const index = state.candlesForAllPools.pools
+                .map((item) => JSON.stringify(item.pool))
+                .findIndex((pool) => pool === poolToFind);
+
+            // if candles for pool not yet saved in RTK, add to RTK
+            if (index === -1) {
+                console.error('pool not found in RTK for new candle data');
+                // state.candlesForAllPools.pools = state.candlesForAllPools.pools.concat(
+                //     action.payload,
+                // );
+                // else, replace candles for pool if different
+            } else {
+                state.candlesForAllPools.pools[index].candles.concat(action.payload.candles);
+            }
+        },
         resetGraphData: (state) => {
             state.positionsByUser = initialState.positionsByUser;
         },
@@ -174,6 +191,7 @@ export const {
     setPositionsByUser,
     setPositionsByPool,
     setCandlesByPool,
+    addCandlesByPool,
     setSwapsByUser,
     setSwapsByPool,
     resetGraphData,

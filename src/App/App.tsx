@@ -11,6 +11,7 @@ import {
     setSwapsByPool,
     CandleData,
     setCandlesByPool,
+    addCandlesByPool,
 } from '../utils/state/graphDataSlice';
 import { ethers } from 'ethers';
 import { JsonRpcProvider } from '@ethersproject/providers';
@@ -400,6 +401,63 @@ export default function App() {
                     dispatch(
                         setPositionsByPool({
                             positions: graphData.positionsByPool.positions.concat(updatedPositions),
+                        }),
+                    );
+                    // }
+                });
+            }
+
+            // console.log({ lastMessageData });
+        }
+    }, [lastAllPositionsMessage]);
+
+    const candleSubscriptionEndpoint = useMemo(
+        () =>
+            'wss://809821320828123.de:5000/subscribe_candles?' +
+            new URLSearchParams({
+                base: baseTokenAddress.toLowerCase(),
+                // baseTokenAddress.toLowerCase() || '0x0000000000000000000000000000000000000000',
+                quote: quoteTokenAddress.toLowerCase(),
+                // quoteTokenAddress.toLowerCase() || '0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa',
+                poolIdx: POOL_PRIMARY.toString(),
+                // 	positive integer	The duration of the candle, in seconds. Must represent one of the following time intervals: 5 minutes, 15 minutes, 1 hour, 4 hours, 1 day, 7 days.
+                period: '60',
+            }),
+        [baseTokenAddress, quoteTokenAddress, POOL_PRIMARY],
+    );
+
+    const {
+        //  sendMessage,
+        lastMessage: candlesMessage,
+        //  readyState
+    } = useWebSocket(
+        candleSubscriptionEndpoint,
+        {
+            // share:  true,
+            // onOpen: () => console.log('opened'),
+            onClose: () => console.log('candles websocket connection closed'),
+            // Will attempt to reconnect on all close events, such as server shutting down
+            shouldReconnect: () => true,
+        },
+        // only connect if base/quote token addresses are available
+        baseTokenAddress !== '' && quoteTokenAddress !== '',
+    );
+
+    useEffect(() => {
+        if (candlesMessage !== null) {
+            //    setMessageHistory((prev) => prev.concat(lastMessage));
+            const lastMessageData = JSON.parse(candlesMessage.data).data;
+
+            if (lastMessageData) {
+                Promise.all(lastMessageData.map(getCandleData)).then((updatedCandles) => {
+                    dispatch(
+                        addCandlesByPool({
+                            pool: {
+                                baseAddress: baseTokenAddress,
+                                quoteAddress: quoteTokenAddress,
+                                poolIdx: POOL_PRIMARY,
+                            },
+                            candles: updatedCandles,
                         }),
                     );
                     // }
