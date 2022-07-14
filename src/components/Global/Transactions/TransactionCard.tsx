@@ -8,6 +8,7 @@ import { ImArrowUp, ImArrowDown } from 'react-icons/im';
 import { useState } from 'react';
 import { ISwap } from '../../../utils/state/graphDataSlice';
 import truncateAddress from '../../../utils/truncateAddress';
+import TooltipComponent from '../TooltipComponent/TooltipComponent';
 
 interface TransactionProps {
     // portfolio?: boolean;
@@ -76,19 +77,39 @@ export default function TransactionCard(props: TransactionProps) {
         <div className={styles.bottom_elements}>
             <div className={styles.account_elements}>
                 <p>
-                    0xaBcD...1234 <FaWallet size={10} />
+                    0xaBcD...1234{' '}
+                    <TooltipComponent
+                        title='Wallet'
+                        placement='top'
+                        icon={<FaWallet size={10} />}
+                    />
                 </p>
                 <p>
-                    {truncatedSwapID} <BsPersonSquare size={10} />
+                    {truncatedSwapID}{' '}
+                    <TooltipComponent
+                        title='ID'
+                        placement='top'
+                        icon={<BsPersonSquare size={10} />}
+                    />
                 </p>
             </div>
 
             <div className={styles.min_max_elements}>
                 <p>
-                    <ImArrowDown size={10} /> 2134.32{' '}
+                    <TooltipComponent
+                        title='Min Price'
+                        placement='top'
+                        icon={<ImArrowDown size={10} />}
+                    />
+                    2134.32
                 </p>
                 <p>
-                    86743.57 <ImArrowUp size={10} />
+                    86743.57
+                    <TooltipComponent
+                        title='Max Price'
+                        placement='top'
+                        icon={<ImArrowUp size={10} />}
+                    />
                 </p>
             </div>
         </div>
