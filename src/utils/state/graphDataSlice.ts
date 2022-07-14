@@ -148,6 +148,20 @@ export const graphDataSlice = createSlice({
             state.swapsByPool = action.payload;
         },
         setCandlesByPool: (state, action: PayloadAction<CandlesByPool>) => {
+            const poolToFind = JSON.stringify(action.payload.pool);
+            if (
+                state.candlesForAllPools.pools
+                    .map((item) => JSON.stringify(item.pool))
+                    .some((pool) => pool === poolToFind)
+            ) {
+                // const index = state.candlesForAllPools.pools.findIndex((item) => {
+                //     JSON.stringify(item.pool) === poolToFind;
+                // });
+                // console.log({ index });
+                console.log('found');
+            } else {
+                console.log('not found');
+            }
             state.candlesForAllPools = { pools: [action.payload] };
         },
         resetGraphData: (state) => {
