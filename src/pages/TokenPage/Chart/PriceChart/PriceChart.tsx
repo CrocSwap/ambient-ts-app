@@ -1,6 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as d3 from 'd3';
-
 import * as d3fc from 'd3fc';
 import dayjs from 'dayjs';
 import {
@@ -8,19 +6,30 @@ import {
     Dispatch,
     HTMLAttributes,
     SetStateAction,
+    useCallback,
     useEffect,
+    useMemo,
     useRef,
     useState,
 } from 'react';
+import './PriceChart.module.css';
+import utc from 'dayjs/plugin/utc';
 
-interface PriceChartProps {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+export type PriceChartProps = {
     data: any[];
-    setValue?: Dispatch<SetStateAction<number | undefined>>; // used for value on hover
-    setLabel?: Dispatch<SetStateAction<string | undefined>>; // used for value on hover
     value?: number;
     label?: string;
-}
+    setValue?: Dispatch<SetStateAction<number | undefined>>; // used for value on hover
+    setLabel?: Dispatch<SetStateAction<string | undefined>>; // used for value label on hover
+};
+
+export type verticalLineCordinate = {
+    x: Date;
+    y: 0;
+};
+
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace JSX {
@@ -31,140 +40,136 @@ declare global {
     }
 }
 
+dayjs.extend(utc);
+
 export default function PriceChart(props: PriceChartProps) {
     const d3Container = useRef(null);
     const d3PlotArea = useRef(null);
     const d3Xaxis = useRef(null);
     const d3Yaxis = useRef(null);
-    const data = props.data;
 
-    const [targets, setTargets] = useState([
-        {
-            time: '2021-05-14',
-            value: 1000000,
-        },
-    ]);
+    const timeFormat = d3.timeFormat('%m/%d %I.00 %p');
+    const [data] = useState(props.data);
+    const [verticalLineChart, setVerticalLineChart] = useState<verticalLineCordinate>({
+        x: new Date(),
+        y: 0,
+    });
+    const xMin = d3.min(data, function (d) {
+        return new Date(Math.min(d.time) * 1000);
+    });
+    const xMax = d3.max(data, function (d) {
+        return new Date(Math.max(d.time) * 1000);
+    });
+
     useEffect(() => {
-        const priceRange = d3fc.extentLinear().accessors([(d: any) => d.value]);
-        // // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const millisPerDay = 24 * 60 * 60 * 1000;
+        const priceRange = d3fc.extentLinear().accessors([(d: any) => d.high, (d: any) => d.low]);
         const xExtent = d3fc
             .extentDate()
-            .accessors([(d: any) => new Date(dayjs(d.time).format('YYYY-MM-DD'))]);
+            .accessors([(d: any) => new Date(d.time * 1000)])
+            .padUnit('domain')
+            .pad([millisPerDay, millisPerDay]);
+
+        console.error('1657180800 :' + new Date(1657180800 * 1000));
+        const result = { x: new Date(data[0].time * 1000), y: 0 };
+
+        const xScale = d3.scaleTime();
         const yScale = d3.scaleLinear();
+        xScale.domain(xExtent(data));
+        yScale.domain(priceRange(data));
 
-        const xScale = d3.scaleTime().domain(xExtent(data)).range([10, 10]);
+        // axes
+        const xAxis = d3fc.axisBottom().scale(xScale).tickFormat(timeFormat);
+        const yAxis = d3fc.axisRight().scale(yScale);
 
-        // yScale.domain(priceRange(data));
+        const candlestick = d3fc
+            .autoBandwidth(d3fc.seriesSvgCandlestick())
+            .crossValue((d: any) => new Date(d.time * 1000))
+            .decorate((selection: any) => {
+                selection
+                    .enter()
+                    .style('fill', (d: any) => (d.close > d.open ? '#7371FC' : '#CDC1FF'))
+                    .style('stroke', (d: any) => (d.close > d.open ? '#7371FC' : '#CDC1FF'))
+                    .on('mouseover', (event: any) => {
+                        const x0 = new Date(event.currentTarget['__data__'].time * 1000); // xScale.invert(d3.pointer(event)[0]);
+                        const result = { x: x0, y: 0 } as verticalLineCordinate;
+                        // onAllRowsSelected(result);
+                        // setVerticalLineChart(result);
+                        // const y0 = event.currentTarget['__data__'].open;
 
-        // // axes
-        // const xAxis = d3fc.axisBottom().scale(xScale);
-        // const yAxis = d3fc.axisRight().scale(yScale);
+                        // props.setValue!(y0);
+                        // // const formattedTime =  dayjs(x0).format('DD/MM h.00 A');
+                        // props.setLabel!(x0.toString());
+                        // setTargets([{ time: x0, value: y0 }]);
+                    })
+                    .on('mouseout', (event: any) => {
+                        const x0 = new Date(event.currentTarget['__data__'].time * 1000); // xScale.invert(d3.pointer(event)[0]);
+                        const result = { x: x0, y: 0 } as verticalLineCordinate;
+                        // onAllRowsSelected(result);
+                        // setVerticalLineChart(result);
+                        // const y0 = event.currentTarget['__data__'].open;
 
-        // const areaSeries = d3fc
-        //     .seriesSvgArea()
-        //     .mainValue((d: any) => d.value)
-        //     .crossValue((d: any) => new Date(dayjs(d.time).format('YYYY-MM-DD')))
-        //     .xScale(xScale)
-        //     .yScale(yScale)
-        //     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        //     .decorate((selection: any) => {
-        //         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        //         selection
-        //             // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        //             .style('fill', (d: any) => {
-        //                 return 'rgba(115, 113, 252, 0.25)';
-        //             })
-        //             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        //             .on('mouseover', (event: any) => {
-        //                 const x0 = xScale.invert(d3.pointer(event)[0]);
-        //                 const y0 = yScale.invert(d3.pointer(event)[1]);
+                        // props.setValue!(y0);
+                        // // const formattedTime =  dayjs(x0).format('DD/MM h.00 A');
+                        // props.setLabel!(x0.toString());
+                        // setTargets([{ time: x0, value: y0 }]);
+                    });
+            })
+            .xScale(xScale)
+            .yScale(yScale);
 
-        //                 props.setValue!(y0);
-        //                 const formattedTime = dayjs(x0).format('MMM D, YYYY');
-        //                 props.setLabel!(formattedTime);
-        //                 setTargets([{ time: dayjs(props.value).format('YYYY-MM-DD'), value: y0 }]);
-        //             });
-        //     });
+        const candleJoin = d3fc.dataJoin('g', 'candle');
+        const verticalLineJoin = d3fc.dataJoin('g', 'line');
 
-        // const lineSeries = d3fc
-        //     .seriesSvgLine()
-        //     .mainValue((d: any) => d.value)
-        //     .crossValue((d: any) => new Date(d.time))
-        //     .xScale(xScale)
-        //     .yScale(yScale)
-        //     .decorate((selection: any) => {
-        //         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        //         selection
-        //             .enter()
-        //             .style('stroke', (d: any) => '#7371FC')
-        //             .on('mouseover', (event: any) => {
-        //                 const x0 = xScale.invert(d3.pointer(event)[0]);
-        //                 const y0 = yScale.invert(d3.pointer(event)[1]);
+        const verticalLine = d3fc
+            .annotationSvgLine()
+            .orient('vertical')
+            .value((d: any) => new Date(d.time * 1000))
+            .xScale(xScale)
+            .yScale(yScale);
 
-        //                 props.setValue!(y0);
-        //                 const formattedTime = dayjs(x0).format('MMM D, YYYY');
-        //                 props.setLabel!(formattedTime);
-        //                 setTargets([{ time: dayjs(props.value).format('YYYY-MM-DD'), value: y0 }]);
-        //             });
-        //     });
+        verticalLine.decorate((selection: any) => {
+            selection.enter().select('g.top-handle').append('text').attr('x', 5).attr('y', -5);
+            selection
+                .enter()
+                .select('line')
+                .attr('class', 'line')
+                .attr('stroke', '#cdc1ff')
+                .attr('stroke-width', 0.5)
+                .style('stroke-dasharray', '6 6');
+            selection.select('g.top-handle text').text('');
+        });
 
-        // const verticalLine = d3fc
-        //     .annotationSvgLine()
-        //     .orient('vertical')
-        //     .value((d: any) => new Date(d.time))
-        //     .xScale(xScale)
-        //     .yScale(yScale);
+        // handle the plot area measure event in order to compute the scale ranges
+        d3.select(d3PlotArea.current).on('measure', function (event: any) {
+            // xScale.domain([xMin!,xMax!]);
+            xScale.range([0, event.detail.width]);
+            yScale.range([event.detail.height, 0]);
+        });
 
-        // verticalLine.decorate((selection: any) => {
-        //     selection.enter().select('g.top-handle').append('text').attr('x', 5).attr('y', -5);
-        //     selection
-        //         .enter()
-        //         .select('line')
-        //         .attr('class', 'line')
-        //         .attr('stroke', '#cdc1ff')
-        //         .attr('stroke-width', 0.5)
-        //         .style('stroke-dasharray', '6 6');
-        //     selection.select('g.top-handle text').text('');
-        // });
+        d3.select(d3PlotArea.current).on('draw', function (event: any) {
+            const svg = d3.select(event.target).select('svg');
+            verticalLineJoin(svg, [verticalLineChart]).call(verticalLine);
+            candleJoin(svg, [data]).call(candlestick);
+        });
 
-        // const areaJoin = d3fc.dataJoin('g', 'webgl');
-        // const lineJoin = d3fc.dataJoin('g', 'line');
-        // const targetsJoin = d3fc.dataJoin('g', 'targets');
+        d3.select(d3Xaxis.current).on('draw', function (event: any) {
+            d3.select(event.target).select('svg').call(xAxis);
+        });
 
-        // d3.select(d3PlotArea.current).on('measure', function (event: any) {
-        //     xScale.range([0, event.detail.width]);
-        //     yScale.range([event.detail.height, 0]);
-        // });
-
-        // d3.select(d3PlotArea.current).on('draw', function (event: any) {
-        //     const svg = d3.select(event.target).select('svg');
-        //     areaJoin(svg, [data]).call(areaSeries);
-        //     lineJoin(svg, [data]).call(lineSeries);
-        //     targetsJoin(svg, [targets]).call(verticalLine);
-        // });
-
-        // d3.select(d3Xaxis.current).on('draw', function (event: any) {
-        //     d3.select(event.target).select('svg').call(xAxis);
-        // });
-
-        // d3.select(d3Yaxis.current).on('draw', function (event: any) {
-        //     d3.select(event.target).select('svg').call(yAxis);
-        // });
-        // const nd = d3.select('#group').node() as any;
-        // nd.requestRedraw();
-    }, [props.value, props.label, targets, data]);
+        d3.select(d3Yaxis.current).on('draw', function (event: any) {
+            d3.select(event.target).select('svg').call(yAxis);
+        });
+        const nd = d3.select('#group').node() as any;
+        nd.requestRedraw();
+    }, [verticalLineChart]);
 
     return (
         <div ref={d3Container} style={{ height: '100%', width: '100%' }} data-testid={'chart'}>
             <d3fc-group
                 id='group'
                 className='hellooo'
-                style={{
-                    display: 'flex',
-                    height: '100%',
-                    width: '100%',
-                    flexDirection: 'column',
-                }}
+                style={{ display: 'flex', height: '100%', width: '100%', flexDirection: 'column' }}
                 auto-resize
             >
                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
@@ -174,7 +179,7 @@ export default function PriceChart(props: PriceChartProps) {
                             className='plot-area'
                             style={{ flex: 1, overflow: 'hidden' }}
                         ></d3fc-svg>
-                        {/* <d3fc-svg ref={d3Yaxis} style={{ width: '3em' }}></d3fc-svg> */}
+                        <d3fc-svg ref={d3Yaxis} style={{ width: '3em' }}></d3fc-svg>
                     </div>
                     <d3fc-svg
                         ref={d3Xaxis}
