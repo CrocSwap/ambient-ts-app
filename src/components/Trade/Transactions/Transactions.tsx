@@ -45,7 +45,7 @@ export default function Transactions(props: TransactionsProps) {
                   //       isAuthenticated={isAuthenticated}
                   //       isShowAllEnabled={isShowAllEnabled}
                   //   />
-                  <TransactionCard key={idx} />
+                  <TransactionCard key={idx} swap={swap} />
               ))
               .reverse()
         : swapsByUser
@@ -59,7 +59,7 @@ export default function Transactions(props: TransactionsProps) {
                   //       isAuthenticated={isAuthenticated}
                   //       isShowAllEnabled={isShowAllEnabled}
                   //   />
-                  <TransactionCard key={idx} />
+                  <TransactionCard key={idx} swap={swap} />
               ))
               .reverse();
 

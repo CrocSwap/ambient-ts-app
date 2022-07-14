@@ -6,7 +6,21 @@ import { FaWallet } from 'react-icons/fa';
 import { BsPersonSquare } from 'react-icons/bs';
 import { ImArrowUp, ImArrowDown } from 'react-icons/im';
 import { useState } from 'react';
-export default function TransactionCard() {
+import { ISwap } from '../../utils/state/graphDataSlice';
+import truncateAddress from '../../utils/truncateAddress';
+
+interface TransactionProps {
+    // portfolio?: boolean;
+    // notOnTradeRoute?: boolean;
+    swap: ISwap;
+    // isShowAllEnabled: boolean;
+    // tokenAAddress: string;
+    // tokenBAddress: string;
+    // isAuthenticated: boolean;
+    // account?: string;
+    // isDenomBase: boolean;
+}
+export default function TransactionCard(props: TransactionProps) {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const handleClick = (
         event: React.MouseEvent<HTMLButtonElement> | React.MouseEvent<HTMLDivElement>,
@@ -57,7 +71,7 @@ export default function TransactionCard() {
             <button className={styles.details_button}>Details</button>
         </div>
     );
-
+    const truncatedSwapID = truncateAddress(props.swap.id, 14);
     const bottomElements = (
         <div className={styles.bottom_elements}>
             <div className={styles.account_elements}>
@@ -65,7 +79,7 @@ export default function TransactionCard() {
                     0xaBcD...1234 <FaWallet size={10} />
                 </p>
                 <p>
-                    0xAbCd...9876 <BsPersonSquare size={10} />
+                    {truncatedSwapID} <BsPersonSquare size={10} />
                 </p>
             </div>
 
@@ -85,7 +99,7 @@ export default function TransactionCard() {
             <div className={styles.content_container}>
                 <div className={`${styles.position_row}  ${styles.positions_container}`}>
                     <p className={`${styles.large_device} ${styles.account_style} `}>
-                        0xaBcD...1234
+                        {truncatedSwapID}
                     </p>
                     <p className={`${styles.large_device} ${styles.account_style}`}>
                         0xAbCd...9876
