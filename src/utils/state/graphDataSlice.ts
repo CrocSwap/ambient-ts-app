@@ -149,20 +149,19 @@ export const graphDataSlice = createSlice({
         },
         setCandlesByPool: (state, action: PayloadAction<CandlesByPool>) => {
             const poolToFind = JSON.stringify(action.payload.pool);
-            if (
-                state.candlesForAllPools.pools
-                    .map((item) => JSON.stringify(item.pool))
-                    .some((pool) => pool === poolToFind)
-            ) {
-                // const index = state.candlesForAllPools.pools.findIndex((item) => {
-                //     JSON.stringify(item.pool) === poolToFind;
-                // });
-                // console.log({ index });
-                console.log('found');
-            } else {
-                console.log('not found');
+            const index = state.candlesForAllPools.pools
+                .map((item) => JSON.stringify(item.pool))
+                .findIndex((pool) => pool === poolToFind);
+
+            // if candles for pool not yet saved in RTK, add to RTK
+            if (index === -1) {
+                state.candlesForAllPools.pools = state.candlesForAllPools.pools.concat(
+                    action.payload,
+                );
+                // else, replace candles for pool if different
+            } else if (state.candlesForAllPools.pools[index] !== action.payload) {
+                state.candlesForAllPools.pools[index] = action.payload;
             }
-            state.candlesForAllPools = { pools: [action.payload] };
         },
         resetGraphData: (state) => {
             state.positionsByUser = initialState.positionsByUser;
