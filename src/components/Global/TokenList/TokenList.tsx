@@ -1,6 +1,7 @@
 import styles from './TokenList.module.css';
 import { useState, Dispatch, SetStateAction } from 'react';
 import TokenListCard from '../TokenListCard/TokenListCard';
+import CustomTokens from './CustomTokens';
 import Divider from '../Divider/Divider';
 import { TokenListIF } from '../../../utils/interfaces/exports';
 import fetchList from './fetchList';
@@ -8,12 +9,17 @@ import fetchList from './fetchList';
 import { motion } from 'framer-motion';
 
 interface TokenListPropsIF {
+    chainId: string;
     activeTokenListsChanged: boolean;
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function TokenList(props: TokenListPropsIF) {
-    const { activeTokenListsChanged, indicateActiveTokenListsChanged } = props;
+    const {
+        chainId,
+        activeTokenListsChanged,
+        indicateActiveTokenListsChanged
+    } = props;
     const [showImportedTokens, setShowImportedTokens] = useState(false);
     const [searchString, setSearchString] = useState('');
 
@@ -103,26 +109,7 @@ export default function TokenList(props: TokenListPropsIF) {
     const ImportedTokensDisplay = (
         <div className={styles.custom_tokens}>
             {TokenListContainerHeader}
-            <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.3 }}
-                className={styles.search_input}
-            >
-                <input
-                    type='text'
-                    placeholder='0x000'
-                    //   onChange={(event) => setSearchTerm(event.target.value)}
-                />
-                <Divider />
-                <div className={styles.custom_tokens_header}>
-                    <span>0 Custom Tokens</span>
-                    <span className={styles.clear_all_button}>Clear all</span>
-                </div>
-                <div className={styles.custom_tokens_footer}>
-                    Tip: Custom tokens are stored locally in your browser
-                </div>
-            </motion.div>
+            <CustomTokens chainId={chainId} />
         </div>
     );
 
