@@ -324,8 +324,9 @@ export default function App() {
                         base: sortedTokens[0].toLowerCase(),
                         quote: sortedTokens[1].toLowerCase(),
                         poolIdx: POOL_PRIMARY.toString(),
-                        period: '86400',
-                        time: '1655769600',
+                        // period: '86400', // 1 day
+                        period: '300', // 5 minute
+                        time: '1657830000',
                         n: '10', // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
                         page: '0', // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
                     }),
@@ -421,7 +422,7 @@ export default function App() {
                 // quoteTokenAddress.toLowerCase() || '0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa',
                 poolIdx: POOL_PRIMARY.toString(),
                 // 	positive integer	The duration of the candle, in seconds. Must represent one of the following time intervals: 5 minutes, 15 minutes, 1 hour, 4 hours, 1 day, 7 days.
-                period: '60',
+                period: '300',
             }),
         [baseTokenAddress, quoteTokenAddress, POOL_PRIMARY],
     );
