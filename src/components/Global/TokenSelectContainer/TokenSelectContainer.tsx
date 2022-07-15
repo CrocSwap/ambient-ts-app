@@ -93,17 +93,21 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
                 ))}
             </div>
             {matchingSearchableTokens.length ? <h3>Searched Tokens</h3> : null}
-            {matchingSearchableTokens
-                .filter((token: TokenIF) => !importedTokensAddresses.includes(token.address))
-                .map((tkn: TokenIF, idx: number) => (
-                    <TokenSelectSearchable
-                        key={`tss_${idx}`}
-                        token={tkn}
-                        clickHandler={() =>
-                            importToken(tkn, tokensBank, setImportedTokens, () => chooseToken(tkn))
-                        }
-                    />
-                ))}
+            <div className={styles.token_select_searchable_container}>
+                {matchingSearchableTokens
+                    .filter((token: TokenIF) => !importedTokensAddresses.includes(token.address))
+                    .map((tkn: TokenIF, idx: number) => (
+                        <TokenSelectSearchable
+                            key={`tss_${idx}`}
+                            token={tkn}
+                            clickHandler={() =>
+                                importToken(tkn, tokensBank, setImportedTokens, () =>
+                                    chooseToken(tkn),
+                                )
+                            }
+                        />
+                    ))}
+            </div>
         </>
     );
 

@@ -18,7 +18,8 @@ export default function TokenListCard(props: TokenListProps) {
     const { list, listIsActive, toggleActiveState } = props;
     const classes = useStyles();
 
-    const cardBackground = listIsActive ? '#7371FC ' : '';
+    const cardBackground = listIsActive ? ' ' : '';
+    const cardBorder = listIsActive ? '1px solid #7371fc ' : '';
 
     const handleClick = (
         event: React.MouseEvent<HTMLButtonElement> | React.MouseEvent<HTMLDivElement>,
@@ -35,7 +36,7 @@ export default function TokenListCard(props: TokenListProps) {
         <div className={styles.token_list_card_container}>
             <div
                 className={styles.token_list_card_content}
-                style={{ backgroundColor: cardBackground }}
+                style={{ backgroundColor: cardBackground, border: cardBorder }}
             >
                 <div className={styles.left_content}>
                     <img src={list.logoURI} alt='' width='40px' />
