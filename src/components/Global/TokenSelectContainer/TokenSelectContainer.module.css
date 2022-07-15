@@ -1,13 +1,16 @@
 
 .title{
-  font-size: var(--header2-size);
+  /* font-size: var(--header2-size);
   line-height: var(--header2-lh);
   color: var(--text-grey-light);
-  margin: 4px ;
+  margin: 4px ; */
+  font-size: var(--body-size);
+  line-height: var(--body-lh);
+  margin: 10px 0;
 
 }
 .tokens_container{
-  background: yellow;
+  /* background: yellow; */
   max-height: 303px;
   /* min-height: 50px; */
     overflow-y: scroll;
@@ -16,7 +19,7 @@
   position: relative;
 }
 .token_select_searchable_container{
-  background: blue;
+  /* background: blue; */
  max-height: 200px;
  overflow-y: scroll;
  overflow-x: hidden;
@@ -69,3 +72,12 @@
   transition: all var(--animation-speed) cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
 
+  .search_tokens_title{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    margin: 10px 0;
+  }
