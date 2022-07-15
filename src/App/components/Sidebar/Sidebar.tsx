@@ -75,25 +75,22 @@ export default function Sidebar(props: SidebarProps): React.ReactElement<Sidebar
                         </div>
                     </li> */}
                     {searchContainer}
-
                     {navItems1.map((item, idx) => (
-                        <>
-                            {/* <li key={idx} className={styles.sidebar_item}>
-                            <div className={styles.sidebar_link}>
-                                {showSidebar && <MdPlayArrow size={12} color='#ffffff' />}
-                                <img src={item.icon} alt={item.name} width='20px' />
+                        //   <li key={idx} className={styles.sidebar_item}>
+                        //  <div className={styles.sidebar_link}>
+                        //      {showSidebar && <MdPlayArrow size={12} color='#ffffff' />}
+                        //      <img src={item.icon} alt={item.name} width='20px' />
 
-                                <span className={styles.link_text}>{item.name}</span>
-                            </div>
-                        </li> */}
-                            <SidebarAccordion
-                                showSidebar={showSidebar}
-                                idx={idx}
-                                item={item}
-                                toggleSidebar={toggleSidebar}
-                                key={idx}
-                            />
-                        </>
+                        //      <span className={styles.link_text}>{item.name}</span>
+                        //    </div>
+                        // </li>
+                        <SidebarAccordion
+                            showSidebar={showSidebar}
+                            idx={idx}
+                            item={item}
+                            toggleSidebar={toggleSidebar}
+                            key={idx}
+                        />
                     ))}
 
                     <div className={styles.bottom_elements}>

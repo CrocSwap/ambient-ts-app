@@ -298,7 +298,7 @@ export default function PositionCard(props: PositionCardProps) {
                     <p className={styles.account_style}>{mobilePosHash}</p>
                 </div>
 
-                <p className={`${''} ${styles.min_max}`}>{ambientRangeOrNull}</p>
+                <div className={`${''} ${styles.min_max}`}>{ambientRangeOrNull}</div>
                 {/* <p className={`${styles.hide_ipad} ${styles.min_max}`}> {maxRange} </p> */}
 
                 {/* <div className={''}>
