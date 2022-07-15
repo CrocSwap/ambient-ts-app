@@ -115,7 +115,7 @@ export default function TransactionCard(props: TransactionProps) {
         </div>
     );
 
-    const positionRow = (
+    return (
         <div className={`${styles.container} `}>
             <div className={styles.content_container}>
                 <div className={`${styles.position_row}  ${styles.positions_container}`}>
@@ -149,5 +149,4 @@ export default function TransactionCard(props: TransactionProps) {
             {bottomElements}
         </div>
     );
-    return <>{positionRow}</>;
 }
