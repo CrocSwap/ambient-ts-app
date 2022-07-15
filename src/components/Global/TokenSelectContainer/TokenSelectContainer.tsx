@@ -82,7 +82,7 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
 
     const tokenListContent = (
         <>
-            <div className={styles.title}>Your Tokens</div>
+            <div className={styles.title}>YOUR TOKENS</div>
             <div className={styles.tokens_container}>
                 {matchingImportedTokens.map((token: TokenIF, idx: number) => (
                     <TokenSelect
@@ -95,18 +95,24 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
                     />
                 ))}
             </div>
-            {matchingSearchableTokens.length ? <h3>Searched Tokens</h3> : null}
-            {matchingSearchableTokens
-                .filter((token: TokenIF) => !importedTokensAddresses.includes(token.address))
-                .map((tkn: TokenIF, idx: number) => (
-                    <TokenSelectSearchable
-                        key={`tss_${idx}`}
-                        token={tkn}
-                        clickHandler={() =>
-                            importToken(tkn, tokensBank, setImportedTokens, () => chooseToken(tkn))
-                        }
-                    />
-                ))}
+            {matchingSearchableTokens.length ? (
+                <h3 className={styles.search_tokens_title}>SEARCHED TOKENS</h3>
+            ) : null}
+            <div className={styles.token_select_searchable_container}>
+                {matchingSearchableTokens
+                    .filter((token: TokenIF) => !importedTokensAddresses.includes(token.address))
+                    .map((tkn: TokenIF, idx: number) => (
+                        <TokenSelectSearchable
+                            key={`tss_${idx}`}
+                            token={tkn}
+                            clickHandler={() =>
+                                importToken(tkn, tokensBank, setImportedTokens, () =>
+                                    chooseToken(tkn),
+                                )
+                            }
+                        />
+                    ))}
+            </div>
         </>
     );
 

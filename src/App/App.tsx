@@ -2,13 +2,16 @@
 import { useEffect, useState, useMemo } from 'react';
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import {
-    Position2,
+    Position,
     resetGraphData,
     setPositionsByPool,
     setPositionsByUser,
     setSwapsByUser,
     ISwap,
     setSwapsByPool,
+    CandleData,
+    setCandlesByPool,
+    addCandlesByPool,
 } from '../utils/state/graphDataSlice';
 import { ethers } from 'ethers';
 import { JsonRpcProvider } from '@ethersproject/providers';
@@ -206,8 +209,6 @@ export default function App() {
 
     useEffect(() => {
         (async () => {
-            console.log('getting ens name');
-
             if (account) {
                 try {
                     const ensName = await cachedFetchAddress(account);
@@ -236,7 +237,7 @@ export default function App() {
 
     const tokenPairStringified = useMemo(() => JSON.stringify(tokenPair), [tokenPair]);
 
-    // useEffect to set baseTokenAddress and quoteTokenAddress and retrieve all pool positions when pair changes
+    // useEffect that runs when token pair changes
     useEffect(() => {
         // reset rtk values for user specified range in ticks
         dispatch(setAdvancedLowTick(0));
@@ -312,6 +313,47 @@ export default function App() {
                         });
                     }
                 });
+
+            const candleSeriesCacheEndpoint = 'https://809821320828123.de:5000/candle_series?';
+
+            fetch(
+                candleSeriesCacheEndpoint +
+                    new URLSearchParams({
+                        base: sortedTokens[0].toLowerCase(),
+                        quote: sortedTokens[1].toLowerCase(),
+                        poolIdx: POOL_PRIMARY.toString(),
+                        period: '60', // 1 minute
+                        // period: '86400', // 1 day
+                        // period: '300', // 5 minute
+                        time: '1657833300', // optional
+                        n: '200', // positive integer
+                        page: '0', // nonnegative integer
+                    }),
+            )
+                .then((response) => response.json())
+                .then((json) => {
+                    const candles = json.data;
+
+                    if (candles) {
+                        Promise.all(candles.map(getCandleData)).then((updatedCandles) => {
+                            if (
+                                JSON.stringify(graphData.candlesForAllPools.pools) !==
+                                JSON.stringify(updatedCandles)
+                            ) {
+                                dispatch(
+                                    setCandlesByPool({
+                                        pool: {
+                                            baseAddress: sortedTokens[0].toLowerCase(),
+                                            quoteAddress: sortedTokens[1].toLowerCase(),
+                                            poolIdx: POOL_PRIMARY,
+                                        },
+                                        candles: updatedCandles,
+                                    }),
+                                );
+                            }
+                        });
+                    }
+                });
         }
     }, [tokenPairStringified]);
 
@@ -337,7 +379,8 @@ export default function App() {
         {
             // share:  true,
             // onOpen: () => console.log('opened'),
-            onClose: () => console.log('allPositions websocket connection closed'),
+            onClose: (event) => console.log({ event }),
+            // onClose: () => console.log('allPositions websocket connection closed'),
             // Will attempt to reconnect on all close events, such as server shutting down
             shouldReconnect: () => true,
         },
@@ -369,6 +412,61 @@ export default function App() {
         }
     }, [lastAllPositionsMessage]);
 
+    const candleSubscriptionEndpoint = useMemo(
+        () =>
+            'wss://809821320828123.de:5000/subscribe_candles?' +
+            new URLSearchParams({
+                base: baseTokenAddress.toLowerCase(),
+                // baseTokenAddress.toLowerCase() || '0x0000000000000000000000000000000000000000',
+                quote: quoteTokenAddress.toLowerCase(),
+                // quoteTokenAddress.toLowerCase() || '0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa',
+                poolIdx: POOL_PRIMARY.toString(),
+                // 	positive integer	The duration of the candle, in seconds. Must represent one of the following time intervals: 5 minutes, 15 minutes, 1 hour, 4 hours, 1 day, 7 days.
+                period: '60',
+            }),
+        [baseTokenAddress, quoteTokenAddress, POOL_PRIMARY],
+    );
+
+    const {
+        //  sendMessage,
+        lastMessage: candlesMessage,
+        //  readyState
+    } = useWebSocket(
+        candleSubscriptionEndpoint,
+        {
+            // share:  true,
+            // onOpen: () => console.log('opened'),
+            onClose: (event) => console.log({ event }),
+            // onClose: () => console.log('candles websocket connection closed'),
+            // Will attempt to reconnect on all close events, such as server shutting down
+            shouldReconnect: () => true,
+        },
+        // only connect if base/quote token addresses are available
+        baseTokenAddress !== '' && quoteTokenAddress !== '',
+    );
+
+    useEffect(() => {
+        if (candlesMessage !== null) {
+            const lastMessageData = JSON.parse(candlesMessage.data).data;
+            if (lastMessageData) {
+                Promise.all(lastMessageData.map(getCandleData)).then((updatedCandles) => {
+                    // console.log({ updatedCandles });
+                    dispatch(
+                        addCandlesByPool({
+                            pool: {
+                                baseAddress: baseTokenAddress,
+                                quoteAddress: quoteTokenAddress,
+                                poolIdx: POOL_PRIMARY,
+                            },
+                            candles: updatedCandles,
+                        }),
+                    );
+                });
+            }
+            // console.log({ lastMessageData });
+        }
+    }, [candlesMessage]);
+
     const poolSwapsCacheSubscriptionEndpoint = useMemo(
         () =>
             'wss://809821320828123.de:5000/subscribe_pool_swaps?' +
@@ -391,7 +489,7 @@ export default function App() {
         {
             // share:  true,
             // onOpen: () => console.log('opened'),
-            onClose: () => console.log('poolSwaps websocket connection closed'),
+            onClose: (event) => console.log({ event }),
             // Will attempt to reconnect on all close events, such as server shutting down
             shouldReconnect: () => true,
         },
@@ -441,7 +539,7 @@ export default function App() {
         {
             // share: true,
             // onOpen: () => console.log('opened'),
-            onClose: () => console.log('userPositions websocket connection closed'),
+            onClose: (event) => console.log({ event }),
             // Will attempt to reconnect on all close events, such as server shutting down
             shouldReconnect: () => true,
         },
@@ -492,7 +590,8 @@ export default function App() {
         {
             // share: true,
             // onOpen: () => console.log('opened'),
-            onClose: () => console.log('userSwaps websocket connection closed'),
+            onClose: (event) => console.log({ event }),
+            // onClose: () => console.log('userSwaps websocket connection closed'),
             // Will attempt to reconnect on all close events, such as server shutting down
             shouldReconnect: () => true,
         },
@@ -695,7 +794,15 @@ export default function App() {
         return swap;
     };
 
-    const getPositionData = async (position: Position2): Promise<Position2> => {
+    const getCandleData = async (candle: CandleData): Promise<CandleData> => {
+        if (candle) {
+            candle.base = candle.base.startsWith('0x') ? candle.base : '0x' + candle.base;
+            candle.quote = candle.quote.startsWith('0x') ? candle.quote : '0x' + candle.quote;
+        }
+        return candle;
+    };
+
+    const getPositionData = async (position: Position): Promise<Position> => {
         position.base = position.base.startsWith('0x') ? position.base : '0x' + position.base;
         position.quote = position.quote.startsWith('0x') ? position.quote : '0x' + position.quote;
         position.user = position.user.startsWith('0x') ? position.user : '0x' + position.user;

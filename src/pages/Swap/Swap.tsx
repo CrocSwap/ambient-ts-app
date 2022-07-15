@@ -12,6 +12,7 @@ import {
     EthersNativeReceipt,
     approveToken,
     getLimitPrice,
+    fromDisplayQty,
 } from '@crocswap-libs/sdk';
 
 // START: Import React Components
@@ -254,6 +255,11 @@ export default function Swap(props: SwapPropsIF) {
                 slippageTolerancePercentage,
             );
 
+            const crocQty = fromDisplayQty(
+                qty,
+                isTokenAPrimary ? tokenA.decimals : tokenB.decimals,
+            );
+
             fetch(
                 newSwapCacheEndpoint +
                     new URLSearchParams({
@@ -264,16 +270,14 @@ export default function Swap(props: SwapPropsIF) {
                         poolIdx: POOL_PRIMARY.toString(),
                         isBuy: isSellTokenBase.toString(),
                         inBaseQty: inBaseQty.toString(),
-                        qty: qty,
+                        qty: crocQty.toString(),
                         limitPrice: limitPrice.toString(),
                         minOut: '0', // integer	The minimum output the user expects from the swap.
                         override: 'false',
                         // boolean	(Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
                     }),
                 // { method: 'POST' },
-            )
-                .then((response) => response.json())
-                .then(console.log);
+            );
 
             let parsedReceipt;
 

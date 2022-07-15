@@ -1,10 +1,12 @@
 import styles from './TooltipComponent.module.css';
 import { Tooltip } from '@mui/material';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
+import { useStyles } from '../../../utils/functions/styles';
 
 interface TooltipComponentProps {
     title: string;
-    children?: React.ReactNode;
+
+    icon?: JSX.Element;
     placement?:
         | 'right'
         | 'bottom-end'
@@ -22,6 +24,7 @@ interface TooltipComponentProps {
 }
 
 export default function TooltipComponent(props: TooltipComponentProps) {
+    const classes = useStyles();
     return (
         <Tooltip
             title={props.title}
@@ -29,9 +32,12 @@ export default function TooltipComponent(props: TooltipComponentProps) {
             arrow
             enterDelay={400}
             leaveDelay={200}
+            classes={{
+                tooltip: classes.customTooltip,
+            }}
         >
             <div className={styles.icon}>
-                <AiOutlineQuestionCircle size={15} />
+                {props.icon ? props.icon : <AiOutlineQuestionCircle size={15} />}
             </div>
         </Tooltip>
     );

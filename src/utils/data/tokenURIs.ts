@@ -13,5 +13,5 @@ export const tokenListURIs = {
     kleros: 'https://wispy-bird-88a7.uniswap.workers.dev/?url=http://t2crtokens.eth.link',
     rollsocialmoney: 'https://app.tryroll.com/tokens.json',
     baerc20:
-    'https://raw.githubusercontent.com/The-Blockchain-Association/sec-notice-list/master/ba-sec-list.json',
+        'https://raw.githubusercontent.com/The-Blockchain-Association/sec-notice-list/master/ba-sec-list.json',
 };

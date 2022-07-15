@@ -9,18 +9,18 @@ import { MenuItem, Menu } from '@material-ui/core';
 import { useStyles } from '../../../utils/functions/styles';
 import { FiMoreHorizontal } from 'react-icons/fi';
 import RangeStatus from '../RangeStatus/RangeStatus';
-import { Position2 } from '../../../utils/state/graphDataSlice';
+import { Position } from '../../../utils/state/graphDataSlice';
 
 import RemoveRange from '../../RemoveRange/RemoveRange';
 import RangeDetails from '../../RangeDetails/RangeDetails';
 import RangeDetailsHeader from '../../RangeDetails/RangeDetailsHeader/RangeDetailsHeader';
-import truncateAddress from '../../../utils/truncateAddress';
+import trimString from '../../../utils/functions/trimString';
 import { ambientPosSlot, concPosSlot } from '@crocswap-libs/sdk';
 
 interface PositionCardProps {
     portfolio?: boolean;
     notOnTradeRoute?: boolean;
-    position: Position2;
+    position: Position;
     isAllPositionsEnabled: boolean;
     tokenAAddress: string;
     tokenBAddress: string;
@@ -91,8 +91,8 @@ export default function PositionCard(props: PositionCardProps) {
     const ownerId = position ? position.user : null;
 
     const ensName = position?.userEnsName !== '' ? position.userEnsName : null;
-    const ownerIdTruncated = position ? truncateAddress(position.user, 15) : null;
-    const mobileOwnerId = position ? truncateAddress(position.user, 9) : null;
+    const ownerIdTruncated = position ? trimString(position.user, 6, 6, '…') : null;
+    const mobileOwnerId = position ? trimString(position.user, 4, 4, '…') : null;
 
     const positionData = {
         position: position,
@@ -111,11 +111,11 @@ export default function PositionCard(props: PositionCardProps) {
         );
     }
 
-    const truncatedPosHash = truncateAddress(posHash as string, 15);
+    const truncatedPosHash = trimString(posHash as string, 6, 6, '…');
 
-    const mobilePosHash = truncateAddress(posHash as string, 9);
+    const mobilePosHash = trimString(posHash as string, 4, 4, '…');
 
-    console.log(mobilePosHash);
+    // console.log(mobilePosHash);
 
     let isPositionInRange = true;
 
@@ -298,7 +298,7 @@ export default function PositionCard(props: PositionCardProps) {
                     <p className={styles.account_style}>{mobilePosHash}</p>
                 </div>
 
-                <p className={`${''} ${styles.min_max}`}>{ambientRangeOrNull}</p>
+                <div className={`${''} ${styles.min_max}`}>{ambientRangeOrNull}</div>
                 {/* <p className={`${styles.hide_ipad} ${styles.min_max}`}> {maxRange} </p> */}
 
                 {/* <div className={''}>

@@ -3,8 +3,8 @@ import { useState, useEffect } from 'react';
 import TabNavItem from './TabNavItem/TabNavItem';
 import TabContent from './TabContent/TabContent';
 import Positions from '../../Trade/Positions/Positions';
-import LimitOrders from '../../Trade/LimitOrders/LimitOrders';
-import Transactions from '../../Trade/Transactions/Transactions';
+import LimitOrders from '../LimitOrder/LimitOrders';
+import Transactions from '../Transactions/Transactions';
 
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import Toggle2 from '../Toggle/Toggle2';
