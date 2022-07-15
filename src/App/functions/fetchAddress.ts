@@ -4,7 +4,7 @@ export const fetchAddress = async (address: string) => {
     const options = { address: address };
     try {
         const ensName = (await Moralis.Web3API.resolve.resolveAddress(options)).name;
-        console.log({ ensName });
+        // console.log({ ensName });
         return ensName;
     } catch (error) {
         return null;

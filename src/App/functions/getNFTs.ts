@@ -6,7 +6,7 @@ export async function getNFTs(account: string) {
     ).result?.filter((nft) => nft.contract_type === 'ERC1155');
 
     if (userEthNFTs) {
-        console.log({ userEthNFTs });
+        // console.log({ userEthNFTs });
         const imageLocalURLs: string[] = [];
         userEthNFTs.forEach((nft) => {
             const metadata = nft.metadata;
