@@ -14,7 +14,7 @@ import { FiMoreHorizontal } from 'react-icons/fi';
 // import RemoveRange from '../../RemoveRange/RemoveRange';
 // import RangeDetails from '../../RangeDetails/RangeDetails';
 import RangeDetailsHeader from '../../RangeDetails/RangeDetailsHeader/RangeDetailsHeader';
-// import truncateAddress from '../../../utils/truncateAddress';
+// import trimString from '../../../utils/functions/trimString';
 // import { ambientPosSlot, concPosSlot } from '@crocswap-libs/sdk';
 import OpenOrderStatus from '../OpenOrderStatus/OpenOrderStatus';
 
@@ -77,8 +77,8 @@ export default function LimitOrderCard() {
     // const ownerId = position ? position.user : null;
 
     // const ensName = position?.userEnsName !== '' ? position.userEnsName : null;
-    // const ownerIdTruncated = position ? truncateAddress(position.user, 15) : null;
-    // const mobileOwnerId = position ? truncateAddress(position.user, 9) : null;
+    // const ownerIdTruncated = position ? trimString(position.user, 6, 6, '…') : null;
+    // const mobileOwnerId = position ? trimString(position.user, 3, 3, '…') : null;
 
     // const positionData = {
     //     position: position,
