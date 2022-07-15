@@ -11,7 +11,7 @@ import { Link, useLocation } from 'react-router-dom';
 import RemoveRange from '../../RemoveRange/RemoveRange';
 import RangeDetails from '../../RangeDetails/RangeDetails';
 import RangeDetailsHeader from '../../RangeDetails/RangeDetailsHeader/RangeDetailsHeader';
-import truncateAddress from '../../../utils/truncateAddress';
+import trimString from '../../../utils/functions/trimString';
 import { ambientPosSlot, concPosSlot } from '@crocswap-libs/sdk';
 
 interface PositionProps {
@@ -89,7 +89,7 @@ export default function Position(props: PositionProps) {
     const ownerId = position ? position.user : null;
 
     const ensName = position?.userEnsName !== '' ? position.userEnsName : null;
-    const ownerIdTruncated = position ? truncateAddress(position.user, 18) : null;
+    const ownerIdTruncated = position ? trimString(position.user, 6, 6, '…') : null;
 
     const positionData = {
         position: position,
@@ -108,7 +108,7 @@ export default function Position(props: PositionProps) {
         );
     }
 
-    const truncatedPosHash = truncateAddress(posHash as string, 18);
+    const truncatedPosHash = trimString(posHash as string, 6, 6, '…');
 
     let isPositionInRange = true;
 
