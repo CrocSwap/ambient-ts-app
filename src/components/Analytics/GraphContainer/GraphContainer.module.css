@@ -41,11 +41,15 @@
     align-items: center;
     margin: 1rem 0;
     transition: all var(--animation-speed)ease-in-out;
+
+    display: grid;
+    grid-gap: 4px;
 }
 
 .graph_container{
     background: var(--dark1);
     padding: 1rem;
+    /* width: 49%; */
 }
 .graph_container .title{
     font-size: var(--header2-size);
@@ -86,4 +90,9 @@ line-height: 38px;
     line-height: var(--header2-lh);
    
 
+}
+@media only screen and (min-width: 768px) {
+    .graph_data{
+        grid-template-columns: 1fr 1fr;
+    }
 }
