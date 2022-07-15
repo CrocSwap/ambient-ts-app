@@ -930,18 +930,20 @@ export default function Range(props: RangePropsIF) {
     };
 
     const baseModeContent = (
-        <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-        >
+        <div>
             <RangeCurrencyConverter {...rangeCurrencyConverterProps} isAdvancedMode={false} />
             <DividerDark addMarginTop />
             {denominationSwitch}
-            <RangeWidth {...rangeWidthProps} />
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+            >
+                <RangeWidth {...rangeWidthProps} />
+            </motion.div>
             <RangePriceInfo {...rangePriceInfoProps} />
             <RangeExtraInfo {...rangeExtraInfoProps} />
-        </motion.div>
+        </div>
     );
     const advancedModeContent = (
         <>
@@ -949,23 +951,28 @@ export default function Range(props: RangePropsIF) {
             <DividerDark addMarginTop />
 
             {denominationSwitch}
-
-            <MinMaxPrice
-                minPricePercentage={minPriceDifferencePercentage}
-                maxPricePercentage={maxPriceDifferencePercentage}
-                minPriceInputString={minPriceInputString}
-                maxPriceInputString={maxPriceInputString}
-                setMinPriceInputString={setMinPriceInputString}
-                setMaxPriceInputString={setMaxPriceInputString}
-                isDenomBase={denominationsInBase}
-                highBoundOnBlur={highBoundOnBlur}
-                lowBoundOnBlur={lowBoundOnBlur}
-                rangeLowTick={rangeLowTick}
-                rangeHighTick={rangeHighTick}
-                setRangeLowTick={setRangeLowTick}
-                setRangeHighTick={setRangeHighTick}
-                disable={isInvalidRange}
-            />
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+            >
+                <MinMaxPrice
+                    minPricePercentage={minPriceDifferencePercentage}
+                    maxPricePercentage={maxPriceDifferencePercentage}
+                    minPriceInputString={minPriceInputString}
+                    maxPriceInputString={maxPriceInputString}
+                    setMinPriceInputString={setMinPriceInputString}
+                    setMaxPriceInputString={setMaxPriceInputString}
+                    isDenomBase={denominationsInBase}
+                    highBoundOnBlur={highBoundOnBlur}
+                    lowBoundOnBlur={lowBoundOnBlur}
+                    rangeLowTick={rangeLowTick}
+                    rangeHighTick={rangeHighTick}
+                    setRangeLowTick={setRangeLowTick}
+                    setRangeHighTick={setRangeHighTick}
+                    disable={isInvalidRange}
+                />
+            </motion.div>
             <DividerDark addMarginTop />
 
             <AdvancedPriceInfo
@@ -1087,12 +1094,7 @@ export default function Range(props: RangePropsIF) {
     // const isAmountEntered = parseFloat(tokenAInputQty) > 0 && parseFloat(tokenBInputQty) > 0;
 
     return (
-        <motion.section
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-            data-testid={'range'}
-        >
+        <section data-testid={'range'}>
             <ContentContainer isOnTradeRoute>
                 <RangeHeader
                     tokenPair={tokenPair}
@@ -1101,14 +1103,20 @@ export default function Range(props: RangePropsIF) {
                 />
                 <DividerDark addMarginTop />
                 {navigationMenu}
-                <DividerDark />
-                {/* <RangeCurrencyConverter {...rangeCurrencyConverterProps} /> */}
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.5 }}
+                >
+                    <DividerDark />
+                    {/* <RangeCurrencyConverter {...rangeCurrencyConverterProps} /> */}
 
-                {/* <div className={styles.header_container}>
+                    {/* <div className={styles.header_container}>
                     {denominationSwitch}
                     <DividerDark addMarginTop />
                 </div> */}
-                {isAdvancedModeActive ? advancedModeContent : baseModeContent}
+                    {isAdvancedModeActive ? advancedModeContent : baseModeContent}
+                </motion.div>
 
                 {!isAuthenticated || !isWeb3Enabled ? (
                     loginButton
@@ -1130,6 +1138,6 @@ export default function Range(props: RangePropsIF) {
             </ContentContainer>
 
             {confirmSwapModalOrNull}
-        </motion.section>
+        </section>
     );
 }

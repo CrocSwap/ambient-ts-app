@@ -342,13 +342,7 @@ export default function Swap(props: SwapPropsIF) {
     const isTokenAAllowanceSufficient = parseFloat(tokenAAllowance) >= parseFloat(tokenAInputQty);
 
     return (
-        <motion.main
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-            data-testid={'swap'}
-            className={styles.swap}
-        >
+        <main data-testid={'swap'} className={styles.swap}>
             <ContentContainer isOnTradeRoute={isOnTradeRoute}>
                 <SwapHeader
                     tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
@@ -358,32 +352,38 @@ export default function Swap(props: SwapPropsIF) {
                 />
                 <DividerDark addMarginTop />
                 {navigationMenu}
-                <CurrencyConverter
-                    tokenPair={tokenPair}
-                    tokensBank={importedTokens}
-                    setImportedTokens={setImportedTokens}
-                    searchableTokens={searchableTokens}
-                    chainId={chainId as string}
-                    isLiq={false}
-                    poolPriceDisplay={poolPriceDisplay}
-                    isTokenAPrimary={isTokenAPrimary}
-                    isSellTokenBase={isSellTokenBase}
-                    nativeBalance={truncateDecimals(parseFloat(nativeBalance), 4).toString()}
-                    tokenABalance={truncateDecimals(parseFloat(tokenABalance), 4).toString()}
-                    tokenBBalance={truncateDecimals(parseFloat(tokenBBalance), 4).toString()}
-                    tokenAInputQty={tokenAInputQty}
-                    tokenBInputQty={tokenBInputQty}
-                    setTokenAInputQty={setTokenAInputQty}
-                    setTokenBInputQty={setTokenBInputQty}
-                    isWithdrawFromDexChecked={isWithdrawFromDexChecked}
-                    setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
-                    isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
-                    setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
-                    setSwapAllowed={setSwapAllowed}
-                    setSwapButtonErrorMessage={setSwapButtonErrorMessage}
-                    activeTokenListsChanged={activeTokenListsChanged}
-                    indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
-                />
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.5 }}
+                >
+                    <CurrencyConverter
+                        tokenPair={tokenPair}
+                        tokensBank={importedTokens}
+                        setImportedTokens={setImportedTokens}
+                        searchableTokens={searchableTokens}
+                        chainId={chainId as string}
+                        isLiq={false}
+                        poolPriceDisplay={poolPriceDisplay}
+                        isTokenAPrimary={isTokenAPrimary}
+                        isSellTokenBase={isSellTokenBase}
+                        nativeBalance={truncateDecimals(parseFloat(nativeBalance), 4).toString()}
+                        tokenABalance={truncateDecimals(parseFloat(tokenABalance), 4).toString()}
+                        tokenBBalance={truncateDecimals(parseFloat(tokenBBalance), 4).toString()}
+                        tokenAInputQty={tokenAInputQty}
+                        tokenBInputQty={tokenBInputQty}
+                        setTokenAInputQty={setTokenAInputQty}
+                        setTokenBInputQty={setTokenBInputQty}
+                        isWithdrawFromDexChecked={isWithdrawFromDexChecked}
+                        setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
+                        isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
+                        setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
+                        setSwapAllowed={setSwapAllowed}
+                        setSwapButtonErrorMessage={setSwapButtonErrorMessage}
+                        activeTokenListsChanged={activeTokenListsChanged}
+                        indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
+                    />
+                </motion.div>
                 <div className={styles.header_container}>
                     <DividerDark addMarginTop />
                     <DenominationSwitch
@@ -425,6 +425,6 @@ export default function Swap(props: SwapPropsIF) {
             <PageFooter lastBlockNumber={2}/>
 
             </div> */}
-        </motion.main>
+        </main>
     );
 }
