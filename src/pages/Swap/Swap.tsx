@@ -277,9 +277,7 @@ export default function Swap(props: SwapPropsIF) {
                         // boolean	(Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
                     }),
                 // { method: 'POST' },
-            )
-                .then((response) => response.json())
-                .then(console.log);
+            );
 
             let parsedReceipt;
 
