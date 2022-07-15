@@ -209,8 +209,6 @@ export default function App() {
 
     useEffect(() => {
         (async () => {
-            console.log('getting ens name');
-
             if (account) {
                 try {
                     const ensName = await cachedFetchAddress(account);
