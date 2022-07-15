@@ -49,6 +49,12 @@ display: none;
     
   
   }
+  .search_input button{
+    background: var(--dark3);
+    color: var(--text-grey-light);
+    border: none;
+    outline: none;
+  }
 
   .header_container{
       width: 100%;

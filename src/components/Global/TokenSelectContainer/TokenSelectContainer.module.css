@@ -1,9 +1,19 @@
+.search_tokens_title{
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: var(--body-size);
+  line-height: var(--body-lh);
+  color: var(--text-grey-light);
+  margin: 10px 0;
+}
 
 .title{
   /* font-size: var(--header2-size);
   line-height: var(--header2-lh);
-  color: var(--text-grey-light);
   margin: 4px ; */
+  color: var(--text-grey-light);
   font-size: var(--body-size);
   line-height: var(--body-lh);
   margin: 10px 0;
@@ -70,14 +80,4 @@
     
  
   transition: all var(--animation-speed) cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  }
-
-  .search_tokens_title{
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: var(--body-size);
-    line-height: var(--body-lh);
-    margin: 10px 0;
   }

@@ -36,6 +36,7 @@ export default function TokenList(props: TokenListPropsIF) {
         </div>
     );
 
+    // Button will be removed in production
     const TokenListInput = (
         <div className={styles.search_input}>
             <input
