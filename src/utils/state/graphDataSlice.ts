@@ -155,7 +155,7 @@ export const graphDataSlice = createSlice({
 
             // if candles for pool not yet saved in RTK, add to RTK
             if (index === -1) {
-                console.log('pool not found in RTK for new candle data');
+                // console.log('pool not found in RTK for new candle data');
 
                 state.candlesForAllPools.pools = state.candlesForAllPools.pools.concat(
                     action.payload,
@@ -173,7 +173,7 @@ export const graphDataSlice = createSlice({
 
             // if candles for pool not yet saved in RTK, add to RTK
             if (index === -1) {
-                console.error('pool not found in RTK for new candle data');
+                console.error('pool not found in RTK for new candle subscription data');
                 // state.candlesForAllPools.pools = state.candlesForAllPools.pools.concat(
                 //     action.payload,
                 // );

@@ -381,7 +381,8 @@ export default function App() {
         {
             // share:  true,
             // onOpen: () => console.log('opened'),
-            onClose: () => console.log('allPositions websocket connection closed'),
+            onClose: (event) => console.log({ event }),
+            // onClose: () => console.log('allPositions websocket connection closed'),
             // Will attempt to reconnect on all close events, such as server shutting down
             shouldReconnect: () => true,
         },
@@ -437,7 +438,8 @@ export default function App() {
         {
             // share:  true,
             // onOpen: () => console.log('opened'),
-            onClose: () => console.log('candles websocket connection closed'),
+            onClose: (event) => console.log({ event }),
+            // onClose: () => console.log('candles websocket connection closed'),
             // Will attempt to reconnect on all close events, such as server shutting down
             shouldReconnect: () => true,
         },
@@ -450,7 +452,7 @@ export default function App() {
             const lastMessageData = JSON.parse(candlesMessage.data).data;
             if (lastMessageData) {
                 Promise.all(lastMessageData.map(getCandleData)).then((updatedCandles) => {
-                    console.log({ updatedCandles });
+                    // console.log({ updatedCandles });
                     dispatch(
                         addCandlesByPool({
                             pool: {
@@ -489,7 +491,7 @@ export default function App() {
         {
             // share:  true,
             // onOpen: () => console.log('opened'),
-            onClose: () => console.log('poolSwaps websocket connection closed'),
+            onClose: (event) => console.log({ event }),
             // Will attempt to reconnect on all close events, such as server shutting down
             shouldReconnect: () => true,
         },
@@ -539,7 +541,7 @@ export default function App() {
         {
             // share: true,
             // onOpen: () => console.log('opened'),
-            onClose: () => console.log('userPositions websocket connection closed'),
+            onClose: (event) => console.log({ event }),
             // Will attempt to reconnect on all close events, such as server shutting down
             shouldReconnect: () => true,
         },
@@ -590,7 +592,8 @@ export default function App() {
         {
             // share: true,
             // onOpen: () => console.log('opened'),
-            onClose: () => console.log('userSwaps websocket connection closed'),
+            onClose: (event) => console.log({ event }),
+            // onClose: () => console.log('userSwaps websocket connection closed'),
             // Will attempt to reconnect on all close events, such as server shutting down
             shouldReconnect: () => true,
         },
