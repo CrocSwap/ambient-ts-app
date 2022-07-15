@@ -313,49 +313,53 @@ export default function App() {
                         });
                     }
                 });
-
-            const candleSeriesCacheEndpoint = 'https://809821320828123.de:5000/candle_series?';
-
-            fetch(
-                candleSeriesCacheEndpoint +
-                    new URLSearchParams({
-                        base: sortedTokens[0].toLowerCase(),
-                        quote: sortedTokens[1].toLowerCase(),
-                        poolIdx: POOL_PRIMARY.toString(),
-                        period: '60', // 1 minute
-                        // period: '86400', // 1 day
-                        // period: '300', // 5 minute
-                        time: '1657833300', // optional
-                        n: '200', // positive integer
-                        page: '0', // nonnegative integer
-                    }),
-            )
-                .then((response) => response.json())
-                .then((json) => {
-                    const candles = json.data;
-
-                    if (candles) {
-                        Promise.all(candles.map(getCandleData)).then((updatedCandles) => {
-                            if (
-                                JSON.stringify(graphData.candlesForAllPools.pools) !==
-                                JSON.stringify(updatedCandles)
-                            ) {
-                                dispatch(
-                                    setCandlesByPool({
-                                        pool: {
-                                            baseAddress: sortedTokens[0].toLowerCase(),
-                                            quoteAddress: sortedTokens[1].toLowerCase(),
-                                            poolIdx: POOL_PRIMARY,
-                                        },
-                                        candles: updatedCandles,
-                                    }),
-                                );
-                            }
-                        });
-                    }
-                });
         }
     }, [tokenPairStringified]);
+
+    const [activePeriod, setActivePeriod] = useState(60); // 1 minute by default
+
+    useEffect(() => {
+        const candleSeriesCacheEndpoint = 'https://809821320828123.de:5000/candle_series?';
+
+        fetch(
+            candleSeriesCacheEndpoint +
+                new URLSearchParams({
+                    base: baseTokenAddress.toLowerCase(),
+                    quote: quoteTokenAddress.toLowerCase(),
+                    poolIdx: POOL_PRIMARY.toString(),
+                    period: activePeriod.toString(),
+                    // period: '86400', // 1 day
+                    // period: '300', // 5 minute
+                    time: '1657833300', // optional
+                    n: '200', // positive integer
+                    page: '0', // nonnegative integer
+                }),
+        )
+            .then((response) => response.json())
+            .then((json) => {
+                const candles = json.data;
+
+                if (candles) {
+                    Promise.all(candles.map(getCandleData)).then((updatedCandles) => {
+                        if (
+                            JSON.stringify(graphData.candlesForAllPools.pools) !==
+                            JSON.stringify(updatedCandles)
+                        ) {
+                            dispatch(
+                                setCandlesByPool({
+                                    pool: {
+                                        baseAddress: baseTokenAddress.toLowerCase(),
+                                        quoteAddress: quoteTokenAddress.toLowerCase(),
+                                        poolIdx: POOL_PRIMARY,
+                                    },
+                                    candles: updatedCandles,
+                                }),
+                            );
+                        }
+                    });
+                }
+            });
+    }, [baseTokenAddress, quoteTokenAddress, activePeriod]);
 
     const allPositionsCacheSubscriptionEndpoint = useMemo(
         () =>
@@ -422,9 +426,9 @@ export default function App() {
                 // quoteTokenAddress.toLowerCase() || '0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa',
                 poolIdx: POOL_PRIMARY.toString(),
                 // 	positive integer	The duration of the candle, in seconds. Must represent one of the following time intervals: 5 minutes, 15 minutes, 1 hour, 4 hours, 1 day, 7 days.
-                period: '60',
+                period: activePeriod.toString(),
             }),
-        [baseTokenAddress, quoteTokenAddress, POOL_PRIMARY],
+        [baseTokenAddress, quoteTokenAddress, POOL_PRIMARY, activePeriod],
     );
 
     const {
@@ -1325,6 +1329,7 @@ export default function App() {
                                     lastBlockNumber={lastBlockNumber}
                                     isTokenABase={isTokenABase}
                                     poolPriceDisplay={poolPriceDisplay}
+                                    setActivePeriod={setActivePeriod}
                                 />
                             }
                         >
