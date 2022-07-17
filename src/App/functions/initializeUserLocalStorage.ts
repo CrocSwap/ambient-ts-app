@@ -1,5 +1,5 @@
 import { defaultTokenLists } from '../../utils/data/defaultTokenLists';
-import { tokenListURIs } from '../../utils/data/tokenURIs';
+import { tokenListURIs } from '../../utils/data/tokenListURIs';
 // import { ambientTokenList } from '../../utils/data/ambientTokenList';
 import { TokenListIF } from '../../utils/interfaces/exports';
 
