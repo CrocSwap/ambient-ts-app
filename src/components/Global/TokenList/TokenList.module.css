@@ -50,10 +50,19 @@ display: none;
   
   }
   .search_input button{
-    background: var(--dark3);
+    cursor: pointer;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: var(--dark2);
     color: var(--text-grey-light);
     border: none;
     outline: none;
+  }
+  .search_input button:hover{
+    color: var(--text-grey-white);
+    transition: all var(--animation-speed) ease-in-out
   }
 
   .header_container{
@@ -90,6 +99,7 @@ display: none;
 
   .active_button{
       background: var(--title-gradient);
+      color: var(--text-grey-dark)
   }
 
   .inactive_button{
