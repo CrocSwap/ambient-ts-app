@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import styles from './CustomTokens.module.css';
 import Divider from '../Divider/Divider';
 import { useCustomToken } from './useCustomToken';
+import { TokenIF } from '../../../utils/interfaces/exports';
 
 interface CustomTokenPropsIF {
     chainId: string
@@ -10,7 +11,12 @@ interface CustomTokenPropsIF {
 export default function CustomTokens(props: CustomTokenPropsIF) {
     const { chainId } = props;
 
-    const [setSearchInput, errorText] = useCustomToken(chainId);
+    const [setSearchInput, foundTokens, errorText] = useCustomToken(chainId);
+    console.log({foundTokens});
+
+    function importToken(tokenData: TokenIF) {
+        console.log(tokenData.address);
+    }
 
     return (
         <motion.div
@@ -29,6 +35,15 @@ export default function CustomTokens(props: CustomTokenPropsIF) {
             <div className={styles.custom_tokens_footer}>
                 Tip: Custom tokens are stored locally in your browser
             </div>
+            <h3>Found Tokens:</h3>
+            {
+                foundTokens.map((token: TokenIF) => (
+                    <div key={`found_token_${token.address}`}>
+                        <h4>{token.name}</h4>
+                        <button onClick={() => importToken(token)}>Import</button>
+                    </div>
+                ))
+            }
         </motion.div>
     );
 }

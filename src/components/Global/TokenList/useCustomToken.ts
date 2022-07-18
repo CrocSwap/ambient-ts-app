@@ -5,7 +5,11 @@ import { TokenIF, TokenListIF } from '../../../utils/interfaces/exports';
 
 export const useCustomToken = (
     chainId: string
-): [Dispatch<SetStateAction<string>>, string | null] => {
+): [
+    Dispatch<SetStateAction<string>>,
+    TokenIF[],
+    string | null
+] => {
     const Web3Api = useMoralisWeb3Api();
 
     const allTokens = useMemo(() => {
@@ -18,7 +22,7 @@ export const useCustomToken = (
     const [errorText, setErrorText] = useState<string|null>(null);
     const [matchingTokens, setMatchingTokens] = useState<Array<TokenIF>>([]);
 
-    const fetchTokenMetadata = async (chainId: string, addresses: string) => await Web3Api.token.getTokenMetadata({ chain: 'eth', addresses: [addresses]});
+    const fetchTokenMetadata = async (chainId: string, addresses: string) => await Web3Api.token.getTokenMetadata({ chain: 'eth', addresses: [addresses] });
 
     useEffect(() => {
         setErrorText('');
@@ -28,7 +32,6 @@ export const useCustomToken = (
                 token.address.includes(searchInput)
             );
             if (matchingTokens.length > 1) {
-                console.log(matchingTokens);
                 setMatchingTokens(matchingLocalTokens);
             } else {
                 console.log('checking on chain with Moralis...')
@@ -54,11 +57,11 @@ export const useCustomToken = (
                 }).catch(err => console.warn(err));
             };
         } else if (!searchInput.match(/^0x[a-f0-9]{40}$/) && searchInput.length) {
-            setErrorText('Please enter a valid 0x[...] contract address.');
+            setErrorText('Please enter a valid 0x[...] address.');
         }
     }, [searchInput]);
 
     useEffect(() => {console.log({matchingTokens})}, [matchingTokens]);
 
-    return [ setSearchInput, errorText ];
+    return [ setSearchInput, matchingTokens, errorText ];
 }
