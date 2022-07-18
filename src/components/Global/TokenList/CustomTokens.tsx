@@ -18,6 +18,10 @@ export default function CustomTokens(props: CustomTokenPropsIF) {
         JSON.parse(localStorage.getItem('user') as string).tokens.filter((tkn: TokenIF) => tkn.fromList === 'custom')
     );
 
+    function deleteToken(sadToken: TokenIF) {
+        console.log('deleting ' + sadToken.name);
+    }
+
     function importToken(newToken: TokenIF) {
         setTokenAlreadyImported(true);
         setImportedTokens([...importedTokens, newToken]);
@@ -40,6 +44,14 @@ export default function CustomTokens(props: CustomTokenPropsIF) {
                 <span>0 Custom Tokens</span>
                 <span className={styles.clear_all_button}>Clear all</span>
             </div>
+            {
+                importedTokens.map((token: TokenIF) => (
+                    <div key={`imported_token_${token.address}`}>
+                        <h4>{token.name}</h4>
+                        <button onClick={() => deleteToken(token)}>Delete</button>
+                    </div>
+                ))
+            }
             { tokenAlreadyImported ||
                 foundTokens.map((token: TokenIF) => (
                     <div key={`found_token_${token.address}`}>
