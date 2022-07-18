@@ -1,5 +1,8 @@
+// START: Import React and Dongles
 import { Dispatch, SetStateAction } from 'react';
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
+
+// START: Import Local Files
 import { setTokenA, setTokenB, setDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
 import styles from './TokenSelectContainer.module.css';
 import TokenSelect from '../TokenSelect/TokenSelect';
@@ -130,6 +133,7 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
         <div className={styles.token_select_container}>
             {showManageTokenListContent ? (
                 <TokenList
+                    chainId={chainId}
                     activeTokenListsChanged={activeTokenListsChanged}
                     indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
                 />

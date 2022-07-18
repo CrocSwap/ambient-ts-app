@@ -355,12 +355,7 @@ export default function Limit(props: LimitPropsIF) {
         />
     );
     return (
-        <motion.section
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-            data-testid={'limit'}
-        >
+        <section>
             <ContentContainer isOnTradeRoute>
                 <LimitHeader
                     tokenPair={tokenPair}
@@ -369,34 +364,39 @@ export default function Limit(props: LimitPropsIF) {
                 />
                 <DividerDark addMarginTop />
                 {navigationMenu}
-
-                <LimitCurrencyConverter
-                    tokenPair={tokenPair}
-                    searchableTokens={searchableTokens}
-                    poolPriceNonDisplay={poolPriceNonDisplay}
-                    isSellTokenBase={isSellTokenBase}
-                    tokensBank={importedTokens}
-                    setImportedTokens={setImportedTokens}
-                    chainId={chainId ?? '0x2a'}
-                    setLimitAllowed={setLimitAllowed}
-                    tokenABalance={truncateDecimals(parseFloat(tokenABalance), 4).toString()}
-                    tokenBBalance={truncateDecimals(parseFloat(tokenBBalance), 4).toString()}
-                    tokenAInputQty={tokenAInputQty}
-                    tokenBInputQty={tokenBInputQty}
-                    setTokenAInputQty={setTokenAInputQty}
-                    isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
-                    setTokenBInputQty={setTokenBInputQty}
-                    setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
-                    setLimitButtonErrorMessage={setLimitButtonErrorMessage}
-                    isWithdrawFromDexChecked={isWithdrawFromDexChecked}
-                    setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
-                    limitRate={limitRate}
-                    setLimitRate={setLimitRate}
-                    insideTickDisplayPrice={insideTickDisplayPrice}
-                    isDenominationInBase={tradeData.isDenomBase}
-                    activeTokenListsChanged={activeTokenListsChanged}
-                    indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
-                />
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.5 }}
+                >
+                    <LimitCurrencyConverter
+                        tokenPair={tokenPair}
+                        searchableTokens={searchableTokens}
+                        poolPriceNonDisplay={poolPriceNonDisplay}
+                        isSellTokenBase={isSellTokenBase}
+                        tokensBank={importedTokens}
+                        setImportedTokens={setImportedTokens}
+                        chainId={chainId ?? '0x2a'}
+                        setLimitAllowed={setLimitAllowed}
+                        tokenABalance={truncateDecimals(parseFloat(tokenABalance), 4).toString()}
+                        tokenBBalance={truncateDecimals(parseFloat(tokenBBalance), 4).toString()}
+                        tokenAInputQty={tokenAInputQty}
+                        tokenBInputQty={tokenBInputQty}
+                        setTokenAInputQty={setTokenAInputQty}
+                        isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
+                        setTokenBInputQty={setTokenBInputQty}
+                        setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
+                        setLimitButtonErrorMessage={setLimitButtonErrorMessage}
+                        isWithdrawFromDexChecked={isWithdrawFromDexChecked}
+                        setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
+                        limitRate={limitRate}
+                        setLimitRate={setLimitRate}
+                        insideTickDisplayPrice={insideTickDisplayPrice}
+                        isDenominationInBase={tradeData.isDenomBase}
+                        activeTokenListsChanged={activeTokenListsChanged}
+                        indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
+                    />
+                </motion.div>
                 <div className={styles.header_container}>
                     <DividerDark addMarginTop />
                     <DenominationSwitch
@@ -434,6 +434,6 @@ export default function Limit(props: LimitPropsIF) {
                 )}
             </ContentContainer>
             {confirmLimitModalOrNull}
-        </motion.section>
+        </section>
     );
 }

@@ -3,7 +3,7 @@
 // import styles from './Transaction.module.css';
 
 // import { ISwap } from '../../utils/state/graphDataSlice';
-// import truncateAddress from '../../utils/truncateAddress';
+// import trimString from '../../utils/functions/trimString';
 
 // interface TransactionProps {
 //     // portfolio?: boolean;
@@ -37,7 +37,7 @@
 //     const tokenAAddressLowerCase = tokenAAddress.toLowerCase();
 //     const tokenBAddressLowerCase = tokenBAddress.toLowerCase();
 
-//     const truncatedSwapID = truncateAddress(props.swap.id, 16);
+//     const truncatedSwapID = trimString(props.swap.id, 6, 6);
 
 //     const transactionMatchesSelectedTokens =
 //         (transactionBaseAddressLowerCase === tokenAAddressLowerCase ||

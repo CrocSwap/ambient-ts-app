@@ -9,7 +9,7 @@ import styles from './PageHeader.module.css';
 import { useRive, useStateMachineInput } from 'rive-react';
 import Account from './Account/Account';
 import NetworkSelector from './NetworkSelector/NetworkSelector';
-import truncateAddress from '../../../utils/truncateAddress';
+import trimString from '../../../utils/functions/trimString';
 import ambientLogo from '../../../assets/images/logos/ambient_logo.svg';
 
 import { useModal } from '../../../components/Global/Modal/useModal';
@@ -113,7 +113,7 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
         onClickInput?.fire();
     }
 
-    const accountAddress = isAuthenticated && account ? truncateAddress(account, 18) : '';
+    const accountAddress = isAuthenticated && account ? trimString(account, 9, 9) : '';
 
     const accountProps = {
         nativeBalance: props.nativeBalance,

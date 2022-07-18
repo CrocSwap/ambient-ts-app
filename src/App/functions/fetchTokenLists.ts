@@ -1,4 +1,4 @@
-import { tokenListURIs } from '../../utils/data/tokenURIs';
+import { tokenListURIs } from '../../utils/data/tokenListURIs';
 import { defaultTokenLists } from '../../utils/data/defaultTokenLists';
 import { TokenIF } from '../../utils/interfaces/exports';
 import uriToHttp from '../../utils/functions/uriToHttp';

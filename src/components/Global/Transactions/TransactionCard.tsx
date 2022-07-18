@@ -7,7 +7,7 @@ import { BsPersonSquare } from 'react-icons/bs';
 import { ImArrowUp, ImArrowDown } from 'react-icons/im';
 import { useState } from 'react';
 import { ISwap } from '../../../utils/state/graphDataSlice';
-import truncateAddress from '../../../utils/truncateAddress';
+import trimString from '../../../utils/functions/trimString';
 import TooltipComponent from '../TooltipComponent/TooltipComponent';
 
 interface TransactionProps {
@@ -72,7 +72,7 @@ export default function TransactionCard(props: TransactionProps) {
             <button className={styles.details_button}>Details</button>
         </div>
     );
-    const truncatedSwapID = truncateAddress(props.swap.id, 14);
+    const truncatedSwapID = trimString(props.swap.id, 5, 5, '…');
     const bottomElements = (
         <div className={styles.bottom_elements}>
             <div className={styles.account_elements}>
@@ -115,7 +115,7 @@ export default function TransactionCard(props: TransactionProps) {
         </div>
     );
 
-    const positionRow = (
+    return (
         <div className={`${styles.container} `}>
             <div className={styles.content_container}>
                 <div className={`${styles.position_row}  ${styles.positions_container}`}>
@@ -149,5 +149,4 @@ export default function TransactionCard(props: TransactionProps) {
             {bottomElements}
         </div>
     );
-    return <>{positionRow}</>;
 }
