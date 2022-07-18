@@ -1,4 +1,4 @@
-.wallet_row{
+.exchange_row{
     display: grid; 
     color: white;
    grid-template-columns: 2fr 1fr 1fr;
@@ -9,7 +9,7 @@
 
 
 
-.wallet_row p{
+.exchange_row p{
     font-size: var(--body-size);
     line-height: var(--body-lh);
     color: rgba(235, 235, 255, 0.4);
