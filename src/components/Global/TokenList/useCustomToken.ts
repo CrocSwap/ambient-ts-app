@@ -23,12 +23,14 @@ export const useCustomToken = (
     useEffect(() => {
         setErrorText('');
         setMatchingTokens([]);
-        const matchingLocalTokens = allTokens.filter((token: TokenIF) =>
-            token.address.includes(searchInput)
-        );
         if (searchInput.match(/^0x[a-f0-9]{40}$/)) {
-            if (matchingTokens.length > 1) setMatchingTokens(matchingLocalTokens);
-            else {
+            const matchingLocalTokens = allTokens.filter((token: TokenIF) =>
+                token.address.includes(searchInput)
+            );
+            if (matchingTokens.length > 1) {
+                console.log(matchingTokens);
+                setMatchingTokens(matchingLocalTokens);
+            } else {
                 console.log('checking on chain with Moralis...')
                 const token = fetchTokenMetadata(chainId as string, searchInput as string);
                 console.log(token);
@@ -51,6 +53,8 @@ export const useCustomToken = (
                     setMatchingTokens([customToken]);
                 }).catch(err => console.warn(err));
             };
+        } else if (!searchInput.match(/^0x[a-f0-9]{40}$/) && searchInput.length) {
+            setErrorText('Please enter a valid 0x[...] contract address.');
         }
     }, [searchInput]);
 
