@@ -48,7 +48,6 @@ export const useCustomToken = (
             const tokenFromImportedList = importedTokens.filter((tkn: TokenIF) => (tkn.address === searchInput && tkn.chainId === parseInt(chainId)));
 
             if (tokenFromImportedList.length) {
-                console.log('it is already imported!');
                 setTokenAlreadyImported(true);
             } else if (!tokenFromImportedList.length) {
                 setTokenAlreadyImported(false);
@@ -58,11 +57,8 @@ export const useCustomToken = (
                 if (matchingTokens.length > 1) {
                     setMatchingTokens(matchingLocalTokens);
                 } else {
-                    console.log('checking on chain with Moralis...')
                     const token = fetchTokenMetadata(chainId as string, searchInput as string);
-                    console.log(token);
                     Promise.resolve(token).then((tkn) => {
-                        console.log(tkn);
                         if (!tkn[0].decimals) {
                             setErrorText('On-chain data is invalid.');
                             throw new Error('Data returned from chain does not appear to represent a valid token. Check that you are on the correct chain for the contract address used. If so, please log an issue referencing the file useCustomToken.ts, your current chain, and the contract address used.');
@@ -76,7 +72,6 @@ export const useCustomToken = (
                             tkn[0].logo ? tkn[0].logo : '',
                             'custom'
                         );
-                        console.log(customToken);
                         setMatchingTokens([customToken]);
                     }).catch(err => console.warn(err));
                 };
@@ -86,8 +81,6 @@ export const useCustomToken = (
             setErrorText('Please enter a valid 0x[...] address.');
         }
     }, [searchInput]);
-
-    useEffect(() => {console.log({matchingTokens})}, [matchingTokens]);
 
     return [
         setSearchInput,
