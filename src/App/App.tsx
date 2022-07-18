@@ -81,6 +81,48 @@ const cachedGetTokenDecimals = memoizePromiseFn(getTokenDecimals);
 export default function App() {
     const { Moralis, chainId, isWeb3Enabled, account, logout, isAuthenticated } = useMoralis();
 
+    const [provider, setProvider] = useState<
+        ethers.providers.JsonRpcProvider | ethers.providers.Web3Provider
+    >();
+
+    const [metamaskLocked, setMetamaskLocked] = useState<boolean>(true);
+
+    useEffect(() => {
+        console.log({ provider });
+        console.log({ chainId });
+    }, [provider, chainId]);
+
+    useEffect(() => {
+        setProvider(undefined);
+    }, [chainId]);
+
+    useEffect(() => {
+        try {
+            // metamask connected and unlocked
+            if (provider && provider.connection?.url === 'metamask' && !metamaskLocked) {
+                return;
+            } else if (provider && provider.connection?.url === 'metamask' && metamaskLocked) {
+                clickLogout();
+            } else if (window.ethereum && !metamaskLocked) {
+                const metamaskProvider = new ethers.providers.Web3Provider(window.ethereum);
+                setProvider(metamaskProvider);
+            } else if (provider) {
+                return;
+            } else {
+                console.log('making new kovan speedy node provider');
+                setProvider(
+                    new ethers.providers.JsonRpcProvider(
+                        'https://speedy-nodes-nyc.moralis.io/015fffb61180886c9708499e/eth/kovan',
+                    ),
+                );
+            }
+        } catch (error) {
+            console.log(error);
+        }
+
+        // const newProvider = useProvider(provider, setProvider, chainId as string);
+    }, [chainId, provider, metamaskLocked]);
+
     const dispatch = useAppDispatch();
 
     // tokens specifically imported by the end user
@@ -150,7 +192,6 @@ export default function App() {
     const [showSidebar, setShowSidebar] = useState<boolean>(false);
     const location = useLocation();
 
-    const [metamaskLocked, setMetamaskLocked] = useState<boolean>(true);
     const [lastBlockNumber, setLastBlockNumber] = useState<number>(0);
 
     const tradeData = useAppSelector((state) => state.tradeData);
@@ -635,6 +676,7 @@ export default function App() {
                 const spotPrice = await cachedQuerySpotPrice(
                     baseTokenAddress,
                     quoteTokenAddress,
+                    chainId,
                     lastBlockNumber,
                 );
                 if (poolPriceNonDisplay !== spotPrice) {
@@ -650,7 +692,7 @@ export default function App() {
                 }
             })();
         }
-    }, [lastBlockNumber, baseTokenAddress, quoteTokenAddress]);
+    }, [lastBlockNumber, baseTokenAddress, quoteTokenAddress, chainId]);
 
     // useEffect to update selected token balances
     useEffect(() => {
@@ -813,6 +855,7 @@ export default function App() {
         const poolPriceNonDisplay = await cachedQuerySpotPrice(
             baseTokenAddress,
             quoteTokenAddress,
+            chainId,
             lastBlockNumber,
         );
 
@@ -990,35 +1033,6 @@ export default function App() {
         toggleSidebarBasedOnRoute();
     }, [location]);
 
-    const [provider, setProvider] = useState<ethers.providers.JsonRpcProvider>();
-
-    useEffect(() => {
-        try {
-            if (provider && provider.connection?.url === 'metamask' && !metamaskLocked) {
-                return;
-                // console.log('metamask connected and unlocked');
-            } else if (provider && provider.connection?.url === 'metamask' && metamaskLocked) {
-                clickLogout();
-            } else if (window.ethereum && !metamaskLocked) {
-                const metamaskProvider = new ethers.providers.Web3Provider(window.ethereum);
-                setProvider(metamaskProvider);
-            } else if (provider) {
-                return;
-            } else {
-                console.log('making new kovan speedy node provider');
-                setProvider(
-                    new ethers.providers.JsonRpcProvider(
-                        'https://speedy-nodes-nyc.moralis.io/015fffb61180886c9708499e/eth/kovan',
-                    ),
-                );
-            }
-        } catch (error) {
-            console.log(error);
-        }
-
-        // const newProvider = useProvider(provider, setProvider, chainId as string);
-    }, [chainId, provider, metamaskLocked]);
-
     const [nativeBalance, setNativeBalance] = useState<string>('');
 
     const [posArray, setPosArray] = useState<Moralis.Object<Moralis.Attributes>[]>();
@@ -1134,8 +1148,8 @@ export default function App() {
             const currentDateTime = new Date().toISOString();
             const chain = chainId ?? '0x2a';
             // console.log({ chainId });
-            const options: { chain: '0x2a' | 'kovan'; date: string } = {
-                chain: chain as '0x2a' | 'kovan',
+            const options: { chain: '0x2a' | '0x5' | 'kovan'; date: string } = {
+                chain: chain as '0x2a' | '0x5' | 'kovan',
                 date: currentDateTime,
             };
             const currentBlock = (await Moralis.Web3API.native.getDateToBlock(options)).block;

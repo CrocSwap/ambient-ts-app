@@ -1,5 +1,6 @@
 import styles from './NetworkSelector.module.css';
 import { useState } from 'react';
+import { useChain, useMoralis } from 'react-moralis';
 import { BiDownArrow } from 'react-icons/bi';
 
 // interface NetworkSelectorProps {
@@ -7,13 +8,21 @@ import { BiDownArrow } from 'react-icons/bi';
 // }
 
 export default function NetworkSelector() {
-    const [selectedChain, setSelectedChain] = useState('');
+    const { isWeb3Enabled } = useMoralis();
+    const { chainId, switchNetwork } = useChain();
+    const [selectedChain, setSelectedChain] = useState(chainId?.toString());
 
     // this chains data will eventually be stored in the data folder.
     const chains = [
         {
             name: 'Kovan Testnet',
             id: '0x2a',
+            icon: null,
+            theme: '#36364a',
+        },
+        {
+            name: 'Goerli Testnet',
+            id: '0x5',
             icon: null,
             theme: '#36364a',
         },
@@ -39,7 +48,12 @@ export default function NetworkSelector() {
 
     const selectElement = (
         <select
-            onChange={(e) => setSelectedChain(e.target.value)}
+            onChange={(e) => {
+                setSelectedChain(e.target.value);
+                if (isWeb3Enabled) {
+                    switchNetwork(e.target.value);
+                }
+            }}
             className={styles.selector_select}
             value={selectedChain}
         >
