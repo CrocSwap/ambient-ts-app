@@ -25,7 +25,7 @@ export const useCustomToken = (
     const [tokenAlreadyImported, setTokenAlreadyImported] = useState(false);
     const [matchingTokens, setMatchingTokens] = useState<Array<TokenIF>>([]);
 
-    const fetchTokenMetadata = async (chainId: string, addresses: string) => await Web3Api.token.getTokenMetadata({ chain: 'eth', addresses: [addresses] });
+    const fetchTokenMetadata = async (chainId: string, addresses: string) => await Web3Api.token.getTokenMetadata({ chain: chainId as 'eth' | '0x1', addresses: [addresses] });
 
     useEffect(() => {
         setErrorText('');
