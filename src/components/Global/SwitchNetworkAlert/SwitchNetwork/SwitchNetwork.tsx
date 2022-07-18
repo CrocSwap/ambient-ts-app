@@ -14,6 +14,7 @@ export default function SwitchNetwork(props: SwitchNetworkProps) {
     const [
         // eslint-disable-next-line
         isModalOpen,
+        // eslint-disable-next-line
         openModal,
 
         closeModal,
