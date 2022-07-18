@@ -5,11 +5,19 @@ import { RiErrorWarningLine } from 'react-icons/ri';
 import NetworkButton from '../NetworkButton/NetworkButton';
 
 interface SwitchNetworkProps {
-    children: React.ReactNode;
+    showSwitchNetwork: boolean;
 }
 
-export default function SwitchNetwork() {
-    const [isModalOpen, openModal, closeModal] = useModal();
+export default function SwitchNetwork(props: SwitchNetworkProps) {
+    const { showSwitchNetwork } = props;
+
+    const [
+        // eslint-disable-next-line
+        isModalOpen,
+        openModal,
+
+        closeModal,
+    ] = useModal();
 
     const modalTitle = 'Unsupported Network';
 
@@ -33,7 +41,7 @@ export default function SwitchNetwork() {
             {modalContent}
         </Modal>
     );
-    const modalOrNull = isModalOpen ? mainModal : null;
+    const modalOrNull = showSwitchNetwork ? mainModal : null;
 
-    return { mainModal };
+    return <>{modalOrNull}</>;
 }

@@ -15,6 +15,7 @@ import ambientLogo from '../../../assets/images/logos/ambient_logo.svg';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import Modal from '../../../components/Global/Modal/Modal';
 import MagicLogin from './MagicLogin';
+import SwitchNetwork from '../../../components/Global/SwitchNetworkAlert/SwitchNetwork/SwitchNetwork';
 
 /** ***** END: Import Local Files *********/
 
@@ -141,12 +142,12 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
     // );
 
     // Switch Network
-    const [showSwitchNetwork, setShowSwitchNetwork] = useState(false);
-
+    const [showSwitchNetwork, setShowSwitchNetwork] = useState(true);
+    // eslint-disable-next-line
     const openSwitchNetwork = useCallback(() => {
         setShowSwitchNetwork(true);
     }, [setShowSwitchNetwork]);
-
+    // eslint-disable-next-line
     const closeSwitchNetwork = useCallback(() => {
         setShowSwitchNetwork(false);
     }, [setShowSwitchNetwork]);
@@ -215,7 +216,7 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
                 {isAuthenticated && isWeb3Enabled && <NetworkSelector />}
                 <Account {...accountProps} />
             </div>
-
+            <SwitchNetwork showSwitchNetwork={showSwitchNetwork} />
             {modalOrNull}
         </header>
     );
