@@ -14,7 +14,7 @@ export const useCustomToken = (
     }, []);
 
     const [searchInput, setSearchInput] = useState('');
-    const [matchingTokens, setMatchingTokens] = useState([]);
+    const [matchingTokens, setMatchingTokens] = useState<Array<TokenIF>>([]);
 
     const fetchTokenMetadata = async (chainId: string, addresses: string) => await Web3Api.token.getTokenMetadata({ chain: chainId as '0x2a' | 'kovan', addresses: [addresses]});
 
@@ -26,6 +26,10 @@ export const useCustomToken = (
                 console.log('checking on chain with Moralis...')
                 const token = fetchTokenMetadata(chainId as string, searchInput as string);
                 console.log(token);
+                Promise.resolve(token).then((tkn) => {
+                    console.log(tkn);
+                    // setMatchingTokens(tkn);
+                });
             };
         } else {
             setMatchingTokens([]);
