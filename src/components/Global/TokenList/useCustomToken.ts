@@ -38,12 +38,16 @@ export const useCustomToken = (
     // function to fetch metadata from on-chain by address and chain ID
     const fetchTokenMetadata = async (chainId: string, addresses: string) => await Web3Api.token.getTokenMetadata({ chain: chainId as 'eth' | '0x1', addresses: [addresses] });
 
+    // hook to run every time the user changes text input
     useEffect(() => {
+        // clear error text in DOM on new input
         setErrorText('');
+        // clear prior results for searched tokens matching user input
         setMatchingTokens([]);
 
+        // determine if user entered a proper 0x[...] contract address
+        // any value that gets here has already been lower-cased
         if (searchInput.match(/^0x[a-f0-9]{40}$/)) {
-
             const importedTokens = JSON.parse(localStorage.getItem('user') as string).tokens;
             const tokenFromImportedList = importedTokens.filter((tkn: TokenIF) => (tkn.address === searchInput && tkn.chainId === parseInt(chainId)));
 
@@ -76,10 +80,11 @@ export const useCustomToken = (
                     }).catch(err => console.warn(err));
                 };
             }
-
+        // action if user did not enter a proper contract address
         } else if (!searchInput.match(/^0x[a-f0-9]{40}$/) && searchInput.length) {
             setErrorText('Please enter a valid 0x[...] address.');
         }
+    // run this hook every time user inputs a new value in the DOM
     }, [searchInput]);
 
     return [
