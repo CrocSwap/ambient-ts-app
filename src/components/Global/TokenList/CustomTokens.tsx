@@ -11,10 +11,11 @@ interface CustomTokenPropsIF {
 export default function CustomTokens(props: CustomTokenPropsIF) {
     const { chainId } = props;
 
-    const [setSearchInput, foundTokens, errorText] = useCustomToken(chainId);
+    const [setSearchInput, tokenAlreadyImported, setTokenAlreadyImported, foundTokens, errorText] = useCustomToken(chainId);
     console.log({foundTokens});
 
     function importToken(newToken: TokenIF) {
+        setTokenAlreadyImported(true);
         const user = JSON.parse(localStorage.getItem('user') as string);
         user.tokens = [...user.tokens, newToken];
         localStorage.setItem('user', JSON.stringify(user));
@@ -38,7 +39,7 @@ export default function CustomTokens(props: CustomTokenPropsIF) {
                 Tip: Custom tokens are stored locally in your browser
             </div>
             <h3>Found Tokens:</h3>
-            {
+            { tokenAlreadyImported ||
                 foundTokens.map((token: TokenIF) => (
                     <div key={`found_token_${token.address}`}>
                         <h4>{token.name}</h4>
