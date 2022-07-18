@@ -140,6 +140,19 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
     //     </button>
     // );
 
+    // Switch Network
+    const [showSwitchNetwork, setShowSwitchNetwork] = useState(false);
+
+    const openSwitchNetwork = useCallback(() => {
+        setShowSwitchNetwork(true);
+    }, [setShowSwitchNetwork]);
+
+    const closeSwitchNetwork = useCallback(() => {
+        setShowSwitchNetwork(false);
+    }, [setShowSwitchNetwork]);
+
+    // END OF SWITCH NETWORK
+
     return (
         <header data-testid={'page-header'} className={styles.primary_header}>
             {/* <div className={styles.header_gradient}> </div> */}
