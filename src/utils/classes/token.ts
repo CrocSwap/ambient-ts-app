@@ -10,7 +10,7 @@ export default class Token {
     constructor(
         name = 'Unknown Token',
         address: string,
-        symbol: '???',
+        symbol = '???',
         decimals: number,
         chainId: number,
         logoURI: string,  
