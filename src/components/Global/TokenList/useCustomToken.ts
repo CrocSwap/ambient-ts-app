@@ -22,11 +22,20 @@ export const useCustomToken = (
             .map((tokenList: TokenListIF) => tokenList.tokens).flat()
     ), []);
 
+    // input text from user input field in the DOM
+    // this hook only receives santized values
     const [searchInput, setSearchInput] = useState('');
+
+    // error text to populate in the DOM to explain invalid inputs
     const [errorText, setErrorText] = useState<string|null>(null);
+
+    // boolean representing whether the user already imported the token searched for
     const [tokenAlreadyImported, setTokenAlreadyImported] = useState(false);
+
+    // array of tokens that match contract addresses from allTokenLists or on-chain query
     const [matchingTokens, setMatchingTokens] = useState<Array<TokenIF>>([]);
 
+    // function to fetch metadata from on-chain by address and chain ID
     const fetchTokenMetadata = async (chainId: string, addresses: string) => await Web3Api.token.getTokenMetadata({ chain: chainId as 'eth' | '0x1', addresses: [addresses] });
 
     useEffect(() => {
