@@ -5,7 +5,7 @@ export default function ExchangeCard() {
         <div className={styles.token_info}>
             <div className={styles.token_icon}>
                 <img
-                    src='https://icons.iconarchive.com/icons/cjdowner/cryptocurrency-flat/1024/Ethereum-ETH-icon.png'
+                    src='https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.png'
                     alt=''
                     width='30px'
                 />

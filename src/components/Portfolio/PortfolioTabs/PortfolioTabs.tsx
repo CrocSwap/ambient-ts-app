@@ -4,6 +4,7 @@ import TabContent from '../../Global/Tabs/TabContent/TabContent';
 import TabNavItem from '../../Global/Tabs/TabNavItem/TabNavItem';
 // import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import Wallet from '../../Global/Account/Wallet/Wallet';
+import Exchange from '../../Global/Account/Exchange/Exchange';
 
 export default function PortfolioTabs() {
     const [activeTab, setActiveTab] = useState('tab1');
@@ -38,7 +39,7 @@ export default function PortfolioTabs() {
                     <Wallet />
                 </TabContent>
                 <TabContent id='tab2' activeTab={activeTab}>
-                    {/* <p>Exchange Component</p> */}
+                    <Exchange />
                 </TabContent>
                 <TabContent id='tab3' activeTab={activeTab}>
                     {/* <p>Position component</p> */}
