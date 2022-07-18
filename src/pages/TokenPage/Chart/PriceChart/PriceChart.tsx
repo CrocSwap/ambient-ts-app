@@ -6,9 +6,7 @@ import {
     Dispatch,
     HTMLAttributes,
     SetStateAction,
-    useCallback,
     useEffect,
-    useMemo,
     useRef,
     useState,
 } from 'react';
@@ -42,7 +40,7 @@ export default function PriceChart(props: PriceChartProps) {
     const d3PlotArea = useRef(null);
     const d3Xaxis = useRef(null);
     const d3Yaxis = useRef(null);
-
+    const verticalLine = useRef(null);
     const timeFormat = d3.timeFormat('%m/%d %I.00 %p');
     const [data] = useState(props.data);
     const [verticalLineChart, setVerticalLineChart] = useState([
@@ -52,12 +50,12 @@ export default function PriceChart(props: PriceChartProps) {
         },
     ]);
 
-    const xMin = d3.min(data, function (d) {
-        return new Date(Math.min(d.time) * 1000);
-    });
-    const xMax = d3.max(data, function (d) {
-        return new Date(Math.max(d.time) * 1000);
-    });
+    // const xMin = d3.min(data, function (d) {
+    //     return new Date(Math.min(d.time) * 1000);
+    // });
+    // const xMax = d3.max(data, function (d) {
+    //     return new Date(Math.max(d.time) * 1000);
+    // });
 
     useEffect(() => {
         const millisPerDay = 24 * 60 * 60 * 1000;
@@ -67,11 +65,6 @@ export default function PriceChart(props: PriceChartProps) {
             .accessors([(d: any) => new Date(d.time * 1000)])
             .padUnit('domain')
             .pad([millisPerDay, millisPerDay]);
-
-        setVerticalLineChart(() => {
-            verticalLineChart[0].x = new Date(data[0].time * 1000);
-            return verticalLineChart;
-        });
 
         const xScale = d3.scaleTime();
         const yScale = d3.scaleLinear();
@@ -109,24 +102,6 @@ export default function PriceChart(props: PriceChartProps) {
                     .enter()
                     .style('fill', (d: any) => (d.close > d.open ? '#7371FC' : '#CDC1FF'))
                     .style('stroke', (d: any) => (d.close > d.open ? '#7371FC' : '#CDC1FF'));
-                // .on('mouseover', (event: any) => {
-
-                //     const x0 = new Date(event.currentTarget['__data__'].time * 1000);
-                //     setVerticalLineChart(() => {
-                //         verticalLineChart[0].x = x0;
-                //         return verticalLineChart;
-                //     });
-
-                //     console.error(verticalLineChart);
-
-                // })
-                // .on('mouseout', (event: any) => {
-                //     const x0 = new Date(event.currentTarget['__data__'].time * 1000);
-                //     setVerticalLineChart(() => {
-                //         verticalLineChart[0].x = x0;
-                //         return verticalLineChart;
-                //     });
-                // });
             })
             .xScale(xScale)
             .yScale(yScale);
@@ -152,11 +127,28 @@ export default function PriceChart(props: PriceChartProps) {
             d3.select(event.target).select('svg').call(xAxis);
         });
 
-        d3.select(d3PlotArea.current).on('mouseover', function (event: any) {
+        d3.select(d3PlotArea.current).on('mousemove', function (event: any) {
             const x0 = xScale.invert(d3.pointer(event)[0]);
+            const y0 = yScale.invert(d3.pointer(event)[1]);
+            console.error('x0 :', x0);
+            console.error('y0 :', y0);
             const result = { x: x0, y: 0 };
+            props.setValue?.(y0);
+            props.setLabel?.(x0.toString());
             setVerticalLineChart([result]);
         });
+
+        // d3.select(d3PlotArea.current).on('mousemove', function (event: any) {
+        //     const x0 = xScale.invert(d3.pointer(event)[0]);
+        //     const y0 = yScale.invert(d3.pointer(event)[1]);
+        //     console.error('x0 :' ,x0);
+        //     console.error('y0 :' ,y0);
+        //     const result = { x: x0, y: 0 };
+        //     props.setValue?.(y0);
+        //     props.setLabel?.(x0.toString());
+        //     setVerticalLineChart([result]);
+
+        // });
 
         d3.select(d3Yaxis.current).on('draw', function (event: any) {
             d3.select(event.target).select('svg').call(yAxis);
@@ -180,6 +172,7 @@ export default function PriceChart(props: PriceChartProps) {
                             className='plot-area'
                             style={{ flex: 1, overflow: 'hidden' }}
                         ></d3fc-svg>
+
                         <d3fc-svg ref={d3Yaxis} style={{ width: '3em' }}></d3fc-svg>
                     </div>
                     <d3fc-svg
