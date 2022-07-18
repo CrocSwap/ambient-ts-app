@@ -19,7 +19,11 @@ export default function CustomTokens(props: CustomTokenPropsIF) {
     );
 
     function deleteToken(sadToken: TokenIF) {
-        console.log('deleting ' + sadToken.name);
+        setTokenAlreadyImported(false);
+        setImportedTokens(importedTokens.filter((token: TokenIF) => (token.address !== sadToken.address || token.chainId !== sadToken.chainId)));
+        const user = JSON.parse(localStorage.getItem('user') as string);
+        user.tokens = user.tokens.filter((token: TokenIF) => (token.address !== sadToken.address || token.chainId !== sadToken.chainId));
+        localStorage.setItem('user', JSON.stringify(user));
     }
 
     function importToken(newToken: TokenIF) {
