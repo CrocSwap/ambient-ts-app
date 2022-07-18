@@ -22,8 +22,11 @@ export const useCustomToken = (
 
     useEffect(() => {
         setErrorText('');
-        const matchingLocalTokens = allTokens.filter((token: TokenIF) => token.address.includes(searchInput));
-        if (searchInput.length >= 3) {
+        setMatchingTokens([]);
+        const matchingLocalTokens = allTokens.filter((token: TokenIF) =>
+            token.address.includes(searchInput)
+        );
+        if (searchInput.match(/^0x[a-f0-9]{40}$/)) {
             if (matchingTokens.length > 1) setMatchingTokens(matchingLocalTokens);
             else {
                 console.log('checking on chain with Moralis...')
@@ -48,8 +51,6 @@ export const useCustomToken = (
                     setMatchingTokens([customToken]);
                 }).catch(err => console.warn(err));
             };
-        } else {
-            setMatchingTokens([]);
         }
     }, [searchInput]);
 
