@@ -14,11 +14,13 @@ export const useCustomToken = (
 ] => {
     const Web3Api = useMoralisWeb3Api();
 
-    const allTokens = useMemo(() => {
-        console.log('got all tokens in useCustomTokens.ts file');
-        return JSON.parse(localStorage.getItem('allTokenLists') as string)
-            .map((tokenList: TokenListIF) => tokenList.tokens).flat();
-    }, []);
+    // make an array of every token in every list in allTokenLists in local storage
+    // empty dependency array makes this value calculated once when the component mounts
+    // to have it update, pass values into the dependency array
+    const allTokens = useMemo(() => (
+        JSON.parse(localStorage.getItem('allTokenLists') as string)
+            .map((tokenList: TokenListIF) => tokenList.tokens).flat()
+    ), []);
 
     const [searchInput, setSearchInput] = useState('');
     const [errorText, setErrorText] = useState<string|null>(null);
