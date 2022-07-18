@@ -142,7 +142,7 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
     // );
 
     // Switch Network
-    const [showSwitchNetwork, setShowSwitchNetwork] = useState(true);
+    const [showSwitchNetwork, setShowSwitchNetwork] = useState(false);
     // eslint-disable-next-line
     const openSwitchNetwork = useCallback(() => {
         setShowSwitchNetwork(true);
