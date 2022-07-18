@@ -5,7 +5,7 @@ import { TokenIF, TokenListIF } from '../../../utils/interfaces/exports';
 
 export const useCustomToken = (
     chainId: string
-): [Dispatch<SetStateAction<string>>, string] => {
+): [Dispatch<SetStateAction<string>>, string | null] => {
     const Web3Api = useMoralisWeb3Api();
 
     const allTokens = useMemo(() => {
@@ -15,12 +15,13 @@ export const useCustomToken = (
     }, []);
 
     const [searchInput, setSearchInput] = useState('');
-    const [errorText, setErrorText] = useState('');
+    const [errorText, setErrorText] = useState<string|null>(null);
     const [matchingTokens, setMatchingTokens] = useState<Array<TokenIF>>([]);
 
     const fetchTokenMetadata = async (chainId: string, addresses: string) => await Web3Api.token.getTokenMetadata({ chain: 'eth', addresses: [addresses]});
 
     useEffect(() => {
+        setErrorText('');
         const matchingLocalTokens = allTokens.filter((token: TokenIF) => token.address.includes(searchInput));
         if (searchInput.length >= 3) {
             if (matchingTokens.length > 1) setMatchingTokens(matchingLocalTokens);
