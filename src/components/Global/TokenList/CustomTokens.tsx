@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import styles from './CustomTokens.module.css';
 import Divider from '../Divider/Divider';
@@ -12,10 +13,14 @@ export default function CustomTokens(props: CustomTokenPropsIF) {
     const { chainId } = props;
 
     const [setSearchInput, tokenAlreadyImported, setTokenAlreadyImported, foundTokens, errorText] = useCustomToken(chainId);
-    console.log({foundTokens});
+
+    const [importedTokens, setImportedTokens] = useState<TokenIF[]>(
+        JSON.parse(localStorage.getItem('user') as string).tokens.filter((tkn: TokenIF) => tkn.fromList === 'custom')
+    );
 
     function importToken(newToken: TokenIF) {
         setTokenAlreadyImported(true);
+        setImportedTokens([...importedTokens, newToken]);
         const user = JSON.parse(localStorage.getItem('user') as string);
         user.tokens = [...user.tokens, newToken];
         localStorage.setItem('user', JSON.stringify(user));
@@ -35,10 +40,6 @@ export default function CustomTokens(props: CustomTokenPropsIF) {
                 <span>0 Custom Tokens</span>
                 <span className={styles.clear_all_button}>Clear all</span>
             </div>
-            <div className={styles.custom_tokens_footer}>
-                Tip: Custom tokens are stored locally in your browser
-            </div>
-            <h3>Found Tokens:</h3>
             { tokenAlreadyImported ||
                 foundTokens.map((token: TokenIF) => (
                     <div key={`found_token_${token.address}`}>
@@ -47,6 +48,9 @@ export default function CustomTokens(props: CustomTokenPropsIF) {
                     </div>
                 ))
             }
+            <div className={styles.custom_tokens_footer}>
+                Tip: Custom tokens are stored locally in your browser
+            </div>
         </motion.div>
     );
 }
