@@ -13,6 +13,11 @@
     padding: 0 2rem;
 }
 
+.query_error_text {
+    color: red;
+    font-style: italic;
+}
+
 .custom_tokens_footer {
     position: absolute;
     display: flex;

@@ -1,11 +1,11 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, Dispatch, SetStateAction } from 'react';
 import { useMoralisWeb3Api } from 'react-moralis';
 import Token from '../../../utils/classes/Token';
 import { TokenIF, TokenListIF } from '../../../utils/interfaces/exports';
 
 export const useCustomToken = (
     chainId: string
-) => {
+): [Dispatch<SetStateAction<string>>, string] => {
     const Web3Api = useMoralisWeb3Api();
 
     const allTokens = useMemo(() => {
@@ -15,6 +15,7 @@ export const useCustomToken = (
     }, []);
 
     const [searchInput, setSearchInput] = useState('');
+    const [errorText, setErrorText] = useState('');
     const [matchingTokens, setMatchingTokens] = useState<Array<TokenIF>>([]);
 
     const fetchTokenMetadata = async (chainId: string, addresses: string) => await Web3Api.token.getTokenMetadata({ chain: 'eth', addresses: [addresses]});
@@ -30,6 +31,7 @@ export const useCustomToken = (
                 Promise.resolve(token).then((tkn) => {
                     console.log(tkn);
                     if (!tkn[0].decimals) {
+                        setErrorText('On-chain data is invalid.');
                         throw new Error('Data returned from chain does not appear to represent a valid token. Check that you are on the correct chain for the contract address used. If so, please log an issue referencing the file useCustomToken.ts, your current chain, and the contract address used.');
                     }
                     const customToken = new Token(
@@ -52,5 +54,5 @@ export const useCustomToken = (
 
     useEffect(() => {console.log({matchingTokens})}, [matchingTokens]);
 
-    return [ setSearchInput ];
+    return [ setSearchInput, errorText ];
 }
