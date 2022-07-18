@@ -1,4 +1,4 @@
-import styles from './Row.module.css';
+import styles from './WalletCard.module.css';
 
 export default function WalletCard() {
     const tokenInfo = (
@@ -9,7 +9,7 @@ export default function WalletCard() {
                     alt=''
                     width='30px'
                 />
-                <p>ETH</p>
+                <p className={styles.token_key}>ETH</p>
             </div>
             <p>Ethereum</p>
         </div>

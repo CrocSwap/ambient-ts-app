@@ -3,7 +3,8 @@
     color: white;
    grid-template-columns: 2fr 1fr 1fr;
    align-items: center;
-   border-bottom: 1px solid red;
+   padding-bottom: 4px;
+   border-bottom: 1px solid rgb(43, 40, 40);
 }
 
 
@@ -12,8 +13,18 @@
     font-size: var(--body-size);
     line-height: var(--body-lh);
     color: rgba(235, 235, 255, 0.4);
-    text-align: right;
+    /* text-align: right; */
+   
     height: 16px;
 
 
+}
+
+.value, .amount{
+    display: flex;
+justify-content: flex-end;
+}
+
+.token{
+    margin-left: 30px;
 }
