@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useMoralisWeb3Api } from 'react-moralis';
+import Token from '../../../utils/classes/Token';
 import { TokenIF, TokenListIF } from '../../../utils/interfaces/exports';
 
 export const useCustomToken = (
@@ -16,7 +17,7 @@ export const useCustomToken = (
     const [searchInput, setSearchInput] = useState('');
     const [matchingTokens, setMatchingTokens] = useState<Array<TokenIF>>([]);
 
-    const fetchTokenMetadata = async (chainId: string, addresses: string) => await Web3Api.token.getTokenMetadata({ chain: chainId as '0x2a' | 'kovan', addresses: [addresses]});
+    const fetchTokenMetadata = async (chainId: string, addresses: string) => await Web3Api.token.getTokenMetadata({ chain: 'eth', addresses: [addresses]});
 
     useEffect(() => {
         const matchingLocalTokens = allTokens.filter((token: TokenIF) => token.address.includes(searchInput));
@@ -28,7 +29,17 @@ export const useCustomToken = (
                 console.log(token);
                 Promise.resolve(token).then((tkn) => {
                     console.log(tkn);
-                    // setMatchingTokens(tkn);
+                    const customToken = new Token(
+                        tkn[0].name,
+                        tkn[0].address,
+                        tkn[0].symbol,
+                        parseInt(tkn[0].decimals),
+                        parseInt(chainId),
+                        tkn[0].logo ? tkn[0].logo : '',
+                        'custom'
+                    );
+                    console.log(customToken);
+                    setMatchingTokens([customToken]);
                 });
             };
         } else {
