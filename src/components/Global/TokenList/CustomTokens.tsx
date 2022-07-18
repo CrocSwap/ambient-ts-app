@@ -14,8 +14,10 @@ export default function CustomTokens(props: CustomTokenPropsIF) {
     const [setSearchInput, foundTokens, errorText] = useCustomToken(chainId);
     console.log({foundTokens});
 
-    function importToken(tokenData: TokenIF) {
-        console.log(tokenData.address);
+    function importToken(newToken: TokenIF) {
+        const user = JSON.parse(localStorage.getItem('user') as string);
+        user.tokens = [...user.tokens, newToken];
+        localStorage.setItem('user', JSON.stringify(user));
     }
 
     return (
