@@ -53,19 +53,14 @@ line-height: 12px;
  
 }
 
-.range_status{
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 4px;
-}
 
-.range_icon, .range_icon_2{
+
+/* .range_icon, .range_icon_2{
     width: 11px;
     height: 11px;
     background: green;
     border-radius: 50%;;
-}
+} */
 
 .account{
     margin: 0 4px;

@@ -1,5 +1,36 @@
+import RangeStatus from '../../RangeStatus/RangeStatus';
 import styles from './RangeCard.module.css';
+import { MenuItem, Menu } from '@material-ui/core';
+import { useStyles } from '../../../../utils/functions/styles';
+import { Link, useLocation } from 'react-router-dom';
+import { useState } from 'react';
+
+import { FiMoreHorizontal } from 'react-icons/fi';
 export default function RangeCard() {
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const location = useLocation();
+    const currentLocation = location.pathname;
+    const handleClick = (
+        event: React.MouseEvent<HTMLButtonElement> | React.MouseEvent<HTMLDivElement>,
+    ) => {
+        console.log('handleClick', event.currentTarget);
+        setAnchorEl(event.currentTarget);
+    };
+    const handleClose = () => {
+        console.log('handleClose');
+        setAnchorEl(null);
+    };
+    const classes = useStyles();
+
+    const position = {
+        ambient: false,
+    };
+
+    const posHash = 1234;
+
+    const openHarvestModal = () => console.log('opened');
+    const openRemoveModal = () => console.log('opened');
+    const openDetailsModal = () => console.log('opened');
     const tokenLogos = (
         <div className={styles.token_logos}>
             <img src='https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.png' alt='' />
@@ -54,6 +85,52 @@ export default function RangeCard() {
         </div>
     );
 
+    const loggedInUserButtons = (
+        <>
+            <div
+                aria-controls='list settings'
+                aria-haspopup='true'
+                onClick={handleClick}
+                className={`${styles.menu} ${styles.hide_mobile}`}
+            >
+                <FiMoreHorizontal size={30} />
+            </div>
+
+            <Menu
+                id='simple-menu'
+                anchorEl={anchorEl}
+                keepMounted
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
+                className={classes.menu}
+            >
+                {!position.ambient && (
+                    <MenuItem onClick={openHarvestModal} className={classes.menuItem}>
+                        Harvest
+                    </MenuItem>
+                )}
+
+                <MenuItem onClick={handleClose} className={classes.menuItem}>
+                    <Link
+                        to={`/trade/edit/${posHash}`}
+                        // state={positionData}
+                        replace={currentLocation.startsWith('/trade/edit')}
+                    >
+                        Edit
+                    </Link>
+                </MenuItem>
+
+                <MenuItem onClick={openRemoveModal} className={classes.menuItem}>
+                    Remove
+                </MenuItem>
+
+                <MenuItem onClick={openDetailsModal} className={classes.menuItem}>
+                    Details
+                </MenuItem>
+            </Menu>
+        </>
+    );
+
     const menuIcon = (
         <div className={styles.min_buttons}>
             <button>Reposition</button>
@@ -63,18 +140,23 @@ export default function RangeCard() {
 
     const inRangeStatus = (
         <div className={styles.range_status}>
-            <div className={styles.range_icon}></div>
-            In Range
+            <RangeStatus isInRange isAmbient={false} />
         </div>
     );
 
-    const rangeIcon2 = <div className={styles.range_icon_2}></div>;
+    const rangeIcon2 = (
+        <div className={styles.range_icon_2}>
+            {' '}
+            <RangeStatus isInRange justSymbol isAmbient={false} />
+        </div>
+    );
 
     const rowData = (
         <div className={styles.row}>
             <div className={styles.pool_name}>ABC/XYZ</div>
             <div className={styles.account}>0xcD...134</div>
             <div className={styles.account}>0BcD...134</div>
+
             {accountColumn}
             {minMax}
             {lardeDesktopMinMaxDisplay}
