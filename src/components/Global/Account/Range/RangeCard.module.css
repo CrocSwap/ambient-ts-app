@@ -7,3 +7,35 @@
 .token_logos img{
     width: 15px;
 }
+
+.min_max{
+    display: flex;
+    flex-direction: column;
+    font-size: 10px;
+line-height: 12px;
+    color: #5FFFF2;
+}
+.min_max_range{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 4px;
+    font-size: 10px;
+    line-height: 12px;
+        color: #5FFFF2;
+}
+.token_qty{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    display: none;
+}
+.token_qty img{
+    width: 15px;
+}
+
+.token_qty_column, .account_column{
+    flex-direction: column;
+    align-items: center;
+}
