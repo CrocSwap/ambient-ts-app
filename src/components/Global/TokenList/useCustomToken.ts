@@ -36,7 +36,7 @@ export const useCustomToken = (
     const [matchingTokens, setMatchingTokens] = useState<Array<TokenIF>>([]);
 
     // function to fetch metadata from on-chain by address and chain ID
-    const fetchTokenMetadata = async (chainId: string, addresses: string) => await Web3Api.token.getTokenMetadata({ chain: chainId as 'eth' | '0x1', addresses: [addresses] });
+    const fetchTokenMetadata = async (chainId: string, addresses: string) => await Web3Api.token.getTokenMetadata({ chain: chainId as 'eth' | '0x1' | 'goerli' | '0x5' | 'kovan' | '0x2a', addresses: [addresses] });
 
     // hook to run every time the user changes text input
     useEffect(() => {
