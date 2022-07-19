@@ -147,5 +147,14 @@ text-shadow: 0px 0px 10px rgba(21, 190, 111, 0.75);
     
     align-items: center;
     }
+
+    .menu_buttons,
+ .account, 
+ .range_status, 
+
+ .pool_name, 
+ .min_max_range, .min_buttons button {
+    display: none;
+}
     
 
