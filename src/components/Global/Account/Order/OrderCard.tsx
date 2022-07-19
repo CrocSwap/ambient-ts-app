@@ -73,5 +73,12 @@ export default function OrderCard() {
         </div>
     );
 
-    return <div>OrderCard</div>;
+    return (
+        <div className={styles.main_container}>
+            {tokenLogos}
+            {rowData}
+            {menuButtons}
+            {menuIcon}
+        </div>
+    );
 }
