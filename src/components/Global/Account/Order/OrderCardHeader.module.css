@@ -97,3 +97,46 @@
       
   }
   
+
+  /* Extra big screen devices (1100px and above) */
+  @media only screen and (min-width: 1100px) {
+  
+    .account{
+       display: none;
+   }
+ .id, .wallet, .status{
+    display: flex;
+    
+ }
+
+  
+
+   .row{
+      grid-template-columns: 80px auto auto repeat(5, 95px) 50px;
+     
+   }
+ 
+
+}
+
+
+/* Extra big screen devices(MONITORS) (1200px and above) */
+@media only screen and (min-width: 1200px) {
+
+    .header_container{
+       
+      grid-template-columns:100px auto  minmax(200px, auto);
+
+        }
+    
+ 
+    /* .row{
+        grid-template-columns: 100px auto auto repeat(3, 95px) 80px 100px;
+    } */
+   
+
+
+}
+
+
+/* THESE MEDIA QUERIES ARE NORMALLY NOT NEEDED. SINCE THIS IS A DEX AND WE WILL MOST LIKELY HAVE USERS WITH EXTRA BIG MONITORS, I AM MAKING SOME CUSTOMIZATIONS TO MAKE USE OF THE EXTRA SPACES */
