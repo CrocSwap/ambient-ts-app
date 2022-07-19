@@ -74,7 +74,7 @@
     }
 
     .row{
-        grid-template-columns: 100px auto repeat(2, 95px) 80px 100px;
+        grid-template-columns: 100px auto repeat(2, 50px) 40px 30px;
     }
     
 }
@@ -87,6 +87,9 @@
         display: flex;
     }
     
+    .row{
+        grid-template-columns: 100px auto repeat(2, 70px) 40px 100px;
+    }
 
     
 }
@@ -127,7 +130,7 @@
 
 }
 
-@media only screen and (min-width: 1400px) {
+/* @media only screen and (min-width: 1400px) {
    
     .row{
         grid-template-columns: 100px auto auto 300px repeat(2, 95px) 80px 100px;
@@ -139,4 +142,4 @@
         text-align: center;
     }
 
-}
+} */

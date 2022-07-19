@@ -211,7 +211,8 @@ text-shadow: 0px 0px 10px rgba(21, 190, 111, 0.75);
     }
 
     .row{
-        grid-template-columns: 100px auto repeat(2, 95px) 80px 100px;
+        /* background: red; */
+        grid-template-columns: 100px auto repeat(2, 50px) 40px 30px;
 
     }
     
@@ -244,6 +245,10 @@ line-height: 22px;
 line-height: 16px;
     }
     
+    .row{
+        /* background: blue; */
+        grid-template-columns: 100px auto repeat(2, 70px) 40px 100px;
+    }
 
     
 }
@@ -301,7 +306,7 @@ line-height: 16px;
 
 
 /* THESE MEDIA QUERIES ARE NORMALLY NOT NEEDED. SINCE THIS IS A DEX AND WE WILL MOST LIKELY HAVE USERS WITH EXTRA BIG MONITORS, I AM MAKING SOME CUSTOMIZATIONS TO MAKE USE OF THE EXTRA SPACES */
-@media only screen and (min-width: 1400px) {
+/* @media only screen and (min-width: 1400px) {
     .min_max_range{
         display: flex;
         margin: 0 1rem;
@@ -314,4 +319,4 @@ line-height: 16px;
 
     }
 
-}
+} */
