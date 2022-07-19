@@ -18,5 +18,11 @@ export default function RangeCardHeader() {
             <p className={styles.status}>Status</p>
         </div>
     );
-    return <div></div>;
+    return (
+        <div className={styles.header_container}>
+            <div />
+            {headerRow}
+            <div className={styles.menu} />
+        </div>
+    );
 }
