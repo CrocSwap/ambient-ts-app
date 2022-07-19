@@ -40,7 +40,7 @@ export default function CustomTokens(props: CustomTokenPropsIF) {
                 break;
             case 'B':
                 dispatch(setTokenB(newToken));
-                () => closeModal;
+                closeModal();
                 break;
             default:
                 console.warn(`Problem in function importToken() in CustomTokens.tsx file. Did not recognize whether to update Token A or Token B in Redux Toolkit.  Received value <<<<<${tokenToUpdate}>>>>> of type <<<<<${typeof tokenToUpdate}>>>>>, recognized values are 'A' and 'B' (type: string). App will not close modal, refer to CustomTokens.tsx for troubleshooting.`);
