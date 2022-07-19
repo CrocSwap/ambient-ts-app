@@ -215,3 +215,27 @@ text-shadow: 0px 0px 10px rgba(21, 190, 111, 0.75);
 
     
 }
+
+@media only screen and (min-width: 1100px) {
+
+    .account_column{
+        display: none;
+    }
+  
+
+    .account{
+        display: flex;
+    }
+
+    .token_qty_column{
+        display: none;
+    }
+    .token_qty{
+        display: flex;
+    }
+    .row{
+        grid-template-columns: 100px auto auto repeat(3, 95px) 80px 100px;
+
+    }
+
+}
