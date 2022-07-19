@@ -86,3 +86,23 @@
 
     
 }
+
+
+/* Extra big screen devices (1100px and above) */
+@media only screen and (min-width: 1100px) {
+
+    .account, .amount{
+       display: none;
+   }
+ .id, .wallet, .token1, .token2{
+    display: flex;
+ }
+
+  
+
+   .row{
+       grid-template-columns: 100px auto auto repeat(3, 95px) 80px 100px;
+   }
+ 
+
+}
