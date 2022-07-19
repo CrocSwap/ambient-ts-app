@@ -33,22 +33,21 @@ export function fetchTokenLists(
         const list = listName as tokenListURIsKey;
         return tokenListURIs[list];
     });
-    // when all promises have been resolved, send to local storage
-    // IMPORTANT!  because of how `Promise.all` works, if a single
-    // ... promise is rejected, the function will not execute, if
-    // ... this is acting strangely, try changing Promise.all() to
-    // ... Promise.allSettled()
-    Promise.all(tokenLists).then((results) => {
-        // add a key-value pair to each list called `default` which tracks whether a
-        // .. list is by default turned on as a boolean
-        results.forEach((list) => (list.default = defaultListURIs.includes(list.uri)));
-        // add a key-value pair to each token data object in each tole list indicating
-        // ... the list it exists on by the URI of the list
-        results.forEach((list) => {
-            list.tokens.forEach((token: TokenIF) => (token.fromList = list.uri));
+
+    Promise.allSettled(tokenLists)
+        // this code extracts data from fulfilled promises
+        .then(promises => promises.flatMap(promise => Object.entries(promise))
+            .filter(promise => promise[0] === 'value')
+            .map(promise => promise[1])
+        // middleware to add data to fetched results for in-house use
+        ).then(lists => {
+            // indicate the list was fetched from the array of lists hardcoded in the front
+            lists.forEach((list) => (list.default = defaultListURIs.includes(list.uri)));
+            // indicate which list each token data object was imported with
+            lists.forEach((list) => list.tokens.forEach((token: TokenIF) => (token.fromList = list.uri)));
+            // send list with custom-added values to local storage
+            localStorage.setItem('allTokenLists', JSON.stringify(lists));
+            // notify App.tsx that new token lists have been written to local storage
+            indicateTokenListsReceived(!tokenListsReceived);
         });
-        // write the array of token lists as modified by middleware to local storage
-        localStorage.setItem('allTokenLists', JSON.stringify(results));
-        indicateTokenListsReceived(!tokenListsReceived);
-    });
 }
