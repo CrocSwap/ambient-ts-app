@@ -35,3 +35,23 @@
   }
   
   
+/* Small screen devices (540px and above) */
+@media only screen and (min-width: 540px) {
+    .header_container{
+        display: grid;
+    grid-template-columns:50px auto 200px;
+
+    }
+
+   
+    .row{
+        display: grid;
+    grid-template-columns: auto repeat(2, 75px) 80px 20px;
+    grid-gap: 4px;
+   
+    align-items: center;
+    }
+  
+  
+
+}
