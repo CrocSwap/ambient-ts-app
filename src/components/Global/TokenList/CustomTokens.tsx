@@ -4,6 +4,8 @@ import styles from './CustomTokens.module.css';
 import Divider from '../Divider/Divider';
 import { useCustomToken } from './useCustomToken';
 import { TokenIF } from '../../../utils/interfaces/exports';
+import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
+import { setTokenA, setTokenB } from '../../../utils/state/tradeDataSlice';
 
 interface CustomTokenPropsIF {
     chainId: string;
@@ -12,6 +14,9 @@ interface CustomTokenPropsIF {
 
 export default function CustomTokens(props: CustomTokenPropsIF) {
     const { chainId, tokenToUpdate } = props;
+
+    const dispatch = useAppDispatch();
+
     console.log(tokenToUpdate);
 
     const [setSearchInput, tokenAlreadyImported, setTokenAlreadyImported, foundTokens, errorText] = useCustomToken(chainId);
@@ -29,6 +34,17 @@ export default function CustomTokens(props: CustomTokenPropsIF) {
     }
 
     function importToken(newToken: TokenIF) {
+        switch (tokenToUpdate) {
+            case 'A':
+                dispatch(setTokenA(newToken));
+                break;
+            case 'B':
+                dispatch(setTokenB(newToken));
+                break;
+            default:
+                console.warn(`Problem in function importToken() in CustomTokens.tsx file. Did not recognize whether to update Token A or Token B in Redux Toolkit.  Received value <<<<<${tokenToUpdate}>>>>> of type <<<<<${typeof tokenToUpdate}>>>>>, recognized values are 'A' and 'B' (type: string). App will not close modal, refer to CustomTokens.tsx for troubleshooting.`);
+                break;
+        }
         setTokenAlreadyImported(true);
         setImportedTokens([...importedTokens, newToken]);
         const user = JSON.parse(localStorage.getItem('user') as string);
