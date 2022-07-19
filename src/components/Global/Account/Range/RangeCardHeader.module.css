@@ -106,3 +106,19 @@
  
 
 }
+
+/* Extra big screen devices(MONITORS) (1200px and above) */
+@media only screen and (min-width: 1200px) {
+
+    .header_container{
+       
+        grid-template-columns:100px auto  minmax(200px, auto);;
+        }
+    
+    .row{
+        grid-template-columns: 100px auto auto repeat(3, 95px) 80px 100px;
+    }
+   
+
+
+}
