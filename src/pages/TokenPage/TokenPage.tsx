@@ -1,9 +1,9 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import Divider from '../../components/Global/Divider/Divider';
 import Pools from '../../components/Pools/Pools';
 
-import { usePoolsForToken, useTokenData } from '../../state/tokens/hooks';
+import { usePoolsForToken, useTokenData, useTokenChartData } from '../../state/tokens/hooks';
 
 import TokenCardInfo from './TokenInfoCard/TokenInfoCard';
 import styles from './TokenPage.module.css';
@@ -11,19 +11,39 @@ import { usePoolDatas } from '../../state/pools/hooks';
 import { isAddress } from '../../utils';
 import TokenPageChart from './Chart/TokenPageChart';
 import { formatDollarAmount } from '../../utils/numbers';
+import dayjs from 'dayjs';
+
+export function unixToDate(unix: number, format = 'YYYY-MM-DD'): string {
+    return dayjs.unix(unix).utc().format(format);
+}
 
 export default function TokenPage() {
     const { address } = useParams() ?? '';
+    const chartData = useTokenChartData(address!);
+
     useEffect(() => {
+        console.log(chartData);
         window.scrollTo(0, 0);
-    }, []);
+    }, [chartData]);
+
+    const formattedVolumeData = useMemo(() => {
+        if (chartData) {
+            return chartData.map((day) => {
+                return {
+                    time: new Date(day.date * 1000),
+                    value: day.volumeUSD,
+                };
+            });
+        } else {
+            return [];
+        }
+    }, [chartData]);
 
     const tokenData = useTokenData(address);
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const poolsForToken = usePoolsForToken(address!);
     const poolDatas = usePoolDatas(poolsForToken ?? []);
     // const transactions = useTokenTransactions(address!);
-    // const chartData = useTokenChartData(address!);
 
     function getTokenLogoURL() {
         const checkSummed = isAddress(tokenData?.address);
@@ -76,7 +96,7 @@ export default function TokenPage() {
             {tokenInfo}
             <div className={styles.hsPAQl}>
                 <TokenCardInfo token={tokenData} />
-                <TokenPageChart />
+                <TokenPageChart tokenVolumeData={formattedVolumeData} />
             </div>
 
             <Divider />
