@@ -239,3 +239,30 @@ text-shadow: 0px 0px 10px rgba(21, 190, 111, 0.75);
     }
 
 }
+
+
+/* Extra big screen devices(MONITORS) (1200px and above) */
+@media only screen and (min-width: 1200px) {
+
+    .main_container{
+       
+        grid-template-columns:100px auto auto ;
+        grid-template-columns:100px auto  minmax(200px, auto);;
+
+        }
+    
+    .row{
+        grid-template-columns: 100px auto auto repeat(3, 95px) 80px 100px;
+
+    }
+    .menu_buttons{
+        display: flex;
+        justify-content: flex-end;
+        
+    }
+    .min_buttons{
+        display: none;
+    }
+
+
+}
