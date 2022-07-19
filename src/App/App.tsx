@@ -268,6 +268,7 @@ export default function App() {
                         base: sortedTokens[0].toLowerCase(),
                         quote: sortedTokens[1].toLowerCase(),
                         poolIdx: POOL_PRIMARY.toString(),
+                        network: 'kovan',
                     }),
             )
                 .then((response) => response.json())
@@ -294,6 +295,7 @@ export default function App() {
                         base: sortedTokens[0].toLowerCase(),
                         quote: sortedTokens[1].toLowerCase(),
                         poolIdx: POOL_PRIMARY.toString(),
+                        network: 'kovan',
                         // n: 10 // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
                         // page: 0 // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
                     }),
@@ -328,6 +330,7 @@ export default function App() {
                         time: '1657833300', // optional
                         n: '200', // positive integer
                         page: '0', // nonnegative integer
+                        network: 'kovan',
                     }),
             )
                 .then((response) => response.json())
@@ -366,6 +369,7 @@ export default function App() {
                 quote: quoteTokenAddress.toLowerCase(),
                 // quoteTokenAddress.toLowerCase() || '0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa',
                 poolIdx: POOL_PRIMARY.toString(),
+                network: 'kovan',
             }),
         [baseTokenAddress, quoteTokenAddress, POOL_PRIMARY],
     );
@@ -423,6 +427,7 @@ export default function App() {
                 poolIdx: POOL_PRIMARY.toString(),
                 // 	positive integer	The duration of the candle, in seconds. Must represent one of the following time intervals: 5 minutes, 15 minutes, 1 hour, 4 hours, 1 day, 7 days.
                 period: '60',
+                network: 'kovan',
             }),
         [baseTokenAddress, quoteTokenAddress, POOL_PRIMARY],
     );
@@ -476,6 +481,7 @@ export default function App() {
                 quote: quoteTokenAddress.toLowerCase(),
                 // quoteTokenAddress.toLowerCase() || '0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa',
                 poolIdx: POOL_PRIMARY.toString(),
+                network: 'kovan',
             }),
         [baseTokenAddress, quoteTokenAddress, POOL_PRIMARY],
     );
@@ -520,13 +526,9 @@ export default function App() {
             'wss://809821320828123.de:5000/subscribe_user_positions?' +
             new URLSearchParams({
                 user: account || '',
+                network: 'kovan',
                 // user: account || '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc',
             }),
-        // new URLSearchParams({
-        //     base: baseTokenAddress.toLowerCase(),
-        //     quote: quoteTokenAddress.toLowerCase(),
-        //     poolIdx: POOL_PRIMARY.toString(),
-        // }),
         [account],
     );
 
@@ -576,6 +578,7 @@ export default function App() {
             'wss://809821320828123.de:5000/subscribe_user_swaps?' +
             new URLSearchParams({
                 user: account || '',
+                network: 'kovan',
                 // user: account || '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc',
             }),
         [account],
@@ -921,6 +924,7 @@ export default function App() {
                 allUserPositionsCacheEndpoint +
                     new URLSearchParams({
                         user: account,
+                        network: 'kovan',
                     }),
             )
                 .then((response) => response.json())
@@ -945,6 +949,7 @@ export default function App() {
                 allUserSwapsCacheEndpoint +
                     new URLSearchParams({
                         user: account,
+                        network: 'kovan',
                     }),
             )
                 .then((response) => response.json())
