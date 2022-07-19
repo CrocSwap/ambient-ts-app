@@ -55,3 +55,23 @@
   
 
 }
+
+
+/* Medium screen devices (768px and above) */
+@media only screen and (min-width: 768px) {
+   
+
+    .pool{
+        display: flex;
+    }
+    .header_container{
+       
+    grid-template-columns:100px auto 200px;
+    }
+
+    .row{
+        grid-template-columns: 100px auto repeat(2, 95px) 80px 100px;
+    }
+    
+}
+
