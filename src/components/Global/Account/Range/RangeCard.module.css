@@ -1,3 +1,10 @@
+.pool_name{
+    font-size: 10px;
+line-height: 12px;
+color: rgba(235, 235, 255, 0.4);
+text-transform: capitalize;
+}
+
 .token_logos{
     display: flex;
     flex-direction: row;
@@ -43,9 +50,7 @@ line-height: 12px;
 .token_qty_column, .account_column{
     flex-direction: column;
     align-items: center;
-    font-size: 10px;
-    line-height: 12px;
-    color: rgba(235, 235, 255, 0.4);
+ 
 }
 
 .range_status{
@@ -64,11 +69,21 @@ line-height: 12px;
 
 .account{
     margin: 0 4px;
+    font-size: 10px;
+line-height: 13px;
+color: rgba(235, 235, 255, 0.4);
+}
+
+.account_column{
+    font-size: 10px;
+    line-height: 13px;
+   
 }
 .apy{
     font-weight: 200;
-    font-size: 18px;
-    line-height: 22px;  
+   
+    font-size: 12px;
+    line-height: 15px;
 
     background: linear-gradient(90deg, #15BE6F 32.38%, #8FE9BF 51.39%, #15BE6F 68.17%);
 -webkit-background-clip: text;
@@ -146,6 +161,7 @@ text-shadow: 0px 0px 10px rgba(21, 190, 111, 0.75);
     grid-gap: 4px;
     
     align-items: center;
+    height: 48px;
     }
 
     .menu_buttons,
@@ -210,6 +226,22 @@ text-shadow: 0px 0px 10px rgba(21, 190, 111, 0.75);
     }
     .range_status{
         display: flex;
+    }
+
+    .pool_name, .min_max p, .min_max_range, .token_qty{
+        font-size: 12px;
+line-height: 15px;
+    }
+
+    .apy{
+        font-weight: 200;
+font-size: 18px;
+line-height: 22px;
+    }
+
+    .account, .account_column{
+        font-size: 12px;
+line-height: 16px;
     }
     
 
