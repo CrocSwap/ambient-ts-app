@@ -158,3 +158,24 @@ text-shadow: 0px 0px 10px rgba(21, 190, 111, 0.75);
 }
     
 
+/* Small screen devices (540px and above) */
+@media only screen and (min-width: 540px) {
+    .main_container{
+        display: grid;
+    grid-template-columns:50px auto 200px;
+font-size: 12px;
+    }
+
+    .row{
+        display: grid;
+    grid-template-columns: auto repeat(2, 75px) 80px 20px;
+    grid-gap: 4px;
+   
+    align-items: center;
+    }
+    .min_buttons button{
+        display: flex;
+    }
+  
+
+}
