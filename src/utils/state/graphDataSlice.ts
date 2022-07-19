@@ -230,7 +230,7 @@ export const graphDataSlice = createSlice({
                 });
                 // else, replace candles for pool if different
             } else {
-                console.log('pool found in RTK for new candle subscription data');
+                // console.log('pool found in RTK for new candle subscription data');
                 const durationToFind = action.payload.duration;
                 const indexOfDuration = state.candlesForAllPools.pools[
                     indexOfPool
