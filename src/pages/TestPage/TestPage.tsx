@@ -11,12 +11,9 @@
 // import Landing5 from '../../components/Home/Landing/Landing5';
 // import Landing6 from '../../components/Home/Landing/Landing6';
 // import PositionCard from '../../components/Global/Position/PositionCard';
-import LimitOrderHeader from '../../components/Global/LimitOrder/LimitOrderHeader';
 // import { TokenListIF } from '../../utils/interfaces/exports';
 import styles from './TestPage.module.css';
-import LimitOrderCard from '../../components/Global/LimitOrder/LimitOrderCard';
-import RangeCard from '../../components/Global/Account/Range/RangeCard';
-import RangeCardHeader from '../../components/Global/Account/Range/RangeCardHeader';
+
 import Range from '../../components/Global/Account/Range/Range';
 
 export default function TestPage() {
@@ -58,8 +55,6 @@ export default function TestPage() {
     //             <button onClick={() => toggleList(list.uri as string)}>Toggle</button>
     //         </li>
     //     ));
-
-    const mapItems = [1, 2, 4, 4, 5, 6, 7, 8, 9];
 
     return (
         // <main>
