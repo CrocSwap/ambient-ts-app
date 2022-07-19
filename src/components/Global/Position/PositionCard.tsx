@@ -16,6 +16,7 @@ import RangeDetails from '../../RangeDetails/RangeDetails';
 import RangeDetailsHeader from '../../RangeDetails/RangeDetailsHeader/RangeDetailsHeader';
 import trimString from '../../../utils/functions/trimString';
 import { ambientPosSlot, concPosSlot } from '@crocswap-libs/sdk';
+import { Tooltip } from '@mui/material';
 
 interface PositionCardProps {
     portfolio?: boolean;
@@ -276,13 +277,25 @@ export default function PositionCard(props: PositionCardProps) {
                     {' '}
                     {truncatedPosHash}
                 </p>
-                <p
-                    className={`${styles.large_device} ${styles.account_style} ${
-                        ensNameTruncated ? styles.ambient_text : null
-                    }`}
+
+                <Tooltip
+                    title={ensName ? ensName : ownerId ? ownerId : ''}
+                    placement={'right'}
+                    arrow
+                    enterDelay={400}
+                    leaveDelay={200}
+                    classes={{
+                        tooltip: classes.customTooltip,
+                    }}
                 >
-                    {ensNameTruncated ? ensNameTruncated : ownerIdTruncated}
-                </p>
+                    <p
+                        className={`${styles.large_device} ${styles.account_style} ${
+                            ensNameTruncated ? styles.ambient_text : null
+                        }`}
+                    >
+                        {ensNameTruncated ? ensNameTruncated : ownerIdTruncated}
+                    </p>
+                </Tooltip>
 
                 <div className={`${styles.column_display} ${styles.account_displays}`}>
                     <p
