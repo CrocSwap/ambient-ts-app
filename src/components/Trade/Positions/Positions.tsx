@@ -34,41 +34,39 @@ export default function Positions(props: PositionsProps) {
     const poolPositions = graphData?.positionsByPool?.positions;
 
     const positionsDisplay = isShowAllEnabled
-        ? poolPositions
-              .map((position, idx) => (
-                  <PositionCard
-                      key={idx}
-                      portfolio={portfolio}
-                      notOnTradeRoute={notOnTradeRoute}
-                      position={position}
-                      isAllPositionsEnabled={isShowAllEnabled}
-                      tokenAAddress={tokenAAddress}
-                      tokenBAddress={tokenBAddress}
-                      account={account ?? undefined}
-                      isAuthenticated={isAuthenticated}
-                      isDenomBase={isDenomBase}
-                      lastBlockNumber={props.lastBlockNumber}
-                  />
-              ))
-              .reverse()
-        : userPositions
-              .map((position, idx) => (
-                  <PositionCard
-                      key={idx}
-                      portfolio={portfolio}
-                      notOnTradeRoute={notOnTradeRoute}
-                      position={position}
-                      isAllPositionsEnabled={isShowAllEnabled}
-                      tokenAAddress={tokenAAddress}
-                      tokenBAddress={tokenBAddress}
-                      account={account ?? undefined}
-                      isAuthenticated={isAuthenticated}
-                      isDenomBase={isDenomBase}
-                      lastBlockNumber={props.lastBlockNumber}
-                      userPosition
-                  />
-              ))
-              .reverse();
+        ? poolPositions.map((position, idx) => (
+              <PositionCard
+                  key={idx}
+                  portfolio={portfolio}
+                  notOnTradeRoute={notOnTradeRoute}
+                  position={position}
+                  isAllPositionsEnabled={isShowAllEnabled}
+                  tokenAAddress={tokenAAddress}
+                  tokenBAddress={tokenBAddress}
+                  account={account ?? undefined}
+                  isAuthenticated={isAuthenticated}
+                  isDenomBase={isDenomBase}
+                  lastBlockNumber={props.lastBlockNumber}
+              />
+          ))
+        : //   .reverse()
+          userPositions.map((position, idx) => (
+              <PositionCard
+                  key={idx}
+                  portfolio={portfolio}
+                  notOnTradeRoute={notOnTradeRoute}
+                  position={position}
+                  isAllPositionsEnabled={isShowAllEnabled}
+                  tokenAAddress={tokenAAddress}
+                  tokenBAddress={tokenBAddress}
+                  account={account ?? undefined}
+                  isAuthenticated={isAuthenticated}
+                  isDenomBase={isDenomBase}
+                  lastBlockNumber={props.lastBlockNumber}
+                  userPosition
+              />
+          ));
+    //   .reverse();
 
     return (
         <div className={styles.posiitonse_table_display}>

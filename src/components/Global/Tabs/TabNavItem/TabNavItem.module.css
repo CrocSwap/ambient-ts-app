@@ -5,7 +5,7 @@
     transition: all ease-in-out var(--animation-speed);
     font-size: 14px;
 line-height: 18px;
-background: var(--dark3);
+/* background: var(--dark3); */
     
 }
 

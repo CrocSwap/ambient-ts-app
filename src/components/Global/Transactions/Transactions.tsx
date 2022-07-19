@@ -34,34 +34,32 @@ export default function Transactions(props: TransactionsProps) {
     const swapsByPool = graphData?.swapsByPool?.swaps;
 
     const TransactionsDisplay = isShowAllEnabled
-        ? swapsByPool
-              .map((swap, idx) => (
-                  //   <Transaction
-                  //       key={idx}
-                  //       swap={swap}
-                  //       tokenAAddress={tokenAAddress}
-                  //       tokenBAddress={tokenBAddress}
-                  //       account={account ?? undefined}
-                  //       isAuthenticated={isAuthenticated}
-                  //       isShowAllEnabled={isShowAllEnabled}
-                  //   />
-                  <TransactionCard key={idx} swap={swap} />
-              ))
-              .reverse()
-        : swapsByUser
-              .map((swap, idx) => (
-                  //   <Transaction
-                  //       key={idx}
-                  //       swap={swap}
-                  //       tokenAAddress={tokenAAddress}
-                  //       tokenBAddress={tokenBAddress}
-                  //       account={account ?? undefined}
-                  //       isAuthenticated={isAuthenticated}
-                  //       isShowAllEnabled={isShowAllEnabled}
-                  //   />
-                  <TransactionCard key={idx} swap={swap} />
-              ))
-              .reverse();
+        ? swapsByPool.map((swap, idx) => (
+              //   <Transaction
+              //       key={idx}
+              //       swap={swap}
+              //       tokenAAddress={tokenAAddress}
+              //       tokenBAddress={tokenBAddress}
+              //       account={account ?? undefined}
+              //       isAuthenticated={isAuthenticated}
+              //       isShowAllEnabled={isShowAllEnabled}
+              //   />
+              <TransactionCard key={idx} swap={swap} />
+          ))
+        : //   .reverse()
+          swapsByUser.map((swap, idx) => (
+              //   <Transaction
+              //       key={idx}
+              //       swap={swap}
+              //       tokenAAddress={tokenAAddress}
+              //       tokenBAddress={tokenBAddress}
+              //       account={account ?? undefined}
+              //       isAuthenticated={isAuthenticated}
+              //       isShowAllEnabled={isShowAllEnabled}
+              //   />
+              <TransactionCard key={idx} swap={swap} />
+          ));
+    //   .reverse();
 
     return (
         <>
