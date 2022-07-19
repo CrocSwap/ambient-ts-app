@@ -10,8 +10,8 @@ import {
     ISwap,
     setSwapsByPool,
     CandleData,
-    setCandlesByPool,
-    addCandlesByPool,
+    setCandles,
+    addCandles,
 } from '../utils/state/graphDataSlice';
 import { ethers } from 'ethers';
 import { JsonRpcProvider } from '@ethersproject/providers';
@@ -315,19 +315,27 @@ export default function App() {
                         });
                     }
                 });
+        }
+    }, [tokenPairStringified]);
 
+    const [activePeriod, setActivePeriod] = useState(60); // 1 minute by default
+
+    useEffect(() => {
+        // console.log({ activePeriod });
+
+        if (baseTokenAddress && quoteTokenAddress) {
             const candleSeriesCacheEndpoint = 'https://809821320828123.de:5000/candle_series?';
 
             fetch(
                 candleSeriesCacheEndpoint +
                     new URLSearchParams({
-                        base: sortedTokens[0].toLowerCase(),
-                        quote: sortedTokens[1].toLowerCase(),
+                        base: baseTokenAddress.toLowerCase(),
+                        quote: quoteTokenAddress.toLowerCase(),
                         poolIdx: POOL_PRIMARY.toString(),
-                        period: '60', // 1 minute
+                        period: activePeriod.toString(),
                         // period: '86400', // 1 day
                         // period: '300', // 5 minute
-                        time: '1657833300', // optional
+                        // time: '1657833300', // optional
                         n: '200', // positive integer
                         page: '0', // nonnegative integer
                         network: 'kovan',
@@ -344,12 +352,13 @@ export default function App() {
                                 JSON.stringify(updatedCandles)
                             ) {
                                 dispatch(
-                                    setCandlesByPool({
+                                    setCandles({
                                         pool: {
-                                            baseAddress: sortedTokens[0].toLowerCase(),
-                                            quoteAddress: sortedTokens[1].toLowerCase(),
+                                            baseAddress: baseTokenAddress.toLowerCase(),
+                                            quoteAddress: quoteTokenAddress.toLowerCase(),
                                             poolIdx: POOL_PRIMARY,
                                         },
+                                        duration: activePeriod,
                                         candles: updatedCandles,
                                     }),
                                 );
@@ -358,7 +367,7 @@ export default function App() {
                     }
                 });
         }
-    }, [tokenPairStringified]);
+    }, [baseTokenAddress, quoteTokenAddress, activePeriod]);
 
     const allPositionsCacheSubscriptionEndpoint = useMemo(
         () =>
@@ -418,10 +427,11 @@ export default function App() {
                 // quoteTokenAddress.toLowerCase() || '0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa',
                 poolIdx: POOL_PRIMARY.toString(),
                 // 	positive integer	The duration of the candle, in seconds. Must represent one of the following time intervals: 5 minutes, 15 minutes, 1 hour, 4 hours, 1 day, 7 days.
-                period: '60',
+                period: activePeriod.toString(),
+                // period: '60',
                 network: 'kovan',
             }),
-        [baseTokenAddress, quoteTokenAddress, POOL_PRIMARY],
+        [baseTokenAddress, quoteTokenAddress, POOL_PRIMARY, activePeriod],
     );
 
     const {
@@ -449,12 +459,13 @@ export default function App() {
                 Promise.all(lastMessageData.map(getCandleData)).then((updatedCandles) => {
                     // console.log({ updatedCandles });
                     dispatch(
-                        addCandlesByPool({
+                        addCandles({
                             pool: {
                                 baseAddress: baseTokenAddress,
                                 quoteAddress: quoteTokenAddress,
                                 poolIdx: POOL_PRIMARY,
                             },
+                            duration: activePeriod,
                             candles: updatedCandles,
                         }),
                     );
@@ -1305,6 +1316,7 @@ export default function App() {
                                     lastBlockNumber={lastBlockNumber}
                                     isTokenABase={isTokenABase}
                                     poolPriceDisplay={poolPriceDisplay}
+                                    setActivePeriod={setActivePeriod}
                                 />
                             }
                         >

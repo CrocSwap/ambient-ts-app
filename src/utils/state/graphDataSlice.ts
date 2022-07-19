@@ -9,11 +9,17 @@ export interface graphData {
 }
 
 export interface CandlesForAllPools {
-    pools: Array<CandlesByPool>;
+    pools: Array<Pool>;
 }
 
-export interface CandlesByPool {
+export interface Pool {
     pool: { baseAddress: string; quoteAddress: string; poolIdx: number };
+    candlesByPoolAndDuration: Array<CandlesByPoolAndDuration>;
+}
+
+export interface CandlesByPoolAndDuration {
+    pool: { baseAddress: string; quoteAddress: string; poolIdx: number };
+    duration: number;
     candles: Array<CandleData>;
 }
 
@@ -147,41 +153,129 @@ export const graphDataSlice = createSlice({
         setSwapsByPool: (state, action: PayloadAction<SwapsByPool>) => {
             state.swapsByPool = action.payload;
         },
-        setCandlesByPool: (state, action: PayloadAction<CandlesByPool>) => {
+        setCandles: (state, action: PayloadAction<CandlesByPoolAndDuration>) => {
             const poolToFind = JSON.stringify(action.payload.pool);
-            const index = state.candlesForAllPools.pools
+            const indexOfPool = state.candlesForAllPools.pools
                 .map((item) => JSON.stringify(item.pool))
                 .findIndex((pool) => pool === poolToFind);
 
             // if candles for pool not yet saved in RTK, add to RTK
-            if (index === -1) {
+            if (indexOfPool === -1) {
                 // console.log('pool not found in RTK for new candle data');
 
-                state.candlesForAllPools.pools = state.candlesForAllPools.pools.concat(
-                    action.payload,
-                );
-                // else, replace candles for pool if different
-            } else if (state.candlesForAllPools.pools[index] !== action.payload) {
-                state.candlesForAllPools.pools[index] = action.payload;
+                state.candlesForAllPools.pools = state.candlesForAllPools.pools.concat({
+                    pool: action.payload.pool,
+                    candlesByPoolAndDuration: [
+                        {
+                            pool: action.payload.pool,
+                            duration: action.payload.duration,
+                            candles: action.payload.candles,
+                        },
+                    ],
+                });
+                // else, check if duration exists
+            } else {
+                // console.log('pool found in RTK for new candle data');
+                const durationToFind = action.payload.duration;
+                const indexOfDuration = state.candlesForAllPools.pools[
+                    indexOfPool
+                ].candlesByPoolAndDuration
+                    .map((item) => item.duration)
+                    .findIndex((duration) => duration === durationToFind);
+
+                if (indexOfDuration === -1) {
+                    console.log('duration not found');
+
+                    state.candlesForAllPools.pools[indexOfPool].candlesByPoolAndDuration =
+                        state.candlesForAllPools.pools[indexOfPool].candlesByPoolAndDuration.concat(
+                            [
+                                {
+                                    pool: action.payload.pool,
+                                    duration: action.payload.duration,
+                                    candles: action.payload.candles,
+                                },
+                            ],
+                        );
+                } else {
+                    // console.log('duration found');
+                    state.candlesForAllPools.pools[indexOfPool].candlesByPoolAndDuration[
+                        indexOfDuration
+                    ] = {
+                        pool: action.payload.pool,
+                        duration: action.payload.duration,
+                        candles: action.payload.candles,
+                    };
+                }
+                // state.candlesForAllPools.pools[indexOfPool] = action.payload;
             }
         },
-        addCandlesByPool: (state, action: PayloadAction<CandlesByPool>) => {
+        addCandles: (state, action: PayloadAction<CandlesByPoolAndDuration>) => {
             const poolToFind = JSON.stringify(action.payload.pool).toLowerCase();
-            const index = state.candlesForAllPools.pools
+            const indexOfPool = state.candlesForAllPools.pools
                 .map((item) => JSON.stringify(item.pool).toLowerCase())
                 .findIndex((pool) => pool === poolToFind);
 
             // if candles for pool not yet saved in RTK, add to RTK
-            if (index === -1) {
+            if (indexOfPool === -1) {
                 console.error('pool not found in RTK for new candle subscription data');
-                // state.candlesForAllPools.pools = state.candlesForAllPools.pools.concat(
-                //     action.payload,
-                // );
+                state.candlesForAllPools.pools = state.candlesForAllPools.pools.concat({
+                    pool: action.payload.pool,
+                    candlesByPoolAndDuration: [
+                        {
+                            pool: action.payload.pool,
+                            duration: action.payload.duration,
+                            candles: action.payload.candles,
+                        },
+                    ],
+                });
                 // else, replace candles for pool if different
             } else {
-                state.candlesForAllPools.pools[index].candles = action.payload.candles.concat(
-                    state.candlesForAllPools.pools[index].candles,
-                );
+                // console.log('pool found in RTK for new candle subscription data');
+                const durationToFind = action.payload.duration;
+                const indexOfDuration = state.candlesForAllPools.pools[
+                    indexOfPool
+                ].candlesByPoolAndDuration
+                    .map((item) => item.duration)
+                    .findIndex((duration) => duration === durationToFind);
+
+                if (indexOfDuration === -1) {
+                    // console.log('duration not found');
+                    state.candlesForAllPools.pools[indexOfPool].candlesByPoolAndDuration =
+                        state.candlesForAllPools.pools[indexOfPool].candlesByPoolAndDuration.concat(
+                            [
+                                {
+                                    pool: action.payload.pool,
+                                    duration: action.payload.duration,
+                                    candles: action.payload.candles,
+                                },
+                            ],
+                        );
+                } else {
+                    const idToFind = action.payload.candles[0].id;
+                    const indexOfDuplicate = state.candlesForAllPools.pools[
+                        indexOfPool
+                    ].candlesByPoolAndDuration[indexOfDuration].candles
+                        .map((item) => {
+                            if (!item) {
+                                return null;
+                            } else {
+                                return item.id;
+                            }
+                        })
+                        .findIndex((id) => id === idToFind);
+
+                    // if new candle data not already in RTK, add
+                    if (indexOfDuplicate === -1) {
+                        // console.log('no duplicate found, adding');
+                        state.candlesForAllPools.pools[indexOfPool].candlesByPoolAndDuration[
+                            indexOfDuration
+                        ].candles = action.payload.candles.concat(
+                            state.candlesForAllPools.pools[indexOfPool].candlesByPoolAndDuration[
+                                indexOfDuration
+                            ].candles,
+                        );
+                    }
+                }
             }
         },
         resetGraphData: (state) => {
@@ -194,8 +288,8 @@ export const graphDataSlice = createSlice({
 export const {
     setPositionsByUser,
     setPositionsByPool,
-    setCandlesByPool,
-    addCandlesByPool,
+    setCandles,
+    addCandles,
     setSwapsByUser,
     setSwapsByPool,
     resetGraphData,
