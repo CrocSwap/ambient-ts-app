@@ -136,6 +136,8 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
                     chainId={chainId}
                     activeTokenListsChanged={activeTokenListsChanged}
                     indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
+                    tokenToUpdate={tokenToUpdate}
+                    closeModal={closeModal}
                 />
             ) : (
                 tokenListContainer
