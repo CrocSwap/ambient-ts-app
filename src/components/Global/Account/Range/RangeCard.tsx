@@ -26,7 +26,7 @@ export default function RangeCard() {
 
     const tokenQty = (
         <div className={styles.token_qty}>
-            T1 Qty
+            <p> T1 Qty</p>
             <img src='https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.png' alt='' />
         </div>
     );
