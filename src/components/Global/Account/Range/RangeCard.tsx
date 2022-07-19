@@ -87,5 +87,12 @@ export default function RangeCard() {
         </div>
     );
 
-    return <div></div>;
+    return (
+        <div className={styles.main_container}>
+            {tokenLogos}
+            {rowData}
+            {menuButtons}
+            {menuIcon}
+        </div>
+    );
 }
