@@ -13,6 +13,7 @@ interface TokenListPropsIF {
     activeTokenListsChanged: boolean;
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
     tokenToUpdate: string;
+    closeModal: () => void;
 }
 
 export default function TokenList(props: TokenListPropsIF) {
@@ -20,8 +21,10 @@ export default function TokenList(props: TokenListPropsIF) {
         chainId,
         activeTokenListsChanged,
         indicateActiveTokenListsChanged,
-        tokenToUpdate
+        tokenToUpdate,
+        closeModal
     } = props;
+
     const [showImportedTokens, setShowImportedTokens] = useState(false);
     const [searchString, setSearchString] = useState('');
 
@@ -112,7 +115,7 @@ export default function TokenList(props: TokenListPropsIF) {
     const ImportedTokensDisplay = (
         <div className={styles.custom_tokens}>
             {TokenListContainerHeader}
-            <CustomTokens chainId={chainId} tokenToUpdate={tokenToUpdate} />
+            <CustomTokens chainId={chainId} tokenToUpdate={tokenToUpdate} closeModal={closeModal} />
         </div>
     );
 

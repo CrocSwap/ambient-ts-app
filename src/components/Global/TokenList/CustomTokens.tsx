@@ -10,14 +10,13 @@ import { setTokenA, setTokenB } from '../../../utils/state/tradeDataSlice';
 interface CustomTokenPropsIF {
     chainId: string;
     tokenToUpdate: string;
+    closeModal: () => void;
 }
 
 export default function CustomTokens(props: CustomTokenPropsIF) {
-    const { chainId, tokenToUpdate } = props;
+    const { chainId, tokenToUpdate, closeModal } = props;
 
     const dispatch = useAppDispatch();
-
-    console.log(tokenToUpdate);
 
     const [setSearchInput, tokenAlreadyImported, setTokenAlreadyImported, foundTokens, errorText] = useCustomToken(chainId);
 
@@ -37,9 +36,11 @@ export default function CustomTokens(props: CustomTokenPropsIF) {
         switch (tokenToUpdate) {
             case 'A':
                 dispatch(setTokenA(newToken));
+                closeModal();
                 break;
             case 'B':
                 dispatch(setTokenB(newToken));
+                () => closeModal;
                 break;
             default:
                 console.warn(`Problem in function importToken() in CustomTokens.tsx file. Did not recognize whether to update Token A or Token B in Redux Toolkit.  Received value <<<<<${tokenToUpdate}>>>>> of type <<<<<${typeof tokenToUpdate}>>>>>, recognized values are 'A' and 'B' (type: string). App will not close modal, refer to CustomTokens.tsx for troubleshooting.`);
