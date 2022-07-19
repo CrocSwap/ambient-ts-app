@@ -161,7 +161,7 @@ export const graphDataSlice = createSlice({
 
             // if candles for pool not yet saved in RTK, add to RTK
             if (indexOfPool === -1) {
-                console.log('pool not found in RTK for new candle data');
+                // console.log('pool not found in RTK for new candle data');
 
                 state.candlesForAllPools.pools = state.candlesForAllPools.pools.concat({
                     pool: action.payload.pool,
@@ -175,7 +175,7 @@ export const graphDataSlice = createSlice({
                 });
                 // else, check if duration exists
             } else {
-                console.log('pool found in RTK for new candle data');
+                // console.log('pool found in RTK for new candle data');
                 const durationToFind = action.payload.duration;
                 const indexOfDuration = state.candlesForAllPools.pools[
                     indexOfPool
@@ -197,7 +197,7 @@ export const graphDataSlice = createSlice({
                             ],
                         );
                 } else {
-                    console.log('duration found');
+                    // console.log('duration found');
                     state.candlesForAllPools.pools[indexOfPool].candlesByPoolAndDuration[
                         indexOfDuration
                     ] = {
@@ -230,7 +230,7 @@ export const graphDataSlice = createSlice({
                 });
                 // else, replace candles for pool if different
             } else {
-                console.error('pool found in RTK for new candle subscription data');
+                console.log('pool found in RTK for new candle subscription data');
                 const durationToFind = action.payload.duration;
                 const indexOfDuration = state.candlesForAllPools.pools[
                     indexOfPool
@@ -251,14 +251,30 @@ export const graphDataSlice = createSlice({
                             ],
                         );
                 } else {
-                    // console.log('duration found');
-                    state.candlesForAllPools.pools[indexOfPool].candlesByPoolAndDuration[
-                        indexOfDuration
-                    ].candles = action.payload.candles.concat(
+                    const idToFind = action.payload.candles[0].id;
+                    const indexOfDuplicate = state.candlesForAllPools.pools[
+                        indexOfPool
+                    ].candlesByPoolAndDuration[indexOfDuration].candles
+                        .map((item) => {
+                            if (!item) {
+                                return null;
+                            } else {
+                                return item.id;
+                            }
+                        })
+                        .findIndex((id) => id === idToFind);
+
+                    // if new candle data not already in RTK, add
+                    if (indexOfDuplicate === -1) {
+                        // console.log('no duplicate found, adding');
                         state.candlesForAllPools.pools[indexOfPool].candlesByPoolAndDuration[
                             indexOfDuration
-                        ].candles,
-                    );
+                        ].candles = action.payload.candles.concat(
+                            state.candlesForAllPools.pools[indexOfPool].candlesByPoolAndDuration[
+                                indexOfDuration
+                            ].candles,
+                        );
+                    }
                 }
             }
         },
