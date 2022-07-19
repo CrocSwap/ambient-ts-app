@@ -171,3 +171,21 @@ font-size: 12px;
     }
     
 }
+
+
+/* Big screen devices (889px and above) */
+@media only screen and (min-width: 889px) {
+    .token_qty_column{
+        display: none;
+    }
+    .token_qty{
+        display: flex;
+    }
+    .row{
+        grid-template-columns: 100px auto repeat(5, 70px) 50px;
+
+    }
+    
+
+    
+}
