@@ -163,7 +163,7 @@ text-shadow: 0px 0px 10px rgba(21, 190, 111, 0.75);
     .main_container{
         display: grid;
     grid-template-columns:50px auto 200px;
-font-size: 12px;
+
     }
 
     .row{
@@ -178,4 +178,25 @@ font-size: 12px;
     }
   
 
+}
+
+/* Medium screen devices (768px and above) */
+@media only screen and (min-width: 768px) {
+    .token_logos img{
+        width: 30px;
+    }
+
+    .pool_name{
+        display: flex;
+    }
+    .main_container{
+       
+    grid-template-columns:100px auto 200px;
+    }
+
+    .row{
+        grid-template-columns: 100px auto repeat(2, 95px) 80px 100px;
+
+    }
+    
 }
