@@ -111,8 +111,9 @@ export default function Account(props: IAccountProps): React.ReactElement<IAccou
         <div className={styles.account_container}>
             <span className={styles.white}>
                 {props.nativeBalance && isAuthenticated && isWeb3Enabled
-                    ? parseFloat(props.nativeBalance).toFixed(4) + ' ETH'
-                    : ''}
+                    ? 'Ξ' + parseFloat(props.nativeBalance).toFixed(4)
+                    : // ? parseFloat(props.nativeBalance).toFixed(4) + ' ETH'
+                      ''}
             </span>
             {/* TODO : REFACTOR THIS TO POPUP ALERT ON COPY - USE VALUE */}
             <div className={`${styles.title_gradient}`} onClick={handleCopyAddress}>
