@@ -321,48 +321,52 @@ export default function App() {
     const [activePeriod, setActivePeriod] = useState(60); // 1 minute by default
 
     useEffect(() => {
-        const candleSeriesCacheEndpoint = 'https://809821320828123.de:5000/candle_series?';
+        console.log({ activePeriod });
 
-        fetch(
-            candleSeriesCacheEndpoint +
-                new URLSearchParams({
-                    base: baseTokenAddress.toLowerCase(),
-                    quote: quoteTokenAddress.toLowerCase(),
-                    poolIdx: POOL_PRIMARY.toString(),
-                    period: activePeriod.toString(),
-                    // period: '86400', // 1 day
-                    // period: '300', // 5 minute
-                    time: '1657833300', // optional
-                    n: '200', // positive integer
-                    page: '0', // nonnegative integer
-                    network: 'kovan',
-                }),
-        )
-            .then((response) => response.json())
-            .then((json) => {
-                const candles = json.data;
+        if (baseTokenAddress && quoteTokenAddress) {
+            const candleSeriesCacheEndpoint = 'https://809821320828123.de:5000/candle_series?';
 
-                if (candles) {
-                    Promise.all(candles.map(getCandleData)).then((updatedCandles) => {
-                        if (
-                            JSON.stringify(graphData.candlesForAllPools.pools) !==
-                            JSON.stringify(updatedCandles)
-                        ) {
-                            dispatch(
-                                setCandles({
-                                    pool: {
-                                        baseAddress: baseTokenAddress.toLowerCase(),
-                                        quoteAddress: quoteTokenAddress.toLowerCase(),
-                                        poolIdx: POOL_PRIMARY,
-                                    },
-                                    duration: activePeriod,
-                                    candles: updatedCandles,
-                                }),
-                            );
-                        }
-                    });
-                }
-            });
+            fetch(
+                candleSeriesCacheEndpoint +
+                    new URLSearchParams({
+                        base: baseTokenAddress.toLowerCase(),
+                        quote: quoteTokenAddress.toLowerCase(),
+                        poolIdx: POOL_PRIMARY.toString(),
+                        period: activePeriod.toString(),
+                        // period: '86400', // 1 day
+                        // period: '300', // 5 minute
+                        // time: '1657833300', // optional
+                        n: '200', // positive integer
+                        page: '0', // nonnegative integer
+                        network: 'kovan',
+                    }),
+            )
+                .then((response) => response.json())
+                .then((json) => {
+                    const candles = json.data;
+
+                    if (candles) {
+                        Promise.all(candles.map(getCandleData)).then((updatedCandles) => {
+                            if (
+                                JSON.stringify(graphData.candlesForAllPools.pools) !==
+                                JSON.stringify(updatedCandles)
+                            ) {
+                                dispatch(
+                                    setCandles({
+                                        pool: {
+                                            baseAddress: baseTokenAddress.toLowerCase(),
+                                            quoteAddress: quoteTokenAddress.toLowerCase(),
+                                            poolIdx: POOL_PRIMARY,
+                                        },
+                                        duration: activePeriod,
+                                        candles: updatedCandles,
+                                    }),
+                                );
+                            }
+                        });
+                    }
+                });
+        }
     }, [baseTokenAddress, quoteTokenAddress, activePeriod]);
 
     const allPositionsCacheSubscriptionEndpoint = useMemo(

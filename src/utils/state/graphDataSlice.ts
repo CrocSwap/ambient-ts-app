@@ -185,6 +185,17 @@ export const graphDataSlice = createSlice({
 
                 if (indexOfDuration === -1) {
                     console.log('duration not found');
+
+                    state.candlesForAllPools.pools[indexOfPool].candlesByPoolAndDuration =
+                        state.candlesForAllPools.pools[indexOfPool].candlesByPoolAndDuration.concat(
+                            [
+                                {
+                                    pool: action.payload.pool,
+                                    duration: action.payload.duration,
+                                    candles: action.payload.candles,
+                                },
+                            ],
+                        );
                 } else {
                     console.log('duration found');
                 }
