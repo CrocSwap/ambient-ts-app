@@ -44,5 +44,31 @@ export default function RangeCard() {
         </div>
     );
 
+    const menuButtons = (
+        <div className={styles.menu_buttons}>
+            <button>Edit</button>
+            <button>Remove</button>
+            <button>Details</button>
+            <button>Harvest</button>
+            <button>Reposition</button>
+        </div>
+    );
+
+    const menuIcon = (
+        <div className={styles.min_buttons}>
+            <button>Reposition</button>
+            <div className={styles.menu_icon}>...</div>
+        </div>
+    );
+
+    const inRangeStatus = (
+        <div className={styles.range_status}>
+            <div className={styles.range_icon}></div>
+            In Range
+        </div>
+    );
+
+    const rangeIcon2 = <div className={styles.range_icon_2}></div>;
+
     return <div></div>;
 }
