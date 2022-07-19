@@ -1,0 +1,9 @@
+.token_logos{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+}
+.token_logos img{
+    width: 15px;
+}

@@ -15,6 +15,7 @@ import LimitOrderHeader from '../../components/Global/LimitOrder/LimitOrderHeade
 // import { TokenListIF } from '../../utils/interfaces/exports';
 import styles from './TestPage.module.css';
 import LimitOrderCard from '../../components/Global/LimitOrder/LimitOrderCard';
+import RangeCard from '../../components/Global/Account/Range/RangeCard';
 
 export default function TestPage() {
     // // get the user object from local storage
@@ -97,10 +98,11 @@ export default function TestPage() {
             <main className={styles.container}>
                 {/* <ul className={styles.token_list_selects_ul}>{tokenListElements}</ul> */}
                 {/* <PositionHeader /> */}
-                <LimitOrderHeader />
+                {/* <LimitOrderHeader />
                 {mapItems.map((item, idx) => (
                     <LimitOrderCard key={idx} />
-                ))}
+                ))} */}
+                <RangeCard />
             </main>
         </>
     );
