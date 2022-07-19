@@ -54,5 +54,24 @@ export default function OrderCard() {
         </div>
     );
 
+    const rangeIcon2 = <div className={styles.range_icon_2}></div>;
+
+    const rowData = (
+        <div className={styles.row}>
+            <div className={styles.pool_name}>ABC/XYZ</div>
+            <div className={styles.account}>0xcD...134</div>
+            <div className={styles.account}>0BcD...134</div>
+            {accountColumn}
+            <p>Price</p>
+            <p className={styles.buy}>Buy</p>
+            <p className={styles.limit}>Limit</p>
+            {buyLimitColumn}
+            {tokenQty}
+            {tokenQty}
+            {tokenQtyColumn}
+            {rangeIcon2}
+        </div>
+    );
+
     return <div>OrderCard</div>;
 }
