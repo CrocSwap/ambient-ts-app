@@ -36,5 +36,23 @@ export default function OrderCard() {
             <p>Limit</p>
         </div>
     );
+
+    const menuButtons = (
+        <div className={styles.menu_buttons}>
+            <button>Edit</button>
+            <button>Remove</button>
+            <button>Details</button>
+            <button>Harvest</button>
+            <button>Reposition</button>
+        </div>
+    );
+
+    const menuIcon = (
+        <div className={styles.min_buttons}>
+            <button>Reposition</button>
+            <div className={styles.menu_icon}>...</div>
+        </div>
+    );
+
     return <div>OrderCard</div>;
 }
