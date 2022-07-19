@@ -31,5 +31,18 @@ export default function RangeCard() {
         </div>
     );
 
+    const tokenQtyColumn = (
+        <div className={styles.token_qty_column}>
+            <p>T1 Qty</p>
+            <p>T2 Qty</p>
+        </div>
+    );
+    const accountColumn = (
+        <div className={styles.account_column}>
+            <p>0xcD...134</p>
+            <p>0xcD...134</p>
+        </div>
+    );
+
     return <div></div>;
 }
