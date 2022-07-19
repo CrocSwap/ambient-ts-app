@@ -198,28 +198,68 @@ export const graphDataSlice = createSlice({
                         );
                 } else {
                     console.log('duration found');
+                    state.candlesForAllPools.pools[indexOfPool].candlesByPoolAndDuration[
+                        indexOfDuration
+                    ] = {
+                        pool: action.payload.pool,
+                        duration: action.payload.duration,
+                        candles: action.payload.candles,
+                    };
                 }
                 // state.candlesForAllPools.pools[indexOfPool] = action.payload;
             }
         },
         addCandles: (state, action: PayloadAction<CandlesByPoolAndDuration>) => {
             const poolToFind = JSON.stringify(action.payload.pool).toLowerCase();
-            const index = state.candlesForAllPools.pools
+            const indexOfPool = state.candlesForAllPools.pools
                 .map((item) => JSON.stringify(item.pool).toLowerCase())
                 .findIndex((pool) => pool === poolToFind);
 
             // if candles for pool not yet saved in RTK, add to RTK
-            if (index === -1) {
+            if (indexOfPool === -1) {
                 console.error('pool not found in RTK for new candle subscription data');
-                // state.candlesForAllPools.pools = state.candlesForAllPools.pools.concat(
-                //     action.payload,
-                // );
+                state.candlesForAllPools.pools = state.candlesForAllPools.pools.concat({
+                    pool: action.payload.pool,
+                    candlesByPoolAndDuration: [
+                        {
+                            pool: action.payload.pool,
+                            duration: action.payload.duration,
+                            candles: action.payload.candles,
+                        },
+                    ],
+                });
                 // else, replace candles for pool if different
             } else {
                 console.error('pool found in RTK for new candle subscription data');
-                // state.candlesForAllPools.pools[index].candles = action.payload.candles.concat(
-                //     state.candlesForAllPools.pools[index].candles,
-                // );
+                const durationToFind = action.payload.duration;
+                const indexOfDuration = state.candlesForAllPools.pools[
+                    indexOfPool
+                ].candlesByPoolAndDuration
+                    .map((item) => item.duration)
+                    .findIndex((duration) => duration === durationToFind);
+
+                if (indexOfDuration === -1) {
+                    // console.log('duration not found');
+                    state.candlesForAllPools.pools[indexOfPool].candlesByPoolAndDuration =
+                        state.candlesForAllPools.pools[indexOfPool].candlesByPoolAndDuration.concat(
+                            [
+                                {
+                                    pool: action.payload.pool,
+                                    duration: action.payload.duration,
+                                    candles: action.payload.candles,
+                                },
+                            ],
+                        );
+                } else {
+                    // console.log('duration found');
+                    state.candlesForAllPools.pools[indexOfPool].candlesByPoolAndDuration[
+                        indexOfDuration
+                    ].candles = action.payload.candles.concat(
+                        state.candlesForAllPools.pools[indexOfPool].candlesByPoolAndDuration[
+                            indexOfDuration
+                        ].candles,
+                    );
+                }
             }
         },
         resetGraphData: (state) => {
