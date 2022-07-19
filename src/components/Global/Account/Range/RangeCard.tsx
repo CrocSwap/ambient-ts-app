@@ -24,5 +24,12 @@ export default function RangeCard() {
         </div>
     );
 
+    const tokenQty = (
+        <div className={styles.token_qty}>
+            T1 Qty
+            <img src='https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.png' alt='' />
+        </div>
+    );
+
     return <div></div>;
 }
