@@ -78,3 +78,60 @@ text-fill-color: transparent;
 
 text-shadow: 0px 0px 10px rgba(21, 190, 111, 0.75);
 }
+
+.menu_buttons{
+    display: flex;
+    justify-content: flex-end;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+}
+
+.menu_buttons button, .min_buttons button{
+    display: flex;
+   justify-content: center;
+   align-items: center;
+   border-radius:6.25rem;
+   cursor: pointer;
+   font-size: 12px;
+   line-height: 15px;
+   color: #bdbdbd; 
+   height: 23px;
+   padding: 5px 8px;
+   
+  
+   background: #0D1117;
+   border: 1px solid #242F3F;
+   box-shadow: 2px 1000px 1px #242f37 inset;
+  
+   cursor: pointer;
+ }
+
+ .min_buttons{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px
+ }
+ .menu_icon{
+
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 5px 8px;
+    gap: 10px;
+    width: 38.51px;
+    background: #0D1117;
+    border: 1px solid #242F3F;
+    border-radius: 50px;
+    color: white;
+   
+    
+    }
+    .min_buttons{
+        justify-content: center;
+        /* justify-content: flex-end; */
+       
+    }
+

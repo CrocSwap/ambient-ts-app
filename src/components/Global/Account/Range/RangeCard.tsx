@@ -81,7 +81,7 @@ export default function RangeCard() {
             {tokenQty}
             {tokenQty}
             {tokenQtyColumn}
-            <div className={styles.adivy}>APY</div>
+            <div className={styles.apy}>APY</div>
             {inRangeStatus}
             {rangeIcon2}
         </div>
