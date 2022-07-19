@@ -13,7 +13,7 @@ export default function PortfolioTabs() {
     const tabData = [
         { title: 'Wallet', id: 'tab1' },
         { title: 'Exchange', id: 'tab2' },
-        { title: 'Positions', id: 'tab3' },
+        { title: 'Ranges', id: 'tab3' },
         { title: 'Limit Orders', id: 'tab4' },
         { title: 'Transactions', id: 'tab5' },
     ];
