@@ -144,3 +144,30 @@ font-size: 12px;
   
 
 }
+
+/* Medium screen devices (768px and above) */
+@media only screen and (min-width: 768px) {
+    .token_logos img{
+        width: 30px;
+    }
+
+    .pool_name{
+        display: flex;
+    }
+    .buy_limit_column{
+        display: none;
+    }
+    .buy, .limit{
+        display: flex;
+    }
+    .main_container{
+       
+    grid-template-columns:100px auto 200px;
+    }
+
+    .row{
+        grid-template-columns: 100px auto repeat(3, 50px) 80px 50px;
+
+    }
+    
+}
