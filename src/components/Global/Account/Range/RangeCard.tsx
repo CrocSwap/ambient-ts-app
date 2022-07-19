@@ -70,5 +70,22 @@ export default function RangeCard() {
 
     const rangeIcon2 = <div className={styles.range_icon_2}></div>;
 
+    const rowData = (
+        <div className={styles.row}>
+            <div className={styles.pool_name}>ABC/XYZ</div>
+            <div className={styles.account}>0xcD...134</div>
+            <div className={styles.account}>0BcD...134</div>
+            {accountColumn}
+            {minMax}
+            {lardeDesktopMinMaxDisplay}
+            {tokenQty}
+            {tokenQty}
+            {tokenQtyColumn}
+            <div className={styles.adivy}>APY</div>
+            {inRangeStatus}
+            {rangeIcon2}
+        </div>
+    );
+
     return <div></div>;
 }
