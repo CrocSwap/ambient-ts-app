@@ -15,7 +15,7 @@ export default function PortfolioTabs() {
         { title: 'Wallet', id: 'tab1' },
         { title: 'Exchange', id: 'tab2' },
         { title: 'Ranges', id: 'tab3' },
-        { title: 'Limit Orders', id: 'tab4' },
+        { title: ' Orders', id: 'tab4' },
         { title: 'Transactions', id: 'tab5' },
     ];
 
