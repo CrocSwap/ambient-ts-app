@@ -15,6 +15,7 @@
 import styles from './TestPage.module.css';
 
 import Range from '../../components/Global/Account/Range/Range';
+import Order from '../../components/Global/Account/Order/Order';
 
 export default function TestPage() {
     // // get the user object from local storage
@@ -102,6 +103,7 @@ export default function TestPage() {
                 {/* <RangeCardHeader /> */}
                 {/* <RangeCard /> */}
                 <Range />
+                <Order />
             </main>
         </>
     );

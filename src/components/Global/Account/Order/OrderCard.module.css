@@ -27,12 +27,6 @@
 }
 
 
- .range_icon_2{
-    width: 20px;
-    height: 20px;
-    background: green;
-    border-radius: 50%;;
-}
 
 .account{
     margin: 0 4px;
@@ -44,10 +38,21 @@
     flex-direction: row;
     align-items: center;
     gap: 4px;
-    font-size: 12px;
+   
 }
 
-.menu_buttons button, .min_buttons button{
+.token_qty, .token_qty_column, .account_column, .account{
+    color: rgba(235, 235, 255, 0.4);
+
+}
+.price, .buy, .limit, .buy_limit_column p, .price_normal{
+    color: #7371FC;
+}
+.buy{
+    color: #E480FF;
+}
+
+.option_button{
     display: flex;
    justify-content: center;
    align-items: center;
@@ -66,6 +71,49 @@
   
    cursor: pointer;
  }
+
+
+.reposition_button{
+   
+
+
+    cursor: pointer;
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    color: var(--text-grey-white); 
+    height: 23px;
+    padding: 5px 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+
+
+
+background: linear-gradient(90deg, rgba(115, 113, 252, 0) 0%, rgba(115, 113, 252, 0) 71.21%, #7371FC 100%);
+
+border: 1px solid #7371FC;
+border-radius: 50px;
+
+
+transition: background var(--animation-speed) ease-in-out;
+
+
+
+  }
+
+
+
+
+
+  .reposition_button:hover{
+    box-shadow: none;
+   
+    border: 1px solid rgba(223,190,106,0);
+    color: rgb(0, 0, 0);
+    background: var(--title-gradient);
+  }
+
 
  .min_buttons{
     display: flex;
@@ -93,6 +141,11 @@
         /* justify-content: flex-end; */
        
     }
+
+.main_container{
+    font-size: 10px;
+line-height: 12px;
+}
 
     .main_container{
         display: grid;
@@ -123,13 +176,20 @@
 @media only screen and (min-width: 540px) {
     .main_container{
         display: grid;
-    grid-template-columns:50px auto 200px;
-font-size: 12px;
+    grid-template-columns:50px auto 120px;
+
+    font-size: 12px;
+    line-height: 15px;
+
+    }
+
+    .account{
+        line-height: 16px;
     }
 
     .row{
         display: grid;
-    grid-template-columns: auto repeat(2, 75px) 80px 20px;
+    grid-template-columns: auto repeat(2, 75px) 70px 20px;
     grid-gap: 4px;
    
    
@@ -163,11 +223,11 @@ font-size: 12px;
     }
     .main_container{
        
-    grid-template-columns:100px auto 200px;
+    grid-template-columns:100px auto 130px;
     }
 
     .row{
-        grid-template-columns: 100px auto repeat(3, 50px) 80px 50px;
+        grid-template-columns: 70px auto repeat(3, 50px) 70px 50px;
 
     }
     
@@ -228,6 +288,10 @@ font-size: 12px;
     }
     .min_buttons{
         display: none;
+    }
+
+    .row{
+        grid-template-columns: 80px auto auto repeat(5, 75px) 50px;
     }
 
 

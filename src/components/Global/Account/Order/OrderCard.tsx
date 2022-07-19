@@ -1,3 +1,6 @@
+import OpenOrderStatus from '../../OpenOrderStatus/OpenOrderStatus';
+import { FiMoreHorizontal } from 'react-icons/fi';
+
 import styles from './OrderCard.module.css';
 export default function OrderCard() {
     const tokenLogos = (
@@ -39,22 +42,26 @@ export default function OrderCard() {
 
     const menuButtons = (
         <div className={styles.menu_buttons}>
-            <button>Edit</button>
-            <button>Remove</button>
-            <button>Details</button>
-            <button>Harvest</button>
-            <button>Reposition</button>
+            <button className={styles.reposition_button}>Reposition</button>
+            <button className={styles.option_button}>Edit</button>
+            <button className={styles.option_button}>Remove</button>
+            <button className={styles.option_button}>Details</button>
+            {/* <button className={styles.option_button}>Harvest</button> */}
         </div>
     );
 
     const menuIcon = (
         <div className={styles.min_buttons}>
-            <button>Reposition</button>
-            <div className={styles.menu_icon}>...</div>
+            <button className={styles.reposition_button}>Reposition</button>
+            <FiMoreHorizontal size={30} />
         </div>
     );
 
-    const rangeIcon2 = <div className={styles.range_icon_2}></div>;
+    const rangeIcon2 = (
+        <div className={styles.range_icon_2}>
+            <OpenOrderStatus isFilled />
+        </div>
+    );
 
     const rowData = (
         <div className={styles.row}>
@@ -62,7 +69,7 @@ export default function OrderCard() {
             <div className={styles.account}>0xcD...134</div>
             <div className={styles.account}>0BcD...134</div>
             {accountColumn}
-            <p>Price</p>
+            <p className={styles.price_normal}>Price</p>
             <p className={styles.buy}>Buy</p>
             <p className={styles.limit}>Limit</p>
             {buyLimitColumn}
