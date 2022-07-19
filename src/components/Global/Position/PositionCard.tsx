@@ -273,10 +273,21 @@ export default function PositionCard(props: PositionCardProps) {
             <div
                 className={`${styles.position_row} ${userPosition ? styles.user_position : 'null'}`}
             >
-                <p className={`${styles.large_device} ${styles.account_style}`}>
-                    {' '}
-                    {truncatedPosHash}
-                </p>
+                <Tooltip
+                    title={(posHash as string) ? (posHash as string) : ''}
+                    placement={'right'}
+                    arrow
+                    enterDelay={400}
+                    leaveDelay={200}
+                    classes={{
+                        tooltip: classes.customTooltip,
+                    }}
+                >
+                    <p className={`${styles.large_device} ${styles.account_style}`}>
+                        {' '}
+                        {truncatedPosHash}
+                    </p>
+                </Tooltip>
 
                 <Tooltip
                     title={ensName ? ensName : ownerId ? ownerId : ''}
