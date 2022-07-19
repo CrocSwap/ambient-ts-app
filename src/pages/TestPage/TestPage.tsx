@@ -16,6 +16,7 @@ import LimitOrderHeader from '../../components/Global/LimitOrder/LimitOrderHeade
 import styles from './TestPage.module.css';
 import LimitOrderCard from '../../components/Global/LimitOrder/LimitOrderCard';
 import RangeCard from '../../components/Global/Account/Range/RangeCard';
+import RangeCardHeader from '../../components/Global/Account/Range/RangeCardHeader';
 
 export default function TestPage() {
     // // get the user object from local storage
@@ -102,6 +103,7 @@ export default function TestPage() {
                 {mapItems.map((item, idx) => (
                     <LimitOrderCard key={idx} />
                 ))} */}
+                <RangeCardHeader />
                 <RangeCard />
             </main>
         </>

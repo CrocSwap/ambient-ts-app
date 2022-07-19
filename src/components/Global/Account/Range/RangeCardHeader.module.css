@@ -1,0 +1,37 @@
+.row p{
+    font-size: 12px;  
+    color: white;
+  }
+  
+  .wallet_id{
+      display: flex;
+      flex-direction: column;
+  }
+  
+  .id, .wallet, .eth, .usdc, .pool, .status, .token1, .token2{
+      display: none;
+  }
+  
+  .range{
+      padding: 0 4px;
+  }
+  
+  .account{
+      margin: 0 4px;
+  }
+  
+  .header_container{
+      display: grid;
+      grid-template-columns:50px auto 50px;
+      font-size: 10px;
+  }
+  .row{
+      display: grid;
+  grid-template-columns: 1fr repeat(2, 50px) 40px 20px;
+  grid-gap: 4px;
+  
+  align-items: center;
+  font-size: 10px;
+  }
+  
+  
