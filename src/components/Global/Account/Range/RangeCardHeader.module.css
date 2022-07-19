@@ -122,3 +122,16 @@
 
 
 }
+
+@media only screen and (min-width: 1400px) {
+   
+    .row{
+        grid-template-columns: 100px auto auto 300px repeat(2, 95px) 80px 100px;
+
+    }
+
+    .range{
+        margin: 0 1rem;
+    }
+
+}
