@@ -58,7 +58,7 @@ export const useCustomToken = (
                 const matchingLocalTokens = allTokens.filter((token: TokenIF) =>
                     token.address.includes(searchInput)
                 );
-                if (matchingTokens.length > 1) {
+                if (matchingTokens.length >= 1) {
                     setMatchingTokens(matchingLocalTokens);
                 } else {
                     const token = fetchTokenMetadata(chainId as string, searchInput as string);

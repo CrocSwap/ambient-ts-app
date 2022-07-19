@@ -12,13 +12,15 @@ interface TokenListPropsIF {
     chainId: string;
     activeTokenListsChanged: boolean;
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
+    tokenToUpdate: string;
 }
 
 export default function TokenList(props: TokenListPropsIF) {
     const {
         chainId,
         activeTokenListsChanged,
-        indicateActiveTokenListsChanged
+        indicateActiveTokenListsChanged,
+        tokenToUpdate
     } = props;
     const [showImportedTokens, setShowImportedTokens] = useState(false);
     const [searchString, setSearchString] = useState('');
@@ -110,7 +112,7 @@ export default function TokenList(props: TokenListPropsIF) {
     const ImportedTokensDisplay = (
         <div className={styles.custom_tokens}>
             {TokenListContainerHeader}
-            <CustomTokens chainId={chainId} />
+            <CustomTokens chainId={chainId} tokenToUpdate={tokenToUpdate} />
         </div>
     );
 

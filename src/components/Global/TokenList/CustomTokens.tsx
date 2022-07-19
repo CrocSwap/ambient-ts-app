@@ -6,11 +6,13 @@ import { useCustomToken } from './useCustomToken';
 import { TokenIF } from '../../../utils/interfaces/exports';
 
 interface CustomTokenPropsIF {
-    chainId: string
+    chainId: string;
+    tokenToUpdate: string;
 }
 
 export default function CustomTokens(props: CustomTokenPropsIF) {
-    const { chainId } = props;
+    const { chainId, tokenToUpdate } = props;
+    console.log(tokenToUpdate);
 
     const [setSearchInput, tokenAlreadyImported, setTokenAlreadyImported, foundTokens, errorText] = useCustomToken(chainId);
 
