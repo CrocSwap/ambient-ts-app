@@ -394,25 +394,17 @@ export default function App() {
 
     useEffect(() => {
         if (lastAllPositionsMessage !== null) {
-            //    setMessageHistory((prev) => prev.concat(lastMessage));
             const lastMessageData = JSON.parse(lastAllPositionsMessage.data).data;
 
             if (lastMessageData) {
                 Promise.all(lastMessageData.map(getPositionData)).then((updatedPositions) => {
-                    // if (
-                    // JSON.stringify(graphData.positionsByUser.positions) !==
-                    // JSON.stringify(updatedPositions)
-                    // ) {
                     dispatch(
                         setPositionsByPool({
-                            positions: graphData.positionsByPool.positions.concat(updatedPositions),
+                            positions: updatedPositions.concat(graphData.positionsByPool.positions),
                         }),
                     );
-                    // }
                 });
             }
-
-            // console.log({ lastMessageData });
         }
     }, [lastAllPositionsMessage]);
 
@@ -505,19 +497,17 @@ export default function App() {
 
     useEffect(() => {
         if (lastPoolSwapsMessage !== null) {
-            //    setMessageHistory((prev) => prev.concat(lastMessage));
             const lastMessageData = JSON.parse(lastPoolSwapsMessage.data).data;
 
             if (lastMessageData) {
                 Promise.all(lastMessageData.map(getSwapData)).then((updatedSwaps) => {
                     dispatch(
                         setSwapsByPool({
-                            swaps: graphData.swapsByPool.swaps.concat(updatedSwaps),
+                            swaps: updatedSwaps.concat(graphData.swapsByPool.swaps),
                         }),
                     );
                 });
             }
-            // console.log({ lastMessageData });
         }
     }, [lastPoolSwapsMessage]);
 
@@ -551,25 +541,17 @@ export default function App() {
 
     useEffect(() => {
         if (lastUserPositionsMessage !== null) {
-            //    setMessageHistory((prev) => prev.concat(lastMessage));
             const lastMessageData = JSON.parse(lastUserPositionsMessage.data).data;
 
             if (lastMessageData) {
                 Promise.all(lastMessageData.map(getPositionData)).then((updatedPositions) => {
-                    // if (
-                    // JSON.stringify(graphData.positionsByUser.positions) !==
-                    // JSON.stringify(updatedPositions)
-                    // ) {
                     dispatch(
                         setPositionsByUser({
-                            positions: graphData.positionsByUser.positions.concat(updatedPositions),
+                            positions: updatedPositions.concat(graphData.positionsByUser.positions),
                         }),
                     );
-                    // }
                 });
             }
-
-            // console.log({ lastMessageData });
         }
     }, [lastUserPositionsMessage]);
 
@@ -604,25 +586,17 @@ export default function App() {
 
     useEffect(() => {
         if (lastUserSwapsMessage !== null) {
-            //    setMessageHistory((prev) => prev.concat(lastMessage));
             const lastMessageData = JSON.parse(lastUserSwapsMessage.data).data;
 
             if (lastMessageData) {
                 Promise.all(lastMessageData.map(getSwapData)).then((updatedSwaps) => {
-                    // if (
-                    // JSON.stringify(graphData.positionsByUser.positions) !==
-                    // JSON.stringify(updatedPositions)
-                    // ) {
                     dispatch(
                         setSwapsByUser({
-                            swaps: graphData.swapsByUser.swaps.concat(updatedSwaps),
+                            swaps: updatedSwaps.concat(graphData.swapsByUser.swaps),
                         }),
                     );
-                    // }
                 });
             }
-
-            // console.log({ lastMessageData });
         }
     }, [lastUserSwapsMessage]);
 
@@ -793,6 +767,7 @@ export default function App() {
         swap.base = swap.base.startsWith('0x') ? swap.base : '0x' + swap.base;
         swap.quote = swap.quote.startsWith('0x') ? swap.quote : '0x' + swap.quote;
         swap.user = swap.user.startsWith('0x') ? swap.user : '0x' + swap.user;
+        swap.id = '0x' + swap.id.slice(5);
 
         return swap;
     };
