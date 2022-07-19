@@ -10,5 +10,19 @@ export default function RangeCard() {
         </div>
     );
 
+    const minMax = (
+        <div className={styles.min_max}>
+            <p>Min</p>
+            <p>Max</p>
+        </div>
+    );
+
+    const lardeDesktopMinMaxDisplay = (
+        <div className={styles.min_max_range}>
+            <p>Min: 1234.22</p>
+            <p>Max: 232.212</p>
+        </div>
+    );
+
     return <div></div>;
 }
