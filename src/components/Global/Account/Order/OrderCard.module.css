@@ -189,3 +189,45 @@ font-size: 12px;
 
     
 }
+
+@media only screen and (min-width: 1100px) {
+
+    .account_column{
+        display: none;
+    }
+  
+
+    .account{
+        display: flex;
+    }
+
+   
+    .row{
+        grid-template-columns: 80px auto auto repeat(5, 95px) 50px;
+       
+
+    }
+
+}
+/* Extra big screen devices(MONITORS) (1200px and above) */
+@media only screen and (min-width: 1200px) {
+
+    .main_container{
+       
+       
+        grid-template-columns:100px auto  minmax(200px, auto);
+
+        }
+    
+  
+    .menu_buttons{
+        display: flex;
+        justify-content: flex-end;
+        
+    }
+    .min_buttons{
+        display: none;
+    }
+
+
+}
