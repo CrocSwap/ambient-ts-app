@@ -135,3 +135,17 @@ text-shadow: 0px 0px 10px rgba(21, 190, 111, 0.75);
        
     }
 
+    .main_container{
+        display: grid;
+        grid-template-columns:50px auto 50px;
+        font-size: 10px;
+    }
+    .row{
+        display: grid;
+    grid-template-columns: 1fr repeat(2, 50px) 40px 20px;
+    grid-gap: 4px;
+    
+    align-items: center;
+    }
+    
+
