@@ -87,10 +87,23 @@ export default function Trade(props: ITradeProps) {
         </div>
     );
 
+    const currencyCharacter = denomInTokenA
+        ? // denom in a, if token b is dollar equivalent use $
+          ~['DAI', 'USDC'].indexOf(tradeData.tokenB.symbol)
+            ? '$'
+            : 'Ξ'
+        : // denom in b, if token a is dollar equivalent use $
+        ~['DAI', 'USDC'].indexOf(tradeData.tokenA.symbol)
+        ? '$'
+        : 'Ξ';
+
     const timeFrameContent = (
         <div className={styles.time_frame_container}>
             <div className={styles.left_side}>
-                <span className={styles.amount}>${truncatedPoolPrice}</span>
+                <span className={styles.amount} onClick={() => dispatch(toggleDidUserFlipDenom())}>
+                    {currencyCharacter}
+                    {truncatedPoolPrice}
+                </span>
                 <span className={styles.change}>+8.57% | 24h</span>
             </div>
             <div className={styles.right_side}>

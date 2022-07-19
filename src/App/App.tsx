@@ -268,6 +268,7 @@ export default function App() {
                         base: sortedTokens[0].toLowerCase(),
                         quote: sortedTokens[1].toLowerCase(),
                         poolIdx: POOL_PRIMARY.toString(),
+                        network: 'kovan',
                     }),
             )
                 .then((response) => response.json())
@@ -294,6 +295,7 @@ export default function App() {
                         base: sortedTokens[0].toLowerCase(),
                         quote: sortedTokens[1].toLowerCase(),
                         poolIdx: POOL_PRIMARY.toString(),
+                        network: 'kovan',
                         // n: 10 // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
                         // page: 0 // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
                     }),
@@ -328,6 +330,7 @@ export default function App() {
                         time: '1657833300', // optional
                         n: '200', // positive integer
                         page: '0', // nonnegative integer
+                        network: 'kovan',
                     }),
             )
                 .then((response) => response.json())
@@ -366,6 +369,7 @@ export default function App() {
                 quote: quoteTokenAddress.toLowerCase(),
                 // quoteTokenAddress.toLowerCase() || '0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa',
                 poolIdx: POOL_PRIMARY.toString(),
+                network: 'kovan',
             }),
         [baseTokenAddress, quoteTokenAddress, POOL_PRIMARY],
     );
@@ -390,25 +394,17 @@ export default function App() {
 
     useEffect(() => {
         if (lastAllPositionsMessage !== null) {
-            //    setMessageHistory((prev) => prev.concat(lastMessage));
             const lastMessageData = JSON.parse(lastAllPositionsMessage.data).data;
 
             if (lastMessageData) {
                 Promise.all(lastMessageData.map(getPositionData)).then((updatedPositions) => {
-                    // if (
-                    // JSON.stringify(graphData.positionsByUser.positions) !==
-                    // JSON.stringify(updatedPositions)
-                    // ) {
                     dispatch(
                         setPositionsByPool({
-                            positions: graphData.positionsByPool.positions.concat(updatedPositions),
+                            positions: updatedPositions.concat(graphData.positionsByPool.positions),
                         }),
                     );
-                    // }
                 });
             }
-
-            // console.log({ lastMessageData });
         }
     }, [lastAllPositionsMessage]);
 
@@ -423,6 +419,7 @@ export default function App() {
                 poolIdx: POOL_PRIMARY.toString(),
                 // 	positive integer	The duration of the candle, in seconds. Must represent one of the following time intervals: 5 minutes, 15 minutes, 1 hour, 4 hours, 1 day, 7 days.
                 period: '60',
+                network: 'kovan',
             }),
         [baseTokenAddress, quoteTokenAddress, POOL_PRIMARY],
     );
@@ -476,6 +473,7 @@ export default function App() {
                 quote: quoteTokenAddress.toLowerCase(),
                 // quoteTokenAddress.toLowerCase() || '0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa',
                 poolIdx: POOL_PRIMARY.toString(),
+                network: 'kovan',
             }),
         [baseTokenAddress, quoteTokenAddress, POOL_PRIMARY],
     );
@@ -499,19 +497,17 @@ export default function App() {
 
     useEffect(() => {
         if (lastPoolSwapsMessage !== null) {
-            //    setMessageHistory((prev) => prev.concat(lastMessage));
             const lastMessageData = JSON.parse(lastPoolSwapsMessage.data).data;
 
             if (lastMessageData) {
                 Promise.all(lastMessageData.map(getSwapData)).then((updatedSwaps) => {
                     dispatch(
                         setSwapsByPool({
-                            swaps: graphData.swapsByPool.swaps.concat(updatedSwaps),
+                            swaps: updatedSwaps.concat(graphData.swapsByPool.swaps),
                         }),
                     );
                 });
             }
-            // console.log({ lastMessageData });
         }
     }, [lastPoolSwapsMessage]);
 
@@ -520,13 +516,9 @@ export default function App() {
             'wss://809821320828123.de:5000/subscribe_user_positions?' +
             new URLSearchParams({
                 user: account || '',
+                network: 'kovan',
                 // user: account || '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc',
             }),
-        // new URLSearchParams({
-        //     base: baseTokenAddress.toLowerCase(),
-        //     quote: quoteTokenAddress.toLowerCase(),
-        //     poolIdx: POOL_PRIMARY.toString(),
-        // }),
         [account],
     );
 
@@ -549,25 +541,17 @@ export default function App() {
 
     useEffect(() => {
         if (lastUserPositionsMessage !== null) {
-            //    setMessageHistory((prev) => prev.concat(lastMessage));
             const lastMessageData = JSON.parse(lastUserPositionsMessage.data).data;
 
             if (lastMessageData) {
                 Promise.all(lastMessageData.map(getPositionData)).then((updatedPositions) => {
-                    // if (
-                    // JSON.stringify(graphData.positionsByUser.positions) !==
-                    // JSON.stringify(updatedPositions)
-                    // ) {
                     dispatch(
                         setPositionsByUser({
-                            positions: graphData.positionsByUser.positions.concat(updatedPositions),
+                            positions: updatedPositions.concat(graphData.positionsByUser.positions),
                         }),
                     );
-                    // }
                 });
             }
-
-            // console.log({ lastMessageData });
         }
     }, [lastUserPositionsMessage]);
 
@@ -576,6 +560,7 @@ export default function App() {
             'wss://809821320828123.de:5000/subscribe_user_swaps?' +
             new URLSearchParams({
                 user: account || '',
+                network: 'kovan',
                 // user: account || '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc',
             }),
         [account],
@@ -601,25 +586,17 @@ export default function App() {
 
     useEffect(() => {
         if (lastUserSwapsMessage !== null) {
-            //    setMessageHistory((prev) => prev.concat(lastMessage));
             const lastMessageData = JSON.parse(lastUserSwapsMessage.data).data;
 
             if (lastMessageData) {
                 Promise.all(lastMessageData.map(getSwapData)).then((updatedSwaps) => {
-                    // if (
-                    // JSON.stringify(graphData.positionsByUser.positions) !==
-                    // JSON.stringify(updatedPositions)
-                    // ) {
                     dispatch(
                         setSwapsByUser({
-                            swaps: graphData.swapsByUser.swaps.concat(updatedSwaps),
+                            swaps: updatedSwaps.concat(graphData.swapsByUser.swaps),
                         }),
                     );
-                    // }
                 });
             }
-
-            // console.log({ lastMessageData });
         }
     }, [lastUserSwapsMessage]);
 
@@ -790,6 +767,7 @@ export default function App() {
         swap.base = swap.base.startsWith('0x') ? swap.base : '0x' + swap.base;
         swap.quote = swap.quote.startsWith('0x') ? swap.quote : '0x' + swap.quote;
         swap.user = swap.user.startsWith('0x') ? swap.user : '0x' + swap.user;
+        swap.id = '0x' + swap.id.slice(5);
 
         return swap;
     };
@@ -921,6 +899,7 @@ export default function App() {
                 allUserPositionsCacheEndpoint +
                     new URLSearchParams({
                         user: account,
+                        network: 'kovan',
                     }),
             )
                 .then((response) => response.json())
@@ -945,6 +924,7 @@ export default function App() {
                 allUserSwapsCacheEndpoint +
                     new URLSearchParams({
                         user: account,
+                        network: 'kovan',
                     }),
             )
                 .then((response) => response.json())
