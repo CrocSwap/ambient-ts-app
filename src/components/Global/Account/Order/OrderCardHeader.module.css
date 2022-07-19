@@ -1,2 +1,99 @@
 
 
+  .wallet_id{
+      display: flex;
+      flex-direction: column;
+  }
+  
+  .id, .wallet, .side, .pool, .status, .token1, .token2{
+      display: none;
+  }
+  
+
+  
+  .account{
+      margin: 0 4px;
+  }
+  
+  .header_container{
+      display: grid;
+      grid-template-columns:50px auto 50px;
+      font-size: 10px;
+  }
+  .row{
+      display: grid;
+      grid-template-columns: 1fr repeat(2, 50px) 40px 50px;
+      grid-gap: 4px;
+  
+  align-items: center;
+  font-size: 10px;
+  }
+  
+  
+  
+  /* Small screen devices (540px and above) */
+  @media only screen and (min-width: 540px) {
+      .header_container{
+          display: grid;
+      grid-template-columns:50px auto 200px;
+  
+      }
+  
+     
+      .row{
+          display: grid;
+      grid-template-columns: auto repeat(2, 75px) 80px 20px;
+      grid-gap: 4px;
+     
+      align-items: center;
+      }
+    
+    
+  
+  }
+  
+  
+  /* Medium screen devices (768px and above) */
+  @media only screen and (min-width: 768px) {
+     
+  
+      .pool, .side{
+          display: flex;
+      }
+      .header_container{
+         
+      grid-template-columns:100px auto 200px;
+      }
+
+      .type{
+        text-align: start;
+      }
+  
+      .row{
+        grid-template-columns: 100px auto repeat(3, 50px) 80px 50px;
+        
+      }
+      
+  }
+  
+  
+  /* Big screen devices (889px and above) */
+  @media only screen and (min-width: 889px) {
+  .amount{
+    display: none;
+  }
+
+  .token1, .token2{
+    display: flex;
+  }
+      
+
+      .row{
+        grid-template-columns: 100px auto repeat(5, 70px) 50px;
+
+    }
+      
+  
+      
+  }
+  
