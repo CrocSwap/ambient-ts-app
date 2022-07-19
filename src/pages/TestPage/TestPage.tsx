@@ -11,10 +11,10 @@
 // import Landing5 from '../../components/Home/Landing/Landing5';
 // import Landing6 from '../../components/Home/Landing/Landing6';
 // import PositionCard from '../../components/Global/Position/PositionCard';
-import LimitOrderHeader from '../../components/Global/LimitOrder/LimitOrderHeader';
 // import { TokenListIF } from '../../utils/interfaces/exports';
 import styles from './TestPage.module.css';
-import LimitOrderCard from '../../components/Global/LimitOrder/LimitOrderCard';
+
+import Range from '../../components/Global/Account/Range/Range';
 
 export default function TestPage() {
     // // get the user object from local storage
@@ -56,8 +56,6 @@ export default function TestPage() {
     //         </li>
     //     ));
 
-    const mapItems = [1, 2, 4, 4, 5, 6, 7, 8, 9];
-
     return (
         // <main>
         //     <button onClick={() => setOpenSnackbar(true)}>open me</button>
@@ -97,10 +95,13 @@ export default function TestPage() {
             <main className={styles.container}>
                 {/* <ul className={styles.token_list_selects_ul}>{tokenListElements}</ul> */}
                 {/* <PositionHeader /> */}
-                <LimitOrderHeader />
+                {/* <LimitOrderHeader />
                 {mapItems.map((item, idx) => (
                     <LimitOrderCard key={idx} />
-                ))}
+                ))} */}
+                {/* <RangeCardHeader /> */}
+                {/* <RangeCard /> */}
+                <Range />
             </main>
         </>
     );
