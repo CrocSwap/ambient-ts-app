@@ -1,4 +1,4 @@
-import styles from './DropdownMenu.module.css';
+import styles from './NavbarDropdownMenu.module.css';
 import { useState, useRef } from 'react';
 import '../../../App.css';
 import { BiArrowBack } from 'react-icons/bi';
@@ -21,7 +21,7 @@ import { AiFillTwitterCircle, AiFillInfoCircle } from 'react-icons/ai';
 
 // networks
 
-interface DropdownItemProps {
+interface NavbarDropdownItemProps {
     goToMenu?: string;
     leftIcon?: React.ReactNode | string;
     topLevel?: boolean;
@@ -32,7 +32,7 @@ interface DropdownItemProps {
     rightIcon?: React.ReactNode;
 }
 
-interface DropdownMenuProps {
+interface NavbarDropdownMenuProps {
     isAuthenticated?: boolean;
     isWeb3Enabled?: boolean;
     clickLogout: () => void;
@@ -40,7 +40,7 @@ interface DropdownMenuProps {
     closeMenu?: () => void;
 }
 
-export default function DropdownMenu(props: DropdownMenuProps) {
+export default function NavbarDropdownMenu(props: NavbarDropdownMenuProps) {
     const { isAuthenticated, isWeb3Enabled, clickLogout, openModal, closeMenu } = props;
     console.log(props.closeMenu);
 
@@ -59,7 +59,7 @@ export default function DropdownMenu(props: DropdownMenuProps) {
         setMenuHeight(height);
     }
 
-    function DropdownItem(props: DropdownItemProps) {
+    function NavbarDropdownItem(props: NavbarDropdownItemProps) {
         const topLevelItemStyle = props.topLevel
             ? styles.topLevelContainer
             : styles.nonTopLevelContainer;
@@ -92,26 +92,28 @@ export default function DropdownMenu(props: DropdownMenuProps) {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
         >
-            <DropdownItem
+            <NavbarDropdownItem
                 imageIcon={kovanImage}
                 rightIcon={<FaDotCircle color='#CDC1FF' size={10} />}
             >
                 Kovan
-            </DropdownItem>
-            <DropdownItem imageIcon={ethereumImage}>Ropsten</DropdownItem>
-            <DropdownItem imageIcon={ethereumImage}>Ethereum</DropdownItem>
-            <DropdownItem imageIcon={polygonImage}>Polygon</DropdownItem>
-            <DropdownItem imageIcon={optimisticImage}>Optimism</DropdownItem>
-            <DropdownItem imageIcon={arbitrumImage}>Arbitrum</DropdownItem>
+            </NavbarDropdownItem>
+            <NavbarDropdownItem imageIcon={ethereumImage}>Ropsten</NavbarDropdownItem>
+            <NavbarDropdownItem imageIcon={ethereumImage}>Ethereum</NavbarDropdownItem>
+            <NavbarDropdownItem imageIcon={polygonImage}>Polygon</NavbarDropdownItem>
+            <NavbarDropdownItem imageIcon={optimisticImage}>Optimism</NavbarDropdownItem>
+            <NavbarDropdownItem imageIcon={arbitrumImage}>Arbitrum</NavbarDropdownItem>
         </motion.div>
     );
 
     const socialsItems = (
         <>
-            <DropdownItem leftIcon={<AiFillTwitterCircle size={20} />}>Twitter</DropdownItem>
-            <DropdownItem leftIcon={<FaDiscord size={20} />}>Discord</DropdownItem>
-            <DropdownItem leftIcon={<BsMedium size={20} />}>Medium</DropdownItem>
-            <DropdownItem leftIcon={<FaGithub size={20} />}>Github</DropdownItem>
+            <NavbarDropdownItem leftIcon={<AiFillTwitterCircle size={20} />}>
+                Twitter
+            </NavbarDropdownItem>
+            <NavbarDropdownItem leftIcon={<FaDiscord size={20} />}>Discord</NavbarDropdownItem>
+            <NavbarDropdownItem leftIcon={<BsMedium size={20} />}>Medium</NavbarDropdownItem>
+            <NavbarDropdownItem leftIcon={<FaGithub size={20} />}>Github</NavbarDropdownItem>
         </>
     );
 
@@ -137,11 +139,11 @@ export default function DropdownMenu(props: DropdownMenuProps) {
 
     const settingsItems = (
         <>
-            <DropdownItem leftIcon={<FaSun size={20} />}>Light Mode</DropdownItem>
-            <DropdownItem leftIcon={<MdLanguage size={20} />}>Language</DropdownItem>
-            <DropdownItem leftIcon={<HiOutlineDocumentText size={20} />}>
+            <NavbarDropdownItem leftIcon={<FaSun size={20} />}>Light Mode</NavbarDropdownItem>
+            <NavbarDropdownItem leftIcon={<MdLanguage size={20} />}>Language</NavbarDropdownItem>
+            <NavbarDropdownItem leftIcon={<HiOutlineDocumentText size={20} />}>
                 Legal & Privacy
-            </DropdownItem>
+            </NavbarDropdownItem>
 
             {isAuthenticated && isWeb3Enabled && logoutButton}
 
@@ -151,20 +153,24 @@ export default function DropdownMenu(props: DropdownMenuProps) {
 
     const supportItems = (
         <>
-            <DropdownItem leftIcon={<MdHelp size={20} />}>Help Center</DropdownItem>
-            <DropdownItem leftIcon={<MdReportProblem size={20} />}>Report a Problem</DropdownItem>
-            <DropdownItem leftIcon={<GoRequestChanges size={20} />}>Request Features</DropdownItem>
+            <NavbarDropdownItem leftIcon={<MdHelp size={20} />}>Help Center</NavbarDropdownItem>
+            <NavbarDropdownItem leftIcon={<MdReportProblem size={20} />}>
+                Report a Problem
+            </NavbarDropdownItem>
+            <NavbarDropdownItem leftIcon={<GoRequestChanges size={20} />}>
+                Request Features
+            </NavbarDropdownItem>
         </>
     );
 
     const moreItems = (
         <>
-            <DropdownItem leftIcon={<AiFillInfoCircle size={20} />}>About</DropdownItem>
-            <DropdownItem leftIcon={<BsBook size={20} />}>Docs</DropdownItem>
+            <NavbarDropdownItem leftIcon={<AiFillInfoCircle size={20} />}>About</NavbarDropdownItem>
+            <NavbarDropdownItem leftIcon={<BsBook size={20} />}>Docs</NavbarDropdownItem>
         </>
     );
 
-    const dropdownItemData = [
+    const NavbardropdownItemData = [
         {
             title: 'Networks',
             data: networksItems,
@@ -212,8 +218,8 @@ export default function DropdownMenu(props: DropdownMenuProps) {
                     transition={{ duration: 0.5 }}
                     className={styles.menu}
                 >
-                    {dropdownItemData.map((item) => (
-                        <DropdownItem
+                    {NavbardropdownItemData.map((item) => (
+                        <NavbarDropdownItem
                             key={item.title}
                             leftIcon={item.leftIcon ? item.leftIcon : ''}
                             rightIcon={<MdArrowForwardIos />}
@@ -221,14 +227,14 @@ export default function DropdownMenu(props: DropdownMenuProps) {
                             topLevel
                         >
                             {item.title}
-                        </DropdownItem>
+                        </NavbarDropdownItem>
                     ))}
                 </motion.div>
             </CSSTransition>
 
             {/* Dropdown item datathat will slide in when clicked */}
 
-            {dropdownItemData.map((item) => (
+            {NavbardropdownItemData.map((item) => (
                 <CSSTransition
                     in={activeMenu === item.title}
                     unmountOnExit
@@ -238,9 +244,9 @@ export default function DropdownMenu(props: DropdownMenuProps) {
                     onEnter={calcHeight}
                 >
                     <div className={styles.menu}>
-                        <DropdownItem goToMenu='main' leftIcon={<BiArrowBack />} goBackItem>
+                        <NavbarDropdownItem goToMenu='main' leftIcon={<BiArrowBack />} goBackItem>
                             <h3>{item.title}</h3>
-                        </DropdownItem>
+                        </NavbarDropdownItem>
                         {item.data}
                     </div>
                 </CSSTransition>
