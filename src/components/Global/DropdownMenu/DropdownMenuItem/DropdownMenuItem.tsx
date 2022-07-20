@@ -5,5 +5,5 @@ interface DropdownMenuItemProps {
 }
 
 export default function DropdownMenuItem(props: DropdownMenuItemProps) {
-    return <div className={styles.row}>{props.children}</div>;
+    return <li className={styles.menu_item}>{props.children}</li>;
 }
