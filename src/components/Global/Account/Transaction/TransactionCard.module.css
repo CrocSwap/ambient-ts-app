@@ -1,0 +1,275 @@
+
+.token_logos{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+}
+
+.token_logos img{
+    width: 15px;
+}
+
+.min_max{
+    display: flex;
+    flex-direction: column;
+    color: #5FFFF2;
+}
+.min_max_range{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 4px;
+}
+
+.token_qty{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    display: none;
+}
+.token_qty img{
+    width: 15px;
+}
+
+.token_qty_column, .account_column, .remove_range_column{
+    flex-direction: column;
+    align-items: center;
+}
+
+
+.account{
+    margin: 0 4px;
+}
+
+
+.menu_buttons{
+    display: flex;
+    justify-content: flex-end;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+}
+
+.menu_buttons button, .min_buttons button{
+    display: flex;
+   justify-content: center;
+   align-items: center;
+   border-radius:6.25rem;
+   cursor: pointer;
+   font-size: 12px;
+   line-height: 15px;
+   color: #bdbdbd; 
+   height: 23px;
+   padding: 5px 8px;
+   
+  
+   background: #0D1117;
+   border: 1px solid #242F3F;
+   box-shadow: 2px 1000px 1px #242f37 inset;
+  
+   cursor: pointer;
+ }
+
+ .min_buttons{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px
+ }
+ .menu_icon{
+
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 5px 8px;
+    gap: 10px;
+    width: 38.51px;
+    background: #0D1117;
+    border: 1px solid #242F3F;
+    border-radius: 50px;
+    color: white;
+   
+    
+    }
+    .min_buttons{
+        justify-content: center;
+        /* justify-content: flex-end; */
+       
+    }
+
+.main_container{
+    color: white;
+    
+   
+}
+
+.row{
+    /* background: red; */
+    color: white;
+    
+
+}
+.main_container{
+    display: grid;
+    grid-template-columns:50px auto 50px;
+    font-size: 10px;
+}
+.row{
+    display: grid;
+    grid-template-columns: 1fr repeat(2, 50px) 40px 20px;
+    grid-gap: 4px;
+
+align-items: center;
+}
+
+
+.menu_buttons,
+ .account, 
+ .remove,
+
+ 
+ /* .main_container,  */
+ .pool_name, 
+ .min_max_range, .min_buttons button {
+    display: none;
+}
+
+/* Small screen devices (540px and above) */
+@media only screen and (min-width: 540px) {
+    .main_container{
+        display: grid;
+        grid-template-columns:50px auto 200px;
+
+    }
+
+    .row{
+        display: grid;
+    grid-template-columns: auto repeat(2, 75px) 80px ;
+    grid-gap: 4px;
+    background: rgb(41, 41, 23);
+   
+    align-items: center;
+    }
+    .min_buttons button{
+        display: flex;
+    }
+  
+
+}
+/* Medium screen devices (768px and above) */
+@media only screen and (min-width: 768px) {
+    .remove_range_column, .token_qty_column{
+        display: none;
+    }
+
+    .remove, 
+    .token_qty{
+        display: flex;
+    }
+    .token_logos img{
+        width: 30px;
+    }
+
+    .pool_name{
+        display: flex;
+    }
+    .main_container{
+       
+    grid-template-columns:100px auto 200px;
+    }
+
+    .row{
+        grid-template-columns: 100px auto 60px repeat(4, 75px)  ;
+        background: red;
+
+    }
+    
+}
+
+/* Big screen devices (889px and above) */
+@media only screen and (min-width: 889px) {
+
+ 
+    
+    
+    
+    
+    .row{
+        background: rgb(5, 5, 46);
+        grid-template-columns: 100px auto auto repeat(4, 90px)  ;
+
+    }
+
+    
+}
+
+  
+
+@media only screen and (min-width: 1100px) {
+
+    .account_column{
+        display: none;
+    }
+  
+
+    .account{
+        display: flex;
+        justify-content: center;
+    }
+
+    .token_qty{
+        display: flex;
+    }
+    .row{
+        grid-template-columns: 100px auto auto 80px repeat(4, 95px) ;
+        background: green;
+
+    }
+
+}
+/* Extra big screen devices(MONITORS) (1200px and above) */
+@media only screen and (min-width: 1200px) {
+
+    .main_container{
+       
+  
+        grid-template-columns:100px auto  minmax(200px, auto);;
+
+        }
+    
+    .row{
+        grid-template-columns: 100px auto auto 90px repeat(4, 95px) ;
+        background: brown;
+
+    }
+    .menu_buttons{
+        display: flex;
+        justify-content: flex-end;
+        
+    }
+    .min_buttons{
+        display: none;
+    }
+
+
+}
+/* THESE MEDIA QUERIES ARE NORMALLY NOT NEEDED. SINCE THIS IS A DEX AND WE WILL MOST LIKELY HAVE USERS WITH EXTRA BIG MONITORS, I AM MAKING SOME CUSTOMIZATIONS TO MAKE USE OF THE EXTRA SPACES */
+@media only screen and (min-width: 1400px) {
+    .min_max_range{
+        display: flex;
+        margin: 0 1rem;
+        
+    }
+    .min_max{
+        display: none;
+    }
+    .row{
+        grid-template-columns: 100px auto auto 300px repeat(2, 95px) 80px 100px;
+        background: blue;
+
+    }
+
+}
