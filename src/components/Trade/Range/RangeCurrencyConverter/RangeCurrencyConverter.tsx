@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { ChangeEvent, SetStateAction, useState, useEffect } from 'react';
+import { ChangeEvent, Dispatch, SetStateAction, useState, useEffect } from 'react';
 
 // START: Import React Functional Components
 import RangeCurrencySelector from '../RangeCurrencySelector/RangeCurrencySelector';
@@ -19,11 +19,13 @@ import {
 // interface for component props
 interface RangeCurrencyConverterPropsIF {
     tokensBank: Array<TokenIF>;
+    setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
+    searchableTokens: Array<TokenIF>;
     chainId: string;
     isWithdrawTokenAFromDexChecked: boolean;
-    setIsWithdrawTokenAFromDexChecked: React.Dispatch<SetStateAction<boolean>>;
+    setIsWithdrawTokenAFromDexChecked: Dispatch<SetStateAction<boolean>>;
     isWithdrawTokenBFromDexChecked: boolean;
-    setIsWithdrawTokenBFromDexChecked: React.Dispatch<SetStateAction<boolean>>;
+    setIsWithdrawTokenBFromDexChecked: Dispatch<SetStateAction<boolean>>;
     isLiq?: boolean;
     poolPriceNonDisplay: number;
     isAdvancedMode: boolean;
@@ -32,22 +34,24 @@ interface RangeCurrencyConverterPropsIF {
         dataTokenB: TokenIF;
     };
     isTokenAPrimaryLocal: boolean;
-    setIsTokenAPrimaryLocal: React.Dispatch<SetStateAction<boolean>>;
+    setIsTokenAPrimaryLocal: Dispatch<SetStateAction<boolean>>;
     isTokenABase: boolean;
     isAmbient: boolean;
     depositSkew: number;
-    setIsSellTokenPrimary?: React.Dispatch<SetStateAction<boolean>>;
+    setIsSellTokenPrimary?: Dispatch<SetStateAction<boolean>>;
     truncatedTokenABalance: string;
     truncatedTokenBBalance: string;
-    setTokenAInputQty: React.Dispatch<React.SetStateAction<string>>;
-    setTokenBInputQty: React.Dispatch<React.SetStateAction<string>>;
-    setRangeButtonErrorMessage: React.Dispatch<React.SetStateAction<string>>;
-    setRangeAllowed: React.Dispatch<SetStateAction<boolean>>;
+    setTokenAInputQty: Dispatch<SetStateAction<string>>;
+    setTokenBInputQty: Dispatch<SetStateAction<string>>;
+    setRangeButtonErrorMessage: Dispatch<SetStateAction<string>>;
+    setRangeAllowed: Dispatch<SetStateAction<boolean>>;
     isTokenADisabled: boolean;
     isTokenBDisabled: boolean;
     isOutOfRange: boolean;
     rangeSpanAboveCurrentPrice: number;
     rangeSpanBelowCurrentPrice: number;
+    activeTokenListsChanged: boolean;
+    indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
 }
 
 // central React functional component
@@ -56,6 +60,8 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         chainId,
         isLiq,
         tokensBank,
+        setImportedTokens,
+        searchableTokens,
         poolPriceNonDisplay,
         tokenPair,
         isTokenABase,
@@ -78,6 +84,8 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         isAdvancedMode,
         isOutOfRange,
         rangeSpanAboveCurrentPrice,
+        activeTokenListsChanged,
+        indicateActiveTokenListsChanged,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -153,6 +161,10 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
                 depositSkew,
             ) ?? 0;
 
+        handleSecondaryTokenQty('B', value, qtyTokenB);
+
+        // handleRangeButtonMessageTokenB(qtyTokenB);
+
         const truncatedTokenBQty = truncateDecimals(
             qtyTokenB,
             tokenPair.dataTokenB.decimals > 10 ? 10 : tokenPair.dataTokenB.decimals,
@@ -194,6 +206,9 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
                 isAmbient,
                 depositSkew,
             ) ?? 0;
+
+        handleSecondaryTokenQty('A', value, qtyTokenA);
+        // handleRangeButtonMessageTokenA(qtyTokenA);
 
         const truncatedTokenAQty = truncateDecimals(
             qtyTokenA,
@@ -253,6 +268,49 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
             setRangeButtonErrorMessage('Enter an Amount');
         } else {
             setRangeAllowed(true);
+        }
+    };
+
+    const handleSecondaryTokenQty = (
+        secondaryToken: string,
+        primaryTokenQty: number,
+        secondaryTokenQty: number,
+    ) => {
+        console.log({ primaryTokenQty });
+        console.log({ secondaryTokenQty });
+        if (secondaryToken === 'B') {
+            if (secondaryTokenQty > parseFloat(truncatedTokenBBalance)) {
+                setRangeAllowed(false);
+                setRangeButtonErrorMessage(
+                    `${tokenPair.dataTokenB.symbol} Amount Exceeds Wallet Balance`,
+                );
+            } else if (
+                isNaN(primaryTokenQty) ||
+                isNaN(secondaryTokenQty) ||
+                secondaryTokenQty < 0
+            ) {
+                console.log('firing');
+                setRangeAllowed(false);
+                setRangeButtonErrorMessage('Enter an Amount');
+            } else {
+                // setRangeAllowed(true);
+            }
+        } else {
+            if (secondaryTokenQty > parseFloat(truncatedTokenABalance)) {
+                setRangeAllowed(false);
+                setRangeButtonErrorMessage(
+                    `${tokenPair.dataTokenA.symbol} Amount Exceeds Wallet Balance`,
+                );
+            } else if (
+                isNaN(primaryTokenQty) ||
+                isNaN(secondaryTokenQty) ||
+                secondaryTokenQty < 0
+            ) {
+                setRangeAllowed(false);
+                setRangeButtonErrorMessage('Enter an Amount');
+            } else {
+                setRangeAllowed(true);
+            }
         }
     };
 
@@ -394,6 +452,8 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         chainId: chainId,
         tokenPair: tokenPair,
         tokensBank: tokensBank,
+        setImportedTokens: setImportedTokens,
+        searchableTokens: searchableTokens,
         isWithdrawTokenAFromDexChecked: isWithdrawTokenAFromDexChecked,
         setIsWithdrawTokenAFromDexChecked: setIsWithdrawTokenAFromDexChecked,
         isWithdrawTokenBFromDexChecked: isWithdrawTokenBFromDexChecked,
@@ -403,10 +463,13 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         truncatedTokenBBalance: truncatedTokenBBalance,
         isTokenADisabled: isTokenADisabled,
         isTokenBDisabled: isTokenBDisabled,
+        activeTokenListsChanged: activeTokenListsChanged,
+        indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
     };
 
     return (
         <section className={styles.currency_converter}>
+            <div className={styles.title}>Collateral</div>
             <RangeCurrencySelector
                 fieldId='A'
                 updateOtherQuantity={(event) => handleTokenAQtyFieldUpdate(event)}

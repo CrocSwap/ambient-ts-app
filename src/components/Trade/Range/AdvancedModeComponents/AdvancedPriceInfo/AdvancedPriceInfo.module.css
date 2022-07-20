@@ -19,7 +19,7 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    padding: 0.2rem 0;
+    /* padding: 0.2rem 0; */
 }
 
 .apy_display_in_range {

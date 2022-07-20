@@ -1,12 +1,16 @@
 
   .currency_quantity {
-    font-size: var(--header1-size);
-    line-height: var(--header1-lh);
+    font-weight: 200;
+    font-size: 18px;
+    line-height: 22px;
     color: #fffefd;
     text-align: start;
     width: 100%;
     height: calc(1.5em + 0.75rem + 2px);
-    padding: 0.375rem 0.75rem;
+    padding:0 ;
+    max-height: 23px;
+    margin: 8.5px 0;
+    margin-left: 32px;
     border: none;
     border-radius: 0.25rem;
     outline: 0;
@@ -18,7 +22,8 @@
   }
   .currency_quantity::placeholder {
     color: var(--text-grey-dark);
-    font-size: var(--header1-size);
-    line-height: var(--header1-lh);
+    font-weight: 200;
+    font-size: 18px;
+    line-height: 22px;
   }
   

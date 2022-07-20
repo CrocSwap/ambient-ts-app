@@ -8,9 +8,19 @@ interface IRangeDetailsProps {
     isPositionInRange: boolean;
     isAmbient: boolean;
     baseTokenSymbol: string;
+    baseTokenDecimals: number;
     quoteTokenSymbol: string;
-    lowRangeDisplay: string;
-    highRangeDisplay: string;
+    quoteTokenDecimals: number;
+    lowRangeDisplayInBase: string;
+    highRangeDisplayInBase: string;
+    lowRangeDisplayInQuote: string;
+    highRangeDisplayInQuote: string;
+    isDenomBase: boolean;
+    baseTokenLogoURI: string;
+    quoteTokenLogoURI: string;
+    baseTokenAddress: string;
+    quoteTokenAddress: string;
+    lastBlockNumber: number;
 }
 
 export default function RangeDetails(props: IRangeDetailsProps) {
@@ -21,14 +31,28 @@ export default function RangeDetails(props: IRangeDetailsProps) {
                 isAmbient={props.isAmbient}
                 baseTokenSymbol={props.baseTokenSymbol}
                 quoteTokenSymbol={props.quoteTokenSymbol}
+                baseTokenLogoURI={props.baseTokenLogoURI}
+                quoteTokenLogoURI={props.quoteTokenLogoURI}
+                isDenomBase={props.isDenomBase}
             />
             <div className={styles.main_content}>
-                <TokenInfo />
+                <TokenInfo
+                    baseTokenAddress={props.baseTokenAddress}
+                    baseTokenDecimals={props.baseTokenDecimals}
+                    quoteTokenAddress={props.quoteTokenAddress}
+                    quoteTokenDecimals={props.quoteTokenDecimals}
+                    lastBlockNumber={props.lastBlockNumber}
+                    isDenomBase={props.isDenomBase}
+                />
                 <Divider />
             </div>
             <PriceInfo
-                lowRangeDisplay={props.lowRangeDisplay}
-                highRangeDisplay={props.highRangeDisplay}
+                lowRangeDisplay={
+                    props.isDenomBase ? props.lowRangeDisplayInBase : props.lowRangeDisplayInQuote
+                }
+                highRangeDisplay={
+                    props.isDenomBase ? props.highRangeDisplayInBase : props.highRangeDisplayInQuote
+                }
             />
         </div>
     );

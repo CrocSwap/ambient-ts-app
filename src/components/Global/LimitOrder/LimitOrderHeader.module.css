@@ -1,0 +1,138 @@
+
+
+.heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* background-color: #26272b;
+    box-shadow: 0px 0px 12px #18191b; */
+    /* margin: 2rem 1rem; */
+    /* padding: .7rem 1rem; */
+    font-weight: 700;
+
+    font-style: normal;
+font-weight: 300;
+font-size: 12px;
+line-height: 15px;
+display: flex;
+text-align: center;
+align-items: center;
+/* text-align: right; */
+padding-bottom: 8px;
+padding-left: 5px;
+
+
+grid-gap: 10px;
+/* text/grey light */
+
+color: #BDBDBD;
+
+border-bottom: 1px solid rgb(42, 40, 40);
+
+}
+
+
+
+
+ .container{
+    width: 100%;
+    display: flex;
+    /* justify-content: space-between; */
+    align-items: center;
+
+    display: grid;
+    grid-template-columns:  1fr 279px;
+  }
+
+
+.heading{
+    /* grid-template-columns: 1fr 1fr repeat(5, 0.5fr) 1fr 1fr 0.5fr; */
+  /* background: red; */
+    grid-template-columns: repeat(2, 1fr) repeat(5, 80px) 40px;
+
+    display: grid;
+    /* min-width: 58%; */
+}
+
+
+.column_display{
+    display: none;
+}
+
+.token_column_display{
+    display: none;
+}
+
+
+
+@media screen and (max-width: 1400px){
+    .container{
+     
+        display: grid;
+        grid-template-columns:  1fr 50px;
+      }
+    .heading{
+        /* background: rgb(73, 17, 17); */
+  
+        grid-template-columns: 1fr repeat(5, 60px) 40px 
+
+    }
+
+    .id, .wallet{
+        display: none;
+    }
+
+    .column_display{
+        display: flex;
+        flex-direction: column;
+    }
+
+    .token_column_display{
+        display: none;
+    }
+
+    
+ 
+}
+
+@media screen and (max-width: 900px){
+    .heading{
+     /* background: blue; */
+
+        grid-template-columns : 1fr repeat(3, 80px) 100px 40px;
+    }
+
+    .token_column_display{
+        display: flex;
+        flex-direction: column;
+    }
+
+    .token_name{
+        display: none;
+    }
+  
+   
+}
+@media screen and (max-width: 840px){
+    
+    .heading{
+        /* background: rgb(183, 255, 0); */
+   
+           /* grid-template-columns :repeat(2, 1fr) 0.7fr 130px 70px 50px */
+           grid-template-columns : 1fr repeat(3, 40px) 100px 40px;
+       }
+  
+   
+}
+
+
+@media screen and (max-width: 670px){
+   
+.heading{
+    grid-template-columns : 1fr repeat(4, 30px)  30px;
+}
+.token_column_display{
+    display: flex;
+    font-size: 10px;
+}
+} 
