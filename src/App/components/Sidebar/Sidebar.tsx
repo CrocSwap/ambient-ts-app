@@ -1,6 +1,7 @@
 import styles from './Sidebar.module.css';
 import React from 'react';
 import { BiSearch } from 'react-icons/bi';
+import { Link } from 'react-router-dom';
 // import { MdDoubleArrow } from 'react-icons/md';
 import favouritePoolsImage from '../../../assets/images/sidebarImages/favouritePools.svg';
 import openOrdersImage from '../../../assets/images/sidebarImages/openOrders.svg';
@@ -44,6 +45,31 @@ export default function Sidebar(props: SidebarProps): React.ReactElement<Sidebar
         },
     ];
 
+    const sidebarFooter = (
+        <div className={styles.sidebar_footer}>
+            <Link to='/analytics'>
+                <img src={topPoolsImage} alt='top tokens' />
+                <p>Top Tokens</p>
+            </Link>
+            <Link to='/analytics'>
+                <img src={topPoolsImage} alt='top pools' />
+                <p>Top Pools</p>
+            </Link>
+            <Link to='/analytics'>
+                <img src={rangePositionsImage} alt='range positions' />
+                <p>Range Positions</p>
+            </Link>
+            <Link to='/analytics'>
+                <img src={openOrdersImage} alt='Open Orders' />
+                <p>Orders</p>
+            </Link>
+            <Link to='/analytics'>
+                <img src={recentTransactionsImage} alt='recent transactions' />
+                <p>Recent Positions</p>
+            </Link>
+        </div>
+    );
+
     const searchContainer = (
         <div className={styles.main_search_container}>
             <div className={styles.search_container}>
@@ -66,14 +92,6 @@ export default function Sidebar(props: SidebarProps): React.ReactElement<Sidebar
         <div>
             <nav className={`${styles.sidebar} ${sidebarStyle}`}>
                 <ul className={styles.sidebar_nav}>
-                    {/* <li className={styles.logo}>
-                        <div className={`${styles.sidebar_link} ${styles.toggle_sidebar_icon}`}>
-                            <div onClick={toggleSidebar}>
-                                <MdDoubleArrow size={20} color='#7371FC' />
-                                
-                            </div>
-                        </div>
-                    </li> */}
                     {searchContainer}
                     {navItems1.map((item, idx) => (
                         //   <li key={idx} className={styles.sidebar_item}>
@@ -114,6 +132,7 @@ export default function Sidebar(props: SidebarProps): React.ReactElement<Sidebar
                     </div>
                 </ul>
             </nav>
+            {sidebarFooter}
         </div>
     );
 }
