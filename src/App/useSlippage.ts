@@ -1,24 +1,30 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export const useSlippage = () => {
-    console.log('ran useSlippage() hook');
+    // console.log('ran useSlippage() hook');
 
-    const [slipSwapStable, setSlipSwapStable] = useState<number>();
-    const [slipSwapVolatile, setSlipSwapVolatile] = useState<number>();
+    const [slipSwapStable, setSlipSwapStable] = useState('2');
+    useEffect(() => {console.log({slipSwapStable})}, [slipSwapStable]);
 
-    const [slipMintStable, setSlipMintStable] = useState<number>();
-    const [slipMintVolatile, setSlipMintVolatile] = useState<number>();
+    const [slipSwapVolatile, setSlipSwapVolatile] = useState('4');
+    useEffect(() => {console.log({slipSwapVolatile})}, [slipSwapVolatile]);
+
+    const [slipMintStable, setSlipMintStable] = useState('3');
+    useEffect(() => {console.log({slipMintStable})}, [slipMintStable]);
+
+    const [slipMintVolatile, setSlipMintVolatile] = useState('7');
+    useEffect(() => {console.log({slipMintVolatile})}, [slipMintVolatile]);
 
     return [
         // swap values and setter functions
         {
             stable: { value: slipSwapStable, setValue: setSlipSwapStable },
-            volatile: { value: slipSwapVolatile, setValue: setSlipSwapVolatile}
+            volatile: { value: slipSwapVolatile, setValue: setSlipSwapVolatile }
         },
         // mint values and setter functions
         {
             stable: { value: slipMintStable, setValue: setSlipMintStable },
-            volatile: { value: slipMintVolatile, setValue: setSlipMintVolatile}
+            volatile: { value: slipMintVolatile, setValue: setSlipMintVolatile }
         }
     ];
 }

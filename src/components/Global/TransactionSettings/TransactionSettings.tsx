@@ -2,38 +2,46 @@ import styles from './TransactionSettings.module.css';
 
 import SlippageTolerance from '../SlippageTolerance/SlippageTolerance';
 
-import { useAppDispatch, useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import { useState } from 'react';
 import { setSlippageTolerance } from '../../../utils/state/tradeDataSlice';
+import { SlippagePairIF } from '../../../utils/interfaces/exports';
 
 interface TransactionSettingsProps {
     module: 'Swap' | 'Market Order' | 'Limit Order' | 'Range Order';
+    slippage: SlippagePairIF;
     onClose: () => void;
 }
 
 export default function TransactionSettings(props: TransactionSettingsProps) {
+    const { module, slippage, onClose } = props;
+
+    console.log(module);
+    console.log(slippage);
+
     const dispatch = useAppDispatch();
 
-    const tradeData = useAppSelector((state) => state.tradeData);
+    const isPairStable = true;
 
-    const slippageToleranceInRTK = tradeData.slippageTolerance;
-
-    const [slippageInput, setSlippageInput] = useState(slippageToleranceInRTK);
+    const [newSlippage, setNewSlippage] = useState<string>(isPairStable ? slippage.stable.value : slippage.volatile.value);
 
     const handleClose = () => {
-        props.onClose();
-        dispatch(setSlippageTolerance(slippageInput));
+        dispatch(setSlippageTolerance(parseInt(newSlippage)));
+        isPairStable
+            ? slippage.stable.setValue(newSlippage)
+            : slippage.volatile.setValue(newSlippage);
+        onClose();
     };
 
-    const shouldDisplaySlippageTolerance = props.module !== 'Limit Order';
+    const shouldDisplaySlippageTolerance = module !== 'Limit Order';
 
     return (
         <div className={styles.settings_container}>
-            <div className={styles.settings_title}>{props.module + ' Settings'}</div>
+            <div className={styles.settings_title}>{module + ' Settings'}</div>
             {shouldDisplaySlippageTolerance ? (
                 <SlippageTolerance
-                    setSlippageInput={setSlippageInput}
-                    slippageInput={slippageInput}
+                    slippageValue={isPairStable ? slippage.stable.value : slippage.volatile.value}
+                    setNewSlippage={setNewSlippage}
                 />
             ) : null}
             {shouldDisplaySlippageTolerance ? <button onClick={handleClose}>Submit</button> : null}

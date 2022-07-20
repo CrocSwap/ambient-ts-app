@@ -51,7 +51,7 @@ import { isTransactionReplacedError, TransactionError } from '../../../utils/Tra
 import { handleParsedReceipt } from '../../../utils/HandleParsedReceipt';
 import truncateDecimals from '../../../utils/data/truncateDecimals';
 import ConfirmRangeModal from '../../../components/Trade/Range/ConfirmRangeModal/ConfirmRangeModal';
-import { TokenIF } from '../../../utils/interfaces/exports';
+import { SlippagePairIF, TokenIF } from '../../../utils/interfaces/exports';
 import { useTradeData } from '../Trade';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import RangeExtraInfo from '../../../components/Trade/Range/RangeExtraInfo/RangeExtraInfo';
@@ -66,6 +66,7 @@ interface RangePropsIF {
     importedTokens: Array<TokenIF>;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     searchableTokens: Array<TokenIF>;
+    mintSlippage: SlippagePairIF;
     provider: JsonRpcProvider;
     gasPriceinGwei: string;
     lastBlockNumber: number;
@@ -89,6 +90,7 @@ export default function Range(props: RangePropsIF) {
         importedTokens,
         setImportedTokens,
         searchableTokens,
+        mintSlippage,
         provider,
         baseTokenAddress,
         quoteTokenAddress,
@@ -102,10 +104,10 @@ export default function Range(props: RangePropsIF) {
         setRecheckTokenBApproval,
         gasPriceinGwei,
         chainId,
-
         activeTokenListsChanged,
         indicateActiveTokenListsChanged,
     } = props;
+
     const [isModalOpen, openModal, closeModal] = useModal();
 
     const { save } = useNewMoralisObject('UserPosition');
@@ -1099,6 +1101,7 @@ export default function Range(props: RangePropsIF) {
             <ContentContainer isOnTradeRoute>
                 <RangeHeader
                     tokenPair={tokenPair}
+                    mintSlippage={mintSlippage}
                     isDenomBase={tradeData.isDenomBase}
                     isTokenABase={isTokenABase}
                 />

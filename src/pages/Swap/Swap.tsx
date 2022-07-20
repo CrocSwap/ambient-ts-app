@@ -35,7 +35,7 @@ import truncateDecimals from '../../utils/data/truncateDecimals';
 import { isTransactionReplacedError, TransactionError } from '../../utils/TransactionError';
 import { useTradeData } from '../Trade/Trade';
 import { useAppSelector, useAppDispatch } from '../../utils/hooks/reduxToolkit';
-import { TokenIF } from '../../utils/interfaces/exports';
+import { SlippagePairIF, TokenIF } from '../../utils/interfaces/exports';
 import { useModal } from '../../components/Global/Modal/useModal';
 import { useRelativeModal } from '../../components/Global/RelativeModal/useRelativeModal';
 import { addReceipt } from '../../utils/state/receiptDataSlice';
@@ -44,6 +44,7 @@ interface SwapPropsIF {
     importedTokens: Array<TokenIF>;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     searchableTokens: Array<TokenIF>;
+    swapSlippage: SlippagePairIF;
     provider: JsonRpcProvider;
     isOnTradeRoute?: boolean;
     gasPriceinGwei: string;
@@ -69,6 +70,7 @@ export default function Swap(props: SwapPropsIF) {
         importedTokens,
         setImportedTokens,
         searchableTokens,
+        swapSlippage,
         provider,
         isOnTradeRoute,
         nativeBalance,
@@ -81,7 +83,6 @@ export default function Swap(props: SwapPropsIF) {
         tokenAAllowance,
         setRecheckTokenAApproval,
         chainId,
-
         activeTokenListsChanged,
         indicateActiveTokenListsChanged,
     } = props;
@@ -347,6 +348,7 @@ export default function Swap(props: SwapPropsIF) {
             <ContentContainer isOnTradeRoute={isOnTradeRoute}>
                 <SwapHeader
                     tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
+                    swapSlippage={swapSlippage}
                     isOnTradeRoute={isOnTradeRoute}
                     isDenomBase={tradeData.isDenomBase}
                     isTokenABase={isSellTokenBase}
@@ -422,10 +424,6 @@ export default function Swap(props: SwapPropsIF) {
             </ContentContainer>
             {confirmSwapModalOrNull}
             {relativeModalOrNull}
-            {/* <div className={styles.footer}>
-            <PageFooter lastBlockNumber={2}/>
-
-            </div> */}
         </main>
     );
 }

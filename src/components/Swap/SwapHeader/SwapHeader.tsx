@@ -10,21 +10,22 @@ import TransactionSettings from '../../Global/TransactionSettings/TransactionSet
 // START: Import Local Files
 import styles from './SwapHeader.module.css';
 import settingsIcon from '../../../assets/images/icons/settings.svg';
-import { TokenPairIF } from '../../../utils/interfaces/exports';
+import { SlippagePairIF, TokenPairIF } from '../../../utils/interfaces/exports';
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import { toggleDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
 
 // interface for props
-interface swapHeaderPropsIF {
+interface SwapHeaderPropsIF {
     tokenPair: TokenPairIF;
+    swapSlippage: SlippagePairIF;
     isOnTradeRoute?: boolean;
     isDenomBase: boolean;
     isTokenABase: boolean;
 }
 
 // main react functional component
-export default function SwapHeader(props: swapHeaderPropsIF) {
-    const { tokenPair, isOnTradeRoute, isDenomBase, isTokenABase } = props;
+export default function SwapHeader(props: SwapHeaderPropsIF) {
+    const { tokenPair, swapSlippage, isOnTradeRoute, isDenomBase, isTokenABase } = props;
     const [isModalOpen, openModal, closeModal] = useModal();
 
     const dispatch = useAppDispatch();
@@ -35,6 +36,7 @@ export default function SwapHeader(props: swapHeaderPropsIF) {
         <Modal noHeader title='modal' onClose={closeModal}>
             <TransactionSettings
                 module={isOnTradeRoute ? 'Market Order' : 'Swap'}
+                slippage={swapSlippage}
                 onClose={closeModal}
             />
         </Modal>
