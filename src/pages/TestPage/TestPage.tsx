@@ -13,12 +13,16 @@
 // import PositionCard from '../../components/Global/Position/PositionCard';
 // import { TokenListIF } from '../../utils/interfaces/exports';
 import styles from './TestPage.module.css';
+import { FiMoreHorizontal } from 'react-icons/fi';
 
 import Range from '../../components/Global/Account/Range/Range';
 import Order from '../../components/Global/Account/Order/Order';
 // import Transaction from '../../components/Transaction/Transaction';
 // import Transactions from '../../components/Global/Transactions/Transactions';
 import TransactionsTable from '../../components/Global/Account/Transaction/TransactionsTable';
+import DropdownMenu from '../../components/Global/DropdownMenu/DropdownMenu';
+import DropdownMenuContainer from '../../components/Global/DropdownMenu/DropdownMenuContainer/DropdownMenuContainer';
+import DropdownMenuItem from '../../components/Global/DropdownMenu/DropdownMenuItem/DropdownMenuItem';
 
 export default function TestPage() {
     // // get the user object from local storage
@@ -108,6 +112,15 @@ export default function TestPage() {
                 <Range />
                 <Order />
                 <TransactionsTable />
+
+                <DropdownMenu title={<FiMoreHorizontal size={20} />}>
+                    <DropdownMenuContainer>
+                        <DropdownMenuItem>Item 1</DropdownMenuItem>
+                        <DropdownMenuItem>Item 2</DropdownMenuItem>
+                        <DropdownMenuItem>Item 3</DropdownMenuItem>
+                        <DropdownMenuItem>Item 4</DropdownMenuItem>
+                    </DropdownMenuContainer>
+                </DropdownMenu>
             </main>
         </>
     );

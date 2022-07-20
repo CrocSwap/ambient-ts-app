@@ -1,0 +1,9 @@
+.menu_icon{
+    cursor: pointer;
+}
+
+
+.nav_item{
+    position: relative;
+    width: 100%;
+}

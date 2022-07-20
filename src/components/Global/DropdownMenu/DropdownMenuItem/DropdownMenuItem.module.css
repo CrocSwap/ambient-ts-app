@@ -1,0 +1,18 @@
+ 
+  .menu_item {
+    height: 50px;
+    display: flex;
+    align-items: center;
+    border-radius: 4px;
+    transition: background 500ms;
+    padding: 0.5rem;
+  }
+  
+
+  
+
+  .menu_item:hover {
+    background-color: #525357;
+  }
+
+  
