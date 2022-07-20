@@ -67,6 +67,23 @@ export default function TransactionCard() {
             <p>Range</p>
         </div>
     );
+    const rowData = (
+        <div className={styles.row}>
+            <div className={styles.pool_name}>ABC/XYZ</div>
+            <div className={styles.account}>0xcD...134</div>
+            <div className={styles.account}>0BcD...134</div>
+            {accountColumn}
+
+            {minMax}
+            {lardeDesktopMinMaxDisplay}
+            {removeRangeColumn}
+            <p className={styles.remove}>Remove</p>
+            <p className={styles.range}>Range</p>
+            {tokenQty}
+            {tokenQty}
+            {tokenQtyColumn}
+        </div>
+    );
 
     return <div>Transaction card</div>;
 }
