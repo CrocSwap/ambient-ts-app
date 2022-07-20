@@ -181,6 +181,8 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
                             ? '/trade/limit'
                             : location.pathname.includes('trade/range')
                             ? '/trade/range'
+                            : location.pathname.includes('trade/edit')
+                            ? '/trade/edit'
                             : '/trade/market'
                     }
                     className={({ isActive }) => (isActive ? styles.active : styles.inactive)}

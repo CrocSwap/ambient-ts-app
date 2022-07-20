@@ -1325,6 +1325,7 @@ export default function App() {
                             <Route path='limit' element={<Limit {...limitPropsTrade} />} />
                             <Route path='range' element={<Range {...rangeProps} />} />
                             <Route path='edit/:positionHash' element={<Edit />} />
+                            <Route path='edit/' element={<Navigate to='/trade/market' replace />} />
                         </Route>
                         <Route path='analytics' element={<Analytics />} />
                         {/* <Route path='details' element={<PositionDetails />} /> */}
