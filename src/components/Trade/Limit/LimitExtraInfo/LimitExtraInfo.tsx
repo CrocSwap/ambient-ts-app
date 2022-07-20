@@ -142,7 +142,7 @@ export default function LimitExtraInfo(props: LimitExtraInfoPropsIF) {
     );
 
     return (
-        <div className={styles.extra_info_container}>
+        <>
             <div
                 className={styles.extra_info_content}
                 onClick={() => setShowExtraDetails(!showExtraDetails)}
@@ -156,6 +156,6 @@ export default function LimitExtraInfo(props: LimitExtraInfoPropsIF) {
                 </div>
             </div>
             {extraDetailsOrNull}
-        </div>
+        </>
     );
 }

@@ -3,27 +3,35 @@ import styles from './Position.module.css';
 import { useModal } from '../Modal/useModal';
 import Modal from '../Modal/Modal';
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { PositionIF } from '../../../utils/interfaces/PositionIF';
+// import { PositionIF } from '../../../utils/interfaces/PositionIF';
+import { Position } from '../../../utils/state/graphDataSlice';
+import { Link, useLocation } from 'react-router-dom';
+// import { PositionIF } from '../../../utils/interfaces/PositionIF';
 
 import RemoveRange from '../../RemoveRange/RemoveRange';
 import RangeDetails from '../../RangeDetails/RangeDetails';
 import RangeDetailsHeader from '../../RangeDetails/RangeDetailsHeader/RangeDetailsHeader';
-import truncateAddress from '../../../utils/truncateAddress';
+import trimString from '../../../utils/functions/trimString';
 import { ambientPosSlot, concPosSlot } from '@crocswap-libs/sdk';
 
 interface PositionProps {
     portfolio?: boolean;
     notOnTradeRoute?: boolean;
-    position: PositionIF;
+    position: Position;
     isAllPositionsEnabled: boolean;
     tokenAAddress: string;
     tokenBAddress: string;
     isAuthenticated: boolean;
     account?: string;
+    isDenomBase: boolean;
+    lastBlockNumber: number;
 }
 export default function Position(props: PositionProps) {
     // const navigate = useNavigate();
+    const location = useLocation();
+
+    const currentLocation = location.pathname;
+
     const {
         position,
         isAllPositionsEnabled,
@@ -32,6 +40,7 @@ export default function Position(props: PositionProps) {
         account,
         notOnTradeRoute,
         isAuthenticated,
+        lastBlockNumber,
     } = props;
 
     const { portfolio } = props;
@@ -77,10 +86,10 @@ export default function Position(props: PositionProps) {
             </td>
         </>
     );
-    const ownerId = position ? position.accountId : null;
+    const ownerId = position ? position.user : null;
 
-    const ensName = position?.ensName !== '' ? position.ensName : null;
-    const ownerIdTruncated = position ? truncateAddress(position.accountId, 18) : null;
+    const ensName = position?.userEnsName !== '' ? position.userEnsName : null;
+    const ownerIdTruncated = position ? trimString(position.user, 6, 6, '…') : null;
 
     const positionData = {
         position: position,
@@ -88,18 +97,18 @@ export default function Position(props: PositionProps) {
 
     let posHash;
     if (position.ambient) {
-        posHash = ambientPosSlot(position.id as string, position.pool.base, position.pool.quote);
+        posHash = ambientPosSlot(position.user, position.base, position.quote);
     } else {
         posHash = concPosSlot(
-            position.id as string,
-            position.pool.base,
-            position.pool.quote,
+            position.user,
+            position.base,
+            position.quote,
             position.bidTick,
             position.askTick,
         );
     }
 
-    const truncatedPosHash = truncateAddress(posHash as string, 18);
+    const truncatedPosHash = trimString(posHash as string, 6, 6, '…');
 
     let isPositionInRange = true;
 
@@ -116,8 +125,8 @@ export default function Position(props: PositionProps) {
         }
     }
 
-    const positionBaseAddressLowerCase = position.pool.base.toLowerCase();
-    const positionQuoteAddressLowerCase = position.pool.quote.toLowerCase();
+    const positionBaseAddressLowerCase = position.base.toLowerCase();
+    const positionQuoteAddressLowerCase = position.quote.toLowerCase();
 
     const tokenAAddressLowerCase = tokenAAddress.toLowerCase();
     const tokenBAddressLowerCase = tokenBAddress.toLowerCase();
@@ -139,9 +148,19 @@ export default function Position(props: PositionProps) {
         isPositionInRange: isPositionInRange,
         isAmbient: position.ambient,
         baseTokenSymbol: position.baseTokenSymbol,
+        baseTokenDecimals: position.baseTokenDecimals,
         quoteTokenSymbol: position.quoteTokenSymbol,
-        lowRangeDisplay: position.lowRangeDisplay,
-        highRangeDisplay: position.highRangeDisplay,
+        quoteTokenDecimals: position.quoteTokenDecimals,
+        lowRangeDisplayInBase: position.lowRangeDisplayInBase,
+        highRangeDisplayInBase: position.highRangeDisplayInBase,
+        lowRangeDisplayInQuote: position.lowRangeDisplayInQuote,
+        highRangeDisplayInQuote: position.highRangeDisplayInQuote,
+        baseTokenLogoURI: position.baseTokenLogoURI,
+        quoteTokenLogoURI: position.quoteTokenLogoURI,
+        isDenomBase: props.isDenomBase,
+        baseTokenAddress: props.position.base,
+        quoteTokenAddress: props.position.quote,
+        lastBlockNumber: lastBlockNumber,
     };
 
     switch (currentModal) {
@@ -170,12 +189,19 @@ export default function Position(props: PositionProps) {
 
     const modalOrNull = isModalOpen ? mainModal : null;
 
+    const rangeDisplay = props.isDenomBase
+        ? `${position.lowRangeDisplayInBase} - ${position.highRangeDisplayInBase}`
+        : `${position.lowRangeDisplayInQuote} - ${position.highRangeDisplayInQuote}`;
+
     const positionRowOrNull =
         notOnTradeRoute || (positionMatchesSelectedTokens && displayAllOrOwned) ? (
             <tr className={styles.position_tr}>
                 {portfolio && tokenImages}
                 {isAllPositionsEnabled && (
-                    <td data-column='Owner ID' className={styles.position_id}>
+                    <td
+                        data-column='Owner ID'
+                        className={`${styles.position_id} ${ensName ? styles.ambient_text : null}`}
+                    >
                         {ensName ? ensName : ownerIdTruncated}
                     </td>
                 )}
@@ -184,7 +210,7 @@ export default function Position(props: PositionProps) {
                 </td>
                 {position.ambient == false && (
                     <td data-column='Range' className={styles.position_range}>
-                        {position.lowRangeDisplay} - {position.highRangeDisplay}
+                        {rangeDisplay}
                     </td>
                 )}
                 {position.ambient == true && (
@@ -203,13 +229,15 @@ export default function Position(props: PositionProps) {
                     {/* In Range */}
                 </td>
                 <td data-column='' className={styles.option_buttons}>
+                    <button className={styles.option_button} onClick={openDetailsModal}>
+                        Details
+                    </button>
                     {notDisplayAllOrOwned && (
-                        <button className={styles.option_button} onClick={openHarvestModal}>
-                            Harvest
-                        </button>
-                    )}
-                    {notDisplayAllOrOwned && (
-                        <Link to={`/trade/edit/${posHash}`} state={positionData}>
+                        <Link
+                            to={`/trade/edit/${posHash}`}
+                            state={positionData}
+                            replace={currentLocation.startsWith('/trade/edit')}
+                        >
                             <button className={styles.option_button}>Edit</button>
                         </Link>
                     )}
@@ -218,9 +246,12 @@ export default function Position(props: PositionProps) {
                             Remove
                         </button>
                     )}
-                    <button className={styles.option_button} onClick={openDetailsModal}>
-                        Details
-                    </button>
+
+                    {notDisplayAllOrOwned && !position.ambient && (
+                        <button className={styles.option_button} onClick={openHarvestModal}>
+                            Harvest
+                        </button>
+                    )}
                 </td>
                 {modalOrNull}
             </tr>

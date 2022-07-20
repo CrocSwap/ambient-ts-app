@@ -48,7 +48,7 @@
   
   
   
-  .sidebar_link {
+   .sidebar_link {
     display: flex;
     align-items: center;
     height: 1.438rem;
@@ -58,6 +58,23 @@
     cursor: pointer;
   }
   
+
+  .open_link{
+    color: #bdbdbd;
+    width: 20px;
+
+    transform: rotate(90deg);
+    transition: var(--animation-speed);
+  }
+
+  .sidebar_link:hover svg{
+    color: white;
+    cursor: pointer;
+    /* transition: all var(--animation-speed) ease-in-out; */
+  
+  }
+
+
   .sidebar_item{
 
     transition: all var(--animation-speed)ease-out;
@@ -70,7 +87,7 @@
 
 
 
-  }
+  } 
 
   .toggle_sidebar_icon{
     padding: 0;
@@ -101,7 +118,12 @@ line-height: 15px;
   .sidebar_link svg {
     width: 2rem;
     min-width: 2rem;
+
    
+  }
+
+  .accordion_container{
+    width: 100%;
   }
   
 
@@ -125,9 +147,9 @@ line-height: 15px;
   
 
   
-  .sidebar:hover .logo svg {
-    transform: scale(1.09);
-    transition: all var(--animation-speed) ease-in-out;
+  .logo svg:hover {
+    /* transform: scale(1.09); */
+    /* transition: all var(--animation-speed) ease-in-out; */
   }
 
   .sidebar_active .logo svg{
@@ -180,8 +202,6 @@ line-height: 15px;
 
 
 
-
-
   /* END OF SEARCH CONTAINER */
   
   /* Small screens */
@@ -205,6 +225,11 @@ line-height: 15px;
     .sidebar_link {
       justify-content: center;
     }
+    .sidebar_item_content{
+      display: none;
+    }
+    
+    
   
    
     main {
@@ -220,7 +245,7 @@ line-height: 15px;
       top: 0;
       width: 1.938rem;
       height: 100vh;
-      margin-top: 4rem;
+      margin-top: 56px;
      
     }
 
@@ -278,17 +303,6 @@ line-height: 15px;
       left: 0px;
     }
 
- 
-
-
-
-
-
-
-
-
-
-
     .sidebar:hover .search_container{
         background-color: var(--dark3);
     }
@@ -298,35 +312,50 @@ line-height: 15px;
       } */
 
       .search_container:hover .search__icon {
-      transform: scale(1.03);
+      /* transform: scale(1.03); */
       transition: all var(--animation-speed) ease-in-out
       }
   
-    /* .sidebar:hover .link_text {
+     .sidebar:hover .link_text {
       display: inline;
     }
   
-    .sidebar:hover .logo svg
+    /* .sidebar:hover .logo svg
     {
       margin-left: 11rem;
     }
-  
-    .sidebar:hover .logo_text
+   */
+    /* .sidebar:hover .logo_text
     {
       left: 0px;
-    } */
+    }  */
   
     .sidebar_nav {
   
-      height: calc(100% - 4rem);
+      height: calc(100% - 56px);
+    }
+    .main_search_container{
+      display: flex;
+      flex-direction: row;
+      gap: 4px;
+      align-items: center;
+      /* background: red; */
     }
     .search_container{
         display:flex;
        
         justify-content: center;
         align-items: center;
-        width: 100%;
+        /* width: 100%; */
+    } 
+
+    .sidebar_item_content{
+
+     width: 100%;
+
+    
     }
+    
   }
   
 

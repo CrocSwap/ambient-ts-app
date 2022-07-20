@@ -2,7 +2,7 @@ import ContentContainer from '../../../components/Global/ContentContainer/Conten
 import Divider from '../../../components/Global/Divider/Divider';
 // import PriceInfo from '../../../components/RangeDetails/PriceInfo/PriceInfo';
 // import RangeDetails from '../../../components/RangeDetails/RangeDetails';
-import TokenInfo from '../../../components/RangeDetails/TokenInfo/TokenInfo';
+// import TokenInfo from '../../../components/RangeDetails/TokenInfo/TokenInfo';
 // import RemoveRangeHeader from '../../../components/RemoveRange/RemoveRangeHeader/RemoveRangeHeader';
 import styles from './PositionDetails.module.css';
 
@@ -12,7 +12,10 @@ export default function PositionDetails() {
             <ContentContainer customWidth>
                 {/* <RemoveRangeHeader /> */}
                 <div className={styles.main_content}>
-                    <TokenInfo />
+                    {/* <TokenInfo
+                        baseTokenAddress={props.baseTokenAddress}
+                        quoteTokenAddress={props.quoteTokenAddress}
+                    /> */}
                     <Divider />
                 </div>
                 {/* <PriceInfo

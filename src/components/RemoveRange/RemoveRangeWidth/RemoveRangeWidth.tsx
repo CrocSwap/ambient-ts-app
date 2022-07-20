@@ -2,18 +2,59 @@
 
 import styles from './RemoveRangeWidth.module.css';
 
-export default function RemoveRangeWidth() {
+interface IRemoveRangeWidthProps {
+    removalPercentage: number;
+    setRemovalPercentage: React.Dispatch<React.SetStateAction<number>>;
+}
+
+export default function RemoveRangeWidth(props: IRemoveRangeWidthProps) {
+    const { removalPercentage, setRemovalPercentage } = props;
+    const handlePercentageUpdate = (percentage: number) => {
+        setRemovalPercentage(percentage);
+        const sliderInputField = document.getElementById('remove-range-slider');
+        if (sliderInputField) {
+            (sliderInputField as HTMLInputElement).value = percentage.toString();
+        }
+    };
     const PercentageOptionContent = (
         <>
             <div className={styles.percentage_options}>
                 <span className={styles.percentage_amount} id='remove-percentage-output'>
-                    100%
+                    {removalPercentage}%
                 </span>
-                <button className={styles.percentage_option_buttons}>10%</button>
-                <button className={styles.percentage_option_buttons}>25%</button>
-                <button className={styles.percentage_option_buttons}>50%</button>
+                <button
+                    className={styles.percentage_option_buttons}
+                    onClick={() => {
+                        handlePercentageUpdate(10);
+                    }}
+                >
+                    10%
+                </button>
+                <button
+                    className={styles.percentage_option_buttons}
+                    onClick={() => {
+                        handlePercentageUpdate(25);
+                    }}
+                >
+                    25%
+                </button>
+                <button
+                    className={styles.percentage_option_buttons}
+                    onClick={() => {
+                        handlePercentageUpdate(50);
+                    }}
+                >
+                    50%
+                </button>
 
-                <button className={styles.percentage_option_buttons}>100%</button>
+                <button
+                    className={styles.percentage_option_buttons}
+                    onClick={() => {
+                        handlePercentageUpdate(100);
+                    }}
+                >
+                    100%
+                </button>
             </div>
         </>
     );
@@ -35,7 +76,7 @@ export default function RemoveRangeWidth() {
                         defaultValue={100}
                         type='range'
                         className={styles.percentage_input}
-                        onChange={(event) => console.log(event)}
+                        onChange={(e) => handlePercentageUpdate(parseInt(e.target.value))}
                     />
                 </div>
 

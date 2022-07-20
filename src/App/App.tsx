@@ -2,34 +2,33 @@
 import { useEffect, useState, useMemo } from 'react';
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import {
-    position,
+    Position,
     resetGraphData,
     setPositionsByPool,
     setPositionsByUser,
+    setSwapsByUser,
+    ISwap,
+    setSwapsByPool,
+    CandleData,
+    setCandles,
+    addCandles,
 } from '../utils/state/graphDataSlice';
 import { ethers } from 'ethers';
 import { JsonRpcProvider } from '@ethersproject/providers';
-import { request, gql } from 'graphql-request';
-import {
-    useMoralis,
-    useMoralisQuery,
-    useMoralisSubscription,
-    // useMoralisWeb3Api,
-} from 'react-moralis';
+// import { request, gql } from 'graphql-request';
+import { useMoralis, useMoralisQuery, useMoralisSubscription } from 'react-moralis';
+import useWebSocket from 'react-use-websocket';
+// import { ReadyState } from 'react-use-websocket';
 import Moralis from 'moralis';
 import {
     contractAddresses,
     getTokenBalanceDisplay,
     sortBaseQuoteTokens,
     getTokenDecimals,
-    // POOL_PRIMARY,
-    // getSpotPrice,
-    // getSpotPriceDisplay,
     getTokenAllowance,
-    // QUERY_ABI,
-    // decodeCrocPrice,
     toDisplayPrice,
     tickToPrice,
+    POOL_PRIMARY,
 } from '@crocswap-libs/sdk';
 
 import { receiptData, resetReceiptData } from '../utils/state/receiptDataSlice';
@@ -59,8 +58,8 @@ import { validateChain } from './validateChain';
 import { IParsedPosition, parsePositionArray } from './parsePositions';
 import { defaultTokens } from '../utils/data/defaultTokens';
 import initializeUserLocalStorage from './functions/initializeUserLocalStorage';
-import { TokenIF } from '../utils/interfaces/exports';
 import TokenPage from '../pages/TokenPage/TokenPage';
+import { TokenIF, TokenListIF } from '../utils/interfaces/exports';
 import { fetchTokenLists } from './functions/fetchTokenLists';
 import {
     resetTradeData,
@@ -74,6 +73,7 @@ import { memoizePromiseFn } from './functions/memoizePromiseFn';
 import { querySpotPrice } from './functions/querySpotPrice';
 import { fetchAddress } from './functions/fetchAddress';
 import truncateDecimals from '../utils/data/truncateDecimals';
+import { getNFTs } from './functions/getNFTs';
 
 const cachedQuerySpotPrice = memoizePromiseFn(querySpotPrice);
 const cachedFetchAddress = memoizePromiseFn(fetchAddress);
@@ -85,7 +85,10 @@ export default function App() {
 
     const dispatch = useAppDispatch();
 
-    const [importedTokens, setImportedTokens] = useState(defaultTokens);
+    // tokens specifically imported by the end user
+    const [importedTokens, setImportedTokens] = useState<TokenIF[]>(defaultTokens);
+    // all tokens from active token lists
+    const [searchableTokens, setSearchableTokens] = useState<TokenIF[]>(defaultTokens);
 
     // prevent multiple fetch requests to external URIs for token lists
     const [needTokenLists, setNeedTokenLists] = useState(true);
@@ -94,6 +97,12 @@ export default function App() {
     // true vs false is an arbitrary distinction here
     const [tokenListsReceived, indicateTokenListsReceived] = useState(false);
 
+    // this is another case where true vs false is an arbitrary distinction
+    const [activeTokenListsChanged, indicateActiveTokenListsChanged] = useState(false);
+    useEffect(() => {
+        console.log('changed activeTokensList');
+    }, [activeTokenListsChanged]);
+
     if (needTokenLists) {
         setNeedTokenLists(false);
         fetchTokenLists(tokenListsReceived, indicateTokenListsReceived);
@@ -101,22 +110,45 @@ export default function App() {
 
     useEffect(() => {
         initializeUserLocalStorage();
+        getImportedTokens();
+    }, [tokenListsReceived]);
+
+    // update local state with searchable tokens once after initial load of app
+    useEffect(() => {
+        // pull activeTokenLists from local storage and parse
+        // do we need to add gatekeeping in case there is not a valid value?
+        const { activeTokenLists } = JSON.parse(localStorage.getItem('user') as string);
+        // update local state with array of all tokens from searchable lists
+        setSearchableTokens(getTokensFromLists(activeTokenLists));
+        // TODO:  this hook runs once after the initial load of the app, we may need to add
+        // TODO:  additional triggers for DOM interactions
+    }, [tokenListsReceived, activeTokenListsChanged]);
+
+    function getTokensFromLists(tokenListURIs: Array<string>) {
+        // retrieve and parse all token lists held in local storage
+        const tokensFromLists = localStorage.allTokenLists
+            ? JSON.parse(localStorage.getItem('allTokenLists') as string)
+                  // remove all lists with URIs not included in the URIs array passed as argument
+                  .filter((tokenList: TokenListIF) => tokenListURIs.includes(tokenList.uri ?? ''))
+                  // extract array of tokens from active lists and flatten into single array
+                  .map((tokenList: TokenListIF) => tokenList.tokens)
+                  .flat()
+            : defaultTokens;
+        // return array of all tokens from lists as specified by token list URI
+        return tokensFromLists;
+    }
+
+    // function to return array of all tokens on lists as specified by URI
+    function getImportedTokens() {
         // see if there's a user object in local storage
         if (localStorage.user) {
             // if user object exists, pull it
             const user = JSON.parse(localStorage.getItem('user') as string);
-            // see if user object has a list of imported tokens
-            if (user.importedTokens) {
-                // if imported tokens are listed, hold in local state
-                setImportedTokens(
-                    user.importedTokens.filter(
-                        (tkn: TokenIF) => tkn.chainId === parseInt(chainId ?? '0x2a'),
-                    ),
-                );
-            }
+            // if imported tokens are listed, hold in local state
+            user.tokens && setImportedTokens(user.tokens);
         }
-    }, [tokenListsReceived]);
-
+    }
+    const [sidebarManuallySet, setSidebarManuallySet] = useState<boolean>(false);
     const [showSidebar, setShowSidebar] = useState<boolean>(false);
     const location = useLocation();
 
@@ -179,8 +211,6 @@ export default function App() {
 
     useEffect(() => {
         (async () => {
-            console.log('getting ens name');
-
             if (account) {
                 try {
                     const ensName = await cachedFetchAddress(account);
@@ -209,9 +239,8 @@ export default function App() {
 
     const tokenPairStringified = useMemo(() => JSON.stringify(tokenPair), [tokenPair]);
 
-    // useEffect to set baseTokenAddress and quoteTokenAddress when pair changes
+    // useEffect that runs when token pair changes
     useEffect(() => {
-        // console.log({ tokenPair });
         // reset rtk values for user specified range in ticks
         dispatch(setAdvancedLowTick(0));
         dispatch(setAdvancedHighTick(0));
@@ -233,69 +262,361 @@ export default function App() {
                 setQuoteTokenDecimals(tokenPair.dataTokenA.decimals);
             }
 
-            const endpoint = 'https://api.thegraph.com/subgraphs/name/a0910841082130913312/croc43';
+            const allPositionsCacheEndpoint = 'https://809821320828123.de:5000/pool_positions?';
 
-            const queryForPositionsByPool = gql`
-                query ($base: Bytes, $quote: Bytes, $poolIdx: BigInt) {
-                    pools(where: { base: $base, quote: $quote, poolIdx: $poolIdx }) {
-                        id
-                        positions {
-                            id
-                            pool {
-                                id
-                                base
-                                quote
-                                poolIdx
+            fetch(
+                allPositionsCacheEndpoint +
+                    new URLSearchParams({
+                        base: sortedTokens[0].toLowerCase(),
+                        quote: sortedTokens[1].toLowerCase(),
+                        poolIdx: POOL_PRIMARY.toString(),
+                        network: 'kovan',
+                    }),
+            )
+                .then((response) => response.json())
+                .then((json) => {
+                    const poolPositions = json.data;
+
+                    if (poolPositions) {
+                        Promise.all(poolPositions.map(getPositionData)).then((updatedPositions) => {
+                            if (
+                                JSON.stringify(graphData.positionsByUser.positions) !==
+                                JSON.stringify(updatedPositions)
+                            ) {
+                                dispatch(setPositionsByPool({ positions: updatedPositions }));
                             }
-                            ambient
-                            bidTick
-                            askTick
-                        }
-                    }
-                }
-            `;
-
-            const positionsByPoolVariables = {
-                base: sortedTokens[0],
-                quote: sortedTokens[1],
-                poolIdx: 36000,
-            };
-
-            // console.log({ positionsByPoolVariables });
-            request(
-                endpoint,
-                queryForPositionsByPool,
-                positionsByPoolVariables,
-                // requestHeaders: headers,
-            ).then(async (data) => {
-                // if (JSON.stringify(graphData.positionsByUser) !== JSON.stringify(data.user)) {
-                const poolData = data.pools[0];
-                const poolPositions = poolData.positions;
-                console.log({ poolPositions });
-                // poolPositions.reduce(
-                //     (p: position, fn: (position: any) => Promise<any>) => p.then(fn),
-                //     Promise.resolve(),
-                // );
-                const updatedPositions: position[] = [];
-                for (const position of poolPositions) {
-                    const updatedPosition = await getPositionData(position);
-                    updatedPositions.push(updatedPosition);
-                }
-                // poolData.positions = updatedPositions;
-                // if (JSON.stringify(graphData.positionsByPool) !== JSON.stringify(poolData)) {
-                //     dispatch(setPositionsByPool(poolData));
-                // }
-                Promise.all(poolPositions.map(getPositionData)).then((updatedPositions) => {
-                    poolData.positions = updatedPositions;
-                    // const positionArray = updatedPositions as positionsByPool
-                    // console.log(pool.positions);
-                    if (JSON.stringify(graphData.positionsByPool) !== JSON.stringify(poolData)) {
-                        dispatch(setPositionsByPool(poolData));
+                        });
                     }
                 });
-            });
+
+            const poolSwapsCacheEndpoint = 'https://809821320828123.de:5000/pool_swaps?';
+
+            fetch(
+                poolSwapsCacheEndpoint +
+                    new URLSearchParams({
+                        base: sortedTokens[0].toLowerCase(),
+                        quote: sortedTokens[1].toLowerCase(),
+                        poolIdx: POOL_PRIMARY.toString(),
+                        network: 'kovan',
+                        // n: 10 // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
+                        // page: 0 // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
+                    }),
+            )
+                .then((response) => response.json())
+                .then((json) => {
+                    const poolSwaps = json.data;
+
+                    if (poolSwaps) {
+                        Promise.all(poolSwaps.map(getSwapData)).then((updatedSwaps) => {
+                            if (
+                                JSON.stringify(graphData.swapsByUser.swaps) !==
+                                JSON.stringify(updatedSwaps)
+                            ) {
+                                dispatch(setSwapsByPool({ swaps: updatedSwaps }));
+                            }
+                        });
+                    }
+                });
         }
     }, [tokenPairStringified]);
+
+    const [activePeriod, setActivePeriod] = useState(60); // 1 minute by default
+
+    useEffect(() => {
+        // console.log({ activePeriod });
+
+        if (baseTokenAddress && quoteTokenAddress) {
+            const candleSeriesCacheEndpoint = 'https://809821320828123.de:5000/candle_series?';
+
+            fetch(
+                candleSeriesCacheEndpoint +
+                    new URLSearchParams({
+                        base: baseTokenAddress.toLowerCase(),
+                        quote: quoteTokenAddress.toLowerCase(),
+                        poolIdx: POOL_PRIMARY.toString(),
+                        period: activePeriod.toString(),
+                        // period: '86400', // 1 day
+                        // period: '300', // 5 minute
+                        // time: '1657833300', // optional
+                        n: '200', // positive integer
+                        page: '0', // nonnegative integer
+                        network: 'kovan',
+                    }),
+            )
+                .then((response) => response.json())
+                .then((json) => {
+                    const candles = json.data;
+
+                    if (candles) {
+                        Promise.all(candles.map(getCandleData)).then((updatedCandles) => {
+                            if (
+                                JSON.stringify(graphData.candlesForAllPools.pools) !==
+                                JSON.stringify(updatedCandles)
+                            ) {
+                                dispatch(
+                                    setCandles({
+                                        pool: {
+                                            baseAddress: baseTokenAddress.toLowerCase(),
+                                            quoteAddress: quoteTokenAddress.toLowerCase(),
+                                            poolIdx: POOL_PRIMARY,
+                                        },
+                                        duration: activePeriod,
+                                        candles: updatedCandles,
+                                    }),
+                                );
+                            }
+                        });
+                    }
+                });
+        }
+    }, [baseTokenAddress, quoteTokenAddress, activePeriod]);
+
+    const allPositionsCacheSubscriptionEndpoint = useMemo(
+        () =>
+            'wss://809821320828123.de:5000/subscribe_pool_positions?' +
+            new URLSearchParams({
+                base: baseTokenAddress.toLowerCase(),
+                // baseTokenAddress.toLowerCase() || '0x0000000000000000000000000000000000000000',
+                quote: quoteTokenAddress.toLowerCase(),
+                // quoteTokenAddress.toLowerCase() || '0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa',
+                poolIdx: POOL_PRIMARY.toString(),
+                network: 'kovan',
+            }),
+        [baseTokenAddress, quoteTokenAddress, POOL_PRIMARY],
+    );
+
+    const {
+        //  sendMessage,
+        lastMessage: lastAllPositionsMessage,
+        //  readyState
+    } = useWebSocket(
+        allPositionsCacheSubscriptionEndpoint,
+        {
+            // share:  true,
+            // onOpen: () => console.log('opened'),
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            onClose: (event: any) => console.log({ event }),
+            // onClose: () => console.log('allPositions websocket connection closed'),
+            // Will attempt to reconnect on all close events, such as server shutting down
+            shouldReconnect: () => true,
+        },
+        // only connect if base/quote token addresses are available
+        baseTokenAddress !== '' && quoteTokenAddress !== '',
+    );
+
+    useEffect(() => {
+        if (lastAllPositionsMessage !== null) {
+            const lastMessageData = JSON.parse(lastAllPositionsMessage.data).data;
+
+            if (lastMessageData) {
+                Promise.all(lastMessageData.map(getPositionData)).then((updatedPositions) => {
+                    dispatch(
+                        setPositionsByPool({
+                            positions: updatedPositions.concat(graphData.positionsByPool.positions),
+                        }),
+                    );
+                });
+            }
+        }
+    }, [lastAllPositionsMessage]);
+
+    const candleSubscriptionEndpoint = useMemo(
+        () =>
+            'wss://809821320828123.de:5000/subscribe_candles?' +
+            new URLSearchParams({
+                base: baseTokenAddress.toLowerCase(),
+                // baseTokenAddress.toLowerCase() || '0x0000000000000000000000000000000000000000',
+                quote: quoteTokenAddress.toLowerCase(),
+                // quoteTokenAddress.toLowerCase() || '0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa',
+                poolIdx: POOL_PRIMARY.toString(),
+                // 	positive integer	The duration of the candle, in seconds. Must represent one of the following time intervals: 5 minutes, 15 minutes, 1 hour, 4 hours, 1 day, 7 days.
+                period: activePeriod.toString(),
+                // period: '60',
+                network: 'kovan',
+            }),
+        [baseTokenAddress, quoteTokenAddress, POOL_PRIMARY, activePeriod],
+    );
+
+    const {
+        //  sendMessage,
+        lastMessage: candlesMessage,
+        //  readyState
+    } = useWebSocket(
+        candleSubscriptionEndpoint,
+        {
+            // share:  true,
+            // onOpen: () => console.log('opened'),
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            onClose: (event: any) => console.log({ event }),
+            // onClose: () => console.log('candles websocket connection closed'),
+            // Will attempt to reconnect on all close events, such as server shutting down
+            shouldReconnect: () => true,
+        },
+        // only connect if base/quote token addresses are available
+        baseTokenAddress !== '' && quoteTokenAddress !== '',
+    );
+
+    useEffect(() => {
+        if (candlesMessage !== null) {
+            const lastMessageData = JSON.parse(candlesMessage.data).data;
+            if (lastMessageData) {
+                Promise.all(lastMessageData.map(getCandleData)).then((updatedCandles) => {
+                    // console.log({ updatedCandles });
+                    dispatch(
+                        addCandles({
+                            pool: {
+                                baseAddress: baseTokenAddress,
+                                quoteAddress: quoteTokenAddress,
+                                poolIdx: POOL_PRIMARY,
+                            },
+                            duration: activePeriod,
+                            candles: updatedCandles,
+                        }),
+                    );
+                });
+            }
+            // console.log({ lastMessageData });
+        }
+    }, [candlesMessage]);
+
+    const poolSwapsCacheSubscriptionEndpoint = useMemo(
+        () =>
+            'wss://809821320828123.de:5000/subscribe_pool_swaps?' +
+            new URLSearchParams({
+                base: baseTokenAddress.toLowerCase(),
+                // baseTokenAddress.toLowerCase() || '0x0000000000000000000000000000000000000000',
+                quote: quoteTokenAddress.toLowerCase(),
+                // quoteTokenAddress.toLowerCase() || '0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa',
+                poolIdx: POOL_PRIMARY.toString(),
+                network: 'kovan',
+            }),
+        [baseTokenAddress, quoteTokenAddress, POOL_PRIMARY],
+    );
+
+    const {
+        //  sendMessage,
+        lastMessage: lastPoolSwapsMessage,
+        //  readyState
+    } = useWebSocket(
+        poolSwapsCacheSubscriptionEndpoint,
+        {
+            // share:  true,
+            // onOpen: () => console.log('opened'),
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            onClose: (event: any) => console.log({ event }),
+            // Will attempt to reconnect on all close events, such as server shutting down
+            shouldReconnect: () => true,
+        },
+        // only connect if base/quote token addresses are available
+        baseTokenAddress !== '' && quoteTokenAddress !== '',
+    );
+
+    useEffect(() => {
+        if (lastPoolSwapsMessage !== null) {
+            const lastMessageData = JSON.parse(lastPoolSwapsMessage.data).data;
+
+            if (lastMessageData) {
+                Promise.all(lastMessageData.map(getSwapData)).then((updatedSwaps) => {
+                    dispatch(
+                        setSwapsByPool({
+                            swaps: updatedSwaps.concat(graphData.swapsByPool.swaps),
+                        }),
+                    );
+                });
+            }
+        }
+    }, [lastPoolSwapsMessage]);
+
+    const userPositionsCacheSubscriptionEndpoint = useMemo(
+        () =>
+            'wss://809821320828123.de:5000/subscribe_user_positions?' +
+            new URLSearchParams({
+                user: account || '',
+                network: 'kovan',
+                // user: account || '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc',
+            }),
+        [account],
+    );
+
+    const {
+        //  sendMessage,
+        lastMessage: lastUserPositionsMessage,
+        //  readyState
+    } = useWebSocket(
+        userPositionsCacheSubscriptionEndpoint,
+        {
+            // share: true,
+            // onOpen: () => console.log('opened'),
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            onClose: (event: any) => console.log({ event }),
+            // Will attempt to reconnect on all close events, such as server shutting down
+            shouldReconnect: () => true,
+        },
+        // only connect is account is available
+        account !== null && account !== '',
+    );
+
+    useEffect(() => {
+        if (lastUserPositionsMessage !== null) {
+            const lastMessageData = JSON.parse(lastUserPositionsMessage.data).data;
+
+            if (lastMessageData) {
+                Promise.all(lastMessageData.map(getPositionData)).then((updatedPositions) => {
+                    dispatch(
+                        setPositionsByUser({
+                            positions: updatedPositions.concat(graphData.positionsByUser.positions),
+                        }),
+                    );
+                });
+            }
+        }
+    }, [lastUserPositionsMessage]);
+
+    const userSwapsCacheSubscriptionEndpoint = useMemo(
+        () =>
+            'wss://809821320828123.de:5000/subscribe_user_swaps?' +
+            new URLSearchParams({
+                user: account || '',
+                network: 'kovan',
+                // user: account || '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc',
+            }),
+        [account],
+    );
+
+    const {
+        //  sendMessage,
+        lastMessage: lastUserSwapsMessage,
+        //  readyState
+    } = useWebSocket(
+        userSwapsCacheSubscriptionEndpoint,
+        {
+            // share: true,
+            // onOpen: () => console.log('opened'),
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            onClose: (event: any) => console.log({ event }),
+            // onClose: () => console.log('userSwaps websocket connection closed'),
+            // Will attempt to reconnect on all close events, such as server shutting down
+            shouldReconnect: () => true,
+        },
+        // only connect is account is available
+        account !== null && account !== '',
+    );
+
+    useEffect(() => {
+        if (lastUserSwapsMessage !== null) {
+            const lastMessageData = JSON.parse(lastUserSwapsMessage.data).data;
+
+            if (lastMessageData) {
+                Promise.all(lastMessageData.map(getSwapData)).then((updatedSwaps) => {
+                    dispatch(
+                        setSwapsByUser({
+                            swaps: updatedSwaps.concat(graphData.swapsByUser.swaps),
+                        }),
+                    );
+                });
+            }
+        }
+    }, [lastUserSwapsMessage]);
 
     const [tokenABalance, setTokenABalance] = useState<string>('');
     const [tokenBBalance, setTokenBBalance] = useState<string>('');
@@ -312,14 +633,14 @@ export default function App() {
                     lastBlockNumber,
                 );
                 if (poolPriceNonDisplay !== spotPrice) {
-                    console.log({ spotPrice });
+                    // console.log({ spotPrice });
                     setPoolPriceNonDisplay(spotPrice);
                     const displayPrice = toDisplayPrice(
                         spotPrice,
                         baseTokenDecimals,
                         quoteTokenDecimals,
                     );
-                    console.log({ displayPrice });
+                    // console.log({ displayPrice });
                     setPoolPriceDisplay(displayPrice);
                 }
             })();
@@ -460,56 +781,106 @@ export default function App() {
 
     const graphData = useAppSelector((state) => state.graphData);
 
-    const getPositionData = async (position: position): Promise<position> => {
-        const baseTokenAddress = position.pool.base;
-        const quoteTokenAddress = position.pool.quote;
-        // console.log({ provider });
-        // const poolPriceNonDisplay = await getSpotPrice(
-        //     baseTokenAddress,
-        //     quoteTokenAddress,
-        //     POOL_PRIMARY,
-        //     provider,
-        // );
+    const getSwapData = async (swap: ISwap): Promise<ISwap> => {
+        swap.base = swap.base.startsWith('0x') ? swap.base : '0x' + swap.base;
+        swap.quote = swap.quote.startsWith('0x') ? swap.quote : '0x' + swap.quote;
+        swap.user = swap.user.startsWith('0x') ? swap.user : '0x' + swap.user;
+        swap.id = '0x' + swap.id.slice(5);
+
+        return swap;
+    };
+
+    const getCandleData = async (candle: CandleData): Promise<CandleData> => {
+        if (candle) {
+            candle.base = candle.base.startsWith('0x') ? candle.base : '0x' + candle.base;
+            candle.quote = candle.quote.startsWith('0x') ? candle.quote : '0x' + candle.quote;
+        }
+        return candle;
+    };
+
+    const getPositionData = async (position: Position): Promise<Position> => {
+        position.base = position.base.startsWith('0x') ? position.base : '0x' + position.base;
+        position.quote = position.quote.startsWith('0x') ? position.quote : '0x' + position.quote;
+        position.user = position.user.startsWith('0x') ? position.user : '0x' + position.user;
+
+        const baseTokenAddress = position.base;
+        const quoteTokenAddress = position.quote;
+
         const poolPriceNonDisplay = await cachedQuerySpotPrice(
             baseTokenAddress,
             quoteTokenAddress,
             lastBlockNumber,
         );
 
-        const positionAccountId = position.id.substring(0, 42);
-
-        position.accountId = positionAccountId;
         try {
-            position.ensName = await cachedFetchAddress(positionAccountId);
+            position.userEnsName = await cachedFetchAddress(position.user);
         } catch (error) {
             console.log(error);
         }
+
         const poolPriceInTicks = Math.log(poolPriceNonDisplay) / Math.log(1.0001);
 
         const baseTokenDecimals = await cachedGetTokenDecimals(baseTokenAddress);
         const quoteTokenDecimals = await cachedGetTokenDecimals(quoteTokenAddress);
 
+        if (baseTokenDecimals) position.baseTokenDecimals = baseTokenDecimals;
+        if (quoteTokenDecimals) position.quoteTokenDecimals = quoteTokenDecimals;
+
         const lowerPriceNonDisplay = tickToPrice(position.bidTick);
         const upperPriceNonDisplay = tickToPrice(position.askTick);
 
-        const lowerPriceDisplay =
+        const lowerPriceDisplayInBase =
             1 / toDisplayPrice(upperPriceNonDisplay, baseTokenDecimals, quoteTokenDecimals);
 
-        const upperPriceDisplay =
+        const upperPriceDisplayInBase =
             1 / toDisplayPrice(lowerPriceNonDisplay, baseTokenDecimals, quoteTokenDecimals);
 
+        const lowerPriceDisplayInQuote = toDisplayPrice(
+            lowerPriceNonDisplay,
+            baseTokenDecimals,
+            quoteTokenDecimals,
+        );
+
+        const upperPriceDisplayInQuote = toDisplayPrice(
+            upperPriceNonDisplay,
+            baseTokenDecimals,
+            quoteTokenDecimals,
+        );
+
+        const baseTokenLogoURI = importedTokens.find(
+            (token) => token.address.toLowerCase() === baseTokenAddress.toLowerCase(),
+        )?.logoURI;
+        const quoteTokenLogoURI = importedTokens.find(
+            (token) => token.address.toLowerCase() === quoteTokenAddress.toLowerCase(),
+        )?.logoURI;
+
+        position.baseTokenLogoURI = baseTokenLogoURI ?? '';
+        position.quoteTokenLogoURI = quoteTokenLogoURI ?? '';
+
         if (!position.ambient) {
-            position.lowRangeDisplay =
-                lowerPriceDisplay < 2
-                    ? truncateDecimals(lowerPriceDisplay, 2).toString()
-                    : truncateDecimals(lowerPriceDisplay, 2).toString();
-            position.highRangeDisplay =
-                lowerPriceDisplay < 2
-                    ? truncateDecimals(upperPriceDisplay, 2).toString()
-                    : truncateDecimals(upperPriceDisplay, 2).toString();
+            position.lowRangeDisplayInBase =
+                lowerPriceDisplayInBase < 2
+                    ? truncateDecimals(lowerPriceDisplayInBase, 4).toString()
+                    : truncateDecimals(lowerPriceDisplayInBase, 2).toString();
+            position.highRangeDisplayInBase =
+                upperPriceDisplayInBase < 2
+                    ? truncateDecimals(upperPriceDisplayInBase, 4).toString()
+                    : truncateDecimals(upperPriceDisplayInBase, 2).toString();
+        }
+
+        if (!position.ambient) {
+            position.lowRangeDisplayInQuote =
+                lowerPriceDisplayInQuote < 2
+                    ? truncateDecimals(lowerPriceDisplayInQuote, 4).toString()
+                    : truncateDecimals(lowerPriceDisplayInQuote, 2).toString();
+            position.highRangeDisplayInQuote =
+                upperPriceDisplayInQuote < 2
+                    ? truncateDecimals(upperPriceDisplayInQuote, 4).toString()
+                    : truncateDecimals(upperPriceDisplayInQuote, 2).toString();
         }
 
         position.poolPriceInTicks = poolPriceInTicks;
+
         if (baseTokenAddress === contractAddresses.ZERO_ADDR) {
             position.baseTokenSymbol = 'ETH';
             position.quoteTokenSymbol = 'DAI';
@@ -540,52 +911,57 @@ export default function App() {
 
     useEffect(() => {
         if (isAuthenticated && account) {
-            const endpoint = 'https://api.thegraph.com/subgraphs/name/a0910841082130913312/croc43';
-            const queryForPositionsByUser = gql`
-                query ($userAddress: Bytes) {
-                    user(id: $userAddress) {
-                        id
-                        positions {
-                            id
-                            pool {
-                                id
-                                base
-                                quote
-                                poolIdx
+            const allUserPositionsCacheEndpoint = 'https://809821320828123.de:5000/user_positions?';
+
+            fetch(
+                allUserPositionsCacheEndpoint +
+                    new URLSearchParams({
+                        user: account,
+                        network: 'kovan',
+                    }),
+            )
+                .then((response) => response.json())
+                .then((json) => {
+                    const userPositions = json.data;
+
+                    if (userPositions) {
+                        Promise.all(userPositions.map(getPositionData)).then((updatedPositions) => {
+                            if (
+                                JSON.stringify(graphData.positionsByUser.positions) !==
+                                JSON.stringify(updatedPositions)
+                            ) {
+                                dispatch(setPositionsByUser({ positions: updatedPositions }));
                             }
-                            ambient
-                            bidTick
-                            askTick
-                        }
+                        });
                     }
-                }
-            `;
-            const positionByUserVariables = {
-                userAddress: account,
-            };
-            request(
-                endpoint,
-                queryForPositionsByUser,
-                positionByUserVariables,
-                // requestHeaders: headers,
-            ).then((data) => {
-                // if (JSON.stringify(graphData.positionsByUser) !== JSON.stringify(data.user)) {
-                const userData = data.user;
-                const userPositions = userData.positions;
-                // console.log({ userPositions });
-                if (userPositions) {
-                    Promise.all(userPositions.map(getPositionData)).then((updatedPositions) => {
-                        userData.positions = updatedPositions;
-                        if (
-                            JSON.stringify(graphData.positionsByUser) !== JSON.stringify(userData)
-                        ) {
-                            dispatch(setPositionsByUser(userData));
-                        }
-                    });
-                }
-            });
+                });
+
+            const allUserSwapsCacheEndpoint = 'https://809821320828123.de:5000/user_swaps?';
+
+            fetch(
+                allUserSwapsCacheEndpoint +
+                    new URLSearchParams({
+                        user: account,
+                        network: 'kovan',
+                    }),
+            )
+                .then((response) => response.json())
+                .then((json) => {
+                    const userSwaps = json.data;
+
+                    if (userSwaps) {
+                        Promise.all(userSwaps.map(getSwapData)).then((updatedSwaps) => {
+                            if (
+                                JSON.stringify(graphData.swapsByUser.swaps) !==
+                                JSON.stringify(updatedSwaps)
+                            ) {
+                                dispatch(setSwapsByUser({ swaps: updatedSwaps }));
+                            }
+                        });
+                    }
+                });
         }
-    }, [isAuthenticated, account, lastBlockNumber]);
+    }, [isAuthenticated, account]);
 
     // run function to initialize local storage
     // internal controls will only initialize values that don't exist
@@ -602,9 +978,13 @@ export default function App() {
     const currentLocation = location.pathname;
 
     function toggleSidebarBasedOnRoute() {
-        setShowSidebar(true);
-        if (currentLocation === '/' || currentLocation === '/swap') {
-            setShowSidebar(false);
+        if (sidebarManuallySet) {
+            return;
+        } else {
+            setShowSidebar(true);
+            if (currentLocation === '/' || currentLocation === '/swap') {
+                setShowSidebar(false);
+            }
         }
     }
 
@@ -770,7 +1150,7 @@ export default function App() {
         // }
     }, [chainId, lastBlockNumber]);
 
-    const shouldDisplayAccountTab = isAuthenticated && account != '';
+    const shouldDisplayAccountTab = isAuthenticated && isWeb3Enabled && account != '';
 
     // props for <PageHeader/> React element
     const headerProps = {
@@ -784,6 +1164,8 @@ export default function App() {
     // props for <Swap/> React element
     const swapProps = {
         importedTokens: importedTokens,
+        setImportedTokens: setImportedTokens,
+        searchableTokens: searchableTokens,
         provider: provider as JsonRpcProvider,
         gasPriceinGwei: gasPriceinGwei,
         nativeBalance: nativeBalance,
@@ -795,12 +1177,16 @@ export default function App() {
         poolPriceDisplay: poolPriceDisplay,
         tokenAAllowance: tokenAAllowance,
         setRecheckTokenAApproval: setRecheckTokenAApproval,
-        // tokenBAllowance: tokenBAllowance,
+        chainId: chainId ?? '0x2a',
+        activeTokenListsChanged: activeTokenListsChanged,
+        indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
     };
 
     // props for <Swap/> React element on trade route
     const swapPropsTrade = {
         importedTokens: importedTokens,
+        setImportedTokens: setImportedTokens,
+        searchableTokens: searchableTokens,
         provider: provider as JsonRpcProvider,
         isOnTradeRoute: true,
         gasPriceinGwei: gasPriceinGwei,
@@ -813,12 +1199,16 @@ export default function App() {
         poolPriceDisplay: poolPriceDisplay,
         setRecheckTokenAApproval: setRecheckTokenAApproval,
         tokenAAllowance: tokenAAllowance,
-        // tokenBAllowance: tokenBAllowance,
+        chainId: chainId ?? '0x2a',
+        activeTokenListsChanged: activeTokenListsChanged,
+        indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
     };
 
     // props for <Limit/> React element on trade route
     const limitPropsTrade = {
         importedTokens: importedTokens,
+        setImportedTokens: setImportedTokens,
+        searchableTokens: searchableTokens,
         provider: provider as JsonRpcProvider,
         isOnTradeRoute: true,
         gasPriceinGwei: gasPriceinGwei,
@@ -833,11 +1223,16 @@ export default function App() {
         poolPriceNonDisplay: poolPriceNonDisplay,
         setRecheckTokenAApproval: setRecheckTokenAApproval,
         tokenAAllowance: tokenAAllowance,
+        chainId: chainId ?? '0x2a',
+        activeTokenListsChanged: activeTokenListsChanged,
+        indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
     };
 
     // props for <Range/> React element
     const rangeProps = {
         importedTokens: importedTokens,
+        setImportedTokens: setImportedTokens,
+        searchableTokens: searchableTokens,
         provider: provider as JsonRpcProvider,
         lastBlockNumber: lastBlockNumber,
         gasPriceinGwei: gasPriceinGwei,
@@ -851,15 +1246,20 @@ export default function App() {
         tokenBBalance: tokenBBalance,
         tokenBAllowance: tokenBAllowance,
         setRecheckTokenBApproval: setRecheckTokenBApproval,
+        chainId: chainId ?? '0x2a',
+        activeTokenListsChanged: activeTokenListsChanged,
+        indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
     };
 
     // props for <Sidebar/> React element
     function toggleSidebar() {
         setShowSidebar(!showSidebar);
+        setSidebarManuallySet(true);
     }
     const sidebarProps = {
         showSidebar: showSidebar,
         toggleSidebar: toggleSidebar,
+        // setShowSidebar : setShowSidebar
     };
 
     function updateDenomIsInBase() {
@@ -897,6 +1297,17 @@ export default function App() {
             : mainLayoutStyle;
     const swapBodyStyle = currentLocation == '/swap' ? 'swap-body' : null;
 
+    const [imageData, setImageData] = useState<string[]>([]);
+
+    useEffect(() => {
+        (async () => {
+            if (account) {
+                const imageLocalURLs = await getNFTs(account);
+                if (imageLocalURLs) setImageData(imageLocalURLs);
+            }
+        })();
+    }, [account]);
+
     return (
         <>
             <div className='content-container'>
@@ -913,7 +1324,11 @@ export default function App() {
                                 <Trade
                                     account={account ?? ''}
                                     isAuthenticated={isAuthenticated}
+                                    isWeb3Enabled={isWeb3Enabled}
                                     lastBlockNumber={lastBlockNumber}
+                                    isTokenABase={isTokenABase}
+                                    poolPriceDisplay={poolPriceDisplay}
+                                    setActivePeriod={setActivePeriod}
                                 />
                             }
                         >
@@ -922,6 +1337,7 @@ export default function App() {
                             <Route path='limit' element={<Limit {...limitPropsTrade} />} />
                             <Route path='range' element={<Range {...rangeProps} />} />
                             <Route path='edit/:positionHash' element={<Edit />} />
+                            <Route path='edit/' element={<Navigate to='/trade/market' replace />} />
                         </Route>
                         <Route path='analytics' element={<Analytics />} />
                         <Route path='tokens/:address' element={<TokenPage />} />
@@ -936,6 +1352,7 @@ export default function App() {
                                 <Portfolio
                                     ensName={ensName}
                                     connectedAccount={account ? account : ''}
+                                    imageData={imageData}
                                 />
                             }
                         />

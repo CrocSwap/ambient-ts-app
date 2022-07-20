@@ -17,8 +17,10 @@
   }
 
   .direction{
-      padding: 12px;
-  }
+    padding: 0.4.5px 0;
+    margin: 4px 0;
+   
+}
   .direction, .swapbox_bottom{
       font-size: var(--body-size);
       line-height: var(--body-lh);
@@ -32,10 +34,10 @@
     justify-content: space-between;
     flex-direction: row;
     align-items: center;
-    padding: 0.5rem 0;
-    max-height: 3rem;
+    /* padding: 0.5rem 0; */
+    min-height: 40px;
+    /* height: 40px; */
   }
-
 .swap_input{
   width: 70%;
 }
@@ -60,12 +62,14 @@
       font-weight: 200;
   }
   
-  /* bottom info */
-  .swapbox_bottom {
+   /* bottom info */
+   .swapbox_bottom {
     display: flex;
     flex-direction: row;
-    justify-content: space-evenly;
+    justify-content: space-between;
     align-items: center;
+ min-height: 33px;
+   margin: 4px 0;
   }
   
   .token_select_button {
@@ -86,15 +90,12 @@
   .sellAllButton:hover {
     color: hotpink;
   }
-  .toggle_container{
-    margin-bottom: 10px;
-    margin-left: 10px;
-  }
 
   .surplus_toggle{
     display: flex;
     flex-direction: row;
     align-items: center;
+    gap: 8px;
   }
 
   /* modal */
