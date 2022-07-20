@@ -3,7 +3,15 @@
 }
 
 
-.nav_item{
+.dropdown_control{
+    display: flex;
+    justify-content: center;
+    align-items: center;
     position: relative;
     width: 100%;
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    /* z-index: 2; */
+
+    /* background: blue; */
 }
