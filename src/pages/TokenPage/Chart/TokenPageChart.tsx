@@ -11,11 +11,13 @@ import { formatDollarAmount } from '../../../utils/numbers';
 import PriceChart from './PriceChart/PriceChart';
 import styles from './TokenPageChart.module.css';
 import TvlChart from './TvlChart/TvlChart';
+import VolumeChart from './VolumeChart/VolumeChart';
 
 interface TokenPageChartProps {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     tvlData?: any;
     priceData?: any;
+    volumeData?: any;
     token?: TokenData;
     valueLabel?: string | undefined;
 }
@@ -31,10 +33,11 @@ declare global {
 
 export default function TokenPageChart(props: TokenPageChartProps) {
     const data = props.tvlData;
-    const [activeTab, setActiveTab] = useState('tvl');
+    const [activeTab, setActiveTab] = useState('vlm');
     const tabData = [
         { title: 'TVL', id: 'tvl' },
         { title: 'Price', id: 'price' },
+        { title: 'Volume', id: 'vlm' },
     ];
     const [latestValue, setLatestValue] = useState<number | undefined>();
     const [valueLabel, setValueLabel] = useState<string | undefined>();
@@ -69,6 +72,14 @@ export default function TokenPageChart(props: TokenPageChartProps) {
             {activeTab === 'tvl' ? (
                 <TvlChart
                     data={data}
+                    value={latestValue}
+                    label={valueLabel}
+                    setValue={setLatestValue}
+                    setLabel={setValueLabel}
+                />
+            ) : activeTab === 'vlm' ? (
+                <VolumeChart
+                    data={props.volumeData}
                     value={latestValue}
                     label={valueLabel}
                     setValue={setLatestValue}
