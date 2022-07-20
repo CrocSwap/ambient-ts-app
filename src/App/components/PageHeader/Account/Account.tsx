@@ -11,7 +11,7 @@ import { FiMoreHorizontal } from 'react-icons/fi';
 // import { HiOutlineDocumentText } from 'react-icons/hi';
 import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
 import SnackbarComponent from '../../../../components/Global/SnackbarComponent/SnackbarComponent';
-import DropdownMenu from '../DropdownMenu/NavbarDropdownMenu';
+import DropdownMenu from '../NavbarDropdownMenu/NavbarDropdownMenu';
 import NavItem from '../NavItem/NavItem';
 
 interface IAccountProps {
