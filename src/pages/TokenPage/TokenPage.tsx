@@ -37,6 +37,7 @@ export default function TokenPage() {
 
     const formattedTvlData = useMemo(() => {
         if (chartData) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             return chartData.map((day: any) => {
                 return {
                     time: unixToDate(day.date),

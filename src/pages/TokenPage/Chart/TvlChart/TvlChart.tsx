@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
-import dayjs from 'dayjs';
+import moment from 'moment';
 import {
     DetailedHTMLProps,
     Dispatch,
@@ -8,7 +9,6 @@ import {
     SetStateAction,
     useEffect,
     useRef,
-    useState,
 } from 'react';
 
 interface TvlChartProps {
@@ -32,58 +32,46 @@ declare global {
 
 export default function TvlChart(props: TvlChartProps) {
     const d3Container = useRef(null);
-    const d3PlotArea = useRef(null);
-    const d3Xaxis = useRef(null);
-    const d3Yaxis = useRef(null);
-    const data = props.data;
 
-    const [targets, setTargets] = useState([
-        {
-            time: '2021-05-14',
-            value: 1000000,
-        },
-    ]);
     useEffect(() => {
-        const priceRange = d3fc.extentLinear().accessors([(d: any) => d.value]);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const priceRange = d3fc.extentLinear().accessors([(d: any) => d.value]);
         const xExtent = d3fc
             .extentDate()
-            .accessors([(d: any) => new Date(dayjs(d.time).format('YYYY-MM-DD'))]);
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            .accessors([(d: any) => new Date(d.time)]);
+
+        const data = {
+            series: props.data,
+            crosshair: [{ x: 0, y: 0 }],
+        };
+
+        const xScale = d3.scaleTime();
         const yScale = d3.scaleLinear();
-
-        const xScale = d3.scaleTime().domain(xExtent(data)).range([10, 10]);
-
-        // xScale.domain(xExtent(data));
-        yScale.domain(priceRange(data));
-
-        // axes
-        const xAxis = d3fc.axisBottom().scale(xScale);
-        const yAxis = d3fc.axisRight().scale(yScale);
+        const crossHair = d3fc
+            .annotationSvgCrosshair()
+            .xLabel('')
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            .decorate((selection: any) => {
+                selection
+                    .enter()
+                    .style('pointer-events', 'all')
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    .style('fill', (d: any) => (d.close > d.open ? '#7371FC' : '#CDC1FF'))
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    .style('stroke', (d: any) => (d.close > d.open ? '#7371FC' : '#CDC1FF'));
+            });
 
         const areaSeries = d3fc
             .seriesSvgArea()
             .mainValue((d: any) => d.value)
-            .crossValue((d: any) => new Date(dayjs(d.time).format('YYYY-MM-DD')))
+            .crossValue((d: any) => new Date(d.time))
             .xScale(xScale)
             .yScale(yScale)
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             .decorate((selection: any) => {
-                // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                selection
-                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                    .style('fill', (d: any) => {
-                        return 'rgba(115, 113, 252, 0.25)';
-                    })
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    .on('mouseover', (event: any) => {
-                        const x0 = xScale.invert(d3.pointer(event)[0]);
-                        const y0 = yScale.invert(d3.pointer(event)[1]);
-
-                        props.setValue!(y0);
-                        const formattedTime = dayjs(x0).format('MMM D, YYYY');
-                        props.setLabel!(formattedTime);
-                        setTargets([{ time: dayjs(props.value).format('YYYY-MM-DD'), value: y0 }]);
-                    });
+                selection.style('fill', () => {
+                    return 'rgba(115, 113, 252, 0.25)';
+                });
             });
 
         const lineSeries = d3fc
@@ -93,96 +81,67 @@ export default function TvlChart(props: TvlChartProps) {
             .xScale(xScale)
             .yScale(yScale)
             .decorate((selection: any) => {
-                // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                selection
-                    .enter()
-                    .style('stroke', (d: any) => '#7371FC')
-                    .on('mouseover', (event: any) => {
-                        const x0 = xScale.invert(d3.pointer(event)[0]);
-                        const y0 = yScale.invert(d3.pointer(event)[1]);
-
-                        props.setValue!(y0);
-                        const formattedTime = dayjs(x0).format('MMM D, YYYY');
-                        props.setLabel!(formattedTime);
-                        setTargets([{ time: dayjs(props.value).format('YYYY-MM-DD'), value: y0 }]);
-                    });
+                selection.enter().style('stroke', () => '#7371FC');
             });
 
-        const verticalLine = d3fc
-            .annotationSvgLine()
-            .orient('vertical')
-            .value((d: any) => new Date(d.time))
-            .xScale(xScale)
-            .yScale(yScale);
+        const multi = d3fc
+            .seriesSvgMulti()
+            .series([lineSeries, areaSeries, crossHair])
+            .mapping((data: any, index: number, series: any) => {
+                switch (series[index]) {
+                    case crossHair:
+                        return data.crosshair;
+                    default:
+                        return data.series;
+                }
+            });
 
-        verticalLine.decorate((selection: any) => {
-            selection.enter().select('g.top-handle').append('text').attr('x', 5).attr('y', -5);
-            selection
-                .enter()
-                .select('line')
-                .attr('class', 'line')
-                .attr('stroke', '#cdc1ff')
-                .attr('stroke-width', 0.5)
-                .style('stroke-dasharray', '6 6');
-            selection.select('g.top-handle text').text('');
+        const chart = d3fc
+            .chartCartesian({
+                xScale: xScale,
+                yScale: yScale,
+            })
+            .yTicks([5])
+            .yDomain(priceRange(data.series))
+            .xDomain(xExtent(data.series))
+            .svgPlotArea(multi);
+
+        const pointer = d3fc.pointer().on('point', (event: any) => {
+            if (event.length > 0) {
+                const xVal = xScale.invert(event[0].x);
+                data.crosshair = [
+                    {
+                        x: event[0].x,
+                        y: yScale(xVal),
+                    },
+                ];
+
+                const parsed = data.series.find(
+                    (item) =>
+                        moment(new Date(item.time)).format('DD/MM/YYYY') ===
+                        moment(xVal).format('DD/MM/YYYY'),
+                );
+
+                props.setValue?.(parsed?.value);
+                props.setLabel?.(moment.utc(xVal).format('DD/MM/YYYY'));
+            }
+            render();
         });
 
-        const areaJoin = d3fc.dataJoin('g', 'webgl');
-        const lineJoin = d3fc.dataJoin('g', 'line');
-        const targetsJoin = d3fc.dataJoin('g', 'targets');
+        function render() {
+            d3.select('.demo').datum(data).call(chart);
+            d3.select('.demo .plot-area').call(pointer);
+        }
 
-        d3.select(d3PlotArea.current).on('measure', function (event: any) {
-            xScale.range([0, event.detail.width]);
-            yScale.range([event.detail.height, 0]);
-        });
-
-        d3.select(d3PlotArea.current).on('draw', function (event: any) {
-            const svg = d3.select(event.target).select('svg');
-            areaJoin(svg, [data]).call(areaSeries);
-            lineJoin(svg, [data]).call(lineSeries);
-            targetsJoin(svg, [targets]).call(verticalLine);
-        });
-
-        d3.select(d3Xaxis.current).on('draw', function (event: any) {
-            d3.select(event.target).select('svg').call(xAxis);
-        });
-
-        d3.select(d3Yaxis.current).on('draw', function (event: any) {
-            d3.select(event.target).select('svg').call(yAxis);
-        });
-        const nd = d3.select('#group').node() as any;
-        nd.requestRedraw();
-    }, [props.value, props.label, targets, data]);
+        render();
+    }, []);
 
     return (
-        <div ref={d3Container} style={{ height: '100%', width: '100%' }} data-testid={'chart'}>
-            <d3fc-group
-                id='group'
-                className='hellooo'
-                style={{
-                    display: 'flex',
-                    height: '100%',
-                    width: '100%',
-                    flexDirection: 'column',
-                }}
-                auto-resize
-            >
-                <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                    <div style={{ flex: 1, display: 'flex', flexDirection: 'row' }}>
-                        <d3fc-svg
-                            ref={d3PlotArea}
-                            className='plot-area'
-                            style={{ flex: 1, overflow: 'hidden' }}
-                        ></d3fc-svg>
-                        {/* <d3fc-svg ref={d3Yaxis} style={{ width: '3em' }}></d3fc-svg> */}
-                    </div>
-                    <d3fc-svg
-                        ref={d3Xaxis}
-                        className='x-axis'
-                        style={{ height: '2em', marginRight: '3em' }}
-                    ></d3fc-svg>
-                </div>
-            </d3fc-group>
-        </div>
+        <div
+            ref={d3Container}
+            className='demo'
+            style={{ height: '100%', width: '100%' }}
+            data-testid={'chart'}
+        ></div>
     );
 }
