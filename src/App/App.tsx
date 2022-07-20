@@ -72,6 +72,7 @@ import { querySpotPrice } from './functions/querySpotPrice';
 import { fetchAddress } from './functions/fetchAddress';
 import truncateDecimals from '../utils/data/truncateDecimals';
 import { getNFTs } from './functions/getNFTs';
+import { useSlippage } from './useSlippage';
 
 const cachedQuerySpotPrice = memoizePromiseFn(querySpotPrice);
 const cachedFetchAddress = memoizePromiseFn(fetchAddress);
@@ -110,6 +111,8 @@ export default function App() {
         initializeUserLocalStorage();
         getImportedTokens();
     }, [tokenListsReceived]);
+
+    useSlippage();
 
     // update local state with searchable tokens once after initial load of app
     useEffect(() => {
