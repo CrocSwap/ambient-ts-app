@@ -3,10 +3,10 @@
     top: 50px;
     width: 100px;
     /* transform: translateX(-45%); */
-    background-color: var(--bg);
+    background-color: blue;
     border: var(--border);
-    border-radius: var(--border-radius);
+    border-radius: 4px;
     padding: 12px;
     overflow: hidden;
-    transition: height var(--speed) ease;
+    transition: height 500ms ease;
 }

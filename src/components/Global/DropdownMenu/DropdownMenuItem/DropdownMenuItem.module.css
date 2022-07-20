@@ -3,8 +3,8 @@
     height: 50px;
     display: flex;
     align-items: center;
-    border-radius: var(--border-radius);
-    transition: background var(--speed);
+    border-radius: 4px;
+    transition: background 500ms;
     padding: 0.5rem;
   }
   

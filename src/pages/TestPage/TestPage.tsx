@@ -13,6 +13,7 @@
 // import PositionCard from '../../components/Global/Position/PositionCard';
 // import { TokenListIF } from '../../utils/interfaces/exports';
 import styles from './TestPage.module.css';
+import { FiMoreHorizontal } from 'react-icons/fi';
 
 import Range from '../../components/Global/Account/Range/Range';
 import Order from '../../components/Global/Account/Order/Order';
@@ -112,7 +113,7 @@ export default function TestPage() {
                 <Order />
                 <TransactionsTable />
 
-                <DropdownMenu>
+                <DropdownMenu title={<FiMoreHorizontal size={20} />}>
                     <DropdownMenuContainer>
                         <DropdownMenuItem>Item 1</DropdownMenuItem>
                         <DropdownMenuItem>Item 2</DropdownMenuItem>
