@@ -39,8 +39,12 @@
 }
 
 
-.account{
+.account, .token_qty, .account_column, .token_qty_column, .pool_name{
     margin: 0 4px;
+    color: rgba(235, 235, 255, 0.4);
+    font-size: 10px;
+line-height: 13px;
+
 }
 
 
@@ -100,32 +104,39 @@
        
     }
 
-.main_container{
-    color: white;
-    
-   
-}
+
 
 .row{
     /* background: red; */
     color: white;
+    height: 48px;
     
 
 }
 .main_container{
     display: grid;
     grid-template-columns:50px auto 50px;
-    font-size: 10px;
+  
 }
 .row{
     display: grid;
-    grid-template-columns: 1fr repeat(2, 50px) 40px 20px;
+    grid-template-columns: 1fr repeat(2, 70px) 50px 70px;
     grid-gap: 4px;
+    /* background: orange; */
 
 align-items: center;
 }
 
-
+.min_max_range, .price{
+    font-size: 10px;
+line-height: 12px;
+color: #5FA2FF;
+}
+.remove_range_column, .remove, .range{
+    font-size: 10px;
+    line-height: 12px;
+    color: #5FFFF2;
+}
 .menu_buttons,
  .account, 
  .remove,
@@ -149,7 +160,7 @@ align-items: center;
         display: grid;
     grid-template-columns: auto repeat(2, 75px) 80px ;
     grid-gap: 4px;
-    background: rgb(41, 41, 23);
+    /* background: rgb(197, 197, 101); */
    
     align-items: center;
     }
@@ -161,6 +172,11 @@ align-items: center;
 }
 /* Medium screen devices (768px and above) */
 @media only screen and (min-width: 768px) {
+
+    .min_max, .min_max_range, .token_qty, .token_qty_column, .account_column, .remove_range_column, .pool_name, .account, .remove, .range{
+        font-size: 12px;
+line-height: 15px;
+    }
     .remove_range_column, .token_qty_column{
         display: none;
     }
@@ -175,6 +191,7 @@ align-items: center;
 
     .pool_name{
         display: flex;
+        
     }
     .main_container{
        
@@ -183,7 +200,7 @@ align-items: center;
 
     .row{
         grid-template-columns: 100px auto 60px repeat(4, 75px)  ;
-        background: red;
+        /* background: red; */
 
     }
     
@@ -198,7 +215,7 @@ align-items: center;
     
     
     .row{
-        background: rgb(5, 5, 46);
+        /* background: rgb(131, 131, 155); */
         grid-template-columns: 100px auto auto repeat(4, 90px)  ;
 
     }
@@ -225,7 +242,7 @@ align-items: center;
     }
     .row{
         grid-template-columns: 100px auto auto 80px repeat(4, 95px) ;
-        background: green;
+        /* background: green; */
 
     }
 
@@ -242,7 +259,7 @@ align-items: center;
     
     .row{
         grid-template-columns: 100px auto auto 90px repeat(4, 95px) ;
-        background: brown;
+        /* background: brown; */
 
     }
     .menu_buttons{
@@ -268,7 +285,7 @@ align-items: center;
     }
     .row{
         grid-template-columns: 100px auto auto 300px repeat(2, 95px) 80px 100px;
-        background: blue;
+        /* background: blue; */
 
     }
 

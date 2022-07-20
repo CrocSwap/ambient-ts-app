@@ -190,14 +190,13 @@ footer {
   .main-layout {
 
     margin: 0;
- 
     overflow: scroll;
   }
 
 }
 
 
-@media only screen and (min-width: 600px) {
+@media only screen and (min-width: 1028px) {
   .main-layout-2{
     margin-left: 16rem;
     
