@@ -112,7 +112,9 @@ export default function App() {
         getImportedTokens();
     }, [tokenListsReceived]);
 
-    useSlippage();
+    const [swapSlippage, mintSlippage] = useSlippage();
+    useEffect(() => console.log(swapSlippage), [swapSlippage]);
+    useEffect(() => console.log(mintSlippage), [mintSlippage]);
 
     // update local state with searchable tokens once after initial load of app
     useEffect(() => {
