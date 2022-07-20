@@ -1,4 +1,5 @@
 import styles from './TransactionCard.module.css';
+import { FiMoreHorizontal } from 'react-icons/fi';
 
 export default function TransactionCard() {
     const tokenLogos = (
@@ -46,18 +47,18 @@ export default function TransactionCard() {
 
     const menuButtons = (
         <div className={styles.menu_buttons}>
-            <button>Edit</button>
-            <button>Remove</button>
-            <button>Details</button>
-            <button>Harvest</button>
-            <button>Reposition</button>
+            <button className={styles.reposition_button}>Reposition</button>
+            <button className={styles.option_button}>Edit</button>
+            <button className={styles.option_button}>Remove</button>
+            <button className={styles.option_button}>Details</button>
+            <button className={styles.option_button}>Harvest</button>
         </div>
     );
 
     const menuIcon = (
         <div className={styles.min_buttons}>
-            <button>Reposition</button>
-            <div className={styles.menu_icon}>...</div>
+            <button className={styles.reposition_button}>Reposition</button>
+            <FiMoreHorizontal size={30} />
         </div>
     );
 

@@ -41,7 +41,7 @@
    
 }
 
-.token_qty, .token_qty_column, .account_column, .account{
+.token_qty, .token_qty_column, .account_column, .account, .pool_name{
     color: rgba(235, 235, 255, 0.4);
 
 }

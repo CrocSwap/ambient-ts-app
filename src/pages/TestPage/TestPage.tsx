@@ -16,8 +16,8 @@ import styles from './TestPage.module.css';
 
 import Range from '../../components/Global/Account/Range/Range';
 import Order from '../../components/Global/Account/Order/Order';
-import Transaction from '../../components/Transaction/Transaction';
-import Transactions from '../../components/Global/Transactions/Transactions';
+// import Transaction from '../../components/Transaction/Transaction';
+// import Transactions from '../../components/Global/Transactions/Transactions';
 import TransactionsTable from '../../components/Global/Account/Transaction/TransactionsTable';
 
 export default function TestPage() {
