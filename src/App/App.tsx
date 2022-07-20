@@ -320,12 +320,13 @@ export default function App() {
         }
     }, [tokenPairStringified]);
 
-    const [activePeriod, setActivePeriod] = useState(60); // 1 minute by default
+    const activePeriod = tradeData.activeChartPeriod;
+    // const [activePeriod, setActivePeriod] = useState(60); // 1 minute by default
 
     useEffect(() => {
         // console.log({ activePeriod });
 
-        if (baseTokenAddress && quoteTokenAddress) {
+        if (baseTokenAddress && quoteTokenAddress && activePeriod) {
             const candleSeriesCacheEndpoint = 'https://809821320828123.de:5000/candle_series?';
 
             fetch(
@@ -1328,7 +1329,7 @@ export default function App() {
                                     lastBlockNumber={lastBlockNumber}
                                     isTokenABase={isTokenABase}
                                     poolPriceDisplay={poolPriceDisplay}
-                                    setActivePeriod={setActivePeriod}
+                                    // setActivePeriod={setActivePeriod}
                                 />
                             }
                         >

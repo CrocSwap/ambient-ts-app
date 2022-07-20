@@ -167,6 +167,12 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
                     Home
                 </NavLink>
                 <NavLink
+                    to='/chart'
+                    className={({ isActive }) => (isActive ? styles.active : styles.inactive)}
+                >
+                    Chart
+                </NavLink>
+                <NavLink
                     to='/swap'
                     className={({ isActive }) => (isActive ? styles.active : styles.inactive)}
                 >

@@ -2,6 +2,9 @@ import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { DetailedHTMLProps, HTMLAttributes, useEffect, useRef, useState } from 'react';
 import './Chart.css';
+import { useAppSelector } from '../../utils/hooks/reduxToolkit';
+import { POOL_PRIMARY, sortBaseQuoteTokens } from '@crocswap-libs/sdk';
+import { CandleData } from '../../utils/state/graphDataSlice';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -20,6 +23,48 @@ export default function Chart() {
     const d3PlotArea = useRef(null);
     const d3Xaxis = useRef(null);
     const d3Yaxis = useRef(null);
+
+    const tradeData = useAppSelector((state) => state.tradeData);
+    const graphData = useAppSelector((state) => state.graphData);
+
+    const [currentPeriodCandleData, setCurrentPeriodCandleData] = useState<CandleData[]>();
+
+    useEffect(() => {
+        const poolIdx = POOL_PRIMARY;
+        const sortedTokenAddresses = sortBaseQuoteTokens(
+            tradeData.tokenA.address,
+            tradeData.tokenB.address,
+        );
+        const baseTokenAddress = sortedTokenAddresses[0];
+        const quoteTokenAddress = sortedTokenAddresses[1];
+
+        const poolToFind = JSON.stringify({
+            baseAddress: baseTokenAddress,
+            quoteAddress: quoteTokenAddress,
+            poolIdx: poolIdx,
+        }).toLowerCase();
+
+        const indexOfPool = graphData.candlesForAllPools.pools
+            .map((item) => JSON.stringify(item.pool).toLowerCase())
+            .findIndex((pool) => pool === poolToFind);
+
+        const durationToFind = tradeData.activeChartPeriod;
+        const indexOfDuration = graphData.candlesForAllPools.pools[
+            indexOfPool
+        ]?.candlesByPoolAndDuration
+            .map((item) => item.duration)
+            .findIndex((duration) => duration === durationToFind);
+
+        setCurrentPeriodCandleData(
+            graphData.candlesForAllPools.pools[indexOfPool]?.candlesByPoolAndDuration[
+                indexOfDuration
+            ]?.candles,
+        );
+    }, [tradeData, graphData]);
+
+    useEffect(() => {
+        if (currentPeriodCandleData) console.log({ currentPeriodCandleData });
+    }, [currentPeriodCandleData]);
 
     // const generator = d3fc.randomFinancial()
     //     .startDate(new Date(2021, 0, 1))
