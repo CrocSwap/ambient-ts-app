@@ -146,7 +146,7 @@ export default function App() {
             user.tokens && setImportedTokens(user.tokens);
         }
     }
-
+    const [sidebarManuallySet, setSidebarManuallySet] = useState<boolean>(false);
     const [showSidebar, setShowSidebar] = useState<boolean>(false);
     const location = useLocation();
 
@@ -971,9 +971,13 @@ export default function App() {
     const currentLocation = location.pathname;
 
     function toggleSidebarBasedOnRoute() {
-        setShowSidebar(true);
-        if (currentLocation === '/' || currentLocation === '/swap') {
-            setShowSidebar(false);
+        if (sidebarManuallySet) {
+            return;
+        } else {
+            setShowSidebar(true);
+            if (currentLocation === '/' || currentLocation === '/swap') {
+                setShowSidebar(false);
+            }
         }
     }
 
@@ -1243,6 +1247,7 @@ export default function App() {
     // props for <Sidebar/> React element
     function toggleSidebar() {
         setShowSidebar(!showSidebar);
+        setSidebarManuallySet(true);
     }
     const sidebarProps = {
         showSidebar: showSidebar,
