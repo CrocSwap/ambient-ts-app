@@ -1,18 +1,21 @@
  
   .menu_item {
-    height: 50px;
+   
     display: flex;
+    justify-content: center;
     align-items: center;
     border-radius: 4px;
     transition: background 500ms;
-    padding: 0.5rem;
+   /* background:var(--dark3); */
+   padding: 8px 0;
+   cursor: pointer;
   }
   
 
   
 
   .menu_item:hover {
-    background-color: #525357;
+    background-color: var(--dark2);
   }
 
   
