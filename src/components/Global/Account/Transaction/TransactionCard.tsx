@@ -85,5 +85,12 @@ export default function TransactionCard() {
         </div>
     );
 
-    return <div>Transaction card</div>;
+    return (
+        <div className={styles.main_container}>
+            {tokenLogos}
+            {rowData}
+            {menuButtons}
+            {menuIcon}
+        </div>
+    );
 }
