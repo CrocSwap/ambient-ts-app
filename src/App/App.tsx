@@ -72,6 +72,7 @@ import { querySpotPrice } from './functions/querySpotPrice';
 import { fetchAddress } from './functions/fetchAddress';
 import truncateDecimals from '../utils/data/truncateDecimals';
 import { getNFTs } from './functions/getNFTs';
+// import SidebarFooter from '../components/Global/SIdebarFooter/SidebarFooter';
 
 const cachedQuerySpotPrice = memoizePromiseFn(querySpotPrice);
 const cachedFetchAddress = memoizePromiseFn(fetchAddress);
@@ -1357,6 +1358,7 @@ export default function App() {
                 {snackbarContent}
             </div>
             <PageFooter lastBlockNumber={lastBlockNumber} />
+            {/* <SidebarFooter/> */}
         </>
     );
 }

@@ -1,7 +1,6 @@
 import styles from './Sidebar.module.css';
 import React from 'react';
 import { BiSearch } from 'react-icons/bi';
-import { Link } from 'react-router-dom';
 // import { MdDoubleArrow } from 'react-icons/md';
 import favouritePoolsImage from '../../../assets/images/sidebarImages/favouritePools.svg';
 import openOrdersImage from '../../../assets/images/sidebarImages/openOrders.svg';
@@ -45,31 +44,6 @@ export default function Sidebar(props: SidebarProps): React.ReactElement<Sidebar
         },
     ];
 
-    const sidebarFooter = (
-        <div className={styles.sidebar_footer}>
-            <Link to='/analytics'>
-                <img src={topPoolsImage} alt='top tokens' />
-                <p>Top Tokens</p>
-            </Link>
-            <Link to='/analytics'>
-                <img src={topPoolsImage} alt='top pools' />
-                <p>Top Pools</p>
-            </Link>
-            <Link to='/analytics'>
-                <img src={rangePositionsImage} alt='range positions' />
-                <p>Range Positions</p>
-            </Link>
-            <Link to='/analytics'>
-                <img src={openOrdersImage} alt='Open Orders' />
-                <p>Orders</p>
-            </Link>
-            <Link to='/analytics'>
-                <img src={recentTransactionsImage} alt='recent transactions' />
-                <p>Recent Positions</p>
-            </Link>
-        </div>
-    );
-
     const searchContainer = (
         <div className={styles.main_search_container}>
             <div className={styles.search_container}>
@@ -89,50 +63,51 @@ export default function Sidebar(props: SidebarProps): React.ReactElement<Sidebar
 
     const sidebarStyle = showSidebar ? styles.sidebar_active : styles.sidebar;
     return (
-        <div>
-            <nav className={`${styles.sidebar} ${sidebarStyle}`}>
-                <ul className={styles.sidebar_nav}>
-                    {searchContainer}
-                    {navItems1.map((item, idx) => (
-                        //   <li key={idx} className={styles.sidebar_item}>
-                        //  <div className={styles.sidebar_link}>
-                        //      {showSidebar && <MdPlayArrow size={12} color='#ffffff' />}
-                        //      <img src={item.icon} alt={item.name} width='20px' />
+        <>
+            <div>
+                <nav className={`${styles.sidebar} ${sidebarStyle}`}>
+                    <ul className={styles.sidebar_nav}>
+                        {searchContainer}
+                        {navItems1.map((item, idx) => (
+                            //   <li key={idx} className={styles.sidebar_item}>
+                            //  <div className={styles.sidebar_link}>
+                            //      {showSidebar && <MdPlayArrow size={12} color='#ffffff' />}
+                            //      <img src={item.icon} alt={item.name} width='20px' />
 
-                        //      <span className={styles.link_text}>{item.name}</span>
-                        //    </div>
-                        // </li>
-                        <SidebarAccordion
-                            showSidebar={showSidebar}
-                            idx={idx}
-                            item={item}
-                            toggleSidebar={toggleSidebar}
-                            key={idx}
-                        />
-                    ))}
-
-                    <div className={styles.bottom_elements}>
-                        {navItems2.map((item, idx) => (
-                            // <li key={idx} className={styles.sidebar_item} >
-                            //     <div className={styles.sidebar_link}>
-                            //         {showSidebar && <MdPlayArrow size={12} color='#ffffff' />}
-                            //         <img src={item.icon} alt={item.name} width='20px' />
-
-                            //         <span className={styles.link_text}>{item.name}</span>
-                            //     </div>
+                            //      <span className={styles.link_text}>{item.name}</span>
+                            //    </div>
                             // </li>
                             <SidebarAccordion
-                                toggleSidebar={toggleSidebar}
                                 showSidebar={showSidebar}
                                 idx={idx}
                                 item={item}
+                                toggleSidebar={toggleSidebar}
                                 key={idx}
                             />
                         ))}
-                    </div>
-                </ul>
-            </nav>
-            {sidebarFooter}
-        </div>
+
+                        <div className={styles.bottom_elements}>
+                            {navItems2.map((item, idx) => (
+                                // <li key={idx} className={styles.sidebar_item} >
+                                //     <div className={styles.sidebar_link}>
+                                //         {showSidebar && <MdPlayArrow size={12} color='#ffffff' />}
+                                //         <img src={item.icon} alt={item.name} width='20px' />
+
+                                //         <span className={styles.link_text}>{item.name}</span>
+                                //     </div>
+                                // </li>
+                                <SidebarAccordion
+                                    toggleSidebar={toggleSidebar}
+                                    showSidebar={showSidebar}
+                                    idx={idx}
+                                    item={item}
+                                    key={idx}
+                                />
+                            ))}
+                        </div>
+                    </ul>
+                </nav>
+            </div>
+        </>
     );
 }

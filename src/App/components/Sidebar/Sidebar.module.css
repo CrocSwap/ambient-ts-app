@@ -198,33 +198,6 @@ line-height: 15px;
 
 }
 
-/* SIDEBAR FOOTER */
-
-.sidebar_footer{
-  width: 100vw;
-  bottom: 0;
-  position: fixed;
-  /* background-color: var(--dark1); */
-  transition: width var(--animation-speed) ease;
-
-  background-color: #143b6c;
-    display: flex;
-    height: 64px;
-    display: none;
-}
-
-.sidebar_footer a{
-  cursor: pointer;
-  display: flex;
-  flex: 1 0;
-  flex-flow: column;
-  align-items: center;
-  padding: 9px 8px;
-  font-size: 12px;
-}
-.sidebar_footer a img, .sidebar_footer a svg{
-  width: 25px;
-}
 
 
 
@@ -233,7 +206,7 @@ line-height: 15px;
   /* Small screens */
   @media only screen and (max-width: 1020px) {
     .sidebar {
-
+display: none;
 
       bottom: 0;
       width: 100vw;
@@ -241,7 +214,7 @@ line-height: 15px;
      background: var(--dark2);
      z-index: 2;
     }
-  
+ 
     .logo {
       display: none;
     }
