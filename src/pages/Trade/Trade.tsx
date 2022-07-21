@@ -23,7 +23,6 @@ interface ITradeProps {
     lastBlockNumber: number;
     isTokenABase: boolean;
     poolPriceDisplay: number;
-    // setActivePeriod: React.Dispatch<React.SetStateAction<number>>;
 }
 
 export default function Trade(props: ITradeProps) {

@@ -22,3 +22,9 @@
     list-style-type: none;
     outline: 2px solid yellow;
 } */
+
+.menu_container{
+    background: yellow;
+    width: 200px;
+    display: flex;
+}

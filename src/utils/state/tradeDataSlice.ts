@@ -4,8 +4,6 @@ import { TokenIF } from '../interfaces/TokenIF';
 export interface tradeData {
     tokenA: TokenIF;
     tokenB: TokenIF;
-    // addressTokenA: string;
-    // addressTokenB: string;
     didUserFlipDenom: boolean;
     isDenomBase: boolean;
     advancedMode: boolean;
@@ -66,12 +64,6 @@ export const tradeDataSlice = createSlice({
         setTokenB: (state, action: PayloadAction<TokenIF>) => {
             state.tokenB = action.payload;
         },
-        // setAddressTokenA: (state, action: PayloadAction<string>) => {
-        // state.addressTokenA = action.payload;
-        // },
-        // setAddressTokenB: (state, action: PayloadAction<string>) => {
-        // state.addressTokenB = action.payload;
-        // },
         setDidUserFlipDenom: (state, action: PayloadAction<boolean>) => {
             state.didUserFlipDenom = action.payload;
         },
@@ -131,8 +123,6 @@ export const tradeDataSlice = createSlice({
 export const {
     setTokenA,
     setTokenB,
-    // setAddressTokenA,
-    // setAddressTokenB,
     setDidUserFlipDenom,
     toggleDidUserFlipDenom,
     setDenomInBase,
