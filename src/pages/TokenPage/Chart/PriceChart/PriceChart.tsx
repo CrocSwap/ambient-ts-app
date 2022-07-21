@@ -35,15 +35,10 @@ export default function PriceChart(props: PriceChartProps) {
     const d3Container = useRef(null);
     useEffect(() => {
         const millisPerDay = 24 * 60 * 60 * 1000;
-        const priceRange = d3fc.extentLinear().accessors([(d: any) => d.high, (d: any) => d.low]);
+        const yExtent = d3fc.extentLinear().accessors([(d: any) => d.high, (d: any) => d.low]);
         const xExtent = d3fc
             .extentDate()
-            .accessors([
-                (d: any) => {
-                    // console.error('date :'+new Date(d.time * 1000) )
-                    return new Date(d.time * 1000);
-                },
-            ])
+            .accessors([(d: any) => new Date(d.time * 1000)])
             .padUnit('domain')
             .pad([millisPerDay, millisPerDay]);
 
@@ -54,6 +49,10 @@ export default function PriceChart(props: PriceChartProps) {
 
         const xScale = d3.scaleTime();
         const yScale = d3.scaleLinear();
+
+        xScale.domain(xExtent(data.series));
+        yScale.domain(yExtent(data.series));
+
         const crossHair = d3fc
             .annotationSvgCrosshair()
             .xLabel('')
@@ -88,7 +87,7 @@ export default function PriceChart(props: PriceChartProps) {
                 yScale: yScale,
             })
             .yTicks([5])
-            .yDomain(priceRange(data.series))
+            .yDomain(yExtent(data.series))
             .xDomain(xExtent(data.series))
             .svgPlotArea(multi);
 

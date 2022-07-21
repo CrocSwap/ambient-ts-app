@@ -33,11 +33,11 @@ declare global {
 
 export default function TokenPageChart(props: TokenPageChartProps) {
     const data = props.tvlData;
-    const [activeTab, setActiveTab] = useState('tvl');
+    const [activeTab, setActiveTab] = useState('price');
     const tabData = [
+        { title: 'Volume', id: 'vlm' },
         { title: 'TVL', id: 'tvl' },
         { title: 'Price', id: 'price' },
-        { title: 'Volume', id: 'vlm' },
     ];
     const [latestValue, setLatestValue] = useState<number | undefined>();
     const [valueLabel, setValueLabel] = useState<string | undefined>();

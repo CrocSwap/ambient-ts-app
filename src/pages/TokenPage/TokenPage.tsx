@@ -23,7 +23,9 @@ const DEFAULT_TIME_WINDOW = TimeWindow.WEEK;
 export default function TokenPage() {
     const { address } = useParams() ?? '';
     const chartData = useTokenChartData(address!);
-
+    const [timeWindow] = useState(DEFAULT_TIME_WINDOW);
+    const tokenData = useTokenData(address);
+    const priceData = useTokenPriceData(address!, ONE_HOUR_SECONDS, timeWindow);
     useEffect(() => {
         window.scrollTo(0, 0);
     }, []);
@@ -41,7 +43,6 @@ export default function TokenPage() {
         }
     }, [chartData]);
 
-    const tokenData = useTokenData(address);
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const poolsForToken = usePoolsForToken(address!);
     const poolDatas = usePoolDatas(poolsForToken ?? []);
@@ -61,10 +62,7 @@ export default function TokenPage() {
         }
     }, [chartData]);
 
-    const [timeWindow] = useState(DEFAULT_TIME_WINDOW);
-
     // pricing data
-    const priceData = useTokenPriceData(address!, ONE_HOUR_SECONDS, timeWindow);
     const adjustedToCurrent = useMemo(() => {
         if (priceData && tokenData && priceData.length > 0) {
             const adjusted = Object.assign([], priceData);
@@ -77,7 +75,7 @@ export default function TokenPage() {
             });
             return adjusted;
         } else {
-            return undefined;
+            return [];
         }
     }, [priceData, tokenData]);
 

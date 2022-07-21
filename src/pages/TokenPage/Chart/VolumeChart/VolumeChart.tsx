@@ -1,8 +1,9 @@
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect } from 'react';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { formatDollarAmountAxis } from '../../../../utils/numbers';
 import dayjs from 'dayjs';
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 interface VolumeData {
     data: any[];
