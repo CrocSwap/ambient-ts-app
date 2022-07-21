@@ -139,10 +139,10 @@ export default function TokenPage() {
             </div>
 
             <Divider />
-            <h2>Pools</h2>
-
-            <Pools pools={poolDatas} propType='all' maxItems={10} />
-            {/* <Transactions transactions={transactions!} /> */}
+            <div className={styles.cqwlBw}>
+                <h2>Pools</h2>
+                <Pools pools={poolDatas} propType='all' maxItems={10} />
+            </div>
         </main>
     );
 }

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import dayjs from 'dayjs';
 import { DetailedHTMLProps, HTMLAttributes, useState } from 'react';
 import { PoolData } from '../../../state/pools/models';

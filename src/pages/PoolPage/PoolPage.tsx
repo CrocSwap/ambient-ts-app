@@ -8,7 +8,6 @@ import { feeTierPercent, isAddress } from '../../utils';
 import PoolInfoCard from './PoolInfoCard/PoolInfoCard';
 import { formatAmount } from '../../utils/numbers';
 import PoolPageChart from './Chart/PoolPageChart';
-import { unixToDate } from '../../utils/date';
 
 export default function PoolPage() {
     const { address } = useParams();
@@ -18,6 +17,7 @@ export default function PoolPage() {
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const poolData = usePoolDatas([address!])[0];
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const chartData = usePoolChartData(address!);
     // const transactions = usePoolTransactions(address);
 

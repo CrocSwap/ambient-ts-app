@@ -50,9 +50,6 @@ export default function PriceChart(props: PriceChartProps) {
         const xScale = d3.scaleTime();
         const yScale = d3.scaleLinear();
 
-        xScale.domain(xExtent(data.series));
-        yScale.domain(yExtent(data.series));
-
         const crossHair = d3fc
             .annotationSvgCrosshair()
             .xLabel('')

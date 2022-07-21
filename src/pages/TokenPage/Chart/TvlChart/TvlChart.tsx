@@ -35,7 +35,7 @@ export default function TvlChart(props: TvlChartProps) {
 
     useEffect(() => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const priceRange = d3fc.extentLinear().accessors([(d: any) => d.value]);
+        const yExtent = d3fc.extentLinear().accessors([(d: any) => d.value]);
         const xExtent = d3fc
             .extentDate()
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -56,9 +56,7 @@ export default function TvlChart(props: TvlChartProps) {
                 selection
                     .enter()
                     .style('pointer-events', 'all')
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     .style('fill', (d: any) => (d.close > d.open ? '#7371FC' : '#CDC1FF'))
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     .style('stroke', (d: any) => (d.close > d.open ? '#7371FC' : '#CDC1FF'));
             });
 
@@ -102,7 +100,7 @@ export default function TvlChart(props: TvlChartProps) {
                 yScale: yScale,
             })
             .yTicks([5])
-            .yDomain(priceRange(data.series))
+            .yDomain(yExtent(data.series))
             .xDomain(xExtent(data.series))
             .svgPlotArea(multi);
 
