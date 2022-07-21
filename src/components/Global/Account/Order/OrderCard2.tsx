@@ -3,6 +3,22 @@ import TableMenu from '../../TableMenu/TableMenu';
 import styles from './OrderCard2.module.css';
 
 export default function OrderCard2() {
+    const token1 = (
+        <div className={styles.qty_sing}>
+            <p>T1 Qty</p>
+            <img
+                src='https://icons.iconarchive.com/icons/cjdowner/cryptocurrency-flat/1024/Ethereum-ETH-icon.png'
+                alt=''
+            />
+        </div>
+    );
+    const token2 = (
+        <div className={styles.qty_sing}>
+            <p>T2 Qty</p>
+            <img src='https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.png' alt='' />
+        </div>
+    );
+
     return (
         <div className={styles.main_container}>
             <div className={styles.row_container}>
@@ -26,11 +42,23 @@ export default function OrderCard2() {
                 <p className={styles.type_sing}>Limit</p>
                 {/* ------------------------------------------------------ */}
                 <div className={styles.column_qty}>
-                    <p>T1 Qty</p>
-                    <p>T2 Qty</p>
+                    <div>
+                        <p>T1 Qty</p>
+                        <img
+                            src='https://icons.iconarchive.com/icons/cjdowner/cryptocurrency-flat/1024/Ethereum-ETH-icon.png'
+                            alt=''
+                        />
+                    </div>
+                    <div>
+                        <p>T2 Qty</p>
+                        <img
+                            src='https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.png'
+                            alt=''
+                        />
+                    </div>
                 </div>
-                <p className={styles.qty_sing}>T1 Qty</p>
-                <p className={styles.qty_sing}>T2 Qty</p>
+                {token1}
+                {token2}
                 {/* ------------------------------------------------------ */}
                 <div className={styles.status}>
                     <OpenOrderStatus isFilled />
