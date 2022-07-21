@@ -70,12 +70,15 @@ import {
 import { memoizePromiseFn } from './functions/memoizePromiseFn';
 import { querySpotPrice } from './functions/querySpotPrice';
 import { fetchAddress } from './functions/fetchAddress';
+import { fetchTokenBalances } from './functions/fetchTokenBalances';
 import truncateDecimals from '../utils/data/truncateDecimals';
 import { getNFTs } from './functions/getNFTs';
+import { resetTokenData, setTokens } from '../utils/state/tokenDataSlice';
 // import SidebarFooter from '../components/Global/SIdebarFooter/SidebarFooter';
 
 const cachedQuerySpotPrice = memoizePromiseFn(querySpotPrice);
 const cachedFetchAddress = memoizePromiseFn(fetchAddress);
+const cachedFetchTokenBalances = memoizePromiseFn(fetchTokenBalances);
 const cachedGetTokenDecimals = memoizePromiseFn(getTokenDecimals);
 
 /** ***** React Function *******/
@@ -221,6 +224,7 @@ export default function App() {
 
     const [ensName, setEnsName] = useState('');
 
+    // check for ENS name account changes
     useEffect(() => {
         (async () => {
             if (account) {
@@ -235,6 +239,28 @@ export default function App() {
             }
         })();
     }, [account]);
+
+    const tokensInRTK = useAppSelector((state) => state.tokenData.tokens);
+
+    // check for token balances on each new block
+    useEffect(() => {
+        (async () => {
+            if (account) {
+                try {
+                    const tokens: TokenIF[] = await cachedFetchTokenBalances(
+                        account,
+                        chainId,
+                        lastBlockNumber,
+                    );
+                    // console.log({ tokens });
+                    if (JSON.stringify(tokensInRTK) !== JSON.stringify(tokens))
+                        dispatch(setTokens(tokens));
+                } catch (error) {
+                    console.log({ error });
+                }
+            }
+        })();
+    }, [account, chainId, lastBlockNumber]);
 
     const [baseTokenAddress, setBaseTokenAddress] = useState<string>('');
     const [quoteTokenAddress, setQuoteTokenAddress] = useState<string>('');
@@ -1086,6 +1112,7 @@ export default function App() {
         setTokenABalance('0');
         setTokenBBalance('0');
         dispatch(resetTradeData());
+        dispatch(resetTokenData());
         dispatch(resetGraphData());
         dispatch(resetReceiptData());
 
