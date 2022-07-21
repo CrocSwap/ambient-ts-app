@@ -18,8 +18,8 @@ interface TokenListPropsIF {
 }
 
 export default function TokenListCard(props: TokenListPropsIF) {
-    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const { list, listIsActive, toggleActiveState } = props;
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const classes = useStyles();
 
     const cardBackground = listIsActive ? ' ' : '';
@@ -38,7 +38,7 @@ export default function TokenListCard(props: TokenListPropsIF) {
                 style={{ backgroundColor: cardBackground, border: cardBorder }}
             >
                 <div className={styles.left_content}>
-                    <img src={uriToHttp(list.logoURI)} alt='' width='40px' />
+                    <img src={uriToHttp(list.logoURI)} alt={`logo for the token list ${list.name}`} width='40px' />
                     <div className={styles.token_list_card_name}>
                         <span> {list?.name}</span>
                         <div className={styles.bottom_container_menu}>
