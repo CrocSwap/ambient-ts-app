@@ -1167,7 +1167,7 @@ export default function App() {
             }
             // console.log({ balance });
         })();
-    }, [chainId, account, isWeb3Enabled, isAuthenticated]);
+    }, [provider, account, isWeb3Enabled, isAuthenticated]);
 
     const [gasPriceinGwei, setGasPriceinGwei] = useState<string>('');
 
