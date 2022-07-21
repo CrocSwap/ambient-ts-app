@@ -27,7 +27,7 @@ interface NavbarDropdownItemProps {
     topLevel?: boolean;
     goBackItem?: boolean;
     imageIcon?: string;
-
+    onClick?: () => void;
     children: React.ReactNode;
     rightIcon?: React.ReactNode;
 }
@@ -38,11 +38,21 @@ interface NavbarDropdownMenuProps {
     clickLogout: () => void;
     openModal: () => void;
     closeMenu?: () => void;
+    chainId: string;
+    setFallbackChainId: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export default function NavbarDropdownMenu(props: NavbarDropdownMenuProps) {
-    const { isAuthenticated, isWeb3Enabled, clickLogout, openModal, closeMenu } = props;
-    console.log(props.closeMenu);
+    const {
+        isAuthenticated,
+        isWeb3Enabled,
+        clickLogout,
+        openModal,
+        closeMenu,
+        chainId,
+        setFallbackChainId,
+    } = props;
+    // console.log(props.closeMenu);
 
     const [activeMenu, setActiveMenu] = useState('main');
     // eslint-disable-next-line
@@ -75,7 +85,10 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuProps) {
             <>
                 <div
                     className={`${styles.menu_item} ${topLevelItemStyle} ${goBackItemStyle}`}
-                    onClick={() => props.goToMenu && setActiveMenu(props.goToMenu)}
+                    onClick={() => {
+                        props.goToMenu && setActiveMenu(props.goToMenu);
+                        if (props.onClick) props.onClick();
+                    }}
                 >
                     {props.imageIcon && imageIcon}
                     {props.leftIcon && itemIcon}
@@ -86,6 +99,8 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuProps) {
         );
     }
 
+    const circleIcon = <FaDotCircle color='#CDC1FF' size={10} />;
+
     const networksItems = (
         <motion.div
             initial={{ opacity: 0 }}
@@ -94,15 +109,46 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuProps) {
         >
             <NavbarDropdownItem
                 imageIcon={kovanImage}
-                rightIcon={<FaDotCircle color='#CDC1FF' size={10} />}
+                rightIcon={chainId === '0x2a' ? circleIcon : null}
+                onClick={() => setFallbackChainId('0x2a')}
             >
                 Kovan
             </NavbarDropdownItem>
-            <NavbarDropdownItem imageIcon={ethereumImage}>Ropsten</NavbarDropdownItem>
-            <NavbarDropdownItem imageIcon={ethereumImage}>Ethereum</NavbarDropdownItem>
-            <NavbarDropdownItem imageIcon={polygonImage}>Polygon</NavbarDropdownItem>
-            <NavbarDropdownItem imageIcon={optimisticImage}>Optimism</NavbarDropdownItem>
-            <NavbarDropdownItem imageIcon={arbitrumImage}>Arbitrum</NavbarDropdownItem>
+            <NavbarDropdownItem
+                imageIcon={ethereumImage}
+                rightIcon={chainId === '0x3' ? circleIcon : null}
+                onClick={() => setFallbackChainId('0x3')}
+            >
+                Ropsten
+            </NavbarDropdownItem>
+            <NavbarDropdownItem
+                imageIcon={ethereumImage}
+                rightIcon={chainId === '0x1' ? circleIcon : null}
+                onClick={() => setFallbackChainId('0x1')}
+            >
+                Ethereum
+            </NavbarDropdownItem>
+            <NavbarDropdownItem
+                imageIcon={polygonImage}
+                rightIcon={chainId === '0x89' ? circleIcon : null}
+                onClick={() => setFallbackChainId('0x89')}
+            >
+                Polygon
+            </NavbarDropdownItem>
+            <NavbarDropdownItem
+                imageIcon={optimisticImage}
+                rightIcon={chainId === '0xa86a' ? circleIcon : null}
+                onClick={() => setFallbackChainId('0xa86a')}
+            >
+                Avalanche
+            </NavbarDropdownItem>
+            <NavbarDropdownItem
+                imageIcon={arbitrumImage}
+                rightIcon={chainId === '0xa869' ? circleIcon : null}
+                onClick={() => setFallbackChainId('0xa869')}
+            >
+                Fuji
+            </NavbarDropdownItem>
         </motion.div>
     );
 

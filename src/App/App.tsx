@@ -95,11 +95,17 @@ export default function App() {
 
     const { switchNetwork } = useChain();
 
+    const [fallbackChainId, setFallbackChainId] = useState('0x2a');
+
     const chainId = moralisChainId
         ? moralisChainId
         : window.ethereum?.networkVersion
         ? '0x' + parseInt(window.ethereum?.networkVersion).toString(16)
-        : '0x2a';
+        : fallbackChainId;
+
+    // useEffect(() => {
+    //     console.log({ fallbackChainId });
+    // }, [fallbackChainId]);
 
     useEffect(() => {
         console.log('switching networks because metamask network changed');
@@ -1216,6 +1222,7 @@ export default function App() {
         ensName: ensName,
         shouldDisplayAccountTab: shouldDisplayAccountTab,
         chainId: chainId,
+        setFallbackChainId: setFallbackChainId,
     };
 
     // props for <Swap/> React element

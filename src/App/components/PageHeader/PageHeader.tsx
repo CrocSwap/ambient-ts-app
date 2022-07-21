@@ -25,10 +25,11 @@ interface IHeaderProps {
     ensName: string;
     shouldDisplayAccountTab: boolean;
     chainId: string;
+    setFallbackChainId: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export default function PageHeader(props: IHeaderProps): React.ReactElement<IHeaderProps> {
-    const { ensName, shouldDisplayAccountTab, chainId } = props;
+    const { ensName, shouldDisplayAccountTab, chainId, setFallbackChainId } = props;
 
     const { user, account, enableWeb3, isWeb3Enabled, authenticate, isAuthenticated } =
         useMoralis();
@@ -125,6 +126,8 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
         isWeb3Enabled: isWeb3Enabled,
         clickLogout: props.clickLogout,
         openModal: openModal,
+        chainId: chainId,
+        setFallbackChainId: setFallbackChainId,
     };
 
     // End of Page Header Functions
