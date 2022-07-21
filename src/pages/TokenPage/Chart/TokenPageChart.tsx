@@ -33,7 +33,7 @@ declare global {
 
 export default function TokenPageChart(props: TokenPageChartProps) {
     const data = props.tvlData;
-    const [activeTab, setActiveTab] = useState('vlm');
+    const [activeTab, setActiveTab] = useState('tvl');
     const tabData = [
         { title: 'TVL', id: 'tvl' },
         { title: 'Price', id: 'price' },
@@ -48,11 +48,17 @@ export default function TokenPageChart(props: TokenPageChartProps) {
                 <div className={styles.ktegKV}>
                     <label className={styles.eJnjNO}>
                         {latestValue
-                            ? formatDollarAmount(latestValue, 2)
+                            ? activeTab === 'vlm'
+                                ? latestValue
+                                : formatDollarAmount(latestValue, 2)
                             : formatDollarAmount(props.token?.priceUSD, 2)}
                     </label>
                     <label className={styles.v4m1wv}>
-                        {valueLabel ? valueLabel + ' (UTC) ' : dayjs.utc().format('MMM D, YYYY')}
+                        {valueLabel
+                            ? activeTab === 'vlm'
+                                ? valueLabel
+                                : valueLabel + ' (UTC) '
+                            : dayjs.utc().format('MMM D, YYYY')}
                     </label>
                 </div>
                 <div className={styles.settings_container}>

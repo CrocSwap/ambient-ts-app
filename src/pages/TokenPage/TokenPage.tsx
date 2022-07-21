@@ -19,14 +19,12 @@ import { unixToDate } from '../../utils/date';
 import { ONE_HOUR_SECONDS, TimeWindow } from '../../constants/intervals';
 
 const DEFAULT_TIME_WINDOW = TimeWindow.WEEK;
-import dayjs from 'dayjs';
 
 export default function TokenPage() {
     const { address } = useParams() ?? '';
     const chartData = useTokenChartData(address!);
 
     useEffect(() => {
-        console.log();
         window.scrollTo(0, 0);
     }, []);
 

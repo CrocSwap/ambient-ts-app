@@ -16,10 +16,9 @@ export default function VolumeChart(props: VolumeData) {
     const volumeValue = props.data;
 
     useEffect(() => {
-        console.log(volumeValue);
         const chartData = {
             lineseries: volumeValue,
-            crosshair: [{ x: 0, y: 0 }],
+            crosshair: [{ x: 0 }],
         };
 
         const render = () => {
@@ -27,40 +26,16 @@ export default function VolumeChart(props: VolumeData) {
             d3.select('#chart-element').datum(chartData).call(chart);
 
             const pointer = d3fc.pointer().on('point', (event: any) => {
-                chartData.crosshair = event;
+                chartData.crosshair = [
+                    {
+                        x: event[0].x,
+                    },
+                ];
+                props.setValue?.(getValue(event[0].x));
+                props.setLabel?.(getDate(event[0].x));
                 render();
             });
             d3.select('#chart-element .plot-area').call(pointer);
-        };
-
-        const legend = () => {
-            const labelJoin = d3fc.dataJoin('text', 'legend-label');
-            const valueJoin = d3fc.dataJoin('text', 'legend-value');
-
-            const instance = (selection: any) => {
-                selection.each((data: any, selectionIndex: any, nodes: any) => {
-                    labelJoin(d3.select(nodes[selectionIndex]), data)
-                        .attr(
-                            'transform',
-                            (_: any, i: any) => 'translate(50, ' + (i + 1) * 15 + ')',
-                        )
-                        .style('alignment-baseline', 'middle')
-                        .text((d: any) => d.name);
-
-                    valueJoin(d3.select(nodes[selectionIndex]), data)
-                        .attr(
-                            'transform',
-                            (_: any, i: any) => 'translate(60, ' + (i + 1) * 15 + ')',
-                        )
-                        .style('fill', 'white')
-                        .style('alignment-baseline', 'middle')
-                        .text((d: any) => d.value);
-                });
-            };
-
-            instance.xScale = () => instance;
-            instance.yScale = () => instance;
-            return instance;
         };
 
         const yExtent = d3fc
@@ -81,6 +56,8 @@ export default function VolumeChart(props: VolumeData) {
         xScale.domain(xExtent(chartData.lineseries));
         yScale.domain(yExtent(chartData.lineseries));
 
+        const xScaleOriginal = xScale.copy();
+
         const getValue = (data: any) => {
             const lineValue = chartData.lineseries.find((line, index) => {
                 if (
@@ -89,25 +66,20 @@ export default function VolumeChart(props: VolumeData) {
                 )
                     return chartData.lineseries[index];
             });
-            return (
-                'Volume: ' +
-                (lineValue === undefined ? '-' : formatDollarAmountAxis(lineValue.value))
-            );
+            return lineValue === undefined ? lineValue : formatDollarAmountAxis(lineValue.value);
         };
 
         const getDate = (date: any) => {
-            return (
-                'Date: ' +
-                (date === undefined ? '-' : dayjs(xScale.invert(date)).format('MMM D, YYYY'))
-            );
+            return date === undefined ? '-' : dayjs(xScale.invert(date)).format('MMM D, YYYY');
         };
 
-        const legendData = (datum: any) => [
-            { name: '', value: getDate(datum.x) },
-            { name: '', value: getValue(datum.x) },
-        ];
-
-        const zoom = d3fc.zoom().on('zoom', render);
+        const zoom = d3
+            .zoom()
+            .scaleExtent([1, 20])
+            .on('zoom', (event: any) => {
+                xScale.domain(event.transform.rescaleX(xScaleOriginal).domain());
+                render();
+            });
 
         const lineSeries = d3fc
             .autoBandwidth(d3fc.seriesSvgBar())
@@ -117,7 +89,7 @@ export default function VolumeChart(props: VolumeData) {
             .crossValue((d: any) => d.time)
             .mainValue((d: any) => d.value)
             .decorate((selection: any) => {
-                selection.enter().style('fill', '#6765e2');
+                selection.enter().style('fill', '#4169E1');
             });
 
         const gridlines = d3fc.annotationSvgGridline().xScale(xScale).yScale(yScale);
@@ -125,26 +97,18 @@ export default function VolumeChart(props: VolumeData) {
         const crosshair = d3fc
             .annotationSvgCrosshair()
             .xLabel('')
-            .yLabel('')
             .decorate((sel: any) => {
-                sel.selectAll('.point>path').attr('transform', 'scale(0.2)');
+                sel.selectAll('.point>path').attr('transform', 'scale(0.2)').style('fill', 'white');
             });
-
-        const chartLegend = legend();
 
         const multi = d3fc
             .seriesSvgMulti()
-            .series([gridlines, lineSeries, chartLegend, crosshair])
+            .series([gridlines, lineSeries, crosshair])
             .mapping((data: any, index: any, series: any) => {
                 if (data.loading) {
                     return [];
                 }
                 switch (series[index]) {
-                    case chartLegend: {
-                        const lastPoint = data.lineseries[data.lineseries.length - 1];
-                        const legendValue = data.crosshair.length ? data.crosshair[0] : lastPoint;
-                        return legendData(legendValue);
-                    }
                     case crosshair:
                         return data.crosshair;
                     default:
@@ -173,9 +137,12 @@ export default function VolumeChart(props: VolumeData) {
                     .style('grid-row', 3)
                     .style('width', '3em');
                 sel.enter().append('div').classed('border', true);
-                sel.enter().selectAll('.plot-area').call(zoom, xScale, yScale);
-                sel.enter().selectAll('.x-axis').call(zoom, xScale, null);
-                sel.enter().selectAll('.y-axis').call(zoom, null, yScale);
+                sel.enter()
+                    .select('d3fc-svg.plot-area')
+                    .on('measure.range', (event: any) => {
+                        xScaleOriginal.range([0, event.detail.width]);
+                    })
+                    .call(zoom);
             });
 
         render();
