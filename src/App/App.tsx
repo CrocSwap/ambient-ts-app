@@ -135,6 +135,7 @@ export default function App() {
                 ) {
                     return;
                 } else if (provider && provider.connection?.url === 'metamask' && metamaskLocked) {
+                    // console.log('automatically logging out');
                     clickLogout();
                     return;
                 } else if (window.ethereum && !metamaskLocked) {
@@ -175,7 +176,7 @@ export default function App() {
         }
 
         // const newProvider = useProvider(provider, setProvider, chainId as string);
-    }, [chainId, metamaskLocked]);
+    }, [isAuthenticated, chainId, metamaskLocked]);
 
     const dispatch = useAppDispatch();
 
@@ -1176,10 +1177,10 @@ export default function App() {
         (async () => {
             if (
                 provider &&
+                provider.connection?.url === 'metamask' &&
                 account &&
                 isAuthenticated &&
                 isWeb3Enabled
-                // && provider.connection?.url === 'metamask'
             ) {
                 const signer = provider.getSigner();
                 const nativeEthBalance = await getTokenBalanceDisplay(
@@ -1189,14 +1190,12 @@ export default function App() {
                 );
                 // make sure a balance was returned, initialized as null
                 if (nativeEthBalance) {
-                    console.log({ nativeEthBalance });
                     // send value to local state
                     setNativeBalance(nativeEthBalance);
                 }
             }
-            // console.log({ balance });
         })();
-    }, [chainId, provider, account, isWeb3Enabled, isAuthenticated]);
+    }, [provider, account, isWeb3Enabled, isAuthenticated]);
 
     const [gasPriceinGwei, setGasPriceinGwei] = useState<string>('');
 
