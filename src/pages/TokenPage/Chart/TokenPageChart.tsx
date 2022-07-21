@@ -11,11 +11,13 @@ import { formatDollarAmount } from '../../../utils/numbers';
 import PriceChart from './PriceChart/PriceChart';
 import styles from './TokenPageChart.module.css';
 import TvlChart from './TvlChart/TvlChart';
+import VolumeChart from './VolumeChart/VolumeChart';
 
 interface TokenPageChartProps {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     tvlData?: any;
     priceData?: any;
+    volumeData?: any;
     token?: TokenData;
     valueLabel?: string | undefined;
 }
@@ -35,6 +37,7 @@ export default function TokenPageChart(props: TokenPageChartProps) {
     const tabData = [
         { title: 'TVL', id: 'tvl' },
         { title: 'Price', id: 'price' },
+        { title: 'Volume', id: 'vlm' },
     ];
     const [latestValue, setLatestValue] = useState<number | undefined>();
     const [valueLabel, setValueLabel] = useState<string | undefined>();
@@ -45,11 +48,17 @@ export default function TokenPageChart(props: TokenPageChartProps) {
                 <div className={styles.ktegKV}>
                     <label className={styles.eJnjNO}>
                         {latestValue
-                            ? formatDollarAmount(latestValue, 2)
+                            ? activeTab === 'vlm'
+                                ? latestValue
+                                : formatDollarAmount(latestValue, 2)
                             : formatDollarAmount(props.token?.priceUSD, 2)}
                     </label>
                     <label className={styles.v4m1wv}>
-                        {valueLabel ? valueLabel + ' (UTC) ' : dayjs.utc().format('MMM D, YYYY')}
+                        {valueLabel
+                            ? activeTab === 'vlm'
+                                ? valueLabel
+                                : valueLabel + ' (UTC) '
+                            : dayjs.utc().format('MMM D, YYYY')}
                     </label>
                 </div>
                 <div className={styles.settings_container}>
@@ -69,6 +78,14 @@ export default function TokenPageChart(props: TokenPageChartProps) {
             {activeTab === 'tvl' ? (
                 <TvlChart
                     data={data}
+                    value={latestValue}
+                    label={valueLabel}
+                    setValue={setLatestValue}
+                    setLabel={setValueLabel}
+                />
+            ) : activeTab === 'vlm' ? (
+                <VolumeChart
+                    data={props.volumeData}
                     value={latestValue}
                     label={valueLabel}
                     setValue={setLatestValue}

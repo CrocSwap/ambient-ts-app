@@ -3,14 +3,12 @@ import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Divider from '../../components/Global/Divider/Divider';
 import Pools from '../../components/Pools/Pools';
-
 import {
     usePoolsForToken,
     useTokenChartData,
     useTokenData,
     useTokenPriceData,
 } from '../../state/tokens/hooks';
-
 import TokenCardInfo from './TokenInfoCard/TokenInfoCard';
 import styles from './TokenPage.module.css';
 import { usePoolDatas } from '../../state/pools/hooks';
@@ -24,16 +22,30 @@ const DEFAULT_TIME_WINDOW = TimeWindow.WEEK;
 
 export default function TokenPage() {
     const { address } = useParams() ?? '';
+    const chartData = useTokenChartData(address!);
+
     useEffect(() => {
         window.scrollTo(0, 0);
     }, []);
+
+    const formattedVolumeData = useMemo(() => {
+        if (chartData) {
+            return chartData.map((day) => {
+                return {
+                    time: new Date(day.date * 1000),
+                    value: day.volumeUSD,
+                };
+            });
+        } else {
+            return [];
+        }
+    }, [chartData]);
 
     const tokenData = useTokenData(address);
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const poolsForToken = usePoolsForToken(address!);
     const poolDatas = usePoolDatas(poolsForToken ?? []);
     // const transactions = useTokenTransactions(address!);
-    const chartData = useTokenChartData(address!);
 
     const formattedTvlData = useMemo(() => {
         if (chartData) {
@@ -123,6 +135,7 @@ export default function TokenPage() {
                 <TokenPageChart
                     tvlData={formattedTvlData}
                     priceData={adjustedToCurrent}
+                    volumeData={formattedVolumeData}
                     token={tokenData}
                 />
             </div>
