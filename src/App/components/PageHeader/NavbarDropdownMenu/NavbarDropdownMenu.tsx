@@ -114,6 +114,7 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuProps) {
                 params: [{ chainId: chainId }],
             });
         }
+        closeMenu ? closeMenu() : null;
     };
 
     const networksItems = (
