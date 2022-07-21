@@ -1,10 +1,13 @@
+// START: Import React and Dongles
+import { useState, MouseEvent } from 'react';
+import { MenuItem, Menu } from '@material-ui/core';
+import { RiFileList2Fill } from 'react-icons/ri';
+
+// START: Import Local Files
 import styles from './TokenListCard.module.css';
 import Toggle from '../../Global/Toggle/Toggle';
 import { useStyles } from '../../../utils/functions/styles';
 import { TokenListIF } from '../../../utils/interfaces/exports';
-import { MenuItem, Menu } from '@material-ui/core';
-import { useState, MouseEvent } from 'react';
-import { RiFileList2Fill } from 'react-icons/ri';
 import uriToHttp from '../../../utils/functions/uriToHttp';
 
 interface TokenListPropsIF {
