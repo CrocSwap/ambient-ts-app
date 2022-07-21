@@ -1,5 +1,5 @@
 import styles from './NetworkSelector.module.css';
-import { useState } from 'react';
+// import { useState } from 'react';
 import { useChain, useMoralis } from 'react-moralis';
 import { BiDownArrow } from 'react-icons/bi';
 
