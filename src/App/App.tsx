@@ -80,7 +80,16 @@ const cachedGetTokenDecimals = memoizePromiseFn(getTokenDecimals);
 
 /** ***** React Function *******/
 export default function App() {
-    const { Moralis, chainId, isWeb3Enabled, account, logout, isAuthenticated } = useMoralis();
+    const {
+        Moralis,
+        chainId: moralisChainId,
+        isWeb3Enabled,
+        account,
+        logout,
+        isAuthenticated,
+    } = useMoralis();
+
+    const chainId = moralisChainId ?? '0x2a';
 
     const dispatch = useAppDispatch();
 
@@ -269,7 +278,7 @@ export default function App() {
                         base: sortedTokens[0].toLowerCase(),
                         quote: sortedTokens[1].toLowerCase(),
                         poolIdx: POOL_PRIMARY.toString(),
-                        chainId: '42',
+                        chainId: parseInt(chainId).toString(),
                     }),
             )
                 .then((response) => response.json())
@@ -296,7 +305,7 @@ export default function App() {
                         base: sortedTokens[0].toLowerCase(),
                         quote: sortedTokens[1].toLowerCase(),
                         poolIdx: POOL_PRIMARY.toString(),
-                        chainId: '42',
+                        chainId: parseInt(chainId).toString(),
                         // n: 10 // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
                         // page: 0 // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
                     }),
@@ -338,7 +347,7 @@ export default function App() {
                         // time: '1657833300', // optional
                         n: '200', // positive integer
                         page: '0', // nonnegative integer
-                        chainId: '42',
+                        chainId: parseInt(chainId).toString(),
                     }),
             )
                 .then((response) => response.json())
@@ -378,7 +387,7 @@ export default function App() {
                 quote: quoteTokenAddress.toLowerCase(),
                 // quoteTokenAddress.toLowerCase() || '0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa',
                 poolIdx: POOL_PRIMARY.toString(),
-                chainId: '42',
+                chainId: parseInt(chainId).toString(),
             }),
         [baseTokenAddress, quoteTokenAddress, POOL_PRIMARY],
     );
@@ -429,7 +438,7 @@ export default function App() {
                 // 	positive integer	The duration of the candle, in seconds. Must represent one of the following time intervals: 5 minutes, 15 minutes, 1 hour, 4 hours, 1 day, 7 days.
                 period: activePeriod.toString(),
                 // period: '60',
-                chainId: '42',
+                chainId: parseInt(chainId).toString(),
             }),
         [baseTokenAddress, quoteTokenAddress, POOL_PRIMARY, activePeriod],
     );
@@ -484,7 +493,7 @@ export default function App() {
                 quote: quoteTokenAddress.toLowerCase(),
                 // quoteTokenAddress.toLowerCase() || '0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa',
                 poolIdx: POOL_PRIMARY.toString(),
-                chainId: '42',
+                chainId: parseInt(chainId).toString(),
             }),
         [baseTokenAddress, quoteTokenAddress, POOL_PRIMARY],
     );
@@ -527,7 +536,7 @@ export default function App() {
             'wss://809821320828123.de:5000/subscribe_user_positions?' +
             new URLSearchParams({
                 user: account || '',
-                chainId: '42',
+                chainId: parseInt(chainId).toString(),
                 // user: account || '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc',
             }),
         [account],
@@ -571,7 +580,7 @@ export default function App() {
             'wss://809821320828123.de:5000/subscribe_user_swaps?' +
             new URLSearchParams({
                 user: account || '',
-                chainId: '42',
+                chainId: parseInt(chainId).toString(),
                 // user: account || '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc',
             }),
         [account],
@@ -910,7 +919,7 @@ export default function App() {
                 allUserPositionsCacheEndpoint +
                     new URLSearchParams({
                         user: account,
-                        chainId: '42',
+                        chainId: parseInt(chainId).toString(),
                     }),
             )
                 .then((response) => response.json())
@@ -935,7 +944,7 @@ export default function App() {
                 allUserSwapsCacheEndpoint +
                     new URLSearchParams({
                         user: account,
-                        chainId: '42',
+                        chainId: parseInt(chainId).toString(),
                     }),
             )
                 .then((response) => response.json())
@@ -1127,7 +1136,7 @@ export default function App() {
     useEffect(() => {
         const interval = setInterval(async () => {
             const currentDateTime = new Date().toISOString();
-            const chain = chainId ?? '0x2a';
+            const chain = chainId;
             // console.log({ chainId });
             const options: { chain: '0x2a' | 'kovan'; date: string } = {
                 chain: chain as '0x2a' | 'kovan',
@@ -1170,7 +1179,7 @@ export default function App() {
         poolPriceDisplay: poolPriceDisplay,
         tokenAAllowance: tokenAAllowance,
         setRecheckTokenAApproval: setRecheckTokenAApproval,
-        chainId: chainId ?? '0x2a',
+        chainId: chainId,
         activeTokenListsChanged: activeTokenListsChanged,
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
     };
@@ -1192,7 +1201,7 @@ export default function App() {
         poolPriceDisplay: poolPriceDisplay,
         setRecheckTokenAApproval: setRecheckTokenAApproval,
         tokenAAllowance: tokenAAllowance,
-        chainId: chainId ?? '0x2a',
+        chainId: chainId,
         activeTokenListsChanged: activeTokenListsChanged,
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
     };
@@ -1216,7 +1225,7 @@ export default function App() {
         poolPriceNonDisplay: poolPriceNonDisplay,
         setRecheckTokenAApproval: setRecheckTokenAApproval,
         tokenAAllowance: tokenAAllowance,
-        chainId: chainId ?? '0x2a',
+        chainId: chainId,
         activeTokenListsChanged: activeTokenListsChanged,
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
     };
@@ -1239,7 +1248,7 @@ export default function App() {
         tokenBBalance: tokenBBalance,
         tokenBAllowance: tokenBAllowance,
         setRecheckTokenBApproval: setRecheckTokenBApproval,
-        chainId: chainId ?? '0x2a',
+        chainId: chainId,
         activeTokenListsChanged: activeTokenListsChanged,
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
     };
