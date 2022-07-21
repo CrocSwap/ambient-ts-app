@@ -99,18 +99,16 @@ export default function App() {
 
     const chainId = moralisChainId
         ? moralisChainId
-        : window.ethereum?.networkVersion
-        ? '0x' + parseInt(window.ethereum?.networkVersion).toString(16)
-        : fallbackChainId;
-
-    // useEffect(() => {
-    //     console.log({ fallbackChainId });
-    // }, [fallbackChainId]);
+        : // : window.ethereum?.networkVersion
+          // ? '0x' + parseInt(window.ethereum?.networkVersion).toString(16)
+          fallbackChainId;
 
     useEffect(() => {
-        console.log('switching networks because metamask network changed');
-        const newNetworkHex = '0x' + parseInt(window.ethereum?.networkVersion).toString(16);
-        switchNetwork(newNetworkHex);
+        if (isWeb3Enabled) {
+            const newNetworkHex = '0x' + parseInt(window.ethereum?.networkVersion).toString(16);
+            console.log('switching networks because metamask network changed');
+            switchNetwork(newNetworkHex);
+        }
     }, [window.ethereum?.networkVersion]);
 
     const [provider, setProvider] = useState<
@@ -125,35 +123,59 @@ export default function App() {
     // }, [provider, chainId]);
 
     useEffect(() => {
-        setProvider(undefined);
-    }, [chainId]);
-
-    useEffect(() => {
         try {
             // metamask connected and unlocked
-            if (provider && provider.connection?.url === 'metamask' && !metamaskLocked) {
-                return;
-            } else if (provider && provider.connection?.url === 'metamask' && metamaskLocked) {
-                clickLogout();
-            } else if (window.ethereum && !metamaskLocked) {
-                const metamaskProvider = new ethers.providers.Web3Provider(window.ethereum);
-                setProvider(metamaskProvider);
-            } else if (provider) {
-                return;
+            // if (provider && provider.connection?.url === 'metamask' && !metamaskLocked) {
+            if (isAuthenticated) {
+                if (
+                    provider &&
+                    provider.connection?.url === 'metamask' &&
+                    !metamaskLocked &&
+                    provider._network?.chainId === parseInt(chainId)
+                ) {
+                    return;
+                } else if (provider && provider.connection?.url === 'metamask' && metamaskLocked) {
+                    clickLogout();
+                    return;
+                } else if (window.ethereum && !metamaskLocked) {
+                    const metamaskProvider = new ethers.providers.Web3Provider(window.ethereum);
+                    setProvider(metamaskProvider);
+                    return;
+                }
             } else {
-                console.log('making new kovan speedy node provider');
-                setProvider(
-                    new ethers.providers.JsonRpcProvider(
-                        'https://speedy-nodes-nyc.moralis.io/015fffb61180886c9708499e/eth/kovan',
-                    ),
-                );
+                if (provider && provider._network?.chainId === parseInt(chainId)) {
+                    console.log('chainId matches');
+                    return;
+                }
+                if (chainId === '0x2a') {
+                    console.log('making new kovan speedy node provider');
+                    setProvider(
+                        new ethers.providers.JsonRpcProvider(
+                            'https://speedy-nodes-nyc.moralis.io/015fffb61180886c9708499e/eth/kovan',
+                        ),
+                    );
+                } else if (chainId === '0x5') {
+                    console.log('making new Goerli speedy node provider');
+                    setProvider(
+                        new ethers.providers.JsonRpcProvider(
+                            'https://speedy-nodes-nyc.moralis.io/015fffb61180886c9708499e/eth/goerli',
+                        ),
+                    );
+                } else if (chainId === '0x1') {
+                    console.log('making new Mainnet speedy node provider');
+                    setProvider(
+                        new ethers.providers.JsonRpcProvider(
+                            'https://speedy-nodes-nyc.moralis.io/015fffb61180886c9708499e/eth/mainnet',
+                        ),
+                    );
+                }
             }
         } catch (error) {
             console.log(error);
         }
 
         // const newProvider = useProvider(provider, setProvider, chainId as string);
-    }, [chainId, provider, metamaskLocked]);
+    }, [chainId, metamaskLocked]);
 
     const dispatch = useAppDispatch();
 
@@ -1167,13 +1189,14 @@ export default function App() {
                 );
                 // make sure a balance was returned, initialized as null
                 if (nativeEthBalance) {
+                    console.log({ nativeEthBalance });
                     // send value to local state
                     setNativeBalance(nativeEthBalance);
                 }
             }
             // console.log({ balance });
         })();
-    }, [provider, account, isWeb3Enabled, isAuthenticated]);
+    }, [chainId, provider, account, isWeb3Enabled, isAuthenticated]);
 
     const [gasPriceinGwei, setGasPriceinGwei] = useState<string>('');
 

@@ -7,10 +7,10 @@ import { CSSTransition } from 'react-transition-group';
 import { FaNetworkWired, FaDiscord, FaSun, FaGithub, FaDotCircle } from 'react-icons/fa';
 import { MdHelp, MdArrowForwardIos, MdLanguage, MdReportProblem } from 'react-icons/md';
 import { motion } from 'framer-motion';
-import arbitrumImage from '../../../../assets/images/networks/arbitrum.svg';
+// import arbitrumImage from '../../../../assets/images/networks/arbitrum.svg';
 import kovanImage from '../../../../assets/images/networks/kovan.svg';
-import optimisticImage from '../../../../assets/images/networks/optimistic.svg';
-import polygonImage from '../../../../assets/images/networks/polygon.svg';
+// import optimisticImage from '../../../../assets/images/networks/optimistic.svg';
+// import polygonImage from '../../../../assets/images/networks/polygon.svg';
 import ethereumImage from '../../../../assets/images/networks/ethereum.png';
 
 import { HiOutlineDocumentText } from 'react-icons/hi';
@@ -105,16 +105,18 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuProps) {
     const circleIcon = <FaDotCircle color='#CDC1FF' size={10} />;
 
     const handleNetworkSwitch = (chainId: string) => {
+        console.log('switching to ' + chainId);
         setFallbackChainId(chainId);
         if (moralisChainId) {
             switchNetwork(chainId);
-        } else if (window.ethereum) {
-            window.ethereum.request({
-                method: 'wallet_switchEthereumChain',
-                params: [{ chainId: chainId }],
-            });
         }
-        closeMenu ? closeMenu() : null;
+        // else if (window.ethereum) {
+        //     window.ethereum.request({
+        //         method: 'wallet_switchEthereumChain',
+        //         params: [{ chainId: chainId }],
+        //     });
+        // }
+        // closeMenu ? closeMenu() : null;
     };
 
     const networksItems = (
@@ -124,20 +126,6 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuProps) {
             transition={{ duration: 0.5 }}
         >
             <NavbarDropdownItem
-                imageIcon={kovanImage}
-                rightIcon={chainId === '0x2a' ? circleIcon : null}
-                onClick={() => handleNetworkSwitch('0x2a')}
-            >
-                Kovan
-            </NavbarDropdownItem>
-            <NavbarDropdownItem
-                imageIcon={ethereumImage}
-                rightIcon={chainId === '0x3' ? circleIcon : null}
-                onClick={() => handleNetworkSwitch('0x3')}
-            >
-                Ropsten
-            </NavbarDropdownItem>
-            <NavbarDropdownItem
                 imageIcon={ethereumImage}
                 rightIcon={chainId === '0x1' ? circleIcon : null}
                 onClick={() => handleNetworkSwitch('0x1')}
@@ -145,13 +133,27 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuProps) {
                 Ethereum
             </NavbarDropdownItem>
             <NavbarDropdownItem
-                imageIcon={polygonImage}
-                rightIcon={chainId === '0x89' ? circleIcon : null}
-                onClick={() => handleNetworkSwitch('0x89')}
+                imageIcon={kovanImage}
+                rightIcon={chainId === '0x2a' ? circleIcon : null}
+                onClick={() => handleNetworkSwitch('0x2a')}
             >
-                Polygon
+                Kovan
             </NavbarDropdownItem>
+            {/* <NavbarDropdownItem
+                imageIcon={kovanImage}
+                rightIcon={chainId === '0x3' ? circleIcon : null}
+                onClick={() => handleNetworkSwitch('0x3')}
+            >
+                Ropsten
+            </NavbarDropdownItem> */}
             <NavbarDropdownItem
+                imageIcon={kovanImage}
+                rightIcon={chainId === '0x5' ? circleIcon : null}
+                onClick={() => handleNetworkSwitch('0x5')}
+            >
+                Görli
+            </NavbarDropdownItem>
+            {/* <NavbarDropdownItem
                 imageIcon={optimisticImage}
                 rightIcon={chainId === '0xa86a' ? circleIcon : null}
                 onClick={() => handleNetworkSwitch('0xa86a')}
@@ -164,7 +166,7 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuProps) {
                 onClick={() => handleNetworkSwitch('0xa869')}
             >
                 Fuji
-            </NavbarDropdownItem>
+            </NavbarDropdownItem> */}
         </motion.div>
     );
 
