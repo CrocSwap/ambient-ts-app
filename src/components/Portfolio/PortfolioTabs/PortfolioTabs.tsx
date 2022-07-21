@@ -7,6 +7,7 @@ import Wallet from '../../Global/Account/Wallet/Wallet';
 import Exchange from '../../Global/Account/Exchange/Exchange';
 import Range from '../../Global/Account/Range/Range';
 import Order from '../../Global/Account/Order/Order';
+import TransactionsTable from '../../Global/Account/Transaction/TransactionsTable';
 
 export default function PortfolioTabs() {
     const [activeTab, setActiveTab] = useState('tab1');
@@ -50,7 +51,7 @@ export default function PortfolioTabs() {
                     <Order />
                 </TabContent>
                 <TabContent id='tab5' activeTab={activeTab}>
-                    {/* <p>Transactions component</p> */}
+                    <TransactionsTable />
                 </TabContent>
             </div>
         </div>

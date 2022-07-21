@@ -709,7 +709,7 @@ export default function Range(props: RangePropsIF) {
                         knockout: 'false', // boolean Whether or not the liquidity position is knockout liquidity. If true, then ambient must be false.
                         isBid: 'false', // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
                         override: 'false', // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
-                        network: 'kovan',
+                        chainId: chainId,
                     }),
                 // { method: 'POST' },
             )
