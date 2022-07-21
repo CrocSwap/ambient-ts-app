@@ -19,6 +19,8 @@ import { GoRequestChanges } from 'react-icons/go';
 import { BsBook, BsMedium } from 'react-icons/bs';
 import { AiFillTwitterCircle, AiFillInfoCircle } from 'react-icons/ai';
 
+import { useChain } from 'react-moralis';
+
 // networks
 
 interface NavbarDropdownItemProps {
@@ -54,6 +56,7 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuProps) {
     } = props;
     // console.log(props.closeMenu);
 
+    const { chainId: moralisChainId, switchNetwork } = useChain();
     const [activeMenu, setActiveMenu] = useState('main');
     // eslint-disable-next-line
     const [menuHeight, setMenuHeight] = useState(null);
@@ -101,6 +104,18 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuProps) {
 
     const circleIcon = <FaDotCircle color='#CDC1FF' size={10} />;
 
+    const handleNetworkSwitch = (chainId: string) => {
+        setFallbackChainId(chainId);
+        if (moralisChainId) {
+            switchNetwork(chainId);
+        } else if (window.ethereum) {
+            window.ethereum.request({
+                method: 'wallet_switchEthereumChain',
+                params: [{ chainId: chainId }],
+            });
+        }
+    };
+
     const networksItems = (
         <motion.div
             initial={{ opacity: 0 }}
@@ -110,42 +125,42 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuProps) {
             <NavbarDropdownItem
                 imageIcon={kovanImage}
                 rightIcon={chainId === '0x2a' ? circleIcon : null}
-                onClick={() => setFallbackChainId('0x2a')}
+                onClick={() => handleNetworkSwitch('0x2a')}
             >
                 Kovan
             </NavbarDropdownItem>
             <NavbarDropdownItem
                 imageIcon={ethereumImage}
                 rightIcon={chainId === '0x3' ? circleIcon : null}
-                onClick={() => setFallbackChainId('0x3')}
+                onClick={() => handleNetworkSwitch('0x3')}
             >
                 Ropsten
             </NavbarDropdownItem>
             <NavbarDropdownItem
                 imageIcon={ethereumImage}
                 rightIcon={chainId === '0x1' ? circleIcon : null}
-                onClick={() => setFallbackChainId('0x1')}
+                onClick={() => handleNetworkSwitch('0x1')}
             >
                 Ethereum
             </NavbarDropdownItem>
             <NavbarDropdownItem
                 imageIcon={polygonImage}
                 rightIcon={chainId === '0x89' ? circleIcon : null}
-                onClick={() => setFallbackChainId('0x89')}
+                onClick={() => handleNetworkSwitch('0x89')}
             >
                 Polygon
             </NavbarDropdownItem>
             <NavbarDropdownItem
                 imageIcon={optimisticImage}
                 rightIcon={chainId === '0xa86a' ? circleIcon : null}
-                onClick={() => setFallbackChainId('0xa86a')}
+                onClick={() => handleNetworkSwitch('0xa86a')}
             >
                 Avalanche
             </NavbarDropdownItem>
             <NavbarDropdownItem
                 imageIcon={arbitrumImage}
                 rightIcon={chainId === '0xa869' ? circleIcon : null}
-                onClick={() => setFallbackChainId('0xa869')}
+                onClick={() => handleNetworkSwitch('0xa869')}
             >
                 Fuji
             </NavbarDropdownItem>
