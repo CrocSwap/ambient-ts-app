@@ -1,3 +1,5 @@
+import OpenOrderStatus from '../../OpenOrderStatus/OpenOrderStatus';
+import TableMenu from '../../TableMenu/TableMenu';
 import styles from './OrderCard2.module.css';
 
 export default function OrderCard2() {
@@ -30,10 +32,14 @@ export default function OrderCard2() {
                 <p className={styles.qty_sing}>T1 Qty</p>
                 <p className={styles.qty_sing}>T2 Qty</p>
                 {/* ------------------------------------------------------ */}
-                <div className={styles.status}>STAT</div>
+                <div className={styles.status}>
+                    <OpenOrderStatus isFilled />
+                </div>
             </div>
 
-            <div className={styles.menu_container}>...</div>
+            <div className={styles.menu_container}>
+                <TableMenu tableType='orders' />
+            </div>
         </div>
     );
 }

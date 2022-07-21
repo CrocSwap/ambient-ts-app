@@ -19,6 +19,7 @@ import Range from '../../components/Global/Account/Range/Range';
 // import Transactions from '../../components/Global/Transactions/Transactions';
 
 import TableMenu from '../../components/Global/TableMenu/TableMenu';
+import OrderCard2 from '../../components/Global/Account/Order/OrderCard2';
 
 export default function TestPage() {
     // // get the user object from local storage
@@ -109,7 +110,9 @@ export default function TestPage() {
                 {/* <Order />
                 <TransactionsTable /> */}
 
-                <TableMenu tableType='orders' />
+                {/* <TableMenu tableType='orders' /> */}
+
+                <OrderCard2 />
             </main>
         </>
     );

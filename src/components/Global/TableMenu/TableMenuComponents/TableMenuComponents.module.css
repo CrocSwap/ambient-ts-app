@@ -27,7 +27,9 @@
  }
  .dropdown_menu{
     width: 100%;
-    display: block;
+    
+    display: flex;
+    justify-content: flex-end;
  }
 
  .dropdown_menu button{
@@ -49,6 +51,9 @@
 
     .actions_menu{
 display: flex;
+
+justify-content: flex-end;
+
 }
 
 .dropdown_menu{
