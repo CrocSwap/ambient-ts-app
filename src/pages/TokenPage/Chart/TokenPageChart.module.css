@@ -76,6 +76,7 @@
 .settings_container button, .right_side button{
     outline: none;
     border: none;
+    cursor: pointer;
     background: var(--dark1);
     font-size: var(--body-size);
     line-height: var(--body-lh);

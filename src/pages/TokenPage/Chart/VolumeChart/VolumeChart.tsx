@@ -97,6 +97,7 @@ export default function VolumeChart(props: VolumeData) {
         const crosshair = d3fc
             .annotationSvgCrosshair()
             .xLabel('')
+            .yLabel('')
             .decorate((sel: any) => {
                 sel.selectAll('.point>path').attr('transform', 'scale(0.2)').style('fill', 'white');
             });
