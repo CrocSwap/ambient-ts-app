@@ -5,6 +5,7 @@ import { TokenListIF } from '../../../utils/interfaces/exports';
 import { MenuItem, Menu } from '@material-ui/core';
 import { useState } from 'react';
 import { RiFileList2Fill } from 'react-icons/ri';
+import uriToHttp from '../../../utils/functions/uriToHttp';
 
 interface TokenListProps {
     list: TokenListIF;
@@ -39,7 +40,7 @@ export default function TokenListCard(props: TokenListProps) {
                 style={{ backgroundColor: cardBackground, border: cardBorder }}
             >
                 <div className={styles.left_content}>
-                    <img src={list.logoURI} alt='' width='40px' />
+                    <img src={uriToHttp(list.logoURI)} alt='' width='40px' />
                     <div className={styles.token_list_card_name}>
                         <span> {list?.name}</span>
                         <div className={styles.bottom_container_menu}>
