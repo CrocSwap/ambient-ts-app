@@ -16,7 +16,8 @@ import {
 import { ethers } from 'ethers';
 import { JsonRpcProvider } from '@ethersproject/providers';
 // import { request, gql } from 'graphql-request';
-import { useMoralis, useMoralisQuery, useMoralisSubscription } from 'react-moralis';
+import { useMoralis, useMoralisQuery, useMoralisSubscription, useChain } from 'react-moralis';
+
 import useWebSocket from 'react-use-websocket';
 // import { ReadyState } from 'react-use-websocket';
 import Moralis from 'moralis';
@@ -92,11 +93,89 @@ export default function App() {
         isAuthenticated,
     } = useMoralis();
 
+    const { switchNetwork } = useChain();
+
+    const [fallbackChainId, setFallbackChainId] = useState('0x2a');
+
     const chainId = moralisChainId
         ? moralisChainId
-        : window.ethereum?.networkVersion
-        ? '0x' + parseInt(window.ethereum?.networkVersion).toString(16)
-        : '0x2a';
+        : // : window.ethereum?.networkVersion
+          // ? '0x' + parseInt(window.ethereum?.networkVersion).toString(16)
+          fallbackChainId;
+
+    useEffect(() => {
+        if (isWeb3Enabled) {
+            const newNetworkHex = '0x' + parseInt(window.ethereum?.networkVersion).toString(16);
+            console.log('switching networks because metamask network changed');
+            switchNetwork(newNetworkHex);
+        }
+    }, [window.ethereum?.networkVersion]);
+
+    const [provider, setProvider] = useState<
+        ethers.providers.JsonRpcProvider | ethers.providers.Web3Provider
+    >();
+
+    const [metamaskLocked, setMetamaskLocked] = useState<boolean>(true);
+
+    // useEffect(() => {
+    //     console.log({ provider });
+    //     console.log({ chainId });
+    // }, [provider, chainId]);
+
+    useEffect(() => {
+        try {
+            // metamask connected and unlocked
+            // if (provider && provider.connection?.url === 'metamask' && !metamaskLocked) {
+            if (isAuthenticated) {
+                if (
+                    provider &&
+                    provider.connection?.url === 'metamask' &&
+                    !metamaskLocked &&
+                    provider._network?.chainId === parseInt(chainId)
+                ) {
+                    return;
+                } else if (provider && provider.connection?.url === 'metamask' && metamaskLocked) {
+                    clickLogout();
+                    return;
+                } else if (window.ethereum && !metamaskLocked) {
+                    const metamaskProvider = new ethers.providers.Web3Provider(window.ethereum);
+                    setProvider(metamaskProvider);
+                    return;
+                }
+            } else {
+                if (provider && provider._network?.chainId === parseInt(chainId)) {
+                    console.log('chainId matches');
+                    return;
+                }
+                if (chainId === '0x2a') {
+                    console.log('making new kovan speedy node provider');
+                    setProvider(
+                        new ethers.providers.JsonRpcProvider(
+                            'https://speedy-nodes-nyc.moralis.io/015fffb61180886c9708499e/eth/kovan',
+                        ),
+                    );
+                } else if (chainId === '0x5') {
+                    console.log('making new Goerli speedy node provider');
+                    setProvider(
+                        new ethers.providers.JsonRpcProvider(
+                            'https://speedy-nodes-nyc.moralis.io/015fffb61180886c9708499e/eth/goerli',
+                        ),
+                    );
+                } else if (chainId === '0x1') {
+                    console.log('making new Mainnet speedy node provider');
+                    setProvider(
+                        new ethers.providers.JsonRpcProvider(
+                            'https://speedy-nodes-nyc.moralis.io/015fffb61180886c9708499e/eth/mainnet',
+                        ),
+                    );
+                }
+            }
+        } catch (error) {
+            console.log(error);
+        }
+
+        // const newProvider = useProvider(provider, setProvider, chainId as string);
+    }, [chainId, metamaskLocked]);
 
     const dispatch = useAppDispatch();
 
@@ -167,7 +246,6 @@ export default function App() {
     const [showSidebar, setShowSidebar] = useState<boolean>(false);
     const location = useLocation();
 
-    const [metamaskLocked, setMetamaskLocked] = useState<boolean>(true);
     const [lastBlockNumber, setLastBlockNumber] = useState<number>(0);
 
     const tradeData = useAppSelector((state) => state.tradeData);
@@ -662,6 +740,7 @@ export default function App() {
                 const spotPrice = await cachedQuerySpotPrice(
                     baseTokenAddress,
                     quoteTokenAddress,
+                    chainId,
                     lastBlockNumber,
                 );
                 if (poolPriceNonDisplay !== spotPrice) {
@@ -677,7 +756,7 @@ export default function App() {
                 }
             })();
         }
-    }, [lastBlockNumber, baseTokenAddress, quoteTokenAddress]);
+    }, [lastBlockNumber, baseTokenAddress, quoteTokenAddress, chainId]);
 
     // useEffect to update selected token balances
     useEffect(() => {
@@ -841,6 +920,7 @@ export default function App() {
         const poolPriceNonDisplay = await cachedQuerySpotPrice(
             baseTokenAddress,
             quoteTokenAddress,
+            chainId,
             lastBlockNumber,
         );
 
@@ -1024,35 +1104,6 @@ export default function App() {
         toggleSidebarBasedOnRoute();
     }, [location]);
 
-    const [provider, setProvider] = useState<ethers.providers.JsonRpcProvider>();
-
-    useEffect(() => {
-        try {
-            if (provider && provider.connection?.url === 'metamask' && !metamaskLocked) {
-                return;
-                // console.log('metamask connected and unlocked');
-            } else if (provider && provider.connection?.url === 'metamask' && metamaskLocked) {
-                clickLogout();
-            } else if (window.ethereum && !metamaskLocked) {
-                const metamaskProvider = new ethers.providers.Web3Provider(window.ethereum);
-                setProvider(metamaskProvider);
-            } else if (provider) {
-                return;
-            } else {
-                console.log('making new kovan speedy node provider');
-                setProvider(
-                    new ethers.providers.JsonRpcProvider(
-                        'https://speedy-nodes-nyc.moralis.io/015fffb61180886c9708499e/eth/kovan',
-                    ),
-                );
-            }
-        } catch (error) {
-            console.log(error);
-        }
-
-        // const newProvider = useProvider(provider, setProvider, chainId as string);
-    }, [chainId, provider, metamaskLocked]);
-
     const [nativeBalance, setNativeBalance] = useState<string>('');
 
     const [posArray, setPosArray] = useState<Moralis.Object<Moralis.Attributes>[]>();
@@ -1138,13 +1189,14 @@ export default function App() {
                 );
                 // make sure a balance was returned, initialized as null
                 if (nativeEthBalance) {
+                    console.log({ nativeEthBalance });
                     // send value to local state
                     setNativeBalance(nativeEthBalance);
                 }
             }
             // console.log({ balance });
         })();
-    }, [chainId, account, isWeb3Enabled, isAuthenticated]);
+    }, [chainId, provider, account, isWeb3Enabled, isAuthenticated]);
 
     const [gasPriceinGwei, setGasPriceinGwei] = useState<string>('');
 
@@ -1169,8 +1221,8 @@ export default function App() {
             const currentDateTime = new Date().toISOString();
             const chain = chainId;
             // console.log({ chainId });
-            const options: { chain: '0x2a' | 'kovan'; date: string } = {
-                chain: chain as '0x2a' | 'kovan',
+            const options: { chain: '0x2a' | '0x5' | 'kovan'; date: string } = {
+                chain: chain as '0x2a' | '0x5' | 'kovan',
                 date: currentDateTime,
             };
             const currentBlock = (await Moralis.Web3API.native.getDateToBlock(options)).block;
@@ -1192,6 +1244,8 @@ export default function App() {
         metamaskLocked: metamaskLocked,
         ensName: ensName,
         shouldDisplayAccountTab: shouldDisplayAccountTab,
+        chainId: chainId,
+        setFallbackChainId: setFallbackChainId,
     };
 
     // props for <Swap/> React element
