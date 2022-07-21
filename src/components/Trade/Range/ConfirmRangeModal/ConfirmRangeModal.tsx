@@ -160,7 +160,9 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalProps) {
     // CONFIRMATION LOGIC STARTS HERE
     const confirmSendMessage = (
         <WaitingConfirmation
-            content={`Minting a Position with ${tokenAQty} ${tokenA.symbol} and ${tokenBQty} ${tokenB.symbol}`}
+            content={`Minting a Position with ${tokenAQty ? tokenAQty : '0'} ${tokenA.symbol} and ${
+                tokenBQty ? tokenBQty : '0'
+            } ${tokenB.symbol}`}
         />
     );
 

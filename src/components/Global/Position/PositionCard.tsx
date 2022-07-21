@@ -16,6 +16,7 @@ import RangeDetails from '../../RangeDetails/RangeDetails';
 import RangeDetailsHeader from '../../RangeDetails/RangeDetailsHeader/RangeDetailsHeader';
 import trimString from '../../../utils/functions/trimString';
 import { ambientPosSlot, concPosSlot } from '@crocswap-libs/sdk';
+import { Tooltip } from '@mui/material';
 
 interface PositionCardProps {
     portfolio?: boolean;
@@ -91,8 +92,9 @@ export default function PositionCard(props: PositionCardProps) {
     const ownerId = position ? position.user : null;
 
     const ensName = position?.userEnsName !== '' ? position.userEnsName : null;
-    const ownerIdTruncated = position ? trimString(position.user, 6, 6, '…') : null;
-    const mobileOwnerId = position ? trimString(position.user, 4, 4, '…') : null;
+    const ensNameTruncated = ensName ? trimString(ensName, 4, 3, '…') : null;
+    const ownerIdTruncated = position ? trimString(position.user, 7, 0, '…') : null;
+    const mobileOwnerId = position ? trimString(position.user, 4, 0, '…') : null;
 
     const positionData = {
         position: position,
@@ -111,9 +113,9 @@ export default function PositionCard(props: PositionCardProps) {
         );
     }
 
-    const truncatedPosHash = trimString(posHash as string, 6, 6, '…');
+    const truncatedPosHash = trimString(posHash as string, 6, 0, '…');
 
-    const mobilePosHash = trimString(posHash as string, 4, 4, '…');
+    const mobilePosHash = trimString(posHash as string, 4, 0, '…');
 
     // console.log(mobilePosHash);
 
@@ -271,17 +273,40 @@ export default function PositionCard(props: PositionCardProps) {
             <div
                 className={`${styles.position_row} ${userPosition ? styles.user_position : 'null'}`}
             >
-                <p
-                    className={`${styles.large_device} ${styles.account_style} ${
-                        ensName ? styles.ambient_text : null
-                    }`}
+                <Tooltip
+                    title={(posHash as string) ? (posHash as string) : ''}
+                    placement={'right'}
+                    arrow
+                    enterDelay={400}
+                    leaveDelay={200}
+                    classes={{
+                        tooltip: classes.customTooltip,
+                    }}
                 >
-                    {ensName ? ensName : ownerIdTruncated}
-                </p>
-                <p className={`${styles.large_device} ${styles.account_style}`}>
-                    {' '}
-                    {truncatedPosHash}
-                </p>
+                    <p className={`${styles.large_device} ${styles.account_style}`}>
+                        {' '}
+                        {truncatedPosHash}
+                    </p>
+                </Tooltip>
+
+                <Tooltip
+                    title={ensName ? ensName : ownerId ? ownerId : ''}
+                    placement={'right'}
+                    arrow
+                    enterDelay={400}
+                    leaveDelay={200}
+                    classes={{
+                        tooltip: classes.customTooltip,
+                    }}
+                >
+                    <p
+                        className={`${styles.large_device} ${styles.account_style} ${
+                            ensNameTruncated ? styles.ambient_text : null
+                        }`}
+                    >
+                        {ensNameTruncated ? ensNameTruncated : ownerIdTruncated}
+                    </p>
+                </Tooltip>
 
                 <div className={`${styles.column_display} ${styles.account_displays}`}>
                     <p
@@ -289,7 +314,7 @@ export default function PositionCard(props: PositionCardProps) {
                             ensName ? styles.ambient_text : null
                         }`}
                     >
-                        {ensName ? ensName : ownerIdTruncated}
+                        {ensNameTruncated ? ensNameTruncated : ownerIdTruncated}
                     </p>
                     <p className={styles.account_style}> {truncatedPosHash}</p>
                 </div>

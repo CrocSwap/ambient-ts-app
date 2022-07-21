@@ -6,4 +6,5 @@ export interface TokenIF {
     chainId: number;
     logoURI: string;
     fromList?: string;
+    balance?: string;
 }

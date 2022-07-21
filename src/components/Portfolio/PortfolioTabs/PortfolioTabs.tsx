@@ -4,6 +4,10 @@ import TabContent from '../../Global/Tabs/TabContent/TabContent';
 import TabNavItem from '../../Global/Tabs/TabNavItem/TabNavItem';
 // import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import Wallet from '../../Global/Account/Wallet/Wallet';
+import Exchange from '../../Global/Account/Exchange/Exchange';
+import Range from '../../Global/Account/Range/Range';
+import Order from '../../Global/Account/Order/Order';
+import TransactionsTable from '../../Global/Account/Transaction/TransactionsTable';
 
 export default function PortfolioTabs() {
     const [activeTab, setActiveTab] = useState('tab1');
@@ -12,8 +16,8 @@ export default function PortfolioTabs() {
     const tabData = [
         { title: 'Wallet', id: 'tab1' },
         { title: 'Exchange', id: 'tab2' },
-        { title: 'Positions', id: 'tab3' },
-        { title: 'Limit Orders', id: 'tab4' },
+        { title: 'Ranges', id: 'tab3' },
+        { title: ' Orders', id: 'tab4' },
         { title: 'Transactions', id: 'tab5' },
     ];
 
@@ -38,16 +42,16 @@ export default function PortfolioTabs() {
                     <Wallet />
                 </TabContent>
                 <TabContent id='tab2' activeTab={activeTab}>
-                    {/* <p>Exchange Component</p> */}
+                    <Exchange />
                 </TabContent>
                 <TabContent id='tab3' activeTab={activeTab}>
-                    {/* <p>Position component</p> */}
+                    <Range />
                 </TabContent>
                 <TabContent id='tab4' activeTab={activeTab}>
-                    {/* <p>Limit Orders component</p> */}
+                    <Order />
                 </TabContent>
                 <TabContent id='tab5' activeTab={activeTab}>
-                    {/* <p>Transactions component</p> */}
+                    <TransactionsTable />
                 </TabContent>
             </div>
         </div>

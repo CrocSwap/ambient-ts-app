@@ -174,7 +174,17 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
                 </NavLink>
                 {/* <NavLink to='/range2'>Range</NavLink> */}
                 <NavLink
-                    to='/trade/market'
+                    to={
+                        location.pathname.includes('trade/market')
+                            ? '/trade/market'
+                            : location.pathname.includes('trade/limit')
+                            ? '/trade/limit'
+                            : location.pathname.includes('trade/range')
+                            ? '/trade/range'
+                            : location.pathname.includes('trade/edit')
+                            ? '/trade/edit'
+                            : '/trade/market'
+                    }
                     className={({ isActive }) => (isActive ? styles.active : styles.inactive)}
                 >
                     Trade

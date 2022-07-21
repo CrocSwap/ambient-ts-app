@@ -72,7 +72,7 @@ export default function TransactionCard(props: TransactionProps) {
             <button className={styles.details_button}>Details</button>
         </div>
     );
-    const truncatedSwapID = trimString(props.swap.id, 5, 5, '…');
+    const truncatedSwapID = trimString(props.swap.id, 6, 0, '…');
     const bottomElements = (
         <div className={styles.bottom_elements}>
             <div className={styles.account_elements}>

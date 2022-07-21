@@ -4,7 +4,7 @@
    grid-template-columns: 2fr 1fr 1fr;
    align-items: center;
    padding-bottom: 4px;
-   border-bottom: 1px solid rgb(43, 40, 40);
+   border-bottom: 1px solid var(--dark3);
 }
 
 

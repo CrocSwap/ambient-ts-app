@@ -9,7 +9,11 @@ import chart from '../../assets/images/Temporary/chart.svg';
 import Tabs from '../../components/Global/Tabs/Tabs';
 import { motion } from 'framer-motion';
 import { useAppSelector, useAppDispatch } from '../../utils/hooks/reduxToolkit';
-import { tradeData as TradeDataIF, toggleDidUserFlipDenom } from '../../utils/state/tradeDataSlice';
+import {
+    tradeData as TradeDataIF,
+    toggleDidUserFlipDenom,
+    setActiveChartPeriod,
+} from '../../utils/state/tradeDataSlice';
 import truncateDecimals from '../../utils/data/truncateDecimals';
 
 interface ITradeProps {
@@ -45,6 +49,9 @@ export default function Trade(props: ITradeProps) {
 
     const tradeData = useAppSelector((state) => state.tradeData);
     const isTokenABase = props.isTokenABase;
+    const setActivePeriod = (period: number) => {
+        dispatch(setActiveChartPeriod(period));
+    };
     const denomInBase = tradeData.isDenomBase;
     const denomInTokenA = (denomInBase && isTokenABase) || (!denomInBase && !isTokenABase);
     const tokenASymbol = tradeData.tokenA.symbol;
@@ -87,20 +94,69 @@ export default function Trade(props: ITradeProps) {
         </div>
     );
 
+    const currencyCharacter = denomInTokenA
+        ? // denom in a, if token b is dollar equivalent use $
+          ~['DAI', 'USDC'].indexOf(tradeData.tokenB.symbol)
+            ? '$'
+            : 'Ξ'
+        : // denom in b, if token a is dollar equivalent use $
+        ~['DAI', 'USDC'].indexOf(tradeData.tokenA.symbol)
+        ? '$'
+        : 'Ξ';
+
     const timeFrameContent = (
         <div className={styles.time_frame_container}>
             <div className={styles.left_side}>
-                <span className={styles.amount}>${truncatedPoolPrice}</span>
+                <span className={styles.amount} onClick={() => dispatch(toggleDidUserFlipDenom())}>
+                    {currencyCharacter}
+                    {truncatedPoolPrice}
+                </span>
                 <span className={styles.change}>+8.57% | 24h</span>
             </div>
             <div className={styles.right_side}>
                 <span>Timeframe</span>
-                <button>1m</button>
-                <button>5m</button>
-                <button>15m</button>
-                <button>1h</button>
-                <button>4h</button>
-                <button>1d</button>
+                <button
+                    onClick={() => {
+                        setActivePeriod(60);
+                    }}
+                >
+                    1m
+                </button>
+                <button
+                    onClick={() => {
+                        setActivePeriod(300);
+                    }}
+                >
+                    5m
+                </button>
+                <button
+                    onClick={() => {
+                        setActivePeriod(900);
+                    }}
+                >
+                    15m
+                </button>
+                <button
+                    onClick={() => {
+                        setActivePeriod(3600);
+                    }}
+                >
+                    1h
+                </button>
+                <button
+                    onClick={() => {
+                        setActivePeriod(14400);
+                    }}
+                >
+                    4h
+                </button>
+                <button
+                    onClick={() => {
+                        setActivePeriod(86400);
+                    }}
+                >
+                    1d
+                </button>
             </div>
         </div>
     );
