@@ -16,7 +16,8 @@ import {
 import { ethers } from 'ethers';
 import { JsonRpcProvider } from '@ethersproject/providers';
 // import { request, gql } from 'graphql-request';
-import { useMoralis, useMoralisQuery, useMoralisSubscription } from 'react-moralis';
+import { useMoralis, useMoralisQuery, useMoralisSubscription, useChain } from 'react-moralis';
+
 import useWebSocket from 'react-use-websocket';
 // import { ReadyState } from 'react-use-websocket';
 import Moralis from 'moralis';
@@ -92,11 +93,19 @@ export default function App() {
         isAuthenticated,
     } = useMoralis();
 
+    const { switchNetwork } = useChain();
+
     const chainId = moralisChainId
         ? moralisChainId
         : window.ethereum?.networkVersion
         ? '0x' + parseInt(window.ethereum?.networkVersion).toString(16)
         : '0x2a';
+
+    useEffect(() => {
+        console.log('switching networks because metamask network changed');
+        const newNetworkHex = '0x' + parseInt(window.ethereum?.networkVersion).toString(16);
+        switchNetwork(newNetworkHex);
+    }, [window.ethereum?.networkVersion]);
 
     const [provider, setProvider] = useState<
         ethers.providers.JsonRpcProvider | ethers.providers.Web3Provider
@@ -104,10 +113,10 @@ export default function App() {
 
     const [metamaskLocked, setMetamaskLocked] = useState<boolean>(true);
 
-    useEffect(() => {
-        console.log({ provider });
-        console.log({ chainId });
-    }, [provider, chainId]);
+    // useEffect(() => {
+    //     console.log({ provider });
+    //     console.log({ chainId });
+    // }, [provider, chainId]);
 
     useEffect(() => {
         setProvider(undefined);
@@ -1206,6 +1215,7 @@ export default function App() {
         metamaskLocked: metamaskLocked,
         ensName: ensName,
         shouldDisplayAccountTab: shouldDisplayAccountTab,
+        chainId: chainId,
     };
 
     // props for <Swap/> React element
