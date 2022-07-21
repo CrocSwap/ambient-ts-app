@@ -9,7 +9,11 @@ import chart from '../../assets/images/Temporary/chart.svg';
 import Tabs from '../../components/Global/Tabs/Tabs';
 import { motion } from 'framer-motion';
 import { useAppSelector, useAppDispatch } from '../../utils/hooks/reduxToolkit';
-import { tradeData as TradeDataIF, toggleDidUserFlipDenom } from '../../utils/state/tradeDataSlice';
+import {
+    tradeData as TradeDataIF,
+    toggleDidUserFlipDenom,
+    setActiveChartPeriod,
+} from '../../utils/state/tradeDataSlice';
 import truncateDecimals from '../../utils/data/truncateDecimals';
 
 interface ITradeProps {
@@ -19,7 +23,6 @@ interface ITradeProps {
     lastBlockNumber: number;
     isTokenABase: boolean;
     poolPriceDisplay: number;
-    setActivePeriod: React.Dispatch<React.SetStateAction<number>>;
 }
 
 export default function Trade(props: ITradeProps) {
@@ -46,7 +49,9 @@ export default function Trade(props: ITradeProps) {
 
     const tradeData = useAppSelector((state) => state.tradeData);
     const isTokenABase = props.isTokenABase;
-    const setActivePeriod = props.setActivePeriod;
+    const setActivePeriod = (period: number) => {
+        dispatch(setActiveChartPeriod(period));
+    };
     const denomInBase = tradeData.isDenomBase;
     const denomInTokenA = (denomInBase && isTokenABase) || (!denomInBase && !isTokenABase);
     const tokenASymbol = tradeData.tokenA.symbol;
