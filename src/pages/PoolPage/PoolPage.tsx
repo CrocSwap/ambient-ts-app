@@ -1,13 +1,14 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import Divider from '../../components/Global/Divider/Divider';
 
 import styles from './PoolPage.module.css';
-import { usePoolDatas } from '../../state/pools/hooks';
+import { usePoolChartData, usePoolDatas } from '../../state/pools/hooks';
 import { feeTierPercent, isAddress } from '../../utils';
 import PoolInfoCard from './PoolInfoCard/PoolInfoCard';
 import { formatAmount } from '../../utils/numbers';
 import PoolPageChart from './Chart/PoolPageChart';
+import { unixToDate } from '../../utils/date';
 
 export default function PoolPage() {
     const { address } = useParams();
@@ -17,8 +18,47 @@ export default function PoolPage() {
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const poolData = usePoolDatas([address!])[0];
-    // const chartData = usePoolChartData(address);
+    const chartData = usePoolChartData(address!);
     // const transactions = usePoolTransactions(address);
+
+    const formattedTvlData = useMemo(() => {
+        if (chartData) {
+            return chartData.map((day) => {
+                return {
+                    time: new Date(day.date * 1000),
+                    value: day.totalValueLockedUSD,
+                };
+            });
+        } else {
+            return [];
+        }
+    }, [chartData]);
+
+    const formattedVolumeData = useMemo(() => {
+        if (chartData) {
+            return chartData.map((day) => {
+                return {
+                    time: new Date(day.date * 1000),
+                    value: day.volumeUSD,
+                };
+            });
+        } else {
+            return [];
+        }
+    }, [chartData]);
+
+    const formattedFeesUSD = useMemo(() => {
+        if (chartData) {
+            return chartData.map((day) => {
+                return {
+                    time: new Date(day.date * 1000),
+                    value: day.feesUSD,
+                };
+            });
+        } else {
+            return [];
+        }
+    }, [chartData]);
 
     function getPoolLogoURL(address: string) {
         const checkSummed = isAddress(address);
@@ -105,7 +145,12 @@ export default function PoolPage() {
             {poolInfo}
             <div className={styles.hsPAQl}>
                 <PoolInfoCard pool={poolData} />
-                <PoolPageChart />
+                <PoolPageChart
+                    tvlData={formattedTvlData}
+                    feesData={formattedFeesUSD}
+                    volumeData={formattedVolumeData}
+                    pool={poolData}
+                />
             </div>
             <Divider />
             {/* <Transactions transactions={transactions!} /> */}
