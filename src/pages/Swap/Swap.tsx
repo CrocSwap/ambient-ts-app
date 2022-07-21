@@ -275,7 +275,7 @@ export default function Swap(props: SwapPropsIF) {
                         limitPrice: limitPrice.toString(),
                         minOut: '0', // integer	The minimum output the user expects from the swap.
                         override: 'false',
-                        network: 'kovan',
+                        chainId: chainId,
                         // boolean	(Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
                     }),
                 // { method: 'POST' },

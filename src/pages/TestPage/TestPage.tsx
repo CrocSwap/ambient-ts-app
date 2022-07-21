@@ -15,6 +15,10 @@
 import styles from './TestPage.module.css';
 
 import Range from '../../components/Global/Account/Range/Range';
+// import Transaction from '../../components/Transaction/Transaction';
+// import Transactions from '../../components/Global/Transactions/Transactions';
+
+import TableMenu from '../../components/Global/TableMenu/TableMenu';
 
 export default function TestPage() {
     // // get the user object from local storage
@@ -102,6 +106,10 @@ export default function TestPage() {
                 {/* <RangeCardHeader /> */}
                 {/* <RangeCard /> */}
                 <Range />
+                {/* <Order />
+                <TransactionsTable /> */}
+
+                <TableMenu tableType='orders' />
             </main>
         </>
     );

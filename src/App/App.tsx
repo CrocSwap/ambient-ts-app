@@ -70,17 +70,34 @@ import {
 import { memoizePromiseFn } from './functions/memoizePromiseFn';
 import { querySpotPrice } from './functions/querySpotPrice';
 import { fetchAddress } from './functions/fetchAddress';
+import { fetchTokenBalances } from './functions/fetchTokenBalances';
 import truncateDecimals from '../utils/data/truncateDecimals';
 import { getNFTs } from './functions/getNFTs';
 import { useSlippage } from './useSlippage';
+import { resetTokenData, setTokens } from '../utils/state/tokenDataSlice';
+// import SidebarFooter from '../components/Global/SIdebarFooter/SidebarFooter';
 
 const cachedQuerySpotPrice = memoizePromiseFn(querySpotPrice);
 const cachedFetchAddress = memoizePromiseFn(fetchAddress);
+const cachedFetchTokenBalances = memoizePromiseFn(fetchTokenBalances);
 const cachedGetTokenDecimals = memoizePromiseFn(getTokenDecimals);
 
 /** ***** React Function *******/
 export default function App() {
-    const { Moralis, chainId, isWeb3Enabled, account, logout, isAuthenticated } = useMoralis();
+    const {
+        Moralis,
+        chainId: moralisChainId,
+        isWeb3Enabled,
+        account,
+        logout,
+        isAuthenticated,
+    } = useMoralis();
+
+    const chainId = moralisChainId
+        ? moralisChainId
+        : window.ethereum?.networkVersion
+        ? '0x' + parseInt(window.ethereum?.networkVersion).toString(16)
+        : '0x2a';
 
     const dispatch = useAppDispatch();
 
@@ -149,7 +166,7 @@ export default function App() {
             user.tokens && setImportedTokens(user.tokens);
         }
     }
-
+    const [sidebarManuallySet, setSidebarManuallySet] = useState<boolean>(false);
     const [showSidebar, setShowSidebar] = useState<boolean>(false);
     const location = useLocation();
 
@@ -210,6 +227,7 @@ export default function App() {
 
     const [ensName, setEnsName] = useState('');
 
+    // check for ENS name account changes
     useEffect(() => {
         (async () => {
             if (account) {
@@ -224,6 +242,28 @@ export default function App() {
             }
         })();
     }, [account]);
+
+    const tokensInRTK = useAppSelector((state) => state.tokenData.tokens);
+
+    // check for token balances on each new block
+    useEffect(() => {
+        (async () => {
+            if (account) {
+                try {
+                    const tokens: TokenIF[] = await cachedFetchTokenBalances(
+                        account,
+                        chainId,
+                        lastBlockNumber,
+                    );
+                    // console.log({ tokens });
+                    if (JSON.stringify(tokensInRTK) !== JSON.stringify(tokens))
+                        dispatch(setTokens(tokens));
+                } catch (error) {
+                    console.log({ error });
+                }
+            }
+        })();
+    }, [account, chainId, lastBlockNumber]);
 
     const [baseTokenAddress, setBaseTokenAddress] = useState<string>('');
     const [quoteTokenAddress, setQuoteTokenAddress] = useState<string>('');
@@ -271,7 +311,7 @@ export default function App() {
                         base: sortedTokens[0].toLowerCase(),
                         quote: sortedTokens[1].toLowerCase(),
                         poolIdx: POOL_PRIMARY.toString(),
-                        network: 'kovan',
+                        chainId: chainId,
                     }),
             )
                 .then((response) => response.json())
@@ -298,7 +338,7 @@ export default function App() {
                         base: sortedTokens[0].toLowerCase(),
                         quote: sortedTokens[1].toLowerCase(),
                         poolIdx: POOL_PRIMARY.toString(),
-                        network: 'kovan',
+                        chainId: chainId,
                         // n: 10 // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
                         // page: 0 // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
                     }),
@@ -321,12 +361,11 @@ export default function App() {
         }
     }, [tokenPairStringified]);
 
-    const [activePeriod, setActivePeriod] = useState(60); // 1 minute by default
+    // const [activePeriod, setActivePeriod] = useState(60); // 1 minute by default
+    const activePeriod = tradeData.activeChartPeriod;
 
     useEffect(() => {
-        // console.log({ activePeriod });
-
-        if (baseTokenAddress && quoteTokenAddress) {
+        if (baseTokenAddress && quoteTokenAddress && activePeriod) {
             const candleSeriesCacheEndpoint = 'https://809821320828123.de:5000/candle_series?';
 
             fetch(
@@ -341,7 +380,7 @@ export default function App() {
                         // time: '1657833300', // optional
                         n: '200', // positive integer
                         page: '0', // nonnegative integer
-                        network: 'kovan',
+                        chainId: chainId,
                     }),
             )
                 .then((response) => response.json())
@@ -381,7 +420,7 @@ export default function App() {
                 quote: quoteTokenAddress.toLowerCase(),
                 // quoteTokenAddress.toLowerCase() || '0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa',
                 poolIdx: POOL_PRIMARY.toString(),
-                network: 'kovan',
+                chainId: chainId,
             }),
         [baseTokenAddress, quoteTokenAddress, POOL_PRIMARY],
     );
@@ -432,7 +471,7 @@ export default function App() {
                 // 	positive integer	The duration of the candle, in seconds. Must represent one of the following time intervals: 5 minutes, 15 minutes, 1 hour, 4 hours, 1 day, 7 days.
                 period: activePeriod.toString(),
                 // period: '60',
-                network: 'kovan',
+                chainId: chainId,
             }),
         [baseTokenAddress, quoteTokenAddress, POOL_PRIMARY, activePeriod],
     );
@@ -487,7 +526,7 @@ export default function App() {
                 quote: quoteTokenAddress.toLowerCase(),
                 // quoteTokenAddress.toLowerCase() || '0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa',
                 poolIdx: POOL_PRIMARY.toString(),
-                network: 'kovan',
+                chainId: chainId,
             }),
         [baseTokenAddress, quoteTokenAddress, POOL_PRIMARY],
     );
@@ -530,7 +569,7 @@ export default function App() {
             'wss://809821320828123.de:5000/subscribe_user_positions?' +
             new URLSearchParams({
                 user: account || '',
-                network: 'kovan',
+                chainId: chainId,
                 // user: account || '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc',
             }),
         [account],
@@ -574,7 +613,7 @@ export default function App() {
             'wss://809821320828123.de:5000/subscribe_user_swaps?' +
             new URLSearchParams({
                 user: account || '',
-                network: 'kovan',
+                chainId: chainId,
                 // user: account || '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc',
             }),
         [account],
@@ -913,7 +952,7 @@ export default function App() {
                 allUserPositionsCacheEndpoint +
                     new URLSearchParams({
                         user: account,
-                        network: 'kovan',
+                        chainId: chainId,
                     }),
             )
                 .then((response) => response.json())
@@ -938,7 +977,7 @@ export default function App() {
                 allUserSwapsCacheEndpoint +
                     new URLSearchParams({
                         user: account,
-                        network: 'kovan',
+                        chainId: chainId,
                     }),
             )
                 .then((response) => response.json())
@@ -974,9 +1013,13 @@ export default function App() {
     const currentLocation = location.pathname;
 
     function toggleSidebarBasedOnRoute() {
-        setShowSidebar(true);
-        if (currentLocation === '/' || currentLocation === '/swap') {
-            setShowSidebar(false);
+        if (sidebarManuallySet) {
+            return;
+        } else {
+            setShowSidebar(true);
+            if (currentLocation === '/' || currentLocation === '/swap') {
+                setShowSidebar(false);
+            }
         }
     }
 
@@ -1072,6 +1115,7 @@ export default function App() {
         setTokenABalance('0');
         setTokenBBalance('0');
         dispatch(resetTradeData());
+        dispatch(resetTokenData());
         dispatch(resetGraphData());
         dispatch(resetReceiptData());
 
@@ -1126,7 +1170,7 @@ export default function App() {
     useEffect(() => {
         const interval = setInterval(async () => {
             const currentDateTime = new Date().toISOString();
-            const chain = chainId ?? '0x2a';
+            const chain = chainId;
             // console.log({ chainId });
             const options: { chain: '0x2a' | 'kovan'; date: string } = {
                 chain: chain as '0x2a' | 'kovan',
@@ -1170,7 +1214,7 @@ export default function App() {
         poolPriceDisplay: poolPriceDisplay,
         tokenAAllowance: tokenAAllowance,
         setRecheckTokenAApproval: setRecheckTokenAApproval,
-        chainId: chainId ?? '0x2a',
+        chainId: chainId,
         activeTokenListsChanged: activeTokenListsChanged,
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
     };
@@ -1193,7 +1237,7 @@ export default function App() {
         poolPriceDisplay: poolPriceDisplay,
         setRecheckTokenAApproval: setRecheckTokenAApproval,
         tokenAAllowance: tokenAAllowance,
-        chainId: chainId ?? '0x2a',
+        chainId: chainId,
         activeTokenListsChanged: activeTokenListsChanged,
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
     };
@@ -1218,7 +1262,7 @@ export default function App() {
         poolPriceNonDisplay: poolPriceNonDisplay,
         setRecheckTokenAApproval: setRecheckTokenAApproval,
         tokenAAllowance: tokenAAllowance,
-        chainId: chainId ?? '0x2a',
+        chainId: chainId,
         activeTokenListsChanged: activeTokenListsChanged,
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
     };
@@ -1242,7 +1286,7 @@ export default function App() {
         tokenBBalance: tokenBBalance,
         tokenBAllowance: tokenBAllowance,
         setRecheckTokenBApproval: setRecheckTokenBApproval,
-        chainId: chainId ?? '0x2a',
+        chainId: chainId,
         activeTokenListsChanged: activeTokenListsChanged,
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
     };
@@ -1250,6 +1294,7 @@ export default function App() {
     // props for <Sidebar/> React element
     function toggleSidebar() {
         setShowSidebar(!showSidebar);
+        setSidebarManuallySet(true);
     }
     const sidebarProps = {
         showSidebar: showSidebar,
@@ -1323,7 +1368,6 @@ export default function App() {
                                     lastBlockNumber={lastBlockNumber}
                                     isTokenABase={isTokenABase}
                                     poolPriceDisplay={poolPriceDisplay}
-                                    setActivePeriod={setActivePeriod}
                                 />
                             }
                         >
@@ -1332,6 +1376,7 @@ export default function App() {
                             <Route path='limit' element={<Limit {...limitPropsTrade} />} />
                             <Route path='range' element={<Range {...rangeProps} />} />
                             <Route path='edit/:positionHash' element={<Edit />} />
+                            <Route path='edit/' element={<Navigate to='/trade/market' replace />} />
                         </Route>
                         <Route path='analytics' element={<Analytics />} />
                         {/* <Route path='details' element={<PositionDetails />} /> */}
@@ -1358,6 +1403,7 @@ export default function App() {
                 {snackbarContent}
             </div>
             <PageFooter lastBlockNumber={lastBlockNumber} />
+            {/* <SidebarFooter/> */}
         </>
     );
 }

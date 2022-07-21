@@ -6,6 +6,8 @@ import TabNavItem from '../../Global/Tabs/TabNavItem/TabNavItem';
 import Wallet from '../../Global/Account/Wallet/Wallet';
 import Exchange from '../../Global/Account/Exchange/Exchange';
 import Range from '../../Global/Account/Range/Range';
+import Order from '../../Global/Account/Order/Order';
+import TransactionsTable from '../../Global/Account/Transaction/TransactionsTable';
 
 export default function PortfolioTabs() {
     const [activeTab, setActiveTab] = useState('tab1');
@@ -15,7 +17,7 @@ export default function PortfolioTabs() {
         { title: 'Wallet', id: 'tab1' },
         { title: 'Exchange', id: 'tab2' },
         { title: 'Ranges', id: 'tab3' },
-        { title: 'Limit Orders', id: 'tab4' },
+        { title: ' Orders', id: 'tab4' },
         { title: 'Transactions', id: 'tab5' },
     ];
 
@@ -46,10 +48,10 @@ export default function PortfolioTabs() {
                     <Range />
                 </TabContent>
                 <TabContent id='tab4' activeTab={activeTab}>
-                    {/* <p>Limit Orders component</p> */}
+                    <Order />
                 </TabContent>
                 <TabContent id='tab5' activeTab={activeTab}>
-                    {/* <p>Transactions component</p> */}
+                    <TransactionsTable />
                 </TabContent>
             </div>
         </div>

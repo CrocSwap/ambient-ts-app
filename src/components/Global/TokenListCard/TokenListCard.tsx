@@ -1,37 +1,35 @@
+// START: Import React and Dongles
+import { useState, MouseEvent } from 'react';
+import { MenuItem, Menu } from '@material-ui/core';
+import { RiFileList2Fill } from 'react-icons/ri';
+
+// START: Import Local Files
 import styles from './TokenListCard.module.css';
 import Toggle from '../../Global/Toggle/Toggle';
 import { useStyles } from '../../../utils/functions/styles';
 import { TokenListIF } from '../../../utils/interfaces/exports';
-import { MenuItem, Menu } from '@material-ui/core';
-import { useState } from 'react';
-import { RiFileList2Fill } from 'react-icons/ri';
 import uriToHttp from '../../../utils/functions/uriToHttp';
 
-interface TokenListProps {
+interface TokenListPropsIF {
     list: TokenListIF;
     activeLists: [];
     listIsActive: boolean;
     toggleActiveState: () => void;
 }
 
-export default function TokenListCard(props: TokenListProps) {
-    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+export default function TokenListCard(props: TokenListPropsIF) {
     const { list, listIsActive, toggleActiveState } = props;
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const classes = useStyles();
 
     const cardBackground = listIsActive ? ' ' : '';
     const cardBorder = listIsActive ? '1px solid #7371fc ' : '';
 
     const handleClick = (
-        event: React.MouseEvent<HTMLButtonElement> | React.MouseEvent<HTMLDivElement>,
-    ) => {
-        console.log('handleClick', event.currentTarget);
-        setAnchorEl(event.currentTarget);
-    };
-    const handleClose = () => {
-        console.log('handleClose');
-        setAnchorEl(null);
-    };
+        event: MouseEvent<HTMLButtonElement> | MouseEvent<HTMLDivElement>
+    ) => setAnchorEl(event.currentTarget);
+
+    const handleClose = () => setAnchorEl(null);
 
     return (
         <div className={styles.token_list_card_container}>
@@ -40,7 +38,7 @@ export default function TokenListCard(props: TokenListProps) {
                 style={{ backgroundColor: cardBackground, border: cardBorder }}
             >
                 <div className={styles.left_content}>
-                    <img src={uriToHttp(list.logoURI)} alt='' width='40px' />
+                    <img src={uriToHttp(list.logoURI)} alt={`logo for the token list ${list.name}`} width='40px' />
                     <div className={styles.token_list_card_name}>
                         <span> {list?.name}</span>
                         <div className={styles.bottom_container_menu}>
@@ -85,10 +83,8 @@ export default function TokenListCard(props: TokenListProps) {
                     <Toggle
                         isOn={listIsActive}
                         handleToggle={toggleActiveState}
-                        // buttonColor={isChecked ? '#7371FC ' : '#565a69'}
                         Width={50}
                         id={`token-list-toggle-${list.uri}`}
-                        // onColor={isChecked ? '#CDC1FF' : '#212429'}
                     />
                 </div>
             </div>
