@@ -14,8 +14,13 @@
 }
 
 .query_error_text {
-    color: red;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #f6385b;
     font-style: italic;
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
 }
 
 .custom_tokens_footer {
@@ -30,4 +35,25 @@
     color: var(--text-grey-light);
     font-size: var(--body-size);
     line-height: var(--body-lh);
+}
+
+.search_input{
+    margin: 1rem 0;
+    padding: 0 1rem;
+}
+
+.search_input input{
+    width: 100%;
+    background: var(--dark3);
+    
+    text-align: center;
+    color: var(--text-grey-light);
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    padding: 0.6rem 0;
+    border-radius: var(--border-radius);
+    border: none;
+    
+    outline: none;
+    
 }
