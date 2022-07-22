@@ -9,7 +9,7 @@ import { TokenIF } from '../../../utils/interfaces/exports';
 import uriToHttp from '../../../utils/functions/uriToHttp';
 import { removeToken } from '../../Global/TokenSelectContainer/removeToken';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import { contractAddresses, toDisplayQty } from '@crocswap-libs/sdk';
+import { toDisplayQty } from '@crocswap-libs/sdk';
 // import truncateDecimals from '../../../utils/data/truncateDecimals';
 // import { tokenData } from '../../../utils/state/tokenDataSlice';
 
@@ -33,27 +33,11 @@ export default function TokenSelect(props: TokenSelectPropsIF) {
         // console.log({ address });
         let tokenBalanceDisplay = '';
         tokensInRTK.map((token) => {
-            if (token.token_address?.toLowerCase() === address.toLowerCase()) {
-                // console.log(token.balance);
+            if ((token as any).token_address?.toLowerCase() === address.toLowerCase()) {
                 if (token.balance && token.decimals) {
-                    if (token.address === contractAddresses.ZERO_ADDR) {
-                        // tokenBalanceDisplay = truncateDecimals(parseFloat(token.balance), 2);
-                        const localizedNativeBalance = parseFloat(token.balance).toLocaleString(
-                            'en-US',
-                        );
-                        tokenBalanceDisplay = localizedNativeBalance;
-                        // tokenBalanceDisplay = parseFloat(token.balance).toPrecision(6);
-
-                        return;
-                    }
                     const untruncatedDisplayQty = toDisplayQty(token.balance, token.decimals);
                     const displayQtyNum = parseFloat(untruncatedDisplayQty);
                     const localDisplayQty = displayQtyNum.toLocaleString('en-US');
-                    // const displayQtyTruncated =
-                    //     displayQtyNum > 2
-                    //         ? truncateDecimals(displayQtyNum, 2)
-                    //         : truncateDecimals(displayQtyNum, 6);
-                    // const displayQtyWithPrecision = displayQtyNum.toPrecision(10);
                     tokenBalanceDisplay = localDisplayQty;
                 }
             }
