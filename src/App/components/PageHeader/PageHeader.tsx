@@ -24,10 +24,12 @@ interface IHeaderProps {
     metamaskLocked: boolean;
     ensName: string;
     shouldDisplayAccountTab: boolean;
+    chainId: string;
+    setFallbackChainId: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export default function PageHeader(props: IHeaderProps): React.ReactElement<IHeaderProps> {
-    const { ensName, shouldDisplayAccountTab } = props;
+    const { ensName, shouldDisplayAccountTab, chainId, setFallbackChainId } = props;
 
     const { user, account, enableWeb3, isWeb3Enabled, authenticate, isAuthenticated } =
         useMoralis();
@@ -124,6 +126,8 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
         isWeb3Enabled: isWeb3Enabled,
         clickLogout: props.clickLogout,
         openModal: openModal,
+        chainId: chainId,
+        setFallbackChainId: setFallbackChainId,
     };
 
     // End of Page Header Functions
@@ -209,7 +213,7 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
             <div className={styles.account}>
                 {(!isAuthenticated || !isWeb3Enabled) && metamaskButton}
                 {/* {(!isAuthenticated || !isWeb3Enabled) && magicButton} */}
-                {isAuthenticated && isWeb3Enabled && <NetworkSelector />}
+                {isAuthenticated && isWeb3Enabled && <NetworkSelector chainId={chainId} />}
                 <Account {...accountProps} />
             </div>
 

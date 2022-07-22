@@ -7,10 +7,10 @@ import { CSSTransition } from 'react-transition-group';
 import { FaNetworkWired, FaDiscord, FaSun, FaGithub, FaDotCircle } from 'react-icons/fa';
 import { MdHelp, MdArrowForwardIos, MdLanguage, MdReportProblem } from 'react-icons/md';
 import { motion } from 'framer-motion';
-import arbitrumImage from '../../../../assets/images/networks/arbitrum.svg';
+// import arbitrumImage from '../../../../assets/images/networks/arbitrum.svg';
 import kovanImage from '../../../../assets/images/networks/kovan.svg';
-import optimisticImage from '../../../../assets/images/networks/optimistic.svg';
-import polygonImage from '../../../../assets/images/networks/polygon.svg';
+// import optimisticImage from '../../../../assets/images/networks/optimistic.svg';
+// import polygonImage from '../../../../assets/images/networks/polygon.svg';
 import ethereumImage from '../../../../assets/images/networks/ethereum.png';
 
 import { HiOutlineDocumentText } from 'react-icons/hi';
@@ -18,6 +18,8 @@ import { HiOutlineDocumentText } from 'react-icons/hi';
 import { GoRequestChanges } from 'react-icons/go';
 import { BsBook, BsMedium } from 'react-icons/bs';
 import { AiFillTwitterCircle, AiFillInfoCircle } from 'react-icons/ai';
+
+import { useChain } from 'react-moralis';
 
 // networks
 
@@ -27,7 +29,7 @@ interface NavbarDropdownItemProps {
     topLevel?: boolean;
     goBackItem?: boolean;
     imageIcon?: string;
-
+    onClick?: () => void;
     children: React.ReactNode;
     rightIcon?: React.ReactNode;
 }
@@ -38,12 +40,23 @@ interface NavbarDropdownMenuProps {
     clickLogout: () => void;
     openModal: () => void;
     closeMenu?: () => void;
+    chainId: string;
+    setFallbackChainId: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export default function NavbarDropdownMenu(props: NavbarDropdownMenuProps) {
-    const { isAuthenticated, isWeb3Enabled, clickLogout, openModal, closeMenu } = props;
-    console.log(props.closeMenu);
+    const {
+        isAuthenticated,
+        isWeb3Enabled,
+        clickLogout,
+        openModal,
+        closeMenu,
+        chainId,
+        setFallbackChainId,
+    } = props;
+    // console.log(props.closeMenu);
 
+    const { chainId: moralisChainId, switchNetwork } = useChain();
     const [activeMenu, setActiveMenu] = useState('main');
     // eslint-disable-next-line
     const [menuHeight, setMenuHeight] = useState(null);
@@ -75,7 +88,10 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuProps) {
             <>
                 <div
                     className={`${styles.menu_item} ${topLevelItemStyle} ${goBackItemStyle}`}
-                    onClick={() => props.goToMenu && setActiveMenu(props.goToMenu)}
+                    onClick={() => {
+                        props.goToMenu && setActiveMenu(props.goToMenu);
+                        if (props.onClick) props.onClick();
+                    }}
                 >
                     {props.imageIcon && imageIcon}
                     {props.leftIcon && itemIcon}
@@ -86,6 +102,23 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuProps) {
         );
     }
 
+    const circleIcon = <FaDotCircle color='#CDC1FF' size={10} />;
+
+    const handleNetworkSwitch = (chainId: string) => {
+        console.log('switching to ' + chainId);
+        setFallbackChainId(chainId);
+        if (moralisChainId) {
+            switchNetwork(chainId);
+        }
+        // else if (window.ethereum) {
+        //     window.ethereum.request({
+        //         method: 'wallet_switchEthereumChain',
+        //         params: [{ chainId: chainId }],
+        //     });
+        // }
+        // closeMenu ? closeMenu() : null;
+    };
+
     const networksItems = (
         <motion.div
             initial={{ opacity: 0 }}
@@ -93,16 +126,47 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuProps) {
             transition={{ duration: 0.5 }}
         >
             <NavbarDropdownItem
+                imageIcon={ethereumImage}
+                rightIcon={chainId === '0x1' ? circleIcon : null}
+                onClick={() => handleNetworkSwitch('0x1')}
+            >
+                Ethereum
+            </NavbarDropdownItem>
+            <NavbarDropdownItem
                 imageIcon={kovanImage}
-                rightIcon={<FaDotCircle color='#CDC1FF' size={10} />}
+                rightIcon={chainId === '0x2a' ? circleIcon : null}
+                onClick={() => handleNetworkSwitch('0x2a')}
             >
                 Kovan
             </NavbarDropdownItem>
-            <NavbarDropdownItem imageIcon={ethereumImage}>Ropsten</NavbarDropdownItem>
-            <NavbarDropdownItem imageIcon={ethereumImage}>Ethereum</NavbarDropdownItem>
-            <NavbarDropdownItem imageIcon={polygonImage}>Polygon</NavbarDropdownItem>
-            <NavbarDropdownItem imageIcon={optimisticImage}>Optimism</NavbarDropdownItem>
-            <NavbarDropdownItem imageIcon={arbitrumImage}>Arbitrum</NavbarDropdownItem>
+            {/* <NavbarDropdownItem
+                imageIcon={kovanImage}
+                rightIcon={chainId === '0x3' ? circleIcon : null}
+                onClick={() => handleNetworkSwitch('0x3')}
+            >
+                Ropsten
+            </NavbarDropdownItem> */}
+            <NavbarDropdownItem
+                imageIcon={kovanImage}
+                rightIcon={chainId === '0x5' ? circleIcon : null}
+                onClick={() => handleNetworkSwitch('0x5')}
+            >
+                Görli
+            </NavbarDropdownItem>
+            {/* <NavbarDropdownItem
+                imageIcon={optimisticImage}
+                rightIcon={chainId === '0xa86a' ? circleIcon : null}
+                onClick={() => handleNetworkSwitch('0xa86a')}
+            >
+                Avalanche
+            </NavbarDropdownItem>
+            <NavbarDropdownItem
+                imageIcon={arbitrumImage}
+                rightIcon={chainId === '0xa869' ? circleIcon : null}
+                onClick={() => handleNetworkSwitch('0xa869')}
+            >
+                Fuji
+            </NavbarDropdownItem> */}
         </motion.div>
     );
 

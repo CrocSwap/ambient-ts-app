@@ -16,10 +16,12 @@ import {
 export const querySpotPrice = async (
     baseTokenAddress: string,
     quoteTokenAddress: string,
+    chainId: string,
     lastBlockNumber: number,
 ) => {
+    console.log({ chainId });
     const options = {
-        chain: 'kovan' as '0x2a' | 'kovan',
+        chain: '0x2a' as '0x2a' | '0x5',
         address: contractAddresses.QUERY_ADDR,
         // eslint-disable-next-line camelcase
         function_name: 'queryPrice',
@@ -33,5 +35,6 @@ export const querySpotPrice = async (
     };
     const crocPrice = await Moralis.Web3API.native.runContractFunction(options);
     const spotPrice = decodeCrocPrice(ethers.BigNumber.from(crocPrice));
+    console.log({ spotPrice });
     return spotPrice;
 };
