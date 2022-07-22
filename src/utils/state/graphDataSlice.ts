@@ -76,6 +76,7 @@ export interface Position {
     tokenBQtyDisplay: string;
     baseTokenDecimals: number;
     quoteTokenDecimals: number;
+    chainId: string;
 }
 
 export interface position {

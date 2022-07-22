@@ -51,6 +51,7 @@ export default function AnalyticsTabs() {
                         notOnTradeRoute={true}
                         graphData={graphData}
                         lastBlockNumber={0}
+                        chainId={'0x0'} // Kludge to get React to compile... real chain data needs to be
                     />
                 </TabContent>
                 <TabContent id='tab2' activeTab={activeTab}>

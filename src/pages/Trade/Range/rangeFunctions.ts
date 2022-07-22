@@ -2,31 +2,20 @@ import {
     fromDisplayPrice,
     toDisplayPrice,
     tickToPrice,
-    GRID_SIZE_DFLT,
     MIN_TICK,
     MAX_TICK,
-    // concDepositSkew,
-    // liquidityForBaseQty, // sendAmbientMint,
-    // liquidityForQuoteQty,
-    // fromDisplayQty,
-    // sendConcMint,
-    // parseMintEthersReceipt,
-    // EthersNativeReceipt,
-    // ambientPosSlot,
-    // concPosSlot,
-    // approveToken,
-    // contractAddresses,
 } from '@crocswap-libs/sdk';
+import { LimitNumberError } from 'ajv/dist/vocabularies/validation/limitNumber';
 
 import truncateDecimals from '../../../utils/data/truncateDecimals';
 
-export function roundDownTick(lowTick: number, nTicksGrid: number = GRID_SIZE_DFLT): number {
+export function roundDownTick(lowTick: number, nTicksGrid: number): number {
     const tickGrid = Math.floor(lowTick / nTicksGrid) * nTicksGrid;
     const horizon = Math.floor(MIN_TICK / nTicksGrid) * nTicksGrid;
     return Math.max(tickGrid, horizon);
 }
 
-export function roundUpTick(highTick: number, nTicksGrid: number = GRID_SIZE_DFLT): number {
+export function roundUpTick(highTick: number, nTicksGrid: number): number {
     const tickGrid = Math.ceil(highTick / nTicksGrid) * nTicksGrid;
     const horizon = Math.ceil(MAX_TICK / nTicksGrid) * nTicksGrid;
     return Math.min(tickGrid, horizon);
@@ -38,6 +27,7 @@ export function getPinnedPriceValuesFromTicks(
     quoteTokenDecimals: number,
     minTick: number,
     maxTick: number,
+    gridSize: number,
 ): {
     pinnedMinPriceDisplay: string;
     pinnedMaxPriceDisplay: string;
@@ -48,9 +38,9 @@ export function getPinnedPriceValuesFromTicks(
     pinnedMinPriceNonDisplay: number;
     pinnedMaxPriceNonDisplay: number;
 } {
-    const pinnedLowTick = roundDownTick(minTick);
+    const pinnedLowTick = roundDownTick(minTick, gridSize);
 
-    const pinnedHighTick = roundUpTick(maxTick);
+    const pinnedHighTick = roundUpTick(maxTick, gridSize);
 
     const pinnedMinPriceNonDisplay = tickToPrice(pinnedLowTick);
     const pinnedMaxPriceNonDisplay = tickToPrice(pinnedHighTick);
@@ -97,6 +87,7 @@ export function getPinnedPriceValuesFromDisplayPrices(
     quoteTokenDecimals: number,
     minPriceDisplayString: string,
     maxPriceDisplayString: string,
+    gridSize: number,
 ): {
     pinnedMinPriceDisplay: string;
     pinnedMaxPriceDisplay: string;
@@ -121,9 +112,9 @@ export function getPinnedPriceValuesFromDisplayPrices(
     const lowTickExact = Math.log(minPriceNonDisplayNum) / Math.log(1.0001);
     const highTickExact = Math.log(maxPriceNonDisplayNum) / Math.log(1.0001);
 
-    const pinnedLowTick = roundDownTick(lowTickExact);
+    const pinnedLowTick = roundDownTick(lowTickExact, gridSize);
 
-    const pinnedHighTick = roundUpTick(highTickExact);
+    const pinnedHighTick = roundUpTick(highTickExact, gridSize);
 
     const pinnedMinPriceNonDisplay = tickToPrice(pinnedLowTick);
     const pinnedMaxPriceNonDisplay = tickToPrice(pinnedHighTick);

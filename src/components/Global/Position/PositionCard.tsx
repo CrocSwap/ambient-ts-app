@@ -17,6 +17,7 @@ import RangeDetailsHeader from '../../RangeDetails/RangeDetailsHeader/RangeDetai
 import trimString from '../../../utils/functions/trimString';
 import { ambientPosSlot, concPosSlot } from '@crocswap-libs/sdk';
 import { Tooltip } from '@mui/material';
+import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
 interface PositionCardProps {
     portfolio?: boolean;
@@ -30,6 +31,7 @@ interface PositionCardProps {
     isDenomBase: boolean;
     userPosition?: boolean;
     lastBlockNumber: number;
+    chainId: string;
 }
 export default function PositionCard(props: PositionCardProps) {
     const {
@@ -43,6 +45,7 @@ export default function PositionCard(props: PositionCardProps) {
 
         userPosition,
         lastBlockNumber,
+        chainId,
     } = props;
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const location = useLocation();
@@ -102,7 +105,12 @@ export default function PositionCard(props: PositionCardProps) {
 
     let posHash;
     if (position.ambient) {
-        posHash = ambientPosSlot(position.user, position.base, position.quote);
+        posHash = ambientPosSlot(
+            position.user,
+            position.base,
+            position.quote,
+            lookupChain(chainId).poolIndex,
+        );
     } else {
         posHash = concPosSlot(
             position.user,
@@ -110,6 +118,7 @@ export default function PositionCard(props: PositionCardProps) {
             position.quote,
             position.bidTick,
             position.askTick,
+            lookupChain(chainId).poolIndex,
         );
     }
 

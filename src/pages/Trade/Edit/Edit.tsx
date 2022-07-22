@@ -11,13 +11,8 @@ import ConfirmEditModal from '../../../components/Trade/Edit/ConfirmEditModal/Co
 import { useModal } from '../../../components/Global/Modal/useModal';
 import { useState, useEffect } from 'react';
 import EditDenominationSwitch from '../../../components/Trade/Edit/EditDenominationSwitch/EditDenominationSwitch';
-// import {
-//     tradeData as TradeDataIF,
-//     toggleDidUserFlipDenom,
-// } from '../../../utils/state/tradeDataSlice';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 
-// import { PositionIF } from '../../../utils/interfaces/PositionIF';
 import { Position } from '../../../utils/state/graphDataSlice';
 import {
     getPinnedPriceValuesFromTicks,
@@ -27,6 +22,7 @@ import truncateDecimals from '../../../utils/data/truncateDecimals';
 // import { PositionIF } from '../../../utils/interfaces/PositionIF';
 import { tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
+import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 interface PositionState {
     position: Position;
 }
@@ -151,6 +147,7 @@ export default function Edit() {
                 quoteTokenDecimals,
                 rangeLowTick,
                 rangeHighTick,
+                lookupChain(position.chainId).gridSize,
             );
             // console.log({ pinnedDisplayPrices });
             // setRangeLowBoundNonDisplayPrice(pinnedDisplayPrices.pinnedMinPriceNonDisplay);
@@ -245,6 +242,7 @@ export default function Edit() {
                         quoteTokenDecimals,
                         rangeLowBoundDisplayField.value,
                         pinnedMaxPriceDisplayTruncated,
+                        lookupChain(position.chainId).gridSize,
                     );
 
                     !denominationsInBase
@@ -270,6 +268,7 @@ export default function Edit() {
                         quoteTokenDecimals,
                         pinnedMinPriceDisplayTruncated,
                         rangeHighBoundDisplayField.value,
+                        lookupChain(position.chainId).gridSize,
                     );
 
                     denominationsInBase
@@ -360,6 +359,7 @@ export default function Edit() {
         setRangeHighTick: setRangeHighTick,
         minPrice: position?.lowRangeDisplayInBase,
         maxPrice: position?.highRangeDisplayInBase,
+        chainId: position.chainId,
     };
     // Props for <CurrencyDisplayContainer/> React element
 

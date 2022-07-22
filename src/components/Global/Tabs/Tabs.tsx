@@ -14,6 +14,7 @@ interface ITabsProps {
     isAuthenticated: boolean;
     isWeb3Enabled: boolean;
     lastBlockNumber: number;
+    chainId: string;
 }
 
 export default function Tabs(props: ITabsProps) {
@@ -29,12 +30,9 @@ export default function Tabs(props: ITabsProps) {
 
     useEffect(() => {
         setHasInitialized(false);
-    }, [props.account, props.isAuthenticated]);
+    }, [props.account, props.isAuthenticated, props.chainId]);
 
     useEffect(() => {
-        // console.log({ hasInitialized });
-        // console.log({ isShowAllEnabled });
-        // console.log({ userPositions });
         if (!hasInitialized) {
             if (!isShowAllEnabled && userPositions.length < 1) {
                 setIsShowAllEnabled(true);
@@ -109,6 +107,7 @@ export default function Tabs(props: ITabsProps) {
                         notOnTradeRoute={false}
                         graphData={graphData}
                         lastBlockNumber={props.lastBlockNumber}
+                        chainId={props.chainId}
                     />
                 </TabContent>
                 <TabContent id='tab2' activeTab={activeTab}>

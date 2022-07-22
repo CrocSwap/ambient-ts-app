@@ -21,16 +21,7 @@ import { useMoralis, useMoralisQuery, useMoralisSubscription, useChain } from 'r
 import useWebSocket from 'react-use-websocket';
 // import { ReadyState } from 'react-use-websocket';
 import Moralis from 'moralis';
-import {
-    contractAddresses,
-    getTokenBalanceDisplay,
-    sortBaseQuoteTokens,
-    getTokenDecimals,
-    getTokenAllowance,
-    toDisplayPrice,
-    tickToPrice,
-    POOL_PRIMARY,
-} from '@crocswap-libs/sdk';
+import { sortBaseQuoteTokens, toDisplayPrice, tickToPrice, CrocEnv } from '@crocswap-libs/sdk';
 
 import { receiptData, resetReceiptData } from '../utils/state/receiptDataSlice';
 
@@ -75,12 +66,15 @@ import { fetchTokenBalances } from './functions/fetchTokenBalances';
 import truncateDecimals from '../utils/data/truncateDecimals';
 import { getNFTs } from './functions/getNFTs';
 import { resetTokenData, setTokens } from '../utils/state/tokenDataSlice';
+import { queryTokenDecimals } from './functions/queryTokenDecimals';
+import { lookup } from 'dns/promises';
+import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 // import SidebarFooter from '../components/Global/SIdebarFooter/SidebarFooter';
 
 const cachedQuerySpotPrice = memoizePromiseFn(querySpotPrice);
 const cachedFetchAddress = memoizePromiseFn(fetchAddress);
 const cachedFetchTokenBalances = memoizePromiseFn(fetchTokenBalances);
-const cachedGetTokenDecimals = memoizePromiseFn(getTokenDecimals);
+const cachedGetTokenDecimals = memoizePromiseFn(queryTokenDecimals);
 
 /** ***** React Function *******/
 export default function App() {
@@ -97,11 +91,7 @@ export default function App() {
 
     const [fallbackChainId, setFallbackChainId] = useState('0x2a');
 
-    const chainId = moralisChainId
-        ? moralisChainId
-        : // : window.ethereum?.networkVersion
-          // ? '0x' + parseInt(window.ethereum?.networkVersion).toString(16)
-          fallbackChainId;
+    const chainId = moralisChainId ? moralisChainId : fallbackChainId;
 
     useEffect(() => {
         if (isWeb3Enabled) {
@@ -111,70 +101,46 @@ export default function App() {
         }
     }, [window.ethereum?.networkVersion]);
 
-    const [provider, setProvider] = useState<
-        ethers.providers.JsonRpcProvider | ethers.providers.Web3Provider
-    >();
+    const [provider, setProvider] = useState<ethers.providers.Provider>();
+
+    function exposeProviderUrl(provider?: ethers.providers.Provider): string {
+        if (provider && 'connection' in provider) {
+            return (provider as any).connection?.url;
+        } else {
+            return '';
+        }
+    }
+
+    function exposeProviderChain(provider?: ethers.providers.Provider): number {
+        if (provider && 'network' in provider) {
+            return (provider as any).network?.chainId;
+        } else {
+            return -1;
+        }
+    }
 
     const [metamaskLocked, setMetamaskLocked] = useState<boolean>(true);
-
-    // useEffect(() => {
-    //     console.log({ provider });
-    //     console.log({ chainId });
-    // }, [provider, chainId]);
-
     useEffect(() => {
         try {
-            // metamask connected and unlocked
-            // if (provider && provider.connection?.url === 'metamask' && !metamaskLocked) {
+            const url = exposeProviderUrl(provider);
+            const onChain = exposeProviderChain(provider) === parseInt(chainId);
+
             if (isAuthenticated) {
-                if (
-                    provider &&
-                    provider.connection?.url === 'metamask' &&
-                    !metamaskLocked &&
-                    provider._network?.chainId === parseInt(chainId)
-                ) {
+                if (provider && url === 'metmask' && !metamaskLocked && onChain) {
                     return;
-                } else if (provider && provider.connection?.url === 'metamask' && metamaskLocked) {
+                } else if (provider && url === 'metamask' && metamaskLocked) {
                     clickLogout();
-                    return;
                 } else if (window.ethereum && !metamaskLocked) {
-                    const metamaskProvider = new ethers.providers.Web3Provider(window.ethereum);
-                    setProvider(metamaskProvider);
-                    return;
+                    const metmaskProvider = new ethers.providers.Web3Provider(window.ethereum);
+                    setProvider(metmaskProvider);
                 }
-            } else {
-                if (provider && provider._network?.chainId === parseInt(chainId)) {
-                    console.log('chainId matches');
-                    return;
-                }
-                if (chainId === '0x2a') {
-                    console.log('making new kovan speedy node provider');
-                    setProvider(
-                        new ethers.providers.JsonRpcProvider(
-                            'https://speedy-nodes-nyc.moralis.io/015fffb61180886c9708499e/eth/kovan',
-                        ),
-                    );
-                } else if (chainId === '0x5') {
-                    console.log('making new Goerli speedy node provider');
-                    setProvider(
-                        new ethers.providers.JsonRpcProvider(
-                            'https://speedy-nodes-nyc.moralis.io/015fffb61180886c9708499e/eth/goerli',
-                        ),
-                    );
-                } else if (chainId === '0x1') {
-                    console.log('making new Mainnet speedy node provider');
-                    setProvider(
-                        new ethers.providers.JsonRpcProvider(
-                            'https://speedy-nodes-nyc.moralis.io/015fffb61180886c9708499e/eth/mainnet',
-                        ),
-                    );
-                }
+            } else if (!provider || !onChain) {
+                const env = new CrocEnv(chainId);
+                env.context.then((c) => setProvider(c.provider));
             }
         } catch (error) {
             console.log(error);
         }
-
-        // const newProvider = useProvider(provider, setProvider, chainId as string);
     }, [chainId, metamaskLocked]);
 
     const dispatch = useAppDispatch();
@@ -256,18 +222,11 @@ export default function App() {
 
     const lastReceipt = receiptData?.sessionReceipts[receiptData.sessionReceipts.length - 1];
 
-    const isLastReceiptSuccess = lastReceipt?.isTxSuccess?.toString();
+    const isLastReceiptSuccess = lastReceipt?.confirmations >= 1;
 
     let snackMessage = '';
-
     if (lastReceipt) {
-        if (lastReceipt.receiptType === 'swap') {
-            snackMessage = `You Successfully Swapped ${lastReceipt.tokenAQtyUnscaled} ${lastReceipt.tokenASymbol} for ${lastReceipt.tokenBQtyUnscaled} ${lastReceipt.tokenBSymbol}`;
-        } else if (lastReceipt.receiptType === 'mint') {
-            snackMessage = `You Successfully Minted a Position with ${lastReceipt.tokenAQtyUnscaled} ${lastReceipt.tokenASymbol} and ${lastReceipt.tokenBQtyUnscaled} ${lastReceipt.tokenBSymbol}`;
-        } else {
-            snackMessage = 'unknown';
-        }
+        snackMessage = `Transaction ${lastReceipt.transactionHash} successfully completed`;
     }
 
     const snackbarContent = (
@@ -290,7 +249,6 @@ export default function App() {
         (async () => {
             if (window.ethereum) {
                 const metamaskAccounts = await window.ethereum.request({ method: 'eth_accounts' });
-                // console.log({ metamaskAccounts });
                 if (metamaskAccounts?.length > 0) {
                     setMetamaskLocked(false);
                 } else {
@@ -312,7 +270,6 @@ export default function App() {
                     else setEnsName('');
                 } catch (error) {
                     setEnsName('');
-                    console.log({ error });
                 }
             }
         })();
@@ -330,7 +287,6 @@ export default function App() {
                         chainId,
                         lastBlockNumber,
                     );
-                    // console.log({ tokens });
                     if (JSON.stringify(tokensInRTK) !== JSON.stringify(tokens))
                         dispatch(setTokens(tokens));
                 } catch (error) {
@@ -365,7 +321,6 @@ export default function App() {
                 tokenPair.dataTokenA.address,
                 tokenPair.dataTokenB.address,
             );
-            // console.log({ sortedTokens });
             setBaseTokenAddress(sortedTokens[0]);
             setQuoteTokenAddress(sortedTokens[1]);
             if (tokenPair.dataTokenA.address === sortedTokens[0]) {
@@ -385,7 +340,7 @@ export default function App() {
                     new URLSearchParams({
                         base: sortedTokens[0].toLowerCase(),
                         quote: sortedTokens[1].toLowerCase(),
-                        poolIdx: POOL_PRIMARY.toString(),
+                        poolIdx: lookupChain(chainId).poolIndex.toString().toString(),
                         chainId: chainId,
                     }),
             )
@@ -412,10 +367,8 @@ export default function App() {
                     new URLSearchParams({
                         base: sortedTokens[0].toLowerCase(),
                         quote: sortedTokens[1].toLowerCase(),
-                        poolIdx: POOL_PRIMARY.toString(),
+                        poolIdx: lookupChain(chainId).poolIndex.toString(),
                         chainId: chainId,
-                        // n: 10 // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
-                        // page: 0 // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
                     }),
             )
                 .then((response) => response.json())
@@ -434,9 +387,8 @@ export default function App() {
                     }
                 });
         }
-    }, [tokenPairStringified]);
+    }, [tokenPairStringified, chainId]);
 
-    // const [activePeriod, setActivePeriod] = useState(60); // 1 minute by default
     const activePeriod = tradeData.activeChartPeriod;
 
     useEffect(() => {
@@ -448,7 +400,7 @@ export default function App() {
                     new URLSearchParams({
                         base: baseTokenAddress.toLowerCase(),
                         quote: quoteTokenAddress.toLowerCase(),
-                        poolIdx: POOL_PRIMARY.toString(),
+                        poolIdx: lookupChain(chainId).poolIndex.toString(),
                         period: activePeriod.toString(),
                         // period: '86400', // 1 day
                         // period: '300', // 5 minute
@@ -473,7 +425,7 @@ export default function App() {
                                         pool: {
                                             baseAddress: baseTokenAddress.toLowerCase(),
                                             quoteAddress: quoteTokenAddress.toLowerCase(),
-                                            poolIdx: POOL_PRIMARY,
+                                            poolIdx: lookupChain(chainId).poolIndex,
                                         },
                                         duration: activePeriod,
                                         candles: updatedCandles,
@@ -484,7 +436,7 @@ export default function App() {
                     }
                 });
         }
-    }, [baseTokenAddress, quoteTokenAddress, activePeriod]);
+    }, [baseTokenAddress, quoteTokenAddress, chainId, activePeriod]);
 
     const allPositionsCacheSubscriptionEndpoint = useMemo(
         () =>
@@ -494,10 +446,10 @@ export default function App() {
                 // baseTokenAddress.toLowerCase() || '0x0000000000000000000000000000000000000000',
                 quote: quoteTokenAddress.toLowerCase(),
                 // quoteTokenAddress.toLowerCase() || '0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa',
-                poolIdx: POOL_PRIMARY.toString(),
+                poolIdx: lookupChain(chainId).poolIndex.toString(),
                 chainId: chainId,
             }),
-        [baseTokenAddress, quoteTokenAddress, POOL_PRIMARY],
+        [baseTokenAddress, quoteTokenAddress, chainId],
     );
 
     const {
@@ -542,13 +494,13 @@ export default function App() {
                 // baseTokenAddress.toLowerCase() || '0x0000000000000000000000000000000000000000',
                 quote: quoteTokenAddress.toLowerCase(),
                 // quoteTokenAddress.toLowerCase() || '0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa',
-                poolIdx: POOL_PRIMARY.toString(),
+                poolIdx: lookupChain(chainId).poolIndex.toString(),
                 // 	positive integer	The duration of the candle, in seconds. Must represent one of the following time intervals: 5 minutes, 15 minutes, 1 hour, 4 hours, 1 day, 7 days.
                 period: activePeriod.toString(),
                 // period: '60',
                 chainId: chainId,
             }),
-        [baseTokenAddress, quoteTokenAddress, POOL_PRIMARY, activePeriod],
+        [baseTokenAddress, quoteTokenAddress, chainId, activePeriod],
     );
 
     const {
@@ -580,7 +532,7 @@ export default function App() {
                             pool: {
                                 baseAddress: baseTokenAddress,
                                 quoteAddress: quoteTokenAddress,
-                                poolIdx: POOL_PRIMARY,
+                                poolIdx: lookupChain(chainId).poolIndex,
                             },
                             duration: activePeriod,
                             candles: updatedCandles,
@@ -590,7 +542,7 @@ export default function App() {
             }
             // console.log({ lastMessageData });
         }
-    }, [candlesMessage]);
+    }, [candlesMessage, chainId]);
 
     const poolSwapsCacheSubscriptionEndpoint = useMemo(
         () =>
@@ -600,10 +552,10 @@ export default function App() {
                 // baseTokenAddress.toLowerCase() || '0x0000000000000000000000000000000000000000',
                 quote: quoteTokenAddress.toLowerCase(),
                 // quoteTokenAddress.toLowerCase() || '0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa',
-                poolIdx: POOL_PRIMARY.toString(),
+                poolIdx: lookupChain(chainId).poolIndex.toString(),
                 chainId: chainId,
             }),
-        [baseTokenAddress, quoteTokenAddress, POOL_PRIMARY],
+        [baseTokenAddress, quoteTokenAddress, chainId],
     );
 
     const {
@@ -689,7 +641,6 @@ export default function App() {
             new URLSearchParams({
                 user: account || '',
                 chainId: chainId,
-                // user: account || '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc',
             }),
         [account],
     );
@@ -761,34 +712,14 @@ export default function App() {
     // useEffect to update selected token balances
     useEffect(() => {
         (async () => {
-            if (
-                provider &&
-                account &&
-                isAuthenticated &&
-                isWeb3Enabled
-                // && provider.connection?.url === 'metamask'
-            ) {
-                const signer = provider.getSigner();
-                const tokenABal = await getTokenBalanceDisplay(
-                    tokenPair.dataTokenA.address,
-                    account,
-                    signer,
-                );
-                // make sure a balance was returned, initialized as null
-                if (tokenABal) {
-                    // send value to local state
-                    setTokenABalance(tokenABal);
-                }
-                const tokenBBal = await getTokenBalanceDisplay(
-                    tokenPair.dataTokenB.address,
-                    account,
-                    signer,
-                );
-                // make sure a balance was returned, initialized as null
-                if (tokenBBal) {
-                    // send value to local state
-                    setTokenBBalance(tokenBBal);
-                }
+            if (provider && account && isAuthenticated && isWeb3Enabled) {
+                const croc = new CrocEnv(provider);
+                croc.token(tokenPair.dataTokenA.address)
+                    .balanceDisplay(account)
+                    .then((bal) => setTokenABalance(bal));
+                croc.token(tokenPair.dataTokenA.address)
+                    .balanceDisplay(account)
+                    .then((bal) => setTokenBBalance(bal));
             }
         })();
     }, [
@@ -807,32 +738,17 @@ export default function App() {
     const [recheckTokenBApproval, setRecheckTokenBApproval] = useState<boolean>(false);
 
     // useEffect to check if user has approved CrocSwap to sell the token A
-    // (hardcoded for native Ether)
     useEffect(() => {
         (async () => {
             try {
                 const tokenAAddress = tokenPair.dataTokenA.address;
-                if (isWeb3Enabled && account !== null) {
+                if (provider && isWeb3Enabled && account !== null) {
+                    const crocEnv = new CrocEnv(provider);
                     if (!tokenAAddress) {
                         return;
                     }
-                    if (tokenAAddress === contractAddresses.ZERO_ADDR) {
-                        setTokenAAllowance((Number.MAX_SAFE_INTEGER - 1).toString());
-                        return;
-                    }
-                    if (provider) {
-                        const signer = provider.getSigner();
-                        getTokenAllowance(tokenAAddress, account, signer)
-                            .then(function (result) {
-                                const allowance = result.lt(Number.MAX_SAFE_INTEGER - 1)
-                                    ? result.toNumber()
-                                    : Number.MAX_SAFE_INTEGER - 1;
-                                setTokenAAllowance(allowance.toString());
-                            })
-                            .catch((e) => {
-                                console.log(e);
-                            });
-                    }
+                    const allowance = await crocEnv.token(tokenAAddress).allowance(account);
+                    setTokenAAllowance(allowance.toString());
                 }
             } catch (err) {
                 console.log(err);
@@ -843,51 +759,36 @@ export default function App() {
         tokenPair.dataTokenA.address,
         lastBlockNumber,
         account,
-        chainId,
+        provider,
         isWeb3Enabled,
         recheckTokenAApproval,
     ]);
 
-    // useEffect to check if user has approved CrocSwap to sell token B
-    // (hardcoded for native Ether)
+    // useEffect to check if user has approved CrocSwap to sell the token B
     useEffect(() => {
         (async () => {
             try {
                 const tokenBAddress = tokenPair.dataTokenB.address;
-                if (isWeb3Enabled && account !== null) {
+                if (provider && isWeb3Enabled && account !== null) {
+                    const crocEnv = new CrocEnv(provider);
                     if (!tokenBAddress) {
                         return;
                     }
-                    if (tokenBAddress === contractAddresses.ZERO_ADDR) {
-                        setTokenBAllowance((Number.MAX_SAFE_INTEGER - 1).toString());
-                        return;
-                    }
-                    if (provider) {
-                        const signer = provider.getSigner();
-                        getTokenAllowance(tokenBAddress, account, signer)
-                            .then(function (result) {
-                                // console.log({ result });
-                                const allowance = result.lt(Number.MAX_SAFE_INTEGER - 1)
-                                    ? result.toNumber()
-                                    : Number.MAX_SAFE_INTEGER - 1;
-                                setTokenBAllowance(allowance.toString());
-                            })
-                            .catch((e) => {
-                                console.log(e);
-                            });
-                    }
+                    const allowance = await crocEnv.token(tokenBAddress).allowance(account);
+                    setTokenBAllowance(allowance.toString());
                 }
             } catch (err) {
                 console.log(err);
             }
+            setRecheckTokenBApproval(false);
         })();
     }, [
         tokenPair.dataTokenB.address,
+        lastBlockNumber,
         account,
-        chainId,
+        provider,
         isWeb3Enabled,
         recheckTokenBApproval,
-        lastBlockNumber,
     ]);
 
     const graphData = useAppSelector((state) => state.graphData);
@@ -992,32 +893,6 @@ export default function App() {
         }
 
         position.poolPriceInTicks = poolPriceInTicks;
-
-        if (baseTokenAddress === contractAddresses.ZERO_ADDR) {
-            position.baseTokenSymbol = 'ETH';
-            position.quoteTokenSymbol = 'DAI';
-            position.tokenAQtyDisplay = '1';
-            position.tokenBQtyDisplay = '2000';
-            // if (!position.ambient) {
-            //     position.lowRangeDisplay = '.001';
-            //     position.highRangeDisplay = '.002';
-            // }
-        } else if (
-            baseTokenAddress.toLowerCase() ===
-            '0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa'.toLowerCase()
-        ) {
-            position.baseTokenSymbol = 'DAI';
-            position.quoteTokenSymbol = 'USDC';
-            position.tokenAQtyDisplay = '101';
-            position.tokenBQtyDisplay = '100';
-            // if (!position.ambient) {
-            //     position.lowRangeDisplay = '0.9';
-            //     position.highRangeDisplay = '1.1';
-            // }
-        } else {
-            position.baseTokenSymbol = 'unknownBase';
-            position.quoteTokenSymbol = 'unknownQuote';
-        }
         return position;
     };
 
@@ -1174,27 +1049,12 @@ export default function App() {
     // this is how we run the function to pull back balances asynchronously
     useEffect(() => {
         (async () => {
-            if (
-                provider &&
-                account &&
-                isAuthenticated &&
-                isWeb3Enabled
-                // && provider.connection?.url === 'metamask'
-            ) {
-                const signer = provider.getSigner();
-                const nativeEthBalance = await getTokenBalanceDisplay(
-                    contractAddresses.ZERO_ADDR,
-                    account,
-                    signer,
-                );
-                // make sure a balance was returned, initialized as null
-                if (nativeEthBalance) {
-                    console.log({ nativeEthBalance });
-                    // send value to local state
-                    setNativeBalance(nativeEthBalance);
-                }
+            if (provider && account && isAuthenticated && isWeb3Enabled) {
+                new CrocEnv(provider)
+                    .tokenEth()
+                    .balance(account)
+                    .then((eth) => setNativeBalance(eth.toString()));
             }
-            // console.log({ balance });
         })();
     }, [chainId, provider, account, isWeb3Enabled, isAuthenticated]);
 
@@ -1203,7 +1063,6 @@ export default function App() {
     useEffect(() => {
         fetch(
             'https://api.etherscan.io/api?module=gastracker&action=gasoracle&apikey=KNJM7A9ST1Q1EESYXPPQITIP7I8EFSY456',
-            // 'https://api.etherscan.io/api?module=gastracker&action=gasoracle&apikey=3UGY5173DQXPSPSVAUNZIVXVN4XI3YEE2N',
         )
             .then((response) => response.json())
             .then((response) => {
@@ -1220,11 +1079,10 @@ export default function App() {
         const interval = setInterval(async () => {
             const currentDateTime = new Date().toISOString();
             const chain = chainId;
-            // console.log({ chainId });
-            const options: { chain: '0x2a' | '0x5' | 'kovan'; date: string } = {
-                chain: chain as '0x2a' | '0x5' | 'kovan',
+            const options = {
+                chain: chain,
                 date: currentDateTime,
-            };
+            } as any; // Narrow type. We know chain string matches Moralis' chain union type
             const currentBlock = (await Moralis.Web3API.native.getDateToBlock(options)).block;
             if (currentBlock !== lastBlockNumber) {
                 setLastBlockNumber(currentBlock);
@@ -1232,7 +1090,6 @@ export default function App() {
         }, 10000);
 
         return () => clearInterval(interval);
-        // }
     }, [chainId, lastBlockNumber]);
 
     const shouldDisplayAccountTab = isAuthenticated && isWeb3Enabled && account != '';
@@ -1415,6 +1272,7 @@ export default function App() {
                                     lastBlockNumber={lastBlockNumber}
                                     isTokenABase={isTokenABase}
                                     poolPriceDisplay={poolPriceDisplay}
+                                    chainId={chainId}
                                 />
                             }
                         >

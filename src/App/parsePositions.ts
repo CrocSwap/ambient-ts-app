@@ -1,12 +1,6 @@
-import {
-    AmbientLiqPos,
-    RangeLiqPos,
-    queryPos,
-    getTokenDecimals,
-    toDisplayPrice,
-} from '@crocswap-libs/sdk';
+import { AmbientLiqPos, CrocEnv, RangeLiqPos, toDisplayPrice } from '@crocswap-libs/sdk';
 import Moralis from 'moralis';
-import { JsonRpcProvider } from '@ethersproject/providers';
+import { ethers } from 'ethers';
 
 export interface IParsedPosition {
     posHash: string;
@@ -29,7 +23,7 @@ export interface IParsedPosition {
 
 export async function parsePositionArray(
     data: Moralis.Object<Moralis.Attributes>[],
-    provider: JsonRpcProvider,
+    provider: ethers.providers.Provider,
     setParsedPositionArray: React.Dispatch<React.SetStateAction<IParsedPosition[]>>,
 ) {
     if (!provider) {
@@ -61,11 +55,8 @@ export async function parsePositionArray(
             }
             // else position has not yet been added to positions array
         } else {
-            const pos = await queryPos(
-                object.get('posHash'),
-                object.get('txHash'),
-                provider as JsonRpcProvider,
-            );
+            const env = new CrocEnv(provider);
+            const pos = await env.positions().queryPos(object.get('posHash'), object.get('txHash'));
             if (pos) {
                 const lpType = pos.lpType;
                 const ambientLiq = pos.ambientLiq?.toString();
@@ -87,8 +78,8 @@ export async function parsePositionArray(
                     if (lpType === 'range') {
                         const lowerPriceNonDisplay = pos.lowerPrice;
                         const upperPriceNonDisplay = pos.upperPrice;
-                        const baseDecimals = await getTokenDecimals(pos.baseToken, provider);
-                        const quoteDecimals = await getTokenDecimals(pos.quoteToken, provider);
+                        const baseDecimals = await env.token(pos.baseToken).decimals;
+                        const quoteDecimals = await env.token(pos.quoteToken).decimals;
                         lowerPriceDisplay = toDisplayPrice(
                             lowerPriceNonDisplay,
                             baseDecimals,
@@ -99,10 +90,6 @@ export async function parsePositionArray(
                             baseDecimals,
                             quoteDecimals,
                         );
-                        // console.log({ lowerPriceNonDisplay });
-                        // console.log({ upperPriceNonDisplay });
-                        // console.log({ lowerPriceDisplay });
-                        // console.log({ upperPriceDisplay });
                     }
                 }
 

@@ -13,6 +13,7 @@ import RangeDetails from '../../RangeDetails/RangeDetails';
 import RangeDetailsHeader from '../../RangeDetails/RangeDetailsHeader/RangeDetailsHeader';
 import trimString from '../../../utils/functions/trimString';
 import { ambientPosSlot, concPosSlot } from '@crocswap-libs/sdk';
+import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
 interface PositionProps {
     portfolio?: boolean;
@@ -25,6 +26,7 @@ interface PositionProps {
     account?: string;
     isDenomBase: boolean;
     lastBlockNumber: number;
+    chainId: string;
 }
 export default function Position(props: PositionProps) {
     // const navigate = useNavigate();
@@ -41,6 +43,7 @@ export default function Position(props: PositionProps) {
         notOnTradeRoute,
         isAuthenticated,
         lastBlockNumber,
+        chainId,
     } = props;
 
     const { portfolio } = props;
@@ -97,7 +100,12 @@ export default function Position(props: PositionProps) {
 
     let posHash;
     if (position.ambient) {
-        posHash = ambientPosSlot(position.user, position.base, position.quote);
+        posHash = ambientPosSlot(
+            position.user,
+            position.base,
+            position.quote,
+            lookupChain(chainId).poolIndex,
+        );
     } else {
         posHash = concPosSlot(
             position.user,
@@ -105,6 +113,7 @@ export default function Position(props: PositionProps) {
             position.quote,
             position.bidTick,
             position.askTick,
+            lookupChain(chainId).poolIndex,
         );
     }
 
@@ -161,6 +170,7 @@ export default function Position(props: PositionProps) {
         baseTokenAddress: props.position.base,
         quoteTokenAddress: props.position.quote,
         lastBlockNumber: lastBlockNumber,
+        chainId: props.chainId,
     };
 
     switch (currentModal) {

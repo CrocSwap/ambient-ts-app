@@ -4,8 +4,7 @@ import { ChangeEvent } from 'react';
 
 import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
 import { setAdvancedHighTick, setAdvancedLowTick } from '../../../../../utils/state/tradeDataSlice';
-
-import { GRID_SIZE_DFLT } from '@crocswap-libs/sdk';
+import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
 interface IMinMaxPrice {
     minPricePercentage: number;
@@ -24,6 +23,7 @@ interface IMinMaxPrice {
     rangeHighTick: number;
     setRangeLowTick: React.Dispatch<React.SetStateAction<number>>;
     setRangeHighTick: React.Dispatch<React.SetStateAction<number>>;
+    chainId: string;
 }
 
 export default function MinMaxPrice(props: IMinMaxPrice) {
@@ -33,13 +33,13 @@ export default function MinMaxPrice(props: IMinMaxPrice) {
         setMinPriceInputString,
         setMaxPriceInputString,
         isDenomBase,
-        // highBoundOnFocus,
         lowBoundOnBlur,
         highBoundOnBlur,
         rangeLowTick,
         rangeHighTick,
         setRangeLowTick,
         setRangeHighTick,
+        chainId,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -79,7 +79,7 @@ export default function MinMaxPrice(props: IMinMaxPrice) {
         </div>
     );
 
-    const tickSize = GRID_SIZE_DFLT;
+    const tickSize = lookupChain(chainId).gridSize;
 
     const increaseLowTick = () => {
         setRangeLowTick(rangeLowTick + tickSize);
