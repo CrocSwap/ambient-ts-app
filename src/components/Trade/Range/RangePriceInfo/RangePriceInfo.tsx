@@ -12,11 +12,18 @@ interface IRangePriceInfoPropsIF {
     minPriceDisplay: string;
     apyPercentage: number;
     didUserFlipDenom: boolean;
+    poolPriceCharacter: string;
 }
 
 // central react functional component
 export default function RangePriceInfo(props: IRangePriceInfoPropsIF) {
-    const { spotPriceDisplay, maxPriceDisplay, minPriceDisplay, apyPercentage } = props;
+    const {
+        spotPriceDisplay,
+        poolPriceCharacter,
+        maxPriceDisplay,
+        minPriceDisplay,
+        apyPercentage,
+    } = props;
 
     // console.log({ spotPriceDisplay });
 
@@ -55,7 +62,10 @@ export default function RangePriceInfo(props: IRangePriceInfoPropsIF) {
                 {minimumPrice}
                 <div className={styles.price_display}>
                     <h4 className={styles.price_title}>Current Price</h4>
-                    <span className={styles.current_price}>{currentPrice}</span>
+                    <span className={styles.current_price}>
+                        {poolPriceCharacter}
+                        {currentPrice}
+                    </span>
                 </div>
                 {maximumPrice}
             </div>
