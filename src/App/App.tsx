@@ -1049,7 +1049,7 @@ export default function App() {
     useEffect(() => {
         (async () => {
             if (provider && account && isAuthenticated && isWeb3Enabled) {
-                console.log(`Provider Native Balance`)
+                console.log('Provider Native Balance')
                 console.dir(provider)
                 new CrocEnv(provider)
                     .tokenEth()
