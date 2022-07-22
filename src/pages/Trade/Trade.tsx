@@ -15,6 +15,7 @@ import {
     setActiveChartPeriod,
 } from '../../utils/state/tradeDataSlice';
 import truncateDecimals from '../../utils/data/truncateDecimals';
+import tokenUnicodeCharMap from '../../utils/data/tokenUnicodeCharMap';
 
 interface ITradeProps {
     account: string;
@@ -95,14 +96,18 @@ export default function Trade(props: ITradeProps) {
     );
 
     const currencyCharacter = denomInTokenA
-        ? // denom in a, if token b is dollar equivalent use $
-          ~['DAI', 'USDC'].indexOf(tradeData.tokenB.symbol)
-            ? '$'
-            : 'Ξ'
-        : // denom in b, if token a is dollar equivalent use $
-        ~['DAI', 'USDC'].indexOf(tradeData.tokenA.symbol)
-        ? '$'
-        : 'Ξ';
+        ? // denom in a, return token b character
+          tokenUnicodeCharMap.map((token) => {
+              if (token.symbol.toLowerCase() === tradeData.tokenB.symbol.toLowerCase()) {
+                  return token.character;
+              }
+          })
+        : // denom in b, return token a character
+          tokenUnicodeCharMap.map((token) => {
+              if (token.symbol.toLowerCase() === tradeData.tokenA.symbol.toLowerCase()) {
+                  return token.character;
+              }
+          });
 
     const timeFrameContent = (
         <div className={styles.time_frame_container}>
