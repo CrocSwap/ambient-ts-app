@@ -104,7 +104,7 @@ export default function App() {
 
     function exposeProviderUrl(provider?: ethers.providers.Provider): string {
         if (provider && 'connection' in provider) {
-            return (provider as any).connection?.url;
+            return (provider as ethers.providers.JsonRpcProvider).connection?.url;
         } else {
             return '';
         }
@@ -112,7 +112,7 @@ export default function App() {
 
     function exposeProviderChain(provider?: ethers.providers.Provider): number {
         if (provider && 'network' in provider) {
-            return (provider as any).network?.chainId;
+            return (provider as ethers.providers.JsonRpcProvider).network?.chainId;
         } else {
             return -1;
         }
@@ -1079,9 +1079,9 @@ export default function App() {
             const currentDateTime = new Date().toISOString();
             const chain = chainId;
             const options = {
-                chain: chain,
+                chain: chain as 'goerli', // Cheat and narrow type. We know chain string matches Moralis' chain union type
                 date: currentDateTime,
-            } as any; // Narrow type. We know chain string matches Moralis' chain union type
+            };
             const currentBlock = (await Moralis.Web3API.native.getDateToBlock(options)).block;
             if (currentBlock !== lastBlockNumber) {
                 setLastBlockNumber(currentBlock);

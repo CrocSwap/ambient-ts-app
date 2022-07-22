@@ -52,7 +52,6 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
         reverseTokens,
         activeTokenListsChanged,
         indicateActiveTokenListsChanged,
-        nativeBalance,
     } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();

@@ -80,8 +80,7 @@ export default function Swap(props: SwapPropsIF) {
 
     const [isRelativeModalOpen, closeRelativeModal] = useRelativeModal();
 
-    const { Moralis, enableWeb3, isWeb3Enabled, authenticate, isAuthenticated, account } =
-        useMoralis();
+    const { enableWeb3, isWeb3Enabled, authenticate, isAuthenticated, account } = useMoralis();
     // get URL pathway for user relative to index
     const { pathname } = useLocation();
 

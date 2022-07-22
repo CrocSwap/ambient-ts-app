@@ -1,6 +1,6 @@
 // START: Import React and Dongles
 import { useState, useEffect, useMemo, Dispatch, SetStateAction } from 'react';
-import { useMoralis, useNewMoralisObject } from 'react-moralis';
+import { useMoralis } from 'react-moralis';
 import { motion } from 'framer-motion';
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { concDepositSkew, MIN_TICK, MAX_TICK, CrocEnv } from '@crocswap-libs/sdk';
@@ -94,8 +94,7 @@ export default function Range(props: RangePropsIF) {
     const [isWithdrawTokenAFromDexChecked, setIsWithdrawTokenAFromDexChecked] = useState(false);
     const [isWithdrawTokenBFromDexChecked, setIsWithdrawTokenBFromDexChecked] = useState(false);
     const [newRangeTransactionHash, setNewRangeTransactionHash] = useState('');
-    const { Moralis, user, account, isAuthenticated, isWeb3Enabled, authenticate, enableWeb3 } =
-        useMoralis();
+    const { account, isAuthenticated, isWeb3Enabled, authenticate, enableWeb3 } = useMoralis();
 
     const { tradeData } = useTradeData();
     const { navigationMenu } = useTradeData();
@@ -117,9 +116,6 @@ export default function Range(props: RangePropsIF) {
     const isTokenABase = tokenPair?.dataTokenA.address === baseTokenAddress;
 
     const slippageTolerancePercentage = tradeData.slippageTolerance;
-
-    const poolWeiPriceLowLimit = poolPriceNonDisplay * (1 - slippageTolerancePercentage / 100);
-    const poolWeiPriceHighLimit = poolPriceNonDisplay * (1 + slippageTolerancePercentage / 100);
 
     const poolPriceDisplayNum = parseFloat(poolPriceDisplay);
 

@@ -115,7 +115,7 @@ export default function Limit(props: LimitPropsIF) {
         }
     };
 
-    const [newLimitOrderTransactionHash, setNewLimitOrderTransactionHash] = useState('');
+    const [newLimitOrderTransactionHash, _setNewLimitOrderTransactionHash] = useState('');
 
     const tokenA = tokenPair.dataTokenA;
     const tokenB = tokenPair.dataTokenB;
@@ -216,12 +216,12 @@ export default function Limit(props: LimitPropsIF) {
     }, [initialLoad, poolPriceNonDisplay, baseDecimals, quoteDecimals, isDenomBase, isTokenABase]);
 
     const initiateLimitOrderMethod = async () => {
-        const sellTokenAddress = tokenA.address;
+        /* const sellTokenAddress = tokenA.address;
         const buyTokenAddress = tokenB.address;
         const poolId = lookupChain(chainId).poolIndex;
         const sellTokenQty = tokenAInputQty;
         const buyTokenQty = tokenBInputQty;
-        const qty = isTokenAPrimary ? sellTokenQty : buyTokenQty;
+        const qty = isTokenAPrimary ? sellTokenQty : buyTokenQty;*/
     };
 
     const confirmLimitModalOrNull = isModalOpen ? (
@@ -242,8 +242,6 @@ export default function Limit(props: LimitPropsIF) {
     const isTokenAAllowanceSufficient = parseFloat(tokenAAllowance) >= parseFloat(tokenAInputQty);
     const loginButton = <Button title='Login' action={clickLogin} />;
     const [isApprovalPending, setIsApprovalPending] = useState(false);
-
-    const signer = provider?.getSigner();
 
     const approve = async (tokenAddress: string) => {
         setIsApprovalPending(true);
