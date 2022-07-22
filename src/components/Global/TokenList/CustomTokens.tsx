@@ -29,7 +29,6 @@ export default function CustomTokens(props: CustomTokenPropsIF) {
             (tkn: TokenIF) => tkn.fromList === 'custom',
         ),
     );
-    console.log(importedTokens);
 
     function deleteToken(sadToken: TokenIF) {
         setTokenAlreadyImported(false);
@@ -86,22 +85,6 @@ export default function CustomTokens(props: CustomTokenPropsIF) {
             </div>
 
             <p className={styles.query_error_text}>{errorText}</p>
-            {/* <Divider />
-            <div className={styles.custom_tokens_header}>
-                <span>0 Custom Tokens</span>
-                <span className={styles.clear_all_button}>Clear all</span>
-            </div>
-            {importedTokens.map((token: TokenIF) => (
-                <div key={`imported_token_${token.address}`} className={styles.token_result}>
-                    <div>
-                        
-                     <img src={uriToHttp(token.logoURI)} alt="no image" width='30px' />
-                        <h4 className={styles.token_name}>{token.name}</h4>
-                        <p className={styles.symbol}>{token.symbol }</p>
-               </div>
-                    <button onClick={() => deleteToken(token)}>Delete</button>
-                </div>
-            ))} */}
 
             <div className={styles.token_result_container}>
                 {tokenAlreadyImported ||
@@ -121,7 +104,7 @@ export default function CustomTokens(props: CustomTokenPropsIF) {
 
             <Divider />
             <div className={styles.custom_tokens_header}>
-                <span>0 Custom Tokens</span>
+                <span>{importedTokens.length} Custom Tokens</span>
                 <span className={styles.clear_all_button}>Clear all</span>
             </div>
             <div className={styles.imported_token_container}>
