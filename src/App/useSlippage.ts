@@ -2,9 +2,22 @@ import { useEffect, useState } from 'react';
 
 export const useSlippage = () => {
     const userData = JSON.parse(localStorage.getItem('user') as string);
-    console.log(userData);
 
     const [slipSwapStable, setSlipSwapStable] = useState('');
+    const [slipSwapVolatile, setSlipSwapVolatile] = useState('');
+    const [slipMintStable, setSlipMintStable] = useState('');
+    const [slipMintVolatile, setSlipMintVolatile] = useState('');
+
+    const [needInitialization, setNeedInitialization] = useState(true);
+
+    if (needInitialization && userData?.slippage) {
+        setSlipSwapStable(userData.slippage.swap.stable);
+        setSlipSwapVolatile(userData.slippage.swap.volatile);
+        setSlipMintStable(userData.slippage.mint.stable);
+        setSlipMintVolatile(userData.slippage.mint.volatile);
+        setNeedInitialization(false);
+    }
+
     useEffect(() => {
         console.log({slipSwapStable});
         if (userData?.slippage) {
@@ -17,11 +30,10 @@ export const useSlippage = () => {
         }
     }, [slipSwapStable]);
 
-    const [slipSwapVolatile, setSlipSwapVolatile] = useState('');
     useEffect(() => {
         if (userData?.slippage) {
             if (slipSwapVolatile === '') {
-                setSlipSwapVolatile(userData.slippage.swap.volatile)
+                setSlipSwapVolatile(userData.slippage.swap.volatile);
             } else {
                 userData.slippage.swap.volatile = slipSwapVolatile;
                 localStorage.setItem('user', JSON.stringify(userData));
@@ -29,7 +41,6 @@ export const useSlippage = () => {
         }
     }, [slipSwapVolatile]);
 
-    const [slipMintStable, setSlipMintStable] = useState('');
     useEffect(() => {
         if (userData?.slippage) {
             if (slipMintStable === '') {
@@ -41,7 +52,6 @@ export const useSlippage = () => {
         }
     }, [slipMintStable]);
 
-    const [slipMintVolatile, setSlipMintVolatile] = useState('');
     useEffect(() => {
         if (userData?.slippage) {
             if (slipMintVolatile === '') {

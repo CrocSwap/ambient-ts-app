@@ -16,6 +16,8 @@ interface TransactionSettingsProps {
 export default function TransactionSettings(props: TransactionSettingsProps) {
     const { module, slippage, onClose } = props;
 
+    console.log(slippage);
+
     const dispatch = useAppDispatch();
 
     const isPairStable = true;

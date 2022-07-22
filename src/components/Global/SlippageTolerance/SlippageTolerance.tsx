@@ -9,6 +9,8 @@ interface TransactionSettingsPropsIF {
 export default function SlippageTolerance(props: TransactionSettingsPropsIF) {
     const { slippageValue, setNewSlippage } = props;
 
+    console.log({slippageValue});
+
     return (
         <div className={styles.slippage_tolerance_container}>
             <div className={styles.slippage_title}>Slippage Tolerance (%)</div>
@@ -19,7 +21,8 @@ export default function SlippageTolerance(props: TransactionSettingsPropsIF) {
                             id='slippage_tolerance_input_field'
                             onChange={(e) => setNewSlippage(e.target.value)}
                             type='text'
-                            placeholder={slippageValue.toString()}
+                            defaultValue={slippageValue.toString()}
+                            placeholder={'slippage'}
                         />
                     </div>
                     <button onClick={() => setNewSlippage('0.1')}>0.1%</button>
