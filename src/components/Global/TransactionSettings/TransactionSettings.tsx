@@ -20,7 +20,7 @@ export default function TransactionSettings(props: TransactionSettingsProps) {
 
     const dispatch = useAppDispatch();
 
-    const isPairStable = true;
+    const isPairStable = false;
 
     const [newSlippage, setNewSlippage] = useState<string>(isPairStable ? slippage.stable.value : slippage.volatile.value);
 
