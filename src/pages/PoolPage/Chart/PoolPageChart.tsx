@@ -89,6 +89,7 @@ export default function PoolPageChart(props: PoolPageChartProps) {
                     label={valueLabel}
                     setValue={setLatestValue}
                     setLabel={setValueLabel}
+                    snapType={'days'}
                 />
             )}
         </div>

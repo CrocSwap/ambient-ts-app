@@ -95,6 +95,7 @@ export default function TokenPageChart(props: TokenPageChartProps) {
                     label={valueLabel}
                     setValue={setLatestValue}
                     setLabel={setValueLabel}
+                    snapType={'days'}
                 />
             ) : (
                 <PriceChart

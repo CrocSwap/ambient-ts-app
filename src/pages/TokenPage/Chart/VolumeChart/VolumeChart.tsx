@@ -10,26 +10,28 @@ interface VolumeData {
     label?: string;
     setValue?: Dispatch<SetStateAction<number | undefined>>; // used for value on hover
     setLabel?: Dispatch<SetStateAction<string | undefined>>; // used for value label on hover
+    snapType?: string;
 }
 
 export default function VolumeChart(props: VolumeData) {
     const volumeValue = props.data;
+    const snapType = props.snapType;
 
     useEffect(() => {
         const chartData = {
             lineseries: volumeValue,
             crosshair: [{ x: 0, y: -1 }],
+            snapType: snapType,
         };
 
         const render = () => {
-            // select and render
             d3.select('#chart-element').datum(chartData).call(chart);
 
             const pointer = d3fc.pointer().on('point', (event: any) => {
                 if (event[0] !== undefined) {
-                    chartData.crosshair = [{ x: event[0].x, y: -1 }];
-                    props.setValue?.(getValue(event[0].x));
-                    props.setLabel?.(getDate(event[0].x));
+                    chartData.crosshair = snap(lineSeries, chartData.lineseries, event[0]);
+                    props.setValue?.(getValue(chartData.crosshair[0].x));
+                    props.setLabel?.(getDate(chartData.crosshair[0].x));
                     render();
                 }
             });
@@ -50,17 +52,21 @@ export default function VolumeChart(props: VolumeData) {
         };
 
         const snap = (series: any, data: any, point: any) => {
-            if (point == undefined) return []; // short circuit if data point was empty
+            if (point == undefined) return [];
             const xScale = series.xScale(),
                 xValue = series.crossValue();
 
             const filtered = data.filter((d: any) => xValue(d) != null);
             const nearest = minimum(filtered, (d: any) => Math.abs(point.x - xScale(xValue(d))))[1];
-
+            const newX = new Date(nearest.time.getTime());
+            const value =
+                chartData.snapType === 'days'
+                    ? new Date(newX.setTime(newX.getTime() + 9 * 60 * 60 * 1000))
+                    : nearest.time;
             return [
                 {
-                    x: xScale(xValue(nearest)),
-                    y: point.y,
+                    x: xScale(value),
+                    y: -1,
                 },
             ];
         };
@@ -174,7 +180,7 @@ export default function VolumeChart(props: VolumeData) {
             });
 
         render();
-    }, [volumeValue]);
+    }, [volumeValue, snapType]);
 
     return <div style={{ height: '100%', width: '100%' }} id='chart-element'></div>;
 }
