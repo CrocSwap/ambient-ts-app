@@ -10,7 +10,7 @@ import uriToHttp from '../../../utils/functions/uriToHttp';
 import { removeToken } from '../../Global/TokenSelectContainer/removeToken';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { contractAddresses, toDisplayQty } from '@crocswap-libs/sdk';
-import truncateDecimals from '../../../utils/data/truncateDecimals';
+// import truncateDecimals from '../../../utils/data/truncateDecimals';
 // import { tokenData } from '../../../utils/state/tokenDataSlice';
 
 interface TokenSelectPropsIF {
