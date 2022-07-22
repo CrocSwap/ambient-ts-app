@@ -22,8 +22,8 @@ const DEFAULT_TIME_WINDOW = TimeWindow.WEEK;
 
 export default function TokenPage() {
     const { address } = useParams() ?? '';
-    const chartData = useTokenChartData(address!);
     const [timeWindow] = useState(DEFAULT_TIME_WINDOW);
+    const chartData = useTokenChartData(address!);
     const tokenData = useTokenData(address);
     const priceData = useTokenPriceData(address!, ONE_HOUR_SECONDS, timeWindow);
     useEffect(() => {

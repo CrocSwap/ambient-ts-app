@@ -44,11 +44,17 @@ export default function PriceChart(props: PriceChartProps) {
 
         const data = {
             series: props.data,
-            crosshair: [{ x: 0, y: 0 }],
+            crosshair: [{ x: 0, y: -5 }],
+            lineData: [{ value: props.data[props.data.length - 1]?.open, status: 0 }],
         };
 
         const xScale = d3.scaleTime();
         const yScale = d3.scaleLinear();
+
+        xScale.domain(xExtent(data.series));
+        yScale.domain(yExtent(data.series));
+
+        const xScaleCopy = xScale.copy();
 
         const crossHair = d3fc
             .annotationSvgCrosshair()
@@ -73,10 +79,72 @@ export default function PriceChart(props: PriceChartProps) {
             .xScale(xScale)
             .yScale(yScale);
 
+        const horizontalLine = d3fc.annotationSvgLine().value((d: any) => d.value);
+        horizontalLine.decorate((selection: any) => {
+            selection.enter().select('g.left-handle').append('text').attr('x', 5).attr('y', -5);
+            selection.enter().select('line').attr('class', 'redline').attr('stroke', 'red');
+            selection.select('g.left-handle text').text((d: any) => d.value);
+            selection
+                .enter()
+                .append('line')
+                .attr('class', 'detector')
+                .attr('stroke', 'transparent')
+                .attr('x2', '100%')
+                .attr('stroke-width', 5)
+                .style('pointer-events', 'all');
+            selection
+                .enter()
+                .select('g.right-handle')
+                .select('text')
+                .text((d: any) => d.value);
+
+            // selection.enter().select('g.right-handle').append('text').attr('x', 5).attr('y', -5);
+            // selection
+            // .select('g.right-handle text')
+            // .text((d: any) => d.value);
+            // selection
+            //     .enter()
+            //     .select('line')
+            //     .attr('class', 'line')
+            //     .attr('stroke', 'red') // '#cdc1ff')
+            //     .attr('stroke-width', 0.5)
+            //     .style('stroke-dasharray', '6 6')
+            //     .style('pointer-events', 'all');
+        });
+
+        const zoom = d3
+            .zoom()
+            .scaleExtent([1, 5])
+            .on('zoom', (event: any) => {
+                xScale.domain(event.transform.rescaleX(xScaleCopy).domain());
+
+                data.lineData = [
+                    {
+                        value: data.series.find(
+                            (item) =>
+                                moment(new Date(item.time * 1000)).format('DD/MM/YYYY h.00 a') ===
+                                moment(xScale.domain()[1].getTime()).format('DD/MM/YYYY h.00 a'),
+                        )?.open,
+
+                        status: 0,
+                    },
+                ];
+                render();
+            });
+
         const multi = d3fc
             .seriesSvgMulti()
-            .series([candlestick, crossHair])
-            .mapping((data: any, index: number) => (index === 0 ? data.series : data.crosshair));
+            .series([candlestick, crossHair, horizontalLine])
+            .mapping((data: any, index: number, series: any) => {
+                switch (series[index]) {
+                    case crossHair:
+                        return data.crosshair;
+                    case horizontalLine:
+                        return data.lineData;
+                    default:
+                        return data.series;
+                }
+            });
 
         const chart = d3fc
             .chartCartesian({
@@ -86,7 +154,15 @@ export default function PriceChart(props: PriceChartProps) {
             .yTicks([5])
             .yDomain(yExtent(data.series))
             .xDomain(xExtent(data.series))
-            .svgPlotArea(multi);
+            .svgPlotArea(multi)
+            .decorate((sel: any) => {
+                sel.enter()
+                    .select('d3fc-svg.plot-area')
+                    .on('measure.range', (event: any) => {
+                        xScaleCopy.range([0, event.detail.width]);
+                    })
+                    .call(zoom);
+            });
 
         // mouse-over events to control the annotation
         const pointer = d3fc.pointer().on('point', (event: any) => {
@@ -95,7 +171,7 @@ export default function PriceChart(props: PriceChartProps) {
                 data.crosshair = [
                     {
                         x: event[0].x,
-                        y: yScale(xVal),
+                        y: -1,
                     },
                 ];
 
@@ -112,8 +188,8 @@ export default function PriceChart(props: PriceChartProps) {
         });
 
         function render() {
-            d3.select('.demo').datum(data).call(chart);
-            d3.select('.demo .plot-area').call(pointer);
+            d3.select('.chart').datum(data).call(chart);
+            d3.select('.chart .plot-area').call(pointer);
         }
 
         render();
@@ -122,7 +198,7 @@ export default function PriceChart(props: PriceChartProps) {
     return (
         <div
             ref={d3Container}
-            className='demo'
+            className='chart'
             style={{ height: '100%', width: '100%' }}
             data-testid={'chart'}
         ></div>
