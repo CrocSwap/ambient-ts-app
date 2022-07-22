@@ -115,10 +115,7 @@ export default function Limit(props: LimitPropsIF) {
         }
     };
 
-    const [newLimitOrderTransactionHash, _setNewLimitOrderTransactionHash] = useState('');
-
-    const tokenA = tokenPair.dataTokenA;
-    const tokenB = tokenPair.dataTokenB;
+    const [newLimitOrderTransactionHash] = useState('');
 
     const tokenADecimals = tokenPair.dataTokenA.decimals;
     const tokenBDecimals = tokenPair.dataTokenB.decimals;
