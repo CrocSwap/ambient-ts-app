@@ -74,7 +74,7 @@ import { fetchAddress } from './functions/fetchAddress';
 import { fetchTokenBalances } from './functions/fetchTokenBalances';
 import truncateDecimals from '../utils/data/truncateDecimals';
 import { getNFTs } from './functions/getNFTs';
-import { resetTokenData, setTokens } from '../utils/state/tokenDataSlice';
+import { addNativeBalance, resetTokenData, setTokens } from '../utils/state/tokenDataSlice';
 // import SidebarFooter from '../components/Global/SIdebarFooter/SidebarFooter';
 
 const cachedQuerySpotPrice = memoizePromiseFn(querySpotPrice);
@@ -1192,10 +1192,26 @@ export default function App() {
                 if (nativeEthBalance) {
                     // send value to local state
                     setNativeBalance(nativeEthBalance);
+                    // console.log('adding native balance: ' + nativeEthBalance);
+                    dispatch(
+                        addNativeBalance([
+                            {
+                                name: 'Native Token',
+                                address: contractAddresses.ZERO_ADDR,
+                                // eslint-disable-next-line camelcase
+                                token_address: contractAddresses.ZERO_ADDR,
+                                symbol: 'ETH',
+                                decimals: 18,
+                                chainId: parseInt(chainId),
+                                logoURI: '',
+                                balance: nativeEthBalance,
+                            },
+                        ]),
+                    );
                 }
             }
         })();
-    }, [provider, account, isWeb3Enabled, isAuthenticated]);
+    }, [provider, account, isWeb3Enabled, isAuthenticated, lastBlockNumber]);
 
     const [gasPriceinGwei, setGasPriceinGwei] = useState<string>('');
 
