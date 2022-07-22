@@ -4,7 +4,7 @@ export const useSlippage = () => {
     const userData = JSON.parse(localStorage.getItem('user') as string);
     console.log(userData);
 
-    const [slipSwapStable, setSlipSwapStable] = useState('2');
+    const [slipSwapStable, setSlipSwapStable] = useState('');
     useEffect(() => {
         console.log({slipSwapStable});
         if (userData?.slippage) {
@@ -14,7 +14,7 @@ export const useSlippage = () => {
         }
     }, [slipSwapStable]);
 
-    const [slipSwapVolatile, setSlipSwapVolatile] = useState('4');
+    const [slipSwapVolatile, setSlipSwapVolatile] = useState('');
     useEffect(() => {
         console.log({slipSwapVolatile});
         if (userData?.slippage) {
@@ -23,7 +23,7 @@ export const useSlippage = () => {
         }
     }, [slipSwapVolatile]);
 
-    const [slipMintStable, setSlipMintStable] = useState('3');
+    const [slipMintStable, setSlipMintStable] = useState('');
     useEffect(() => {
         console.log({slipMintStable});
         if (userData?.slippage) {
@@ -32,7 +32,7 @@ export const useSlippage = () => {
         }
     }, [slipMintStable]);
 
-    const [slipMintVolatile, setSlipMintVolatile] = useState('7');
+    const [slipMintVolatile, setSlipMintVolatile] = useState('');
     useEffect(() => {
         console.log({slipMintVolatile});
         if (userData?.slippage) {
