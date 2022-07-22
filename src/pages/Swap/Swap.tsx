@@ -170,6 +170,8 @@ export default function Swap(props: SwapPropsIF) {
     const [newSwapTransactionHash, setNewSwapTransactionHash] = useState('');
 
     async function initiateSwap() {
+        console.log("Initiate Swap A")
+        console.dir(provider)
         if (!provider.getSigner()) {
             return;
         }
@@ -182,6 +184,9 @@ export default function Swap(props: SwapPropsIF) {
         const isQtySell = isTokenAPrimary;
 
         const env = new CrocEnv(provider);
+
+        console.log("Initiate Swap B")
+        console.dir((await env.context).provider)
 
         const tx = await (isQtySell
             ? env.sell(sellTokenAddress, qty).for(buyTokenAddress).swap()

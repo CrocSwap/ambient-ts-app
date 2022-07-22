@@ -33,7 +33,7 @@ export default function TokenSelect(props: TokenSelectPropsIF) {
         // console.log({ address });
         let tokenBalanceDisplay = '';
         tokensInRTK.map((token) => {
-            if (token.address.toLowerCase() === address.toLowerCase()) {
+            if (token.address?.toLowerCase() === address.toLowerCase()) {
                 if (token.balance && token.decimals) {
                     const untruncatedDisplayQty = toDisplayQty(token.balance, token.decimals);
                     const displayQtyNum = parseFloat(untruncatedDisplayQty);

@@ -130,8 +130,8 @@ export default function App() {
                 } else if (provider && url === 'metamask' && metamaskLocked) {
                     clickLogout();
                 } else if (window.ethereum && !metamaskLocked) {
-                    const metmaskProvider = new ethers.providers.Web3Provider(window.ethereum);
-                    setProvider(metmaskProvider);
+                    const metamaskProvider = new ethers.providers.Web3Provider(window.ethereum);
+                    setProvider(metamaskProvider, window.ethereum);
                 }
             } else if (!provider || !onChain) {
                 const env = new CrocEnv(chainId);
