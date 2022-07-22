@@ -42,6 +42,7 @@ import {
 } from '../../../utils/state/tradeDataSlice';
 import { addReceipt } from '../../../utils/state/receiptDataSlice';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
 
 interface RangePropsIF {
     importedTokens: Array<TokenIF>;
@@ -149,7 +150,13 @@ export default function Range(props: RangePropsIF) {
     const baseTokenDecimals = isTokenABase ? tokenADecimals : tokenBDecimals;
     const quoteTokenDecimals = !isTokenABase ? tokenADecimals : tokenBDecimals;
 
-    const qtyIsBase = (isTokenAPrimary && isTokenABase) || (!isTokenAPrimary && !isTokenABase);
+    const poolPriceCharacter = denominationsInBase
+        ? isTokenABase
+            ? getUnicodeCharacter(tokenB.symbol)
+            : getUnicodeCharacter(tokenA.symbol)
+        : !isTokenABase
+        ? getUnicodeCharacter(tokenB.symbol)
+        : getUnicodeCharacter(tokenA.symbol);
 
     const [rangeButtonErrorMessage, setRangeButtonErrorMessage] =
         useState<string>('Enter an Amount');
@@ -659,6 +666,7 @@ export default function Range(props: RangePropsIF) {
         apyPercentage: apyPercentage,
         isTokenABase: isTokenABase,
         didUserFlipDenom: tradeData.didUserFlipDenom,
+        poolPriceCharacter: poolPriceCharacter,
     };
 
     const pinnedMinPriceDisplayTruncatedInBase = useMemo(

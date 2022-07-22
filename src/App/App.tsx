@@ -65,10 +65,9 @@ import { fetchAddress } from './functions/fetchAddress';
 import { fetchTokenBalances } from './functions/fetchTokenBalances';
 import truncateDecimals from '../utils/data/truncateDecimals';
 import { getNFTs } from './functions/getNFTs';
-import { resetTokenData, setTokens } from '../utils/state/tokenDataSlice';
 import { queryTokenDecimals } from './functions/queryTokenDecimals';
-import { lookup } from 'dns/promises';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import { resetTokenData, setTokens } from '../utils/state/tokenDataSlice';
 // import SidebarFooter from '../components/Global/SIdebarFooter/SidebarFooter';
 
 const cachedQuerySpotPrice = memoizePromiseFn(querySpotPrice);
@@ -141,7 +140,7 @@ export default function App() {
         } catch (error) {
             console.log(error);
         }
-    }, [chainId, metamaskLocked]);
+    }, [isAuthenticated, chainId, metamaskLocked]);
 
     const dispatch = useAppDispatch();
 
@@ -1056,7 +1055,7 @@ export default function App() {
                     .then((eth) => setNativeBalance(eth.toString()));
             }
         })();
-    }, [chainId, provider, account, isWeb3Enabled, isAuthenticated]);
+    }, [provider, account, isWeb3Enabled, isAuthenticated, lastBlockNumber]);
 
     const [gasPriceinGwei, setGasPriceinGwei] = useState<string>('');
 

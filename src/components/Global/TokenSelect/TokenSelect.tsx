@@ -8,6 +8,10 @@ import styles from './TokenSelect.module.css';
 import { TokenIF } from '../../../utils/interfaces/exports';
 import uriToHttp from '../../../utils/functions/uriToHttp';
 import { removeToken } from '../../Global/TokenSelectContainer/removeToken';
+import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import { contractAddresses, toDisplayQty } from '@crocswap-libs/sdk';
+// import truncateDecimals from '../../../utils/data/truncateDecimals';
+// import { tokenData } from '../../../utils/state/tokenDataSlice';
 
 interface TokenSelectPropsIF {
     token: TokenIF;
@@ -22,13 +26,52 @@ export default function TokenSelect(props: TokenSelectPropsIF) {
     const [showDelete, setShowDelete] = useState(false);
     const [toggleDeleteOn, setToggleDeleteOn] = useState(false);
 
-    const getRandomInt = () => Math.floor(Math.random() * 18000);
+    const tokensInRTK = useAppSelector((state) => state.tokenData.tokens);
+
+    // const getRandomInt = () => Math.floor(Math.random() * 18000);
+    const getTokenBalance = (address: string) => {
+        // console.log({ address });
+        let tokenBalanceDisplay = '';
+        tokensInRTK.map((token) => {
+            if (token.token_address?.toLowerCase() === address.toLowerCase()) {
+                // console.log(token.balance);
+                if (token.balance && token.decimals) {
+                    if (token.address === contractAddresses.ZERO_ADDR) {
+                        // tokenBalanceDisplay = truncateDecimals(parseFloat(token.balance), 2);
+                        const localizedNativeBalance = parseFloat(token.balance).toLocaleString(
+                            'en-US',
+                        );
+                        tokenBalanceDisplay = localizedNativeBalance;
+                        // tokenBalanceDisplay = parseFloat(token.balance).toPrecision(6);
+
+                        return;
+                    }
+                    const untruncatedDisplayQty = toDisplayQty(token.balance, token.decimals);
+                    const displayQtyNum = parseFloat(untruncatedDisplayQty);
+                    const localDisplayQty = displayQtyNum.toLocaleString('en-US');
+                    // const displayQtyTruncated =
+                    //     displayQtyNum > 2
+                    //         ? truncateDecimals(displayQtyNum, 2)
+                    //         : truncateDecimals(displayQtyNum, 6);
+                    // const displayQtyWithPrecision = displayQtyNum.toPrecision(10);
+                    tokenBalanceDisplay = localDisplayQty;
+                }
+            }
+        });
+        return tokenBalanceDisplay;
+    };
 
     const noTokenImage = <CgUnavailable size={20} />;
 
     // As much as I dislike directing using svgs in code, this is the only way we can style the fill on hover...unless we want to bring in two different SVGS.
     const starIcon = (
-        <svg width='23' height='23' viewBox='0 0 23 23' fill='none' xmlns='http://www.w3.org/2000/svg'>
+        <svg
+            width='23'
+            height='23'
+            viewBox='0 0 23 23'
+            fill='none'
+            xmlns='http://www.w3.org/2000/svg'
+        >
             <path
                 d='M11.5 1.58301L14.7187 8.10384L21.9166 9.15593L16.7083 14.2288L17.9375 21.3955L11.5 18.0101L5.06248 21.3955L6.29165 14.2288L1.08331 9.15593L8.28123 8.10384L11.5 1.58301Z'
                 stroke='#BDBDBD'
@@ -86,16 +129,22 @@ export default function TokenSelect(props: TokenSelectPropsIF) {
                 Remove {token.symbol} from your list
                 {toggleButtons}
             </div>
-            <div className={styles.star_icon}>
-                {starIcon}
-            </div>
+            <div className={styles.star_icon}>{starIcon}</div>
             <div className={styles.modal_content} onClick={() => chooseToken(token)}>
                 <div className={styles.modal_tokens_info}>
-                    {token.logoURI ? <img src={uriToHttp(token.logoURI)} alt={`logo for token ${token.name}`} width='27px' /> : noTokenImage}
+                    {token.logoURI ? (
+                        <img
+                            src={uriToHttp(token.logoURI)}
+                            alt={`logo for token ${token.name}`}
+                            width='27px'
+                        />
+                    ) : (
+                        noTokenImage
+                    )}
                     <span className={styles.modal_token_symbol}>{token.symbol}</span>
                     <span className={styles.modal_token_name}>{token.name}</span>
                 </div>
-                <div className={styles.modal_tokens_amount}>{getRandomInt()}</div>
+                <div className={styles.modal_tokens_amount}>{getTokenBalance(token.address)}</div>
             </div>
             {deleteIcon}
         </div>
