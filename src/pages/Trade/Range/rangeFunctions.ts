@@ -5,7 +5,6 @@ import {
     MIN_TICK,
     MAX_TICK,
 } from '@crocswap-libs/sdk';
-import { LimitNumberError } from 'ajv/dist/vocabularies/validation/limitNumber';
 
 import truncateDecimals from '../../../utils/data/truncateDecimals';
 
