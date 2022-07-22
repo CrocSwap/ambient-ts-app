@@ -12,10 +12,9 @@ export default function OrderCard2Header() {
                 <p className={styles.tokens}>ETH/USDC</p>
                 <p className={styles.token}>ETH</p>
                 <p className={styles.token}>USDC</p>
-                <p>ST</p>
             </div>
 
-            <div />
+            <div></div>
         </div>
     );
 }

@@ -1,13 +1,13 @@
 .non_filled{
-    width: 24px;
-height: 24px;
+    width: 15px;
+height: 15px;
 border-radius: 50%;
 border: 1px solid var(--text-grey-light);
 background: transparent
 }
 .filled{
-    width: 24px;
-height: 24px;
+    width: 15px;
+height: 15px;
 border-radius: 50%;
 border: 1px solid #41D18E;;
 background: transparent;
@@ -15,4 +15,18 @@ background: transparent;
 display: flex;
 justify-content: center;
 align-items: center;
+}
+
+
+
+
+
+/* Desktop screen Sizes */
+@media only screen and (min-width: 992px) {
+.filled, .non_filled{
+    width: 24px;
+    height: 24px;
+}
+	
+
 }
