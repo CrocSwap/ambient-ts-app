@@ -131,7 +131,7 @@ export default function App() {
                     clickLogout();
                 } else if (window.ethereum && !metamaskLocked) {
                     const metamaskProvider = new ethers.providers.Web3Provider(window.ethereum);
-                    setProvider(metamaskProvider, window.ethereum);
+                    setProvider(metamaskProvider);
                 }
             } else if (!provider || !onChain) {
                 const env = new CrocEnv(chainId);
@@ -1049,6 +1049,8 @@ export default function App() {
     useEffect(() => {
         (async () => {
             if (provider && account && isAuthenticated && isWeb3Enabled) {
+                console.log(`Provider Native Balance`)
+                console.dir(provider)
                 new CrocEnv(provider)
                     .tokenEth()
                     .balance(account)
