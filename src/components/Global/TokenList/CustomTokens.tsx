@@ -6,6 +6,9 @@ import { useCustomToken } from './useCustomToken';
 import { TokenIF } from '../../../utils/interfaces/exports';
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import { setTokenA, setTokenB } from '../../../utils/state/tradeDataSlice';
+import uriToHttp from '../../../utils/functions/uriToHttp';
+import { AiOutlineDelete } from 'react-icons/ai';
+import { FiExternalLink } from 'react-icons/fi';
 
 interface CustomTokenPropsIF {
     chainId: string;
@@ -26,6 +29,7 @@ export default function CustomTokens(props: CustomTokenPropsIF) {
             (tkn: TokenIF) => tkn.fromList === 'custom',
         ),
     );
+    console.log(importedTokens);
 
     function deleteToken(sadToken: TokenIF) {
         setTokenAlreadyImported(false);
@@ -82,24 +86,71 @@ export default function CustomTokens(props: CustomTokenPropsIF) {
             </div>
 
             <p className={styles.query_error_text}>{errorText}</p>
-            <Divider />
+            {/* <Divider />
             <div className={styles.custom_tokens_header}>
                 <span>0 Custom Tokens</span>
                 <span className={styles.clear_all_button}>Clear all</span>
             </div>
             {importedTokens.map((token: TokenIF) => (
-                <div key={`imported_token_${token.address}`}>
-                    <h4>{token.name}</h4>
+                <div key={`imported_token_${token.address}`} className={styles.token_result}>
+                    <div>
+                        
+                     <img src={uriToHttp(token.logoURI)} alt="no image" width='30px' />
+                        <h4 className={styles.token_name}>{token.name}</h4>
+                        <p className={styles.symbol}>{token.symbol }</p>
+               </div>
                     <button onClick={() => deleteToken(token)}>Delete</button>
                 </div>
-            ))}
-            {tokenAlreadyImported ||
-                foundTokens.map((token: TokenIF) => (
-                    <div key={`found_token_${token.address}`}>
-                        <h4>{token.name}</h4>
-                        <button onClick={() => importToken(token)}>Import</button>
+            ))} */}
+
+            <div className={styles.token_result_container}>
+                {tokenAlreadyImported ||
+                    foundTokens.map((token: TokenIF) => (
+                        <div key={`found_token_${token.address}`} className={styles.token_result}>
+                            <div className={styles.token_info}>
+                                <div className={styles.token_icon_key}>
+                                    <img src={uriToHttp(token.logoURI)} alt='' width='30px' />
+                                    <p className={styles.symbol}>{token.symbol}</p>
+                                </div>
+                                <h4 className={styles.token_name}>{token.name}</h4>
+                            </div>
+                            <button onClick={() => importToken(token)}>Import</button>
+                        </div>
+                    ))}
+            </div>
+
+            <Divider />
+            <div className={styles.custom_tokens_header}>
+                <span>0 Custom Tokens</span>
+                <span className={styles.clear_all_button}>Clear all</span>
+            </div>
+            <div className={styles.imported_token_container}>
+                {importedTokens.map((token: TokenIF) => (
+                    <div key={`imported_token_${token.address}`} className={styles.token_result}>
+                        <div className={styles.token_info}>
+                            <div className={styles.token_icon_key}>
+                                <img src={uriToHttp(token.logoURI)} alt='no image' width='30px' />
+                                <p className={styles.symbol}>{token.symbol}</p>
+                            </div>
+                            <h4 className={styles.token_name}>{token.name}</h4>
+                        </div>
+                        {/* <button onClick={() => deleteToken(token)}>Delete</button> */}
+                        <div className={styles.action_menu}>
+                            <div onClick={() => deleteToken(token)}>
+                                <AiOutlineDelete size={15} />
+                            </div>
+                            <a
+                                href={`https://etherscan.io/address/${token?.address}`}
+                                target='_blank'
+                                rel='noreferrer'
+                            >
+                                <FiExternalLink size={15} />
+                            </a>
+                        </div>
                     </div>
                 ))}
+            </div>
+
             <div className={styles.custom_tokens_footer}>
                 Tip: Custom tokens are stored locally in your browser
             </div>
