@@ -62,6 +62,7 @@ import initializeUserLocalStorage from './functions/initializeUserLocalStorage';
 import { TokenIF, TokenListIF } from '../utils/interfaces/exports';
 import { fetchTokenLists } from './functions/fetchTokenLists';
 import {
+    resetTokens,
     resetTradeData,
     setAdvancedHighTick,
     setAdvancedLowTick,
@@ -177,6 +178,10 @@ export default function App() {
 
         // const newProvider = useProvider(provider, setProvider, chainId as string);
     }, [isAuthenticated, chainId, metamaskLocked]);
+
+    useEffect(() => {
+        dispatch(resetTokens(chainId));
+    }, [chainId]);
 
     const dispatch = useAppDispatch();
 
