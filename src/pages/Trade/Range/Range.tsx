@@ -981,4 +981,3 @@ export default function Range(props: RangePropsIF) {
         </section>
     );
 }
- 
