@@ -1,5 +1,4 @@
 // START: Import React and Dongles
-import { MdShowChart } from 'react-icons/md';
 
 // START: Import React Functional Components
 import Modal from '../../../components/Global/Modal/Modal';
@@ -55,9 +54,7 @@ export default function SwapHeader(props: swapHeaderPropsIF) {
 
     const mainHeader = (
         <ContentHeader>
-            <span>
-                <MdShowChart />
-            </span>
+            <div />
             <span className={styles.title}>Swap</span>
             <div className={styles.settings_container} onClick={openModal}>
                 <img src={settingsIcon} alt='settings' />
