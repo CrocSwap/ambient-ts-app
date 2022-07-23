@@ -341,10 +341,13 @@ export default function Swap(props: SwapPropsIF) {
     ) : null;
 
     const isTokenAAllowanceSufficient = parseFloat(tokenAAllowance) >= parseFloat(tokenAInputQty);
+    console.log(pathname);
 
+    const swapContainerStyle = pathname == '/swap' ? styles.swap_page_container : null;
+    const swapPageStyle = pathname == '/swap' ? styles.swap_page : null;
     return (
-        <main data-testid={'swap'} className={styles.swap}>
-            <div className={styles.swap_container}>
+        <main data-testid={'swap'} className={swapPageStyle}>
+            <div className={`${swapContainerStyle}`}>
                 <ContentContainer isOnTradeRoute={isOnTradeRoute}>
                     <SwapHeader
                         tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
