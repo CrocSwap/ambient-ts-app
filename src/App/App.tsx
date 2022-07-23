@@ -1431,61 +1431,59 @@ export default function App() {
         <>
             <div className='content-container'>
                 {currentLocation !== '/404' && <PageHeader {...headerProps} />}
-                <main className={`${showSidebarOrNullStyle}`}>
+                <main className={`${showSidebarOrNullStyle} ${swapBodyStyle}`}>
                     {sidebarRender}
                     {/* <div className={`${noSidebarStyle} ${swapBodyStyle}`}> */}
-                    <div>
-                        <Routes>
-                            <Route index element={<Home />} />
-                            <Route
-                                path='trade'
-                                element={
-                                    <Trade
-                                        account={account ?? ''}
-                                        isAuthenticated={isAuthenticated}
-                                        isWeb3Enabled={isWeb3Enabled}
-                                        lastBlockNumber={lastBlockNumber}
-                                        isTokenABase={isTokenABase}
-                                        poolPriceDisplay={poolPriceDisplay}
-                                    />
-                                }
-                            >
-                                <Route path='' element={<Swap {...swapPropsTrade} />} />
-                                <Route path='market' element={<Swap {...swapPropsTrade} />} />
-                                <Route path='limit' element={<Limit {...limitPropsTrade} />} />
-                                <Route path='range' element={<Range {...rangeProps} />} />
-                                <Route path='edit/:positionHash' element={<Edit />} />
-                                <Route
-                                    path='edit/'
-                                    element={<Navigate to='/trade/market' replace />}
+
+                    <Routes>
+                        <Route index element={<Home />} />
+                        <Route
+                            path='trade'
+                            element={
+                                <Trade
+                                    account={account ?? ''}
+                                    isAuthenticated={isAuthenticated}
+                                    isWeb3Enabled={isWeb3Enabled}
+                                    lastBlockNumber={lastBlockNumber}
+                                    isTokenABase={isTokenABase}
+                                    poolPriceDisplay={poolPriceDisplay}
                                 />
-                            </Route>
-                            <Route path='analytics' element={<Analytics />} />
-                            {/* <Route path='details' element={<PositionDetails />} /> */}
-                            <Route path='range2' element={<Range {...rangeProps} />} />
+                            }
+                        >
+                            <Route path='' element={<Swap {...swapPropsTrade} />} />
+                            <Route path='market' element={<Swap {...swapPropsTrade} />} />
+                            <Route path='limit' element={<Limit {...limitPropsTrade} />} />
+                            <Route path='range' element={<Range {...rangeProps} />} />
+                            <Route path='edit/:positionHash' element={<Edit />} />
+                            <Route path='edit/' element={<Navigate to='/trade/market' replace />} />
+                        </Route>
+                        <Route path='analytics' element={<Analytics />} />
+                        {/* <Route path='details' element={<PositionDetails />} /> */}
+                        <Route path='range2' element={<Range {...rangeProps} />} />
 
-                            <Route
-                                path='account'
-                                element={
-                                    <Portfolio
-                                        ensName={ensName}
-                                        connectedAccount={account ? account : ''}
-                                        imageData={imageData}
-                                    />
-                                }
-                            />
+                        <Route
+                            path='account'
+                            element={
+                                <Portfolio
+                                    ensName={ensName}
+                                    connectedAccount={account ? account : ''}
+                                    imageData={imageData}
+                                />
+                            }
+                        />
 
-                            <Route path='swap' element={<Swap {...swapProps} />} />
-                            <Route path='chart' element={<Chart />} />
-                            <Route path='testpage' element={<TestPage />} />
-                            <Route path='*' element={<Navigate to='/404' replace />} />
-                            <Route path='/404' element={<NotFound />} />
-                        </Routes>
-                    </div>
+                        <Route path='swap' element={<Swap {...swapProps} />} />
+                        <Route path='chart' element={<Chart />} />
+                        <Route path='testpage' element={<TestPage />} />
+                        <Route path='*' element={<Navigate to='/404' replace />} />
+                        <Route path='/404' element={<NotFound />} />
+                    </Routes>
                 </main>
                 {snackbarContent}
             </div>
-            <PageFooter lastBlockNumber={lastBlockNumber} />
+            <div className='footer_container'>
+                <PageFooter lastBlockNumber={lastBlockNumber} />
+            </div>
             {/* <SidebarFooter/> */}
         </>
     );

@@ -178,6 +178,7 @@
     gap: 2rem;
 }
 .settings_container button, .right_side button{
+    cursor: pointer;
     outline: none;
     border: none;
     background: var(--dark1);

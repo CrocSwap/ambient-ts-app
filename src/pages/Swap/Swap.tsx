@@ -344,88 +344,99 @@ export default function Swap(props: SwapPropsIF) {
 
     return (
         <main data-testid={'swap'} className={styles.swap}>
-            <ContentContainer isOnTradeRoute={isOnTradeRoute}>
-                <SwapHeader
-                    tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
-                    isOnTradeRoute={isOnTradeRoute}
-                    isDenomBase={tradeData.isDenomBase}
-                    isTokenABase={isSellTokenBase}
-                />
-                <DividerDark addMarginTop />
-                {navigationMenu}
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.5 }}
-                >
-                    <CurrencyConverter
-                        tokenPair={tokenPair}
-                        tokensBank={importedTokens}
-                        setImportedTokens={setImportedTokens}
-                        searchableTokens={searchableTokens}
-                        chainId={chainId as string}
-                        isLiq={false}
-                        poolPriceDisplay={poolPriceDisplay}
-                        isTokenAPrimary={isTokenAPrimary}
-                        isSellTokenBase={isSellTokenBase}
-                        nativeBalance={truncateDecimals(parseFloat(nativeBalance), 4).toString()}
-                        tokenABalance={truncateDecimals(parseFloat(tokenABalance), 4).toString()}
-                        tokenBBalance={truncateDecimals(parseFloat(tokenBBalance), 4).toString()}
-                        tokenAInputQty={tokenAInputQty}
-                        tokenBInputQty={tokenBInputQty}
-                        setTokenAInputQty={setTokenAInputQty}
-                        setTokenBInputQty={setTokenBInputQty}
-                        isWithdrawFromDexChecked={isWithdrawFromDexChecked}
-                        setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
-                        isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
-                        setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
-                        setSwapAllowed={setSwapAllowed}
-                        setSwapButtonErrorMessage={setSwapButtonErrorMessage}
-                        activeTokenListsChanged={activeTokenListsChanged}
-                        indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
+            <div className={styles.swap_container}>
+                <ContentContainer isOnTradeRoute={isOnTradeRoute}>
+                    <SwapHeader
+                        tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
+                        isOnTradeRoute={isOnTradeRoute}
+                        isDenomBase={tradeData.isDenomBase}
+                        isTokenABase={isSellTokenBase}
                     />
-                </motion.div>
-                <div className={styles.header_container}>
                     <DividerDark addMarginTop />
-                    <DenominationSwitch
+                    {navigationMenu}
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.5 }}
+                    >
+                        <CurrencyConverter
+                            tokenPair={tokenPair}
+                            tokensBank={importedTokens}
+                            setImportedTokens={setImportedTokens}
+                            searchableTokens={searchableTokens}
+                            chainId={chainId as string}
+                            isLiq={false}
+                            poolPriceDisplay={poolPriceDisplay}
+                            isTokenAPrimary={isTokenAPrimary}
+                            isSellTokenBase={isSellTokenBase}
+                            nativeBalance={truncateDecimals(
+                                parseFloat(nativeBalance),
+                                4,
+                            ).toString()}
+                            tokenABalance={truncateDecimals(
+                                parseFloat(tokenABalance),
+                                4,
+                            ).toString()}
+                            tokenBBalance={truncateDecimals(
+                                parseFloat(tokenBBalance),
+                                4,
+                            ).toString()}
+                            tokenAInputQty={tokenAInputQty}
+                            tokenBInputQty={tokenBInputQty}
+                            setTokenAInputQty={setTokenAInputQty}
+                            setTokenBInputQty={setTokenBInputQty}
+                            isWithdrawFromDexChecked={isWithdrawFromDexChecked}
+                            setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
+                            isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
+                            setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
+                            setSwapAllowed={setSwapAllowed}
+                            setSwapButtonErrorMessage={setSwapButtonErrorMessage}
+                            activeTokenListsChanged={activeTokenListsChanged}
+                            indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
+                        />
+                    </motion.div>
+                    <div className={styles.header_container}>
+                        <DividerDark addMarginTop />
+                        <DenominationSwitch
+                            tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
+                            isTokenABase={isSellTokenBase}
+                            displayForBase={tradeData.isDenomBase}
+                            poolPriceDisplay={poolPriceDisplay}
+                            didUserFlipDenom={tradeData.didUserFlipDenom}
+                        />
+                    </div>
+                    <ExtraInfo
                         tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
                         isTokenABase={isSellTokenBase}
-                        displayForBase={tradeData.isDenomBase}
                         poolPriceDisplay={poolPriceDisplay}
+                        slippageTolerance={slippageTolerancePercentage}
+                        liquidityProviderFee={0.3}
+                        quoteTokenIsBuy={true}
+                        gasPriceinGwei={gasPriceinGwei}
                         didUserFlipDenom={tradeData.didUserFlipDenom}
+                        isDenomBase={tradeData.isDenomBase}
                     />
-                </div>
-                <ExtraInfo
-                    tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
-                    isTokenABase={isSellTokenBase}
-                    poolPriceDisplay={poolPriceDisplay}
-                    slippageTolerance={slippageTolerancePercentage}
-                    liquidityProviderFee={0.3}
-                    quoteTokenIsBuy={true}
-                    gasPriceinGwei={gasPriceinGwei}
-                    didUserFlipDenom={tradeData.didUserFlipDenom}
-                    isDenomBase={tradeData.isDenomBase}
-                />
-                {isAuthenticated && isWeb3Enabled ? (
-                    !isTokenAAllowanceSufficient && parseFloat(tokenAInputQty) > 0 ? (
-                        approvalButton
+                    {isAuthenticated && isWeb3Enabled ? (
+                        !isTokenAAllowanceSufficient && parseFloat(tokenAInputQty) > 0 ? (
+                            approvalButton
+                        ) : (
+                            <SwapButton
+                                onClickFn={openModal}
+                                swapAllowed={swapAllowed}
+                                swapButtonErrorMessage={swapButtonErrorMessage}
+                            />
+                        )
                     ) : (
-                        <SwapButton
-                            onClickFn={openModal}
-                            swapAllowed={swapAllowed}
-                            swapButtonErrorMessage={swapButtonErrorMessage}
-                        />
-                    )
-                ) : (
-                    loginButton
-                )}
-            </ContentContainer>
-            {confirmSwapModalOrNull}
-            {relativeModalOrNull}
-            {/* <div className={styles.footer}>
+                        loginButton
+                    )}
+                </ContentContainer>
+                {confirmSwapModalOrNull}
+                {relativeModalOrNull}
+                {/* <div className={styles.footer}>
             <PageFooter lastBlockNumber={2}/>
 
             </div> */}
+            </div>
         </main>
     );
 }
