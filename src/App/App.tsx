@@ -1396,12 +1396,9 @@ export default function App() {
         }
     }, [tradeData.didUserFlipDenom, tokenPair]);
 
-    const mainLayoutStyle = showSidebar ? 'main-layout-2' : 'main-layout';
+    // const mainLayoutStyle = showSidebar ? 'main-layout-2' : 'main-layout';
     // take away margin from left if we are on homepage or swap
-    const noSidebarStyle =
-        currentLocation == '/' || currentLocation == '/swap' || currentLocation == '/404'
-            ? 'no-sidebar'
-            : mainLayoutStyle;
+
     const swapBodyStyle = currentLocation == '/swap' ? 'swap-body' : null;
 
     const [imageData, setImageData] = useState<string[]>([]);
@@ -1415,14 +1412,28 @@ export default function App() {
         })();
     }, [account]);
 
+    // Show sidebar on all pages except for home and swap
+    const sidebarRender = currentLocation !== '/' &&
+        currentLocation !== '/swap' &&
+        currentLocation !== '/404' && <Sidebar {...sidebarProps} />;
+
+    const sidebarDislayStyle = showSidebar
+        ? 'sidebar_content_layout'
+        : 'sidebar_content_layout_close';
+
+    const showSidebarOrNullStyle =
+        currentLocation == '/' || currentLocation == '/swap' || currentLocation == '/404'
+            ? 'hide_sidebar'
+            : sidebarDislayStyle;
+
     return (
         <>
             <div className='content-container'>
                 {currentLocation !== '/404' && <PageHeader {...headerProps} />}
-                {currentLocation !== '/' &&
-                    currentLocation !== '/swap' &&
-                    currentLocation !== '/404' && <Sidebar {...sidebarProps} />}
-                <div className={`${noSidebarStyle} ${swapBodyStyle}`}>
+                <main className={`${showSidebarOrNullStyle} ${swapBodyStyle}`}>
+                    {sidebarRender}
+                    {/* <div className={`${noSidebarStyle} ${swapBodyStyle}`}> */}
+
                     <Routes>
                         <Route index element={<Home />} />
                         <Route
@@ -1466,10 +1477,12 @@ export default function App() {
                         <Route path='*' element={<Navigate to='/404' replace />} />
                         <Route path='/404' element={<NotFound />} />
                     </Routes>
-                </div>
+                </main>
                 {snackbarContent}
             </div>
-            <PageFooter lastBlockNumber={lastBlockNumber} />
+            <div className='footer_container'>
+                <PageFooter lastBlockNumber={lastBlockNumber} />
+            </div>
             {/* <SidebarFooter/> */}
         </>
     );

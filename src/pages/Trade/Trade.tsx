@@ -7,7 +7,7 @@ import {
 import styles from './Trade.module.css';
 import chart from '../../assets/images/Temporary/chart.svg';
 import Tabs from '../../components/Global/Tabs/Tabs';
-import { motion } from 'framer-motion';
+// import { motion } from 'framer-motion';
 import { useAppSelector, useAppDispatch } from '../../utils/hooks/reduxToolkit';
 import {
     tradeData as TradeDataIF,
@@ -183,27 +183,29 @@ export default function Trade(props: ITradeProps) {
     );
 
     return (
-        <motion.main
-            initial={{ width: 0 }}
-            animate={{ width: '100%' }}
-            exit={{ x: window.innerWidth, transition: { duration: 0.4 } }}
-            data-testid={'trade'}
-        >
-            <main className={styles.main_layout}>
-                <div className={`${styles.middle_col} ${styles.graph_container}`}>
+        // <motion.main
+        //     initial={{ width: 0 }}
+        //     animate={{ width: '100%' }}
+        //     exit={{ x: window.innerWidth, transition: { duration: 0.4 } }}
+        //     data-testid={'trade'}
+        // >
+        <main className={styles.main_layout}>
+            <div className={`${styles.middle_col} ${styles.graph_container}`}>
+                <div>
                     {tokenInfo}
                     {timeFrameContent}
                     {chartImage}
-                    <Tabs
-                        account={props.account}
-                        isAuthenticated={props.isAuthenticated}
-                        isWeb3Enabled={props.isWeb3Enabled}
-                        lastBlockNumber={props.lastBlockNumber}
-                    />
                 </div>
-                {mainContent}
-            </main>
-        </motion.main>
+                <Tabs
+                    account={props.account}
+                    isAuthenticated={props.isAuthenticated}
+                    isWeb3Enabled={props.isWeb3Enabled}
+                    lastBlockNumber={props.lastBlockNumber}
+                />
+            </div>
+            {mainContent}
+        </main>
+        // </motion.main>
     );
 }
 
