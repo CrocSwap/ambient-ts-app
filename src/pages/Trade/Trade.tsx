@@ -183,27 +183,27 @@ export default function Trade(props: ITradeProps) {
     );
 
     return (
-        <motion.main
-            initial={{ width: 0 }}
-            animate={{ width: '100%' }}
-            exit={{ x: window.innerWidth, transition: { duration: 0.4 } }}
-            data-testid={'trade'}
-        >
-            <main className={styles.main_layout}>
-                <div className={`${styles.middle_col} ${styles.graph_container}`}>
-                    {tokenInfo}
-                    {timeFrameContent}
-                    {chartImage}
-                    <Tabs
-                        account={props.account}
-                        isAuthenticated={props.isAuthenticated}
-                        isWeb3Enabled={props.isWeb3Enabled}
-                        lastBlockNumber={props.lastBlockNumber}
-                    />
-                </div>
-                {mainContent}
-            </main>
-        </motion.main>
+        // <motion.main
+        //     initial={{ width: 0 }}
+        //     animate={{ width: '100%' }}
+        //     exit={{ x: window.innerWidth, transition: { duration: 0.4 } }}
+        //     data-testid={'trade'}
+        // >
+        <main className={styles.main_layout}>
+            <div className={`${styles.middle_col} ${styles.graph_container}`}>
+                {tokenInfo}
+                {timeFrameContent}
+                {chartImage}
+                <Tabs
+                    account={props.account}
+                    isAuthenticated={props.isAuthenticated}
+                    isWeb3Enabled={props.isWeb3Enabled}
+                    lastBlockNumber={props.lastBlockNumber}
+                />
+            </div>
+            {mainContent}
+        </main>
+        // </motion.main>
     );
 }
 

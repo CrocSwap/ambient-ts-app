@@ -113,9 +113,7 @@
     }
     
     .middle_col{
-        /* display: flex;
-        justify-content: center;
-        align-items: center; */
+  
        background: var(--dark3);
 
     }

@@ -76,6 +76,7 @@ import { fetchTokenBalances } from './functions/fetchTokenBalances';
 import truncateDecimals from '../utils/data/truncateDecimals';
 import { getNFTs } from './functions/getNFTs';
 import { addNativeBalance, resetTokenData, setTokens } from '../utils/state/tokenDataSlice';
+import { StylesContext } from '@material-ui/styles';
 // import SidebarFooter from '../components/Global/SIdebarFooter/SidebarFooter';
 
 const cachedQuerySpotPrice = memoizePromiseFn(querySpotPrice);
@@ -1398,10 +1399,7 @@ export default function App() {
 
     const mainLayoutStyle = showSidebar ? 'main-layout-2' : 'main-layout';
     // take away margin from left if we are on homepage or swap
-    const noSidebarStyle =
-        currentLocation == '/' || currentLocation == '/swap' || currentLocation == '/404'
-            ? 'no-sidebar'
-            : mainLayoutStyle;
+
     const swapBodyStyle = currentLocation == '/swap' ? 'swap-body' : null;
 
     const [imageData, setImageData] = useState<string[]>([]);
@@ -1415,58 +1413,76 @@ export default function App() {
         })();
     }, [account]);
 
+    // Show sidebar on all pages except for home and swap
+    const sidebarRender = currentLocation !== '/' &&
+        currentLocation !== '/swap' &&
+        currentLocation !== '/404' && <Sidebar {...sidebarProps} />;
+
+    const sidebarDislayStyle = showSidebar
+        ? 'sidebar_content_layout'
+        : 'sidebar_content_layout_close';
+
+    const showSidebarOrNullStyle =
+        currentLocation == '/' || currentLocation == '/swap' || currentLocation == '/404'
+            ? 'hide_sidebar'
+            : sidebarDislayStyle;
+
     return (
         <>
             <div className='content-container'>
                 {currentLocation !== '/404' && <PageHeader {...headerProps} />}
-                {currentLocation !== '/' &&
-                    currentLocation !== '/swap' &&
-                    currentLocation !== '/404' && <Sidebar {...sidebarProps} />}
-                <div className={`${noSidebarStyle} ${swapBodyStyle}`}>
-                    <Routes>
-                        <Route index element={<Home />} />
-                        <Route
-                            path='trade'
-                            element={
-                                <Trade
-                                    account={account ?? ''}
-                                    isAuthenticated={isAuthenticated}
-                                    isWeb3Enabled={isWeb3Enabled}
-                                    lastBlockNumber={lastBlockNumber}
-                                    isTokenABase={isTokenABase}
-                                    poolPriceDisplay={poolPriceDisplay}
+                <main className={`${showSidebarOrNullStyle}`}>
+                    {sidebarRender}
+                    {/* <div className={`${noSidebarStyle} ${swapBodyStyle}`}> */}
+                    <div>
+                        <Routes>
+                            <Route index element={<Home />} />
+                            <Route
+                                path='trade'
+                                element={
+                                    <Trade
+                                        account={account ?? ''}
+                                        isAuthenticated={isAuthenticated}
+                                        isWeb3Enabled={isWeb3Enabled}
+                                        lastBlockNumber={lastBlockNumber}
+                                        isTokenABase={isTokenABase}
+                                        poolPriceDisplay={poolPriceDisplay}
+                                    />
+                                }
+                            >
+                                <Route path='' element={<Swap {...swapPropsTrade} />} />
+                                <Route path='market' element={<Swap {...swapPropsTrade} />} />
+                                <Route path='limit' element={<Limit {...limitPropsTrade} />} />
+                                <Route path='range' element={<Range {...rangeProps} />} />
+                                <Route path='edit/:positionHash' element={<Edit />} />
+                                <Route
+                                    path='edit/'
+                                    element={<Navigate to='/trade/market' replace />}
                                 />
-                            }
-                        >
-                            <Route path='' element={<Swap {...swapPropsTrade} />} />
-                            <Route path='market' element={<Swap {...swapPropsTrade} />} />
-                            <Route path='limit' element={<Limit {...limitPropsTrade} />} />
-                            <Route path='range' element={<Range {...rangeProps} />} />
-                            <Route path='edit/:positionHash' element={<Edit />} />
-                            <Route path='edit/' element={<Navigate to='/trade/market' replace />} />
-                        </Route>
-                        <Route path='analytics' element={<Analytics />} />
-                        {/* <Route path='details' element={<PositionDetails />} /> */}
-                        <Route path='range2' element={<Range {...rangeProps} />} />
+                            </Route>
+                            <Route path='analytics' element={<Analytics />} />
+                            {/* <Route path='details' element={<PositionDetails />} /> */}
+                            <Route path='range2' element={<Range {...rangeProps} />} />
 
-                        <Route
-                            path='account'
-                            element={
-                                <Portfolio
-                                    ensName={ensName}
-                                    connectedAccount={account ? account : ''}
-                                    imageData={imageData}
-                                />
-                            }
-                        />
+                            <Route
+                                path='account'
+                                element={
+                                    <Portfolio
+                                        ensName={ensName}
+                                        connectedAccount={account ? account : ''}
+                                        imageData={imageData}
+                                    />
+                                }
+                            />
 
-                        <Route path='swap' element={<Swap {...swapProps} />} />
-                        <Route path='chart' element={<Chart />} />
-                        <Route path='testpage' element={<TestPage />} />
-                        <Route path='*' element={<Navigate to='/404' replace />} />
-                        <Route path='/404' element={<NotFound />} />
-                    </Routes>
-                </div>
+                            <Route path='swap' element={<Swap {...swapProps} />} />
+                            <Route path='chart' element={<Chart />} />
+                            <Route path='testpage' element={<TestPage />} />
+                            <Route path='*' element={<Navigate to='/404' replace />} />
+                            <Route path='/404' element={<NotFound />} />
+                        </Routes>
+                    </div>
+                </main>
                 {snackbarContent}
             </div>
             <PageFooter lastBlockNumber={lastBlockNumber} />

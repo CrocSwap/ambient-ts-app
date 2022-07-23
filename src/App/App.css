@@ -80,26 +80,24 @@ footer {
 
 
 
-.main-layout{
-  transition: all var(--animation-speed) ease-in-out;  /* background: var(--dark3); */
-  /* min-height: calc(100vh - 5rem); */
-  /* margin-left: 5rem; */
-  /* padding: 1rem; */
+/* .main-layout{
+  transition: all var(--animation-speed) ease-in-out;  
+  
   margin-left: 1.938rem;
+
 
 
 }
 
 .no-sidebar{
   margin-left: 0;
-  transition: all var(--animation-speed) ease-in-out;  /* min-height: calc(100vh - 5rem); */
 }
 .main-layout-2{
-  transition: all var(--animation-speed) ease-in-out;  /* background: var(--dark3); */
-  /* min-height: calc(100vh - 5rem); */
+  transition: all var(--animation-speed) ease-in-out; 
+ 
  
   
-}
+} */
 .swap-body{
   /* height: 100vh; */
   background: #171D27;
@@ -110,11 +108,7 @@ footer {
    align-items: center;
  
 }
-.content-container {
-  /* height: calc(100vh - 4rem);  */
 
-
-}
 
 .primary_apy{
   background: linear-gradient(90deg, #15BE6F 32.38%, #8FE9BF 51.39%, #15BE6F 68.17%);
@@ -149,7 +143,7 @@ footer {
 }
 
 /* CSSTransition classes  */
-.menu-primary-enter {
+/* .menu-primary-enter {
   position: absolute;
   transform: translateX(-110%);
 }
@@ -179,9 +173,12 @@ footer {
 .menu-secondary-exit-active {
   transform: translateX(110%);
   transition: all var(--animation-speed) ease;
+} */
+
+.hide_sidebar{
+ display: grid;
+ grid-template-columns: 100%;
 }
-
-
 
 
 @media only screen and (max-width: 600px) {
@@ -191,20 +188,48 @@ footer {
 
     margin: 0;
     overflow: scroll;
-  }
-
-}
-
-
-@media only screen and (min-width: 1020px) {
-  .main-layout-2{
-    margin-left: 16rem;
-    
    
   }
 
 }
 
 
+@media only screen and (min-width: 1080px) {
+ 
+  .sidebar_content_layout{
+    transition: all var(--animation-speed) ease-in-out;
+   display: grid;
+   grid-template-columns: 296px auto;
+  }
+  .sidebar_content_layout_close{
+    transition: all var(--animation-speed) ease-in-out;
+
+    display: grid;
+    grid-template-columns: 31px auto;
+  }
 
 
+
+}
+/* 
+@media only screen and (min-width: 1280px) {
+ 
+  .sidebar_content_layout{
+    transition: all var(--animation-speed) ease-in-out;
+   display: grid;
+   grid-template-columns: 296px auto;
+  }
+  .sidebar_content_layout_close{
+    transition: all var(--animation-speed) ease-in-out;
+
+    display: grid;
+    grid-template-columns: 31px auto;
+  }
+
+
+
+}
+
+
+
+ */
