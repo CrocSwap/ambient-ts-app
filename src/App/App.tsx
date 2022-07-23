@@ -76,7 +76,6 @@ import { fetchTokenBalances } from './functions/fetchTokenBalances';
 import truncateDecimals from '../utils/data/truncateDecimals';
 import { getNFTs } from './functions/getNFTs';
 import { addNativeBalance, resetTokenData, setTokens } from '../utils/state/tokenDataSlice';
-import { StylesContext } from '@material-ui/styles';
 // import SidebarFooter from '../components/Global/SIdebarFooter/SidebarFooter';
 
 const cachedQuerySpotPrice = memoizePromiseFn(querySpotPrice);
@@ -1397,7 +1396,7 @@ export default function App() {
         }
     }, [tradeData.didUserFlipDenom, tokenPair]);
 
-    const mainLayoutStyle = showSidebar ? 'main-layout-2' : 'main-layout';
+    // const mainLayoutStyle = showSidebar ? 'main-layout-2' : 'main-layout';
     // take away margin from left if we are on homepage or swap
 
     const swapBodyStyle = currentLocation == '/swap' ? 'swap-body' : null;

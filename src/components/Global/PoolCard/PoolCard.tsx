@@ -12,7 +12,7 @@ const spring = {
 };
 
 export default function PoolCard(props: PoolCardProps) {
-    const { isSelected, onClick, speed } = props;
+    const { isSelected, onClick } = props;
 
     return (
         <motion.div className={styles.pool_card} onMouseEnter={onClick}>
