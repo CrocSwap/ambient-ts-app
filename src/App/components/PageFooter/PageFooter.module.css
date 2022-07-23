@@ -5,7 +5,8 @@
     flex-direction: row;
     align-items: center;
     margin-top: auto;
-    padding: 16px 0;
+    /* padding: 16px 0; */
+    height: var(--footer-height);
 
     font-size:  var(--body-size);
 line-height: var(--body-lh);

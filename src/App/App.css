@@ -109,6 +109,7 @@ footer {
 .swap-body{
   /* height: 100vh; */
   background: #171D27;
+  height: calc(100vh - (var(--footer-height) + 2rem));
 
    /* height: calc(100vh - 3.5rem);  */
    
@@ -223,22 +224,26 @@ footer {
     grid-template-columns: 31px auto;
   }
 
-
-
+  
+  
 }
 
 @media only screen and (min-width: 1280px) {
- 
+  
   .sidebar_content_layout{
     transition: all var(--animation-speed) ease-in-out;
-   display: grid;
-   /* grid-template-columns: 296px auto; */
+    display: grid;
+    /* grid-template-columns: 296px auto; */
   }
   .sidebar_content_layout_close{
     transition: all var(--animation-speed) ease-in-out;
-
+    
     display: grid;
     grid-template-columns: 31px auto;
+  }
+  
+  .content-container{
+    height: calc(100vh - var(--footer-height))
   }
 
 
