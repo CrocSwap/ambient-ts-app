@@ -1,4 +1,5 @@
 import TableMenu from '../../../Global/Tabs/TableMenu/TableMenu';
+import TokenQty from '../../../Global/Tabs/TokenQty/TokenQty';
 import TransactionTypeSide from '../../../Global/Tabs/TypeAndSide/TransactionTypeSide/TransactionTypeSide';
 import WalletAndId from '../../../Global/Tabs/WalletAndID/WalletAndId';
 import styles from './TransactionCard2.module.css';
@@ -45,7 +46,7 @@ export default function TransactionCard2() {
                 <section className={styles.type_sing}>Range</section> */}
                 <TransactionTypeSide />
                 {/* ------------------------------------------------------ */}
-                <section className={styles.column_qty}>
+                {/* <section className={styles.column_qty}>
                     <div>
                         <p>T1 Qty</p>
                         <img
@@ -62,7 +63,8 @@ export default function TransactionCard2() {
                     </div>
                 </section>
                 {token1}
-                {token2}
+                {token2} */}
+                <TokenQty />
             </div>
 
             <div className={styles.menu_container}>

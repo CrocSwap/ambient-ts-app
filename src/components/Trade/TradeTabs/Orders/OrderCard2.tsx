@@ -1,26 +1,11 @@
 import OpenOrderStatus from '../../../Global/OpenOrderStatus/OpenOrderStatus';
 import TableMenu from '../../../Global/Tabs/TableMenu/TableMenu';
+import TokenQty from '../../../Global/Tabs/TokenQty/TokenQty';
 import OrderTypeSide from '../../../Global/Tabs/TypeAndSide/OrderTypeAndSide/OrderTypeSide';
 import WalletAndId from '../../../Global/Tabs/WalletAndID/WalletAndId';
 import styles from './OrderCard2.module.css';
 
 export default function OrderCard2() {
-    const token1 = (
-        <section className={styles.qty_sing}>
-            <p>T1 Qty</p>
-            <img
-                src='https://icons.iconarchive.com/icons/cjdowner/cryptocurrency-flat/1024/Ethereum-ETH-icon.png'
-                alt=''
-            />
-        </section>
-    );
-    const token2 = (
-        <section className={styles.qty_sing}>
-            <p>T2 Qty</p>
-            <img src='https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.png' alt='' />
-        </section>
-    );
-
     return (
         <div className={styles.main_container}>
             <div className={styles.row_container}>
@@ -46,7 +31,7 @@ export default function OrderCard2() {
 
                 <OrderTypeSide />
                 {/* ------------------------------------------------------ */}
-                <section className={styles.column_qty}>
+                {/* <section className={styles.column_qty}>
                     <div>
                         <p>T1 Qty</p>
                         <img
@@ -63,7 +48,8 @@ export default function OrderCard2() {
                     </div>
                 </section>
                 {token1}
-                {token2}
+                {token2} */}
+                <TokenQty />
                 {/* ------------------------------------------------------ */}
                 <div className={styles.status}>
                     <OpenOrderStatus isFilled />
