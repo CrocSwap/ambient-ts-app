@@ -17,7 +17,6 @@ import LimitHeader from '../../../components/Trade/Limit/LimitHeader/LimitHeader
 import DividerDark from '../../../components/Global/DividerDark/DividerDark';
 import Modal from '../../../components/Global/Modal/Modal';
 import ConfirmLimitModal from '../../../components/Trade/Limit/ConfirmLimitModal/ConfirmLimitModal';
-import { JsonRpcProvider } from '@ethersproject/providers';
 import styles from './Limit.module.css';
 import truncateDecimals from '../../../utils/data/truncateDecimals';
 
@@ -27,12 +26,13 @@ import { useModal } from '../../../components/Global/Modal/useModal';
 import { TokenIF } from '../../../utils/interfaces/exports';
 import { setLimitPrice } from '../../../utils/state/tradeDataSlice';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import { ethers } from 'ethers';
 
 interface LimitPropsIF {
     importedTokens: Array<TokenIF>;
     searchableTokens: Array<TokenIF>;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
-    provider: JsonRpcProvider;
+    provider?: ethers.providers.Provider;
     isOnTradeRoute?: boolean;
     gasPriceinGwei: string;
     nativeBalance: string;
@@ -241,6 +241,9 @@ export default function Limit(props: LimitPropsIF) {
     const [isApprovalPending, setIsApprovalPending] = useState(false);
 
     const approve = async (tokenAddress: string) => {
+        if (!provider) {
+            return;
+        }
         setIsApprovalPending(true);
         try {
             const tx = await new CrocEnv(provider).token(tokenAddress).approve();

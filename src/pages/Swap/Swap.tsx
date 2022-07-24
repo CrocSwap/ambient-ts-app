@@ -3,7 +3,6 @@ import { useState, Dispatch, SetStateAction } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useMoralis } from 'react-moralis';
 import { motion } from 'framer-motion';
-import { JsonRpcProvider } from '@ethersproject/providers';
 import { CrocEnv } from '@crocswap-libs/sdk';
 
 // START: Import React Components
@@ -29,12 +28,13 @@ import { TokenIF } from '../../utils/interfaces/exports';
 import { useModal } from '../../components/Global/Modal/useModal';
 import { useRelativeModal } from '../../components/Global/RelativeModal/useRelativeModal';
 import { addReceipt } from '../../utils/state/receiptDataSlice';
+import { ethers } from 'ethers';
 
 interface SwapPropsIF {
     importedTokens: Array<TokenIF>;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     searchableTokens: Array<TokenIF>;
-    provider: JsonRpcProvider;
+    provider?: ethers.providers.Provider;
     isOnTradeRoute?: boolean;
     gasPriceinGwei: string;
     nativeBalance: string;
@@ -127,6 +127,9 @@ export default function Swap(props: SwapPropsIF) {
     const [isApprovalPending, setIsApprovalPending] = useState(false);
 
     const approve = async (tokenAddress: string) => {
+        if (!provider) {
+            return;
+        }
         setIsApprovalPending(true);
         try {
             const tx = await new CrocEnv(provider).token(tokenAddress).approve();
@@ -170,9 +173,13 @@ export default function Swap(props: SwapPropsIF) {
     const [newSwapTransactionHash, setNewSwapTransactionHash] = useState('');
 
     async function initiateSwap() {
-        console.log('Initiate Swap A')
-        console.dir(provider)
-        if (!provider.getSigner()) {
+        if (!provider) {
+            return;
+        }
+
+        console.log('Initiate Swap A');
+        console.dir(provider);
+        if (!(provider as ethers.providers.JsonRpcProvider).getSigner()) {
             return;
         }
 
@@ -185,8 +192,8 @@ export default function Swap(props: SwapPropsIF) {
 
         const env = new CrocEnv(provider);
 
-        console.log('Initiate Swap B')
-        console.dir((await env.context).provider)
+        console.log('Initiate Swap B');
+        console.dir((await env.context).provider);
 
         const tx = await (isQtySell
             ? env.sell(sellTokenAddress, qty).for(buyTokenAddress).swap()

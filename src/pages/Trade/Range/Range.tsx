@@ -2,7 +2,6 @@
 import { useState, useEffect, useMemo, Dispatch, SetStateAction } from 'react';
 import { useMoralis } from 'react-moralis';
 import { motion } from 'framer-motion';
-import { JsonRpcProvider } from '@ethersproject/providers';
 import { concDepositSkew, MIN_TICK, MAX_TICK, CrocEnv } from '@crocswap-libs/sdk';
 
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
@@ -43,12 +42,13 @@ import {
 import { addReceipt } from '../../../utils/state/receiptDataSlice';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
+import { ethers } from 'ethers';
 
 interface RangePropsIF {
     importedTokens: Array<TokenIF>;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     searchableTokens: Array<TokenIF>;
-    provider: JsonRpcProvider;
+    provider?: ethers.providers.Provider;
     gasPriceinGwei: string;
     lastBlockNumber: number;
     baseTokenAddress: string;
@@ -559,7 +559,7 @@ export default function Range(props: RangePropsIF) {
     const truncatedTokenBBalance = truncateDecimals(parseFloat(tokenBBalance), 4).toString();
 
     const sendTransaction = async () => {
-        if (!provider?.getSigner()) {
+        if (!provider || !(provider as ethers.providers.JsonRpcProvider).getSigner()) {
             return;
         }
 
@@ -888,6 +888,9 @@ export default function Range(props: RangePropsIF) {
     const [isApprovalPending, setIsApprovalPending] = useState(false);
 
     const approve = async (tokenAddress: string) => {
+        if (!provider) {
+            return;
+        }
         setIsApprovalPending(true);
         try {
             const tx = await new CrocEnv(provider).token(tokenAddress).approve();

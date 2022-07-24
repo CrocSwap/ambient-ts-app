@@ -1049,8 +1049,8 @@ export default function App() {
     useEffect(() => {
         (async () => {
             if (provider && account && isAuthenticated && isWeb3Enabled) {
-                console.log('Provider Native Balance')
-                console.dir(provider)
+                console.log('Provider Native Balance');
+                console.dir(provider);
                 new CrocEnv(provider)
                     .tokenEth()
                     .balance(account)
@@ -1111,7 +1111,7 @@ export default function App() {
         importedTokens: importedTokens,
         setImportedTokens: setImportedTokens,
         searchableTokens: searchableTokens,
-        provider: provider as JsonRpcProvider,
+        provider: provider,
         gasPriceinGwei: gasPriceinGwei,
         nativeBalance: nativeBalance,
         lastBlockNumber: lastBlockNumber,
@@ -1132,7 +1132,7 @@ export default function App() {
         importedTokens: importedTokens,
         setImportedTokens: setImportedTokens,
         searchableTokens: searchableTokens,
-        provider: provider as JsonRpcProvider,
+        provider: provider,
         isOnTradeRoute: true,
         gasPriceinGwei: gasPriceinGwei,
         nativeBalance: nativeBalance,
@@ -1154,7 +1154,7 @@ export default function App() {
         importedTokens: importedTokens,
         setImportedTokens: setImportedTokens,
         searchableTokens: searchableTokens,
-        provider: provider as JsonRpcProvider,
+        provider: provider,
         isOnTradeRoute: true,
         gasPriceinGwei: gasPriceinGwei,
         nativeBalance: nativeBalance,
@@ -1178,7 +1178,7 @@ export default function App() {
         importedTokens: importedTokens,
         setImportedTokens: setImportedTokens,
         searchableTokens: searchableTokens,
-        provider: provider as JsonRpcProvider,
+        provider: provider,
         lastBlockNumber: lastBlockNumber,
         gasPriceinGwei: gasPriceinGwei,
         baseTokenAddress: baseTokenAddress,
