@@ -14,7 +14,6 @@ import {
     addCandles,
 } from '../utils/state/graphDataSlice';
 import { ethers } from 'ethers';
-import { JsonRpcProvider } from '@ethersproject/providers';
 // import { request, gql } from 'graphql-request';
 import { useMoralis, useMoralisQuery, useMoralisSubscription, useChain } from 'react-moralis';
 
@@ -131,9 +130,11 @@ export default function App() {
                     clickLogout();
                 } else if (window.ethereum && !metamaskLocked) {
                     const metamaskProvider = new ethers.providers.Web3Provider(window.ethereum);
+                    console.log("Metamask Provider")
                     setProvider(metamaskProvider);
                 }
             } else if (!provider || !onChain) {
+                console.log("Chain Providers " + chainId)
                 const env = new CrocEnv(chainId);
                 env.context.then((c) => setProvider(c.provider));
             }
@@ -807,7 +808,7 @@ export default function App() {
             candle.quote = candle.quote.startsWith('0x') ? candle.quote : '0x' + candle.quote;
         }
         return candle;
-    };
+    }
 
     const getPositionData = async (position: Position): Promise<Position> => {
         position.base = position.base.startsWith('0x') ? position.base : '0x' + position.base;
@@ -1311,6 +1312,5 @@ export default function App() {
             <PageFooter lastBlockNumber={lastBlockNumber} />
             {/* <SidebarFooter/> */}
         </>
-    );
+    )
 }
-                                                   
