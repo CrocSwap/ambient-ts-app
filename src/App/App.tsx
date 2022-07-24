@@ -130,7 +130,7 @@ export default function App() {
                     clickLogout();
                 } else if (window.ethereum && !metamaskLocked) {
                     const metamaskProvider = new ethers.providers.Web3Provider(window.ethereum);
-                    console.log(metamaskProvider.getBalance("0x01e650ABfc761C6A0Fc60f62A4E4b3832bb1178b"))
+                    console.log(metamaskProvider.getBalance('0x01e650ABfc761C6A0Fc60f62A4E4b3832bb1178b'))
                     console.log('Metamask Provider')
                     setProvider(metamaskProvider);
                 }
