@@ -1,15 +1,16 @@
 import styles from './TradeTabs.module.css';
 import { useState, useEffect } from 'react';
 import TabNavItem from '../../Global/Tabs/TabNavItem/TabNavItem';
-import Positions from '../Positions/Positions';
+import Positions from './Positions/Positions';
 import TabContent from '../../Global/Tabs/TabContent/TabContent';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 // import Order2 from '../../../Account/Order/Order2';
-import Order2 from '../../Global/Account/Order/Order2';
-import LimitOrders from '../../Global/LimitOrder/LimitOrders';
-import Transactions2 from '../../Global/Transactions/Transactions2';
-import Transactions from '../../Global/Transactions/Transactions';
+// import Order2 from '../../Global/Account/Order/Order2';
+import LimitOrders from './Orders/LimitOrders';
+import Transactions2 from './Transactions/Transactions2';
+import Transactions from './Transactions/Transactions';
 import Toggle2 from '../../Global/Toggle/Toggle2';
+import Order2 from './Orders/Order2';
 
 interface ITabsProps {
     account: string;
