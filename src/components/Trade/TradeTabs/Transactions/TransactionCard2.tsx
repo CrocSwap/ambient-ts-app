@@ -1,4 +1,4 @@
-import TableMenu from '../../../Global/TableMenu/TableMenu';
+import TableMenu from '../../../Global/Tabs/TableMenu/TableMenu';
 import styles from './TransactionCard2.module.css';
 
 export default function TransactionCard2() {

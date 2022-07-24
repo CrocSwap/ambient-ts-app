@@ -1,6 +1,6 @@
-import DropdownMenu from '../../DropdownMenu/DropdownMenu';
-import DropdownMenuContainer from '../../DropdownMenu/DropdownMenuContainer/DropdownMenuContainer';
-import DropdownMenuItem from '../../DropdownMenu/DropdownMenuItem/DropdownMenuItem';
+import DropdownMenu from '../../../DropdownMenu/DropdownMenu';
+import DropdownMenuContainer from '../../../DropdownMenu/DropdownMenuContainer/DropdownMenuContainer';
+import DropdownMenuItem from '../../../DropdownMenu/DropdownMenuItem/DropdownMenuItem';
 import { FiMoreHorizontal } from 'react-icons/fi';
 import styles from './TableMenuComponents.module.css';
 export default function OrdersMenu() {

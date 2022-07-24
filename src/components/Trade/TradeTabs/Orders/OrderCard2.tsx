@@ -1,5 +1,5 @@
 import OpenOrderStatus from '../../../Global/OpenOrderStatus/OpenOrderStatus';
-import TableMenu from '../../../Global/TableMenu/TableMenu';
+import TableMenu from '../../../Global/Tabs/TableMenu/TableMenu';
 import styles from './OrderCard2.module.css';
 
 export default function OrderCard2() {
