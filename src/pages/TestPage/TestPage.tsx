@@ -21,7 +21,7 @@ import styles from './TestPage.module.css';
 import Transactions2 from '../../components/Trade/TradeTabs/Transactions/Transactions2';
 import Range from '../../components/Global/Account/AccountTabs/Range/Range';
 import WalletAndId from '../../components/Global/Tabs/WalletAndID/WalletAndId';
-import OrderTypeSide from '../../components/Global/Tabs/TypeAndSide/OrderTypeSide';
+import OrderTypeSide from '../../components/Global/Tabs/TypeAndSide/OrderTypeAndSide/OrderTypeSide';
 
 export default function TestPage() {
     // // get the user object from local storage

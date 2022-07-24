@@ -1,4 +1,5 @@
 import TableMenu from '../../../Global/Tabs/TableMenu/TableMenu';
+import TransactionTypeSide from '../../../Global/Tabs/TypeAndSide/TransactionTypeSide/TransactionTypeSide';
 import WalletAndId from '../../../Global/Tabs/WalletAndID/WalletAndId';
 import styles from './TransactionCard2.module.css';
 
@@ -36,12 +37,13 @@ export default function TransactionCard2() {
                 {/* ------------------------------------------------------ */}
                 {/* ------------------------------------------------------ */}
 
-                <section className={styles.type_column}>
+                {/* <section className={styles.type_column}>
                     <p>Remove</p>
                     <p> Range</p>
                 </section>
                 <section className={styles.side_sing}>Remove</section>
-                <section className={styles.type_sing}>Range</section>
+                <section className={styles.type_sing}>Range</section> */}
+                <TransactionTypeSide />
                 {/* ------------------------------------------------------ */}
                 <section className={styles.column_qty}>
                     <div>
