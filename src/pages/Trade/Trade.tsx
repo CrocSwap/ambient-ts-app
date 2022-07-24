@@ -6,7 +6,7 @@ import {
 } from 'react-router-dom';
 import styles from './Trade.module.css';
 import chart from '../../assets/images/Temporary/chart.svg';
-import Tabs from '../../components/Global/Tabs/Tabs';
+
 // import { motion } from 'framer-motion';
 import { useAppSelector, useAppDispatch } from '../../utils/hooks/reduxToolkit';
 import {
@@ -16,6 +16,7 @@ import {
 } from '../../utils/state/tradeDataSlice';
 import truncateDecimals from '../../utils/data/truncateDecimals';
 import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
+import TradeTabs from '../../components/Trade/TradeTabs/TradeTabs';
 
 interface ITradeProps {
     account: string;
@@ -196,7 +197,8 @@ export default function Trade(props: ITradeProps) {
                     {timeFrameContent}
                     {chartImage}
                 </div>
-                <Tabs
+
+                <TradeTabs
                     account={props.account}
                     isAuthenticated={props.isAuthenticated}
                     isWeb3Enabled={props.isWeb3Enabled}
