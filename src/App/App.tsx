@@ -134,9 +134,8 @@ export default function App() {
                     setProvider(metamaskProvider);
                 }
             } else if (!provider || !onChain) {
-                console.log('Chain Providers ' + chainId)
-                const env = new CrocEnv(chainId);
-                env.context.then((c) => setProvider(c.provider));
+                const url = lookupChain(chainId).nodeUrl
+                setProvider(new ethers.providers.JsonRpcProvider(url))
             }
         } catch (error) {
             console.log(error);
