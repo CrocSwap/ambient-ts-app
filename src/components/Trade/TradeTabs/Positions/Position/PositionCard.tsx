@@ -1,20 +1,20 @@
 // Unfinished file - Currently not in used.
-import { useModal } from '../Modal/useModal';
-import Modal from '../Modal/Modal';
+import { useModal } from '../../../../Global/Modal/useModal';
+import Modal from '../../../../Global/Modal/Modal';
 import { Link, useLocation } from 'react-router-dom';
 
 import styles from './PositionCard.module.css';
 import { useState } from 'react';
 import { MenuItem, Menu } from '@material-ui/core';
-import { useStyles } from '../../../utils/functions/styles';
+import { useStyles } from '../../../../../utils/functions/styles';
 import { FiMoreHorizontal } from 'react-icons/fi';
-import RangeStatus from '../RangeStatus/RangeStatus';
-import { Position } from '../../../utils/state/graphDataSlice';
+import RangeStatus from '../../../../Global/RangeStatus/RangeStatus';
+import { Position } from '../../../../../utils/state/graphDataSlice';
 
-import RemoveRange from '../../RemoveRange/RemoveRange';
-import RangeDetails from '../../RangeDetails/RangeDetails';
-import RangeDetailsHeader from '../../RangeDetails/RangeDetailsHeader/RangeDetailsHeader';
-import trimString from '../../../utils/functions/trimString';
+import RemoveRange from '../../../../RemoveRange/RemoveRange';
+import RangeDetails from '../../../../RangeDetails/RangeDetails';
+import RangeDetailsHeader from '../../../../RangeDetails/RangeDetailsHeader/RangeDetailsHeader';
+import trimString from '../../../../../utils/functions/trimString';
 import { ambientPosSlot, concPosSlot } from '@crocswap-libs/sdk';
 import { Tooltip } from '@mui/material';
 

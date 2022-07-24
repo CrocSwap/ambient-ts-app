@@ -1,7 +1,8 @@
-import RangeStatus from '../../RangeStatus/RangeStatus';
+// import RangeStatus from '../../RangeStatus/RangeStatus';
 import styles from './RangeCard.module.css';
 
 import { FiMoreHorizontal } from 'react-icons/fi';
+import RangeStatus from '../../../RangeStatus/RangeStatus';
 export default function RangeCard() {
     const position = {
         ambient: false,

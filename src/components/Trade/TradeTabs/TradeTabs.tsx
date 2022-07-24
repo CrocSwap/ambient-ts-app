@@ -1,15 +1,16 @@
-import styles from './Tabs.module.css';
+import styles from './TradeTabs.module.css';
 import { useState, useEffect } from 'react';
-import TabNavItem from './TabNavItem/TabNavItem';
-import TabContent from './TabContent/TabContent';
-import Positions from '../../Trade/Positions/Positions';
-import LimitOrders from '../LimitOrder/LimitOrders';
-import Transactions from '../Transactions/Transactions';
-
+import TabNavItem from '../../Global/Tabs/TabNavItem/TabNavItem';
+import Positions from './Positions/Positions';
+import TabContent from '../../Global/Tabs/TabContent/TabContent';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import Toggle2 from '../Toggle/Toggle2';
-import Order2 from '../Account/Order/Order2';
-import Transactions2 from '../Transactions/Transactions2';
+// import Order2 from '../../../Account/Order/Order2';
+// import Order2 from '../../Global/Account/Order/Order2';
+import LimitOrders from './Orders/LimitOrders';
+import Transactions2 from './Transactions/Transactions2';
+import Transactions from './Transactions/Transactions';
+import Toggle2 from '../../Global/Toggle/Toggle2';
+import Order2 from './Orders/Order2';
 
 interface ITabsProps {
     account: string;
@@ -18,7 +19,7 @@ interface ITabsProps {
     lastBlockNumber: number;
 }
 
-export default function Tabs(props: ITabsProps) {
+export default function TradeTabs(props: ITabsProps) {
     const [activeTab, setActiveTab] = useState('tab1');
     const [isShowAllEnabled, setIsShowAllEnabled] = useState<boolean>(true);
 
@@ -113,6 +114,7 @@ export default function Tabs(props: ITabsProps) {
                         lastBlockNumber={props.lastBlockNumber}
                     />
                 </TabContent>
+
                 <TabContent id='tab2' activeTab={activeTab}>
                     <LimitOrders />
                 </TabContent>

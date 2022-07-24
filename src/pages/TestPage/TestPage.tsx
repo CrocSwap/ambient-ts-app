@@ -14,11 +14,12 @@
 // import { TokenListIF } from '../../utils/interfaces/exports';
 import styles from './TestPage.module.css';
 
-import Range from '../../components/Global/Account/Range/Range';
+// import Range from '../../components/Global/Account/Range/Range';
 // import Transaction from '../../components/Transaction/Transaction';
 // import Transactions from '../../components/Global/Transactions/Transactions';
 
-import Transactions2 from '../../components/Global/Transactions/Transactions2';
+import Transactions2 from '../../components/Trade/TradeTabs/Transactions/Transactions2';
+import Range from '../../components/Global/Account/AccountTabs/Range/Range';
 
 export default function TestPage() {
     // // get the user object from local storage
@@ -105,6 +106,7 @@ export default function TestPage() {
                 ))} */}
                 {/* <RangeCardHeader /> */}
                 {/* <RangeCard /> */}
+
                 <Range />
                 {/* <Order />
                 <TransactionsTable /> */}

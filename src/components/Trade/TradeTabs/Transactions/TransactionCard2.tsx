@@ -1,8 +1,7 @@
-import OpenOrderStatus from '../../OpenOrderStatus/OpenOrderStatus';
-import TableMenu from '../../TableMenu/TableMenu';
-import styles from './OrderCard2.module.css';
+import TableMenu from '../../../Global/TableMenu/TableMenu';
+import styles from './TransactionCard2.module.css';
 
-export default function OrderCard2() {
+export default function TransactionCard2() {
     const token1 = (
         <section className={styles.qty_sing}>
             <p>T1 Qty</p>
@@ -12,13 +11,13 @@ export default function OrderCard2() {
             />
         </section>
     );
+
     const token2 = (
         <section className={styles.qty_sing}>
             <p>T2 Qty</p>
             <img src='https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.png' alt='' />
         </section>
     );
-
     return (
         <div className={styles.main_container}>
             <div className={styles.row_container}>
@@ -33,13 +32,14 @@ export default function OrderCard2() {
                 {/* ------------------------------------------------------ */}
                 <section className={styles.price}>Price</section>
                 {/* ------------------------------------------------------ */}
+                {/* ------------------------------------------------------ */}
 
                 <section className={styles.type_column}>
-                    <p>Buy</p>
-                    <p>Limit</p>
+                    <p>Remove</p>
+                    <p> Range</p>
                 </section>
-                <section className={styles.side_sing}>Buy</section>
-                <section className={styles.type_sing}>Limit</section>
+                <section className={styles.side_sing}>Remove</section>
+                <section className={styles.type_sing}>Range</section>
                 {/* ------------------------------------------------------ */}
                 <section className={styles.column_qty}>
                     <div>
@@ -59,14 +59,10 @@ export default function OrderCard2() {
                 </section>
                 {token1}
                 {token2}
-                {/* ------------------------------------------------------ */}
-                <div className={styles.status}>
-                    <OpenOrderStatus isFilled />
-                </div>
             </div>
 
             <div className={styles.menu_container}>
-                <TableMenu tableType='orders' />
+                <TableMenu tableType='transactions' />
             </div>
         </div>
     );

@@ -1,5 +1,5 @@
 // import Position from '../../Global/Position/Position';
-import { useAppSelector } from './../../../utils/hooks/reduxToolkit';
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 
 import styles from './Positions.module.css';
 
@@ -12,9 +12,9 @@ interface PositionsProps {
 }
 
 import { useMoralis } from 'react-moralis';
-import { graphData } from '../../../utils/state/graphDataSlice';
-import PositionHeader from '../../Global/Position/PositionHeader';
-import PositionCard from '../../Global/Position/PositionCard';
+import { graphData } from '../../../../utils/state/graphDataSlice';
+import PositionHeader from './Position/PositionHeader';
+import PositionCard from './Position/PositionCard';
 
 export default function Positions(props: PositionsProps) {
     const { portfolio, notOnTradeRoute, isShowAllEnabled, graphData } = props;

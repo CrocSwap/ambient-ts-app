@@ -1,6 +1,6 @@
 // import Transaction from '../../Transaction/Transaction';
 // import styles from './Transactions.module.css';
-import { graphData } from '../../../utils/state/graphDataSlice';
+import { graphData } from '../../../../utils/state/graphDataSlice';
 // import { useAppSelector } from './../../../utils/hooks/reduxToolkit';
 // import { useMoralis } from 'react-moralis';
 import TransactionCard from './TransactionCard';
