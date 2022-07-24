@@ -20,11 +20,11 @@ export default function OrderTypeSide() {
     return (
         <>
             <section className={styles.type_column}>
-                <p>Buy</p>
-                <p>Limit</p>
+                {sideData.sell}
+                {typeData.limit}
             </section>
-            <section className={styles.side_sing}>Buy</section>
-            <section className={styles.type_sing}>Limit</section>
+            <section className={styles.side_sing}>{sideData.sell}</section>
+            <section className={styles.type_sing}>{typeData.limit}</section>
         </>
     );
 }

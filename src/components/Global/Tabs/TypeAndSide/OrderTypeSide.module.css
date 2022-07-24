@@ -3,6 +3,9 @@
     flex-direction: column;
     align-items: center;
 }
+
+
+
 .side_sing, .type_sing{
     display: none;
 }
@@ -12,6 +15,11 @@
 }
 .order_style, .sell_style{
     color: #E480FF
+}
+
+.limit_style, .market_style, .buy_style, .order_style, .sell_style{
+    font-size: 10px;
+    line-height: 13px;
 }
 
 
@@ -26,13 +34,13 @@
    
 
 
-
-    
-  .side_sing, .type_sing{
+    .limit_style, .market_style, .buy_style, .order_style, .sell_style{
         font-size: 12px;
         line-height: 15px; 
-      
     }
+    
+    
+
     
     
     }

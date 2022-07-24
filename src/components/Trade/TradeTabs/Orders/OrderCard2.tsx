@@ -1,5 +1,6 @@
 import OpenOrderStatus from '../../../Global/OpenOrderStatus/OpenOrderStatus';
 import TableMenu from '../../../Global/Tabs/TableMenu/TableMenu';
+import OrderTypeSide from '../../../Global/Tabs/TypeAndSide/OrderTypeSide';
 import WalletAndId from '../../../Global/Tabs/WalletAndID/WalletAndId';
 import styles from './OrderCard2.module.css';
 
@@ -36,12 +37,13 @@ export default function OrderCard2() {
                 <section className={styles.price}>Price</section>
                 {/* ------------------------------------------------------ */}
 
-                <section className={styles.type_column}>
+                {/* <section className={styles.type_column}>
                     <p>Buy</p>
                     <p>Limit</p>
                 </section>
                 <section className={styles.side_sing}>Buy</section>
-                <section className={styles.type_sing}>Limit</section>
+                <section className={styles.type_sing}>Limit</section> */}
+                <OrderTypeSide />
                 {/* ------------------------------------------------------ */}
                 <section className={styles.column_qty}>
                     <div>
