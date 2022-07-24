@@ -9,6 +9,7 @@ import Transactions from '../Transactions/Transactions';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import Toggle2 from '../Toggle/Toggle2';
 import Order2 from '../Account/Order/Order2';
+import Transactions2 from '../Transactions/Transactions2';
 
 interface ITabsProps {
     account: string;
@@ -124,6 +125,9 @@ export default function Tabs(props: ITabsProps) {
                 </TabContent>
                 <TabContent id='tab4' activeTab={activeTab}>
                     <Order2 />
+                </TabContent>
+                <TabContent id='tab5' activeTab={activeTab}>
+                    <Transactions2 />
                 </TabContent>
             </div>
         </div>

@@ -18,9 +18,7 @@ import Range from '../../components/Global/Account/Range/Range';
 // import Transaction from '../../components/Transaction/Transaction';
 // import Transactions from '../../components/Global/Transactions/Transactions';
 
-import Order2 from '../../components/Global/Account/Order/Order2';
-import TransactionCard from '../../components/Global/Account/Transaction/TransactionCard';
-import TransactionCard2 from '../../components/Global/Transactions/TransactionCard2';
+import Transactions2 from '../../components/Global/Transactions/Transactions2';
 
 export default function TestPage() {
     // // get the user object from local storage
@@ -114,7 +112,7 @@ export default function TestPage() {
                 {/* <TableMenu tableType='orders' /> */}
 
                 {/* <Order2 /> */}
-                <TransactionCard2 />
+                <Transactions2 />
             </main>
         </>
     );
