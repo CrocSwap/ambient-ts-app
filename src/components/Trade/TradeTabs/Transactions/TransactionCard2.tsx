@@ -1,4 +1,5 @@
-import TableMenu from '../../../Global/TableMenu/TableMenu';
+import TableMenu from '../../../Global/Tabs/TableMenu/TableMenu';
+import WalletAndId from '../../../Global/Tabs/WalletAndID/WalletAndId';
 import styles from './TransactionCard2.module.css';
 
 export default function TransactionCard2() {
@@ -22,12 +23,13 @@ export default function TransactionCard2() {
         <div className={styles.main_container}>
             <div className={styles.row_container}>
                 {/* ------------------------------------------------------ */}
-                <section className={styles.column_account}>
+                {/* <section className={styles.column_account}>
                     <p>0xcD...1234</p>
                     <p>0xCd...9876</p>
                 </section>
                 <section className={styles.account_sing}>0xcD...1234</section>
-                <section className={styles.account_sing}>0xCd...9876</section>
+                <section className={styles.account_sing}>0xCd...9876</section> */}
+                <WalletAndId />
 
                 {/* ------------------------------------------------------ */}
                 <section className={styles.price}>Price</section>
