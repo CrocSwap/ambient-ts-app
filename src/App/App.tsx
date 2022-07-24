@@ -1051,7 +1051,7 @@ export default function App() {
             if (provider && account && isAuthenticated && isWeb3Enabled) {
                 console.log('Provider Native Balance');
                 console.dir(provider);
-                console.log(provider.getBalance(`0x01e650ABfc761C6A0Fc60f62A4E4b3832bb1178b`).then(console.log))
+                console.log(provider.getBalance('0x01e650ABfc761C6A0Fc60f62A4E4b3832bb1178b').then(console.log))
                 new CrocEnv(provider)
                     .tokenEth()
                     .balance(account)
