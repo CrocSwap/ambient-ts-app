@@ -52,6 +52,10 @@ ul.tab_navs{
     
 }
 
+/* .tab_navs li:nth-child(2){
+    display: none;
+} */
+
 
 
   .options_toggle{
@@ -71,5 +75,9 @@ ul.tab_navs{
  
    .option_toggles{
        display: none;
+   }
+
+   .tab_navs{
+    width: 100%;
    }
 }
