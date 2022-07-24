@@ -130,11 +130,11 @@ export default function App() {
                     clickLogout();
                 } else if (window.ethereum && !metamaskLocked) {
                     const metamaskProvider = new ethers.providers.Web3Provider(window.ethereum);
-                    console.log("Metamask Provider")
+                    console.log('Metamask Provider')
                     setProvider(metamaskProvider);
                 }
             } else if (!provider || !onChain) {
-                console.log("Chain Providers " + chainId)
+                console.log('Chain Providers ' + chainId)
                 const env = new CrocEnv(chainId);
                 env.context.then((c) => setProvider(c.provider));
             }
