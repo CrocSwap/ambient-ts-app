@@ -1,5 +1,5 @@
 import styles from './WalletAndId.module.css';
-import trimString from '../../../../utils/functions/trimString';
+// import trimString from '../../../../utils/functions/trimString';
 import { Tooltip } from '@mui/material';
 import { useStyles } from '../../../../utils/functions/styles';
 
@@ -9,7 +9,7 @@ export default function WalletAndId() {
     // const ownerIdTruncated = ownerId ? trimString(ownerId, 7, 0, '…') : null;
     // const mobileOwnerId = ownerId ? trimString(ownerId, 4, 0, '…') : null;
 
-    const ensName = 'benw....eth';
+    // const ensName = 'benw....eth';
     // const ensNameTruncated = ensName ? trimString(ensName, 4, 3, '…') : null;
 
     const ownerId = '0xcD...1234';
@@ -47,20 +47,20 @@ export default function WalletAndId() {
             <p>{ownerId}</p>
         </Tooltip>
     );
-    const ENSWithTooltip = (
-        <Tooltip
-            title={'this is full ENS'}
-            placement={'right'}
-            arrow
-            enterDelay={400}
-            leaveDelay={200}
-            classes={{
-                tooltip: classes.customTooltip,
-            }}
-        >
-            <p>{ensName}</p>
-        </Tooltip>
-    );
+    // const ENSWithTooltip = (
+    //     <Tooltip
+    //         title={'this is full ENS'}
+    //         placement={'right'}
+    //         arrow
+    //         enterDelay={400}
+    //         leaveDelay={200}
+    //         classes={{
+    //             tooltip: classes.customTooltip,
+    //         }}
+    //     >
+    //         <p>{ensName}</p>
+    //     </Tooltip>
+    // );
 
     // todo
     // Create variable with ens name with its own styling
