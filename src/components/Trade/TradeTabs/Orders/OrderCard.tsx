@@ -4,9 +4,9 @@ import TableMenu from '../../../Global/Tabs/TableMenu/TableMenu';
 import TokenQty from '../../../Global/Tabs/TokenQty/TokenQty';
 import OrderTypeSide from '../../../Global/Tabs/TypeAndSide/OrderTypeAndSide/OrderTypeSide';
 import WalletAndId from '../../../Global/Tabs/WalletAndID/WalletAndId';
-import styles from './OrderCard2.module.css';
+import styles from './OrderCard.module.css';
 
-export default function OrderCard2() {
+export default function OrderCard() {
     const tempOwnerId = '0xa2b398145b7fc8fd9a01142698f15d329ebb5ff5090cfcc8caae440867ab9919';
     const tempPosHash = '0x01e650abfc761c6a0fc60f62a4e4b3832bb1178b';
     return (
