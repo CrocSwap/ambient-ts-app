@@ -132,8 +132,12 @@ export default function VolumeChart(props: VolumeData) {
             .annotationSvgCrosshair()
             .xLabel('')
             .yLabel('')
-            .decorate((sel: any) => {
-                sel.selectAll('.point>path').attr('transform', 'scale(0.2)').style('fill', 'white');
+            .decorate((selection: any) => {
+                selection.enter().attr('stroke-dasharray', '6 6').style('pointer-events', 'all');
+                selection
+                    .selectAll('.point>path')
+                    .attr('transform', 'scale(0.2)')
+                    .style('fill', 'white');
             });
 
         const multi = d3fc

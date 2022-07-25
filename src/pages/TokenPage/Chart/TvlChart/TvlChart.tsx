@@ -43,7 +43,7 @@ export default function TvlChart(props: TvlChartProps) {
 
         const data = {
             series: props.data,
-            crosshair: [{ x: 0, y: 0 }],
+            crosshair: [{ x: 0, y: -15 }],
         };
 
         const xScale = d3.scaleTime();
@@ -59,6 +59,10 @@ export default function TvlChart(props: TvlChartProps) {
                     .style('pointer-events', 'all')
                     .style('fill', (d: any) => (d.close > d.open ? '#7371FC' : '#CDC1FF'))
                     .style('stroke', (d: any) => (d.close > d.open ? '#7371FC' : '#CDC1FF'));
+                selection
+                    .enter()
+                    .select('g.annotation-line.horizontal')
+                    .attr('visibility', 'hidden');
             });
 
         const areaSeries = d3fc
@@ -129,18 +133,19 @@ export default function TvlChart(props: TvlChartProps) {
         const pointer = d3fc.pointer().on('point', (event: any) => {
             if (event.length > 0) {
                 const xVal = xScale.invert(event[0].x);
-                data.crosshair = [
-                    {
-                        x: event[0].x,
-                        y: yScale(xVal),
-                    },
-                ];
 
                 const parsed = data.series.find(
                     (item) =>
                         moment(new Date(item.time)).format('DD/MM/YYYY') ===
                         moment(xVal).format('DD/MM/YYYY'),
                 );
+
+                data.crosshair = [
+                    {
+                        x: event[0].x,
+                        y: yScale(parsed?.value),
+                    },
+                ];
 
                 props.setValue?.(parsed?.value);
                 props.setLabel?.(moment.utc(xVal).format('DD/MM/YYYY'));
