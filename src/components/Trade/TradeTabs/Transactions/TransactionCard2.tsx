@@ -1,3 +1,4 @@
+import Price from '../../../Global/Tabs/Price/Price';
 import TableMenu from '../../../Global/Tabs/TableMenu/TableMenu';
 import TokenQty from '../../../Global/Tabs/TokenQty/TokenQty';
 import TransactionTypeSide from '../../../Global/Tabs/TypeAndSide/TransactionTypeSide/TransactionTypeSide';
@@ -18,7 +19,8 @@ export default function TransactionCard2() {
                 <WalletAndId />
 
                 {/* ------------------------------------------------------ */}
-                <section className={styles.price}>Price</section>
+                {/* <section className={styles.price}>Price</section> */}
+                <Price />
                 {/* ------------------------------------------------------ */}
                 {/* ------------------------------------------------------ */}
 

@@ -5,8 +5,8 @@ export default function TransactionTypeSide() {
     const addType = <p className={styles.add_style}>Add</p>;
     const sellType = <p className={styles.sell_style}>Sell</p>;
 
-    const rangeSide = <p className={styles.range_style}>Range</p>;
-    const range2Side = <p className={styles.range_style2}>Range</p>;
+    const rangeRemove = <p className={styles.range_style}>Range</p>;
+    const rangeAdd = <p className={styles.range_style2}>Range</p>;
     const limitSide = <p className={styles.limit_style}>Limit</p>;
     const marketSide = <p className={styles.market_style}>Market</p>;
 
@@ -18,8 +18,8 @@ export default function TransactionTypeSide() {
     };
 
     const sideData = {
-        range: rangeSide,
-        range2: range2Side,
+        rangeRemove: rangeRemove,
+        rangeAdd: rangeAdd,
         limit: limitSide,
         market: marketSide,
     };
@@ -27,10 +27,10 @@ export default function TransactionTypeSide() {
         <>
             <section className={styles.type_column}>
                 {typeData.remove}
-                {sideData.range}
+                {sideData.rangeAdd}
             </section>
             <section className={styles.type_sing}>{typeData.remove}</section>
-            <section className={styles.side_sing}>{sideData.range}</section>
+            <section className={styles.side_sing}>{sideData.rangeAdd}</section>
         </>
     );
 }

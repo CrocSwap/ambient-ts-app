@@ -1,4 +1,5 @@
 import OpenOrderStatus from '../../../Global/OpenOrderStatus/OpenOrderStatus';
+import Price from '../../../Global/Tabs/Price/Price';
 import TableMenu from '../../../Global/Tabs/TableMenu/TableMenu';
 import TokenQty from '../../../Global/Tabs/TokenQty/TokenQty';
 import OrderTypeSide from '../../../Global/Tabs/TypeAndSide/OrderTypeAndSide/OrderTypeSide';
@@ -19,7 +20,8 @@ export default function OrderCard2() {
                 <WalletAndId />
 
                 {/* ------------------------------------------------------ */}
-                <section className={styles.price}>Price</section>
+                {/* <section className={styles.price}>Price</section> */}
+                <Price />
                 {/* ------------------------------------------------------ */}
 
                 {/* <section className={styles.type_column}>
