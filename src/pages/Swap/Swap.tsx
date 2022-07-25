@@ -339,7 +339,7 @@ export default function Swap(props: SwapPropsIF) {
     ) : null;
 
     const isTokenAAllowanceSufficient = parseFloat(tokenAAllowance) >= parseFloat(tokenAInputQty);
-    console.log(pathname);
+    // console.log(pathname);
 
     const swapContainerStyle = pathname == '/swap' ? styles.swap_page_container : null;
     const swapPageStyle = pathname == '/swap' ? styles.swap_page : null;
