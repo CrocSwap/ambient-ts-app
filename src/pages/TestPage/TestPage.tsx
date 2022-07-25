@@ -20,6 +20,7 @@ import styles from './TestPage.module.css';
 
 import Transactions2 from '../../components/Trade/TradeTabs/Transactions/Transactions2';
 import Range from '../../components/Global/Account/AccountTabs/Range/Range';
+import Reposition from '../Trade/Reposition/Reposition';
 
 export default function TestPage() {
     // // get the user object from local storage
@@ -115,6 +116,9 @@ export default function TestPage() {
 
                 {/* <Order2 /> */}
                 <Transactions2 />
+                <div style={{ maxWidth: '400px' }}>
+                    <Reposition />
+                </div>
             </main>
         </>
     );

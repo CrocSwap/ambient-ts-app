@@ -83,6 +83,11 @@ import { getNFTs } from './functions/getNFTs';
 import { useSlippage } from './useSlippage';
 import { addNativeBalance, resetTokenData, setTokens } from '../utils/state/tokenDataSlice';
 
+import Reposition from '../pages/Trade/Reposition/Reposition';
+// import SidebarFooter from '../components/Global/SIdebarFooter/SidebarFooter';
+
+
+
 const cachedQuerySpotPrice = memoizePromiseFn(querySpotPrice);
 const cachedFetchAddress = memoizePromiseFn(fetchAddress);
 const cachedFetchTokenBalances = memoizePromiseFn(fetchTokenBalances);
@@ -1468,6 +1473,7 @@ export default function App() {
                             <Route path='limit' element={<Limit {...limitPropsTrade} />} />
                             <Route path='range' element={<Range {...rangeProps} />} />
                             <Route path='edit/:positionHash' element={<Edit />} />
+                            <Route path='reposition' element={<Reposition />} />
                             <Route path='edit/' element={<Navigate to='/trade/market' replace />} />
                         </Route>
                         <Route path='analytics' element={<Analytics />} />
