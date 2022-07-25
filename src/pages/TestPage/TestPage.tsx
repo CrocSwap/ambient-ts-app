@@ -20,6 +20,7 @@ import styles from './TestPage.module.css';
 
 import Range from '../../components/Global/Account/AccountTabs/Range/Range';
 import Reposition from '../Trade/Reposition/Reposition';
+import AccountTokensDisplay from '../../components/Global/Tabs/AccountTokensDisplay/AccountTokensDisplay';
 
 export default function TestPage() {
     // // get the user object from local storage
@@ -117,6 +118,7 @@ export default function TestPage() {
                 <div style={{ maxWidth: '400px' }}>
                     <Reposition />
                 </div>
+                <AccountTokensDisplay />
             </main>
         </>
     );
