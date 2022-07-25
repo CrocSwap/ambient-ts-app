@@ -57,12 +57,17 @@ export default function PoolPageChart(props: PoolPageChartProps) {
                     </label>
                 </div>
                 <div className={styles.settings_container}>
-                    {tabData.map((tab) => (
+                    {tabData.map((tab, index) => (
                         <button
                             key={tab.id}
                             onClick={() => {
                                 setActiveTab(tab.id);
                             }}
+                            style={
+                                activeTab === tab.id
+                                    ? { background: '#4169E1' }
+                                    : { background: 'var(--dark1)' }
+                            }
                         >
                             {tab.title}
                         </button>
@@ -85,6 +90,7 @@ export default function PoolPageChart(props: PoolPageChartProps) {
                     label={valueLabel}
                     setValue={setLatestValue}
                     setLabel={setValueLabel}
+                    snapType={'days'}
                 />
             )}
         </div>
