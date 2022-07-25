@@ -16,11 +16,16 @@ import {
 import { ethers } from 'ethers';
 import { JsonRpcProvider } from '@ethersproject/providers';
 // import { request, gql } from 'graphql-request';
-import { useMoralis, useMoralisQuery, useMoralisSubscription, useChain } from 'react-moralis';
+import {
+    useMoralis,
+    //  useMoralisQuery,
+    //  useMoralisSubscription,
+    useChain,
+} from 'react-moralis';
 
 import useWebSocket from 'react-use-websocket';
 // import { ReadyState } from 'react-use-websocket';
-import Moralis from 'moralis';
+// import Moralis from 'moralis';
 import {
     contractAddresses,
     getTokenBalanceDisplay,
@@ -56,7 +61,7 @@ import Trade from '../pages/Trade/Trade';
 import './App.css';
 import { useAppDispatch, useAppSelector } from '../utils/hooks/reduxToolkit';
 import { validateChain } from './validateChain';
-import { IParsedPosition, parsePositionArray } from './parsePositions';
+// import { IParsedPosition, parsePositionArray } from './parsePositions';
 import { defaultTokens } from '../utils/data/defaultTokens';
 import initializeUserLocalStorage from './functions/initializeUserLocalStorage';
 import { TokenIF, TokenListIF } from '../utils/interfaces/exports';
@@ -75,9 +80,13 @@ import { fetchAddress } from './functions/fetchAddress';
 import { fetchTokenBalances } from './functions/fetchTokenBalances';
 import truncateDecimals from '../utils/data/truncateDecimals';
 import { getNFTs } from './functions/getNFTs';
+import { useSlippage } from './useSlippage';
 import { addNativeBalance, resetTokenData, setTokens } from '../utils/state/tokenDataSlice';
+
 import Reposition from '../pages/Trade/Reposition/Reposition';
 // import SidebarFooter from '../components/Global/SIdebarFooter/SidebarFooter';
+
+
 
 const cachedQuerySpotPrice = memoizePromiseFn(querySpotPrice);
 const cachedFetchAddress = memoizePromiseFn(fetchAddress);
@@ -182,6 +191,7 @@ export default function App() {
 
     useEffect(() => {
         dispatch(resetTokens(chainId));
+        dispatch(resetTokenData());
     }, [chainId]);
 
     const dispatch = useAppDispatch();
@@ -213,6 +223,8 @@ export default function App() {
         initializeUserLocalStorage();
         getImportedTokens();
     }, [tokenListsReceived]);
+
+    const [swapSlippage, mintSlippage] = useSlippage();
 
     // update local state with searchable tokens once after initial load of app
     useEffect(() => {
@@ -337,15 +349,19 @@ export default function App() {
                         chainId,
                         lastBlockNumber,
                     );
-                    // console.log({ tokens });
-                    if (JSON.stringify(tokensInRTK) !== JSON.stringify(tokens))
+                    if (
+                        tokens &&
+                        (tokensInRTK.length === 1 ||
+                            JSON.stringify(tokensInRTK.slice(1)) !== JSON.stringify(tokens))
+                    ) {
                         dispatch(setTokens(tokens));
+                    }
                 } catch (error) {
                     console.log({ error });
                 }
             }
         })();
-    }, [account, chainId, lastBlockNumber]);
+    }, [account, chainId, lastBlockNumber, tokensInRTK]);
 
     const [baseTokenAddress, setBaseTokenAddress] = useState<string>('');
     const [quoteTokenAddress, setQuoteTokenAddress] = useState<string>('');
@@ -1113,56 +1129,56 @@ export default function App() {
 
     const [nativeBalance, setNativeBalance] = useState<string>('');
 
-    const [posArray, setPosArray] = useState<Moralis.Object<Moralis.Attributes>[]>();
-    const [parsedPositionArray, setParsedPositionArray] = useState<IParsedPosition[]>();
+    // const [posArray, setPosArray] = useState<Moralis.Object<Moralis.Attributes>[]>();
+    // const [parsedPositionArray, setParsedPositionArray] = useState<IParsedPosition[]>();
 
-    useMoralisSubscription(
-        'UserPosition',
-        (query) => query.equalTo('account', account).limit(1000),
-        [account],
-        {
-            // onCreate: (data) => console.log({ data }),
-            onCreate: (data) => {
-                if (data && posArray) {
-                    const newPosArray = [...posArray, data];
-                    setPosArray(newPosArray);
-                }
-            },
-        },
-    );
+    // useMoralisSubscription(
+    //     'UserPosition',
+    //     (query) => query.equalTo('account', account).limit(1000),
+    //     [account],
+    //     {
+    //         // onCreate: (data) => console.log({ data }),
+    //         onCreate: (data) => {
+    //             if (data && posArray) {
+    //                 const newPosArray = [...posArray, data];
+    //                 setPosArray(newPosArray);
+    //             }
+    //         },
+    //     },
+    // );
 
-    const { data } = useMoralisQuery(
-        'UserPosition',
-        (query) => query.equalTo('account', account).limit(1000),
-        [account],
-        { autoFetch: true },
-    );
+    // const { data } = useMoralisQuery(
+    //     'UserPosition',
+    //     (query) => query.equalTo('account', account).limit(1000),
+    //     [account],
+    //     { autoFetch: true },
+    // );
 
     // useEffect to dispatch new position data to local state when
     // when the moralis query returns different data
-    useEffect(() => {
-        if (data) {
-            setPosArray(data);
-        }
-    }, [data, account]);
+    // useEffect(() => {
+    //     if (data) {
+    //         setPosArray(data);
+    //     }
+    // }, [data, account]);
+
+    // // useEffect to console log for dev purposes
+    // useEffect(() => {
+    //     if (provider && posArray && posArray?.length > 0) {
+    //         parsePositionArray(
+    //             posArray,
+    //             provider,
+    //             setParsedPositionArray as React.Dispatch<React.SetStateAction<IParsedPosition[]>>,
+    //         );
+    //     }
+    // }, [posArray]);
 
     // useEffect to console log for dev purposes
-    useEffect(() => {
-        if (provider && posArray && posArray?.length > 0) {
-            parsePositionArray(
-                posArray,
-                provider,
-                setParsedPositionArray as React.Dispatch<React.SetStateAction<IParsedPosition[]>>,
-            );
-        }
-    }, [posArray]);
-
-    // useEffect to console log for dev purposes
-    useEffect(() => {
-        if (parsedPositionArray && parsedPositionArray?.length > 0) {
-            console.log({ parsedPositionArray });
-        }
-    }, [parsedPositionArray]);
+    // useEffect(() => {
+    //     if (parsedPositionArray && parsedPositionArray?.length > 0) {
+    //         console.log({ parsedPositionArray });
+    //     }
+    // }, [parsedPositionArray]);
 
     // function to sever connection between user wallet and Moralis server
     const clickLogout = async () => {
@@ -1198,22 +1214,20 @@ export default function App() {
                 if (nativeEthBalance) {
                     // send value to local state
                     setNativeBalance(nativeEthBalance);
+                    const nativeToken: TokenIF = {
+                        name: 'Native Token',
+                        address: contractAddresses.ZERO_ADDR,
+                        // eslint-disable-next-line camelcase
+                        token_address: contractAddresses.ZERO_ADDR,
+                        symbol: 'ETH',
+                        decimals: 18,
+                        chainId: parseInt(chainId),
+                        logoURI: '',
+                        balance: nativeEthBalance,
+                    };
                     // console.log('adding native balance: ' + nativeEthBalance);
-                    dispatch(
-                        addNativeBalance([
-                            {
-                                name: 'Native Token',
-                                address: contractAddresses.ZERO_ADDR,
-                                // eslint-disable-next-line camelcase
-                                token_address: contractAddresses.ZERO_ADDR,
-                                symbol: 'ETH',
-                                decimals: 18,
-                                chainId: parseInt(chainId),
-                                logoURI: '',
-                                balance: nativeEthBalance,
-                            },
-                        ]),
-                    );
+                    if (JSON.stringify(tokensInRTK[0]) !== JSON.stringify(nativeToken))
+                        dispatch(addNativeBalance([nativeToken]));
                 }
             }
         })();
@@ -1274,6 +1288,7 @@ export default function App() {
         importedTokens: importedTokens,
         setImportedTokens: setImportedTokens,
         searchableTokens: searchableTokens,
+        swapSlippage: swapSlippage,
         provider: provider as JsonRpcProvider,
         gasPriceinGwei: gasPriceinGwei,
         nativeBalance: nativeBalance,
@@ -1295,6 +1310,7 @@ export default function App() {
         importedTokens: importedTokens,
         setImportedTokens: setImportedTokens,
         searchableTokens: searchableTokens,
+        swapSlippage: swapSlippage,
         provider: provider as JsonRpcProvider,
         isOnTradeRoute: true,
         gasPriceinGwei: gasPriceinGwei,
@@ -1317,6 +1333,7 @@ export default function App() {
         importedTokens: importedTokens,
         setImportedTokens: setImportedTokens,
         searchableTokens: searchableTokens,
+        mintSlippage: mintSlippage,
         provider: provider as JsonRpcProvider,
         isOnTradeRoute: true,
         gasPriceinGwei: gasPriceinGwei,
@@ -1341,6 +1358,7 @@ export default function App() {
         importedTokens: importedTokens,
         setImportedTokens: setImportedTokens,
         searchableTokens: searchableTokens,
+        mintSlippage: mintSlippage,
         provider: provider as JsonRpcProvider,
         lastBlockNumber: lastBlockNumber,
         gasPriceinGwei: gasPriceinGwei,

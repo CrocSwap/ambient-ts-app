@@ -28,7 +28,7 @@
         "graphql-request": "^4.2.0",
         "jest-canvas-mock": "^2.4.0",
         "magic-sdk": "7.0.0",
-        "moralis": "^1.9.1",
+        "moralis": "^1.10.0",
         "react": "^18.1.0",
         "react-dom": "^18.1.0",
         "react-icons": "^4.3.1",
