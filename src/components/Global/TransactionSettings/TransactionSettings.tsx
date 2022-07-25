@@ -4,22 +4,28 @@ import SlippageTolerance from '../SlippageTolerance/SlippageTolerance';
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import { useState } from 'react';
 import { setSlippageTolerance } from '../../../utils/state/tradeDataSlice';
-import { SlippagePairIF } from '../../../utils/interfaces/exports';
+import { SlippagePairIF, TokenPairIF } from '../../../utils/interfaces/exports';
+import { checkIsStable } from '../../../utils/data/stablePairs';
 
 interface TransactionSettingsProps {
     module: 'Swap' | 'Market Order' | 'Limit Order' | 'Range Order';
+    tokenPair: TokenPairIF;
     slippage: SlippagePairIF;
     onClose: () => void;
 }
 
 export default function TransactionSettings(props: TransactionSettingsProps) {
-    const { module, slippage, onClose } = props;
-
-    console.log(slippage);
+    const { module, tokenPair, slippage, onClose } = props;
 
     const dispatch = useAppDispatch();
 
-    const isPairStable = false;
+    const isPairStable = checkIsStable(
+        tokenPair.dataTokenA.address,
+        tokenPair.dataTokenB.address,
+        '0x2a'
+    );
+
+    console.log({isPairStable});
 
     const [newSlippage, setNewSlippage] = useState<string>(isPairStable ? slippage.stable.value : slippage.volatile.value);
 

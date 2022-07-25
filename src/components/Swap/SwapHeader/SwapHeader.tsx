@@ -35,6 +35,7 @@ export default function SwapHeader(props: SwapHeaderPropsIF) {
         <Modal noHeader title='modal' onClose={closeModal}>
             <TransactionSettings
                 module={isOnTradeRoute ? 'Market Order' : 'Swap'}
+                tokenPair={tokenPair}
                 slippage={swapSlippage}
                 onClose={closeModal}
             />

@@ -33,7 +33,12 @@ export default function LimitHeader(props: LimitHeaderPropsIF) {
 
     const settingsModalOrNull = isModalOpen ? (
         <Modal noHeader title='modal' onClose={closeModal}>
-            <TransactionSettings module='Limit Order' slippage={mintSlippage} onClose={closeModal} />
+            <TransactionSettings
+                module='Limit Order'
+                tokenPair={tokenPair}
+                slippage={mintSlippage}
+                onClose={closeModal}
+            />
         </Modal>
     ) : null;
 

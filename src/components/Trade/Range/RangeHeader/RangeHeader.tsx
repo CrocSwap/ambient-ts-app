@@ -33,7 +33,12 @@ export default function RangeHeader(props: RangeHeaderPropsIF) {
 
     const settingsModalOrNull = isModalOpen ? (
         <Modal noHeader title='modal' onClose={closeModal}>
-            <TransactionSettings module='Range Order' slippage={mintSlippage} onClose={closeModal} />
+            <TransactionSettings
+                module='Range Order'
+                tokenPair={tokenPair}
+                slippage={mintSlippage}
+                onClose={closeModal}
+            />
         </Modal>
     ) : null;
 
