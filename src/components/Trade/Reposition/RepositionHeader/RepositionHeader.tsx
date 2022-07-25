@@ -3,11 +3,11 @@ import { RiCloseFill } from 'react-icons/ri';
 import { useNavigate } from 'react-router-dom';
 import trimString from '../../../../utils/functions/trimString';
 
-interface RepositionHeaderPropsIF {
-    positionHash?: string;
-}
-export default function RepositionHeader(props: RepositionHeaderPropsIF) {
-    const { positionHash } = props;
+// interface RepositionHeaderPropsIF {
+//     positionHash?: string;
+// }
+export default function RepositionHeader() {
+    const positionHash = '0xFD054234fds34fffeA3FF';
     const navigate = useNavigate();
 
     return (
