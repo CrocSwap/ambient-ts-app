@@ -2,7 +2,7 @@ import styles from './TransactionSettings.module.css';
 import Button from '../Button/Button';
 import SlippageTolerance from '../SlippageTolerance/SlippageTolerance';
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { setSlippageTolerance } from '../../../utils/state/tradeDataSlice';
 import { SlippagePairIF, TokenPairIF } from '../../../utils/interfaces/exports';
 import { checkIsStable } from '../../../utils/data/stablePairs';
@@ -20,13 +20,15 @@ export default function TransactionSettings(props: TransactionSettingsPropsIF) {
 
     const dispatch = useAppDispatch();
 
-    const isPairStable = checkIsStable(
-        tokenPair.dataTokenA.address,
-        tokenPair.dataTokenB.address,
-        chainId
-    );
-
-    console.log({isPairStable});
+    // boolean value representing whether the current token pair is a recognized stable pair
+    // useMemo() with empty dependency array means value is only calculated once on component mount
+    const isPairStable = useMemo(() => (
+        checkIsStable(
+            tokenPair.dataTokenA.address,
+            tokenPair.dataTokenB.address,
+            chainId
+        )
+    ), []);
 
     const [newSlippage, setNewSlippage] = useState<string>(isPairStable ? slippage.stable.value : slippage.volatile.value);
 
