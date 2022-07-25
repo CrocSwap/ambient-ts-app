@@ -29,12 +29,6 @@
 
 
 
- 
-
-
-
-
-
 
 /* Mobile Landscape Screen Sizes */
 @media only screen and (min-width: 480px)  {
@@ -42,20 +36,10 @@
     .main_container{
         grid-template-columns:  auto 100px;
     }
-    
-
 }
 
 /* Desktop screen Sizes */
 @media only screen and (min-width: 768px) {
-
-   
-
-
-
-
-
-
 
 }
 
@@ -65,15 +49,10 @@
         grid-template-columns:  auto 50px;
       
     }
-
-
 }
 
 /* Extra large devices (large laptops and desktops, 1200px and up) */
 @media only screen and (min-width: 1200px) {
-
-
-  
 
 }
 
@@ -83,8 +62,6 @@
     .main_container{
         grid-template-columns:  auto 250px;
     }
-
-
 }
 /* Extra large devices (large laptops and desktops, 1200px and up) */
 @media only screen and (min-width: 1600px) {
@@ -92,7 +69,4 @@
     .main_container{
         grid-template-columns: 1fr 0.6fr;
     }
-    
-
-
 }
