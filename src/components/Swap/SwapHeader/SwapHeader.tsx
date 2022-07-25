@@ -15,6 +15,7 @@ import { toggleDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
 
 // interface for props
 interface SwapHeaderPropsIF {
+    chainId: string;
     tokenPair: TokenPairIF;
     swapSlippage: SlippagePairIF;
     isOnTradeRoute?: boolean;
@@ -24,7 +25,7 @@ interface SwapHeaderPropsIF {
 
 // main react functional component
 export default function SwapHeader(props: SwapHeaderPropsIF) {
-    const { tokenPair, swapSlippage, isOnTradeRoute, isDenomBase, isTokenABase } = props;
+    const { chainId, tokenPair, swapSlippage, isOnTradeRoute, isDenomBase, isTokenABase } = props;
     const [isModalOpen, openModal, closeModal] = useModal();
 
     const dispatch = useAppDispatch();
@@ -34,7 +35,9 @@ export default function SwapHeader(props: SwapHeaderPropsIF) {
     const settingsModalOrNull = isModalOpen ? (
         <Modal noHeader title='modal' onClose={closeModal}>
             <TransactionSettings
+                chainId={chainId}
                 module={isOnTradeRoute ? 'Market Order' : 'Swap'}
+                tokenPair={tokenPair}
                 slippage={swapSlippage}
                 onClose={closeModal}
             />

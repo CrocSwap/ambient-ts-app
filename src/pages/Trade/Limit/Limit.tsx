@@ -357,6 +357,7 @@ export default function Limit(props: LimitPropsIF) {
         <section>
             <ContentContainer isOnTradeRoute>
                 <LimitHeader
+                    chainId={chainId}
                     tokenPair={tokenPair}
                     mintSlippage={mintSlippage}
                     isDenomBase={tradeData.isDenomBase}
