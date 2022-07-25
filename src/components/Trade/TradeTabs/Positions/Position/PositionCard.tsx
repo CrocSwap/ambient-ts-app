@@ -361,61 +361,6 @@ export default function PositionCard(props: PositionCardProps) {
     const positionRowOrNull = positionMatchesSelectedTokens ? positionRow : null;
 
     return (
-        // <div className={`${styles.container} `}>
-        //     <div
-        //         className={`${styles.position_row} ${userPosition ? styles.user_position : 'null'}`}
-        //     >
-        //         <p
-        //             className={`${styles.large_device} ${styles.account_style} ${
-        //                 ensName ? styles.ambient_text : null
-        //             }`}
-        //         >
-        //             {ensName ? ensName : ownerIdTruncated}
-        //         </p>
-        //         <p className={`${styles.large_device} ${styles.account_style}`}>
-        //             {' '}
-        //             {truncatedPosHash}
-        //         </p>
-
-        //         <div className={`${styles.column_display} ${styles.account_displays}`}>
-        //             <p className={styles.account_style}>{ensName ? ensName : ownerIdTruncated}</p>
-        //             <p className={styles.account_style}> {truncatedPosHash}</p>
-        //         </div>
-        //         <div className={styles.mobile_display}>
-        //             <p className={styles.account_style}>{mobileOwnerId}</p>
-        //             <p className={styles.account_style}>{mobilePosHash}</p>
-        //         </div>
-
-        //         <p className={`${''} ${styles.min_max}`}>{ambientRangeOrNull}</p>
-        //         {/* <p className={`${styles.hide_ipad} ${styles.min_max}`}> {maxRange} </p> */}
-
-        //         {/* <div className={''}>
-        //             <p className={styles.min_max}>Min</p>
-        //             <p className={styles.min_max}>Max</p>
-        //         </div> */}
-        //         <p className={`${styles.large_device} ${styles.qty}`}>T1 Qty</p>
-        //         <p className={`${styles.large_device} ${styles.qty}`}>T2 Qty</p>
-        //         <div className={styles.column_display}>
-        //             <p className={styles.qty}>T1 Qty</p>
-        //             <p className={styles.qty}>T2 Qty</p>
-        //         </div>
-        //         <p className={`${''} ${styles.apy}`}>APY</p>
-        //         <div className={styles.full_range}>
-        //             <RangeStatus isInRange={isPositionInRange} isAmbient={position.ambient} />{' '}
-        //         </div>
-        //         <div className={styles.range_icon}>
-        //             <RangeStatus
-        //                 isInRange={isPositionInRange}
-        //                 isAmbient={position.ambient}
-        //                 justSymbol
-        //             />{' '}
-        //         </div>
-        //         <button className={`${styles.option_button} ${''}`}>Reposition</button>
-
-        //         {userPosition ? loggedInUserButtons : detailsButton}
-        //     </div>
-        //     {modalOrNull}
-        // </div>
         <>
             {positionRowOrNull}
             {modalOrNull}
