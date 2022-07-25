@@ -1,5 +1,5 @@
 import Ajv from 'ajv';
-import { TokenListIF } from '../interfaces/TokenListIF';
+import { TokenListIF } from '../interfaces/exports';
 import tokenListSchema from '../data/tokenListSchema.json';
 import addFormats from 'ajv-formats';
 

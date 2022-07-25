@@ -53,6 +53,14 @@ export default function initializeUserLocalStorage() {
         userUpdated = true;
     }
 
+    if (!user.slippage) {
+        user.slippage = {
+            swap: { stable: '2', volatile: '4' },
+            mint: { stable: '5', volatile: '9' }
+        };
+        userUpdated = true;
+    }
+
     if (userUpdated) {
         localStorage.setItem('user', JSON.stringify(user));
     }

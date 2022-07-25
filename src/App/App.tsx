@@ -75,8 +75,8 @@ import { fetchAddress } from './functions/fetchAddress';
 import { fetchTokenBalances } from './functions/fetchTokenBalances';
 import truncateDecimals from '../utils/data/truncateDecimals';
 import { getNFTs } from './functions/getNFTs';
+import { useSlippage } from './useSlippage';
 import { addNativeBalance, resetTokenData, setTokens } from '../utils/state/tokenDataSlice';
-// import SidebarFooter from '../components/Global/SIdebarFooter/SidebarFooter';
 
 const cachedQuerySpotPrice = memoizePromiseFn(querySpotPrice);
 const cachedFetchAddress = memoizePromiseFn(fetchAddress);
@@ -212,6 +212,8 @@ export default function App() {
         initializeUserLocalStorage();
         getImportedTokens();
     }, [tokenListsReceived]);
+
+    const [swapSlippage, mintSlippage] = useSlippage();
 
     // update local state with searchable tokens once after initial load of app
     useEffect(() => {
@@ -1273,6 +1275,7 @@ export default function App() {
         importedTokens: importedTokens,
         setImportedTokens: setImportedTokens,
         searchableTokens: searchableTokens,
+        swapSlippage: swapSlippage,
         provider: provider as JsonRpcProvider,
         gasPriceinGwei: gasPriceinGwei,
         nativeBalance: nativeBalance,
@@ -1294,6 +1297,7 @@ export default function App() {
         importedTokens: importedTokens,
         setImportedTokens: setImportedTokens,
         searchableTokens: searchableTokens,
+        swapSlippage: swapSlippage,
         provider: provider as JsonRpcProvider,
         isOnTradeRoute: true,
         gasPriceinGwei: gasPriceinGwei,
@@ -1316,6 +1320,7 @@ export default function App() {
         importedTokens: importedTokens,
         setImportedTokens: setImportedTokens,
         searchableTokens: searchableTokens,
+        mintSlippage: mintSlippage,
         provider: provider as JsonRpcProvider,
         isOnTradeRoute: true,
         gasPriceinGwei: gasPriceinGwei,
@@ -1340,6 +1345,7 @@ export default function App() {
         importedTokens: importedTokens,
         setImportedTokens: setImportedTokens,
         searchableTokens: searchableTokens,
+        mintSlippage: mintSlippage,
         provider: provider as JsonRpcProvider,
         lastBlockNumber: lastBlockNumber,
         gasPriceinGwei: gasPriceinGwei,
