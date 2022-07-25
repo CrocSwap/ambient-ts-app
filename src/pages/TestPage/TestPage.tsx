@@ -22,6 +22,7 @@ import Transactions2 from '../../components/Trade/TradeTabs/Transactions/Transac
 import Range from '../../components/Global/Account/AccountTabs/Range/Range';
 import WalletAndId from '../../components/Global/Tabs/WalletAndID/WalletAndId';
 import OrderTypeSide from '../../components/Global/Tabs/TypeAndSide/OrderTypeAndSide/OrderTypeSide';
+import Price from '../../components/Global/Tabs/Price/Price';
 
 export default function TestPage() {
     // // get the user object from local storage
@@ -119,6 +120,7 @@ export default function TestPage() {
                 <Transactions2 />
                 <WalletAndId />
                 <OrderTypeSide />
+                <Price />
             </main>
         </>
     );

@@ -1,5 +1,5 @@
-import styles from './PriceSide.module.css';
-export default function PriceSide() {
+import styles from './Price.module.css';
+export default function Price() {
     const priceBuy = <p className={styles.buy_style}>Price</p>;
     const priceSell = <p className={styles.sell_style}>Price</p>;
 
