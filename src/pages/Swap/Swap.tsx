@@ -348,6 +348,7 @@ export default function Swap(props: SwapPropsIF) {
             <div className={`${swapContainerStyle}`}>
                 <ContentContainer isOnTradeRoute={isOnTradeRoute}>
                     <SwapHeader
+                        chainId={chainId}
                         tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
                         swapSlippage={swapSlippage}
                         isOnTradeRoute={isOnTradeRoute}

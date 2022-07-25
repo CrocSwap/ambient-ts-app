@@ -1110,6 +1110,7 @@ export default function Range(props: RangePropsIF) {
         <section data-testid={'range'}>
             <ContentContainer isOnTradeRoute>
                 <RangeHeader
+                    chainId={chainId}
                     tokenPair={tokenPair}
                     mintSlippage={mintSlippage}
                     isDenomBase={tradeData.isDenomBase}

@@ -7,23 +7,26 @@ import { setSlippageTolerance } from '../../../utils/state/tradeDataSlice';
 import { SlippagePairIF, TokenPairIF } from '../../../utils/interfaces/exports';
 import { checkIsStable } from '../../../utils/data/stablePairs';
 
-interface TransactionSettingsProps {
+interface TransactionSettingsPropsIF {
+    chainId: string;
     module: 'Swap' | 'Market Order' | 'Limit Order' | 'Range Order';
     tokenPair: TokenPairIF;
     slippage: SlippagePairIF;
     onClose: () => void;
 }
 
-export default function TransactionSettings(props: TransactionSettingsProps) {
-    const { module, tokenPair, slippage, onClose } = props;
+export default function TransactionSettings(props: TransactionSettingsPropsIF) {
+    const { chainId, module, tokenPair, slippage, onClose } = props;
 
     const dispatch = useAppDispatch();
 
     const isPairStable = checkIsStable(
         tokenPair.dataTokenA.address,
         tokenPair.dataTokenB.address,
-        '0x2a'
+        chainId
     );
+
+    console.log({isPairStable});
 
     const [newSlippage, setNewSlippage] = useState<string>(isPairStable ? slippage.stable.value : slippage.volatile.value);
 
