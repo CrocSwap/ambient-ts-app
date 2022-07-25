@@ -1,7 +1,6 @@
 import styles from './TransactionSettings.module.css';
-
+import Button from '../Button/Button';
 import SlippageTolerance from '../SlippageTolerance/SlippageTolerance';
-
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import { useState } from 'react';
 import { setSlippageTolerance } from '../../../utils/state/tradeDataSlice';
@@ -43,7 +42,11 @@ export default function TransactionSettings(props: TransactionSettingsProps) {
                     setNewSlippage={setNewSlippage}
                 />
             ) : null}
-            {shouldDisplaySlippageTolerance ? <button onClick={handleClose}>Submit</button> : null}
+            <div className={styles.button_container}>
+                {shouldDisplaySlippageTolerance ? (
+                    <Button title='Submit' action={handleClose} />
+                ) : null}
+            </div>
         </div>
     );
 }

@@ -62,6 +62,7 @@ import initializeUserLocalStorage from './functions/initializeUserLocalStorage';
 import { TokenIF, TokenListIF } from '../utils/interfaces/exports';
 import { fetchTokenLists } from './functions/fetchTokenLists';
 import {
+    resetTokens,
     resetTradeData,
     setAdvancedHighTick,
     setAdvancedLowTick,
@@ -75,8 +76,7 @@ import { fetchTokenBalances } from './functions/fetchTokenBalances';
 import truncateDecimals from '../utils/data/truncateDecimals';
 import { getNFTs } from './functions/getNFTs';
 import { useSlippage } from './useSlippage';
-import { resetTokenData, setTokens } from '../utils/state/tokenDataSlice';
-// import SidebarFooter from '../components/Global/SIdebarFooter/SidebarFooter';
+import { addNativeBalance, resetTokenData, setTokens } from '../utils/state/tokenDataSlice';
 
 const cachedQuerySpotPrice = memoizePromiseFn(querySpotPrice);
 const cachedFetchAddress = memoizePromiseFn(fetchAddress);
@@ -178,6 +178,10 @@ export default function App() {
 
         // const newProvider = useProvider(provider, setProvider, chainId as string);
     }, [isAuthenticated, chainId, metamaskLocked]);
+
+    useEffect(() => {
+        dispatch(resetTokens(chainId));
+    }, [chainId]);
 
     const dispatch = useAppDispatch();
 
@@ -1195,10 +1199,26 @@ export default function App() {
                 if (nativeEthBalance) {
                     // send value to local state
                     setNativeBalance(nativeEthBalance);
+                    // console.log('adding native balance: ' + nativeEthBalance);
+                    dispatch(
+                        addNativeBalance([
+                            {
+                                name: 'Native Token',
+                                address: contractAddresses.ZERO_ADDR,
+                                // eslint-disable-next-line camelcase
+                                token_address: contractAddresses.ZERO_ADDR,
+                                symbol: 'ETH',
+                                decimals: 18,
+                                chainId: parseInt(chainId),
+                                logoURI: '',
+                                balance: nativeEthBalance,
+                            },
+                        ]),
+                    );
                 }
             }
         })();
-    }, [provider, account, isWeb3Enabled, isAuthenticated]);
+    }, [provider, account, isWeb3Enabled, isAuthenticated, lastBlockNumber]);
 
     const [gasPriceinGwei, setGasPriceinGwei] = useState<string>('');
 
@@ -1382,12 +1402,9 @@ export default function App() {
         }
     }, [tradeData.didUserFlipDenom, tokenPair]);
 
-    const mainLayoutStyle = showSidebar ? 'main-layout-2' : 'main-layout';
+    // const mainLayoutStyle = showSidebar ? 'main-layout-2' : 'main-layout';
     // take away margin from left if we are on homepage or swap
-    const noSidebarStyle =
-        currentLocation == '/' || currentLocation == '/swap' || currentLocation == '/404'
-            ? 'no-sidebar'
-            : mainLayoutStyle;
+
     const swapBodyStyle = currentLocation == '/swap' ? 'swap-body' : null;
 
     const [imageData, setImageData] = useState<string[]>([]);
@@ -1401,14 +1418,28 @@ export default function App() {
         })();
     }, [account]);
 
+    // Show sidebar on all pages except for home and swap
+    const sidebarRender = currentLocation !== '/' &&
+        currentLocation !== '/swap' &&
+        currentLocation !== '/404' && <Sidebar {...sidebarProps} />;
+
+    const sidebarDislayStyle = showSidebar
+        ? 'sidebar_content_layout'
+        : 'sidebar_content_layout_close';
+
+    const showSidebarOrNullStyle =
+        currentLocation == '/' || currentLocation == '/swap' || currentLocation == '/404'
+            ? 'hide_sidebar'
+            : sidebarDislayStyle;
+
     return (
         <>
             <div className='content-container'>
                 {currentLocation !== '/404' && <PageHeader {...headerProps} />}
-                {currentLocation !== '/' &&
-                    currentLocation !== '/swap' &&
-                    currentLocation !== '/404' && <Sidebar {...sidebarProps} />}
-                <div className={`${noSidebarStyle} ${swapBodyStyle}`}>
+                <main className={`${showSidebarOrNullStyle} ${swapBodyStyle}`}>
+                    {sidebarRender}
+                    {/* <div className={`${noSidebarStyle} ${swapBodyStyle}`}> */}
+
                     <Routes>
                         <Route index element={<Home />} />
                         <Route
@@ -1452,10 +1483,12 @@ export default function App() {
                         <Route path='*' element={<Navigate to='/404' replace />} />
                         <Route path='/404' element={<NotFound />} />
                     </Routes>
-                </div>
+                </main>
                 {snackbarContent}
             </div>
-            <PageFooter lastBlockNumber={lastBlockNumber} />
+            <div className='footer_container'>
+                <PageFooter lastBlockNumber={lastBlockNumber} />
+            </div>
             {/* <SidebarFooter/> */}
         </>
     );

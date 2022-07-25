@@ -6,7 +6,7 @@ import styles from './TableMenuComponents.module.css';
 
 export default function TransactionsMenu() {
     const transactionsMenu = (
-        <div className={styles.action_menu}>
+        <div className={styles.actions_menu}>
             <button>Edit</button>
             <button>Remove</button>
             <button>Details</button>

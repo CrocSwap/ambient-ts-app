@@ -1,5 +1,5 @@
-import OpenOrderStatus from '../../OpenOrderStatus/OpenOrderStatus';
 import { FiMoreHorizontal } from 'react-icons/fi';
+import OpenOrderStatus from '../../../OpenOrderStatus/OpenOrderStatus';
 
 import styles from './OrderCard.module.css';
 export default function OrderCard() {

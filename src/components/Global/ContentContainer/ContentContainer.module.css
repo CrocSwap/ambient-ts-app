@@ -20,9 +20,10 @@
     border-radius: var(--border-radius);
     
     background-color: var(--dark1);
-    background: linear-gradient(to right, #0E131A, #CDC1FF, #13122d);
-    background-size: 400% 400%;
-	animation: gradient 15s ease infinite;
+    background: linear-gradient(to right, #4a489e, #56516b
+    , #2e2d67);
+    /* background-size: 400% 400%;
+	animation: gradient 15s ease infinite; */
   /* box-shadow: 0px 0px 78px 4px rgba(4, 27, 49, 0.73); */
 
     padding: 1px;
@@ -116,7 +117,7 @@
       box-shadow: none;
     }
 
-    .circle, .circle2{
+    /* .circle, .circle2{
       display: block;
       height: 118px;
       background-color: rgba(0, 0, 0, 0.2);
@@ -136,9 +137,9 @@
   
 
       
-  }
+  } */
 
-  .inner_circle{
+  /* .inner_circle{
     display: block;
     height: 118px;
     background-color: rgba(0, 0, 0, 0.2);
@@ -146,7 +147,6 @@
     padding: 5px;
     position: absolute;
     width: 700px;
-    /* bottom: -100px; */
     
     pointer-events: none;
     z-index: -2;
@@ -158,7 +158,7 @@
   .circle{
     left: -135px;
     opacity: 0.2;
-  }
+  } */
 
  
 
@@ -186,7 +186,7 @@
 
   }
   
-  @keyframes gradient {
+  /* @keyframes gradient {
     0% {
       background-position: 0% 50%;
     }
@@ -196,4 +196,4 @@
     100% {
       background-position: 0% 50%;
     }
-  }
+  } */

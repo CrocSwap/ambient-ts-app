@@ -1,47 +1,47 @@
-import OpenOrderStatus from '../../OpenOrderStatus/OpenOrderStatus';
-import TableMenu from '../../TableMenu/TableMenu';
+import OpenOrderStatus from '../../../Global/OpenOrderStatus/OpenOrderStatus';
+import TableMenu from '../../../Global/TableMenu/TableMenu';
 import styles from './OrderCard2.module.css';
 
 export default function OrderCard2() {
     const token1 = (
-        <div className={styles.qty_sing}>
+        <section className={styles.qty_sing}>
             <p>T1 Qty</p>
             <img
                 src='https://icons.iconarchive.com/icons/cjdowner/cryptocurrency-flat/1024/Ethereum-ETH-icon.png'
                 alt=''
             />
-        </div>
+        </section>
     );
     const token2 = (
-        <div className={styles.qty_sing}>
+        <section className={styles.qty_sing}>
             <p>T2 Qty</p>
             <img src='https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.png' alt='' />
-        </div>
+        </section>
     );
 
     return (
         <div className={styles.main_container}>
             <div className={styles.row_container}>
                 {/* ------------------------------------------------------ */}
-                <div className={styles.column_account}>
-                    <p>0xaBcD...1234</p>
-                    <p>0xAbCd...9876</p>
-                </div>
-                <p className={styles.account_sing}>0xaBcD...1234</p>
-                <p className={styles.account_sing}>0xAbCd...9876</p>
+                <section className={styles.column_account}>
+                    <p>0xcD...1234</p>
+                    <p>0xCd...9876</p>
+                </section>
+                <section className={styles.account_sing}>0xcD...1234</section>
+                <section className={styles.account_sing}>0xCd...9876</section>
 
                 {/* ------------------------------------------------------ */}
-                <p className={styles.price}>Price</p>
+                <section className={styles.price}>Price</section>
                 {/* ------------------------------------------------------ */}
 
-                <div className={styles.type_column}>
+                <section className={styles.type_column}>
                     <p>Buy</p>
                     <p>Limit</p>
-                </div>
-                <p className={styles.side_sing}>Buy</p>
-                <p className={styles.type_sing}>Limit</p>
+                </section>
+                <section className={styles.side_sing}>Buy</section>
+                <section className={styles.type_sing}>Limit</section>
                 {/* ------------------------------------------------------ */}
-                <div className={styles.column_qty}>
+                <section className={styles.column_qty}>
                     <div>
                         <p>T1 Qty</p>
                         <img
@@ -56,7 +56,7 @@ export default function OrderCard2() {
                             alt=''
                         />
                     </div>
-                </div>
+                </section>
                 {token1}
                 {token2}
                 {/* ------------------------------------------------------ */}

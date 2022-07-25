@@ -61,6 +61,7 @@ import {
     setSimpleRangeWidth,
 } from '../../../utils/state/tradeDataSlice';
 import { addReceipt } from '../../../utils/state/receiptDataSlice';
+import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
 
 interface RangePropsIF {
     importedTokens: Array<TokenIF>;
@@ -173,6 +174,14 @@ export default function Range(props: RangePropsIF) {
     const tokenBDecimals = tokenB.decimals;
     const baseTokenDecimals = isTokenABase ? tokenADecimals : tokenBDecimals;
     const quoteTokenDecimals = !isTokenABase ? tokenADecimals : tokenBDecimals;
+
+    const poolPriceCharacter = denominationsInBase
+        ? isTokenABase
+            ? getUnicodeCharacter(tokenB.symbol)
+            : getUnicodeCharacter(tokenA.symbol)
+        : !isTokenABase
+        ? getUnicodeCharacter(tokenB.symbol)
+        : getUnicodeCharacter(tokenA.symbol);
 
     const isTokenAEth = tokenA.address === contractAddresses.ZERO_ADDR;
     const isTokenBEth = tokenB.address === contractAddresses.ZERO_ADDR;
@@ -810,6 +819,7 @@ export default function Range(props: RangePropsIF) {
         apyPercentage: apyPercentage,
         isTokenABase: isTokenABase,
         didUserFlipDenom: tradeData.didUserFlipDenom,
+        poolPriceCharacter: poolPriceCharacter,
     };
 
     const pinnedMinPriceDisplayTruncatedInBase = useMemo(
