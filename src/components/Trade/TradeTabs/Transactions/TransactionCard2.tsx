@@ -1,25 +1,10 @@
 import TableMenu from '../../../Global/Tabs/TableMenu/TableMenu';
+import TokenQty from '../../../Global/Tabs/TokenQty/TokenQty';
 import TransactionTypeSide from '../../../Global/Tabs/TypeAndSide/TransactionTypeSide/TransactionTypeSide';
 import WalletAndId from '../../../Global/Tabs/WalletAndID/WalletAndId';
 import styles from './TransactionCard2.module.css';
 
 export default function TransactionCard2() {
-    const token1 = (
-        <section className={styles.qty_sing}>
-            <p>T1 Qty</p>
-            <img
-                src='https://icons.iconarchive.com/icons/cjdowner/cryptocurrency-flat/1024/Ethereum-ETH-icon.png'
-                alt=''
-            />
-        </section>
-    );
-
-    const token2 = (
-        <section className={styles.qty_sing}>
-            <p>T2 Qty</p>
-            <img src='https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.png' alt='' />
-        </section>
-    );
     return (
         <div className={styles.main_container}>
             <div className={styles.row_container}>
@@ -28,7 +13,7 @@ export default function TransactionCard2() {
                     <p>0xcD...1234</p>
                     <p>0xCd...9876</p>
                 </section>
-                <section className={styles.account_sing}>0xcD...1234</section>
+               
                 <section className={styles.account_sing}>0xCd...9876</section> */}
                 <WalletAndId />
 
@@ -45,7 +30,7 @@ export default function TransactionCard2() {
                 <section className={styles.type_sing}>Range</section> */}
                 <TransactionTypeSide />
                 {/* ------------------------------------------------------ */}
-                <section className={styles.column_qty}>
+                {/* <section className={styles.column_qty}>
                     <div>
                         <p>T1 Qty</p>
                         <img
@@ -62,7 +47,8 @@ export default function TransactionCard2() {
                     </div>
                 </section>
                 {token1}
-                {token2}
+                {token2} */}
+                <TokenQty />
             </div>
 
             <div className={styles.menu_container}>
