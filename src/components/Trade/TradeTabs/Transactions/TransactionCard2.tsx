@@ -33,7 +33,7 @@ export default function TransactionCard2() {
                 </section>
                 <section className={styles.side_sing}>Remove</section>
                 <section className={styles.type_sing}>Range</section> */}
-                <TransactionTypeSide />
+                <TransactionTypeSide type='remove' side='rangeAdd' />
                 {/* ------------------------------------------------------ */}
                 {/* <section className={styles.column_qty}>
                     <div>

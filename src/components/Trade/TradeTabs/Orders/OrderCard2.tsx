@@ -33,7 +33,7 @@ export default function OrderCard2() {
                 <section className={styles.side_sing}>Buy</section>
                 <section className={styles.type_sing}>Limit</section> */}
 
-                <OrderTypeSide />
+                <OrderTypeSide type='order' side='sell' />
                 {/* ------------------------------------------------------ */}
                 {/* <section className={styles.column_qty}>
                     <div>

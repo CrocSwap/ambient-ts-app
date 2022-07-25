@@ -1,5 +1,11 @@
 import styles from './TransactionTypeSide.module.css';
-export default function TransactionTypeSide() {
+
+interface TransactionTypeSideProps {
+    type: 'remove' | 'buy' | 'add' | 'sell';
+    side: 'rangeRemove' | 'rangeAdd' | 'limit' | 'market';
+}
+export default function TransactionTypeSide(props: TransactionTypeSideProps) {
+    const { type, side } = props;
     const removeType = <p className={styles.remove_style}>Remove</p>;
     const buyType = <p className={styles.buy_style}>Buy</p>;
     const addType = <p className={styles.add_style}>Add</p>;
@@ -26,11 +32,11 @@ export default function TransactionTypeSide() {
     return (
         <>
             <section className={styles.type_column}>
-                {typeData.remove}
-                {sideData.rangeAdd}
+                {typeData[type]}
+                {sideData[side]}
             </section>
-            <section className={styles.type_sing}>{typeData.remove}</section>
-            <section className={styles.side_sing}>{sideData.rangeAdd}</section>
+            <section className={styles.type_sing}>{typeData[type]}</section>
+            <section className={styles.side_sing}>{sideData[side]}</section>
         </>
     );
 }
