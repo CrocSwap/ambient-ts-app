@@ -1,5 +1,11 @@
 import styles from './OrderTypeSide.module.css';
-export default function OrderTypeSide() {
+
+interface OrderTypeSideProps {
+    type: 'limit' | 'order' | 'market';
+    side: 'buy' | 'sell';
+}
+export default function OrderTypeSide(props: OrderTypeSideProps) {
+    const { type, side } = props;
     const limitType = <p className={styles.limit_style}>Limit</p>;
     const orderType = <p className={styles.order_style}>Order</p>;
     const marketType = <p className={styles.market_style}>Order</p>;
@@ -20,11 +26,11 @@ export default function OrderTypeSide() {
     return (
         <>
             <section className={styles.type_column}>
-                {sideData.sell}
-                {typeData.limit}
+                {sideData[side]}
+                {typeData[type]}
             </section>
-            <section className={styles.side_sing}>{sideData.sell}</section>
-            <section className={styles.type_sing}>{typeData.limit}</section>
+            <section className={styles.side_sing}>{sideData[side]}</section>
+            <section className={styles.type_sing}>{typeData[type]}</section>
         </>
     );
 }

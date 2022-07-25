@@ -1,19 +1,20 @@
 import styles from './WalletAndId.module.css';
-// import trimString from '../../../../utils/functions/trimString';
+import trimString from '../../../../utils/functions/trimString';
 import { Tooltip } from '@mui/material';
 import { useStyles } from '../../../../utils/functions/styles';
 
-export default function WalletAndId() {
+interface WalletAndIDProps {
+    posHash: string;
+    ownerId: string;
+    ensName?: string;
+}
+export default function WalletAndId(props: WalletAndIDProps) {
+    const { ownerId, posHash, ensName } = props;
     const classes = useStyles();
 
-    // const ownerIdTruncated = ownerId ? trimString(ownerId, 7, 0, '…') : null;
-    // const mobileOwnerId = ownerId ? trimString(ownerId, 4, 0, '…') : null;
-
-    // const ensName = 'benw....eth';
-    // const ensNameTruncated = ensName ? trimString(ensName, 4, 3, '…') : null;
-
-    const ownerId = '0xcD...1234';
-    const posHash = '0xCd...9876';
+    const ensNameTruncated = ensName ? trimString(ensName, 4, 4, '…') : null;
+    const ownerIdTruncated = trimString(ownerId, 4, 4, '…');
+    const posHashTruncated = trimString(posHash, 4, 4, '…');
 
     // const truncatedPosHash = trimString(posHash as string, 6, 0, '…');
 
@@ -21,7 +22,7 @@ export default function WalletAndId() {
 
     const walletWithTooltip = (
         <Tooltip
-            title={'this is full posHash'}
+            title={posHash}
             placement={'right'}
             arrow
             enterDelay={400}
@@ -30,12 +31,12 @@ export default function WalletAndId() {
                 tooltip: classes.customTooltip,
             }}
         >
-            <p>{posHash}</p>
+            <p>{posHashTruncated}</p>
         </Tooltip>
     );
     const IDWithTooltip = (
         <Tooltip
-            title={'this is full ID'}
+            title={ownerId}
             placement={'right'}
             arrow
             enterDelay={400}
@@ -44,34 +45,31 @@ export default function WalletAndId() {
                 tooltip: classes.customTooltip,
             }}
         >
-            <p>{ownerId}</p>
+            <p>{ownerIdTruncated}</p>
         </Tooltip>
     );
-    // const ENSWithTooltip = (
-    //     <Tooltip
-    //         title={'this is full ENS'}
-    //         placement={'right'}
-    //         arrow
-    //         enterDelay={400}
-    //         leaveDelay={200}
-    //         classes={{
-    //             tooltip: classes.customTooltip,
-    //         }}
-    //     >
-    //         <p>{ensName}</p>
-    //     </Tooltip>
-    // );
+    const ENSWithTooltip = (
+        <Tooltip
+            title={ensName ? ensName : 'ensName'}
+            placement={'right'}
+            arrow
+            enterDelay={400}
+            leaveDelay={200}
+            classes={{
+                tooltip: classes.customTooltip,
+            }}
+        >
+            <p className={styles.ens}>{ensNameTruncated}</p>
+        </Tooltip>
+    );
 
-    // todo
-    // Create variable with ens name with its own styling
-    // Create a variable that displays ens name if we have it else display wallet
-    // return this variable in the wallet place
+    const displayENSorWallet = ensName ? ENSWithTooltip : walletWithTooltip;
 
     return (
         <>
             <section className={styles.column_account}>
                 {IDWithTooltip}
-                {walletWithTooltip}
+                {displayENSorWallet}
             </section>
             <section className={styles.account_sing}>{IDWithTooltip}</section>
             <section className={styles.account_sing}>{walletWithTooltip}</section>

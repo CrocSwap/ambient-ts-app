@@ -1,5 +1,10 @@
 import styles from './Price.module.css';
-export default function Price() {
+
+interface PriceProps {
+    priceType: 'priceBuy' | 'priceSell' | 'minMaxBuy' | 'minMaxAdd';
+}
+export default function Price(props: PriceProps) {
+    const { priceType } = props;
     const priceBuy = <p className={styles.buy_style}>Price</p>;
     const priceSell = <p className={styles.sell_style}>Price</p>;
 
@@ -25,7 +30,7 @@ export default function Price() {
 
     return (
         <>
-            <section className={styles.price}>{priceData.priceBuy}</section>
+            <section className={styles.price}>{priceData[priceType]}</section>
         </>
     );
 }
