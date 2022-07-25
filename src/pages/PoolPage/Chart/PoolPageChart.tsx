@@ -57,7 +57,7 @@ export default function PoolPageChart(props: PoolPageChartProps) {
                     </label>
                 </div>
                 <div className={styles.settings_container}>
-                    {tabData.map((tab, index) => (
+                    {tabData.map((tab) => (
                         <button
                             key={tab.id}
                             onClick={() => {
