@@ -27,8 +27,11 @@ export function getStableTokensByChain(chain:string) {
         case '0x5':
             tokens = stableTokens['0x5'];
             break;
+        case '0x2a':
+            tokens = stableTokens['0x2a'];
+            break;
         default:
-            console.warn(`Could not process argument <<<chain>>> in function getStableTokensByChain(). Recognized values include <<<'0x5'>>> of type <<<string>>>; received value <<<${chain}>>> of type <<<${typeof chain}>>>. Refer to file stablePairs.ts for troubleshooting.`);
+            console.warn(`Could not process argument <<<chain>>> in function getStableTokensByChain(). Recognized values include <<<'0x5', '0x2a'>>> of type <<<string>>>; received value <<<${chain}>>> of type <<<${typeof chain}>>>. Refer to file stablePairs.ts for troubleshooting. Returning stable tokens for Goerli testnet as a default value.`);
             tokens = stableTokens['0x5'];
     }
     return tokens;
@@ -44,7 +47,7 @@ export function getStablePairsByChain(chain:string) {
             tokenPairs = stablePairs['0x2a'];
             break;
         default:
-            console.warn(`Could not process argument <<<chain>>> in function getStableTokensByChain(). Recognized values include <<<'0x5'>>> of type <<<string>>>; received value <<<${chain}>>> of type <<<${typeof chain}>>>. Refer to file stablePairs.ts for troubleshooting.`);
+            console.warn(`Could not process argument <<<chain>>> in function getStablePairsByChain(). Recognized values include <<<'0x5', '0x2a'>>> of type <<<string>>>; received value <<<${chain}>>> of type <<<${typeof chain}>>>. Refer to file stablePairs.ts for troubleshooting. Returning stable tokens for Goerli testnet as a default value.`);
             tokenPairs = stablePairs['0x5'];
     }
     return tokenPairs;
