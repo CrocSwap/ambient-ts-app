@@ -17,7 +17,8 @@ export default function RepositionRangeWidth() {
     const rangeWidthPercentage = 100;
 
     // todo
-    // @anyone working on this. I think we could refactor the RangeWidth component and reuse it here but I know this might take a few different functionalities so to simplify things, I have created an entirely new component for it. The workflow should follow a similar approach to RangeWidth.tsx so take a look at that for some guidance. - JR
+    // @anyone working on this. I think we could refactor the RangeWidth component and reuse it here but I know this might take a few different functionalities so to simplify things, I have created an entirely new component for it. The workflow should follow a similar approach to RangeWidth.tsx so take a look at that for some guidance, especially rangeWidthFunctions.ts.
+    // Also, don't forget the input ids will be different. -JR
 
     const PercentageOptionContent = (
         <>
@@ -78,14 +79,14 @@ export default function RepositionRangeWidth() {
         <div className={styles.range_width_container}>
             <div className={styles.range_width_content}>
                 {PercentageOptionContent}
-                <span className={styles.percentage_amount} id='percentage-output'>
+                <span className={styles.percentage_amount} id='reposition-percentage-output'>
                     {rangeWidthPercentage === 100 ? 'Ambient' : '± ' + rangeWidthPercentage + '%'}
                 </span>
                 <div className={styles.range_width_input}>
                     <input
                         size={28}
-                        aria-labelledby='input slider'
-                        id='input-slider-range'
+                        aria-labelledby='reposition-input slider'
+                        id='reposition-input-slider-range'
                         min='10'
                         max='100'
                         step='1'
