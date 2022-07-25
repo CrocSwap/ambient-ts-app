@@ -51,7 +51,6 @@ export function getStablePairsByChain(chain:string) {
 }
 
 export function checkIsStable(addr1:string, addr2:string, chain:string) {
-    console.log({addr1, addr2});
     const stablePairs = getStablePairsByChain(chain);
     let pairIsIncluded = false;
     stablePairs.forEach((stablePair:string[]) => {
