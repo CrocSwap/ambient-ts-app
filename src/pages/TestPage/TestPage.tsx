@@ -119,7 +119,6 @@ export default function TestPage() {
                 {/* <Order2 /> */}
                 <Transactions2 />
                 <OrderTypeSide />
-                <Price />
             </main>
         </>
     );

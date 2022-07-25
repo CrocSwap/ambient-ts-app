@@ -5,12 +5,12 @@
     color: #3480ff;
 }
 .add_style{
-    color: #fafc71;
+    color: #5FFFF2;
 }
 .min_max{
     display: flex;
     flex-direction: column;
-align-items: center;
+/* align-items: center; */
 }
 
 .price{

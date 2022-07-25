@@ -23,7 +23,7 @@ export default function OrderCard2() {
 
                 {/* ------------------------------------------------------ */}
                 {/* <section className={styles.price}>Price</section> */}
-                <Price />
+                <Price priceType='priceBuy' />
                 {/* ------------------------------------------------------ */}
 
                 {/* <section className={styles.type_column}>

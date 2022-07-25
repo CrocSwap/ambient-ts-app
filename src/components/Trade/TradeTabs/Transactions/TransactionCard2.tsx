@@ -23,7 +23,7 @@ export default function TransactionCard2() {
 
                 {/* ------------------------------------------------------ */}
                 {/* <section className={styles.price}>Price</section> */}
-                <Price />
+                <Price priceType='minMaxAdd' />
                 {/* ------------------------------------------------------ */}
                 {/* ------------------------------------------------------ */}
 
