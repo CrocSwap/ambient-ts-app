@@ -60,6 +60,20 @@ export default function RepositionPriceInfo() {
         </div>
     );
 
+    // jsx for  Collateral
+    const baseTokenCollateral = (
+        <div className={styles.collateral_display}>
+            <p className={styles.collateral_title}>ETH Collateral</p>
+            <p className={styles.collateral_amount}>1.69</p>
+        </div>
+    );
+    const quoteTokenCollateral = (
+        <div className={styles.collateral_display}>
+            <p className={styles.collateral_title}>USDC Collateral</p>
+            <p className={styles.collateral_amount}>5,000.00</p>
+        </div>
+    );
+
     return (
         <div className={styles.price_info_container}>
             {apy}
@@ -73,6 +87,10 @@ export default function RepositionPriceInfo() {
                     </span>
                 </div>
                 {maximumPrice}
+            </div>
+            <div className={styles.collateral_container}>
+                {baseTokenCollateral}
+                {quoteTokenCollateral}
             </div>
         </div>
     );
