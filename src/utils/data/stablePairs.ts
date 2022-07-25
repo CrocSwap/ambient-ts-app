@@ -25,3 +25,16 @@ export function getStableTokensByChain(chain:string) {
     }
     return tokens;
 }
+
+export function getStablePairsByChain(chain:string) {
+    let tokenPairs;
+    switch (chain) {
+        case '0x5':
+            tokenPairs = stableTokens['0x5'];
+            break;
+        default:
+            console.warn(`Could not process argument <<<chain>>> in function getStableTokensByChain(). Recognized values include <<<'0x5'>>> of type <<<string>>>; received value <<<${chain}>>> of type <<<${typeof chain}>>>. Refer to file stablePairs.ts for troubleshooting.`);
+            tokenPairs = stableTokens['0x5'];
+    }
+    return tokenPairs;
+}
