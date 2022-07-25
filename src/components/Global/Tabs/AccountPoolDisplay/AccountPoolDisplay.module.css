@@ -22,7 +22,7 @@ line-height: 13px;
 /* Desktop screen Sizes */
 @media only screen and (min-width: 1200px) {
     .account_pool_display {
-        display: flex;
+       
     
         font-size: 12px;
         line-height: 16px;  
