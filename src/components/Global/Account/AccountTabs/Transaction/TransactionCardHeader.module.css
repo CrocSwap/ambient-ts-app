@@ -1,163 +1,111 @@
-.row p{
-    font-size: var(--body-size);
-    line-height: var(--body-lh);
-    color: rgba(235, 235, 255, 0.4);
-    /* text-align: right; */
-   
-    height: 16px;
-  }
-  
-  .wallet_id{
-      display: flex;
-      flex-direction: column;
-  }
-  
-  .id, .wallet, .eth, .usdc, .pool,  .token1, .token2, .side{
-      display: none;
-  }
-
-  
-  .account{
-      margin: 0 4px;
-  }
-  
-  .header_container{
-      display: grid;
-      grid-template-columns:50px auto 50px;
-      font-size: 10px;
-  }
-  .row{
-      display: grid;
-      grid-template-columns: 1fr repeat(2, 70px) 50px 70px;
-  grid-gap: 4px;
-  
+.main_container{
+  display: grid;
+  grid-template-columns:  auto 50px;
   align-items: center;
+
   font-size: 10px;
+
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--dark3);
+
+}
+.token_logos, .pool{
+  display: none;
+}
+.row_container{
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.row_container p{
+  flex: 0.4 0;
+      /* flex-flow: column; */
+  align-items: center;
+ 
+  padding: 2px 8px;
+  /* font-size: var(--body-size);
+  line-height: var(--body-lh); */
+  color: rgba(235, 235, 255, 0.4);
+
+
+}
+
+.wallet, .side, .token{
+  display: none;
+}
+
+
+/* Mobile Landscape Screen Sizes */
+@media only screen and (min-width: 480px)  {
+
+  .main_container{
+    grid-template-columns:  50px auto 50px;
+
   }
-  
-  
-  
-  /* Small screen devices (540px and above) */
-  @media only screen and (min-width: 540px) {
-      .header_container{
-          display: grid;
-      grid-template-columns:50px auto 200px;
-  
-      }
-  
-     
-      .row{
-          display: grid;
-          grid-template-columns: auto repeat(2, 75px) 80px ;
-      grid-gap: 4px;
-     
-      align-items: center;
-      }
-    
-    
-  
-  }
-  
-  
-  /* Medium screen devices (768px and above) */
-  @media only screen and (min-width: 768px) {
-     
-  .side, .token1, .token2, .pool{
+  .token_logos{
     display: flex;
   }
 
-  .type{
-    text-align: start;
-  }
-     .amount{
-        display: none;
-     }
-      .header_container{
-         
-        grid-template-columns:100px auto 200px;
-      }
   
-      .row{
-        grid-template-columns: 100px auto 60px repeat(4, 75px)  ;
 
-      }
-      
-  }
-  
-  
-  /* Big screen devices (889px and above) */
-  @media only screen and (min-width: 889px) {
-  
-     
-      
-      .row{
-        /* background: rgb(5, 5, 46); */
-        grid-template-columns: 100px auto auto repeat(4, 90px)  ;
-
-    }
-  }
-  
-  
-  /* Extra big screen devices (1100px and above) */
-  @media only screen and (min-width: 1100px) {
-  
-      .account, .amount{
-         display: none;
-     }
-   .id, .wallet, .token1, .token2{
-      display: flex;
-   }
-  
-   .id, .wallet{
-    text-align: center;
-    justify-content: center;
-   }
-    
-  
-   .row{
-    grid-template-columns: 100px auto auto 80px repeat(4, 95px) ;
-    /* background: green; */
 
 }
-   
-  
+
+/* Desktop screen Sizes */
+@media only screen and (min-width: 768px) {
+ 
+  .wallet, .pool{
+      display: flex;
   }
   
   
-  /* Extra big screen devices(MONITORS) (1200px and above) */
-  @media only screen and (min-width: 1200px) {
-  
-      .header_container{
-         
-        grid-template-columns:100px auto  minmax(240px, auto);;
-          }
-      
-          .row{
-            grid-template-columns: 100px auto auto 90px repeat(4, 95px) ;
-            /* background: brown; */
-    
-        }
-     
-  
-  
+  /* }
+  .price{
+      text-align: start;
+  } */
+}
+  /* Large devices (laptops/desktops, 992px and up) */
+@media only screen and (min-width: 992px) {
+  .main_container{
+    grid-template-columns: 100px auto 50px;
+  }
+
+
+}
+
+/* Extra large devices (large laptops and desktops, 1200px and up) */
+@media only screen and (min-width: 1200px) {
+
+  .tokens{
+      display: none;
+  }
+
+  .token, .side{
+      display: flex;
+  }
+
+
+}
+
+/* Extra large devices (large laptops and desktops, 1200px and up) */
+@media only screen and (min-width: 1500px) {
+
+  .main_container{
+    grid-template-columns: 100px auto 250px;
+
+  }
+
+
+}
+
+/* Extra large devices (large laptops and desktops, 1200px and up) */
+@media only screen and (min-width: 1600px) {
+
+  .main_container{
+    grid-template-columns: 100px 1fr 0.6fr;
   }
   
-  
-  /* THESE MEDIA QUERIES ARE NORMALLY NOT NEEDED. SINCE THIS IS A DEX AND WE WILL MOST LIKELY HAVE USERS WITH EXTRA BIG MONITORS, I AM MAKING SOME CUSTOMIZATIONS TO MAKE USE OF THE EXTRA SPACES */
-  @media only screen and (min-width: 1400px) {
-     
-      .row{
-          grid-template-columns: 100px auto auto 300px repeat(2, 95px) 80px 100px;
-  
-      }
 
-      .price{
 
- display: flex;
- justify-content: center;
-
-      }
-  
-    
-  
-  }
+}
