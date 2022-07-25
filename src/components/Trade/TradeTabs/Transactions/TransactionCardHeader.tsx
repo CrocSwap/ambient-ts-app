@@ -2,17 +2,19 @@ import styles from './TransactionCardHeader.module.css';
 
 export default function TransactionCardHeader() {
     return (
-        <div className={styles.header_container}>
-            <div className={styles.header_container_items}>
-                <p className={styles.account}>ID</p>
-                <p className={styles.account}>Wallet</p>
+        <div className={styles.main_container}>
+            <div className={styles.row_container}>
+                <p>ID</p>
+                <p className={styles.wallet}>Wallet</p>
                 <p className={styles.price}>Price</p>
-                <p>Type</p>
-                <p>Side</p>
-                <p>ETH</p>
-                <p>USDC</p>
+                <p className={styles.side}>Side</p>
+                <p className={styles.type}>Type</p>
+                <p className={styles.tokens}>ETH/USDC</p>
+                <p className={styles.token}>ETH</p>
+                <p className={styles.token}>USDC</p>
             </div>
-            <div className={styles.menu}></div>
+
+            <div></div>
         </div>
     );
 }

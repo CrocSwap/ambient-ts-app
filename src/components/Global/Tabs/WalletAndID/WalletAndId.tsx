@@ -12,9 +12,9 @@ export default function WalletAndId(props: WalletAndIDProps) {
     const { ownerId, posHash, ensName } = props;
     const classes = useStyles();
 
-    const ensNameTruncated = ensName ? trimString(ensName, 4, 4, '…') : null;
-    const ownerIdTruncated = trimString(ownerId, 4, 4, '…');
-    const posHashTruncated = trimString(posHash, 4, 4, '…');
+    const ensNameTruncated = ensName ? trimString(ensName, 4, 3, '…') : null;
+    const ownerIdTruncated = trimString(ownerId, 4, 3, '…');
+    const posHashTruncated = trimString(posHash, 4, 3, '…');
 
     // const truncatedPosHash = trimString(posHash as string, 6, 0, '…');
 
