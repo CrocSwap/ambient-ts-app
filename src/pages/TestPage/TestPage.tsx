@@ -21,6 +21,7 @@ import styles from './TestPage.module.css';
 import Range from '../../components/Global/Account/AccountTabs/Range/Range';
 import Reposition from '../Trade/Reposition/Reposition';
 import AccountTokensDisplay from '../../components/Global/Tabs/AccountTokensDisplay/AccountTokensDisplay';
+import AccountPoolDisplay from '../../components/Global/Tabs/AccountPoolDisplay/AccountPoolDisplay';
 
 export default function TestPage() {
     // // get the user object from local storage
@@ -119,6 +120,7 @@ export default function TestPage() {
                     <Reposition />
                 </div>
                 <AccountTokensDisplay />
+                <AccountPoolDisplay />
             </main>
         </>
     );
