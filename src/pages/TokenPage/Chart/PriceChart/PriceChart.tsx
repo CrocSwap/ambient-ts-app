@@ -63,11 +63,7 @@ export default function PriceChart(props: PriceChartProps) {
             .annotationSvgCrosshair()
             .xLabel('')
             .decorate((selection: any) => {
-                selection
-                    .enter()
-                    .style('pointer-events', 'all')
-                    .style('fill', (d: any) => (d.close > d.open ? '#7371FC' : '#CDC1FF'))
-                    .style('stroke', (d: any) => (d.close > d.open ? '#7371FC' : '#CDC1FF'));
+                selection.enter().attr('stroke-dasharray', '6 6').style('pointer-events', 'all');
             });
 
         const candlestick = d3fc

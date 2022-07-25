@@ -55,6 +55,7 @@ export default function TvlChart(props: TvlChartProps) {
             .decorate((selection: any) => {
                 selection
                     .enter()
+                    .attr('stroke-dasharray', '6 6')
                     .style('pointer-events', 'all')
                     .style('fill', (d: any) => (d.close > d.open ? '#7371FC' : '#CDC1FF'))
                     .style('stroke', (d: any) => (d.close > d.open ? '#7371FC' : '#CDC1FF'));
@@ -68,7 +69,7 @@ export default function TvlChart(props: TvlChartProps) {
             .yScale(yScale)
             .decorate((selection: any) => {
                 selection.style('fill', () => {
-                    return 'rgba(115, 113, 252, 0.25)';
+                    return 'url(#mygrad)';
                 });
             });
 
@@ -80,6 +81,7 @@ export default function TvlChart(props: TvlChartProps) {
             .yScale(yScale)
             .decorate((selection: any) => {
                 selection.enter().style('stroke', () => '#7371FC');
+                selection.attr('stroke-width', '3');
             });
 
         const multi = d3fc
@@ -93,6 +95,26 @@ export default function TvlChart(props: TvlChartProps) {
                         return data.series;
                 }
             });
+
+        const svgmain = d3.select('.demo').select('svg');
+
+        const lg = svgmain
+            .append('defs')
+            .append('linearGradient')
+            .attr('id', 'mygrad')
+            .attr('x1', '100%')
+            .attr('x2', '100%')
+            .attr('y1', '0%')
+            .attr('y2', '100%');
+        lg.append('stop')
+            .attr('offset', '10%')
+            .style('stop-color', '#7d7cfb')
+            .style('stop-opacity', 1);
+
+        lg.append('stop')
+            .attr('offset', '100%')
+            .style('stop-color', 'black')
+            .style('stop-opacity', 1);
 
         const chart = d3fc
             .chartCartesian({
