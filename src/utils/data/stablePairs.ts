@@ -1,3 +1,4 @@
+// list of all stable tokens, organized by chain ID
 export const stableTokens = {
     '0x5': {
         dai: '0xdc31Ee1784292379Fbb2964b3B9C4124D8F89C60',
@@ -9,9 +10,12 @@ export const stableTokens = {
     }
 };
 
+// references to each set of stable tokens by chain for convenience
 export const goerliStableTokens = stableTokens['0x5'];
 export const kovanStableTokens = stableTokens['0x2a'];
 
+// list of all recogized stable pairs, organized by chain ID
+// remember there may be stable pairs not made of stable tokens
 export const stablePairs = {
     '0x5': [
         [goerliStableTokens.dai, goerliStableTokens.usdc]
@@ -21,6 +25,11 @@ export const stablePairs = {
     ]
 };
 
+// TODO:  @Ben  we should restructure these functions to look up the value for `chain` dynamically
+// TODO:        ... in the respective data objects rather than having hardcoded references to each
+// TODO:        ... existing valid value, personally I think a try-catch-finally makes the most sense
+
+// function to return a list of all stable token addresses by chain ID
 export function getStableTokensByChain(chain:string) {
     let tokens;
     switch (chain) {
@@ -37,6 +46,7 @@ export function getStableTokensByChain(chain:string) {
     return tokens;
 }
 
+// function to return a list of all stable address pairs by chain ID
 export function getStablePairsByChain(chain:string) {
     let tokenPairs;
     switch (chain) {
@@ -53,8 +63,8 @@ export function getStablePairsByChain(chain:string) {
     return tokenPairs;
 }
 
+// function to check if a given pair of addresses on a given chain is stable
 export function checkIsStable(addr1:string, addr2:string, chain:string) {
-    console.log('running function checkIsStable()');
     const stablePairs = getStablePairsByChain(chain);
     let pairIsIncluded = false;
     stablePairs.forEach((stablePair:string[]) => {
