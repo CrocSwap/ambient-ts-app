@@ -1,15 +1,32 @@
 import styles from './TokenList.module.css';
-import { useState } from 'react';
+import { useState, Dispatch, SetStateAction } from 'react';
 import TokenListCard from '../TokenListCard/TokenListCard';
+import CustomTokens from './CustomTokens';
 import Divider from '../Divider/Divider';
 import { TokenListIF } from '../../../utils/interfaces/exports';
+import fetchList from './fetchList';
 
 import { motion } from 'framer-motion';
 
-export default function TokenList() {
+interface TokenListPropsIF {
+    chainId: string;
+    activeTokenListsChanged: boolean;
+    indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
+    tokenToUpdate: string;
+    closeModal: () => void;
+}
+
+export default function TokenList(props: TokenListPropsIF) {
+    const {
+        chainId,
+        activeTokenListsChanged,
+        indicateActiveTokenListsChanged,
+        tokenToUpdate,
+        closeModal,
+    } = props;
+
     const [showImportedTokens, setShowImportedTokens] = useState(false);
-    // eslint-disable-next-line
-    const [searchTerm, setSearchTerm] = useState('');
+    const [searchString, setSearchString] = useState('');
 
     const TokenListContainerHeader = (
         <div className={styles.header_container}>
@@ -30,13 +47,15 @@ export default function TokenList() {
         </div>
     );
 
+    // Button will be removed in production
     const TokenListInput = (
         <div className={styles.search_input}>
             <input
                 type='text'
                 placeholder='https:// pr ipfs:// or ENS name'
-                onChange={(event) => setSearchTerm(event.target.value)}
+                onChange={(event) => setSearchString(event.target.value)}
             />
+            <button onClick={() => fetchList(searchString)}>Get List</button>
         </div>
     );
 
@@ -58,6 +77,7 @@ export default function TokenList() {
         // send the updated user object to local storage
         localStorage.setItem('user', JSON.stringify(userData));
         setActiveLists(newActiveTokenList);
+        indicateActiveTokenListsChanged(!activeTokenListsChanged);
     };
 
     // get allTokenLists value from local storage
@@ -95,26 +115,7 @@ export default function TokenList() {
     const ImportedTokensDisplay = (
         <div className={styles.custom_tokens}>
             {TokenListContainerHeader}
-            <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.3 }}
-                className={styles.search_input}
-            >
-                <input
-                    type='text'
-                    placeholder='0x000'
-                    //   onChange={(event) => setSearchTerm(event.target.value)}
-                />
-                <Divider />
-                <div className={styles.custom_tokens_header}>
-                    <span>0 Custom Tokens</span>
-                    <span className={styles.clear_all_button}>Clear all</span>
-                </div>
-                <div className={styles.custom_tokens_footer}>
-                    Tip: Custom tokens are stored locally in your browser
-                </div>
-            </motion.div>
+            <CustomTokens chainId={chainId} tokenToUpdate={tokenToUpdate} closeModal={closeModal} />
         </div>
     );
 

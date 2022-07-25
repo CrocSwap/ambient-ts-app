@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { ChangeEvent, SetStateAction, useEffect, useState } from 'react';
+import { ChangeEvent, Dispatch, SetStateAction, useEffect, useState } from 'react';
 
 import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 
@@ -19,31 +19,37 @@ import LimitRate from '../LimitRate/LimitRate';
 // START: Import Local Files
 import styles from './LimitCurrencyConverter.module.css';
 import { TokenIF, TokenPairIF } from '../../../../utils/interfaces/exports';
+import TokensArrow from '../../../Global/TokensArrow/TokensArrow';
+import DividerDark from '../../../Global/DividerDark/DividerDark';
 
 // interface for component props
 interface LimitCurrencyConverterProps {
     tokenPair: TokenPairIF;
     tokensBank: Array<TokenIF>;
+    setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
+    searchableTokens: Array<TokenIF>;
     chainId: string;
     poolPriceNonDisplay: number;
     insideTickDisplayPrice: number;
-    setIsSellTokenPrimary?: React.Dispatch<SetStateAction<boolean>>;
-    setLimitAllowed: React.Dispatch<React.SetStateAction<boolean>>;
+    setIsSellTokenPrimary?: Dispatch<SetStateAction<boolean>>;
+    setLimitAllowed: Dispatch<SetStateAction<boolean>>;
     isSellTokenBase: boolean;
     tokenABalance: string;
     tokenBBalance: string;
     tokenAInputQty: string;
     tokenBInputQty: string;
-    setTokenAInputQty: React.Dispatch<React.SetStateAction<string>>;
-    setTokenBInputQty: React.Dispatch<React.SetStateAction<string>>;
-    setLimitButtonErrorMessage: React.Dispatch<React.SetStateAction<string>>;
+    setTokenAInputQty: Dispatch<SetStateAction<string>>;
+    setTokenBInputQty: Dispatch<SetStateAction<string>>;
+    setLimitButtonErrorMessage: Dispatch<SetStateAction<string>>;
     isWithdrawFromDexChecked: boolean;
-    setIsWithdrawFromDexChecked: React.Dispatch<SetStateAction<boolean>>;
-    isWithdrawToWalletChecked: boolean;
-    setIsWithdrawToWalletChecked: React.Dispatch<SetStateAction<boolean>>;
-    setLimitRate: React.Dispatch<React.SetStateAction<string>>;
+    setIsWithdrawFromDexChecked: Dispatch<SetStateAction<boolean>>;
+    isSaveAsDexSurplusChecked: boolean;
+    setIsSaveAsDexSurplusChecked: Dispatch<SetStateAction<boolean>>;
+    setLimitRate: Dispatch<SetStateAction<string>>;
     limitRate: string;
     isDenominationInBase: boolean;
+    activeTokenListsChanged: boolean;
+    indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
 }
 
 // central react functional component
@@ -51,6 +57,8 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
     const {
         tokenPair,
         tokensBank,
+        setImportedTokens,
+        searchableTokens,
         chainId,
         poolPriceNonDisplay,
         insideTickDisplayPrice,
@@ -63,11 +71,13 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
         setLimitButtonErrorMessage,
         isWithdrawFromDexChecked,
         setIsWithdrawFromDexChecked,
-        isWithdrawToWalletChecked,
-        setIsWithdrawToWalletChecked,
+        isSaveAsDexSurplusChecked,
+        setIsSaveAsDexSurplusChecked,
         setLimitRate,
         limitRate,
         isDenominationInBase,
+        activeTokenListsChanged,
+        indicateActiveTokenListsChanged,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -270,6 +280,8 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
             <LimitCurrencySelector
                 tokenPair={tokenPair}
                 tokensBank={tokensBank}
+                setImportedTokens={setImportedTokens}
+                searchableTokens={searchableTokens}
                 chainId={chainId}
                 fieldId='sell'
                 sellToken
@@ -280,15 +292,19 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 tokenBBalance={tokenBBalance}
                 isWithdrawFromDexChecked={isWithdrawFromDexChecked}
                 setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
-                isWithdrawToWalletChecked={isWithdrawToWalletChecked}
-                setIsWithdrawToWalletChecked={setIsWithdrawToWalletChecked}
+                isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
+                setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
+                activeTokenListsChanged={activeTokenListsChanged}
+                indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
             />
             <div className={styles.arrow_container} onClick={handleArrowClick}>
-                <span className={styles.arrow} />
+                <TokensArrow />
             </div>
             <LimitCurrencySelector
                 tokenPair={tokenPair}
                 tokensBank={tokensBank}
+                setImportedTokens={setImportedTokens}
+                searchableTokens={searchableTokens}
                 chainId={chainId}
                 fieldId='buy'
                 direction='To: '
@@ -298,9 +314,12 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 tokenBBalance={tokenBBalance}
                 isWithdrawFromDexChecked={isWithdrawFromDexChecked}
                 setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
-                isWithdrawToWalletChecked={isWithdrawToWalletChecked}
-                setIsWithdrawToWalletChecked={setIsWithdrawToWalletChecked}
+                isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
+                setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
+                activeTokenListsChanged={activeTokenListsChanged}
+                indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
             />
+            <DividerDark addMarginTop />
             <LimitRate
                 tokenPair={tokenPair}
                 tokensBank={tokensBank}

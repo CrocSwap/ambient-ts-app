@@ -1,23 +1,25 @@
-import { ChangeEvent, SetStateAction, useState } from 'react';
+import { ChangeEvent, Dispatch, SetStateAction, useState } from 'react';
 import styles from './RangeCurrencySelector.module.css';
 import RangeCurrencyQuantity from '../RangeCurrencyQuantity/RangeCurrencyQuantity';
 import { RiArrowDownSLine } from 'react-icons/ri';
-import Toggle from '../../../Global/Toggle/Toggle';
 import { TokenIF, TokenPairIF } from '../../../../utils/interfaces/exports';
 import { useModal } from '../../../../components/Global/Modal/useModal';
 import Modal from '../../../../components/Global/Modal/Modal';
 import TokenSelectContainer from '../../../Global/TokenSelectContainer/TokenSelectContainer';
+import Toggle2 from '../../../Global/Toggle/Toggle2';
 
 interface RangeCurrencySelectorProps {
     fieldId: string;
     chainId: string;
     tokenPair: TokenPairIF;
     tokensBank: Array<TokenIF>;
+    setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
+    searchableTokens: Array<TokenIF>;
     updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
     isWithdrawTokenAFromDexChecked: boolean;
-    setIsWithdrawTokenAFromDexChecked: React.Dispatch<SetStateAction<boolean>>;
+    setIsWithdrawTokenAFromDexChecked: Dispatch<SetStateAction<boolean>>;
     isWithdrawTokenBFromDexChecked: boolean;
-    setIsWithdrawTokenBFromDexChecked: React.Dispatch<SetStateAction<boolean>>;
+    setIsWithdrawTokenBFromDexChecked: Dispatch<SetStateAction<boolean>>;
     sellToken?: boolean;
     reverseTokens: () => void;
     truncatedTokenABalance: string;
@@ -26,12 +28,16 @@ interface RangeCurrencySelectorProps {
     isTokenBDisabled: boolean;
     isAdvancedMode: boolean;
     disable?: boolean;
+    activeTokenListsChanged: boolean;
+    indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function RangeCurrencySelector(props: RangeCurrencySelectorProps) {
     const {
         tokenPair,
         tokensBank,
+        setImportedTokens,
+        searchableTokens,
         chainId,
         isWithdrawTokenAFromDexChecked,
         setIsWithdrawTokenAFromDexChecked,
@@ -46,6 +52,8 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
         isTokenADisabled,
         isTokenBDisabled,
         isAdvancedMode,
+        activeTokenListsChanged,
+        indicateActiveTokenListsChanged,
     } = props;
 
     const thisToken = fieldId === 'A' ? tokenPair.dataTokenA : tokenPair.dataTokenB;
@@ -54,10 +62,12 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
     const [isModalOpen, openModal, closeModal] = useModal();
 
     const tokenSelectModalOrNull = isModalOpen ? (
-        <Modal onClose={closeModal} title='Select Token'>
+        <Modal onClose={closeModal} title='Select Token' centeredTitle>
             <TokenSelectContainer
                 tokenPair={tokenPair}
+                searchableTokens={searchableTokens}
                 tokensBank={tokensBank}
+                setImportedTokens={setImportedTokens}
                 tokenToUpdate={fieldId}
                 chainId={chainId}
                 tokenList={tokensBank}
@@ -65,34 +75,32 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                 reverseTokens={reverseTokens}
                 showManageTokenListContent={showManageTokenListContent}
                 setShowManageTokenListContent={setShowManageTokenListContent}
+                activeTokenListsChanged={activeTokenListsChanged}
+                indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
             />
         </Modal>
     ) : null;
 
     const DexBalanceContent = (
         <span className={styles.surplus_toggle}>
-            {'Use DEX Balance'}
-            <div className={styles.toggle_container}>
-                {fieldId === 'A' ? (
-                    <Toggle
-                        isOn={isWithdrawTokenAFromDexChecked}
-                        handleToggle={() =>
-                            setIsWithdrawTokenAFromDexChecked(!isWithdrawTokenAFromDexChecked)
-                        }
-                        Width={36}
-                        id='withdraw_from_dex'
-                    />
-                ) : (
-                    <Toggle
-                        isOn={isWithdrawTokenBFromDexChecked}
-                        handleToggle={() =>
-                            setIsWithdrawTokenBFromDexChecked(!isWithdrawTokenBFromDexChecked)
-                        }
-                        Width={36}
-                        id='withdraw_to_wallet'
-                    />
-                )}
-            </div>
+            {'Use exchange Balance'}
+            {fieldId === 'A' ? (
+                <Toggle2
+                    isOn={isWithdrawTokenAFromDexChecked}
+                    handleToggle={() =>
+                        setIsWithdrawTokenAFromDexChecked(!isWithdrawTokenAFromDexChecked)
+                    }
+                    id='withdraw_from_dex'
+                />
+            ) : (
+                <Toggle2
+                    isOn={isWithdrawTokenBFromDexChecked}
+                    handleToggle={() =>
+                        setIsWithdrawTokenBFromDexChecked(!isWithdrawTokenBFromDexChecked)
+                    }
+                    id='withdraw_to_wallet'
+                />
+            )}
         </span>
     );
 
