@@ -1,29 +1,83 @@
-import { useEffect } from 'react';
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Divider from '../../components/Global/Divider/Divider';
 import Pools from '../../components/Pools/Pools';
-
-import { usePoolsForToken, useTokenData } from '../../state/tokens/hooks';
-
+import {
+    usePoolsForToken,
+    useTokenChartData,
+    useTokenData,
+    useTokenPriceData,
+} from '../../state/tokens/hooks';
 import TokenCardInfo from './TokenInfoCard/TokenInfoCard';
 import styles from './TokenPage.module.css';
 import { usePoolDatas } from '../../state/pools/hooks';
-import { isAddress } from '../../utils';
+import { currentTimestamp, isAddress } from '../../utils';
 import TokenPageChart from './Chart/TokenPageChart';
 import { formatDollarAmount } from '../../utils/numbers';
+import { unixToDate } from '../../utils/date';
+import { ONE_HOUR_SECONDS, TimeWindow } from '../../constants/intervals';
+
+const DEFAULT_TIME_WINDOW = TimeWindow.WEEK;
 
 export default function TokenPage() {
     const { address } = useParams() ?? '';
+    const [timeWindow] = useState(DEFAULT_TIME_WINDOW);
+    const chartData = useTokenChartData(address!);
+    const tokenData = useTokenData(address);
+    const priceData = useTokenPriceData(address!, ONE_HOUR_SECONDS, timeWindow);
     useEffect(() => {
         window.scrollTo(0, 0);
     }, []);
 
-    const tokenData = useTokenData(address);
+    const formattedVolumeData = useMemo(() => {
+        if (chartData) {
+            return chartData.map((day) => {
+                return {
+                    time: new Date(day.date * 1000),
+                    value: day.volumeUSD,
+                };
+            });
+        } else {
+            return [];
+        }
+    }, [chartData]);
+
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const poolsForToken = usePoolsForToken(address!);
     const poolDatas = usePoolDatas(poolsForToken ?? []);
     // const transactions = useTokenTransactions(address!);
-    // const chartData = useTokenChartData(address!);
+
+    const formattedTvlData = useMemo(() => {
+        if (chartData) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            return chartData.map((day: any) => {
+                return {
+                    time: unixToDate(day.date),
+                    value: day.totalValueLockedUSD,
+                };
+            });
+        } else {
+            return [];
+        }
+    }, [chartData]);
+
+    // pricing data
+    const adjustedToCurrent = useMemo(() => {
+        if (priceData && tokenData && priceData.length > 0) {
+            const adjusted = Object.assign([], priceData);
+            adjusted.push({
+                time: currentTimestamp() / 1000,
+                open: priceData[priceData.length - 1].close,
+                close: tokenData?.priceUSD,
+                high: tokenData?.priceUSD,
+                low: priceData[priceData.length - 1].close,
+            });
+            return adjusted;
+        } else {
+            return [];
+        }
+    }, [priceData, tokenData]);
 
     function getTokenLogoURL() {
         const checkSummed = isAddress(tokenData?.address);
@@ -76,14 +130,24 @@ export default function TokenPage() {
             {tokenInfo}
             <div className={styles.hsPAQl}>
                 <TokenCardInfo token={tokenData} />
-                <TokenPageChart />
+
+                {chartData && tokenData && priceData ? (
+                    <TokenPageChart
+                        tvlData={formattedTvlData}
+                        priceData={adjustedToCurrent}
+                        volumeData={formattedVolumeData}
+                        token={tokenData}
+                    />
+                ) : (
+                    <></>
+                )}
             </div>
 
             <Divider />
-            <h2>Pools</h2>
-
-            <Pools pools={poolDatas} propType='all' maxItems={10} />
-            {/* <Transactions transactions={transactions!} /> */}
+            <div className={styles.cqwlBw}>
+                <h2>Pools</h2>
+                <Pools pools={poolDatas} propType='all' maxItems={10} />
+            </div>
         </main>
     );
 }
