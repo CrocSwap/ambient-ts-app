@@ -29,13 +29,11 @@ export default function OrdersMenu() {
     function openRemoveModal() {
         setCurrentModal('remove');
         openModal();
-        //   handleClose();
     }
 
     function openDetailsModal() {
         setCurrentModal('details');
         openModal();
-        //   handleClose();
     }
 
     // -----------------SNACKBAR----------------
