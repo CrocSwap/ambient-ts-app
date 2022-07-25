@@ -115,7 +115,7 @@ export default function TransactionsMenu() {
             {transactionsMenu}
             {dropdownTransactionsMenu}
             {modalOrNull}
-            {transactionsMenu}
+
             {snackbarContent}
         </>
     );

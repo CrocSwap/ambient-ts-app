@@ -1,334 +1,78 @@
-
-.token_logos{
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 4px;
-}
-
-.token_logos img{
-    width: 15px;
-}
-
-.min_max{
-    display: flex;
-    flex-direction: column;
-    color: #5FFFF2;
-}
-.min_max_range{
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 4px;
-}
-
-.token_qty{
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    display: none;
-}
-.token_qty img{
-    width: 15px;
-}
-
-.token_qty_column, .account_column, .remove_range_column{
-    flex-direction: column;
-    align-items: center;
-}
-
-
-.account, .token_qty, .account_column, .token_qty_column, .pool_name, .min_max{
-    margin: 0 4px;
-    color: rgba(235, 235, 255, 0.4);
-    font-size: 10px;
-line-height: 13px;
-
-}
-
-
-.menu_buttons{
-    display: flex;
-    justify-content: flex-end;
-    flex-direction: row;
-    align-items: center;
-    gap: 4px;
-    font-size: 12px;
-}
-
-.option_button{
-    display: flex;
-   justify-content: center;
-   align-items: center;
-   border-radius:6.25rem;
-   cursor: pointer;
-   font-size: 12px;
-   line-height: 15px;
-   color: #bdbdbd; 
-   height: 23px;
-   padding: 5px 8px;
-   
-  
-   background: #0D1117;
-   border: 1px solid #242F3F;
-   box-shadow: 2px 1000px 1px #242f37 inset;
-  
-   cursor: pointer;
- }
-
-
-.reposition_button{
-   
-
-
-    cursor: pointer;
-    font-size: var(--body-size);
-    line-height: var(--body-lh);
-    color: var(--text-grey-white); 
-    height: 23px;
-    padding: 5px 8px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-
-
-
-background: linear-gradient(90deg, rgba(115, 113, 252, 0) 0%, rgba(115, 113, 252, 0) 71.21%, #7371FC 100%);
-
-border: 1px solid #7371FC;
-border-radius: 50px;
-
-
-transition: background var(--animation-speed) ease-in-out;
-
-
-
-  }
-
-
-
-
-
-  .reposition_button:hover{
-    box-shadow: none;
-   
-    border: 1px solid rgba(223,190,106,0);
-    color: rgb(0, 0, 0);
-    background: var(--title-gradient);
-  }
-
- .min_buttons{
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 4px
- }
- .menu_icon{
-
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    padding: 5px 8px;
-    gap: 10px;
-    width: 38.51px;
-    background: #0D1117;
-    border: 1px solid #242F3F;
-    border-radius: 50px;
-    color: white;
-   
-    
-    }
-    .min_buttons{
-        justify-content: center;
-        /* justify-content: flex-end; */
-       
-    }
-
-
-
-.row{
-    /* background: red; */
-    color: white;
-    height: 48px;
-    
-
-}
 .main_container{
+    /* margin: 3rem 0; */
     display: grid;
-    grid-template-columns:50px auto 50px;
-  
+    grid-template-columns:  auto 50px;
+    align-items: center;
+    height: 40px;
 }
-.row{
-    display: grid;
-    grid-template-columns: 1fr repeat(2, 70px) 50px 70px;
-    grid-gap: 4px;
-    /* background: orange; */
-
-align-items: center;
-}
-
-.min_max_range, .price{
-    font-size: 10px;
-line-height: 12px;
-color: #5FA2FF;
-}
-.remove_range_column, .remove, .range{
-    font-size: 10px;
-    line-height: 12px;
-    color: #5FFFF2;
-}
-.menu_buttons,
- .account, 
- .remove,
-
- 
- /* .main_container,  */
- .pool_name, 
- .min_max_range, .min_buttons button {
+.tokens_container{
     display: none;
 }
-
-/* Small screen devices (540px and above) */
-@media only screen and (min-width: 540px) {
-    .main_container{
-        display: grid;
-        grid-template-columns:50px auto 200px;
-
-    }
-
-    .row{
-        display: grid;
-    grid-template-columns: auto repeat(2, 75px) 80px ;
-    grid-gap: 4px;
-    /* background: rgb(197, 197, 101); */
-   
+.row_container{
+    display: flex;
     align-items: center;
-    }
-    .min_buttons button{
-        display: flex;
-    }
-  
-
+    width: 100%;
 }
-/* Medium screen devices (768px and above) */
+
+.row_container section{
+    flex: 0.4 0;
+    /* flex-flow: column; */
+    align-items: center;
+    padding: 2px 8px;
+    /* font-size: 10px; */
+}
+ 
+.menu_container{
+    display: flex;
+    width: 100%;
+    justify-content: flex-end;
+  
+}
+
+
+
+
+/* Mobile Landscape Screen Sizes */
+@media only screen and (min-width: 480px)  {
+.tokens_container{
+    display: flex;
+}
+    .main_container{
+        grid-template-columns:  50px auto 50px;
+        /* background: red; */
+    }
+}
+
+/* Desktop screen Sizes */
 @media only screen and (min-width: 768px) {
 
-    .min_max, .min_max_range, .token_qty, .token_qty_column, .account_column, .remove_range_column, .pool_name, .account, .remove, .range{
-        font-size: 12px;
-line-height: 15px;
-    }
-    .remove_range_column, .token_qty_column{
-        display: none;
-    }
+}
 
-    .remove, 
-    .token_qty{
-        display: flex;
-    }
-    .token_logos img{
-        width: 30px;
-    }
-
-    .pool_name{
-        display: flex;
-        
-    }
+/* Large devices (laptops/desktops, 992px and up) */
+@media only screen and (min-width: 992px) {
     .main_container{
-       
-    grid-template-columns:100px auto 200px;
+        grid-template-columns: 100px auto 50px;
+        /* background: blue; */
+      
     }
-
-    .row{
-        grid-template-columns: 100px auto 60px repeat(4, 75px)  ;
-        /* background: red; */
-
-    }
-    
 }
 
-/* Big screen devices (889px and above) */
-@media only screen and (min-width: 889px) {
-
- 
-    
-    
-    
-    
-    .row{
-        /* background: rgb(131, 131, 155); */
-        grid-template-columns: 100px auto auto repeat(4, 90px)  ;
-
-    }
-
-    
-}
-
-  
-
-@media only screen and (min-width: 1100px) {
-
-    .account_column{
-        display: none;
-    }
-  
-
-    .account{
-        display: flex;
-        justify-content: center;
-    }
-
-    .token_qty{
-        display: flex;
-    }
-    .row{
-        grid-template-columns: 100px auto auto 80px repeat(4, 95px) ;
-        /* background: green; */
-
-    }
-
-}
-/* Extra big screen devices(MONITORS) (1200px and above) */
+/* Extra large devices (large laptops and desktops, 1200px and up) */
 @media only screen and (min-width: 1200px) {
 
-    .main_container{
-       
-  
-        grid-template-columns:100px auto  minmax(200px, auto);;
-
-        }
-    
-    .row{
-        grid-template-columns: 100px auto auto 90px repeat(4, 95px) ;
-        /* background: brown; */
-
-    }
-    .menu_buttons{
-        display: flex;
-        justify-content: flex-end;
-        
-    }
-    .min_buttons{
-        display: none;
-    }
-
-
 }
-/* THESE MEDIA QUERIES ARE NORMALLY NOT NEEDED. SINCE THIS IS A DEX AND WE WILL MOST LIKELY HAVE USERS WITH EXTRA BIG MONITORS, I AM MAKING SOME CUSTOMIZATIONS TO MAKE USE OF THE EXTRA SPACES */
-@media only screen and (min-width: 1400px) {
-    .min_max_range{
-        display: flex;
-        margin: 0 1rem;
-        
-    }
-    .min_max{
-        display: none;
-    }
-    .row{
-        grid-template-columns: 100px auto auto 300px repeat(2, 95px) 80px 100px;
-        /* background: blue; */
 
-    }
+/* Extra large devices (large laptops and desktops, 1200px and up) */
+@media only screen and (min-width: 1500px) {
 
+    .main_container{
+        grid-template-columns: 100px auto 250px;
+    }
+}
+/* Extra large devices (large laptops and desktops, 1200px and up) */
+@media only screen and (min-width: 1600px) {
+
+    .main_container{
+        grid-template-columns: 100px 1fr 0.6fr;
+    }
 }
