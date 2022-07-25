@@ -1,12 +1,16 @@
+// START: Import React and Dongles
+import { useMemo, useState } from 'react';
+
+// START: Import Local Files
 import styles from './TransactionSettings.module.css';
 import Button from '../Button/Button';
 import SlippageTolerance from '../SlippageTolerance/SlippageTolerance';
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
-import { useMemo, useState } from 'react';
 import { setSlippageTolerance } from '../../../utils/state/tradeDataSlice';
 import { SlippagePairIF, TokenPairIF } from '../../../utils/interfaces/exports';
 import { checkIsStable } from '../../../utils/data/stablePairs';
 
+// interface for component props
 interface TransactionSettingsPropsIF {
     chainId: string;
     module: 'Swap' | 'Market Order' | 'Limit Order' | 'Range Order';
