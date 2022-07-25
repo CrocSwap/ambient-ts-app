@@ -18,7 +18,6 @@ import styles from './TestPage.module.css';
 // import Transaction from '../../components/Transaction/Transaction';
 // import Transactions from '../../components/Global/Transactions/Transactions';
 
-import Transactions2 from '../../components/Trade/TradeTabs/Transactions/Transactions2';
 import Range from '../../components/Global/Account/AccountTabs/Range/Range';
 import Reposition from '../Trade/Reposition/Reposition';
 
@@ -115,7 +114,6 @@ export default function TestPage() {
                 {/* <TableMenu tableType='orders' /> */}
 
                 {/* <Order2 /> */}
-                <Transactions2 />
                 <div style={{ maxWidth: '400px' }}>
                     <Reposition />
                 </div>

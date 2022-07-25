@@ -1,70 +1,32 @@
-// import Transaction from '../../Transaction/Transaction';
-// import styles from './Transactions.module.css';
-import { graphData } from '../../../../utils/state/graphDataSlice';
-// import { useAppSelector } from './../../../utils/hooks/reduxToolkit';
-// import { useMoralis } from 'react-moralis';
+import styles from './Transactions.module.css';
 import TransactionCard from './TransactionCard';
 import TransactionCardHeader from './TransactionCardHeader';
+import { graphData } from '../../../../utils/state/graphDataSlice';
 
 interface TransactionsProps {
     isShowAllEnabled: boolean;
     portfolio?: boolean;
-    notOnTradeRoute?: boolean;
+
     graphData: graphData;
 }
-
 export default function Transactions(props: TransactionsProps) {
-    const {
-        // portfolio,
-        //  notOnTradeRoute,
-        isShowAllEnabled,
-        graphData,
-    } = props;
-
-    // const tradeData = useAppSelector((state) => state.tradeData);
-
-    // const { account, isAuthenticated } = useMoralis();
-
-    // const tokenAAddress = tradeData.tokenA.address;
-    // const tokenBAddress = tradeData.tokenB.address;
-
-    // const exampleTransactions = [1, 2, 3];
+    const { isShowAllEnabled, graphData } = props;
 
     const swapsByUser = graphData?.swapsByUser?.swaps;
     const swapsByPool = graphData?.swapsByPool?.swaps;
 
     const TransactionsDisplay = isShowAllEnabled
         ? swapsByPool.map((swap, idx) => (
-              //   <Transaction
-              //       key={idx}
-              //       swap={swap}
-              //       tokenAAddress={tokenAAddress}
-              //       tokenBAddress={tokenBAddress}
-              //       account={account ?? undefined}
-              //       isAuthenticated={isAuthenticated}
-              //       isShowAllEnabled={isShowAllEnabled}
               //   />
               <TransactionCard key={idx} swap={swap} />
           ))
         : //   .reverse()
-          swapsByUser.map((swap, idx) => (
-              //   <Transaction
-              //       key={idx}
-              //       swap={swap}
-              //       tokenAAddress={tokenAAddress}
-              //       tokenBAddress={tokenBAddress}
-              //       account={account ?? undefined}
-              //       isAuthenticated={isAuthenticated}
-              //       isShowAllEnabled={isShowAllEnabled}
-              //   />
-              <TransactionCard key={idx} swap={swap} />
-          ));
-    //   .reverse();
+          swapsByUser.map((swap, idx) => <TransactionCard key={idx} swap={swap} />);
 
     return (
-        <>
+        <div className={styles.container}>
             <TransactionCardHeader />
-            <>{TransactionsDisplay}</>
-        </>
+            {TransactionsDisplay}
+        </div>
     );
 }

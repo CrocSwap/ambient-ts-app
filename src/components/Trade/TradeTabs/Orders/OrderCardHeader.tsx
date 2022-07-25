@@ -1,6 +1,6 @@
-import styles from './TransactionCard2Header.module.css';
+import styles from './OrderCardHeader.module.css';
 
-export default function TransactionCard2Header() {
+export default function OrderCardHeader() {
     return (
         <div className={styles.main_container}>
             <div className={styles.row_container}>

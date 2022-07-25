@@ -6,11 +6,9 @@ import TabContent from '../../Global/Tabs/TabContent/TabContent';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 // import Order2 from '../../../Account/Order/Order2';
 // import Order2 from '../../Global/Account/Order/Order2';
-import LimitOrders from './Orders/LimitOrders';
-import Transactions2 from './Transactions/Transactions2';
 import Transactions from './Transactions/Transactions';
 import Toggle2 from '../../Global/Toggle/Toggle2';
-import Order2 from './Orders/Order2';
+import Orders from './Orders/Orders';
 
 interface ITabsProps {
     account: string;
@@ -116,20 +114,16 @@ export default function TradeTabs(props: ITabsProps) {
                 </TabContent>
 
                 <TabContent id='tab2' activeTab={activeTab}>
-                    <LimitOrders />
+                    <Orders />
                 </TabContent>
                 <TabContent id='tab3' activeTab={activeTab}>
-                    <Transactions
-                        isShowAllEnabled={isShowAllEnabled}
-                        notOnTradeRoute={false}
-                        graphData={graphData}
-                    />
+                    <Transactions isShowAllEnabled={isShowAllEnabled} graphData={graphData} />
                 </TabContent>
                 <TabContent id='tab4' activeTab={activeTab}>
-                    <Order2 />
+                    Leaderboard
                 </TabContent>
                 <TabContent id='tab5' activeTab={activeTab}>
-                    <Transactions2 />
+                    Info
                 </TabContent>
             </div>
         </div>
