@@ -145,12 +145,16 @@ export default function PoolPage() {
             {poolInfo}
             <div className={styles.hsPAQl}>
                 <PoolInfoCard pool={poolData} />
-                <PoolPageChart
-                    tvlData={formattedTvlData}
-                    feesData={formattedFeesUSD}
-                    volumeData={formattedVolumeData}
-                    pool={poolData}
-                />
+                {poolData && chartData ? (
+                    <PoolPageChart
+                        tvlData={formattedTvlData}
+                        feesData={formattedFeesUSD}
+                        volumeData={formattedVolumeData}
+                        pool={poolData}
+                    />
+                ) : (
+                    <></>
+                )}
             </div>
             <Divider />
             {/* <Transactions transactions={transactions!} /> */}

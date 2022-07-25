@@ -130,12 +130,17 @@ export default function TokenPage() {
             {tokenInfo}
             <div className={styles.hsPAQl}>
                 <TokenCardInfo token={tokenData} />
-                <TokenPageChart
-                    tvlData={formattedTvlData}
-                    priceData={adjustedToCurrent}
-                    volumeData={formattedVolumeData}
-                    token={tokenData}
-                />
+
+                {chartData && tokenData && priceData ? (
+                    <TokenPageChart
+                        tvlData={formattedTvlData}
+                        priceData={adjustedToCurrent}
+                        volumeData={formattedVolumeData}
+                        token={tokenData}
+                    />
+                ) : (
+                    <></>
+                )}
             </div>
 
             <Divider />
