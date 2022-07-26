@@ -53,3 +53,24 @@
     background: var(--title-gradient);
     border-radius: 50%;
    }
+   .in_range_display{
+    display: none;
+   }
+
+   @media only screen and (min-width: 768px) {
+
+    .in_range_display{
+      display: flex;
+    }
+    .symbol_only_display{
+      display: none;
+    }
+        }
+    
+        /* Extra large devices (large laptops and desktops, 1200px and up) */
+    @media only screen and (min-width: 1200px) {
+    
+   
+      
+    
+    }

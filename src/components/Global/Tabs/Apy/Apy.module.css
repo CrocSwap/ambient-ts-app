@@ -5,22 +5,32 @@
     line-height: 13px;
     font-weight: 200;
     letter-spacing: -0.02em;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-fill-color: transparent;
+
 }
 
 .apy_green p{
-    background: linear-gradient(90deg, #15BE6F 32.38%, #8FE9BF 51.39%, #15BE6F 68.17%);
 
-    text-shadow: 0px 0px 10px rgba(21, 190, 111, 0.75);
+  /* apy/green */
+
+background: linear-gradient(90deg, #15BE6F 32.38%, #8FE9BF 51.39%, #15BE6F 68.17%);
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+background-clip: text;
+text-fill-color: transparent;
+
+text-shadow: 0px 0px 10px rgba(21, 190, 111, 0.75);
 }
 
 .apy_red p{
-    background: linear-gradient(90deg, #be5e15 32.38%, #d58c1f 51.39%, #b55b11 68.17%);
+    /* apy/green */
 
-    text-shadow: 0px 0px 10px rgba(190, 100, 21, 0.75);
+background: linear-gradient(90deg, #be4515 32.38%, #de5a2e 51.39%, #be5315 68.17%);
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+background-clip: text;
+text-fill-color: transparent;
+
+text-shadow: 0px 0px 10px rgba(190, 100, 21, 0.75);
 }
 /* Desktop screen Sizes */
 @media only screen and (min-width: 768px) {
