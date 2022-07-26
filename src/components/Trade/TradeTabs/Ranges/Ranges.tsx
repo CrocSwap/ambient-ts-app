@@ -1,8 +1,9 @@
-// import styles from './Ranges.module.css';
+import styles from './Ranges.module.css';
 import RangeCard from './RangeCard';
 import { graphData } from '../../../../utils/state/graphDataSlice';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { useMoralis } from 'react-moralis';
+import RangeCardHeader from './RangeCardHeader';
 
 interface RangesProps {
     isShowAllEnabled: boolean;
@@ -61,5 +62,10 @@ export default function Ranges(props: RangesProps) {
           ));
     //   .reverse();
 
-    return <div>{RangesDisplay}</div>;
+    return (
+        <div className={styles.container}>
+            <RangeCardHeader />
+            {RangesDisplay}
+        </div>
+    );
 }
