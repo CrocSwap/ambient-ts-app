@@ -1123,62 +1123,9 @@ export default function App() {
         }
     }
 
-    useEffect(() => {
-        toggleSidebarBasedOnRoute();
-    }, [location]);
+    useEffect(() => toggleSidebarBasedOnRoute(), [location]);
 
     const [nativeBalance, setNativeBalance] = useState<string>('');
-
-    // const [posArray, setPosArray] = useState<Moralis.Object<Moralis.Attributes>[]>();
-    // const [parsedPositionArray, setParsedPositionArray] = useState<IParsedPosition[]>();
-
-    // useMoralisSubscription(
-    //     'UserPosition',
-    //     (query) => query.equalTo('account', account).limit(1000),
-    //     [account],
-    //     {
-    //         // onCreate: (data) => console.log({ data }),
-    //         onCreate: (data) => {
-    //             if (data && posArray) {
-    //                 const newPosArray = [...posArray, data];
-    //                 setPosArray(newPosArray);
-    //             }
-    //         },
-    //     },
-    // );
-
-    // const { data } = useMoralisQuery(
-    //     'UserPosition',
-    //     (query) => query.equalTo('account', account).limit(1000),
-    //     [account],
-    //     { autoFetch: true },
-    // );
-
-    // useEffect to dispatch new position data to local state when
-    // when the moralis query returns different data
-    // useEffect(() => {
-    //     if (data) {
-    //         setPosArray(data);
-    //     }
-    // }, [data, account]);
-
-    // // useEffect to console log for dev purposes
-    // useEffect(() => {
-    //     if (provider && posArray && posArray?.length > 0) {
-    //         parsePositionArray(
-    //             posArray,
-    //             provider,
-    //             setParsedPositionArray as React.Dispatch<React.SetStateAction<IParsedPosition[]>>,
-    //         );
-    //     }
-    // }, [posArray]);
-
-    // useEffect to console log for dev purposes
-    // useEffect(() => {
-    //     if (parsedPositionArray && parsedPositionArray?.length > 0) {
-    //         console.log({ parsedPositionArray });
-    //     }
-    // }, [parsedPositionArray]);
 
     // function to sever connection between user wallet and Moralis server
     const clickLogout = async () => {

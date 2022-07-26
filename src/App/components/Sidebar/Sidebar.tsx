@@ -1,7 +1,19 @@
-import styles from './Sidebar.module.css';
-import React from 'react';
+// START: Import React and Dongles
+import { MouseEvent } from 'react';
 import { BiSearch } from 'react-icons/bi';
-// import { MdDoubleArrow } from 'react-icons/md';
+
+// START: Import JSX Elements
+import SidebarAccordion from './SidebarAccordion';
+import TopTokens from '../../../components/Global/Sidebar/TopTokens/TopTokens';
+import TopPools from '../../../components/Global/Sidebar/TopPools/TopPools';
+import FavoritePools from '../../../components/Global/Sidebar/FavoritePools/FavoritePools';
+import SidebarRangePositions from '../../../components/Global/Sidebar/SidebarRangePositions/SidebarRangePositions';
+import SidebarLimitOrders from '../../../components/Global/Sidebar/SidebarLimitOrders/SidebarLimitOrders';
+import SidebarRecentTransactions from '../../../components/Global/Sidebar/SidebarRecentTransactions/SidebarRecentTransactions';
+
+// START: Import Local Files
+import styles from './Sidebar.module.css';
+import { useTokenMap } from './useTokenMap';
 import favouritePoolsImage from '../../../assets/images/sidebarImages/favouritePools.svg';
 import openOrdersImage from '../../../assets/images/sidebarImages/openOrders.svg';
 import rangePositionsImage from '../../../assets/images/sidebarImages/rangePositions.svg';
@@ -9,24 +21,21 @@ import recentTransactionsImage from '../../../assets/images/sidebarImages/recent
 import topPoolsImage from '../../../assets/images/sidebarImages/topPools.svg';
 import topTokensImage from '../../../assets/images/sidebarImages/topTokens.svg';
 import closeSidebarImage from '../../../assets/images/sidebarImages/closeSidebar.svg';
-import SidebarAccordion from './SidebarAccordion';
 
-import TopTokens from '../../../components/Global/Sidebar/TopTokens/TopTokens';
-import TopPools from '../../../components/Global/Sidebar/TopPools/TopPools';
-import FavoritePools from '../../../components/Global/Sidebar/FavoritePools/FavoritePools';
-import SidebarRangePositions from '../../../components/Global/Sidebar/SidebarRangePositions/SidebarRangePositions';
-import SidebarLimitOrders from '../../../components/Global/Sidebar/SidebarLimitOrders/SidebarLimitOrders';
-import SidebarRecentTransactions from '../../../components/Global/Sidebar/SidebarRecentTransactions/SidebarRecentTransactions';
-interface SidebarProps {
-    // setShowSidebar: SetStateAction<boolean>;
+// interface for component props
+interface SidebarPropsIF {
     showSidebar: boolean;
     toggleSidebar: (
-        event: React.MouseEvent<HTMLDivElement> | React.MouseEvent<HTMLLIElement>,
+        event: MouseEvent<HTMLDivElement> | MouseEvent<HTMLLIElement>,
     ) => void;
 }
 
-export default function Sidebar(props: SidebarProps): React.ReactElement<SidebarProps> {
+export default function Sidebar(props: SidebarPropsIF) {
     const { toggleSidebar, showSidebar } = props;
+
+    // TODO:  @Ben this is the map with all the coin gecko token data objects
+    const coinGeckoTokenMap = useTokenMap();
+    console.assert(coinGeckoTokenMap, 'no map present');
 
     const navItems1 = [
         { name: 'Top Tokens', icon: topTokensImage, data: <TopTokens /> },
@@ -68,14 +77,6 @@ export default function Sidebar(props: SidebarProps): React.ReactElement<Sidebar
                 <ul className={styles.sidebar_nav}>
                     {searchContainer}
                     {navItems1.map((item, idx) => (
-                        //   <li key={idx} className={styles.sidebar_item}>
-                        //  <div className={styles.sidebar_link}>
-                        //      {showSidebar && <MdPlayArrow size={12} color='#ffffff' />}
-                        //      <img src={item.icon} alt={item.name} width='20px' />
-
-                        //      <span className={styles.link_text}>{item.name}</span>
-                        //    </div>
-                        // </li>
                         <SidebarAccordion
                             showSidebar={showSidebar}
                             idx={idx}
@@ -84,17 +85,8 @@ export default function Sidebar(props: SidebarProps): React.ReactElement<Sidebar
                             key={idx}
                         />
                     ))}
-
                     <div className={styles.bottom_elements}>
                         {navItems2.map((item, idx) => (
-                            // <li key={idx} className={styles.sidebar_item} >
-                            //     <div className={styles.sidebar_link}>
-                            //         {showSidebar && <MdPlayArrow size={12} color='#ffffff' />}
-                            //         <img src={item.icon} alt={item.name} width='20px' />
-
-                            //         <span className={styles.link_text}>{item.name}</span>
-                            //     </div>
-                            // </li>
                             <SidebarAccordion
                                 toggleSidebar={toggleSidebar}
                                 showSidebar={showSidebar}
