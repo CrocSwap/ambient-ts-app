@@ -1,7 +1,6 @@
 import styles from './Sidebar.module.css';
 import React from 'react';
 import { BiSearch } from 'react-icons/bi';
-// import { MdDoubleArrow } from 'react-icons/md';
 import favouritePoolsImage from '../../../assets/images/sidebarImages/favouritePools.svg';
 import openOrdersImage from '../../../assets/images/sidebarImages/openOrders.svg';
 import rangePositionsImage from '../../../assets/images/sidebarImages/rangePositions.svg';
@@ -18,7 +17,6 @@ import SidebarRangePositions from '../../../components/Global/Sidebar/SidebarRan
 import SidebarLimitOrders from '../../../components/Global/Sidebar/SidebarLimitOrders/SidebarLimitOrders';
 import SidebarRecentTransactions from '../../../components/Global/Sidebar/SidebarRecentTransactions/SidebarRecentTransactions';
 interface SidebarProps {
-    // setShowSidebar: SetStateAction<boolean>;
     showSidebar: boolean;
     toggleSidebar: (
         event: React.MouseEvent<HTMLDivElement> | React.MouseEvent<HTMLLIElement>,
@@ -68,14 +66,6 @@ export default function Sidebar(props: SidebarProps): React.ReactElement<Sidebar
                 <ul className={styles.sidebar_nav}>
                     {searchContainer}
                     {navItems1.map((item, idx) => (
-                        //   <li key={idx} className={styles.sidebar_item}>
-                        //  <div className={styles.sidebar_link}>
-                        //      {showSidebar && <MdPlayArrow size={12} color='#ffffff' />}
-                        //      <img src={item.icon} alt={item.name} width='20px' />
-
-                        //      <span className={styles.link_text}>{item.name}</span>
-                        //    </div>
-                        // </li>
                         <SidebarAccordion
                             showSidebar={showSidebar}
                             idx={idx}
@@ -87,14 +77,6 @@ export default function Sidebar(props: SidebarProps): React.ReactElement<Sidebar
 
                     <div className={styles.bottom_elements}>
                         {navItems2.map((item, idx) => (
-                            // <li key={idx} className={styles.sidebar_item} >
-                            //     <div className={styles.sidebar_link}>
-                            //         {showSidebar && <MdPlayArrow size={12} color='#ffffff' />}
-                            //         <img src={item.icon} alt={item.name} width='20px' />
-
-                            //         <span className={styles.link_text}>{item.name}</span>
-                            //     </div>
-                            // </li>
                             <SidebarAccordion
                                 toggleSidebar={toggleSidebar}
                                 showSidebar={showSidebar}
