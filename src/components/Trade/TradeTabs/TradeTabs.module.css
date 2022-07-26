@@ -11,6 +11,8 @@
 }
 
 .tabs{
+    width: 100%;
+    /* background: green; */
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -18,13 +20,13 @@
     
 }
 .tab_navs{
-   
-    max-width: 80%;
-    width: 50%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+ width: 100%;
+ display: flex;
+
+ justify-content: center;
+ align-items: center;
 }
+
 
 ul.tab_navs{
     color: var(--text-grey-dark);
@@ -37,47 +39,89 @@ ul.tab_navs{
 
 
 
-.option_toggles{
+.options_toggles, .options_toggle{
+    display: none;
+}
+
+
+
+.mobile_menus{
+    min-width: 9.875rem;
+    min-height: 1.875rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+ 
+}
+  
+    .mobile_tabs_display{
+        width: 100%;
+      display: flex;
+    
+      flex-direction: row;
+      align-items: center;
+      background: var(--dark2);
+    }
+
+
+.desktop_tabs{
+    display: none;
+}
+
+/* Desktop screen Sizes */
+@media only screen and (min-width: 568px) {
+.desktop_tabs{
+    display: flex;
+    width: 100%;
+    
+}
+.mobile_tabs_display{
+    display: none;
+
+}
+
+.tab_navs{
+  
+    max-width: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+}
+/* Desktop screen Sizes */
+@media only screen and (min-width: 768px) {
+
+.tab_navs{
+   
+    max-width: 80%;
+    width: 60%;
+   
+}
+.options_toggles{
+    display: flex;
     max-width: 20%;
     width: 20%;
     height: 100%;
+    
+    cursor: pointer;
+}
+
+.options_toggle p{
     color: var(--text-grey-light);
     font-weight: 500;
     font-size: var(--body-size);
     line-height: var(--body-lh);
     list-style: none;
-    cursor: pointer;
-
-    
-    
 }
-
-/* .tab_navs li:nth-child(2){
-    display: none;
-} */
-
-
-
-  .options_toggle{
-      
+.options_toggle{
+    
     display: flex;
     gap: 6px;
     justify-content: flex-end;
     margin-right: 0.5rem;
     flex-direction: row;
     align-items: center;
-  }
-
-  @media only screen 
-  and (min-device-width: 320px) 
-  and (max-device-width: 568px)
-  and (-webkit-min-device-pixel-ratio: 2) {
- 
-   .option_toggles{
-       display: none;
-   }
-
-   .tab_navs{
-    width: 100%;
-   }
+}
 }

@@ -4,11 +4,14 @@ import TabNavItem from '../../Global/Tabs/TabNavItem/TabNavItem';
 import Positions from './Positions/Positions';
 import TabContent from '../../Global/Tabs/TabContent/TabContent';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-// import Order2 from '../../../Account/Order/Order2';
-// import Order2 from '../../Global/Account/Order/Order2';
+
 import Transactions from './Transactions/Transactions';
 import Toggle2 from '../../Global/Toggle/Toggle2';
 import Orders from './Orders/Orders';
+import DropdownMenu from '../../Global/DropdownMenu/DropdownMenu';
+import DropdownMenuContainer from '../../Global/DropdownMenu/DropdownMenuContainer/DropdownMenuContainer';
+import DropdownMenuItem from '../../Global/DropdownMenu/DropdownMenuItem/DropdownMenuItem';
+import { BiDownArrow } from 'react-icons/bi';
 
 interface ITabsProps {
     account: string;
@@ -64,8 +67,8 @@ export default function TradeTabs(props: ITabsProps) {
     }
 
     const positionsOnlyToggle = (
-        <span className={styles.options_toggle}>
-            {isShowAllEnabled ? 'All ' + label : 'My ' + label}
+        <div className={styles.options_toggle}>
+            <p>{isShowAllEnabled ? 'All ' + label : 'My ' + label}</p>
 
             <Toggle2
                 isOn={isShowAllEnabled}
@@ -76,7 +79,7 @@ export default function TradeTabs(props: ITabsProps) {
                 id='positions_only_toggle'
                 disabled={!props.isAuthenticated || !props.isWeb3Enabled}
             />
-        </span>
+        </div>
     );
 
     const tabData = [
@@ -86,22 +89,80 @@ export default function TradeTabs(props: ITabsProps) {
         { title: 'Leaderboard', id: 'tab4' },
         { title: 'Info', id: 'tab5' },
     ];
+    // ----------------------------TAB DISPLAY ON DESKTOPS---------------------
+    const desktopTabs = (
+        <ul className={`${styles.tab_navs} ${styles.desktop_tabs}`}>
+            {tabData.map((tab) => (
+                <TabNavItem
+                    key={tab.title}
+                    title={tab.title}
+                    id={tab.id}
+                    activeTab={activeTab}
+                    setActiveTab={setActiveTab}
+                />
+            ))}
+        </ul>
+    );
+    // ----------------------------END OF TAB DISPLAY ON DESKTOPS---------------------
+    // spread operator is used to make a shallow copy  so we won't mutate the original data
+    // We don't need to assign these to variables. We can simply use this in the return statement but it is cleaner to read this way.
+    const firstTwoNavs = [...tabData].slice(0, 2);
+    const remainingNavs = [...tabData].splice(2, tabData.length - 1);
+
+    // ---------------------------MOBILE MENU DROPDOWWN-----------------------
+    const mobileMenu = (
+        <div className={styles.mobile_menus}>
+            <DropdownMenu title={<BiDownArrow size={18} color='#bdbdbd' />}>
+                <DropdownMenuContainer>
+                    {remainingNavs.map((tab) => (
+                        <DropdownMenuItem key={tab.title}>
+                            <TabNavItem
+                                key={tab.title}
+                                title={tab.title}
+                                id={tab.id}
+                                activeTab={activeTab}
+                                setActiveTab={setActiveTab}
+                            />
+                        </DropdownMenuItem>
+                    ))}
+                </DropdownMenuContainer>
+            </DropdownMenu>
+        </div>
+    );
+    // ---------------------------END OF MOBILE MENU DROPDOWWN-----------------------
+
+    // --------------------------- MOBILE TABS(FIRST TWO TABS)-----------------------
+    const mobileTabs = (
+        <ul className={`${styles.tab_navs} ${styles.mobile_tabs}`}>
+            {firstTwoNavs.map((tab) => (
+                <TabNavItem
+                    key={tab.title}
+                    title={tab.title}
+                    id={tab.id}
+                    activeTab={activeTab}
+                    setActiveTab={setActiveTab}
+                />
+            ))}
+        </ul>
+    );
+
+    // ---------------------------END OF MOBILE TABS(FIRST TWO TABS)-----------------------
+
+    // FIRST TWO TABS PLUS DROPDOWN MEMU
+    const mobileTabsDisplay = (
+        <div className={styles.mobile_tabs_display}>
+            {mobileTabs}
+            {mobileMenu}
+        </div>
+    );
 
     return (
         <div className={styles.tabs_container}>
             <div className={styles.tabs}>
-                <ul className={styles.tab_navs}>
-                    {tabData.map((tab) => (
-                        <TabNavItem
-                            key={tab.title}
-                            title={tab.title}
-                            id={tab.id}
-                            activeTab={activeTab}
-                            setActiveTab={setActiveTab}
-                        />
-                    ))}
-                </ul>
-                <div className={styles.option_toggles}>{label ? positionsOnlyToggle : null}</div>
+                {mobileTabsDisplay}
+                {desktopTabs}
+
+                {label ? positionsOnlyToggle : null}
             </div>
             <div className={styles.tabs_outlet}>
                 <TabContent id='tab1' activeTab={activeTab}>
