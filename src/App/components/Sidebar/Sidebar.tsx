@@ -1,6 +1,18 @@
-import styles from './Sidebar.module.css';
-import { MouseEvent, ReactElement } from 'react';
+// START: Import React and Dongles
+import { MouseEvent } from 'react';
 import { BiSearch } from 'react-icons/bi';
+
+// START: Import JSX Elements
+import SidebarAccordion from './SidebarAccordion';
+import TopTokens from '../../../components/Global/Sidebar/TopTokens/TopTokens';
+import TopPools from '../../../components/Global/Sidebar/TopPools/TopPools';
+import FavoritePools from '../../../components/Global/Sidebar/FavoritePools/FavoritePools';
+import SidebarRangePositions from '../../../components/Global/Sidebar/SidebarRangePositions/SidebarRangePositions';
+import SidebarLimitOrders from '../../../components/Global/Sidebar/SidebarLimitOrders/SidebarLimitOrders';
+import SidebarRecentTransactions from '../../../components/Global/Sidebar/SidebarRecentTransactions/SidebarRecentTransactions';
+
+// START: Import Local Files
+import styles from './Sidebar.module.css';
 import favouritePoolsImage from '../../../assets/images/sidebarImages/favouritePools.svg';
 import openOrdersImage from '../../../assets/images/sidebarImages/openOrders.svg';
 import rangePositionsImage from '../../../assets/images/sidebarImages/rangePositions.svg';
@@ -8,22 +20,16 @@ import recentTransactionsImage from '../../../assets/images/sidebarImages/recent
 import topPoolsImage from '../../../assets/images/sidebarImages/topPools.svg';
 import topTokensImage from '../../../assets/images/sidebarImages/topTokens.svg';
 import closeSidebarImage from '../../../assets/images/sidebarImages/closeSidebar.svg';
-import SidebarAccordion from './SidebarAccordion';
 
-import TopTokens from '../../../components/Global/Sidebar/TopTokens/TopTokens';
-import TopPools from '../../../components/Global/Sidebar/TopPools/TopPools';
-import FavoritePools from '../../../components/Global/Sidebar/FavoritePools/FavoritePools';
-import SidebarRangePositions from '../../../components/Global/Sidebar/SidebarRangePositions/SidebarRangePositions';
-import SidebarLimitOrders from '../../../components/Global/Sidebar/SidebarLimitOrders/SidebarLimitOrders';
-import SidebarRecentTransactions from '../../../components/Global/Sidebar/SidebarRecentTransactions/SidebarRecentTransactions';
-interface SidebarProps {
+// interface for component props
+interface SidebarPropsIF {
     showSidebar: boolean;
     toggleSidebar: (
         event: MouseEvent<HTMLDivElement> | MouseEvent<HTMLLIElement>,
     ) => void;
 }
 
-export default function Sidebar(props: SidebarProps): ReactElement<SidebarProps> {
+export default function Sidebar(props: SidebarPropsIF) {
     const { toggleSidebar, showSidebar } = props;
 
     const navItems1 = [
