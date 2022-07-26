@@ -11,7 +11,10 @@ import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import SnackbarComponent from '../../../../../components/Global/SnackbarComponent/SnackbarComponent';
 interface RangesMenu {
     userPosition: boolean | undefined;
+    // todoFromJr: Assign the correct types to these data -Jr
+    // eslint-disable-next-line
     removeRangeProps: any;
+    // eslint-disable-next-line
     positionData: any;
     posHash: string;
 }
@@ -23,6 +26,7 @@ export default function RangesMenu(props: RangesMenu) {
     const { isAmbient, isPositionInRange } = props.removeRangeProps;
     const { posHash, positionData } = props;
     const { userPosition, removeRangeProps } = props;
+    // eslint-disable-next-line
     const [value, copy] = useCopyToClipboard();
     const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
 

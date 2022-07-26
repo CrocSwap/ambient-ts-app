@@ -1,15 +1,11 @@
 import styles from './RangeCard.module.css';
-import Price from '../../../Global/Tabs/Price/Price';
-import TableMenu from '../../../Global/Tabs/TableMenu/TableMenu';
 import TokenQty from '../../../Global/Tabs/TokenQty/TokenQty';
-import OrderTypeSide from '../../../Global/Tabs/TypeAndSide/OrderTypeAndSide/OrderTypeSide';
 import WalletAndId from '../../../Global/Tabs/WalletAndID/WalletAndId';
 import RangeStatus from '../../../Global/RangeStatus/RangeStatus';
 import RangeMinMax from '../../../Global/Tabs/RangeMinMax/RangeMinMax';
 import Apy from '../../../Global/Tabs/Apy/Apy';
 import { Position } from '../../../../utils/state/graphDataSlice';
 import { ambientPosSlot, concPosSlot } from '@crocswap-libs/sdk';
-import OrdersMenu from '../../../Global/Tabs/TableMenu/TableMenuComponents/OrdersMenu';
 import RangesMenu from '../../../Global/Tabs/TableMenu/TableMenuComponents/RangesMenu';
 
 interface RangeCardProps {
@@ -27,15 +23,12 @@ interface RangeCardProps {
 }
 
 export default function RangeCard(props: RangeCardProps) {
-    const tempOwnerId = '0xa2b398145b7fc8fd9a01142698f15d329ebb5ff5090cfcc8caae440867ab9919';
-    const tempPosHash = '0x01e650abfc761c6a0fc60f62a4e4b3832bb1178b';
-
     const {
         position,
         // isAllPositionsEnabled,
         tokenAAddress,
         tokenBAddress,
-        account,
+        // account,
         // notOnTradeRoute,
         // isAuthenticated,
 
@@ -83,7 +76,7 @@ export default function RangeCard(props: RangeCardProps) {
     // ----------------------------------END OF POSITIONS RANGE-------------------
 
     // --------------------SELECTED TOKEN FUNCTIONALITY---------------------------
-    const ownerId = position ? position.user : null;
+    // const ownerId = position ? position.user : null;
 
     const positionBaseAddressLowerCase = position.base.toLowerCase();
     const positionQuoteAddressLowerCase = position.quote.toLowerCase();
@@ -97,9 +90,9 @@ export default function RangeCard(props: RangeCardProps) {
         (positionBaseAddressLowerCase === tokenBAddressLowerCase ||
             positionQuoteAddressLowerCase === tokenBAddressLowerCase);
 
-    const accountAddress = account ? account.toLowerCase() : null;
+    // const accountAddress = account ? account.toLowerCase() : null;
 
-    const positionOwnedByConnectedAccount = ownerId === accountAddress;
+    // const positionOwnedByConnectedAccount = ownerId === accountAddress;
 
     // -------------------- ENDSELECTED TOKEN FUNCTIONALITY---------------------------
 

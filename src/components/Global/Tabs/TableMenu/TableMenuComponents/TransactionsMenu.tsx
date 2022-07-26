@@ -11,7 +11,11 @@ import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import SnackbarComponent from '../../../../../components/Global/SnackbarComponent/SnackbarComponent';
 import { Link } from 'react-router-dom';
 
-export default function TransactionsMenu() {
+interface TransactionMenu {
+    userPosition: boolean | undefined;
+}
+export default function TransactionsMenu(props: TransactionMenu) {
+    const { userPosition } = props;
     const [value, copy] = useCopyToClipboard();
     const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
 
@@ -81,11 +85,11 @@ export default function TransactionsMenu() {
 
     const modalOrNull = isModalOpen ? mainModal : null;
 
-    const removeButton = (
+    const removeButton = userPosition ? (
         <button className={styles.option_button} onClick={openRemoveModal}>
             Remove
         </button>
-    );
+    ) : null;
     const copyButton = (
         <button className={styles.option_button} onClick={handleCopyAddress}>
             Copy
@@ -96,16 +100,16 @@ export default function TransactionsMenu() {
             Details
         </button>
     );
-    const harvestButton = (
+    const harvestButton = userPosition ? (
         <button className={styles.option_button} onClick={openHarvestModal}>
             Harvest
         </button>
-    );
-    const editButton = (
+    ) : null;
+    const editButton = userPosition ? (
         <Link className={styles.option_button} to={'/trade/edit'}>
             Edit
         </Link>
-    );
+    ) : null;
 
     const transactionsMenu = (
         <div className={styles.actions_menu}>

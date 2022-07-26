@@ -20,9 +20,6 @@ import styles from './TestPage.module.css';
 
 import Range from '../../components/Global/Account/AccountTabs/Range/Range';
 import Reposition from '../Trade/Reposition/Reposition';
-import AccountTokensDisplay from '../../components/Global/Tabs/AccountTokensDisplay/AccountTokensDisplay';
-import AccountPoolDisplay from '../../components/Global/Tabs/AccountPoolDisplay/AccountPoolDisplay';
-import RangeCard from '../../components/Trade/TradeTabs/Ranges/RangeCard';
 
 export default function TestPage() {
     // // get the user object from local storage

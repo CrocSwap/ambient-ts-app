@@ -1,4 +1,4 @@
-import styles from './Ranges.module.css';
+// import styles from './Ranges.module.css';
 import RangeCard from './RangeCard';
 import { graphData } from '../../../../utils/state/graphDataSlice';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';

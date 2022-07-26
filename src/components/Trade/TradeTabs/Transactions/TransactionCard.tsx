@@ -1,10 +1,10 @@
 import Price from '../../../Global/Tabs/Price/Price';
-import TableMenu from '../../../Global/Tabs/TableMenu/TableMenu';
 import TokenQty from '../../../Global/Tabs/TokenQty/TokenQty';
 import TransactionTypeSide from '../../../Global/Tabs/TypeAndSide/TransactionTypeSide/TransactionTypeSide';
 import WalletAndId from '../../../Global/Tabs/WalletAndID/WalletAndId';
 import styles from './TransactionCard.module.css';
 import { ISwap } from '../../../../utils/state/graphDataSlice';
+import TransactionsMenu from '../../../Global/Tabs/TableMenu/TableMenuComponents/TransactionsMenu';
 
 interface TransactionProps {
     swap: ISwap;
@@ -32,7 +32,7 @@ export default function TransactionCard(props: TransactionProps) {
             </div>
 
             <div className={styles.menu_container}>
-                <TableMenu tableType='transactions' userPosition={false} />
+                <TransactionsMenu userPosition={false} />
             </div>
         </div>
     );
