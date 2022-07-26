@@ -9,6 +9,8 @@ import RangeMinMax from '../../../Global/Tabs/RangeMinMax/RangeMinMax';
 import Apy from '../../../Global/Tabs/Apy/Apy';
 import { Position } from '../../../../utils/state/graphDataSlice';
 import { ambientPosSlot, concPosSlot } from '@crocswap-libs/sdk';
+import OrdersMenu from '../../../Global/Tabs/TableMenu/TableMenuComponents/OrdersMenu';
+import RangesMenu from '../../../Global/Tabs/TableMenu/TableMenuComponents/RangesMenu';
 
 interface RangeCardProps {
     portfolio?: boolean;
@@ -59,6 +61,7 @@ export default function RangeCard(props: RangeCardProps) {
             position.askTick,
         );
     }
+
     // -------------------------------END OF POSITION HASH------------------------
 
     // -----------------------------POSITIONS RANGE--------------------
@@ -79,6 +82,27 @@ export default function RangeCard(props: RangeCardProps) {
 
     // ----------------------------------END OF POSITIONS RANGE-------------------
 
+    // --------------------SELECTED TOKEN FUNCTIONALITY---------------------------
+    const ownerId = position ? position.user : null;
+
+    const positionBaseAddressLowerCase = position.base.toLowerCase();
+    const positionQuoteAddressLowerCase = position.quote.toLowerCase();
+
+    const tokenAAddressLowerCase = tokenAAddress.toLowerCase();
+    const tokenBAddressLowerCase = tokenBAddress.toLowerCase();
+
+    const positionMatchesSelectedTokens =
+        (positionBaseAddressLowerCase === tokenAAddressLowerCase ||
+            positionQuoteAddressLowerCase === tokenAAddressLowerCase) &&
+        (positionBaseAddressLowerCase === tokenBAddressLowerCase ||
+            positionQuoteAddressLowerCase === tokenBAddressLowerCase);
+
+    const accountAddress = account ? account.toLowerCase() : null;
+
+    const positionOwnedByConnectedAccount = ownerId === accountAddress;
+
+    // -------------------- ENDSELECTED TOKEN FUNCTIONALITY---------------------------
+
     // ---------------------------------POSITIONS MIN AND MAX RANGE--------------------
 
     const minRange = props.isDenomBase
@@ -92,6 +116,29 @@ export default function RangeCard(props: RangeCardProps) {
     const ambientMaxOrNull = position.ambient ? 'ambient' : maxRange;
 
     // ---------------------------------END OF POSITIONS MIN AND MAX RANGE--------------------
+
+    // --------------------------REMOVE RANGE PROPS-------------------------------
+    const removeRangeProps = {
+        isPositionInRange: isPositionInRange,
+        isAmbient: position.ambient,
+        baseTokenSymbol: position.baseTokenSymbol,
+        baseTokenDecimals: position.baseTokenDecimals,
+        quoteTokenSymbol: position.quoteTokenSymbol,
+        quoteTokenDecimals: position.quoteTokenDecimals,
+        lowRangeDisplayInBase: position.lowRangeDisplayInBase,
+        highRangeDisplayInBase: position.highRangeDisplayInBase,
+        lowRangeDisplayInQuote: position.lowRangeDisplayInQuote,
+        highRangeDisplayInQuote: position.highRangeDisplayInQuote,
+        baseTokenLogoURI: position.baseTokenLogoURI,
+        quoteTokenLogoURI: position.quoteTokenLogoURI,
+        isDenomBase: props.isDenomBase,
+        baseTokenAddress: props.position.base,
+        quoteTokenAddress: props.position.quote,
+        lastBlockNumber: lastBlockNumber,
+    };
+
+    // ------------------------------END OF REMOVE RANGE PROPS-----------------
+    if (!positionMatchesSelectedTokens) return null;
     return (
         <div className={styles.main_container}>
             <div className={styles.row_container}>
@@ -115,7 +162,12 @@ export default function RangeCard(props: RangeCardProps) {
             </div>
 
             <div className={styles.menu_container}>
-                <TableMenu tableType='orders' userPosition={userPosition} />
+                <RangesMenu
+                    userPosition={userPosition}
+                    removeRangeProps={removeRangeProps}
+                    posHash={posHash as string}
+                    positionData={positionData}
+                />
             </div>
         </div>
     );

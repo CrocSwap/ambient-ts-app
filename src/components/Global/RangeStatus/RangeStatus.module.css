@@ -57,7 +57,7 @@
     display: none;
    }
 
-   @media only screen and (min-width: 768px) {
+   @media only screen and (min-width: 1200px) {
 
     .in_range_display{
       display: flex;
@@ -67,10 +67,4 @@
     }
         }
     
-        /* Extra large devices (large laptops and desktops, 1200px and up) */
-    @media only screen and (min-width: 1200px) {
-    
    
-      
-    
-    }
