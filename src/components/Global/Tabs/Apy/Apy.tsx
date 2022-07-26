@@ -1,5 +1,17 @@
+import { Styles } from '@material-ui/core/styles/withStyles';
 import styles from './Apy.module.css';
 
-export default function Apy() {
-    return <div>apy</div>;
+interface ApyProps {
+    amount: number;
+}
+
+export default function Apy(props: ApyProps) {
+    const { amount } = props;
+
+    const apyColor = amount > 20 ? styles.apy_green : styles.apy_red;
+    return (
+        <section className={`${styles.apy} ${apyColor}`}>
+            <p>{amount}</p>
+        </section>
+    );
 }
