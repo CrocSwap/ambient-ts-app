@@ -14,7 +14,11 @@ import SnackbarComponent from '../../../../../components/Global/SnackbarComponen
 
 import { Link } from 'react-router-dom';
 
-export default function OrdersMenu() {
+interface OrdersMenu {
+    userPosition: boolean | undefined;
+}
+export default function OrdersMenu(props: OrdersMenu) {
+    const { userPosition } = props;
     const [value, copy] = useCopyToClipboard();
     const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
 

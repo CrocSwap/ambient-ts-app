@@ -33,7 +33,7 @@ export default function TransactionCard() {
             </div>
 
             <div className={styles.menu_container}>
-                <TableMenu tableType='transactions' />
+                <TableMenu tableType='transactions' userPosition={false} />
             </div>
         </div>
     );

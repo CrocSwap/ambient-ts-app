@@ -4,11 +4,12 @@ import TransactionsMenu from './TableMenuComponents/TransactionsMenu';
 
 interface TableMenuProps {
     tableType: 'orders' | 'ranges' | 'transactions';
+    userPosition: boolean | undefined;
 }
 export default function TableMenu(props: TableMenuProps) {
-    const { tableType } = props;
+    const { tableType, userPosition } = props;
     const menuData = {
-        orders: <OrdersMenu />,
+        orders: <OrdersMenu userPosition={userPosition} />,
         ranges: <RangesMenu />,
         transactions: <TransactionsMenu />,
     };

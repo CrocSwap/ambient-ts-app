@@ -29,7 +29,7 @@ export default function OrderCard() {
             </div>
 
             <div className={styles.menu_container}>
-                <TableMenu tableType='orders' />
+                <TableMenu tableType='orders' userPosition={false} />
             </div>
         </div>
     );

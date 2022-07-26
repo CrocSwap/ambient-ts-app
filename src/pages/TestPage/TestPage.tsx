@@ -122,7 +122,6 @@ export default function TestPage() {
                 </div>
                 {/* <AccountTokensDisplay />
                 <AccountPoolDisplay /> */}
-                <RangeCard />
             </main>
         </>
     );

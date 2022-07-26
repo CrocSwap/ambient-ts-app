@@ -1,17 +1,22 @@
 import styles from './RangeMinMax.module.css';
 
-export default function RangeMinMax() {
+interface RangeMinMaxprops {
+    min: number | string;
+    max: number | string;
+}
+
+export default function RangeMinMax(props: RangeMinMaxprops) {
     return (
         <>
             <section className={styles.range_column}>
-                <p>Min</p>
-                <p>Max</p>
+                <p>{props.min}</p>
+                <p>{props.max}</p>
             </section>
             <section className={styles.range_sing}>
-                <p>Min</p>
+                <p>{props.min}</p>
             </section>
             <section className={styles.range_sing}>
-                <p>Max</p>
+                <p>{props.max}</p>
             </section>
         </>
     );
