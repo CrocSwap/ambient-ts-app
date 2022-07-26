@@ -13,6 +13,7 @@ import SidebarRecentTransactions from '../../../components/Global/Sidebar/Sideba
 
 // START: Import Local Files
 import styles from './Sidebar.module.css';
+import { useTokenMap } from './useTokenMap';
 import favouritePoolsImage from '../../../assets/images/sidebarImages/favouritePools.svg';
 import openOrdersImage from '../../../assets/images/sidebarImages/openOrders.svg';
 import rangePositionsImage from '../../../assets/images/sidebarImages/rangePositions.svg';
@@ -31,6 +32,8 @@ interface SidebarPropsIF {
 
 export default function Sidebar(props: SidebarPropsIF) {
     const { toggleSidebar, showSidebar } = props;
+
+    const coinGeckoTokenMap = useTokenMap();
 
     const navItems1 = [
         { name: 'Top Tokens', icon: topTokensImage, data: <TopTokens /> },
