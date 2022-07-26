@@ -33,7 +33,9 @@ interface SidebarPropsIF {
 export default function Sidebar(props: SidebarPropsIF) {
     const { toggleSidebar, showSidebar } = props;
 
+    // TODO:  @Ben this is the map with all the coin gecko token data objects
     const coinGeckoTokenMap = useTokenMap();
+    console.assert(coinGeckoTokenMap, 'no map present');
 
     const navItems1 = [
         { name: 'Top Tokens', icon: topTokensImage, data: <TopTokens /> },
