@@ -86,8 +86,6 @@ import { addNativeBalance, resetTokenData, setTokens } from '../utils/state/toke
 import Reposition from '../pages/Trade/Reposition/Reposition';
 // import SidebarFooter from '../components/Global/SIdebarFooter/SidebarFooter';
 
-
-
 const cachedQuerySpotPrice = memoizePromiseFn(querySpotPrice);
 const cachedFetchAddress = memoizePromiseFn(fetchAddress);
 const cachedFetchTokenBalances = memoizePromiseFn(fetchTokenBalances);
@@ -1332,6 +1330,7 @@ export default function App() {
     const sidebarProps = {
         showSidebar: showSidebar,
         toggleSidebar: toggleSidebar,
+        chainId: chainId,
         // setShowSidebar : setShowSidebar
     };
 
