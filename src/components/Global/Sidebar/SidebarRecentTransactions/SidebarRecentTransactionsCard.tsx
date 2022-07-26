@@ -31,7 +31,7 @@ export default function SidebarRecentTransactionsCard(props: TransactionProps) {
             <div>{tx.block}</div>
             <div>Swap</div>
             <div className={styles.status_display}>
-                {baseToken.symbol} / {quoteToken.symbol}
+                {baseToken?.symbol} / {quoteToken?.symbol}
                 {tokenDisplay}
             </div>
         </div>
