@@ -1,3 +1,4 @@
+import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import { ISwap } from '../../../../utils/state/graphDataSlice';
 import styles from './SidebarRecentTransactions.module.css';
 import SidebarRecentTransactionsCard from './SidebarRecentTransactionsCard';
@@ -6,7 +7,7 @@ interface SidebarRecentTransactionsPropsIF {
     // showSidebar: boolean;
     mostRecentTransactions: ISwap[];
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    coinGeckoTokenMap?: Map<any, any>;
+    coinGeckoTokenMap?: Map<string, TokenIF>;
     chainId: string;
 }
 

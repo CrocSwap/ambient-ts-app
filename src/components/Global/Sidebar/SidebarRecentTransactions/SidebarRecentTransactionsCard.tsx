@@ -1,6 +1,5 @@
 import { ISwap } from '../../../../utils/state/graphDataSlice';
 
-import { useEffect } from 'react';
 import styles from './SidebarRecentTransactionsCard.module.css';
 
 interface TransactionProps {
@@ -13,15 +12,11 @@ interface TransactionProps {
 export default function SidebarRecentTransactionsCard(props: TransactionProps) {
     const { tx, coinGeckoTokenMap, chainId } = props;
 
+    const baseId = tx.base + '_' + chainId;
     const quoteId = tx.quote + '_' + chainId;
-    // console.log({ quoteId });
-    // console.log({ coinGeckoTokenMap });
 
-    const quoteToken = coinGeckoTokenMap ? coinGeckoTokenMap.get(quoteId) : null;
-
-    useEffect(() => {
-        console.log({ quoteToken });
-    }, [quoteToken]);
+    const baseToken = coinGeckoTokenMap ? coinGeckoTokenMap.get(baseId.toLowerCase()) : null;
+    const quoteToken = coinGeckoTokenMap ? coinGeckoTokenMap.get(quoteId.toLowerCase()) : null;
 
     const tokenDisplay = (
         <div className={styles.token_container}>
@@ -36,7 +31,7 @@ export default function SidebarRecentTransactionsCard(props: TransactionProps) {
             <div>{tx.block}</div>
             <div>Swap</div>
             <div className={styles.status_display}>
-                {tx.inBaseQty}
+                {baseToken.symbol} / {quoteToken.symbol}
                 {tokenDisplay}
             </div>
         </div>
