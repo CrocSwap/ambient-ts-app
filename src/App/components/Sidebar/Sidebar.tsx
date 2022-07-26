@@ -80,7 +80,6 @@ export default function Sidebar(props: SidebarPropsIF) {
                             key={idx}
                         />
                     ))}
-
                     <div className={styles.bottom_elements}>
                         {navItems2.map((item, idx) => (
                             <SidebarAccordion
