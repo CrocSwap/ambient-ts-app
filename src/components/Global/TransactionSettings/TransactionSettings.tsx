@@ -1,42 +1,64 @@
+// START: Import React and Dongles
+import { useMemo, useState } from 'react';
+
+// START: Import Local Files
 import styles from './TransactionSettings.module.css';
-
+import Button from '../Button/Button';
 import SlippageTolerance from '../SlippageTolerance/SlippageTolerance';
-
-import { useAppDispatch, useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import { useState } from 'react';
+import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import { setSlippageTolerance } from '../../../utils/state/tradeDataSlice';
+import { SlippagePairIF, TokenPairIF } from '../../../utils/interfaces/exports';
+import { checkIsStable } from '../../../utils/data/stablePairs';
 
-interface TransactionSettingsProps {
+// interface for component props
+interface TransactionSettingsPropsIF {
+    chainId: string;
     module: 'Swap' | 'Market Order' | 'Limit Order' | 'Range Order';
+    tokenPair: TokenPairIF;
+    slippage: SlippagePairIF;
     onClose: () => void;
 }
 
-export default function TransactionSettings(props: TransactionSettingsProps) {
+export default function TransactionSettings(props: TransactionSettingsPropsIF) {
+    const { chainId, module, tokenPair, slippage, onClose } = props;
+
     const dispatch = useAppDispatch();
 
-    const tradeData = useAppSelector((state) => state.tradeData);
+    // boolean value representing whether the current token pair is a recognized stable pair
+    // useMemo() with empty dependency array means value is only calculated once on component mount
+    const isPairStable = useMemo(
+        () => checkIsStable(tokenPair.dataTokenA.address, tokenPair.dataTokenB.address, chainId),
+        [],
+    );
 
-    const slippageToleranceInRTK = tradeData.slippageTolerance;
-
-    const [slippageInput, setSlippageInput] = useState(slippageToleranceInRTK);
+    const [newSlippage, setNewSlippage] = useState<string>(
+        isPairStable ? slippage.stable.value : slippage.volatile.value,
+    );
 
     const handleClose = () => {
-        props.onClose();
-        dispatch(setSlippageTolerance(slippageInput));
+        dispatch(setSlippageTolerance(parseInt(newSlippage)));
+        isPairStable
+            ? slippage.stable.setValue(newSlippage)
+            : slippage.volatile.setValue(newSlippage);
+        onClose();
     };
 
-    const shouldDisplaySlippageTolerance = props.module !== 'Limit Order';
+    const shouldDisplaySlippageTolerance = module !== 'Limit Order';
 
     return (
         <div className={styles.settings_container}>
-            <div className={styles.settings_title}>{props.module + ' Settings'}</div>
+            <div className={styles.settings_title}>{module + ' Settings'}</div>
             {shouldDisplaySlippageTolerance ? (
                 <SlippageTolerance
-                    setSlippageInput={setSlippageInput}
-                    slippageInput={slippageInput}
+                    slippageValue={isPairStable ? slippage.stable.value : slippage.volatile.value}
+                    setNewSlippage={setNewSlippage}
                 />
             ) : null}
-            {shouldDisplaySlippageTolerance ? <button onClick={handleClose}>Submit</button> : null}
+            <div className={styles.button_container}>
+                {shouldDisplaySlippageTolerance ? (
+                    <Button title='Submit' action={handleClose} />
+                ) : null}
+            </div>
         </div>
     );
 }

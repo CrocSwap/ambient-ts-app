@@ -15,11 +15,16 @@ import {
 } from '../utils/state/graphDataSlice';
 import { ethers } from 'ethers';
 // import { request, gql } from 'graphql-request';
-import { useMoralis, useMoralisQuery, useMoralisSubscription, useChain } from 'react-moralis';
+import {
+    useMoralis,
+    //  useMoralisQuery,
+    //  useMoralisSubscription,
+    useChain,
+} from 'react-moralis';
 
 import useWebSocket from 'react-use-websocket';
 // import { ReadyState } from 'react-use-websocket';
-import Moralis from 'moralis';
+// import Moralis from 'moralis';
 import { sortBaseQuoteTokens, toDisplayPrice, tickToPrice, CrocEnv } from '@crocswap-libs/sdk';
 
 import { receiptData, resetReceiptData } from '../utils/state/receiptDataSlice';
@@ -46,12 +51,13 @@ import Trade from '../pages/Trade/Trade';
 import './App.css';
 import { useAppDispatch, useAppSelector } from '../utils/hooks/reduxToolkit';
 import { validateChain } from './validateChain';
-import { IParsedPosition, parsePositionArray } from './parsePositions';
+// import { IParsedPosition, parsePositionArray } from './parsePositions';
 import { defaultTokens } from '../utils/data/defaultTokens';
 import initializeUserLocalStorage from './functions/initializeUserLocalStorage';
 import { TokenIF, TokenListIF } from '../utils/interfaces/exports';
 import { fetchTokenLists } from './functions/fetchTokenLists';
 import {
+    resetTokens,
     resetTradeData,
     setAdvancedHighTick,
     setAdvancedLowTick,
@@ -66,7 +72,10 @@ import truncateDecimals from '../utils/data/truncateDecimals';
 import { getNFTs } from './functions/getNFTs';
 import { queryTokenDecimals } from './functions/queryTokenDecimals';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { resetTokenData, setTokens } from '../utils/state/tokenDataSlice';
+import { useSlippage } from './useSlippage';
+import { addNativeBalance, resetTokenData, setTokens } from '../utils/state/tokenDataSlice';
+
+import Reposition from '../pages/Trade/Reposition/Reposition';
 // import SidebarFooter from '../components/Global/SIdebarFooter/SidebarFooter';
 
 const cachedQuerySpotPrice = memoizePromiseFn(querySpotPrice);
@@ -130,17 +139,22 @@ export default function App() {
                     clickLogout();
                 } else if (window.ethereum && !metamaskLocked) {
                     const metamaskProvider = new ethers.providers.Web3Provider(window.ethereum);
-                    console.log('Metamask Provider')
+                    console.log('Metamask Provider');
                     setProvider(metamaskProvider);
                 }
             } else if (!provider || !onChain) {
-                const url = lookupChain(chainId).nodeUrl
-                setProvider(new ethers.providers.JsonRpcProvider(url))
+                const url = lookupChain(chainId).nodeUrl;
+                setProvider(new ethers.providers.JsonRpcProvider(url));
             }
         } catch (error) {
             console.log(error);
         }
     }, [isAuthenticated, chainId, metamaskLocked]);
+
+    useEffect(() => {
+        dispatch(resetTokens(chainId));
+        dispatch(resetTokenData());
+    }, [chainId]);
 
     const dispatch = useAppDispatch();
 
@@ -171,6 +185,8 @@ export default function App() {
         initializeUserLocalStorage();
         getImportedTokens();
     }, [tokenListsReceived]);
+
+    const [swapSlippage, mintSlippage] = useSlippage();
 
     // update local state with searchable tokens once after initial load of app
     useEffect(() => {
@@ -286,14 +302,19 @@ export default function App() {
                         chainId,
                         lastBlockNumber,
                     );
-                    if (JSON.stringify(tokensInRTK) !== JSON.stringify(tokens))
+                    if (
+                        tokens &&
+                        (tokensInRTK.length === 1 ||
+                            JSON.stringify(tokensInRTK.slice(1)) !== JSON.stringify(tokens))
+                    ) {
                         dispatch(setTokens(tokens));
+                    }
                 } catch (error) {
                     console.log({ error });
                 }
             }
         })();
-    }, [account, chainId, lastBlockNumber]);
+    }, [account, chainId, lastBlockNumber, tokensInRTK]);
 
     const [baseTokenAddress, setBaseTokenAddress] = useState<string>('');
     const [quoteTokenAddress, setQuoteTokenAddress] = useState<string>('');
@@ -807,7 +828,7 @@ export default function App() {
             candle.quote = candle.quote.startsWith('0x') ? candle.quote : '0x' + candle.quote;
         }
         return candle;
-    }
+    };
 
     const getPositionData = async (position: Position): Promise<Position> => {
         position.base = position.base.startsWith('0x') ? position.base : '0x' + position.base;
@@ -980,56 +1001,56 @@ export default function App() {
 
     const [nativeBalance, setNativeBalance] = useState<string>('');
 
-    const [posArray, setPosArray] = useState<Moralis.Object<Moralis.Attributes>[]>();
-    const [parsedPositionArray, setParsedPositionArray] = useState<IParsedPosition[]>();
+    // const [posArray, setPosArray] = useState<Moralis.Object<Moralis.Attributes>[]>();
+    // const [parsedPositionArray, setParsedPositionArray] = useState<IParsedPosition[]>();
 
-    useMoralisSubscription(
-        'UserPosition',
-        (query) => query.equalTo('account', account).limit(1000),
-        [account],
-        {
-            // onCreate: (data) => console.log({ data }),
-            onCreate: (data) => {
-                if (data && posArray) {
-                    const newPosArray = [...posArray, data];
-                    setPosArray(newPosArray);
-                }
-            },
-        },
-    );
+    // useMoralisSubscription(
+    //     'UserPosition',
+    //     (query) => query.equalTo('account', account).limit(1000),
+    //     [account],
+    //     {
+    //         // onCreate: (data) => console.log({ data }),
+    //         onCreate: (data) => {
+    //             if (data && posArray) {
+    //                 const newPosArray = [...posArray, data];
+    //                 setPosArray(newPosArray);
+    //             }
+    //         },
+    //     },
+    // );
 
-    const { data } = useMoralisQuery(
-        'UserPosition',
-        (query) => query.equalTo('account', account).limit(1000),
-        [account],
-        { autoFetch: true },
-    );
+    // const { data } = useMoralisQuery(
+    //     'UserPosition',
+    //     (query) => query.equalTo('account', account).limit(1000),
+    //     [account],
+    //     { autoFetch: true },
+    // );
 
     // useEffect to dispatch new position data to local state when
     // when the moralis query returns different data
-    useEffect(() => {
-        if (data) {
-            setPosArray(data);
-        }
-    }, [data, account]);
+    // useEffect(() => {
+    //     if (data) {
+    //         setPosArray(data);
+    //     }
+    // }, [data, account]);
+
+    // // useEffect to console log for dev purposes
+    // useEffect(() => {
+    //     if (provider && posArray && posArray?.length > 0) {
+    //         parsePositionArray(
+    //             posArray,
+    //             provider,
+    //             setParsedPositionArray as React.Dispatch<React.SetStateAction<IParsedPosition[]>>,
+    //         );
+    //     }
+    // }, [posArray]);
 
     // useEffect to console log for dev purposes
-    useEffect(() => {
-        if (provider && posArray && posArray?.length > 0) {
-            parsePositionArray(
-                posArray,
-                provider,
-                setParsedPositionArray as React.Dispatch<React.SetStateAction<IParsedPosition[]>>,
-            );
-        }
-    }, [posArray]);
-
-    // useEffect to console log for dev purposes
-    useEffect(() => {
-        if (parsedPositionArray && parsedPositionArray?.length > 0) {
-            console.log({ parsedPositionArray });
-        }
-    }, [parsedPositionArray]);
+    // useEffect(() => {
+    //     if (parsedPositionArray && parsedPositionArray?.length > 0) {
+    //         console.log({ parsedPositionArray });
+    //     }
+    // }, [parsedPositionArray]);
 
     // function to sever connection between user wallet and Moralis server
     const clickLogout = async () => {
@@ -1051,11 +1072,65 @@ export default function App() {
             if (provider && account && isAuthenticated && isWeb3Enabled) {
                 console.log('Provider Native Balance');
                 console.dir(provider);
-                console.log(provider.getBalance('0x01e650ABfc761C6A0Fc60f62A4E4b3832bb1178b').then(console.log))
+                console.log(
+                    provider
+                        .getBalance('0x01e650ABfc761C6A0Fc60f62A4E4b3832bb1178b')
+                        .then(console.log),
+                );
                 new CrocEnv(provider)
                     .tokenEth()
                     .balance(account)
-                    .then((eth) => setNativeBalance(eth.toString()));
+                    .then((eth) => {
+                        setNativeBalance(eth.toString());
+
+                        const nativeToken: TokenIF = {
+                            name: 'Native Token',
+
+                            address: '0x0000000000000000000000000000000000000000',
+                            // eslint-disable-next-line camelcase
+                            token_address: '0x0000000000000000000000000000000000000000',
+                            symbol: 'ETH',
+                            decimals: 18,
+                            chainId: parseInt(chainId),
+                            logoURI: '',
+                            balance: eth.toString(),
+                        };
+                        if (JSON.stringify(tokensInRTK[0]) !== JSON.stringify(nativeToken))
+                            dispatch(addNativeBalance([nativeToken]));
+                    });
+                // if (
+                //     provider &&
+                //     provider.connection?.url === 'metamask' &&
+                //     account &&
+                //     isAuthenticated &&
+                //     isWeb3Enabled
+                // ) {
+                // const signer = provider.getSigner();
+
+                // const nativeEthBalance = await getTokenBalanceDisplay(
+                //     contractAddresses.ZERO_ADDR,
+                //     account,
+                //     signer,
+                // );
+                // make sure a balance was returned, initialized as null
+                // if (nativeEthBalance) {
+                //     // send value to local state
+                //     setNativeBalance(nativeEthBalance);
+                //     const nativeToken: TokenIF = {
+                //         name: 'Native Token',
+                //         address: contractAddresses.ZERO_ADDR,
+                //         // eslint-disable-next-line camelcase
+                //         token_address: contractAddresses.ZERO_ADDR,
+                //         symbol: 'ETH',
+                //         decimals: 18,
+                //         chainId: parseInt(chainId),
+                //         logoURI: '',
+                //         balance: nativeEthBalance,
+                //     };
+                //     // console.log('adding native balance: ' + nativeEthBalance);
+                //     if (JSON.stringify(tokensInRTK[0]) !== JSON.stringify(nativeToken))
+                //         dispatch(addNativeBalance([nativeToken]));
+                // }
             }
         })();
     }, [provider, account, isWeb3Enabled, isAuthenticated, lastBlockNumber]);
@@ -1113,6 +1188,8 @@ export default function App() {
         setImportedTokens: setImportedTokens,
         searchableTokens: searchableTokens,
         provider: provider,
+        swapSlippage: swapSlippage,
+        // provider: provider as JsonRpcProvider,
         gasPriceinGwei: gasPriceinGwei,
         nativeBalance: nativeBalance,
         lastBlockNumber: lastBlockNumber,
@@ -1134,6 +1211,8 @@ export default function App() {
         setImportedTokens: setImportedTokens,
         searchableTokens: searchableTokens,
         provider: provider,
+        swapSlippage: swapSlippage,
+        // provider: provider as JsonRpcProvider,
         isOnTradeRoute: true,
         gasPriceinGwei: gasPriceinGwei,
         nativeBalance: nativeBalance,
@@ -1156,6 +1235,8 @@ export default function App() {
         setImportedTokens: setImportedTokens,
         searchableTokens: searchableTokens,
         provider: provider,
+        mintSlippage: mintSlippage,
+        // provider: provider as JsonRpcProvider,
         isOnTradeRoute: true,
         gasPriceinGwei: gasPriceinGwei,
         nativeBalance: nativeBalance,
@@ -1180,6 +1261,8 @@ export default function App() {
         setImportedTokens: setImportedTokens,
         searchableTokens: searchableTokens,
         provider: provider,
+        mintSlippage: mintSlippage,
+        // provider: provider as JsonRpcProvider,
         lastBlockNumber: lastBlockNumber,
         gasPriceinGwei: gasPriceinGwei,
         baseTokenAddress: baseTokenAddress,
@@ -1235,12 +1318,9 @@ export default function App() {
         }
     }, [tradeData.didUserFlipDenom, tokenPair]);
 
-    const mainLayoutStyle = showSidebar ? 'main-layout-2' : 'main-layout';
+    // const mainLayoutStyle = showSidebar ? 'main-layout-2' : 'main-layout';
     // take away margin from left if we are on homepage or swap
-    const noSidebarStyle =
-        currentLocation == '/' || currentLocation == '/swap' || currentLocation == '/404'
-            ? 'no-sidebar'
-            : mainLayoutStyle;
+
     const swapBodyStyle = currentLocation == '/swap' ? 'swap-body' : null;
 
     const [imageData, setImageData] = useState<string[]>([]);
@@ -1254,14 +1334,28 @@ export default function App() {
         })();
     }, [account]);
 
+    // Show sidebar on all pages except for home and swap
+    const sidebarRender = currentLocation !== '/' &&
+        currentLocation !== '/swap' &&
+        currentLocation !== '/404' && <Sidebar {...sidebarProps} />;
+
+    const sidebarDislayStyle = showSidebar
+        ? 'sidebar_content_layout'
+        : 'sidebar_content_layout_close';
+
+    const showSidebarOrNullStyle =
+        currentLocation == '/' || currentLocation == '/swap' || currentLocation == '/404'
+            ? 'hide_sidebar'
+            : sidebarDislayStyle;
+
     return (
         <>
             <div className='content-container'>
                 {currentLocation !== '/404' && <PageHeader {...headerProps} />}
-                {currentLocation !== '/' &&
-                    currentLocation !== '/swap' &&
-                    currentLocation !== '/404' && <Sidebar {...sidebarProps} />}
-                <div className={`${noSidebarStyle} ${swapBodyStyle}`}>
+                <main className={`${showSidebarOrNullStyle} ${swapBodyStyle}`}>
+                    {sidebarRender}
+                    {/* <div className={`${noSidebarStyle} ${swapBodyStyle}`}> */}
+
                     <Routes>
                         <Route index element={<Home />} />
                         <Route
@@ -1283,6 +1377,7 @@ export default function App() {
                             <Route path='limit' element={<Limit {...limitPropsTrade} />} />
                             <Route path='range' element={<Range {...rangeProps} />} />
                             <Route path='edit/:positionHash' element={<Edit />} />
+                            <Route path='reposition' element={<Reposition />} />
                             <Route path='edit/' element={<Navigate to='/trade/market' replace />} />
                         </Route>
                         <Route path='analytics' element={<Analytics />} />
@@ -1306,11 +1401,13 @@ export default function App() {
                         <Route path='*' element={<Navigate to='/404' replace />} />
                         <Route path='/404' element={<NotFound />} />
                     </Routes>
-                </div>
+                </main>
                 {snackbarContent}
             </div>
-            <PageFooter lastBlockNumber={lastBlockNumber} />
+            <div className='footer_container'>
+                <PageFooter lastBlockNumber={lastBlockNumber} />
+            </div>
             {/* <SidebarFooter/> */}
         </>
-    )
+    );
 }

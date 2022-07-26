@@ -2,12 +2,17 @@ import styles from './PortfolioTabs.module.css';
 import { useState } from 'react';
 import TabContent from '../../Global/Tabs/TabContent/TabContent';
 import TabNavItem from '../../Global/Tabs/TabNavItem/TabNavItem';
+import Wallet from '../../Global/Account/AccountTabs/Wallet/Wallet';
+import Exchange from '../../Global/Account/AccountTabs/Exchange/Exchange';
+import Range from '../../Global/Account/AccountTabs/Range/Range';
+import Order from '../../Global/Account/AccountTabs/Order/Order';
+import TransactionsTable from '../../Global/Account/AccountTabs/Transaction/TransactionsTable';
 // import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import Wallet from '../../Global/Account/Wallet/Wallet';
-import Exchange from '../../Global/Account/Exchange/Exchange';
-import Range from '../../Global/Account/Range/Range';
-import Order from '../../Global/Account/Order/Order';
-import TransactionsTable from '../../Global/Account/Transaction/TransactionsTable';
+// import Wallet from '../../Global/Account/Wallet/Wallet';
+// import Exchange from '../../Global/Account/Exchange/Exchange';
+// import Range from '../../Global/Account/Range/Range';
+// import Order from '../../Global/Account/Order/Order';
+// import TransactionsTable from '../../Global/Account/Transaction/TransactionsTable';
 
 export default function PortfolioTabs() {
     const [activeTab, setActiveTab] = useState('tab1');

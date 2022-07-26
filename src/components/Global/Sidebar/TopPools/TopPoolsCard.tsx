@@ -1,7 +1,7 @@
 import styles from './TopPoolsCard.module.css';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import { setTokenA, setTokenB } from '../../../../utils/state/tradeDataSlice';
-import { TokenIF } from '../../../../utils/interfaces/TokenIF';
+import { TokenIF } from '../../../../utils/interfaces/exports';
 
 interface TopPoolsCardProps {
     pool: { name: string; tokenA: TokenIF; tokenB: TokenIF };

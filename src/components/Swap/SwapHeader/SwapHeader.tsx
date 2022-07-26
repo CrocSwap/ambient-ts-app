@@ -1,5 +1,4 @@
 // START: Import React and Dongles
-import { MdShowChart } from 'react-icons/md';
 
 // START: Import React Functional Components
 import Modal from '../../../components/Global/Modal/Modal';
@@ -10,21 +9,23 @@ import TransactionSettings from '../../Global/TransactionSettings/TransactionSet
 // START: Import Local Files
 import styles from './SwapHeader.module.css';
 import settingsIcon from '../../../assets/images/icons/settings.svg';
-import { TokenPairIF } from '../../../utils/interfaces/exports';
+import { SlippagePairIF, TokenPairIF } from '../../../utils/interfaces/exports';
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import { toggleDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
 
 // interface for props
-interface swapHeaderPropsIF {
+interface SwapHeaderPropsIF {
+    chainId: string;
     tokenPair: TokenPairIF;
+    swapSlippage: SlippagePairIF;
     isOnTradeRoute?: boolean;
     isDenomBase: boolean;
     isTokenABase: boolean;
 }
 
 // main react functional component
-export default function SwapHeader(props: swapHeaderPropsIF) {
-    const { tokenPair, isOnTradeRoute, isDenomBase, isTokenABase } = props;
+export default function SwapHeader(props: SwapHeaderPropsIF) {
+    const { chainId, tokenPair, swapSlippage, isOnTradeRoute, isDenomBase, isTokenABase } = props;
     const [isModalOpen, openModal, closeModal] = useModal();
 
     const dispatch = useAppDispatch();
@@ -34,7 +35,10 @@ export default function SwapHeader(props: swapHeaderPropsIF) {
     const settingsModalOrNull = isModalOpen ? (
         <Modal noHeader title='modal' onClose={closeModal}>
             <TransactionSettings
+                chainId={chainId}
                 module={isOnTradeRoute ? 'Market Order' : 'Swap'}
+                tokenPair={tokenPair}
+                slippage={swapSlippage}
                 onClose={closeModal}
             />
         </Modal>
@@ -55,9 +59,7 @@ export default function SwapHeader(props: swapHeaderPropsIF) {
 
     const mainHeader = (
         <ContentHeader>
-            <span>
-                <MdShowChart />
-            </span>
+            <div />
             <span className={styles.title}>Swap</span>
             <div className={styles.settings_container} onClick={openModal}>
                 <img src={settingsIcon} alt='settings' />

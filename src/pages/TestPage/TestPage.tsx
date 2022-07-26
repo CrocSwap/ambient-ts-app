@@ -14,11 +14,14 @@
 // import { TokenListIF } from '../../utils/interfaces/exports';
 import styles from './TestPage.module.css';
 
-import Range from '../../components/Global/Account/Range/Range';
+// import Range from '../../components/Global/Account/Range/Range';
 // import Transaction from '../../components/Transaction/Transaction';
 // import Transactions from '../../components/Global/Transactions/Transactions';
 
-import Order2 from '../../components/Global/Account/Order/Order2';
+import Range from '../../components/Global/Account/AccountTabs/Range/Range';
+import Reposition from '../Trade/Reposition/Reposition';
+import AccountTokensDisplay from '../../components/Global/Tabs/AccountTokensDisplay/AccountTokensDisplay';
+import AccountPoolDisplay from '../../components/Global/Tabs/AccountPoolDisplay/AccountPoolDisplay';
 
 export default function TestPage() {
     // // get the user object from local storage
@@ -105,13 +108,19 @@ export default function TestPage() {
                 ))} */}
                 {/* <RangeCardHeader /> */}
                 {/* <RangeCard /> */}
+
                 <Range />
                 {/* <Order />
                 <TransactionsTable /> */}
 
                 {/* <TableMenu tableType='orders' /> */}
 
-                <Order2 />
+                {/* <Order2 /> */}
+                <div style={{ maxWidth: '400px' }}>
+                    <Reposition />
+                </div>
+                <AccountTokensDisplay />
+                <AccountPoolDisplay />
             </main>
         </>
     );

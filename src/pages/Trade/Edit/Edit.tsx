@@ -19,7 +19,6 @@ import {
     getPinnedPriceValuesFromDisplayPrices,
 } from '../Range/rangeFunctions';
 import truncateDecimals from '../../../utils/data/truncateDecimals';
-// import { PositionIF } from '../../../utils/interfaces/PositionIF';
 import { tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
@@ -31,8 +30,6 @@ export default function Edit() {
     const [isModalOpen, openModal, closeModal] = useModal();
 
     const location = useLocation();
-
-    // const dispatch = useAppDispatch();
 
     const tradeData = useAppSelector((state) => state.tradeData);
 

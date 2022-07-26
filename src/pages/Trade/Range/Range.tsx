@@ -30,7 +30,7 @@ import {
 import { isTransactionReplacedError, TransactionError } from '../../../utils/TransactionError';
 import truncateDecimals from '../../../utils/data/truncateDecimals';
 import ConfirmRangeModal from '../../../components/Trade/Range/ConfirmRangeModal/ConfirmRangeModal';
-import { TokenIF } from '../../../utils/interfaces/exports';
+import { SlippagePairIF, TokenIF } from '../../../utils/interfaces/exports';
 import { useTradeData } from '../Trade';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import RangeExtraInfo from '../../../components/Trade/Range/RangeExtraInfo/RangeExtraInfo';
@@ -49,6 +49,8 @@ interface RangePropsIF {
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     searchableTokens: Array<TokenIF>;
     provider?: ethers.providers.Provider;
+    mintSlippage: SlippagePairIF;
+    // provider: JsonRpcProvider;
     gasPriceinGwei: string;
     lastBlockNumber: number;
     baseTokenAddress: string;
@@ -71,6 +73,7 @@ export default function Range(props: RangePropsIF) {
         importedTokens,
         setImportedTokens,
         searchableTokens,
+        mintSlippage,
         provider,
         baseTokenAddress,
         quoteTokenAddress,
@@ -87,6 +90,7 @@ export default function Range(props: RangePropsIF) {
         activeTokenListsChanged,
         indicateActiveTokenListsChanged,
     } = props;
+
     const [isModalOpen, openModal, closeModal] = useModal();
 
     const dispatch = useAppDispatch();
@@ -940,7 +944,9 @@ export default function Range(props: RangePropsIF) {
         <section data-testid={'range'}>
             <ContentContainer isOnTradeRoute>
                 <RangeHeader
+                    chainId={chainId}
                     tokenPair={tokenPair}
+                    mintSlippage={mintSlippage}
                     isDenomBase={tradeData.isDenomBase}
                     isTokenABase={isTokenABase}
                 />
