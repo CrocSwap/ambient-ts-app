@@ -1,5 +1,5 @@
 import styles from './Sidebar.module.css';
-import React from 'react';
+import { MouseEvent, ReactElement } from 'react';
 import { BiSearch } from 'react-icons/bi';
 import favouritePoolsImage from '../../../assets/images/sidebarImages/favouritePools.svg';
 import openOrdersImage from '../../../assets/images/sidebarImages/openOrders.svg';
@@ -19,11 +19,11 @@ import SidebarRecentTransactions from '../../../components/Global/Sidebar/Sideba
 interface SidebarProps {
     showSidebar: boolean;
     toggleSidebar: (
-        event: React.MouseEvent<HTMLDivElement> | React.MouseEvent<HTMLLIElement>,
+        event: MouseEvent<HTMLDivElement> | MouseEvent<HTMLLIElement>,
     ) => void;
 }
 
-export default function Sidebar(props: SidebarProps): React.ReactElement<SidebarProps> {
+export default function Sidebar(props: SidebarProps): ReactElement<SidebarProps> {
     const { toggleSidebar, showSidebar } = props;
 
     const navItems1 = [
