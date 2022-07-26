@@ -81,11 +81,31 @@ export default function TransactionsMenu() {
 
     const modalOrNull = isModalOpen ? mainModal : null;
 
-    const removeButton = <button onClick={openRemoveModal}>Remove</button>;
-    const copyButton = <button onClick={handleCopyAddress}>Copy</button>;
-    const detailsButton = <button onClick={openDetailsModal}>Details</button>;
-    const harvestButton = <button onClick={openHarvestModal}>Harvest</button>;
-    const editButton = <Link to={'/trade/edit'}>Edit</Link>;
+    const removeButton = (
+        <button className={styles.option_button} onClick={openRemoveModal}>
+            Remove
+        </button>
+    );
+    const copyButton = (
+        <button className={styles.option_button} onClick={handleCopyAddress}>
+            Copy
+        </button>
+    );
+    const detailsButton = (
+        <button className={styles.option_button} onClick={openDetailsModal}>
+            Details
+        </button>
+    );
+    const harvestButton = (
+        <button className={styles.option_button} onClick={openHarvestModal}>
+            Harvest
+        </button>
+    );
+    const editButton = (
+        <Link className={styles.option_button} to={'/trade/edit'}>
+            Edit
+        </Link>
+    );
 
     const transactionsMenu = (
         <div className={styles.actions_menu}>
