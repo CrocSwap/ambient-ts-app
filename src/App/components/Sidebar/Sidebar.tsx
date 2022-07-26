@@ -22,20 +22,26 @@ import topPoolsImage from '../../../assets/images/sidebarImages/topPools.svg';
 import topTokensImage from '../../../assets/images/sidebarImages/topTokens.svg';
 import closeSidebarImage from '../../../assets/images/sidebarImages/closeSidebar.svg';
 
+import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+
 // interface for component props
 interface SidebarPropsIF {
     showSidebar: boolean;
-    toggleSidebar: (
-        event: MouseEvent<HTMLDivElement> | MouseEvent<HTMLLIElement>,
-    ) => void;
+    toggleSidebar: (event: MouseEvent<HTMLDivElement> | MouseEvent<HTMLLIElement>) => void;
+    chainId: string;
 }
 
 export default function Sidebar(props: SidebarPropsIF) {
-    const { toggleSidebar, showSidebar } = props;
+    const { toggleSidebar, showSidebar, chainId } = props;
+
+    const graphData = useAppSelector((state) => state.graphData);
+    const swapsByUser = graphData.swapsByUser.swaps;
+
+    const mostRecentTransactions = swapsByUser.slice(0, 4);
 
     // TODO:  @Ben this is the map with all the coin gecko token data objects
     const coinGeckoTokenMap = useTokenMap();
-    console.assert(coinGeckoTokenMap, 'no map present');
+    // console.assert(coinGeckoTokenMap, 'no map present');
 
     const navItems1 = [
         { name: 'Top Tokens', icon: topTokensImage, data: <TopTokens /> },
@@ -46,10 +52,19 @@ export default function Sidebar(props: SidebarPropsIF) {
 
     const navItems2 = [
         { name: 'Favorite Pools', icon: favouritePoolsImage, data: <FavoritePools /> },
+    ];
+
+    const navItems3 = [
         {
             name: 'Recent Transactions',
             icon: recentTransactionsImage,
-            data: <SidebarRecentTransactions />,
+            data: (
+                <SidebarRecentTransactions
+                    mostRecentTransactions={mostRecentTransactions}
+                    coinGeckoTokenMap={coinGeckoTokenMap}
+                    chainId={chainId}
+                />
+            ),
         },
     ];
 
@@ -93,6 +108,16 @@ export default function Sidebar(props: SidebarPropsIF) {
                                 idx={idx}
                                 item={item}
                                 key={idx}
+                            />
+                        ))}
+                        {navItems3.map((item, idx) => (
+                            <SidebarAccordion
+                                toggleSidebar={toggleSidebar}
+                                showSidebar={showSidebar}
+                                idx={idx}
+                                item={item}
+                                key={idx}
+                                mostRecentTransactions={mostRecentTransactions}
                             />
                         ))}
                     </div>
