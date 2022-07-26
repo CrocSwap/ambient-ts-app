@@ -1,4 +1,3 @@
-import { Styles } from '@material-ui/core/styles/withStyles';
 import styles from './Apy.module.css';
 
 interface ApyProps {
