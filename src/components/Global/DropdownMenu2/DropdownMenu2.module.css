@@ -8,6 +8,8 @@
     border-right: 4px solid transparent;
     transition: 0.2s cubic-bezier(0.6, -0.28, 0.735, 0.045);
     justify-content: space-between;
+
+    position: relative;
 }
 
 .menu_item {
@@ -16,9 +18,13 @@
   }
 
 .menu_container{
+    width: 100%;
     display: flex;
     flex-direction: column;
     background: brown;
+
+    position: absolute;
+    top: 30px;
 }
 
 .link_text {

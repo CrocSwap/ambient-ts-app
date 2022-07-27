@@ -2,6 +2,7 @@ import styles from './NetworkSelector.module.css';
 // import { useState } from 'react';
 import { useChain, useMoralis } from 'react-moralis';
 import { BiDownArrow } from 'react-icons/bi';
+import DropdownMenu2 from '../../../../components/Global/DropdownMenu2/DropdownMenu2';
 
 interface NetworkSelectorProps {
     chainId: string;
@@ -82,12 +83,21 @@ export default function NetworkSelector(props: NetworkSelectorProps) {
         // closeMenu ? closeMenu() : null;
     };
 
+    const networkMenu = (
+        <DropdownMenu2 title='Network'>
+            {chains.map((chain) => (
+                <p key={chain.id}>chain.name</p>
+            ))}
+        </DropdownMenu2>
+    );
+
     return (
         <div className={styles.selector_select_container}>
-            {selectElement}
+            {/* {selectElement}
             <span className={styles.custom_arrow}>
                 <BiDownArrow size={20} color='#ffffff' />
-            </span>
+            </span> */}
+            {networkMenu}
         </div>
     );
 }

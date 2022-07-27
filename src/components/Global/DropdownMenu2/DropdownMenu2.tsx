@@ -1,4 +1,4 @@
-import styles from './DropdownMenu.module.css';
+import styles from './DropdownMenu2.module.css';
 import { useState, useEffect, SetStateAction } from 'react';
 import { FaAngleDown } from 'react-icons/fa';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -7,7 +7,7 @@ interface DropdownMenuProps {
     title: string;
     children: React.ReactNode;
 }
-const DropdownMenu = (props: DropdownMenuProps) => {
+export default function DropdownMenu2(props: DropdownMenuProps) {
     const { title, children } = props;
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     let isIconOpen = true;
@@ -74,6 +74,4 @@ const DropdownMenu = (props: DropdownMenuProps) => {
             {dropdownMenuContent}
         </>
     );
-};
-
-export default DropdownMenu;
+}
