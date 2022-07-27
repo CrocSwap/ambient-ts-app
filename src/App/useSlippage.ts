@@ -1,7 +1,12 @@
 import { useEffect, useState } from 'react';
 
-export const useSlippage = () => {
+export const useSlippage = (
+    addressTokenA: string,
+    addressTokenB: string
+) => {
     const userData = JSON.parse(localStorage.getItem('user') as string);
+
+    console.log(addressTokenA, addressTokenB);
 
     const [slipSwapStable, setSlipSwapStable] = useState('');
     const [slipSwapVolatile, setSlipSwapVolatile] = useState('');

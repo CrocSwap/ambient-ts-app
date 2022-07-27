@@ -194,6 +194,9 @@ export default function App() {
 
     const dispatch = useAppDispatch();
 
+    // current configurations of trade as specified by the user
+    const tradeData = useAppSelector((state) => state.tradeData);
+
     // tokens specifically imported by the end user
     const [importedTokens, setImportedTokens] = useState<TokenIF[]>(defaultTokens);
     // all tokens from active token lists
@@ -222,7 +225,7 @@ export default function App() {
         getImportedTokens();
     }, [tokenListsReceived]);
 
-    const [swapSlippage, mintSlippage] = useSlippage();
+    const [swapSlippage, mintSlippage] = useSlippage(tradeData.tokenA, tradeData.tokenB);
 
     // update local state with searchable tokens once after initial load of app
     useEffect(() => {
@@ -264,8 +267,6 @@ export default function App() {
     const location = useLocation();
 
     const [lastBlockNumber, setLastBlockNumber] = useState<number>(0);
-
-    const tradeData = useAppSelector((state) => state.tradeData);
 
     const receiptData = useAppSelector((state) => state.receiptData) as receiptData;
 
