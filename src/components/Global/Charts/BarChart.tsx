@@ -1,11 +1,11 @@
 import { Dispatch, SetStateAction, useEffect } from 'react';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
-import { formatDollarAmountAxis } from '../../../../utils/numbers';
 import dayjs from 'dayjs';
+import { formatDollarAmountAxis } from '../../../utils/numbers';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-interface VolumeData {
+interface BarData {
     data: any[];
     value?: number;
     label?: string;
@@ -14,13 +14,13 @@ interface VolumeData {
     snapType?: string;
 }
 
-export default function VolumeChart(props: VolumeData) {
-    const volumeValue = props.data;
+export default function BarChart(props: BarData) {
+    const barValue = props.data;
     const snapType = props.snapType;
 
     useEffect(() => {
         const chartData = {
-            lineseries: volumeValue,
+            lineseries: barValue,
             crosshair: [{ x: 0, y: -1 }],
             snapType: snapType,
         };
@@ -63,6 +63,8 @@ export default function VolumeChart(props: VolumeData) {
             const value =
                 chartData.snapType === 'days'
                     ? new Date(newX.setTime(newX.getTime() + 9 * 60 * 60 * 1000))
+                    : chartData.snapType === 'months'
+                    ? new Date(newX.setTime(newX.getTime() + 9 * 60 * 2 * 1000))
                     : nearest.time;
             return [
                 {
@@ -182,10 +184,11 @@ export default function VolumeChart(props: VolumeData) {
                         xScaleOriginal.range([0, event.detail.width]);
                     })
                     .call(zoom);
+                sel.enter().style('min-height', '305px');
             });
 
         render();
-    }, [volumeValue, snapType]);
+    }, [barValue, snapType]);
 
     return <div style={{ height: '100%', width: '100%' }} id='chart-element'></div>;
 }

@@ -11,7 +11,7 @@ import {
     useRef,
 } from 'react';
 
-interface TvlChartProps {
+interface AreaChartProps {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     data: any[];
     setValue?: Dispatch<SetStateAction<number | undefined>>; // used for value on hover
@@ -30,16 +30,13 @@ declare global {
     }
 }
 
-export default function TvlChart(props: TvlChartProps) {
+export default function AreaChart(props: AreaChartProps) {
     const d3Container = useRef(null);
 
     useEffect(() => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const yExtent = d3fc.extentLinear().accessors([(d: any) => d.value]);
-        const xExtent = d3fc
-            .extentDate()
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            .accessors([(d: any) => new Date(d.time)]);
+        const xExtent = d3fc.extentDate().accessors([(d: any) => d.time]);
 
         const data = {
             series: props.data,
@@ -53,12 +50,7 @@ export default function TvlChart(props: TvlChartProps) {
             .xLabel('')
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             .decorate((selection: any) => {
-                selection
-                    .enter()
-                    .attr('stroke-dasharray', '6 6')
-                    .style('pointer-events', 'all')
-                    .style('fill', (d: any) => (d.close > d.open ? '#7371FC' : '#CDC1FF'))
-                    .style('stroke', (d: any) => (d.close > d.open ? '#7371FC' : '#CDC1FF'));
+                selection.enter().attr('stroke-dasharray', '6 6').style('pointer-events', 'all');
                 selection
                     .enter()
                     .select('g.annotation-line.horizontal')
@@ -68,7 +60,7 @@ export default function TvlChart(props: TvlChartProps) {
         const areaSeries = d3fc
             .seriesSvgArea()
             .mainValue((d: any) => d.value)
-            .crossValue((d: any) => new Date(d.time))
+            .crossValue((d: any) => d.time)
             .xScale(xScale)
             .yScale(yScale)
             .decorate((selection: any) => {
@@ -80,7 +72,7 @@ export default function TvlChart(props: TvlChartProps) {
         const lineSeries = d3fc
             .seriesSvgLine()
             .mainValue((d: any) => d.value)
-            .crossValue((d: any) => new Date(d.time))
+            .crossValue((d: any) => d.time)
             .xScale(xScale)
             .yScale(yScale)
             .decorate((selection: any) => {
@@ -128,7 +120,10 @@ export default function TvlChart(props: TvlChartProps) {
             .yTicks([5])
             .yDomain(yExtent(data.series))
             .xDomain(xExtent(data.series))
-            .svgPlotArea(multi);
+            .svgPlotArea(multi)
+            .decorate((sel: any) => {
+                sel.enter().style('min-height', '310px');
+            });
 
         const pointer = d3fc.pointer().on('point', (event: any) => {
             if (event.length > 0) {
@@ -148,10 +143,14 @@ export default function TvlChart(props: TvlChartProps) {
                 ];
 
                 props.setValue?.(parsed?.value);
-                props.setLabel?.(moment.utc(xVal).format('DD/MM/YYYY'));
+                props.setLabel?.(getDate(xVal));
             }
             render();
         });
+
+        const getDate = (date: any) => {
+            return date === undefined ? '-' : moment.utc(date).format('MMM D, YYYY');
+        };
 
         function render() {
             d3.select('.demo').datum(data).call(chart);
@@ -165,7 +164,7 @@ export default function TvlChart(props: TvlChartProps) {
         <div
             ref={d3Container}
             className='demo'
-            style={{ height: '100%', width: '100%' }}
+            style={{ height: '100%', width: '100%', minHeight: '300px' }}
             data-testid={'chart'}
         ></div>
     );

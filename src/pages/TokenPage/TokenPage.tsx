@@ -15,8 +15,9 @@ import { usePoolDatas } from '../../state/pools/hooks';
 import { currentTimestamp, isAddress } from '../../utils';
 import TokenPageChart from './Chart/TokenPageChart';
 import { formatDollarAmount } from '../../utils/numbers';
-import { unixToDate } from '../../utils/date';
 import { ONE_HOUR_SECONDS, TimeWindow } from '../../constants/intervals';
+import { PriceChartEntry } from '../../types';
+import logo from '../../assets/images/logos/ambient_logo.svg';
 
 const DEFAULT_TIME_WINDOW = TimeWindow.WEEK;
 
@@ -53,7 +54,7 @@ export default function TokenPage() {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             return chartData.map((day: any) => {
                 return {
-                    time: unixToDate(day.date),
+                    time: new Date(day.date * 1000),
                     value: day.totalValueLockedUSD,
                 };
             });
@@ -73,7 +74,15 @@ export default function TokenPage() {
                 high: tokenData?.priceUSD,
                 low: priceData[priceData.length - 1].close,
             });
-            return adjusted;
+            return adjusted.map((item: PriceChartEntry) => {
+                return {
+                    time: new Date(item.time * 1000),
+                    high: item.high,
+                    low: item.low,
+                    open: item.open,
+                    close: item.close,
+                };
+            });
         } else {
             return [];
         }
@@ -125,6 +134,12 @@ export default function TokenPage() {
         </div>
     );
 
+    const loading = (
+        <div className={styles.animatedImg}>
+            <img src={logo} width={110} alt='logo' />
+        </div>
+    );
+
     return (
         <main data-testid={'token-page'} className={styles.container}>
             {tokenInfo}
@@ -139,7 +154,7 @@ export default function TokenPage() {
                         token={tokenData}
                     />
                 ) : (
-                    <></>
+                    <>{loading}</>
                 )}
             </div>
 
