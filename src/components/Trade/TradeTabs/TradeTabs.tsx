@@ -13,12 +13,14 @@ import DropdownMenuContainer from '../../Global/DropdownMenu/DropdownMenuContain
 import DropdownMenuItem from '../../Global/DropdownMenu/DropdownMenuItem/DropdownMenuItem';
 import { BiDownArrow } from 'react-icons/bi';
 import Ranges from './Ranges/Ranges';
+import { useTokenMap } from '../../../App/components/Sidebar/useTokenMap';
 
 interface ITabsProps {
     account: string;
     isAuthenticated: boolean;
     isWeb3Enabled: boolean;
     lastBlockNumber: number;
+    chainId: string;
 }
 
 export default function TradeTabs(props: ITabsProps) {
@@ -26,6 +28,8 @@ export default function TradeTabs(props: ITabsProps) {
     const [isShowAllEnabled, setIsShowAllEnabled] = useState<boolean>(true);
 
     const graphData = useAppSelector((state) => state?.graphData);
+
+    const tokenMap = useTokenMap();
 
     const userPositions = graphData?.positionsByUser?.positions;
     // const poolPositions = graphData?.positionsByPool?.positions;
@@ -179,7 +183,12 @@ export default function TradeTabs(props: ITabsProps) {
                     <Orders />
                 </TabContent>
                 <TabContent id='tab3' activeTab={activeTab}>
-                    <Transactions isShowAllEnabled={isShowAllEnabled} graphData={graphData} />
+                    <Transactions
+                        isShowAllEnabled={isShowAllEnabled}
+                        graphData={graphData}
+                        tokenMap={tokenMap}
+                        chainId={props.chainId}
+                    />
                 </TabContent>
                 <TabContent id='tab4' activeTab={activeTab}>
                     Leaderboard

@@ -2,10 +2,11 @@ import styles from './Price.module.css';
 
 interface PriceProps {
     priceType: 'priceBuy' | 'priceSell' | 'minMaxBuy' | 'minMaxAdd';
+    displayPrice?: string;
 }
 export default function Price(props: PriceProps) {
-    const { priceType } = props;
-    const priceBuy = <p className={styles.buy_style}>Price</p>;
+    const { priceType, displayPrice } = props;
+    const priceBuy = <p className={styles.buy_style}>{displayPrice ?? 'unknown'}</p>;
     const priceSell = <p className={styles.sell_style}>Price</p>;
 
     const minMaxBuy = (

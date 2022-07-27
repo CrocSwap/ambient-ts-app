@@ -1,43 +1,51 @@
+import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import styles from './TokenQty.module.css';
 
-export default function TokenQty() {
-    const token1 = (
+interface TokenQtyProps {
+    baseToken?: TokenIF;
+    quoteToken?: TokenIF;
+    baseQty?: string;
+    quoteQty?: string;
+}
+
+export default function TokenQty(props: TokenQtyProps) {
+    const { baseToken, quoteToken, baseQty, quoteQty } = props;
+
+    const baseDisplay = (
         <section className={styles.qty_sing}>
-            <p>T1 Qty</p>
-            <img
-                src='https://icons.iconarchive.com/icons/cjdowner/cryptocurrency-flat/1024/Ethereum-ETH-icon.png'
-                alt=''
-            />
+            <p>{baseQty ?? '0'}</p>
+            <img src={baseToken ? baseToken.logoURI : undefined} alt='' />
         </section>
     );
 
-    const token2 = (
+    const quoteDisplay = (
         <section className={styles.qty_sing}>
-            <p>T2 Qty</p>
-            <img src='https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.png' alt='' />
+            <p>{quoteQty ?? '0'}</p>
+            <img src={quoteToken ? quoteToken.logoURI : undefined} alt='' />
         </section>
     );
 
     const tokenQtyColumns = (
         <section className={styles.column_qty}>
-            <div>
-                <p>T1 Qty</p>
-                <img
-                    src='https://icons.iconarchive.com/icons/cjdowner/cryptocurrency-flat/1024/Ethereum-ETH-icon.png'
-                    alt=''
-                />
-            </div>
-            <div>
-                <p>T2 Qty</p>
-                <img src='https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.png' alt='' />
-            </div>
+            {baseQty ? (
+                <div>
+                    <p>{baseQty}</p>
+                    <img src={baseToken ? baseToken.logoURI : undefined} alt='' />
+                </div>
+            ) : null}
+            {quoteQty ? (
+                <div>
+                    <p>{quoteQty}</p>
+                    <img src={quoteToken ? quoteToken.logoURI : undefined} alt='' />
+                </div>
+            ) : null}
         </section>
     );
     return (
         <>
             {tokenQtyColumns}
-            {token1}
-            {token2}
+            {baseDisplay}
+            {quoteDisplay}
         </>
     );
 }

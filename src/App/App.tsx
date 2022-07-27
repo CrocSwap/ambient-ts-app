@@ -1417,6 +1417,7 @@ export default function App() {
                                     lastBlockNumber={lastBlockNumber}
                                     isTokenABase={isTokenABase}
                                     poolPriceDisplay={poolPriceDisplay}
+                                    chainId={chainId}
                                 />
                             }
                         >
