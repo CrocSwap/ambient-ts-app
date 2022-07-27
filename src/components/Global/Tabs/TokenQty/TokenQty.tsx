@@ -1,3 +1,4 @@
+import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import styles from './TokenQty.module.css';
 
@@ -11,17 +12,21 @@ interface TokenQtyProps {
 export default function TokenQty(props: TokenQtyProps) {
     const { baseToken, quoteToken, baseQty, quoteQty } = props;
 
+    const baseTokenCharacter = baseToken ? getUnicodeCharacter(baseToken?.symbol) : null;
+    const quoteTokenCharacter = quoteToken ? getUnicodeCharacter(quoteToken?.symbol) : null;
+
     const baseDisplay = (
         <section className={styles.qty_sing}>
-            <p>{baseQty ?? '0'}</p>
-            <img src={baseToken ? baseToken.logoURI : undefined} alt='' />
+            {baseTokenCharacter} <p>{baseQty}</p>
+            {/* <img src={baseToken ? baseToken.logoURI : undefined} alt='' /> */}
         </section>
     );
 
     const quoteDisplay = (
         <section className={styles.qty_sing}>
-            <p>{quoteQty ?? '0'}</p>
-            <img src={quoteToken ? quoteToken.logoURI : undefined} alt='' />
+            {quoteTokenCharacter}
+            <p>{quoteQty}</p>
+            {/* <img src={quoteToken ? quoteToken.logoURI : undefined} alt='' /> */}
         </section>
     );
 
@@ -29,14 +34,16 @@ export default function TokenQty(props: TokenQtyProps) {
         <section className={styles.column_qty}>
             {baseQty ? (
                 <div>
+                    {baseTokenCharacter}
                     <p>{baseQty}</p>
-                    <img src={baseToken ? baseToken.logoURI : undefined} alt='' />
+                    {/* <img src={baseToken ? baseToken.logoURI : undefined} alt='' /> */}
                 </div>
             ) : null}
             {quoteQty ? (
                 <div>
+                    {quoteTokenCharacter}
                     <p>{quoteQty}</p>
-                    <img src={quoteToken ? quoteToken.logoURI : undefined} alt='' />
+                    {/* <img src={quoteToken ? quoteToken.logoURI : undefined} alt='' /> */}
                 </div>
             ) : null}
         </section>
