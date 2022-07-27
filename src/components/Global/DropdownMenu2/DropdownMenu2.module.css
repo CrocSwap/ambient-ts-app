@@ -1,0 +1,42 @@
+
+.menu{
+    display: flex;
+    flex-direction: row;
+align-items: center;
+    color: white;
+  width: 100%;
+    padding: 5px 10px;
+    border-right: 4px solid transparent;
+    transition: 0.2s cubic-bezier(0.6, -0.28, 0.735, 0.045);
+    justify-content: space-between;
+    position: relative;
+}
+
+.menu_item {
+    display: flex;
+    gap: 10px;
+    cursor: pointer;
+  }
+
+.menu_container{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+   
+
+    position: absolute;
+    /* top: 30px; */
+}
+
+.link_text {
+    white-space: nowrap;
+    font-size: 15px;
+    color: white;
+  }
+
+.icon{
+    cursor: pointer;
+}
+.menu svg{
+    cursor: pointer;
+}
