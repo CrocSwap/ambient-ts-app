@@ -1,7 +1,7 @@
 // START: Import React and Dongles
 import { useMoralis } from 'react-moralis';
 import { motion } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Dispatch, SetStateAction } from 'react';
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import Button from '../../../components/Global/Button/Button';
 
@@ -28,7 +28,7 @@ import DividerDark from '../../../components/Global/DividerDark/DividerDark';
 import Modal from '../../../components/Global/Modal/Modal';
 import ConfirmLimitModal from '../../../components/Trade/Limit/ConfirmLimitModal/ConfirmLimitModal';
 import { JsonRpcProvider } from '@ethersproject/providers';
-
+import styles from './Limit.module.css';
 import truncateDecimals from '../../../utils/data/truncateDecimals';
 
 // START: Import Local Files
@@ -39,6 +39,8 @@ import { setLimitPrice } from '../../../utils/state/tradeDataSlice';
 
 interface LimitPropsIF {
     importedTokens: Array<TokenIF>;
+    searchableTokens: Array<TokenIF>;
+    setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     provider: JsonRpcProvider;
     isOnTradeRoute?: boolean;
     gasPriceinGwei: string;
@@ -56,11 +58,17 @@ interface LimitPropsIF {
     poolPriceNonDisplay: number;
     tokenAAllowance: string;
     setRecheckTokenAApproval: React.Dispatch<React.SetStateAction<boolean>>;
+
+    chainId: string;
+    activeTokenListsChanged: boolean;
+    indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function Limit(props: LimitPropsIF) {
     const {
         importedTokens,
+        searchableTokens,
+        setImportedTokens,
         provider,
         isSellTokenBase,
         tokenABalance,
@@ -72,10 +80,15 @@ export default function Limit(props: LimitPropsIF) {
         poolPriceNonDisplay,
         tokenAAllowance,
         setRecheckTokenAApproval,
+        chainId,
+
+        activeTokenListsChanged,
+        indicateActiveTokenListsChanged,
     } = props;
     const { tradeData } = useTradeData();
+    const { navigationMenu } = useTradeData();
     const dispatch = useAppDispatch();
-    const { chainId, enableWeb3, isWeb3Enabled, authenticate, isAuthenticated } = useMoralis();
+    const { enableWeb3, isWeb3Enabled, authenticate, isAuthenticated } = useMoralis();
     const [isModalOpen, openModal, closeModal] = useModal();
     const [limitAllowed, setLimitAllowed] = useState<boolean>(false);
 
@@ -83,7 +96,7 @@ export default function Limit(props: LimitPropsIF) {
     const [tokenBInputQty, setTokenBInputQty] = useState<string>('');
     const [isWithdrawFromDexChecked, setIsWithdrawFromDexChecked] = useState(false);
 
-    const [isWithdrawToWalletChecked, setIsWithdrawToWalletChecked] = useState(true);
+    const [isSaveAsDexSurplusChecked, setIsSaveAsDexSurplusChecked] = useState(false);
 
     const [limitButtonErrorMessage, setLimitButtonErrorMessage] = useState<string>('');
 
@@ -342,50 +355,58 @@ export default function Limit(props: LimitPropsIF) {
         />
     );
     return (
-        <motion.section
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-            data-testid={'limit'}
-        >
+        <section>
             <ContentContainer isOnTradeRoute>
                 <LimitHeader
                     tokenPair={tokenPair}
                     isDenomBase={tradeData.isDenomBase}
                     isTokenABase={isTokenABase}
                 />
-                <DenominationSwitch
-                    tokenPair={tokenPair}
-                    displayForBase={tradeData.isDenomBase}
-                    poolPriceDisplay={poolPriceDisplay}
-                    isTokenABase={isSellTokenBase}
-                    didUserFlipDenom={tradeData.didUserFlipDenom}
-                />
-                <DividerDark />
-                <LimitCurrencyConverter
-                    tokenPair={tokenPair}
-                    // poolPriceDisplay={poolPriceDisplay}
-                    poolPriceNonDisplay={poolPriceNonDisplay}
-                    isSellTokenBase={isSellTokenBase}
-                    tokensBank={importedTokens}
-                    chainId={chainId ?? '0x2a'}
-                    setLimitAllowed={setLimitAllowed}
-                    tokenABalance={truncateDecimals(parseFloat(tokenABalance), 4).toString()}
-                    tokenBBalance={truncateDecimals(parseFloat(tokenBBalance), 4).toString()}
-                    tokenAInputQty={tokenAInputQty}
-                    tokenBInputQty={tokenBInputQty}
-                    setTokenAInputQty={setTokenAInputQty}
-                    isWithdrawToWalletChecked={isWithdrawToWalletChecked}
-                    setTokenBInputQty={setTokenBInputQty}
-                    setIsWithdrawToWalletChecked={setIsWithdrawToWalletChecked}
-                    setLimitButtonErrorMessage={setLimitButtonErrorMessage}
-                    isWithdrawFromDexChecked={isWithdrawFromDexChecked}
-                    setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
-                    limitRate={limitRate}
-                    setLimitRate={setLimitRate}
-                    insideTickDisplayPrice={insideTickDisplayPrice}
-                    isDenominationInBase={tradeData.isDenomBase}
-                />
+                <DividerDark addMarginTop />
+                {navigationMenu}
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.5 }}
+                >
+                    <LimitCurrencyConverter
+                        tokenPair={tokenPair}
+                        searchableTokens={searchableTokens}
+                        poolPriceNonDisplay={poolPriceNonDisplay}
+                        isSellTokenBase={isSellTokenBase}
+                        tokensBank={importedTokens}
+                        setImportedTokens={setImportedTokens}
+                        chainId={chainId ?? '0x2a'}
+                        setLimitAllowed={setLimitAllowed}
+                        tokenABalance={truncateDecimals(parseFloat(tokenABalance), 4).toString()}
+                        tokenBBalance={truncateDecimals(parseFloat(tokenBBalance), 4).toString()}
+                        tokenAInputQty={tokenAInputQty}
+                        tokenBInputQty={tokenBInputQty}
+                        setTokenAInputQty={setTokenAInputQty}
+                        isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
+                        setTokenBInputQty={setTokenBInputQty}
+                        setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
+                        setLimitButtonErrorMessage={setLimitButtonErrorMessage}
+                        isWithdrawFromDexChecked={isWithdrawFromDexChecked}
+                        setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
+                        limitRate={limitRate}
+                        setLimitRate={setLimitRate}
+                        insideTickDisplayPrice={insideTickDisplayPrice}
+                        isDenominationInBase={tradeData.isDenomBase}
+                        activeTokenListsChanged={activeTokenListsChanged}
+                        indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
+                    />
+                </motion.div>
+                <div className={styles.header_container}>
+                    <DividerDark addMarginTop />
+                    <DenominationSwitch
+                        tokenPair={tokenPair}
+                        displayForBase={tradeData.isDenomBase}
+                        poolPriceDisplay={poolPriceDisplay}
+                        isTokenABase={isSellTokenBase}
+                        didUserFlipDenom={tradeData.didUserFlipDenom}
+                    />
+                </div>
                 <LimitExtraInfo
                     tokenPair={tokenPair}
                     gasPriceinGwei={gasPriceinGwei}
@@ -413,6 +434,6 @@ export default function Limit(props: LimitPropsIF) {
                 )}
             </ContentContainer>
             {confirmLimitModalOrNull}
-        </motion.section>
+        </section>
     );
 }

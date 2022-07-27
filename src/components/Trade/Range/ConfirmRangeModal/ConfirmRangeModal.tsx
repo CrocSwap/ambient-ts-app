@@ -160,11 +160,21 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalProps) {
     // CONFIRMATION LOGIC STARTS HERE
     const confirmSendMessage = (
         <WaitingConfirmation
-            content={`Minting a Position with ${tokenAQty} ${tokenA.symbol} and ${tokenBQty} ${tokenB.symbol}`}
+            content={`Minting a Position with ${tokenAQty ? tokenAQty : '0'} ${tokenA.symbol} and ${
+                tokenBQty ? tokenBQty : '0'
+            } ${tokenB.symbol}`}
         />
     );
 
-    const transactionSubmitted = <TransactionSubmitted hash={newRangeTransactionHash} />;
+    const transactionSubmitted = (
+        <TransactionSubmitted
+            hash={newRangeTransactionHash}
+            tokenBSymbol={tokenB.symbol}
+            tokenBAddress={tokenB.address}
+            tokenBDecimals={tokenB.decimals}
+            tokenBImage={tokenB.logoURI}
+        />
+    );
 
     const confirmTradeButton = (
         <Button

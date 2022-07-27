@@ -1,11 +1,8 @@
-.posiitons_table_display table { 
-	/* width: 950px;  */
+/* .posiitons_table_display table { 
 	border-collapse: collapse;
     width: 100%; 
-	/* margin:50px auto; */
 	}
 
-/* Zebra striping */
 
     .posiitons_table_display th { 
 	
@@ -35,11 +32,7 @@
 	
 	}
 
-/* 
-Max width before this PARTICULAR table gets nasty
-This query will take effect for any screen smaller than 760px
-and also iPads specifically.
-*/
+
 @media 
 only screen and (max-width: 760px),
 (min-device-width: 768px) and (max-device-width: 1024px)  {
@@ -48,12 +41,10 @@ only screen and (max-width: 760px),
 	  	width: 100%; 
 	}
 
-	/* Force table to not be like tables anymore */
 	.posiitons_table_display table, .posiitons_table_display thead, .posiitons_table_display tbody,.posiitons_table_display th, .posiitons_table_display td, .posiitons_table_display tr { 
 		display: block; 
 	}
 	
-	/* Hide table headers (but not display: none;, for accessibility) */
 	.posiitons_table_display thead tr { 
 		position: absolute;
 		top: -9999px;
@@ -62,7 +53,6 @@ only screen and (max-width: 760px),
 	
 	
 	.posiitons_table_display td { 
-		/* Behave  like a "row" */
 		border: none;
 		border-bottom: 1px solid rgb(160, 156, 156); 
 		position: relative;
@@ -70,19 +60,16 @@ only screen and (max-width: 760px),
 	}
 
 	.posiitons_table_display td:before { 
-		/* Now like a table header */
 		position: absolute;
-		/* Top/left values mimic padding */
 		top: 6px;
 		left: 6px;
 		width: 45%; 
 		padding-right: 10px; 
 		white-space: nowrap;
-		/* Label the data */
 		content: attr(data-column);
 
 		
 		font-weight: bold;
 	}
 
-}
+} */

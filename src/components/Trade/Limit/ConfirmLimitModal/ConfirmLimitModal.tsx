@@ -87,7 +87,15 @@ export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
         />
     );
 
-    const transactionSubmitted = <TransactionSubmitted hash={newLimitOrderTransactionHash} />;
+    const transactionSubmitted = (
+        <TransactionSubmitted
+            hash={newLimitOrderTransactionHash}
+            tokenBSymbol={buyTokenData.symbol}
+            tokenBAddress={buyTokenData.address}
+            tokenBDecimals={buyTokenData.decimals}
+            tokenBImage={buyTokenData.logoURI}
+        />
+    );
 
     const confirmationDisplay = transactionApproved ? transactionSubmitted : confirmSendMessage;
 

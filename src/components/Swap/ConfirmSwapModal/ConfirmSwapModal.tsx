@@ -107,7 +107,15 @@ export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
         />
     );
 
-    const transactionSubmitted = <TransactionSubmitted hash={newSwapTransactionHash} />;
+    const transactionSubmitted = (
+        <TransactionSubmitted
+            hash={newSwapTransactionHash}
+            tokenBSymbol={buyTokenData.symbol}
+            tokenBAddress={buyTokenData.address}
+            tokenBDecimals={buyTokenData.decimals}
+            tokenBImage={buyTokenData.logoURI}
+        />
+    );
 
     // END OF REGULAR CONFIRMATION MESSAGE
 
