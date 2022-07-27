@@ -20,6 +20,8 @@ export default function Transactions(props: TransactionsProps) {
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
+    const isDenomBase = tradeData.isDenomBase;
+
     const tokenAAddress = tradeData.tokenA.address;
     const tokenBAddress = tradeData.tokenB.address;
 
@@ -33,6 +35,7 @@ export default function Transactions(props: TransactionsProps) {
                   chainId={chainId}
                   tokenAAddress={tokenAAddress}
                   tokenBAddress={tokenBAddress}
+                  isDenomBase={isDenomBase}
               />
           ))
         : //   .reverse()
@@ -44,6 +47,7 @@ export default function Transactions(props: TransactionsProps) {
                   chainId={chainId}
                   tokenAAddress={tokenAAddress}
                   tokenBAddress={tokenBAddress}
+                  isDenomBase={isDenomBase}
               />
           ));
 

@@ -7,7 +7,6 @@ import { ISwap } from '../../../../utils/state/graphDataSlice';
 import TransactionsMenu from '../../../Global/Tabs/TableMenu/TableMenuComponents/TransactionsMenu';
 import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import { toDisplayPrice, toDisplayQty } from '@crocswap-libs/sdk';
-import truncateDecimals from '../../../../utils/data/truncateDecimals';
 
 interface TransactionProps {
     swap: ISwap;
@@ -15,9 +14,10 @@ interface TransactionProps {
     chainId: string;
     tokenAAddress: string;
     tokenBAddress: string;
+    isDenomBase: boolean;
 }
 export default function TransactionCard(props: TransactionProps) {
-    const { swap, tokenMap, chainId, tokenAAddress, tokenBAddress } = props;
+    const { swap, tokenMap, chainId, tokenAAddress, tokenBAddress, isDenomBase } = props;
 
     // const tempOwnerId = '0xa2b398145b7fc8fd9a01142698f15d329ebb5ff5090cfcc8caae440867ab9919';
     const PosHash = swap.id;
@@ -55,16 +55,23 @@ export default function TransactionCard(props: TransactionProps) {
             ? toDisplayPrice(limitPrice, baseToken.decimals, quoteToken.decimals)
             : 2;
 
-    const truncatedDisplayPrice = truncateDecimals(displayPrice, 2);
+    const truncatedDisplayPrice = isDenomBase
+        ? (1 / displayPrice).toPrecision(6)
+        : displayPrice.toPrecision(6);
     // console.log({ limitPrice });
     // console.log({ displayPrice });
 
-    const baseQty = swap.inBaseQty
-        ? toDisplayQty(swap.qty.toString(), baseToken?.decimals ?? 0)
-        : undefined;
-    const quoteQty = !swap.inBaseQty
-        ? toDisplayQty(swap.qty.toString(), quoteToken?.decimals ?? 0)
-        : undefined;
+    const swapQtyString = swap.qty.toString();
+    const qtyIsExponential = swapQtyString.includes('e');
+
+    const baseQty =
+        swap.inBaseQty && !qtyIsExponential
+            ? toDisplayQty(swapQtyString, baseToken?.decimals ?? 0)
+            : undefined;
+    const quoteQty =
+        !swap.inBaseQty && !qtyIsExponential
+            ? toDisplayQty(swapQtyString, quoteToken?.decimals ?? 0)
+            : undefined;
 
     // const qty = swap.qty;
     // const sellQty = swap.isBuy // sell token is base
