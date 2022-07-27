@@ -6,9 +6,10 @@ import { showAnimation, dropdownAnimation } from '../../../utils/others/FramerMo
 interface DropdownMenuProps {
     title: string;
     children: React.ReactNode;
+    marginTop?: number;
 }
 export default function DropdownMenu2(props: DropdownMenuProps) {
-    const { title, children } = props;
+    const { title, children, marginTop } = props;
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     let isIconOpen = true;
     const toggleMenu = () => {
@@ -25,6 +26,7 @@ export default function DropdownMenu2(props: DropdownMenuProps) {
                     animate='show'
                     exit='hidden'
                     className={styles.menu_container}
+                    style={{ top: marginTop ? marginTop : '30px' }}
                 >
                     {/* {route.map((subRoute, i) => (
               <motion.div variants={menuItemAnimation} key={i} custom={i}>

@@ -21,10 +21,10 @@
     width: 100%;
     display: flex;
     flex-direction: column;
-    background: brown;
+   
 
     position: absolute;
-    top: 30px;
+    /* top: 30px; */
 }
 
 .link_text {

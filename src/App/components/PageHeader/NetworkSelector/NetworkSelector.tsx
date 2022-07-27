@@ -83,12 +83,24 @@ export default function NetworkSelector(props: NetworkSelectorProps) {
         // closeMenu ? closeMenu() : null;
     };
 
-    const networkMenu = (
-        <DropdownMenu2 title='Network'>
+    const networkMenuContent = (
+        <ul className={styles.menu_content}>
             {chains.map((chain) => (
-                <p key={chain.id}>chain.name</p>
+                <li
+                    onClick={() => handleNetworkSwitch(chain.id)}
+                    key={chain.id}
+                    className={styles.network_item}
+                >
+                    {chain.name}
+                </li>
             ))}
-        </DropdownMenu2>
+        </ul>
+    );
+
+    const networkMenu = (
+        <div className={styles.dropdown_menu_container}>
+            <DropdownMenu2 title='Network'>{networkMenuContent}</DropdownMenu2>
+        </div>
     );
 
     return (
