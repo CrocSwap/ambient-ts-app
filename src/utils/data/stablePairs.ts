@@ -72,6 +72,6 @@ export function checkIsStable(addr1: string, addr2: string, chain: string) {
             pairIsIncluded = true;
         }
     });
-    console.log({ pairIsIncluded });
+    // console.log({ pairIsIncluded });
     return pairIsIncluded;
 }

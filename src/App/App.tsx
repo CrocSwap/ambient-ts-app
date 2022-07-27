@@ -82,6 +82,7 @@ import truncateDecimals from '../utils/data/truncateDecimals';
 import { getNFTs } from './functions/getNFTs';
 import { useSlippage } from './useSlippage';
 import { addNativeBalance, resetTokenData, setTokens } from '../utils/state/tokenDataSlice';
+import { checkIsStable } from '../utils/data/stablePairs';
 
 import Reposition from '../pages/Trade/Reposition/Reposition';
 // import SidebarFooter from '../components/Global/SIdebarFooter/SidebarFooter';
@@ -225,7 +226,23 @@ export default function App() {
         getImportedTokens();
     }, [tokenListsReceived]);
 
-    const [swapSlippage, mintSlippage] = useSlippage(tradeData.tokenA, tradeData.tokenB);
+    const [swapSlippage, mintSlippage] = useSlippage();
+
+    const isPairStable = useMemo(() => (
+        checkIsStable(
+            tradeData.tokenA.address,
+            tradeData.tokenA.address,
+            chainId
+        )
+    ), [
+        tradeData.tokenA.address,
+        tradeData.tokenA.address,
+        chainId
+    ]);
+
+    useEffect(() => {
+        console.log({isPairStable});
+    }, [isPairStable]);
 
     // update local state with searchable tokens once after initial load of app
     useEffect(() => {
