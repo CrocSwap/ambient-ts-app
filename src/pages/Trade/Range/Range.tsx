@@ -20,8 +20,6 @@ import {
     approveToken,
     contractAddresses,
     POOL_PRIMARY,
-    // pinTickLower,
-    // fromDisplayPrice,
 } from '@crocswap-libs/sdk';
 
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
@@ -68,6 +66,7 @@ interface RangePropsIF {
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     searchableTokens: Array<TokenIF>;
     mintSlippage: SlippagePairIF;
+    isPairStable: boolean;
     provider: JsonRpcProvider;
     gasPriceinGwei: string;
     lastBlockNumber: number;
@@ -92,6 +91,7 @@ export default function Range(props: RangePropsIF) {
         setImportedTokens,
         searchableTokens,
         mintSlippage,
+        isPairStable,
         provider,
         baseTokenAddress,
         quoteTokenAddress,
@@ -1110,9 +1110,9 @@ export default function Range(props: RangePropsIF) {
         <section data-testid={'range'}>
             <ContentContainer isOnTradeRoute>
                 <RangeHeader
-                    chainId={chainId}
                     tokenPair={tokenPair}
                     mintSlippage={mintSlippage}
+                    isPairStable={isPairStable}
                     isDenomBase={tradeData.isDenomBase}
                     isTokenABase={isTokenABase}
                 />
@@ -1124,12 +1124,6 @@ export default function Range(props: RangePropsIF) {
                     transition={{ duration: 0.5 }}
                 >
                     <DividerDark />
-                    {/* <RangeCurrencyConverter {...rangeCurrencyConverterProps} /> */}
-
-                    {/* <div className={styles.header_container}>
-                    {denominationSwitch}
-                    <DividerDark addMarginTop />
-                </div> */}
                     {isAdvancedModeActive ? advancedModeContent : baseModeContent}
                 </motion.div>
 
