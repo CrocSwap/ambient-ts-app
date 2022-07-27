@@ -16,9 +16,9 @@ export default function SidebarRecentTransactions(props: SidebarRecentTransactio
 
     const header = (
         <div className={styles.header}>
-            <div>Block</div>
+            <div>Pool</div>
             <div>Type</div>
-            <div>Amount</div>
+            <div>Status</div>
         </div>
     );
 
