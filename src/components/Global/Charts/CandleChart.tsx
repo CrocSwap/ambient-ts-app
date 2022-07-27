@@ -8,12 +8,11 @@ import {
     useEffect,
     useRef,
 } from 'react';
-import './PriceChart.module.css';
 import moment from 'moment';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-export type PriceChartProps = {
+export type CandleChartProps = {
     data: any[];
     value?: number;
     label?: string;
@@ -31,7 +30,7 @@ declare global {
     }
 }
 
-export default function PriceChart(props: PriceChartProps) {
+export default function CandleChart(props: CandleChartProps) {
     const d3Container = useRef(null);
 
     useEffect(() => {
@@ -41,7 +40,7 @@ export default function PriceChart(props: PriceChartProps) {
         const yExtent = d3fc.extentLinear().accessors([(d: any) => d.high, (d: any) => d.low]);
         const xExtent = d3fc
             .extentDate()
-            .accessors([(d: any) => new Date(d.time * 1000)])
+            .accessors([(d: any) => d.time])
             .padUnit('domain')
             .pad([millisPerDay, millisPerDay]);
 
@@ -68,7 +67,7 @@ export default function PriceChart(props: PriceChartProps) {
 
         const candlestick = d3fc
             .autoBandwidth(d3fc.seriesSvgCandlestick())
-            .crossValue((d: any) => new Date(d.time * 1000))
+            .crossValue((d: any) => d.time)
             .decorate((selection: any) => {
                 selection
                     .enter()
@@ -107,7 +106,7 @@ export default function PriceChart(props: PriceChartProps) {
                 xScale.domain(event.transform.rescaleX(xScaleCopy).domain());
                 const result = data.series.find(
                     (item) =>
-                        moment(new Date(item.time * 1000)).format('DD/MM/YYYY h.00 a') ===
+                        moment(item.time).format('DD/MM/YYYY h.00 a') ===
                         moment(xScale.domain()[1].getTime()).format('DD/MM/YYYY h.00 a'),
                 );
                 data.lineData = [
@@ -163,7 +162,7 @@ export default function PriceChart(props: PriceChartProps) {
 
                 const parsed = data.series.find(
                     (item) =>
-                        moment(new Date(item.time * 1000)).format('DD/MM/YYYY h.00 a') ===
+                        moment(item.time).format('DD/MM/YYYY h.00 a') ===
                         moment(xVal.getTime()).format('DD/MM/YYYY h.00 a'),
                 );
 

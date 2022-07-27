@@ -46,6 +46,10 @@
 .graph_container{
     background: var(--dark1);
     padding: 1rem;
+    width: 50%;
+    min-height: 150%;
+    margin: 2px;
+
 }
 .graph_container .title{
     font-size: var(--header2-size);
