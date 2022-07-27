@@ -11,7 +11,7 @@ import {
     setSwapsByPool,
     CandleData,
     setCandles,
-    addCandles,
+    // addCandles,
 } from '../utils/state/graphDataSlice';
 import { ethers } from 'ethers';
 import { JsonRpcProvider } from '@ethersproject/providers';
@@ -359,17 +359,22 @@ export default function App() {
         (async () => {
             if (account) {
                 try {
-                    const tokens: TokenIF[] = await cachedFetchTokenBalances(
+                    const newTokens: TokenIF[] = await cachedFetchTokenBalances(
                         account,
                         chainId,
                         lastBlockNumber,
                     );
+
+                    const tokensInRTKminusNative = tokensInRTK.slice(1);
+
                     if (
-                        tokens &&
+                        newTokens &&
                         (tokensInRTK.length === 1 ||
-                            JSON.stringify(tokensInRTK.slice(1)) !== JSON.stringify(tokens))
+                            JSON.stringify(tokensInRTKminusNative) !== JSON.stringify(newTokens))
                     ) {
-                        dispatch(setTokens(tokens));
+                        // console.log({ newTokens });
+                        // console.log({ tokensInRTKminusNative });
+                        dispatch(setTokens(newTokens));
                     }
                 } catch (error) {
                     console.log({ error });
@@ -572,63 +577,63 @@ export default function App() {
         }
     }, [lastAllPositionsMessage]);
 
-    const candleSubscriptionEndpoint = useMemo(
-        () =>
-            'wss://809821320828123.de:5000/subscribe_candles?' +
-            new URLSearchParams({
-                base: baseTokenAddress.toLowerCase(),
-                // baseTokenAddress.toLowerCase() || '0x0000000000000000000000000000000000000000',
-                quote: quoteTokenAddress.toLowerCase(),
-                // quoteTokenAddress.toLowerCase() || '0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa',
-                poolIdx: POOL_PRIMARY.toString(),
-                // 	positive integer	The duration of the candle, in seconds. Must represent one of the following time intervals: 5 minutes, 15 minutes, 1 hour, 4 hours, 1 day, 7 days.
-                period: activePeriod.toString(),
-                // period: '60',
-                chainId: chainId,
-            }),
-        [baseTokenAddress, quoteTokenAddress, POOL_PRIMARY, activePeriod],
-    );
+    // const candleSubscriptionEndpoint = useMemo(
+    //     () =>
+    //         'wss://809821320828123.de:5000/subscribe_candles?' +
+    //         new URLSearchParams({
+    //             base: baseTokenAddress.toLowerCase(),
+    //             // baseTokenAddress.toLowerCase() || '0x0000000000000000000000000000000000000000',
+    //             quote: quoteTokenAddress.toLowerCase(),
+    //             // quoteTokenAddress.toLowerCase() || '0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa',
+    //             poolIdx: POOL_PRIMARY.toString(),
+    //             // 	positive integer	The duration of the candle, in seconds. Must represent one of the following time intervals: 5 minutes, 15 minutes, 1 hour, 4 hours, 1 day, 7 days.
+    //             period: activePeriod.toString(),
+    //             // period: '60',
+    //             chainId: chainId,
+    //         }),
+    //     [baseTokenAddress, quoteTokenAddress, POOL_PRIMARY, activePeriod],
+    // );
 
-    const {
-        //  sendMessage,
-        lastMessage: candlesMessage,
-        //  readyState
-    } = useWebSocket(
-        candleSubscriptionEndpoint,
-        {
-            // share:  true,
-            // onOpen: () => console.log('opened'),
-            onClose: (event) => console.log({ event }),
-            // onClose: () => console.log('candles websocket connection closed'),
-            // Will attempt to reconnect on all close events, such as server shutting down
-            shouldReconnect: () => true,
-        },
-        // only connect if base/quote token addresses are available
-        baseTokenAddress !== '' && quoteTokenAddress !== '',
-    );
+    // const {
+    //     //  sendMessage,
+    //     lastMessage: candlesMessage,
+    //     //  readyState
+    // } = useWebSocket(
+    //     candleSubscriptionEndpoint,
+    //     {
+    //         // share:  true,
+    //         // onOpen: () => console.log('opened'),
+    //         onClose: (event) => console.log({ event }),
+    //         // onClose: () => console.log('candles websocket connection closed'),
+    //         // Will attempt to reconnect on all close events, such as server shutting down
+    //         shouldReconnect: () => true,
+    //     },
+    //     // only connect if base/quote token addresses are available
+    //     baseTokenAddress !== '' && quoteTokenAddress !== '',
+    // );
 
-    useEffect(() => {
-        if (candlesMessage !== null) {
-            const lastMessageData = JSON.parse(candlesMessage.data).data;
-            if (lastMessageData) {
-                Promise.all(lastMessageData.map(getCandleData)).then((updatedCandles) => {
-                    // console.log({ updatedCandles });
-                    dispatch(
-                        addCandles({
-                            pool: {
-                                baseAddress: baseTokenAddress,
-                                quoteAddress: quoteTokenAddress,
-                                poolIdx: POOL_PRIMARY,
-                            },
-                            duration: activePeriod,
-                            candles: updatedCandles,
-                        }),
-                    );
-                });
-            }
-            // console.log({ lastMessageData });
-        }
-    }, [candlesMessage]);
+    // useEffect(() => {
+    //     if (candlesMessage !== null) {
+    //         const lastMessageData = JSON.parse(candlesMessage.data).data;
+    //         if (lastMessageData) {
+    //             Promise.all(lastMessageData.map(getCandleData)).then((updatedCandles) => {
+    //                 // console.log({ updatedCandles });
+    //                 dispatch(
+    //                     addCandles({
+    //                         pool: {
+    //                             baseAddress: baseTokenAddress,
+    //                             quoteAddress: quoteTokenAddress,
+    //                             poolIdx: POOL_PRIMARY,
+    //                         },
+    //                         duration: activePeriod,
+    //                         candles: updatedCandles,
+    //                     }),
+    //                 );
+    //             });
+    //         }
+    //         // console.log({ lastMessageData });
+    //     }
+    // }, [candlesMessage]);
 
     const poolSwapsCacheSubscriptionEndpoint = useMemo(
         () =>
@@ -1172,6 +1177,7 @@ export default function App() {
                     account,
                     signer,
                 );
+                // console.log({ nativeEthBalance });
                 // make sure a balance was returned, initialized as null
                 if (nativeEthBalance) {
                     // send value to local state

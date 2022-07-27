@@ -10,7 +10,8 @@
 
     font-size:  var(--body-size);
 line-height: var(--body-lh);
-gap: var(--gap, 1rem)
+gap: var(--gap, 1rem);
+
 
 }
 
@@ -35,6 +36,7 @@ width: 10px;
     linear-gradient(45deg, transparent, transparent 40%, yellow),
     linear-gradient(#262626, #141414);
   animation: rotate 9.5s linear infinite;
+  color: white;
 }
 .page_block_sign:before,
 .page_block_sign:after {
