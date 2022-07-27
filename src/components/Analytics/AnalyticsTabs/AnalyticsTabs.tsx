@@ -47,10 +47,16 @@ export default function AnalyticsTabs() {
     const search = (value: string) => {
         setSearchWord(value);
         if (value.length > 0) {
-            setTokens(tokensResult.filter((item) => item.name.includes(value)));
+            setTokens(
+                tokensResult.filter((item) =>
+                    item.name.toLowerCase().includes(value.toLowerCase()),
+                ),
+            );
             setPools(
                 poolsResult.filter(
-                    (item) => item.token0.name.includes(value) || item.token1.name.includes(value),
+                    (item) =>
+                        item.token0.name.toLowerCase().includes(value.toLowerCase()) ||
+                        item.token1.name.toLowerCase().includes(value.toLowerCase()),
                 ),
             );
         }

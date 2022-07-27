@@ -15,12 +15,12 @@ interface BarData {
 }
 
 export default function BarChart(props: BarData) {
-    const BarValue = props.data;
+    const barValue = props.data;
     const snapType = props.snapType;
 
     useEffect(() => {
         const chartData = {
-            lineseries: BarValue,
+            lineseries: barValue,
             crosshair: [{ x: 0, y: -1 }],
             snapType: snapType,
         };
@@ -82,19 +82,7 @@ export default function BarChart(props: BarData) {
         const millisPerDay = 24 * 60 * 60 * 1000;
         const xExtent = d3fc
             .extentDate()
-            .accessors([
-                (d: any) => {
-                    switch (chartData.snapType) {
-                        case 'months':
-                            break;
-
-                        case 'days':
-                            return d.time;
-                        default:
-                            break;
-                    }
-                },
-            ])
+            .accessors([(d: any) => d.time])
             .padUnit('domain')
             .pad([millisPerDay, millisPerDay]);
 
@@ -200,7 +188,7 @@ export default function BarChart(props: BarData) {
             });
 
         render();
-    }, [BarValue, snapType]);
+    }, [barValue, snapType]);
 
     return <div style={{ height: '100%', width: '100%' }} id='chart-element'></div>;
 }

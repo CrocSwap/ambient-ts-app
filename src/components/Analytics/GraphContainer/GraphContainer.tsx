@@ -96,7 +96,7 @@ export default function GraphContainer() {
                         backgroundColor: volumeWindow === VolumeWindow.weekly ? '#7371FC' : '',
                         cursor: 'pointer',
                     }}
-                    onClick={() => setVolumeWindow(VolumeWindow.weekly)}
+                    // onClick={() => setVolumeWindow(VolumeWindow.weekly)}
                 >
                     Weekly
                 </button>
@@ -105,7 +105,7 @@ export default function GraphContainer() {
                         backgroundColor: volumeWindow === VolumeWindow.monthly ? '#7371FC' : '',
                         cursor: 'pointer',
                     }}
-                    onClick={() => setVolumeWindow(VolumeWindow.monthly)}
+                    // onClick={() => setVolumeWindow(VolumeWindow.monthly)}
                 >
                     Monthly
                 </button>
