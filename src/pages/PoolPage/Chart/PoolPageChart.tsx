@@ -1,9 +1,11 @@
 import dayjs from 'dayjs';
 import { DetailedHTMLProps, HTMLAttributes, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { PoolData } from '../../../state/pools/models';
 import { formatDollarAmount } from '../../../utils/numbers';
 import TvlChart from '../../TokenPage/Chart/TvlChart/TvlChart';
 import VolumeChart from '../../TokenPage/Chart/VolumeChart/VolumeChart';
+import LiquidityChart from '../LiquidtiyChart/LiquidityChart';
 import styles from './PoolPageChart.module.css';
 
 interface PoolPageChartProps {
@@ -26,6 +28,7 @@ declare global {
 }
 
 export default function PoolPageChart(props: PoolPageChartProps) {
+    const { address } = useParams() ?? '';
     const [activeTab, setActiveTab] = useState('vlm');
     const tabData = [
         { title: 'Volume', id: 'vlm' },
@@ -44,6 +47,8 @@ export default function PoolPageChart(props: PoolPageChartProps) {
                         {latestValue
                             ? activeTab === 'vlm' || activeTab === 'fee'
                                 ? latestValue
+                                : activeTab === 'liq'
+                                ? null
                                 : formatDollarAmount(latestValue, 2)
                             : formatDollarAmount(props.pool?.volumeUSD, 2)}
                     </label>
@@ -51,6 +56,8 @@ export default function PoolPageChart(props: PoolPageChartProps) {
                         {valueLabel
                             ? activeTab === 'vlm'
                                 ? valueLabel
+                                : activeTab === 'liq'
+                                ? null
                                 : valueLabel + ' (UTC) '
                             : dayjs.utc().format('MMM D, YYYY')}
                     </label>
@@ -77,6 +84,14 @@ export default function PoolPageChart(props: PoolPageChartProps) {
             {activeTab === 'tvl' ? (
                 <TvlChart
                     data={props.tvlData}
+                    value={latestValue}
+                    label={valueLabel}
+                    setValue={setLatestValue}
+                    setLabel={setValueLabel}
+                />
+            ) : activeTab === 'liq' ? (
+                <LiquidityChart
+                    address={address}
                     value={latestValue}
                     label={valueLabel}
                     setValue={setLatestValue}

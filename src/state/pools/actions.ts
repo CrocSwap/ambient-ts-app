@@ -1,5 +1,6 @@
 import { createAction } from '@reduxjs/toolkit';
 import { SupportedNetwork } from '../../constants/networks';
+import { TickProcessed } from '../../data/pools/tickData';
 import { Transaction } from '../../types';
 import { PoolData, PoolChartEntry } from './models';
 
@@ -24,3 +25,16 @@ export const updatePoolTransactions = createAction<{
     transactions: Transaction[];
     networkId: SupportedNetwork;
 }>('pool/updatePoolTransactions');
+
+export const updateTickData = createAction<{
+    poolAddress: string;
+    tickData:
+        | {
+              ticksProcessed: TickProcessed[];
+              feeTier: string;
+              tickSpacing: number;
+              activeTickIdx: number;
+          }
+        | undefined;
+    networkId: SupportedNetwork;
+}>('pool/updateTickData');

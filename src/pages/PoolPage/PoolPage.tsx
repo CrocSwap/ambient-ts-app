@@ -11,7 +11,7 @@ import PoolPageChart from './Chart/PoolPageChart';
 import { unixToDate } from '../../utils/date';
 
 export default function PoolPage() {
-    const { address } = useParams();
+    const { address } = useParams() ?? '';
     useEffect(() => {
         window.scrollTo(0, 0);
     }, []);
