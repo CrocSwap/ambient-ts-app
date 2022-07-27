@@ -226,19 +226,18 @@ export default function App() {
         getImportedTokens();
     }, [tokenListsReceived]);
 
+    // hook holding values and setter functions for slippage
+    // holds stable and volatile values for swap and mint transactions
     const [swapSlippage, mintSlippage] = useSlippage();
 
+    // 
     const isPairStable = useMemo(() => (
         checkIsStable(
             tradeData.tokenA.address,
             tradeData.tokenA.address,
             chainId
         )
-    ), [
-        tradeData.tokenA.address,
-        tradeData.tokenA.address,
-        chainId
-    ]);
+    ), [ tradeData.tokenA.address, tradeData.tokenA.address, chainId ]);
 
     useEffect(() => {
         console.log({isPairStable});
@@ -1252,6 +1251,7 @@ export default function App() {
         setImportedTokens: setImportedTokens,
         searchableTokens: searchableTokens,
         swapSlippage: swapSlippage,
+        isPairStable: isPairStable,
         provider: provider as JsonRpcProvider,
         gasPriceinGwei: gasPriceinGwei,
         nativeBalance: nativeBalance,
@@ -1274,6 +1274,7 @@ export default function App() {
         setImportedTokens: setImportedTokens,
         searchableTokens: searchableTokens,
         swapSlippage: swapSlippage,
+        isPairStable: isPairStable,
         provider: provider as JsonRpcProvider,
         isOnTradeRoute: true,
         gasPriceinGwei: gasPriceinGwei,
@@ -1297,6 +1298,7 @@ export default function App() {
         setImportedTokens: setImportedTokens,
         searchableTokens: searchableTokens,
         mintSlippage: mintSlippage,
+        isPairStable: isPairStable,
         provider: provider as JsonRpcProvider,
         isOnTradeRoute: true,
         gasPriceinGwei: gasPriceinGwei,
@@ -1322,6 +1324,7 @@ export default function App() {
         setImportedTokens: setImportedTokens,
         searchableTokens: searchableTokens,
         mintSlippage: mintSlippage,
+        isPairStable: isPairStable,
         provider: provider as JsonRpcProvider,
         lastBlockNumber: lastBlockNumber,
         gasPriceinGwei: gasPriceinGwei,

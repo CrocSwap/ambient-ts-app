@@ -45,6 +45,7 @@ interface SwapPropsIF {
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     searchableTokens: Array<TokenIF>;
     swapSlippage: SlippagePairIF;
+    isPairStable: boolean;
     provider: JsonRpcProvider;
     isOnTradeRoute?: boolean;
     gasPriceinGwei: string;
@@ -68,6 +69,7 @@ export default function Swap(props: SwapPropsIF) {
         setImportedTokens,
         searchableTokens,
         swapSlippage,
+        isPairStable,
         provider,
         isOnTradeRoute,
         nativeBalance,
@@ -348,9 +350,9 @@ export default function Swap(props: SwapPropsIF) {
             <div className={`${swapContainerStyle}`}>
                 <ContentContainer isOnTradeRoute={isOnTradeRoute}>
                     <SwapHeader
-                        chainId={chainId}
                         tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
                         swapSlippage={swapSlippage}
+                        isPairStable={isPairStable}
                         isOnTradeRoute={isOnTradeRoute}
                         isDenomBase={tradeData.isDenomBase}
                         isTokenABase={isSellTokenBase}
