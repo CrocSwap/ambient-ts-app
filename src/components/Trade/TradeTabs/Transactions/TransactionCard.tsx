@@ -68,10 +68,22 @@ export default function TransactionCard(props: TransactionProps) {
         swap.inBaseQty && !qtyIsExponential
             ? toDisplayQty(swapQtyString, baseToken?.decimals ?? 0)
             : undefined;
+
     const quoteQty =
         !swap.inBaseQty && !qtyIsExponential
             ? toDisplayQty(swapQtyString, quoteToken?.decimals ?? 0)
             : undefined;
+
+    const truncatedBaseQty = baseQty
+        ? parseFloat(baseQty)
+              .toPrecision(6)
+              .replace(/(?:\.0+|(\.\d+?)0+)$/, '$1')
+        : '0';
+    const truncatedQuoteQty = quoteQty
+        ? parseFloat(quoteQty)
+              .toPrecision(6)
+              .replace(/(?:\.0+|(\.\d+?)0+)$/, '$1')
+        : '0';
 
     // const qty = swap.qty;
     // const sellQty = swap.isBuy // sell token is base
@@ -108,8 +120,8 @@ export default function TransactionCard(props: TransactionProps) {
                 <TokenQty
                     baseToken={baseToken}
                     quoteToken={quoteToken}
-                    baseQty={baseQty}
-                    quoteQty={quoteQty}
+                    baseQty={truncatedBaseQty}
+                    quoteQty={truncatedQuoteQty}
                 />
             </div>
 
