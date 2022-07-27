@@ -5,13 +5,15 @@ import { BiDownArrow } from 'react-icons/bi';
 
 interface NetworkSelectorProps {
     chainId: string;
+    setFallbackChainId: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export default function NetworkSelector(props: NetworkSelectorProps) {
-    const { chainId } = props;
+    const { chainId, setFallbackChainId } = props;
     const { isWeb3Enabled } = useMoralis();
     const {
         // chainId,
+        chainId: moralisChainId,
         switchNetwork,
     } = useChain();
     // const [selectedChain, setSelectedChain] = useState(chainId?.toString());
@@ -64,6 +66,21 @@ export default function NetworkSelector(props: NetworkSelectorProps) {
             {selectOptions}
         </select>
     );
+
+    const handleNetworkSwitch = (chainId: string) => {
+        console.log('switching to ' + chainId);
+        setFallbackChainId(chainId);
+        if (moralisChainId) {
+            switchNetwork(chainId);
+        }
+        // else if (window.ethereum) {
+        //     window.ethereum.request({
+        //         method: 'wallet_switchEthereumChain',
+        //         params: [{ chainId: chainId }],
+        //     });
+        // }
+        // closeMenu ? closeMenu() : null;
+    };
 
     return (
         <div className={styles.selector_select_container}>
