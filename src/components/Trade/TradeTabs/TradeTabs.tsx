@@ -12,6 +12,7 @@ import DropdownMenu from '../../Global/DropdownMenu/DropdownMenu';
 import DropdownMenuContainer from '../../Global/DropdownMenu/DropdownMenuContainer/DropdownMenuContainer';
 import DropdownMenuItem from '../../Global/DropdownMenu/DropdownMenuItem/DropdownMenuItem';
 import { BiDownArrow } from 'react-icons/bi';
+import Ranges from './Ranges/Ranges';
 
 interface ITabsProps {
     account: string;
@@ -184,7 +185,13 @@ export default function TradeTabs(props: ITabsProps) {
                     Leaderboard
                 </TabContent>
                 <TabContent id='tab5' activeTab={activeTab}>
-                    Info
+                    Test of ranges refactor
+                    <Ranges
+                        isShowAllEnabled={isShowAllEnabled}
+                        notOnTradeRoute={false}
+                        graphData={graphData}
+                        lastBlockNumber={props.lastBlockNumber}
+                    />
                 </TabContent>
             </div>
         </div>

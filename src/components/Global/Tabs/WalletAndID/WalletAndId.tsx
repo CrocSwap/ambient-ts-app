@@ -6,7 +6,7 @@ import { useStyles } from '../../../../utils/functions/styles';
 interface WalletAndIDProps {
     posHash: string;
     ownerId: string;
-    ensName?: string;
+    ensName?: string | null;
 }
 export default function WalletAndId(props: WalletAndIDProps) {
     const { ownerId, posHash, ensName } = props;
@@ -72,7 +72,7 @@ export default function WalletAndId(props: WalletAndIDProps) {
                 {displayENSorWallet}
             </section>
             <section className={styles.account_sing}>{IDWithTooltip}</section>
-            <section className={styles.account_sing}>{walletWithTooltip}</section>
+            <section className={styles.account_sing}>{displayENSorWallet}</section>
         </>
     );
 }

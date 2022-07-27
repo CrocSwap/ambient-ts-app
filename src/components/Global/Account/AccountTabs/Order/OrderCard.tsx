@@ -1,11 +1,11 @@
 import OpenOrderStatus from '../../../../Global/OpenOrderStatus/OpenOrderStatus';
 import Price from '../../../../Global/Tabs/Price/Price';
-import TableMenu from '../../../../Global/Tabs/TableMenu/TableMenu';
 import TokenQty from '../../../../Global/Tabs/TokenQty/TokenQty';
 import OrderTypeSide from '../../../../Global/Tabs/TypeAndSide/OrderTypeAndSide/OrderTypeSide';
 import WalletAndId from '../../../../Global/Tabs/WalletAndID/WalletAndId';
 import AccountPoolDisplay from '../../../Tabs/AccountPoolDisplay/AccountPoolDisplay';
 import AccountTokensDisplay from '../../../Tabs/AccountTokensDisplay/AccountTokensDisplay';
+import OrdersMenu from '../../../Tabs/TableMenu/TableMenuComponents/OrdersMenu';
 
 import styles from './OrderCard.module.css';
 export default function OrderCard() {
@@ -30,8 +30,7 @@ export default function OrderCard() {
             </div>
 
             <div className={styles.menu_container}>
-                {' '}
-                <TableMenu tableType='orders' />
+                <OrdersMenu userPosition={false} />
             </div>
         </div>
     );

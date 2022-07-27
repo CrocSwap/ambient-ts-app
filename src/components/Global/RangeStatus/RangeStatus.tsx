@@ -7,10 +7,10 @@ interface RangeStatusProps {
 }
 
 export default function RangeStatus(props: RangeStatusProps) {
-    const { isInRange, isAmbient, justSymbol } = props;
+    const { isInRange, isAmbient } = props;
 
     const symbolOnlyDisplay = (
-        <div className={styles.range_container}>
+        <div className={`${styles.range_container} ${styles.symbol_only_display}`}>
             {isAmbient ? (
                 <div className={styles.range_text_ambient} />
             ) : (
@@ -35,5 +35,11 @@ export default function RangeStatus(props: RangeStatusProps) {
         </div>
     );
 
-    return <> {justSymbol ? symbolOnlyDisplay : rangeDisplay}</>;
+    return (
+        <>
+            {' '}
+            {symbolOnlyDisplay}
+            {rangeDisplay}
+        </>
+    );
 }

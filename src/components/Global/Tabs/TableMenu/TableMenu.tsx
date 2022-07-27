@@ -1,16 +1,17 @@
 import OrdersMenu from './TableMenuComponents/OrdersMenu';
-import RangesMenu from './TableMenuComponents/RangesMenu';
-import TransactionsMenu from './TableMenuComponents/TransactionsMenu';
+// import RangesMenu from './TableMenuComponents/RangesMenu';
+// import TransactionsMenu from './TableMenuComponents/TransactionsMenu';
 
 interface TableMenuProps {
-    tableType: 'orders' | 'ranges' | 'transactions';
+    tableType: 'orders';
+    userPosition: boolean | undefined;
 }
 export default function TableMenu(props: TableMenuProps) {
-    const { tableType } = props;
+    const { tableType, userPosition } = props;
     const menuData = {
-        orders: <OrdersMenu />,
-        ranges: <RangesMenu />,
-        transactions: <TransactionsMenu />,
+        orders: <OrdersMenu userPosition={userPosition} />,
+        // ranges: <RangesMenu userPosition={userPosition} />,
+        // transactions: <TransactionsMenu />,
     };
 
     return <>{menuData[tableType]}</>;
