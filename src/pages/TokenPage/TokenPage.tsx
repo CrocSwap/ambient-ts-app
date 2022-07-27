@@ -17,6 +17,7 @@ import TokenPageChart from './Chart/TokenPageChart';
 import { formatDollarAmount } from '../../utils/numbers';
 import { ONE_HOUR_SECONDS, TimeWindow } from '../../constants/intervals';
 import { PriceChartEntry } from '../../types';
+import logo from '../../assets/images/logos/ambient_logo.svg';
 
 const DEFAULT_TIME_WINDOW = TimeWindow.WEEK;
 
@@ -133,6 +134,12 @@ export default function TokenPage() {
         </div>
     );
 
+    const loading = (
+        <div className={styles.animatedImg}>
+            <img src={logo} width={110} alt='logo' />
+        </div>
+    );
+
     return (
         <main data-testid={'token-page'} className={styles.container}>
             {tokenInfo}
@@ -147,7 +154,7 @@ export default function TokenPage() {
                         token={tokenData}
                     />
                 ) : (
-                    <></>
+                    <>{loading}</>
                 )}
             </div>
 

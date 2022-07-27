@@ -5,6 +5,7 @@ import { formatDollarAmount } from '../../../utils/numbers';
 import AreaChart from '../../Global/Charts/AreaChart';
 import BarChart from '../../Global/Charts/BarChart';
 import { useTransformedVolumeData } from '../../../hooks/chart';
+import logo from '../../../assets/images/logos/ambient_logo.svg';
 
 export enum VolumeWindow {
     daily,
@@ -113,6 +114,12 @@ export default function GraphContainer() {
         </div>
     );
 
+    const loading = (
+        <div className={styles.animatedImg}>
+            <img src={logo} width={110} alt='logo' />
+        </div>
+    );
+
     const graphData = (
         <div className={styles.graph_data}>
             <div className={styles.graph_container}>
@@ -124,10 +131,12 @@ export default function GraphContainer() {
                         : formatDollarAmount(latestValueTvl, 2)}
                 </label>
                 <br></br>
-                <label className={styles.eJnjNO}>{valueLabelTvl + ' (UTC) '}</label>
+                <label className={styles.eJnjNO}>
+                    {valueLabelTvl ? valueLabelTvl + ' (UTC) ' : '-'}
+                </label>
                 <div className={styles.chart_container}>
                     {' '}
-                    {formattedTvlData ? (
+                    {chartData ? (
                         <AreaChart
                             data={formattedTvlData}
                             value={latestValueTvl}
@@ -136,7 +145,7 @@ export default function GraphContainer() {
                             setLabel={setValueLabelTvl}
                         />
                     ) : (
-                        <></>
+                        <>{loading}</>
                     )}
                 </div>
             </div>
@@ -148,28 +157,34 @@ export default function GraphContainer() {
                         : formatDollarAmount(latestValueVolume, 2)}
                 </label>
                 <br></br>
-                <label className={styles.eJnjNO}>{valueLabelVolume + ' (UTC) '}</label>
+                <label className={styles.eJnjNO}>
+                    {valueLabelVolume ? valueLabelVolume + ' (UTC) ' : '-'}
+                </label>
                 <div className={styles.chart_container}>
-                    <BarChart
-                        data={
-                            volumeWindow === VolumeWindow.monthly
-                                ? monthlyVolumeData
-                                : volumeWindow === VolumeWindow.weekly
-                                ? weeklyVolumeData
-                                : formattedVolumeData
-                        }
-                        value={latestValueVolume}
-                        label={valueLabelVolume}
-                        setValue={setLatestValueVolume}
-                        setLabel={setValueLabelVolume}
-                        snapType={
-                            volumeWindow === VolumeWindow.daily
-                                ? 'days'
-                                : volumeWindow === VolumeWindow.monthly
-                                ? 'months'
-                                : 'weeks'
-                        }
-                    />
+                    {chartData ? (
+                        <BarChart
+                            data={
+                                volumeWindow === VolumeWindow.monthly
+                                    ? monthlyVolumeData
+                                    : volumeWindow === VolumeWindow.weekly
+                                    ? weeklyVolumeData
+                                    : formattedVolumeData
+                            }
+                            value={latestValueVolume}
+                            label={valueLabelVolume}
+                            setValue={setLatestValueVolume}
+                            setLabel={setValueLabelVolume}
+                            snapType={
+                                volumeWindow === VolumeWindow.daily
+                                    ? 'days'
+                                    : volumeWindow === VolumeWindow.monthly
+                                    ? 'months'
+                                    : 'weeks'
+                            }
+                        />
+                    ) : (
+                        <>{loading}</>
+                    )}
                 </div>
             </div>
         </div>
