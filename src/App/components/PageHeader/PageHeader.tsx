@@ -213,7 +213,9 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
             <div className={styles.account}>
                 {(!isAuthenticated || !isWeb3Enabled) && metamaskButton}
                 {/* {(!isAuthenticated || !isWeb3Enabled) && magicButton} */}
-                {isAuthenticated && isWeb3Enabled && <NetworkSelector chainId={chainId} />}
+                {isAuthenticated && isWeb3Enabled && (
+                    <NetworkSelector chainId={chainId} setFallbackChainId={setFallbackChainId} />
+                )}
                 <Account {...accountProps} />
             </div>
 
