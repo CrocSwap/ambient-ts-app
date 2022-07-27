@@ -89,7 +89,7 @@
 .right_col{
     display: flex;
     flex-direction: column;
-    background-color: var(--dark1);
+    /* background-color: var(--dark1); */
     position: relative;
   
 }
