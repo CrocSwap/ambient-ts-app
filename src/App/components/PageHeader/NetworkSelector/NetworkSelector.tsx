@@ -1,8 +1,12 @@
 import styles from './NetworkSelector.module.css';
 // import { useState } from 'react';
-import { useChain, useMoralis } from 'react-moralis';
-import { BiDownArrow } from 'react-icons/bi';
+import { useChain } from 'react-moralis';
+import { FaDotCircle } from 'react-icons/fa';
 import DropdownMenu2 from '../../../../components/Global/DropdownMenu2/DropdownMenu2';
+import { motion } from 'framer-motion';
+import kovanImage from '../../../../assets/images/networks/kovan.svg';
+import ethereumImage from '../../../../assets/images/networks/ethereum.png';
+import { ItemEnterAnimation } from '../../../../utils/others/FramerMotionAnimations';
 
 interface NetworkSelectorProps {
     chainId: string;
@@ -11,7 +15,6 @@ interface NetworkSelectorProps {
 
 export default function NetworkSelector(props: NetworkSelectorProps) {
     const { chainId, setFallbackChainId } = props;
-    const { isWeb3Enabled } = useMoralis();
     const {
         // chainId,
         chainId: moralisChainId,
@@ -20,53 +23,36 @@ export default function NetworkSelector(props: NetworkSelectorProps) {
     // const [selectedChain, setSelectedChain] = useState(chainId?.toString());
 
     // this chains data will eventually be stored in the data folder.
+
+    console.log(chainId);
     const chains = [
         {
-            name: 'Kovan Testnet',
+            name: 'Kovan ',
             id: '0x2a',
-            icon: null,
+            icon: kovanImage,
             theme: '#36364a',
         },
         {
-            name: 'Goerli Testnet',
+            name: 'Goerli ',
             id: '0x5',
-            icon: null,
+            icon: kovanImage,
             theme: '#36364a',
         },
         {
-            name: 'Avalanche Testnet',
+            name: 'Avalanche ',
             id: '0xa869',
-            icon: '',
+            icon: kovanImage,
             theme: 'red',
         },
         {
-            name: 'Ethereum Mainnet',
+            name: 'Ethereum ',
             id: '0x1',
-            icon: null,
+            icon: ethereumImage,
             theme: 'blue',
         },
     ];
 
-    const selectOptions = chains.map((chain) => (
-        <option className={styles.selector_option} key={chain.id} value={chain.id}>
-            {chain.name}
-        </option>
-    ));
-
-    const selectElement = (
-        <select
-            onChange={(e) => {
-                // setSelectedChain(e.target.value);
-                if (isWeb3Enabled) {
-                    switchNetwork(e.target.value);
-                }
-            }}
-            className={styles.selector_select}
-            value={chainId}
-        >
-            {selectOptions}
-        </select>
-    );
+    const currenctChain = chains.filter((chain) => chain.id === chainId);
 
     const handleNetworkSwitch = (chainId: string) => {
         console.log('switching to ' + chainId);
@@ -83,23 +69,37 @@ export default function NetworkSelector(props: NetworkSelectorProps) {
         // closeMenu ? closeMenu() : null;
     };
 
+    const circleIcon = <FaDotCircle color='#CDC1FF' size={10} />;
+
     const networkMenuContent = (
         <ul className={styles.menu_content}>
-            {chains.map((chain) => (
-                <li
+            {chains.map((chain, idx) => (
+                <motion.li
                     onClick={() => handleNetworkSwitch(chain.id)}
                     key={chain.id}
                     className={styles.network_item}
+                    custom={idx}
+                    variants={ItemEnterAnimation}
                 >
-                    {chain.name}
-                </li>
+                    <img src={chain.icon} className={styles.icon_button} alt={chain.name} />
+                    <div className={styles.chain_name_status}>
+                        {chain.name}
+                        {chain.id == chainId && circleIcon}
+                    </div>
+                </motion.li>
             ))}
         </ul>
     );
 
     const networkMenu = (
         <div className={styles.dropdown_menu_container}>
-            <DropdownMenu2 title='Network'>{networkMenuContent}</DropdownMenu2>
+            <DropdownMenu2
+                marginTop={'50px'}
+                titleWidth={'130px'}
+                title={currenctChain ? currenctChain[0].name : ''}
+            >
+                {networkMenuContent}
+            </DropdownMenu2>
         </div>
     );
 

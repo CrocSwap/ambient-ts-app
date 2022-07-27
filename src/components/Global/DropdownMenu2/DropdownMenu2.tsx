@@ -1,15 +1,17 @@
 import styles from './DropdownMenu2.module.css';
-import { useState, useEffect, SetStateAction } from 'react';
+import { useState } from 'react';
 import { FaAngleDown } from 'react-icons/fa';
 import { AnimatePresence, motion } from 'framer-motion';
-import { showAnimation, dropdownAnimation } from '../../../utils/others/FramerMotionAnimations';
+import { dropdownAnimation } from '../../../utils/others/FramerMotionAnimations';
 interface DropdownMenuProps {
     title: string;
     children: React.ReactNode;
-    marginTop?: number;
+    marginTop?: string;
+    titleWidth?: string;
+    titleBackground?: string;
 }
 export default function DropdownMenu2(props: DropdownMenuProps) {
-    const { title, children, marginTop } = props;
+    const { title, children, marginTop, titleWidth, titleBackground } = props;
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     let isIconOpen = true;
     const toggleMenu = () => {
@@ -42,7 +44,14 @@ export default function DropdownMenu2(props: DropdownMenuProps) {
 
     return (
         <>
-            <div className={styles.menu} onClick={toggleMenu}>
+            <div
+                className={styles.menu}
+                onClick={toggleMenu}
+                style={{
+                    minWidth: titleWidth ? titleWidth : '100px',
+                    background: titleBackground ? titleBackground : 'transparent',
+                }}
+            >
                 <div className={styles.menu_item}>
                     <div className={styles.icon}>{title}</div>
                     {/* <AnimatePresence>
