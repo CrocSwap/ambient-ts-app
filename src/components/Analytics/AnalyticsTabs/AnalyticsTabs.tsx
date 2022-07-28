@@ -16,8 +16,6 @@ import { PoolData } from '../../../state/pools/models';
 export default function AnalyticsTabs() {
     const [activeTab, setActiveTab] = useState('tab1');
 
-    // const graphData = useAppSelector((state) => state?.graphData);
-
     const tabData = [
         { title: 'Top Tokens', id: 'tab1' },
         { title: 'Top Pools', id: 'tab2' },

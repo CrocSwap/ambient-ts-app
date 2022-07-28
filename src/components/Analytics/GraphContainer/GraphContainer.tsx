@@ -24,7 +24,7 @@ export default function GraphContainer() {
     const [valueLabelVolume, setValueLabelVolume] = useState<string | undefined>();
     const weeklyVolumeData = useTransformedVolumeData(chartData, 'week');
     const monthlyVolumeData = useTransformedVolumeData(chartData, 'month');
-    const [volumeWindow, setVolumeWindow] = useState(VolumeWindow.daily);
+    const [volumeWindow] = useState(VolumeWindow.daily);
     useEffect(() => {
         if (volumeHover === undefined && protocolData) {
             setVolumeHover(protocolData.volumeUSD);
@@ -66,22 +66,21 @@ export default function GraphContainer() {
     const timeFrame = (
         <div className={styles.time_frame_container}>
             <div className={styles.title}>Ambient Analytics</div>
-            {/* <div className={styles.right_side}>
+            <div className={styles.right_side}>
                 <span>Timeframe</span>
-                <button>1m</button>
-                <button>5m</button>
-                <button>15m</button>
-                <button>1h</button>
-                <button>4h</button>
                 <button>1d</button>
-            </div> */}
+                <button>1M</button>
+                <button>6M</button>
+                <button>1Y</button>
+                <button>All</button>
+            </div>
         </div>
     );
 
     const dateFrame = (
         <div className={styles.time_frame_container}>
             <div className={styles.title}>Volume 24H</div>
-            <div className={styles.right_side}>
+            {/* <div className={styles.right_side}>
                 <span>Timeframe</span>
                 <button
                     style={{
@@ -110,7 +109,7 @@ export default function GraphContainer() {
                 >
                     Monthly
                 </button>
-            </div>
+            </div> */}
         </div>
     );
 

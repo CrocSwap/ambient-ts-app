@@ -122,7 +122,7 @@ export default function AreaChart(props: AreaChartProps) {
             .xDomain(xExtent(data.series))
             .svgPlotArea(multi)
             .decorate((sel: any) => {
-                sel.enter().style('min-height', '310px');
+                sel.enter().style('min-height', '300px');
             });
 
         const pointer = d3fc.pointer().on('point', (event: any) => {

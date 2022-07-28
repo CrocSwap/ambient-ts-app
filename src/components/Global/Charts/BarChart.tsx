@@ -184,7 +184,7 @@ export default function BarChart(props: BarData) {
                         xScaleOriginal.range([0, event.detail.width]);
                     })
                     .call(zoom);
-                sel.enter().style('min-height', '305px');
+                sel.enter().style('min-height', '300px');
             });
 
         render();
