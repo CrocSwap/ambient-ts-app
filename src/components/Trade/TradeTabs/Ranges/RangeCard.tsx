@@ -44,7 +44,7 @@ export default function RangeCard(props: RangeCardProps) {
 
     let posHash;
     if (position.ambient) {
-        posHash = ambientPosSlot(position.user, position.base, position.quote);
+        posHash = ambientPosSlot(position.user, position.base, position.quote, 36000);
     } else {
         posHash = concPosSlot(
             position.user,
@@ -52,6 +52,7 @@ export default function RangeCard(props: RangeCardProps) {
             position.quote,
             position.bidTick,
             position.askTick,
+            36000,
         );
     }
 
