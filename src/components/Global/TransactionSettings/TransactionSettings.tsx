@@ -5,8 +5,8 @@ import { useState } from 'react';
 import styles from './TransactionSettings.module.css';
 import Button from '../Button/Button';
 import SlippageTolerance from '../SlippageTolerance/SlippageTolerance';
-import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
-import { setSlippageTolerance } from '../../../utils/state/tradeDataSlice';
+// import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
+// import { setSlippageTolerance } from '../../../utils/state/tradeDataSlice';
 import { SlippagePairIF } from '../../../utils/interfaces/exports';
 
 // interface for component props
@@ -20,15 +20,25 @@ interface TransactionSettingsPropsIF {
 export default function TransactionSettings(props: TransactionSettingsPropsIF) {
     const { module, slippage, isPairStable, onClose } = props;
 
-    const dispatch = useAppDispatch();
+    // const dispatch = useAppDispatch();
 
-    const [newSlippage, setNewSlippage] = useState<string>(isPairStable ? slippage.stable.value : slippage.volatile.value);
+    const [newSlippage, setNewSlippage] = useState<string>(
+        isPairStable ? slippage.stable.value : slippage.volatile.value,
+    );
 
-    const handleClose = () => {
-        dispatch(setSlippageTolerance(parseInt(newSlippage)));
+    const setSlippage = (input: string) => {
+        setNewSlippage(input);
         isPairStable
             ? slippage.stable.setValue(newSlippage)
             : slippage.volatile.setValue(newSlippage);
+    };
+
+    const handleClose = () => {
+        // dispatch(setSlippageTolerance(parseInt(newSlippage)));
+        // isPairStable
+        //     ? slippage.stable.setValue(newSlippage)
+        //     : slippage.volatile.setValue(newSlippage);
+        setSlippage(newSlippage);
         onClose();
     };
 
@@ -39,8 +49,9 @@ export default function TransactionSettings(props: TransactionSettingsPropsIF) {
             <div className={styles.settings_title}>{module + ' Settings'}</div>
             {shouldDisplaySlippageTolerance ? (
                 <SlippageTolerance
-                    slippageValue={isPairStable ? slippage.stable.value : slippage.volatile.value}
-                    setNewSlippage={setNewSlippage}
+                    slippageValue={newSlippage}
+                    setSlippage={setSlippage}
+                    module={module}
                 />
             ) : null}
             <div className={styles.button_container}>
