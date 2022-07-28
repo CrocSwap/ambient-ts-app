@@ -140,6 +140,10 @@ export default function BarChart(props: BarData) {
                     .selectAll('.point>path')
                     .attr('transform', 'scale(0.2)')
                     .style('fill', 'white');
+                selection
+                    .enter()
+                    .select('g.annotation-line.horizontal')
+                    .attr('visibility', 'hidden');
             });
 
         const multi = d3fc
