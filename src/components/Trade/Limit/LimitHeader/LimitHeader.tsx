@@ -18,13 +18,14 @@ interface LimitHeaderPropsIF {
     chainId: string;
     tokenPair: TokenPairIF;
     mintSlippage: SlippagePairIF;
+    isPairStable: boolean;
     isDenomBase: boolean;
     isTokenABase: boolean;
 }
 
 // central react functional component
 export default function LimitHeader(props: LimitHeaderPropsIF) {
-    const { chainId, tokenPair, mintSlippage, isDenomBase, isTokenABase } = props;
+    const { tokenPair, mintSlippage, isPairStable, isDenomBase, isTokenABase } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
 
@@ -35,10 +36,9 @@ export default function LimitHeader(props: LimitHeaderPropsIF) {
     const settingsModalOrNull = isModalOpen ? (
         <Modal noHeader title='modal' onClose={closeModal}>
             <TransactionSettings
-                chainId={chainId}
                 module='Limit Order'
-                tokenPair={tokenPair}
                 slippage={mintSlippage}
+                isPairStable={isPairStable}
                 onClose={closeModal}
             />
         </Modal>

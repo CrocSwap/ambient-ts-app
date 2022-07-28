@@ -32,6 +32,7 @@ interface LimitPropsIF {
     importedTokens: Array<TokenIF>;
     searchableTokens: Array<TokenIF>;
     mintSlippage: SlippagePairIF;
+    isPairStable: boolean;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     provider?: ethers.providers.Provider;
     isOnTradeRoute?: boolean;
@@ -58,6 +59,7 @@ export default function Limit(props: LimitPropsIF) {
         importedTokens,
         searchableTokens,
         mintSlippage,
+        isPairStable,
         setImportedTokens,
         provider,
         isSellTokenBase,
@@ -277,6 +279,7 @@ export default function Limit(props: LimitPropsIF) {
                     chainId={chainId}
                     tokenPair={tokenPair}
                     mintSlippage={mintSlippage}
+                    isPairStable={isPairStable}
                     isDenomBase={tradeData.isDenomBase}
                     isTokenABase={isTokenABase}
                 />

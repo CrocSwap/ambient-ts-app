@@ -9,9 +9,24 @@ import { useState } from 'react';
 import RangeDetailsHeader from '../../../../RangeDetails/RangeDetailsHeader/RangeDetailsHeader';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import SnackbarComponent from '../../../../../components/Global/SnackbarComponent/SnackbarComponent';
-
+interface RangesMenu {
+    userPosition: boolean | undefined;
+    // todoFromJr: Assign the correct types to these data -Jr
+    // eslint-disable-next-line
+    removeRangeProps: any;
+    // eslint-disable-next-line
+    positionData: any;
+    posHash: string;
+}
 import { Link } from 'react-router-dom';
-export default function RangesMenu() {
+import RemoveRange from '../../../../RemoveRange/RemoveRange';
+import RangeDetails from '../../../../RangeDetails/RangeDetails';
+export default function RangesMenu(props: RangesMenu) {
+    const currentLocation = location.pathname;
+    const { isAmbient, isPositionInRange } = props.removeRangeProps;
+    const { posHash, positionData } = props;
+    const { userPosition, removeRangeProps } = props;
+    // eslint-disable-next-line
     const [value, copy] = useCopyToClipboard();
     const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
 
@@ -39,7 +54,7 @@ export default function RangesMenu() {
 
     // -----------------SNACKBAR----------------
     function handleCopyAddress() {
-        copy('example data');
+        copy(posHash);
         setOpenSnackbar(true);
     }
 
@@ -49,21 +64,20 @@ export default function RangesMenu() {
             setOpenSnackbar={setOpenSnackbar}
             openSnackbar={openSnackbar}
         >
-            {value} copied
+            {posHash} copied
         </SnackbarComponent>
     );
     // -----------------END OF SNACKBAR----------------
 
     switch (currentModal) {
         case 'remove':
-            // modalContent = <RemoveRange {...removeRangeProps} />;
-            modalContent = 'Remove';
+            modalContent = <RemoveRange {...removeRangeProps} />;
             modalTitle = 'Remove Position';
             break;
 
         case 'details':
             // modalContent = <RangeDetails {...removeRangeProps} />;
-            modalContent = 'details';
+            modalContent = <RangeDetails {...removeRangeProps} />;
             modalTitle = <RangeDetailsHeader />;
             break;
         case 'harvest':
@@ -81,14 +95,51 @@ export default function RangesMenu() {
 
     const modalOrNull = isModalOpen ? mainModal : null;
 
-    const removeButton = <button onClick={openRemoveModal}>Remove</button>;
-    const copyButton = <button onClick={handleCopyAddress}>Copy</button>;
-    const detailsButton = <button onClick={openDetailsModal}>Details</button>;
-    const harvestButton = <button onClick={openHarvestModal}>Harvest</button>;
-    const editButton = <Link to={'/trade/edit'}>Edit</Link>;
+    const repositionButton =
+        userPosition && !isPositionInRange ? (
+            <Link className={styles.reposition_button} to={'/trade/reposition'}>
+                Reposition
+            </Link>
+        ) : null;
+
+    const removeButton = userPosition ? (
+        <button className={styles.option_button} onClick={openRemoveModal}>
+            Remove
+        </button>
+    ) : null;
+    const copyButton =
+        userPosition && isPositionInRange ? (
+            <button className={styles.option_button} onClick={handleCopyAddress}>
+                Copy
+            </button>
+        ) : null;
+
+    const detailsButton = (
+        <button className={styles.option_button} onClick={openDetailsModal}>
+            Details
+        </button>
+    );
+    const harvestButton =
+        !isAmbient && userPosition ? (
+            <button className={styles.option_button} onClick={openHarvestModal}>
+                Harvest
+            </button>
+        ) : null;
+
+    const editButton = userPosition ? (
+        <Link
+            className={styles.option_button}
+            to={`/trade/edit/${posHash}`}
+            state={positionData}
+            replace={currentLocation.startsWith('/trade/edit')}
+        >
+            Edit
+        </Link>
+    ) : null;
 
     const rangesMenu = (
         <div className={styles.actions_menu}>
+            {repositionButton}
             {editButton}
             {harvestButton}
             {removeButton}
@@ -96,6 +147,8 @@ export default function RangesMenu() {
             {copyButton}
         </div>
     );
+
+    console.log(posHash);
 
     const dropdownRangesMenu = (
         <div className={styles.dropdown_menu}>

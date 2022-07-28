@@ -1,6 +1,6 @@
 import OpenOrderStatus from '../../../Global/OpenOrderStatus/OpenOrderStatus';
 import Price from '../../../Global/Tabs/Price/Price';
-import TableMenu from '../../../Global/Tabs/TableMenu/TableMenu';
+import OrdersMenu from '../../../Global/Tabs/TableMenu/TableMenuComponents/OrdersMenu';
 import TokenQty from '../../../Global/Tabs/TokenQty/TokenQty';
 import OrderTypeSide from '../../../Global/Tabs/TypeAndSide/OrderTypeAndSide/OrderTypeSide';
 import WalletAndId from '../../../Global/Tabs/WalletAndID/WalletAndId';
@@ -29,7 +29,7 @@ export default function OrderCard() {
             </div>
 
             <div className={styles.menu_container}>
-                <TableMenu tableType='orders' />
+                <OrdersMenu userPosition={false} />
             </div>
         </div>
     );

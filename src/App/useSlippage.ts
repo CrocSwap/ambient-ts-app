@@ -19,7 +19,6 @@ export const useSlippage = () => {
     }
 
     useEffect(() => {
-        console.log({ slipSwapStable });
         if (userData?.slippage) {
             if (slipSwapStable === '') {
                 setSlipSwapStable(userData.slippage.swap.stable);

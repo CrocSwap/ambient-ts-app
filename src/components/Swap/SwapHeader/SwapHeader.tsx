@@ -1,13 +1,11 @@
-// START: Import React and Dongles
-
 // START: Import React Functional Components
 import Modal from '../../../components/Global/Modal/Modal';
-import { useModal } from '../../../components/Global/Modal/useModal';
 import ContentHeader from '../../Global/ContentHeader/ContentHeader';
 import TransactionSettings from '../../Global/TransactionSettings/TransactionSettings';
 
 // START: Import Local Files
 import styles from './SwapHeader.module.css';
+import { useModal } from '../../../components/Global/Modal/useModal';
 import settingsIcon from '../../../assets/images/icons/settings.svg';
 import { SlippagePairIF, TokenPairIF } from '../../../utils/interfaces/exports';
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
@@ -15,9 +13,9 @@ import { toggleDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
 
 // interface for props
 interface SwapHeaderPropsIF {
-    chainId: string;
     tokenPair: TokenPairIF;
     swapSlippage: SlippagePairIF;
+    isPairStable: boolean;
     isOnTradeRoute?: boolean;
     isDenomBase: boolean;
     isTokenABase: boolean;
@@ -25,7 +23,8 @@ interface SwapHeaderPropsIF {
 
 // main react functional component
 export default function SwapHeader(props: SwapHeaderPropsIF) {
-    const { chainId, tokenPair, swapSlippage, isOnTradeRoute, isDenomBase, isTokenABase } = props;
+    const { tokenPair, swapSlippage, isPairStable, isOnTradeRoute, isDenomBase, isTokenABase } =
+        props;
     const [isModalOpen, openModal, closeModal] = useModal();
 
     const dispatch = useAppDispatch();
@@ -35,10 +34,9 @@ export default function SwapHeader(props: SwapHeaderPropsIF) {
     const settingsModalOrNull = isModalOpen ? (
         <Modal noHeader title='modal' onClose={closeModal}>
             <TransactionSettings
-                chainId={chainId}
                 module={isOnTradeRoute ? 'Market Order' : 'Swap'}
-                tokenPair={tokenPair}
                 slippage={swapSlippage}
+                isPairStable={isPairStable}
                 onClose={closeModal}
             />
         </Modal>

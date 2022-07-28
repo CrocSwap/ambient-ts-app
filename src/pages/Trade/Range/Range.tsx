@@ -2,7 +2,25 @@
 import { useState, useEffect, useMemo, Dispatch, SetStateAction } from 'react';
 import { useMoralis } from 'react-moralis';
 import { motion } from 'framer-motion';
-import { concDepositSkew, MIN_TICK, MAX_TICK, CrocEnv } from '@crocswap-libs/sdk';
+// import { JsonRpcProvider } from '@ethersproject/providers';
+import {
+    // sendAmbientMint,
+    // liquidityForBaseQty,
+    // liquidityForQuoteQty,
+    // fromDisplayQty,
+    // sendConcMint,
+    // parseMintEthersReceipt,
+    // EthersNativeReceipt,
+    // ambientPosSlot,
+    concDepositSkew,
+    MIN_TICK,
+    MAX_TICK,
+    CrocEnv,
+    // concPosSlot,
+    // approveToken,
+    // contractAddresses,
+    // POOL_PRIMARY,
+} from '@crocswap-libs/sdk';
 
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 
@@ -42,15 +60,18 @@ import {
 import { addReceipt } from '../../../utils/state/receiptDataSlice';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
-import { ethers } from 'ethers';
+import {
+    ethers,
+    //  BigNumber
+} from 'ethers';
 
 interface RangePropsIF {
     importedTokens: Array<TokenIF>;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     searchableTokens: Array<TokenIF>;
-    provider?: ethers.providers.Provider;
     mintSlippage: SlippagePairIF;
-    // provider: JsonRpcProvider;
+    isPairStable: boolean;
+    provider?: ethers.providers.Provider;
     gasPriceinGwei: string;
     lastBlockNumber: number;
     baseTokenAddress: string;
@@ -74,6 +95,7 @@ export default function Range(props: RangePropsIF) {
         setImportedTokens,
         searchableTokens,
         mintSlippage,
+        isPairStable,
         provider,
         baseTokenAddress,
         quoteTokenAddress,
@@ -119,7 +141,15 @@ export default function Range(props: RangePropsIF) {
 
     const isTokenABase = tokenPair?.dataTokenA.address === baseTokenAddress;
 
-    const slippageTolerancePercentage = tradeData.slippageTolerance;
+    // const slippageTolerancePercentage = tradeData.slippageTolerance;
+    const slippageTolerancePercentage = isPairStable
+        ? mintSlippage.stable.value
+        : mintSlippage.volatile.value;
+
+    // const poolWeiPriceLowLimit =
+    //     poolPriceNonDisplay * (1 - parseFloat(slippageTolerancePercentage) / 100);
+    // const poolWeiPriceHighLimit =
+    //     poolPriceNonDisplay * (1 + parseFloat(slippageTolerancePercentage) / 100);
 
     const poolPriceDisplayNum = parseFloat(poolPriceDisplay);
 
@@ -570,8 +600,8 @@ export default function Range(props: RangePropsIF) {
         const pool = new CrocEnv(provider).pool(tokenA.address, tokenB.address);
 
         const spot = await pool.spotPrice();
-        const minPrice = spot * (1 - slippageTolerancePercentage);
-        const maxPrice = spot * (1 + slippageTolerancePercentage);
+        const minPrice = spot * (1 - parseFloat(slippageTolerancePercentage));
+        const maxPrice = spot * (1 + parseFloat(slippageTolerancePercentage));
 
         const tx = await (isAmbient
             ? isTokenAPrimary
@@ -947,6 +977,7 @@ export default function Range(props: RangePropsIF) {
                     chainId={chainId}
                     tokenPair={tokenPair}
                     mintSlippage={mintSlippage}
+                    isPairStable={isPairStable}
                     isDenomBase={tradeData.isDenomBase}
                     isTokenABase={isTokenABase}
                 />
@@ -958,12 +989,6 @@ export default function Range(props: RangePropsIF) {
                     transition={{ duration: 0.5 }}
                 >
                     <DividerDark />
-                    {/* <RangeCurrencyConverter {...rangeCurrencyConverterProps} /> */}
-
-                    {/* <div className={styles.header_container}>
-                    {denominationSwitch}
-                    <DividerDark addMarginTop />
-                </div> */}
                     {isAdvancedModeActive ? advancedModeContent : baseModeContent}
                 </motion.div>
 

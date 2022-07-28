@@ -55,8 +55,8 @@ export default function initializeUserLocalStorage() {
 
     if (!user.slippage) {
         user.slippage = {
-            swap: { stable: '2', volatile: '4' },
-            mint: { stable: '5', volatile: '9' },
+            swap: { stable: '0.1', volatile: '0.5' },
+            mint: { stable: '1', volatile: '3' },
         };
         userUpdated = true;
     }

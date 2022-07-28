@@ -20,8 +20,10 @@ import {
 } from '../Range/rangeFunctions';
 import truncateDecimals from '../../../utils/data/truncateDecimals';
 import { tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
-import { TokenIF } from '../../../utils/interfaces/TokenIF';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+
+import { TokenIF } from '../../../utils/interfaces/exports';
+
 interface PositionState {
     position: Position;
 }

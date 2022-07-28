@@ -14,7 +14,12 @@ import SnackbarComponent from '../../../../../components/Global/SnackbarComponen
 
 import { Link } from 'react-router-dom';
 
-export default function OrdersMenu() {
+interface OrdersMenu {
+    userPosition: boolean | undefined;
+}
+
+export default function OrdersMenu(props: OrdersMenu) {
+    const { userPosition } = props;
     const [value, copy] = useCopyToClipboard();
     const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
 
@@ -77,13 +82,36 @@ export default function OrdersMenu() {
 
     // ------------------  END OF MODAL FUNCTIONALITY-----------------
 
-    const removeButton = <button onClick={openRemoveModal}>Remove</button>;
-    const copyButton = <button onClick={handleCopyAddress}>Copy</button>;
-    const detailsButton = <button onClick={openDetailsModal}>Details</button>;
-    const editButton = <Link to={'/trade/edit'}>Edit</Link>;
+    const repositionButton = (
+        <Link className={styles.reposition_button} to={'/trade/reposition'}>
+            Reposition
+        </Link>
+    );
+
+    const removeButton = userPosition ? (
+        <button className={styles.option_button} onClick={openRemoveModal}>
+            Remove
+        </button>
+    ) : null;
+    const copyButton = userPosition ? (
+        <button className={styles.option_button} onClick={handleCopyAddress}>
+            Copy
+        </button>
+    ) : null;
+    const detailsButton = (
+        <button className={styles.option_button} onClick={openDetailsModal}>
+            Details
+        </button>
+    );
+    const editButton = userPosition ? (
+        <Link className={styles.option_button} to={'/trade/edit'}>
+            Edit
+        </Link>
+    ) : null;
 
     const ordersMenu = (
         <div className={styles.actions_menu}>
+            {repositionButton}
             {editButton}
             {removeButton}
             {detailsButton}

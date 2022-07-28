@@ -34,9 +34,9 @@ interface SwapPropsIF {
     importedTokens: Array<TokenIF>;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     searchableTokens: Array<TokenIF>;
-    provider?: ethers.providers.Provider;
     swapSlippage: SlippagePairIF;
-    // provider: JsonRpcProvider;
+    isPairStable: boolean;
+    provider?: ethers.providers.Provider;
     isOnTradeRoute?: boolean;
     gasPriceinGwei: string;
     nativeBalance: string;
@@ -59,6 +59,7 @@ export default function Swap(props: SwapPropsIF) {
         setImportedTokens,
         searchableTokens,
         swapSlippage,
+        isPairStable,
         provider,
         isOnTradeRoute,
         nativeBalance,
@@ -96,7 +97,11 @@ export default function Swap(props: SwapPropsIF) {
 
     const { tokenA, tokenB } = tradeData;
 
-    const slippageTolerancePercentage = tradeData.slippageTolerance;
+    // const slippageTolerancePercentage = tradeData.slippageTolerance;
+
+    const slippageTolerancePercentage = isPairStable
+        ? parseFloat(swapSlippage.stable.value)
+        : parseFloat(swapSlippage.volatile.value);
 
     // login functionality
     const clickLogin = () => {
@@ -280,9 +285,9 @@ export default function Swap(props: SwapPropsIF) {
             <div className={`${swapContainerStyle}`}>
                 <ContentContainer isOnTradeRoute={isOnTradeRoute}>
                     <SwapHeader
-                        chainId={chainId}
                         tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
                         swapSlippage={swapSlippage}
+                        isPairStable={isPairStable}
                         isOnTradeRoute={isOnTradeRoute}
                         isDenomBase={tradeData.isDenomBase}
                         isTokenABase={isSellTokenBase}
