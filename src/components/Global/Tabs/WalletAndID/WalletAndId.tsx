@@ -13,28 +13,14 @@ export default function WalletAndId(props: WalletAndIDProps) {
     const classes = useStyles();
 
     const ensNameTruncated = ensName ? trimString(ensName, 4, 3, '…') : null;
-    const ownerIdTruncated = trimString(ownerId, 4, 3, '…');
-    const posHashTruncated = trimString(posHash, 4, 3, '…');
+    const ownerIdTruncated = trimString(ownerId, 6, 0, '…');
+    const posHashTruncated = trimString(posHash, 6, 0, '…');
 
     // const truncatedPosHash = trimString(posHash as string, 6, 0, '…');
 
     // const mobilePosHash = trimString(posHash as string, 4, 0, '…');
 
     const walletWithTooltip = (
-        <Tooltip
-            title={posHash}
-            placement={'right'}
-            arrow
-            enterDelay={400}
-            leaveDelay={200}
-            classes={{
-                tooltip: classes.customTooltip,
-            }}
-        >
-            <p>{posHashTruncated}</p>
-        </Tooltip>
-    );
-    const IDWithTooltip = (
         <Tooltip
             title={ownerId}
             placement={'right'}
@@ -46,6 +32,20 @@ export default function WalletAndId(props: WalletAndIDProps) {
             }}
         >
             <p>{ownerIdTruncated}</p>
+        </Tooltip>
+    );
+    const IDWithTooltip = (
+        <Tooltip
+            title={posHash}
+            placement={'right'}
+            arrow
+            enterDelay={400}
+            leaveDelay={200}
+            classes={{
+                tooltip: classes.customTooltip,
+            }}
+        >
+            <p>{posHashTruncated}</p>
         </Tooltip>
     );
     const ENSWithTooltip = (

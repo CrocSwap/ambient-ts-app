@@ -25,6 +25,7 @@ interface ITradeProps {
     lastBlockNumber: number;
     isTokenABase: boolean;
     poolPriceDisplay: number;
+    chainId: string;
 }
 
 export default function Trade(props: ITradeProps) {
@@ -203,6 +204,7 @@ export default function Trade(props: ITradeProps) {
                     isAuthenticated={props.isAuthenticated}
                     isWeb3Enabled={props.isWeb3Enabled}
                     lastBlockNumber={props.lastBlockNumber}
+                    chainId={props.chainId}
                 />
             </div>
             {mainContent}
