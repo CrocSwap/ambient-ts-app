@@ -10,6 +10,7 @@ import {
     useEffect,
     useRef,
 } from 'react';
+import { formatDollarAmountAxis } from '../../../utils/numbers';
 
 interface AreaChartProps {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -112,14 +113,20 @@ export default function AreaChart(props: AreaChartProps) {
             .style('stop-color', 'black')
             .style('stop-opacity', 1);
 
+        const xFormat = d3.timeFormat(' %b %Y ');
         const chart = d3fc
             .chartCartesian({
                 xScale: xScale,
                 yScale: yScale,
+                xAxis: {
+                    bottom: (d: any) => d3fc.axisLabelRotate(d3fc.axisOrdinalBottom(d)),
+                },
             })
             .yTicks([5])
             .yDomain(yExtent(data.series))
             .xDomain(xExtent(data.series))
+            .yTickFormat(formatDollarAmountAxis)
+            .xTickFormat(xFormat)
             .svgPlotArea(multi)
             .decorate((sel: any) => {
                 sel.enter().style('min-height', '300px');
