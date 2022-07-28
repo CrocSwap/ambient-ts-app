@@ -200,9 +200,9 @@ export default function App() {
         [tradeData.tokenA.address, tradeData.tokenA.address, chainId],
     );
 
-    useEffect(() => {
-        console.log({ isPairStable });
-    }, [isPairStable]);
+    // useEffect(() => {
+    //     console.log({isPairStable});
+    // }, [isPairStable]);
 
     // update local state with searchable tokens once after initial load of app
     useEffect(() => {
