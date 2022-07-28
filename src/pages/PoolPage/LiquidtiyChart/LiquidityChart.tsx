@@ -11,7 +11,6 @@ import { TickMath, FeeAmount, TICK_SPACINGS, Pool } from '@uniswap/v3-sdk';
 import { CurrencyAmount, Token } from '@uniswap/sdk-core';
 import JSBI from 'jsbi';
 import tippy, { followCursor } from 'tippy.js';
-import 'tippy.js/dist/tippy.css';
 
 interface LiquidtiyData {
     address: any;
