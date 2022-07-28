@@ -140,6 +140,10 @@ export default function BarChart(props: BarData) {
                     .selectAll('.point>path')
                     .attr('transform', 'scale(0.2)')
                     .style('fill', 'white');
+                selection
+                    .enter()
+                    .select('g.annotation-line.horizontal')
+                    .attr('visibility', 'hidden');
             });
 
         const multi = d3fc
@@ -157,20 +161,21 @@ export default function BarChart(props: BarData) {
                 }
             });
 
+        const xFormat = d3.timeFormat(' %b %Y ');
+
         const chart = d3fc
-            .chartCartesian(xScale, yScale)
+            .chartCartesian({
+                xScale: xScale,
+                yScale: yScale,
+                xAxis: {
+                    bottom: (d: any) => d3fc.axisLabelRotate(d3fc.axisOrdinalBottom(d)),
+                },
+            })
             .yOrient('right')
             .svgPlotArea(multi)
+            .xTickFormat(xFormat)
             .yTickFormat(formatDollarAmountAxis)
             .yDecorate((sel: any) => sel.select('text').attr('transform', 'translate(20, -6)'))
-            .xDecorate((sel: any) =>
-                sel
-                    .select('text')
-                    .attr('dy', undefined)
-                    .style('text-anchor', 'start')
-                    .style('dominant-baseline', 'central')
-                    .attr('transform', 'translate(3, 10)'),
-            )
             .decorate((sel: any) => {
                 sel.enter()
                     .append('d3fc-svg')
@@ -184,7 +189,7 @@ export default function BarChart(props: BarData) {
                         xScaleOriginal.range([0, event.detail.width]);
                     })
                     .call(zoom);
-                sel.enter().style('min-height', '305px');
+                sel.enter().style('min-height', '300px');
             });
 
         render();
