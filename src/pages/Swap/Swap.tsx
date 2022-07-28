@@ -108,7 +108,11 @@ export default function Swap(props: SwapPropsIF) {
 
     const { tokenA, tokenB } = tradeData;
 
-    const slippageTolerancePercentage = tradeData.slippageTolerance;
+    // const slippageTolerancePercentage = tradeData.slippageTolerance;
+
+    const slippageTolerancePercentage = isPairStable
+        ? parseFloat(swapSlippage.stable.value)
+        : parseFloat(swapSlippage.volatile.value);
 
     // login functionality
     const clickLogin = () => {

@@ -140,10 +140,15 @@ export default function Range(props: RangePropsIF) {
 
     const isTokenABase = tokenPair?.dataTokenA.address === baseTokenAddress;
 
-    const slippageTolerancePercentage = tradeData.slippageTolerance;
+    // const slippageTolerancePercentage = tradeData.slippageTolerance;
+    const slippageTolerancePercentage = isPairStable
+        ? mintSlippage.stable.value
+        : mintSlippage.volatile.value;
 
-    const poolWeiPriceLowLimit = poolPriceNonDisplay * (1 - slippageTolerancePercentage / 100);
-    const poolWeiPriceHighLimit = poolPriceNonDisplay * (1 + slippageTolerancePercentage / 100);
+    const poolWeiPriceLowLimit =
+        poolPriceNonDisplay * (1 - parseFloat(slippageTolerancePercentage) / 100);
+    const poolWeiPriceHighLimit =
+        poolPriceNonDisplay * (1 + parseFloat(slippageTolerancePercentage) / 100);
 
     const poolPriceDisplayNum = parseFloat(poolPriceDisplay);
 
