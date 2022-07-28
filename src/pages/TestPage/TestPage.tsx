@@ -18,9 +18,12 @@ import styles from './TestPage.module.css';
 // import Transaction from '../../components/Transaction/Transaction';
 // import Transactions from '../../components/Global/Transactions/Transactions';
 
-import Range from '../../components/Global/Account/AccountTabs/Range/Range';
-import Reposition from '../Trade/Reposition/Reposition';
-import WaveAnimation from '../../components/Global/LoadingAnimations/DotsWave/WaveAnimation';
+// import Range from '../../components/Global/Account/AccountTabs/Range/Range';
+// import Reposition from '../Trade/Reposition/Reposition';
+import WaveAnimation from '../../components/Global/LoadingAnimations/WaveAnimation/WaveAnimation';
+import BouncingBall from '../../components/Global/LoadingAnimations/DotJump/BouncingBall';
+import CircleLoader from '../../components/Global/LoadingAnimations/CircleLoader/CircleLoader';
+import RollingBall from '../../components/Global/LoadingAnimations/RollingBall/RollingBall';
 
 export default function TestPage() {
     // // get the user object from local storage
@@ -110,6 +113,7 @@ export default function TestPage() {
 
                 {/* <Range /> */}
                 {/* <Order />
+                
                 <TransactionsTable /> */}
 
                 {/* <TableMenu tableType='orders' /> */}
@@ -138,6 +142,20 @@ export default function TestPage() {
                 </div>
                 {/* <AccountTokensDisplay />
                 <AccountPoolDisplay /> */}
+                <h4>&lt;CircleLoader /&gt;</h4>
+
+                <div className={styles.animation_container}>
+                    <CircleLoader />
+                </div>
+                <h4>&lt;BouncingBall /&gt;</h4>
+                <div className={styles.animation_container}>
+                    <BouncingBall />
+                </div>
+
+                <h4>&lt;RollingBall ballSize=&#39;10px&#39; /&gt;</h4>
+                <div className={styles.animation_container}>
+                    <RollingBall ballSize='30px' />
+                </div>
             </main>
         </>
     );
