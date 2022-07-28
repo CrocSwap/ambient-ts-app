@@ -23,7 +23,7 @@ import truncateDecimals from '../../../utils/data/truncateDecimals';
 // START: Import Local Files
 import { useTradeData } from '../Trade';
 import { useModal } from '../../../components/Global/Modal/useModal';
-import { TokenIF } from '../../../utils/interfaces/exports';
+import { SlippagePairIF, TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
 import { setLimitPrice } from '../../../utils/state/tradeDataSlice';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { ethers } from 'ethers';
@@ -31,6 +31,8 @@ import { ethers } from 'ethers';
 interface LimitPropsIF {
     importedTokens: Array<TokenIF>;
     searchableTokens: Array<TokenIF>;
+    mintSlippage: SlippagePairIF;
+    isPairStable: boolean;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     provider?: ethers.providers.Provider;
     isOnTradeRoute?: boolean;
@@ -40,10 +42,7 @@ interface LimitPropsIF {
     tokenABalance: string;
     tokenBBalance: string;
     isSellTokenBase: boolean;
-    tokenPair: {
-        dataTokenA: TokenIF;
-        dataTokenB: TokenIF;
-    };
+    tokenPair: TokenPairIF;
     isTokenABase: boolean;
     poolPriceDisplay: number;
     poolPriceNonDisplay: number;
@@ -59,6 +58,8 @@ export default function Limit(props: LimitPropsIF) {
     const {
         importedTokens,
         searchableTokens,
+        mintSlippage,
+        isPairStable,
         setImportedTokens,
         provider,
         isSellTokenBase,
@@ -72,10 +73,10 @@ export default function Limit(props: LimitPropsIF) {
         tokenAAllowance,
         setRecheckTokenAApproval,
         chainId,
-
         activeTokenListsChanged,
         indicateActiveTokenListsChanged,
     } = props;
+
     const { tradeData } = useTradeData();
     const { navigationMenu } = useTradeData();
     const dispatch = useAppDispatch();
@@ -275,7 +276,10 @@ export default function Limit(props: LimitPropsIF) {
         <section>
             <ContentContainer isOnTradeRoute>
                 <LimitHeader
+                    chainId={chainId}
                     tokenPair={tokenPair}
+                    mintSlippage={mintSlippage}
+                    isPairStable={isPairStable}
                     isDenomBase={tradeData.isDenomBase}
                     isTokenABase={isTokenABase}
                 />

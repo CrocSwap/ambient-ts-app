@@ -1,5 +1,5 @@
 import styles from './PoolCard.module.css';
-import { motion, useViewportScroll, useTransform } from 'framer-motion';
+import { motion } from 'framer-motion';
 interface PoolCardProps {
     onClick: () => void;
     isSelected: boolean;
@@ -12,19 +12,10 @@ const spring = {
 };
 
 export default function PoolCard(props: PoolCardProps) {
-    const { isSelected, onClick, speed } = props;
+    const { isSelected, onClick } = props;
 
-    const { scrollYProgress } = useViewportScroll();
-    const yValue = useTransform(scrollYProgress, [0, 1], [0, 100 * speed]);
     return (
-        <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.2 }}
-            style={{ y: yValue }}
-            className={styles.pool_card}
-            onMouseEnter={onClick}
-        >
+        <motion.div className={styles.pool_card} onMouseEnter={onClick}>
             <div className={styles.row}>
                 <div>
                     <img

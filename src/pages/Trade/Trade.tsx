@@ -6,8 +6,8 @@ import {
 } from 'react-router-dom';
 import styles from './Trade.module.css';
 import chart from '../../assets/images/Temporary/chart.svg';
-import Tabs from '../../components/Global/Tabs/Tabs';
-import { motion } from 'framer-motion';
+
+// import { motion } from 'framer-motion';
 import { useAppSelector, useAppDispatch } from '../../utils/hooks/reduxToolkit';
 import {
     tradeData as TradeDataIF,
@@ -16,6 +16,7 @@ import {
 } from '../../utils/state/tradeDataSlice';
 import truncateDecimals from '../../utils/data/truncateDecimals';
 import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
+import TradeTabs from '../../components/Trade/TradeTabs/TradeTabs';
 
 interface ITradeProps {
     account: string;
@@ -184,28 +185,31 @@ export default function Trade(props: ITradeProps) {
     );
 
     return (
-        <motion.main
-            initial={{ width: 0 }}
-            animate={{ width: '100%' }}
-            exit={{ x: window.innerWidth, transition: { duration: 0.4 } }}
-            data-testid={'trade'}
-        >
-            <main className={styles.main_layout}>
-                <div className={`${styles.middle_col} ${styles.graph_container}`}>
+        // <motion.main
+        //     initial={{ width: 0 }}
+        //     animate={{ width: '100%' }}
+        //     exit={{ x: window.innerWidth, transition: { duration: 0.4 } }}
+        //     data-testid={'trade'}
+        // >
+        <main className={styles.main_layout}>
+            <div className={`${styles.middle_col} ${styles.graph_container}`}>
+                <div>
                     {tokenInfo}
                     {timeFrameContent}
                     {chartImage}
-                    <Tabs
-                        account={props.account}
-                        isAuthenticated={props.isAuthenticated}
-                        isWeb3Enabled={props.isWeb3Enabled}
-                        lastBlockNumber={props.lastBlockNumber}
-                        chainId={props.chainId}
-                    />
                 </div>
-                {mainContent}
-            </main>
-        </motion.main>
+
+                <TradeTabs
+                    account={props.account}
+                    isAuthenticated={props.isAuthenticated}
+                    isWeb3Enabled={props.isWeb3Enabled}
+                    lastBlockNumber={props.lastBlockNumber}
+                    chainId={props.chainId}
+                />
+            </div>
+            {mainContent}
+        </main>
+        // </motion.main>
     );
 }
 
