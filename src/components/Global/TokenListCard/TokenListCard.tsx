@@ -19,6 +19,7 @@ interface TokenListPropsIF {
 
 export default function TokenListCard(props: TokenListPropsIF) {
     const { list, listIsActive, toggleActiveState } = props;
+    console.log(list);
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const classes = useStyles();
 
@@ -43,7 +44,6 @@ export default function TokenListCard(props: TokenListPropsIF) {
                         <span> {list?.name}</span>
                         <div className={styles.bottom_container_menu}>
                             <div className={styles.token_count}>{list?.tokens?.length} tokens</div>
-
                             <div
                                 aria-controls='list settings'
                                 aria-haspopup='true'
@@ -80,12 +80,13 @@ export default function TokenListCard(props: TokenListPropsIF) {
                     </div>
                 </div>
                 <div className={styles.right_content}>
+                    { list.uri !== '/ambient-token-list.json' &&
                     <Toggle
                         isOn={listIsActive}
                         handleToggle={toggleActiveState}
                         Width={50}
                         id={`token-list-toggle-${list.uri}`}
-                    />
+                    />}
                 </div>
             </div>
         </div>
