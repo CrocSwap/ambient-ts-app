@@ -230,18 +230,15 @@ export default function App() {
     // holds stable and volatile values for swap and mint transactions
     const [swapSlippage, mintSlippage] = useSlippage();
 
-    // 
-    const isPairStable = useMemo(() => (
-        checkIsStable(
-            tradeData.tokenA.address,
-            tradeData.tokenA.address,
-            chainId
-        )
-    ), [ tradeData.tokenA.address, tradeData.tokenA.address, chainId ]);
+    //
+    const isPairStable = useMemo(
+        () => checkIsStable(tradeData.tokenA.address, tradeData.tokenA.address, chainId),
+        [tradeData.tokenA.address, tradeData.tokenA.address, chainId],
+    );
 
-    useEffect(() => {
-        console.log({isPairStable});
-    }, [isPairStable]);
+    // useEffect(() => {
+    //     console.log({ isPairStable });
+    // }, [isPairStable]);
 
     // update local state with searchable tokens once after initial load of app
     useEffect(() => {
@@ -527,7 +524,7 @@ export default function App() {
                     }
                 });
         }
-    }, [baseTokenAddress, quoteTokenAddress, activePeriod]);
+    }, [baseTokenAddress, quoteTokenAddress, activePeriod, chainId]);
 
     const allPositionsCacheSubscriptionEndpoint = useMemo(
         () =>
@@ -646,7 +643,7 @@ export default function App() {
                 poolIdx: POOL_PRIMARY.toString(),
                 chainId: chainId,
             }),
-        [baseTokenAddress, quoteTokenAddress, POOL_PRIMARY],
+        [baseTokenAddress, quoteTokenAddress, POOL_PRIMARY, chainId],
     );
 
     const {
@@ -690,7 +687,7 @@ export default function App() {
                 chainId: chainId,
                 // user: account || '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc',
             }),
-        [account],
+        [account, chainId],
     );
 
     const {
@@ -734,7 +731,7 @@ export default function App() {
                 chainId: chainId,
                 // user: account || '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc',
             }),
-        [account],
+        [account, chainId],
     );
 
     const {
@@ -1116,7 +1113,7 @@ export default function App() {
                     }
                 });
         }
-    }, [isAuthenticated, account]);
+    }, [isAuthenticated, account, chainId]);
 
     // run function to initialize local storage
     // internal controls will only initialize values that don't exist
