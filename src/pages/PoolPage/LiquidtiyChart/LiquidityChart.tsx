@@ -1,6 +1,3 @@
-import { CurrencyAmount, Token } from '@uniswap/sdk-core';
-import { TickMath, FeeAmount, TICK_SPACINGS, Pool } from '@uniswap/v3-sdk';
-import JSBI from 'jsbi';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { MAX_UINT128 } from '../../../constants';
 import { fetchTicksSurroundingPrice, TickProcessed } from '../../../data/pools/tickData';
@@ -10,6 +7,11 @@ import { PoolData } from '../../../state/pools/models';
 import { isAddress } from '../../../utils';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
+import { TickMath, FeeAmount, TICK_SPACINGS, Pool } from '@uniswap/v3-sdk';
+import { CurrencyAmount, Token } from '@uniswap/sdk-core';
+import JSBI from 'jsbi';
+import tippy, { followCursor } from 'tippy.js';
+import 'tippy.js/dist/tippy.css';
 
 interface LiquidtiyData {
     address: any;
@@ -165,8 +167,15 @@ export default function LiquidityChart(props: LiquidtiyData) {
             console.log('Draw Chart');
             const chartData = {
                 lineseries: formattedData,
-                crosshair: [{ x: 200, y: -1 }],
+                crosshair: [{ x: 200, y: 200 }],
                 lineWidth: 1,
+                tooltipData: [
+                    {
+                        token0Price: 0,
+                        token1Price: 0,
+                        shownSideLocked: 0,
+                    },
+                ],
             };
 
             const render = () => {
@@ -205,11 +214,10 @@ export default function LiquidityChart(props: LiquidtiyData) {
                     Math.abs(point.x - xScale(xValue(d))),
                 )[1];
                 const newX = nearest.index;
-                const value = newX - 0.375;
                 return [
                     {
-                        x: xScale(value),
-                        y: -1,
+                        x: xScale(newX),
+                        y: point.y,
                     },
                 ];
             };
@@ -231,7 +239,7 @@ export default function LiquidityChart(props: LiquidtiyData) {
                 .autoBandwidth(d3fc.seriesSvgBar())
                 .xScale(xScale)
                 .yScale(yScale)
-                .align('left')
+                .align('center')
                 .crossValue((d: any) => d.index)
                 .mainValue((d: any) => d.activeLiquidity)
                 .decorate((selection: any) => {
@@ -250,8 +258,21 @@ export default function LiquidityChart(props: LiquidtiyData) {
                     sel.enter().select('g.annotation-line.horizontal').attr('visibility', 'hidden');
                     sel.enter()
                         .select('g.annotation-line.vertical')
-                        .style('stroke', 'rgb(242,243,245,0.8)')
+                        .style('stroke', 'rgb(242,243,245,0.3)')
                         .attr('stroke-width', 2);
+                    sel.enter().call((s: any) =>
+                        tippy(s.nodes(), {
+                            theme: 'custom',
+                            content:
+                                '<strong>Bolded <span style="color: aqua;">content</span></strong>',
+                            allowHTML: true,
+                            followCursor: true,
+                            plugins: [followCursor],
+                            arrow: false,
+                            animation: 'fade',
+                            duration: [500, 100],
+                        }),
+                    );
                 });
 
             const zoom = d3
@@ -261,23 +282,15 @@ export default function LiquidityChart(props: LiquidtiyData) {
                     xScale.domain(event.transform.rescaleX(xScaleOriginal).domain());
 
                     d3.select('g.annotation-line.vertical')
-                        .attr('stroke-width', event.transform.k * 2 + event.transform.k / 2)
+                        .attr('stroke-width', event.transform.k * 2 + event.transform.k / 1.1)
                         .style('pointer-events', 'all');
 
                     render();
                 });
 
-            const tooltip = d3
-                .select('body')
-                .append('div')
-                .style('position', 'absolute')
-                .style('z-index', '10')
-                .style('visibility', 'hidden')
-                .text('a simple tooltip');
-
             const multi = d3fc
                 .seriesSvgMulti()
-                .series([crosshair, lineSeries])
+                .series([lineSeries, crosshair])
                 .mapping((data: any, index: any, series: any) => {
                     if (data.loading) {
                         return [];

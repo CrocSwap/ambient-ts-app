@@ -1,9 +1,9 @@
 import gql from 'graphql-tag';
 import keyBy from 'lodash.keyby';
-import { Token } from '@uniswap/sdk-core';
 import { ApolloClient, NormalizedCacheObject } from '@apollo/client';
 import { TickMath, tickToPrice } from '@uniswap/v3-sdk';
 import JSBI from 'jsbi';
+import { Token } from '@uniswap/sdk-core';
 
 const PRICE_FIXED_DIGITS = 4;
 const DEFAULT_SURROUNDING_TICKS = 300;
