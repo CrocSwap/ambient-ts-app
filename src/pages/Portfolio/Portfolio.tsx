@@ -77,6 +77,17 @@ export default function Portfolio(props: PortfolioPropsIF) {
         })();
     }, [address, isInitialized]);
 
+    const shouldDisplayExchangeBalance =
+        !address || address.toLowerCase() === connectedAccount.toLowerCase();
+
+    const exchangeBalanceComponent = (
+        <div>
+            <div className={styles.title}>Exchange Balance</div>
+            <div className={styles.exchange_balance}>
+                <ExchangeBalance />
+            </div>
+        </div>
+    );
     return (
         <main data-testid={'portfolio'} className={styles.portfolio_container}>
             <PortfolioBanner
@@ -86,10 +97,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
                 imageData={address ? secondaryImageData : userImageData}
             />
             <PortfolioTabs />
-            <div className={styles.title}>Exchange Balance</div>
-            <div className={styles.exchange_balance}>
-                <ExchangeBalance />
-            </div>
+            {shouldDisplayExchangeBalance ? exchangeBalanceComponent : null}
         </main>
     );
 }
