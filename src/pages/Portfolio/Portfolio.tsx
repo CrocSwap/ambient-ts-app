@@ -81,6 +81,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
         <main data-testid={'portfolio'} className={styles.portfolio_container}>
             <PortfolioBanner
                 ensName={address ? secondaryensName : ensName}
+                resolvedAddress={resolvedAddress}
                 activeAccount={address ?? connectedAccount}
                 imageData={address ? secondaryImageData : userImageData}
             />

@@ -5,10 +5,11 @@ interface PortfolioBannerPropsIF {
     ensName: string;
     activeAccount: string;
     imageData: string[];
+    resolvedAddress: string;
 }
 
 export default function PortfolioBanner(props: PortfolioBannerPropsIF) {
-    const { ensName, activeAccount, imageData } = props;
+    const { ensName, activeAccount, imageData, resolvedAddress } = props;
     const ensNameAvailable = ensName !== '';
 
     const truncatedAccountAddress = trimString(activeAccount, 6, 6, '…');
@@ -19,10 +20,18 @@ export default function PortfolioBanner(props: PortfolioBannerPropsIF) {
                 {imageData[0] ? <img src={imageData[0]} alt='avatar' /> : null}
                 <div className={styles.account_names}>
                     <span className={styles.name}>
-                        {ensNameAvailable ? ensName : truncatedAccountAddress}
+                        {ensNameAvailable
+                            ? ensName
+                            : resolvedAddress
+                            ? activeAccount
+                            : truncatedAccountAddress}
                     </span>
                     <span className={styles.hash}>
-                        {ensNameAvailable ? truncatedAccountAddress : activeAccount}
+                        {resolvedAddress
+                            ? resolvedAddress
+                            : ensNameAvailable
+                            ? truncatedAccountAddress
+                            : activeAccount}
                     </span>
                 </div>
             </div>
