@@ -11,6 +11,8 @@ import { TickMath, FeeAmount, TICK_SPACINGS, Pool } from '@uniswap/v3-sdk';
 import { CurrencyAmount, Token } from '@uniswap/sdk-core';
 import JSBI from 'jsbi';
 import tippy, { followCursor } from 'tippy.js';
+import { motion, AnimateSharedLayout } from 'framer-motion';
+import styles from './LiquidityChart.module.css';
 
 interface LiquidtiyData {
     address: any;
@@ -55,6 +57,8 @@ export default function LiquidityChart(props: LiquidtiyData) {
     const [poolTickData, updatePoolTickData] = usePoolTickData(address);
     const [ticksToFetch, setTicksToFetch] = useState(INITIAL_TICKS_TO_FETCH);
     const amountTicks = ticksToFetch * 2 + 1;
+
+    const [currentData, setCurrentData] = useState<ChartEntry>();
 
     useEffect(() => {
         async function fetch() {
@@ -158,6 +162,8 @@ export default function LiquidityChart(props: LiquidtiyData) {
     }, [address]);
 
     useEffect(() => {
+        setCurrentData(formattedData?.find((item: ChartEntry) => item.isCurrent === true));
+
         drawChart();
     }, [formattedData]);
 
@@ -187,7 +193,9 @@ export default function LiquidityChart(props: LiquidtiyData) {
                     }
                 });
 
+                // d3.select('#current-element').attr('position','absolute').style('margin-left',xScale.invert(currentPrice!.index)+'px');
                 d3.select('#chart-element .plot-area').call(pointer);
+                // d3.select('#chart-element').append();
             };
 
             const minimum = (data: any, accessor: any) => {
@@ -313,6 +321,8 @@ export default function LiquidityChart(props: LiquidtiyData) {
                             xScaleOriginal.range([0, event.detail.width]);
                         })
                         .call(zoom);
+
+                    sel.enter().style('min-height', '50px');
                 })
                 .xDecorate((sel: any) => {
                     sel.enter().attr('visibility', 'hidden');
@@ -325,5 +335,40 @@ export default function LiquidityChart(props: LiquidtiyData) {
         }
     }, [formattedData]);
 
-    return <div style={{ height: '100%', width: '100%' }} id='chart-element'></div>;
+    return (
+        <>
+            <div style={{ height: '80%', width: '100%' }} id='chart-element'></div>
+            <div className={styles.centerBox}>
+                <motion.div
+                    id='current-element'
+                    layoutId='outline'
+                    className={styles.outline}
+                    initial={false}
+                    animate={{ borderColor: 'red' }}
+                >
+                    <div className={styles.kHKQUR}>
+                        <div className={styles.eJnjNO}>
+                            <div style={{ margin: '0 4px 0 0' }}>Current Price</div>
+                            <div className={styles.currentPink} />
+                        </div>
+                    </div>
+
+                    <div>
+                        {`1 ${poolData.token0.symbol} = ${Number(
+                            currentData?.price0,
+                        ).toLocaleString(undefined, {
+                            minimumSignificantDigits: 1,
+                        })} ${poolData.token1.symbol}`}
+                    </div>
+                    <div>
+                        {`1 ${poolData.token1.symbol} = ${Number(
+                            currentData?.price1,
+                        ).toLocaleString(undefined, {
+                            minimumSignificantDigits: 1,
+                        })} ${poolData.token0.symbol}`}
+                    </div>
+                </motion.div>
+            </div>
+        </>
+    );
 }
