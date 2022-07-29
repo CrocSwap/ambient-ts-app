@@ -77,7 +77,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
         })();
     }, [address, isInitialized]);
 
-    const shouldDisplayExchangeBalance =
+    const connectedAccountActive =
         !address || address.toLowerCase() === connectedAccount.toLowerCase();
 
     const exchangeBalanceComponent = (
@@ -96,8 +96,12 @@ export default function Portfolio(props: PortfolioPropsIF) {
                 activeAccount={address ?? connectedAccount}
                 imageData={address ? secondaryImageData : userImageData}
             />
-            <PortfolioTabs />
-            {shouldDisplayExchangeBalance ? exchangeBalanceComponent : null}
+            <PortfolioTabs
+                resolvedAddress={resolvedAddress}
+                activeAccount={address ?? connectedAccount}
+                connectedAccountActive={connectedAccountActive}
+            />
+            {connectedAccountActive ? exchangeBalanceComponent : null}
         </main>
     );
 }
