@@ -105,7 +105,7 @@ export default function App() {
 
     const { switchNetwork } = useChain();
 
-    const [fallbackChainId, setFallbackChainId] = useState('0x2a');
+    const [fallbackChainId, setFallbackChainId] = useState('0x5');
 
     const chainId = moralisChainId
         ? moralisChainId
@@ -418,63 +418,77 @@ export default function App() {
                 setQuoteTokenDecimals(tokenPair.dataTokenA.decimals);
             }
 
-            const allPositionsCacheEndpoint = 'https://809821320828123.de:5000/pool_positions?';
+            // const allPositionsCacheEndpoint = 'https://809821320828123.de:5000/pool_positions?';
 
-            fetch(
-                allPositionsCacheEndpoint +
-                    new URLSearchParams({
-                        base: sortedTokens[0].toLowerCase(),
-                        quote: sortedTokens[1].toLowerCase(),
-                        poolIdx: POOL_PRIMARY.toString(),
-                        chainId: chainId,
-                    }),
-            )
-                .then((response) => response.json())
-                .then((json) => {
-                    const poolPositions = json.data;
+            // try {
+            //     fetch(
+            //         allPositionsCacheEndpoint +
+            //             new URLSearchParams({
+            //                 base: sortedTokens[0].toLowerCase(),
+            //                 quote: sortedTokens[1].toLowerCase(),
+            //                 poolIdx: POOL_PRIMARY.toString(),
+            //                 chainId: chainId,
+            //             }),
+            //     )
+            //         .then((response) => response.json())
+            //         .then((json) => {
+            //             const poolPositions = json.data;
 
-                    if (poolPositions) {
-                        Promise.all(poolPositions.map(getPositionData)).then((updatedPositions) => {
-                            if (
-                                JSON.stringify(graphData.positionsByUser.positions) !==
-                                JSON.stringify(updatedPositions)
-                            ) {
-                                dispatch(setPositionsByPool({ positions: updatedPositions }));
-                            }
-                        });
-                    }
-                });
+            //             if (poolPositions) {
+            //                 Promise.all(poolPositions.map(getPositionData)).then(
+            //                     (updatedPositions) => {
+            //                         if (
+            //                             JSON.stringify(graphData.positionsByUser.positions) !==
+            //                             JSON.stringify(updatedPositions)
+            //                         ) {
+            //                             dispatch(
+            //                                 setPositionsByPool({ positions: updatedPositions }),
+            //                             );
+            //                         }
+            //                     },
+            //                 );
+            //             }
+            //         });
+            // } catch (error) {
+            //     console.log;
+            // }
 
-            const poolSwapsCacheEndpoint = 'https://809821320828123.de:5000/pool_swaps?';
+            try {
+                const poolSwapsCacheEndpoint = 'https://809821320828123.de:5000/pool_swaps?';
 
-            fetch(
-                poolSwapsCacheEndpoint +
-                    new URLSearchParams({
-                        base: sortedTokens[0].toLowerCase(),
-                        quote: sortedTokens[1].toLowerCase(),
-                        poolIdx: POOL_PRIMARY.toString(),
-                        chainId: chainId,
-                        // n: 10 // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
-                        // page: 0 // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
-                    }),
-            )
-                .then((response) => response.json())
-                .then((json) => {
-                    const poolSwaps = json.data;
+                fetch(
+                    poolSwapsCacheEndpoint +
+                        new URLSearchParams({
+                            base: sortedTokens[0].toLowerCase(),
+                            quote: sortedTokens[1].toLowerCase(),
+                            poolIdx: POOL_PRIMARY.toString(),
+                            chainId: chainId,
+                            // n: 10 // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
+                            // page: 0 // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
+                        }),
+                )
+                    .then((response) => response.json())
+                    .then((json) => {
+                        const poolSwaps = json.data;
 
-                    if (poolSwaps) {
-                        Promise.all(poolSwaps.map(getSwapData)).then((updatedSwaps) => {
-                            if (
-                                JSON.stringify(graphData.swapsByUser.swaps) !==
-                                JSON.stringify(updatedSwaps)
-                            ) {
-                                dispatch(setSwapsByPool({ swaps: updatedSwaps }));
-                            }
-                        });
-                    }
-                });
+                        console.log({ poolSwaps });
+
+                        if (poolSwaps) {
+                            Promise.all(poolSwaps.map(getSwapData)).then((updatedSwaps) => {
+                                if (
+                                    JSON.stringify(graphData.swapsByUser.swaps) !==
+                                    JSON.stringify(updatedSwaps)
+                                ) {
+                                    dispatch(setSwapsByPool({ swaps: updatedSwaps }));
+                                }
+                            });
+                        }
+                    });
+            } catch (error) {
+                console.log;
+            }
         }
-    }, [tokenPairStringified]);
+    }, [tokenPairStringified, chainId]);
 
     // const [activePeriod, setActivePeriod] = useState(60); // 1 minute by default
     const activePeriod = tradeData.activeChartPeriod;
@@ -537,7 +551,7 @@ export default function App() {
                 poolIdx: POOL_PRIMARY.toString(),
                 chainId: chainId,
             }),
-        [baseTokenAddress, quoteTokenAddress, POOL_PRIMARY],
+        [baseTokenAddress, quoteTokenAddress, POOL_PRIMARY, chainId],
     );
 
     const {
@@ -1065,53 +1079,65 @@ export default function App() {
         if (isAuthenticated && account) {
             const allUserPositionsCacheEndpoint = 'https://809821320828123.de:5000/user_positions?';
 
-            fetch(
-                allUserPositionsCacheEndpoint +
-                    new URLSearchParams({
-                        user: account,
-                        chainId: chainId,
-                    }),
-            )
-                .then((response) => response.json())
-                .then((json) => {
-                    const userPositions = json.data;
+            try {
+                fetch(
+                    allUserPositionsCacheEndpoint +
+                        new URLSearchParams({
+                            user: account,
+                            chainId: chainId,
+                        }),
+                )
+                    .then((response) => response.json())
+                    .then((json) => {
+                        const userPositions = json.data;
 
-                    if (userPositions) {
-                        Promise.all(userPositions.map(getPositionData)).then((updatedPositions) => {
-                            if (
-                                JSON.stringify(graphData.positionsByUser.positions) !==
-                                JSON.stringify(updatedPositions)
-                            ) {
-                                dispatch(setPositionsByUser({ positions: updatedPositions }));
-                            }
-                        });
-                    }
-                });
+                        if (userPositions) {
+                            Promise.all(userPositions.map(getPositionData)).then(
+                                (updatedPositions) => {
+                                    if (
+                                        JSON.stringify(graphData.positionsByUser.positions) !==
+                                        JSON.stringify(updatedPositions)
+                                    ) {
+                                        dispatch(
+                                            setPositionsByUser({ positions: updatedPositions }),
+                                        );
+                                    }
+                                },
+                            );
+                        }
+                    });
+            } catch (error) {
+                console.log;
+            }
 
-            const allUserSwapsCacheEndpoint = 'https://809821320828123.de:5000/user_swaps?';
+            try {
+                const allUserSwapsCacheEndpoint = 'https://809821320828123.de:5000/user_swaps?';
+                console.log('fetching user swaps');
+                fetch(
+                    allUserSwapsCacheEndpoint +
+                        new URLSearchParams({
+                            user: account,
+                            chainId: chainId,
+                        }),
+                )
+                    .then((response) => response.json())
+                    .then((json) => {
+                        const userSwaps = json.data;
 
-            fetch(
-                allUserSwapsCacheEndpoint +
-                    new URLSearchParams({
-                        user: account,
-                        chainId: chainId,
-                    }),
-            )
-                .then((response) => response.json())
-                .then((json) => {
-                    const userSwaps = json.data;
-
-                    if (userSwaps) {
-                        Promise.all(userSwaps.map(getSwapData)).then((updatedSwaps) => {
-                            if (
-                                JSON.stringify(graphData.swapsByUser.swaps) !==
-                                JSON.stringify(updatedSwaps)
-                            ) {
-                                dispatch(setSwapsByUser({ swaps: updatedSwaps }));
-                            }
-                        });
-                    }
-                });
+                        if (userSwaps) {
+                            Promise.all(userSwaps.map(getSwapData)).then((updatedSwaps) => {
+                                if (
+                                    JSON.stringify(graphData.swapsByUser.swaps) !==
+                                    JSON.stringify(updatedSwaps)
+                                ) {
+                                    dispatch(setSwapsByUser({ swaps: updatedSwaps }));
+                                }
+                            });
+                        }
+                    });
+            } catch (error) {
+                console.log;
+            }
         }
     }, [isAuthenticated, account, chainId]);
 
