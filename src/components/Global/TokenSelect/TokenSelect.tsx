@@ -154,7 +154,7 @@ export default function TokenSelect(props: TokenSelectPropsIF) {
                 </div>
                 <div className={styles.modal_tokens_amount}>{getTokenBalance(token.address)}</div>
             </div>
-            {deleteIcon}
+            {undeletableTokens.includes(token.address) || deleteIcon}
         </div>
     );
 }
