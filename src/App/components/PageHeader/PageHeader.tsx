@@ -115,7 +115,7 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
         onClickInput?.fire();
     }
 
-    const accountAddress = isAuthenticated && account ? trimString(account, 9, 9) : '';
+    const accountAddress = isAuthenticated && account ? trimString(account, 6, 6) : '';
 
     const accountProps = {
         nativeBalance: props.nativeBalance,
