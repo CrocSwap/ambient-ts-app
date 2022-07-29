@@ -4,16 +4,22 @@ import { TokenIF } from '../../../../../utils/interfaces/TokenIF';
 import styles from './WalletCard.module.css';
 interface WalletPropsIF {
     token?: TokenIF;
+    chainId: string;
 }
 export default function WalletCard(props: WalletPropsIF) {
-    const { token } = props;
+    const { token, chainId } = props;
 
     const tokenMap = useTokenMap();
 
-    const tokenAddress = token?.token_address?.toLowerCase() + '_0x5';
+    const tokenAddress = token?.token_address
+        ? token?.token_address?.toLowerCase() + '_' + chainId
+        : token?.address
+        ? token?.address?.toLowerCase() + '_' + chainId
+        : '';
 
     const tokenFromMap = tokenMap && token?.token_address ? tokenMap.get(tokenAddress) : null;
 
+    // console.log({ token });
     // console.log({ tokenAddress });
     // console.log({ tokenMap });
     // console.log({ tokenFromMap });

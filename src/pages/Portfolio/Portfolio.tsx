@@ -14,6 +14,7 @@ interface PortfolioPropsIF {
     ensName: string;
     connectedAccount: string;
     userImageData: string[];
+    chainId: string;
 }
 
 const mainnetProvider = new ethers.providers.JsonRpcProvider(
@@ -25,7 +26,7 @@ const mainnetProvider = new ethers.providers.JsonRpcProvider(
 export default function Portfolio(props: PortfolioPropsIF) {
     const { isInitialized } = useMoralis();
 
-    const { ensName, userImageData, connectedAccount } = props;
+    const { ensName, userImageData, connectedAccount, chainId } = props;
 
     const { address } = useParams();
 
@@ -78,7 +79,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
     }, [address, isInitialized]);
 
     const connectedAccountActive =
-        !address || address.toLowerCase() === connectedAccount.toLowerCase();
+        !address || resolvedAddress.toLowerCase() === connectedAccount.toLowerCase();
 
     const exchangeBalanceComponent = (
         <div>
@@ -100,6 +101,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
                 resolvedAddress={resolvedAddress}
                 activeAccount={address ?? connectedAccount}
                 connectedAccountActive={connectedAccountActive}
+                chainId={chainId}
             />
             {connectedAccountActive ? exchangeBalanceComponent : null}
         </main>

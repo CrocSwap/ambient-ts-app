@@ -17,9 +17,10 @@ interface PortfolioTabsPropsIF {
     resolvedAddress: string;
     activeAccount: string;
     connectedAccountActive: boolean;
+    chainId: string;
 }
 export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
-    const { resolvedAddress, activeAccount, connectedAccountActive } = props;
+    const { resolvedAddress, activeAccount, connectedAccountActive, chainId } = props;
 
     const [activeTab, setActiveTab] = useState('tab1');
     // const graphData = useAppSelector((state) => state?.graphData);
@@ -54,6 +55,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
                         connectedAccountActive={connectedAccountActive}
                         resolvedAddress={resolvedAddress}
                         activeAccount={activeAccount}
+                        chainId={chainId}
                     />
                 </TabContent>
                 <TabContent id='tab2' activeTab={activeTab}>
