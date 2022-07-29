@@ -18,7 +18,7 @@ interface PortfolioPropsIF {
 // const cachedFetchAddress = memoizePromiseFn(fetchAddress);
 
 export default function Portfolio(props: PortfolioPropsIF) {
-    const { Moralis } = useMoralis();
+    const { isInitialized } = useMoralis();
 
     const { ensName, userImageData, connectedAccount } = props;
 
@@ -28,19 +28,19 @@ export default function Portfolio(props: PortfolioPropsIF) {
 
     useEffect(() => {
         (async () => {
-            if (address && Moralis.Web3API) {
+            if (address && isInitialized) {
                 const imageLocalURLs = await getNFTs(address);
                 if (imageLocalURLs) setSecondaryImageData(imageLocalURLs);
             }
         })();
-    }, [address, Moralis.Web3API]);
+    }, [address, isInitialized]);
 
     const [secondaryensName, setSecondaryEnsName] = useState('');
 
     // check for ENS name account changes
     useEffect(() => {
         (async () => {
-            if (address && Moralis.Web3API) {
+            if (address && isInitialized) {
                 try {
                     const ensName = await fetchAddress(address);
                     if (ensName) setSecondaryEnsName(ensName);
@@ -51,7 +51,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
                 }
             }
         })();
-    }, [address, Moralis.Web3API]);
+    }, [address, isInitialized]);
 
     return (
         <main data-testid={'portfolio'} className={styles.portfolio_container}>
