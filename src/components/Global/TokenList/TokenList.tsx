@@ -13,6 +13,7 @@ interface TokenListPropsIF {
     activeTokenListsChanged: boolean;
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
     tokenToUpdate: string;
+    undeletableTokens: string[];
     closeModal: () => void;
 }
 
@@ -22,6 +23,7 @@ export default function TokenList(props: TokenListPropsIF) {
         activeTokenListsChanged,
         indicateActiveTokenListsChanged,
         tokenToUpdate,
+        undeletableTokens,
         closeModal
     } = props;
 
@@ -115,7 +117,12 @@ export default function TokenList(props: TokenListPropsIF) {
     const ImportedTokensDisplay = (
         <div className={styles.custom_tokens}>
             {TokenListContainerHeader}
-            <CustomTokens chainId={chainId} tokenToUpdate={tokenToUpdate} closeModal={closeModal} />
+            <CustomTokens
+                chainId={chainId}
+                tokenToUpdate={tokenToUpdate}
+                undeletableTokens={undeletableTokens}
+                closeModal={closeModal}
+            />
         </div>
     );
 

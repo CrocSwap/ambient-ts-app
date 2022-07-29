@@ -10,14 +10,15 @@ import uriToHttp from '../../../utils/functions/uriToHttp';
 import { AiOutlineDelete } from 'react-icons/ai';
 import { FiExternalLink } from 'react-icons/fi';
 
-interface CustomTokenPropsIF {
+interface CustomTokensPropsIF {
     chainId: string;
     tokenToUpdate: string;
+    undeletableTokens: string[];
     closeModal: () => void;
 }
 
-export default function CustomTokens(props: CustomTokenPropsIF) {
-    const { chainId, tokenToUpdate, closeModal } = props;
+export default function CustomTokens(props: CustomTokensPropsIF) {
+    const { chainId, tokenToUpdate, undeletableTokens, closeModal } = props;
 
     const dispatch = useAppDispatch();
 
