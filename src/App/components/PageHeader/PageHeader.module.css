@@ -163,7 +163,7 @@ border-radius: 4px;
 }
 .mobile_nav_toggle{
     display: block;
-    position: absolute;
+    /* position: absolute; */
     z-index: 99999;
     width: 2rem;
     aspect-ratio: 1;
