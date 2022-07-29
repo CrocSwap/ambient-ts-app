@@ -1385,11 +1385,6 @@ export default function App() {
         }
     }, [tradeData.didUserFlipDenom, tokenPair]);
 
-    // const mainLayoutStyle = showSidebar ? 'main-layout-2' : 'main-layout';
-    // take away margin from left if we are on homepage or swap
-
-    const swapBodyStyle = currentLocation == '/swap' ? 'swap-body' : null;
-
     const [imageData, setImageData] = useState<string[]>([]);
 
     useEffect(() => {
@@ -1400,6 +1395,11 @@ export default function App() {
             }
         })();
     }, [account]);
+
+    // const mainLayoutStyle = showSidebar ? 'main-layout-2' : 'main-layout';
+    // take away margin from left if we are on homepage or swap
+
+    const swapBodyStyle = currentLocation == '/swap' ? 'swap-body' : null;
 
     // Show sidebar on all pages except for home and swap
     const sidebarRender = currentLocation !== '/' &&
@@ -1457,7 +1457,17 @@ export default function App() {
                                 <Portfolio
                                     ensName={ensName}
                                     connectedAccount={account ? account : ''}
-                                    imageData={imageData}
+                                    userImageData={imageData}
+                                />
+                            }
+                        />
+                        <Route
+                            path='account/:address'
+                            element={
+                                <Portfolio
+                                    ensName={ensName}
+                                    connectedAccount={account ? account : ''}
+                                    userImageData={imageData}
                                 />
                             }
                         />
