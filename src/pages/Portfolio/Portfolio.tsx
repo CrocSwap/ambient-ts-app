@@ -7,6 +7,7 @@ import { getNFTs } from '../../App/functions/getNFTs';
 import { useEffect, useState } from 'react';
 // import { memoizePromiseFn } from '../../App/functions/memoizePromiseFn';
 import { fetchAddress } from '../../App/functions/fetchAddress';
+import { useMoralis } from 'react-moralis';
 
 interface PortfolioPropsIF {
     ensName: string;
@@ -17,6 +18,8 @@ interface PortfolioPropsIF {
 // const cachedFetchAddress = memoizePromiseFn(fetchAddress);
 
 export default function Portfolio(props: PortfolioPropsIF) {
+    const { Moralis } = useMoralis();
+
     const { ensName, userImageData, connectedAccount } = props;
 
     const { address } = useParams();
@@ -25,19 +28,19 @@ export default function Portfolio(props: PortfolioPropsIF) {
 
     useEffect(() => {
         (async () => {
-            if (address) {
+            if (address && Moralis.Web3API) {
                 const imageLocalURLs = await getNFTs(address);
                 if (imageLocalURLs) setSecondaryImageData(imageLocalURLs);
             }
         })();
-    }, [address]);
+    }, [address, Moralis.Web3API]);
 
     const [secondaryensName, setSecondaryEnsName] = useState('');
 
     // check for ENS name account changes
     useEffect(() => {
         (async () => {
-            if (address) {
+            if (address && Moralis.Web3API) {
                 try {
                     const ensName = await fetchAddress(address);
                     if (ensName) setSecondaryEnsName(ensName);
@@ -48,7 +51,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
                 }
             }
         })();
-    }, [address]);
+    }, [address, Moralis.Web3API]);
 
     return (
         <main data-testid={'portfolio'} className={styles.portfolio_container}>
