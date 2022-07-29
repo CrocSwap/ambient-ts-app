@@ -2,20 +2,60 @@ import ExchangeBalance from '../../components/Portfolio/EchangeBalance/ExchangeB
 import PortfolioBanner from '../../components/Portfolio/PortfolioBanner/PortfolioBanner';
 import PortfolioTabs from '../../components/Portfolio/PortfolioTabs/PortfolioTabs';
 import styles from './Portfolio.module.css';
+import { useParams } from 'react-router-dom';
+import { getNFTs } from '../../App/functions/getNFTs';
+import { useEffect, useState } from 'react';
+// import { memoizePromiseFn } from '../../App/functions/memoizePromiseFn';
+import { fetchAddress } from '../../App/functions/fetchAddress';
 
 interface PortfolioPropsIF {
     ensName: string;
     connectedAccount: string;
-    imageData: string[];
+    userImageData: string[];
 }
 
+// const cachedFetchAddress = memoizePromiseFn(fetchAddress);
+
 export default function Portfolio(props: PortfolioPropsIF) {
+    const { ensName, userImageData, connectedAccount } = props;
+
+    const { address } = useParams();
+
+    const [secondaryImageData, setSecondaryImageData] = useState<string[]>([]);
+
+    useEffect(() => {
+        (async () => {
+            if (address) {
+                const imageLocalURLs = await getNFTs(address);
+                if (imageLocalURLs) setSecondaryImageData(imageLocalURLs);
+            }
+        })();
+    }, [address]);
+
+    const [secondaryensName, setSecondaryEnsName] = useState('');
+
+    // check for ENS name account changes
+    useEffect(() => {
+        (async () => {
+            if (address) {
+                try {
+                    const ensName = await fetchAddress(address);
+                    if (ensName) setSecondaryEnsName(ensName);
+                    else setSecondaryEnsName('');
+                } catch (error) {
+                    setSecondaryEnsName('');
+                    console.log({ error });
+                }
+            }
+        })();
+    }, [address]);
+
     return (
         <main data-testid={'portfolio'} className={styles.portfolio_container}>
             <PortfolioBanner
-                ensName={props.ensName}
-                connectedAccount={props.connectedAccount}
-                imageData={props.imageData}
+                ensName={address ? secondaryensName : ensName}
+                activeAccount={address ?? connectedAccount}
+                imageData={address ? secondaryImageData : userImageData}
             />
             <PortfolioTabs />
             <div className={styles.title}>Exchange Balance</div>
