@@ -8,12 +8,17 @@ import { useEffect, useState } from 'react';
 // import { memoizePromiseFn } from '../../App/functions/memoizePromiseFn';
 import { fetchAddress } from '../../App/functions/fetchAddress';
 import { useMoralis } from 'react-moralis';
+import { ethers } from 'ethers';
 
 interface PortfolioPropsIF {
     ensName: string;
     connectedAccount: string;
     userImageData: string[];
 }
+
+const mainnetProvider = new ethers.providers.JsonRpcProvider(
+    'https://mainnet.infura.io/v3/cbb2856ea8804fc5ba59be0a2e8a9f88',
+);
 
 // const cachedFetchAddress = memoizePromiseFn(fetchAddress);
 
@@ -24,16 +29,35 @@ export default function Portfolio(props: PortfolioPropsIF) {
 
     const { address } = useParams();
 
+    const isAddressEns = address?.endsWith('.eth');
+
+    const [resolvedAddress, setResolvedAddress] = useState<string>('');
+
+    useEffect(() => {
+        (async () => {
+            if (address && isAddressEns && mainnetProvider) {
+                const newResolvedAddress = await mainnetProvider.resolveName(address);
+
+                if (newResolvedAddress) {
+                    setResolvedAddress(newResolvedAddress);
+                }
+            }
+        })();
+    }, [address, isAddressEns, mainnetProvider]);
+
     const [secondaryImageData, setSecondaryImageData] = useState<string[]>([]);
 
     useEffect(() => {
         (async () => {
-            if (address && isInitialized) {
+            if (resolvedAddress) {
+                const imageLocalURLs = await getNFTs(resolvedAddress);
+                if (imageLocalURLs) setSecondaryImageData(imageLocalURLs);
+            } else if (address && isInitialized) {
                 const imageLocalURLs = await getNFTs(address);
                 if (imageLocalURLs) setSecondaryImageData(imageLocalURLs);
             }
         })();
-    }, [address, isInitialized]);
+    }, [resolvedAddress, address, isInitialized]);
 
     const [secondaryensName, setSecondaryEnsName] = useState('');
 
