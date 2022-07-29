@@ -118,11 +118,13 @@ export default function CustomTokens(props: CustomTokensPropsIF) {
                             </div>
                             <h4 className={styles.token_name}>{token.name}</h4>
                         </div>
-                        {/* <button onClick={() => deleteToken(token)}>Delete</button> */}
                         <div className={styles.action_menu}>
-                            <div onClick={() => deleteToken(token)}>
-                                <AiOutlineDelete size={15} />
-                            </div>
+                            {
+                                undeletableTokens.includes(token.address) ||
+                                <div onClick={() => deleteToken(token)}>
+                                    <AiOutlineDelete size={15} />
+                                </div>
+                            }
                             <a
                                 href={`https://etherscan.io/address/${token?.address}`}
                                 target='_blank'

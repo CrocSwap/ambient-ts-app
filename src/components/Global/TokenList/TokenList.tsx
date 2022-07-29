@@ -1,13 +1,18 @@
-import styles from './TokenList.module.css';
+// START: Import React and Dongles
 import { useState, Dispatch, SetStateAction } from 'react';
+import { motion } from 'framer-motion';
+
+// START: Import JSX Components
 import TokenListCard from '../TokenListCard/TokenListCard';
 import CustomTokens from './CustomTokens';
 import Divider from '../Divider/Divider';
+
+// START: Import Local Files
+import styles from './TokenList.module.css';
 import { TokenListIF } from '../../../utils/interfaces/exports';
 import fetchList from './fetchList';
 
-import { motion } from 'framer-motion';
-
+// interface for React functional component props
 interface TokenListPropsIF {
     chainId: string;
     activeTokenListsChanged: boolean;
