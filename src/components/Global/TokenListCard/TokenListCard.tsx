@@ -19,7 +19,6 @@ interface TokenListPropsIF {
 
 export default function TokenListCard(props: TokenListPropsIF) {
     const { list, listIsActive, toggleActiveState } = props;
-    console.log(list);
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const classes = useStyles();
 
