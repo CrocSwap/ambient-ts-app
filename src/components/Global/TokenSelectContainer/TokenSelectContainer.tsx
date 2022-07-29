@@ -106,8 +106,11 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
                             key={`tss_${idx}`}
                             token={tkn}
                             clickHandler={() =>
-                                importToken(tkn, tokensBank, setImportedTokens, () =>
-                                    chooseToken(tkn),
+                                importToken(
+                                    tkn,
+                                    tokensBank,
+                                    setImportedTokens,
+                                    () => chooseToken(tkn),
                                 )
                             }
                         />
