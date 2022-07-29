@@ -1,11 +1,11 @@
 // START: Import React and Dongles
-import { Dispatch, SetStateAction, useMemo, useState } from 'react';
+import { Dispatch, SetStateAction, useState } from 'react';
 import { AiFillCloseSquare } from 'react-icons/ai';
 import { CgUnavailable } from 'react-icons/cg';
 
 // START: Import Local Files
 import styles from './TokenSelect.module.css';
-import { TokenIF, TokenListIF } from '../../../utils/interfaces/exports';
+import { TokenIF } from '../../../utils/interfaces/exports';
 import uriToHttp from '../../../utils/functions/uriToHttp';
 import { removeToken } from '../../Global/TokenSelectContainer/removeToken';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
@@ -16,13 +16,21 @@ import { contractAddresses, toDisplayQty } from '@crocswap-libs/sdk';
 interface TokenSelectPropsIF {
     token: TokenIF;
     tokensBank: Array<TokenIF>;
+    undeletableTokens: Array<string>;
     chainId: string;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     chooseToken: (tok: TokenIF) => void;
 }
 
 export default function TokenSelect(props: TokenSelectPropsIF) {
-    const { token, chooseToken, tokensBank, chainId, setImportedTokens } = props;
+    const {
+        token,
+        chooseToken,
+        tokensBank,
+        undeletableTokens,
+        chainId,
+        setImportedTokens
+    } = props;
     const [showDelete, setShowDelete] = useState(false);
     const [toggleDeleteOn, setToggleDeleteOn] = useState(false);
 
@@ -122,14 +130,6 @@ export default function TokenSelect(props: TokenSelectPropsIF) {
     );
 
     const deleteStateStyle = !showDelete ? styles.delete_active : styles.delete_inactive;
-
-    const undeletableTokens = useMemo(() => (
-        JSON.parse(localStorage.getItem('allTokenLists') as string)
-            .find((tokenList: TokenListIF) => tokenList.uri === '/ambient-token-list.json')
-            .tokens.map((tkn: TokenIF) => tkn.address)
-    ), []);
-
-    console.log({undeletableTokens});
 
     return (
         <div className={styles.main_container}>
