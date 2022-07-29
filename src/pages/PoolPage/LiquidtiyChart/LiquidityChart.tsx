@@ -10,9 +10,9 @@ import * as d3fc from 'd3fc';
 import { TickMath, FeeAmount, TICK_SPACINGS, Pool } from '@uniswap/v3-sdk';
 import { CurrencyAmount, Token } from '@uniswap/sdk-core';
 import JSBI from 'jsbi';
-import tippy, { followCursor } from 'tippy.js';
 import { motion, AnimateSharedLayout } from 'framer-motion';
 import styles from './LiquidityChart.module.css';
+import { formatAmount } from '../../../utils/numbers';
 
 interface LiquidtiyData {
     address: any;
@@ -59,6 +59,7 @@ export default function LiquidityChart(props: LiquidtiyData) {
     const amountTicks = ticksToFetch * 2 + 1;
 
     const [currentData, setCurrentData] = useState<ChartEntry>();
+    const [tickData, setTickData] = useState<ChartEntry>();
 
     useEffect(() => {
         async function fetch() {
@@ -192,10 +193,7 @@ export default function LiquidityChart(props: LiquidtiyData) {
                         render();
                     }
                 });
-
-                // d3.select('#current-element').attr('position','absolute').style('margin-left',xScale.invert(currentPrice!.index)+'px');
                 d3.select('#chart-element .plot-area').call(pointer);
-                // d3.select('#chart-element').append();
             };
 
             const minimum = (data: any, accessor: any) => {
@@ -220,6 +218,7 @@ export default function LiquidityChart(props: LiquidtiyData) {
                 const nearest = minimum(filtered, (d: any) =>
                     Math.abs(point.x - xScale(xValue(d))),
                 )[1];
+                setTickData(nearest);
                 const newX = nearest.index;
                 return [
                     {
@@ -265,21 +264,8 @@ export default function LiquidityChart(props: LiquidtiyData) {
                     sel.enter().select('g.annotation-line.horizontal').attr('visibility', 'hidden');
                     sel.enter()
                         .select('g.annotation-line.vertical')
-                        .style('stroke', 'rgb(242,243,245,0.3)')
+                        .style('stroke', 'rgb(242,243,245,0.7)')
                         .attr('stroke-width', 2);
-                    sel.enter().call((s: any) =>
-                        tippy(s.nodes(), {
-                            theme: 'custom',
-                            content:
-                                '<strong>Bolded <span style="color: aqua;">content</span></strong>',
-                            allowHTML: true,
-                            followCursor: true,
-                            plugins: [followCursor],
-                            arrow: false,
-                            animation: 'fade',
-                            duration: [500, 100],
-                        }),
-                    );
                 });
 
             const zoom = d3
@@ -289,7 +275,7 @@ export default function LiquidityChart(props: LiquidtiyData) {
                     xScale.domain(event.transform.rescaleX(xScaleOriginal).domain());
 
                     d3.select('g.annotation-line.vertical')
-                        .attr('stroke-width', event.transform.k * 2 + event.transform.k / 1.1)
+                        .attr('stroke-width', event.transform.k * 2 + event.transform.k / 1.5)
                         .style('pointer-events', 'all');
 
                     render();
@@ -297,7 +283,7 @@ export default function LiquidityChart(props: LiquidtiyData) {
 
             const multi = d3fc
                 .seriesSvgMulti()
-                .series([lineSeries, crosshair])
+                .series([crosshair, lineSeries])
                 .mapping((data: any, index: any, series: any) => {
                     if (data.loading) {
                         return [];
@@ -339,35 +325,86 @@ export default function LiquidityChart(props: LiquidtiyData) {
         <>
             <div style={{ height: '80%', width: '100%' }} id='chart-element'></div>
             <div className={styles.centerBox}>
-                <motion.div
-                    id='current-element'
-                    layoutId='outline'
-                    className={styles.outline}
-                    initial={false}
-                    animate={{ borderColor: 'red' }}
-                >
-                    <div className={styles.kHKQUR}>
-                        <div className={styles.eJnjNO}>
-                            <div style={{ margin: '0 4px 0 0' }}>Current Price</div>
-                            <div className={styles.currentPink} />
+                <div className={styles.singleBox}>
+                    <motion.div
+                        id='current-element'
+                        layoutId='outline'
+                        className={styles.outline}
+                        initial={false}
+                        animate={{ borderColor: 'red' }}
+                    >
+                        <div className={styles.kHKQUR}>
+                            <div className={styles.eJnjNO}>
+                                <div style={{ margin: '0 4px 0 0' }}>Current Price</div>
+                                <div className={styles.currentPink} />
+                            </div>
                         </div>
-                    </div>
 
-                    <div>
-                        {`1 ${poolData.token0.symbol} = ${Number(
-                            currentData?.price0,
-                        ).toLocaleString(undefined, {
-                            minimumSignificantDigits: 1,
-                        })} ${poolData.token1.symbol}`}
-                    </div>
-                    <div>
-                        {`1 ${poolData.token1.symbol} = ${Number(
-                            currentData?.price1,
-                        ).toLocaleString(undefined, {
-                            minimumSignificantDigits: 1,
-                        })} ${poolData.token0.symbol}`}
-                    </div>
-                </motion.div>
+                        <div>
+                            {`1 ${poolData.token0.symbol} = ${Number(
+                                currentData?.price0,
+                            ).toLocaleString(undefined, {
+                                minimumSignificantDigits: 1,
+                            })} ${poolData.token1.symbol}`}
+                        </div>
+                        <div>
+                            {`1 ${poolData.token1.symbol} = ${Number(
+                                currentData?.price1,
+                            ).toLocaleString(undefined, {
+                                minimumSignificantDigits: 1,
+                            })} ${poolData.token0.symbol}`}
+                        </div>
+                    </motion.div>
+                </div>
+
+                <div className={styles.singleBox}>
+                    <motion.div
+                        id='crosshair-element'
+                        layoutId='outline'
+                        className={styles.outline}
+                        initial={false}
+                        animate={{ borderColor: 'red' }}
+                    >
+                        <div className={styles.kHKQUR}>
+                            <div className={styles.eJnjNO}>
+                                <div style={{ margin: '0 4px 0 0' }}>Tick Stats</div>
+                                <div className={styles.currentPink} />
+                            </div>
+                        </div>
+
+                        <div>
+                            {` ${poolData.token0.symbol} Price: = ${Number(
+                                tickData?.price0,
+                            ).toLocaleString(undefined, {
+                                minimumSignificantDigits: 1,
+                            })} ${poolData.token1.symbol}`}
+                        </div>
+                        <div>
+                            {` ${poolData.token1.symbol} Price: = ${Number(
+                                tickData?.price1,
+                            ).toLocaleString(undefined, {
+                                minimumSignificantDigits: 1,
+                            })} ${poolData.token0.symbol}`}
+                        </div>
+
+                        <div>
+                            {` ${
+                                Number(tickData?.index) < Number(currentData?.index)
+                                    ? poolData.token1.symbol
+                                    : poolData.token0.symbol
+                            } Locked: = 
+                        ${formatAmount(
+                            Number(tickData?.index) < Number(currentData?.index)
+                                ? tickData?.tvlToken1
+                                : tickData?.tvlToken0,
+                        )} ${
+                                Number(tickData?.index) < Number(currentData?.index)
+                                    ? poolData.token1.symbol
+                                    : poolData.token0.symbol
+                            }`}
+                        </div>
+                    </motion.div>
+                </div>
             </div>
         </>
     );

@@ -48,6 +48,10 @@ border-radius: var(--border-radius);
   justify-content: center;
 }
 
+.singleBox {
+margin: 15px
+}
+
 
 .currentPink {
   margin-top: 2px;
