@@ -54,6 +54,7 @@ export default function TabComponent(props: TabProps) {
         </div>
     );
 
+    // We can honestly refactor one jsx to take care of both full nav items and nav items on the left but this is simpler to understand and refactor down the line.
     // TAB MENU WITH ITEMS ON THE RIGHT
     const tabsWithRightOption = (
         <div className={styles.tab_with_option_container}>
@@ -96,5 +97,25 @@ export default function TabComponent(props: TabProps) {
         </ul>
     );
 
-    return <div className={styles.row}></div>;
+    return (
+        <div className={styles.window}>
+            <nav className={styles.tab_nav}>
+                {props.rightTabOptions ? tabsWithRightOption : fullTabs}
+                {mobileTabContainer}
+            </nav>
+            <main className={styles.main_tab_content}>
+                <AnimatePresence exitBeforeEnter>
+                    <motion.div
+                        key={selectedTab ? selectedTab.label : 'empty'}
+                        initial={{ y: 10, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        exit={{ y: -10, opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                    >
+                        {selectedTab ? selectedTab.content : '😋'}
+                    </motion.div>
+                </AnimatePresence>
+            </main>
+        </div>
+    );
 }
