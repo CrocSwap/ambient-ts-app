@@ -77,5 +77,24 @@ export default function TabComponent(props: TabProps) {
         </div>
     );
 
+    // TAB MENU WITHOUT ANY ITEMS ON THE RIGHT
+
+    const fullTabs = (
+        <ul className={`${styles.tab_ul} ${styles.desktop_tabs}`}>
+            {data.map((item) => (
+                <li
+                    key={item.label}
+                    className={item === selectedTab ? styles.selected : ''}
+                    onClick={() => setSelectedTab(item)}
+                >
+                    {item.label}
+                    {item === selectedTab ? (
+                        <motion.div className={styles.underline} layoutId='underline' />
+                    ) : null}
+                </li>
+            ))}
+        </ul>
+    );
+
     return <div className={styles.row}></div>;
 }
