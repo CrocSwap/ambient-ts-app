@@ -47,5 +47,12 @@ export default function TabComponent(props: TabProps) {
         </div>
     );
 
+    const mobileTabContainer = (
+        <div className={styles.mobile_container}>
+            {dropdownMenu}
+            {/* {mobileTabMenu} */}
+        </div>
+    );
+
     return <div className={styles.row}></div>;
 }
