@@ -2,6 +2,7 @@ import styles from './TabComponent.module.css';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ItemEnterAnimation } from '../../../utils/others/FramerMotionAnimations';
+import DropdownMenu2 from '../DropdownMenu2/DropdownMenu2';
 
 type tabData = {
     label: string;
@@ -36,6 +37,14 @@ export default function TabComponent(props: TabProps) {
                 </motion.li>
             ))}
         </ul>
+    );
+
+    const dropdownMenu = (
+        <div className={styles.dropdown_menu_container}>
+            <DropdownMenu2 marginTop={'10px'} titleWidth={'100%'} title={'something'}>
+                {networkMenuContent}
+            </DropdownMenu2>
+        </div>
     );
 
     return <div className={styles.row}></div>;
