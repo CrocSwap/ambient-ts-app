@@ -29,3 +29,40 @@
     flex-grow: 1;
     user-select: none;
   }
+
+   
+  .tab_ul, .tab_ul li, .tab_ul_left{
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-family: "Poppins", sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+  }
+  .tab_ul{
+    display: flex;
+    width: 100%;
+
+    
+  }
+
+
+  .tab_ul li, .menu_content li, .tab_ul_left li{
+    border-radius: 5px;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    width: 100%;
+    padding: 10px 15px;
+    position: relative;
+    /* background: white; */
+    cursor: pointer;
+    height: 24px;
+    display: flex;
+    
+    align-items: center;
+    flex: 1;
+    min-width: 0;
+    position: relative;
+    user-select: none;
+    list-style: none;
+  }
