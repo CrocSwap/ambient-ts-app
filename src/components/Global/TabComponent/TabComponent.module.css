@@ -105,3 +105,36 @@
   max-height: 44px;  
   }
   
+
+  /* dropdown */
+
+  .dropdown_menu_container{
+    width: 100%;
+    padding: 0 1rem;
+  }
+  .mobile_container{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+  .menu_content{
+    background: black;
+  }
+  .dropdown_menu_container{
+    min-width: 100px;
+    position: relative;
+  }
+  
+
+
+
+
+ @media (min-width: 992px) {
+  .desktop_tabs {
+   display: flex;
+  }
+  .mobile_container{
+    display: none;
+  }
+} 
