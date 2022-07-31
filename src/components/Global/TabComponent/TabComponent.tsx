@@ -54,5 +54,28 @@ export default function TabComponent(props: TabProps) {
         </div>
     );
 
+    // TAB MENU WITH ITEMS ON THE RIGHT
+    const tabsWithRightOption = (
+        <div className={styles.tab_with_option_container}>
+            <ul className={`${styles.tab_ul_left} ${styles.desktop_tabs} `}>
+                {data.map((item) => (
+                    <li
+                        key={item.label}
+                        className={item === selectedTab ? styles.selected : ''}
+                        onClick={() => setSelectedTab(item)}
+                    >
+                        {item.label}
+                        {item === selectedTab ? (
+                            <motion.div className={styles.underline} layoutId='underline' />
+                        ) : null}
+                    </li>
+                ))}
+            </ul>
+            <div className={styles.tap_option_right}>
+                {props.rightTabOptions ? props.rightTabOptions : null}
+            </div>
+        </div>
+    );
+
     return <div className={styles.row}></div>;
 }
