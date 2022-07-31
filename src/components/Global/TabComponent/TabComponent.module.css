@@ -66,3 +66,18 @@
     user-select: none;
     list-style: none;
   }
+
+  .tab_ul li.selected, .menu_content li.selected, .tab_ul_left li.selected{
+    background: #171d27;
+    color: #7371FC;
+    
+  }
+
+  .underline {
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: #7371FC
+  }
