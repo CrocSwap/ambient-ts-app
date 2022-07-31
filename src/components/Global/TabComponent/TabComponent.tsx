@@ -1,4 +1,7 @@
 import styles from './TabComponent.module.css';
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ItemEnterAnimation } from '../../../utils/others/FramerMotionAnimations';
 
 interface TabComponentProps {
     children: React.ReactNode;
