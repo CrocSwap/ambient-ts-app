@@ -14,5 +14,11 @@ interface TabProps {
 }
 
 export default function TabComponent(props: TabProps) {
+    const { data } = props;
+    const [selectedTab, setSelectedTab] = useState(data[0]);
+    console.log(data.length);
+    const firstTwoNavs = [...data].slice(0, 2);
+    const remainingNavs = [...data].splice(2, data.length - 1);
+
     return <div className={styles.row}></div>;
 }
