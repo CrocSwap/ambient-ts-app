@@ -20,5 +20,23 @@ export default function TabComponent(props: TabProps) {
     const firstTwoNavs = [...data].slice(0, 2);
     const remainingNavs = [...data].splice(2, data.length - 1);
 
+    const networkMenuContent = (
+        <ul className={`${styles.menu_content} `}>
+            {data.map((nav, idx) => (
+                <motion.li
+                    key={idx}
+                    className={`${styles.network_item} ${
+                        nav === selectedTab ? styles.selected : ''
+                    }`}
+                    onClick={() => setSelectedTab(nav)}
+                    custom={idx}
+                    variants={ItemEnterAnimation}
+                >
+                    <div className={styles.chain_name_status}>{nav.label}</div>
+                </motion.li>
+            ))}
+        </ul>
+    );
+
     return <div className={styles.row}></div>;
 }
