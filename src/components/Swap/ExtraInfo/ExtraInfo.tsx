@@ -128,7 +128,7 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
     const extraDetailsOrNull = showExtraDetails ? extraInfoDetails : null;
 
     return (
-        <div className={styles.extra_info_container}>
+        <>
             <div
                 className={styles.extra_info_content}
                 onClick={() => setShowExtraDetails(!showExtraDetails)}
@@ -142,6 +142,6 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
                 </div>
             </div>
             {extraDetailsOrNull}
-        </div>
+        </>
     );
 }

@@ -3,11 +3,21 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
+    
 
 }
 .token_list_content{
-    height: 400px;
-    max-height: 250px;
+    /* background: 
+    linear-gradient(#0d1117 33%, rgba(13,17,23, 0)),
+    linear-gradient(rgba(13,17,23, 0), #0d1117 66%) 0 100%,
+    radial-gradient(farthest-side at 50% 0, rgba(13, 2, 134, 0.5), rgba(0,0,0,0)),
+    radial-gradient(farthest-side at 50% 100%, rgba(2, 2, 173, 0.5), rgba(0,0,0,0)) 0 100%; */
+  background-color: #0d1117;
+  background-repeat: no-repeat;
+  background-attachment: local, local, scroll, scroll;
+  background-size: 100% 81px, 100% 81px, 100% 27px, 100% 27px;
+    /* height: 400px; */
+    max-height: 200px;
     overflow-y: scroll;
     overflow-x: hidden;
     transition: all var(--animation-speed) cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -15,24 +25,10 @@ position: relative;
 }
 .token_list_content_container{
     position: relative;
+   
 }
 
-.token_list_content_container:after {
-    content: "";
-    position: absolute;
-    z-index: 1;
-    bottom: 0;
-    left: 0;
-    pointer-events: none;
-    /* background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.1), rgb(53, 51, 108) 90%); */
-    width: 100%;
-    height: 3.7em;
-    background:linear-gradient(
-    to bottom,
-    rgba(0,0,0,0),
-    rgba(13, 17, 23, 0.90) 50%
-  );
-  }
+
 .token_list_content::-webkit-scrollbar {
 display: none;
 }
@@ -52,6 +48,21 @@ display: none;
     outline: none;
     
   
+  }
+  .search_input button{
+    cursor: pointer;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: var(--dark2);
+    color: var(--text-grey-light);
+    border: none;
+    outline: none;
+  }
+  .search_input button:hover{
+    color: var(--text-grey-white);
+    transition: all var(--animation-speed) ease-in-out
   }
 
   .header_container{
@@ -88,25 +99,11 @@ display: none;
 
   .active_button{
       background: var(--title-gradient);
+      color: var(--text-grey-dark)
   }
 
   .inactive_button{
       background: transparent;
-  }
-
-  .custom_tokens{
-    min-height: 400px;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .custom_tokens_header{
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-      padding: 0 2rem;
   }
 
   .clear_all_button{
@@ -124,17 +121,3 @@ display: none;
       --p: 100%;
       color: var(--text-grey-white);
   }
-  
-  .custom_tokens_footer{
-position: absolute;
-display: flex;
-width: 100%;
-justify-content: center;
-align-items: center;
-text-align: center;
-bottom: 0;
-padding: 1rem 0;
-color: var(--text-grey-light);
-font-size: var(--body-size);
-line-height: var(--body-lh);
- }

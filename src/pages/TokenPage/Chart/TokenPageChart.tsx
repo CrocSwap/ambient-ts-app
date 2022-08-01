@@ -1,17 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import * as d3 from 'd3';
-import * as d3fc from 'd3fc';
 import dayjs from 'dayjs';
 import { DetailedHTMLProps, HTMLAttributes, useEffect, useMemo, useRef, useState } from 'react';
-import { useTokenPriceData } from '../../../state/tokens/hooks';
+import AreaChart from '../../../components/Global/Charts/AreaChart';
+import BarChart from '../../../components/Global/Charts/BarChart';
+import CandleChart from '../../../components/Global/Charts/CandleChart';
 import { TokenData } from '../../../state/tokens/models';
-import { unixToDate } from '../../../utils/date';
 import { formatDollarAmount } from '../../../utils/numbers';
-import PriceChart from './PriceChart/PriceChart';
 import styles from './TokenPageChart.module.css';
-import TvlChart from './TvlChart/TvlChart';
-import VolumeChart from './VolumeChart/VolumeChart';
 
 interface TokenPageChartProps {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -32,12 +28,11 @@ declare global {
 }
 
 export default function TokenPageChart(props: TokenPageChartProps) {
-    const data = props.tvlData;
     const [activeTab, setActiveTab] = useState('tvl');
     const tabData = [
+        { title: 'Volume', id: 'vlm' },
         { title: 'TVL', id: 'tvl' },
         { title: 'Price', id: 'price' },
-        { title: 'Volume', id: 'vlm' },
     ];
     const [latestValue, setLatestValue] = useState<number | undefined>();
     const [valueLabel, setValueLabel] = useState<string | undefined>();
@@ -81,15 +76,15 @@ export default function TokenPageChart(props: TokenPageChartProps) {
             </div>
 
             {activeTab === 'tvl' ? (
-                <TvlChart
-                    data={data}
+                <AreaChart
+                    data={props.tvlData}
                     value={latestValue}
                     label={valueLabel}
                     setValue={setLatestValue}
                     setLabel={setValueLabel}
                 />
             ) : activeTab === 'vlm' ? (
-                <VolumeChart
+                <BarChart
                     data={props.volumeData}
                     value={latestValue}
                     label={valueLabel}
@@ -98,7 +93,7 @@ export default function TokenPageChart(props: TokenPageChartProps) {
                     snapType={'days'}
                 />
             ) : (
-                <PriceChart
+                <CandleChart
                     data={props.priceData}
                     value={latestValue}
                     label={valueLabel}

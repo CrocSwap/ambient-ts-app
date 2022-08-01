@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useState } from 'react';
+import { useState, Dispatch, SetStateAction } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useMoralis } from 'react-moralis';
 import { motion } from 'framer-motion';
@@ -11,6 +11,8 @@ import {
     parseSwapEthersReceipt,
     EthersNativeReceipt,
     approveToken,
+    getLimitPrice,
+    fromDisplayQty,
 } from '@crocswap-libs/sdk';
 
 // START: Import React Components
@@ -38,8 +40,10 @@ import { useModal } from '../../components/Global/Modal/useModal';
 import { useRelativeModal } from '../../components/Global/RelativeModal/useRelativeModal';
 import { addReceipt } from '../../utils/state/receiptDataSlice';
 
-interface ISwapProps {
+interface SwapPropsIF {
     importedTokens: Array<TokenIF>;
+    setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
+    searchableTokens: Array<TokenIF>;
     provider: JsonRpcProvider;
     isOnTradeRoute?: boolean;
     gasPriceinGwei: string;
@@ -54,12 +58,17 @@ interface ISwapProps {
     };
     poolPriceDisplay: number;
     tokenAAllowance: string;
-    setRecheckTokenAApproval: React.Dispatch<React.SetStateAction<boolean>>;
+    setRecheckTokenAApproval: Dispatch<SetStateAction<boolean>>;
+    chainId: string;
+    activeTokenListsChanged: boolean;
+    indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
 }
 
-export default function Swap(props: ISwapProps) {
+export default function Swap(props: SwapPropsIF) {
     const {
         importedTokens,
+        setImportedTokens,
+        searchableTokens,
         provider,
         isOnTradeRoute,
         nativeBalance,
@@ -71,6 +80,10 @@ export default function Swap(props: ISwapProps) {
         poolPriceDisplay,
         tokenAAllowance,
         setRecheckTokenAApproval,
+        chainId,
+
+        activeTokenListsChanged,
+        indicateActiveTokenListsChanged,
     } = props;
     const [isModalOpen, openModal, closeModal] = useModal();
 
@@ -78,7 +91,7 @@ export default function Swap(props: ISwapProps) {
 
     const [isRelativeModalOpen, closeRelativeModal] = useRelativeModal();
 
-    const { Moralis, chainId, enableWeb3, isWeb3Enabled, authenticate, isAuthenticated } =
+    const { Moralis, enableWeb3, isWeb3Enabled, authenticate, isAuthenticated, account } =
         useMoralis();
     // get URL pathway for user relative to index
     const { pathname } = useLocation();
@@ -88,6 +101,10 @@ export default function Swap(props: ISwapProps) {
     const { tradeData } = pathname.includes('/trade')
         ? useTradeData()
         : useAppSelector((state) => state);
+
+    const { navigationMenu } = pathname.includes('/trade')
+        ? useTradeData()
+        : { navigationMenu: null };
 
     const { tokenA, tokenB } = tradeData;
 
@@ -180,7 +197,7 @@ export default function Swap(props: ISwapProps) {
     // const [isTokenAPrimary, setIsTokenAPrimary] = useState<boolean>(tradeData.isTokenAPrimary);
     const isTokenAPrimary = tradeData.isTokenAPrimary;
     const [isWithdrawFromDexChecked, setIsWithdrawFromDexChecked] = useState(false);
-    const [isWithdrawToWalletChecked, setIsWithdrawToWalletChecked] = useState(true);
+    const [isSaveAsDexSurplusChecked, setIsSaveAsDexSurplusChecked] = useState(false);
 
     const [newSwapTransactionHash, setNewSwapTransactionHash] = useState('');
 
@@ -225,9 +242,45 @@ export default function Swap(props: ISwapProps) {
 
             let newTransactionHash = tx.hash;
             setNewSwapTransactionHash(newTransactionHash);
-            let parsedReceipt;
-
             console.log({ newTransactionHash });
+
+            const newSwapCacheEndpoint = 'https://809821320828123.de:5000/new_swap?';
+
+            const inBaseQty =
+                (isSellTokenBase && isTokenAPrimary) || (!isSellTokenBase && !isTokenAPrimary);
+            // const limitPrice = poolPrice
+            const limitPrice = await getLimitPrice(
+                sellTokenAddress,
+                buyTokenAddress,
+                slippageTolerancePercentage,
+            );
+
+            const crocQty = fromDisplayQty(
+                qty,
+                isTokenAPrimary ? tokenA.decimals : tokenB.decimals,
+            );
+
+            fetch(
+                newSwapCacheEndpoint +
+                    new URLSearchParams({
+                        tx: newTransactionHash,
+                        user: account ?? '',
+                        base: isSellTokenBase ? sellTokenAddress : buyTokenAddress,
+                        quote: isSellTokenBase ? buyTokenAddress : sellTokenAddress,
+                        poolIdx: POOL_PRIMARY.toString(),
+                        isBuy: isSellTokenBase.toString(),
+                        inBaseQty: inBaseQty.toString(),
+                        qty: crocQty.toString(),
+                        limitPrice: limitPrice.toString(),
+                        minOut: '0', // integer	The minimum output the user expects from the swap.
+                        override: 'false',
+                        chainId: chainId,
+                        // boolean	(Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
+                    }),
+                // { method: 'POST' },
+            );
+
+            let parsedReceipt;
 
             try {
                 const receipt = await tx.wait();
@@ -250,6 +303,7 @@ export default function Swap(props: ISwapProps) {
                     );
                 }
             }
+
             if (parsedReceipt) {
                 const unifiedReceipt = await handleParsedReceipt(
                     Moralis,
@@ -289,13 +343,7 @@ export default function Swap(props: ISwapProps) {
     const isTokenAAllowanceSufficient = parseFloat(tokenAAllowance) >= parseFloat(tokenAInputQty);
 
     return (
-        <motion.main
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-            data-testid={'swap'}
-            className={styles.swap}
-        >
+        <main data-testid={'swap'} className={styles.swap}>
             <ContentContainer isOnTradeRoute={isOnTradeRoute}>
                 <SwapHeader
                     tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
@@ -303,36 +351,50 @@ export default function Swap(props: ISwapProps) {
                     isDenomBase={tradeData.isDenomBase}
                     isTokenABase={isSellTokenBase}
                 />
-                <DenominationSwitch
-                    tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
-                    isTokenABase={isSellTokenBase}
-                    displayForBase={tradeData.isDenomBase}
-                    poolPriceDisplay={poolPriceDisplay}
-                    didUserFlipDenom={tradeData.didUserFlipDenom}
-                />
-                <DividerDark />
-                <CurrencyConverter
-                    tokenPair={tokenPair}
-                    tokensBank={importedTokens}
-                    chainId={chainId as string}
-                    isLiq={false}
-                    poolPriceDisplay={poolPriceDisplay}
-                    isTokenAPrimary={isTokenAPrimary}
-                    isSellTokenBase={isSellTokenBase}
-                    nativeBalance={truncateDecimals(parseFloat(nativeBalance), 4).toString()}
-                    tokenABalance={truncateDecimals(parseFloat(tokenABalance), 4).toString()}
-                    tokenBBalance={truncateDecimals(parseFloat(tokenBBalance), 4).toString()}
-                    tokenAInputQty={tokenAInputQty}
-                    tokenBInputQty={tokenBInputQty}
-                    setTokenAInputQty={setTokenAInputQty}
-                    setTokenBInputQty={setTokenBInputQty}
-                    isWithdrawFromDexChecked={isWithdrawFromDexChecked}
-                    setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
-                    isWithdrawToWalletChecked={isWithdrawToWalletChecked}
-                    setIsWithdrawToWalletChecked={setIsWithdrawToWalletChecked}
-                    setSwapAllowed={setSwapAllowed}
-                    setSwapButtonErrorMessage={setSwapButtonErrorMessage}
-                />
+                <DividerDark addMarginTop />
+                {navigationMenu}
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.5 }}
+                >
+                    <CurrencyConverter
+                        tokenPair={tokenPair}
+                        tokensBank={importedTokens}
+                        setImportedTokens={setImportedTokens}
+                        searchableTokens={searchableTokens}
+                        chainId={chainId as string}
+                        isLiq={false}
+                        poolPriceDisplay={poolPriceDisplay}
+                        isTokenAPrimary={isTokenAPrimary}
+                        isSellTokenBase={isSellTokenBase}
+                        nativeBalance={truncateDecimals(parseFloat(nativeBalance), 4).toString()}
+                        tokenABalance={truncateDecimals(parseFloat(tokenABalance), 4).toString()}
+                        tokenBBalance={truncateDecimals(parseFloat(tokenBBalance), 4).toString()}
+                        tokenAInputQty={tokenAInputQty}
+                        tokenBInputQty={tokenBInputQty}
+                        setTokenAInputQty={setTokenAInputQty}
+                        setTokenBInputQty={setTokenBInputQty}
+                        isWithdrawFromDexChecked={isWithdrawFromDexChecked}
+                        setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
+                        isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
+                        setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
+                        setSwapAllowed={setSwapAllowed}
+                        setSwapButtonErrorMessage={setSwapButtonErrorMessage}
+                        activeTokenListsChanged={activeTokenListsChanged}
+                        indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
+                    />
+                </motion.div>
+                <div className={styles.header_container}>
+                    <DividerDark addMarginTop />
+                    <DenominationSwitch
+                        tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
+                        isTokenABase={isSellTokenBase}
+                        displayForBase={tradeData.isDenomBase}
+                        poolPriceDisplay={poolPriceDisplay}
+                        didUserFlipDenom={tradeData.didUserFlipDenom}
+                    />
+                </div>
                 <ExtraInfo
                     tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
                     isTokenABase={isSellTokenBase}
@@ -364,6 +426,6 @@ export default function Swap(props: ISwapProps) {
             <PageFooter lastBlockNumber={2}/>
 
             </div> */}
-        </motion.main>
+        </main>
     );
 }

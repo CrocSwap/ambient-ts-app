@@ -16,8 +16,6 @@ import { PoolData } from '../../../state/pools/models';
 export default function AnalyticsTabs() {
     const [activeTab, setActiveTab] = useState('tab1');
 
-    // const graphData = useAppSelector((state) => state?.graphData);
-
     const tabData = [
         { title: 'Top Tokens', id: 'tab1' },
         { title: 'Top Pools', id: 'tab2' },
@@ -47,10 +45,16 @@ export default function AnalyticsTabs() {
     const search = (value: string) => {
         setSearchWord(value);
         if (value.length > 0) {
-            setTokens(tokensResult.filter((item) => item.name.includes(value)));
+            setTokens(
+                tokensResult.filter((item) =>
+                    item.name.toLowerCase().includes(value.toLowerCase()),
+                ),
+            );
             setPools(
                 poolsResult.filter(
-                    (item) => item.token0.name.includes(value) || item.token1.name.includes(value),
+                    (item) =>
+                        item.token0.name.toLowerCase().includes(value.toLowerCase()) ||
+                        item.token1.name.toLowerCase().includes(value.toLowerCase()),
                 ),
             );
         }

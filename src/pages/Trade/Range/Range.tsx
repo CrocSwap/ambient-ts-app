@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, Dispatch, SetStateAction } from 'react';
 import { useMoralis, useNewMoralisObject } from 'react-moralis';
 import { motion } from 'framer-motion';
 import { BigNumber } from 'ethers';
@@ -13,15 +13,13 @@ import {
     parseMintEthersReceipt,
     EthersNativeReceipt,
     ambientPosSlot,
-    // tickToPrice,
-    // toDisplayPrice,
     concDepositSkew,
-    // GRID_SIZE_DFLT,
     MIN_TICK,
     MAX_TICK,
     concPosSlot,
     approveToken,
     contractAddresses,
+    POOL_PRIMARY,
     // pinTickLower,
     // fromDisplayPrice,
 } from '@crocswap-libs/sdk';
@@ -61,12 +59,13 @@ import {
     setAdvancedHighTick,
     setAdvancedLowTick,
     setSimpleRangeWidth,
-    // setIsTokenAPrimaryRange,
 } from '../../../utils/state/tradeDataSlice';
 import { addReceipt } from '../../../utils/state/receiptDataSlice';
 
 interface RangePropsIF {
     importedTokens: Array<TokenIF>;
+    setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
+    searchableTokens: Array<TokenIF>;
     provider: JsonRpcProvider;
     gasPriceinGwei: string;
     lastBlockNumber: number;
@@ -77,14 +76,19 @@ interface RangePropsIF {
     tokenABalance: string;
     tokenBBalance: string;
     tokenAAllowance: string;
-    setRecheckTokenAApproval: React.Dispatch<React.SetStateAction<boolean>>;
+    setRecheckTokenAApproval: Dispatch<SetStateAction<boolean>>;
     tokenBAllowance: string;
-    setRecheckTokenBApproval: React.Dispatch<React.SetStateAction<boolean>>;
+    setRecheckTokenBApproval: Dispatch<SetStateAction<boolean>>;
+    chainId: string;
+    activeTokenListsChanged: boolean;
+    indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function Range(props: RangePropsIF) {
     const {
         importedTokens,
+        setImportedTokens,
+        searchableTokens,
         provider,
         baseTokenAddress,
         quoteTokenAddress,
@@ -97,6 +101,10 @@ export default function Range(props: RangePropsIF) {
         tokenBAllowance,
         setRecheckTokenBApproval,
         gasPriceinGwei,
+        chainId,
+
+        activeTokenListsChanged,
+        indicateActiveTokenListsChanged,
     } = props;
     const [isModalOpen, openModal, closeModal] = useModal();
 
@@ -107,18 +115,11 @@ export default function Range(props: RangePropsIF) {
     const [isWithdrawTokenAFromDexChecked, setIsWithdrawTokenAFromDexChecked] = useState(false);
     const [isWithdrawTokenBFromDexChecked, setIsWithdrawTokenBFromDexChecked] = useState(false);
     const [newRangeTransactionHash, setNewRangeTransactionHash] = useState('');
-    const {
-        Moralis,
-        user,
-        account,
-        chainId,
-        isAuthenticated,
-        isWeb3Enabled,
-        authenticate,
-        enableWeb3,
-    } = useMoralis();
+    const { Moralis, user, account, isAuthenticated, isWeb3Enabled, authenticate, enableWeb3 } =
+        useMoralis();
 
     const { tradeData } = useTradeData();
+    const { navigationMenu } = useTradeData();
 
     const tokenPair = {
         dataTokenA: tradeData.tokenA,
@@ -323,31 +324,7 @@ export default function Range(props: RangePropsIF) {
     const [rangeHighBoundFieldBlurred, setRangeHighBoundFieldBlurred] = useState(false);
     const highBoundOnBlur = () => setRangeHighBoundFieldBlurred(true);
 
-    // useEffect(() => {
-    //     console.log({ currentPoolPriceTick });
-    // }, [currentPoolPriceTick]);
-
-    // useEffect(() => {
-    //     console.log({ rangeLowTick });
-    // }, [rangeLowTick]);
-
-    // useEffect(() => {
-    //     console.log({ rangeHighTick });
-    // }, [rangeHighTick]);
-
-    // useEffect(() => {
-    //     console.log({ isTokenADisabled });
-    // }, [isTokenADisabled]);
-
-    // useEffect(() => {
-    //     console.log({ isTokenBDisabled });
-    // }, [isTokenBDisabled]);
-
     const [initializationComplete, setInitializationComplete] = useState(false);
-
-    // useEffect(() => {
-    //     console.log({ initializationComplete });
-    // }, [initializationComplete]);
 
     useEffect(() => {
         if (isAdvancedModeActive) {
@@ -365,7 +342,7 @@ export default function Range(props: RangePropsIF) {
                 setInitializationComplete(false);
             }
         }
-    }, [isAdvancedModeActive, denominationsInBase, rangeLowTick, rangeHighTick]);
+    }, [isAdvancedModeActive, rangeLowTick, rangeHighTick]);
 
     // initialize based on MinPriceDifferencePercentage & MaxPriceDifferencePercentage
     useEffect(() => {
@@ -715,6 +692,30 @@ export default function Range(props: RangePropsIF) {
             let newTransactionHash = tx.hash;
             setNewRangeTransactionHash(newTransactionHash);
             console.log({ newTransactionHash });
+
+            const newPositionCacheEndpoint = 'https://809821320828123.de:5000/new_position?';
+
+            fetch(
+                newPositionCacheEndpoint +
+                    new URLSearchParams({
+                        tx: newTransactionHash,
+                        base: baseTokenAddress,
+                        quote: quoteTokenAddress,
+                        poolIdx: POOL_PRIMARY.toString(),
+                        user: account ?? '',
+                        ambient: isAmbient.toString(),
+                        bidTick: rangeLowTick.toString(),
+                        askTick: rangeHighTick.toString(),
+                        knockout: 'false', // boolean Whether or not the liquidity position is knockout liquidity. If true, then ambient must be false.
+                        isBid: 'false', // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
+                        override: 'false', // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
+                        chainId: chainId,
+                    }),
+                // { method: 'POST' },
+            )
+                .then((response) => response.json())
+                .then(console.log);
+
             let parsedReceipt;
 
             try {
@@ -884,6 +885,8 @@ export default function Range(props: RangePropsIF) {
         poolPriceNonDisplay: poolPriceNonDisplay,
         chainId: chainId ?? '0x2a',
         tokensBank: importedTokens,
+        setImportedTokens: setImportedTokens,
+        searchableTokens: searchableTokens,
         tokenPair: tokenPair,
         isAmbient: isAmbient,
         isTokenABase: isTokenABase,
@@ -905,6 +908,8 @@ export default function Range(props: RangePropsIF) {
         isOutOfRange: isOutOfRange,
         rangeSpanAboveCurrentPrice: rangeSpanAboveCurrentPrice,
         rangeSpanBelowCurrentPrice: rangeSpanBelowCurrentPrice,
+        activeTokenListsChanged: activeTokenListsChanged,
+        indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
     };
 
     // props for <RangeWidth/> React element
@@ -926,39 +931,51 @@ export default function Range(props: RangePropsIF) {
     };
 
     const baseModeContent = (
-        <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-        >
+        <div>
             <RangeCurrencyConverter {...rangeCurrencyConverterProps} isAdvancedMode={false} />
-
-            <RangeWidth {...rangeWidthProps} />
+            <DividerDark addMarginTop />
+            {denominationSwitch}
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+            >
+                <RangeWidth {...rangeWidthProps} />
+            </motion.div>
             <RangePriceInfo {...rangePriceInfoProps} />
             <RangeExtraInfo {...rangeExtraInfoProps} />
-        </motion.div>
+        </div>
     );
     const advancedModeContent = (
         <>
             <RangeCurrencyConverter {...rangeCurrencyConverterProps} isAdvancedMode />
+            <DividerDark addMarginTop />
 
-            <MinMaxPrice
-                minPricePercentage={minPriceDifferencePercentage}
-                maxPricePercentage={maxPriceDifferencePercentage}
-                minPriceInputString={minPriceInputString}
-                maxPriceInputString={maxPriceInputString}
-                setMinPriceInputString={setMinPriceInputString}
-                setMaxPriceInputString={setMaxPriceInputString}
-                isDenomBase={denominationsInBase}
-                // highBoundOnFocus={highBoundOnFocus}
-                highBoundOnBlur={highBoundOnBlur}
-                lowBoundOnBlur={lowBoundOnBlur}
-                rangeLowTick={rangeLowTick}
-                rangeHighTick={rangeHighTick}
-                setRangeLowTick={setRangeLowTick}
-                setRangeHighTick={setRangeHighTick}
-                disable={isInvalidRange}
-            />
+            {denominationSwitch}
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+            >
+                <MinMaxPrice
+                    minPricePercentage={minPriceDifferencePercentage}
+                    maxPricePercentage={maxPriceDifferencePercentage}
+                    minPriceInputString={minPriceInputString}
+                    maxPriceInputString={maxPriceInputString}
+                    setMinPriceInputString={setMinPriceInputString}
+                    setMaxPriceInputString={setMaxPriceInputString}
+                    isDenomBase={denominationsInBase}
+                    highBoundOnBlur={highBoundOnBlur}
+                    lowBoundOnBlur={lowBoundOnBlur}
+                    rangeLowTick={rangeLowTick}
+                    rangeHighTick={rangeHighTick}
+                    setRangeLowTick={setRangeLowTick}
+                    setRangeHighTick={setRangeHighTick}
+                    disable={isInvalidRange}
+                />
+            </motion.div>
+            <DividerDark addMarginTop />
+
             <AdvancedPriceInfo
                 tokenPair={tokenPair}
                 poolPriceDisplay={poolPriceTruncated.toString()}
@@ -1078,22 +1095,30 @@ export default function Range(props: RangePropsIF) {
     // const isAmountEntered = parseFloat(tokenAInputQty) > 0 && parseFloat(tokenBInputQty) > 0;
 
     return (
-        <motion.section
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-            data-testid={'range'}
-        >
+        <section data-testid={'range'}>
             <ContentContainer isOnTradeRoute>
                 <RangeHeader
                     tokenPair={tokenPair}
                     isDenomBase={tradeData.isDenomBase}
                     isTokenABase={isTokenABase}
                 />
-                {denominationSwitch}
-                <DividerDark />
-                {/* <RangeCurrencyConverter {...rangeCurrencyConverterProps} /> */}
-                {isAdvancedModeActive ? advancedModeContent : baseModeContent}
+                <DividerDark addMarginTop />
+                {navigationMenu}
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.5 }}
+                >
+                    <DividerDark />
+                    {/* <RangeCurrencyConverter {...rangeCurrencyConverterProps} /> */}
+
+                    {/* <div className={styles.header_container}>
+                    {denominationSwitch}
+                    <DividerDark addMarginTop />
+                </div> */}
+                    {isAdvancedModeActive ? advancedModeContent : baseModeContent}
+                </motion.div>
+
                 {!isAuthenticated || !isWeb3Enabled ? (
                     loginButton
                 ) : poolPriceNonDisplay !== 0 &&
@@ -1114,6 +1139,6 @@ export default function Range(props: RangePropsIF) {
             </ContentContainer>
 
             {confirmSwapModalOrNull}
-        </motion.section>
+        </section>
     );
 }

@@ -3,6 +3,7 @@ export interface PositionIF {
     ambient: boolean;
     askTick: number;
     baseTokenSymbol: string;
+    baseTokenDecimals: number;
     bidTick: number;
     highRangeDisplay: string;
     id: string;
@@ -16,6 +17,7 @@ export interface PositionIF {
         quote: string;
     };
     quoteTokenSymbol: string;
+    quoteTokenDecimals: number;
     tokenAQtyDisplay: string;
     tokenBQtyDisplay: string;
     poolPriceInTicks?: number;

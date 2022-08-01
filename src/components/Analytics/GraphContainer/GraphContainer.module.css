@@ -35,12 +35,13 @@
 /* graph data */
 
 .graph_data{
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
+    
     align-items: center;
     margin: 1rem 0;
     transition: all var(--animation-speed)ease-in-out;
+
+    display: grid;
+    grid-gap: 4px;
 }
 
 .graph_container{
@@ -56,21 +57,27 @@
 
 /* Analytics Info */
 .info_container{
-    display: flex;
+    /* display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: space-between; */
     align-items: center;
     gap: 3rem;
-   width: 80%;
-   margin: 0 auto;
+   /* width: 80%;
+   margin: 0 auto; */
+
+   display: grid;
+   
+   grid-gap: 8px;
 }
 .info_content{
     display: flex;
     flex-direction: column;
     align-items: center;
-
+    background: var(--dark2);
     color: var(--text-grey-white);
     gap: 0.5rem;
+    border-radius: 4px;
+    padding: 8px 0;
 }
 
 .info_content .info_title{
@@ -87,3 +94,39 @@ line-height: 38px;
    
 
 }
+@media only screen and (min-width: 768px) {
+    .graph_data{
+        grid-template-columns: 1fr 1fr;
+    }
+    .info_container{
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        gap: 3rem;
+       width: 80%;
+       margin: 0 auto;
+    
+     
+    }
+    .info_content{
+        
+        background: transparent;
+        
+        padding:  0;
+    }
+}
+
+
+.animatedImg {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-animation:spin 3s linear infinite;
+    -moz-animation:spin 4s linear infinite;
+    animation:spin 4s linear infinite;
+  }
+  
+  @-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
+  @-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
+  @keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } } 

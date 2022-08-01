@@ -1,10 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import dayjs from 'dayjs';
 import { DetailedHTMLProps, HTMLAttributes, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams } from 'react-router';
+import AreaChart from '../../../components/Global/Charts/AreaChart';
+import BarChart from '../../../components/Global/Charts/BarChart';
 import { PoolData } from '../../../state/pools/models';
 import { formatDollarAmount } from '../../../utils/numbers';
-import TvlChart from '../../TokenPage/Chart/TvlChart/TvlChart';
-import VolumeChart from '../../TokenPage/Chart/VolumeChart/VolumeChart';
 import LiquidityChart from '../LiquidtiyChart/LiquidityChart';
 import styles from './PoolPageChart.module.css';
 
@@ -63,7 +64,7 @@ export default function PoolPageChart(props: PoolPageChartProps) {
                     </label>
                 </div>
                 <div className={styles.settings_container}>
-                    {tabData.map((tab, index) => (
+                    {tabData.map((tab) => (
                         <button
                             key={tab.id}
                             onClick={() => {
@@ -82,7 +83,7 @@ export default function PoolPageChart(props: PoolPageChartProps) {
             </div>
 
             {activeTab === 'tvl' ? (
-                <TvlChart
+                <AreaChart
                     data={props.tvlData}
                     value={latestValue}
                     label={valueLabel}
@@ -98,7 +99,7 @@ export default function PoolPageChart(props: PoolPageChartProps) {
                     setLabel={setValueLabel}
                 />
             ) : (
-                <VolumeChart
+                <BarChart
                     data={activeTab === 'vlm' ? props.volumeData : props.feesData}
                     value={latestValue}
                     label={valueLabel}

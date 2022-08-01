@@ -11,7 +11,7 @@ import { FiMoreHorizontal } from 'react-icons/fi';
 // import { HiOutlineDocumentText } from 'react-icons/hi';
 import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
 import SnackbarComponent from '../../../../components/Global/SnackbarComponent/SnackbarComponent';
-import DropdownMenu from '../DropdownMenu/DropdownMenu';
+import DropdownMenu from '../NavbarDropdownMenu/NavbarDropdownMenu';
 import NavItem from '../NavItem/NavItem';
 
 interface IAccountProps {
@@ -111,11 +111,12 @@ export default function Account(props: IAccountProps): React.ReactElement<IAccou
         <div className={styles.account_container}>
             <span className={styles.white}>
                 {props.nativeBalance && isAuthenticated && isWeb3Enabled
-                    ? parseFloat(props.nativeBalance).toFixed(4) + ' ETH'
-                    : ''}
+                    ? 'Ξ' + parseFloat(props.nativeBalance).toFixed(4)
+                    : // ? parseFloat(props.nativeBalance).toFixed(4) + ' ETH'
+                      ''}
             </span>
             {/* TODO : REFACTOR THIS TO POPUP ALERT ON COPY - USE VALUE */}
-            <div className={styles.title_gradient} onClick={handleCopyAddress}>
+            <div className={`${styles.title_gradient}`} onClick={handleCopyAddress}>
                 {ensName !== '' && isAuthenticated ? ensName : props.accountAddress}
             </div>
 

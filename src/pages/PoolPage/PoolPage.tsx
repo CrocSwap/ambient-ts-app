@@ -8,7 +8,7 @@ import { feeTierPercent, isAddress } from '../../utils';
 import PoolInfoCard from './PoolInfoCard/PoolInfoCard';
 import { formatAmount } from '../../utils/numbers';
 import PoolPageChart from './Chart/PoolPageChart';
-import { unixToDate } from '../../utils/date';
+import logo from '../../assets/images/logos/ambient_logo.svg';
 
 export default function PoolPage() {
     const { address } = useParams() ?? '';
@@ -18,6 +18,7 @@ export default function PoolPage() {
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const poolData = usePoolDatas([address!])[0];
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const chartData = usePoolChartData(address!);
     // const transactions = usePoolTransactions(address);
 
@@ -140,17 +141,27 @@ export default function PoolPage() {
         </div>
     );
 
+    const loading = (
+        <div className={styles.animatedImg}>
+            <img src={logo} width={110} alt='logo' />
+        </div>
+    );
+
     return (
         <main data-testid={'pool-page'} className={styles.container}>
             {poolInfo}
             <div className={styles.hsPAQl}>
                 <PoolInfoCard pool={poolData} />
-                <PoolPageChart
-                    tvlData={formattedTvlData}
-                    feesData={formattedFeesUSD}
-                    volumeData={formattedVolumeData}
-                    pool={poolData}
-                />
+                {poolData && chartData ? (
+                    <PoolPageChart
+                        tvlData={formattedTvlData}
+                        feesData={formattedFeesUSD}
+                        volumeData={formattedVolumeData}
+                        pool={poolData}
+                    />
+                ) : (
+                    <>{loading}</>
+                )}
             </div>
             <Divider />
             {/* <Transactions transactions={transactions!} /> */}

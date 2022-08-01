@@ -114,6 +114,7 @@ input[type='range'] {
     ); /* Otherwise white in Chrome */
 
     -webkit-appearance: none; /* Hides the slider so that custom slider can be made */
+   
 }
 
 input[type='range']:focus {
@@ -131,21 +132,27 @@ input[type='range']::-ms-track {
     outline: none;
     border: none;
     background: transparent;
+    border-radius: 10px;
+
 }
+
 
 /* Special styling for WebKit/Blink */
 input[type='range']::-webkit-slider-thumb {
     background: var(--dark2);
-    width: 16px;
-    height: 36px;
+    width: 20px;
+    height: 35px;
     margin-top: -14px;
     cursor: pointer;
 
     border: 1px solid #cdc1ff;
     box-sizing: border-box;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.25);
-    border-radius: 8px;
+    border-radius: 10px;
+
     -webkit-appearance: none;
+
+  
 }
 
 /* All the same stuff for Firefox */
@@ -181,7 +188,8 @@ input[type='range']::-webkit-slider-runnable-track {
     cursor: pointer;
 
     border: 0.2px solid #010101;
-    border-radius: 1.3px;
+    border-radius: 10px;
+
     background: linear-gradient(
         90deg,
         #7371fc 0%,
@@ -199,6 +207,8 @@ input[type='range']:focus::-webkit-slider-runnable-track {
         #cdc1ff 49.48%,
         #7371fc 100%
     ); /* Otherwise white in Chrome */
+    border-radius: 10px;
+
 }
 
 input[type='range']::-moz-range-track {
@@ -232,7 +242,8 @@ input[type='range']::-ms-track {
 }
 input[type='range']::-ms-fill-lower {
     border: 0.2px solid #010101;
-    border-radius: 2.6px;
+    border-radius: 10px;
+
     background: linear-gradient(
         90deg,
         #7371fc 0%,
@@ -246,8 +257,9 @@ input[type='range']:focus::-ms-fill-lower {
     background: var(--dark2);
 }
 input[type='range']::-ms-fill-upper {
-    border: 0.2px solid #010101;
-    border-radius: 2.6px;
+    /* border: 0.2px solid #010101; */
+    border-radius: 10px;
+
     background: linear-gradient(
         90deg,
         #7371fc 0%,

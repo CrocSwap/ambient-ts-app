@@ -1,20 +1,34 @@
-import { Outlet, useOutletContext, NavLink, useLocation } from 'react-router-dom';
+import {
+    Outlet,
+    useOutletContext,
+    NavLink,
+    // useLocation
+} from 'react-router-dom';
 import styles from './Trade.module.css';
 import chart from '../../assets/images/Temporary/chart.svg';
 import Tabs from '../../components/Global/Tabs/Tabs';
 import { motion } from 'framer-motion';
-import { useAppSelector } from '../../utils/hooks/reduxToolkit';
-import { tradeData as TradeDataIF } from '../../utils/state/tradeDataSlice';
+import { useAppSelector, useAppDispatch } from '../../utils/hooks/reduxToolkit';
+import {
+    tradeData as TradeDataIF,
+    toggleDidUserFlipDenom,
+    setActiveChartPeriod,
+} from '../../utils/state/tradeDataSlice';
+import truncateDecimals from '../../utils/data/truncateDecimals';
 
 interface ITradeProps {
     account: string;
     isAuthenticated: boolean;
+    isWeb3Enabled: boolean;
     lastBlockNumber: number;
+    isTokenABase: boolean;
+    poolPriceDisplay: number;
 }
 
 export default function Trade(props: ITradeProps) {
-    const location = useLocation();
-    const currentLocation = location.pathname;
+    // const location = useLocation();
+    // const currentLocation = location.pathname;
+    const dispatch = useAppDispatch();
 
     // console.log(currentLocation);
 
@@ -34,24 +48,42 @@ export default function Trade(props: ITradeProps) {
     ];
 
     const tradeData = useAppSelector((state) => state.tradeData);
+    const isTokenABase = props.isTokenABase;
+    const setActivePeriod = (period: number) => {
+        dispatch(setActiveChartPeriod(period));
+    };
+    const denomInBase = tradeData.isDenomBase;
+    const denomInTokenA = (denomInBase && isTokenABase) || (!denomInBase && !isTokenABase);
+    const tokenASymbol = tradeData.tokenA.symbol;
+    const tokenBSymbol = tradeData.tokenB.symbol;
+    const poolPriceDisplay = denomInBase ? 1 / props.poolPriceDisplay : props.poolPriceDisplay;
+    const truncatedPoolPrice =
+        poolPriceDisplay < 2
+            ? truncateDecimals(poolPriceDisplay, 4)
+            : truncateDecimals(poolPriceDisplay, 2);
 
     // These would be move to their own components, presumably the graph component
     const tokenInfo = (
         <div className={styles.token_info_container}>
-            <div className={styles.tokens_info}>
+            <div className={styles.tokens_info} onClick={() => dispatch(toggleDidUserFlipDenom())}>
                 <div className={styles.tokens_images}>
                     <img
-                        src='https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png'
+                        src={denomInTokenA ? tradeData.tokenA.logoURI : tradeData.tokenB.logoURI}
+                        // src='https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png'
                         alt='token'
                         width='30px'
                     />
                     <img
-                        src='https://cryptologos.cc/logos/usd-coin-usdc-logo.png'
+                        src={denomInTokenA ? tradeData.tokenB.logoURI : tradeData.tokenA.logoURI}
+                        // src='https://cryptologos.cc/logos/usd-coin-usdc-logo.png'
                         alt='token'
                         width='30px'
                     />
                 </div>
-                <span className={styles.tokens_name}>ETH / USDC</span>
+                <span className={styles.tokens_name}>
+                    {denomInTokenA ? tokenASymbol : tokenBSymbol} /{' '}
+                    {denomInTokenA ? tokenBSymbol : tokenASymbol}
+                </span>
             </div>
 
             <div className={styles.settings_container}>
@@ -62,20 +94,69 @@ export default function Trade(props: ITradeProps) {
         </div>
     );
 
+    const currencyCharacter = denomInTokenA
+        ? // denom in a, if token b is dollar equivalent use $
+          ~['DAI', 'USDC'].indexOf(tradeData.tokenB.symbol)
+            ? '$'
+            : 'Ξ'
+        : // denom in b, if token a is dollar equivalent use $
+        ~['DAI', 'USDC'].indexOf(tradeData.tokenA.symbol)
+        ? '$'
+        : 'Ξ';
+
     const timeFrameContent = (
         <div className={styles.time_frame_container}>
             <div className={styles.left_side}>
-                <span className={styles.amount}>$2,658.00</span>
+                <span className={styles.amount} onClick={() => dispatch(toggleDidUserFlipDenom())}>
+                    {currencyCharacter}
+                    {truncatedPoolPrice}
+                </span>
                 <span className={styles.change}>+8.57% | 24h</span>
             </div>
             <div className={styles.right_side}>
                 <span>Timeframe</span>
-                <button>1m</button>
-                <button>5m</button>
-                <button>15m</button>
-                <button>1h</button>
-                <button>4h</button>
-                <button>1d</button>
+                <button
+                    onClick={() => {
+                        setActivePeriod(60);
+                    }}
+                >
+                    1m
+                </button>
+                <button
+                    onClick={() => {
+                        setActivePeriod(300);
+                    }}
+                >
+                    5m
+                </button>
+                <button
+                    onClick={() => {
+                        setActivePeriod(900);
+                    }}
+                >
+                    15m
+                </button>
+                <button
+                    onClick={() => {
+                        setActivePeriod(3600);
+                    }}
+                >
+                    1h
+                </button>
+                <button
+                    onClick={() => {
+                        setActivePeriod(14400);
+                    }}
+                >
+                    4h
+                </button>
+                <button
+                    onClick={() => {
+                        setActivePeriod(86400);
+                    }}
+                >
+                    1d
+                </button>
             </div>
         </div>
     );
@@ -98,8 +179,8 @@ export default function Trade(props: ITradeProps) {
 
     const mainContent = (
         <div className={styles.right_col}>
-            {currentLocation.slice(0, 11) !== '/trade/edit' && navigationMenu}
-            <Outlet context={{ tradeData }} />
+            {/* {currentLocation.slice(0, 11) !== '/trade/edit' && navigationMenu} */}
+            <Outlet context={{ tradeData: tradeData, navigationMenu: navigationMenu }} />
             {/* <PageFooter lastBlockNumber={props.lastBlockNumber} /> */}
         </div>
     );
@@ -116,7 +197,12 @@ export default function Trade(props: ITradeProps) {
                     {tokenInfo}
                     {timeFrameContent}
                     {chartImage}
-                    <Tabs account={props.account} isAuthenticated={props.isAuthenticated} />
+                    <Tabs
+                        account={props.account}
+                        isAuthenticated={props.isAuthenticated}
+                        isWeb3Enabled={props.isWeb3Enabled}
+                        lastBlockNumber={props.lastBlockNumber}
+                    />
                 </div>
                 {mainContent}
             </main>
@@ -124,7 +210,7 @@ export default function Trade(props: ITradeProps) {
     );
 }
 
-type ContextType = { tradeData: TradeDataIF };
+type ContextType = { tradeData: TradeDataIF; navigationMenu: JSX.Element };
 
 export function useTradeData() {
     return useOutletContext<ContextType>();
