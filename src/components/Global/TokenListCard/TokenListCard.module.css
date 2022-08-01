@@ -34,6 +34,7 @@
     align-items: flex-start;
     margin: 0 1rem;
 }
+
 .token_list_card_name span{
     font-weight: 200;
     font-size: var(--header2-size);
@@ -53,6 +54,13 @@
 .token_list_card_name .token_count svg{
     margin:  0 5px;
     cursor: pointer;
+}
+
+.token_list_name {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
 }
 
 .bottom_container_menu{
