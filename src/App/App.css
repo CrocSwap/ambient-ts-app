@@ -31,10 +31,11 @@ body::-webkit-scrollbar-thumb {
     box-shadow: 0px 0px 0px 100000vh black;
 }
 
-html {
-    background: var(--body-bg);
-    color: var(--text-grey-white);
-    height: 100%;
+html{
+  background: var(--body-bg);
+  color: var(--text-grey-white); 
+  height: 100%;
+   
 }
 
 svg {
@@ -59,8 +60,16 @@ a {
   position: relative;
 } */
 
-body {
-    overflow-x: hidden;
+body{
+  overflow-x: hidden;
+
+  min-height: 100%;
+ 
+
+  display: flex;
+  flex-direction: column;
+  /* padding: 0 1rem; */
+ 
 
     min-height: 100%;
 
@@ -82,13 +91,16 @@ body {
 }
 
 footer {
-    /* To make page 100vh, turn off footer position sticky and turn on absolute then style the footer based on route. */
-    /* position: absolute;
+  /* To make page 100vh, turn off footer position sticky and turn on absolute then style the footer based on route. */
+  /* position: absolute;
   position: sticky;
   right: 0;
  bottom: 0; */
-    margin-top: auto;
+ margin-top: auto;
 }
+
+
+
 
 /* .main-layout{
   transition: all var(--animation-speed) ease-in-out;  
@@ -108,36 +120,37 @@ footer {
  
   
 } */
-.swap-body {
-    /* height: 100vh; */
-    background: #171d27;
-    height: calc(100vh - (var(--footer-height) + 2rem));
+.swap-body{
+  /* height: 100vh; */
+  background: #171D27;
+  height: calc(100vh - (var(--footer-height) + 2rem));
 
-    /* height: calc(100vh - 3.5rem);  */
+   /* height: calc(100vh - 3.5rem);  */
+   
 
-    /* display: flex;
+   /* display: flex;
    justify-content: center;
    align-items: center; */
+ 
 }
 
-.footer_container {
-    display: flex;
-    justify-content: flex-end;
-    color: white;
+.footer_container{
+  display: flex;
+  justify-content: flex-end;
+  color: white;
 }
 
-.primary_apy {
-    background: linear-gradient(90deg, #15be6f 32.38%, #8fe9bf 51.39%, #15be6f 68.17%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-fill-color: transparent;
 
-    /* glow/positive */
-
-    text-shadow: 0px 0px 10px rgba(21, 190, 111, 0.75);
-
-    /* glow/positive */
+.primary_apy{
+  background: linear-gradient(90deg, #15BE6F 32.38%, #8FE9BF 51.39%, #15BE6F 68.17%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-fill-color: transparent;
+  
+  /* glow/positive */
+  
+  text-shadow: 0px 0px 10px rgba(21, 190, 111, 0.75);
 
     text-shadow: 0px 0px 10px rgba(21, 190, 111, 0.75);
 
@@ -193,46 +206,60 @@ footer {
     transition: all var(--animation-speed) ease;
 }
 
-.hide_sidebar {
-    display: grid;
-    grid-template-columns: 100%;
+.hide_sidebar{
+ display: grid;
+ grid-template-columns: 100%;
 }
 
+
 @media only screen and (max-width: 600px) {
-    .main-layout {
-        margin: 0;
-        overflow: scroll;
-    }
+
+
+  .main-layout {
+
+    margin: 0;
+    overflow: scroll;
+   
+  }
+
 }
 
 @media only screen and (min-width: 1020px) {
-    .sidebar_content_layout {
-        transition: all var(--animation-speed) ease-in-out;
-        display: grid;
-        grid-template-columns: 296px auto;
-    }
-    .sidebar_content_layout_close {
-        transition: all var(--animation-speed) ease-in-out;
+ 
+  .sidebar_content_layout{
+    transition: all var(--animation-speed) ease-in-out;
+   display: grid;
+   grid-template-columns: 296px auto;
+  }
+  .sidebar_content_layout_close{
+    transition: all var(--animation-speed) ease-in-out;
 
-        display: grid;
-        grid-template-columns: 31px auto;
-    }
+    display: grid;
+    grid-template-columns: 31px auto;
+  }
+
+  
+  
 }
 
 @media only screen and (min-width: 1280px) {
-    .sidebar_content_layout {
-        transition: all var(--animation-speed) ease-in-out;
-        display: grid;
-        /* grid-template-columns: 296px auto; */
-    }
-    .sidebar_content_layout_close {
-        transition: all var(--animation-speed) ease-in-out;
+  
+  .sidebar_content_layout{
+    transition: all var(--animation-speed) ease-in-out;
+    display: grid;
+    /* grid-template-columns: 296px auto; */
+  }
+  .sidebar_content_layout_close{
+    transition: all var(--animation-speed) ease-in-out;
+    
+    display: grid;
+    grid-template-columns: 31px auto;
+  }
+  
+  .content-container{
+    height: calc(100vh - var(--footer-height))
+  }
 
-        display: grid;
-        grid-template-columns: 31px auto;
-    }
 
-    .content-container {
-        height: calc(100vh - var(--footer-height));
-    }
+
 }

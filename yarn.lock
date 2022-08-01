@@ -10635,10 +10635,10 @@ moo-color@^1.0.2:
   dependencies:
     color-name "^1.1.4"
 
-moralis@^1.10.0:
-  version "1.10.0"
-  resolved "https://registry.yarnpkg.com/moralis/-/moralis-1.10.0.tgz#6b3b57b331896a12a3c81531ef00d998ebc285d0"
-  integrity sha512-TzYovuIe7bAW6o5gNrRG3EGrqQRtPs+QRwGArdq3DrDlV98qkQrFtlyWIUMuLiEgnW03Ay14Qneu6CpKuS+WqQ==
+moralis@^1.10.1:
+  version "1.10.1"
+  resolved "https://registry.yarnpkg.com/moralis/-/moralis-1.10.1.tgz#bb8044d4d61ddae9baaf60fb29b77f46d12f0ceb"
+  integrity sha512-BAdB46RmFGpBFca0OpT5fye1iMbW1fFRqmfu39S7FLIVjwipU97TXduVHywmcqmqnLbknedgNfvUzX60YCjAAg==
   dependencies:
     "@babel/runtime" "7.16.7"
     "@babel/runtime-corejs3" "7.16.8"
