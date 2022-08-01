@@ -1,7 +1,7 @@
 // START: Import React and Dongles
 import { useState, MouseEvent } from 'react';
 import { MenuItem, Menu } from '@material-ui/core';
-import { RiFileList2Fill } from 'react-icons/ri';
+import { RiFileList2Fill, RiRefreshFill } from 'react-icons/ri';
 
 // START: Import Local Files
 import styles from './TokenListCard.module.css';
@@ -40,7 +40,10 @@ export default function TokenListCard(props: TokenListPropsIF) {
                 <div className={styles.left_content}>
                     <img src={uriToHttp(list.logoURI)} alt={`logo for the token list ${list.name}`} width='40px' />
                     <div className={styles.token_list_card_name}>
-                        <span> {list?.name}</span>
+                        <div className={styles.token_list_name}>
+                            <p>{list?.name}</p>
+                            <RiRefreshFill size={16} />
+                        </div>
                         <div className={styles.bottom_container_menu}>
                             <div className={styles.token_count}>{list?.tokens?.length} tokens</div>
                             <div
