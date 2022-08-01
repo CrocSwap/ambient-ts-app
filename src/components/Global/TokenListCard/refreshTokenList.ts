@@ -6,6 +6,8 @@ export default function refreshTokenList(uri:string) {
 
     const allTokenLists = JSON.parse(localStorage.getItem('allTokenLists') as string);
 
+    const tokenListIndex = allTokenLists.findIndex((tokenList: TokenListIF) => tokenList.uri === uri);
+
     const newList = fetch(uriToHttp(uri))
         .then((response) => response.json())
         .then((response) => (
@@ -13,7 +15,7 @@ export default function refreshTokenList(uri:string) {
                 ...response,
                 uri,
                 dateRetrieved: new Date().toISOString(),
-                userImported: false
+                userImported: allTokenLists[tokenListIndex].userImported
             }
         ));
 
@@ -22,7 +24,6 @@ export default function refreshTokenList(uri:string) {
 
     function formatAndUpdateList(list: TokenListIF) {
         list.tokens.forEach((tkn: TokenIF) => tkn.fromList = uri);
-        const tokenListIndex = allTokenLists.findIndex((tokenList: TokenListIF) => tokenList.uri === uri);
         allTokenLists.splice(tokenListIndex, 1, list);
         localStorage.setItem('allTokenLists', JSON.stringify(allTokenLists));
     }
