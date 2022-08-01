@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ItemEnterAnimation } from '../../../utils/others/FramerMotionAnimations';
 import DropdownMenu2 from '../DropdownMenu2/DropdownMenu2';
-
+import '../../../App/App.css';
 type tabData = {
     label: string;
     content: React.ReactNode;
@@ -17,9 +17,9 @@ interface TabProps {
 export default function TabComponent(props: TabProps) {
     const { data } = props;
     const [selectedTab, setSelectedTab] = useState(data[0]);
-    console.log(data.length);
-    const firstTwoNavs = [...data].slice(0, 2);
-    const remainingNavs = [...data].splice(2, data.length - 1);
+
+    // const firstTwoNavs = [...data].slice(0, 2);
+    // const remainingNavs = [...data].splice(2, data.length - 1);
 
     const networkMenuContent = (
         <ul className={`${styles.menu_content} `}>
@@ -41,7 +41,7 @@ export default function TabComponent(props: TabProps) {
 
     const dropdownMenu = (
         <div className={styles.dropdown_menu_container}>
-            <DropdownMenu2 marginTop={'10px'} titleWidth={'100%'} title={'something'}>
+            <DropdownMenu2 marginTop={'10px'} titleWidth={'100%'} title={'Menu'}>
                 {networkMenuContent}
             </DropdownMenu2>
         </div>
@@ -98,7 +98,7 @@ export default function TabComponent(props: TabProps) {
     );
 
     return (
-        <div className={styles.window}>
+        <div className={styles.tab_window}>
             <nav className={styles.tab_nav}>
                 {props.rightTabOptions ? tabsWithRightOption : fullTabs}
                 {mobileTabContainer}

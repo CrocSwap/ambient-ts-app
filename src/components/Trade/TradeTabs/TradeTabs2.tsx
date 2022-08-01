@@ -1,19 +1,16 @@
-import styles from './TradeTabs2.module.css';
 import { useState, useEffect } from 'react';
-import TabNavItem from '../../Global/Tabs/TabNavItem/TabNavItem';
-import Positions from './Positions/Positions';
-import TabContent from '../../Global/Tabs/TabContent/TabContent';
+
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 
 import Transactions from './Transactions/Transactions';
-import Toggle2 from '../../Global/Toggle/Toggle2';
 import Orders from './Orders/Orders';
-import DropdownMenu from '../../Global/DropdownMenu/DropdownMenu';
-import DropdownMenuContainer from '../../Global/DropdownMenu/DropdownMenuContainer/DropdownMenuContainer';
-import DropdownMenuItem from '../../Global/DropdownMenu/DropdownMenuItem/DropdownMenuItem';
-import { BiDownArrow } from 'react-icons/bi';
+// import DropdownMenu from '../../Global/DropdownMenu/DropdownMenu';
+// import DropdownMenuContainer from '../../Global/DropdownMenu/DropdownMenuContainer/DropdownMenuContainer';
+// import DropdownMenuItem from '../../Global/DropdownMenu/DropdownMenuItem/DropdownMenuItem';
+// import { BiDownArrow } from 'react-icons/bi';
 import Ranges from './Ranges/Ranges';
 import { useTokenMap } from '../../../App/components/Sidebar/useTokenMap';
+import TabComponent from '../../Global/TabComponent/TabComponent';
 
 interface ITabsProps {
     account: string;
@@ -55,30 +52,28 @@ export default function TradeTabs2(props: ITabsProps) {
         }
     }, [hasInitialized, isShowAllEnabled, JSON.stringify(userPositions)]);
 
-    const rangessWithData = (
-        <Ranges
-            isShowAllEnabled={isShowAllEnabled}
-            notOnTradeRoute={false}
-            graphData={graphData}
-            lastBlockNumber={props.lastBlockNumber}
-        />
-    );
+    // -------------------------------DATA-----------------------------------------
 
-    const ordersWithData = <Orders />;
-
-    const transactionsWithData = (
-        <Transactions
-            isShowAllEnabled={isShowAllEnabled}
-            graphData={graphData}
-            tokenMap={tokenMap}
-            chainId={props.chainId}
-        />
-    );
+    // Props for <Ranges/> React Element
+    const rangesProps = {
+        isShowAllEnabled: isShowAllEnabled,
+        notOnTradeRoute: false,
+        graphData: graphData,
+        lastBlockNumber: props.lastBlockNumber,
+    };
+    // Props for <Transactions/> React Element
+    const transactionsProps = {
+        isShowAllEnabled: isShowAllEnabled,
+        tokenMap: tokenMap,
+        graphData: graphData,
+        chainId: props.chainId,
+    };
 
     const tradeTabData = [
-        { label: 'Ranges', content: rangessWithData },
-        { label: 'Orders', content: ordersWithData },
-        { label: 'Transactions', content: transactionsWithData },
+        { label: 'Ranges', content: <Ranges {...rangesProps} /> },
+        { label: 'Orders', content: <Orders /> },
+        { label: 'Transactions', content: <Transactions {...transactionsProps} /> },
     ];
-    return <div className={styles.row}>{ordersWithData}</div>;
+    // -------------------------------END OF DATA-----------------------------------------
+    return <>{<TabComponent data={tradeTabData} />}</>;
 }

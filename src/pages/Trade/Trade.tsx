@@ -16,7 +16,8 @@ import {
 } from '../../utils/state/tradeDataSlice';
 import truncateDecimals from '../../utils/data/truncateDecimals';
 import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
-import TradeTabs from '../../components/Trade/TradeTabs/TradeTabs';
+// import TradeTabs from '../../components/Trade/TradeTabs/TradeTabs';
+import TradeTabs2 from '../../components/Trade/TradeTabs/TradeTabs2';
 
 interface ITradeProps {
     account: string;
@@ -199,7 +200,14 @@ export default function Trade(props: ITradeProps) {
                     {chartImage}
                 </div>
 
-                <TradeTabs
+                {/* <TradeTabs
+                    account={props.account}
+                    isAuthenticated={props.isAuthenticated}
+                    isWeb3Enabled={props.isWeb3Enabled}
+                    lastBlockNumber={props.lastBlockNumber}
+                    chainId={props.chainId}
+                /> */}
+                <TradeTabs2
                     account={props.account}
                     isAuthenticated={props.isAuthenticated}
                     isWeb3Enabled={props.isWeb3Enabled}
