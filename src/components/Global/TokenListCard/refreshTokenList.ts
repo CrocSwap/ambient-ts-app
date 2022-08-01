@@ -1,5 +1,5 @@
 import uriToHttp from '../../../utils/functions/uriToHttp'; 
-import { TokenListIF } from '../../../utils/interfaces/exports';
+import { TokenIF, TokenListIF } from '../../../utils/interfaces/exports';
 
 export default function refreshTokenList(uri:string) {
     console.log('user clicked button to refresh: ', uriToHttp(uri));
@@ -18,9 +18,10 @@ export default function refreshTokenList(uri:string) {
         ));
 
     Promise.resolve(newList)
-        .then((list) => replaceList(list))
+        .then((list) => formatAndUpdateList(list));
 
-    function replaceList(list: TokenListIF) {
+    function formatAndUpdateList(list: TokenListIF) {
+        list.tokens.forEach((tkn: TokenIF) => tkn.fromList = uri);
         const tokenListIndex = allTokenLists.findIndex((tokenList: TokenListIF) => tokenList.uri === uri);
         allTokenLists.splice(tokenListIndex, 1, list);
         localStorage.setItem('allTokenLists', JSON.stringify(allTokenLists));
