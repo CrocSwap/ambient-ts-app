@@ -10,14 +10,15 @@ import uriToHttp from '../../../utils/functions/uriToHttp';
 import { AiOutlineDelete } from 'react-icons/ai';
 import { FiExternalLink } from 'react-icons/fi';
 
-interface CustomTokenPropsIF {
+interface CustomTokensPropsIF {
     chainId: string;
     tokenToUpdate: string;
+    undeletableTokens: string[];
     closeModal: () => void;
 }
 
-export default function CustomTokens(props: CustomTokenPropsIF) {
-    const { chainId, tokenToUpdate, closeModal } = props;
+export default function CustomTokens(props: CustomTokensPropsIF) {
+    const { chainId, tokenToUpdate, undeletableTokens, closeModal } = props;
 
     const dispatch = useAppDispatch();
 
@@ -117,11 +118,13 @@ export default function CustomTokens(props: CustomTokenPropsIF) {
                             </div>
                             <h4 className={styles.token_name}>{token.name}</h4>
                         </div>
-                        {/* <button onClick={() => deleteToken(token)}>Delete</button> */}
                         <div className={styles.action_menu}>
-                            <div onClick={() => deleteToken(token)}>
-                                <AiOutlineDelete size={15} />
-                            </div>
+                            {
+                                undeletableTokens.includes(token.address) ||
+                                <div onClick={() => deleteToken(token)}>
+                                    <AiOutlineDelete size={15} />
+                                </div>
+                            }
                             <a
                                 href={`https://etherscan.io/address/${token?.address}`}
                                 target='_blank'
