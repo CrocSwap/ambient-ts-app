@@ -9,6 +9,7 @@ import Toggle from '../../Global/Toggle/Toggle';
 import { useStyles } from '../../../utils/functions/styles';
 import { TokenListIF } from '../../../utils/interfaces/exports';
 import uriToHttp from '../../../utils/functions/uriToHttp';
+import refreshTokenList from './refreshTokenList';
 
 interface TokenListPropsIF {
     list: TokenListIF;
@@ -42,7 +43,7 @@ export default function TokenListCard(props: TokenListPropsIF) {
                     <div className={styles.token_list_card_name}>
                         <div className={styles.token_list_name}>
                             <p>{list?.name}</p>
-                            <RiRefreshFill size={16} />
+                            <RiRefreshFill size={16} onClick={() => refreshTokenList(list.uri as string)} />
                         </div>
                         <div className={styles.bottom_container_menu}>
                             <div className={styles.token_count}>{list?.tokens?.length} tokens</div>
