@@ -1,11 +1,15 @@
 import { toDisplayQty } from '@crocswap-libs/sdk';
 import { useTokenMap } from '../../../../../App/components/Sidebar/useTokenMap';
+import { testTokenMap } from '../../../../../utils/data/testTokenMap';
+import { fetchTokenPrice } from '../../../../../App/functions/fetchTokenPrice';
 import { TokenIF } from '../../../../../utils/interfaces/TokenIF';
 import styles from './WalletCard.module.css';
+import { useEffect, useState } from 'react';
 interface WalletPropsIF {
     token?: TokenIF;
     chainId: string;
 }
+
 export default function WalletCard(props: WalletPropsIF) {
     const { token, chainId } = props;
 
@@ -19,10 +23,35 @@ export default function WalletCard(props: WalletPropsIF) {
 
     const tokenFromMap = tokenMap && token?.token_address ? tokenMap.get(tokenAddress) : null;
 
-    // console.log({ token });
-    // console.log({ tokenAddress });
-    // console.log({ tokenMap });
-    // console.log({ tokenFromMap });
+    const [tokenPrice, setTokenPrice] = useState<{
+        nativePrice?:
+            | {
+                  value: string;
+                  decimals: number;
+                  name: string;
+                  symbol: string;
+              }
+            | undefined;
+        usdPrice: number;
+        exchangeAddress?: string | undefined;
+        exchangeName?: string | undefined;
+    }>();
+
+    useEffect(() => {
+        (async () => {
+            try {
+                const mainnetAddress = testTokenMap.get(tokenAddress)?.split('_')[0];
+                if (mainnetAddress) {
+                    const price = await fetchTokenPrice(mainnetAddress, '0x1');
+                    if (price) setTokenPrice(price);
+                }
+            } catch (err) {
+                console.log(err);
+            }
+        })();
+    }, [tokenAddress]);
+
+    const tokenUsdPrice = tokenPrice?.usdPrice ?? 0;
 
     if (!tokenFromMap) {
         return <div className={styles.wallet_row}></div>;
@@ -33,9 +62,11 @@ export default function WalletCard(props: WalletPropsIF) {
             ? token.balance
             : token && token.balance && token?.decimals
             ? toDisplayQty(token.balance, token.decimals)
-            : '';
+            : '0';
 
-    const truncatedTokenBalance = tokenBalance ? parseFloat(tokenBalance).toLocaleString() : 0;
+    const tokenBalanceNum = tokenBalance ? parseFloat(tokenBalance) : 0;
+
+    const truncatedTokenBalance = tokenBalanceNum.toLocaleString();
 
     const tokenInfo = (
         <div className={styles.token_info}>
@@ -56,7 +87,7 @@ export default function WalletCard(props: WalletPropsIF) {
     return (
         <div className={styles.wallet_row}>
             {tokenInfo}
-            <p className={styles.value}>$1,000,000.00</p>
+            <p className={styles.value}>${(tokenUsdPrice * tokenBalanceNum).toLocaleString()}</p>
             <p className={styles.amount}>{truncatedTokenBalance}</p>
         </div>
     );
