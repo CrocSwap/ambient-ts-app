@@ -73,6 +73,12 @@ body {
     display: flex;
     flex-direction: column;
     /* padding: 0 1rem; */
+
+    min-height: 100%;
+
+    display: flex;
+    flex-direction: column;
+    /* padding: 0 1rem; */
 }
 
 footer {
@@ -126,6 +132,10 @@ footer {
     -webkit-text-fill-color: transparent;
     background-clip: text;
     text-fill-color: transparent;
+
+    /* glow/positive */
+
+    text-shadow: 0px 0px 10px rgba(21, 190, 111, 0.75);
 
     /* glow/positive */
 

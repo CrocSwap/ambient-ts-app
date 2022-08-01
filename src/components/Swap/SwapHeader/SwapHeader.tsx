@@ -25,6 +25,7 @@ interface SwapHeaderPropsIF {
 export default function SwapHeader(props: SwapHeaderPropsIF) {
     const { tokenPair, swapSlippage, isPairStable, isOnTradeRoute, isDenomBase, isTokenABase } =
         props;
+
     const [isModalOpen, openModal, closeModal] = useModal();
 
     const dispatch = useAppDispatch();

@@ -24,7 +24,7 @@ export default function NetworkSelector(props: NetworkSelectorProps) {
 
     // this chains data will eventually be stored in the data folder.
 
-    console.log(chainId);
+    // console.log(chainId);
     const chains = [
         {
             name: 'Kovan ',

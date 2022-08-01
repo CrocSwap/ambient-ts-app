@@ -97,7 +97,7 @@ export default function App() {
 
     const { switchNetwork } = useChain();
 
-    const [fallbackChainId, setFallbackChainId] = useState('0x2a');
+    const [fallbackChainId, setFallbackChainId] = useState('0x5');
 
     const chainId = moralisChainId ? moralisChainId : fallbackChainId;
 
@@ -201,7 +201,7 @@ export default function App() {
     );
 
     // useEffect(() => {
-    //     console.log({isPairStable});
+    //     console.log({ isPairStable });
     // }, [isPairStable]);
 
     // update local state with searchable tokens once after initial load of app
@@ -372,59 +372,75 @@ export default function App() {
                 setQuoteTokenDecimals(tokenPair.dataTokenA.decimals);
             }
 
-            const allPositionsCacheEndpoint = 'https://809821320828123.de:5000/pool_positions?';
+            // const allPositionsCacheEndpoint = 'https://809821320828123.de:5000/pool_positions?';
 
-            fetch(
-                allPositionsCacheEndpoint +
-                    new URLSearchParams({
-                        base: sortedTokens[0].toLowerCase(),
-                        quote: sortedTokens[1].toLowerCase(),
-                        poolIdx: lookupChain(chainId).poolIndex.toString().toString(),
-                        chainId: chainId,
-                    }),
-            )
-                .then((response) => response.json())
-                .then((json) => {
-                    const poolPositions = json.data;
+            // try {
+            //     fetch(
+            //         allPositionsCacheEndpoint +
+            //             new URLSearchParams({
+            //                 base: sortedTokens[0].toLowerCase(),
+            //                 quote: sortedTokens[1].toLowerCase(),
+            //                 poolIdx: POOL_PRIMARY.toString(),
+            //                 chainId: chainId,
+            //             }),
+            //     )
+            //         .then((response) => response.json())
+            //         .then((json) => {
+            //             const poolPositions = json.data;
 
-                    if (poolPositions) {
-                        Promise.all(poolPositions.map(getPositionData)).then((updatedPositions) => {
-                            if (
-                                JSON.stringify(graphData.positionsByUser.positions) !==
-                                JSON.stringify(updatedPositions)
-                            ) {
-                                dispatch(setPositionsByPool({ positions: updatedPositions }));
-                            }
-                        });
-                    }
-                });
+            //             if (poolPositions) {
+            //                 Promise.all(poolPositions.map(getPositionData)).then(
+            //                     (updatedPositions) => {
+            //                         if (
+            //                             JSON.stringify(graphData.positionsByUser.positions) !==
+            //                             JSON.stringify(updatedPositions)
+            //                         ) {
+            //                             dispatch(
+            //                                 setPositionsByPool({ positions: updatedPositions }),
+            //                             );
+            //                         }
+            //                     },
+            //                 );
+            //             }
+            //         });
+            // } catch (error) {
+            //     console.log;
+            // }
 
-            const poolSwapsCacheEndpoint = 'https://809821320828123.de:5000/pool_swaps?';
+            // try {
+            //     const poolSwapsCacheEndpoint = 'https://809821320828123.de:5000/pool_swaps?';
 
-            fetch(
-                poolSwapsCacheEndpoint +
-                    new URLSearchParams({
-                        base: sortedTokens[0].toLowerCase(),
-                        quote: sortedTokens[1].toLowerCase(),
-                        poolIdx: lookupChain(chainId).poolIndex.toString(),
-                        chainId: chainId,
-                    }),
-            )
-                .then((response) => response.json())
-                .then((json) => {
-                    const poolSwaps = json.data;
+            //     fetch(
+            //         poolSwapsCacheEndpoint +
+            //             new URLSearchParams({
+            //                 base: sortedTokens[0].toLowerCase(),
+            //                 quote: sortedTokens[1].toLowerCase(),
+            //                 poolIdx: POOL_PRIMARY.toString(),
+            //                 chainId: chainId,
+            //                 // n: 10 // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
+            //                 // page: 0 // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
+            //             }),
+            //     )
+            //         .then((response) => response.json())
+            //         .then((json) => {
+            //             const poolSwaps = json.data;
 
-                    if (poolSwaps) {
-                        Promise.all(poolSwaps.map(getSwapData)).then((updatedSwaps) => {
-                            if (
-                                JSON.stringify(graphData.swapsByUser.swaps) !==
-                                JSON.stringify(updatedSwaps)
-                            ) {
-                                dispatch(setSwapsByPool({ swaps: updatedSwaps }));
-                            }
-                        });
-                    }
-                });
+            //             console.log({ poolSwaps });
+
+            //             if (poolSwaps) {
+            //                 Promise.all(poolSwaps.map(getSwapData)).then((updatedSwaps) => {
+            //                     if (
+            //                         JSON.stringify(graphData.swapsByUser.swaps) !==
+            //                         JSON.stringify(updatedSwaps)
+            //                     ) {
+            //                         dispatch(setSwapsByPool({ swaps: updatedSwaps }));
+            //                     }
+            //                 });
+            //             }
+            //         });
+            // } catch (error) {
+            //     console.log;
+            // }
         }
     }, [tokenPairStringified, chainId]);
 
@@ -475,7 +491,7 @@ export default function App() {
                     }
                 });
         }
-    }, [baseTokenAddress, quoteTokenAddress, chainId, activePeriod]);
+    }, [baseTokenAddress, quoteTokenAddress, activePeriod, chainId]);
 
     const allPositionsCacheSubscriptionEndpoint = useMemo(
         () =>
@@ -638,7 +654,7 @@ export default function App() {
                 chainId: chainId,
                 // user: account || '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc',
             }),
-        [account],
+        [account, chainId],
     );
 
     const {
@@ -681,7 +697,7 @@ export default function App() {
                 user: account || '',
                 chainId: chainId,
             }),
-        [account],
+        [account, chainId],
     );
 
     const {
@@ -939,55 +955,67 @@ export default function App() {
         if (isAuthenticated && account) {
             const allUserPositionsCacheEndpoint = 'https://809821320828123.de:5000/user_positions?';
 
-            fetch(
-                allUserPositionsCacheEndpoint +
-                    new URLSearchParams({
-                        user: account,
-                        chainId: chainId,
-                    }),
-            )
-                .then((response) => response.json())
-                .then((json) => {
-                    const userPositions = json.data;
+            try {
+                fetch(
+                    allUserPositionsCacheEndpoint +
+                        new URLSearchParams({
+                            user: account,
+                            chainId: chainId,
+                        }),
+                )
+                    .then((response) => response.json())
+                    .then((json) => {
+                        const userPositions = json.data;
 
-                    if (userPositions) {
-                        Promise.all(userPositions.map(getPositionData)).then((updatedPositions) => {
-                            if (
-                                JSON.stringify(graphData.positionsByUser.positions) !==
-                                JSON.stringify(updatedPositions)
-                            ) {
-                                dispatch(setPositionsByUser({ positions: updatedPositions }));
-                            }
-                        });
-                    }
-                });
+                        if (userPositions) {
+                            Promise.all(userPositions.map(getPositionData)).then(
+                                (updatedPositions) => {
+                                    if (
+                                        JSON.stringify(graphData.positionsByUser.positions) !==
+                                        JSON.stringify(updatedPositions)
+                                    ) {
+                                        dispatch(
+                                            setPositionsByUser({ positions: updatedPositions }),
+                                        );
+                                    }
+                                },
+                            );
+                        }
+                    });
+            } catch (error) {
+                console.log;
+            }
 
-            const allUserSwapsCacheEndpoint = 'https://809821320828123.de:5000/user_swaps?';
+            try {
+                const allUserSwapsCacheEndpoint = 'https://809821320828123.de:5000/user_swaps?';
+                console.log('fetching user swaps');
+                fetch(
+                    allUserSwapsCacheEndpoint +
+                        new URLSearchParams({
+                            user: account,
+                            chainId: chainId,
+                        }),
+                )
+                    .then((response) => response.json())
+                    .then((json) => {
+                        const userSwaps = json.data;
 
-            fetch(
-                allUserSwapsCacheEndpoint +
-                    new URLSearchParams({
-                        user: account,
-                        chainId: chainId,
-                    }),
-            )
-                .then((response) => response.json())
-                .then((json) => {
-                    const userSwaps = json.data;
-
-                    if (userSwaps) {
-                        Promise.all(userSwaps.map(getSwapData)).then((updatedSwaps) => {
-                            if (
-                                JSON.stringify(graphData.swapsByUser.swaps) !==
-                                JSON.stringify(updatedSwaps)
-                            ) {
-                                dispatch(setSwapsByUser({ swaps: updatedSwaps }));
-                            }
-                        });
-                    }
-                });
+                        if (userSwaps) {
+                            Promise.all(userSwaps.map(getSwapData)).then((updatedSwaps) => {
+                                if (
+                                    JSON.stringify(graphData.swapsByUser.swaps) !==
+                                    JSON.stringify(updatedSwaps)
+                                ) {
+                                    dispatch(setSwapsByUser({ swaps: updatedSwaps }));
+                                }
+                            });
+                        }
+                    });
+            } catch (error) {
+                console.log;
+            }
         }
-    }, [isAuthenticated, account]);
+    }, [isAuthenticated, account, chainId]);
 
     // run function to initialize local storage
     // internal controls will only initialize values that don't exist
@@ -1289,11 +1317,6 @@ export default function App() {
         }
     }, [tradeData.didUserFlipDenom, tokenPair]);
 
-    // const mainLayoutStyle = showSidebar ? 'main-layout-2' : 'main-layout';
-    // take away margin from left if we are on homepage or swap
-
-    const swapBodyStyle = currentLocation == '/swap' ? 'swap-body' : null;
-
     const [imageData, setImageData] = useState<string[]>([]);
 
     useEffect(() => {
@@ -1304,6 +1327,11 @@ export default function App() {
             }
         })();
     }, [account]);
+
+    // const mainLayoutStyle = showSidebar ? 'main-layout-2' : 'main-layout';
+    // take away margin from left if we are on homepage or swap
+
+    const swapBodyStyle = currentLocation == '/swap' ? 'swap-body' : null;
 
     // Show sidebar on all pages except for home and swap
     const sidebarRender = currentLocation !== '/' &&
@@ -1361,7 +1389,19 @@ export default function App() {
                                 <Portfolio
                                     ensName={ensName}
                                     connectedAccount={account ? account : ''}
-                                    imageData={imageData}
+                                    userImageData={imageData}
+                                    chainId={chainId}
+                                />
+                            }
+                        />
+                        <Route
+                            path='account/:address'
+                            element={
+                                <Portfolio
+                                    ensName={ensName}
+                                    connectedAccount={account ? account : ''}
+                                    chainId={chainId}
+                                    userImageData={imageData}
                                 />
                             }
                         />
