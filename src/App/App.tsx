@@ -92,8 +92,8 @@ const cachedFetchAddress = memoizePromiseFn(fetchAddress);
 const cachedFetchTokenBalances = memoizePromiseFn(fetchTokenBalances);
 const cachedGetTokenDecimals = memoizePromiseFn(getTokenDecimals);
 
-// const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
-const httpGraphCacheServerDomain = '';
+const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
+// const httpGraphCacheServerDomain = '';
 const wssGraphCacheServerDomain = 'wss://809821320828123.de:5000';
 // const wssGraphCacheServerDomain = '';
 
@@ -443,8 +443,10 @@ export default function App() {
                             const poolPositions = json.data;
 
                             if (poolPositions) {
+                                // console.log({ poolPositions });
                                 Promise.all(poolPositions.map(getPositionData)).then(
                                     (updatedPositions) => {
+                                        // console.log({ updatedPositions });
                                         if (
                                             JSON.stringify(graphData.positionsByUser.positions) !==
                                             JSON.stringify(updatedPositions)
@@ -991,8 +993,8 @@ export default function App() {
 
     const getCandleData = async (candle: CandleData): Promise<CandleData> => {
         if (candle) {
-            candle.base = candle.base.startsWith('0x') ? candle.base : '0x' + candle.base;
-            candle.quote = candle.quote.startsWith('0x') ? candle.quote : '0x' + candle.quote;
+            candle.base = candle.base?.startsWith('0x') ? candle.base : '0x' + candle.base;
+            candle.quote = candle.quote?.startsWith('0x') ? candle.quote : '0x' + candle.quote;
         }
         return candle;
     };
