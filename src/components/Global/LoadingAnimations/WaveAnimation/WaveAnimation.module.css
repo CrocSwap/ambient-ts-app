@@ -1,0 +1,10 @@
+.animation_container span:nth-child(odd){
+    background: #7371FC;
+}
+.animation_container span:nth-child(even){
+    background: #CDC1FF;
+}
+
+/* .ball{
+   margin-left: 2px;
+} */

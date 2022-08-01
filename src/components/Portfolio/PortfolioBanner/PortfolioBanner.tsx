@@ -3,15 +3,16 @@ import trimString from '../../../utils/functions/trimString';
 
 interface PortfolioBannerPropsIF {
     ensName: string;
-    connectedAccount: string;
+    activeAccount: string;
     imageData: string[];
+    resolvedAddress: string;
 }
 
 export default function PortfolioBanner(props: PortfolioBannerPropsIF) {
-    const { ensName, connectedAccount, imageData } = props;
+    const { ensName, activeAccount, imageData, resolvedAddress } = props;
     const ensNameAvailable = ensName !== '';
 
-    const truncatedAccountAddress = trimString(connectedAccount, 6, 6, '…');
+    const truncatedAccountAddress = trimString(activeAccount, 6, 6, '…');
 
     return (
         <div className={styles.rectangle_container}>
@@ -19,10 +20,18 @@ export default function PortfolioBanner(props: PortfolioBannerPropsIF) {
                 {imageData[0] ? <img src={imageData[0]} alt='avatar' /> : null}
                 <div className={styles.account_names}>
                     <span className={styles.name}>
-                        {ensNameAvailable ? ensName : truncatedAccountAddress}
+                        {ensNameAvailable
+                            ? ensName
+                            : resolvedAddress
+                            ? activeAccount
+                            : truncatedAccountAddress}
                     </span>
                     <span className={styles.hash}>
-                        {ensNameAvailable ? truncatedAccountAddress : connectedAccount}
+                        {resolvedAddress
+                            ? resolvedAddress
+                            : ensNameAvailable
+                            ? truncatedAccountAddress
+                            : activeAccount}
                     </span>
                 </div>
             </div>
