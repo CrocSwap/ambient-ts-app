@@ -42,6 +42,8 @@ export default function Portfolio(props: PortfolioPropsIF) {
                 if (newResolvedAddress) {
                     setResolvedAddress(newResolvedAddress);
                 }
+            } else if (address && !isAddressEns) {
+                setResolvedAddress(address);
             }
         })();
     }, [address, isAddressEns, mainnetProvider]);
