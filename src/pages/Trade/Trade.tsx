@@ -18,6 +18,7 @@ import truncateDecimals from '../../utils/data/truncateDecimals';
 import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
 // import TradeTabs from '../../components/Trade/TradeTabs/TradeTabs';
 import TradeTabs2 from '../../components/Trade/TradeTabs/TradeTabs2';
+import { Dispatch, SetStateAction } from 'react';
 
 interface ITradeProps {
     account: string;
@@ -27,6 +28,8 @@ interface ITradeProps {
     isTokenABase: boolean;
     poolPriceDisplay: number;
     chainId: string;
+    switchTabToTransactions: boolean;
+    setSwitchTabToTransactions: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function Trade(props: ITradeProps) {
@@ -193,27 +196,24 @@ export default function Trade(props: ITradeProps) {
         //     data-testid={'trade'}
         // >
         <main className={styles.main_layout}>
-            <div className={`${styles.middle_col} ${styles.graph_container}`}>
-                <div>
+            <div className={styles.middle_col}>
+                <div className={styles.graph_style}>
                     {tokenInfo}
                     {timeFrameContent}
                     {chartImage}
                 </div>
 
-                {/* <TradeTabs
-                    account={props.account}
-                    isAuthenticated={props.isAuthenticated}
-                    isWeb3Enabled={props.isWeb3Enabled}
-                    lastBlockNumber={props.lastBlockNumber}
-                    chainId={props.chainId}
-                /> */}
-                <TradeTabs2
-                    account={props.account}
-                    isAuthenticated={props.isAuthenticated}
-                    isWeb3Enabled={props.isWeb3Enabled}
-                    lastBlockNumber={props.lastBlockNumber}
-                    chainId={props.chainId}
-                />
+                <div className={styles.trade_style}>
+                    <TradeTabs2
+                        account={props.account}
+                        isAuthenticated={props.isAuthenticated}
+                        isWeb3Enabled={props.isWeb3Enabled}
+                        lastBlockNumber={props.lastBlockNumber}
+                        chainId={props.chainId}
+                        switchTabToTransactions={props.switchTabToTransactions}
+                        setSwitchTabToTransactions={props.setSwitchTabToTransactions}
+                    />
+                </div>
             </div>
             {mainContent}
         </main>

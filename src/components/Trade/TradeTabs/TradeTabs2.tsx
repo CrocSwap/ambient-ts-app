@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Dispatch, SetStateAction } from 'react';
 
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 
@@ -8,6 +8,10 @@ import Orders from './Orders/Orders';
 // import DropdownMenuContainer from '../../Global/DropdownMenu/DropdownMenuContainer/DropdownMenuContainer';
 // import DropdownMenuItem from '../../Global/DropdownMenu/DropdownMenuItem/DropdownMenuItem';
 // import { BiDownArrow } from 'react-icons/bi';
+
+import openOrdersImage from '../../../assets/images/sidebarImages/openOrders.svg';
+import rangePositionsImage from '../../../assets/images/sidebarImages/rangePositions.svg';
+import recentTransactionsImage from '../../../assets/images/sidebarImages/recentTransactions.svg';
 import Ranges from './Ranges/Ranges';
 import { useTokenMap } from '../../../App/components/Sidebar/useTokenMap';
 import TabComponent from '../../Global/TabComponent/TabComponent';
@@ -18,6 +22,8 @@ interface ITabsProps {
     isWeb3Enabled: boolean;
     lastBlockNumber: number;
     chainId: string;
+    switchTabToTransactions: boolean;
+    setSwitchTabToTransactions: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function TradeTabs2(props: ITabsProps) {
@@ -70,10 +76,20 @@ export default function TradeTabs2(props: ITabsProps) {
     };
 
     const tradeTabData = [
-        { label: 'Ranges', content: <Ranges {...rangesProps} /> },
-        { label: 'Orders', content: <Orders /> },
-        { label: 'Transactions', content: <Transactions {...transactionsProps} /> },
+        { label: 'Ranges', content: <Ranges {...rangesProps} />, icon: rangePositionsImage },
+        { label: 'Orders', content: <Orders />, icon: openOrdersImage },
+        {
+            label: 'Transactions',
+            content: <Transactions {...transactionsProps} />,
+            icon: recentTransactionsImage,
+        },
     ];
+
+    const outsideTabControl = {
+        switchToTab: props.switchTabToTransactions,
+        tabToSwitchTo: 2,
+        stateHandler: props.setSwitchTabToTransactions,
+    };
     // -------------------------------END OF DATA-----------------------------------------
-    return <>{<TabComponent data={tradeTabData} />}</>;
+    return <>{<TabComponent data={tradeTabData} outsideTabControl={outsideTabControl} />}</>;
 }

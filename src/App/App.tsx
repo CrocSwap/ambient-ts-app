@@ -85,6 +85,7 @@ import { addNativeBalance, resetTokenData, setTokens } from '../utils/state/toke
 import { checkIsStable } from '../utils/data/stablePairs';
 
 import Reposition from '../pages/Trade/Reposition/Reposition';
+import { MdSettingsPower } from 'react-icons/md';
 // import SidebarFooter from '../components/Global/SIdebarFooter/SidebarFooter';
 
 const cachedQuerySpotPrice = memoizePromiseFn(querySpotPrice);
@@ -106,6 +107,7 @@ export default function App() {
     const { switchNetwork } = useChain();
 
     const [fallbackChainId, setFallbackChainId] = useState('0x5');
+    const [switchTabToTransactions, setSwitchTabToTransactions] = useState<boolean>(false);
 
     const chainId = moralisChainId
         ? moralisChainId
@@ -1379,10 +1381,17 @@ export default function App() {
         setShowSidebar(!showSidebar);
         setSidebarManuallySet(true);
     }
+
+    function handleSetTradeTabToTransaction() {
+        setSwitchTabToTransactions(!switchTabToTransactions);
+    }
     const sidebarProps = {
         showSidebar: showSidebar,
         toggleSidebar: toggleSidebar,
         chainId: chainId,
+        switchTabToTransactions: switchTabToTransactions,
+        handleSetTradeTabToTransaction: handleSetTradeTabToTransaction,
+        setSwitchTabToTransactions: setSwitchTabToTransactions,
         // setShowSidebar : setShowSidebar
     };
 
@@ -1464,6 +1473,8 @@ export default function App() {
                                     isTokenABase={isTokenABase}
                                     poolPriceDisplay={poolPriceDisplay}
                                     chainId={chainId}
+                                    switchTabToTransactions={switchTabToTransactions}
+                                    setSwitchTabToTransactions={setSwitchTabToTransactions}
                                 />
                             }
                         >

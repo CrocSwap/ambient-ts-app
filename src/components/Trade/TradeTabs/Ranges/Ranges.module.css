@@ -1,3 +1,13 @@
 .container{
     padding: 0 8px;
 }
+.item_container{
+    max-height: 220px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+.item_container::-webkit-scrollbar {
+    width: 1px;
+    display: none;
+
+  }

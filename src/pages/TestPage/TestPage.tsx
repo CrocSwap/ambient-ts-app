@@ -132,7 +132,7 @@ export default function TestPage() {
                 <div className={styles.animation_container}>
                     <RollingBall ballSize='30px' />
                 </div> */}
-                <TabComponent data={allIngredients} />
+                {/* <TabComponent data={allIngredients} /> */}
             </div>
         </main>
     );
