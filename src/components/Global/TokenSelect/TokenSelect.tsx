@@ -16,13 +16,14 @@ import { toDisplayQty } from '@crocswap-libs/sdk';
 interface TokenSelectPropsIF {
     token: TokenIF;
     tokensBank: Array<TokenIF>;
+    undeletableTokens: Array<string>;
     chainId: string;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     chooseToken: (tok: TokenIF) => void;
 }
 
 export default function TokenSelect(props: TokenSelectPropsIF) {
-    const { token, chooseToken, tokensBank, chainId, setImportedTokens } = props;
+    const { token, chooseToken, tokensBank, undeletableTokens, chainId, setImportedTokens } = props;
     const [showDelete, setShowDelete] = useState(false);
     const [toggleDeleteOn, setToggleDeleteOn] = useState(false);
 
@@ -130,7 +131,7 @@ export default function TokenSelect(props: TokenSelectPropsIF) {
                 </div>
                 <div className={styles.modal_tokens_amount}>{getTokenBalance(token.address)}</div>
             </div>
-            {deleteIcon}
+            {undeletableTokens.includes(token.address) || deleteIcon}
         </div>
     );
 }

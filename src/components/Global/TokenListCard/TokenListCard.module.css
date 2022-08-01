@@ -1,8 +1,6 @@
 .token_list_card_container{
     padding: 0 1rem;
-   
 }
-
 
 .token_list_card_content{  
     width: 100%;
@@ -15,26 +13,10 @@
     transition: all var(--animation-speed) ease 0s;
     border-radius: var(--border-radius);
     background: rgba( 23, 29, 39, 0.55 );
-/* box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 );
-backdrop-filter: blur( 17px );
--webkit-backdrop-filter: blur( 17px );
-border: 1px solid rgba( 255, 255, 255, 0.18 ); */
-
-
-
-/* background: linear-gradient(#7371FC  0 0) no-repeat calc(200% - var(--p, 0%))
-100% / 200% var(--p, 0.08em);
-transition: var(--animation-speed)var(--t, 0s),
-background-position 0.3s calc(0.3s - var(--t, 0s)); */
-
-    
 }
 
 .token_list_card_content:hover{
-   
-   background: var(--dark3);
-
-
+    background: var(--dark3);
     color: #fff;
 }
 
@@ -52,6 +34,7 @@ background-position 0.3s calc(0.3s - var(--t, 0s)); */
     align-items: flex-start;
     margin: 0 1rem;
 }
+
 .token_list_card_name span{
     font-weight: 200;
     font-size: var(--header2-size);
@@ -67,16 +50,24 @@ background-position 0.3s calc(0.3s - var(--t, 0s)); */
     line-height: var(--body-lh);
     color: var(--text-grey-light)
 }
+
 .token_list_card_name .token_count svg{
     margin:  0 5px;
     cursor: pointer;
 }
 
+.token_list_name {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+}
+
 .bottom_container_menu{
     display: flex;
-   flex-direction: row;
-   align-items: center;
-   gap: 10px;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
 }
 
 .popover_container{
