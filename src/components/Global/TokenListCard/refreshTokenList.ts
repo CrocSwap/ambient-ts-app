@@ -13,6 +13,7 @@ export default function refreshTokenList(uri:string) {
                 userImported: false
             }
         ));
-    
-    console.log(newList);
+
+    Promise.resolve(newList)
+        .then((list) => console.log(list))
 }
