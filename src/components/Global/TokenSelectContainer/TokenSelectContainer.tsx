@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useMemo } from 'react';
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 
 // START: Import Local Files
@@ -7,7 +7,7 @@ import { setTokenA, setTokenB, setDidUserFlipDenom } from '../../../utils/state/
 import styles from './TokenSelectContainer.module.css';
 import TokenSelect from '../TokenSelect/TokenSelect';
 import TokenSelectSearchable from '../TokenSelect/TokenSelectSearchable';
-import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
+import { TokenIF, TokenPairIF, TokenListIF } from '../../../utils/interfaces/exports';
 import TokenList from '../../Global/TokenList/TokenList';
 import { useSearch } from './useSearch';
 import { importToken } from './importToken';
@@ -44,6 +44,12 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
     } = props;
 
     const dispatch = useAppDispatch();
+
+    const undeletableTokens = useMemo(() => (
+        JSON.parse(localStorage.getItem('allTokenLists') as string)
+            .find((tokenList: TokenListIF) => tokenList.uri === '/ambient-token-list.json')
+            .tokens.map((tkn: TokenIF) => tkn.address)
+    ), []);
 
     const [matchingImportedTokens, matchingSearchableTokens, setSearchInput] = useSearch(
         tokensBank,
@@ -90,6 +96,7 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
                         token={token}
                         chooseToken={chooseToken}
                         tokensBank={tokensBank}
+                        undeletableTokens={undeletableTokens}
                         chainId={chainId}
                         setImportedTokens={setImportedTokens}
                     />
@@ -106,8 +113,11 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
                             key={`tss_${idx}`}
                             token={tkn}
                             clickHandler={() =>
-                                importToken(tkn, tokensBank, setImportedTokens, () =>
-                                    chooseToken(tkn),
+                                importToken(
+                                    tkn,
+                                    tokensBank,
+                                    setImportedTokens,
+                                    () => chooseToken(tkn),
                                 )
                             }
                         />
@@ -137,6 +147,7 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
                     activeTokenListsChanged={activeTokenListsChanged}
                     indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
                     tokenToUpdate={tokenToUpdate}
+                    undeletableTokens={undeletableTokens}
                     closeModal={closeModal}
                 />
             ) : (
