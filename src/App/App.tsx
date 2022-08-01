@@ -554,6 +554,8 @@ export default function App() {
         [baseTokenAddress, quoteTokenAddress, POOL_PRIMARY, chainId],
     );
 
+    const shouldReconnect = false;
+
     const {
         //  sendMessage,
         lastMessage: lastAllPositionsMessage,
@@ -566,7 +568,7 @@ export default function App() {
             onClose: (event) => console.log({ event }),
             // onClose: () => console.log('allPositions websocket connection closed'),
             // Will attempt to reconnect on all close events, such as server shutting down
-            shouldReconnect: () => true,
+            shouldReconnect: () => shouldReconnect,
         },
         // only connect if base/quote token addresses are available
         baseTokenAddress !== '' && quoteTokenAddress !== '',
@@ -671,7 +673,7 @@ export default function App() {
             // onOpen: () => console.log('opened'),
             onClose: (event) => console.log({ event }),
             // Will attempt to reconnect on all close events, such as server shutting down
-            shouldReconnect: () => true,
+            shouldReconnect: () => shouldReconnect,
         },
         // only connect if base/quote token addresses are available
         baseTokenAddress !== '' && quoteTokenAddress !== '',
@@ -715,7 +717,7 @@ export default function App() {
             // onOpen: () => console.log('opened'),
             onClose: (event) => console.log({ event }),
             // Will attempt to reconnect on all close events, such as server shutting down
-            shouldReconnect: () => true,
+            shouldReconnect: () => shouldReconnect,
         },
         // only connect is account is available
         account !== null && account !== '',
@@ -760,7 +762,7 @@ export default function App() {
             onClose: (event) => console.log({ event }),
             // onClose: () => console.log('userSwaps websocket connection closed'),
             // Will attempt to reconnect on all close events, such as server shutting down
-            shouldReconnect: () => true,
+            shouldReconnect: () => shouldReconnect,
         },
         // only connect is account is available
         account !== null && account !== '',
