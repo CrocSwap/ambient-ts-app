@@ -1484,6 +1484,7 @@ export default function App() {
                                     ensName={ensName}
                                     connectedAccount={account ? account : ''}
                                     userImageData={imageData}
+                                    chainId={chainId}
                                 />
                             }
                         />
@@ -1493,6 +1494,7 @@ export default function App() {
                                 <Portfolio
                                     ensName={ensName}
                                     connectedAccount={account ? account : ''}
+                                    chainId={chainId}
                                     userImageData={imageData}
                                 />
                             }

@@ -13,8 +13,15 @@ import TransactionsTable from '../../Global/Account/AccountTabs/Transaction/Tran
 // import Range from '../../Global/Account/Range/Range';
 // import Order from '../../Global/Account/Order/Order';
 // import TransactionsTable from '../../Global/Account/Transaction/TransactionsTable';
+interface PortfolioTabsPropsIF {
+    resolvedAddress: string;
+    activeAccount: string;
+    connectedAccountActive: boolean;
+    chainId: string;
+}
+export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
+    const { resolvedAddress, activeAccount, connectedAccountActive, chainId } = props;
 
-export default function PortfolioTabs() {
     const [activeTab, setActiveTab] = useState('tab1');
     // const graphData = useAppSelector((state) => state?.graphData);
 
@@ -44,7 +51,12 @@ export default function PortfolioTabs() {
             </div>
             <div className={styles.tabs_outlet}>
                 <TabContent id='tab1' activeTab={activeTab}>
-                    <Wallet />
+                    <Wallet
+                        connectedAccountActive={connectedAccountActive}
+                        resolvedAddress={resolvedAddress}
+                        activeAccount={activeAccount}
+                        chainId={chainId}
+                    />
                 </TabContent>
                 <TabContent id='tab2' activeTab={activeTab}>
                     <Exchange />
