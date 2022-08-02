@@ -13,7 +13,7 @@ import truncateDecimals from '../../../../utils/data/truncateDecimals';
 interface RangeExtraInfoPropsIF {
     tokenPair: TokenPairIF;
     poolPriceDisplay: number;
-    slippageTolerance: number;
+    slippageTolerance: string;
     liquidityProviderFee: number;
     quoteTokenIsBuy?: boolean;
     gasPriceinGwei: string;

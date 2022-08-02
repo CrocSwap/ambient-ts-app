@@ -7,6 +7,7 @@ import { useState } from 'react';
 import WaitingConfirmation from '../../../Global/WaitingConfirmation/WaitingConfirmation';
 import TransactionSubmitted from '../../../Global/TransactionSubmitted/TransactionSubmitted';
 import { TokenPairIF } from '../../../../utils/interfaces/exports';
+import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 
 interface ConfirmRangeModalProps {
     sendTransaction: () => void;
@@ -92,6 +93,12 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalProps) {
     );
     // FEE TIER DISPLAY
 
+    const tokenACharacter = getUnicodeCharacter(dataTokenA.symbol);
+    const tokenBCharacter = getUnicodeCharacter(dataTokenB.symbol);
+
+    console.log({ tokenACharacter });
+    console.log({ tokenBCharacter });
+
     const feeTierDisplay = (
         <section className={styles.fee_tier_display}>
             <div className={styles.fee_tier_container}>
@@ -100,14 +107,14 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalProps) {
                         <img src={dataTokenA.logoURI} alt={dataTokenA.name} />
                         <span>{dataTokenA.symbol}</span>
                     </div>
-                    <span>{tokenAQty !== '' ? tokenAQty : '0'}</span>
+                    <span>{tokenAQty !== '' ? tokenACharacter + tokenAQty : '0'}</span>
                 </div>
                 <div className={styles.detail_line}>
                     <div>
                         <img src={dataTokenB.logoURI} alt={dataTokenB.name} />
                         <span>{dataTokenB.symbol}</span>
                     </div>
-                    <span>{tokenBQty !== '' ? tokenBQty : '0'}</span>
+                    <span>{tokenBQty !== '' ? tokenBCharacter + tokenBQty : '0'}</span>
                 </div>
                 <Divider />
                 <div className={styles.detail_line}>

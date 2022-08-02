@@ -78,15 +78,19 @@ export const useCustomToken = (
                                     'Data returned from chain does not appear to represent a valid token. Check that you are on the correct chain for the contract address used. If so, please log an issue referencing the file useCustomToken.ts, your current chain, and the contract address used.',
                                 );
                             }
+                            console.log(tkn);
                             const customToken = {
                                 name: tkn[0].name,
                                 address: tkn[0].address,
                                 symbol: tkn[0].symbol,
                                 decimals: parseInt(tkn[0].decimals),
                                 chainId: parseInt(chainId),
-                                logoURI: tkn[0].logo ? tkn[0].logo : '',
+                                logoURI: tkn[0].logo
+                                    ? tkn[0].logo
+                                    : 'https://cdn4.iconfinder.com/data/icons/symbol-blue-set-1/100/Untitled-2-63-512.png',
                                 fromList: 'custom',
                             };
+                            console.log(customToken);
                             setMatchingTokens([customToken]);
                         })
                         .catch((err) => console.warn(err));

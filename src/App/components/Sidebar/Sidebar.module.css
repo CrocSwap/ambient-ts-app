@@ -258,12 +258,10 @@ display: none;
         background: transparent;
       }
   
-    /* .sidebar:hover {
-      width: 16rem;
-    } */
+ 
 
     .sidebar_active{
-        width: 16rem;
+        width: 296px;
 
     }
 
