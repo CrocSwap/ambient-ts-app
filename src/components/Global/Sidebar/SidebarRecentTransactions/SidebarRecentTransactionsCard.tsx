@@ -18,7 +18,7 @@ export default function SidebarRecentTransactionsCard(props: TransactionProps) {
 
     // console.log(tx.source);
     // console.log(tx.block);
-
+    console.log('from recent tx card', isShowAllEnabled);
     const baseId = tx.base + '_' + chainId;
     const quoteId = tx.quote + '_' + chainId;
 
@@ -36,8 +36,19 @@ export default function SidebarRecentTransactionsCard(props: TransactionProps) {
     //         <img src={quoteToken?.logoURI} alt='quote token image' />
     //     </div>
     // );
+
+    console.log(isShowAllEnabled);
+
+    function handleTransactionCardClick() {
+        if (isShowAllEnabled) {
+            setIsShowAllEnabled(false);
+            console.log('i am clicked');
+        } else {
+            console.log('nothing');
+        }
+    }
     return (
-        <div className={styles.container}>
+        <div className={styles.container} onClick={() => handleTransactionCardClick()}>
             <div>
                 {baseToken?.symbol} / {quoteToken?.symbol}
             </div>

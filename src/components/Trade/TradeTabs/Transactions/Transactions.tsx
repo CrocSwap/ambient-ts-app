@@ -4,30 +4,34 @@ import TransactionCardHeader from './TransactionCardHeader';
 import { graphData } from '../../../../utils/state/graphDataSlice';
 import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Dispatch, SetStateAction } from 'react';
+import { ISwap } from './../../../../utils/state/graphDataSlice';
 
 interface TransactionsProps {
     isShowAllEnabled: boolean;
+    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
     portfolio?: boolean;
     tokenMap: Map<string, TokenIF>;
     graphData: graphData;
     chainId: string;
 }
 export default function Transactions(props: TransactionsProps) {
-    const { isShowAllEnabled, graphData, tokenMap, chainId } = props;
+    const { isShowAllEnabled, graphData, tokenMap, chainId, setIsShowAllEnabled } = props;
 
     const swapsByUser = graphData?.swapsByUser?.swaps;
     const swapsByPool = graphData?.swapsByPool?.swaps;
 
-    const [poolData, setPoolData] = useState(swapsByPool);
+    const [poolData, setPoolData] = useState<ISwap[]>();
+
+    console.log({ isShowAllEnabled });
 
     useEffect(() => {
         if (isShowAllEnabled) {
-            setPoolData(swapsByUser);
-        } else {
             setPoolData(swapsByPool);
+        } else {
+            setPoolData(swapsByUser);
         }
-    }, [isShowAllEnabled, swapsByPool, swapsByUser]);
+    }, [isShowAllEnabled]);
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
@@ -35,9 +39,6 @@ export default function Transactions(props: TransactionsProps) {
 
     const tokenAAddress = tradeData.tokenA.address;
     const tokenBAddress = tradeData.tokenB.address;
-
-    console.log({ swapsByUser });
-    console.log(isShowAllEnabled);
 
     const TransactionsDisplay = poolData?.map((swap, idx) => (
         //   />
