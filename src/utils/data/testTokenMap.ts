@@ -4,7 +4,7 @@ export const testTokenMap = new Map([
         '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2_0x1', // 'ETH' on Mainnet
     ],
     [
-        '0xdc31Ee1784292379Fbb2964b3B9C4124D8F89C60_0x5', // 'DAI' on Goerli
+        '0xdc31ee1784292379fbb2964b3b9c4124d8f89c60_0x5', // 'DAI' on Goerli
         '0x6b175474e89094c44da98b954eedeac495271d0f_0x1', // 'DAI' on Mainnet
     ],
     [

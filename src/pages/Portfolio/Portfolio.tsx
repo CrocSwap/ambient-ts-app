@@ -14,6 +14,7 @@ interface PortfolioPropsIF {
     ensName: string;
     connectedAccount: string;
     userImageData: string[];
+    chainId: string;
 }
 
 const mainnetProvider = new ethers.providers.JsonRpcProvider(
@@ -25,7 +26,7 @@ const mainnetProvider = new ethers.providers.JsonRpcProvider(
 export default function Portfolio(props: PortfolioPropsIF) {
     const { isInitialized } = useMoralis();
 
-    const { ensName, userImageData, connectedAccount } = props;
+    const { ensName, userImageData, connectedAccount, chainId } = props;
 
     const { address } = useParams();
 
@@ -41,6 +42,8 @@ export default function Portfolio(props: PortfolioPropsIF) {
                 if (newResolvedAddress) {
                     setResolvedAddress(newResolvedAddress);
                 }
+            } else if (address && !isAddressEns) {
+                setResolvedAddress(address);
             }
         })();
     }, [address, isAddressEns, mainnetProvider]);
@@ -77,8 +80,8 @@ export default function Portfolio(props: PortfolioPropsIF) {
         })();
     }, [address, isInitialized]);
 
-    const shouldDisplayExchangeBalance =
-        !address || address.toLowerCase() === connectedAccount.toLowerCase();
+    const connectedAccountActive =
+        !address || resolvedAddress.toLowerCase() === connectedAccount.toLowerCase();
 
     const exchangeBalanceComponent = (
         <div>
@@ -96,8 +99,13 @@ export default function Portfolio(props: PortfolioPropsIF) {
                 activeAccount={address ?? connectedAccount}
                 imageData={address ? secondaryImageData : userImageData}
             />
-            <PortfolioTabs />
-            {shouldDisplayExchangeBalance ? exchangeBalanceComponent : null}
+            <PortfolioTabs
+                resolvedAddress={resolvedAddress}
+                activeAccount={address ?? connectedAccount}
+                connectedAccountActive={connectedAccountActive}
+                chainId={chainId}
+            />
+            {connectedAccountActive ? exchangeBalanceComponent : null}
         </main>
     );
 }
