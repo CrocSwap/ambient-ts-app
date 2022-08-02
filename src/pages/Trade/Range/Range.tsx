@@ -20,8 +20,6 @@ import {
     approveToken,
     contractAddresses,
     POOL_PRIMARY,
-    // pinTickLower,
-    // fromDisplayPrice,
 } from '@crocswap-libs/sdk';
 
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
@@ -51,7 +49,7 @@ import { isTransactionReplacedError, TransactionError } from '../../../utils/Tra
 import { handleParsedReceipt } from '../../../utils/HandleParsedReceipt';
 import truncateDecimals from '../../../utils/data/truncateDecimals';
 import ConfirmRangeModal from '../../../components/Trade/Range/ConfirmRangeModal/ConfirmRangeModal';
-import { TokenIF } from '../../../utils/interfaces/exports';
+import { SlippagePairIF, TokenIF } from '../../../utils/interfaces/exports';
 import { useTradeData } from '../Trade';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import RangeExtraInfo from '../../../components/Trade/Range/RangeExtraInfo/RangeExtraInfo';
@@ -61,11 +59,14 @@ import {
     setSimpleRangeWidth,
 } from '../../../utils/state/tradeDataSlice';
 import { addReceipt } from '../../../utils/state/receiptDataSlice';
+import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
 
 interface RangePropsIF {
     importedTokens: Array<TokenIF>;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     searchableTokens: Array<TokenIF>;
+    mintSlippage: SlippagePairIF;
+    isPairStable: boolean;
     provider: JsonRpcProvider;
     gasPriceinGwei: string;
     lastBlockNumber: number;
@@ -89,6 +90,8 @@ export default function Range(props: RangePropsIF) {
         importedTokens,
         setImportedTokens,
         searchableTokens,
+        mintSlippage,
+        isPairStable,
         provider,
         baseTokenAddress,
         quoteTokenAddress,
@@ -102,10 +105,10 @@ export default function Range(props: RangePropsIF) {
         setRecheckTokenBApproval,
         gasPriceinGwei,
         chainId,
-
         activeTokenListsChanged,
         indicateActiveTokenListsChanged,
     } = props;
+
     const [isModalOpen, openModal, closeModal] = useModal();
 
     const { save } = useNewMoralisObject('UserPosition');
@@ -137,10 +140,15 @@ export default function Range(props: RangePropsIF) {
 
     const isTokenABase = tokenPair?.dataTokenA.address === baseTokenAddress;
 
-    const slippageTolerancePercentage = tradeData.slippageTolerance;
+    // const slippageTolerancePercentage = tradeData.slippageTolerance;
+    const slippageTolerancePercentage = isPairStable
+        ? mintSlippage.stable.value
+        : mintSlippage.volatile.value;
 
-    const poolWeiPriceLowLimit = poolPriceNonDisplay * (1 - slippageTolerancePercentage / 100);
-    const poolWeiPriceHighLimit = poolPriceNonDisplay * (1 + slippageTolerancePercentage / 100);
+    const poolWeiPriceLowLimit =
+        poolPriceNonDisplay * (1 - parseFloat(slippageTolerancePercentage) / 100);
+    const poolWeiPriceHighLimit =
+        poolPriceNonDisplay * (1 + parseFloat(slippageTolerancePercentage) / 100);
 
     const poolPriceDisplayNum = parseFloat(poolPriceDisplay);
 
@@ -171,6 +179,14 @@ export default function Range(props: RangePropsIF) {
     const tokenBDecimals = tokenB.decimals;
     const baseTokenDecimals = isTokenABase ? tokenADecimals : tokenBDecimals;
     const quoteTokenDecimals = !isTokenABase ? tokenADecimals : tokenBDecimals;
+
+    const poolPriceCharacter = denominationsInBase
+        ? isTokenABase
+            ? getUnicodeCharacter(tokenB.symbol)
+            : getUnicodeCharacter(tokenA.symbol)
+        : !isTokenABase
+        ? getUnicodeCharacter(tokenB.symbol)
+        : getUnicodeCharacter(tokenA.symbol);
 
     const isTokenAEth = tokenA.address === contractAddresses.ZERO_ADDR;
     const isTokenBEth = tokenB.address === contractAddresses.ZERO_ADDR;
@@ -808,6 +824,7 @@ export default function Range(props: RangePropsIF) {
         apyPercentage: apyPercentage,
         isTokenABase: isTokenABase,
         didUserFlipDenom: tradeData.didUserFlipDenom,
+        poolPriceCharacter: poolPriceCharacter,
     };
 
     const pinnedMinPriceDisplayTruncatedInBase = useMemo(
@@ -1099,6 +1116,8 @@ export default function Range(props: RangePropsIF) {
             <ContentContainer isOnTradeRoute>
                 <RangeHeader
                     tokenPair={tokenPair}
+                    mintSlippage={mintSlippage}
+                    isPairStable={isPairStable}
                     isDenomBase={tradeData.isDenomBase}
                     isTokenABase={isTokenABase}
                 />
@@ -1110,12 +1129,6 @@ export default function Range(props: RangePropsIF) {
                     transition={{ duration: 0.5 }}
                 >
                     <DividerDark />
-                    {/* <RangeCurrencyConverter {...rangeCurrencyConverterProps} /> */}
-
-                    {/* <div className={styles.header_container}>
-                    {denominationSwitch}
-                    <DividerDark addMarginTop />
-                </div> */}
                     {isAdvancedModeActive ? advancedModeContent : baseModeContent}
                 </motion.div>
 

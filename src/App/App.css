@@ -36,6 +36,7 @@ body::-webkit-scrollbar-thumb {
 html{
   background: var(--body-bg);
   color: var(--text-grey-white); 
+  height: 100%;
    
 }
 
@@ -63,6 +64,12 @@ a {
 
 body{
   overflow-x: hidden;
+
+  min-height: 100%;
+ 
+
+  display: flex;
+  flex-direction: column;
   /* padding: 0 1rem; */
  
 
@@ -71,50 +78,54 @@ body{
 
 footer {
   /* To make page 100vh, turn off footer position sticky and turn on absolute then style the footer based on route. */
-  position: absolute;
+  /* position: absolute;
   position: sticky;
   right: 0;
- bottom: 0;
+ bottom: 0; */
+ margin-top: auto;
 }
 
 
 
 
-.main-layout{
-  transition: all var(--animation-speed) ease-in-out;  /* background: var(--dark3); */
-  /* min-height: calc(100vh - 5rem); */
-  /* margin-left: 5rem; */
-  /* padding: 1rem; */
+/* .main-layout{
+  transition: all var(--animation-speed) ease-in-out;  
+  
   margin-left: 1.938rem;
+
 
 
 }
 
 .no-sidebar{
   margin-left: 0;
-  transition: all var(--animation-speed) ease-in-out;  /* min-height: calc(100vh - 5rem); */
 }
 .main-layout-2{
-  transition: all var(--animation-speed) ease-in-out;  /* background: var(--dark3); */
-  /* min-height: calc(100vh - 5rem); */
+  transition: all var(--animation-speed) ease-in-out; 
+ 
  
   
-}
+} */
 .swap-body{
   /* height: 100vh; */
   background: #171D27;
-   height: calc(100vh - 3.5rem); 
+  height: calc(100vh - (var(--footer-height) + 2rem));
 
-   display: flex;
+   /* height: calc(100vh - 3.5rem);  */
+   
+
+   /* display: flex;
    justify-content: center;
-   align-items: center;
+   align-items: center; */
  
 }
-.content-container {
-  /* height: calc(100vh - 4rem);  */
 
-
+.footer_container{
+  display: flex;
+  justify-content: flex-end;
+  color: white;
 }
+
 
 .primary_apy{
   background: linear-gradient(90deg, #15BE6F 32.38%, #8FE9BF 51.39%, #15BE6F 68.17%);
@@ -181,7 +192,10 @@ footer {
   transition: all var(--animation-speed) ease;
 }
 
-
+.hide_sidebar{
+ display: grid;
+ grid-template-columns: 100%;
+}
 
 
 @media only screen and (max-width: 600px) {
@@ -191,17 +205,49 @@ footer {
 
     margin: 0;
     overflow: scroll;
+   
   }
 
 }
 
 
 @media only screen and (min-width: 1020px) {
-  .main-layout-2{
-    margin-left: 16rem;
-    
-   
+ 
+  .sidebar_content_layout{
+    transition: all var(--animation-speed) ease-in-out;
+   display: grid;
+   grid-template-columns: 296px auto;
   }
+  .sidebar_content_layout_close{
+    transition: all var(--animation-speed) ease-in-out;
+
+    display: grid;
+    grid-template-columns: 31px auto;
+  }
+
+  
+  
+}
+
+@media only screen and (min-width: 1280px) {
+  
+  .sidebar_content_layout{
+    transition: all var(--animation-speed) ease-in-out;
+    display: grid;
+    /* grid-template-columns: 296px auto; */
+  }
+  .sidebar_content_layout_close{
+    transition: all var(--animation-speed) ease-in-out;
+    
+    display: grid;
+    grid-template-columns: 31px auto;
+  }
+  
+  .content-container{
+    height: calc(100vh - var(--footer-height))
+  }
+
+
 
 }
 

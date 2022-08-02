@@ -53,6 +53,19 @@ export default function initializeUserLocalStorage() {
         userUpdated = true;
     }
 
+    if (!user.slippage) {
+        user.slippage = {
+            swap: { stable: '0.1', volatile: '0.5' },
+            mint: { stable: '1', volatile: '3' },
+        };
+        userUpdated = true;
+    }
+
+    if (!user.theme) {
+        user.theme = 'purple_dark';
+        userUpdated = true;
+    }
+
     if (userUpdated) {
         localStorage.setItem('user', JSON.stringify(user));
     }

@@ -14,11 +14,16 @@
 // import { TokenListIF } from '../../utils/interfaces/exports';
 import styles from './TestPage.module.css';
 
-import Range from '../../components/Global/Account/Range/Range';
+// import Range from '../../components/Global/Account/Range/Range';
 // import Transaction from '../../components/Transaction/Transaction';
 // import Transactions from '../../components/Global/Transactions/Transactions';
 
-import TableMenu from '../../components/Global/TableMenu/TableMenu';
+// import Range from '../../components/Global/Account/AccountTabs/Range/Range';
+// import Reposition from '../Trade/Reposition/Reposition';
+import WaveAnimation from '../../components/Global/LoadingAnimations/WaveAnimation/WaveAnimation';
+import BouncingBall from '../../components/Global/LoadingAnimations/DotJump/BouncingBall';
+import CircleLoader from '../../components/Global/LoadingAnimations/CircleLoader/CircleLoader';
+import RollingBall from '../../components/Global/LoadingAnimations/RollingBall/RollingBall';
 
 export default function TestPage() {
     // // get the user object from local storage
@@ -105,11 +110,52 @@ export default function TestPage() {
                 ))} */}
                 {/* <RangeCardHeader /> */}
                 {/* <RangeCard /> */}
-                <Range />
+
+                {/* <Range /> */}
                 {/* <Order />
+                
                 <TransactionsTable /> */}
 
-                <TableMenu tableType='orders' />
+                {/* <TableMenu tableType='orders' /> */}
+
+                {/* <Order2 /> */}
+                <div style={{ maxWidth: '600px' }} className={styles.loading_screens}>
+                    {/* <Reposition /> */}
+                    <h4>&lt;WaveAnimation ballsAmount=&#123;10&#125; shape=&#39;line&#39; /&gt;</h4>
+                    <div className={styles.animation_container}>
+                        <WaveAnimation ballsAmount={10} shape='line' />
+                    </div>
+                    <h4>
+                        &lt;WaveAnimation ballsAmount=&#123;10&#125; shape=&#39;square&#39; /&gt;
+                    </h4>
+
+                    <div className={styles.animation_container}>
+                        <WaveAnimation ballsAmount={10} shape='square' />
+                    </div>
+                    <h4>
+                        &lt;WaveAnimation ballsAmount=&#123;10&#125; shape=&#39;circle&#39; /&gt;
+                    </h4>
+
+                    <div className={styles.animation_container}>
+                        <WaveAnimation ballsAmount={10} shape='circle' />
+                    </div>
+                </div>
+                {/* <AccountTokensDisplay />
+                <AccountPoolDisplay /> */}
+                <h4>&lt;CircleLoader /&gt;</h4>
+
+                <div className={styles.animation_container}>
+                    <CircleLoader />
+                </div>
+                <h4>&lt;BouncingBall /&gt;</h4>
+                <div className={styles.animation_container}>
+                    <BouncingBall />
+                </div>
+
+                <h4>&lt;RollingBall ballSize=&#39;10px&#39; /&gt;</h4>
+                <div className={styles.animation_container}>
+                    <RollingBall ballSize='30px' />
+                </div>
             </main>
         </>
     );

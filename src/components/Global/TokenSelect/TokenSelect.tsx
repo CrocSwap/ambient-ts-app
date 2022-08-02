@@ -8,21 +8,59 @@ import styles from './TokenSelect.module.css';
 import { TokenIF } from '../../../utils/interfaces/exports';
 import uriToHttp from '../../../utils/functions/uriToHttp';
 import { removeToken } from '../../Global/TokenSelectContainer/removeToken';
+import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import { contractAddresses, toDisplayQty } from '@crocswap-libs/sdk';
+// import truncateDecimals from '../../../utils/data/truncateDecimals';
+// import { tokenData } from '../../../utils/state/tokenDataSlice';
 
 interface TokenSelectPropsIF {
     token: TokenIF;
     tokensBank: Array<TokenIF>;
+    undeletableTokens: Array<string>;
     chainId: string;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     chooseToken: (tok: TokenIF) => void;
 }
 
 export default function TokenSelect(props: TokenSelectPropsIF) {
-    const { token, chooseToken, tokensBank, chainId, setImportedTokens } = props;
+    const { token, chooseToken, tokensBank, undeletableTokens, chainId, setImportedTokens } = props;
     const [showDelete, setShowDelete] = useState(false);
     const [toggleDeleteOn, setToggleDeleteOn] = useState(false);
 
-    const getRandomInt = () => Math.floor(Math.random() * 18000);
+    const tokensInRTK = useAppSelector((state) => state.tokenData.tokens);
+
+    // const getRandomInt = () => Math.floor(Math.random() * 18000);
+    const getTokenBalance = (address: string) => {
+        // console.log({ address });
+        let tokenBalanceDisplay = '';
+        tokensInRTK.map((token) => {
+            if (token.token_address?.toLowerCase() === address.toLowerCase()) {
+                // console.log(token.balance);
+                if (token.balance && token.decimals) {
+                    if (token.address === contractAddresses.ZERO_ADDR) {
+                        // tokenBalanceDisplay = truncateDecimals(parseFloat(token.balance), 2);
+                        const localizedNativeBalance = parseFloat(token.balance).toLocaleString(
+                            'en-US',
+                        );
+                        tokenBalanceDisplay = localizedNativeBalance;
+                        // tokenBalanceDisplay = parseFloat(token.balance).toPrecision(6);
+
+                        return;
+                    }
+                    const untruncatedDisplayQty = toDisplayQty(token.balance, token.decimals);
+                    const displayQtyNum = parseFloat(untruncatedDisplayQty);
+                    const localDisplayQty = displayQtyNum.toLocaleString('en-US');
+                    // const displayQtyTruncated =
+                    //     displayQtyNum > 2
+                    //         ? truncateDecimals(displayQtyNum, 2)
+                    //         : truncateDecimals(displayQtyNum, 6);
+                    // const displayQtyWithPrecision = displayQtyNum.toPrecision(10);
+                    tokenBalanceDisplay = localDisplayQty;
+                }
+            }
+        });
+        return tokenBalanceDisplay;
+    };
 
     const noTokenImage = <CgUnavailable size={20} />;
 
@@ -107,9 +145,9 @@ export default function TokenSelect(props: TokenSelectPropsIF) {
                     <span className={styles.modal_token_symbol}>{token.symbol}</span>
                     <span className={styles.modal_token_name}>{token.name}</span>
                 </div>
-                <div className={styles.modal_tokens_amount}>{getRandomInt()}</div>
+                <div className={styles.modal_tokens_amount}>{getTokenBalance(token.address)}</div>
             </div>
-            {deleteIcon}
+            {undeletableTokens.includes(token.address) || deleteIcon}
         </div>
     );
 }
