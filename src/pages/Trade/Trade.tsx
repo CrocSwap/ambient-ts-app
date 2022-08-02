@@ -30,6 +30,8 @@ interface ITradeProps {
     chainId: string;
     switchTabToTransactions: boolean;
     setSwitchTabToTransactions: Dispatch<SetStateAction<boolean>>;
+    isShowAllEnabled: boolean;
+    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function Trade(props: ITradeProps) {
@@ -212,6 +214,8 @@ export default function Trade(props: ITradeProps) {
                         chainId={props.chainId}
                         switchTabToTransactions={props.switchTabToTransactions}
                         setSwitchTabToTransactions={props.setSwitchTabToTransactions}
+                        isShowAllEnabled={props.isShowAllEnabled}
+                        setIsShowAllEnabled={props.setIsShowAllEnabled}
                     />
                 </div>
             </div>

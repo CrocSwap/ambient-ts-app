@@ -25,7 +25,6 @@ interface TabProps {
 export default function TabComponent(props: TabProps) {
     const { data, outsideTabControl } = props;
 
-    console.log(data);
     const [selectedTab, setSelectedTab] = useState(data[0]);
 
     function handleOutsideControl() {
@@ -89,7 +88,7 @@ export default function TabComponent(props: TabProps) {
                 {data.map((item) => (
                     <li
                         key={item.label}
-                        className={item === selectedTab ? styles.selected : ''}
+                        className={item.label === selectedTab.label ? styles.selected : ''}
                         onClick={() => handleSelectedTab(item)}
                     >
                         {item.icon ? handleMobileMenuIcon(item.icon, item.label) : null}

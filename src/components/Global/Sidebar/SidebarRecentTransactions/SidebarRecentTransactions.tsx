@@ -2,6 +2,7 @@ import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import { ISwap } from '../../../../utils/state/graphDataSlice';
 import styles from './SidebarRecentTransactions.module.css';
 import SidebarRecentTransactionsCard from './SidebarRecentTransactionsCard';
+import { Dispatch, SetStateAction } from 'react';
 
 interface SidebarRecentTransactionsPropsIF {
     // showSidebar: boolean;
@@ -9,10 +10,18 @@ interface SidebarRecentTransactionsPropsIF {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     coinGeckoTokenMap?: Map<string, TokenIF>;
     chainId: string;
+    isShowAllEnabled: boolean;
+    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function SidebarRecentTransactions(props: SidebarRecentTransactionsPropsIF) {
-    const { mostRecentTransactions, coinGeckoTokenMap, chainId } = props;
+    const {
+        mostRecentTransactions,
+        coinGeckoTokenMap,
+        chainId,
+        isShowAllEnabled,
+        setIsShowAllEnabled,
+    } = props;
 
     const header = (
         <div className={styles.header}>
@@ -33,6 +42,8 @@ export default function SidebarRecentTransactions(props: SidebarRecentTransactio
                         key={idx}
                         coinGeckoTokenMap={coinGeckoTokenMap}
                         chainId={chainId}
+                        isShowAllEnabled={isShowAllEnabled}
+                        setIsShowAllEnabled={setIsShowAllEnabled}
                     />
                 ))}
             </div>

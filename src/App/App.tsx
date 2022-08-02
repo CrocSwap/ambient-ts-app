@@ -116,6 +116,8 @@ export default function App() {
 
     const [fallbackChainId, setFallbackChainId] = useState('0x5');
     const [switchTabToTransactions, setSwitchTabToTransactions] = useState<boolean>(false);
+    // my data only toggle
+    const [isShowAllEnabled, setIsShowAllEnabled] = useState<boolean>(true);
 
     const chainId = moralisChainId
         ? moralisChainId
@@ -1423,6 +1425,8 @@ export default function App() {
         switchTabToTransactions: switchTabToTransactions,
         handleSetTradeTabToTransaction: handleSetTradeTabToTransaction,
         setSwitchTabToTransactions: setSwitchTabToTransactions,
+        isShowAllEnabled: isShowAllEnabled,
+        setIsShowAllEnabled: setIsShowAllEnabled,
         // setShowSidebar : setShowSidebar
     };
 
@@ -1506,6 +1510,8 @@ export default function App() {
                                     chainId={chainId}
                                     switchTabToTransactions={switchTabToTransactions}
                                     setSwitchTabToTransactions={setSwitchTabToTransactions}
+                                    isShowAllEnabled={isShowAllEnabled}
+                                    setIsShowAllEnabled={setIsShowAllEnabled}
                                 />
                             }
                         >

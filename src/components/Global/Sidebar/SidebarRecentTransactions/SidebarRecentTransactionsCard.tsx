@@ -2,16 +2,19 @@ import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import { ISwap } from '../../../../utils/state/graphDataSlice';
 
 import styles from './SidebarRecentTransactionsCard.module.css';
+import { Dispatch, SetStateAction } from 'react';
 
 interface TransactionProps {
     tx: ISwap;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     coinGeckoTokenMap?: Map<string, TokenIF>;
     chainId: string;
+    isShowAllEnabled: boolean;
+    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function SidebarRecentTransactionsCard(props: TransactionProps) {
-    const { tx, coinGeckoTokenMap, chainId } = props;
+    const { tx, coinGeckoTokenMap, chainId, isShowAllEnabled, setIsShowAllEnabled } = props;
 
     // console.log(tx.source);
     // console.log(tx.block);
