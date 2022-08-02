@@ -80,6 +80,8 @@ export default function Sidebar(props: SidebarPropsIF) {
                     chainId={chainId}
                     isShowAllEnabled={isShowAllEnabled}
                     setIsShowAllEnabled={setIsShowAllEnabled}
+                    currenClickedTxHashFromRecentTx={currenClickedTxHashFromRecentTx}
+                    SetCurrenClickedTxHashFromRecentTx={SetCurrenClickedTxHashFromRecentTx}
                 />
             ),
         },

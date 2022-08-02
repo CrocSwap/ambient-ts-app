@@ -11,10 +11,20 @@ interface TransactionProps {
     chainId: string;
     isShowAllEnabled: boolean;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
+    currenClickedTxHashFromRecentTx: string;
+    SetCurrenClickedTxHashFromRecentTx: Dispatch<SetStateAction<string>>;
 }
 
 export default function SidebarRecentTransactionsCard(props: TransactionProps) {
-    const { tx, coinGeckoTokenMap, chainId, isShowAllEnabled, setIsShowAllEnabled } = props;
+    const {
+        tx,
+        coinGeckoTokenMap,
+        chainId,
+        isShowAllEnabled,
+        setIsShowAllEnabled,
+        currenClickedTxHashFromRecentTx,
+        SetCurrenClickedTxHashFromRecentTx,
+    } = props;
 
     // console.log(tx.source);
     // console.log(tx.block);
