@@ -23,7 +23,8 @@ export default function Transactions(props: TransactionsProps) {
 
     const [poolData, setPoolData] = useState<ISwap[]>();
 
-    console.log({ isShowAllEnabled });
+    console.log({ swapsByUser });
+    console.log({ swapsByPool });
 
     useEffect(() => {
         if (isShowAllEnabled) {

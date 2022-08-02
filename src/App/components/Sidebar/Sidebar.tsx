@@ -33,6 +33,8 @@ interface SidebarPropsIF {
     setSwitchTabToTransactions: Dispatch<SetStateAction<boolean>>;
     isShowAllEnabled: boolean;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
+    currenClickedTxHashFromRecentTx: string;
+    SetCurrenClickedTxHashFromRecentTx: Dispatch<SetStateAction<string>>;
 }
 
 export default function Sidebar(props: SidebarPropsIF) {
@@ -43,6 +45,8 @@ export default function Sidebar(props: SidebarPropsIF) {
         setSwitchTabToTransactions,
         isShowAllEnabled,
         setIsShowAllEnabled,
+        currenClickedTxHashFromRecentTx,
+        SetCurrenClickedTxHashFromRecentTx,
     } = props;
 
     const graphData = useAppSelector((state) => state.graphData);

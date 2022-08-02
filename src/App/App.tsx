@@ -119,6 +119,9 @@ export default function App() {
     // my data only toggle
     const [isShowAllEnabled, setIsShowAllEnabled] = useState<boolean>(true);
 
+    const [currenClickedTxHashFromRecentTx, SetCurrenClickedTxHashFromRecentTx] =
+        useState<string>('');
+
     const chainId = moralisChainId
         ? moralisChainId
         : // : window.ethereum?.networkVersion
@@ -1427,6 +1430,8 @@ export default function App() {
         setSwitchTabToTransactions: setSwitchTabToTransactions,
         isShowAllEnabled: isShowAllEnabled,
         setIsShowAllEnabled: setIsShowAllEnabled,
+        currenClickedTxHashFromRecentTx: currenClickedTxHashFromRecentTx,
+        SetCurrenClickedTxHashFromRecentTx: SetCurrenClickedTxHashFromRecentTx,
         // setShowSidebar : setShowSidebar
     };
 

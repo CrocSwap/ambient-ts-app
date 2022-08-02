@@ -25,6 +25,7 @@ export default function SidebarRecentTransactionsCard(props: TransactionProps) {
     const baseToken = coinGeckoTokenMap ? coinGeckoTokenMap.get(baseId.toLowerCase()) : null;
     const quoteToken = coinGeckoTokenMap ? coinGeckoTokenMap.get(quoteId.toLowerCase()) : null;
 
+    console.log(tx);
     // const baseTokenDisplay = (
     //     <div className={styles.token_container}>
     //         <img src={baseToken?.logoURI} alt='base token image' />
@@ -39,7 +40,7 @@ export default function SidebarRecentTransactionsCard(props: TransactionProps) {
 
     console.log(isShowAllEnabled);
 
-    function handleTransactionCardClick() {
+    function handleTransactionCardClick(tx: ISwap) {
         if (isShowAllEnabled) {
             setIsShowAllEnabled(false);
             console.log('i am clicked');
@@ -48,7 +49,7 @@ export default function SidebarRecentTransactionsCard(props: TransactionProps) {
         }
     }
     return (
-        <div className={styles.container} onClick={() => handleTransactionCardClick()}>
+        <div className={styles.container} onClick={() => handleTransactionCardClick(tx)}>
             <div>
                 {baseToken?.symbol} / {quoteToken?.symbol}
             </div>
