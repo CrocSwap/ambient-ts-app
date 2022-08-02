@@ -26,18 +26,23 @@ export interface CandlesByPoolAndDuration {
 export interface CandleData {
     base: string;
     firstBlock: number;
-    id: string;
+    firstSwap: string;
     lastBlock: number;
+    lastSwap: string;
+    maxPrice: number;
+    minPrice: number;
+    netBaseFlow: number;
+    netQuoteFlow: number;
+    network: string;
     numSwaps: number;
+    numSwapsFromCroc: number;
+    numSwapsFromUniV3: number;
     period: number;
     poolHash: string;
     poolIdx: number;
     priceClose: number;
-    priceMax: number;
-    priceMin: number;
     priceOpen: number;
     quote: string;
-    source: string;
     time: number;
     totalBaseQty: number;
     totalQuoteQty: number;
@@ -251,7 +256,7 @@ export const graphDataSlice = createSlice({
                             ],
                         );
                 } else {
-                    const idToFind = action.payload.candles[0].id;
+                    const timeToFind = action.payload.candles[0].time;
                     const indexOfDuplicate = state.candlesForAllPools.pools[
                         indexOfPool
                     ].candlesByPoolAndDuration[indexOfDuration].candles
@@ -259,10 +264,10 @@ export const graphDataSlice = createSlice({
                             if (!item) {
                                 return null;
                             } else {
-                                return item.id;
+                                return item.time;
                             }
                         })
-                        .findIndex((id) => id === idToFind);
+                        .findIndex((time) => time === timeToFind);
 
                     // if new candle data not already in RTK, add
                     if (indexOfDuplicate === -1) {

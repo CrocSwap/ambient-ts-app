@@ -627,7 +627,7 @@ export default function App() {
                 // period: '60',
                 chainId: chainId,
             }),
-        [baseTokenAddress, quoteTokenAddress, POOL_PRIMARY, activePeriod],
+        [baseTokenAddress, quoteTokenAddress, POOL_PRIMARY, activePeriod, chainId],
     );
 
     const {
@@ -638,7 +638,7 @@ export default function App() {
         candleSubscriptionEndpoint,
         {
             // share:  true,
-            // onOpen: () => console.log('opened'),
+            onOpen: () => console.log({ candleSubscriptionEndpoint }),
             onClose: (event) => console.log({ event }),
             // onClose: () => console.log('candles websocket connection closed'),
             // Will attempt to reconnect on all close events, such as server shutting down
@@ -652,6 +652,7 @@ export default function App() {
         if (candlesMessage !== null) {
             const lastMessageData = JSON.parse(candlesMessage.data).data;
             if (lastMessageData) {
+                // console.log({ lastMessageData });
                 Promise.all(lastMessageData.map(getCandleData)).then((updatedCandles) => {
                     // console.log({ updatedCandles });
                     dispatch(
@@ -844,51 +845,51 @@ export default function App() {
         }
     }, [lastBlockNumber, baseTokenAddress, quoteTokenAddress, chainId]);
 
-    // useEffect to update selected token balances
-    useEffect(() => {
-        (async () => {
-            if (
-                provider &&
-                account &&
-                isAuthenticated &&
-                isWeb3Enabled
-                // && provider.connection?.url === 'metamask'
-            ) {
-                try {
-                    const signer = provider.getSigner();
-                    const tokenABal = await getTokenBalanceDisplay(
-                        tokenPair.dataTokenA.address,
-                        account,
-                        signer,
-                    );
-                    // make sure a balance was returned, initialized as null
-                    if (tokenABal) {
-                        // send value to local state
-                        setTokenABalance(tokenABal);
-                    }
-                    const tokenBBal = await getTokenBalanceDisplay(
-                        tokenPair.dataTokenB.address,
-                        account,
-                        signer,
-                    );
-                    // make sure a balance was returned, initialized as null
-                    if (tokenBBal) {
-                        // send value to local state
-                        setTokenBBalance(tokenBBal);
-                    }
-                } catch (error) {
-                    console.log({ error });
-                }
-            }
-        })();
-    }, [
-        chainId,
-        account,
-        isWeb3Enabled,
-        isAuthenticated,
-        JSON.stringify(tokenPair),
-        lastBlockNumber,
-    ]);
+    // // useEffect to update selected token balances
+    // useEffect(() => {
+    //     (async () => {
+    //         if (
+    //             provider &&
+    //             account &&
+    //             isAuthenticated &&
+    //             isWeb3Enabled
+    //             // && provider.connection?.url === 'metamask'
+    //         ) {
+    //             try {
+    //                 const signer = provider.getSigner();
+    //                 const tokenABal = await getTokenBalanceDisplay(
+    //                     tokenPair.dataTokenA.address,
+    //                     account,
+    //                     signer,
+    //                 );
+    //                 // make sure a balance was returned, initialized as null
+    //                 if (tokenABal) {
+    //                     // send value to local state
+    //                     setTokenABalance(tokenABal);
+    //                 }
+    //                 const tokenBBal = await getTokenBalanceDisplay(
+    //                     tokenPair.dataTokenB.address,
+    //                     account,
+    //                     signer,
+    //                 );
+    //                 // make sure a balance was returned, initialized as null
+    //                 if (tokenBBal) {
+    //                     // send value to local state
+    //                     setTokenBBalance(tokenBBal);
+    //                 }
+    //             } catch (error) {
+    //                 console.log;
+    //             }
+    //         }
+    //     })();
+    // }, [
+    //     chainId,
+    //     account,
+    //     isWeb3Enabled,
+    //     isAuthenticated,
+    //     JSON.stringify(tokenPair),
+    //     lastBlockNumber,
+    // ]);
 
     const [tokenAAllowance, setTokenAAllowance] = useState<string>('');
     const [tokenBAllowance, setTokenBAllowance] = useState<string>('');
@@ -992,10 +993,6 @@ export default function App() {
     };
 
     const getCandleData = async (candle: CandleData): Promise<CandleData> => {
-        if (candle) {
-            candle.base = candle.base?.startsWith('0x') ? candle.base : '0x' + candle.base;
-            candle.quote = candle.quote?.startsWith('0x') ? candle.quote : '0x' + candle.quote;
-        }
         return candle;
     };
 
