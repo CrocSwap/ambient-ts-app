@@ -62,10 +62,12 @@ export default function Ranges(props: RangesProps) {
           ));
     //   .reverse();
 
+    console.log({ poolPositions });
+
     return (
         <div className={styles.container}>
             <RangeCardHeader />
-            {RangesDisplay}
+            <div className={styles.item_container}>{RangesDisplay}</div>
         </div>
     );
 }

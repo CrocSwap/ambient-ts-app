@@ -115,6 +115,7 @@ export default function App() {
     const location = useLocation();
 
     const [fallbackChainId, setFallbackChainId] = useState('0x5');
+    const [switchTabToTransactions, setSwitchTabToTransactions] = useState<boolean>(false);
 
     const chainId = moralisChainId
         ? moralisChainId
@@ -1411,10 +1412,17 @@ export default function App() {
         setShowSidebar(!showSidebar);
         setSidebarManuallySet(true);
     }
+
+    function handleSetTradeTabToTransaction() {
+        setSwitchTabToTransactions(!switchTabToTransactions);
+    }
     const sidebarProps = {
         showSidebar: showSidebar,
         toggleSidebar: toggleSidebar,
         chainId: chainId,
+        switchTabToTransactions: switchTabToTransactions,
+        handleSetTradeTabToTransaction: handleSetTradeTabToTransaction,
+        setSwitchTabToTransactions: setSwitchTabToTransactions,
         // setShowSidebar : setShowSidebar
     };
 
@@ -1496,6 +1504,8 @@ export default function App() {
                                     isTokenABase={isTokenABase}
                                     poolPriceDisplay={poolPriceDisplay}
                                     chainId={chainId}
+                                    switchTabToTransactions={switchTabToTransactions}
+                                    setSwitchTabToTransactions={setSwitchTabToTransactions}
                                 />
                             }
                         >

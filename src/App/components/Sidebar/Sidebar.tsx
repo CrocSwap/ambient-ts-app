@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { MouseEvent } from 'react';
+import { MouseEvent, SetStateAction, Dispatch } from 'react';
 import { BiSearch } from 'react-icons/bi';
 
 // START: Import JSX Elements
@@ -21,7 +21,6 @@ import recentTransactionsImage from '../../../assets/images/sidebarImages/recent
 import topPoolsImage from '../../../assets/images/sidebarImages/topPools.svg';
 import topTokensImage from '../../../assets/images/sidebarImages/topTokens.svg';
 import closeSidebarImage from '../../../assets/images/sidebarImages/closeSidebar.svg';
-
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 
 // interface for component props
@@ -29,10 +28,13 @@ interface SidebarPropsIF {
     showSidebar: boolean;
     toggleSidebar: (event: MouseEvent<HTMLDivElement> | MouseEvent<HTMLLIElement>) => void;
     chainId: string;
+    switchTabToTransactions: boolean;
+    handleSetTradeTabToTransaction: () => void;
+    setSwitchTabToTransactions: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function Sidebar(props: SidebarPropsIF) {
-    const { toggleSidebar, showSidebar, chainId } = props;
+    const { toggleSidebar, showSidebar, chainId, setSwitchTabToTransactions } = props;
 
     const graphData = useAppSelector((state) => state.graphData);
     const swapsByUser = graphData.swapsByUser.swaps;
@@ -91,6 +93,7 @@ export default function Sidebar(props: SidebarPropsIF) {
             <nav className={`${styles.sidebar} ${sidebarStyle}`}>
                 <ul className={styles.sidebar_nav}>
                     {searchContainer}
+                    <div onClick={() => setSwitchTabToTransactions(true)}>Recent Transactions</div>
                     {navItems1.map((item, idx) => (
                         <SidebarAccordion
                             showSidebar={showSidebar}

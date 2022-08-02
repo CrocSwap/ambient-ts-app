@@ -26,7 +26,7 @@ export default function Transactions(props: TransactionsProps) {
     const tokenBAddress = tradeData.tokenB.address;
 
     const TransactionsDisplay = isShowAllEnabled
-        ? swapsByPool.map((swap, idx) => (
+        ? swapsByPool?.map((swap, idx) => (
               //   />
               <TransactionCard
                   key={idx}
@@ -39,7 +39,7 @@ export default function Transactions(props: TransactionsProps) {
               />
           ))
         : //   .reverse()
-          swapsByUser.map((swap, idx) => (
+          swapsByUser?.map((swap, idx) => (
               <TransactionCard
                   key={idx}
                   swap={swap}
@@ -54,7 +54,7 @@ export default function Transactions(props: TransactionsProps) {
     return (
         <div className={styles.container}>
             <TransactionCardHeader />
-            {TransactionsDisplay}
+            <div className={styles.item_container}>{TransactionsDisplay}</div>
         </div>
     );
 }
