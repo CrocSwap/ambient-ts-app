@@ -8,6 +8,8 @@ import App from './App/App';
 import reportWebVitals from './reportWebVitals';
 import { MoralisProvider } from 'react-moralis';
 
+import './i18n/config.ts';
+
 // const APP_ID = process.env.REACT_APP_MORALIS_APPLICATION_ID;
 const APP_ID = 'mVXmmaPDkP1oWs7YcGSqnP3U7qmK7BwUHyrLlqJe';
 // const SERVER_URL = process.env.REACT_APP_MORALIS_SERVER_URL;

@@ -2,6 +2,8 @@
 import { NavLink, Link } from 'react-router-dom';
 import { useEffect, useState, useCallback } from 'react';
 import { useMoralis } from 'react-moralis';
+import { useTranslation } from 'react-i18next';
+
 /** ***** END: Import React and Dongles *********/
 
 /** ***** START: Import Local Files *******/
@@ -28,11 +30,23 @@ interface IHeaderProps {
     setFallbackChainId: React.Dispatch<React.SetStateAction<string>>;
 }
 
+// interface lgnData {
+//     name: keyof typeof lngs;
+// }
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const lngs: any = {
+    en: { nativeName: 'English' },
+    zh: { nativeName: '中国人' },
+};
+
 export default function PageHeader(props: IHeaderProps): React.ReactElement<IHeaderProps> {
     const { ensName, shouldDisplayAccountTab, chainId, setFallbackChainId } = props;
 
     const { user, account, enableWeb3, isWeb3Enabled, authenticate, isAuthenticated } =
         useMoralis();
+
+    const { i18n } = useTranslation();
 
     const [isModalOpen, openModal, closeModal] = useModal();
     const modalTitle = 'Log in with Email';
@@ -216,6 +230,20 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
                 {isAuthenticated && isWeb3Enabled && (
                     <NetworkSelector chainId={chainId} setFallbackChainId={setFallbackChainId} />
                 )}
+                <div>
+                    {Object.keys(lngs).map((lng) => (
+                        <button
+                            key={lng}
+                            style={{
+                                fontWeight: i18n.resolvedLanguage === lng ? 'bold' : 'normal',
+                            }}
+                            type='submit'
+                            onClick={() => i18n.changeLanguage(lng)}
+                        >
+                            {lngs[lng].nativeName}
+                        </button>
+                    ))}
+                </div>
                 <Account {...accountProps} />
             </div>
 
