@@ -119,7 +119,7 @@ export default function App() {
     // my data only toggle
     const [isShowAllEnabled, setIsShowAllEnabled] = useState<boolean>(true);
 
-    const [currenClickedTxHashFromRecentTx, SetCurrenClickedTxHashFromRecentTx] =
+    const [currentClickedTxHashFromRecentTx, SetCurrentClickedTxHashFromRecentTx] =
         useState<string>('');
 
     const chainId = moralisChainId
@@ -1430,8 +1430,8 @@ export default function App() {
         setSwitchTabToTransactions: setSwitchTabToTransactions,
         isShowAllEnabled: isShowAllEnabled,
         setIsShowAllEnabled: setIsShowAllEnabled,
-        currenClickedTxHashFromRecentTx: currenClickedTxHashFromRecentTx,
-        SetCurrenClickedTxHashFromRecentTx: SetCurrenClickedTxHashFromRecentTx,
+        currentClickedTxHashFromRecentTx: currentClickedTxHashFromRecentTx,
+        SetCurrentClickedTxHashFromRecentTx: SetCurrentClickedTxHashFromRecentTx,
         // setShowSidebar : setShowSidebar
     };
 
@@ -1517,6 +1517,12 @@ export default function App() {
                                     setSwitchTabToTransactions={setSwitchTabToTransactions}
                                     isShowAllEnabled={isShowAllEnabled}
                                     setIsShowAllEnabled={setIsShowAllEnabled}
+                                    currentClickedTxHashFromRecentTx={
+                                        currentClickedTxHashFromRecentTx
+                                    }
+                                    SetCurrentClickedTxHashFromRecentTx={
+                                        SetCurrentClickedTxHashFromRecentTx
+                                    }
                                 />
                             }
                         >

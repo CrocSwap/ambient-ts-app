@@ -14,9 +14,19 @@ interface TransactionsProps {
     tokenMap: Map<string, TokenIF>;
     graphData: graphData;
     chainId: string;
+    currentClickedTxHashFromRecentTx: string;
+    SetCurrentClickedTxHashFromRecentTx: Dispatch<SetStateAction<string>>;
 }
 export default function Transactions(props: TransactionsProps) {
-    const { isShowAllEnabled, graphData, tokenMap, chainId, setIsShowAllEnabled } = props;
+    const {
+        isShowAllEnabled,
+        graphData,
+        tokenMap,
+        chainId,
+        setIsShowAllEnabled,
+        currentClickedTxHashFromRecentTx,
+        SetCurrentClickedTxHashFromRecentTx,
+    } = props;
 
     const swapsByUser = graphData?.swapsByUser?.swaps;
     const swapsByPool = graphData?.swapsByPool?.swaps;
@@ -51,6 +61,8 @@ export default function Transactions(props: TransactionsProps) {
             tokenAAddress={tokenAAddress}
             tokenBAddress={tokenBAddress}
             isDenomBase={isDenomBase}
+            currentClickedTxHashFromRecentTx={currentClickedTxHashFromRecentTx}
+            SetCurrentClickedTxHashFromRecentTx={SetCurrentClickedTxHashFromRecentTx}
         />
     ));
     // : //   .reverse()

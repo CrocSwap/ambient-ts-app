@@ -33,8 +33,8 @@ interface SidebarPropsIF {
     setSwitchTabToTransactions: Dispatch<SetStateAction<boolean>>;
     isShowAllEnabled: boolean;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
-    currenClickedTxHashFromRecentTx: string;
-    SetCurrenClickedTxHashFromRecentTx: Dispatch<SetStateAction<string>>;
+    currentClickedTxHashFromRecentTx: string;
+    SetCurrentClickedTxHashFromRecentTx: Dispatch<SetStateAction<string>>;
 }
 
 export default function Sidebar(props: SidebarPropsIF) {
@@ -45,8 +45,8 @@ export default function Sidebar(props: SidebarPropsIF) {
         setSwitchTabToTransactions,
         isShowAllEnabled,
         setIsShowAllEnabled,
-        currenClickedTxHashFromRecentTx,
-        SetCurrenClickedTxHashFromRecentTx,
+        currentClickedTxHashFromRecentTx,
+        SetCurrentClickedTxHashFromRecentTx,
     } = props;
 
     const graphData = useAppSelector((state) => state.graphData);
@@ -80,8 +80,8 @@ export default function Sidebar(props: SidebarPropsIF) {
                     chainId={chainId}
                     isShowAllEnabled={isShowAllEnabled}
                     setIsShowAllEnabled={setIsShowAllEnabled}
-                    currenClickedTxHashFromRecentTx={currenClickedTxHashFromRecentTx}
-                    SetCurrenClickedTxHashFromRecentTx={SetCurrenClickedTxHashFromRecentTx}
+                    currentClickedTxHashFromRecentTx={currentClickedTxHashFromRecentTx}
+                    SetCurrentClickedTxHashFromRecentTx={SetCurrentClickedTxHashFromRecentTx}
                 />
             ),
         },

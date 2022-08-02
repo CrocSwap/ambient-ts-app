@@ -11,8 +11,8 @@ interface TransactionProps {
     chainId: string;
     isShowAllEnabled: boolean;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
-    currenClickedTxHashFromRecentTx: string;
-    SetCurrenClickedTxHashFromRecentTx: Dispatch<SetStateAction<string>>;
+    currentClickedTxHashFromRecentTx: string;
+    SetCurrentClickedTxHashFromRecentTx: Dispatch<SetStateAction<string>>;
 }
 
 export default function SidebarRecentTransactionsCard(props: TransactionProps) {
@@ -22,20 +22,19 @@ export default function SidebarRecentTransactionsCard(props: TransactionProps) {
         chainId,
         isShowAllEnabled,
         setIsShowAllEnabled,
-        currenClickedTxHashFromRecentTx,
-        SetCurrenClickedTxHashFromRecentTx,
+        currentClickedTxHashFromRecentTx,
+        SetCurrentClickedTxHashFromRecentTx,
     } = props;
 
     // console.log(tx.source);
     // console.log(tx.block);
-    console.log('from recent tx card', isShowAllEnabled);
+
     const baseId = tx.base + '_' + chainId;
     const quoteId = tx.quote + '_' + chainId;
 
     const baseToken = coinGeckoTokenMap ? coinGeckoTokenMap.get(baseId.toLowerCase()) : null;
     const quoteToken = coinGeckoTokenMap ? coinGeckoTokenMap.get(quoteId.toLowerCase()) : null;
 
-    console.log(tx);
     // const baseTokenDisplay = (
     //     <div className={styles.token_container}>
     //         <img src={baseToken?.logoURI} alt='base token image' />
@@ -48,16 +47,22 @@ export default function SidebarRecentTransactionsCard(props: TransactionProps) {
     //     </div>
     // );
 
-    console.log(isShowAllEnabled);
-
-    function handleTransactionCardClick(tx: ISwap) {
-        if (isShowAllEnabled) {
-            setIsShowAllEnabled(false);
-            console.log('i am clicked');
+    // todoJr: take a look at this again. We might not need the else
+    function handleCurrentTx(transaction: ISwap) {
+        if (currentClickedTxHashFromRecentTx !== '') {
+            SetCurrentClickedTxHashFromRecentTx(transaction.id);
         } else {
-            console.log('nothing');
+            SetCurrentClickedTxHashFromRecentTx(transaction.id);
         }
     }
+
+    function handleTransactionCardClick(transaction: ISwap) {
+        if (isShowAllEnabled) {
+            setIsShowAllEnabled(false);
+        }
+        handleCurrentTx(transaction);
+    }
+
     return (
         <div className={styles.container} onClick={() => handleTransactionCardClick(tx)}>
             <div>

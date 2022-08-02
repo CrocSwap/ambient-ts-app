@@ -7,6 +7,7 @@ import { ISwap } from '../../../../utils/state/graphDataSlice';
 import TransactionsMenu from '../../../Global/Tabs/TableMenu/TableMenuComponents/TransactionsMenu';
 import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import { toDisplayPrice, toDisplayQty } from '@crocswap-libs/sdk';
+import { Dispatch, SetStateAction } from 'react';
 
 interface TransactionProps {
     swap: ISwap;
@@ -15,6 +16,8 @@ interface TransactionProps {
     tokenAAddress: string;
     tokenBAddress: string;
     isDenomBase: boolean;
+    currentClickedTxHashFromRecentTx: string;
+    SetCurrentClickedTxHashFromRecentTx: Dispatch<SetStateAction<string>>;
 }
 export default function TransactionCard(props: TransactionProps) {
     const { swap, tokenMap, chainId, tokenAAddress, tokenBAddress, isDenomBase } = props;
