@@ -4,5 +4,10 @@
         "part1": "This is an example using multiple namespaces.",
         "part2": "😉"
     },
-    "marketCTA": "Trade Now"
+    "marketCTA": "Trade Now",
+    "homeTitle": "Home",
+    "swapTitle": "Swap",
+    "tradeTitle": "Trade",
+    "analyticsTitle": "Analytics",
+    "accountTitle": "Account"
 }

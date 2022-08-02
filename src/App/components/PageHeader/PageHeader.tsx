@@ -46,7 +46,7 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
     const { user, account, enableWeb3, isWeb3Enabled, authenticate, isAuthenticated } =
         useMoralis();
 
-    const { i18n } = useTranslation();
+    const { t, i18n } = useTranslation();
 
     const [isModalOpen, openModal, closeModal] = useModal();
     const modalTitle = 'Log in with Email';
@@ -182,13 +182,13 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
                     to='/'
                     className={({ isActive }) => (isActive ? styles.active : styles.inactive)}
                 >
-                    Home
+                    {t('common:homeTitle')}
                 </NavLink>
                 <NavLink
                     to='/swap'
                     className={({ isActive }) => (isActive ? styles.active : styles.inactive)}
                 >
-                    Swap
+                    {t('common:swapTitle')}
                 </NavLink>
                 {/* <NavLink to='/range2'>Range</NavLink> */}
                 <NavLink
@@ -205,20 +205,20 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
                     }
                     className={({ isActive }) => (isActive ? styles.active : styles.inactive)}
                 >
-                    Trade
+                    {t('common:tradeTitle')}
                 </NavLink>
                 <NavLink
                     to='/analytics'
                     className={({ isActive }) => (isActive ? styles.active : styles.inactive)}
                 >
-                    Analytics
+                    {t('common:analyticsTitle')}
                 </NavLink>
                 {shouldDisplayAccountTab ? (
                     <NavLink
                         to='/account'
                         className={({ isActive }) => (isActive ? styles.active : styles.inactive)}
                     >
-                        Account
+                        {t('common:accountTitle')}
                     </NavLink>
                 ) : null}
             </nav>
