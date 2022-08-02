@@ -34,8 +34,8 @@ export const querySpotPrice = async (
         },
     };
     const crocPrice = await Moralis.Web3API.native.runContractFunction(options);
-    console.log({ crocPrice });
+    // console.log({ crocPrice });
     const spotPrice = decodeCrocPrice(ethers.BigNumber.from(crocPrice));
-    console.log({ spotPrice });
+    // console.log({ spotPrice });
     return spotPrice;
 };
