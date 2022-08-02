@@ -57,7 +57,7 @@ export default function BarChart(props: BarData) {
             const xScale = series.xScale(),
                 xValue = series.crossValue();
 
-            const filtered = data.filter((d: any) => xValue(d) != null);
+            const filtered = data.lenght > 1 ? data.filter((d: any) => xValue(d) != null) : data;
             const nearest = minimum(filtered, (d: any) => Math.abs(point.x - xScale(xValue(d))))[1];
             const newX = new Date(nearest.time.getTime());
             const value =
@@ -161,7 +161,7 @@ export default function BarChart(props: BarData) {
                 }
             });
 
-        const xFormat = d3.timeFormat(' %b %Y ');
+        const xFormat = d3.timeFormat('%b %Y ');
 
         const chart = d3fc
             .chartCartesian({

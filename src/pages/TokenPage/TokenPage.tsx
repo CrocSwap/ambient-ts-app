@@ -18,6 +18,7 @@ import { formatDollarAmount } from '../../utils/numbers';
 import { ONE_HOUR_SECONDS, TimeWindow } from '../../constants/intervals';
 import { PriceChartEntry } from '../../types';
 import logo from '../../assets/images/logos/ambient_logo.svg';
+import moment from 'moment';
 
 const DEFAULT_TIME_WINDOW = TimeWindow.WEEK;
 
@@ -35,7 +36,7 @@ export default function TokenPage() {
         if (chartData) {
             return chartData.map((day) => {
                 return {
-                    time: new Date(day.date * 1000),
+                    time: new Date(moment(new Date(day.date * 1000)).format('YYYY-MM-DD')),
                     value: day.volumeUSD,
                 };
             });
