@@ -85,7 +85,6 @@ import { addNativeBalance, resetTokenData, setTokens } from '../utils/state/toke
 import { checkIsStable } from '../utils/data/stablePairs';
 
 import Reposition from '../pages/Trade/Reposition/Reposition';
-import { MdSettingsPower } from 'react-icons/md';
 // import SidebarFooter from '../components/Global/SIdebarFooter/SidebarFooter';
 
 const cachedQuerySpotPrice = memoizePromiseFn(querySpotPrice);

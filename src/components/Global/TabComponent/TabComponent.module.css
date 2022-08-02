@@ -96,14 +96,12 @@
   }
   .tab_ul_left{
   
-    width: 70%;
+   width: 100%;
+   display: flex;
+   flex-direction: row;
   }
   .tap_option_right{
-    width: 30%;
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-  max-height: 44px;  
+    display: none;
   }
   
 .tab_icon{
@@ -151,4 +149,21 @@
     justify-content: flex-start;
   
   }
+
+  .tab_ul_left{
+  
+    width: 70%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .tap_option_right{
+    width: 30%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+  max-height: 44px;  
+  }
 } 
+

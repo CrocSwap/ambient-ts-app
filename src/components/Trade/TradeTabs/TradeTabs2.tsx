@@ -15,6 +15,7 @@ import recentTransactionsImage from '../../../assets/images/sidebarImages/recent
 import Ranges from './Ranges/Ranges';
 import { useTokenMap } from '../../../App/components/Sidebar/useTokenMap';
 import TabComponent from '../../Global/TabComponent/TabComponent';
+import PositionsOnlyToggle from './PositionsOnlyToggle/PositionsOnlyToggle';
 
 interface ITabsProps {
     account: string;
@@ -74,6 +75,15 @@ export default function TradeTabs2(props: ITabsProps) {
         graphData: graphData,
         chainId: props.chainId,
     };
+    // props for <PositionsOnlyToggle/> React Element
+
+    const positionsOnlyToggleProps = {
+        isShowAllEnabled: isShowAllEnabled,
+        isAuthenticated: props.isAuthenticated,
+        isWeb3Enabled: props.isWeb3Enabled,
+        setHasInitialized: setHasInitialized,
+        setIsShowAllEnabled: setIsShowAllEnabled,
+    };
 
     const tradeTabData = [
         { label: 'Ranges', content: <Ranges {...rangesProps} />, icon: rangePositionsImage },
@@ -91,5 +101,15 @@ export default function TradeTabs2(props: ITabsProps) {
         stateHandler: props.setSwitchTabToTransactions,
     };
     // -------------------------------END OF DATA-----------------------------------------
-    return <>{<TabComponent data={tradeTabData} outsideTabControl={outsideTabControl} />}</>;
+    return (
+        <>
+            {
+                <TabComponent
+                    data={tradeTabData}
+                    outsideTabControl={outsideTabControl}
+                    rightTabOptions={<PositionsOnlyToggle {...positionsOnlyToggleProps} />}
+                />
+            }
+        </>
+    );
 }

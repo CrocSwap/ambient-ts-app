@@ -22,7 +22,6 @@ import topPoolsImage from '../../../assets/images/sidebarImages/topPools.svg';
 import topTokensImage from '../../../assets/images/sidebarImages/topTokens.svg';
 import closeSidebarImage from '../../../assets/images/sidebarImages/closeSidebar.svg';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import truncateDecimals from '../../../utils/data/truncateDecimals';
 
 // interface for component props
 interface SidebarPropsIF {

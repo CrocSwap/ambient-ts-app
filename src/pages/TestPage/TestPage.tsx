@@ -24,19 +24,8 @@ import styles from './TestPage.module.css';
 // import BouncingBall from '../../components/Global/LoadingAnimations/DotJump/BouncingBall';
 // import CircleLoader from '../../components/Global/LoadingAnimations/CircleLoader/CircleLoader';
 // import RollingBall from '../../components/Global/LoadingAnimations/RollingBall/RollingBall';
-import TabComponent from '../../components/Global/TabComponent/TabComponent';
 
 export default function TestPage() {
-    const allIngredients = [
-        { content: '🍅', label: 'Tomato' },
-        { content: '🥬', label: 'Lettuce' },
-        { content: '🧀', label: 'Cheese' },
-        { content: '🧀', label: 'Carrot' },
-        { content: '🍌', label: 'Banana' },
-        { content: '🫐', label: 'Blueberries' },
-        { content: '🥂', label: 'Champers?' },
-    ];
-
     // // get the user object from local storage
     // const userData = JSON.parse(localStorage.getItem('user') as string);
 

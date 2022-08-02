@@ -1,8 +1,6 @@
 import styles from './TabComponent.module.css';
 import { useState, useEffect, Dispatch, SetStateAction } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ItemEnterAnimation } from '../../../utils/others/FramerMotionAnimations';
-import DropdownMenu2 from '../DropdownMenu2/DropdownMenu2';
 import '../../../App/App.css';
 import { Tooltip } from '@mui/material';
 import { useStyles } from '../../../utils/functions/styles';
@@ -139,17 +137,17 @@ export default function TabComponent(props: TabProps) {
                 {props.rightTabOptions ? tabsWithRightOption : fullTabs}
             </nav>
             <main className={styles.main_tab_content}>
-                {/* <AnimatePresence exitBeforeEnter> */}
-                <div
-                // key={selectedTab ? selectedTab.label : 'empty'}
-                // initial={{ y: 10, opacity: 0 }}
-                // animate={{ y: 0, opacity: 1 }}
-                // exit={{ y: -10, opacity: 0 }}
-                // transition={{ duration: 0.2 }}
-                >
-                    {selectedTab ? selectedTab.content : 'no content to display'}
-                </div>
-                {/* </AnimatePresence> */}
+                <AnimatePresence exitBeforeEnter>
+                    <motion.div
+                    // key={selectedTab ? selectedTab.label : 'empty'}
+                    // initial={{ y: 10, opacity: 0 }}
+                    // animate={{ y: 0, opacity: 1 }}
+                    // exit={{ y: -10, opacity: 0 }}
+                    // transition={{ duration: 0.2 }}
+                    >
+                        {selectedTab ? selectedTab.content : 'no content to display'}
+                    </motion.div>
+                </AnimatePresence>
             </main>
         </div>
     );
