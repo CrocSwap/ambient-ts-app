@@ -597,7 +597,7 @@ export default function App() {
         candleSubscriptionEndpoint,
         {
             // share:  true,
-            // onOpen: () => console.log('opened'),
+            onOpen: () => console.log({ candleSubscriptionEndpoint }),
             onClose: (event) => console.log({ event }),
             // onClose: () => console.log('candles websocket connection closed'),
             // Will attempt to reconnect on all close events, such as server shutting down
@@ -611,6 +611,7 @@ export default function App() {
         if (candlesMessage !== null) {
             const lastMessageData = JSON.parse(candlesMessage.data).data;
             if (lastMessageData) {
+                // console.log({ lastMessageData });
                 Promise.all(lastMessageData.map(getCandleData)).then((updatedCandles) => {
                     // console.log({ updatedCandles });
                     dispatch(
@@ -898,10 +899,6 @@ export default function App() {
     };
 
     const getCandleData = async (candle: CandleData): Promise<CandleData> => {
-        if (candle) {
-            candle.base = candle.base?.startsWith('0x') ? candle.base : '0x' + candle.base;
-            candle.quote = candle.quote?.startsWith('0x') ? candle.quote : '0x' + candle.quote;
-        }
         return candle;
     };
 
