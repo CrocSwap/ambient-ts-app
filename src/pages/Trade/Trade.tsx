@@ -226,6 +226,8 @@ export default function Trade(props: ITradeProps) {
                         setCurrentTxActiveInTransactions={props.setCurrentTxActiveInTransactions}
                         isShowAllEnabled={props.isShowAllEnabled}
                         setIsShowAllEnabled={props.setIsShowAllEnabled}
+                        expandTradeTable={props.expandTradeTable}
+                        setExpandTradeTable={props.setExpandTradeTable}
                     />
                 </div>
             </div>

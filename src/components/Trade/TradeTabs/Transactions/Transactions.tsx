@@ -14,6 +14,9 @@ interface TransactionsProps {
     chainId: string;
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
+
+    expandTradeTable: boolean;
+    setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
 }
 export default function Transactions(props: TransactionsProps) {
     const {

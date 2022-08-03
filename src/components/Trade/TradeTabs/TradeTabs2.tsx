@@ -29,6 +29,9 @@ interface ITabsProps {
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     isShowAllEnabled: boolean;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
+
+    expandTradeTable: boolean;
+    setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function TradeTabs2(props: ITabsProps) {
@@ -73,7 +76,7 @@ export default function TradeTabs2(props: ITabsProps) {
         lastBlockNumber: props.lastBlockNumber,
     };
     // Props for <Transactions/> React Element
-     const transactionsProps = {
+    const transactionsProps = {
         isShowAllEnabled: isShowAllEnabled,
         tokenMap: tokenMap,
         graphData: graphData,
@@ -81,6 +84,8 @@ export default function TradeTabs2(props: ITabsProps) {
         currentTxActiveInTransactions: props.currentTxActiveInTransactions,
 
         setCurrentTxActiveInTransactions: props.setCurrentTxActiveInTransactions,
+        expandTradeTable: props.expandTradeTable,
+        setExpandTradeTable: props.setExpandTradeTable,
     };
     // props for <PositionsOnlyToggle/> React Element
 
