@@ -1,5 +1,5 @@
 import styles from './PortfolioTabs.module.css';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import TabContent from '../../Global/Tabs/TabContent/TabContent';
 import TabNavItem from '../../Global/Tabs/TabNavItem/TabNavItem';
 import Wallet from '../../Global/Account/AccountTabs/Wallet/Wallet';
@@ -7,6 +7,10 @@ import Exchange from '../../Global/Account/AccountTabs/Exchange/Exchange';
 import Range from '../../Global/Account/AccountTabs/Range/Range';
 import Order from '../../Global/Account/AccountTabs/Order/Order';
 import TransactionsTable from '../../Global/Account/AccountTabs/Transaction/TransactionsTable';
+import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import { getPositionData } from '../../../App/functions/getPositionData';
+import { PositionIF } from '../../../utils/state/graphDataSlice';
+
 // import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 // import Wallet from '../../Global/Account/Wallet/Wallet';
 // import Exchange from '../../Global/Account/Exchange/Exchange';
@@ -21,9 +25,46 @@ interface PortfolioTabsPropsIF {
 }
 export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
     const { resolvedAddress, activeAccount, connectedAccountActive, chainId } = props;
-
     const [activeTab, setActiveTab] = useState('tab1');
-    // const graphData = useAppSelector((state) => state?.graphData);
+    const graphData = useAppSelector((state) => state?.graphData);
+    const connectedAccountPositionData = graphData.positionsByUser.positions;
+    const [otherAccountPositionData, setOtherAccountPositionData] = useState<PositionIF[]>([]);
+
+    const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
+
+    const allUserPositionsCacheEndpoint = httpGraphCacheServerDomain + '/user_positions?';
+
+    const getUserPositions = async (accountToSearch: string) =>
+        fetch(
+            allUserPositionsCacheEndpoint +
+                new URLSearchParams({
+                    user: accountToSearch,
+                    chainId: chainId,
+                }),
+        )
+            .then((response) => response?.json())
+            .then((json) => {
+                const userPositions = json?.data;
+
+                if (userPositions) {
+                    Promise.all(userPositions.map(getPositionData)).then((updatedPositions) => {
+                        setOtherAccountPositionData(updatedPositions);
+                    });
+                }
+            })
+            .catch(console.log);
+
+    useEffect(() => {
+        (async () => {
+            if (!connectedAccountActive) {
+                await getUserPositions(activeAccount);
+            }
+        })();
+    }, [activeAccount, connectedAccountActive]);
+
+    const activeAccountPositionData = connectedAccountActive
+        ? connectedAccountPositionData
+        : otherAccountPositionData;
 
     const tabData = [
         { title: 'Wallet', id: 'tab1' },
@@ -62,7 +103,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
                     <Exchange />
                 </TabContent>
                 <TabContent id='tab3' activeTab={activeTab}>
-                    <Range />
+                    <Range positions={activeAccountPositionData} />
                 </TabContent>
                 <TabContent id='tab4' activeTab={activeTab}>
                     <Order />
