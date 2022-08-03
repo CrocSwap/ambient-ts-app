@@ -25,6 +25,8 @@ interface ITabsProps {
     chainId: string;
     switchTabToTransactions: boolean;
     setSwitchTabToTransactions: Dispatch<SetStateAction<boolean>>;
+    currentTxActiveInTransactions: string;
+    setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
 }
 
 export default function TradeTabs2(props: ITabsProps) {
@@ -74,6 +76,9 @@ export default function TradeTabs2(props: ITabsProps) {
         tokenMap: tokenMap,
         graphData: graphData,
         chainId: props.chainId,
+        currentTxActiveInTransactions: props.currentTxActiveInTransactions,
+
+        setCurrentTxActiveInTransactions: props.setCurrentTxActiveInTransactions,
     };
     // props for <PositionsOnlyToggle/> React Element
 

@@ -31,10 +31,19 @@ interface SidebarPropsIF {
     switchTabToTransactions: boolean;
     handleSetTradeTabToTransaction: () => void;
     setSwitchTabToTransactions: Dispatch<SetStateAction<boolean>>;
+    currentTxActiveInTransactions: string;
+    setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
 }
 
 export default function Sidebar(props: SidebarPropsIF) {
-    const { toggleSidebar, showSidebar, chainId, setSwitchTabToTransactions } = props;
+    const {
+        toggleSidebar,
+        showSidebar,
+        chainId,
+        setSwitchTabToTransactions,
+        currentTxActiveInTransactions,
+        setCurrentTxActiveInTransactions,
+    } = props;
 
     const graphData = useAppSelector((state) => state.graphData);
     const swapsByUser = graphData.swapsByUser.swaps;
@@ -64,6 +73,8 @@ export default function Sidebar(props: SidebarPropsIF) {
                 <SidebarRecentTransactions
                     mostRecentTransactions={mostRecentTransactions}
                     coinGeckoTokenMap={coinGeckoTokenMap}
+                    currentTxActiveInTransactions={currentTxActiveInTransactions}
+                    setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
                     chainId={chainId}
                 />
             ),

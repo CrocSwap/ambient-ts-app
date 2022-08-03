@@ -183,12 +183,12 @@ export default function TradeTabs(props: ITabsProps) {
                     <Orders />
                 </TabContent>
                 <TabContent id='tab3' activeTab={activeTab}>
-                    <Transactions
+                    {/* <Transactions
                         isShowAllEnabled={isShowAllEnabled}
                         graphData={graphData}
                         tokenMap={tokenMap}
                         chainId={props.chainId}
-                    />
+                    /> */}
                 </TabContent>
                 <TabContent id='tab4' activeTab={activeTab}>
                     Leaderboard

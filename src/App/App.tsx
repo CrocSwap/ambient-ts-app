@@ -117,6 +117,8 @@ export default function App() {
     const [fallbackChainId, setFallbackChainId] = useState('0x5');
     const [switchTabToTransactions, setSwitchTabToTransactions] = useState<boolean>(false);
 
+    const [currentTxActiveInTransactions, setCurrentTxActiveInTransactions] = useState<string>('');
+
     const chainId = moralisChainId
         ? moralisChainId
         : // : window.ethereum?.networkVersion
@@ -1423,6 +1425,8 @@ export default function App() {
         switchTabToTransactions: switchTabToTransactions,
         handleSetTradeTabToTransaction: handleSetTradeTabToTransaction,
         setSwitchTabToTransactions: setSwitchTabToTransactions,
+        currentTxActiveInTransactions: currentTxActiveInTransactions,
+        setCurrentTxActiveInTransactions: setCurrentTxActiveInTransactions,
         // setShowSidebar : setShowSidebar
     };
 
@@ -1506,6 +1510,10 @@ export default function App() {
                                     chainId={chainId}
                                     switchTabToTransactions={switchTabToTransactions}
                                     setSwitchTabToTransactions={setSwitchTabToTransactions}
+                                    currentTxActiveInTransactions={currentTxActiveInTransactions}
+                                    setCurrentTxActiveInTransactions={
+                                        setCurrentTxActiveInTransactions
+                                    }
                                 />
                             }
                         >
