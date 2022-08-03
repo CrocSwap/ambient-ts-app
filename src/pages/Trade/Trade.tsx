@@ -19,6 +19,7 @@ import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
 // import TradeTabs from '../../components/Trade/TradeTabs/TradeTabs';
 import TradeTabs2 from '../../components/Trade/TradeTabs/TradeTabs2';
 import { Dispatch, SetStateAction } from 'react';
+import { motion } from 'framer-motion';
 
 interface ITradeProps {
     account: string;
@@ -196,7 +197,7 @@ export default function Trade(props: ITradeProps) {
     );
 
     const expandGraphStyle = props.expandTradeTable ? styles.hide_graph : '';
-    const expandTradeTableStyle = props.expandTradeTable ? styles.expand_table : styles.trade_style;
+    // const expandTradeTableStyle = props.expandTradeTable ? styles.expand_table : styles.trade_style;
 
     return (
         // <motion.main
@@ -213,7 +214,18 @@ export default function Trade(props: ITradeProps) {
                     {chartImage}
                 </div>
 
-                <div className={` ${expandTradeTableStyle}`}>
+                <motion.div
+                    animate={{
+                        height: props.expandTradeTable ? '100%' : '30%',
+                        transition: {
+                            duration: 0.5,
+                            type: 'spring',
+                            damping: 10,
+                        },
+                    }}
+
+                    // className={` ${expandTradeTableStyle}`}
+                >
                     <TradeTabs2
                         account={props.account}
                         isAuthenticated={props.isAuthenticated}
@@ -229,7 +241,7 @@ export default function Trade(props: ITradeProps) {
                         expandTradeTable={props.expandTradeTable}
                         setExpandTradeTable={props.setExpandTradeTable}
                     />
-                </div>
+                </motion.div>
             </div>
             {mainContent}
         </main>
