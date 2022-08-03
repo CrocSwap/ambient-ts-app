@@ -14,8 +14,12 @@ function unixToType(unix: number, type: ChartDataTimeframe) {
             return date.format('YYYY-MM-DD hh');
         case ChartDataTimeframe.oneMonth:
             return date.format('YYYY-MM-DD');
-        case ChartDataTimeframe.sixMonth || ChartDataTimeframe.oneYear:
+        case ChartDataTimeframe.sixMonth:
             return date.format('YYYY-MM');
+        case ChartDataTimeframe.oneYear:
+            return date.format('YYYY-MM');
+        default:
+            return date.format('YYYY-MM-DD');
         //     case 'month':
         //         return date.format('YYYY-MM');
         //     case 'week':
@@ -44,6 +48,32 @@ export function useTransformedVolumeData(
                     data[group!] = {
                         time: unixToDate(date),
                         value: volumeUSD,
+                    };
+                }
+            });
+
+            return Object.values(data);
+        } else {
+            return [];
+        }
+    }, [chartData, type]);
+}
+
+export function useTransformedTvlData(
+    chartData: ChartDayData[] | undefined,
+    type: ChartDataTimeframe,
+): any {
+    return useMemo(() => {
+        if (chartData) {
+            const data: Record<string, GenericChartEntry> = {};
+            chartData.forEach(({ date, tvlUSD }: { date: number; tvlUSD: number }) => {
+                const group = unixToType(date, type);
+                if (data[group!]) {
+                    data[group!].value += tvlUSD;
+                } else {
+                    data[group!] = {
+                        time: unixToDate(date),
+                        value: tvlUSD,
                     };
                 }
             });

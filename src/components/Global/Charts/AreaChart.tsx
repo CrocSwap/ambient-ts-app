@@ -33,14 +33,22 @@ declare global {
 
 export default function AreaChart(props: AreaChartProps) {
     const d3Container = useRef(null);
-
+    const chartValue = props.data;
     useEffect(() => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
+        // if (chartValue && chartValue.length<2){
+
+        //     chartValue.push(chartValue[0])
+        //     chartValue.push(chartValue[0])
+        //     chartValue.push(chartValue[0])
+        // }
+
         const yExtent = d3fc.extentLinear().accessors([(d: any) => d.value]);
         const xExtent = d3fc.extentDate().accessors([(d: any) => d.time]);
 
         const data = {
-            series: props.data,
+            series: chartValue,
             crosshair: [{ x: 0, y: -15 }],
         };
 
@@ -142,15 +150,17 @@ export default function AreaChart(props: AreaChartProps) {
                         moment(xVal).format('DD/MM/YYYY'),
                 );
 
-                data.crosshair = [
-                    {
-                        x: event[0].x,
-                        y: yScale(parsed?.value),
-                    },
-                ];
+                if (parsed) {
+                    data.crosshair = [
+                        {
+                            x: event[0].x,
+                            y: yScale(parsed?.value),
+                        },
+                    ];
 
-                props.setValue?.(parsed?.value);
-                props.setLabel?.(getDate(xVal));
+                    props.setValue?.(parsed?.value);
+                    props.setLabel?.(getDate(xVal));
+                }
             }
             render();
         });
@@ -165,7 +175,7 @@ export default function AreaChart(props: AreaChartProps) {
         }
 
         render();
-    }, []);
+    }, [chartValue]);
 
     return (
         <div

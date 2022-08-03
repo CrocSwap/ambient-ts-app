@@ -4,16 +4,10 @@ import { useEffect, useMemo, useState } from 'react';
 import { formatDollarAmount } from '../../../utils/numbers';
 import AreaChart from '../../Global/Charts/AreaChart';
 import BarChart from '../../Global/Charts/BarChart';
-import { useTransformedVolumeData } from '../../../hooks/chart';
+import { useTransformedTvlData, useTransformedVolumeData } from '../../../hooks/chart';
 import logo from '../../../assets/images/logos/ambient_logo.svg';
 import moment from 'moment';
 import { ChartDataTimeframe } from '../../../hooks/ChartDataTimeframe';
-
-export enum VolumeWindow {
-    daily,
-    weekly,
-    monthly,
-}
 
 export default function GraphContainer() {
     const [protocolData] = useProtocolData();
@@ -25,55 +19,64 @@ export default function GraphContainer() {
 
     const [valueLabelTvl, setValueLabelTvl] = useState<string | undefined>();
     const [valueLabelVolume, setValueLabelVolume] = useState<string | undefined>();
-    // const weeklyVolumeData = useTransformedVolumeData(chartData, 'week');
-    // const monthlyVolumeData = useTransformedVolumeData(chartData, 'month');
-    const oneDayVolumeData = useTransformedVolumeData(
-        chartData?.filter(
-            (item) =>
-                moment(item.date * 1000).format('YYYY-MM-DD') ===
-                moment(new Date()).format('YYYY-MM-DD'),
-        ),
-        ChartDataTimeframe.oneDay,
-    );
-    // const monthlyVolumeData = useTransformedVolumeData(chartData, ChartDataTimeframe.oneDay);
-    const oneMonthVolumeData = useTransformedVolumeData(
-        chartData?.filter(
-            (item) =>
-                moment(new Date()).subtract(1, 'M').format('YYYY-MM-DD') <=
-                    moment(item.date * 1000).format('YYYY-MM-DD') ||
-                moment(new Date()).format('YYYY-MM-DD') <=
-                    moment(item.date * 1000).format('YYYY-MM-DD'),
-        ),
-        ChartDataTimeframe.oneMonth,
-    );
+    const [tempData, setTempData] = useState(chartData);
+    // const oneDayVolumeData = useTransformedVolumeData(
+    //     chartData?.filter(
+    //         (item) =>
+    //             moment(item.date * 1000).format('YYYY-MM-DD') ===
+    //             moment(new Date()).format('YYYY-MM-DD'),
+    //     ),
+    //     ChartDataTimeframe.oneDay,
+    // );
+    // const oneMonthVolumeData = useTransformedVolumeData(
+    //     chartData?.filter(
+    //         (item) =>
+    //             moment(new Date()).subtract(1, 'M').format('YYYY-MM-DD') <=
+    //                 moment(item.date * 1000).format('YYYY-MM-DD') ||
+    //             moment(new Date()).format('YYYY-MM-DD') <=
+    //                 moment(item.date * 1000).format('YYYY-MM-DD'),
+    //     ),
+    //     ChartDataTimeframe.oneMonth,
+    // );
 
-    const sixMonthVolumeData = useTransformedVolumeData(
-        chartData?.filter(
-            (item) =>
-                moment(new Date()).subtract(6, 'M').format('YYYY-MM-DD') <=
-                    moment(item.date * 1000).format('YYYY-MM-DD') ||
-                moment(new Date()).format('YYYY-MM-DD') <=
-                    moment(item.date * 1000).format('YYYY-MM-DD'),
-        ),
-        ChartDataTimeframe.sixMonth,
-    );
+    // const sixMonthVolumeData = useTransformedVolumeData(
+    //     chartData?.filter(
+    //         (item) =>
+    //             moment(new Date()).subtract(6, 'M').format('YYYY-MM-DD') <=
+    //                 moment(item.date * 1000).format('YYYY-MM-DD') ||
+    //             moment(new Date()).format('YYYY-MM-DD') <=
+    //                 moment(item.date * 1000).format('YYYY-MM-DD'),
+    //     ),
+    //     ChartDataTimeframe.sixMonth,
+    // );
 
-    const oneYearVolumeData = useTransformedVolumeData(
-        chartData?.filter(
-            (item) =>
-                moment(new Date()).subtract(12, 'M').format('YYYY-MM-DD') <=
-                    moment(item.date * 1000).format('YYYY-MM-DD') ||
-                moment(new Date()).format('YYYY-MM-DD') <=
-                    moment(item.date * 1000).format('YYYY-MM-DD'),
-        ),
-        ChartDataTimeframe.oneYear,
-    );
+    // const oneYearVolumeData = useTransformedVolumeData(
+    //     chartData?.filter(
+    //         (item) =>
+    //             moment(new Date()).subtract(12, 'M').format('YYYY-MM-DD') <=
+    //                 moment(item.date * 1000).format('YYYY-MM-DD') ||
+    //             moment(new Date()).format('YYYY-MM-DD') <=
+    //                 moment(item.date * 1000).format('YYYY-MM-DD'),
+    //     ),
+    //     ChartDataTimeframe.oneYear,
+    // );
+
+    //  const sixMonthVolumeData = useTransformedVolumeData(
+    //     chartData,
+    //     ChartDataTimeframe.oneYear,
+    // );
 
     const [volumeWindow, setVolumeWindow] = useState(ChartDataTimeframe.all);
+
+    const volumeData = useTransformedVolumeData(tempData, volumeWindow);
+
+    const tvlData = useTransformedTvlData(tempData, volumeWindow);
+
     useEffect(() => {
         if (volumeHover === undefined && protocolData) {
             setVolumeHover(protocolData.volumeUSD);
         }
+        setTempData(chartData);
     }, [protocolData, volumeHover]);
 
     useEffect(() => {
@@ -83,95 +86,34 @@ export default function GraphContainer() {
     }, [liquidityHover, protocolData]);
 
     const formattedTvlData = useMemo(() => {
-        if (chartData) {
-            return chartData.map((day) => {
+        if (tvlData) {
+            return tvlData.map((day: any) => {
                 return {
-                    time: new Date(day.date * 1000),
-                    value: day.tvlUSD,
+                    time: new Date(day.time), // new Date(day.time * 1000),
+                    value: day.value,
                 };
             });
         } else {
             return [];
         }
-    }, [chartData]);
+    }, [tvlData]);
 
     const formattedVolumeData = useMemo(() => {
-        if (chartData) {
-            return chartData.map((day) => {
+        if (volumeData) {
+            return volumeData.map((day: any) => {
                 return {
-                    time: new Date(moment(new Date(day.date * 1000)).format('YYYY-MM-DD')),
-                    value: day.volumeUSD,
-                };
-            });
-        } else {
-            return [];
-        }
-    }, [chartData]);
-
-    // {
-    //     "date": 1659398400,
-    //     "volumeUSD": 557660858.2540138,
-    //     "tvlUSD": 4595037017.492477
-    // }
-    // {
-    //     "date": 1659312000,
-    //     "volumeUSD": 1118240108.4692507,
-    //     "tvlUSD": 4631055024.65114
-    // }
-
-    // {
-    //     "date": 1659225600,
-    //     "volumeUSD": 814782234.1296902,
-    //     "tvlUSD": 4662406385.048436
-    // }
-
-    // {
-    //     "date": 1659139200,
-    //     "volumeUSD": 937311550.5366873,
-    //     "tvlUSD": 4675772043.9153805
-    // }
-    const formattedVolumeDataOneMonth = useMemo(() => {
-        if (oneMonthVolumeData) {
-            return oneMonthVolumeData.map((day) => {
-                return {
-                    time: new Date(moment(day.time).format('YYYY-MM-DD')),
+                    time: new Date(day.time), // new Date(moment(new Date(day.time * 1000)).format('YYYY-MM-DD')),
                     value: day.value,
                 };
             });
         } else {
             return [];
         }
-    }, [chartData]);
+    }, [volumeData]);
 
-    const formattedVolumeDataSixMonth = useMemo(() => {
-        if (sixMonthVolumeData) {
-            return sixMonthVolumeData.map((day) => {
-                return {
-                    time: new Date(moment(day.time).format('YYYY-MM-DD')),
-                    value: day.value,
-                };
-            });
-        } else {
-            return [];
-        }
-    }, [chartData]);
-
-    const formattedVolumeDataOneYear = useMemo(() => {
-        if (oneYearVolumeData) {
-            return oneYearVolumeData.map((day) => {
-                return {
-                    time: new Date(moment(day.time).format('YYYY-MM-DD')),
-                    value: day.value,
-                };
-            });
-        } else {
-            return [];
-        }
-    }, [chartData]);
-
-    // const formattedVolumeDataWeek = useMemo(() => {
-    //     if (weeklyVolumeData) {
-    //         return weeklyVolumeData.map((day) => {
+    // const formattedVolumeDataOneMonth = useMemo(() => {
+    //     if (oneMonthVolumeData) {
+    //         return oneMonthVolumeData.map((day) => {
     //             return {
     //                 time: new Date(moment(day.time).format('YYYY-MM-DD')),
     //                 value: day.value,
@@ -182,9 +124,9 @@ export default function GraphContainer() {
     //     }
     // }, [chartData]);
 
-    // const formattedVolumeDataMonth = useMemo(() => {
-    //     if (monthlyVolumeData) {
-    //         return monthlyVolumeData.map((day) => {
+    // const formattedVolumeDataSixMonth = useMemo(() => {
+    //     if (sixMonthVolumeData) {
+    //         return sixMonthVolumeData.map((day) => {
     //             return {
     //                 time: new Date(moment(day.time).format('YYYY-MM-DD')),
     //                 value: day.value,
@@ -195,19 +137,85 @@ export default function GraphContainer() {
     //     }
     // }, [chartData]);
 
-    const formattedVolumeDataOneDay = useMemo(() => {
-        if (oneDayVolumeData) {
-            return oneDayVolumeData.map((day) => {
-                return {
-                    time: new Date(moment(day.time).format('YYYY-MM-DD')),
-                    value: day.value,
-                };
-            });
-        } else {
-            return [];
-        }
-    }, [chartData]);
+    // const formattedVolumeDataOneYear = useMemo(() => {
+    //     if (oneYearVolumeData) {
+    //         return oneYearVolumeData.map((day) => {
+    //             return {
+    //                 time: new Date(moment(day.time).format('YYYY-MM-DD')),
+    //                 value: day.value,
+    //             };
+    //         });
+    //     } else {
+    //         return [];
+    //     }
+    // }, [chartData]);
 
+    // const formattedVolumeDataOneDay = useMemo(() => {
+    //     if (oneDayVolumeData) {
+    //         return oneDayVolumeData.map((day) => {
+    //             return {
+    //                 time: new Date(moment(day.time).format('YYYY-MM-DD')),
+    //                 value: day.value,
+    //             };
+    //         });
+    //     } else {
+    //         return [];
+    //     }
+    // }, [chartData]);
+
+    const setChartDataValues = (_volumeWindow: ChartDataTimeframe) => {
+        setVolumeWindow(_volumeWindow);
+        switch (_volumeWindow) {
+            case ChartDataTimeframe.oneDay:
+                setTempData(
+                    chartData?.filter(
+                        (item) =>
+                            moment(item.date * 1000).format('YYYY-MM-DD') ===
+                            moment(new Date()).format('YYYY-MM-DD'),
+                    ),
+                );
+                break;
+
+            case ChartDataTimeframe.oneMonth:
+                setTempData(
+                    chartData?.filter(
+                        (item) =>
+                            moment(new Date()).subtract(1, 'M').format('YYYY-MM-DD') <=
+                                moment(item.date * 1000).format('YYYY-MM-DD') ||
+                            moment(new Date()).format('YYYY-MM-DD') <=
+                                moment(item.date * 1000).format('YYYY-MM-DD'),
+                    ),
+                );
+                break;
+
+            case ChartDataTimeframe.sixMonth:
+                setTempData(
+                    chartData?.filter(
+                        (item) =>
+                            moment(new Date()).subtract(6, 'M').format('YYYY-MM-DD') <=
+                                moment(item.date * 1000).format('YYYY-MM-DD') ||
+                            moment(new Date()).format('YYYY-MM-DD') <=
+                                moment(item.date * 1000).format('YYYY-MM-DD'),
+                    ),
+                );
+                break;
+
+            case ChartDataTimeframe.oneYear:
+                setTempData(
+                    chartData?.filter(
+                        (item) =>
+                            moment(new Date()).subtract(12, 'M').format('YYYY-MM-DD') <=
+                                moment(item.date * 1000).format('YYYY-MM-DD') ||
+                            moment(new Date()).format('YYYY-MM-DD') <=
+                                moment(item.date * 1000).format('YYYY-MM-DD'),
+                    ),
+                );
+                break;
+
+            default:
+                setTempData(chartData);
+        }
+    };
     const timeFrame = (
         <div className={styles.time_frame_container}>
             <div className={styles.title}>Ambient Analytics</div>
@@ -215,54 +223,54 @@ export default function GraphContainer() {
                 <span>Timeframe</span>
                 <button
                     style={{
-                        backgroundColor: volumeWindow === ChartDataTimeframe.all ? '#7371FC' : '',
+                        backgroundColor:
+                            volumeWindow === ChartDataTimeframe.oneDay ? '#7371FC' : '',
                         cursor: 'pointer',
                     }}
-                    onClick={() => setVolumeWindow(ChartDataTimeframe.oneDay)}
+                    onClick={() => setChartDataValues(ChartDataTimeframe.oneDay)}
                 >
                     1d
                 </button>
-                <button onClick={() => setVolumeWindow(ChartDataTimeframe.oneMonth)}>1M</button>
-                <button onClick={() => setVolumeWindow(ChartDataTimeframe.sixMonth)}>6M </button>
-                <button onClick={() => setVolumeWindow(ChartDataTimeframe.oneYear)}>1Y</button>
-                <button onClick={() => setVolumeWindow(ChartDataTimeframe.all)}>All</button>
+                <button
+                    style={{
+                        backgroundColor:
+                            volumeWindow === ChartDataTimeframe.oneMonth ? '#7371FC' : '',
+                        cursor: 'pointer',
+                    }}
+                    onClick={() => setChartDataValues(ChartDataTimeframe.oneMonth)}
+                >
+                    1M
+                </button>
+                <button
+                    style={{
+                        backgroundColor:
+                            volumeWindow === ChartDataTimeframe.sixMonth ? '#7371FC' : '',
+                        cursor: 'pointer',
+                    }}
+                    onClick={() => setChartDataValues(ChartDataTimeframe.sixMonth)}
+                >
+                    6M{' '}
+                </button>
+                <button
+                    style={{
+                        backgroundColor:
+                            volumeWindow === ChartDataTimeframe.oneYear ? '#7371FC' : '',
+                        cursor: 'pointer',
+                    }}
+                    onClick={() => setChartDataValues(ChartDataTimeframe.oneYear)}
+                >
+                    1Y
+                </button>
+                <button
+                    style={{
+                        backgroundColor: volumeWindow === ChartDataTimeframe.all ? '#7371FC' : '',
+                        cursor: 'pointer',
+                    }}
+                    onClick={() => setChartDataValues(ChartDataTimeframe.all)}
+                >
+                    All
+                </button>
             </div>
-        </div>
-    );
-
-    const dateFrame = (
-        <div className={styles.time_frame_container}>
-            <div className={styles.title}>Volume 24H</div>
-            {/* <div className={styles.right_side}>
-                <span>Timeframe</span>
-                <button
-                    style={{
-                        backgroundColor: volumeWindow === VolumeWindow.daily ? '#7371FC' : '',
-                        cursor: 'pointer',
-                    }}
-                    onClick={() => setVolumeWindow(VolumeWindow.daily)}
-                >
-                    Daily
-                </button>
-                <button
-                    style={{
-                        backgroundColor: volumeWindow === VolumeWindow.weekly ? '#7371FC' : '',
-                        cursor: 'pointer',
-                    }}
-                    // onClick={() => setVolumeWindow(VolumeWindow.weekly)}
-                >
-                    Weekly
-                </button>
-                <button
-                    style={{
-                        backgroundColor: volumeWindow === VolumeWindow.monthly ? '#7371FC' : '',
-                        cursor: 'pointer',
-                    }}
-                    // onClick={() => setVolumeWindow(VolumeWindow.monthly)}
-                >
-                    Monthly
-                </button>
-            </div> */}
         </div>
     );
 
@@ -271,6 +279,21 @@ export default function GraphContainer() {
             <img src={logo} width={110} alt='logo' />
         </div>
     );
+
+    // const volumeChartData = ()=> {
+    //     switch (volumeWindow) {
+    //         case ChartDataTimeframe.oneDay:
+    //         return formattedVolumeData;
+    //         case ChartDataTimeframe.oneMonth:
+    //             return formattedVolumeData;
+    //         case ChartDataTimeframe.sixMonth:
+    //             return formattedVolumeData;
+    //         case ChartDataTimeframe.oneYear:
+    //             return formattedVolumeData;
+    //         default:
+    //             return formattedVolumeData;
+    //     }
+    // }
 
     const graphData = (
         <div className={styles.graph_data}>
@@ -302,7 +325,7 @@ export default function GraphContainer() {
                 </div>
             </div>
             <div className={styles.graph_container}>
-                {dateFrame}
+                <div className={styles.title}>Volume 24H</div>
                 <label className={styles.eJnjNO}>
                     {latestValueVolume
                         ? formatDollarAmount(latestValueVolume, 2)
@@ -315,22 +338,7 @@ export default function GraphContainer() {
                 <div className={styles.chart_container}>
                     {chartData ? (
                         <BarChart
-                            data={
-                                volumeWindow === ChartDataTimeframe.oneMonth
-                                    ? formattedVolumeDataOneMonth
-                                    : ChartDataTimeframe.sixMonth
-                                    ? formattedVolumeDataSixMonth
-                                    : ChartDataTimeframe.oneYear
-                                    ? formattedVolumeDataOneYear
-                                    : ChartDataTimeframe.oneDay
-                                    ? formattedVolumeDataOneDay
-                                    : formattedVolumeData
-                                // volumeWindow === ChartDataTimeframe.monthly
-                                //     ? formattedVolumeDataMonth
-                                //     : volumeWindow === ChartDataTimeframe.weekly
-                                //     ? formattedVolumeDataWeek
-                                //     : formattedVolumeData
-                            }
+                            data={formattedVolumeData}
                             value={latestValueVolume}
                             label={valueLabelVolume}
                             setValue={setLatestValueVolume}
