@@ -50,6 +50,8 @@ export default function Sidebar(props: SidebarPropsIF) {
         isShowAllEnabled,
         setIsShowAllEnabled,
         switchTabToTransactions,
+        expandTradeTable,
+        setExpandTradeTable,
     } = props;
 
     const graphData = useAppSelector((state) => state.graphData);
@@ -115,7 +117,9 @@ export default function Sidebar(props: SidebarPropsIF) {
             <nav className={`${styles.sidebar} ${sidebarStyle}`}>
                 <ul className={styles.sidebar_nav}>
                     {searchContainer}
-                    <div onClick={() => setSwitchTabToTransactions(true)}>Recent Transactions</div>
+                    <div onClick={() => setExpandTradeTable(!expandTradeTable)}>
+                        Recent Transactions
+                    </div>
                     {navItems1.map((item, idx) => (
                         <SidebarAccordion
                             showSidebar={showSidebar}

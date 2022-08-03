@@ -1533,6 +1533,8 @@ export default function App() {
                                     }
                                     isShowAllEnabled={isShowAllEnabled}
                                     setIsShowAllEnabled={setIsShowAllEnabled}
+                                    expandTradeTable={expandTradeTable}
+                                    setExpandTradeTable={setExpandTradeTable}
                                 />
                             }
                         >

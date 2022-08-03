@@ -233,6 +233,10 @@ and (-webkit-min-device-pixel-ratio: 2) {
     height: 30%;
    
   }
+
+  .hide_graph{
+    display: none;
+  }
 }
 
 
