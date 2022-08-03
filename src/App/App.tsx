@@ -30,7 +30,7 @@ import {
     contractAddresses,
     getTokenBalanceDisplay,
     sortBaseQuoteTokens,
-    getTokenDecimals,
+    // getTokenDecimals,
     getTokenAllowance,
     toDisplayPrice,
     tickToPrice,
