@@ -1,6 +1,10 @@
 import { PoolIF, TokenIF } from '../../../utils/interfaces/exports';
 
-export default function clickStar(token: TokenIF, chain: string) {
+export default function clickStar(
+    token: TokenIF,
+    chain: string,
+    poolId: number
+) {
     console.log('user clicked the star: ', token);
     // native token address is always 0x0[...] on every chain
     const nativeTokenAddress = '0x0000000000000000000000000000000000000000';
@@ -25,7 +29,7 @@ export default function clickStar(token: TokenIF, chain: string) {
     const addPoolToFavorites = () => {
         const pool: PoolIF = {
             tokens: [],
-            poolId: 36000,
+            poolId: poolId,
             chainId: chain
         };
         switch (token.address) {
@@ -46,7 +50,7 @@ export default function clickStar(token: TokenIF, chain: string) {
             !pool.tokens.includes(token.address) ||
             !pool.tokens.includes(otherAddress) ||
             pool.chainId !== chain ||
-            pool.poolId !== 36000
+            pool.poolId !== poolId
         );
         user.favePools = newFavePools;
     }
