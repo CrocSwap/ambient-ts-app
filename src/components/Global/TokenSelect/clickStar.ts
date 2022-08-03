@@ -41,7 +41,17 @@ export default function clickStar(token: TokenIF, chain: string) {
         user.favePools.push(pool);
     }
 
-    isPoolInFavorites || addPoolToFavorites();
+    const removePoolFromFavorites = () => {
+        const newFavePools = user.favePools.filter((pool: PoolIF) => 
+            !pool.tokens.includes(token.address) ||
+            !pool.tokens.includes(otherAddress) ||
+            pool.chainId !== chain ||
+            pool.poolId !== 36000
+        );
+        user.favePools = newFavePools;
+    }
+
+    isPoolInFavorites ? removePoolFromFavorites() : addPoolToFavorites();
 
     // send updated user object to local storage
     localStorage.setItem('user', JSON.stringify(user));
