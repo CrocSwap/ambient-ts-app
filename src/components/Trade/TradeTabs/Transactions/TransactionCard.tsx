@@ -118,7 +118,14 @@ export default function TransactionCard(props: TransactionProps) {
         swap.id === currentTxActiveInTransactions ? styles.active_tx_style : '';
 
     return (
-        <div className={`${styles.main_container} ${activeTransactionStyle}`}>
+        <div
+            className={`${styles.main_container} ${activeTransactionStyle}`}
+            onClick={() =>
+                swap.id === currentTxActiveInTransactions
+                    ? null
+                    : setCurrentTxActiveInTransactions('')
+            }
+        >
             <div className={styles.row_container}>
                 {/* ------------------------------------------------------ */}
 

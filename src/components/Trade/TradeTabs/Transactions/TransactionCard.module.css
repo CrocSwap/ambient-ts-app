@@ -4,7 +4,6 @@
     grid-template-columns:  auto 50px;
     align-items: center;
     height: 40px;
-    position: relative;
     /* display: none; */
 }
 .row_container{
