@@ -2,7 +2,7 @@
 import { useEffect, useState, useMemo } from 'react';
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import {
-    Position,
+    PositionIF,
     resetGraphData,
     setPositionsByPool,
     setPositionsByUser,
@@ -33,7 +33,6 @@ import {
 
     // eslint-disable-next-line
     getTokenDecimals,
-
     getTokenAllowance,
     toDisplayPrice,
     tickToPrice,
@@ -1003,7 +1002,7 @@ export default function App() {
         return candle;
     };
 
-    const getPositionData = async (position: Position): Promise<Position> => {
+    const getPositionData = async (position: PositionIF): Promise<PositionIF> => {
         position.base = position.base.startsWith('0x') ? position.base : '0x' + position.base;
         position.quote = position.quote.startsWith('0x') ? position.quote : '0x' + position.quote;
         position.user = position.user.startsWith('0x') ? position.user : '0x' + position.user;

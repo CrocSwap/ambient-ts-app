@@ -38,7 +38,7 @@ interface SidebarPropsIF {
 }
 
 export default function Sidebar(props: SidebarPropsIF) {
-   const {
+    const {
         toggleSidebar,
         showSidebar,
         chainId,
@@ -52,30 +52,40 @@ export default function Sidebar(props: SidebarPropsIF) {
 
     const graphData = useAppSelector((state) => state.graphData);
     const swapsByUser = graphData.swapsByUser.swaps;
+    const positionsByUser = graphData.positionsByUser.positions;
 
     const mostRecentTransactions = swapsByUser.slice(0, 4);
+    const mostRecentPositions = positionsByUser.slice(0, 4);
 
     // TODO:  @Ben this is the map with all the coin gecko token data objects
     const coinGeckoTokenMap = useTokenMap();
     // console.assert(coinGeckoTokenMap, 'no map present');
 
-    const navItems1 = [
+    const topItems = [
         { name: 'Top Tokens', icon: topTokensImage, data: <TopTokens /> },
         { name: 'Top Pools', icon: topPoolsImage, data: <TopPools /> },
-        { name: 'Range Positions', icon: rangePositionsImage, data: <SidebarRangePositions /> },
+    ];
+    const recentRangePositions = [
+        {
+            name: 'Range Positions',
+            icon: rangePositionsImage,
+            data: <SidebarRangePositions mostRecentPositions={mostRecentPositions} />,
+        },
+    ];
+    const recentLimitOrders = [
         { name: 'Limit Orders', icon: openOrdersImage, data: <SidebarLimitOrders /> },
     ];
 
-    const navItems2 = [
+    const favoritePools = [
         { name: 'Favorite Pools', icon: favouritePoolsImage, data: <FavoritePools /> },
     ];
 
-    const navItems3 = [
+    const recentTransactions = [
         {
             name: 'Recent Transactions',
             icon: recentTransactionsImage,
             data: (
-              <SidebarRecentTransactions
+                <SidebarRecentTransactions
                     mostRecentTransactions={mostRecentTransactions}
                     coinGeckoTokenMap={coinGeckoTokenMap}
                     currentTxActiveInTransactions={currentTxActiveInTransactions}
@@ -114,33 +124,55 @@ export default function Sidebar(props: SidebarPropsIF) {
                 <ul className={styles.sidebar_nav}>
                     {searchContainer}
                     <div onClick={() => setSwitchTabToTransactions(true)}>Recent Transactions</div>
-                    {navItems1.map((item, idx) => (
+                    {topItems.map((item, idx) => (
                         <SidebarAccordion
                             showSidebar={showSidebar}
                             idx={idx}
                             item={item}
                             toggleSidebar={toggleSidebar}
                             key={idx}
+                            // mostRecent={mostRecentPositions}
                         />
                     ))}
                     <div className={styles.bottom_elements}>
-                        {navItems2.map((item, idx) => (
+                        {recentRangePositions.map((item, idx) => (
                             <SidebarAccordion
                                 toggleSidebar={toggleSidebar}
                                 showSidebar={showSidebar}
                                 idx={idx}
                                 item={item}
                                 key={idx}
+                                mostRecent={mostRecentPositions}
                             />
                         ))}
-                        {navItems3.map((item, idx) => (
+                        {recentLimitOrders.map((item, idx) => (
                             <SidebarAccordion
                                 toggleSidebar={toggleSidebar}
                                 showSidebar={showSidebar}
                                 idx={idx}
                                 item={item}
                                 key={idx}
-                                mostRecentTransactions={mostRecentTransactions}
+                                // mostRecent={mostRecentTransactions}
+                            />
+                        ))}
+                        {favoritePools.map((item, idx) => (
+                            <SidebarAccordion
+                                toggleSidebar={toggleSidebar}
+                                showSidebar={showSidebar}
+                                idx={idx}
+                                item={item}
+                                key={idx}
+                                // mostRecent={mostRecentTransactions}
+                            />
+                        ))}
+                        {recentTransactions.map((item, idx) => (
+                            <SidebarAccordion
+                                toggleSidebar={toggleSidebar}
+                                showSidebar={showSidebar}
+                                idx={idx}
+                                item={item}
+                                key={idx}
+                                mostRecent={mostRecentTransactions}
                             />
                         ))}
                     </div>

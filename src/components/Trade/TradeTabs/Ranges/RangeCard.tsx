@@ -4,14 +4,14 @@ import WalletAndId from '../../../Global/Tabs/WalletAndID/WalletAndId';
 import RangeStatus from '../../../Global/RangeStatus/RangeStatus';
 import RangeMinMax from '../../../Global/Tabs/RangeMinMax/RangeMinMax';
 import Apy from '../../../Global/Tabs/Apy/Apy';
-import { Position } from '../../../../utils/state/graphDataSlice';
+import { PositionIF } from '../../../../utils/state/graphDataSlice';
 import { ambientPosSlot, concPosSlot } from '@crocswap-libs/sdk';
 import RangesMenu from '../../../Global/Tabs/TableMenu/TableMenuComponents/RangesMenu';
 
 interface RangeCardProps {
     portfolio?: boolean;
     notOnTradeRoute?: boolean;
-    position: Position;
+    position: PositionIF;
     isAllPositionsEnabled: boolean;
     tokenAAddress: string;
     tokenBAddress: string;
