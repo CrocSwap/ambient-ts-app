@@ -25,6 +25,7 @@ interface TabProps {
 export default function TabComponent(props: TabProps) {
     const { data, outsideTabControl } = props;
 
+
     const [selectedTab, setSelectedTab] = useState(data[0]);
 
     useEffect(() => {

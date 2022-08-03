@@ -2,62 +2,66 @@ import PoolCard from '../../Global/PoolCard/PoolCard';
 import styles from './TopPools.module.css';
 import { motion, AnimateSharedLayout } from 'framer-motion';
 import { useState } from 'react';
+import { topPools } from '../../../App/mockData';
+import { useTranslation } from 'react-i18next';
 
 export default function TopPools() {
     const [selected, setSelected] = useState(-2);
 
-    const statCardData = [
-        {
-            title: 'Total TVL',
-            value: '1,000,000,000',
-            speed: -2,
-            id: 1,
-        },
-        {
-            title: 'Total Volume',
-            value: '1,000,000,000',
-            speed: 0,
-            id: 2,
-        },
-        {
-            title: 'Total Fees',
-            value: '1,000,000,000',
-            speed: 0,
-            id: 3,
-        },
+    const { t } = useTranslation();
 
-        {
-            title: 'Total Fees',
-            value: '1,000,000,000',
-            speed: -1,
-            id: 4,
-        },
-        {
-            title: 'Total Fees',
-            value: '1,000,000,000',
-            speed: 0.5,
-            id: 5,
-        },
+    // const statCardData = [
+    //     {
+    //         title: 'Total TVL',
+    //         value: '1,000,000,000',
+    //         speed: -2,
+    //         id: 1,
+    //     },
+    //     {
+    //         title: 'Total Volume',
+    //         value: '1,000,000,000',
+    //         speed: 0,
+    //         id: 2,
+    //     },
+    //     {
+    //         title: 'Total Fees',
+    //         value: '1,000,000,000',
+    //         speed: 0,
+    //         id: 3,
+    //     },
 
-        {
-            title: 'Total Fees',
-            value: '1,000,000,000',
-            speed: 0,
-            id: 8,
-        },
-        {
-            title: 'Total Fees',
-            value: '1,000,000,000',
-            speed: 0,
-            id: 6,
-        },
-        {
-            title: 'Total Fees',
-            value: '1,000,000,000',
-            speed: 0.5,
-            id: 7,
-        },
-    ];
+    //     {
+    //         title: 'Total Fees',
+    //         value: '1,000,000,000',
+    //         speed: -1,
+    //         id: 4,
+    //     },
+    //     {
+    //         title: 'Total Fees',
+    //         value: '1,000,000,000',
+    //         speed: 0.5,
+    //         id: 5,
+    //     },
+
+    //     {
+    //         title: 'Total Fees',
+    //         value: '1,000,000,000',
+    //         speed: 0,
+    //         id: 8,
+    //     },
+    //     {
+    //         title: 'Total Fees',
+    //         value: '1,000,000,000',
+    //         speed: 0,
+    //         id: 6,
+    //     },
+    //     {
+    //         title: 'Total Fees',
+    //         value: '1,000,000,000',
+    //         speed: 0.5,
+    //         id: 7,
+    //     },
+    // ];
 
     return (
         <AnimateSharedLayout>
@@ -67,11 +71,12 @@ export default function TopPools() {
                 animate={{ width: '100%' }}
                 exit={{ x: window.innerWidth, transition: { duration: 2 } }}
             >
-                <div className={styles.title}>Top Pools</div>
+                <div className={styles.title}>{t('topPools')}</div>
                 <div className={styles.content}>
-                    {statCardData.map((pool, idx) => (
+                    {topPools.map((pool, idx) => (
                         <PoolCard
                             speed={pool.speed}
+                            name={pool.name}
                             key={idx}
                             isSelected={selected === pool.id}
                             onClick={() => setSelected(pool.id ? pool.id : -2)}

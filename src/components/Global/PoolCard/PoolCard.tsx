@@ -4,6 +4,7 @@ interface PoolCardProps {
     onClick: () => void;
     isSelected: boolean;
     speed: number;
+    name: string;
 }
 const spring = {
     type: 'spring',
@@ -12,7 +13,7 @@ const spring = {
 };
 
 export default function PoolCard(props: PoolCardProps) {
-    const { isSelected, onClick } = props;
+    const { isSelected, onClick, name } = props;
 
     return (
         <motion.div className={styles.pool_card} onMouseEnter={onClick}>
@@ -27,7 +28,7 @@ export default function PoolCard(props: PoolCardProps) {
                         alt=''
                     />
                 </div>
-                <div className={styles.tokens_name}>ETH / USDC</div>
+                <div className={styles.tokens_name}>{name}</div>
             </div>
 
             <div className={styles.row}>
