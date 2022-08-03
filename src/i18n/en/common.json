@@ -9,5 +9,26 @@
     "swapTitle": "Swap",
     "tradeTitle": "Trade",
     "analyticsTitle": "Analytics",
-    "accountTitle": "Account"
+    "accountTitle": "Account",
+    "topPools": "Top Pools",
+    "slide2": {
+        "part1": "The on-chain exchange designed",
+        "part2": "for traders"
+    },
+    "slide3": {
+        "part1": "runs the entire DEX inside a",
+        "part2": "single smart contract"
+    },
+    "slide4": {
+        "part1": "combines liquidity in the",
+        "part2": "same pool"
+    },
+    "slide5": {
+        "part1": "something something good for devs..."
+    },
+    "slide6": {
+        "part1": "something something gas savings..."
+    },
+    "homeStatsTitle": "DEX Stats",
+    "ourInvestorsTitle": "Our Investors"
 }

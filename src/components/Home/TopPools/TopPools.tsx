@@ -3,9 +3,12 @@ import styles from './TopPools.module.css';
 import { motion, AnimateSharedLayout } from 'framer-motion';
 import { useState } from 'react';
 import { topPools } from '../../../App/mockData';
+import { useTranslation } from 'react-i18next';
 
 export default function TopPools() {
     const [selected, setSelected] = useState(-2);
+
+    const { t } = useTranslation();
 
     // const statCardData = [
     //     {
@@ -68,7 +71,7 @@ export default function TopPools() {
                 animate={{ width: '100%' }}
                 exit={{ x: window.innerWidth, transition: { duration: 2 } }}
             >
-                <div className={styles.title}>Top Pools</div>
+                <div className={styles.title}>{t('topPools')}</div>
                 <div className={styles.content}>
                     {topPools.map((pool, idx) => (
                         <PoolCard

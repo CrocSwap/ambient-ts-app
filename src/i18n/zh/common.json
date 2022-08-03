@@ -5,5 +5,26 @@
     "swapTitle": "交换",
     "tradeTitle": "贸易",
     "analyticsTitle": "分析",
-    "accountTitle": "帐户"
+    "accountTitle": "帐户",
+    "topPools": "顶级资本池",
+    "slide2": {
+        "part1": "链上交易所设计",
+        "part2": "对于交易者"
+    },
+    "slide3": {
+        "part1": "中运行整个 DEX",
+        "part2": "单个智能合约"
+    },
+    "slide4": {
+        "part1": "合流动性",
+        "part2": "在同一个池中结"
+    },
+    "slide5": {
+        "part1": "对开发人员有好处的东西..."
+    },
+    "slide6": {
+        "part1": "关于省油的事..."
+    },
+    "homeStatsTitle": "DEX 统计",
+    "ourInvestorsTitle": "我们的投资者"
 }
