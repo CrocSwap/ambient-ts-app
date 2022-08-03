@@ -2,7 +2,7 @@
 import { useEffect, useState, useMemo } from 'react';
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import {
-    Position,
+    PositionIF,
     resetGraphData,
     setPositionsByPool,
     setPositionsByUser,
@@ -30,6 +30,8 @@ import {
     contractAddresses,
     getTokenBalanceDisplay,
     sortBaseQuoteTokens,
+
+    // eslint-disable-next-line
     getTokenDecimals,
     getTokenAllowance,
     toDisplayPrice,
@@ -116,11 +118,9 @@ export default function App() {
 
     const [fallbackChainId, setFallbackChainId] = useState('0x5');
     const [switchTabToTransactions, setSwitchTabToTransactions] = useState<boolean>(false);
-    // my data only toggle
-    const [isShowAllEnabled, setIsShowAllEnabled] = useState<boolean>(true);
 
-    const [currentClickedTxHashFromRecentTx, SetCurrentClickedTxHashFromRecentTx] =
-        useState<string>('');
+    const [isShowAllEnabled, setIsShowAllEnabled] = useState<boolean>(true);
+    const [currentTxActiveInTransactions, setCurrentTxActiveInTransactions] = useState<string>('');
 
     const chainId = moralisChainId
         ? moralisChainId
@@ -1002,7 +1002,7 @@ export default function App() {
         return candle;
     };
 
-    const getPositionData = async (position: Position): Promise<Position> => {
+    const getPositionData = async (position: PositionIF): Promise<PositionIF> => {
         position.base = position.base.startsWith('0x') ? position.base : '0x' + position.base;
         position.quote = position.quote.startsWith('0x') ? position.quote : '0x' + position.quote;
         position.user = position.user.startsWith('0x') ? position.user : '0x' + position.user;
@@ -1434,10 +1434,12 @@ export default function App() {
         switchTabToTransactions: switchTabToTransactions,
         handleSetTradeTabToTransaction: handleSetTradeTabToTransaction,
         setSwitchTabToTransactions: setSwitchTabToTransactions,
+
+        currentTxActiveInTransactions: currentTxActiveInTransactions,
+        setCurrentTxActiveInTransactions: setCurrentTxActiveInTransactions,
         isShowAllEnabled: isShowAllEnabled,
         setIsShowAllEnabled: setIsShowAllEnabled,
-        currentClickedTxHashFromRecentTx: currentClickedTxHashFromRecentTx,
-        SetCurrentClickedTxHashFromRecentTx: SetCurrentClickedTxHashFromRecentTx,
+
         // setShowSidebar : setShowSidebar
     };
 
@@ -1521,14 +1523,12 @@ export default function App() {
                                     chainId={chainId}
                                     switchTabToTransactions={switchTabToTransactions}
                                     setSwitchTabToTransactions={setSwitchTabToTransactions}
+                                    currentTxActiveInTransactions={currentTxActiveInTransactions}
+                                    setCurrentTxActiveInTransactions={
+                                        setCurrentTxActiveInTransactions
+                                    }
                                     isShowAllEnabled={isShowAllEnabled}
                                     setIsShowAllEnabled={setIsShowAllEnabled}
-                                    currentClickedTxHashFromRecentTx={
-                                        currentClickedTxHashFromRecentTx
-                                    }
-                                    SetCurrentClickedTxHashFromRecentTx={
-                                        SetCurrentClickedTxHashFromRecentTx
-                                    }
                                 />
                             }
                         >

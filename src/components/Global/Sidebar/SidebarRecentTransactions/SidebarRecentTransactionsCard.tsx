@@ -9,21 +9,26 @@ interface TransactionProps {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     coinGeckoTokenMap?: Map<string, TokenIF>;
     chainId: string;
+    currentTxActiveInTransactions: string;
+    setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     isShowAllEnabled: boolean;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
-    currentClickedTxHashFromRecentTx: string;
-    SetCurrentClickedTxHashFromRecentTx: Dispatch<SetStateAction<string>>;
+    setSwitchTabToTransactions: Dispatch<SetStateAction<boolean>>;
+    switchTabToTransactions: boolean;
 }
 
+
 export default function SidebarRecentTransactionsCard(props: TransactionProps) {
-    const {
+  const {
         tx,
         coinGeckoTokenMap,
         chainId,
-        isShowAllEnabled,
+        // currentTxActiveInTransactions,
+        setCurrentTxActiveInTransactions,
+        // isShowAllEnabled,
         setIsShowAllEnabled,
-        currentClickedTxHashFromRecentTx,
-        SetCurrentClickedTxHashFromRecentTx,
+        setSwitchTabToTransactions,
+        switchTabToTransactions,
     } = props;
 
     // console.log(tx.source);
@@ -47,24 +52,15 @@ export default function SidebarRecentTransactionsCard(props: TransactionProps) {
     //     </div>
     // );
 
-    // todoJr: take a look at this again. We might not need the else
-    function handleCurrentTx(transaction: ISwap) {
-        if (currentClickedTxHashFromRecentTx !== '') {
-            SetCurrentClickedTxHashFromRecentTx(transaction.id);
-        } else {
-            SetCurrentClickedTxHashFromRecentTx(transaction.id);
-        }
-    }
+ function handleRecentTransactionClick(tx: ISwap) {
+        switchTabToTransactions ? null : setSwitchTabToTransactions(true);
+        setIsShowAllEnabled(false);
 
-    function handleTransactionCardClick(transaction: ISwap) {
-        if (isShowAllEnabled) {
-            setIsShowAllEnabled(false);
-        }
-        handleCurrentTx(transaction);
+        setCurrentTxActiveInTransactions(tx.id);
     }
 
     return (
-        <div className={styles.container} onClick={() => handleTransactionCardClick(tx)}>
+         <div className={styles.container} onClick={() => handleRecentTransactionClick(tx)}>
             <div>
                 {baseToken?.symbol} / {quoteToken?.symbol}
             </div>
