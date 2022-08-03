@@ -1,13 +1,13 @@
 import styles from './Orders.module.css';
 import OrderCard from './OrderCard';
 import OrderCardHeader from './OrderCardHeader';
-import { Dispatch, SetStateAction } from 'react';
+// import { Dispatch, SetStateAction } from 'react';
 interface OrdersProps {
     expandTradeTable: boolean;
-    setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
+    // setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
 }
 export default function Orders(props: OrdersProps) {
-    const { expandTradeTable, setExpandTradeTable } = props;
+    const { expandTradeTable } = props;
     const items = [1, 2, 3, 4, 5, 6];
 
     const ItemContent = (

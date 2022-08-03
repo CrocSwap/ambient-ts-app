@@ -89,6 +89,8 @@ export default function Sidebar(props: SidebarPropsIF) {
                     setIsShowAllEnabled={setIsShowAllEnabled}
                     switchTabToTransactions={switchTabToTransactions}
                     setSwitchTabToTransactions={setSwitchTabToTransactions}
+                    expandTradeTable={expandTradeTable}
+                    setExpandTradeTable={setExpandTradeTable}
                 />
             ),
         },

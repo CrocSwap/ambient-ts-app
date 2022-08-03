@@ -76,7 +76,6 @@ export default function TradeTabs2(props: ITabsProps) {
         lastBlockNumber: props.lastBlockNumber,
 
         expandTradeTable: props.expandTradeTable,
-        setExpandTradeTable: props.setExpandTradeTable,
     };
     // Props for <Transactions/> React Element
     const transactionsProps = {
@@ -88,12 +87,10 @@ export default function TradeTabs2(props: ITabsProps) {
 
         setCurrentTxActiveInTransactions: props.setCurrentTxActiveInTransactions,
         expandTradeTable: props.expandTradeTable,
-        setExpandTradeTable: props.setExpandTradeTable,
     };
     // Props for <Orders/> React Element
     const ordersProps = {
         expandTradeTable: props.expandTradeTable,
-        setExpandTradeTable: props.setExpandTradeTable,
     };
     // props for <PositionsOnlyToggle/> React Element
 
@@ -103,6 +100,8 @@ export default function TradeTabs2(props: ITabsProps) {
         isWeb3Enabled: props.isWeb3Enabled,
         setHasInitialized: setHasInitialized,
         setIsShowAllEnabled: setIsShowAllEnabled,
+        expandTradeTable: props.expandTradeTable,
+        setExpandTradeTable: props.setExpandTradeTable,
     };
 
     const tradeTabData = [

@@ -16,7 +16,7 @@ interface TransactionsProps {
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
 
     expandTradeTable: boolean;
-    setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
+    // setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
 }
 export default function Transactions(props: TransactionsProps) {
     const {
@@ -27,7 +27,7 @@ export default function Transactions(props: TransactionsProps) {
         currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions,
         expandTradeTable,
-        setExpandTradeTable,
+        // setExpandTradeTable,
     } = props;
 
     const swapsByUser = graphData?.swapsByUser?.swaps;

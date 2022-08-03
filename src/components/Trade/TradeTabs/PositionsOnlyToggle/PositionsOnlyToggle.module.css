@@ -1,3 +1,11 @@
+.main_container{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    min-height: 20px;
+}
+
 .options_toggles{
     display: flex;
     max-width: 20%;
@@ -21,5 +29,10 @@
     justify-content: flex-end;
     margin-right: 0.5rem;
     flex-direction: row;
-    align-items: center;
+    /* align-items: center; */
+}
+
+
+.icon{
+    cursor: pointer;
 }
