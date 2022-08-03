@@ -30,6 +30,7 @@ import {
     contractAddresses,
     getTokenBalanceDisplay,
     sortBaseQuoteTokens,
+    // eslint-disable-next-line
     getTokenDecimals,
     getTokenAllowance,
     toDisplayPrice,
@@ -119,8 +120,6 @@ export default function App() {
 
     const [isShowAllEnabled, setIsShowAllEnabled] = useState<boolean>(true);
     const [currentTxActiveInTransactions, setCurrentTxActiveInTransactions] = useState<string>('');
-
-
 
     const chainId = moralisChainId
         ? moralisChainId
@@ -1523,14 +1522,12 @@ export default function App() {
                                     chainId={chainId}
                                     switchTabToTransactions={switchTabToTransactions}
                                     setSwitchTabToTransactions={setSwitchTabToTransactions}
-
                                     currentTxActiveInTransactions={currentTxActiveInTransactions}
                                     setCurrentTxActiveInTransactions={
                                         setCurrentTxActiveInTransactions
                                     }
                                     isShowAllEnabled={isShowAllEnabled}
                                     setIsShowAllEnabled={setIsShowAllEnabled}
-
                                 />
                             }
                         >
