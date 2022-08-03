@@ -237,6 +237,9 @@ and (-webkit-min-device-pixel-ratio: 2) {
   .hide_graph{
     display: none;
   }
+  .expand_table{
+    height: 100%;
+  }
 }
 
 

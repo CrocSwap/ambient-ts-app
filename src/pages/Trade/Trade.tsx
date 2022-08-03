@@ -196,6 +196,7 @@ export default function Trade(props: ITradeProps) {
     );
 
     const expandGraphStyle = props.expandTradeTable ? styles.hide_graph : '';
+    const expandTradeTableStyle = props.expandTradeTable ? styles.expand_table : styles.trade_style;
 
     return (
         // <motion.main
@@ -212,7 +213,7 @@ export default function Trade(props: ITradeProps) {
                     {chartImage}
                 </div>
 
-                <div className={styles.trade_style}>
+                <div className={` ${expandTradeTableStyle}`}>
                     <TradeTabs2
                         account={props.account}
                         isAuthenticated={props.isAuthenticated}
