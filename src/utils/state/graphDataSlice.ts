@@ -49,14 +49,14 @@ export interface CandleData {
 }
 
 export interface PositionsByUser {
-    positions: Array<Position>;
+    positions: Array<PositionIF>;
 }
 
 export interface PositionsByPool {
-    positions: Array<Position>;
+    positions: Array<PositionIF>;
 }
 
-export interface Position {
+export interface PositionIF {
     ambient: boolean;
     askTick: number;
     bidTick: number;
@@ -81,6 +81,7 @@ export interface Position {
     tokenBQtyDisplay: string;
     baseTokenDecimals: number;
     quoteTokenDecimals: number;
+    positionType?: string;
 }
 
 export interface position {

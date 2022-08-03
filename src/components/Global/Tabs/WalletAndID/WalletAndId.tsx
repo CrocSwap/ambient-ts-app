@@ -2,6 +2,7 @@ import styles from './WalletAndId.module.css';
 import trimString from '../../../../utils/functions/trimString';
 import { Tooltip } from '@mui/material';
 import { useStyles } from '../../../../utils/functions/styles';
+import { NavLink } from 'react-router-dom';
 
 interface WalletAndIDProps {
     posHash: string;
@@ -16,13 +17,14 @@ export default function WalletAndId(props: WalletAndIDProps) {
     const ownerIdTruncated = trimString(ownerId, 6, 0, '…');
     const posHashTruncated = trimString(posHash, 6, 0, '…');
 
-    // const truncatedPosHash = trimString(posHash as string, 6, 0, '…');
-
-    // const mobilePosHash = trimString(posHash as string, 4, 0, '…');
-
     const walletWithTooltip = (
         <Tooltip
-            title={ownerId}
+            title={
+                <div>
+                    <p>{ownerId}</p>
+                    <NavLink to={`/account/${ownerId}`}>View Account</NavLink>
+                </div>
+            }
             placement={'right'}
             arrow
             enterDelay={400}
@@ -50,7 +52,12 @@ export default function WalletAndId(props: WalletAndIDProps) {
     );
     const ENSWithTooltip = (
         <Tooltip
-            title={ensName ? ensName : 'ensName'}
+            title={
+                <div>
+                    <p>{ensName}</p>
+                    <NavLink to={`/account/${ensName}`}>View Account</NavLink>
+                </div>
+            }
             placement={'right'}
             arrow
             enterDelay={400}
