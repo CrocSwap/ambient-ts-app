@@ -35,11 +35,11 @@ interface IHeaderProps {
 // }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const lngs: any = {
-    en: { nativeName: 'English' },
-    zh: { nativeName: '中文' },
-    kr: { nativeName: '한국어' },
-};
+// const lngs: any = {
+//     en: { nativeName: 'English' },
+//     zh: { nativeName: '中文' },
+//     kr: { nativeName: '한국어' },
+// };
 
 export default function PageHeader(props: IHeaderProps): React.ReactElement<IHeaderProps> {
     const { ensName, shouldDisplayAccountTab, chainId, setFallbackChainId } = props;
@@ -47,7 +47,7 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
     const { user, account, enableWeb3, isWeb3Enabled, authenticate, isAuthenticated } =
         useMoralis();
 
-    const { t, i18n } = useTranslation();
+    const { t } = useTranslation();
 
     const [isModalOpen, openModal, closeModal] = useModal();
     const modalTitle = 'Log in with Email';
@@ -231,7 +231,7 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
                 {isAuthenticated && isWeb3Enabled && (
                     <NetworkSelector chainId={chainId} setFallbackChainId={setFallbackChainId} />
                 )}
-                <div>
+                {/* <div>
                     {Object.keys(lngs).map((lng) => (
                         <button
                             key={lng}
@@ -244,7 +244,7 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
                             {lngs[lng].nativeName}
                         </button>
                     ))}
-                </div>
+                </div> */}
                 <Account {...accountProps} />
             </div>
 
