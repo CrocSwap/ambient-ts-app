@@ -38,7 +38,7 @@ interface SidebarPropsIF {
 }
 
 export default function Sidebar(props: SidebarPropsIF) {
-    const {
+   const {
         toggleSidebar,
         showSidebar,
         chainId,
@@ -75,7 +75,7 @@ export default function Sidebar(props: SidebarPropsIF) {
             name: 'Recent Transactions',
             icon: recentTransactionsImage,
             data: (
-                <SidebarRecentTransactions
+              <SidebarRecentTransactions
                     mostRecentTransactions={mostRecentTransactions}
                     coinGeckoTokenMap={coinGeckoTokenMap}
                     currentTxActiveInTransactions={currentTxActiveInTransactions}

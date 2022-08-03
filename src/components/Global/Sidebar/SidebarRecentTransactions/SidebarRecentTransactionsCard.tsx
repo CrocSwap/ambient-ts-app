@@ -17,8 +17,9 @@ interface TransactionProps {
     switchTabToTransactions: boolean;
 }
 
+
 export default function SidebarRecentTransactionsCard(props: TransactionProps) {
-    const {
+  const {
         tx,
         coinGeckoTokenMap,
         chainId,
@@ -51,7 +52,7 @@ export default function SidebarRecentTransactionsCard(props: TransactionProps) {
     //     </div>
     // );
 
-    function handleRecentTransactionClick(tx: ISwap) {
+ function handleRecentTransactionClick(tx: ISwap) {
         switchTabToTransactions ? null : setSwitchTabToTransactions(true);
         setIsShowAllEnabled(false);
 
@@ -59,7 +60,7 @@ export default function SidebarRecentTransactionsCard(props: TransactionProps) {
     }
 
     return (
-        <div className={styles.container} onClick={() => handleRecentTransactionClick(tx)}>
+         <div className={styles.container} onClick={() => handleRecentTransactionClick(tx)}>
             <div>
                 {baseToken?.symbol} / {quoteToken?.symbol}
             </div>

@@ -18,7 +18,7 @@ interface SidebarRecentTransactionsPropsIF {
 }
 
 export default function SidebarRecentTransactions(props: SidebarRecentTransactionsPropsIF) {
-    const {
+  const {
         mostRecentTransactions,
         coinGeckoTokenMap,
         chainId,
@@ -44,7 +44,7 @@ export default function SidebarRecentTransactions(props: SidebarRecentTransactio
             {header}
             <div className={styles.content}>
                 {mostRecentTransactions.map((tx, idx) => (
-                    <SidebarRecentTransactionsCard
+                     <SidebarRecentTransactionsCard
                         tx={tx}
                         key={idx}
                         coinGeckoTokenMap={coinGeckoTokenMap}

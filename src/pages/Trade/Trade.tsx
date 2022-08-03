@@ -208,7 +208,7 @@ export default function Trade(props: ITradeProps) {
                 </div>
 
                 <div className={styles.trade_style}>
-                    <TradeTabs2
+                      <TradeTabs2
                         account={props.account}
                         isAuthenticated={props.isAuthenticated}
                         isWeb3Enabled={props.isWeb3Enabled}

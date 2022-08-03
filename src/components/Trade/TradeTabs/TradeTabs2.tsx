@@ -33,6 +33,7 @@ interface ITabsProps {
 
 export default function TradeTabs2(props: ITabsProps) {
     const { isShowAllEnabled, setIsShowAllEnabled } = props;
+
     const graphData = useAppSelector((state) => state?.graphData);
 
     const tokenMap = useTokenMap();
@@ -72,7 +73,7 @@ export default function TradeTabs2(props: ITabsProps) {
         lastBlockNumber: props.lastBlockNumber,
     };
     // Props for <Transactions/> React Element
-    const transactionsProps = {
+     const transactionsProps = {
         isShowAllEnabled: isShowAllEnabled,
         tokenMap: tokenMap,
         graphData: graphData,

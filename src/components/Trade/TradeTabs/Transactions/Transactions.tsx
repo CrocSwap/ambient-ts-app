@@ -6,6 +6,7 @@ import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { Dispatch, SetStateAction, useState, useEffect } from 'react';
 
+
 interface TransactionsProps {
     isShowAllEnabled: boolean;
     portfolio?: boolean;
@@ -27,6 +28,16 @@ export default function Transactions(props: TransactionsProps) {
 
     const swapsByUser = graphData?.swapsByUser?.swaps;
     const swapsByPool = graphData?.swapsByPool?.swaps;
+
+    const [poolData, setPoolData] = useState<ISwap[]>();
+
+    useEffect(() => {
+        if (isShowAllEnabled) {
+            setPoolData(swapsByPool);
+        } else {
+            setPoolData(swapsByUser);
+        }
+    }, [isShowAllEnabled]);
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
