@@ -148,7 +148,7 @@ export default function RangesMenu(props: RangesMenu) {
         </div>
     );
 
-    console.log(posHash);
+    // console.log(posHash);
 
     const dropdownRangesMenu = (
         <div className={styles.dropdown_menu}>

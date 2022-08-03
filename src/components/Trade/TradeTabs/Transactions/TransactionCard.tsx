@@ -7,7 +7,7 @@ import { ISwap } from '../../../../utils/state/graphDataSlice';
 import TransactionsMenu from '../../../Global/Tabs/TableMenu/TableMenuComponents/TransactionsMenu';
 import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import { toDisplayPrice, toDisplayQty } from '@crocswap-libs/sdk';
-import { Dispatch, SetStateAction, useEffect } from 'react';
+import { Dispatch, SetStateAction } from 'react';
 
 interface TransactionProps {
     swap: ISwap;
@@ -113,9 +113,9 @@ export default function TransactionCard(props: TransactionProps) {
 
     if (!transactionMatchesSelectedTokens) return null;
 
-    useEffect(() => {
-        console.log(currentClickedTxHashFromRecentTx);
-    }, [currentClickedTxHashFromRecentTx]);
+    // useEffect(() => {
+    //     console.log(currentClickedTxHashFromRecentTx);
+    // }, [currentClickedTxHashFromRecentTx]);
     const activeTxStyle =
         swap.id === currentClickedTxHashFromRecentTx ? styles.active_transaction_style : '';
 

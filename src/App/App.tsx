@@ -90,7 +90,7 @@ import Reposition from '../pages/Trade/Reposition/Reposition';
 const cachedQuerySpotPrice = memoizePromiseFn(querySpotPrice);
 const cachedFetchAddress = memoizePromiseFn(fetchAddress);
 const cachedFetchTokenBalances = memoizePromiseFn(fetchTokenBalances);
-const cachedGetTokenDecimals = memoizePromiseFn(getTokenDecimals);
+// const cachedGetTokenDecimals = memoizePromiseFn(getTokenDecimals);
 
 const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
 // const httpGraphCacheServerDomain = '';
@@ -1010,12 +1010,16 @@ export default function App() {
         const baseTokenAddress = position.base;
         const quoteTokenAddress = position.quote;
 
-        const poolPriceNonDisplay = await cachedQuerySpotPrice(
-            baseTokenAddress,
-            quoteTokenAddress,
-            chainId,
-            lastBlockNumber,
-        );
+        console.log({ position });
+
+        // const poolPriceNonDisplay = await cachedQuerySpotPrice(
+        //     baseTokenAddress,
+        //     quoteTokenAddress,
+        //     chainId,
+        //     lastBlockNumber,
+        // );
+
+        const poolPriceNonDisplay = 0.001;
 
         try {
             position.userEnsName = await cachedFetchAddress(position.user);
@@ -1025,8 +1029,10 @@ export default function App() {
 
         const poolPriceInTicks = Math.log(poolPriceNonDisplay) / Math.log(1.0001);
 
-        const baseTokenDecimals = await cachedGetTokenDecimals(baseTokenAddress);
-        const quoteTokenDecimals = await cachedGetTokenDecimals(quoteTokenAddress);
+        // const baseTokenDecimals = await cachedGetTokenDecimals(baseTokenAddress);
+        // const quoteTokenDecimals = await cachedGetTokenDecimals(quoteTokenAddress);
+        const baseTokenDecimals = 18;
+        const quoteTokenDecimals = 18;
 
         if (baseTokenDecimals) position.baseTokenDecimals = baseTokenDecimals;
         if (quoteTokenDecimals) position.quoteTokenDecimals = quoteTokenDecimals;
