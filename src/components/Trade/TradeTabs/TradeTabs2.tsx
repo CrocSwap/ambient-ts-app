@@ -90,6 +90,11 @@ export default function TradeTabs2(props: ITabsProps) {
         expandTradeTable: props.expandTradeTable,
         setExpandTradeTable: props.setExpandTradeTable,
     };
+    // Props for <Orders/> React Element
+    const ordersProps = {
+        expandTradeTable: props.expandTradeTable,
+        setExpandTradeTable: props.setExpandTradeTable,
+    };
     // props for <PositionsOnlyToggle/> React Element
 
     const positionsOnlyToggleProps = {
@@ -102,7 +107,7 @@ export default function TradeTabs2(props: ITabsProps) {
 
     const tradeTabData = [
         { label: 'Ranges', content: <Ranges {...rangesProps} />, icon: rangePositionsImage },
-        { label: 'Orders', content: <Orders />, icon: openOrdersImage },
+        { label: 'Orders', content: <Orders {...ordersProps} />, icon: openOrdersImage },
         {
             label: 'Transactions',
             content: <Transactions {...transactionsProps} />,

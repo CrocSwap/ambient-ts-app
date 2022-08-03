@@ -73,12 +73,15 @@ export default function Transactions(props: TransactionsProps) {
     //       />
     //   ));
 
-    const expandTableStyle = expandTradeTable ? styles.container_expanded : styles.item_container;
-
     return (
         <div className={styles.container}>
             <TransactionCardHeader />
-            <div className={expandTableStyle}>{TransactionsDisplay}</div>
+            <div
+                className={styles.item_container}
+                style={{ height: expandTradeTable ? '100%' : '220px' }}
+            >
+                {TransactionsDisplay}
+            </div>
         </div>
     );
 }

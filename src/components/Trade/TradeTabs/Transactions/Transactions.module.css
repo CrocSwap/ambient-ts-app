@@ -2,20 +2,16 @@
     padding: 0 8px;
 }
 
-.container_expanded{
-    overflow-y: scroll;
-    overflow-x: hidden;
-    max-height: 800px;
-}
+
 .item_container{
-    max-height: 220px;
+    /* max-height: 220px; */
     overflow-y: scroll;
     overflow-x: hidden;
 
     
 }
 
-.item_container::-webkit-scrollbar, .container_expanded::-webkit-scrollbar {
+.item_container::-webkit-scrollbar {
     width: 1px;
     display: none;
 

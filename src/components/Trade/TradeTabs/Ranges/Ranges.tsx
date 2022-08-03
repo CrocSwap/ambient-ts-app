@@ -72,12 +72,16 @@ export default function Ranges(props: RangesProps) {
               />
           ));
     //   .reverse();
-    const expandTableStyle = expandTradeTable ? styles.container_expanded : styles.item_container;
 
     return (
         <div className={styles.container}>
             <RangeCardHeader />
-            <div className={expandTableStyle}>{RangesDisplay}</div>
+            <div
+                className={styles.item_container}
+                style={{ height: expandTradeTable ? '100%' : '220px' }}
+            >
+                {RangesDisplay}
+            </div>
         </div>
     );
 }

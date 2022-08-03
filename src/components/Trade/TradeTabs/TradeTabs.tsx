@@ -182,7 +182,7 @@ export default function TradeTabs(props: ITabsProps) {
                 </TabContent>
 
                 <TabContent id='tab2' activeTab={activeTab}>
-                    <Orders />
+                    {/* <Orders /> */}
                 </TabContent>
                 <TabContent id='tab3' activeTab={activeTab}>
                     {/* <Transactions

@@ -1,8 +1,13 @@
 import styles from './Orders.module.css';
 import OrderCard from './OrderCard';
 import OrderCardHeader from './OrderCardHeader';
-
-export default function Orders() {
+import { Dispatch, SetStateAction } from 'react';
+interface OrdersProps {
+    expandTradeTable: boolean;
+    setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
+}
+export default function Orders(props: OrdersProps) {
+    const { expandTradeTable, setExpandTradeTable } = props;
     const items = [1, 2, 3, 4, 5, 6];
 
     const ItemContent = (
@@ -16,7 +21,12 @@ export default function Orders() {
     return (
         <div className={styles.container}>
             <OrderCardHeader />
-            {ItemContent}
+            <div
+                className={styles.item_container}
+                style={{ height: expandTradeTable ? '100%' : '220px' }}
+            >
+                {ItemContent}
+            </div>
         </div>
     );
 }
