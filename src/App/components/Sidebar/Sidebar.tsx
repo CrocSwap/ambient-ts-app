@@ -31,22 +31,23 @@ interface SidebarPropsIF {
     switchTabToTransactions: boolean;
     handleSetTradeTabToTransaction: () => void;
     setSwitchTabToTransactions: Dispatch<SetStateAction<boolean>>;
+    currentTxActiveInTransactions: string;
+    setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     isShowAllEnabled: boolean;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
-    currentClickedTxHashFromRecentTx: string;
-    SetCurrentClickedTxHashFromRecentTx: Dispatch<SetStateAction<string>>;
 }
 
 export default function Sidebar(props: SidebarPropsIF) {
-    const {
+   const {
         toggleSidebar,
         showSidebar,
         chainId,
         setSwitchTabToTransactions,
+        currentTxActiveInTransactions,
+        setCurrentTxActiveInTransactions,
         isShowAllEnabled,
         setIsShowAllEnabled,
-        currentClickedTxHashFromRecentTx,
-        SetCurrentClickedTxHashFromRecentTx,
+        switchTabToTransactions,
     } = props;
 
     const graphData = useAppSelector((state) => state.graphData);
@@ -74,14 +75,16 @@ export default function Sidebar(props: SidebarPropsIF) {
             name: 'Recent Transactions',
             icon: recentTransactionsImage,
             data: (
-                <SidebarRecentTransactions
+              <SidebarRecentTransactions
                     mostRecentTransactions={mostRecentTransactions}
                     coinGeckoTokenMap={coinGeckoTokenMap}
+                    currentTxActiveInTransactions={currentTxActiveInTransactions}
+                    setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
                     chainId={chainId}
                     isShowAllEnabled={isShowAllEnabled}
                     setIsShowAllEnabled={setIsShowAllEnabled}
-                    currentClickedTxHashFromRecentTx={currentClickedTxHashFromRecentTx}
-                    SetCurrentClickedTxHashFromRecentTx={SetCurrentClickedTxHashFromRecentTx}
+                    switchTabToTransactions={switchTabToTransactions}
+                    setSwitchTabToTransactions={setSwitchTabToTransactions}
                 />
             ),
         },

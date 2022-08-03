@@ -25,10 +25,10 @@ interface ITabsProps {
     chainId: string;
     switchTabToTransactions: boolean;
     setSwitchTabToTransactions: Dispatch<SetStateAction<boolean>>;
+    currentTxActiveInTransactions: string;
+    setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     isShowAllEnabled: boolean;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
-    currentClickedTxHashFromRecentTx: string;
-    SetCurrentClickedTxHashFromRecentTx: Dispatch<SetStateAction<string>>;
 }
 
 export default function TradeTabs2(props: ITabsProps) {
@@ -73,14 +73,14 @@ export default function TradeTabs2(props: ITabsProps) {
         lastBlockNumber: props.lastBlockNumber,
     };
     // Props for <Transactions/> React Element
-    const transactionsProps = {
+     const transactionsProps = {
         isShowAllEnabled: isShowAllEnabled,
-        setIsShowAllEnabled: setIsShowAllEnabled,
         tokenMap: tokenMap,
         graphData: graphData,
         chainId: props.chainId,
-        currentClickedTxHashFromRecentTx: props.currentClickedTxHashFromRecentTx,
-        SetCurrentClickedTxHashFromRecentTx: props.SetCurrentClickedTxHashFromRecentTx,
+        currentTxActiveInTransactions: props.currentTxActiveInTransactions,
+
+        setCurrentTxActiveInTransactions: props.setCurrentTxActiveInTransactions,
     };
     // props for <PositionsOnlyToggle/> React Element
 

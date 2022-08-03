@@ -4,8 +4,7 @@ import TransactionCardHeader from './TransactionCardHeader';
 import { graphData } from '../../../../utils/state/graphDataSlice';
 import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
-import { useState, useEffect, Dispatch, SetStateAction } from 'react';
-import { ISwap } from './../../../../utils/state/graphDataSlice';
+import { Dispatch, SetStateAction, useState, useEffect } from 'react';
 
 interface TransactionsProps {
     isShowAllEnabled: boolean;
@@ -13,8 +12,8 @@ interface TransactionsProps {
     tokenMap: Map<string, TokenIF>;
     graphData: graphData;
     chainId: string;
-    currentClickedTxHashFromRecentTx: string;
-    SetCurrentClickedTxHashFromRecentTx: Dispatch<SetStateAction<string>>;
+    currentTxActiveInTransactions: string;
+    setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
 }
 export default function Transactions(props: TransactionsProps) {
     const {
@@ -22,32 +21,27 @@ export default function Transactions(props: TransactionsProps) {
         graphData,
         tokenMap,
         chainId,
-
-        currentClickedTxHashFromRecentTx,
-        SetCurrentClickedTxHashFromRecentTx,
+        currentTxActiveInTransactions,
+        setCurrentTxActiveInTransactions,
     } = props;
 
     const swapsByUser = graphData?.swapsByUser?.swaps;
     const swapsByPool = graphData?.swapsByPool?.swaps;
 
-    const [poolData, setPoolData] = useState<ISwap[]>();
+    const tradeData = useAppSelector((state) => state.tradeData);
+
+    const [transactionData, setTransactionData] = useState(swapsByPool);
 
     useEffect(() => {
-        if (isShowAllEnabled) {
-            setPoolData(swapsByPool);
-        } else {
-            setPoolData(swapsByUser);
-        }
+        !isShowAllEnabled ? setTransactionData(swapsByUser) : setTransactionData(swapsByPool);
     }, [isShowAllEnabled]);
-
-    const tradeData = useAppSelector((state) => state.tradeData);
 
     const isDenomBase = tradeData.isDenomBase;
 
     const tokenAAddress = tradeData.tokenA.address;
     const tokenBAddress = tradeData.tokenB.address;
 
-    const TransactionsDisplay = poolData?.map((swap, idx) => (
+    const TransactionsDisplay = transactionData?.map((swap, idx) => (
         //   />
         <TransactionCard
             key={idx}
@@ -57,8 +51,8 @@ export default function Transactions(props: TransactionsProps) {
             tokenAAddress={tokenAAddress}
             tokenBAddress={tokenBAddress}
             isDenomBase={isDenomBase}
-            currentClickedTxHashFromRecentTx={currentClickedTxHashFromRecentTx}
-            SetCurrentClickedTxHashFromRecentTx={SetCurrentClickedTxHashFromRecentTx}
+            currentTxActiveInTransactions={currentTxActiveInTransactions}
+            setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
         />
     ));
     // : //   .reverse()
@@ -77,7 +71,6 @@ export default function Transactions(props: TransactionsProps) {
     return (
         <div className={styles.container}>
             <TransactionCardHeader />
-
             <div className={styles.item_container}>{TransactionsDisplay}</div>
         </div>
     );

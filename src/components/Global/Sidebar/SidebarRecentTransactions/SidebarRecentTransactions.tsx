@@ -3,28 +3,31 @@ import { ISwap } from '../../../../utils/state/graphDataSlice';
 import styles from './SidebarRecentTransactions.module.css';
 import SidebarRecentTransactionsCard from './SidebarRecentTransactionsCard';
 import { Dispatch, SetStateAction } from 'react';
-
 interface SidebarRecentTransactionsPropsIF {
     // showSidebar: boolean;
     mostRecentTransactions: ISwap[];
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     coinGeckoTokenMap?: Map<string, TokenIF>;
     chainId: string;
+    currentTxActiveInTransactions: string;
+    setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     isShowAllEnabled: boolean;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
-    currentClickedTxHashFromRecentTx: string;
-    SetCurrentClickedTxHashFromRecentTx: Dispatch<SetStateAction<string>>;
+    setSwitchTabToTransactions: Dispatch<SetStateAction<boolean>>;
+    switchTabToTransactions: boolean;
 }
 
 export default function SidebarRecentTransactions(props: SidebarRecentTransactionsPropsIF) {
-    const {
+  const {
         mostRecentTransactions,
         coinGeckoTokenMap,
         chainId,
+        currentTxActiveInTransactions,
+        setCurrentTxActiveInTransactions,
         isShowAllEnabled,
         setIsShowAllEnabled,
-        currentClickedTxHashFromRecentTx,
-        SetCurrentClickedTxHashFromRecentTx,
+        setSwitchTabToTransactions,
+        switchTabToTransactions,
     } = props;
 
     const header = (
@@ -41,15 +44,17 @@ export default function SidebarRecentTransactions(props: SidebarRecentTransactio
             {header}
             <div className={styles.content}>
                 {mostRecentTransactions.map((tx, idx) => (
-                    <SidebarRecentTransactionsCard
+                     <SidebarRecentTransactionsCard
                         tx={tx}
                         key={idx}
                         coinGeckoTokenMap={coinGeckoTokenMap}
                         chainId={chainId}
+                        currentTxActiveInTransactions={currentTxActiveInTransactions}
+                        setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
                         isShowAllEnabled={isShowAllEnabled}
                         setIsShowAllEnabled={setIsShowAllEnabled}
-                        currentClickedTxHashFromRecentTx={currentClickedTxHashFromRecentTx}
-                        SetCurrentClickedTxHashFromRecentTx={SetCurrentClickedTxHashFromRecentTx}
+                        setSwitchTabToTransactions={setSwitchTabToTransactions}
+                        switchTabToTransactions={switchTabToTransactions}
                     />
                 ))}
             </div>
