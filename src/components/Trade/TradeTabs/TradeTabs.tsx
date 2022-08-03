@@ -198,12 +198,12 @@ export default function TradeTabs(props: ITabsProps) {
                 </TabContent>
                 <TabContent id='tab5' activeTab={activeTab}>
                     Test of ranges refactor
-                    <Ranges
+                    {/* <Ranges
                         isShowAllEnabled={isShowAllEnabled}
                         notOnTradeRoute={false}
                         graphData={graphData}
                         lastBlockNumber={props.lastBlockNumber}
-                    />
+                    /> */}
                 </TabContent>
             </div>
         </div>

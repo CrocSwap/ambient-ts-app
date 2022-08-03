@@ -74,6 +74,9 @@ export default function TradeTabs2(props: ITabsProps) {
         notOnTradeRoute: false,
         graphData: graphData,
         lastBlockNumber: props.lastBlockNumber,
+
+        expandTradeTable: props.expandTradeTable,
+        setExpandTradeTable: props.setExpandTradeTable,
     };
     // Props for <Transactions/> React Element
     const transactionsProps = {
