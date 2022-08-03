@@ -15,32 +15,33 @@ export default function clickStar(token: TokenIF, chain: string) {
         ? usdcAddress
         : nativeTokenAddress;
 
-        const isPoolInFavorites = user.favePools.some(
+    const isPoolInFavorites = user.favePools.some(
         (pool: PoolIF) =>
             pool.tokens.includes(token.address) &&
             pool.tokens.includes(otherAddress) &&
             pool.chainId === chain
     );
 
-    console.log({isPoolInFavorites});
-
-    const pool: PoolIF = {
-        tokens: [],
-        poolId: 36000,
-        chainId: chain
-    };
-
-    switch (token.address) {
-        case nativeTokenAddress:
-        case usdcAddress:
-            pool.tokens.push(nativeTokenAddress);
-            pool.tokens.push(usdcAddress);
-            break;
-        default:
-            pool.tokens.push(nativeTokenAddress);
-            pool.tokens.push(token.address);
+    const addPoolToFavorites = () => {
+        const pool: PoolIF = {
+            tokens: [],
+            poolId: 36000,
+            chainId: chain
+        };
+        switch (token.address) {
+            case nativeTokenAddress:
+            case usdcAddress:
+                pool.tokens.push(nativeTokenAddress);
+                pool.tokens.push(usdcAddress);
+                break;
+            default:
+                pool.tokens.push(nativeTokenAddress);
+                pool.tokens.push(token.address);
+        }
+        user.favePools.push(pool);
     }
-    user.favePools.push(pool);
+
+    isPoolInFavorites || addPoolToFavorites();
 
     // send updated user object to local storage
     localStorage.setItem('user', JSON.stringify(user));
