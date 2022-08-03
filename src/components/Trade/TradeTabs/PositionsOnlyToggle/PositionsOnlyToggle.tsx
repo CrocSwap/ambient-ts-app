@@ -27,6 +27,7 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
                 isOn={isShowAllEnabled}
                 handleToggle={() => {
                     setHasInitialized(true);
+                    console.log('toggle on', !isShowAllEnabled);
                     setIsShowAllEnabled(!isShowAllEnabled);
                 }}
                 id='positions_only_toggle'
