@@ -37,7 +37,8 @@ interface IHeaderProps {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const lngs: any = {
     en: { nativeName: 'English' },
-    zh: { nativeName: '中国人' },
+    zh: { nativeName: '中文' },
+    kr: { nativeName: '한국어' },
 };
 
 export default function PageHeader(props: IHeaderProps): React.ReactElement<IHeaderProps> {

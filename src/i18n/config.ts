@@ -7,6 +7,9 @@ import enGlossary from './en/glossary.json';
 import zhCommon from './zh/common.json';
 import zhValidation from './zh/validation.json';
 import zhGlossary from './zh/glossary.json';
+import krCommon from './kr/common.json';
+import krValidation from './kr/validation.json';
+import krGlossary from './kr/glossary.json';
 
 export const resources = {
     en: {
@@ -18,6 +21,11 @@ export const resources = {
         common: zhCommon,
         validation: zhValidation,
         glossary: zhGlossary,
+    },
+    kr: {
+        common: krCommon,
+        validation: krValidation,
+        glossary: krGlossary,
     },
 } as const;
 
