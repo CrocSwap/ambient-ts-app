@@ -33,7 +33,6 @@ import {
 
     // eslint-disable-next-line
     getTokenDecimals,
-
     getTokenAllowance,
     toDisplayPrice,
     tickToPrice,
@@ -122,6 +121,8 @@ export default function App() {
 
     const [isShowAllEnabled, setIsShowAllEnabled] = useState<boolean>(true);
     const [currentTxActiveInTransactions, setCurrentTxActiveInTransactions] = useState<string>('');
+
+    const [expandTradeTable, setExpandTradeTable] = useState(false);
 
     const chainId = moralisChainId
         ? moralisChainId
@@ -1440,6 +1441,8 @@ export default function App() {
         setCurrentTxActiveInTransactions: setCurrentTxActiveInTransactions,
         isShowAllEnabled: isShowAllEnabled,
         setIsShowAllEnabled: setIsShowAllEnabled,
+        expandTradeTable: expandTradeTable,
+        setExpandTradeTable: setExpandTradeTable,
 
         // setShowSidebar : setShowSidebar
     };
