@@ -2,16 +2,29 @@ import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import { ISwap } from '../../../../utils/state/graphDataSlice';
 
 import styles from './SidebarRecentTransactionsCard.module.css';
+import { Dispatch, SetStateAction } from 'react';
 
 interface TransactionProps {
     tx: ISwap;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     coinGeckoTokenMap?: Map<string, TokenIF>;
     chainId: string;
+    isShowAllEnabled: boolean;
+    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
+    currentClickedTxHashFromRecentTx: string;
+    SetCurrentClickedTxHashFromRecentTx: Dispatch<SetStateAction<string>>;
 }
 
 export default function SidebarRecentTransactionsCard(props: TransactionProps) {
-    const { tx, coinGeckoTokenMap, chainId } = props;
+    const {
+        tx,
+        coinGeckoTokenMap,
+        chainId,
+        isShowAllEnabled,
+        setIsShowAllEnabled,
+        currentClickedTxHashFromRecentTx,
+        SetCurrentClickedTxHashFromRecentTx,
+    } = props;
 
     // console.log(tx.source);
     // console.log(tx.block);
@@ -33,8 +46,25 @@ export default function SidebarRecentTransactionsCard(props: TransactionProps) {
     //         <img src={quoteToken?.logoURI} alt='quote token image' />
     //     </div>
     // );
+
+    // todoJr: take a look at this again. We might not need the else
+    function handleCurrentTx(transaction: ISwap) {
+        if (currentClickedTxHashFromRecentTx !== '') {
+            SetCurrentClickedTxHashFromRecentTx(transaction.id);
+        } else {
+            SetCurrentClickedTxHashFromRecentTx(transaction.id);
+        }
+    }
+
+    function handleTransactionCardClick(transaction: ISwap) {
+        if (isShowAllEnabled) {
+            setIsShowAllEnabled(false);
+        }
+        handleCurrentTx(transaction);
+    }
+
     return (
-        <div className={styles.container}>
+        <div className={styles.container} onClick={() => handleTransactionCardClick(tx)}>
             <div>
                 {baseToken?.symbol} / {quoteToken?.symbol}
             </div>

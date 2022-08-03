@@ -30,6 +30,10 @@ interface ITradeProps {
     chainId: string;
     switchTabToTransactions: boolean;
     setSwitchTabToTransactions: Dispatch<SetStateAction<boolean>>;
+    isShowAllEnabled: boolean;
+    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
+    currentClickedTxHashFromRecentTx: string;
+    SetCurrentClickedTxHashFromRecentTx: Dispatch<SetStateAction<string>>;
 }
 
 export default function Trade(props: ITradeProps) {
@@ -212,6 +216,12 @@ export default function Trade(props: ITradeProps) {
                         chainId={props.chainId}
                         switchTabToTransactions={props.switchTabToTransactions}
                         setSwitchTabToTransactions={props.setSwitchTabToTransactions}
+                        isShowAllEnabled={props.isShowAllEnabled}
+                        setIsShowAllEnabled={props.setIsShowAllEnabled}
+                        currentClickedTxHashFromRecentTx={props.currentClickedTxHashFromRecentTx}
+                        SetCurrentClickedTxHashFromRecentTx={
+                            props.SetCurrentClickedTxHashFromRecentTx
+                        }
                     />
                 </div>
             </div>

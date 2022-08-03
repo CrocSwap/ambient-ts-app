@@ -25,8 +25,13 @@ interface TabProps {
 export default function TabComponent(props: TabProps) {
     const { data, outsideTabControl } = props;
 
-    console.log(data);
+
     const [selectedTab, setSelectedTab] = useState(data[0]);
+
+    useEffect(() => {
+        const currentTabData = data.find((item) => item.label === selectedTab.label);
+        if (currentTabData) setSelectedTab(currentTabData);
+    }, [data]);
 
     function handleOutsideControl() {
         if (outsideTabControl) {
@@ -89,7 +94,7 @@ export default function TabComponent(props: TabProps) {
                 {data.map((item) => (
                     <li
                         key={item.label}
-                        className={item === selectedTab ? styles.selected : ''}
+                        className={item.label === selectedTab.label ? styles.selected : ''}
                         onClick={() => handleSelectedTab(item)}
                     >
                         {item.icon ? handleMobileMenuIcon(item.icon, item.label) : null}
@@ -143,9 +148,9 @@ export default function TabComponent(props: TabProps) {
                     // initial={{ y: 10, opacity: 0 }}
                     // animate={{ y: 0, opacity: 1 }}
                     // exit={{ y: -10, opacity: 0 }}
-                    // transition={{ duration: 0.2 }}
+                    // transition={{ duration: 0.1 }}
                     >
-                        {selectedTab ? selectedTab.content : 'no content to display'}
+                        {selectedTab ? selectedTab.content : null}
                     </motion.div>
                 </AnimatePresence>
             </main>
