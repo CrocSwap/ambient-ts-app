@@ -19,6 +19,7 @@ export default function clickStar(
         ? usdcAddress
         : nativeTokenAddress;
 
+    // bool determining if relevant pool is already in the favorites list
     const isPoolInFavorites = user.favePools.some(
         (pool: PoolIF) =>
             pool.tokens.includes(token.address) &&
@@ -26,6 +27,7 @@ export default function clickStar(
             pool.chainId === chain
     );
 
+    // function to add relevant pool to the favorites list
     const addPoolToFavorites = () => {
         const pool: PoolIF = {
             tokens: [],
@@ -45,6 +47,7 @@ export default function clickStar(
         user.favePools.push(pool);
     }
 
+    // function to remove relevant pool from the favorites list
     const removePoolFromFavorites = () => {
         const newFavePools = user.favePools.filter((pool: PoolIF) => 
             !pool.tokens.includes(token.address) ||
@@ -55,6 +58,8 @@ export default function clickStar(
         user.favePools = newFavePools;
     }
 
+    // add or remove the relevant pool from the favorites array depending on
+    // ... whether or not it is already there
     isPoolInFavorites ? removePoolFromFavorites() : addPoolToFavorites();
 
     // send updated user object to local storage
