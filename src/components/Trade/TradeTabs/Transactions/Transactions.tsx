@@ -51,6 +51,8 @@ export default function Transactions(props: TransactionsProps) {
             tokenAAddress={tokenAAddress}
             tokenBAddress={tokenBAddress}
             isDenomBase={isDenomBase}
+            currentTxActiveInTransactions={currentTxActiveInTransactions}
+            setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
         />
     ));
     // : //   .reverse()

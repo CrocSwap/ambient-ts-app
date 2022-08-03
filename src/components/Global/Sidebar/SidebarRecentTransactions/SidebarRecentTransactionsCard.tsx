@@ -13,6 +13,8 @@ interface TransactionProps {
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     isShowAllEnabled: boolean;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
+    setSwitchTabToTransactions: Dispatch<SetStateAction<boolean>>;
+    switchTabToTransactions: boolean;
 }
 
 export default function SidebarRecentTransactionsCard(props: TransactionProps) {
@@ -24,6 +26,8 @@ export default function SidebarRecentTransactionsCard(props: TransactionProps) {
         setCurrentTxActiveInTransactions,
         isShowAllEnabled,
         setIsShowAllEnabled,
+        setSwitchTabToTransactions,
+        switchTabToTransactions,
     } = props;
 
     // console.log(tx.source);
@@ -48,11 +52,11 @@ export default function SidebarRecentTransactionsCard(props: TransactionProps) {
     // );
 
     function handleRecentTransactionClick(tx: ISwap) {
-        isShowAllEnabled ? setIsShowAllEnabled(false) : null;
+        switchTabToTransactions ? null : setSwitchTabToTransactions(true);
+        setIsShowAllEnabled(false);
 
         setCurrentTxActiveInTransactions(tx.id);
     }
-    console.log(currentTxActiveInTransactions);
 
     return (
         <div className={styles.container} onClick={() => handleRecentTransactionClick(tx)}>

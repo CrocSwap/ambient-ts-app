@@ -47,6 +47,7 @@ export default function Sidebar(props: SidebarPropsIF) {
         setCurrentTxActiveInTransactions,
         isShowAllEnabled,
         setIsShowAllEnabled,
+        switchTabToTransactions,
     } = props;
 
     const graphData = useAppSelector((state) => state.graphData);
@@ -82,6 +83,8 @@ export default function Sidebar(props: SidebarPropsIF) {
                     chainId={chainId}
                     isShowAllEnabled={isShowAllEnabled}
                     setIsShowAllEnabled={setIsShowAllEnabled}
+                    switchTabToTransactions={switchTabToTransactions}
+                    setSwitchTabToTransactions={setSwitchTabToTransactions}
                 />
             ),
         },
