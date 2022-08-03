@@ -119,9 +119,7 @@ export default function Sidebar(props: SidebarPropsIF) {
             <nav className={`${styles.sidebar} ${sidebarStyle}`}>
                 <ul className={styles.sidebar_nav}>
                     {searchContainer}
-                    <div onClick={() => setExpandTradeTable(!expandTradeTable)}>
-                        Recent Transactions
-                    </div>
+
                     {navItems1.map((item, idx) => (
                         <SidebarAccordion
                             showSidebar={showSidebar}
