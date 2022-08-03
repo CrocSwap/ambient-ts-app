@@ -34,6 +34,9 @@ interface ITradeProps {
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     isShowAllEnabled: boolean;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
+
+    expandTradeTable: boolean;
+    setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function Trade(props: ITradeProps) {
@@ -192,6 +195,9 @@ export default function Trade(props: ITradeProps) {
         </div>
     );
 
+    const expandGraphStyle = props.expandTradeTable ? styles.hide_graph : '';
+    const expandTradeTableStyle = props.expandTradeTable ? styles.expand_table : styles.trade_style;
+
     return (
         // <motion.main
         //     initial={{ width: 0 }}
@@ -201,14 +207,14 @@ export default function Trade(props: ITradeProps) {
         // >
         <main className={styles.main_layout}>
             <div className={styles.middle_col}>
-                <div className={styles.graph_style}>
+                <div className={`${styles.graph_style} ${expandGraphStyle}`}>
                     {tokenInfo}
                     {timeFrameContent}
                     {chartImage}
                 </div>
 
-                <div className={styles.trade_style}>
-                      <TradeTabs2
+                <div className={` ${expandTradeTableStyle}`}>
+                    <TradeTabs2
                         account={props.account}
                         isAuthenticated={props.isAuthenticated}
                         isWeb3Enabled={props.isWeb3Enabled}
@@ -220,6 +226,8 @@ export default function Trade(props: ITradeProps) {
                         setCurrentTxActiveInTransactions={props.setCurrentTxActiveInTransactions}
                         isShowAllEnabled={props.isShowAllEnabled}
                         setIsShowAllEnabled={props.setIsShowAllEnabled}
+                        expandTradeTable={props.expandTradeTable}
+                        setExpandTradeTable={props.setExpandTradeTable}
                     />
                 </div>
             </div>

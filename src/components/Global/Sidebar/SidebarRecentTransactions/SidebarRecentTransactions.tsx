@@ -15,10 +15,12 @@ interface SidebarRecentTransactionsPropsIF {
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
     setSwitchTabToTransactions: Dispatch<SetStateAction<boolean>>;
     switchTabToTransactions: boolean;
+    expandTradeTable: boolean;
+    setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function SidebarRecentTransactions(props: SidebarRecentTransactionsPropsIF) {
-  const {
+    const {
         mostRecentTransactions,
         coinGeckoTokenMap,
         chainId,
@@ -28,6 +30,8 @@ export default function SidebarRecentTransactions(props: SidebarRecentTransactio
         setIsShowAllEnabled,
         setSwitchTabToTransactions,
         switchTabToTransactions,
+        expandTradeTable,
+        setExpandTradeTable,
     } = props;
 
     const header = (
@@ -44,7 +48,7 @@ export default function SidebarRecentTransactions(props: SidebarRecentTransactio
             {header}
             <div className={styles.content}>
                 {mostRecentTransactions.map((tx, idx) => (
-                     <SidebarRecentTransactionsCard
+                    <SidebarRecentTransactionsCard
                         tx={tx}
                         key={idx}
                         coinGeckoTokenMap={coinGeckoTokenMap}
@@ -58,6 +62,11 @@ export default function SidebarRecentTransactions(props: SidebarRecentTransactio
                     />
                 ))}
             </div>
+            {!expandTradeTable && (
+                <div className={styles.view_more} onClick={() => setExpandTradeTable(true)}>
+                    View More
+                </div>
+            )}
         </div>
     );
 }

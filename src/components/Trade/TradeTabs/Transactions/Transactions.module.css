@@ -1,8 +1,10 @@
 .container{
     padding: 0 8px;
 }
+
+
 .item_container{
-    max-height: 220px;
+    /* max-height: 220px; */
     overflow-y: scroll;
     overflow-x: hidden;
 

@@ -26,6 +26,8 @@
     flex-grow: 1;
     user-select: none;
     margin-top: 6px;
+    height: 100%;
+    
   }
 
    

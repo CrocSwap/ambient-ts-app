@@ -14,6 +14,9 @@ interface TransactionsProps {
     chainId: string;
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
+
+    expandTradeTable: boolean;
+    // setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
 }
 export default function Transactions(props: TransactionsProps) {
     const {
@@ -23,6 +26,8 @@ export default function Transactions(props: TransactionsProps) {
         chainId,
         currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions,
+        expandTradeTable,
+        // setExpandTradeTable,
     } = props;
 
     const swapsByUser = graphData?.swapsByUser?.swaps;
@@ -71,7 +76,12 @@ export default function Transactions(props: TransactionsProps) {
     return (
         <div className={styles.container}>
             <TransactionCardHeader />
-            <div className={styles.item_container}>{TransactionsDisplay}</div>
+            <div
+                className={styles.item_container}
+                style={{ height: expandTradeTable ? '100%' : '220px' }}
+            >
+                {TransactionsDisplay}
+            </div>
         </div>
     );
 }

@@ -35,6 +35,8 @@ interface SidebarPropsIF {
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     isShowAllEnabled: boolean;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
+    expandTradeTable: boolean;
+    setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function Sidebar(props: SidebarPropsIF) {
@@ -48,6 +50,8 @@ export default function Sidebar(props: SidebarPropsIF) {
         isShowAllEnabled,
         setIsShowAllEnabled,
         switchTabToTransactions,
+        expandTradeTable,
+        setExpandTradeTable,
     } = props;
 
     const graphData = useAppSelector((state) => state.graphData);
@@ -95,6 +99,8 @@ export default function Sidebar(props: SidebarPropsIF) {
                     setIsShowAllEnabled={setIsShowAllEnabled}
                     switchTabToTransactions={switchTabToTransactions}
                     setSwitchTabToTransactions={setSwitchTabToTransactions}
+                    expandTradeTable={expandTradeTable}
+                    setExpandTradeTable={setExpandTradeTable}
                 />
             ),
         },
@@ -123,9 +129,9 @@ export default function Sidebar(props: SidebarPropsIF) {
             <nav className={`${styles.sidebar} ${sidebarStyle}`}>
                 <ul className={styles.sidebar_nav}>
                     {searchContainer}
-                    <div onClick={() => setSwitchTabToTransactions(true)}>Recent Transactions</div>
+
                     {topItems.map((item, idx) => (
-                        <SidebarAccordion
+           <SidebarAccordion
                             showSidebar={showSidebar}
                             idx={idx}
                             item={item}

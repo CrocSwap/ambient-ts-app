@@ -122,6 +122,8 @@ export default function App() {
     const [isShowAllEnabled, setIsShowAllEnabled] = useState<boolean>(true);
     const [currentTxActiveInTransactions, setCurrentTxActiveInTransactions] = useState<string>('');
 
+    const [expandTradeTable, setExpandTradeTable] = useState(false);
+
     const chainId = moralisChainId
         ? moralisChainId
         : // : window.ethereum?.networkVersion
@@ -1439,6 +1441,8 @@ export default function App() {
         setCurrentTxActiveInTransactions: setCurrentTxActiveInTransactions,
         isShowAllEnabled: isShowAllEnabled,
         setIsShowAllEnabled: setIsShowAllEnabled,
+        expandTradeTable: expandTradeTable,
+        setExpandTradeTable: setExpandTradeTable,
 
         // setShowSidebar : setShowSidebar
     };
@@ -1529,6 +1533,8 @@ export default function App() {
                                     }
                                     isShowAllEnabled={isShowAllEnabled}
                                     setIsShowAllEnabled={setIsShowAllEnabled}
+                                    expandTradeTable={expandTradeTable}
+                                    setExpandTradeTable={setExpandTradeTable}
                                 />
                             }
                         >

@@ -29,6 +29,9 @@ interface ITabsProps {
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     isShowAllEnabled: boolean;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
+
+    expandTradeTable: boolean;
+    setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function TradeTabs2(props: ITabsProps) {
@@ -71,9 +74,11 @@ export default function TradeTabs2(props: ITabsProps) {
         notOnTradeRoute: false,
         graphData: graphData,
         lastBlockNumber: props.lastBlockNumber,
+
+        expandTradeTable: props.expandTradeTable,
     };
     // Props for <Transactions/> React Element
-     const transactionsProps = {
+    const transactionsProps = {
         isShowAllEnabled: isShowAllEnabled,
         tokenMap: tokenMap,
         graphData: graphData,
@@ -81,6 +86,11 @@ export default function TradeTabs2(props: ITabsProps) {
         currentTxActiveInTransactions: props.currentTxActiveInTransactions,
 
         setCurrentTxActiveInTransactions: props.setCurrentTxActiveInTransactions,
+        expandTradeTable: props.expandTradeTable,
+    };
+    // Props for <Orders/> React Element
+    const ordersProps = {
+        expandTradeTable: props.expandTradeTable,
     };
     // props for <PositionsOnlyToggle/> React Element
 
@@ -90,11 +100,13 @@ export default function TradeTabs2(props: ITabsProps) {
         isWeb3Enabled: props.isWeb3Enabled,
         setHasInitialized: setHasInitialized,
         setIsShowAllEnabled: setIsShowAllEnabled,
+        expandTradeTable: props.expandTradeTable,
+        setExpandTradeTable: props.setExpandTradeTable,
     };
 
     const tradeTabData = [
         { label: 'Ranges', content: <Ranges {...rangesProps} />, icon: rangePositionsImage },
-        { label: 'Orders', content: <Orders />, icon: openOrdersImage },
+        { label: 'Orders', content: <Orders {...ordersProps} />, icon: openOrdersImage },
         {
             label: 'Transactions',
             content: <Transactions {...transactionsProps} />,
