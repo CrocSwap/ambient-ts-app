@@ -32,6 +32,8 @@ interface ITradeProps {
     setSwitchTabToTransactions: Dispatch<SetStateAction<boolean>>;
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
+    isShowAllEnabled: boolean;
+    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function Trade(props: ITradeProps) {
@@ -216,6 +218,8 @@ export default function Trade(props: ITradeProps) {
                         setSwitchTabToTransactions={props.setSwitchTabToTransactions}
                         currentTxActiveInTransactions={props.currentTxActiveInTransactions}
                         setCurrentTxActiveInTransactions={props.setCurrentTxActiveInTransactions}
+                        isShowAllEnabled={props.isShowAllEnabled}
+                        setIsShowAllEnabled={props.setIsShowAllEnabled}
                     />
                 </div>
             </div>

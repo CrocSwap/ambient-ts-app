@@ -27,11 +27,12 @@ interface ITabsProps {
     setSwitchTabToTransactions: Dispatch<SetStateAction<boolean>>;
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
+    isShowAllEnabled: boolean;
+    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function TradeTabs2(props: ITabsProps) {
-    const [isShowAllEnabled, setIsShowAllEnabled] = useState<boolean>(true);
-
+    const { isShowAllEnabled, setIsShowAllEnabled } = props;
     const graphData = useAppSelector((state) => state?.graphData);
 
     const tokenMap = useTokenMap();

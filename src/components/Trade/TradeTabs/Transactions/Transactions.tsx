@@ -33,7 +33,7 @@ export default function Transactions(props: TransactionsProps) {
     const [transactionData, setTransactionData] = useState(swapsByPool);
 
     useEffect(() => {
-        !isShowAllEnabled ? setTransactionData(swapsByUser) : swapsByPool;
+        !isShowAllEnabled ? setTransactionData(swapsByUser) : setTransactionData(swapsByPool);
     }, [isShowAllEnabled]);
 
     const isDenomBase = tradeData.isDenomBase;

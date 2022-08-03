@@ -116,7 +116,7 @@ export default function App() {
 
     const [fallbackChainId, setFallbackChainId] = useState('0x5');
     const [switchTabToTransactions, setSwitchTabToTransactions] = useState<boolean>(false);
-
+    const [isShowAllEnabled, setIsShowAllEnabled] = useState<boolean>(true);
     const [currentTxActiveInTransactions, setCurrentTxActiveInTransactions] = useState<string>('');
 
     const chainId = moralisChainId
@@ -1427,6 +1427,8 @@ export default function App() {
         setSwitchTabToTransactions: setSwitchTabToTransactions,
         currentTxActiveInTransactions: currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions: setCurrentTxActiveInTransactions,
+        isShowAllEnabled: isShowAllEnabled,
+        setIsShowAllEnabled: setIsShowAllEnabled,
         // setShowSidebar : setShowSidebar
     };
 
@@ -1514,6 +1516,8 @@ export default function App() {
                                     setCurrentTxActiveInTransactions={
                                         setCurrentTxActiveInTransactions
                                     }
+                                    isShowAllEnabled={isShowAllEnabled}
+                                    setIsShowAllEnabled={setIsShowAllEnabled}
                                 />
                             }
                         >

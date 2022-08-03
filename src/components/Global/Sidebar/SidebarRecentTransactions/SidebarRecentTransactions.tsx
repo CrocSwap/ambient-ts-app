@@ -11,6 +11,8 @@ interface SidebarRecentTransactionsPropsIF {
     chainId: string;
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
+    isShowAllEnabled: boolean;
+    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function SidebarRecentTransactions(props: SidebarRecentTransactionsPropsIF) {
@@ -20,6 +22,8 @@ export default function SidebarRecentTransactions(props: SidebarRecentTransactio
         chainId,
         currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions,
+        isShowAllEnabled,
+        setIsShowAllEnabled,
     } = props;
 
     const header = (
@@ -43,6 +47,8 @@ export default function SidebarRecentTransactions(props: SidebarRecentTransactio
                         chainId={chainId}
                         currentTxActiveInTransactions={currentTxActiveInTransactions}
                         setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
+                        isShowAllEnabled={isShowAllEnabled}
+                        setIsShowAllEnabled={setIsShowAllEnabled}
                     />
                 ))}
             </div>

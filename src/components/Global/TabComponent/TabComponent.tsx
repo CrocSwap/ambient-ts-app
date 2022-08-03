@@ -31,7 +31,7 @@ export default function TabComponent(props: TabProps) {
     useEffect(() => {
         const currentTabData = data.find((item) => item.label === selectedTab.label);
         if (currentTabData) setSelectedTab(currentTabData);
-    }, [data]);
+    }, [data, outsideTabControl]);
 
     function handleOutsideControl() {
         if (outsideTabControl) {

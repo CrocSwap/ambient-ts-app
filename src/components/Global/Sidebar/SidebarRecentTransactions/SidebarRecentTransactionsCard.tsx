@@ -11,6 +11,8 @@ interface TransactionProps {
     chainId: string;
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
+    isShowAllEnabled: boolean;
+    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function SidebarRecentTransactionsCard(props: TransactionProps) {
@@ -20,6 +22,8 @@ export default function SidebarRecentTransactionsCard(props: TransactionProps) {
         chainId,
         currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions,
+        isShowAllEnabled,
+        setIsShowAllEnabled,
     } = props;
 
     // console.log(tx.source);
@@ -42,6 +46,12 @@ export default function SidebarRecentTransactionsCard(props: TransactionProps) {
     //         <img src={quoteToken?.logoURI} alt='quote token image' />
     //     </div>
     // );
+
+    function handleRecentTransactionClick() {
+        console.log('yes');
+    }
+
+    console.log(currentTxActiveInTransactions);
     return (
         <div className={styles.container}>
             <div>
