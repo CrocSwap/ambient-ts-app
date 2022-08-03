@@ -25,8 +25,13 @@ interface TabProps {
 export default function TabComponent(props: TabProps) {
     const { data, outsideTabControl } = props;
 
-    console.log(data);
+    // console.log(data);
     const [selectedTab, setSelectedTab] = useState(data[0]);
+
+    useEffect(() => {
+        const currentTabData = data.find((item) => item.label === selectedTab.label);
+        if (currentTabData) setSelectedTab(currentTabData);
+    }, [data]);
 
     function handleOutsideControl() {
         if (outsideTabControl) {
