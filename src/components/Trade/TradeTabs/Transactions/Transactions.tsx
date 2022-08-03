@@ -9,7 +9,6 @@ import { ISwap } from './../../../../utils/state/graphDataSlice';
 
 interface TransactionsProps {
     isShowAllEnabled: boolean;
-    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
     portfolio?: boolean;
     tokenMap: Map<string, TokenIF>;
     graphData: graphData;
@@ -23,7 +22,7 @@ export default function Transactions(props: TransactionsProps) {
         graphData,
         tokenMap,
         chainId,
-        setIsShowAllEnabled,
+
         currentClickedTxHashFromRecentTx,
         SetCurrentClickedTxHashFromRecentTx,
     } = props;
@@ -32,9 +31,6 @@ export default function Transactions(props: TransactionsProps) {
     const swapsByPool = graphData?.swapsByPool?.swaps;
 
     const [poolData, setPoolData] = useState<ISwap[]>();
-
-    console.log({ swapsByUser });
-    console.log({ swapsByPool });
 
     useEffect(() => {
         if (isShowAllEnabled) {
@@ -81,6 +77,7 @@ export default function Transactions(props: TransactionsProps) {
     return (
         <div className={styles.container}>
             <TransactionCardHeader />
+
             <div className={styles.item_container}>{TransactionsDisplay}</div>
         </div>
     );
