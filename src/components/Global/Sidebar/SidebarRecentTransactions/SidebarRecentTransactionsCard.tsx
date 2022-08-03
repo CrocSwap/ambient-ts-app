@@ -47,13 +47,15 @@ export default function SidebarRecentTransactionsCard(props: TransactionProps) {
     //     </div>
     // );
 
-    function handleRecentTransactionClick() {
-        console.log('yes');
-    }
+    function handleRecentTransactionClick(tx: ISwap) {
+        isShowAllEnabled ? setIsShowAllEnabled(false) : null;
 
+        setCurrentTxActiveInTransactions(tx.id);
+    }
     console.log(currentTxActiveInTransactions);
+
     return (
-        <div className={styles.container}>
+        <div className={styles.container} onClick={() => handleRecentTransactionClick(tx)}>
             <div>
                 {baseToken?.symbol} / {quoteToken?.symbol}
             </div>
