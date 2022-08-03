@@ -1,11 +1,12 @@
+import { Dispatch, SetStateAction } from 'react';
 import { PoolIF, TokenIF } from '../../../utils/interfaces/exports';
 
 export default function clickStar(
     token: TokenIF,
     chain: string,
-    poolId: number
+    poolId: number,
+    setFavePools: Dispatch<SetStateAction<PoolIF[]>>
 ) {
-    console.log('user clicked the star: ', token);
     // native token address is always 0x0[...] on every chain
     const nativeTokenAddress = '0x0000000000000000000000000000000000000000';
     // goerli address for USDC
@@ -61,6 +62,8 @@ export default function clickStar(
     // add or remove the relevant pool from the favorites array depending on
     // ... whether or not it is already there
     isPoolInFavorites ? removePoolFromFavorites() : addPoolToFavorites();
+
+    setFavePools(user.favePools);
 
     // send updated user object to local storage
     localStorage.setItem('user', JSON.stringify(user));
