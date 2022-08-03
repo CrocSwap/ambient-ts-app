@@ -30,8 +30,10 @@ import {
     contractAddresses,
     getTokenBalanceDisplay,
     sortBaseQuoteTokens,
+
     // eslint-disable-next-line
     getTokenDecimals,
+
     getTokenAllowance,
     toDisplayPrice,
     tickToPrice,
