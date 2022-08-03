@@ -19,6 +19,7 @@ interface TokenSelectPropsIF {
     chainId: string;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     chooseToken: (tok: TokenIF) => void;
+    favePools: PoolIF[];
     setFavePools: Dispatch<SetStateAction<PoolIF[]>>;
 }
 
@@ -30,8 +31,12 @@ export default function TokenSelect(props: TokenSelectPropsIF) {
         undeletableTokens,
         chainId,
         setImportedTokens,
-        setFavePools
+        favePools,
+        setFavePools,
     } = props;
+
+    console.log({favePools});
+
     const [showDelete, setShowDelete] = useState(false);
     const [toggleDeleteOn, setToggleDeleteOn] = useState(false);
 
