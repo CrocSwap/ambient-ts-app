@@ -131,7 +131,7 @@ export default function Sidebar(props: SidebarPropsIF) {
                     {searchContainer}
 
                     {topItems.map((item, idx) => (
-           <SidebarAccordion
+                        <SidebarAccordion
                             showSidebar={showSidebar}
                             idx={idx}
                             item={item}
