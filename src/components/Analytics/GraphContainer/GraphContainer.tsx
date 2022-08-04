@@ -87,6 +87,7 @@ export default function GraphContainer() {
 
     const formattedTvlData = useMemo(() => {
         if (tvlData) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             return tvlData.map((day: any) => {
                 return {
                     time: new Date(day.time), // new Date(day.time * 1000),
@@ -100,9 +101,10 @@ export default function GraphContainer() {
 
     const formattedVolumeData = useMemo(() => {
         if (volumeData) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             return volumeData.map((day: any) => {
                 return {
-                    time: new Date(day.time), // new Date(moment(new Date(day.time * 1000)).format('YYYY-MM-DD')),
+                    time: new Date(day.time),
                     value: day.value,
                 };
             });
@@ -110,58 +112,6 @@ export default function GraphContainer() {
             return [];
         }
     }, [volumeData]);
-
-    // const formattedVolumeDataOneMonth = useMemo(() => {
-    //     if (oneMonthVolumeData) {
-    //         return oneMonthVolumeData.map((day) => {
-    //             return {
-    //                 time: new Date(moment(day.time).format('YYYY-MM-DD')),
-    //                 value: day.value,
-    //             };
-    //         });
-    //     } else {
-    //         return [];
-    //     }
-    // }, [chartData]);
-
-    // const formattedVolumeDataSixMonth = useMemo(() => {
-    //     if (sixMonthVolumeData) {
-    //         return sixMonthVolumeData.map((day) => {
-    //             return {
-    //                 time: new Date(moment(day.time).format('YYYY-MM-DD')),
-    //                 value: day.value,
-    //             };
-    //         });
-    //     } else {
-    //         return [];
-    //     }
-    // }, [chartData]);
-
-    // const formattedVolumeDataOneYear = useMemo(() => {
-    //     if (oneYearVolumeData) {
-    //         return oneYearVolumeData.map((day) => {
-    //             return {
-    //                 time: new Date(moment(day.time).format('YYYY-MM-DD')),
-    //                 value: day.value,
-    //             };
-    //         });
-    //     } else {
-    //         return [];
-    //     }
-    // }, [chartData]);
-
-    // const formattedVolumeDataOneDay = useMemo(() => {
-    //     if (oneDayVolumeData) {
-    //         return oneDayVolumeData.map((day) => {
-    //             return {
-    //                 time: new Date(moment(day.time).format('YYYY-MM-DD')),
-    //                 value: day.value,
-    //             };
-    //         });
-    //     } else {
-    //         return [];
-    //     }
-    // }, [chartData]);
 
     const setChartDataValues = (_volumeWindow: ChartDataTimeframe) => {
         setVolumeWindow(_volumeWindow);
@@ -279,21 +229,6 @@ export default function GraphContainer() {
             <img src={logo} width={110} alt='logo' />
         </div>
     );
-
-    // const volumeChartData = ()=> {
-    //     switch (volumeWindow) {
-    //         case ChartDataTimeframe.oneDay:
-    //         return formattedVolumeData;
-    //         case ChartDataTimeframe.oneMonth:
-    //             return formattedVolumeData;
-    //         case ChartDataTimeframe.sixMonth:
-    //             return formattedVolumeData;
-    //         case ChartDataTimeframe.oneYear:
-    //             return formattedVolumeData;
-    //         default:
-    //             return formattedVolumeData;
-    //     }
-    // }
 
     const graphData = (
         <div className={styles.graph_data}>

@@ -60,12 +60,8 @@ export default function BarChart(props: BarData) {
             const filtered = data.lenght > 1 ? data.filter((d: any) => xValue(d) != null) : data;
             const nearest = minimum(filtered, (d: any) => Math.abs(point.x - xScale(xValue(d))))[1];
             const newX = new Date(nearest.time.getTime());
-            const value =
-                chartData.snapType === 'days'
-                    ? new Date(newX.setTime(newX.getTime() + 9 * 60 * 60 * 1000))
-                    : chartData.snapType === 'months'
-                    ? new Date(newX.setTime(newX.getTime() + 9 * 60 * 2 * 1000))
-                    : nearest.time;
+            const value = new Date(newX.setTime(newX.getTime()));
+
             return [
                 {
                     x: xScale(value),
@@ -121,7 +117,7 @@ export default function BarChart(props: BarData) {
             .autoBandwidth(d3fc.seriesSvgBar())
             .xScale(xScale)
             .yScale(yScale)
-            .align('left')
+            .align('center')
             .crossValue((d: any) => d.time)
             .mainValue((d: any) => d.value)
             .decorate((selection: any) => {

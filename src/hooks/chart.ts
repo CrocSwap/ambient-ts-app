@@ -20,16 +20,6 @@ function unixToType(unix: number, type: ChartDataTimeframe) {
             return date.format('YYYY-MM');
         default:
             return date.format('YYYY-MM-DD');
-        //     case 'month':
-        //         return date.format('YYYY-MM');
-        //     case 'week':
-        //         // eslint-disable-next-line no-case-declarations
-        //         let week = String(date.week());
-        //         if (week.length === 1) {
-        //             week = `0${week}`;
-        //         }
-        //         return `${date.year()}-${week}`;
-        // }
     }
 }
 
@@ -42,10 +32,10 @@ export function useTransformedVolumeData(
             const data: Record<string, GenericChartEntry> = {};
             chartData.forEach(({ date, volumeUSD }: { date: number; volumeUSD: number }) => {
                 const group = unixToType(date, type);
-                if (data[group!]) {
-                    data[group!].value += volumeUSD;
+                if (data[group]) {
+                    data[group].value += volumeUSD;
                 } else {
-                    data[group!] = {
+                    data[group] = {
                         time: unixToDate(date),
                         value: volumeUSD,
                     };
@@ -62,16 +52,17 @@ export function useTransformedVolumeData(
 export function useTransformedTvlData(
     chartData: ChartDayData[] | undefined,
     type: ChartDataTimeframe,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): any {
     return useMemo(() => {
         if (chartData) {
             const data: Record<string, GenericChartEntry> = {};
             chartData.forEach(({ date, tvlUSD }: { date: number; tvlUSD: number }) => {
                 const group = unixToType(date, type);
-                if (data[group!]) {
-                    data[group!].value += tvlUSD;
+                if (data[group]) {
+                    data[group].value += tvlUSD;
                 } else {
-                    data[group!] = {
+                    data[group] = {
                         time: unixToDate(date),
                         value: tvlUSD,
                     };
