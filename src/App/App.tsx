@@ -1529,7 +1529,7 @@ export default function App() {
                                     lastBlockNumber={lastBlockNumber}
                                     isTokenABase={isTokenABase}
                                     poolPriceDisplay={poolPriceDisplay}
-                                    tokenPair={tokenPair}
+                                    // tokenPair={tokenPair}
                                     chainId={chainId}
                                     switchTabToTransactions={switchTabToTransactions}
                                     setSwitchTabToTransactions={setSwitchTabToTransactions}
