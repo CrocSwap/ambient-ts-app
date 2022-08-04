@@ -24,7 +24,13 @@
 } */
 
 .menu_container{
-    background: yellow;
-    width: 200px;
+ 
+    width: 800px;
     display: flex;
 }
+
+.animation_container{
+    width: 100px;
+    margin: 1rem 0;
+}
+

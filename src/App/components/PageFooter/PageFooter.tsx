@@ -2,6 +2,7 @@ import styles from './PageFooter.module.css';
 import { FaDiscord, FaGithub } from 'react-icons/fa';
 import { BsMedium } from 'react-icons/bs';
 import { AiFillTwitterCircle } from 'react-icons/ai';
+// import { useLocation} from 'react-router-dom'
 
 interface IFooterProps {
     lastBlockNumber: number;
@@ -10,6 +11,7 @@ interface IFooterProps {
 const pageBlockSign = <div className={styles.page_block_sign}></div>;
 
 export default function PageFooter(props: IFooterProps) {
+    // const  location = useLocation()
     return (
         <footer data-testid={'page-footer'} className={styles.footer}>
             <a href='#'>
@@ -31,10 +33,13 @@ export default function PageFooter(props: IFooterProps) {
             <a href='#'>
                 <span>Docs</span>
             </a>
+            {/* {location.pathname !== '/' && ( */}
+
             <a href='#'>
                 {pageBlockSign}
                 <span>{props.lastBlockNumber}</span>
             </a>
+            {/* // )} */}
         </footer>
     );
 }

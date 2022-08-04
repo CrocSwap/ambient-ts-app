@@ -11406,6 +11406,11 @@ mockdate@^3.0.5:
   resolved "https://registry.yarnpkg.com/mockdate/-/mockdate-3.0.5.tgz#789be686deb3149e7df2b663d2bc4392bc3284fb"
   integrity sha512-iniQP4rj1FhBdBYS/+eQv7j1tadJ9lJtdzgOpvsOHng/GbcDh2Fhdeq+ZRldrPYdXvCyfFUmFeEwEGXZB5I/AQ==
 
+moment@^2.29.4:
+  version "2.29.4"
+  resolved "https://registry.yarnpkg.com/moment/-/moment-2.29.4.tgz#3dbe052889fe7c1b2ed966fcb3a77328964ef108"
+  integrity sha512-5LC9SOxjSc2HF6vO2CyuTDNivEdoz2IvyJJGj6X8DJ0eFyfszE0QiEd+iXmBvUP3WHxSjFH/vIsA0EN00cgr8w==
+
 moo-color@^1.0.2:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/moo-color/-/moo-color-1.0.3.tgz#d56435f8359c8284d83ac58016df7427febece74"
@@ -11413,10 +11418,10 @@ moo-color@^1.0.2:
   dependencies:
     color-name "^1.1.4"
 
-moralis@^1.9.0:
-  version "1.9.0"
-  resolved "https://registry.yarnpkg.com/moralis/-/moralis-1.9.0.tgz#b9386deda559d9233a5dd7b637cd6b983b96afbc"
-  integrity sha512-X/BScB1y5hgzfI4xG5Y4MWW8dzOiKJdYycb9D8lGh8ov3LcmQpzIuxnMyYvelzleuw3AuT9P4IUPRHF6tVk9Gw==
+moralis@^1.10.1:
+  version "1.10.1"
+  resolved "https://registry.yarnpkg.com/moralis/-/moralis-1.10.1.tgz#bb8044d4d61ddae9baaf60fb29b77f46d12f0ceb"
+  integrity sha512-BAdB46RmFGpBFca0OpT5fye1iMbW1fFRqmfu39S7FLIVjwipU97TXduVHywmcqmqnLbknedgNfvUzX60YCjAAg==
   dependencies:
     "@babel/runtime" "7.16.7"
     "@babel/runtime-corejs3" "7.16.8"

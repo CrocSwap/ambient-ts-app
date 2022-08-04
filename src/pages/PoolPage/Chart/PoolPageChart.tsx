@@ -1,10 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import dayjs from 'dayjs';
 import { DetailedHTMLProps, HTMLAttributes, useState } from 'react';
+import { useParams } from 'react-router';
 import AreaChart from '../../../components/Global/Charts/AreaChart';
 import BarChart from '../../../components/Global/Charts/BarChart';
 import { PoolData } from '../../../state/pools/models';
 import { formatDollarAmount } from '../../../utils/numbers';
+import LiquidityChart from '../LiquidtiyChart/LiquidityChart';
 import styles from './PoolPageChart.module.css';
 
 interface PoolPageChartProps {
@@ -27,6 +29,7 @@ declare global {
 }
 
 export default function PoolPageChart(props: PoolPageChartProps) {
+    const { address } = useParams() ?? '';
     const [activeTab, setActiveTab] = useState('vlm');
     const tabData = [
         { title: 'Volume', id: 'vlm' },
@@ -45,6 +48,8 @@ export default function PoolPageChart(props: PoolPageChartProps) {
                         {latestValue
                             ? activeTab === 'vlm' || activeTab === 'fee'
                                 ? latestValue
+                                : activeTab === 'liq'
+                                ? null
                                 : formatDollarAmount(latestValue, 2)
                             : formatDollarAmount(props.pool?.volumeUSD, 2)}
                     </label>
@@ -52,6 +57,8 @@ export default function PoolPageChart(props: PoolPageChartProps) {
                         {valueLabel
                             ? activeTab === 'vlm'
                                 ? valueLabel
+                                : activeTab === 'liq'
+                                ? null
                                 : valueLabel + ' (UTC) '
                             : dayjs.utc().format('MMM D, YYYY')}
                     </label>
@@ -82,6 +89,13 @@ export default function PoolPageChart(props: PoolPageChartProps) {
                     label={valueLabel}
                     setValue={setLatestValue}
                     setLabel={setValueLabel}
+                />
+            ) : activeTab === 'liq' ? (
+                <LiquidityChart
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                    address={address!}
+                    value={latestValue}
+                    label={valueLabel}
                 />
             ) : (
                 <BarChart

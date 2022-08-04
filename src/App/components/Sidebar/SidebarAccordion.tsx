@@ -1,8 +1,9 @@
 // import styles from './SidebarAccordion.module.css';
 import { MdPlayArrow } from 'react-icons/md';
 import styles from './Sidebar.module.css';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { ISwap } from '../../../utils/state/graphDataSlice';
 interface Item {
     name: string;
     icon: string;
@@ -17,11 +18,31 @@ interface SidebarAccordionProps {
     ) => void;
     item: Item;
     idx: number;
+    mostRecentTransactions?: ISwap[];
 }
 
 export default function SidebarAccordion(props: SidebarAccordionProps) {
-    const { showSidebar, idx, item, toggleSidebar } = props;
-    const [isOpen, setIsOpen] = useState(false);
+    const { showSidebar, idx, item, toggleSidebar, mostRecentTransactions = [] } = props;
+
+    const userHasRecentTransactions = mostRecentTransactions.length > 0;
+
+    const [isOpen, setIsOpen] = useState(userHasRecentTransactions);
+
+    useEffect(() => {
+        if (userHasRecentTransactions) {
+            setIsOpen(true);
+        } else {
+            setIsOpen(false);
+        }
+    }, [userHasRecentTransactions]);
+
+    useEffect(() => {
+        if (mostRecentTransactions.length > 0) {
+            setIsOpen(true);
+        } else {
+            setIsOpen(false);
+        }
+    }, [JSON.stringify(mostRecentTransactions)]);
 
     // console.log(showSidebar);
     const openStateContent = (
