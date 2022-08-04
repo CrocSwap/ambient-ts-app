@@ -1201,7 +1201,6 @@ export default function App() {
     // later we can make this available to the rest of the app through
     // ... the React Router context provider API
     const isChainValid = chainId ? validateChain(chainId as string) : false;
-    console.assert(true, isChainValid);
 
     const currentLocation = location.pathname;
 
@@ -1321,6 +1320,7 @@ export default function App() {
         shouldDisplayAccountTab: shouldDisplayAccountTab,
         chainId: chainId,
         setFallbackChainId: setFallbackChainId,
+        isChainValid: isChainValid,
     };
 
     // props for <Swap/> React element
