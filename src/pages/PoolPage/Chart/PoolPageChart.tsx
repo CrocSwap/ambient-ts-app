@@ -92,11 +92,10 @@ export default function PoolPageChart(props: PoolPageChartProps) {
                 />
             ) : activeTab === 'liq' ? (
                 <LiquidityChart
-                    address={address}
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                    address={address!}
                     value={latestValue}
                     label={valueLabel}
-                    setValue={setLatestValue}
-                    setLabel={setValueLabel}
                 />
             ) : (
                 <BarChart
