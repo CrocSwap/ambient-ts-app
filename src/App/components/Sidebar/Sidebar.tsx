@@ -65,10 +65,8 @@ export default function Sidebar(props: SidebarPropsIF) {
     const coinGeckoTokenMap = useTokenMap();
     // console.assert(coinGeckoTokenMap, 'no map present');
 
-    const topItems = [
-        { name: 'Top Tokens', icon: topTokensImage, data: <TopTokens /> },
-        { name: 'Top Pools', icon: topPoolsImage, data: <TopPools /> },
-    ];
+    const topTokens = [{ name: 'Top Tokens', icon: topTokensImage, data: <TopTokens /> }];
+    const topPoolsSection = [{ name: 'Top Pools', icon: topPoolsImage, data: <TopPools /> }];
     const recentRangePositions = [
         {
             name: 'Range Positions',
@@ -130,7 +128,7 @@ export default function Sidebar(props: SidebarPropsIF) {
                 <ul className={styles.sidebar_nav}>
                     {searchContainer}
 
-                    {topItems.map((item, idx) => (
+                    {topTokens.map((item, idx) => (
                         <SidebarAccordion
                             showSidebar={showSidebar}
                             idx={idx}
@@ -138,6 +136,16 @@ export default function Sidebar(props: SidebarPropsIF) {
                             toggleSidebar={toggleSidebar}
                             key={idx}
                             // mostRecent={mostRecentPositions}
+                        />
+                    ))}
+                    {topPoolsSection.map((item, idx) => (
+                        <SidebarAccordion
+                            showSidebar={showSidebar}
+                            idx={idx}
+                            item={item}
+                            toggleSidebar={toggleSidebar}
+                            key={idx}
+                            mostRecent={['should open automatically']}
                         />
                     ))}
                     <div className={styles.bottom_elements}>

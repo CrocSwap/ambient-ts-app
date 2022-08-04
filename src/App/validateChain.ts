@@ -19,7 +19,7 @@
 // list all chains here that our app supports
 // const supportedChains = ['kovan'];
 
-const supportedChainsTemp = ['kovan', '0x2a', 'testnet', 'ropsten', '0x3'];
+const supportedChainsTemp = ['0x5'];
 
 export const validateChain = (currentChain: string) => {
     const output: boolean = supportedChainsTemp.includes(currentChain);

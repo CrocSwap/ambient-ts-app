@@ -28,6 +28,7 @@ interface IHeaderProps {
     shouldDisplayAccountTab: boolean;
     chainId: string;
     setFallbackChainId: React.Dispatch<React.SetStateAction<string>>;
+    isChainValid: boolean;
 }
 
 // interface lgnData {
@@ -42,7 +43,7 @@ interface IHeaderProps {
 // };
 
 export default function PageHeader(props: IHeaderProps): React.ReactElement<IHeaderProps> {
-    const { ensName, shouldDisplayAccountTab, chainId, setFallbackChainId } = props;
+    const { ensName, shouldDisplayAccountTab, chainId, setFallbackChainId, isChainValid } = props;
 
     const { user, account, enableWeb3, isWeb3Enabled, authenticate, isAuthenticated } =
         useMoralis();
@@ -226,11 +227,13 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
             {/* <div className={styles.account}>Account Info</div> */}
             {/* <div className={styles.account}>{accountAddress}</div> */}
             <div className={styles.account}>
-                {(!isAuthenticated || !isWeb3Enabled) && metamaskButton}
                 {/* {(!isAuthenticated || !isWeb3Enabled) && magicButton} */}
-                {isAuthenticated && isWeb3Enabled && (
+                {isChainValid ? null : 'chain not currently supported'}
+                {<NetworkSelector chainId={chainId} setFallbackChainId={setFallbackChainId} />}
+                {(!isAuthenticated || !isWeb3Enabled) && metamaskButton}
+                {/* {isAuthenticated && isWeb3Enabled && (
                     <NetworkSelector chainId={chainId} setFallbackChainId={setFallbackChainId} />
-                )}
+                )} */}
                 {/* <div>
                     {Object.keys(lngs).map((lng) => (
                         <button

@@ -12,6 +12,7 @@ interface PositionsOnlyToggleProps {
 
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
+    currentTab?: string;
 }
 
 export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
@@ -25,16 +26,20 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
         setExpandTradeTable,
     } = props;
 
+    // console.log(props);
+
     const expandIcon = (
         <div className={styles.icon} onClick={() => setExpandTradeTable(!expandTradeTable)}>
             {expandTradeTable ? <MdCloseFullscreen /> : <MdExpand />}
         </div>
     );
+
     return (
         <div className={styles.main_container}>
             <div className={styles.options_toggle}>
                 {/* <p>{isShowAllEnabled ? 'All ' + label : 'My ' + label}</p> */}
-                <p>{isShowAllEnabled ? 'All ' + 'label' : 'My ' + 'label'}</p>
+
+                <p>{`All ${props.currentTab}`}</p>
 
                 <Toggle2
                     isOn={isShowAllEnabled}
