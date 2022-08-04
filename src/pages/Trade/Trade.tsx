@@ -157,15 +157,17 @@ export default function Trade(props: ITradeProps) {
             <button
                 onClick={() => handleTimeFrameButtonClick(time.label, time.activePeriod)}
                 className={
-                    time.label === activeTimeFrame ? styles.active_button : styles.non_active_button
+                    time.label === activeTimeFrame
+                        ? styles.active_button2
+                        : styles.non_active_button2
                 }
             >
                 {time.label}
 
                 {time.label === activeTimeFrame && (
                     <motion.div
-                        layoutId='outline'
-                        className={styles.outline}
+                        layoutId='outline2'
+                        className={styles.outline2}
                         initial={false}
                         // animate={{ borderColor: 'red' }}
                         transition={spring}
@@ -219,48 +221,7 @@ export default function Trade(props: ITradeProps) {
             </div>
             <div className={styles.right_side}>
                 <span>Timeframe</span>
-                <button
-                    onClick={() => {
-                        setActivePeriod(60);
-                    }}
-                >
-                    1m
-                </button>
-                <button
-                    onClick={() => {
-                        setActivePeriod(300);
-                    }}
-                >
-                    5m
-                </button>
-                <button
-                    onClick={() => {
-                        setActivePeriod(900);
-                    }}
-                >
-                    15m
-                </button>
-                <button
-                    onClick={() => {
-                        setActivePeriod(3600);
-                    }}
-                >
-                    1h
-                </button>
-                <button
-                    onClick={() => {
-                        setActivePeriod(14400);
-                    }}
-                >
-                    4h
-                </button>
-                <button
-                    onClick={() => {
-                        setActivePeriod(86400);
-                    }}
-                >
-                    1d
-                </button>
+                {activeTimeFrameDisplay}
             </div>
         </div>
     );
