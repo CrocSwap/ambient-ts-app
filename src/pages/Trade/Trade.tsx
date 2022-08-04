@@ -272,13 +272,14 @@ export default function Trade(props: ITradeProps) {
                 <div>
                     {tokenInfo}
                     {timeFrameContent}
-                    <TradeCandleStickChart
-                        tvlData={formattedTvlData}
-                        volumeData={formattedVolumeData}
-                        feeData={formattedFeesUSD}
-                        priceData={adjustedToCurrent}
-                    />
                 </div>
+
+                <TradeCandleStickChart
+                    tvlData={formattedTvlData}
+                    volumeData={formattedVolumeData}
+                    feeData={formattedFeesUSD}
+                    priceData={adjustedToCurrent}
+                />
 
                 <TradeTabs
                     account={props.account}
