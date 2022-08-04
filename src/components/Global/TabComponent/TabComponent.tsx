@@ -1,6 +1,6 @@
 import styles from './TabComponent.module.css';
 import React, { useState, useEffect, Dispatch, SetStateAction, cloneElement } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, AnimateSharedLayout } from 'framer-motion';
 import '../../../App/App.css';
 import { Tooltip } from '@mui/material';
 import { useStyles } from '../../../utils/functions/styles';
@@ -105,9 +105,9 @@ export default function TabComponent(props: TabProps) {
 
                         <div className={styles.item_label}> {item.label}</div>
                         {item.label === selectedTab.label && <div className={styles.underline} />}
-                        {/* {item === selectedTab ? (
-              <motion.div className={styles.underline} layoutId='underline' />
-            ) : null} */}
+                        {item === selectedTab ? (
+                            <motion.div className={styles.underline} layoutId='underline' />
+                        ) : null}
                     </li>
                 ))}
             </ul>
@@ -146,17 +146,17 @@ export default function TabComponent(props: TabProps) {
                 {props.rightTabOptions ? tabsWithRightOption : fullTabs}
             </nav>
             <main className={styles.main_tab_content}>
-                <AnimatePresence exitBeforeEnter>
+                <AnimateSharedLayout>
                     <motion.div
-                    // key={selectedTab ? selectedTab.label : 'empty'}
-                    // initial={{ y: 10, opacity: 0 }}
-                    // animate={{ y: 0, opacity: 1 }}
-                    // exit={{ y: -10, opacity: 0 }}
-                    // transition={{ duration: 0.1 }}
+                        key={selectedTab ? selectedTab.label : 'empty'}
+                        initial={{ y: 10, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        exit={{ y: -10, opacity: 0 }}
+                        transition={{ duration: 0.2 }}
                     >
                         {selectedTab ? selectedTab.content : null}
                     </motion.div>
-                </AnimatePresence>
+                </AnimateSharedLayout>
             </main>
         </div>
     );
