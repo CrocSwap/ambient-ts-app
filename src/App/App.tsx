@@ -88,6 +88,7 @@ import { addNativeBalance, resetTokenData, setTokens } from '../utils/state/toke
 import { checkIsStable } from '../utils/data/stablePairs';
 
 import Reposition from '../pages/Trade/Reposition/Reposition';
+import SidebarFooter from '../components/Global/SIdebarFooter/SidebarFooter';
 // import SidebarFooter from '../components/Global/SIdebarFooter/SidebarFooter';
 
 const cachedQuerySpotPrice = memoizePromiseFn(querySpotPrice);
@@ -1585,7 +1586,7 @@ export default function App() {
             <div className='footer_container'>
                 <PageFooter lastBlockNumber={lastBlockNumber} />
             </div>
-            {/* <SidebarFooter/> */}
+            <SidebarFooter />
         </>
     );
 }

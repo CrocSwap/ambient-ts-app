@@ -1,5 +1,5 @@
 import styles from './TabComponent.module.css';
-import { useState, useEffect, Dispatch, SetStateAction } from 'react';
+import React, { useState, useEffect, Dispatch, SetStateAction, cloneElement } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import '../../../App/App.css';
 import { Tooltip } from '@mui/material';
@@ -24,7 +24,6 @@ interface TabProps {
 
 export default function TabComponent(props: TabProps) {
     const { data, outsideTabControl } = props;
-
 
     const [selectedTab, setSelectedTab] = useState(data[0]);
 
@@ -87,6 +86,11 @@ export default function TabComponent(props: TabProps) {
             </div>
         );
     }
+    const rightOptionWithProps =
+        // eslint-disable-next-line
+        cloneElement(props.rightTabOptions as React.ReactElement<any>, {
+            currentTab: selectedTab.label,
+        });
 
     const tabsWithRightOption = (
         <div className={styles.tab_with_option_container}>
@@ -108,7 +112,7 @@ export default function TabComponent(props: TabProps) {
                 ))}
             </ul>
             <div className={styles.tap_option_right}>
-                {props.rightTabOptions ? props.rightTabOptions : null}
+                {props.rightTabOptions ? rightOptionWithProps : null}
             </div>
         </div>
     );

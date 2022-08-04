@@ -255,7 +255,7 @@ footer {
   }
   
   .content-container{
-    height: calc(100vh - var(--footer-height))
+    min-height: calc(100vh - var(--footer-height))
   }
 
 

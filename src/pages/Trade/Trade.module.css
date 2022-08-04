@@ -260,10 +260,10 @@ and (-webkit-min-device-pixel-ratio: 2) {
 
   
 
-    .middle_col, .right_col{
+    /* .middle_col, .right_col{
         height: calc(100vh - 4rem);
 
-    }
+    } */
     
     .middle_col{
   
