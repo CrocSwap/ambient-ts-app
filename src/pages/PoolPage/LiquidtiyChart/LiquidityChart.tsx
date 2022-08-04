@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { MAX_UINT128 } from '../../../constants';
 import { fetchTicksSurroundingPrice, TickProcessed } from '../../../data/pools/tickData';
@@ -10,16 +11,14 @@ import * as d3fc from 'd3fc';
 import { TickMath, FeeAmount, TICK_SPACINGS, Pool } from '@uniswap/v3-sdk';
 import { CurrencyAmount, Token } from '@uniswap/sdk-core';
 import JSBI from 'jsbi';
-import { motion, AnimateSharedLayout } from 'framer-motion';
+import { motion } from 'framer-motion';
 import styles from './LiquidityChart.module.css';
 import { formatAmount } from '../../../utils/numbers';
 
 interface LiquidtiyData {
-    address: any;
-    value: any;
-    label: any;
-    setValue: any;
-    setLabel: any;
+    address: string;
+    value?: number;
+    label?: string;
 }
 
 export interface ChartEntry {
@@ -55,7 +54,7 @@ export default function LiquidityChart(props: LiquidtiyData) {
     }, [formattedAddress1, poolData]);
 
     const [poolTickData, updatePoolTickData] = usePoolTickData(address);
-    const [ticksToFetch, setTicksToFetch] = useState(INITIAL_TICKS_TO_FETCH);
+    const [ticksToFetch] = useState(INITIAL_TICKS_TO_FETCH);
     const amountTicks = ticksToFetch * 2 + 1;
 
     const [currentData, setCurrentData] = useState<ChartEntry>();
