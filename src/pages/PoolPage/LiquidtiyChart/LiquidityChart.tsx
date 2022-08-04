@@ -251,7 +251,13 @@ export default function LiquidityChart(props: LiquidtiyData) {
                 .decorate((selection: any) => {
                     selection
                         .enter()
-                        .style('fill', (d: any) => (d.isCurrent ? '#E6274A' : '#0F52BA'));
+                        .style('fill', (d: any) =>
+                            d.isCurrent
+                                ? '#E6274A'
+                                : d.index < (chartData.lineseries.length - 1) / 2
+                                ? '#CDC1FF'
+                                : '#7371FC',
+                        );
                 });
 
             const crosshair = d3fc
