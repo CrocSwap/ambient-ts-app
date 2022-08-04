@@ -26,7 +26,7 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
         setExpandTradeTable,
     } = props;
 
-    console.log(props);
+    // console.log(props);
 
     const expandIcon = (
         <div className={styles.icon} onClick={() => setExpandTradeTable(!expandTradeTable)}>
