@@ -108,7 +108,7 @@
   
 
     .middle_col, .right_col{
-        min-height: calc(100vh - 3rem);
+        min-height: 1200px;
 
     }
     
