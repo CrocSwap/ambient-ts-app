@@ -6,6 +6,7 @@ import {
     updatePoolChartData,
     updatePoolData,
     updatePoolTransactions,
+    updateTickData,
 } from './actions';
 import { PoolsState } from './models';
 
@@ -63,5 +64,11 @@ export default createReducer(initialState, (builder) =>
                     transactions,
                 };
             },
-        ),
+        )
+        .addCase(updateTickData, (state, { payload: { poolAddress, tickData, networkId } }) => {
+            state.byAddress[networkId][poolAddress] = {
+                ...state.byAddress[networkId][poolAddress],
+                tickData,
+            };
+        }),
 );

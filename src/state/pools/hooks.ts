@@ -7,12 +7,14 @@ import {
     updatePoolChartData,
     updatePoolData,
     updatePoolTransactions,
+    updateTickData,
 } from './actions';
 import { useActiveNetworkVersion, useClients } from '../application/hooks';
 import { notEmpty } from '../../utils';
 import { fetchPoolChartData } from '../../data/pools/chartData';
 import { Transaction } from '../../types';
 import { fetchPoolTransactions } from '../../data/pools/transactions';
+import { PoolTickData } from '../../data/pools/tickData';
 
 export function useAllPoolData(): {
     [address: string]: { data: PoolData | undefined; lastUpdated: number | undefined };
@@ -146,4 +148,25 @@ export function usePoolTransactions(address: string): Transaction[] | undefined 
 
     // return data
     return transactions;
+}
+
+export function usePoolTickData(
+    address: string,
+): [PoolTickData | undefined, (poolAddress: string, tickData: PoolTickData) => void] {
+    const dispatch = useDispatch<AppDispatch>();
+    const [activeNetwork] = useActiveNetworkVersion();
+    const pool = useSelector(
+        (state: AppState) => state.pools.byAddress[activeNetwork.id]?.[address],
+    );
+    const tickData = pool.tickData;
+
+    const setPoolTickData = useCallback(
+        (address: string, tickData: PoolTickData) =>
+            dispatch(
+                updateTickData({ poolAddress: address, tickData, networkId: activeNetwork.id }),
+            ),
+        [activeNetwork.id, dispatch],
+    );
+
+    return [tickData, setPoolTickData];
 }
