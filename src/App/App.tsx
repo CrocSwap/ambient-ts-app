@@ -1501,6 +1501,7 @@ export default function App() {
                                     lastBlockNumber={lastBlockNumber}
                                     isTokenABase={isTokenABase}
                                     poolPriceDisplay={poolPriceDisplay}
+                                    tokenPair={tokenPair}
                                     chainId={chainId}
                                 />
                             }
@@ -1544,7 +1545,6 @@ export default function App() {
                         />
 
                         <Route path='swap' element={<Swap {...swapProps} />} />
-                        <Route path='chart' element={<Chart />} />
                         <Route path='testpage' element={<TestPage />} />
                         <Route path='*' element={<Navigate to='/404' replace />} />
                         <Route path='/404' element={<NotFound />} />
