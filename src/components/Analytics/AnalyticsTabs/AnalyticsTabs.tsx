@@ -2,6 +2,7 @@ import styles from './AnalyticsTabs.module.css';
 import { useMemo, useState } from 'react';
 import TabContent from '../../Global/Tabs/TabContent/TabContent';
 import TabNavItem from '../../Global/Tabs/TabNavItem/TabNavItem';
+// import Positions from '../../Trade/TradeTabs/Positions/Positions';
 import { BiSearch } from 'react-icons/bi';
 import TopTokens from '../../TopTokens/TopTokens';
 import Pools from '../../Pools/Pools';

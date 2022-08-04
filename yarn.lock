@@ -11646,7 +11646,7 @@ mockdate@^3.0.5:
 
 moment@^2.29.4:
   version "2.29.4"
-  resolved "http://nexus.ext.proven.com/repository/npm-group/moment/-/moment-2.29.4.tgz#3dbe052889fe7c1b2ed966fcb3a77328964ef108"
+  resolved "https://registry.yarnpkg.com/moment/-/moment-2.29.4.tgz#3dbe052889fe7c1b2ed966fcb3a77328964ef108"
   integrity sha512-5LC9SOxjSc2HF6vO2CyuTDNivEdoz2IvyJJGj6X8DJ0eFyfszE0QiEd+iXmBvUP3WHxSjFH/vIsA0EN00cgr8w==
 
 moo-color@^1.0.2:
@@ -11656,9 +11656,9 @@ moo-color@^1.0.2:
   dependencies:
     color-name "^1.1.4"
 
-moralis@^1.9.0:
+moralis@^1.10.1:
   version "1.10.1"
-  resolved "http://nexus.ext.proven.com/repository/npm-group/moralis/-/moralis-1.10.1.tgz#bb8044d4d61ddae9baaf60fb29b77f46d12f0ceb"
+  resolved "https://registry.yarnpkg.com/moralis/-/moralis-1.10.1.tgz#bb8044d4d61ddae9baaf60fb29b77f46d12f0ceb"
   integrity sha512-BAdB46RmFGpBFca0OpT5fye1iMbW1fFRqmfu39S7FLIVjwipU97TXduVHywmcqmqnLbknedgNfvUzX60YCjAAg==
   dependencies:
     "@babel/runtime" "7.16.7"

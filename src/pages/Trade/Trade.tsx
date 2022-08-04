@@ -6,8 +6,8 @@ import {
 } from 'react-router-dom';
 import styles from './Trade.module.css';
 import chart from '../../assets/images/Temporary/chart.svg';
-import Tabs from '../../components/Global/Tabs/Tabs';
-import { motion } from 'framer-motion';
+
+// import { motion } from 'framer-motion';
 import { useAppSelector, useAppDispatch } from '../../utils/hooks/reduxToolkit';
 import {
     tradeData as TradeDataIF,
@@ -15,6 +15,8 @@ import {
     setActiveChartPeriod,
 } from '../../utils/state/tradeDataSlice';
 import truncateDecimals from '../../utils/data/truncateDecimals';
+import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
+import TradeTabs from '../../components/Trade/TradeTabs/TradeTabs';
 
 interface ITradeProps {
     account: string;
@@ -23,6 +25,7 @@ interface ITradeProps {
     lastBlockNumber: number;
     isTokenABase: boolean;
     poolPriceDisplay: number;
+    chainId: string;
 }
 
 export default function Trade(props: ITradeProps) {
@@ -95,14 +98,10 @@ export default function Trade(props: ITradeProps) {
     );
 
     const currencyCharacter = denomInTokenA
-        ? // denom in a, if token b is dollar equivalent use $
-          ~['DAI', 'USDC'].indexOf(tradeData.tokenB.symbol)
-            ? '$'
-            : 'Ξ'
-        : // denom in b, if token a is dollar equivalent use $
-        ~['DAI', 'USDC'].indexOf(tradeData.tokenA.symbol)
-        ? '$'
-        : 'Ξ';
+        ? // denom in a, return token b character
+          getUnicodeCharacter(tradeData.tokenB.symbol)
+        : // denom in b, return token a character
+          getUnicodeCharacter(tradeData.tokenA.symbol);
 
     const timeFrameContent = (
         <div className={styles.time_frame_container}>
@@ -186,27 +185,31 @@ export default function Trade(props: ITradeProps) {
     );
 
     return (
-        <motion.main
-            initial={{ width: 0 }}
-            animate={{ width: '100%' }}
-            exit={{ x: window.innerWidth, transition: { duration: 0.4 } }}
-            data-testid={'trade'}
-        >
-            <main className={styles.main_layout}>
-                <div className={`${styles.middle_col} ${styles.graph_container}`}>
+        // <motion.main
+        //     initial={{ width: 0 }}
+        //     animate={{ width: '100%' }}
+        //     exit={{ x: window.innerWidth, transition: { duration: 0.4 } }}
+        //     data-testid={'trade'}
+        // >
+        <main className={styles.main_layout}>
+            <div className={`${styles.middle_col} ${styles.graph_container}`}>
+                <div>
                     {tokenInfo}
                     {timeFrameContent}
                     {chartImage}
-                    <Tabs
-                        account={props.account}
-                        isAuthenticated={props.isAuthenticated}
-                        isWeb3Enabled={props.isWeb3Enabled}
-                        lastBlockNumber={props.lastBlockNumber}
-                    />
                 </div>
-                {mainContent}
-            </main>
-        </motion.main>
+
+                <TradeTabs
+                    account={props.account}
+                    isAuthenticated={props.isAuthenticated}
+                    isWeb3Enabled={props.isWeb3Enabled}
+                    lastBlockNumber={props.lastBlockNumber}
+                    chainId={props.chainId}
+                />
+            </div>
+            {mainContent}
+        </main>
+        // </motion.main>
     );
 }
 

@@ -40,6 +40,11 @@ transition: all var(--animation-speed) ease-in-out;
   border-radius: var(--border-radius);
   position: relative;
   color: white;
+
+ 
+
+  /* min-height: 80vh; */
+
  
 
 }
@@ -79,6 +84,7 @@ transition: all var(--animation-speed) ease-in-out;
 .modal_footer {
   /* padding: 10px; */
   /* bottom: 10px; */
+  bottom: 0;
   position: absolute;
   width: 100%;
   /* padding: 0 20px; */

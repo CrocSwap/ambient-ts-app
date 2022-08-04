@@ -9,7 +9,7 @@ import truncateDecimals from '../../../../utils/data/truncateDecimals';
 // START: Import Local Files
 import styles from './RangeCurrencyConverter.module.css';
 import { calculateSecondaryDepositQty } from '../../../../utils/functions/calculateSecondaryDepositQty';
-import { TokenIF } from '../../../../utils/interfaces/TokenIF';
+import { TokenIF, TokenPairIF } from '../../../../utils/interfaces/exports';
 import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import {
     setIsTokenAPrimaryRange,
@@ -29,10 +29,7 @@ interface RangeCurrencyConverterPropsIF {
     isLiq?: boolean;
     poolPriceNonDisplay: number;
     isAdvancedMode: boolean;
-    tokenPair: {
-        dataTokenA: TokenIF;
-        dataTokenB: TokenIF;
-    };
+    tokenPair: TokenPairIF;
     isTokenAPrimaryLocal: boolean;
     setIsTokenAPrimaryLocal: Dispatch<SetStateAction<boolean>>;
     isTokenABase: boolean;
