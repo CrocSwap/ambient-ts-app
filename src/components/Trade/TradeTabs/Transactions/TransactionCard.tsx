@@ -7,6 +7,7 @@ import { ISwap } from '../../../../utils/state/graphDataSlice';
 import TransactionsMenu from '../../../Global/Tabs/TableMenu/TableMenuComponents/TransactionsMenu';
 import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import { toDisplayPrice, toDisplayQty } from '@crocswap-libs/sdk';
+import { Dispatch, SetStateAction } from 'react';
 
 interface TransactionProps {
     swap: ISwap;
@@ -15,9 +16,20 @@ interface TransactionProps {
     tokenAAddress: string;
     tokenBAddress: string;
     isDenomBase: boolean;
+    currentTxActiveInTransactions: string;
+    setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
 }
 export default function TransactionCard(props: TransactionProps) {
-    const { swap, tokenMap, chainId, tokenAAddress, tokenBAddress, isDenomBase } = props;
+    const {
+        swap,
+        tokenMap,
+        chainId,
+        tokenAAddress,
+        tokenBAddress,
+        isDenomBase,
+        currentTxActiveInTransactions,
+        setCurrentTxActiveInTransactions,
+    } = props;
 
     // const tempOwnerId = '0xa2b398145b7fc8fd9a01142698f15d329ebb5ff5090cfcc8caae440867ab9919';
     const PosHash = swap.id;
@@ -102,8 +114,18 @@ export default function TransactionCard(props: TransactionProps) {
 
     if (!transactionMatchesSelectedTokens) return null;
 
+    const activeTransactionStyle =
+        swap.id === currentTxActiveInTransactions ? styles.active_tx_style : '';
+
     return (
-        <div className={styles.main_container}>
+        <div
+            className={`${styles.main_container} ${activeTransactionStyle}`}
+            onClick={() =>
+                swap.id === currentTxActiveInTransactions
+                    ? null
+                    : setCurrentTxActiveInTransactions('')
+            }
+        >
             <div className={styles.row_container}>
                 {/* ------------------------------------------------------ */}
 

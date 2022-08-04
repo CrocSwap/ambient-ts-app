@@ -4,6 +4,7 @@ import styles from './Sidebar.module.css';
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ISwap } from '../../../utils/state/graphDataSlice';
+import { PositionIF } from '../../../utils/interfaces/PositionIF';
 interface Item {
     name: string;
     icon: string;
@@ -18,31 +19,31 @@ interface SidebarAccordionProps {
     ) => void;
     item: Item;
     idx: number;
-    mostRecentTransactions?: ISwap[];
+    mostRecent?: PositionIF[] | ISwap[];
 }
 
 export default function SidebarAccordion(props: SidebarAccordionProps) {
-    const { showSidebar, idx, item, toggleSidebar, mostRecentTransactions = [] } = props;
+    const { showSidebar, idx, item, toggleSidebar, mostRecent = [] } = props;
 
-    const userHasRecentTransactions = mostRecentTransactions.length > 0;
+    const userHasRecent = mostRecent.length > 0;
 
-    const [isOpen, setIsOpen] = useState(userHasRecentTransactions);
+    const [isOpen, setIsOpen] = useState(userHasRecent);
 
     useEffect(() => {
-        if (userHasRecentTransactions) {
+        if (userHasRecent) {
             setIsOpen(true);
         } else {
             setIsOpen(false);
         }
-    }, [userHasRecentTransactions]);
+    }, [userHasRecent]);
 
     useEffect(() => {
-        if (mostRecentTransactions.length > 0) {
+        if (mostRecent.length > 0) {
             setIsOpen(true);
         } else {
             setIsOpen(false);
         }
-    }, [JSON.stringify(mostRecentTransactions)]);
+    }, [JSON.stringify(mostRecent)]);
 
     // console.log(showSidebar);
     const openStateContent = (

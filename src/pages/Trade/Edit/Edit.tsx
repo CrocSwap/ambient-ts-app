@@ -13,7 +13,8 @@ import { useState, useEffect } from 'react';
 import EditDenominationSwitch from '../../../components/Trade/Edit/EditDenominationSwitch/EditDenominationSwitch';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 
-import { Position } from '../../../utils/state/graphDataSlice';
+import { PositionIF } from '../../../utils/interfaces/PositionIF';
+
 import {
     getPinnedPriceValuesFromTicks,
     getPinnedPriceValuesFromDisplayPrices,
@@ -23,7 +24,7 @@ import { tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 import { TokenIF } from '../../../utils/interfaces/exports';
 
 interface PositionState {
-    position: Position;
+    position: PositionIF;
 }
 
 export default function Edit() {

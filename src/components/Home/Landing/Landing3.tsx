@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import styles from './Landing3.module.css';
 
 interface circleItemProps {
@@ -8,6 +9,8 @@ interface circleItemProps {
 }
 
 export default function Landing3() {
+    const { t } = useTranslation();
+
     const CircleItem = (props: circleItemProps) => {
         const { width, background, children, big } = props;
 
@@ -30,8 +33,8 @@ export default function Landing3() {
         <div className={styles.header_content}>
             <div className={styles.header_text}>
                 <span className={styles.ambient_text}>ambient </span>
-                runs the entire DEX inside a{' '}
-                <span className={styles.highlight_text}>single smart contract</span>
+                {t('slide3.part1')}{' '}
+                <span className={styles.highlight_text}>{t('slide3.part2')}</span>
             </div>
             {/* <div className={styles.amm_pools}>
                 Individual AMM pools are lightweight data structures instead of separate smart

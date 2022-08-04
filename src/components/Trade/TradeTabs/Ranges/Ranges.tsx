@@ -4,6 +4,7 @@ import { graphData } from '../../../../utils/state/graphDataSlice';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { useMoralis } from 'react-moralis';
 import RangeCardHeader from './RangeCardHeader';
+// import { Dispatch, SetStateAction } from 'react';
 
 interface RangesProps {
     isShowAllEnabled: boolean;
@@ -11,9 +12,12 @@ interface RangesProps {
     notOnTradeRoute?: boolean;
     graphData: graphData;
     lastBlockNumber: number;
+
+    expandTradeTable: boolean;
+    // setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
 }
 export default function Ranges(props: RangesProps) {
-    const { portfolio, notOnTradeRoute, isShowAllEnabled, graphData } = props;
+    const { portfolio, notOnTradeRoute, isShowAllEnabled, graphData, expandTradeTable } = props;
 
     const { account, isAuthenticated } = useMoralis();
 
@@ -65,7 +69,12 @@ export default function Ranges(props: RangesProps) {
     return (
         <div className={styles.container}>
             <RangeCardHeader />
-            {RangesDisplay}
+            <div
+                className={styles.item_container}
+                style={{ height: expandTradeTable ? '100%' : '220px' }}
+            >
+                {RangesDisplay}
+            </div>
         </div>
     );
 }

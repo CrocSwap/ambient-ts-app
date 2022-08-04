@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import styles from './Stats.module.css';
 
 interface StatCardProps {
@@ -15,6 +16,7 @@ function StatCard(props: StatCardProps) {
     );
 }
 export default function Stats() {
+    const { t } = useTranslation();
     const statCardData = [
         {
             title: 'Total TVL',
@@ -31,7 +33,7 @@ export default function Stats() {
     ];
     return (
         <div className={styles.container}>
-            <div className={styles.title}>Ambient Finance Stats</div>
+            <div className={styles.title}>{t('homeStatsTitle')}</div>
             <div className={styles.content}>
                 {statCardData.map((card, idx) => (
                     <StatCard key={idx} title={card.title} value={card.value} />

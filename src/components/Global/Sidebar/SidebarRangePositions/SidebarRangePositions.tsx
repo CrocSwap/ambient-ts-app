@@ -1,6 +1,13 @@
 import styles from './SidebarRangePositions.module.css';
 import SidebarRangePositionsCard from './SidebarRangePositionsCard';
-export default function SidebarRangePositions() {
+import { PositionIF } from '../../../../utils/interfaces/PositionIF';
+
+interface SidebarRangeProps {
+    mostRecentPositions?: PositionIF[];
+}
+export default function SidebarRangePositions(props: SidebarRangeProps) {
+    const { mostRecentPositions } = props;
+
     const header = (
         <div className={styles.header}>
             <div>Pool</div>
@@ -9,14 +16,15 @@ export default function SidebarRangePositions() {
         </div>
     );
 
-    const mapItems = [1, 2, 3, 4, 5, 6, 7];
+    // const mapItems = [1, 2, 3, 4, 5, 6, 7];
     return (
         <div className={styles.container}>
             {header}
             <div className={styles.content}>
-                {mapItems.map((item, idx) => (
-                    <SidebarRangePositionsCard key={idx} />
-                ))}
+                {mostRecentPositions &&
+                    mostRecentPositions.map((position, idx) => (
+                        <SidebarRangePositionsCard key={idx} position={position} />
+                    ))}
             </div>
         </div>
     );

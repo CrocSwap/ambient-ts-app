@@ -1,8 +1,9 @@
 /** ***** Import React and Dongles *******/
 import { useEffect, useState, useMemo } from 'react';
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
+import { getPositionData } from './functions/getPositionData';
 import {
-    Position,
+    // PositionIF,
     resetGraphData,
     setPositionsByPool,
     setPositionsByUser,
@@ -30,10 +31,12 @@ import {
     contractAddresses,
     getTokenBalanceDisplay,
     sortBaseQuoteTokens,
+
+    // eslint-disable-next-line
     getTokenDecimals,
     getTokenAllowance,
     toDisplayPrice,
-    tickToPrice,
+    // tickToPrice,
     POOL_PRIMARY,
 } from '@crocswap-libs/sdk';
 
@@ -79,7 +82,7 @@ import { memoizePromiseFn } from './functions/memoizePromiseFn';
 import { querySpotPrice } from './functions/querySpotPrice';
 import { fetchAddress } from './functions/fetchAddress';
 import { fetchTokenBalances } from './functions/fetchTokenBalances';
-import truncateDecimals from '../utils/data/truncateDecimals';
+// import truncateDecimals from '../utils/data/truncateDecimals';
 import { getNFTs } from './functions/getNFTs';
 import { useSlippage } from './useSlippage';
 import { addNativeBalance, resetTokenData, setTokens } from '../utils/state/tokenDataSlice';
@@ -91,7 +94,7 @@ import Reposition from '../pages/Trade/Reposition/Reposition';
 const cachedQuerySpotPrice = memoizePromiseFn(querySpotPrice);
 const cachedFetchAddress = memoizePromiseFn(fetchAddress);
 const cachedFetchTokenBalances = memoizePromiseFn(fetchTokenBalances);
-const cachedGetTokenDecimals = memoizePromiseFn(getTokenDecimals);
+// const cachedGetTokenDecimals = memoizePromiseFn(getTokenDecimals);
 
 const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
 // const httpGraphCacheServerDomain = '';
@@ -116,6 +119,12 @@ export default function App() {
     const location = useLocation();
 
     const [fallbackChainId, setFallbackChainId] = useState('0x5');
+    const [switchTabToTransactions, setSwitchTabToTransactions] = useState<boolean>(false);
+
+    const [isShowAllEnabled, setIsShowAllEnabled] = useState<boolean>(true);
+    const [currentTxActiveInTransactions, setCurrentTxActiveInTransactions] = useState<string>('');
+
+    const [expandTradeTable, setExpandTradeTable] = useState(false);
 
     const chainId = moralisChainId
         ? moralisChainId
@@ -510,6 +519,62 @@ export default function App() {
     const activePeriod = tradeData.activeChartPeriod;
 
     useEffect(() => {
+        if (activePeriod) {
+            try {
+                if (httpGraphCacheServerDomain) {
+                    const candleSeriesCacheEndpoint =
+                        httpGraphCacheServerDomain + '/candle_series?';
+
+                    fetch(
+                        candleSeriesCacheEndpoint +
+                            new URLSearchParams({
+                                base: '0x0000000000000000000000000000000000000000',
+                                quote: '0x6b175474e89094c44da98b954eedeac495271d0f',
+                                poolIdx: '36000',
+                                period: activePeriod.toString(),
+                                dex: 'all',
+                                n: '200', // positive integer
+                                page: '0', // nonnegative integer
+                                chainId: '0x1',
+                            }),
+                    )
+                        .then((response) => response?.json())
+                        .then((json) => {
+                            const candles = json?.data;
+                            // console.log({ candles });
+                            if (candles) {
+                                Promise.all(candles.map(getCandleData)).then((updatedCandles) => {
+                                    // if (
+                                    //     JSON.stringify(graphData.candlesForAllPools.pools) !==
+                                    //     JSON.stringify(updatedCandles)
+                                    // ) {
+                                    dispatch(
+                                        setCandles({
+                                            pool: {
+                                                baseAddress:
+                                                    '0x0000000000000000000000000000000000000000',
+                                                quoteAddress:
+                                                    '0x6b175474e89094c44da98b954eedeac495271d0f',
+                                                poolIdx: 36000,
+                                                network: '0x1',
+                                            },
+                                            duration: activePeriod,
+                                            candles: updatedCandles,
+                                        }),
+                                    );
+                                    // }
+                                });
+                            }
+                        })
+                        .catch(console.log);
+                }
+            } catch (error) {
+                console.log({ error });
+            }
+        }
+    }, [activePeriod]);
+
+    useEffect(() => {
         if (baseTokenAddress && quoteTokenAddress && activePeriod) {
             try {
                 if (httpGraphCacheServerDomain) {
@@ -537,22 +602,23 @@ export default function App() {
 
                             if (candles) {
                                 Promise.all(candles.map(getCandleData)).then((updatedCandles) => {
-                                    if (
-                                        JSON.stringify(graphData.candlesForAllPools.pools) !==
-                                        JSON.stringify(updatedCandles)
-                                    ) {
-                                        dispatch(
-                                            setCandles({
-                                                pool: {
-                                                    baseAddress: baseTokenAddress.toLowerCase(),
-                                                    quoteAddress: quoteTokenAddress.toLowerCase(),
-                                                    poolIdx: POOL_PRIMARY,
-                                                },
-                                                duration: activePeriod,
-                                                candles: updatedCandles,
-                                            }),
-                                        );
-                                    }
+                                    // if (
+                                    //     JSON.stringify(graphData.candlesForAllPools.pools) !==
+                                    //     JSON.stringify(updatedCandles)
+                                    // ) {
+                                    dispatch(
+                                        setCandles({
+                                            pool: {
+                                                baseAddress: baseTokenAddress.toLowerCase(),
+                                                quoteAddress: quoteTokenAddress.toLowerCase(),
+                                                poolIdx: POOL_PRIMARY,
+                                                network: chainId,
+                                            },
+                                            duration: activePeriod,
+                                            candles: updatedCandles,
+                                        }),
+                                    );
+                                    // }
                                 });
                             }
                         })
@@ -663,6 +729,7 @@ export default function App() {
                                 baseAddress: baseTokenAddress,
                                 quoteAddress: quoteTokenAddress,
                                 poolIdx: POOL_PRIMARY,
+                                network: chainId,
                             },
                             duration: activePeriod,
                             candles: updatedCandles,
@@ -673,6 +740,65 @@ export default function App() {
             // console.log({ lastMessageData });
         }
     }, [candlesMessage]);
+
+    const mainnetCandleSubscriptionEndpoint = useMemo(
+        () =>
+            wssGraphCacheServerDomain +
+            '/subscribe_candles?' +
+            new URLSearchParams({
+                base: '0x0000000000000000000000000000000000000000',
+                quote: '0x6b175474e89094c44da98b954eedeac495271d0f',
+                poolIdx: POOL_PRIMARY.toString(),
+                // 	positive integer	The duration of the candle, in seconds. Must represent one of the following time intervals: 5 minutes, 15 minutes, 1 hour, 4 hours, 1 day, 7 days.
+                period: activePeriod.toString(),
+                chainId: '0x1',
+                dex: 'all',
+            }),
+        [baseTokenAddress, quoteTokenAddress, POOL_PRIMARY, activePeriod, chainId],
+    );
+
+    const {
+        //  sendMessage,
+        lastMessage: mainnetCandlesMessage,
+        //  readyState
+    } = useWebSocket(
+        mainnetCandleSubscriptionEndpoint,
+        {
+            // share:  true,
+            onOpen: () => console.log({ mainnetCandleSubscriptionEndpoint }),
+            onClose: (event) => console.log({ event }),
+            // onClose: () => console.log('candles websocket connection closed'),
+            // Will attempt to reconnect on all close events, such as server shutting down
+            shouldReconnect: () => shouldSubscriptionsReconnect,
+        },
+        // only connect if base/quote token addresses are available
+        // baseTokenAddress !== '' && quoteTokenAddress !== '',
+    );
+
+    useEffect(() => {
+        if (mainnetCandlesMessage !== null) {
+            const lastMessageData = JSON.parse(mainnetCandlesMessage.data).data;
+            if (lastMessageData) {
+                // console.log({ lastMessageData });
+                Promise.all(lastMessageData.map(getCandleData)).then((updatedCandles) => {
+                    // console.log({ updatedCandles });
+                    dispatch(
+                        addCandles({
+                            pool: {
+                                baseAddress: '0x0000000000000000000000000000000000000000',
+                                quoteAddress: '0x6b175474e89094c44da98b954eedeac495271d0f',
+                                poolIdx: 36000,
+                                network: '0x1',
+                            },
+                            duration: activePeriod,
+                            candles: updatedCandles,
+                        }),
+                    );
+                });
+            }
+            // console.log({ lastMessageData });
+        }
+    }, [mainnetCandlesMessage]);
 
     const poolSwapsCacheSubscriptionEndpoint = useMemo(
         () =>
@@ -1001,118 +1127,6 @@ export default function App() {
         return candle;
     };
 
-    const getPositionData = async (position: Position): Promise<Position> => {
-        position.base = position.base.startsWith('0x') ? position.base : '0x' + position.base;
-        position.quote = position.quote.startsWith('0x') ? position.quote : '0x' + position.quote;
-        position.user = position.user.startsWith('0x') ? position.user : '0x' + position.user;
-
-        const baseTokenAddress = position.base;
-        const quoteTokenAddress = position.quote;
-
-        const poolPriceNonDisplay = await cachedQuerySpotPrice(
-            baseTokenAddress,
-            quoteTokenAddress,
-            chainId,
-            lastBlockNumber,
-        );
-
-        try {
-            position.userEnsName = await cachedFetchAddress(position.user);
-        } catch (error) {
-            console.log(error);
-        }
-
-        const poolPriceInTicks = Math.log(poolPriceNonDisplay) / Math.log(1.0001);
-
-        const baseTokenDecimals = await cachedGetTokenDecimals(baseTokenAddress);
-        const quoteTokenDecimals = await cachedGetTokenDecimals(quoteTokenAddress);
-
-        if (baseTokenDecimals) position.baseTokenDecimals = baseTokenDecimals;
-        if (quoteTokenDecimals) position.quoteTokenDecimals = quoteTokenDecimals;
-
-        const lowerPriceNonDisplay = tickToPrice(position.bidTick);
-        const upperPriceNonDisplay = tickToPrice(position.askTick);
-
-        const lowerPriceDisplayInBase =
-            1 / toDisplayPrice(upperPriceNonDisplay, baseTokenDecimals, quoteTokenDecimals);
-
-        const upperPriceDisplayInBase =
-            1 / toDisplayPrice(lowerPriceNonDisplay, baseTokenDecimals, quoteTokenDecimals);
-
-        const lowerPriceDisplayInQuote = toDisplayPrice(
-            lowerPriceNonDisplay,
-            baseTokenDecimals,
-            quoteTokenDecimals,
-        );
-
-        const upperPriceDisplayInQuote = toDisplayPrice(
-            upperPriceNonDisplay,
-            baseTokenDecimals,
-            quoteTokenDecimals,
-        );
-
-        const baseTokenLogoURI = importedTokens.find(
-            (token) => token.address.toLowerCase() === baseTokenAddress.toLowerCase(),
-        )?.logoURI;
-        const quoteTokenLogoURI = importedTokens.find(
-            (token) => token.address.toLowerCase() === quoteTokenAddress.toLowerCase(),
-        )?.logoURI;
-
-        position.baseTokenLogoURI = baseTokenLogoURI ?? '';
-        position.quoteTokenLogoURI = quoteTokenLogoURI ?? '';
-
-        if (!position.ambient) {
-            position.lowRangeDisplayInBase =
-                lowerPriceDisplayInBase < 2
-                    ? truncateDecimals(lowerPriceDisplayInBase, 4).toString()
-                    : truncateDecimals(lowerPriceDisplayInBase, 2).toString();
-            position.highRangeDisplayInBase =
-                upperPriceDisplayInBase < 2
-                    ? truncateDecimals(upperPriceDisplayInBase, 4).toString()
-                    : truncateDecimals(upperPriceDisplayInBase, 2).toString();
-        }
-
-        if (!position.ambient) {
-            position.lowRangeDisplayInQuote =
-                lowerPriceDisplayInQuote < 2
-                    ? truncateDecimals(lowerPriceDisplayInQuote, 4).toString()
-                    : truncateDecimals(lowerPriceDisplayInQuote, 2).toString();
-            position.highRangeDisplayInQuote =
-                upperPriceDisplayInQuote < 2
-                    ? truncateDecimals(upperPriceDisplayInQuote, 4).toString()
-                    : truncateDecimals(upperPriceDisplayInQuote, 2).toString();
-        }
-
-        position.poolPriceInTicks = poolPriceInTicks;
-
-        if (baseTokenAddress === contractAddresses.ZERO_ADDR) {
-            position.baseTokenSymbol = 'ETH';
-            position.quoteTokenSymbol = 'DAI';
-            position.tokenAQtyDisplay = '1';
-            position.tokenBQtyDisplay = '2000';
-            // if (!position.ambient) {
-            //     position.lowRangeDisplay = '.001';
-            //     position.highRangeDisplay = '.002';
-            // }
-        } else if (
-            baseTokenAddress.toLowerCase() ===
-            '0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa'.toLowerCase()
-        ) {
-            position.baseTokenSymbol = 'DAI';
-            position.quoteTokenSymbol = 'USDC';
-            position.tokenAQtyDisplay = '101';
-            position.tokenBQtyDisplay = '100';
-            // if (!position.ambient) {
-            //     position.lowRangeDisplay = '0.9';
-            //     position.highRangeDisplay = '1.1';
-            // }
-        } else {
-            position.baseTokenSymbol = 'unknownBase';
-            position.quoteTokenSymbol = 'unknownQuote';
-        }
-        return position;
-    };
-
     useEffect(() => {
         if (isAuthenticated && account) {
             const allUserPositionsCacheEndpoint = httpGraphCacheServerDomain + '/user_positions?';
@@ -1416,10 +1430,25 @@ export default function App() {
         setShowSidebar(!showSidebar);
         setSidebarManuallySet(true);
     }
+
+    function handleSetTradeTabToTransaction() {
+        setSwitchTabToTransactions(!switchTabToTransactions);
+    }
     const sidebarProps = {
         showSidebar: showSidebar,
         toggleSidebar: toggleSidebar,
         chainId: chainId,
+        switchTabToTransactions: switchTabToTransactions,
+        handleSetTradeTabToTransaction: handleSetTradeTabToTransaction,
+        setSwitchTabToTransactions: setSwitchTabToTransactions,
+
+        currentTxActiveInTransactions: currentTxActiveInTransactions,
+        setCurrentTxActiveInTransactions: setCurrentTxActiveInTransactions,
+        isShowAllEnabled: isShowAllEnabled,
+        setIsShowAllEnabled: setIsShowAllEnabled,
+        expandTradeTable: expandTradeTable,
+        setExpandTradeTable: setExpandTradeTable,
+
         // setShowSidebar : setShowSidebar
     };
 
@@ -1502,6 +1531,16 @@ export default function App() {
                                     poolPriceDisplay={poolPriceDisplay}
                                     tokenPair={tokenPair}
                                     chainId={chainId}
+                                    switchTabToTransactions={switchTabToTransactions}
+                                    setSwitchTabToTransactions={setSwitchTabToTransactions}
+                                    currentTxActiveInTransactions={currentTxActiveInTransactions}
+                                    setCurrentTxActiveInTransactions={
+                                        setCurrentTxActiveInTransactions
+                                    }
+                                    isShowAllEnabled={isShowAllEnabled}
+                                    setIsShowAllEnabled={setIsShowAllEnabled}
+                                    expandTradeTable={expandTradeTable}
+                                    setExpandTradeTable={setExpandTradeTable}
                                 />
                             }
                         >
