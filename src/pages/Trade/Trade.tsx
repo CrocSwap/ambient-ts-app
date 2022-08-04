@@ -7,7 +7,6 @@ import {
 import styles from './Trade.module.css';
 import chart from '../../assets/images/Temporary/chart.svg';
 import Tabs from '../../components/Global/Tabs/Tabs';
-import { motion } from 'framer-motion';
 import { useAppSelector, useAppDispatch } from '../../utils/hooks/reduxToolkit';
 import {
     tradeData as TradeDataIF,
@@ -16,7 +15,7 @@ import {
 } from '../../utils/state/tradeDataSlice';
 import truncateDecimals from '../../utils/data/truncateDecimals';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { ONE_HOUR_SECONDS, TimeWindow } from '../../constants/intervals';
 import { useTokenData, useTokenPriceData } from '../../state/tokens/hooks';
 import { currentTimestamp } from '../../utils';
@@ -241,12 +240,6 @@ export default function Trade(props: ITradeProps) {
                     1d
                 </button>
             </div>
-        </div>
-    );
-
-    const chartImage = (
-        <div className={styles.chart_image}>
-            <img src={chart} alt='chart' />
         </div>
     );
 
