@@ -1,13 +1,10 @@
 import PoolCard from '../../Global/PoolCard/PoolCard';
 import styles from './TopPools.module.css';
-import { motion, AnimateSharedLayout } from 'framer-motion';
-import { useState } from 'react';
+import { motion } from 'framer-motion';
 import { topPools } from '../../../App/mockData';
 import { useTranslation } from 'react-i18next';
 
 export default function TopPools() {
-    const [selected, setSelected] = useState(-2);
-
     const { t } = useTranslation();
 
     // const statCardData = [

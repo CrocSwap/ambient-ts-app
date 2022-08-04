@@ -1,5 +1,4 @@
 import styles from './PoolCard.module.css';
-import { motion } from 'framer-motion';
 interface PoolCardProps {
     speed: number;
     name: string;
