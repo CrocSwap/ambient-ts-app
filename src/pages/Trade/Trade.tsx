@@ -16,7 +16,10 @@ import {
 } from '../../utils/state/tradeDataSlice';
 import truncateDecimals from '../../utils/data/truncateDecimals';
 import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
-import TradeTabs from '../../components/Trade/TradeTabs/TradeTabs';
+// import TradeTabs from '../../components/Trade/TradeTabs/TradeTabs';
+import TradeTabs2 from '../../components/Trade/TradeTabs/TradeTabs2';
+import { Dispatch, SetStateAction } from 'react';
+import { motion } from 'framer-motion';
 
 interface ITradeProps {
     account: string;
@@ -26,6 +29,15 @@ interface ITradeProps {
     isTokenABase: boolean;
     poolPriceDisplay: number;
     chainId: string;
+    switchTabToTransactions: boolean;
+    setSwitchTabToTransactions: Dispatch<SetStateAction<boolean>>;
+    currentTxActiveInTransactions: string;
+    setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
+    isShowAllEnabled: boolean;
+    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
+
+    expandTradeTable: boolean;
+    setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function Trade(props: ITradeProps) {
@@ -184,6 +196,9 @@ export default function Trade(props: ITradeProps) {
         </div>
     );
 
+    const expandGraphStyle = props.expandTradeTable ? styles.hide_graph : '';
+    // const expandTradeTableStyle = props.expandTradeTable ? styles.expand_table : styles.trade_style;
+
     return (
         // <motion.main
         //     initial={{ width: 0 }}
@@ -192,20 +207,41 @@ export default function Trade(props: ITradeProps) {
         //     data-testid={'trade'}
         // >
         <main className={styles.main_layout}>
-            <div className={`${styles.middle_col} ${styles.graph_container}`}>
-                <div>
+            <div className={styles.middle_col}>
+                <div className={`${styles.graph_style} ${expandGraphStyle}`}>
                     {tokenInfo}
                     {timeFrameContent}
                     {chartImage}
                 </div>
 
-                <TradeTabs
-                    account={props.account}
-                    isAuthenticated={props.isAuthenticated}
-                    isWeb3Enabled={props.isWeb3Enabled}
-                    lastBlockNumber={props.lastBlockNumber}
-                    chainId={props.chainId}
-                />
+                <motion.div
+                    animate={{
+                        height: props.expandTradeTable ? '100%' : '30%',
+                        transition: {
+                            duration: 0.5,
+                            type: 'spring',
+                            damping: 10,
+                        },
+                    }}
+
+                    // className={` ${expandTradeTableStyle}`}
+                >
+                    <TradeTabs2
+                        account={props.account}
+                        isAuthenticated={props.isAuthenticated}
+                        isWeb3Enabled={props.isWeb3Enabled}
+                        lastBlockNumber={props.lastBlockNumber}
+                        chainId={props.chainId}
+                        switchTabToTransactions={props.switchTabToTransactions}
+                        setSwitchTabToTransactions={props.setSwitchTabToTransactions}
+                        currentTxActiveInTransactions={props.currentTxActiveInTransactions}
+                        setCurrentTxActiveInTransactions={props.setCurrentTxActiveInTransactions}
+                        isShowAllEnabled={props.isShowAllEnabled}
+                        setIsShowAllEnabled={props.setIsShowAllEnabled}
+                        expandTradeTable={props.expandTradeTable}
+                        setExpandTradeTable={props.setExpandTradeTable}
+                    />
+                </motion.div>
             </div>
             {mainContent}
         </main>

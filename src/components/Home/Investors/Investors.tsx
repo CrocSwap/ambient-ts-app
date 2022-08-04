@@ -14,6 +14,7 @@ import hypotenuseImage from '../../../assets/images/Investors/hypotenuse.svg';
 import grugImage from '../../../assets/images/Investors/grug.svg';
 
 import { motion, useViewportScroll, useTransform } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 
 interface RowAnimateProps {
     children?: React.ReactNode;
@@ -37,6 +38,8 @@ function RowAnimate(props: RowAnimateProps) {
 }
 
 export default function Investors() {
+    const { t } = useTranslation();
+
     const blockTower = (
         <div className={styles.center}>
             <img src={blocktowerImage} alt='blocktower' />
@@ -126,7 +129,7 @@ export default function Investors() {
         <div className={styles.container}>
             <div className={styles.blur_background}></div>
 
-            <div className={styles.title}>Our Investors</div>
+            <div className={styles.title}>{t('ourInvestorsTitle')}</div>
             <div className={styles.content}>
                 <RowAnimate speed={-1.2}>
                     <div className={styles.row1}>{blockTower}</div>

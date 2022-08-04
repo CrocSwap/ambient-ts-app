@@ -33,7 +33,7 @@ export default function NetworkSelector(props: NetworkSelectorProps) {
             theme: '#36364a',
         },
         {
-            name: 'Goerli ',
+            name: 'Görli ',
             id: '0x5',
             icon: kovanImage,
             theme: '#36364a',

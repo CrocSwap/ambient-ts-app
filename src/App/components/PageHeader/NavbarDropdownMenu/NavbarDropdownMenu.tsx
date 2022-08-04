@@ -4,9 +4,10 @@ import '../../../App.css';
 import { BiArrowBack } from 'react-icons/bi';
 import { FiSettings, FiMoreHorizontal } from 'react-icons/fi';
 import { CSSTransition } from 'react-transition-group';
-import { FaDiscord, FaSun, FaGithub } from 'react-icons/fa';
 import { MdHelp, MdArrowForwardIos, MdLanguage, MdReportProblem } from 'react-icons/md';
 import { motion } from 'framer-motion';
+import { FaDiscord, FaSun, FaGithub, FaDotCircle } from 'react-icons/fa';
+import { useTranslation } from 'react-i18next';
 // import arbitrumImage from '../../../../assets/images/networks/arbitrum.svg';
 // import kovanImage from '../../../../assets/images/networks/kovan.svg';
 // import optimisticImage from '../../../../assets/images/networks/optimistic.svg';
@@ -191,7 +192,13 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuProps) {
     const settingsItems = (
         <>
             <NavbarDropdownItem leftIcon={<FaSun size={20} />}>Light Mode</NavbarDropdownItem>
-            <NavbarDropdownItem leftIcon={<MdLanguage size={20} />}>Language</NavbarDropdownItem>
+            <NavbarDropdownItem
+                leftIcon={<MdLanguage size={20} />}
+                rightIcon={<MdArrowForwardIos />}
+                goToMenu='languages'
+            >
+                Language
+            </NavbarDropdownItem>
             <NavbarDropdownItem leftIcon={<HiOutlineDocumentText size={20} />}>
                 Legal & Privacy
             </NavbarDropdownItem>
@@ -211,6 +218,32 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuProps) {
             <NavbarDropdownItem leftIcon={<GoRequestChanges size={20} />}>
                 Request Features
             </NavbarDropdownItem>
+        </>
+    );
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
+    const { i18n } = useTranslation();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const lngs: any = {
+        en: { nativeName: 'English' },
+        zh: { nativeName: '中文' },
+        kr: { nativeName: '한국어' },
+    };
+    const circleIcon = <FaDotCircle color='#CDC1FF' size={10} />;
+
+    const languagesItems = (
+        <>
+            {Object.keys(lngs).map((lng, idx) => (
+                <div key={idx} onClick={() => i18n.changeLanguage(lng)}>
+                    <NavbarDropdownItem
+                        goBackItem
+                        key={idx}
+                        rightIcon={i18n.resolvedLanguage === lng ? circleIcon : null}
+                    >
+                        {lngs[lng].nativeName}
+                    </NavbarDropdownItem>
+                </div>
+            ))}
         </>
     );
 
@@ -283,7 +316,7 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuProps) {
                 </motion.div>
             </CSSTransition>
 
-            {/* Dropdown item datathat will slide in when clicked */}
+            {/* Dropdown item data that will slide in when clicked */}
 
             {NavbardropdownItemData.map((item) => (
                 <CSSTransition
@@ -302,6 +335,27 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuProps) {
                     </div>
                 </CSSTransition>
             ))}
+            <div>
+                <CSSTransition
+                    in={activeMenu === 'languages'}
+                    unmountOnExit
+                    // key={item.title}
+                    timeout={500}
+                    classNames='menu-secondary'
+                    onEnter={calcHeight}
+                >
+                    <div className={styles.menu}>
+                        <NavbarDropdownItem
+                            goToMenu='Settings & Privacy'
+                            leftIcon={<BiArrowBack />}
+                            goBackItem
+                        >
+                            <h3>{'Languages'}</h3>
+                        </NavbarDropdownItem>
+                        {languagesItems}
+                    </div>
+                </CSSTransition>
+            </div>
         </div>
     );
 }

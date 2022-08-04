@@ -1,5 +1,5 @@
 import styles from './TradeTabs.module.css';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Dispatch, SetStateAction } from 'react';
 import TabNavItem from '../../Global/Tabs/TabNavItem/TabNavItem';
 import Positions from './Positions/Positions';
 import TabContent from '../../Global/Tabs/TabContent/TabContent';
@@ -21,11 +21,13 @@ interface ITabsProps {
     isWeb3Enabled: boolean;
     lastBlockNumber: number;
     chainId: string;
+    isShowAllEnabled: boolean;
+    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function TradeTabs(props: ITabsProps) {
     const [activeTab, setActiveTab] = useState('tab1');
-    const [isShowAllEnabled, setIsShowAllEnabled] = useState<boolean>(true);
+    const { isShowAllEnabled, setIsShowAllEnabled } = props;
 
     const graphData = useAppSelector((state) => state?.graphData);
 
@@ -180,27 +182,28 @@ export default function TradeTabs(props: ITabsProps) {
                 </TabContent>
 
                 <TabContent id='tab2' activeTab={activeTab}>
-                    <Orders />
+                    {/* <Orders /> */}
                 </TabContent>
                 <TabContent id='tab3' activeTab={activeTab}>
-                    <Transactions
+                    {/* <Transactions
                         isShowAllEnabled={isShowAllEnabled}
+                        setIsShowAllEnabled={setIsShowAllEnabled}
                         graphData={graphData}
                         tokenMap={tokenMap}
                         chainId={props.chainId}
-                    />
+                    /> */}
                 </TabContent>
                 <TabContent id='tab4' activeTab={activeTab}>
                     Leaderboard
                 </TabContent>
                 <TabContent id='tab5' activeTab={activeTab}>
                     Test of ranges refactor
-                    <Ranges
+                    {/* <Ranges
                         isShowAllEnabled={isShowAllEnabled}
                         notOnTradeRoute={false}
                         graphData={graphData}
                         lastBlockNumber={props.lastBlockNumber}
-                    />
+                    /> */}
                 </TabContent>
             </div>
         </div>
