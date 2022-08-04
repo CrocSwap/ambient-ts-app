@@ -19,7 +19,7 @@ interface SidebarAccordionProps {
     ) => void;
     item: Item;
     idx: number;
-    mostRecent?: PositionIF[] | ISwap[];
+    mostRecent?: PositionIF[] | ISwap[] | string[];
 }
 
 export default function SidebarAccordion(props: SidebarAccordionProps) {
