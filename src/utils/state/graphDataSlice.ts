@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-
+import { PositionIF } from '../interfaces/PositionIF';
 export interface graphData {
     positionsByUser: PositionsByUser;
     positionsByPool: PositionsByPool;
@@ -13,39 +13,39 @@ export interface CandlesForAllPools {
 }
 
 export interface Pool {
-    pool: { baseAddress: string; quoteAddress: string; poolIdx: number };
+    pool: { baseAddress: string; quoteAddress: string; poolIdx: number; network: string };
     candlesByPoolAndDuration: Array<CandlesByPoolAndDuration>;
 }
 
 export interface CandlesByPoolAndDuration {
-    pool: { baseAddress: string; quoteAddress: string; poolIdx: number };
+    pool: { baseAddress: string; quoteAddress: string; poolIdx: number; network: string };
     duration: number;
     candles: Array<CandleData>;
 }
 
 export interface CandleData {
-    base: string;
+    time: number;
+    poolHash: string;
     firstBlock: number;
-    firstSwap: string;
     lastBlock: number;
-    lastSwap: string;
-    maxPrice: number;
     minPrice: number;
+    maxPrice: number;
+    priceOpen: number;
+    priceClose: number;
+    numSwaps: number;
     netBaseFlow: number;
     netQuoteFlow: number;
-    network: string;
-    numSwaps: number;
+    totalBaseFlow: number;
+    totalQuoteFlow: number;
+    firstSwap: string;
+    lastSwap: string;
     numSwapsFromCroc: number;
     numSwapsFromUniV3: number;
-    period: number;
-    poolHash: string;
-    poolIdx: number;
-    priceClose: number;
-    priceOpen: number;
+    network: string;
+    base: string;
     quote: string;
-    time: number;
-    totalBaseQty: number;
-    totalQuoteQty: number;
+    poolIdx: number;
+    period: number;
 }
 
 export interface PositionsByUser {
@@ -54,34 +54,6 @@ export interface PositionsByUser {
 
 export interface PositionsByPool {
     positions: Array<PositionIF>;
-}
-
-export interface PositionIF {
-    ambient: boolean;
-    askTick: number;
-    bidTick: number;
-    id: string;
-    isBid: boolean;
-    knockout: boolean;
-    poolIdx: number;
-    base: string;
-    baseTokenLogoURI: string;
-    quoteTokenLogoURI: string;
-    quote: string;
-    user: string;
-    userEnsName: string;
-    baseTokenSymbol: string;
-    quoteTokenSymbol: string;
-    poolPriceInTicks: number;
-    lowRangeDisplayInBase: string;
-    highRangeDisplayInBase: string;
-    lowRangeDisplayInQuote: string;
-    highRangeDisplayInQuote: string;
-    tokenAQtyDisplay: string;
-    tokenBQtyDisplay: string;
-    baseTokenDecimals: number;
-    quoteTokenDecimals: number;
-    positionType?: string;
 }
 
 export interface position {

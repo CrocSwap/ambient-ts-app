@@ -3,7 +3,7 @@ import styles from './RangeCard.module.css';
 
 import { FiMoreHorizontal } from 'react-icons/fi';
 import RangeStatus from '../../../RangeStatus/RangeStatus';
-import { PositionIF } from '../../../../../utils/state/graphDataSlice';
+import { PositionIF } from '../../../../../utils/interfaces/PositionIF';
 
 interface RangeCardPropsIF {
     position: PositionIF;

@@ -1,7 +1,7 @@
 import { contractAddresses, tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 import truncateDecimals from '../../utils/data/truncateDecimals';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
-import { PositionIF } from '../../utils/state/graphDataSlice';
+import { PositionIF } from '../../utils/interfaces/PositionIF';
 
 import { fetchAddress } from './fetchAddress';
 

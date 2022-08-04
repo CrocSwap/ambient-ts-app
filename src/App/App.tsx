@@ -518,6 +518,62 @@ export default function App() {
     const activePeriod = tradeData.activeChartPeriod;
 
     useEffect(() => {
+        if (activePeriod) {
+            try {
+                if (httpGraphCacheServerDomain) {
+                    const candleSeriesCacheEndpoint =
+                        httpGraphCacheServerDomain + '/candle_series?';
+
+                    fetch(
+                        candleSeriesCacheEndpoint +
+                            new URLSearchParams({
+                                base: '0x0000000000000000000000000000000000000000',
+                                quote: '0x6b175474e89094c44da98b954eedeac495271d0f',
+                                poolIdx: '36000',
+                                period: activePeriod.toString(),
+                                dex: 'all',
+                                n: '200', // positive integer
+                                page: '0', // nonnegative integer
+                                chainId: '0x1',
+                            }),
+                    )
+                        .then((response) => response?.json())
+                        .then((json) => {
+                            const candles = json?.data;
+                            // console.log({ candles });
+                            if (candles) {
+                                Promise.all(candles.map(getCandleData)).then((updatedCandles) => {
+                                    // if (
+                                    //     JSON.stringify(graphData.candlesForAllPools.pools) !==
+                                    //     JSON.stringify(updatedCandles)
+                                    // ) {
+                                    dispatch(
+                                        setCandles({
+                                            pool: {
+                                                baseAddress:
+                                                    '0x0000000000000000000000000000000000000000',
+                                                quoteAddress:
+                                                    '0x6b175474e89094c44da98b954eedeac495271d0f',
+                                                poolIdx: 36000,
+                                                network: '0x1',
+                                            },
+                                            duration: activePeriod,
+                                            candles: updatedCandles,
+                                        }),
+                                    );
+                                    // }
+                                });
+                            }
+                        })
+                        .catch(console.log);
+                }
+            } catch (error) {
+                console.log({ error });
+            }
+        }
+    }, [activePeriod]);
+
+    useEffect(() => {
         if (baseTokenAddress && quoteTokenAddress && activePeriod) {
             try {
                 if (httpGraphCacheServerDomain) {
@@ -545,22 +601,23 @@ export default function App() {
 
                             if (candles) {
                                 Promise.all(candles.map(getCandleData)).then((updatedCandles) => {
-                                    if (
-                                        JSON.stringify(graphData.candlesForAllPools.pools) !==
-                                        JSON.stringify(updatedCandles)
-                                    ) {
-                                        dispatch(
-                                            setCandles({
-                                                pool: {
-                                                    baseAddress: baseTokenAddress.toLowerCase(),
-                                                    quoteAddress: quoteTokenAddress.toLowerCase(),
-                                                    poolIdx: POOL_PRIMARY,
-                                                },
-                                                duration: activePeriod,
-                                                candles: updatedCandles,
-                                            }),
-                                        );
-                                    }
+                                    // if (
+                                    //     JSON.stringify(graphData.candlesForAllPools.pools) !==
+                                    //     JSON.stringify(updatedCandles)
+                                    // ) {
+                                    dispatch(
+                                        setCandles({
+                                            pool: {
+                                                baseAddress: baseTokenAddress.toLowerCase(),
+                                                quoteAddress: quoteTokenAddress.toLowerCase(),
+                                                poolIdx: POOL_PRIMARY,
+                                                network: chainId,
+                                            },
+                                            duration: activePeriod,
+                                            candles: updatedCandles,
+                                        }),
+                                    );
+                                    // }
                                 });
                             }
                         })
@@ -670,6 +727,7 @@ export default function App() {
                                 baseAddress: baseTokenAddress,
                                 quoteAddress: quoteTokenAddress,
                                 poolIdx: POOL_PRIMARY,
+                                network: chainId,
                             },
                             duration: activePeriod,
                             candles: updatedCandles,
@@ -680,6 +738,65 @@ export default function App() {
             // console.log({ lastMessageData });
         }
     }, [candlesMessage]);
+
+    const mainnetCandleSubscriptionEndpoint = useMemo(
+        () =>
+            wssGraphCacheServerDomain +
+            '/subscribe_candles?' +
+            new URLSearchParams({
+                base: '0x0000000000000000000000000000000000000000',
+                quote: '0x6b175474e89094c44da98b954eedeac495271d0f',
+                poolIdx: POOL_PRIMARY.toString(),
+                // 	positive integer	The duration of the candle, in seconds. Must represent one of the following time intervals: 5 minutes, 15 minutes, 1 hour, 4 hours, 1 day, 7 days.
+                period: activePeriod.toString(),
+                chainId: '0x1',
+                dex: 'all',
+            }),
+        [baseTokenAddress, quoteTokenAddress, POOL_PRIMARY, activePeriod, chainId],
+    );
+
+    const {
+        //  sendMessage,
+        lastMessage: mainnetCandlesMessage,
+        //  readyState
+    } = useWebSocket(
+        mainnetCandleSubscriptionEndpoint,
+        {
+            // share:  true,
+            onOpen: () => console.log({ mainnetCandleSubscriptionEndpoint }),
+            onClose: (event) => console.log({ event }),
+            // onClose: () => console.log('candles websocket connection closed'),
+            // Will attempt to reconnect on all close events, such as server shutting down
+            shouldReconnect: () => shouldSubscriptionsReconnect,
+        },
+        // only connect if base/quote token addresses are available
+        // baseTokenAddress !== '' && quoteTokenAddress !== '',
+    );
+
+    useEffect(() => {
+        if (mainnetCandlesMessage !== null) {
+            const lastMessageData = JSON.parse(mainnetCandlesMessage.data).data;
+            if (lastMessageData) {
+                // console.log({ lastMessageData });
+                Promise.all(lastMessageData.map(getCandleData)).then((updatedCandles) => {
+                    // console.log({ updatedCandles });
+                    dispatch(
+                        addCandles({
+                            pool: {
+                                baseAddress: '0x0000000000000000000000000000000000000000',
+                                quoteAddress: '0x6b175474e89094c44da98b954eedeac495271d0f',
+                                poolIdx: 36000,
+                                network: '0x1',
+                            },
+                            duration: activePeriod,
+                            candles: updatedCandles,
+                        }),
+                    );
+                });
+            }
+            // console.log({ lastMessageData });
+        }
+    }, [mainnetCandlesMessage]);
 
     const poolSwapsCacheSubscriptionEndpoint = useMemo(
         () =>

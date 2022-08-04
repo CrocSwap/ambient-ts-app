@@ -13,7 +13,8 @@ import { useState, useEffect } from 'react';
 import EditDenominationSwitch from '../../../components/Trade/Edit/EditDenominationSwitch/EditDenominationSwitch';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 
-import { PositionIF } from '../../../utils/state/graphDataSlice';
+import { PositionIF } from '../../../utils/interfaces/PositionIF';
+
 import {
     getPinnedPriceValuesFromTicks,
     getPinnedPriceValuesFromDisplayPrices,

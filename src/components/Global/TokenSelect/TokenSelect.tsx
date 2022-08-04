@@ -31,11 +31,11 @@ export default function TokenSelect(props: TokenSelectPropsIF) {
         undeletableTokens,
         chainId,
         setImportedTokens,
-        favePools,
+        // favePools,
         setFavePools,
     } = props;
 
-    console.log({favePools});
+    // console.log({favePools});
 
     const [showDelete, setShowDelete] = useState(false);
     const [toggleDeleteOn, setToggleDeleteOn] = useState(false);
@@ -48,7 +48,9 @@ export default function TokenSelect(props: TokenSelectPropsIF) {
             if (token.token_address?.toLowerCase() === address.toLowerCase()) {
                 if (token.balance && token.decimals) {
                     if (token.address === contractAddresses.ZERO_ADDR) {
-                        const localizedNativeBalance = parseFloat(token.balance).toLocaleString('en-US');
+                        const localizedNativeBalance = parseFloat(token.balance).toLocaleString(
+                            'en-US',
+                        );
                         tokenBalanceDisplay = localizedNativeBalance;
                         return;
                     }

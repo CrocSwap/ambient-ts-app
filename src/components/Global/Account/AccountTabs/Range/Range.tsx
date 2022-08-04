@@ -1,7 +1,7 @@
 import styles from './Range.module.css';
 import RangeCardHeader from './RangeCardHeader';
 import RangeCard from './RangeCard';
-import { PositionIF } from '../../../../../utils/state/graphDataSlice';
+import { PositionIF } from '../../../../../utils/interfaces/PositionIF';
 
 interface RangeTabPropsIF {
     positions: PositionIF[];
