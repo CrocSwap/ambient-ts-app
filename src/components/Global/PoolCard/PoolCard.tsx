@@ -1,6 +1,7 @@
 import styles from './PoolCard.module.css';
 import { motion } from 'framer-motion';
 interface PoolCardProps {
+    onMouseEnter: () => void;
     onClick: () => void;
     isSelected: boolean;
     speed: number;
@@ -13,10 +14,10 @@ const spring = {
 };
 
 export default function PoolCard(props: PoolCardProps) {
-    const { isSelected, onClick, name } = props;
+    const { isSelected, onMouseEnter, onClick, name } = props;
 
     return (
-        <motion.div className={styles.pool_card} onMouseEnter={onClick}>
+        <motion.div className={styles.pool_card} onMouseEnter={onMouseEnter} onClick={onClick}>
             <div className={styles.row}>
                 <div>
                     <img
