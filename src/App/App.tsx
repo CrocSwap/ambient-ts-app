@@ -64,13 +64,12 @@ import {
     setDenomInBase,
 } from '../utils/state/tradeDataSlice';
 // import PositionDetails from '../pages/Trade/Range/PositionDetails';
-import { memoizePromiseFn } from './functions/memoizePromiseFn';
-import { querySpotPrice } from './functions/querySpotPrice';
-import { fetchAddress } from './functions/fetchAddress';
-import { fetchTokenBalances } from './functions/fetchTokenBalances';
+import { memoizeQuerySpotPrice } from './functions/querySpotPrice';
+import { memoizeFetchAddress } from './functions/fetchAddress';
+import { memoizeTokenBalance } from './functions/fetchTokenBalances';
 import truncateDecimals from '../utils/data/truncateDecimals';
 import { getNFTs } from './functions/getNFTs';
-import { queryTokenDecimals } from './functions/queryTokenDecimals';
+import { memoizeTokenDecimals, queryTokenDecimals } from './functions/queryTokenDecimals';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { useSlippage } from './useSlippage';
 import { addNativeBalance, resetTokenData, setTokens } from '../utils/state/tokenDataSlice';
@@ -79,10 +78,10 @@ import { checkIsStable } from '../utils/data/stablePairs';
 import Reposition from '../pages/Trade/Reposition/Reposition';
 // import SidebarFooter from '../components/Global/SIdebarFooter/SidebarFooter';
 
-const cachedQuerySpotPrice = memoizePromiseFn(querySpotPrice);
-const cachedFetchAddress = memoizePromiseFn(fetchAddress);
-const cachedFetchTokenBalances = memoizePromiseFn(fetchTokenBalances);
-const cachedGetTokenDecimals = memoizePromiseFn(queryTokenDecimals);
+const cachedQuerySpotPrice = memoizeQuerySpotPrice();
+const cachedFetchAddress = memoizeFetchAddress();
+const cachedFetchTokenBalances = memoizeTokenBalance();
+const cachedGetTokenDecimals = memoizeTokenDecimals();
 
 /** ***** React Function *******/
 export default function App() {
@@ -292,9 +291,9 @@ export default function App() {
     // check for ENS name account changes
     useEffect(() => {
         (async () => {
-            if (account) {
+            if (account && provider) {
                 try {
-                    const ensName = await cachedFetchAddress(account);
+                    const ensName = await cachedFetchAddress(provider, account, chainId);
                     if (ensName) setEnsName(ensName);
                     else setEnsName('');
                 } catch (error) {
@@ -302,7 +301,7 @@ export default function App() {
                 }
             }
         })();
-    }, [account]);
+    }, [account, chainId]);
 
     const tokensInRTK = useAppSelector((state) => state.tokenData.tokens);
 
@@ -371,76 +370,6 @@ export default function App() {
                 setBaseTokenDecimals(tokenPair.dataTokenB.decimals);
                 setQuoteTokenDecimals(tokenPair.dataTokenA.decimals);
             }
-
-            // const allPositionsCacheEndpoint = 'https://809821320828123.de:5000/pool_positions?';
-
-            // try {
-            //     fetch(
-            //         allPositionsCacheEndpoint +
-            //             new URLSearchParams({
-            //                 base: sortedTokens[0].toLowerCase(),
-            //                 quote: sortedTokens[1].toLowerCase(),
-            //                 poolIdx: POOL_PRIMARY.toString(),
-            //                 chainId: chainId,
-            //             }),
-            //     )
-            //         .then((response) => response.json())
-            //         .then((json) => {
-            //             const poolPositions = json.data;
-
-            //             if (poolPositions) {
-            //                 Promise.all(poolPositions.map(getPositionData)).then(
-            //                     (updatedPositions) => {
-            //                         if (
-            //                             JSON.stringify(graphData.positionsByUser.positions) !==
-            //                             JSON.stringify(updatedPositions)
-            //                         ) {
-            //                             dispatch(
-            //                                 setPositionsByPool({ positions: updatedPositions }),
-            //                             );
-            //                         }
-            //                     },
-            //                 );
-            //             }
-            //         });
-            // } catch (error) {
-            //     console.log;
-            // }
-
-            // try {
-            //     const poolSwapsCacheEndpoint = 'https://809821320828123.de:5000/pool_swaps?';
-
-            //     fetch(
-            //         poolSwapsCacheEndpoint +
-            //             new URLSearchParams({
-            //                 base: sortedTokens[0].toLowerCase(),
-            //                 quote: sortedTokens[1].toLowerCase(),
-            //                 poolIdx: POOL_PRIMARY.toString(),
-            //                 chainId: chainId,
-            //                 // n: 10 // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
-            //                 // page: 0 // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
-            //             }),
-            //     )
-            //         .then((response) => response.json())
-            //         .then((json) => {
-            //             const poolSwaps = json.data;
-
-            //             console.log({ poolSwaps });
-
-            //             if (poolSwaps) {
-            //                 Promise.all(poolSwaps.map(getSwapData)).then((updatedSwaps) => {
-            //                     if (
-            //                         JSON.stringify(graphData.swapsByUser.swaps) !==
-            //                         JSON.stringify(updatedSwaps)
-            //                     ) {
-            //                         dispatch(setSwapsByPool({ swaps: updatedSwaps }));
-            //                     }
-            //                 });
-            //             }
-            //         });
-            // } catch (error) {
-            //     console.log;
-            // }
         }
     }, [tokenPairStringified, chainId]);
 
@@ -540,64 +469,6 @@ export default function App() {
             }
         }
     }, [lastAllPositionsMessage]);
-
-    // const candleSubscriptionEndpoint = useMemo(
-    //     () =>
-    //         'wss://809821320828123.de:5000/subscribe_candles?' +
-    //         new URLSearchParams({
-    //             base: baseTokenAddress.toLowerCase(),
-    //             // baseTokenAddress.toLowerCase() || '0x0000000000000000000000000000000000000000',
-    //             quote: quoteTokenAddress.toLowerCase(),
-    //             // quoteTokenAddress.toLowerCase() || '0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa',
-    //             poolIdx: POOL_PRIMARY.toString(),
-    //             // 	positive integer	The duration of the candle, in seconds. Must represent one of the following time intervals: 5 minutes, 15 minutes, 1 hour, 4 hours, 1 day, 7 days.
-    //             period: activePeriod.toString(),
-    //             // period: '60',
-    //             chainId: chainId,
-    //         }),
-    //     [baseTokenAddress, quoteTokenAddress, POOL_PRIMARY, activePeriod],
-    // );
-
-    // const {
-    //     //  sendMessage,
-    //     lastMessage: candlesMessage,
-    //     //  readyState
-    // } = useWebSocket(
-    //     candleSubscriptionEndpoint,
-    //     {
-    //         // share:  true,
-    //         // onOpen: () => console.log('opened'),
-    //         onClose: (event) => console.log({ event }),
-    //         // onClose: () => console.log('candles websocket connection closed'),
-    //         // Will attempt to reconnect on all close events, such as server shutting down
-    //         shouldReconnect: () => true,
-    //     },
-    //     // only connect if base/quote token addresses are available
-    //     baseTokenAddress !== '' && quoteTokenAddress !== '',
-    // );
-
-    // useEffect(() => {
-    //     if (candlesMessage !== null) {
-    //         const lastMessageData = JSON.parse(candlesMessage.data).data;
-    //         if (lastMessageData) {
-    //             Promise.all(lastMessageData.map(getCandleData)).then((updatedCandles) => {
-    //                 // console.log({ updatedCandles });
-    //                 dispatch(
-    //                     addCandles({
-    //                         pool: {
-    //                             baseAddress: baseTokenAddress,
-    //                             quoteAddress: quoteTokenAddress,
-    //                             poolIdx: POOL_PRIMARY,
-    //                         },
-    //                         duration: activePeriod,
-    //                         candles: updatedCandles,
-    //                     }),
-    //                 );
-    //             });
-    //         }
-    //         // console.log({ lastMessageData });
-    //     }
-    // }, [candlesMessage]);
 
     const poolSwapsCacheSubscriptionEndpoint = useMemo(
         () =>
@@ -743,7 +614,12 @@ export default function App() {
     useEffect(() => {
         if (baseTokenAddress && quoteTokenAddress) {
             (async () => {
+                if (!provider) {
+                    return;
+                }
+
                 const spotPrice = await cachedQuerySpotPrice(
+                    provider,
                     baseTokenAddress,
                     quoteTokenAddress,
                     chainId,
@@ -873,7 +749,10 @@ export default function App() {
         const baseTokenAddress = position.base;
         const quoteTokenAddress = position.quote;
 
+        const viewProvider = provider ? provider : (await new CrocEnv(chainId).context).provider;
+
         const poolPriceNonDisplay = await cachedQuerySpotPrice(
+            viewProvider,
             baseTokenAddress,
             quoteTokenAddress,
             chainId,
@@ -881,15 +760,26 @@ export default function App() {
         );
 
         try {
-            position.userEnsName = await cachedFetchAddress(position.user);
+            const ensName = await cachedFetchAddress(viewProvider, position.user, chainId);
+            if (ensName) {
+                position.userEnsName = ensName;
+            }
         } catch (error) {
             console.log(error);
         }
 
         const poolPriceInTicks = Math.log(poolPriceNonDisplay) / Math.log(1.0001);
 
-        const baseTokenDecimals = await cachedGetTokenDecimals(baseTokenAddress);
-        const quoteTokenDecimals = await cachedGetTokenDecimals(quoteTokenAddress);
+        const baseTokenDecimals = await cachedGetTokenDecimals(
+            viewProvider,
+            baseTokenAddress,
+            chainId,
+        );
+        const quoteTokenDecimals = await cachedGetTokenDecimals(
+            viewProvider,
+            quoteTokenAddress,
+            chainId,
+        );
 
         if (baseTokenDecimals) position.baseTokenDecimals = baseTokenDecimals;
         if (quoteTokenDecimals) position.quoteTokenDecimals = quoteTokenDecimals;

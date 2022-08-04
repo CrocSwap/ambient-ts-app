@@ -60,7 +60,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
                 if (imageLocalURLs) setSecondaryImageData(imageLocalURLs);
             }
         })();
-    }, [resolvedAddress, address, isInitialized]);
+    }, [resolvedAddress, address, chainId, isInitialized]);
 
     const [secondaryensName, setSecondaryEnsName] = useState('');
 
@@ -69,7 +69,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
         (async () => {
             if (address && isInitialized) {
                 try {
-                    const ensName = await fetchAddress(address);
+                    const ensName = await fetchAddress(address, chainId);
                     if (ensName) setSecondaryEnsName(ensName);
                     else setSecondaryEnsName('');
                 } catch (error) {
@@ -78,7 +78,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
                 }
             }
         })();
-    }, [address, isInitialized]);
+    }, [address, chainId, isInitialized]);
 
     const connectedAccountActive =
         !address || resolvedAddress.toLowerCase() === connectedAccount.toLowerCase();
