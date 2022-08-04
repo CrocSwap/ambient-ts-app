@@ -43,19 +43,24 @@
 .bottom_elements{
     margin-top: auto;
     width: 100%;
+    border-top: 1px solid var(--dark3);
   
   }
   
-  
+ 
   
    .sidebar_link {
     display: flex;
     align-items: center;
-    height: 1.438rem;
-    padding: 1.4375rem 0;
+    height: 28px;
+    /* padding: 4px 0; */
     border-bottom: 1px solid #171D27;
 
     cursor: pointer;
+  }
+
+  .sidebar_link:first-of-type{
+    margin-top: 4px;
   }
   
 
@@ -70,6 +75,7 @@
   .sidebar_link:hover svg{
     color: white;
     cursor: pointer;
+    max-width: 15px;
     /* transition: all var(--animation-speed) ease-in-out; */
   
   }
