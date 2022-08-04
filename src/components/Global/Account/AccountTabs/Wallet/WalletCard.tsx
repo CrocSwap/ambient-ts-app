@@ -1,5 +1,5 @@
 import { toDisplayQty } from '@crocswap-libs/sdk';
-import { useTokenMap } from '../../../../../App/components/Sidebar/useTokenMap';
+// import { useTokenMap } from '../../../../../App/components/Sidebar/useTokenMap';
 import { testTokenMap } from '../../../../../utils/data/testTokenMap';
 import { fetchTokenPrice } from '../../../../../App/functions/fetchTokenPrice';
 import { TokenIF } from '../../../../../utils/interfaces/TokenIF';
@@ -8,12 +8,13 @@ import { useEffect, useState } from 'react';
 interface WalletPropsIF {
     token?: TokenIF;
     chainId: string;
+    tokenMap: Map<string, TokenIF>;
 }
 
 export default function WalletCard(props: WalletPropsIF) {
-    const { token, chainId } = props;
+    const { token, chainId, tokenMap } = props;
 
-    const tokenMap = useTokenMap();
+    // const tokenMap = useTokenMap();
 
     const tokenAddress = token?.token_address
         ? token?.token_address?.toLowerCase() + '_' + chainId

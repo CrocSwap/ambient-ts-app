@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTokenMap } from '../../../../../App/components/Sidebar/useTokenMap';
 import { fetchTokenBalances } from '../../../../../App/functions/fetchTokenBalances';
 import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 import styles from './Wallet.module.css';
@@ -13,6 +14,8 @@ interface WalletPropsIF {
     chainId: string;
 }
 export default function Wallet(props: WalletPropsIF) {
+    const tokenMap = useTokenMap();
+
     const tokensInRTK = useAppSelector((state) => state.tokenData.tokens);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -40,9 +43,11 @@ export default function Wallet(props: WalletPropsIF) {
     // const items = [1, 2, 3, 4, 5, 6];
 
     const ItemContent = connectedAccountActive
-        ? tokensInRTK.map((item, idx) => <WalletCard key={idx} token={item} chainId={chainId} />)
+        ? tokensInRTK.map((item, idx) => (
+              <WalletCard key={idx} token={item} chainId={chainId} tokenMap={tokenMap} />
+          ))
         : resolvedAddressTokens.map((item, idx) => (
-              <WalletCard key={idx} token={item} chainId={chainId} />
+              <WalletCard key={idx} token={item} chainId={chainId} tokenMap={tokenMap} />
           ));
     return (
         <div className={styles.container}>

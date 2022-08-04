@@ -11,6 +11,7 @@ import {
     setSwapsByPool,
     CandleData,
     setCandles,
+    addCandles,
     // addCandles,
 } from '../utils/state/graphDataSlice';
 import { ethers } from 'ethers';
@@ -83,6 +84,13 @@ const cachedFetchAddress = memoizeFetchAddress();
 const cachedFetchTokenBalances = memoizeTokenBalance();
 const cachedGetTokenDecimals = memoizeTokenDecimals();
 
+const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
+// const httpGraphCacheServerDomain = '';
+const wssGraphCacheServerDomain = 'wss://809821320828123.de:5000';
+// const wssGraphCacheServerDomain = '';
+
+const shouldSubscriptionsReconnect = false;
+
 /** ***** React Function *******/
 export default function App() {
     const {
@@ -96,9 +104,13 @@ export default function App() {
 
     const { switchNetwork } = useChain();
 
+    const location = useLocation();
+
     const [fallbackChainId, setFallbackChainId] = useState('0x5');
 
     const chainId = moralisChainId ? moralisChainId : fallbackChainId;
+
+    const poolIndex = useMemo(() => lookupChain(chainId).poolIndex.toString(), [chainId]);
 
     useEffect(() => {
         if (isWeb3Enabled) {
@@ -175,9 +187,10 @@ export default function App() {
 
     // this is another case where true vs false is an arbitrary distinction
     const [activeTokenListsChanged, indicateActiveTokenListsChanged] = useState(false);
-    useEffect(() => {
-        console.log('changed activeTokensList');
-    }, [activeTokenListsChanged]);
+
+    // useEffect(() => {
+    //     console.log('changed activeTokensList');
+    // }, [activeTokenListsChanged]);
 
     if (needTokenLists) {
         setNeedTokenLists(false);
@@ -240,7 +253,6 @@ export default function App() {
     }
     const [sidebarManuallySet, setSidebarManuallySet] = useState<boolean>(false);
     const [showSidebar, setShowSidebar] = useState<boolean>(false);
-    const location = useLocation();
 
     const [lastBlockNumber, setLastBlockNumber] = useState<number>(0);
 
@@ -354,6 +366,7 @@ export default function App() {
         // reset rtk values for user specified range in ticks
         dispatch(setAdvancedLowTick(0));
         dispatch(setAdvancedHighTick(0));
+
         if (tokenPair.dataTokenA.address && tokenPair.dataTokenB.address) {
             const sortedTokens = sortBaseQuoteTokens(
                 tokenPair.dataTokenA.address,
@@ -370,6 +383,84 @@ export default function App() {
                 setBaseTokenDecimals(tokenPair.dataTokenB.decimals);
                 setQuoteTokenDecimals(tokenPair.dataTokenA.decimals);
             }
+
+            try {
+                if (httpGraphCacheServerDomain) {
+                    const allPositionsCacheEndpoint =
+                        httpGraphCacheServerDomain + '/pool_positions?';
+                    fetch(
+                        allPositionsCacheEndpoint +
+                            new URLSearchParams({
+                                base: sortedTokens[0].toLowerCase(),
+                                quote: sortedTokens[1].toLowerCase(),
+                                poolIdx: poolIndex,
+                                chainId: chainId,
+                            }),
+                    )
+                        .then((response) => response.json())
+                        .then((json) => {
+                            const poolPositions = json.data;
+
+                            if (poolPositions) {
+                                // console.log({ poolPositions });
+                                Promise.all(poolPositions.map(getPositionData)).then(
+                                    (updatedPositions) => {
+                                        // console.log({ updatedPositions });
+                                        if (
+                                            JSON.stringify(graphData.positionsByUser.positions) !==
+                                            JSON.stringify(updatedPositions)
+                                        ) {
+                                            dispatch(
+                                                setPositionsByPool({ positions: updatedPositions }),
+                                            );
+                                        }
+                                    },
+                                );
+                            }
+                        })
+                        .catch(console.log);
+                }
+            } catch (error) {
+                console.log;
+            }
+
+            try {
+                if (httpGraphCacheServerDomain) {
+                    const poolSwapsCacheEndpoint = httpGraphCacheServerDomain + '/pool_swaps?';
+
+                    fetch(
+                        poolSwapsCacheEndpoint +
+                            new URLSearchParams({
+                                base: sortedTokens[0].toLowerCase(),
+                                quote: sortedTokens[1].toLowerCase(),
+                                poolIdx: poolIndex,
+                                chainId: chainId,
+                                // n: 10 // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
+                                // page: 0 // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
+                            }),
+                    )
+                        .then((response) => response?.json())
+                        .then((json) => {
+                            const poolSwaps = json?.data;
+
+                            console.log({ poolSwaps });
+
+                            if (poolSwaps) {
+                                Promise.all(poolSwaps.map(getSwapData)).then((updatedSwaps) => {
+                                    if (
+                                        JSON.stringify(graphData.swapsByUser.swaps) !==
+                                        JSON.stringify(updatedSwaps)
+                                    ) {
+                                        dispatch(setSwapsByPool({ swaps: updatedSwaps }));
+                                    }
+                                });
+                            }
+                        })
+                        .catch(console.log);
+                }
+            } catch (error) {
+                console.log;
+            }
         }
     }, [tokenPairStringified, chainId]);
 
@@ -377,60 +468,69 @@ export default function App() {
 
     useEffect(() => {
         if (baseTokenAddress && quoteTokenAddress && activePeriod) {
-            const candleSeriesCacheEndpoint = 'https://809821320828123.de:5000/candle_series?';
+            try {
+                if (httpGraphCacheServerDomain) {
+                    const candleSeriesCacheEndpoint =
+                        httpGraphCacheServerDomain + '/candle_series?';
 
-            fetch(
-                candleSeriesCacheEndpoint +
-                    new URLSearchParams({
-                        base: baseTokenAddress.toLowerCase(),
-                        quote: quoteTokenAddress.toLowerCase(),
-                        poolIdx: lookupChain(chainId).poolIndex.toString(),
-                        period: activePeriod.toString(),
-                        // period: '86400', // 1 day
-                        // period: '300', // 5 minute
-                        // time: '1657833300', // optional
-                        n: '200', // positive integer
-                        page: '0', // nonnegative integer
-                        chainId: chainId,
-                    }),
-            )
-                .then((response) => response.json())
-                .then((json) => {
-                    const candles = json.data;
+                    fetch(
+                        candleSeriesCacheEndpoint +
+                            new URLSearchParams({
+                                base: baseTokenAddress.toLowerCase(),
+                                quote: quoteTokenAddress.toLowerCase(),
+                                poolIdx: poolIndex,
+                                period: activePeriod.toString(),
+                                // period: '86400', // 1 day
+                                // period: '300', // 5 minute
+                                // time: '1657833300', // optional
+                                n: '200', // positive integer
+                                page: '0', // nonnegative integer
+                                chainId: chainId,
+                            }),
+                    )
+                        .then((response) => response?.json())
+                        .then((json) => {
+                            const candles = json?.data;
 
-                    if (candles) {
-                        Promise.all(candles.map(getCandleData)).then((updatedCandles) => {
-                            if (
-                                JSON.stringify(graphData.candlesForAllPools.pools) !==
-                                JSON.stringify(updatedCandles)
-                            ) {
-                                dispatch(
-                                    setCandles({
-                                        pool: {
-                                            baseAddress: baseTokenAddress.toLowerCase(),
-                                            quoteAddress: quoteTokenAddress.toLowerCase(),
-                                            poolIdx: lookupChain(chainId).poolIndex,
-                                        },
-                                        duration: activePeriod,
-                                        candles: updatedCandles,
-                                    }),
-                                );
+                            if (candles) {
+                                Promise.all(candles.map(getCandleData)).then((updatedCandles) => {
+                                    if (
+                                        JSON.stringify(graphData.candlesForAllPools.pools) !==
+                                        JSON.stringify(updatedCandles)
+                                    ) {
+                                        dispatch(
+                                            setCandles({
+                                                pool: {
+                                                    baseAddress: baseTokenAddress.toLowerCase(),
+                                                    quoteAddress: quoteTokenAddress.toLowerCase(),
+                                                    poolIdx: parseInt(poolIndex),
+                                                },
+                                                duration: activePeriod,
+                                                candles: updatedCandles,
+                                            }),
+                                        );
+                                    }
+                                });
                             }
-                        });
-                    }
-                });
+                        })
+                        .catch(console.log);
+                }
+            } catch (error) {
+                console.log({ error });
+            }
         }
     }, [baseTokenAddress, quoteTokenAddress, activePeriod, chainId]);
 
     const allPositionsCacheSubscriptionEndpoint = useMemo(
         () =>
-            'wss://809821320828123.de:5000/subscribe_pool_positions?' +
+            wssGraphCacheServerDomain +
+            '/subscribe_pool_positions?' +
             new URLSearchParams({
                 base: baseTokenAddress.toLowerCase(),
                 // baseTokenAddress.toLowerCase() || '0x0000000000000000000000000000000000000000',
                 quote: quoteTokenAddress.toLowerCase(),
                 // quoteTokenAddress.toLowerCase() || '0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa',
-                poolIdx: lookupChain(chainId).poolIndex.toString(),
+                poolIdx: poolIndex,
                 chainId: chainId,
             }),
         [baseTokenAddress, quoteTokenAddress, chainId],
@@ -448,7 +548,7 @@ export default function App() {
             onClose: (event) => console.log({ event }),
             // onClose: () => console.log('allPositions websocket connection closed'),
             // Will attempt to reconnect on all close events, such as server shutting down
-            shouldReconnect: () => true,
+            shouldReconnect: () => shouldSubscriptionsReconnect,
         },
         // only connect if base/quote token addresses are available
         baseTokenAddress !== '' && quoteTokenAddress !== '',
@@ -470,15 +570,76 @@ export default function App() {
         }
     }, [lastAllPositionsMessage]);
 
-    const poolSwapsCacheSubscriptionEndpoint = useMemo(
+    const candleSubscriptionEndpoint = useMemo(
         () =>
-            'wss://809821320828123.de:5000/subscribe_pool_swaps?' +
+            wssGraphCacheServerDomain +
+            '/subscribe_candles?' +
             new URLSearchParams({
                 base: baseTokenAddress.toLowerCase(),
                 // baseTokenAddress.toLowerCase() || '0x0000000000000000000000000000000000000000',
                 quote: quoteTokenAddress.toLowerCase(),
                 // quoteTokenAddress.toLowerCase() || '0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa',
-                poolIdx: lookupChain(chainId).poolIndex.toString(),
+                poolIdx: poolIndex,
+                // 	positive integer	The duration of the candle, in seconds. Must represent one of the following time intervals: 5 minutes, 15 minutes, 1 hour, 4 hours, 1 day, 7 days.
+                period: activePeriod.toString(),
+                // period: '60',
+                chainId: chainId,
+            }),
+        [baseTokenAddress, quoteTokenAddress, poolIndex, activePeriod],
+    );
+
+    const {
+        //  sendMessage,
+        lastMessage: candlesMessage,
+        //  readyState
+    } = useWebSocket(
+        candleSubscriptionEndpoint,
+        {
+            // share:  true,
+            onOpen: () => console.log({ candleSubscriptionEndpoint }),
+            onClose: (event) => console.log({ event }),
+            // onClose: () => console.log('candles websocket connection closed'),
+            // Will attempt to reconnect on all close events, such as server shutting down
+            shouldReconnect: () => shouldSubscriptionsReconnect,
+        },
+        // only connect if base/quote token addresses are available
+        baseTokenAddress !== '' && quoteTokenAddress !== '',
+    );
+
+    useEffect(() => {
+        if (candlesMessage !== null) {
+            const lastMessageData = JSON.parse(candlesMessage.data).data;
+            if (lastMessageData) {
+                // console.log({ lastMessageData });
+                Promise.all(lastMessageData.map(getCandleData)).then((updatedCandles) => {
+                    // console.log({ updatedCandles });
+                    dispatch(
+                        addCandles({
+                            pool: {
+                                baseAddress: baseTokenAddress,
+                                quoteAddress: quoteTokenAddress,
+                                poolIdx: parseInt(poolIndex),
+                            },
+                            duration: activePeriod,
+                            candles: updatedCandles,
+                        }),
+                    );
+                });
+            }
+            // console.log({ lastMessageData });
+        }
+    }, [candlesMessage]);
+
+    const poolSwapsCacheSubscriptionEndpoint = useMemo(
+        () =>
+            wssGraphCacheServerDomain +
+            '/subscribe_pool_swaps?' +
+            new URLSearchParams({
+                base: baseTokenAddress.toLowerCase(),
+                // baseTokenAddress.toLowerCase() || '0x0000000000000000000000000000000000000000',
+                quote: quoteTokenAddress.toLowerCase(),
+                // quoteTokenAddress.toLowerCase() || '0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa',
+                poolIdx: poolIndex,
                 chainId: chainId,
             }),
         [baseTokenAddress, quoteTokenAddress, chainId],
@@ -495,7 +656,7 @@ export default function App() {
             // onOpen: () => console.log('opened'),
             onClose: (event) => console.log({ event }),
             // Will attempt to reconnect on all close events, such as server shutting down
-            shouldReconnect: () => true,
+            shouldReconnect: () => shouldSubscriptionsReconnect,
         },
         // only connect if base/quote token addresses are available
         baseTokenAddress !== '' && quoteTokenAddress !== '',
@@ -519,7 +680,8 @@ export default function App() {
 
     const userPositionsCacheSubscriptionEndpoint = useMemo(
         () =>
-            'wss://809821320828123.de:5000/subscribe_user_positions?' +
+            wssGraphCacheServerDomain +
+            '/subscribe_user_positions?' +
             new URLSearchParams({
                 user: account || '',
                 chainId: chainId,
@@ -539,7 +701,7 @@ export default function App() {
             // onOpen: () => console.log('opened'),
             onClose: (event) => console.log({ event }),
             // Will attempt to reconnect on all close events, such as server shutting down
-            shouldReconnect: () => true,
+            shouldReconnect: () => shouldSubscriptionsReconnect,
         },
         // only connect is account is available
         account !== null && account !== '',
@@ -563,7 +725,8 @@ export default function App() {
 
     const userSwapsCacheSubscriptionEndpoint = useMemo(
         () =>
-            'wss://809821320828123.de:5000/subscribe_user_swaps?' +
+            wssGraphCacheServerDomain +
+            '/subscribe_user_swaps?' +
             new URLSearchParams({
                 user: account || '',
                 chainId: chainId,
@@ -583,7 +746,7 @@ export default function App() {
             onClose: (event) => console.log({ event }),
             // onClose: () => console.log('userSwaps websocket connection closed'),
             // Will attempt to reconnect on all close events, such as server shutting down
-            shouldReconnect: () => true,
+            shouldReconnect: () => shouldSubscriptionsReconnect,
         },
         // only connect is account is available
         account !== null && account !== '',
@@ -626,14 +789,12 @@ export default function App() {
                     lastBlockNumber,
                 );
                 if (poolPriceNonDisplay !== spotPrice) {
-                    // console.log({ spotPrice });
                     setPoolPriceNonDisplay(spotPrice);
                     const displayPrice = toDisplayPrice(
                         spotPrice,
                         baseTokenDecimals,
                         quoteTokenDecimals,
                     );
-                    // console.log({ displayPrice });
                     setPoolPriceDisplay(displayPrice);
                 }
             })();
@@ -647,10 +808,12 @@ export default function App() {
                 const croc = new CrocEnv(provider);
                 croc.token(tokenPair.dataTokenA.address)
                     .balanceDisplay(account)
-                    .then((bal) => setTokenABalance(bal));
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    .then((bal: any) => setTokenABalance(bal));
                 croc.token(tokenPair.dataTokenA.address)
                     .balanceDisplay(account)
-                    .then((bal) => setTokenBBalance(bal));
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    .then((bal: any) => setTokenBBalance(bal));
             }
         })();
     }, [
@@ -734,10 +897,6 @@ export default function App() {
     };
 
     const getCandleData = async (candle: CandleData): Promise<CandleData> => {
-        if (candle) {
-            candle.base = candle.base.startsWith('0x') ? candle.base : '0x' + candle.base;
-            candle.quote = candle.quote.startsWith('0x') ? candle.quote : '0x' + candle.quote;
-        }
         return candle;
     };
 
@@ -843,7 +1002,7 @@ export default function App() {
 
     useEffect(() => {
         if (isAuthenticated && account) {
-            const allUserPositionsCacheEndpoint = 'https://809821320828123.de:5000/user_positions?';
+            const allUserPositionsCacheEndpoint = httpGraphCacheServerDomain + '/user_positions?';
 
             try {
                 fetch(
@@ -853,9 +1012,9 @@ export default function App() {
                             chainId: chainId,
                         }),
                 )
-                    .then((response) => response.json())
+                    .then((response) => response?.json())
                     .then((json) => {
-                        const userPositions = json.data;
+                        const userPositions = json?.data;
 
                         if (userPositions) {
                             Promise.all(userPositions.map(getPositionData)).then(
@@ -871,13 +1030,14 @@ export default function App() {
                                 },
                             );
                         }
-                    });
+                    })
+                    .catch(console.log);
             } catch (error) {
                 console.log;
             }
 
             try {
-                const allUserSwapsCacheEndpoint = 'https://809821320828123.de:5000/user_swaps?';
+                const allUserSwapsCacheEndpoint = httpGraphCacheServerDomain + '/user_swaps?';
                 console.log('fetching user swaps');
                 fetch(
                     allUserSwapsCacheEndpoint +
@@ -886,9 +1046,9 @@ export default function App() {
                             chainId: chainId,
                         }),
                 )
-                    .then((response) => response.json())
+                    .then((response) => response?.json())
                     .then((json) => {
-                        const userSwaps = json.data;
+                        const userSwaps = json?.data;
 
                         if (userSwaps) {
                             Promise.all(userSwaps.map(getSwapData)).then((updatedSwaps) => {
@@ -900,7 +1060,8 @@ export default function App() {
                                 }
                             });
                         }
-                    });
+                    })
+                    .catch(console.log);
             } catch (error) {
                 console.log;
             }
@@ -964,7 +1125,8 @@ export default function App() {
                 new CrocEnv(provider)
                     .tokenEth()
                     .balance(account)
-                    .then((eth) => {
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    .then((eth: any) => {
                         setNativeBalance(eth.toString());
 
                         const nativeToken: TokenIF = {
@@ -1030,11 +1192,12 @@ export default function App() {
                 if (response.result.ProposeGasPrice) {
                     setGasPriceinGwei(response.result.ProposeGasPrice);
                 }
-            });
+            })
+            .catch(console.log);
     }, [lastBlockNumber]);
 
     // useEffect to get current block number
-    // on a 3 second interval
+    // on a 10 second interval
     // currently displayed in footer
     useEffect(() => {
         const interval = setInterval(async () => {
