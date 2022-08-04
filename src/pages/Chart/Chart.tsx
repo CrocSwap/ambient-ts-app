@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
-import { DetailedHTMLProps, HTMLAttributes, useCallback, useEffect, useRef, useState } from 'react';
+import { DetailedHTMLProps, HTMLAttributes, useEffect, useRef, useState } from 'react';
 import './Chart.css';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -45,51 +45,9 @@ export default function Chart(props: ChartData) {
                 ...data,
             });
         });
-        const chartUtils = {
-            crosshair: [{ x: 1545, y: 200 }],
-        };
-
         if (chartData.length > 0) {
             const render = () => {
-                const pointer = d3fc.pointer().on('point', (event: any) => {
-                    if (event[0] !== undefined) {
-                        chartUtils.crosshair = snap(candlestick, chartData, event[0]);
-                        render();
-                    }
-                });
-
-                // d3.select(d3PlotArea.current).call(pointer)
                 nd.requestRedraw();
-            };
-
-            const minimum = (data: any, accessor: any) => {
-                return data
-                    .map(function (dataPoint: any, index: any) {
-                        return [accessor(dataPoint, index), dataPoint, index];
-                    })
-                    .reduce(
-                        function (accumulator: any, dataPoint: any) {
-                            return accumulator[0] > dataPoint[0] ? dataPoint : accumulator;
-                        },
-                        [Number.MAX_VALUE, null, -1],
-                    );
-            };
-
-            const snap = (series: any, data: any, point: any) => {
-                if (point == undefined) return [];
-                const xScale = series.xScale(),
-                    xValue = series.crossValue();
-
-                const filtered = data.filter((d: any) => xValue(d) != null);
-                const nearest = minimum(filtered, (d: any) =>
-                    Math.abs(point.x - xScale(xValue(d))),
-                )[1];
-                return [
-                    {
-                        x: xScale(xValue(nearest)),
-                        y: point.y,
-                    },
-                ];
             };
 
             const valueFormatter = d3.format('.2f');
