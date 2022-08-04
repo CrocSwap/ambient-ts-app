@@ -79,6 +79,7 @@ export default function Trade(props: ITradeProps) {
 
     // These would be move to their own components, presumably the graph component
 
+    // ---------------------------ACTIVE OVERLAY BUTTON FUNCTIONALITY-------------------------------
     const [activerOverlayButton, setActiveOverlayButton] = useState('Curve');
     const chartOverlayButtonData = [
         { name: 'Volume' },
@@ -125,6 +126,56 @@ export default function Trade(props: ITradeProps) {
             </button>
         </motion.div>
     ));
+    // --------------------------- END OF ACTIVE OVERLAY BUTTON FUNCTIONALITY-------------------------------
+
+    // --------------------------- TIME FRAME BUTTON FUNCTIONALITY-------------------------------
+
+    const activeTimeFrameData = [
+        { label: '1m', activePeriod: 60 },
+        { label: '5m', activePeriod: 300 },
+        { label: '15m', activePeriod: 900 },
+        { label: '1h', activePeriod: 3600 },
+        { label: '4h', activePeriod: 14400 },
+        { label: '1d', activePeriod: 86400 },
+    ];
+    const [activeTimeFrame, setActiveTimeFrame] = useState('1m');
+
+    function handleTimeFrameButtonClick(label: string, time: number) {
+        setActiveTimeFrame(label);
+        setActivePeriod(time);
+    }
+
+    const activeTimeFrameDisplay = activeTimeFrameData.map((time, idx) => (
+        <motion.div
+            initial={{ y: 10, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -10, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className={styles.settings_container}
+            key={idx}
+        >
+            <button
+                onClick={() => handleTimeFrameButtonClick(time.label, time.activePeriod)}
+                className={
+                    time.label === activeTimeFrame ? styles.active_button : styles.non_active_button
+                }
+            >
+                {time.label}
+
+                {time.label === activeTimeFrame && (
+                    <motion.div
+                        layoutId='outline'
+                        className={styles.outline}
+                        initial={false}
+                        // animate={{ borderColor: 'red' }}
+                        transition={spring}
+                    />
+                )}
+            </button>
+        </motion.div>
+    ));
+
+    // --------------------------- END OF TIME FRAME BUTTON FUNCTIONALITY-------------------------------
     const tokenInfo = (
         <div className={styles.token_info_container}>
             <div className={styles.tokens_info} onClick={() => dispatch(toggleDidUserFlipDenom())}>
