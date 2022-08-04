@@ -14,7 +14,7 @@ import {
 } from '../../utils/state/tradeDataSlice';
 import truncateDecimals from '../../utils/data/truncateDecimals';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
-import { useMemo, useState, Dispatch, SetStateAction } from 'react';
+import { useMemo, useState, Dispatch, SetStateAction, useEffect } from 'react';
 import { ONE_HOUR_SECONDS, TimeWindow } from '../../constants/intervals';
 import { useTokenData, useTokenPriceData } from '../../state/tokens/hooks';
 import { currentTimestamp } from '../../utils';
@@ -144,6 +144,26 @@ export default function Trade(props: ITradeProps) {
     ];
 
     const tradeData = useAppSelector((state) => state.tradeData);
+
+    const graphData = useAppSelector((state) => state.graphData);
+
+    const mainnetCandlePoolDefinition = JSON.stringify({
+        baseAddress: '0x0000000000000000000000000000000000000000',
+        quoteAddress: '0x6b175474e89094c44da98b954eedeac495271d0f',
+        poolIdx: 36000,
+        network: '0x1',
+    }).toLowerCase();
+
+    const indexOfMainnetCandlePool = graphData.candlesForAllPools.pools
+        .map((item) => JSON.stringify(item.pool).toLowerCase())
+        .findIndex((pool) => pool === mainnetCandlePoolDefinition);
+
+    const mainnetCandleData = graphData.candlesForAllPools.pools[indexOfMainnetCandlePool];
+
+    useEffect(() => {
+        console.log({ mainnetCandleData });
+    }, [mainnetCandleData]);
+
     const isTokenABase = props.isTokenABase;
     const setActivePeriod = (period: number) => {
         dispatch(setActiveChartPeriod(period));
