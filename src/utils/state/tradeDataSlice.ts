@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { goerliETH, goerliUSDC } from '../data/defaultTokens';
 import { TokenIF } from '../interfaces/TokenIF';
 
 export interface tradeData {
@@ -115,6 +116,16 @@ export const tradeDataSlice = createSlice({
         setActiveChartPeriod: (state, action: PayloadAction<number>) => {
             state.activeChartPeriod = action.payload;
         },
+        resetTokens: (state, action: PayloadAction<string>) => {
+            if (action.payload === '0x5') {
+                state.tokenA = goerliETH;
+                state.tokenB = goerliUSDC;
+            } else if (action.payload === '0x2a') {
+                state.tokenA = initialState.tokenA;
+                state.tokenB = initialState.tokenB;
+            }
+        },
+
         resetTradeData: () => initialState,
     },
 });
@@ -141,6 +152,7 @@ export const {
     setSlippageTolerance,
     setActiveChartPeriod,
     resetTradeData,
+    resetTokens,
 } = tradeDataSlice.actions;
 
 export default tradeDataSlice.reducer;

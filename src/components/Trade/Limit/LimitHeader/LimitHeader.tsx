@@ -6,7 +6,7 @@ import TransactionSettings from '../../../Global/TransactionSettings/Transaction
 
 // START: Import Local Files
 import styles from './LimitHeader.module.css';
-import { TokenPairIF } from '../../../../utils/interfaces/exports';
+import { SlippagePairIF, TokenPairIF } from '../../../../utils/interfaces/exports';
 import settingsIcon from '../../../../assets/images/icons/settings.svg';
 import Modal from '../../../../components/Global/Modal/Modal';
 import { useModal } from '../../../../components/Global/Modal/useModal';
@@ -16,13 +16,15 @@ import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
 // interface for component props
 interface LimitHeaderPropsIF {
     tokenPair: TokenPairIF;
+    mintSlippage: SlippagePairIF;
+    isPairStable: boolean;
     isDenomBase: boolean;
     isTokenABase: boolean;
 }
 
 // central react functional component
 export default function LimitHeader(props: LimitHeaderPropsIF) {
-    const { tokenPair, isDenomBase, isTokenABase } = props;
+    const { tokenPair, mintSlippage, isPairStable, isDenomBase, isTokenABase } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
 
@@ -32,7 +34,12 @@ export default function LimitHeader(props: LimitHeaderPropsIF) {
 
     const settingsModalOrNull = isModalOpen ? (
         <Modal noHeader title='modal' onClose={closeModal}>
-            <TransactionSettings module='Limit Order' onClose={closeModal} />
+            <TransactionSettings
+                module='Limit Order'
+                slippage={mintSlippage}
+                isPairStable={isPairStable}
+                onClose={closeModal}
+            />
         </Modal>
     ) : null;
 

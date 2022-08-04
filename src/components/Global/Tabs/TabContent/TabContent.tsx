@@ -14,9 +14,9 @@ export default function Toggle(props: TabContentProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
-            className={styles.TabContent}
+            className={styles.tab_container}
         >
-            {children}
+            <div className={styles.TabContent}>{children}</div>
         </motion.div>
     ) : null;
 }

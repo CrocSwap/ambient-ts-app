@@ -3,10 +3,8 @@ import styles from './Position.module.css';
 import { useModal } from '../Modal/useModal';
 import Modal from '../Modal/Modal';
 import { useState } from 'react';
-// import { PositionIF } from '../../../utils/interfaces/PositionIF';
 import { Position } from '../../../utils/state/graphDataSlice';
 import { Link, useLocation } from 'react-router-dom';
-// import { PositionIF } from '../../../utils/interfaces/PositionIF';
 
 import RemoveRange from '../../RemoveRange/RemoveRange';
 import RangeDetails from '../../RangeDetails/RangeDetails';

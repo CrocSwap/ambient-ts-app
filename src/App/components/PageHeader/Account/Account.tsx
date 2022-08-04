@@ -23,6 +23,8 @@ interface IAccountProps {
     clickLogout: () => void;
     openModal: () => void;
     ensName: string;
+    chainId: string;
+    setFallbackChainId: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export default function Account(props: IAccountProps): React.ReactElement<IAccountProps> {
@@ -30,7 +32,15 @@ export default function Account(props: IAccountProps): React.ReactElement<IAccou
     // const [anchorEl, setAnchorEl] = useState(null);
     const [value, copy] = useCopyToClipboard();
 
-    const { isAuthenticated, isWeb3Enabled, clickLogout, ensName, openModal } = props;
+    const {
+        isAuthenticated,
+        isWeb3Enabled,
+        clickLogout,
+        ensName,
+        openModal,
+        chainId,
+        setFallbackChainId,
+    } = props;
     // eslint-disable-next-line
     // const handlePopoverClick = (event: React.ChangeEvent<any>) => {
     //     setAnchorEl(event.currentTarget);
@@ -131,6 +141,8 @@ export default function Account(props: IAccountProps): React.ReactElement<IAccou
                     isWeb3Enabled={isWeb3Enabled}
                     clickLogout={clickLogout}
                     openModal={openModal}
+                    chainId={chainId}
+                    setFallbackChainId={setFallbackChainId}
                 />
             </NavItem>
 
