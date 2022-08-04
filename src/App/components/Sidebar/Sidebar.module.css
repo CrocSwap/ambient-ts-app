@@ -247,6 +247,8 @@ display: none;
       width: 1.938rem;
       height: 100vh;
       margin-top: 56px;
+      border-top: 1px solid var(--dark3);
+     padding-top: 4px;
      
     }
 
@@ -262,6 +264,9 @@ display: none;
 
     .sidebar_active{
         width: 296px;
+        padding-top: 4px;
+        border-top: 1px solid var(--dark3);
+
 
     }
 
