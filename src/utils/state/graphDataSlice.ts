@@ -13,39 +13,39 @@ export interface CandlesForAllPools {
 }
 
 export interface Pool {
-    pool: { baseAddress: string; quoteAddress: string; poolIdx: number };
+    pool: { baseAddress: string; quoteAddress: string; poolIdx: number; network: string };
     candlesByPoolAndDuration: Array<CandlesByPoolAndDuration>;
 }
 
 export interface CandlesByPoolAndDuration {
-    pool: { baseAddress: string; quoteAddress: string; poolIdx: number };
+    pool: { baseAddress: string; quoteAddress: string; poolIdx: number; network: string };
     duration: number;
     candles: Array<CandleData>;
 }
 
 export interface CandleData {
-    base: string;
+    time: number;
+    poolHash: string;
     firstBlock: number;
-    firstSwap: string;
     lastBlock: number;
-    lastSwap: string;
-    maxPrice: number;
     minPrice: number;
+    maxPrice: number;
+    priceOpen: number;
+    priceClose: number;
+    numSwaps: number;
     netBaseFlow: number;
     netQuoteFlow: number;
-    network: string;
-    numSwaps: number;
+    totalBaseFlow: number;
+    totalQuoteFlow: number;
+    firstSwap: string;
+    lastSwap: string;
     numSwapsFromCroc: number;
     numSwapsFromUniV3: number;
-    period: number;
-    poolHash: string;
-    poolIdx: number;
-    priceClose: number;
-    priceOpen: number;
+    network: string;
+    base: string;
     quote: string;
-    time: number;
-    totalBaseQty: number;
-    totalQuoteQty: number;
+    poolIdx: number;
+    period: number;
 }
 
 export interface PositionsByUser {
