@@ -64,26 +64,18 @@ export default function TopPools() {
     // ];
 
     return (
-        <AnimateSharedLayout>
-            <motion.div
-                className={styles.container}
-                initial={{ width: 0 }}
-                animate={{ width: '100%' }}
-                exit={{ x: window.innerWidth, transition: { duration: 2 } }}
-            >
-                <div className={styles.title}>{t('topPools')}</div>
-                <div className={styles.content}>
-                    {topPools.map((pool, idx) => (
-                        <PoolCard
-                            speed={pool.speed}
-                            name={pool.name}
-                            key={idx}
-                            isSelected={selected === pool.id}
-                            onClick={() => setSelected(pool.id ? pool.id : -2)}
-                        />
-                    ))}
-                </div>
-            </motion.div>
-        </AnimateSharedLayout>
+        <motion.div
+            className={styles.container}
+            initial={{ width: 0 }}
+            animate={{ width: '100%' }}
+            exit={{ x: window.innerWidth, transition: { duration: 2 } }}
+        >
+            <div className={styles.title}>{t('topPools')}</div>
+            <div className={styles.content}>
+                {topPools.map((pool, idx) => (
+                    <PoolCard speed={pool.speed} name={pool.name} key={idx} />
+                ))}
+            </div>
+        </motion.div>
     );
 }
