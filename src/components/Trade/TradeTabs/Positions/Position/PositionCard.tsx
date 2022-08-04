@@ -9,7 +9,7 @@ import { MenuItem, Menu } from '@material-ui/core';
 import { useStyles } from '../../../../../utils/functions/styles';
 import { FiMoreHorizontal } from 'react-icons/fi';
 import RangeStatus from '../../../../Global/RangeStatus/RangeStatus';
-import { PositionIF } from '../../../../../utils/state/graphDataSlice';
+import { PositionIF } from '../../../../../utils/interfaces/PositionIF';
 
 import RemoveRange from '../../../../RemoveRange/RemoveRange';
 import RangeDetails from '../../../../RangeDetails/RangeDetails';

@@ -1,6 +1,6 @@
 import styles from './SidebarRangePositions.module.css';
 import SidebarRangePositionsCard from './SidebarRangePositionsCard';
-import { PositionIF } from '../../../../utils/state/graphDataSlice';
+import { PositionIF } from '../../../../utils/interfaces/PositionIF';
 
 interface SidebarRangeProps {
     mostRecentPositions?: PositionIF[];

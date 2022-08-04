@@ -9,7 +9,7 @@ import Order from '../../Global/Account/AccountTabs/Order/Order';
 import TransactionsTable from '../../Global/Account/AccountTabs/Transaction/TransactionsTable';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { getPositionData } from '../../../App/functions/getPositionData';
-import { PositionIF } from '../../../utils/state/graphDataSlice';
+import { PositionIF } from '../../../utils/interfaces/PositionIF';
 
 // import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 // import Wallet from '../../Global/Account/Wallet/Wallet';

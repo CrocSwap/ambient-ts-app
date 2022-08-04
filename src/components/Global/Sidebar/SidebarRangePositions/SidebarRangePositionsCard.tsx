@@ -1,5 +1,5 @@
-import { PositionIF } from '../../../../utils/state/graphDataSlice';
 import styles from './SidebarRangePositionsCard.module.css';
+import { PositionIF } from '../../../../utils/interfaces/PositionIF';
 
 interface SidebarRangePositionsProps {
     position: PositionIF;

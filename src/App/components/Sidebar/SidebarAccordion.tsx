@@ -3,7 +3,8 @@ import { MdPlayArrow } from 'react-icons/md';
 import styles from './Sidebar.module.css';
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ISwap, PositionIF } from '../../../utils/state/graphDataSlice';
+import { ISwap } from '../../../utils/state/graphDataSlice';
+import { PositionIF } from '../../../utils/interfaces/PositionIF';
 interface Item {
     name: string;
     icon: string;
