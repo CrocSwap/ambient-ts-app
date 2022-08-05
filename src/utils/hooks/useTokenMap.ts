@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { TokenIF, TokenListIF } from '../interfaces/exports';
 import { tokenListURIs } from '../data/tokenListURIs';
+// import { ambientTokenList } from '../data/ambientTokenList';
 
 export const useTokenMap = () => {
     const [tokenMap, setTokenMap] = useState(new Map<string, TokenIF>());
@@ -19,10 +20,11 @@ export const useTokenMap = () => {
                         (tokenList: TokenListIF) => tokenList.uri === tokenListURIs.ambient,
                     ).tokens;
                 } else {
-                    throw new Error('Did not find Ambient token list in local storage.');
+                    // throw new Error('Did not find Ambient token list in local storage.');
                 }
             } else {
-                throw new Error('Did not find value <<<allTokenLists>>> in local storage.');
+                // tokenLists.push(ambientTokenList.tokens);
+                // throw new Error('Did not find value <<<allTokenLists>>> in local storage.');
             }
         } catch (err) {
             console.warn(err);
@@ -46,10 +48,10 @@ export const useTokenMap = () => {
                         (tokenList: TokenListIF) => tokenList.uri === tokenListURIs.coingecko,
                     ).tokens;
                 } else {
-                    throw new Error('Did not find CoinGecko token list in local storage.');
+                    // throw new Error('Did not find CoinGecko token list in local storage.');
                 }
             } else {
-                throw new Error('Did not find value <<<allTokenLists>>> in local storage.');
+                // throw new Error('Did not find value <<<allTokenLists>>> in local storage.');
             }
         } catch (err) {
             console.warn(err);
@@ -72,7 +74,7 @@ export const useTokenMap = () => {
             ),
         );
         setTokenMap(newTokensMap);
-    }, []);
+    }, [localStorage.allTokenLists]);
 
     return tokenMap;
 };
