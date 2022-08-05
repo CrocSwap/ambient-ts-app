@@ -1,6 +1,6 @@
 import styles from './TabComponent.module.css';
 import React, { useState, useEffect, Dispatch, SetStateAction, cloneElement } from 'react';
-import { motion, AnimatePresence, AnimateSharedLayout } from 'framer-motion';
+import { motion, AnimateSharedLayout } from 'framer-motion';
 import '../../../App/App.css';
 import { Tooltip } from '@mui/material';
 import { useStyles } from '../../../utils/functions/styles';
