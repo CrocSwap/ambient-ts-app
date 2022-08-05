@@ -70,7 +70,7 @@ import { memoizeFetchAddress } from './functions/fetchAddress';
 import { memoizeTokenBalance } from './functions/fetchTokenBalances';
 import truncateDecimals from '../utils/data/truncateDecimals';
 import { getNFTs } from './functions/getNFTs';
-import { memoizeTokenDecimals, queryTokenDecimals } from './functions/queryTokenDecimals';
+import { memoizeTokenDecimals } from './functions/queryTokenDecimals';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { useSlippage } from './useSlippage';
 import { addNativeBalance, resetTokenData, setTokens } from '../utils/state/tokenDataSlice';

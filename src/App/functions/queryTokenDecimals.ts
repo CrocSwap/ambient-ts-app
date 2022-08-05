@@ -5,7 +5,8 @@ import { memoizeProviderFn } from './memoizePromiseFn';
 export const queryTokenDecimals = async (
     provider: Provider,
     tokenAddress: string,
-    chainId: string,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _chainId: string,
 ) => {
     console.log('Query token decimals ' + tokenAddress);
     const env = new CrocEnv(provider);

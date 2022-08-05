@@ -4,6 +4,7 @@ import { memoizeProviderFn } from './memoizePromiseFn';
 export const fetchAddress = async (
     provider: ethers.providers.Provider,
     address: string,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _chainId: string,
 ) => {
     return provider.lookupAddress(address);
