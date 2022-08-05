@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
-import { DetailedHTMLProps, HTMLAttributes, useCallback, useEffect, useRef, useState } from 'react';
+import { DetailedHTMLProps, HTMLAttributes, useEffect, useRef, useState } from 'react';
 import './Chart.css';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
