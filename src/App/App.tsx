@@ -1023,7 +1023,7 @@ export default function App() {
         swap.base = swap.base.startsWith('0x') ? swap.base : '0x' + swap.base;
         swap.quote = swap.quote.startsWith('0x') ? swap.quote : '0x' + swap.quote;
         swap.user = swap.user.startsWith('0x') ? swap.user : '0x' + swap.user;
-        swap.id = '0x' + swap.id.slice(5);
+        swap.id = '0x' + swap.id.slice(6);
 
         return swap;
     };
