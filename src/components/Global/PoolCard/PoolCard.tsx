@@ -1,23 +1,14 @@
 import styles from './PoolCard.module.css';
-import { motion } from 'framer-motion';
 interface PoolCardProps {
-    onMouseEnter: () => void;
     onClick: () => void;
-    isSelected: boolean;
-    speed: number;
     name: string;
 }
-const spring = {
-    type: 'spring',
-    stiffness: 500,
-    damping: 30,
-};
 
 export default function PoolCard(props: PoolCardProps) {
-    const { isSelected, onMouseEnter, onClick, name } = props;
+    const { name } = props;
 
     return (
-        <motion.div className={styles.pool_card} onMouseEnter={onMouseEnter} onClick={onClick}>
+        <div className={styles.pool_card}>
             <div className={styles.row}>
                 <div>
                     <img
@@ -54,15 +45,6 @@ export default function PoolCard(props: PoolCardProps) {
                     <div className={styles.hours}>1.54%</div>
                 </div>
             </div>
-            {isSelected && (
-                <motion.div
-                    layoutId='outline'
-                    className={styles.outline}
-                    initial={false}
-                    animate={{ borderColor: 'red' }}
-                    transition={spring}
-                />
-            )}
-        </motion.div>
+        </div>
     );
 }

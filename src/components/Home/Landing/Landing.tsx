@@ -12,7 +12,7 @@ export default function Landing() {
                 <div className={styles.ambient}>ambient</div>
                 <Link to={'/trade/market'}>
                     <button className={styles.action_button}>
-                        <span>{t('common:marketCTA')}</span>
+                        <p className={styles.button_text}>{t('common:marketCTA')}</p>
                     </button>
                 </Link>
             </div>
