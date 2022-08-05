@@ -1,9 +1,4 @@
-import {
-    Outlet,
-    useOutletContext,
-    NavLink,
-    // useLocation
-} from 'react-router-dom';
+import { Outlet, useOutletContext, NavLink } from 'react-router-dom';
 import styles from './Trade.module.css';
 import chart from '../../assets/images/Temporary/chart.svg';
 
@@ -50,6 +45,8 @@ export default function Trade(props: ITradeProps) {
     const dispatch = useAppDispatch();
 
     // console.log(currentLocation);
+    const { pathname } = location;
+    console.log('I am pathname', pathname);
 
     const routes = [
         {
