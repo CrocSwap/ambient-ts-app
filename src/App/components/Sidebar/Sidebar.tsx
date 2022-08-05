@@ -13,7 +13,7 @@ import SidebarRecentTransactions from '../../../components/Global/Sidebar/Sideba
 
 // START: Import Local Files
 import styles from './Sidebar.module.css';
-import { useTokenMap } from './useTokenMap';
+
 import favouritePoolsImage from '../../../assets/images/sidebarImages/favouritePools.svg';
 import openOrdersImage from '../../../assets/images/sidebarImages/openOrders.svg';
 import rangePositionsImage from '../../../assets/images/sidebarImages/rangePositions.svg';
@@ -22,6 +22,7 @@ import topPoolsImage from '../../../assets/images/sidebarImages/topPools.svg';
 import topTokensImage from '../../../assets/images/sidebarImages/topTokens.svg';
 import closeSidebarImage from '../../../assets/images/sidebarImages/closeSidebar.svg';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import { TokenIF } from '../../../utils/interfaces/TokenIF';
 
 // interface for component props
 interface SidebarPropsIF {
@@ -37,6 +38,7 @@ interface SidebarPropsIF {
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
+    tokenMap: Map<string, TokenIF>;
 }
 
 export default function Sidebar(props: SidebarPropsIF) {
@@ -52,6 +54,7 @@ export default function Sidebar(props: SidebarPropsIF) {
         switchTabToTransactions,
         expandTradeTable,
         setExpandTradeTable,
+        tokenMap,
     } = props;
 
     const graphData = useAppSelector((state) => state.graphData);
@@ -62,7 +65,6 @@ export default function Sidebar(props: SidebarPropsIF) {
     const mostRecentPositions = positionsByUser.slice(0, 4);
 
     // TODO:  @Ben this is the map with all the coin gecko token data objects
-    const coinGeckoTokenMap = useTokenMap();
     // console.assert(coinGeckoTokenMap, 'no map present');
 
     const topTokens = [{ name: 'Top Tokens', icon: topTokensImage, data: <TopTokens /> }];
@@ -89,7 +91,7 @@ export default function Sidebar(props: SidebarPropsIF) {
             data: (
                 <SidebarRecentTransactions
                     mostRecentTransactions={mostRecentTransactions}
-                    coinGeckoTokenMap={coinGeckoTokenMap}
+                    coinGeckoTokenMap={tokenMap}
                     currentTxActiveInTransactions={currentTxActiveInTransactions}
                     setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
                     chainId={chainId}

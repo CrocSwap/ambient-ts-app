@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { TokenIF, TokenListIF } from '../../../utils/interfaces/exports';
-import { tokenListURIs } from '../../../utils/data/tokenListURIs';
+import { TokenIF, TokenListIF } from '../interfaces/exports';
+import { tokenListURIs } from '../data/tokenListURIs';
 
 export const useTokenMap = () => {
     const [tokenMap, setTokenMap] = useState(new Map<string, TokenIF>());
@@ -10,7 +10,6 @@ export const useTokenMap = () => {
         try {
             let tokenLists = [];
             if (localStorage.allTokenLists) {
-                console.log('getting allTokenLists from localStorage...');
                 tokenLists = JSON.parse(localStorage.getItem('allTokenLists') as string);
                 const ambientListPresent = tokenLists.some(
                     (tokenList: TokenListIF) => tokenList.uri === tokenListURIs.ambient,
@@ -36,7 +35,8 @@ export const useTokenMap = () => {
         try {
             let tokenLists = [];
             if (localStorage.allTokenLists) {
-                console.log('getting allTokenLists from localStorage...');
+                console.log('getting coinGeckoTokens from localStorage...');
+
                 tokenLists = JSON.parse(localStorage.getItem('allTokenLists') as string);
                 const coinGeckoListPresent = tokenLists.some(
                     (tokenList: TokenListIF) => tokenList.uri === tokenListURIs.coingecko,

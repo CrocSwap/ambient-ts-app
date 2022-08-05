@@ -86,6 +86,7 @@ import { getNFTs } from './functions/getNFTs';
 import { useSlippage } from './useSlippage';
 import { addNativeBalance, resetTokenData, setTokens } from '../utils/state/tokenDataSlice';
 import { checkIsStable } from '../utils/data/stablePairs';
+import { useTokenMap } from '../utils/hooks/useTokenMap';
 
 import Reposition from '../pages/Trade/Reposition/Reposition';
 import SidebarFooter from '../components/Global/SIdebarFooter/SidebarFooter';
@@ -113,6 +114,8 @@ export default function App() {
         logout,
         isAuthenticated,
     } = useMoralis();
+
+    const tokenMap = useTokenMap();
 
     const { switchNetwork } = useChain();
 
@@ -1421,7 +1424,6 @@ export default function App() {
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
     };
 
-    // props for <Sidebar/> React element
     function toggleSidebar() {
         setShowSidebar(!showSidebar);
         setSidebarManuallySet(true);
@@ -1430,6 +1432,7 @@ export default function App() {
     function handleSetTradeTabToTransaction() {
         setSwitchTabToTransactions(!switchTabToTransactions);
     }
+    // props for <Sidebar/> React element
     const sidebarProps = {
         showSidebar: showSidebar,
         toggleSidebar: toggleSidebar,
@@ -1444,6 +1447,7 @@ export default function App() {
         setIsShowAllEnabled: setIsShowAllEnabled,
         expandTradeTable: expandTradeTable,
         setExpandTradeTable: setExpandTradeTable,
+        tokenMap: tokenMap,
 
         // setShowSidebar : setShowSidebar
     };
@@ -1536,6 +1540,7 @@ export default function App() {
                                     setIsShowAllEnabled={setIsShowAllEnabled}
                                     expandTradeTable={expandTradeTable}
                                     setExpandTradeTable={setExpandTradeTable}
+                                    tokenMap={tokenMap}
                                 />
                             }
                         >
@@ -1559,6 +1564,7 @@ export default function App() {
                                     connectedAccount={account ? account : ''}
                                     userImageData={imageData}
                                     chainId={chainId}
+                                    tokenMap={tokenMap}
                                 />
                             }
                         />
@@ -1570,6 +1576,7 @@ export default function App() {
                                     connectedAccount={account ? account : ''}
                                     chainId={chainId}
                                     userImageData={imageData}
+                                    tokenMap={tokenMap}
                                 />
                             }
                         />

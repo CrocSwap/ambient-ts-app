@@ -10,6 +10,7 @@ import TransactionsTable from '../../Global/Account/AccountTabs/Transaction/Tran
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { getPositionData } from '../../../App/functions/getPositionData';
 import { PositionIF } from '../../../utils/interfaces/PositionIF';
+import { TokenIF } from '../../../utils/interfaces/TokenIF';
 
 // import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 // import Wallet from '../../Global/Account/Wallet/Wallet';
@@ -22,9 +23,10 @@ interface PortfolioTabsPropsIF {
     activeAccount: string;
     connectedAccountActive: boolean;
     chainId: string;
+    tokenMap: Map<string, TokenIF>;
 }
 export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
-    const { resolvedAddress, activeAccount, connectedAccountActive, chainId } = props;
+    const { resolvedAddress, activeAccount, connectedAccountActive, chainId, tokenMap } = props;
     const [activeTab, setActiveTab] = useState('tab1');
     const graphData = useAppSelector((state) => state?.graphData);
     const connectedAccountPositionData = graphData.positionsByUser.positions;
@@ -97,6 +99,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
                         resolvedAddress={resolvedAddress}
                         activeAccount={activeAccount}
                         chainId={chainId}
+                        tokenMap={tokenMap}
                     />
                 </TabContent>
                 <TabContent id='tab2' activeTab={activeTab}>
