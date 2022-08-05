@@ -1518,7 +1518,7 @@ export default function App() {
                     {/* <div className={`${noSidebarStyle} ${swapBodyStyle}`}> */}
 
                     <Routes>
-                        <Route index element={<Home />} />
+                        <Route index element={<Home tokenMap={tokenMap} />} />
                         <Route
                             path='trade'
                             element={
