@@ -6,11 +6,20 @@ import {
 } from 'react-router-dom';
 import styles from './Trade.module.css';
 import chart from '../../assets/images/Temporary/chart.svg';
-import Tabs from '../../components/Global/Tabs/Tabs';
-import { motion } from 'framer-motion';
+
+// import { motion } from 'framer-motion';
 import { useAppSelector, useAppDispatch } from '../../utils/hooks/reduxToolkit';
-import { tradeData as TradeDataIF, toggleDidUserFlipDenom } from '../../utils/state/tradeDataSlice';
+import {
+    tradeData as TradeDataIF,
+    toggleDidUserFlipDenom,
+    setActiveChartPeriod,
+} from '../../utils/state/tradeDataSlice';
 import truncateDecimals from '../../utils/data/truncateDecimals';
+import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
+// import TradeTabs from '../../components/Trade/TradeTabs/TradeTabs';
+import TradeTabs2 from '../../components/Trade/TradeTabs/TradeTabs2';
+import { Dispatch, SetStateAction, useState } from 'react';
+import { motion, AnimateSharedLayout } from 'framer-motion';
 
 interface ITradeProps {
     account: string;
@@ -19,6 +28,16 @@ interface ITradeProps {
     lastBlockNumber: number;
     isTokenABase: boolean;
     poolPriceDisplay: number;
+    chainId: string;
+    switchTabToTransactions: boolean;
+    setSwitchTabToTransactions: Dispatch<SetStateAction<boolean>>;
+    currentTxActiveInTransactions: string;
+    setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
+    isShowAllEnabled: boolean;
+    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
+
+    expandTradeTable: boolean;
+    setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function Trade(props: ITradeProps) {
@@ -45,6 +64,9 @@ export default function Trade(props: ITradeProps) {
 
     const tradeData = useAppSelector((state) => state.tradeData);
     const isTokenABase = props.isTokenABase;
+    const setActivePeriod = (period: number) => {
+        dispatch(setActiveChartPeriod(period));
+    };
     const denomInBase = tradeData.isDenomBase;
     const denomInTokenA = (denomInBase && isTokenABase) || (!denomInBase && !isTokenABase);
     const tokenASymbol = tradeData.tokenA.symbol;
@@ -56,6 +78,106 @@ export default function Trade(props: ITradeProps) {
             : truncateDecimals(poolPriceDisplay, 2);
 
     // These would be move to their own components, presumably the graph component
+
+    // ---------------------------ACTIVE OVERLAY BUTTON FUNCTIONALITY-------------------------------
+    const [activerOverlayButton, setActiveOverlayButton] = useState('Curve');
+    const chartOverlayButtonData = [
+        { name: 'Volume' },
+        { name: 'TVL' },
+        { name: 'Fee Rate' },
+        { name: 'Heatmap' },
+        { name: 'Liquidity Profile' },
+        { name: 'Curve' },
+        { name: 'Depth' },
+    ];
+
+    function handleOverlayButtonClick(name: string) {
+        setActiveOverlayButton(name);
+    }
+
+    const chartOverlayButtons = chartOverlayButtonData.map((button, idx) => (
+        <motion.div
+            initial={{ y: 10, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -10, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className={styles.settings_container}
+            key={idx}
+        >
+            <button
+                onClick={() => handleOverlayButtonClick(button.name)}
+                className={
+                    button.name === activerOverlayButton
+                        ? styles.active_button
+                        : styles.non_active_button
+                }
+            >
+                {button.name}
+
+                {button.name === activerOverlayButton && (
+                    <motion.div
+                        layoutId='outline'
+                        className={styles.outline}
+                        initial={false}
+                        // animate={{ borderColor: 'red' }}
+                        transition={spring}
+                    />
+                )}
+            </button>
+        </motion.div>
+    ));
+    // --------------------------- END OF ACTIVE OVERLAY BUTTON FUNCTIONALITY-------------------------------
+
+    // --------------------------- TIME FRAME BUTTON FUNCTIONALITY-------------------------------
+
+    const activeTimeFrameData = [
+        { label: '1m', activePeriod: 60 },
+        { label: '5m', activePeriod: 300 },
+        { label: '15m', activePeriod: 900 },
+        { label: '1h', activePeriod: 3600 },
+        { label: '4h', activePeriod: 14400 },
+        { label: '1d', activePeriod: 86400 },
+    ];
+    const [activeTimeFrame, setActiveTimeFrame] = useState('1m');
+
+    function handleTimeFrameButtonClick(label: string, time: number) {
+        setActiveTimeFrame(label);
+        setActivePeriod(time);
+    }
+
+    const activeTimeFrameDisplay = activeTimeFrameData.map((time, idx) => (
+        <motion.div
+            initial={{ y: 10, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -10, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className={styles.settings_container}
+            key={idx}
+        >
+            <button
+                onClick={() => handleTimeFrameButtonClick(time.label, time.activePeriod)}
+                className={
+                    time.label === activeTimeFrame
+                        ? styles.active_button2
+                        : styles.non_active_button2
+                }
+            >
+                {time.label}
+
+                {time.label === activeTimeFrame && (
+                    <motion.div
+                        layoutId='outline2'
+                        className={styles.outline2}
+                        initial={false}
+                        // animate={{ borderColor: 'red' }}
+                        transition={spring}
+                    />
+                )}
+            </button>
+        </motion.div>
+    ));
+
+    // --------------------------- END OF TIME FRAME BUTTON FUNCTIONALITY-------------------------------
     const tokenInfo = (
         <div className={styles.token_info_container}>
             <div className={styles.tokens_info} onClick={() => dispatch(toggleDidUserFlipDenom())}>
@@ -78,29 +200,28 @@ export default function Trade(props: ITradeProps) {
                     {denomInTokenA ? tokenBSymbol : tokenASymbol}
                 </span>
             </div>
-
-            <div className={styles.settings_container}>
-                <span>Liquidity Profile</span>
-                <button>Total</button>
-                <button>Cumulative</button>
-            </div>
+            <div className={styles.chart_overlay_container}>{chartOverlayButtons}</div>
         </div>
     );
+
+    const currencyCharacter = denomInTokenA
+        ? // denom in a, return token b character
+          getUnicodeCharacter(tradeData.tokenB.symbol)
+        : // denom in b, return token a character
+          getUnicodeCharacter(tradeData.tokenA.symbol);
 
     const timeFrameContent = (
         <div className={styles.time_frame_container}>
             <div className={styles.left_side}>
-                <span className={styles.amount}>${truncatedPoolPrice}</span>
+                <span className={styles.amount} onClick={() => dispatch(toggleDidUserFlipDenom())}>
+                    {currencyCharacter}
+                    {truncatedPoolPrice}
+                </span>
                 <span className={styles.change}>+8.57% | 24h</span>
             </div>
             <div className={styles.right_side}>
                 <span>Timeframe</span>
-                <button>1m</button>
-                <button>5m</button>
-                <button>15m</button>
-                <button>1h</button>
-                <button>4h</button>
-                <button>1d</button>
+                {activeTimeFrameDisplay}
             </div>
         </div>
     );
@@ -129,28 +250,61 @@ export default function Trade(props: ITradeProps) {
         </div>
     );
 
+    const expandGraphStyle = props.expandTradeTable ? styles.hide_graph : '';
+    // const expandTradeTableStyle = props.expandTradeTable ? styles.expand_table : styles.trade_style;
+
     return (
-        <motion.main
-            initial={{ width: 0 }}
-            animate={{ width: '100%' }}
-            exit={{ x: window.innerWidth, transition: { duration: 0.4 } }}
-            data-testid={'trade'}
-        >
+        // <motion.main
+        //     initial={{ width: 0 }}
+        //     animate={{ width: '100%' }}
+        //     exit={{ x: window.innerWidth, transition: { duration: 0.4 } }}
+        //     data-testid={'trade'}
+        // >
+        <AnimateSharedLayout>
             <main className={styles.main_layout}>
-                <div className={`${styles.middle_col} ${styles.graph_container}`}>
-                    {tokenInfo}
-                    {timeFrameContent}
-                    {chartImage}
-                    <Tabs
-                        account={props.account}
-                        isAuthenticated={props.isAuthenticated}
-                        isWeb3Enabled={props.isWeb3Enabled}
-                        lastBlockNumber={props.lastBlockNumber}
-                    />
+                <div className={styles.middle_col}>
+                    <div className={`${styles.graph_style} ${expandGraphStyle}`}>
+                        {tokenInfo}
+                        {timeFrameContent}
+                        {chartImage}
+                    </div>
+
+                    <motion.div
+                        animate={{
+                            height: props.expandTradeTable ? '100%' : '30%',
+                            transition: {
+                                duration: 0.5,
+                                type: 'spring',
+                                damping: 10,
+                            },
+                        }}
+
+                        // className={` ${expandTradeTableStyle}`}
+                    >
+                        <TradeTabs2
+                            account={props.account}
+                            isAuthenticated={props.isAuthenticated}
+                            isWeb3Enabled={props.isWeb3Enabled}
+                            lastBlockNumber={props.lastBlockNumber}
+                            chainId={props.chainId}
+                            switchTabToTransactions={props.switchTabToTransactions}
+                            setSwitchTabToTransactions={props.setSwitchTabToTransactions}
+                            currentTxActiveInTransactions={props.currentTxActiveInTransactions}
+                            setCurrentTxActiveInTransactions={
+                                props.setCurrentTxActiveInTransactions
+                            }
+                            isShowAllEnabled={props.isShowAllEnabled}
+                            setIsShowAllEnabled={props.setIsShowAllEnabled}
+                            expandTradeTable={props.expandTradeTable}
+                            setExpandTradeTable={props.setExpandTradeTable}
+                        />
+                    </motion.div>
                 </div>
                 {mainContent}
             </main>
-        </motion.main>
+        </AnimateSharedLayout>
+
+        // </motion.main>
     );
 }
 
@@ -159,3 +313,9 @@ type ContextType = { tradeData: TradeDataIF; navigationMenu: JSX.Element };
 export function useTradeData() {
     return useOutletContext<ContextType>();
 }
+
+const spring = {
+    type: 'spring',
+    stiffness: 500,
+    damping: 30,
+};

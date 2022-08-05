@@ -22,3 +22,15 @@
     list-style-type: none;
     outline: 2px solid yellow;
 } */
+
+.menu_container{
+ 
+    width: 800px;
+    display: flex;
+}
+
+.animation_container{
+    width: 100px;
+    margin: 1rem 0;
+}
+

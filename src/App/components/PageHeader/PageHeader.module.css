@@ -83,6 +83,7 @@
     flex-direction: row;
     align-items: center;
     gap: var(--gap, 1rem);
+    margin-left: 2rem;
 }
 
 
@@ -163,7 +164,7 @@ border-radius: 4px;
 }
 .mobile_nav_toggle{
     display: block;
-    position: absolute;
+    /* position: absolute; */
     z-index: 99999;
     width: 2rem;
     aspect-ratio: 1;

@@ -9,7 +9,7 @@ import truncateDecimals from '../../../../utils/data/truncateDecimals';
 // START: Import Local Files
 import styles from './RangeCurrencyConverter.module.css';
 import { calculateSecondaryDepositQty } from '../../../../utils/functions/calculateSecondaryDepositQty';
-import { TokenIF } from '../../../../utils/interfaces/TokenIF';
+import { TokenIF, TokenPairIF } from '../../../../utils/interfaces/exports';
 import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import {
     setIsTokenAPrimaryRange,
@@ -29,10 +29,7 @@ interface RangeCurrencyConverterPropsIF {
     isLiq?: boolean;
     poolPriceNonDisplay: number;
     isAdvancedMode: boolean;
-    tokenPair: {
-        dataTokenA: TokenIF;
-        dataTokenB: TokenIF;
-    };
+    tokenPair: TokenPairIF;
     isTokenAPrimaryLocal: boolean;
     setIsTokenAPrimaryLocal: Dispatch<SetStateAction<boolean>>;
     isTokenABase: boolean;
@@ -161,7 +158,9 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
                 depositSkew,
             ) ?? 0;
 
-        handleRangeButtonMessageTokenB(qtyTokenB);
+        handleSecondaryTokenQty('B', value, qtyTokenB);
+
+        // handleRangeButtonMessageTokenB(qtyTokenB);
 
         const truncatedTokenBQty = truncateDecimals(
             qtyTokenB,
@@ -205,7 +204,8 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
                 depositSkew,
             ) ?? 0;
 
-        handleRangeButtonMessageTokenA(qtyTokenA);
+        handleSecondaryTokenQty('A', value, qtyTokenA);
+        // handleRangeButtonMessageTokenA(qtyTokenA);
 
         const truncatedTokenAQty = truncateDecimals(
             qtyTokenA,
@@ -265,6 +265,49 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
             setRangeButtonErrorMessage('Enter an Amount');
         } else {
             setRangeAllowed(true);
+        }
+    };
+
+    const handleSecondaryTokenQty = (
+        secondaryToken: string,
+        primaryTokenQty: number,
+        secondaryTokenQty: number,
+    ) => {
+        console.log({ primaryTokenQty });
+        console.log({ secondaryTokenQty });
+        if (secondaryToken === 'B') {
+            if (secondaryTokenQty > parseFloat(truncatedTokenBBalance)) {
+                setRangeAllowed(false);
+                setRangeButtonErrorMessage(
+                    `${tokenPair.dataTokenB.symbol} Amount Exceeds Wallet Balance`,
+                );
+            } else if (
+                isNaN(primaryTokenQty) ||
+                isNaN(secondaryTokenQty) ||
+                secondaryTokenQty < 0
+            ) {
+                console.log('firing');
+                setRangeAllowed(false);
+                setRangeButtonErrorMessage('Enter an Amount');
+            } else {
+                // setRangeAllowed(true);
+            }
+        } else {
+            if (secondaryTokenQty > parseFloat(truncatedTokenABalance)) {
+                setRangeAllowed(false);
+                setRangeButtonErrorMessage(
+                    `${tokenPair.dataTokenA.symbol} Amount Exceeds Wallet Balance`,
+                );
+            } else if (
+                isNaN(primaryTokenQty) ||
+                isNaN(secondaryTokenQty) ||
+                secondaryTokenQty < 0
+            ) {
+                setRangeAllowed(false);
+                setRangeButtonErrorMessage('Enter an Amount');
+            } else {
+                setRangeAllowed(true);
+            }
         }
     };
 

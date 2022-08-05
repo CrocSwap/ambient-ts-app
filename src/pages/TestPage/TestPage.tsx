@@ -11,10 +11,19 @@
 // import Landing5 from '../../components/Home/Landing/Landing5';
 // import Landing6 from '../../components/Home/Landing/Landing6';
 // import PositionCard from '../../components/Global/Position/PositionCard';
-import LimitOrderHeader from '../../components/Global/LimitOrder/LimitOrderHeader';
 // import { TokenListIF } from '../../utils/interfaces/exports';
 import styles from './TestPage.module.css';
-import LimitOrderCard from '../../components/Global/LimitOrder/LimitOrderCard';
+
+// import Range from '../../components/Global/Account/Range/Range';
+// import Transaction from '../../components/Transaction/Transaction';
+// import Transactions from '../../components/Global/Transactions/Transactions';
+
+// import Range from '../../components/Global/Account/AccountTabs/Range/Range';
+// import Reposition from '../Trade/Reposition/Reposition';
+// import WaveAnimation from '../../components/Global/LoadingAnimations/WaveAnimation/WaveAnimation';
+// import BouncingBall from '../../components/Global/LoadingAnimations/DotJump/BouncingBall';
+// import CircleLoader from '../../components/Global/LoadingAnimations/CircleLoader/CircleLoader';
+// import RollingBall from '../../components/Global/LoadingAnimations/RollingBall/RollingBall';
 
 export default function TestPage() {
     // // get the user object from local storage
@@ -56,52 +65,64 @@ export default function TestPage() {
     //         </li>
     //     ));
 
-    const mapItems = [1, 2, 4, 4, 5, 6, 7, 8, 9];
-
     return (
         // <main>
-        //     <button onClick={() => setOpenSnackbar(true)}>open me</button>
-        //     <h3>This is TestPage.tsx</h3>
-        //     <SnackbarComponent
-        //         severity='success'
-        //         setOpenSnackbar={setOpenSnackbar}
-        //         openSnackbar={openSnackbar}
-        //     >
-        //         I am snackbar
-        //     </SnackbarComponent>
-        //     <TooltipComponent title='Snackbar title' />
-        //     <PoolCard />
-        //     <Stats />
-        //     <Carousel>
-        //         <CarouselItem>
-        //             <Landing />
-        //         </CarouselItem>
-        //         <CarouselItem>
-        //             <Landing2 />
-        //         </CarouselItem>
-        //         <CarouselItem>
-        //             <Landing3 />
-        //         </CarouselItem>
-        //         <CarouselItem>
-        //             <Landing4 />
-        //         </CarouselItem>
-        //         <CarouselItem>
-        //             <Landing5 />
-        //         </CarouselItem>
-        //         <CarouselItem>
-        //             <Landing6 />
-        //         </CarouselItem>
-        //     </Carousel>
-        //     </main>
-        <>
-            <main className={styles.container}>
-                {/* <ul className={styles.token_list_selects_ul}>{tokenListElements}</ul> */}
-                {/* <PositionHeader /> */}
-                <LimitOrderHeader />
+
+        <main className={styles.container}>
+            {/* <ul className={styles.token_list_selects_ul}>{tokenListElements}</ul> */}
+            {/* <PositionHeader /> */}
+            {/* <LimitOrderHeader />
                 {mapItems.map((item, idx) => (
                     <LimitOrderCard key={idx} />
-                ))}
-            </main>
-        </>
+                ))} */}
+            {/* <RangeCardHeader /> */}
+            {/* <RangeCard /> */}
+
+            {/* <Range /> */}
+            {/* <Order />
+                
+                <TransactionsTable /> */}
+
+            {/* <TableMenu tableType='orders' /> */}
+
+            {/* <Order2 /> */}
+            <div style={{ maxWidth: '600px' }} className={styles.loading_screens}>
+                {/* <h4>&lt;WaveAnimation ballsAmount=&#123;10&#125; shape=&#39;line&#39; /&gt;</h4>
+                    <div className={styles.animation_container}>
+                        <WaveAnimation ballsAmount={10} shape='line' />
+                    </div>
+                    <h4>
+                        &lt;WaveAnimation ballsAmount=&#123;10&#125; shape=&#39;square&#39; /&gt;
+                    </h4>
+
+                    <div className={styles.animation_container}>
+                        <WaveAnimation ballsAmount={10} shape='square' />
+                    </div>
+                    <h4>
+                        &lt;WaveAnimation ballsAmount=&#123;10&#125; shape=&#39;circle&#39; /&gt;
+                    </h4>
+
+                    <div className={styles.animation_container}>
+                        <WaveAnimation ballsAmount={10} shape='circle' />
+                    </div>
+                </div>
+       
+                <h4>&lt;CircleLoader /&gt;</h4>
+
+                <div className={styles.animation_container}>
+                    <CircleLoader />
+                </div>
+                <h4>&lt;BouncingBall /&gt;</h4>
+                <div className={styles.animation_container}>
+                    <BouncingBall />
+                </div>
+
+                <h4>&lt;RollingBall ballSize=&#39;10px&#39; /&gt;</h4>
+                <div className={styles.animation_container}>
+                    <RollingBall ballSize='30px' />
+                </div> */}
+                {/* <TabComponent data={allIngredients} /> */}
+            </div>
+        </main>
     );
 }

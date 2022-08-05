@@ -11,7 +11,7 @@ import { FiMoreHorizontal } from 'react-icons/fi';
 // import { HiOutlineDocumentText } from 'react-icons/hi';
 import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
 import SnackbarComponent from '../../../../components/Global/SnackbarComponent/SnackbarComponent';
-import DropdownMenu from '../DropdownMenu/DropdownMenu';
+import DropdownMenu from '../NavbarDropdownMenu/NavbarDropdownMenu';
 import NavItem from '../NavItem/NavItem';
 
 interface IAccountProps {
@@ -23,6 +23,8 @@ interface IAccountProps {
     clickLogout: () => void;
     openModal: () => void;
     ensName: string;
+    chainId: string;
+    setFallbackChainId: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export default function Account(props: IAccountProps): React.ReactElement<IAccountProps> {
@@ -30,7 +32,15 @@ export default function Account(props: IAccountProps): React.ReactElement<IAccou
     // const [anchorEl, setAnchorEl] = useState(null);
     const [value, copy] = useCopyToClipboard();
 
-    const { isAuthenticated, isWeb3Enabled, clickLogout, ensName, openModal } = props;
+    const {
+        isAuthenticated,
+        isWeb3Enabled,
+        clickLogout,
+        ensName,
+        openModal,
+        chainId,
+        setFallbackChainId,
+    } = props;
     // eslint-disable-next-line
     // const handlePopoverClick = (event: React.ChangeEvent<any>) => {
     //     setAnchorEl(event.currentTarget);
@@ -111,8 +121,9 @@ export default function Account(props: IAccountProps): React.ReactElement<IAccou
         <div className={styles.account_container}>
             <span className={styles.white}>
                 {props.nativeBalance && isAuthenticated && isWeb3Enabled
-                    ? parseFloat(props.nativeBalance).toFixed(4) + ' ETH'
-                    : ''}
+                    ? 'Ξ' + parseFloat(props.nativeBalance).toFixed(4)
+                    : // ? parseFloat(props.nativeBalance).toFixed(4) + ' ETH'
+                      ''}
             </span>
             {/* TODO : REFACTOR THIS TO POPUP ALERT ON COPY - USE VALUE */}
             <div className={`${styles.title_gradient}`} onClick={handleCopyAddress}>
@@ -130,6 +141,8 @@ export default function Account(props: IAccountProps): React.ReactElement<IAccou
                     isWeb3Enabled={isWeb3Enabled}
                     clickLogout={clickLogout}
                     openModal={openModal}
+                    chainId={chainId}
+                    setFallbackChainId={setFallbackChainId}
                 />
             </NavItem>
 

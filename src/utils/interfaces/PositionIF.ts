@@ -2,23 +2,27 @@
 export interface PositionIF {
     ambient: boolean;
     askTick: number;
-    baseTokenSymbol: string;
-    baseTokenDecimals: number;
     bidTick: number;
-    highRangeDisplay: string;
     id: string;
-    accountId: string;
-    ensName: string;
-    lowRangeDisplay: string;
-    pool: {
-        base: string;
-        id: string;
-        poolIdx: string;
-        quote: string;
-    };
+    isBid: boolean;
+    knockout: boolean;
+    poolIdx: number;
+    base: string;
+    baseTokenLogoURI: string;
+    quoteTokenLogoURI: string;
+    quote: string;
+    user: string;
+    userEnsName: string;
+    baseTokenSymbol: string;
     quoteTokenSymbol: string;
-    quoteTokenDecimals: number;
+    poolPriceInTicks: number;
+    lowRangeDisplayInBase: string;
+    highRangeDisplayInBase: string;
+    lowRangeDisplayInQuote: string;
+    highRangeDisplayInQuote: string;
     tokenAQtyDisplay: string;
     tokenBQtyDisplay: string;
-    poolPriceInTicks?: number;
+    baseTokenDecimals: number;
+    quoteTokenDecimals: number;
+    positionType?: string;
 }

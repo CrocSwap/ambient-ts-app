@@ -1,25 +1,37 @@
-import styles from './TokenList.module.css';
+// START: Import React and Dongles
 import { useState, Dispatch, SetStateAction } from 'react';
+import { motion } from 'framer-motion';
+
+// START: Import JSX Components
 import TokenListCard from '../TokenListCard/TokenListCard';
 import CustomTokens from './CustomTokens';
 import Divider from '../Divider/Divider';
+
+// START: Import Local Files
+import styles from './TokenList.module.css';
 import { TokenListIF } from '../../../utils/interfaces/exports';
 import fetchList from './fetchList';
 
-import { motion } from 'framer-motion';
-
+// interface for React functional component props
 interface TokenListPropsIF {
     chainId: string;
     activeTokenListsChanged: boolean;
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
+    tokenToUpdate: string;
+    undeletableTokens: string[];
+    closeModal: () => void;
 }
 
 export default function TokenList(props: TokenListPropsIF) {
     const {
         chainId,
         activeTokenListsChanged,
-        indicateActiveTokenListsChanged
+        indicateActiveTokenListsChanged,
+        tokenToUpdate,
+        undeletableTokens,
+        closeModal
     } = props;
+
     const [showImportedTokens, setShowImportedTokens] = useState(false);
     const [searchString, setSearchString] = useState('');
 
@@ -63,10 +75,10 @@ export default function TokenList(props: TokenListPropsIF) {
     const toggleList = (list: string) => {
         // check if toggled list is currently in the active list
         const newActiveTokenList = userData.activeTokenLists.includes(list)
-            ? // if URI is in active list, remove it
-              userData.activeTokenLists.filter((uri: string) => uri !== list)
-            : // if URI is not in active list, add it
-              [...userData.activeTokenLists, list];
+            // if URI is in active list, remove it
+            ? userData.activeTokenLists.filter((uri: string) => uri !== list)
+            // if URI is not in active list, add it
+            : [...userData.activeTokenLists, list];
         // overwrite the old activeTokenLists value with the new one
         userData.activeTokenLists = newActiveTokenList;
         // send the updated user object to local storage
@@ -110,7 +122,12 @@ export default function TokenList(props: TokenListPropsIF) {
     const ImportedTokensDisplay = (
         <div className={styles.custom_tokens}>
             {TokenListContainerHeader}
-            <CustomTokens chainId={chainId} />
+            <CustomTokens
+                chainId={chainId}
+                tokenToUpdate={tokenToUpdate}
+                undeletableTokens={undeletableTokens}
+                closeModal={closeModal}
+            />
         </div>
     );
 

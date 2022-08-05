@@ -1,7 +1,19 @@
-import styles from './Sidebar.module.css';
-import React from 'react';
+// START: Import React and Dongles
+import { MouseEvent, SetStateAction, Dispatch } from 'react';
 import { BiSearch } from 'react-icons/bi';
-// import { MdDoubleArrow } from 'react-icons/md';
+
+// START: Import JSX Elements
+import SidebarAccordion from './SidebarAccordion';
+import TopTokens from '../../../components/Global/Sidebar/TopTokens/TopTokens';
+import TopPools from '../../../components/Global/Sidebar/TopPools/TopPools';
+import FavoritePools from '../../../components/Global/Sidebar/FavoritePools/FavoritePools';
+import SidebarRangePositions from '../../../components/Global/Sidebar/SidebarRangePositions/SidebarRangePositions';
+import SidebarLimitOrders from '../../../components/Global/Sidebar/SidebarLimitOrders/SidebarLimitOrders';
+import SidebarRecentTransactions from '../../../components/Global/Sidebar/SidebarRecentTransactions/SidebarRecentTransactions';
+
+// START: Import Local Files
+import styles from './Sidebar.module.css';
+import { useTokenMap } from './useTokenMap';
 import favouritePoolsImage from '../../../assets/images/sidebarImages/favouritePools.svg';
 import openOrdersImage from '../../../assets/images/sidebarImages/openOrders.svg';
 import rangePositionsImage from '../../../assets/images/sidebarImages/rangePositions.svg';
@@ -9,38 +21,86 @@ import recentTransactionsImage from '../../../assets/images/sidebarImages/recent
 import topPoolsImage from '../../../assets/images/sidebarImages/topPools.svg';
 import topTokensImage from '../../../assets/images/sidebarImages/topTokens.svg';
 import closeSidebarImage from '../../../assets/images/sidebarImages/closeSidebar.svg';
-import SidebarAccordion from './SidebarAccordion';
+import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 
-import TopTokens from '../../../components/Global/Sidebar/TopTokens/TopTokens';
-import TopPools from '../../../components/Global/Sidebar/TopPools/TopPools';
-import FavoritePools from '../../../components/Global/Sidebar/FavoritePools/FavoritePools';
-import SidebarRangePositions from '../../../components/Global/Sidebar/SidebarRangePositions/SidebarRangePositions';
-import SidebarLimitOrders from '../../../components/Global/Sidebar/SidebarLimitOrders/SidebarLimitOrders';
-import SidebarRecentTransactions from '../../../components/Global/Sidebar/SidebarRecentTransactions/SidebarRecentTransactions';
-interface SidebarProps {
-    // setShowSidebar: SetStateAction<boolean>;
+// interface for component props
+interface SidebarPropsIF {
     showSidebar: boolean;
-    toggleSidebar: (
-        event: React.MouseEvent<HTMLDivElement> | React.MouseEvent<HTMLLIElement>,
-    ) => void;
+    toggleSidebar: (event: MouseEvent<HTMLDivElement> | MouseEvent<HTMLLIElement>) => void;
+    chainId: string;
+    switchTabToTransactions: boolean;
+    handleSetTradeTabToTransaction: () => void;
+    setSwitchTabToTransactions: Dispatch<SetStateAction<boolean>>;
+    currentTxActiveInTransactions: string;
+    setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
+    isShowAllEnabled: boolean;
+    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
+    expandTradeTable: boolean;
+    setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
 }
 
-export default function Sidebar(props: SidebarProps): React.ReactElement<SidebarProps> {
-    const { toggleSidebar, showSidebar } = props;
+export default function Sidebar(props: SidebarPropsIF) {
+    const {
+        toggleSidebar,
+        showSidebar,
+        chainId,
+        setSwitchTabToTransactions,
+        currentTxActiveInTransactions,
+        setCurrentTxActiveInTransactions,
+        isShowAllEnabled,
+        setIsShowAllEnabled,
+        switchTabToTransactions,
+        expandTradeTable,
+        setExpandTradeTable,
+    } = props;
 
-    const navItems1 = [
-        { name: 'Top Tokens', icon: topTokensImage, data: <TopTokens /> },
-        { name: 'Top Pools', icon: topPoolsImage, data: <TopPools /> },
-        { name: 'Range Positions', icon: rangePositionsImage, data: <SidebarRangePositions /> },
+    const graphData = useAppSelector((state) => state.graphData);
+    const swapsByUser = graphData.swapsByUser.swaps;
+    const positionsByUser = graphData.positionsByUser.positions;
+
+    const mostRecentTransactions = swapsByUser.slice(0, 4);
+    const mostRecentPositions = positionsByUser.slice(0, 4);
+
+    // TODO:  @Ben this is the map with all the coin gecko token data objects
+    const coinGeckoTokenMap = useTokenMap();
+    // console.assert(coinGeckoTokenMap, 'no map present');
+
+    const topTokens = [{ name: 'Top Tokens', icon: topTokensImage, data: <TopTokens /> }];
+    const topPoolsSection = [{ name: 'Top Pools', icon: topPoolsImage, data: <TopPools /> }];
+    const recentRangePositions = [
+        {
+            name: 'Range Positions',
+            icon: rangePositionsImage,
+            data: <SidebarRangePositions mostRecentPositions={mostRecentPositions} />,
+        },
+    ];
+    const recentLimitOrders = [
         { name: 'Limit Orders', icon: openOrdersImage, data: <SidebarLimitOrders /> },
     ];
 
-    const navItems2 = [
+    const favoritePools = [
         { name: 'Favorite Pools', icon: favouritePoolsImage, data: <FavoritePools /> },
+    ];
+
+    const recentTransactions = [
         {
             name: 'Recent Transactions',
             icon: recentTransactionsImage,
-            data: <SidebarRecentTransactions />,
+            data: (
+                <SidebarRecentTransactions
+                    mostRecentTransactions={mostRecentTransactions}
+                    coinGeckoTokenMap={coinGeckoTokenMap}
+                    currentTxActiveInTransactions={currentTxActiveInTransactions}
+                    setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
+                    chainId={chainId}
+                    isShowAllEnabled={isShowAllEnabled}
+                    setIsShowAllEnabled={setIsShowAllEnabled}
+                    switchTabToTransactions={switchTabToTransactions}
+                    setSwitchTabToTransactions={setSwitchTabToTransactions}
+                    expandTradeTable={expandTradeTable}
+                    setExpandTradeTable={setExpandTradeTable}
+                />
+            ),
         },
     ];
 
@@ -66,49 +126,67 @@ export default function Sidebar(props: SidebarProps): React.ReactElement<Sidebar
         <div>
             <nav className={`${styles.sidebar} ${sidebarStyle}`}>
                 <ul className={styles.sidebar_nav}>
-                    {/* <li className={styles.logo}>
-                        <div className={`${styles.sidebar_link} ${styles.toggle_sidebar_icon}`}>
-                            <div onClick={toggleSidebar}>
-                                <MdDoubleArrow size={20} color='#7371FC' />
-                                
-                            </div>
-                        </div>
-                    </li> */}
                     {searchContainer}
-                    {navItems1.map((item, idx) => (
-                        //   <li key={idx} className={styles.sidebar_item}>
-                        //  <div className={styles.sidebar_link}>
-                        //      {showSidebar && <MdPlayArrow size={12} color='#ffffff' />}
-                        //      <img src={item.icon} alt={item.name} width='20px' />
 
-                        //      <span className={styles.link_text}>{item.name}</span>
-                        //    </div>
-                        // </li>
+                    {topTokens.map((item, idx) => (
                         <SidebarAccordion
                             showSidebar={showSidebar}
                             idx={idx}
                             item={item}
                             toggleSidebar={toggleSidebar}
                             key={idx}
+                            // mostRecent={mostRecentPositions}
                         />
                     ))}
-
+                    {topPoolsSection.map((item, idx) => (
+                        <SidebarAccordion
+                            showSidebar={showSidebar}
+                            idx={idx}
+                            item={item}
+                            toggleSidebar={toggleSidebar}
+                            key={idx}
+                            mostRecent={['should open automatically']}
+                        />
+                    ))}
                     <div className={styles.bottom_elements}>
-                        {navItems2.map((item, idx) => (
-                            // <li key={idx} className={styles.sidebar_item} >
-                            //     <div className={styles.sidebar_link}>
-                            //         {showSidebar && <MdPlayArrow size={12} color='#ffffff' />}
-                            //         <img src={item.icon} alt={item.name} width='20px' />
-
-                            //         <span className={styles.link_text}>{item.name}</span>
-                            //     </div>
-                            // </li>
+                        {recentRangePositions.map((item, idx) => (
                             <SidebarAccordion
                                 toggleSidebar={toggleSidebar}
                                 showSidebar={showSidebar}
                                 idx={idx}
                                 item={item}
                                 key={idx}
+                                mostRecent={mostRecentPositions}
+                            />
+                        ))}
+                        {recentLimitOrders.map((item, idx) => (
+                            <SidebarAccordion
+                                toggleSidebar={toggleSidebar}
+                                showSidebar={showSidebar}
+                                idx={idx}
+                                item={item}
+                                key={idx}
+                                // mostRecent={mostRecentTransactions}
+                            />
+                        ))}
+                        {favoritePools.map((item, idx) => (
+                            <SidebarAccordion
+                                toggleSidebar={toggleSidebar}
+                                showSidebar={showSidebar}
+                                idx={idx}
+                                item={item}
+                                key={idx}
+                                // mostRecent={mostRecentTransactions}
+                            />
+                        ))}
+                        {recentTransactions.map((item, idx) => (
+                            <SidebarAccordion
+                                toggleSidebar={toggleSidebar}
+                                showSidebar={showSidebar}
+                                idx={idx}
+                                item={item}
+                                key={idx}
+                                mostRecent={mostRecentTransactions}
                             />
                         ))}
                     </div>

@@ -3,11 +3,11 @@ import Button from '../../../Global/Button/Button';
 import CurrencyDisplayContainer from '../CurrencyDisplayContainer/CurrencyDisplayContainer';
 import Divider from '../../../Global/Divider/Divider';
 import EditPriceInfo from '../EditPriceInfo/EditPriceInfo';
-// import { PositionIF } from '../../../../utils/interfaces/PositionIF';
-import { Position } from '../../../../utils/state/graphDataSlice';
-interface ConfirmEditModalProps {
+import { PositionIF } from '../../../../utils/interfaces/PositionIF';
+
+interface ConfirmEditModalPropsIF {
     onClose: () => void;
-    position: Position;
+    position: PositionIF;
     // position: PositionIF;
     currentPoolPriceDisplay: string;
     denominationsInBase: boolean;
@@ -19,15 +19,20 @@ interface ConfirmEditModalProps {
     highPriceDisplayTruncated: string;
 }
 
-export default function ConfirmEditModal(props: ConfirmEditModalProps) {
+export default function ConfirmEditModal(props: ConfirmEditModalPropsIF) {
     const {
+        onClose,
+        position,
+        denominationsInBase,
+        baseTokenImageURL,
+        quoteTokenImageURL,
         pinnedMinPriceDisplayTruncated,
         pinnedMaxPriceDisplayTruncated,
         lowPriceDisplayTruncated,
         highPriceDisplayTruncated,
     } = props;
-    const closeButton = <Button title='Close' action={props.onClose} />;
-    const { position, denominationsInBase, baseTokenImageURL, quoteTokenImageURL } = props;
+
+    const closeButton = <Button title='Close' action={onClose} />;
 
     const fullTxDetails = (
         <div>

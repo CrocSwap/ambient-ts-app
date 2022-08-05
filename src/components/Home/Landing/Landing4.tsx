@@ -2,13 +2,16 @@ import styles from './Landing4.module.css';
 import ambientImage from '../../../assets/images/home/waveform_ambient.png';
 import concentratedImage from '../../../assets/images/home/waveform_concentrated.png';
 import combinedImage from '../../../assets/images/home/waveform_combined.png';
+import { useTranslation } from 'react-i18next';
 export default function Landing4() {
+    const { t } = useTranslation();
+
     const headerText = (
         <div className={styles.header_content}>
             <div className={styles.header_text}>
                 <span className={styles.ambient_text}>ambient </span>
-                combines liquidity in the
-                <span className={styles.highlight_text}>same pool</span>
+                {t('slide4.part1')}
+                <span className={styles.highlight_text}> {t('slide4.part2')}</span>
                 {/* <div className={styles.amm_pools}>
                 Meaning greater rewards for liquidity providers, and less price impact for traders
             </div> */}

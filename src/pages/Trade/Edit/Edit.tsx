@@ -11,32 +11,26 @@ import ConfirmEditModal from '../../../components/Trade/Edit/ConfirmEditModal/Co
 import { useModal } from '../../../components/Global/Modal/useModal';
 import { useState, useEffect } from 'react';
 import EditDenominationSwitch from '../../../components/Trade/Edit/EditDenominationSwitch/EditDenominationSwitch';
-// import {
-//     tradeData as TradeDataIF,
-//     toggleDidUserFlipDenom,
-// } from '../../../utils/state/tradeDataSlice';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 
-// import { PositionIF } from '../../../utils/interfaces/PositionIF';
-import { Position } from '../../../utils/state/graphDataSlice';
+import { PositionIF } from '../../../utils/interfaces/PositionIF';
+
 import {
     getPinnedPriceValuesFromTicks,
     getPinnedPriceValuesFromDisplayPrices,
 } from '../Range/rangeFunctions';
 import truncateDecimals from '../../../utils/data/truncateDecimals';
-// import { PositionIF } from '../../../utils/interfaces/PositionIF';
 import { tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
-import { TokenIF } from '../../../utils/interfaces/TokenIF';
+import { TokenIF } from '../../../utils/interfaces/exports';
+
 interface PositionState {
-    position: Position;
+    position: PositionIF;
 }
 
 export default function Edit() {
     const [isModalOpen, openModal, closeModal] = useModal();
 
     const location = useLocation();
-
-    // const dispatch = useAppDispatch();
 
     const tradeData = useAppSelector((state) => state.tradeData);
 

@@ -1,8 +1,10 @@
 // import styles from './SidebarAccordion.module.css';
 import { MdPlayArrow } from 'react-icons/md';
 import styles from './Sidebar.module.css';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { ISwap } from '../../../utils/state/graphDataSlice';
+import { PositionIF } from '../../../utils/interfaces/PositionIF';
 interface Item {
     name: string;
     icon: string;
@@ -17,11 +19,31 @@ interface SidebarAccordionProps {
     ) => void;
     item: Item;
     idx: number;
+    mostRecent?: PositionIF[] | ISwap[] | string[];
 }
 
 export default function SidebarAccordion(props: SidebarAccordionProps) {
-    const { showSidebar, idx, item, toggleSidebar } = props;
-    const [isOpen, setIsOpen] = useState(false);
+    const { showSidebar, idx, item, toggleSidebar, mostRecent = [] } = props;
+
+    const userHasRecent = mostRecent.length > 0;
+
+    const [isOpen, setIsOpen] = useState(userHasRecent);
+
+    useEffect(() => {
+        if (userHasRecent) {
+            setIsOpen(true);
+        } else {
+            setIsOpen(false);
+        }
+    }, [userHasRecent]);
+
+    useEffect(() => {
+        if (mostRecent.length > 0) {
+            setIsOpen(true);
+        } else {
+            setIsOpen(false);
+        }
+    }, [JSON.stringify(mostRecent)]);
 
     // console.log(showSidebar);
     const openStateContent = (

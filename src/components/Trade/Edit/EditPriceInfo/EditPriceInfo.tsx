@@ -1,6 +1,4 @@
-// import { tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 import styles from './EditPriceInfo.module.css';
-// import { TokenPairIF } from '../../../../../utils/interfaces/exports';
 
 interface EditPriceInfoIF {
     currentPoolPriceDisplay: string;
@@ -20,6 +18,13 @@ interface EditPriceInfoIF {
 
 export default function EditPriceInfo(props: EditPriceInfoIF) {
     const {
+        ambient,
+        currentPoolPriceDisplay,
+        denominationsInBase,
+        baseTokenSymbol,
+        quoteTokenSymbol,
+        tokenAQtyDisplay,
+        tokenBQtyDisplay,
         pinnedMinPriceDisplayTruncated,
         pinnedMaxPriceDisplayTruncated,
         lowPriceDisplayTruncated,
@@ -31,9 +36,9 @@ export default function EditPriceInfo(props: EditPriceInfoIF) {
         <div className={styles.price_info_row}>
             <span>Current Price</span>
             <span>
-                {props.currentPoolPriceDisplay}{' '}
-                {props.denominationsInBase ? props.quoteTokenSymbol : props.baseTokenSymbol} per{' '}
-                {props.denominationsInBase ? props.baseTokenSymbol : props.quoteTokenSymbol}
+                {currentPoolPriceDisplay}{' '}
+                {denominationsInBase ? quoteTokenSymbol : baseTokenSymbol} per{' '}
+                {denominationsInBase ? baseTokenSymbol : quoteTokenSymbol}
             </span>
         </div>
     );
@@ -60,8 +65,8 @@ export default function EditPriceInfo(props: EditPriceInfoIF) {
     // JSX frag to display the balance of Token A
     const balanceTokenA = (
         <tr>
-            <td data-column='Target: '>{props.baseTokenSymbol} Balance</td>
-            <td data-column='Current'>{props.tokenAQtyDisplay}</td>
+            <td data-column='Target: '>{baseTokenSymbol} Balance</td>
+            <td data-column='Current'>{tokenAQtyDisplay}</td>
             <td data-column='Repositioned To'>0.69</td>
         </tr>
     );
@@ -69,8 +74,8 @@ export default function EditPriceInfo(props: EditPriceInfoIF) {
     // JSX frag to display the balance of Token B
     const balanceTokenB = (
         <tr>
-            <td data-column='Target: '>{props.quoteTokenSymbol} Balance</td>
-            <td data-column='Current'>{props.tokenBQtyDisplay}</td>
+            <td data-column='Target: '>{quoteTokenSymbol} Balance</td>
+            <td data-column='Current'>{tokenBQtyDisplay}</td>
             <td data-column='Repositioned To'>500.0</td>
         </tr>
     );
@@ -104,8 +109,8 @@ export default function EditPriceInfo(props: EditPriceInfoIF) {
                         <tbody>
                             {balanceTokenA}
                             {balanceTokenB}
-                            {props.ambient == false && rangeUpperLimit}
-                            {props.ambient == false && rangeLowerLimit}
+                            {ambient == false && rangeUpperLimit}
+                            {ambient == false && rangeLowerLimit}
                         </tbody>
                     </table>
                 </div>

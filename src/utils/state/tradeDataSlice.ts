@@ -1,11 +1,10 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { goerliETH, goerliUSDC } from '../data/defaultTokens';
 import { TokenIF } from '../interfaces/TokenIF';
 
 export interface tradeData {
     tokenA: TokenIF;
     tokenB: TokenIF;
-    addressTokenA: string;
-    addressTokenB: string;
     didUserFlipDenom: boolean;
     isDenomBase: boolean;
     advancedMode: boolean;
@@ -18,6 +17,7 @@ export interface tradeData {
     advancedHighTick: number;
     simpleRangeWidth: number;
     slippageTolerance: number;
+    activeChartPeriod: number;
 }
 
 const initialState: tradeData = {
@@ -38,8 +38,8 @@ const initialState: tradeData = {
         chainId: 42,
         logoURI: 'https://tokens.1inch.io/0x6b175474e89094c44da98b954eedeac495271d0f.png',
     },
-    addressTokenA: '0x0000000000000000000000000000000000000000',
-    addressTokenB: '0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa',
+    // addressTokenA: '0x0000000000000000000000000000000000000000',
+    // addressTokenB: '0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa',
     didUserFlipDenom: false,
     isDenomBase: true,
     advancedMode: false,
@@ -52,6 +52,7 @@ const initialState: tradeData = {
     advancedHighTick: 0,
     simpleRangeWidth: 100,
     slippageTolerance: 0.05,
+    activeChartPeriod: 60,
 };
 
 export const tradeDataSlice = createSlice({
@@ -63,12 +64,6 @@ export const tradeDataSlice = createSlice({
         },
         setTokenB: (state, action: PayloadAction<TokenIF>) => {
             state.tokenB = action.payload;
-        },
-        setAddressTokenA: (state, action: PayloadAction<string>) => {
-            state.addressTokenA = action.payload;
-        },
-        setAddressTokenB: (state, action: PayloadAction<string>) => {
-            state.addressTokenB = action.payload;
         },
         setDidUserFlipDenom: (state, action: PayloadAction<boolean>) => {
             state.didUserFlipDenom = action.payload;
@@ -118,6 +113,19 @@ export const tradeDataSlice = createSlice({
         setSlippageTolerance: (state, action: PayloadAction<number>) => {
             state.slippageTolerance = action.payload;
         },
+        setActiveChartPeriod: (state, action: PayloadAction<number>) => {
+            state.activeChartPeriod = action.payload;
+        },
+        resetTokens: (state, action: PayloadAction<string>) => {
+            if (action.payload === '0x5') {
+                state.tokenA = goerliETH;
+                state.tokenB = goerliUSDC;
+            } else if (action.payload === '0x2a') {
+                state.tokenA = initialState.tokenA;
+                state.tokenB = initialState.tokenB;
+            }
+        },
+
         resetTradeData: () => initialState,
     },
 });
@@ -126,8 +134,6 @@ export const tradeDataSlice = createSlice({
 export const {
     setTokenA,
     setTokenB,
-    setAddressTokenA,
-    setAddressTokenB,
     setDidUserFlipDenom,
     toggleDidUserFlipDenom,
     setDenomInBase,
@@ -144,7 +150,9 @@ export const {
     setAdvancedHighTick,
     setSimpleRangeWidth,
     setSlippageTolerance,
+    setActiveChartPeriod,
     resetTradeData,
+    resetTokens,
 } = tradeDataSlice.actions;
 
 export default tradeDataSlice.reducer;
