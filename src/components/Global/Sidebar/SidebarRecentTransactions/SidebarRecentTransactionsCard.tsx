@@ -2,16 +2,33 @@ import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import { ISwap } from '../../../../utils/state/graphDataSlice';
 
 import styles from './SidebarRecentTransactionsCard.module.css';
+import { Dispatch, SetStateAction } from 'react';
 
 interface TransactionProps {
     tx: ISwap;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     coinGeckoTokenMap?: Map<string, TokenIF>;
     chainId: string;
+    currentTxActiveInTransactions: string;
+    setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
+    isShowAllEnabled: boolean;
+    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
+    setSwitchTabToTransactions: Dispatch<SetStateAction<boolean>>;
+    switchTabToTransactions: boolean;
 }
 
 export default function SidebarRecentTransactionsCard(props: TransactionProps) {
-    const { tx, coinGeckoTokenMap, chainId } = props;
+    const {
+        tx,
+        coinGeckoTokenMap,
+        chainId,
+        // currentTxActiveInTransactions,
+        setCurrentTxActiveInTransactions,
+        // isShowAllEnabled,
+        setIsShowAllEnabled,
+        setSwitchTabToTransactions,
+        switchTabToTransactions,
+    } = props;
 
     // console.log(tx.source);
     // console.log(tx.block);
@@ -33,8 +50,16 @@ export default function SidebarRecentTransactionsCard(props: TransactionProps) {
     //         <img src={quoteToken?.logoURI} alt='quote token image' />
     //     </div>
     // );
+
+    function handleRecentTransactionClick(tx: ISwap) {
+        switchTabToTransactions ? null : setSwitchTabToTransactions(true);
+        setIsShowAllEnabled(false);
+
+        setCurrentTxActiveInTransactions(tx.id);
+    }
+
     return (
-        <div className={styles.container}>
+        <div className={styles.container} onClick={() => handleRecentTransactionClick(tx)}>
             <div>
                 {baseToken?.symbol} / {quoteToken?.symbol}
             </div>

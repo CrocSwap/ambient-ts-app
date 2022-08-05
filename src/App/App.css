@@ -1,60 +1,57 @@
 @import url(../css/reset.css);
 
 * {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
-  scroll-behavior: smooth;
-  font-family: var(--font-family);
-  font-weight: 200;
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+    scroll-behavior: smooth;
+    font-family: var(--font-family);
+    font-weight: 200;
 
-  /* outline: 1px solid red; */
+    /* outline: 1px solid red; */
 }
 
 /* ===== Scrollbar CSS ===== */
-  /* Firefox */
-  * {
+/* Firefox */
+* {
     scrollbar-width: auto;
     scrollbar-color: #8f54a0 #ffffff;
-  }
+}
 
-  
- 
 body::-webkit-scrollbar {
-  width: 5px;
+    width: 5px;
 }
 
 body::-webkit-scrollbar-track {
-  background: transparent; /* opacity: 0; should do the thing either */
+    background: transparent; /* opacity: 0; should do the thing either */
 }
 body::-webkit-scrollbar-thumb {
-  background:  linear-gradient(0deg, #7371FC 0%, #CDC1FF 49.48%,#7371FC   100%);
+    background: linear-gradient(0deg, #7371fc 0%, #cdc1ff 49.48%, #7371fc 100%);
 
-  box-shadow: 0px 0px 0px 100000vh black;
+    box-shadow: 0px 0px 0px 100000vh black;
 }
 
-html{
-  background: var(--body-bg);
-  color: var(--text-grey-white); 
-  height: 100%;
-   
+html {
+    background: var(--body-bg);
+    color: var(--text-grey-white);
+    height: 100%;
 }
 
-svg{
-  color: var(--text-grey-light); 
+svg {
+    color: var(--text-grey-light);
 }
 
-svg:hover{
-  color: var(--text-grey-white);
-  transition: all var(--animation-speed) ease-in-out;
+svg:hover {
+    color: var(--text-grey-white);
+    transition: all var(--animation-speed) ease-in-out;
 }
 
 a {
-  color: unset;
-  text-decoration: none;
-  /* position: relative;  */
+    color: unset;
+    text-decoration: none;
+    /* position: relative;  */
 }
- /* .active{
+/* .active{
 
   transition: opacity ease-in-out var(--animation-speed);
   color: blue;
@@ -62,31 +59,25 @@ a {
   position: relative;
 } */
 
-body{
-  overflow-x: hidden;
+body {
+    overflow-x: hidden;
 
-  min-height: 100%;
- 
+    min-height: 100%;
+    max-height: 100%;
 
-  display: flex;
-  flex-direction: column;
-  /* padding: 0 1rem; */
- 
-
+    display: flex;
+    flex-direction: column;
+    /* padding: 0 1rem; */
 }
- 
 
 footer {
-  /* To make page 100vh, turn off footer position sticky and turn on absolute then style the footer based on route. */
-  /* position: absolute;
+    /* To make page 100vh, turn off footer position sticky and turn on absolute then style the footer based on route. */
+    /* position: absolute;
   position: sticky;
   right: 0;
  bottom: 0; */
- margin-top: auto;
+    margin-top: auto;
 }
-
-
-
 
 /* .main-layout{
   transition: all var(--animation-speed) ease-in-out;  
@@ -106,151 +97,125 @@ footer {
  
   
 } */
-.swap-body{
-  /* height: 100vh; */
-  background: #171D27;
-  height: calc(100vh - (var(--footer-height) + 2rem));
+.swap-body {
+    /* height: 100vh; */
+    background: #171d27;
+    height: calc(100vh - (var(--footer-height) + 2rem));
 
-   /* height: calc(100vh - 3.5rem);  */
-   
+    /* height: calc(100vh - 3.5rem);  */
 
-   /* display: flex;
+    /* display: flex;
    justify-content: center;
    align-items: center; */
- 
 }
 
-.footer_container{
-  display: flex;
-  justify-content: flex-end;
-  color: white;
+.footer_container {
+    display: flex;
+    justify-content: flex-end;
+    color: white;
 }
 
+.primary_apy {
+    background: linear-gradient(90deg, #15be6f 32.38%, #8fe9bf 51.39%, #15be6f 68.17%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-fill-color: transparent;
 
-.primary_apy{
-  background: linear-gradient(90deg, #15BE6F 32.38%, #8FE9BF 51.39%, #15BE6F 68.17%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  text-fill-color: transparent;
-  
-  /* glow/positive */
-  
-  text-shadow: 0px 0px 10px rgba(21, 190, 111, 0.75);
+    /* glow/positive */
 
+    text-shadow: 0px 0px 10px rgba(21, 190, 111, 0.75);
 }
 
-.secondary_apy{
-  background: var(--apy-gradient-secondary);
-  -webkit-background-clip: text;
+.secondary_apy {
+    background: var(--apy-gradient-secondary);
+    -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
 }
 
-.sr-only{
-  position: absolute;
-  width: 1px;
-  aspect-ratio: 1;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0,0,0,0);
-  border: 0;
-
+.sr-only {
+    position: absolute;
+    width: 1px;
+    aspect-ratio: 1;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
 }
 
 /* CSSTransition classes  */
 .menu-primary-enter {
-  position: absolute;
-  transform: translateX(-110%);
+    position: absolute;
+    transform: translateX(-110%);
 }
 .menu-primary-enter-active {
-  transform: translateX(0%);
-  transition: all var(--animation-speed) ease;
+    transform: translateX(0%);
+    transition: all var(--animation-speed) ease;
 }
 .menu-primary-exit {
-  position: absolute;
+    position: absolute;
 }
 .menu-primary-exit-active {
-  transform: translateX(-110%);
-  transition: all var(--animation-speed) ease;
+    transform: translateX(-110%);
+    transition: all var(--animation-speed) ease;
 }
-
 
 .menu-secondary-enter {
-  transform: translateX(110%);
+    transform: translateX(110%);
 }
 .menu-secondary-enter-active {
-  transform: translateX(0%);
-  transition: all var(--animation-speed) ease;
+    transform: translateX(0%);
+    transition: all var(--animation-speed) ease;
 }
 .menu-secondary-exit {
-
 }
 .menu-secondary-exit-active {
-  transform: translateX(110%);
-  transition: all var(--animation-speed) ease;
+    transform: translateX(110%);
+    transition: all var(--animation-speed) ease;
 }
 
-.hide_sidebar{
- display: grid;
- grid-template-columns: 100%;
+.hide_sidebar {
+    display: grid;
+    grid-template-columns: 100%;
 }
-
 
 @media only screen and (max-width: 600px) {
-
-
-  .main-layout {
-
-    margin: 0;
-    overflow: scroll;
-   
-  }
-
+    .main-layout {
+        margin: 0;
+        overflow: scroll;
+    }
 }
 
-
 @media only screen and (min-width: 1020px) {
- 
-  .sidebar_content_layout{
-    transition: all var(--animation-speed) ease-in-out;
-   display: grid;
-   grid-template-columns: 296px auto;
-  }
-  .sidebar_content_layout_close{
-    transition: all var(--animation-speed) ease-in-out;
+    .sidebar_content_layout {
+        transition: all var(--animation-speed) ease-in-out;
+        display: grid;
+        grid-template-columns: 296px auto;
+    }
+    .sidebar_content_layout_close {
+        transition: all var(--animation-speed) ease-in-out;
 
-    display: grid;
-    grid-template-columns: 31px auto;
-  }
-
-  
-  
+        display: grid;
+        grid-template-columns: 31px auto;
+    }
 }
 
 @media only screen and (min-width: 1280px) {
-  
-  .sidebar_content_layout{
-    transition: all var(--animation-speed) ease-in-out;
-    display: grid;
-    /* grid-template-columns: 296px auto; */
-  }
-  .sidebar_content_layout_close{
-    transition: all var(--animation-speed) ease-in-out;
-    
-    display: grid;
-    grid-template-columns: 31px auto;
-  }
-  
-  .content-container{
-    height: calc(100vh - var(--footer-height))
-  }
+    .sidebar_content_layout {
+        transition: all var(--animation-speed) ease-in-out;
+        display: grid;
+        /* grid-template-columns: 296px auto; */
+    }
+    .sidebar_content_layout_close {
+        transition: all var(--animation-speed) ease-in-out;
 
+        display: grid;
+        grid-template-columns: 31px auto;
+    }
 
-
+    .content-container {
+        height: calc(100vh - var(--footer-height));
+    }
 }
-
-
-
-

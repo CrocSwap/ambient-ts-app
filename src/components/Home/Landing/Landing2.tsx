@@ -1,12 +1,15 @@
+import { useTranslation } from 'react-i18next';
 import styles from './Landing2.module.css';
 
 export default function Landing2() {
+    const { t } = useTranslation();
+
     return (
         <div className={styles.main_container}>
             <div className={styles.content_container}>
                 <div className={styles.on_chain}>
-                    The on-chain exchange designed{' '}
-                    <div className={styles.highlight_text}>for traders</div>
+                    {t('slide2.part1')}{' '}
+                    <div className={styles.highlight_text}> {t('slide2.part2')}</div>
                 </div>
                 {/* <div className={styles.ambient}>ambient</div>
                 <div className={styles.architecture}>

@@ -2,6 +2,8 @@
 import { NavLink, Link } from 'react-router-dom';
 import { useEffect, useState, useCallback } from 'react';
 import { useMoralis } from 'react-moralis';
+import { useTranslation } from 'react-i18next';
+
 /** ***** END: Import React and Dongles *********/
 
 /** ***** START: Import Local Files *******/
@@ -26,13 +28,27 @@ interface IHeaderProps {
     shouldDisplayAccountTab: boolean;
     chainId: string;
     setFallbackChainId: React.Dispatch<React.SetStateAction<string>>;
+    isChainValid: boolean;
 }
 
+// interface lgnData {
+//     name: keyof typeof lngs;
+// }
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// const lngs: any = {
+//     en: { nativeName: 'English' },
+//     zh: { nativeName: '中文' },
+//     kr: { nativeName: '한국어' },
+// };
+
 export default function PageHeader(props: IHeaderProps): React.ReactElement<IHeaderProps> {
-    const { ensName, shouldDisplayAccountTab, chainId, setFallbackChainId } = props;
+    const { ensName, shouldDisplayAccountTab, chainId, setFallbackChainId, isChainValid } = props;
 
     const { user, account, enableWeb3, isWeb3Enabled, authenticate, isAuthenticated } =
         useMoralis();
+
+    const { t } = useTranslation();
 
     const [isModalOpen, openModal, closeModal] = useModal();
     const modalTitle = 'Log in with Email';
@@ -168,13 +184,13 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
                     to='/'
                     className={({ isActive }) => (isActive ? styles.active : styles.inactive)}
                 >
-                    Home
+                    {t('common:homeTitle')}
                 </NavLink>
                 <NavLink
                     to='/swap'
                     className={({ isActive }) => (isActive ? styles.active : styles.inactive)}
                 >
-                    Swap
+                    {t('common:swapTitle')}
                 </NavLink>
                 {/* <NavLink to='/range2'>Range</NavLink> */}
                 <NavLink
@@ -191,31 +207,47 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
                     }
                     className={({ isActive }) => (isActive ? styles.active : styles.inactive)}
                 >
-                    Trade
+                    {t('common:tradeTitle')}
                 </NavLink>
                 <NavLink
                     to='/analytics'
                     className={({ isActive }) => (isActive ? styles.active : styles.inactive)}
                 >
-                    Analytics
+                    {t('common:analyticsTitle')}
                 </NavLink>
                 {shouldDisplayAccountTab ? (
                     <NavLink
                         to='/account'
                         className={({ isActive }) => (isActive ? styles.active : styles.inactive)}
                     >
-                        Account
+                        {t('common:accountTitle')}
                     </NavLink>
                 ) : null}
             </nav>
             {/* <div className={styles.account}>Account Info</div> */}
             {/* <div className={styles.account}>{accountAddress}</div> */}
             <div className={styles.account}>
-                {(!isAuthenticated || !isWeb3Enabled) && metamaskButton}
                 {/* {(!isAuthenticated || !isWeb3Enabled) && magicButton} */}
-                {isAuthenticated && isWeb3Enabled && (
+                {isChainValid ? null : 'chain not currently supported'}
+                {<NetworkSelector chainId={chainId} setFallbackChainId={setFallbackChainId} />}
+                {(!isAuthenticated || !isWeb3Enabled) && metamaskButton}
+                {/* {isAuthenticated && isWeb3Enabled && (
                     <NetworkSelector chainId={chainId} setFallbackChainId={setFallbackChainId} />
-                )}
+                )} */}
+                {/* <div>
+                    {Object.keys(lngs).map((lng) => (
+                        <button
+                            key={lng}
+                            style={{
+                                fontWeight: i18n.resolvedLanguage === lng ? 'bold' : 'normal',
+                            }}
+                            type='submit'
+                            onClick={() => i18n.changeLanguage(lng)}
+                        >
+                            {lngs[lng].nativeName}
+                        </button>
+                    ))}
+                </div> */}
                 <Account {...accountProps} />
             </div>
 
