@@ -1,5 +1,5 @@
 /** ***** START: Import React and Dongles *******/
-import { NavLink, Link } from 'react-router-dom';
+import { NavLink, Link, useLocation } from 'react-router-dom';
 import { useEffect, useState, useCallback } from 'react';
 import { useMoralis } from 'react-moralis';
 import { useTranslation } from 'react-i18next';
@@ -18,7 +18,7 @@ import { useModal } from '../../../components/Global/Modal/useModal';
 import Modal from '../../../components/Global/Modal/Modal';
 import MagicLogin from './MagicLogin';
 
-import { motion } from 'framer-motion';
+import { motion, AnimateSharedLayout } from 'framer-motion';
 
 /** ***** END: Import Local Files *********/
 
@@ -156,11 +156,61 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
         </button>
     );
 
-    // const magicButton = (
-    //     <button className={styles.authenticate_button} onClick={openModal}>
-    //         Log in with Email
-    //     </button>
-    // );
+    // ----------------------------NAVIGATION FUNCTIONALITY-------------------------------------
+
+    const { pathname } = location;
+    const tradeDestination = location.pathname.includes('trade/market')
+        ? '/trade/market'
+        : location.pathname.includes('trade/limit')
+        ? '/trade/limit'
+        : location.pathname.includes('trade/range')
+        ? '/trade/range'
+        : location.pathname.includes('trade/edit')
+        ? '/trade/edit'
+        : '/trade/market';
+
+    const linkData = [
+        { title: t('common:homeTitle'), destination: '/', shouldDisplay: true },
+        { title: t('common:swapTitle'), destination: '/swap', shouldDisplay: true },
+        { title: t('common:tradeTitle'), destination: tradeDestination, shouldDisplay: true },
+        { title: t('common:analyticsTitle'), destination: '/analytics', shouldDisplay: true },
+        {
+            title: t('common:accountTitle'),
+            destination: '/account',
+            shouldDisplay: shouldDisplayAccountTab,
+        },
+    ];
+
+    // Most of this functionality can be achieve by using the NavLink instead of Link and accessing the isActive prop on the Navlink. Access to this is needed outside of the link itself for animation purposes, which is why it is being done in this way.
+    const routeDisplay = (
+        <AnimateSharedLayout>
+            <nav
+                className={styles.primary_navigation}
+                id='primary_navigation'
+                data-visible={mobileNavToggle}
+            >
+                {linkData.map((link, idx) =>
+                    link.shouldDisplay ? (
+                        <Link
+                            className={
+                                pathname === link.destination ? styles.active : styles.inactive
+                            }
+                            to={link.destination}
+                            key={idx}
+                        >
+                            {link.title}
+
+                            {pathname === link.destination && (
+                                <motion.div className={styles.underline} layoutId='underline' />
+                            )}
+                        </Link>
+                    ) : null,
+                )}
+            </nav>
+        </AnimateSharedLayout>
+    );
+
+    // ----------------------------END OF NAVIGATION FUNCTIONALITY-------------------------------------
 
     return (
         <header data-testid={'page-header'} className={styles.primary_header}>
@@ -177,79 +227,14 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
                 <RiveComponent onClick={handleMobileNavToggle} />
                 <span className='sr-only'>Menu</span>
             </div>
-            <nav
-                className={styles.primary_navigation}
-                id='primary_navigation'
-                data-visible={mobileNavToggle}
-            >
-                <NavLink
-                    to='/'
-                    className={({ isActive }) => (isActive ? styles.active : styles.inactive)}
-                >
-                    {t('common:homeTitle')}
-                </NavLink>
-                <NavLink
-                    to='/swap'
-                    className={({ isActive }) => (isActive ? styles.active : styles.inactive)}
-                >
-                    {t('common:swapTitle')}
-                </NavLink>
-                {/* <NavLink to='/range2'>Range</NavLink> */}
-                <NavLink
-                    to={
-                        location.pathname.includes('trade/market')
-                            ? '/trade/market'
-                            : location.pathname.includes('trade/limit')
-                            ? '/trade/limit'
-                            : location.pathname.includes('trade/range')
-                            ? '/trade/range'
-                            : location.pathname.includes('trade/edit')
-                            ? '/trade/edit'
-                            : '/trade/market'
-                    }
-                    className={({ isActive }) => (isActive ? styles.active : styles.inactive)}
-                >
-                    {t('common:tradeTitle')}
-                </NavLink>
-                <NavLink
-                    to='/analytics'
-                    className={({ isActive }) => (isActive ? styles.active : styles.inactive)}
-                >
-                    {t('common:analyticsTitle')}
-                </NavLink>
-                {shouldDisplayAccountTab ? (
-                    <NavLink
-                        to='/account'
-                        className={({ isActive }) => (isActive ? styles.active : styles.inactive)}
-                    >
-                        {t('common:accountTitle')}
-                    </NavLink>
-                ) : null}
-            </nav>
-            {/* <div className={styles.account}>Account Info</div> */}
-            {/* <div className={styles.account}>{accountAddress}</div> */}
+
+            {routeDisplay}
+
             <div className={styles.account}>
-                {/* {(!isAuthenticated || !isWeb3Enabled) && magicButton} */}
                 {isChainValid ? null : 'chain not currently supported'}
                 {<NetworkSelector chainId={chainId} setFallbackChainId={setFallbackChainId} />}
                 {(!isAuthenticated || !isWeb3Enabled) && metamaskButton}
-                {/* {isAuthenticated && isWeb3Enabled && (
-                    <NetworkSelector chainId={chainId} setFallbackChainId={setFallbackChainId} />
-                )} */}
-                {/* <div>
-                    {Object.keys(lngs).map((lng) => (
-                        <button
-                            key={lng}
-                            style={{
-                                fontWeight: i18n.resolvedLanguage === lng ? 'bold' : 'normal',
-                            }}
-                            type='submit'
-                            onClick={() => i18n.changeLanguage(lng)}
-                        >
-                            {lngs[lng].nativeName}
-                        </button>
-                    ))}
-                </div> */}
+
                 <Account {...accountProps} />
             </div>
 
