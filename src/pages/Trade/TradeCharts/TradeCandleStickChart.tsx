@@ -107,7 +107,7 @@ export default function TradeCandleStickChart(props: ChartData) {
             .chartCartesian({ xScale, yScale })
             .xTicks([0])
             .yTicks([2])
-            .yTickValues(235466, 235466)
+            // .yTickValues([Math.min(...chartData.lineseries.map((o) => o.value)), Math.max(...chartData.lineseries.map((o) => o.value))])
             .yTickFormat(formatDollarAmountAxis)
             .decorate((selection: any) => {
                 selection.select('.x-axis').style('height', '3px');

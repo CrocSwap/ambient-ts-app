@@ -113,9 +113,6 @@ export default function Chart(props: ChartData) {
             const liquidityScale = d3.scaleLinear();
             const barThreshold = 1650;
 
-            const xScaleCopy = xScale.copy();
-            const yScaleCopy = yScale.copy();
-
             // bar chart
             const liquidityExtent = d3fc
                 .extentLinear(props.liquidityData)
@@ -124,6 +121,10 @@ export default function Chart(props: ChartData) {
 
             xScale.domain(xExtent(chartData));
             yScale.domain(priceRange(chartData));
+
+            const xScaleCopy = xScale.copy();
+            const yScaleCopy = yScale.copy();
+
             liquidityScale.domain(liquidityExtent(props.liquidityData));
 
             const liqScale = liquidityScale
@@ -160,6 +161,12 @@ export default function Chart(props: ChartData) {
                         .enter()
                         .style('fill', (d: any) => (d.close > d.open ? '#7371FC' : '#CDC1FF'))
                         .style('stroke', (d: any) => (d.close > d.open ? '#7371FC' : '#CDC1FF'));
+                    selection.enter().on('mouseover', (event: any) => {
+                        tooltip.transition().duration(200).style('visibility', 'visible');
+                    });
+                    selection.enter().on('mouseout', (event: any) => {
+                        tooltip.transition().duration(200).style('visibility', 'hidden');
+                    });
                 })
                 .xScale(xScale)
                 .yScale(yScale);
@@ -202,14 +209,27 @@ export default function Chart(props: ChartData) {
                     .call(drag);
             });
 
-            // const zoom = d3
-            //     .zoom()
-            //     // .scaleExtent([100, 1])
-            //     .on('zoom', (event: any) => {
-            //         xScale.domain(event.transform.rescaleX(xScaleCopy).domain());
-            //         yScale.domain(event.transform.rescaleY(yScaleCopy).domain());
-            //         render();
-            //     }) as any;
+            const tooltip = d3
+                .select(d3Container.current)
+                .append('div')
+                .style('position', 'absolute')
+                .style('visibility', 'hidden')
+                .style('background-color', 'white')
+                .style('border', 'solid')
+                .style('border-width', '1px')
+                .style('border-radius', '5px')
+                .style('padding', '10px')
+                .html(
+                    '<p> a tooltip written in HTML</p><br>Fancy<br><span style="font-size: 40px;">Isnt it?</span>',
+                );
+
+            const zoom = d3
+                .zoom()
+                .scaleExtent([1, 10])
+                .on('zoom', (event: any) => {
+                    xScale.domain(event.transform.rescaleX(xScaleCopy).domain());
+                    render();
+                }) as any;
 
             const candleJoin = d3fc.dataJoin('g', 'candle');
             const targetsJoin = d3fc.dataJoin('g', 'targets');
@@ -219,9 +239,6 @@ export default function Chart(props: ChartData) {
             d3.select(d3PlotArea.current).on('measure', function (event: any) {
                 xScale.range([0, event.detail.width]);
                 yScale.range([event.detail.height, 0]);
-
-                xScaleCopy.range([0, event.detail.width]);
-                yScaleCopy.range([event.detail.height, 0]);
 
                 liquidityTickScale.range([event.detail.height, 0]);
                 liquidityScale.range([event.detail.width, event.detail.width / 2]);
@@ -243,12 +260,12 @@ export default function Chart(props: ChartData) {
                 d3.select(event.target).select('svg').call(yAxis);
             });
 
-            // d3.select(d3PlotArea.current).on('measure.range', function (event: any) {
-            //     const svg = d3.select(event.target).select('svg');
-            //     xScaleCopy.range([0, event.detail.width]);
-            //     yScaleCopy.range([event.detail.height, 0]);
-            //     svg.call(zoom)
-            // })
+            d3.select(d3PlotArea.current).on('measure.range', function (event: any) {
+                const svg = d3.select(event.target).select('svg');
+                xScaleCopy.range([0, event.detail.width]);
+                yScaleCopy.range([event.detail.height, 0]);
+                svg.call(zoom);
+            });
 
             const nd = d3.select('#group').node() as any;
             render();
@@ -260,7 +277,12 @@ export default function Chart(props: ChartData) {
             <d3fc-group
                 id='group'
                 className='hellooo'
-                style={{ display: 'flex', height: '100%', width: '100%', flexDirection: 'column' }}
+                style={{
+                    display: 'flex',
+                    height: '100%',
+                    width: '100%',
+                    flexDirection: 'column',
+                }}
                 auto-resize
             >
                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
