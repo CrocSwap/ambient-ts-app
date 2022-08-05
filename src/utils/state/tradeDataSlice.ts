@@ -52,7 +52,7 @@ const initialState: tradeData = {
     advancedHighTick: 0,
     simpleRangeWidth: 100,
     slippageTolerance: 0.05,
-    activeChartPeriod: 900,
+    activeChartPeriod: 60,
 };
 
 export const tradeDataSlice = createSlice({

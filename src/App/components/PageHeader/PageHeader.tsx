@@ -17,6 +17,7 @@ import ambientLogo from '../../../assets/images/logos/ambient_logo.svg';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import Modal from '../../../components/Global/Modal/Modal';
 import MagicLogin from './MagicLogin';
+import SwitchNetwork from '../../../components/Global/SwitchNetworkAlert/SwitchNetwork/SwitchNetwork';
 
 import { motion, AnimateSharedLayout } from 'framer-motion';
 
@@ -133,6 +134,27 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
         onClickInput?.fire();
     }
 
+    // -----------------SWITCH NETWORK FUNCTIONALITY--------------------------------------
+    // eslint-disable-next-line
+    const [showSwitchNetwork, setShowSwitchNetwork] = useState(true);
+    // eslint-disable-next-line
+    // const openSwitchNetwork = useCallback(() => {
+    //     setShowSwitchNetwork(true);
+    // }, [setShowSwitchNetwork]);
+    // eslint-disable-next-line
+    const closeSwitchNetwork = useCallback(() => {
+        setShowSwitchNetwork(false);
+    }, [setShowSwitchNetwork]);
+
+    const switchNetWorkOrNull = isChainValid ? null : (
+        <SwitchNetwork
+            onClose={closeSwitchNetwork}
+            chainId={chainId}
+            setFallbackChainId={setFallbackChainId}
+        />
+    );
+
+    // -----------------END OF SWITCH NETWORK FUNCTIONALITY--------------------------------------
     const accountAddress = isAuthenticated && account ? trimString(account, 6, 6) : '';
 
     const accountProps = {
@@ -231,13 +253,14 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
             {routeDisplay}
 
             <div className={styles.account}>
-                {isChainValid ? null : 'chain not currently supported'}
+
                 {<NetworkSelector chainId={chainId} setFallbackChainId={setFallbackChainId} />}
                 {(!isAuthenticated || !isWeb3Enabled) && metamaskButton}
 
                 <Account {...accountProps} />
             </div>
-
+            {/* <SwitchNetwork showSwitchNetwork={showSwitchNetwork} /> */}
+            {switchNetWorkOrNull}
             {modalOrNull}
         </header>
     );

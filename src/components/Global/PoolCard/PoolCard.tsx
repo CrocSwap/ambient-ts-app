@@ -1,22 +1,35 @@
+import { TokenIF } from '../../../utils/interfaces/TokenIF';
 import styles from './PoolCard.module.css';
 interface PoolCardProps {
     onClick: () => void;
     name: string;
+    tokenMap: Map<string, TokenIF>;
+    tokenA: TokenIF;
+    tokenB: TokenIF;
 }
 
 export default function PoolCard(props: PoolCardProps) {
-    const { name } = props;
+    const { name, onClick, tokenMap, tokenA, tokenB } = props;
+
+    const tokenAKey = tokenA?.address.toLowerCase() + '_0x' + tokenA?.chainId.toString();
+    const tokenBKey = tokenB?.address.toLowerCase() + '_0x' + tokenB?.chainId.toString();
+
+    const tokenAFromMap = tokenMap && tokenA?.address ? tokenMap.get(tokenAKey) : null;
+
+    const tokenBFromMap = tokenMap && tokenB?.address ? tokenMap.get(tokenBKey) : null;
 
     return (
-        <div className={styles.pool_card}>
+        <div className={styles.pool_card} onClick={onClick}>
             <div className={styles.row}>
                 <div>
                     <img
-                        src='https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png'
+                        src={tokenAFromMap?.logoURI}
+                        // src='https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png'
                         alt=''
                     />
                     <img
-                        src='https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.png'
+                        src={tokenBFromMap?.logoURI}
+                        // src='https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.png'
                         alt=''
                     />
                 </div>

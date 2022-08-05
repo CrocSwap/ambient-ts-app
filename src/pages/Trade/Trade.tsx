@@ -15,6 +15,7 @@ import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
 import TradeTabs2 from '../../components/Trade/TradeTabs/TradeTabs2';
 import { Dispatch, SetStateAction, useState } from 'react';
 import { motion, AnimateSharedLayout } from 'framer-motion';
+import { TokenIF } from '../../utils/interfaces/TokenIF';
 
 interface ITradeProps {
     account: string;
@@ -33,9 +34,12 @@ interface ITradeProps {
 
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
+    tokenMap: Map<string, TokenIF>;
 }
 
 export default function Trade(props: ITradeProps) {
+    const { tokenMap } = props;
+
     // const location = useLocation();
     // const currentLocation = location.pathname;
     const dispatch = useAppDispatch();
@@ -294,6 +298,7 @@ export default function Trade(props: ITradeProps) {
                             setIsShowAllEnabled={props.setIsShowAllEnabled}
                             expandTradeTable={props.expandTradeTable}
                             setExpandTradeTable={props.setExpandTradeTable}
+                            tokenMap={tokenMap}
                         />
                     </motion.div>
                 </div>

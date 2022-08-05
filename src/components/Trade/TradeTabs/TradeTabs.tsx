@@ -5,15 +5,14 @@ import Positions from './Positions/Positions';
 import TabContent from '../../Global/Tabs/TabContent/TabContent';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 
-import Transactions from './Transactions/Transactions';
+// import Transactions from './Transactions/Transactions';
 import Toggle2 from '../../Global/Toggle/Toggle2';
-import Orders from './Orders/Orders';
+// import Orders from './Orders/Orders';
 import DropdownMenu from '../../Global/DropdownMenu/DropdownMenu';
 import DropdownMenuContainer from '../../Global/DropdownMenu/DropdownMenuContainer/DropdownMenuContainer';
 import DropdownMenuItem from '../../Global/DropdownMenu/DropdownMenuItem/DropdownMenuItem';
 import { BiDownArrow } from 'react-icons/bi';
-import Ranges from './Ranges/Ranges';
-import { useTokenMap } from '../../../App/components/Sidebar/useTokenMap';
+// import Ranges from './Ranges/Ranges';
 
 interface ITabsProps {
     account: string;
@@ -30,8 +29,6 @@ export default function TradeTabs(props: ITabsProps) {
     const { isShowAllEnabled, setIsShowAllEnabled } = props;
 
     const graphData = useAppSelector((state) => state?.graphData);
-
-    const tokenMap = useTokenMap();
 
     const userPositions = graphData?.positionsByUser?.positions;
     // const poolPositions = graphData?.positionsByPool?.positions;
