@@ -9,11 +9,49 @@
     display: flex;
   
     background-color: rgba(0, 0, 0, 0.92);
+    /* background: url('../../../../assets/images/backgrounds/swap_background.svg') no-repeat center center fixed;  */
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
   
     align-items: center;
     justify-content: center;
   }
   
+  .greeting{
+    position: absolute;
+    bottom: 0;
+    height: 300px;
+    width: 100vw;
+    background: url('../../../../assets/images/backgrounds/swap_background.svg') no-repeat center center fixed; 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+    /* animation: wave 7s cubic-bezier( 0.36, 0.45, 0.63, 0.53) -.125s infinite, swell 7s ease -1.25s infinite;
+    animation: wave 7s cubic-bezier( 0.36, 0.45, 0.63, 0.53) -.125s infinite, swell 7s ease -1.25s infinite; */
+
+  }
+
+
+@keyframes wave {
+  0% {
+    margin-left: 0;
+  }
+  100% {
+    margin-left: -1600px;
+  }
+}
+
+@keyframes swell {
+  0%, 100% {
+    transform: translate3d(0,-25px,0);
+  }
+  50% {
+    transform: translate3d(0,5px,0);
+  }
+}
   .modal {
     position: relative;
   
@@ -25,8 +63,8 @@
     padding: 0 0 2rem;
   
     color: white;
-    border-radius: 26px;
-    background-color: #24272d;
+    border-radius: 4px;
+    background-color: var(--dark2);
   
     align-items: center;
   }
@@ -44,11 +82,11 @@
     letter-spacing: 1px;
     text-transform: capitalize;
   
-    border-top-left-radius: 26px;
-    border-top-right-radius: 26px;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
   
     color: white;
-    background-color: rgb(244, 67, 54);
+    background-color: #f6385b;
   
     align-items: center;
     justify-content: center;

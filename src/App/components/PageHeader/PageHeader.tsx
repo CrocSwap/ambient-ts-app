@@ -132,6 +132,20 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
         onClickInput?.fire();
     }
 
+    // -----------------SWITCH NETWORK FUNCTIONALITY--------------------------------------
+    const [showSwitchNetwork, setShowSwitchNetwork] = useState(true);
+    // eslint-disable-next-line
+    const openSwitchNetwork = useCallback(() => {
+        setShowSwitchNetwork(true);
+    }, [setShowSwitchNetwork]);
+    // eslint-disable-next-line
+    const closeSwitchNetwork = useCallback(() => {
+        setShowSwitchNetwork(false);
+    }, [setShowSwitchNetwork]);
+
+    const switchNetWorkOrNull = showSwitchNetwork ? <SwitchNetwork onClose={closeModal} /> : null;
+
+    // -----------------END OF SWITCH NETWORK FUNCTIONALITY--------------------------------------
     const accountAddress = isAuthenticated && account ? trimString(account, 6, 6) : '';
 
     const accountProps = {
@@ -160,19 +174,6 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
     //         Log in with Email
     //     </button>
     // );
-
-    // Switch Network
-    const [showSwitchNetwork, setShowSwitchNetwork] = useState(false);
-    // eslint-disable-next-line
-    const openSwitchNetwork = useCallback(() => {
-        setShowSwitchNetwork(true);
-    }, [setShowSwitchNetwork]);
-    // eslint-disable-next-line
-    const closeSwitchNetwork = useCallback(() => {
-        setShowSwitchNetwork(false);
-    }, [setShowSwitchNetwork]);
-
-    // END OF SWITCH NETWORK
 
     return (
         <header data-testid={'page-header'} className={styles.primary_header}>
@@ -264,7 +265,8 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
                 </div> */}
                 <Account {...accountProps} />
             </div>
-            <SwitchNetwork showSwitchNetwork={showSwitchNetwork} />
+            {/* <SwitchNetwork showSwitchNetwork={showSwitchNetwork} /> */}
+            {switchNetWorkOrNull}
             {modalOrNull}
         </header>
     );
