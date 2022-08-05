@@ -9,10 +9,10 @@ import { MdHelp, MdArrowForwardIos, MdLanguage, MdReportProblem } from 'react-ic
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 // import arbitrumImage from '../../../../assets/images/networks/arbitrum.svg';
-// import kovanImage from '../../../../assets/images/networks/kovan.svg';
+// // import kovanImage from '../../../../assets/images/networks/kovan.svg';
 // import optimisticImage from '../../../../assets/images/networks/optimistic.svg';
 // import polygonImage from '../../../../assets/images/networks/polygon.svg';
-// import ethereumImage from '../../../../assets/images/networks/ethereum.png';
+// // import ethereumImage from '../../../../assets/images/networks/ethereum.png';
 
 import { HiOutlineDocumentText } from 'react-icons/hi';
 
@@ -255,11 +255,11 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuProps) {
     );
 
     const NavbardropdownItemData = [
-        // {
-        //     title: 'Networks',
-        //     data: networksItems,
-        //     leftIcon: <FaNetworkWired size={20} />,
-        // },
+        // // {
+        // //     title: 'Networks',
+        // //     data: networksItems,
+        // //     leftIcon: <FaNetworkWired size={20} />,
+        // // },
         {
             title: 'Settings & Privacy',
             data: settingsItems,

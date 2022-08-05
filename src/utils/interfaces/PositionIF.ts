@@ -1,5 +1,6 @@
 // import { PositionPoolIF } from './PositionPoolIF';
 export interface PositionIF {
+    chainId: string;
     ambient: boolean;
     askTick: number;
     bidTick: number;

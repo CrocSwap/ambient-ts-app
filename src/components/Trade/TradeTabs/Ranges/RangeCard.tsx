@@ -4,9 +4,9 @@ import WalletAndId from '../../../Global/Tabs/WalletAndID/WalletAndId';
 import RangeStatus from '../../../Global/RangeStatus/RangeStatus';
 import RangeMinMax from '../../../Global/Tabs/RangeMinMax/RangeMinMax';
 import Apy from '../../../Global/Tabs/Apy/Apy';
+import { PositionIF } from '../../../../utils/interfaces/PositionIF';
 import { ambientPosSlot, concPosSlot } from '@crocswap-libs/sdk';
 import RangesMenu from '../../../Global/Tabs/TableMenu/TableMenuComponents/RangesMenu';
-import { PositionIF } from '../../../../utils/interfaces/PositionIF';
 
 interface RangeCardProps {
     portfolio?: boolean;
@@ -44,7 +44,7 @@ export default function RangeCard(props: RangeCardProps) {
 
     let posHash;
     if (position.ambient) {
-        posHash = ambientPosSlot(position.user, position.base, position.quote);
+        posHash = ambientPosSlot(position.user, position.base, position.quote, 36000);
     } else {
         posHash = concPosSlot(
             position.user,
@@ -52,6 +52,7 @@ export default function RangeCard(props: RangeCardProps) {
             position.quote,
             position.bidTick,
             position.askTick,
+            36000,
         );
     }
 

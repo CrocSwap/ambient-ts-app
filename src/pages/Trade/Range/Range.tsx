@@ -1,25 +1,25 @@
 // START: Import React and Dongles
 import { useState, useEffect, useMemo, Dispatch, SetStateAction } from 'react';
-import { useMoralis, useNewMoralisObject } from 'react-moralis';
+import { useMoralis } from 'react-moralis';
 import { motion } from 'framer-motion';
-import { BigNumber } from 'ethers';
-import { JsonRpcProvider } from '@ethersproject/providers';
+// import { JsonRpcProvider } from '@ethersproject/providers';
 import {
-    sendAmbientMint,
-    liquidityForBaseQty,
-    liquidityForQuoteQty,
-    fromDisplayQty,
-    sendConcMint,
-    parseMintEthersReceipt,
-    EthersNativeReceipt,
-    ambientPosSlot,
+    // sendAmbientMint,
+    // liquidityForBaseQty,
+    // liquidityForQuoteQty,
+    // fromDisplayQty,
+    // sendConcMint,
+    // parseMintEthersReceipt,
+    // EthersNativeReceipt,
+    // ambientPosSlot,
     concDepositSkew,
     MIN_TICK,
     MAX_TICK,
-    concPosSlot,
-    approveToken,
-    contractAddresses,
-    POOL_PRIMARY,
+    CrocEnv,
+    // concPosSlot,
+    // approveToken,
+    // contractAddresses,
+    // POOL_PRIMARY,
 } from '@crocswap-libs/sdk';
 
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
@@ -46,7 +46,6 @@ import {
     getPinnedPriceValuesFromTicks,
 } from './rangeFunctions';
 import { isTransactionReplacedError, TransactionError } from '../../../utils/TransactionError';
-import { handleParsedReceipt } from '../../../utils/HandleParsedReceipt';
 import truncateDecimals from '../../../utils/data/truncateDecimals';
 import ConfirmRangeModal from '../../../components/Trade/Range/ConfirmRangeModal/ConfirmRangeModal';
 import { SlippagePairIF, TokenIF } from '../../../utils/interfaces/exports';
@@ -59,7 +58,12 @@ import {
     setSimpleRangeWidth,
 } from '../../../utils/state/tradeDataSlice';
 import { addReceipt } from '../../../utils/state/receiptDataSlice';
+import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
+import {
+    ethers,
+    //  BigNumber
+} from 'ethers';
 
 interface RangePropsIF {
     importedTokens: Array<TokenIF>;
@@ -67,7 +71,7 @@ interface RangePropsIF {
     searchableTokens: Array<TokenIF>;
     mintSlippage: SlippagePairIF;
     isPairStable: boolean;
-    provider: JsonRpcProvider;
+    provider?: ethers.providers.Provider;
     gasPriceinGwei: string;
     lastBlockNumber: number;
     baseTokenAddress: string;
@@ -111,15 +115,12 @@ export default function Range(props: RangePropsIF) {
 
     const [isModalOpen, openModal, closeModal] = useModal();
 
-    const { save } = useNewMoralisObject('UserPosition');
-
     const dispatch = useAppDispatch();
 
     const [isWithdrawTokenAFromDexChecked, setIsWithdrawTokenAFromDexChecked] = useState(false);
     const [isWithdrawTokenBFromDexChecked, setIsWithdrawTokenBFromDexChecked] = useState(false);
     const [newRangeTransactionHash, setNewRangeTransactionHash] = useState('');
-    const { Moralis, user, account, isAuthenticated, isWeb3Enabled, authenticate, enableWeb3 } =
-        useMoralis();
+    const { account, isAuthenticated, isWeb3Enabled, authenticate, enableWeb3 } = useMoralis();
 
     const { tradeData } = useTradeData();
     const { navigationMenu } = useTradeData();
@@ -145,10 +146,10 @@ export default function Range(props: RangePropsIF) {
         ? mintSlippage.stable.value
         : mintSlippage.volatile.value;
 
-    const poolWeiPriceLowLimit =
-        poolPriceNonDisplay * (1 - parseFloat(slippageTolerancePercentage) / 100);
-    const poolWeiPriceHighLimit =
-        poolPriceNonDisplay * (1 + parseFloat(slippageTolerancePercentage) / 100);
+    // const poolWeiPriceLowLimit =
+    //     poolPriceNonDisplay * (1 - parseFloat(slippageTolerancePercentage) / 100);
+    // const poolWeiPriceHighLimit =
+    //     poolPriceNonDisplay * (1 + parseFloat(slippageTolerancePercentage) / 100);
 
     const poolPriceDisplayNum = parseFloat(poolPriceDisplay);
 
@@ -172,7 +173,6 @@ export default function Range(props: RangePropsIF) {
         ? poolPriceTruncatedInBase
         : poolPriceTruncatedInQuote;
 
-    const signer = provider?.getSigner();
     const tokenA = tokenPair.dataTokenA;
     const tokenB = tokenPair.dataTokenB;
     const tokenADecimals = tokenA.decimals;
@@ -187,11 +187,6 @@ export default function Range(props: RangePropsIF) {
         : !isTokenABase
         ? getUnicodeCharacter(tokenB.symbol)
         : getUnicodeCharacter(tokenA.symbol);
-
-    const isTokenAEth = tokenA.address === contractAddresses.ZERO_ADDR;
-    const isTokenBEth = tokenB.address === contractAddresses.ZERO_ADDR;
-
-    const qtyIsBase = (isTokenAPrimary && isTokenABase) || (!isTokenAPrimary && !isTokenABase);
 
     const [rangeButtonErrorMessage, setRangeButtonErrorMessage] =
         useState<string>('Enter an Amount');
@@ -251,6 +246,7 @@ export default function Range(props: RangePropsIF) {
                 quoteTokenDecimals,
                 lowTick,
                 highTick,
+                lookupChain(chainId).gridSize,
             );
             setRangeLowBoundNonDisplayPrice(pinnedDisplayPrices.pinnedMinPriceNonDisplay);
             setRangeHighBoundNonDisplayPrice(pinnedDisplayPrices.pinnedMaxPriceNonDisplay);
@@ -369,6 +365,7 @@ export default function Range(props: RangePropsIF) {
                 quoteTokenDecimals,
                 defaultLowTick,
                 defaultHighTick,
+                lookupChain(chainId).gridSize,
             );
             setRangeLowBoundNonDisplayPrice(pinnedDisplayPrices.pinnedMinPriceNonDisplay);
             setRangeHighBoundNonDisplayPrice(pinnedDisplayPrices.pinnedMaxPriceNonDisplay);
@@ -447,6 +444,7 @@ export default function Range(props: RangePropsIF) {
                     quoteTokenDecimals,
                     rangeLowBoundDisplayField.value,
                     pinnedMaxPriceDisplayTruncated,
+                    lookupChain(chainId).gridSize,
                 );
                 console.log({ pinnedDisplayPrices });
 
@@ -508,6 +506,7 @@ export default function Range(props: RangePropsIF) {
                     quoteTokenDecimals,
                     pinnedMinPriceDisplayTruncated,
                     rangeHighBoundDisplayField.value,
+                    lookupChain(chainId).gridSize,
                 );
                 // console.log({ pinnedDisplayPrices });
                 denominationsInBase
@@ -594,202 +593,75 @@ export default function Range(props: RangePropsIF) {
     const truncatedTokenBBalance = truncateDecimals(parseFloat(tokenBBalance), 4).toString();
 
     const sendTransaction = async () => {
-        console.log({ isTokenAPrimary });
-
-        let liquidity: BigNumber;
-        let tx;
-        if (isTokenAPrimary) {
-            // console.log({ tokenAInputQty });
-            // console.log({ tokenADecimals });
-            // console.log({ isTokenABase });
-            // console.log({ baseTokenAddress });
-            // console.log({ quoteTokenAddress });
-            console.log({ rangeLowTick });
-            console.log({ rangeHighTick });
-            // console.log({ isTokenBEth });
-            const tokenAQtyNonDisplay = fromDisplayQty(tokenAInputQty, tokenADecimals);
-            if (isTokenABase) {
-                liquidity = liquidityForBaseQty(poolPriceNonDisplay, tokenAQtyNonDisplay);
-            } else {
-                liquidity = liquidityForQuoteQty(poolPriceNonDisplay, tokenAQtyNonDisplay);
-            }
-            if (signer) {
-                if (isAmbient) {
-                    tx = await sendAmbientMint(
-                        baseTokenAddress,
-                        quoteTokenAddress,
-                        liquidity,
-                        poolWeiPriceLowLimit,
-                        poolWeiPriceHighLimit,
-                        isTokenAEth
-                            ? parseFloat(tokenAInputQty)
-                            : isTokenBEth
-                            ? parseFloat(tokenBInputQty)
-                            : 0,
-                        signer,
-                    );
-                } else {
-                    console.log({ tokenAInputQty });
-                    console.log({ tokenADecimals });
-                    tx = await sendConcMint(
-                        baseTokenAddress,
-                        quoteTokenAddress,
-                        poolPriceNonDisplay,
-                        rangeLowTick,
-                        rangeHighTick,
-                        tokenAInputQty,
-                        qtyIsBase,
-                        poolWeiPriceLowLimit,
-                        poolWeiPriceHighLimit,
-                        isTokenAEth
-                            ? parseFloat(tokenAInputQty)
-                            : isTokenBEth
-                            ? parseFloat(tokenBInputQty)
-                            : 0,
-                        signer,
-                    );
-                }
-            }
-        } else {
-            // console.log({ tokenBInputQty });
-            // console.log({ tokenBDecimals });
-            // console.log({ isTokenABase });
-            // console.log({ baseTokenAddress });
-            // console.log({ quoteTokenAddress });
-            // console.log({ isTokenAEth });
-            // console.log({ isTokenBEth });
-            console.log({ rangeLowTick });
-            console.log({ rangeHighTick });
-            const tokenBQtyNonDisplay = fromDisplayQty(tokenBInputQty, tokenBDecimals);
-            if (!isTokenABase) {
-                liquidity = liquidityForBaseQty(poolPriceNonDisplay, tokenBQtyNonDisplay);
-            } else {
-                liquidity = liquidityForQuoteQty(poolPriceNonDisplay, tokenBQtyNonDisplay);
-            }
-            if (signer) {
-                if (isAmbient) {
-                    tx = await sendAmbientMint(
-                        baseTokenAddress,
-                        quoteTokenAddress,
-                        liquidity,
-                        poolWeiPriceLowLimit,
-                        poolWeiPriceHighLimit,
-                        isTokenAEth
-                            ? parseFloat(tokenAInputQty)
-                            : isTokenBEth
-                            ? parseFloat(tokenBInputQty)
-                            : 0,
-                        signer,
-                    );
-                } else {
-                    console.log({ tokenBInputQty });
-                    console.log({ tokenBDecimals });
-                    tx = await sendConcMint(
-                        baseTokenAddress,
-                        quoteTokenAddress,
-                        poolPriceNonDisplay,
-                        rangeLowTick,
-                        rangeHighTick,
-                        tokenBInputQty,
-                        qtyIsBase,
-                        poolWeiPriceLowLimit,
-                        poolWeiPriceHighLimit,
-                        isTokenAEth
-                            ? parseFloat(tokenAInputQty)
-                            : isTokenBEth
-                            ? parseFloat(tokenBInputQty)
-                            : 0,
-                        signer,
-                    );
-                }
-            }
+        if (!provider || !(provider as ethers.providers.JsonRpcProvider).getSigner()) {
+            return;
         }
-        if (tx) {
-            let newTransactionHash = tx.hash;
-            setNewRangeTransactionHash(newTransactionHash);
-            console.log({ newTransactionHash });
 
-            const newPositionCacheEndpoint = 'https://809821320828123.de:5000/new_position?';
+        const pool = new CrocEnv(provider).pool(tokenA.address, tokenB.address);
 
-            fetch(
-                newPositionCacheEndpoint +
-                    new URLSearchParams({
-                        tx: newTransactionHash,
-                        base: baseTokenAddress,
-                        quote: quoteTokenAddress,
-                        poolIdx: POOL_PRIMARY.toString(),
-                        user: account ?? '',
-                        ambient: isAmbient.toString(),
-                        bidTick: rangeLowTick.toString(),
-                        askTick: rangeHighTick.toString(),
-                        knockout: 'false', // boolean Whether or not the liquidity position is knockout liquidity. If true, then ambient must be false.
-                        isBid: 'false', // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
-                        override: 'false', // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
-                        chainId: chainId,
-                    }),
-                // { method: 'POST' },
-            )
-                .then((response) => response.json())
-                .then(console.log);
+        const spot = await pool.spotPrice();
+        const minPrice = spot * (1 - parseFloat(slippageTolerancePercentage) / 100);
+        const maxPrice = spot * (1 + parseFloat(slippageTolerancePercentage) / 100);
 
-            let parsedReceipt;
+        const tx = await (isAmbient
+            ? isTokenAPrimary
+                ? pool.mintAmbientLeft(tokenAInputQty, [minPrice, maxPrice])
+                : pool.mintAmbientRight(tokenBInputQty, [minPrice, maxPrice])
+            : isTokenAPrimary
+            ? pool.mintRangeLeft(
+                  tokenAInputQty,
+                  [rangeLowTick, rangeHighTick],
+                  [minPrice, maxPrice],
+              )
+            : pool.mintRangeRight(
+                  tokenBInputQty,
+                  [rangeLowTick, rangeHighTick],
+                  [minPrice, maxPrice],
+              ));
 
-            try {
-                const receipt = await tx.wait();
-                console.log({ receipt });
-                parsedReceipt = await parseMintEthersReceipt(
-                    provider,
-                    receipt as EthersNativeReceipt,
-                );
-            } catch (e) {
-                const error = e as TransactionError;
-                if (isTransactionReplacedError(error)) {
-                    // The user used "speed up" or something similar
-                    // in their client, but we now have the updated info
+        let newTransactionHash = tx.hash;
+        setNewRangeTransactionHash(newTransactionHash);
+        console.log({ newTransactionHash });
 
-                    // dispatch(removePendingTx(tx.hash));
-                    console.log('repriced');
-                    newTransactionHash = error.replacement.hash;
-                    console.log({ newTransactionHash });
+        const newPositionCacheEndpoint = 'https://809821320828123.de:5000/new_position?';
 
-                    parsedReceipt = await parseMintEthersReceipt(
-                        provider,
-                        error.receipt as EthersNativeReceipt,
-                    );
-                }
-            } finally {
-                let posHash;
-                if (isAmbient) {
-                    posHash = ambientPosSlot(
-                        account as string,
-                        baseTokenAddress,
-                        quoteTokenAddress,
-                    );
-                } else {
-                    posHash = concPosSlot(
-                        account as string,
-                        baseTokenAddress,
-                        quoteTokenAddress,
-                        rangeLowTick,
-                        rangeHighTick,
-                    );
-                }
-                const txHash = newTransactionHash;
+        fetch(
+            newPositionCacheEndpoint +
+                new URLSearchParams({
+                    tx: newTransactionHash,
+                    base: baseTokenAddress,
+                    quote: quoteTokenAddress,
+                    poolIdx: lookupChain(chainId).poolIndex.toString(),
+                    user: account ?? '',
+                    ambient: isAmbient.toString(),
+                    bidTick: rangeLowTick.toString(),
+                    askTick: rangeHighTick.toString(),
+                    knockout: 'false', // boolean Whether or not the liquidity position is knockout liquidity. If true, then ambient must be false.
+                    isBid: 'false', // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
+                    override: 'false', // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
+                    chainId: chainId,
+                }),
+        )
+            .then((response) => response.json())
+            .then(console.log);
 
-                save({ txHash, posHash, user, account, chainId });
+        let receipt;
+        try {
+            receipt = await tx.wait();
+        } catch (e) {
+            const error = e as TransactionError;
 
-                if (parsedReceipt) {
-                    const unifiedReceipt = await handleParsedReceipt(
-                        Moralis,
-                        'mint',
-                        newTransactionHash,
-                        parsedReceipt,
-                    );
-                    if (unifiedReceipt) {
-                        dispatch(addReceipt(unifiedReceipt));
-                        console.log({ unifiedReceipt });
-                    }
-                }
+            // The user used "speed up" or something similar
+            // in their client, but we now have the updated info
+            if (isTransactionReplacedError(error)) {
+                console.log('repriced');
+                newTransactionHash = error.replacement.hash;
+                console.log({ newTransactionHash });
+                receipt = error.receipt;
+            }
+
+            if (receipt) {
+                dispatch(addReceipt(receipt));
             }
         }
     };
@@ -835,6 +707,7 @@ export default function Range(props: RangePropsIF) {
                 quoteTokenDecimals,
                 rangeLowTick,
                 rangeHighTick,
+                lookupChain(chainId).gridSize,
             ).pinnedMinPriceDisplayTruncated,
         [baseTokenDecimals, quoteTokenDecimals, rangeLowTick, rangeHighTick],
     );
@@ -847,6 +720,7 @@ export default function Range(props: RangePropsIF) {
                 quoteTokenDecimals,
                 rangeLowTick,
                 rangeHighTick,
+                lookupChain(chainId).gridSize,
             ).pinnedMinPriceDisplayTruncated,
         [baseTokenDecimals, quoteTokenDecimals, rangeLowTick, rangeHighTick],
     );
@@ -859,6 +733,7 @@ export default function Range(props: RangePropsIF) {
                 quoteTokenDecimals,
                 rangeLowTick,
                 rangeHighTick,
+                lookupChain(chainId).gridSize,
             ).pinnedMaxPriceDisplayTruncated,
         [baseTokenDecimals, quoteTokenDecimals, rangeLowTick, rangeHighTick],
     );
@@ -871,6 +746,7 @@ export default function Range(props: RangePropsIF) {
                 quoteTokenDecimals,
                 rangeLowTick,
                 rangeHighTick,
+                lookupChain(chainId).gridSize,
             ).pinnedMaxPriceDisplayTruncated,
         [baseTokenDecimals, quoteTokenDecimals, rangeLowTick, rangeHighTick],
     );
@@ -989,6 +865,7 @@ export default function Range(props: RangePropsIF) {
                     setRangeLowTick={setRangeLowTick}
                     setRangeHighTick={setRangeHighTick}
                     disable={isInvalidRange}
+                    chainId={chainId.toString()}
                 />
             </motion.div>
             <DividerDark addMarginTop />
@@ -1045,32 +922,14 @@ export default function Range(props: RangePropsIF) {
     const [isApprovalPending, setIsApprovalPending] = useState(false);
 
     const approve = async (tokenAddress: string) => {
-        // console.log(`allow button clicked for ${tokenAddress}`);
+        if (!provider) {
+            return;
+        }
         setIsApprovalPending(true);
-        let tx;
         try {
-            tx = await approveToken(tokenAddress, signer);
-        } catch (error) {
-            setIsApprovalPending(false);
-            setRecheckTokenAApproval(true);
-            setRecheckTokenBApproval(true);
-        }
-        if (tx.hash) {
-            console.log('approval transaction hash: ' + tx.hash);
-            // setApprovalButtonText('Approval Pending...');
-            // dispatch(setCurrentTxHash(tx.hash));
-            // dispatch(addPendingTx(tx.hash));
-        }
-
-        try {
-            const receipt = await tx.wait();
-            // console.log({ receipt });
-            if (receipt) {
-                // console.log('approval receipt: ' + JSON.stringify(receipt));
-                // setShouldRecheckApproval(true);
-                // parseSwapEthersTxReceipt(receipt).then((val) => {
-                //   val.conversionRateString = `${val.sellSymbol} Approval Successful`;
-                //   dispatch(addApprovalReceipt(val));
+            const tx = await new CrocEnv(provider).token(tokenAddress).approve();
+            if (tx) {
+                await tx.wait();
             }
         } catch (error) {
             console.log({ error });
@@ -1115,6 +974,7 @@ export default function Range(props: RangePropsIF) {
         <section data-testid={'range'}>
             <ContentContainer isOnTradeRoute>
                 <RangeHeader
+                    chainId={chainId}
                     tokenPair={tokenPair}
                     mintSlippage={mintSlippage}
                     isPairStable={isPairStable}

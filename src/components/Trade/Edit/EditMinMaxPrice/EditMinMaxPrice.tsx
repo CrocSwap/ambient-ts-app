@@ -4,8 +4,7 @@ import { motion } from 'framer-motion';
 import { ChangeEvent } from 'react';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import { setAdvancedHighTick, setAdvancedLowTick } from '../../../../utils/state/tradeDataSlice';
-
-import { GRID_SIZE_DFLT } from '@crocswap-libs/sdk';
+import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
 interface EditMinMaxPriceProps {
     minPrice: string;
@@ -27,6 +26,7 @@ interface EditMinMaxPriceProps {
     rangeHighTick: number;
     setRangeLowTick: React.Dispatch<React.SetStateAction<number>>;
     setRangeHighTick: React.Dispatch<React.SetStateAction<number>>;
+    chainId: string;
 }
 export default function EditMinMaxPrice(props: EditMinMaxPriceProps) {
     const dispatch = useAppDispatch();
@@ -37,13 +37,13 @@ export default function EditMinMaxPrice(props: EditMinMaxPriceProps) {
         setMinPriceInputString,
         setMaxPriceInputString,
         isDenomBase,
-        // highBoundOnFocus,
         lowBoundOnBlur,
         highBoundOnBlur,
         rangeLowTick,
         rangeHighTick,
         setRangeLowTick,
         setRangeHighTick,
+        chainId,
     } = props;
 
     const handleMinPriceChangeEvent = (evt?: ChangeEvent<HTMLInputElement>) => {
@@ -75,7 +75,7 @@ export default function EditMinMaxPrice(props: EditMinMaxPriceProps) {
         //   }
     };
 
-    const tickSize = GRID_SIZE_DFLT;
+    const tickSize = lookupChain(chainId).poolIndex;
 
     const increaseLowTick = () => {
         setRangeLowTick(rangeLowTick + tickSize);

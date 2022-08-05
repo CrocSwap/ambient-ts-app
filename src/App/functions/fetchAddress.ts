@@ -1,16 +1,21 @@
-import Moralis from 'moralis';
-export const fetchAddress = async (address: string) => {
-    // get ENS domain of an address
-    const options = { address: address };
+import { ethers } from 'ethers';
+import { memoizeProviderFn } from './memoizePromiseFn';
 
-    console.groupCollapsed('collapsed ENS resolution errors');
-    try {
-        const ensName = (await Moralis.Web3API.resolve.resolveAddress(options)).name;
-        // console.log({ ensName });
-        return ensName;
-    } catch (error) {
-        return null;
-    } finally {
-        console.groupEnd();
-    }
+export const fetchAddress = async (
+    provider: ethers.providers.Provider,
+    address: string,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _chainId: string,
+) => {
+    return provider.lookupAddress(address);
 };
+
+type FetchAddrFn = (
+    provider: ethers.providers.Provider,
+    address: string,
+    chainId: string,
+) => Promise<string | undefined>;
+
+export function memoizeFetchAddress(): FetchAddrFn {
+    return memoizeProviderFn(fetchAddress) as FetchAddrFn;
+}
