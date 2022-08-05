@@ -32,7 +32,7 @@ export default function Transactions(props: TransactionsProps) {
 
     const swapsByUser = graphData?.swapsByUser?.swaps;
     const swapsByPool = graphData?.swapsByPool?.swaps;
-    console.log('this is graph data', graphData);
+    // console.log('this is graph data', graphData);
 
     const tradeData = useAppSelector((state) => state.tradeData);
 

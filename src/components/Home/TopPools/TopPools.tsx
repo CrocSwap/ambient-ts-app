@@ -8,8 +8,15 @@ import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import { setTokenA, setTokenB } from '../../../utils/state/tradeDataSlice';
 
 import { topPools } from '../../../App/mockData';
+import { TokenIF } from '../../../utils/interfaces/TokenIF';
 
-export default function TopPools() {
+interface TopPoolsProps {
+    tokenMap: Map<string, TokenIF>;
+}
+
+export default function TopPools(props: TopPoolsProps) {
+    const { tokenMap } = props;
+
     const { t } = useTranslation();
 
     const dispatch = useAppDispatch();
@@ -54,11 +61,14 @@ export default function TopPools() {
                     <NavLink key={idx} to='/trade/market'>
                         <PoolCard
                             name={pool.name}
+                            tokenA={pool.tokenA}
+                            tokenB={pool.tokenB}
                             key={idx}
                             onClick={() => {
                                 dispatch(setTokenA(pool.tokenA));
                                 dispatch(setTokenB(pool.tokenB));
                             }}
+                            tokenMap={tokenMap}
                         />
                     </NavLink>
                 ))}
