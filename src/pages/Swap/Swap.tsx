@@ -3,17 +3,7 @@ import { useState, Dispatch, SetStateAction } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useMoralis } from 'react-moralis';
 import { motion } from 'framer-motion';
-import { JsonRpcProvider } from '@ethersproject/providers';
-import {
-    contractAddresses,
-    POOL_PRIMARY,
-    sendSwap,
-    parseSwapEthersReceipt,
-    EthersNativeReceipt,
-    approveToken,
-    getLimitPrice,
-    fromDisplayQty,
-} from '@crocswap-libs/sdk';
+import { CrocEnv } from '@crocswap-libs/sdk';
 
 // START: Import React Components
 import CurrencyConverter from '../../components/Swap/CurrencyConverter/CurrencyConverter';
@@ -30,7 +20,6 @@ import Button from '../../components/Global/Button/Button';
 
 // START: Import Local Files
 import styles from './Swap.module.css';
-import { handleParsedReceipt } from '../../utils/HandleParsedReceipt';
 import truncateDecimals from '../../utils/data/truncateDecimals';
 import { isTransactionReplacedError, TransactionError } from '../../utils/TransactionError';
 import { useTradeData } from '../Trade/Trade';
@@ -39,6 +28,7 @@ import { SlippagePairIF, TokenIF, TokenPairIF } from '../../utils/interfaces/exp
 import { useModal } from '../../components/Global/Modal/useModal';
 import { useRelativeModal } from '../../components/Global/RelativeModal/useRelativeModal';
 import { addReceipt } from '../../utils/state/receiptDataSlice';
+import { ethers } from 'ethers';
 
 interface SwapPropsIF {
     importedTokens: Array<TokenIF>;
@@ -46,7 +36,7 @@ interface SwapPropsIF {
     searchableTokens: Array<TokenIF>;
     swapSlippage: SlippagePairIF;
     isPairStable: boolean;
-    provider: JsonRpcProvider;
+    provider?: ethers.providers.Provider;
     isOnTradeRoute?: boolean;
     gasPriceinGwei: string;
     nativeBalance: string;
@@ -91,8 +81,7 @@ export default function Swap(props: SwapPropsIF) {
 
     const [isRelativeModalOpen, closeRelativeModal] = useRelativeModal();
 
-    const { Moralis, enableWeb3, isWeb3Enabled, authenticate, isAuthenticated, account } =
-        useMoralis();
+    const { enableWeb3, isWeb3Enabled, authenticate, isAuthenticated, account } = useMoralis();
     // get URL pathway for user relative to index
     const { pathname } = useLocation();
 
@@ -143,31 +132,14 @@ export default function Swap(props: SwapPropsIF) {
     const [isApprovalPending, setIsApprovalPending] = useState(false);
 
     const approve = async (tokenAddress: string) => {
-        // console.log(`allow button clicked for ${tokenAddress}`);
+        if (!provider) {
+            return;
+        }
         setIsApprovalPending(true);
-        let tx;
         try {
-            tx = await approveToken(tokenAddress, signer);
-        } catch (error) {
-            setIsApprovalPending(false);
-            setRecheckTokenAApproval(true);
-        }
-        if (tx.hash) {
-            console.log('approval transaction hash: ' + tx.hash);
-            // setApprovalButtonText('Approval Pending...');
-            // dispatch(setCurrentTxHash(tx.hash));
-            // dispatch(addPendingTx(tx.hash));
-        }
-
-        try {
-            const receipt = await tx.wait();
-            // console.log({ receipt });
-            if (receipt) {
-                // console.log('approval receipt: ' + JSON.stringify(receipt));
-                // setShouldRecheckApproval(true);
-                // parseSwapEthersTxReceipt(receipt).then((val) => {
-                //   val.conversionRateString = `${val.sellSymbol} Approval Successful`;
-                //   dispatch(addApprovalReceipt(val));
+            const tx = await new CrocEnv(provider).token(tokenAddress).approve();
+            if (tx) {
+                await tx.wait();
             }
         } catch (error) {
             console.log({ error });
@@ -205,121 +177,74 @@ export default function Swap(props: SwapPropsIF) {
 
     const [newSwapTransactionHash, setNewSwapTransactionHash] = useState('');
 
-    const signer = provider?.getSigner();
-
-    // TODO:  @Emily refactor this function to remove sellTokenAddress
-    // TODO:  ... and buyTokenAddress references
     async function initiateSwap() {
+        if (!provider) {
+            return;
+        }
+
+        if (!(provider as ethers.providers.JsonRpcProvider).getSigner()) {
+            return;
+        }
+
         const sellTokenAddress = tokenA.address;
         const buyTokenAddress = tokenB.address;
-        const poolId = POOL_PRIMARY;
         const sellTokenQty = (document.getElementById('sell-quantity') as HTMLInputElement)?.value;
         const buyTokenQty = (document.getElementById('buy-quantity') as HTMLInputElement)?.value;
         const qty = isTokenAPrimary ? sellTokenQty : buyTokenQty;
+        const isQtySell = isTokenAPrimary;
 
-        console.log({ isTokenAPrimary });
+        const env = new CrocEnv(provider);
 
-        // overwritten by a non-zero value when selling ETH for another token
-        let ethValue = '0';
+        const tx = await (isQtySell
+            ? env.sell(sellTokenAddress, qty).for(buyTokenAddress).swap()
+            : env.buy(buyTokenAddress, qty).with(sellTokenAddress).swap());
 
-        // if the user is selling ETH and requesting an exact output quantity
-        // then pad the ETH sent to the contract by 2% (remainder will be returned)
-        if (sellTokenAddress === contractAddresses.ZERO_ADDR) {
-            const roundedUpEthValue = truncateDecimals(
-                parseFloat(sellTokenQty) * 1.02,
-                18,
-            ).toString();
-            isTokenAPrimary ? (ethValue = sellTokenQty) : (ethValue = roundedUpEthValue);
+        let newTransactionHash = (await tx).hash;
+        setNewSwapTransactionHash(newTransactionHash);
+
+        const newSwapCacheEndpoint = 'https://809821320828123.de:5000/new_swap?';
+
+        const inBaseQty =
+            (isSellTokenBase && isTokenAPrimary) || (!isSellTokenBase && !isTokenAPrimary);
+
+        const crocQty = await env
+            .token(isTokenAPrimary ? tokenA.address : tokenB.address)
+            .normQty(qty);
+
+        fetch(
+            newSwapCacheEndpoint +
+                new URLSearchParams({
+                    tx: newTransactionHash,
+                    user: account ?? '',
+                    base: isSellTokenBase ? sellTokenAddress : buyTokenAddress,
+                    quote: isSellTokenBase ? buyTokenAddress : sellTokenAddress,
+                    poolIdx: (await env.context).chain.poolIndex.toString(),
+                    isBuy: isSellTokenBase.toString(),
+                    inBaseQty: inBaseQty.toString(),
+                    qty: crocQty.toString(),
+                    override: 'false',
+                    chainId: chainId,
+                }),
+        );
+
+        let receipt;
+        try {
+            receipt = await tx.wait();
+        } catch (e) {
+            const error = e as TransactionError;
+
+            // The user used "speed up" or something similar
+            // in their client, but we now have the updated info
+            if (isTransactionReplacedError(error)) {
+                console.log('repriced');
+                newTransactionHash = error.replacement.hash;
+                console.log({ newTransactionHash });
+                receipt = error.receipt;
+            }
         }
 
-        if (signer) {
-            const tx = await sendSwap(
-                sellTokenAddress,
-                buyTokenAddress,
-                isTokenAPrimary,
-                qty,
-                ethValue,
-                slippageTolerancePercentage,
-                poolId,
-                signer,
-            );
-
-            let newTransactionHash = tx.hash;
-            setNewSwapTransactionHash(newTransactionHash);
-            console.log({ newTransactionHash });
-
-            const newSwapCacheEndpoint = 'https://809821320828123.de:5000/new_swap?';
-
-            const inBaseQty =
-                (isSellTokenBase && isTokenAPrimary) || (!isSellTokenBase && !isTokenAPrimary);
-            // const limitPrice = poolPrice
-            const limitPrice = await getLimitPrice(
-                sellTokenAddress,
-                buyTokenAddress,
-                slippageTolerancePercentage,
-            );
-
-            const crocQty = fromDisplayQty(
-                qty,
-                isTokenAPrimary ? tokenA.decimals : tokenB.decimals,
-            );
-
-            fetch(
-                newSwapCacheEndpoint +
-                    new URLSearchParams({
-                        tx: newTransactionHash,
-                        user: account ?? '',
-                        base: isSellTokenBase ? sellTokenAddress : buyTokenAddress,
-                        quote: isSellTokenBase ? buyTokenAddress : sellTokenAddress,
-                        poolIdx: POOL_PRIMARY.toString(),
-                        isBuy: isSellTokenBase.toString(),
-                        inBaseQty: inBaseQty.toString(),
-                        qty: crocQty.toString(),
-                        limitPrice: limitPrice.toString(),
-                        minOut: '0', // integer	The minimum output the user expects from the swap.
-                        override: 'false',
-                        chainId: chainId,
-                        // boolean	(Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
-                    }),
-                // { method: 'POST' },
-            );
-
-            let parsedReceipt;
-
-            try {
-                const receipt = await tx.wait();
-                console.log({ receipt });
-                parsedReceipt = await parseSwapEthersReceipt(
-                    provider,
-                    receipt as EthersNativeReceipt,
-                );
-            } catch (e) {
-                const error = e as TransactionError;
-                if (isTransactionReplacedError(error)) {
-                    // The user used "speed up" or something similar
-                    // in their client, but we now have the updated info
-                    console.log('repriced');
-                    newTransactionHash = error.replacement.hash;
-                    console.log({ newTransactionHash });
-                    parsedReceipt = await parseSwapEthersReceipt(
-                        provider,
-                        error.receipt as EthersNativeReceipt,
-                    );
-                }
-            }
-
-            if (parsedReceipt) {
-                const unifiedReceipt = await handleParsedReceipt(
-                    Moralis,
-                    'swap',
-                    newTransactionHash,
-                    parsedReceipt,
-                );
-                if (unifiedReceipt) {
-                    dispatch(addReceipt(unifiedReceipt));
-                    console.log({ unifiedReceipt });
-                }
-            }
+        if (receipt) {
+            dispatch(addReceipt(receipt));
         }
     }
 
