@@ -18,6 +18,8 @@ import { useModal } from '../../../components/Global/Modal/useModal';
 import Modal from '../../../components/Global/Modal/Modal';
 import MagicLogin from './MagicLogin';
 
+import { motion } from 'framer-motion';
+
 /** ***** END: Import Local Files *********/
 
 interface IHeaderProps {
