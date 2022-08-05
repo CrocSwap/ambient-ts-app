@@ -20,10 +20,10 @@ import styles from './TestPage.module.css';
 
 // import Range from '../../components/Global/Account/AccountTabs/Range/Range';
 // import Reposition from '../Trade/Reposition/Reposition';
-import WaveAnimation from '../../components/Global/LoadingAnimations/WaveAnimation/WaveAnimation';
-import BouncingBall from '../../components/Global/LoadingAnimations/DotJump/BouncingBall';
-import CircleLoader from '../../components/Global/LoadingAnimations/CircleLoader/CircleLoader';
-import RollingBall from '../../components/Global/LoadingAnimations/RollingBall/RollingBall';
+// import WaveAnimation from '../../components/Global/LoadingAnimations/WaveAnimation/WaveAnimation';
+// import BouncingBall from '../../components/Global/LoadingAnimations/DotJump/BouncingBall';
+// import CircleLoader from '../../components/Global/LoadingAnimations/CircleLoader/CircleLoader';
+// import RollingBall from '../../components/Global/LoadingAnimations/RollingBall/RollingBall';
 
 export default function TestPage() {
     // // get the user object from local storage
@@ -67,61 +67,27 @@ export default function TestPage() {
 
     return (
         // <main>
-        //     <button onClick={() => setOpenSnackbar(true)}>open me</button>
-        //     <h3>This is TestPage.tsx</h3>
-        //     <SnackbarComponent
-        //         severity='success'
-        //         setOpenSnackbar={setOpenSnackbar}
-        //         openSnackbar={openSnackbar}
-        //     >
-        //         I am snackbar
-        //     </SnackbarComponent>
-        //     <TooltipComponent title='Snackbar title' />
-        //     <PoolCard />
-        //     <Stats />
-        //     <Carousel>
-        //         <CarouselItem>
-        //             <Landing />
-        //         </CarouselItem>
-        //         <CarouselItem>
-        //             <Landing2 />
-        //         </CarouselItem>
-        //         <CarouselItem>
-        //             <Landing3 />
-        //         </CarouselItem>
-        //         <CarouselItem>
-        //             <Landing4 />
-        //         </CarouselItem>
-        //         <CarouselItem>
-        //             <Landing5 />
-        //         </CarouselItem>
-        //         <CarouselItem>
-        //             <Landing6 />
-        //         </CarouselItem>
-        //     </Carousel>
-        //     </main>
-        <>
-            <main className={styles.container}>
-                {/* <ul className={styles.token_list_selects_ul}>{tokenListElements}</ul> */}
-                {/* <PositionHeader /> */}
-                {/* <LimitOrderHeader />
+
+        <main className={styles.container}>
+            {/* <ul className={styles.token_list_selects_ul}>{tokenListElements}</ul> */}
+            {/* <PositionHeader /> */}
+            {/* <LimitOrderHeader />
                 {mapItems.map((item, idx) => (
                     <LimitOrderCard key={idx} />
                 ))} */}
-                {/* <RangeCardHeader /> */}
-                {/* <RangeCard /> */}
+            {/* <RangeCardHeader /> */}
+            {/* <RangeCard /> */}
 
-                {/* <Range /> */}
-                {/* <Order />
+            {/* <Range /> */}
+            {/* <Order />
                 
                 <TransactionsTable /> */}
 
-                {/* <TableMenu tableType='orders' /> */}
+            {/* <TableMenu tableType='orders' /> */}
 
-                {/* <Order2 /> */}
-                <div style={{ maxWidth: '600px' }} className={styles.loading_screens}>
-                    {/* <Reposition /> */}
-                    <h4>&lt;WaveAnimation ballsAmount=&#123;10&#125; shape=&#39;line&#39; /&gt;</h4>
+            {/* <Order2 /> */}
+            <div style={{ maxWidth: '600px' }} className={styles.loading_screens}>
+                {/* <h4>&lt;WaveAnimation ballsAmount=&#123;10&#125; shape=&#39;line&#39; /&gt;</h4>
                     <div className={styles.animation_container}>
                         <WaveAnimation ballsAmount={10} shape='line' />
                     </div>
@@ -140,8 +106,7 @@ export default function TestPage() {
                         <WaveAnimation ballsAmount={10} shape='circle' />
                     </div>
                 </div>
-                {/* <AccountTokensDisplay />
-                <AccountPoolDisplay /> */}
+       
                 <h4>&lt;CircleLoader /&gt;</h4>
 
                 <div className={styles.animation_container}>
@@ -155,8 +120,9 @@ export default function TestPage() {
                 <h4>&lt;RollingBall ballSize=&#39;10px&#39; /&gt;</h4>
                 <div className={styles.animation_container}>
                     <RollingBall ballSize='30px' />
-                </div>
-            </main>
-        </>
+                </div> */}
+                {/* <TabComponent data={allIngredients} /> */}
+            </div>
+        </main>
     );
 }

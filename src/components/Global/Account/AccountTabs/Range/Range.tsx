@@ -1,10 +1,20 @@
 import styles from './Range.module.css';
 import RangeCardHeader from './RangeCardHeader';
 import RangeCard from './RangeCard';
-export default function Range() {
-    const items = [1, 2, 3, 4, 5, 6];
+import { PositionIF } from '../../../../../utils/interfaces/PositionIF';
 
-    const ItemContent = items.map((item, idx) => <RangeCard key={idx} />);
+interface RangeTabPropsIF {
+    positions: PositionIF[];
+}
+
+export default function Range(props: RangeTabPropsIF) {
+    const { positions } = props;
+
+    // const items = [1, 2, 3, 4, 5, 6];
+
+    const ItemContent = positions.map((position, idx) => (
+        <RangeCard key={idx} position={position} />
+    ));
     return (
         <div className={styles.container}>
             <RangeCardHeader />

@@ -61,6 +61,12 @@ export default function initializeUserLocalStorage() {
         userUpdated = true;
     }
 
+    // create a favorite pools value on the user object
+    if (!user.favePools) {
+        user.favePools = [];
+        userUpdated = true;
+    }
+
     if (!user.theme) {
         user.theme = 'purple_dark';
         userUpdated = true;

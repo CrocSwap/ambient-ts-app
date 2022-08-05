@@ -1,0 +1,30 @@
+{
+    "title": "Welcome to react using react-i18next and typescript 4.1",
+    "marketCTA": "지금 거래",
+    "homeTitle": "집",
+    "swapTitle": "교환",
+    "tradeTitle": "트레이딩",
+    "analyticsTitle": "분석",
+    "accountTitle": "계정",
+    "topPools": "최고 자본 풀",
+    "slide2": {
+        "part1": "온체인 거래소 설계",
+        "part2": "상인을 위해"
+    },
+    "slide3": {
+        "part1": "는 단일 스마트 계약",
+        "part2": "내에서 전체 DEX를 실행합니다"
+    },
+    "slide4": {
+        "part1": "는 동일한 풀에서",
+        "part2": "유동성을 결합합니다"
+    },
+    "slide5": {
+        "part1": "개발자에게 좋은 것..."
+    },
+    "slide6": {
+        "part1": "가스 절약에 대해..."
+    },
+    "homeStatsTitle": "DEX 통계",
+    "ourInvestorsTitle": "우리 투자자들"
+}

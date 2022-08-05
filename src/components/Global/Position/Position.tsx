@@ -3,7 +3,7 @@ import styles from './Position.module.css';
 import { useModal } from '../Modal/useModal';
 import Modal from '../Modal/Modal';
 import { useState } from 'react';
-import { Position } from '../../../utils/state/graphDataSlice';
+import { PositionIF } from '../../../utils/interfaces/PositionIF';
 import { Link, useLocation } from 'react-router-dom';
 
 import RemoveRange from '../../RemoveRange/RemoveRange';
@@ -15,7 +15,7 @@ import { ambientPosSlot, concPosSlot } from '@crocswap-libs/sdk';
 interface PositionProps {
     portfolio?: boolean;
     notOnTradeRoute?: boolean;
-    position: Position;
+    position: PositionIF;
     isAllPositionsEnabled: boolean;
     tokenAAddress: string;
     tokenBAddress: string;

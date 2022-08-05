@@ -4,7 +4,7 @@
     z-index: 999;
     width: 100vw;
    bottom: 0;
-    position: fixed;
+    position: sticky;
     /* background-color: var(--dark1); */
     transition: width var(--animation-speed) ease;
   
@@ -19,13 +19,26 @@
     flex: 1 0;
     flex-flow: column;
     align-items: center;
+    padding: 9px 3px;
+    font-size: 11px;
+  }
+  .sidebar_footer a img, .sidebar_footer a svg{
+    width: 20px;
+  }
+  
+
+@media only screen and (min-width: 500px) {
+  .sidebar_footer a{
+    
+    flex: 1 0;
     padding: 9px 8px;
     font-size: 12px;
   }
   .sidebar_footer a img, .sidebar_footer a svg{
     width: 20px;
   }
-  
+
+}
 
    /* Small screens */
    @media only screen and (max-width: 1020px) {

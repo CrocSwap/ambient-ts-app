@@ -3,6 +3,7 @@
     display: inline-block;
     width: 36px;
     height: 20px;
+    margin-top: -3px;
   }
   .toggle_switch input[type="checkbox"] {
     display: none;
@@ -20,7 +21,7 @@
     left: 0;
     transition: background-color 0.2s ease;
 
-    border: double 2px transparent;
+    border: double 1px transparent;
 
     background-image: linear-gradient(#171D27, #171D27), var(--title-gradient);
     background-origin: border-box;
