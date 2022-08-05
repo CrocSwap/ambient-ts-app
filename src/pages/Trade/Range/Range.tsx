@@ -600,8 +600,8 @@ export default function Range(props: RangePropsIF) {
         const pool = new CrocEnv(provider).pool(tokenA.address, tokenB.address);
 
         const spot = await pool.spotPrice();
-        const minPrice = spot * (1 - parseFloat(slippageTolerancePercentage));
-        const maxPrice = spot * (1 + parseFloat(slippageTolerancePercentage));
+        const minPrice = spot * (1 - parseFloat(slippageTolerancePercentage) / 100);
+        const maxPrice = spot * (1 + parseFloat(slippageTolerancePercentage) / 100);
 
         const tx = await (isAmbient
             ? isTokenAPrimary

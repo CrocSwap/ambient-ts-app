@@ -3,7 +3,7 @@
     "version": "0.1.2",
     "private": true,
     "dependencies": {
-        "@crocswap-libs/sdk": "^0.2.13",
+        "@crocswap-libs/sdk": "^0.2.14",
         "@emotion/react": "^11.9.0",
         "@emotion/style": "^0.8.0",
         "@emotion/styled": "^11.8.1",

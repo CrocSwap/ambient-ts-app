@@ -182,8 +182,6 @@ export default function Swap(props: SwapPropsIF) {
             return;
         }
 
-        console.log('Initiate Swap A');
-        console.dir(provider);
         if (!(provider as ethers.providers.JsonRpcProvider).getSigner()) {
             return;
         }
@@ -197,16 +195,12 @@ export default function Swap(props: SwapPropsIF) {
 
         const env = new CrocEnv(provider);
 
-        console.log('Initiate Swap B');
-        console.dir((await env.context).provider);
-
         const tx = await (isQtySell
             ? env.sell(sellTokenAddress, qty).for(buyTokenAddress).swap()
             : env.buy(buyTokenAddress, qty).with(sellTokenAddress).swap());
 
         let newTransactionHash = (await tx).hash;
         setNewSwapTransactionHash(newTransactionHash);
-        console.log({ newTransactionHash });
 
         const newSwapCacheEndpoint = 'https://809821320828123.de:5000/new_swap?';
 
@@ -276,7 +270,6 @@ export default function Swap(props: SwapPropsIF) {
     ) : null;
 
     const isTokenAAllowanceSufficient = parseFloat(tokenAAllowance) >= parseFloat(tokenAInputQty);
-    // console.log(pathname);
 
     const swapContainerStyle = pathname == '/swap' ? styles.swap_page_container : null;
     const swapPageStyle = pathname == '/swap' ? styles.swap_page : null;
