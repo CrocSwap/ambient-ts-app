@@ -66,8 +66,6 @@ export default function TradeCandleStickChart(props: ChartData) {
         };
 
         const render = () => {
-            console.log('Draw Volume Chart');
-
             d3.select('#chart-volume').datum(chartData).call(chart);
         };
 
@@ -78,7 +76,6 @@ export default function TradeCandleStickChart(props: ChartData) {
             .extentDate()
             .accessors([(d: any) => d.time])
             .padUnit('domain')
-            // ensure that the scale is padded by one day in either direction
             .pad([millisPerDay, 9000000000]);
 
         const xScale = d3.scaleTime();
@@ -110,6 +107,7 @@ export default function TradeCandleStickChart(props: ChartData) {
             .chartCartesian({ xScale, yScale })
             .xTicks([0])
             .yTicks([2])
+            .yTickValues(235466, 235466)
             .yTickFormat(formatDollarAmountAxis)
             .decorate((selection: any) => {
                 selection.select('.x-axis').style('height', '3px');
@@ -128,7 +126,6 @@ export default function TradeCandleStickChart(props: ChartData) {
             .extentDate()
             .accessors([(d: any) => d.time])
             .padUnit('domain')
-            // ensure that the scale is padded by one day in either direction
             .pad([millisPerDay, 9000000000]);
 
         const chartData = {
@@ -198,8 +195,6 @@ export default function TradeCandleStickChart(props: ChartData) {
             .svgPlotArea(multi);
 
         function render() {
-            console.log('Draw Tvl Chart');
-
             d3.select('.chart-tvl').datum(chartData).call(chart);
         }
 
@@ -215,7 +210,6 @@ export default function TradeCandleStickChart(props: ChartData) {
             .extentDate()
             .accessors([(d: any) => d.time])
             .padUnit('domain')
-            // ensure that the scale is padded by one day in either direction
             .pad([millisPerDay, 9000000000]);
 
         const chartData = {
@@ -255,8 +249,6 @@ export default function TradeCandleStickChart(props: ChartData) {
             .svgPlotArea(multi);
 
         function render() {
-            console.log('Draw fee Chart');
-
             d3.select('.chart-fee').datum(chartData).call(chart);
         }
 

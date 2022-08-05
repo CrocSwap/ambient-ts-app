@@ -5,7 +5,6 @@ import {
     // useLocation
 } from 'react-router-dom';
 import styles from './Trade.module.css';
-import chart from '../../assets/images/Temporary/chart.svg';
 // import { motion } from 'framer-motion';
 import { useAppSelector, useAppDispatch } from '../../utils/hooks/reduxToolkit';
 import {
