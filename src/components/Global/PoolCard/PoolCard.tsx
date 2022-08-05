@@ -5,10 +5,10 @@ interface PoolCardProps {
 }
 
 export default function PoolCard(props: PoolCardProps) {
-    const { name } = props;
+    const { name, onClick } = props;
 
     return (
-        <div className={styles.pool_card}>
+        <div className={styles.pool_card} onClick={onClick}>
             <div className={styles.row}>
                 <div>
                     <img
