@@ -8,7 +8,7 @@
   
     display: flex;
   
-    background-color: rgba(0, 0, 0, 0.92);
+    background-color: rgba(0, 0, 0, 1);
     /* background: url('../../../../assets/images/backgrounds/swap_background.svg') no-repeat center center fixed;  */
     -webkit-background-size: cover;
     -moz-background-size: cover;

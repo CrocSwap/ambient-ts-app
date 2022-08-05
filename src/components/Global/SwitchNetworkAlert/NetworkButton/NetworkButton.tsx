@@ -1,25 +1,24 @@
 import styles from './NetworkButton.module.css';
 
-// interface NetworkButtonProps {
-//     children: React.ReactNode;
-// }
+interface NetworkButtonProps {
+    name: string;
+    icon: string;
+    theme: string;
+    id: string;
+    handleClick: (chainId: string) => void;
+}
 
-export default function NetworkButton() {
-    function handleClick() {
-        console.log('clicked');
-    }
+export default function NetworkButton(props: NetworkButtonProps) {
+    const { name, icon, theme, id, handleClick } = props;
 
-    const network = {
-        theme: 'blue',
-        name: 'blue network',
-    };
     return (
         <button
             className={styles.networkButton}
-            onClick={() => handleClick}
-            style={{ background: network.theme }}
+            onClick={() => handleClick(id)}
+            style={{ background: theme }}
         >
-            Switch to {network.name}
+            <img src={icon} alt={name} />
+            Switch to {name}
         </button>
     );
 }

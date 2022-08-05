@@ -133,17 +133,24 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
     }
 
     // -----------------SWITCH NETWORK FUNCTIONALITY--------------------------------------
+    // eslint-disable-next-line
     const [showSwitchNetwork, setShowSwitchNetwork] = useState(true);
     // eslint-disable-next-line
-    const openSwitchNetwork = useCallback(() => {
-        setShowSwitchNetwork(true);
-    }, [setShowSwitchNetwork]);
+    // const openSwitchNetwork = useCallback(() => {
+    //     setShowSwitchNetwork(true);
+    // }, [setShowSwitchNetwork]);
     // eslint-disable-next-line
     const closeSwitchNetwork = useCallback(() => {
         setShowSwitchNetwork(false);
     }, [setShowSwitchNetwork]);
 
-    const switchNetWorkOrNull = showSwitchNetwork ? <SwitchNetwork onClose={closeModal} /> : null;
+    const switchNetWorkOrNull = isChainValid ? null : (
+        <SwitchNetwork
+            onClose={closeSwitchNetwork}
+            chainId={chainId}
+            setFallbackChainId={setFallbackChainId}
+        />
+    );
 
     // -----------------END OF SWITCH NETWORK FUNCTIONALITY--------------------------------------
     const accountAddress = isAuthenticated && account ? trimString(account, 6, 6) : '';
@@ -243,7 +250,7 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
             {/* <div className={styles.account}>{accountAddress}</div> */}
             <div className={styles.account}>
                 {/* {(!isAuthenticated || !isWeb3Enabled) && magicButton} */}
-                {isChainValid ? null : 'chain not currently supported'}
+                {/* {isChainValid ? null : 'chain not currently supported'} */}
                 {<NetworkSelector chainId={chainId} setFallbackChainId={setFallbackChainId} />}
                 {(!isAuthenticated || !isWeb3Enabled) && metamaskButton}
                 {/* {isAuthenticated && isWeb3Enabled && (
