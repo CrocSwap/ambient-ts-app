@@ -42,7 +42,7 @@ export default function SidebarRecentTransactions(props: SidebarRecentTransactio
         </div>
     );
 
-    // const mapItems = [1, 2, 3, 4, 5, 6, 7];
+    // // const mapItems = [1, 2, 3, 4, 5, 6, 7];
     return (
         <div className={styles.container}>
             {header}

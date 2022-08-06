@@ -45,8 +45,8 @@ export default function Trade(props: ITradeProps) {
     const dispatch = useAppDispatch();
 
     // console.log(currentLocation);
-    const { pathname } = location;
-    console.log('I am pathname', pathname);
+    // const { pathname } = location;
+    // console.log('I am pathname', pathname);
 
     const routes = [
         {

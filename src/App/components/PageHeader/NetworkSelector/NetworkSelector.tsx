@@ -25,6 +25,8 @@ export default function NetworkSelector(props: NetworkSelectorProps) {
     // this chains data will eventually be stored in the data folder.
 
     // console.log(chainId);
+
+    // console.log(chainId);
     const chains = [
         {
             name: 'Kovan ',
@@ -105,7 +107,7 @@ export default function NetworkSelector(props: NetworkSelectorProps) {
 
     return (
         <div className={styles.selector_select_container}>
-            {/* {selectElement}
+            {/* {/* {selectElement}
             <span className={styles.custom_arrow}>
                 <BiDownArrow size={20} color='#ffffff' />
             </span> */}

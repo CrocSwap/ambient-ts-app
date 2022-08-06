@@ -11,6 +11,7 @@ export const calculateRangeLimitsSimple = (
     rangeWidthPercentage: number,
     baseDecimals: number,
     quoteDecimals: number,
+    gridSize: number,
 ) => {
     const currentPoolPriceTick = Math.log(poolPriceNonDisplay) / Math.log(1.0001);
 
@@ -20,11 +21,14 @@ export const calculateRangeLimitsSimple = (
     const rangeLowBoundNonDisplayPrice = tickToPrice(unpinnedRangeLowBoundTick);
     const rangeHighBoundNonDisplayPrice = tickToPrice(unpinnedRangeHighBoundTick);
 
-    const pinnedRangeLowBoundNonDisplayPrice = pinTickLower(rangeLowBoundNonDisplayPrice);
-    const pinnedRangeHighBoundNonDisplayPrice = pinTickUpper(rangeHighBoundNonDisplayPrice);
+    const pinnedRangeLowBoundNonDisplayPrice = pinTickLower(rangeLowBoundNonDisplayPrice, gridSize);
+    const pinnedRangeHighBoundNonDisplayPrice = pinTickUpper(
+        rangeHighBoundNonDisplayPrice,
+        gridSize,
+    );
 
-    const pinnedRangeLowBoundTick = pinTickLower(pinnedRangeLowBoundNonDisplayPrice);
-    const pinnedRangeHighBoundTick = pinTickLower(pinnedRangeHighBoundNonDisplayPrice);
+    const pinnedRangeLowBoundTick = pinTickLower(pinnedRangeLowBoundNonDisplayPrice, gridSize);
+    const pinnedRangeHighBoundTick = pinTickLower(pinnedRangeHighBoundNonDisplayPrice, gridSize);
 
     const pinnedRangeLowBoundDisplayPrice = toDisplayPrice(
         pinnedRangeLowBoundNonDisplayPrice,
@@ -57,6 +61,7 @@ export const calculateRangeLimitsAdvanced = (
     isDenominationInBase: boolean,
     baseDecimals: number,
     quoteDecimals: number,
+    gridSize: number,
 ) => {
     const rangeLowBoundDisplayPrice = parseFloat(rangeLowBoundDisplayPriceString);
     const rangeHighBoundDisplayPrice = parseFloat(rangeHowBoundDisplayPriceString);
@@ -67,7 +72,7 @@ export const calculateRangeLimitsAdvanced = (
 
     const pinnedRangeLowBoundNonDisplayPrice = areBoundsPinnedToTick
         ? rangeLowBoundNonDisplayPrice
-        : pinTickLower(rangeLowBoundNonDisplayPrice);
+        : pinTickLower(rangeLowBoundNonDisplayPrice, gridSize);
 
     const rangeHighBoundNonDisplayPrice = isDenominationInBase
         ? fromDisplayPrice(rangeHighBoundDisplayPrice, baseDecimals, quoteDecimals, false)
@@ -75,7 +80,7 @@ export const calculateRangeLimitsAdvanced = (
 
     const pinnedRangeHighBoundNonDisplayPrice = areBoundsPinnedToTick
         ? rangeHighBoundNonDisplayPrice
-        : pinTickUpper(rangeHighBoundNonDisplayPrice);
+        : pinTickUpper(rangeHighBoundNonDisplayPrice, gridSize);
 
     const pinnedRangeLowBoundTick = Math.log(pinnedRangeLowBoundNonDisplayPrice) / Math.log(1.0001);
     const pinnedRangeHighBoundTick =

@@ -175,6 +175,7 @@ export default function TradeTabs(props: ITabsProps) {
                         notOnTradeRoute={false}
                         graphData={graphData}
                         lastBlockNumber={props.lastBlockNumber}
+                        chainId={props.chainId}
                     />
                 </TabContent>
 

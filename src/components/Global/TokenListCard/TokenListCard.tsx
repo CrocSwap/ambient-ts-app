@@ -26,9 +26,8 @@ export default function TokenListCard(props: TokenListPropsIF) {
     const cardBackground = listIsActive ? ' ' : '';
     const cardBorder = listIsActive ? '1px solid #7371fc ' : '';
 
-    const handleClick = (
-        event: MouseEvent<HTMLButtonElement> | MouseEvent<HTMLDivElement>
-    ) => setAnchorEl(event.currentTarget);
+    const handleClick = (event: MouseEvent<HTMLButtonElement> | MouseEvent<HTMLDivElement>) =>
+        setAnchorEl(event.currentTarget);
 
     const handleClose = () => setAnchorEl(null);
 
@@ -39,11 +38,18 @@ export default function TokenListCard(props: TokenListPropsIF) {
                 style={{ backgroundColor: cardBackground, border: cardBorder }}
             >
                 <div className={styles.left_content}>
-                    <img src={uriToHttp(list.logoURI)} alt={`logo for the token list ${list.name}`} width='40px' />
+                    <img
+                        src={uriToHttp(list.logoURI)}
+                        alt={`logo for the token list ${list.name}`}
+                        width='40px'
+                    />
                     <div className={styles.token_list_card_name}>
                         <div className={styles.token_list_name}>
                             <p>{list?.name}</p>
-                            <RiRefreshFill size={16} onClick={() => refreshTokenList(list.uri as string)} />
+                            <RiRefreshFill
+                                size={16}
+                                onClick={() => refreshTokenList(list.uri as string)}
+                            />
                         </div>
                         <div className={styles.bottom_container_menu}>
                             <div className={styles.token_count}>{list?.tokens?.length} tokens</div>
@@ -83,13 +89,14 @@ export default function TokenListCard(props: TokenListPropsIF) {
                     </div>
                 </div>
                 <div className={styles.right_content}>
-                    { list.uri !== '/ambient-token-list.json' &&
-                    <Toggle
-                        isOn={listIsActive}
-                        handleToggle={toggleActiveState}
-                        Width={50}
-                        id={`token-list-toggle-${list.uri}`}
-                    />}
+                    {list.uri !== '/ambient-token-list.json' && (
+                        <Toggle
+                            isOn={listIsActive}
+                            handleToggle={toggleActiveState}
+                            Width={50}
+                            id={`token-list-toggle-${list.uri}`}
+                        />
+                    )}
                 </div>
             </div>
         </div>

@@ -71,7 +71,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
         (async () => {
             if (address && isInitialized) {
                 try {
-                    const ensName = await fetchAddress(address);
+                    const ensName = await fetchAddress(mainnetProvider, address, chainId);
                     if (ensName) setSecondaryEnsName(ensName);
                     else setSecondaryEnsName('');
                 } catch (error) {
