@@ -1,7 +1,6 @@
 import styles from './PortfolioTabs.module.css';
 import { useEffect, useState } from 'react';
-import TabContent from '../../Global/Tabs/TabContent/TabContent';
-import TabNavItem from '../../Global/Tabs/TabNavItem/TabNavItem';
+
 import Wallet from '../../Global/Account/AccountTabs/Wallet/Wallet';
 import Exchange from '../../Global/Account/AccountTabs/Exchange/Exchange';
 import Range from '../../Global/Account/AccountTabs/Range/Range';
@@ -35,7 +34,7 @@ interface PortfolioTabsPropsIF {
 }
 export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
     const { resolvedAddress, activeAccount, connectedAccountActive, chainId, tokenMap } = props;
-    const [activeTab, setActiveTab] = useState('tab1');
+
     const graphData = useAppSelector((state) => state?.graphData);
     const connectedAccountPositionData = graphData.positionsByUser.positions;
     const [otherAccountPositionData, setOtherAccountPositionData] = useState<PositionIF[]>([]);
@@ -76,14 +75,6 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
         ? connectedAccountPositionData
         : otherAccountPositionData;
 
-    const tabData = [
-        { title: 'Wallet', id: 'tab1' },
-        { title: 'Exchange', id: 'tab2' },
-        { title: 'Ranges', id: 'tab3' },
-        { title: ' Orders', id: 'tab4' },
-        { title: 'Transactions', id: 'tab5' },
-    ];
-
     // props for <Wallet/> React Element
     const walletProps = {
         connectedAccountActive: connectedAccountActive,
@@ -104,8 +95,6 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
         { label: ' Orders', content: <Order />, icon: openOrdersImage },
         { label: 'Transactions', content: <TransactionsTable />, icon: recentTransactionsImage },
     ];
-
-    const rightTabOption = 'this is me';
 
     return (
         <div className={styles.tabs_container}>

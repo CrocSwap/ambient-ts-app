@@ -1,7 +1,5 @@
 import styles from './ExchangeBalance.module.css';
-import { useState } from 'react';
-import TabContent from '../../Global/Tabs/TabContent/TabContent';
-import TabNavItem from '../../Global/Tabs/TabNavItem/TabNavItem';
+
 import Deposit from './Deposit/Deposit';
 import Withdraw from './Withdraw/Withdraw';
 import Transfer from './Transfer/Transfer';
