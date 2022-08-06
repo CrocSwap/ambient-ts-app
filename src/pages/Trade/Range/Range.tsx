@@ -599,7 +599,7 @@ export default function Range(props: RangePropsIF) {
 
         const pool = new CrocEnv(provider).pool(tokenA.address, tokenB.address);
 
-        const spot = await pool.spotPrice();
+        const spot = await pool.displayPrice();
         const minPrice = spot * (1 - parseFloat(slippageTolerancePercentage) / 100);
         const maxPrice = spot * (1 + parseFloat(slippageTolerancePercentage) / 100);
 
