@@ -286,4 +286,11 @@
     .middle_col {
         background: var(--dark3);
     }
+    .right_col{
+        background: var(--dark1)
+    }
+
+   
+
+
 }

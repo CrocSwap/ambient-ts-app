@@ -120,6 +120,8 @@ export default function TabComponent(props: TabProps) {
     // TAB MENU WITHOUT ANY ITEMS ON THE RIGHT
 
     const fullTabs = (
+        // <AnimateSharedLayout>
+
         <ul className={`${styles.tab_ul} ${styles.desktop_tabs}`}>
             {data.map((item) => {
                 return (
@@ -138,12 +140,15 @@ export default function TabComponent(props: TabProps) {
                 );
             })}
         </ul>
+        // </AnimateSharedLayout>
     );
 
     return (
         <div className={styles.tab_window}>
             <nav className={styles.tab_nav}>
-                {props.rightTabOptions ? tabsWithRightOption : fullTabs}
+                <AnimateSharedLayout>
+                    {props.rightTabOptions ? tabsWithRightOption : fullTabs}
+                </AnimateSharedLayout>
             </nav>
             <main className={styles.main_tab_content}>
                 <AnimateSharedLayout>

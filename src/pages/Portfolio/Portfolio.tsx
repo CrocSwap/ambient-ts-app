@@ -86,11 +86,8 @@ export default function Portfolio(props: PortfolioPropsIF) {
         !address || resolvedAddress.toLowerCase() === connectedAccount.toLowerCase();
 
     const exchangeBalanceComponent = (
-        <div>
-            <div className={styles.title}>Exchange Balance</div>
-            <div className={styles.exchange_balance}>
-                <ExchangeBalance />
-            </div>
+        <div className={styles.exchange_balance}>
+            <ExchangeBalance />
         </div>
     );
     return (

@@ -1,7 +1,6 @@
 import styles from './PortfolioTabs.module.css';
 import { useEffect, useState } from 'react';
-import TabContent from '../../Global/Tabs/TabContent/TabContent';
-import TabNavItem from '../../Global/Tabs/TabNavItem/TabNavItem';
+
 import Wallet from '../../Global/Account/AccountTabs/Wallet/Wallet';
 import Exchange from '../../Global/Account/AccountTabs/Exchange/Exchange';
 import Range from '../../Global/Account/AccountTabs/Range/Range';
@@ -11,6 +10,14 @@ import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { getPositionData } from '../../../App/functions/getPositionData';
 import { PositionIF } from '../../../utils/interfaces/PositionIF';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
+
+import openOrdersImage from '../../../assets/images/sidebarImages/openOrders.svg';
+import rangePositionsImage from '../../../assets/images/sidebarImages/rangePositions.svg';
+import recentTransactionsImage from '../../../assets/images/sidebarImages/recentTransactions.svg';
+import walletImage from '../../../assets/images/sidebarImages/wallet.svg';
+import exchangeImage from '../../../assets/images/sidebarImages/exchange.svg';
+
+import TabComponent from '../../Global/TabComponent/TabComponent';
 
 // import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 // import Wallet from '../../Global/Account/Wallet/Wallet';
@@ -27,7 +34,7 @@ interface PortfolioTabsPropsIF {
 }
 export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
     const { resolvedAddress, activeAccount, connectedAccountActive, chainId, tokenMap } = props;
-    const [activeTab, setActiveTab] = useState('tab1');
+
     const graphData = useAppSelector((state) => state?.graphData);
     const connectedAccountPositionData = graphData.positionsByUser.positions;
     const [otherAccountPositionData, setOtherAccountPositionData] = useState<PositionIF[]>([]);
@@ -68,53 +75,30 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
         ? connectedAccountPositionData
         : otherAccountPositionData;
 
-    const tabData = [
-        { title: 'Wallet', id: 'tab1' },
-        { title: 'Exchange', id: 'tab2' },
-        { title: 'Ranges', id: 'tab3' },
-        { title: ' Orders', id: 'tab4' },
-        { title: 'Transactions', id: 'tab5' },
+    // props for <Wallet/> React Element
+    const walletProps = {
+        connectedAccountActive: connectedAccountActive,
+        resolvedAddress: resolvedAddress,
+        activeAccount: activeAccount,
+        chainId: chainId,
+        tokenMap: tokenMap,
+    };
+    // props for <Range/> React Element
+    const rangeProps = {
+        positions: activeAccountPositionData,
+    };
+
+    const accountTabData = [
+        { label: 'Wallet', content: <Wallet {...walletProps} />, icon: walletImage },
+        { label: 'Exchange', content: <Exchange />, icon: exchangeImage },
+        { label: 'Ranges', content: <Range {...rangeProps} />, icon: rangePositionsImage },
+        { label: ' Orders', content: <Order />, icon: openOrdersImage },
+        { label: 'Transactions', content: <TransactionsTable />, icon: recentTransactionsImage },
     ];
 
     return (
         <div className={styles.tabs_container}>
-            <div className={styles.tabs}>
-                <ul className={styles.tab_navs}>
-                    {tabData.map((tab) => (
-                        <TabNavItem
-                            key={tab.title}
-                            title={tab.title}
-                            id={tab.id}
-                            activeTab={activeTab}
-                            setActiveTab={setActiveTab}
-                        />
-                    ))}
-                </ul>
-                {/* <div className={styles.option_toggles}>{positionsOnlyToggle}</div> */}
-            </div>
-            <div className={styles.tabs_outlet}>
-                <TabContent id='tab1' activeTab={activeTab}>
-                    <Wallet
-                        connectedAccountActive={connectedAccountActive}
-                        resolvedAddress={resolvedAddress}
-                        activeAccount={activeAccount}
-                        chainId={chainId}
-                        tokenMap={tokenMap}
-                    />
-                </TabContent>
-                <TabContent id='tab2' activeTab={activeTab}>
-                    <Exchange />
-                </TabContent>
-                <TabContent id='tab3' activeTab={activeTab}>
-                    <Range positions={activeAccountPositionData} />
-                </TabContent>
-                <TabContent id='tab4' activeTab={activeTab}>
-                    <Order />
-                </TabContent>
-                <TabContent id='tab5' activeTab={activeTab}>
-                    <TransactionsTable />
-                </TabContent>
-            </div>
+            <TabComponent data={accountTabData} rightTabOptions={false} />
         </div>
     );
 }
