@@ -350,6 +350,10 @@ and (-webkit-min-device-pixel-ratio: 2) {
 
     }
 
+    .right_col{
+        background: var(--dark1)
+    }
+
    
 }
 

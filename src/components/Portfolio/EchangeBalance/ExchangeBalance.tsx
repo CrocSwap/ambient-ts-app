@@ -6,42 +6,24 @@ import Deposit from './Deposit/Deposit';
 import Withdraw from './Withdraw/Withdraw';
 import Transfer from './Transfer/Transfer';
 
-export default function ExchangeBalance() {
-    const [activeTab, setActiveTab] = useState('tab1');
+import transferImage from '../../../assets/images/sidebarImages/transfer.svg';
+import withdrawImage from '../../../assets/images/sidebarImages/withdraw.svg';
+import depositImage from '../../../assets/images/sidebarImages/deposit.svg';
+import TabComponent from '../../Global/TabComponent/TabComponent';
 
-    const tabData = [
-        { title: 'Deposit', id: 'tab1' },
-        { title: 'Withdraw', id: 'tab2' },
-        { title: 'Transfer', id: 'tab3' },
+export default function ExchangeBalance() {
+    const accountData = [
+        { label: 'Deposit', content: <Deposit />, icon: depositImage },
+        { label: 'Withdraw', content: <Withdraw />, icon: withdrawImage },
+        { label: 'Transfer', content: <Transfer />, icon: transferImage },
     ];
 
     return (
         <div className={styles.main_container}>
+            <div className={styles.title}>Exchange Balance</div>
+
             <div className={styles.tabs_container}>
-                <div className={styles.tabs}>
-                    <ul className={styles.tab_navs}>
-                        {tabData.map((tab) => (
-                            <TabNavItem
-                                key={tab.title}
-                                title={tab.title}
-                                id={tab.id}
-                                activeTab={activeTab}
-                                setActiveTab={setActiveTab}
-                            />
-                        ))}
-                    </ul>
-                </div>
-                <div className={styles.tabs_outlet}>
-                    <TabContent id='tab1' activeTab={activeTab}>
-                        <Deposit />
-                    </TabContent>
-                    <TabContent id='tab2' activeTab={activeTab}>
-                        <Withdraw />
-                    </TabContent>
-                    <TabContent id='tab3' activeTab={activeTab}>
-                        <Transfer />
-                    </TabContent>
-                </div>
+                <TabComponent data={accountData} rightTabOptions={false} />
             </div>
             <div className={styles.info_text}>
                 {' '}

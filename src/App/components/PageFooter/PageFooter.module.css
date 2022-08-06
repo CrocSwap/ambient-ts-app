@@ -11,6 +11,7 @@
     font-size:  var(--body-size);
 line-height: var(--body-lh);
 gap: var(--gap, 1rem);
+z-index: 999;
 
 
 }

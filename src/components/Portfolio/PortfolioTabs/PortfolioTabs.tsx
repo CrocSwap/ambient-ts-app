@@ -18,8 +18,6 @@ import recentTransactionsImage from '../../../assets/images/sidebarImages/recent
 import walletImage from '../../../assets/images/sidebarImages/wallet.svg';
 import exchangeImage from '../../../assets/images/sidebarImages/exchange.svg';
 
-import { FaWallet } from 'react-icons/fa';
-import { BsCurrencyExchange } from 'react-icons/bs';
 import TabComponent from '../../Global/TabComponent/TabComponent';
 
 // import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
