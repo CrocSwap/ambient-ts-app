@@ -4,6 +4,8 @@
     justify-content: center;
     align-items: center;
     width: 100%;
+    height: calc(100%/3);
+    
     
 }
 
@@ -12,7 +14,8 @@
     max-width: 516px;
     height: auto;
     margin-top: 1rem;
-  min-height: 260px;
+    /* height: 300px; */
+  /* min-height: 260px; */
   border-radius: var(--border-radius);
   background: var(--dark1)
 
@@ -42,7 +45,18 @@ ul.tab_navs{
     cursor: pointer;
 }
 
+.title{
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    margin-top: 1rem;
+    font-size: var(--header1-size);
+    line-height: var(--header1-lh);
+    letter-spacing: -0.02em;
+    color: var(--text-grey-white);
 
+    
+}
 
 
 
@@ -65,7 +79,10 @@ ul.tab_navs{
       font-size: var(--body-size);
       line-height: var(--body-lh);
       color: var(--text-grey-light);
-      margin: 1rem;
+      /* margin: 1rem; */
+      position: absolute;
+      bottom: 5px;
+
   }
 
   @media only screen 
@@ -75,5 +92,9 @@ ul.tab_navs{
  
    .option_toggles{
        display: none;
+   }
+
+   .info_text{
+    display: none;
    }
 }

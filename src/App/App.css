@@ -109,7 +109,7 @@ footer {
 } */
 .swap-body{
   /* height: 100vh; */
-  background: #171D27;
+  background: var(--dark3);
   height: calc(100vh - (var(--footer-height) + 2rem));
 
    /* height: calc(100vh - 3.5rem);  */
@@ -125,6 +125,8 @@ footer {
   display: flex;
   justify-content: flex-end;
   color: white;
+  /* background: var(--dark3); */
+
 }
 
 
@@ -247,7 +249,8 @@ footer {
   }
   
   .content-container{
-    height: calc(100vh - var(--footer-height))
+    height: calc(100vh - var(--footer-height));
+    background: var(--dark3);
   }
 
 
