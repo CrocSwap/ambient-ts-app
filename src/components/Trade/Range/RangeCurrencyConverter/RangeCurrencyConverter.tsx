@@ -330,7 +330,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
 
     const handleTokenAQtyFieldUpdate = (evt?: ChangeEvent<HTMLInputElement>) => {
         if (evt) {
-            console.log('new handle token A event');
+            // console.log('new handle token A event');
             const input = evt.target.value;
             setTokenAQtyValue(parseFloat(input));
             setIsTokenAPrimaryLocal(true);
@@ -343,13 +343,12 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
             if (!isOutOfRange) {
                 if (tokenAQtyLocal) setTokenAQtyValue(tokenAQtyLocal);
             } else {
-                console.log({ tokenAQtyLocal });
-                console.log({ tokenBQtyLocal });
                 if (rangeSpanAboveCurrentPrice < 0) {
                     if (isTokenABase) {
                         if (tokenAQtyLocal && tokenAQtyLocal !== 0) {
                             if (!tradeData.isTokenAPrimaryRange) {
                                 dispatch(setIsTokenAPrimaryRange(true));
+                                setIsTokenAPrimaryLocal(true);
                             }
                             setTokenAQtyValue(tokenAQtyLocal);
                         }
@@ -358,6 +357,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
                         if (tokenBQtyLocal && tokenBQtyLocal !== 0) {
                             if (tradeData.isTokenAPrimaryRange) {
                                 dispatch(setIsTokenAPrimaryRange(false));
+                                setIsTokenAPrimaryLocal(false);
                             }
                             setTokenBQtyValue(tokenBQtyLocal);
                         }
@@ -385,7 +385,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
 
     const handleTokenBQtyFieldUpdate = (evt?: ChangeEvent<HTMLInputElement>) => {
         if (evt) {
-            console.log('new handle token B event');
+            // console.log('new handle token B event');
             const input = evt.target.value;
             setTokenBQtyValue(parseFloat(input));
             setIsTokenAPrimaryLocal(false);
@@ -404,6 +404,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
                         if (tokenAQtyLocal && tokenAQtyLocal !== 0) {
                             if (!tradeData.isTokenAPrimaryRange) {
                                 dispatch(setIsTokenAPrimaryRange(true));
+                                setIsTokenAPrimaryLocal(true);
                             }
                             setTokenAQtyValue(tokenAQtyLocal);
                         }
@@ -412,6 +413,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
                         if (tokenBQtyLocal && tokenBQtyLocal !== 0) {
                             if (tradeData.isTokenAPrimaryRange) {
                                 dispatch(setIsTokenAPrimaryRange(false));
+                                setIsTokenAPrimaryLocal(false);
                             }
                             setTokenBQtyValue(tokenBQtyLocal);
                         }
@@ -438,9 +440,11 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
     };
 
     useEffect(() => {
-        tradeData.isTokenAPrimaryRange
-            ? handleTokenAQtyFieldUpdate()
-            : handleTokenBQtyFieldUpdate();
+        if (isOutOfRange !== undefined) {
+            tradeData.isTokenAPrimaryRange
+                ? handleTokenAQtyFieldUpdate()
+                : handleTokenBQtyFieldUpdate();
+        }
     }, [
         isOutOfRange,
         poolPriceNonDisplay,

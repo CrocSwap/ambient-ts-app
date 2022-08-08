@@ -63,8 +63,9 @@ export default function RangePriceInfo(props: IRangePriceInfoPropsIF) {
                 <div className={styles.price_display}>
                     <h4 className={styles.price_title}>Current Price</h4>
                     <span className={styles.current_price}>
-                        {poolPriceCharacter}
-                        {currentPrice}
+                        {currentPrice === 'Infinity'
+                            ? '...'
+                            : `${poolPriceCharacter}${currentPrice}`}
                     </span>
                 </div>
                 {maximumPrice}

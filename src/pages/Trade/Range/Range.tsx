@@ -285,36 +285,15 @@ export default function Range(props: RangePropsIF) {
     const [rangeLowTick, setRangeLowTick] = useState(tradeData.advancedLowTick);
     const [rangeHighTick, setRangeHighTick] = useState(tradeData.advancedHighTick);
 
-    useEffect(() => {
-        console.log({ rangeLowTick });
-    }, [rangeLowTick]);
-
-    useEffect(() => {
-        console.log({ rangeHighTick });
-    }, [rangeHighTick]);
-
-    const rangeSpanAboveCurrentPrice = rangeHighTick - currentPoolPriceTick;
-    const rangeSpanBelowCurrentPrice = currentPoolPriceTick - rangeLowTick;
-    useEffect(() => {
-        if (currentPoolPriceTick === 0 || rangeHighTick === 0 || rangeLowTick === 0) {
-            return;
-        } else {
-            setIsOutOfRange(rangeSpanAboveCurrentPrice < 0 || rangeSpanBelowCurrentPrice < 0);
-        }
-    }, [
-        rangeSpanAboveCurrentPrice,
-        rangeHighTick,
-        rangeLowTick,
-        rangeSpanBelowCurrentPrice,
-        currentPoolPriceTick,
-    ]);
+    const [rangeSpanAboveCurrentPrice, setRangeSpanAboveCurrentPrice] = useState(0);
+    const [rangeSpanBelowCurrentPrice, setRangeSpanBelowCurrentPrice] = useState(0);
 
     useEffect(() => {
         setIsOutOfRange(undefined);
-        // setRangeHighTick(0);
-        // setRangeLowTick(0);
+        setRangeHighTick(0);
+        setRangeLowTick(0);
         setCurrentPoolPriceTick(0);
-    }, [tokenA.address, tokenB.address]);
+    }, [baseTokenAddress, quoteTokenAddress]);
 
     const isInvalidRange = rangeHighTick <= rangeLowTick;
     // const inRangeSpan = isOutOfRange ? 0 : rangeSpanAboveCurrentPrice + rangeSpanBelowCurrentPrice;
@@ -326,6 +305,25 @@ export default function Range(props: RangePropsIF) {
             setRangeButtonErrorMessage('Enter an Amount');
         }
     }, [isInvalidRange]);
+
+    useEffect(() => {
+        if (currentPoolPriceTick === 0 || rangeHighTick === 0 || rangeLowTick === 0) {
+            return;
+        } else {
+            const rangeSpanAboveCurrentPrice = rangeHighTick - currentPoolPriceTick;
+            const rangeSpanBelowCurrentPrice = currentPoolPriceTick - rangeLowTick;
+            setRangeSpanAboveCurrentPrice(rangeSpanAboveCurrentPrice);
+            setRangeSpanBelowCurrentPrice(rangeSpanBelowCurrentPrice);
+            // const rangeSpanBelowCurrentPrice = currentPoolPriceTick - rangeLowTick;
+            setIsOutOfRange(rangeSpanAboveCurrentPrice < 0 || rangeSpanBelowCurrentPrice < 0);
+        }
+    }, [
+        rangeSpanAboveCurrentPrice,
+        rangeHighTick,
+        rangeLowTick,
+        rangeSpanBelowCurrentPrice,
+        currentPoolPriceTick,
+    ]);
 
     const minimumSpan =
         rangeSpanAboveCurrentPrice < rangeSpanBelowCurrentPrice
@@ -446,8 +444,6 @@ export default function Range(props: RangePropsIF) {
                 ? setMinPriceDifferencePercentage(-highGeometricDifferencePercentage)
                 : setMinPriceDifferencePercentage(lowGeometricDifferencePercentage);
 
-            // console.log({ pinnedDisplayPrices });
-
             const rangeLowBoundDisplayField = document.getElementById(
                 'min-price-input-quantity',
             ) as HTMLInputElement;
@@ -494,7 +490,7 @@ export default function Range(props: RangePropsIF) {
                     pinnedMaxPriceDisplayTruncated,
                     lookupChain(chainId).gridSize,
                 );
-                console.log({ pinnedDisplayPrices });
+                // console.log({ pinnedDisplayPrices });
 
                 setRangeLowBoundNonDisplayPrice(pinnedDisplayPrices.pinnedMinPriceNonDisplay);
                 setRangeHighBoundNonDisplayPrice(pinnedDisplayPrices.pinnedMaxPriceNonDisplay);
