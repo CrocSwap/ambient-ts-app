@@ -4,9 +4,7 @@ import chart from '../../assets/images/Temporary/chart.svg';
 
 // import { motion } from 'framer-motion';
 import { useAppSelector, useAppDispatch } from '../../utils/hooks/reduxToolkit';
-import { FiSettings } from 'react-icons/fi';
-import { BsArrowsFullscreen } from 'react-icons/bs';
-import { AiOutlineCamera } from 'react-icons/ai';
+import { AiOutlineCamera, AiOutlineFullscreen, AiOutlineSetting } from 'react-icons/ai';
 import {
     tradeData as TradeDataIF,
     toggleDidUserFlipDenom,
@@ -233,13 +231,13 @@ export default function Trade(props: ITradeProps) {
     const graphSettingsContent = (
         <div className={styles.graph_settings_container}>
             <div>
-                <FiSettings />
+                <AiOutlineSetting size={20} />
             </div>
             <div>
-                <BsArrowsFullscreen />
+                <AiOutlineFullscreen size={20} />
             </div>
             <div>
-                <AiOutlineCamera />
+                <AiOutlineCamera size={20} />
             </div>
         </div>
     );
@@ -282,6 +280,7 @@ export default function Trade(props: ITradeProps) {
             <main className={styles.main_layout}>
                 <div className={styles.middle_col}>
                     <div className={`${styles.graph_style} ${expandGraphStyle}`}>
+                        {graphSettingsContent}
                         {tokenInfo}
                         {timeFrameContent}
                         {chartImage}
