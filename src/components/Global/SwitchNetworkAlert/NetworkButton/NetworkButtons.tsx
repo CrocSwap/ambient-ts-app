@@ -10,7 +10,10 @@ interface NetworkButtonsProps {
     // }
 }
 export default function NetworkButtons(props: NetworkButtonsProps) {
-    const { setFallbackChainId, onClose } = props;
+    const {
+        // setFallbackChainId,
+        onClose
+    } = props;
     const {
         chainId: moralisChainId,
         switchNetwork,
@@ -27,7 +30,7 @@ export default function NetworkButtons(props: NetworkButtonsProps) {
 
     const handleNetworkSwitch = (chainId: string) => {
         console.log('switching to ' + chainId);
-        setFallbackChainId(chainId);
+        // setFallbackChainId(chainId);
         if (moralisChainId) {
             switchNetwork(chainId);
         } else if (window.ethereum) {

@@ -10,9 +10,19 @@ export const useAppChain = () => {
         // account
     } = useChain();
 
-    const currentChain = useMemo(() => (
-        lookupChain(chainId ?? '0x5')
-    ), [chainId]);
+    const defaultChain = '0x5';
+
+    const currentChain = useMemo(() => {
+        const requestedChain = chainId ?? defaultChain;
+        let chn;
+        try {
+            chn = lookupChain(requestedChain);
+        } catch (err) {
+            console.warn(err);
+            chn = lookupChain(defaultChain);
+        }
+        return chn;
+    }, [chainId]);
 
     return currentChain;
 }
