@@ -4,6 +4,9 @@ import chart from '../../assets/images/Temporary/chart.svg';
 
 // import { motion } from 'framer-motion';
 import { useAppSelector, useAppDispatch } from '../../utils/hooks/reduxToolkit';
+import { FiSettings } from 'react-icons/fi';
+import { BsArrowsFullscreen } from 'react-icons/bs';
+import { AiOutlineCamera } from 'react-icons/ai';
 import {
     tradeData as TradeDataIF,
     toggleDidUserFlipDenom,
@@ -223,6 +226,20 @@ export default function Trade(props: ITradeProps) {
             <div className={styles.right_side}>
                 <span>Timeframe</span>
                 {activeTimeFrameDisplay}
+            </div>
+        </div>
+    );
+
+    const graphSettingsContent = (
+        <div className={styles.graph_settings_container}>
+            <div>
+                <FiSettings />
+            </div>
+            <div>
+                <BsArrowsFullscreen />
+            </div>
+            <div>
+                <AiOutlineCamera />
             </div>
         </div>
     );
