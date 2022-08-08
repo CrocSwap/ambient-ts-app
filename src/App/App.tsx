@@ -161,7 +161,7 @@ export default function App() {
             const onChain = exposeProviderChain(provider) === parseInt(chainId);
 
             if (isAuthenticated) {
-                if (provider && url === 'metmask' && !metamaskLocked && onChain) {
+                if (provider && url === 'metamask' && !metamaskLocked && onChain) {
                     return;
                 } else if (provider && url === 'metamask' && metamaskLocked) {
                     clickLogout();
@@ -929,8 +929,6 @@ export default function App() {
 
     // useEffect to get spot price when tokens change and block updates
     useEffect(() => {
-        console.log({ baseTokenAddress });
-        console.log({ quoteTokenAddress });
         if (
             baseTokenAddress &&
             quoteTokenAddress &&
@@ -939,15 +937,10 @@ export default function App() {
             lastBlockNumber !== 0
         ) {
             (async () => {
-                console.log({ baseTokenDecimals });
-                console.log({ quoteTokenDecimals });
                 const viewProvider = provider
                     ? provider
                     : (await new CrocEnv(chainId).context).provider;
-
-                console.log({ viewProvider });
-                console.log({ chainId });
-                console.log({ lastBlockNumber });
+                // console.log({ viewProvider });
                 const spotPrice = await querySpotPrice(
                     viewProvider,
                     baseTokenAddress,
@@ -955,6 +948,7 @@ export default function App() {
                     chainId,
                     lastBlockNumber,
                 );
+
                 // const spotPrice = await cachedQuerySpotPrice(
                 //     viewProvider,
                 //     baseTokenAddress,
@@ -962,7 +956,7 @@ export default function App() {
                 //     chainId,
                 //     lastBlockNumber,
                 // );
-                console.log({ spotPrice });
+                // console.log({ spotPrice });
 
                 setPoolPriceNonDisplay(spotPrice);
                 if (spotPrice) {
@@ -1093,8 +1087,11 @@ export default function App() {
         const baseTokenAddress = position.base;
         const quoteTokenAddress = position.quote;
 
-        const viewProvider = provider ? provider : (await new CrocEnv(chainId).context).provider;
+        // console.log({ baseTokenAddress });
+        // console.log({ quoteTokenAddress });
 
+        const viewProvider = provider ? provider : (await new CrocEnv(chainId).context).provider;
+        // const poolPriceNonDisplay = 0;
         const poolPriceNonDisplay = await cachedQuerySpotPrice(
             viewProvider,
             baseTokenAddress,
@@ -1102,8 +1099,6 @@ export default function App() {
             chainId,
             lastBlockNumber,
         );
-
-        console.log({ poolPriceNonDisplay });
 
         try {
             const ensName = await cachedFetchAddress(viewProvider, position.user, chainId);
@@ -1301,13 +1296,13 @@ export default function App() {
     useEffect(() => {
         (async () => {
             if (provider && account && isAuthenticated && isWeb3Enabled) {
-                console.log('Provider Native Balance');
-                console.dir(provider);
-                console.log(
-                    provider
-                        .getBalance('0x01e650ABfc761C6A0Fc60f62A4E4b3832bb1178b')
-                        .then(console.log),
-                );
+                // console.log('Provider Native Balance');
+                // console.dir(provider);
+                // console.log(
+                //     provider
+                //         .getBalance('0x01e650ABfc761C6A0Fc60f62A4E4b3832bb1178b')
+                //         .then(console.log),
+                // );
                 new CrocEnv(provider)
                     .tokenEth()
                     .balance(account)
