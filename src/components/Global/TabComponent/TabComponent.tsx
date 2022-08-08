@@ -2,8 +2,8 @@ import styles from './TabComponent.module.css';
 import React, { useState, useEffect, Dispatch, SetStateAction, cloneElement } from 'react';
 import { motion, AnimateSharedLayout } from 'framer-motion';
 import '../../../App/App.css';
-import { Tooltip } from '@mui/material';
-import { useStyles } from '../../../utils/functions/styles';
+
+import { DefaultTooltip } from '../StyledTooltip/StyledTooltip';
 type tabData = {
     label: string;
     content: React.ReactNode;
@@ -68,21 +68,17 @@ export default function TabComponent(props: TabProps) {
     }
 
     function handleMobileMenuIcon(icon: string, label: string) {
-        const classes = useStyles();
         return (
             <div className={styles.tab_iconf}>
-                <Tooltip
+                <DefaultTooltip
                     title={label}
                     placeholder={'bottom'}
                     arrow
                     enterDelay={400}
                     leaveDelay={200}
-                    classes={{
-                        tooltip: classes.customTooltip,
-                    }}
                 >
                     <img className={styles.tab_icon} src={icon} alt={label} width='15px' />
-                </Tooltip>
+                </DefaultTooltip>
             </div>
         );
     }

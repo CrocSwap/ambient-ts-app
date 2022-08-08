@@ -13,6 +13,7 @@
 // import PositionCard from '../../components/Global/Position/PositionCard';
 // import { TokenListIF } from '../../utils/interfaces/exports';
 import styles from './TestPage.module.css';
+import { DefaultTooltip } from '../../components/Global/StyledTooltip/StyledTooltip';
 
 // // import Range from '../../components/Global/Account/Range/Range';
 // import Transaction from '../../components/Transaction/Transaction';
@@ -122,6 +123,12 @@ export default function TestPage() {
                     <RollingBall ballSize='30px' />
                 </div> */}
                 {/* <TabComponent data={allIngredients} /> */}
+
+                <DefaultTooltip title='This tooltip is customized via withStyles' interactive arrow>
+                    <div style={{ marginBottom: '20px' }}>
+                        Hover to see blue-on-green tooltip customized via withStyles
+                    </div>
+                </DefaultTooltip>
             </div>
         </main>
     );

@@ -1,93 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-      <style>
-       .container_loader{
-    background: #0E131A;
-    width: 100vw;
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 9999;
-    
-}
 
-.water_loader{
-    width:500px;
-    height: 500px;
-    background-color: #35b3e7;
-    
-    border-radius: 50%;
-    position: relative;
-    background: url('../src/assets/images/logos/ambient_logo.svg') no-repeat center center fixed; 
-    -webkit-background-size: cover;
-    -moz-background-size: cover;
-    -o-background-size: cover;
-    background-size: cover;
-
-
-    box-shadow: inset 0 0 20px 0 rgba(0,0,0,.8), 0 0 20px 0 rgba(0,0,0,.3);
-    overflow: hidden;
-
-}
-
-.water_loader img{
-    max-width: 100%;
-}
-.water_loader:before, .water_loader:after{
-    content:'';
-    position: absolute;
-    width:200%;
-    height: 200%;
-    top: -80%;
-    left: 50%;
-    
-    
-}
-
-.water_loader:before{
-    border-radius: 45%;
-
-    
-    animation:wave 2s linear infinite;
-
-
-    
-    background: #7371FC;
-}
-.water_loader:after{
-    border-radius: 35%;
-  
-    animation:wave 2s linear infinite;
-
-  
-    background: #CDC1FF;
-   
-}
-@keyframes wave{
-    0%{
-        transform: translate(-50%, -50%) rotate(0);
-        top: -0%;
-    }
-    25%{
-       
-        top: -25%;
-    }
-    50%{
-    	top: -50%;
-    }
-    75%{
-    	top: -75%;
-    }
-    100%{
-        transform: translate(-50%, -50%)  rotate(360deg);
-        top: -100%;
-    }
-}
-
-
-      </style>
         <meta charset="utf-8" />
         <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -124,12 +38,7 @@
         <noscript>You need to enable JavaScript to run this app.</noscript>
         <div id="root">
 
-          <div class="container_loader">
-            <div class="water_loader">
-                    <img src="../src/assets/images/logos/ambient_logo.svg" alt="">
-                </div>
-        </div>
-
+ 
 
 
         </div>
