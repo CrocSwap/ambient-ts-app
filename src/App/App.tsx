@@ -442,7 +442,10 @@ export default function App() {
                                             JSON.stringify(updatedPositions)
                                         ) {
                                             dispatch(
-                                                setPositionsByPool({ positions: updatedPositions }),
+                                                setPositionsByPool({
+                                                    dataReceived: true,
+                                                    positions: updatedPositions,
+                                                }),
                                             );
                                         }
                                     },
@@ -482,7 +485,12 @@ export default function App() {
                                         JSON.stringify(graphData.swapsByUser.swaps) !==
                                         JSON.stringify(updatedSwaps)
                                     ) {
-                                        dispatch(setSwapsByPool({ swaps: updatedSwaps }));
+                                        dispatch(
+                                            setSwapsByPool({
+                                                dataReceived: true,
+                                                swaps: updatedSwaps,
+                                            }),
+                                        );
                                     }
                                 });
                             }
@@ -650,6 +658,7 @@ export default function App() {
                 Promise.all(lastMessageData.map(getPositionData)).then((updatedPositions) => {
                     dispatch(
                         setPositionsByPool({
+                            dataReceived: true,
                             positions: updatedPositions.concat(graphData.positionsByPool.positions),
                         }),
                     );
@@ -824,6 +833,7 @@ export default function App() {
                 Promise.all(lastMessageData.map(getSwapData)).then((updatedSwaps) => {
                     dispatch(
                         setSwapsByPool({
+                            dataReceived: true,
                             swaps: updatedSwaps.concat(graphData.swapsByPool.swaps),
                         }),
                     );
@@ -869,6 +879,7 @@ export default function App() {
                 Promise.all(lastMessageData.map(getPositionData)).then((updatedPositions) => {
                     dispatch(
                         setPositionsByUser({
+                            dataReceived: true,
                             positions: updatedPositions.concat(graphData.positionsByUser.positions),
                         }),
                     );
@@ -914,6 +925,7 @@ export default function App() {
                 Promise.all(lastMessageData.map(getSwapData)).then((updatedSwaps) => {
                     dispatch(
                         setSwapsByUser({
+                            dataReceived: true,
                             swaps: updatedSwaps.concat(graphData.swapsByUser.swaps),
                         }),
                     );
@@ -1206,7 +1218,10 @@ export default function App() {
                                         JSON.stringify(updatedPositions)
                                     ) {
                                         dispatch(
-                                            setPositionsByUser({ positions: updatedPositions }),
+                                            setPositionsByUser({
+                                                dataReceived: true,
+                                                positions: updatedPositions,
+                                            }),
                                         );
                                     }
                                 },
@@ -1238,7 +1253,12 @@ export default function App() {
                                     JSON.stringify(graphData.swapsByUser.swaps) !==
                                     JSON.stringify(updatedSwaps)
                                 ) {
-                                    dispatch(setSwapsByUser({ swaps: updatedSwaps }));
+                                    dispatch(
+                                        setSwapsByUser({
+                                            dataReceived: true,
+                                            swaps: updatedSwaps,
+                                        }),
+                                    );
                                 }
                             });
                         }

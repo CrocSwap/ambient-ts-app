@@ -50,10 +50,12 @@ export interface CandleData {
 }
 
 export interface PositionsByUser {
+    dataReceived: boolean;
     positions: Array<PositionIF>;
 }
 
 export interface PositionsByPool {
+    dataReceived: boolean;
     positions: Array<PositionIF>;
 }
 
@@ -101,18 +103,20 @@ export interface ISwap {
 }
 
 export interface SwapsByUser {
+    dataReceived: boolean;
     swaps: Array<ISwap>;
 }
 
 export interface SwapsByPool {
+    dataReceived: boolean;
     swaps: Array<ISwap>;
 }
 
 const initialState: graphData = {
-    positionsByUser: { positions: [] },
-    positionsByPool: { positions: [] },
-    swapsByUser: { swaps: [] },
-    swapsByPool: { swaps: [] },
+    positionsByUser: { dataReceived: false, positions: [] },
+    positionsByPool: { dataReceived: false, positions: [] },
+    swapsByUser: { dataReceived: false, swaps: [] },
+    swapsByPool: { dataReceived: false, swaps: [] },
     candlesForAllPools: { pools: [] },
 };
 
