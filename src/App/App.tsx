@@ -940,7 +940,7 @@ export default function App() {
                 const viewProvider = provider
                     ? provider
                     : (await new CrocEnv(chainId).context).provider;
-                // console.log({ viewProvider });
+
                 const spotPrice = await querySpotPrice(
                     viewProvider,
                     baseTokenAddress,
