@@ -39,7 +39,7 @@ export const useCustomToken = (
     // function to fetch metadata from on-chain by address and chain ID
     const fetchTokenMetadata = async (chainId: string, addresses: string) =>
         await Web3Api.token.getTokenMetadata({
-            chain: chainId as 'eth' | '0x1' | 'goerli' | '0x5' | 'kovan' | '0x2a',
+            chain: chainId as 'eth' | '0x1' | 'goerli' | '0x5',
             addresses: [addresses],
         });
 
