@@ -303,8 +303,8 @@ export default function Range(props: RangePropsIF) {
 
     useEffect(() => {
         setIsOutOfRange(undefined);
-        setRangeHighTick(0);
-        setRangeLowTick(0);
+        // setRangeHighTick(0);
+        // setRangeLowTick(0);
         setCurrentPoolPriceTick(0);
     }, [tokenA.address, tokenB.address]);
 
