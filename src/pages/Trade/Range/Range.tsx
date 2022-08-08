@@ -249,9 +249,9 @@ export default function Range(props: RangePropsIF) {
             setRangeHighBoundNonDisplayPrice(Infinity);
         } else {
             setIsAmbient(false);
-            if (currentPoolPriceTick === 0) {
-                return;
-            }
+            // if (currentPoolPriceTick === 0) {
+            //     return;
+            // }
             const lowTick = currentPoolPriceTick - rangeWidthPercentage * 100;
             const highTick = currentPoolPriceTick + rangeWidthPercentage * 100;
 
@@ -284,6 +284,14 @@ export default function Range(props: RangePropsIF) {
 
     const [rangeLowTick, setRangeLowTick] = useState(tradeData.advancedLowTick);
     const [rangeHighTick, setRangeHighTick] = useState(tradeData.advancedHighTick);
+
+    useEffect(() => {
+        console.log({ rangeLowTick });
+    }, [rangeLowTick]);
+
+    useEffect(() => {
+        console.log({ rangeHighTick });
+    }, [rangeHighTick]);
 
     const rangeSpanAboveCurrentPrice = rangeHighTick - currentPoolPriceTick;
     const rangeSpanBelowCurrentPrice = currentPoolPriceTick - rangeLowTick;
