@@ -19,6 +19,9 @@ export default function WalletAndId(props: WalletAndIDProps) {
 
     const walletWithTooltip = (
         <Tooltip
+            classes={{
+                tooltip: classes.customTooltip,
+            }}
             title={
                 <div>
                     <p>{ownerId}</p>
@@ -29,9 +32,6 @@ export default function WalletAndId(props: WalletAndIDProps) {
             arrow
             enterDelay={400}
             leaveDelay={200}
-            classes={{
-                tooltip: classes.customTooltip,
-            }}
         >
             <p>{ownerIdTruncated}</p>
         </Tooltip>
