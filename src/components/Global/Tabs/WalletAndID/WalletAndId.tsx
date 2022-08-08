@@ -3,7 +3,7 @@ import trimString from '../../../../utils/functions/trimString';
 import { Tooltip } from '@mui/material';
 import { useStyles } from '../../../../utils/functions/styles';
 import { NavLink } from 'react-router-dom';
-
+import { DefaultTooltip } from '../../StyledTooltip/StyledTooltip';
 interface WalletAndIDProps {
     posHash: string;
     ownerId: string;
@@ -18,7 +18,7 @@ export default function WalletAndId(props: WalletAndIDProps) {
     const posHashTruncated = trimString(posHash, 6, 0, '…');
 
     const walletWithTooltip = (
-        <Tooltip
+        <DefaultTooltip
             classes={{
                 tooltip: classes.customTooltip,
             }}
@@ -34,10 +34,10 @@ export default function WalletAndId(props: WalletAndIDProps) {
             leaveDelay={200}
         >
             <p>{ownerIdTruncated}</p>
-        </Tooltip>
+        </DefaultTooltip>
     );
     const IDWithTooltip = (
-        <Tooltip
+        <DefaultTooltip
             title={posHash}
             placement={'right'}
             arrow
@@ -48,10 +48,10 @@ export default function WalletAndId(props: WalletAndIDProps) {
             }}
         >
             <p>{posHashTruncated}</p>
-        </Tooltip>
+        </DefaultTooltip>
     );
     const ENSWithTooltip = (
-        <Tooltip
+        <DefaultTooltip
             title={
                 <div>
                     <p>{ensName}</p>
@@ -67,7 +67,7 @@ export default function WalletAndId(props: WalletAndIDProps) {
             }}
         >
             <p className={styles.ens}>{ensNameTruncated}</p>
-        </Tooltip>
+        </DefaultTooltip>
     );
 
     const displayENSorWallet = ensName ? ENSWithTooltip : walletWithTooltip;
