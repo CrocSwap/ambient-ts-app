@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useChain } from 'react-moralis';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
@@ -12,7 +12,16 @@ export const useAppChain = () => {
 
     const defaultChain = '0x5';
 
-    const currentChain = useMemo(() => {
+    const [ currentChain, setCurrentChain ] = useState(defaultChain);
+
+    useEffect(() => {
+        if (chainId !== currentChain) {
+            chainId ?? console.log(`updating chain to: ${chainId ?? defaultChain}`);
+            setCurrentChain(chainId ?? defaultChain);
+        }
+    }, [chainId]);
+
+    const chainData = useMemo(() => {
         const requestedChain = chainId ?? defaultChain;
         let chn;
         try {
@@ -24,5 +33,5 @@ export const useAppChain = () => {
         return chn;
     }, [chainId]);
 
-    return currentChain;
+    return chainData;
 }
