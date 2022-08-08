@@ -4,7 +4,6 @@ import { useChain } from 'react-moralis';
 import { FaDotCircle } from 'react-icons/fa';
 import DropdownMenu2 from '../../../../components/Global/DropdownMenu2/DropdownMenu2';
 import { motion } from 'framer-motion';
-import kovanImage from '../../../../assets/images/networks/kovan.svg';
 import ethereumImage from '../../../../assets/images/networks/ethereum.png';
 import { ItemEnterAnimation } from '../../../../utils/others/FramerMotionAnimations';
 
@@ -29,21 +28,15 @@ export default function NetworkSelector(props: NetworkSelectorProps) {
     // console.log(chainId);
     const chains = [
         {
-            name: 'Kovan ',
-            id: '0x2a',
-            icon: kovanImage,
-            theme: '#36364a',
-        },
-        {
             name: 'Görli ',
             id: '0x5',
-            icon: kovanImage,
+            icon: ethereumImage,
             theme: '#36364a',
         },
         {
             name: 'Avalanche ',
             id: '0xa869',
-            icon: kovanImage,
+            icon: ethereumImage,
             theme: 'red',
         },
         {
