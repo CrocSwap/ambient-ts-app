@@ -17,6 +17,7 @@ export default function WalletAndId(props: WalletAndIDProps) {
 
     const walletWithTooltip = (
         <DefaultTooltip
+            interactive
             title={
                 <div>
                     <p>{ownerId}</p>
@@ -32,12 +33,20 @@ export default function WalletAndId(props: WalletAndIDProps) {
         </DefaultTooltip>
     );
     const IDWithTooltip = (
-        <DefaultTooltip title={posHash} placement={'right'} arrow enterDelay={400} leaveDelay={200}>
+        <DefaultTooltip
+            interactive
+            title={posHash}
+            placement={'right'}
+            arrow
+            enterDelay={400}
+            leaveDelay={200}
+        >
             <p>{posHashTruncated}</p>
         </DefaultTooltip>
     );
     const ENSWithTooltip = (
         <DefaultTooltip
+            interactive
             title={
                 <div>
                     <p>{ensName}</p>
