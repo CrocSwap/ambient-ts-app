@@ -305,6 +305,11 @@
     .graph_settings_container div{
         cursor: pointer;
     }
+
+    .graph_style{
+        resize: vertical;
+        overflow: auto;
+    }
    
 
 
