@@ -4,7 +4,16 @@ import chart from '../../assets/images/Temporary/chart.svg';
 
 // import { motion } from 'framer-motion';
 import { useAppSelector, useAppDispatch } from '../../utils/hooks/reduxToolkit';
-import { AiOutlineCamera, AiOutlineFullscreen, AiOutlineSetting } from 'react-icons/ai';
+import {
+    AiOutlineCamera,
+    AiOutlineFullscreen,
+    AiOutlineSetting,
+    AiOutlineDownload,
+    AiOutlineCopy,
+    AiOutlineLink,
+    AiOutlineTwitter,
+} from 'react-icons/ai';
+import { HiOutlineExternalLink } from 'react-icons/hi';
 import {
     tradeData as TradeDataIF,
     toggleDidUserFlipDenom,
@@ -17,6 +26,7 @@ import TradeTabs2 from '../../components/Trade/TradeTabs/TradeTabs2';
 import { Dispatch, SetStateAction, useState, useEffect } from 'react';
 import { motion, AnimateSharedLayout } from 'framer-motion';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
+import { DefaultTooltip } from '../../components/Global/StyledTooltip/StyledTooltip';
 
 interface ITradeProps {
     account: string;
@@ -229,7 +239,31 @@ export default function Trade(props: ITradeProps) {
         </div>
     );
 
-    console.log(fullScreenChart);
+    const saveImageContent = (
+        <div className={styles.save_image_container}>
+            <div className={styles.save_image_content}>
+                <AiOutlineDownload />
+                Save Chart Image
+            </div>
+            <div className={styles.save_image_content}>
+                <AiOutlineCopy />
+                Copy Chart Image
+            </div>
+            <div className={styles.save_image_content}>
+                <AiOutlineLink />
+                Copy link to the chart image
+            </div>
+            <div className={styles.save_image_content}>
+                <HiOutlineExternalLink />
+                Open image in new tab
+            </div>
+            <div className={styles.save_image_content}>
+                <AiOutlineTwitter />
+                Tweet chart image
+            </div>
+        </div>
+    );
+
     // eslint-disable-next-line
     function closeOnEscapeKeyDown(e: any) {
         if ((e.charCode || e.keyCode) === 27) setFullScreenChart(false);
@@ -249,9 +283,11 @@ export default function Trade(props: ITradeProps) {
             <div onClick={() => setFullScreenChart(true)}>
                 <AiOutlineFullscreen size={20} />
             </div>
-            <div>
-                <AiOutlineCamera size={20} />
-            </div>
+            <DefaultTooltip interactive title={saveImageContent}>
+                <div>
+                    <AiOutlineCamera size={20} />
+                </div>
+            </DefaultTooltip>
         </div>
     );
 
