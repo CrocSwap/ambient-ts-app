@@ -30,7 +30,7 @@ import {
     toDisplayPrice,
     tickToPrice,
     CrocEnv,
-    toDisplayQty,
+    toDisplayQty
 } from '@crocswap-libs/sdk';
 
 import { receiptData, resetReceiptData } from '../utils/state/receiptDataSlice';
@@ -78,10 +78,10 @@ import { getNFTs } from './functions/getNFTs';
 import { memoizeTokenDecimals } from './functions/queryTokenDecimals';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { useSlippage } from './useSlippage';
+import { useAppChain } from './hooks/useAppChain';
 import { addNativeBalance, resetTokenData, setTokens } from '../utils/state/tokenDataSlice';
 import { checkIsStable } from '../utils/data/stablePairs';
 import { useTokenMap } from '../utils/hooks/useTokenMap';
-import { chains } from '../utils/data/chains';
 import Reposition from '../pages/Trade/Reposition/Reposition';
 import SidebarFooter from '../components/Global/SIdebarFooter/SidebarFooter';
 // import SidebarFooter from '../components/Global/SIdebarFooter/SidebarFooter';
@@ -116,8 +116,6 @@ export default function App() {
 
     const location = useLocation();
 
-    console.log(chains);
-
     const [fallbackChainId, setFallbackChainId] = useState('0x5');
     const [switchTabToTransactions, setSwitchTabToTransactions] = useState<boolean>(false);
 
@@ -127,6 +125,8 @@ export default function App() {
     const [expandTradeTable, setExpandTradeTable] = useState(false);
 
     const chainId = moralisChainId ? moralisChainId : fallbackChainId;
+
+    useAppChain();
 
     const poolIndex = useMemo(() => lookupChain(chainId).poolIndex.toString(), [chainId]);
 
