@@ -18,7 +18,7 @@ import DividerDark from '../../../components/Global/DividerDark/DividerDark';
 import Modal from '../../../components/Global/Modal/Modal';
 import ConfirmLimitModal from '../../../components/Trade/Limit/ConfirmLimitModal/ConfirmLimitModal';
 import styles from './Limit.module.css';
-import truncateDecimals from '../../../utils/data/truncateDecimals';
+// import truncateDecimals from '../../../utils/data/truncateDecimals';
 
 // START: Import Local Files
 import { useTradeData } from '../Trade';
@@ -299,8 +299,10 @@ export default function Limit(props: LimitPropsIF) {
                         setImportedTokens={setImportedTokens}
                         chainId={chainId ?? '0x2a'}
                         setLimitAllowed={setLimitAllowed}
-                        tokenABalance={truncateDecimals(parseFloat(tokenABalance), 4).toString()}
-                        tokenBBalance={truncateDecimals(parseFloat(tokenBBalance), 4).toString()}
+                        tokenABalance={tokenABalance}
+                        tokenBBalance={tokenBBalance}
+                        // tokenABalance={truncateDecimals(parseFloat(tokenABalance), 4).toString()}
+                        // tokenBBalance={truncateDecimals(parseFloat(tokenBBalance), 4).toString()}
                         tokenAInputQty={tokenAInputQty}
                         tokenBInputQty={tokenBInputQty}
                         setTokenAInputQty={setTokenAInputQty}

@@ -589,8 +589,8 @@ export default function Range(props: RangePropsIF) {
         minPriceDisplay = pinnedMinPriceDisplayTruncated;
     }
 
-    const truncatedTokenABalance = truncateDecimals(parseFloat(tokenABalance), 4).toString();
-    const truncatedTokenBBalance = truncateDecimals(parseFloat(tokenBBalance), 4).toString();
+    // const truncatedTokenABalance = truncateDecimals(parseFloat(tokenABalance), 4).toString();
+    // const truncatedTokenBBalance = truncateDecimals(parseFloat(tokenBBalance), 4).toString();
 
     const sendTransaction = async () => {
         if (!provider || !(provider as ethers.providers.JsonRpcProvider).getSigner()) {
@@ -790,8 +790,10 @@ export default function Range(props: RangePropsIF) {
         setIsWithdrawTokenAFromDexChecked: setIsWithdrawTokenAFromDexChecked,
         isWithdrawTokenBFromDexChecked: isWithdrawTokenBFromDexChecked,
         setIsWithdrawTokenBFromDexChecked: setIsWithdrawTokenBFromDexChecked,
-        truncatedTokenABalance: truncatedTokenABalance,
-        truncatedTokenBBalance: truncatedTokenBBalance,
+        tokenABalance: tokenABalance,
+        tokenBBalance: tokenBBalance,
+        // truncatedTokenABalance: truncatedTokenABalance,
+        // truncatedTokenBBalance: truncatedTokenBBalance,
         setTokenAInputQty: setTokenAInputQty,
         setTokenBInputQty: setTokenBInputQty,
         setRangeButtonErrorMessage: setRangeButtonErrorMessage,

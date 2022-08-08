@@ -133,10 +133,10 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
     ) : null;
 
     const walletBalance =
-        props.sellToken && tokenABalance !== 'NaN'
-            ? tokenABalance
-            : !props.sellToken && tokenBBalance !== 'NaN'
-            ? tokenBBalance
+        props.sellToken && tokenABalance !== ''
+            ? parseFloat(tokenABalance).toLocaleString()
+            : !props.sellToken && tokenBBalance !== ''
+            ? parseFloat(tokenBBalance).toLocaleString()
             : '0';
 
     return (

@@ -307,14 +307,10 @@ export default function Swap(props: SwapPropsIF) {
                                 parseFloat(nativeBalance),
                                 4,
                             ).toString()}
-                            tokenABalance={truncateDecimals(
-                                parseFloat(tokenABalance),
-                                4,
-                            ).toString()}
-                            tokenBBalance={truncateDecimals(
-                                parseFloat(tokenBBalance),
-                                4,
-                            ).toString()}
+                            // tokenABalance={parseFloat(tokenABalance).toLocaleString()}
+                            // tokenBBalance={parseFloat(tokenBBalance).toLocaleString()}
+                            tokenABalance={tokenABalance}
+                            tokenBBalance={tokenBBalance}
                             tokenAInputQty={tokenAInputQty}
                             tokenBInputQty={tokenBInputQty}
                             setTokenAInputQty={setTokenAInputQty}
