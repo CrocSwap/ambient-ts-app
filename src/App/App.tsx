@@ -25,7 +25,13 @@ import {
 import useWebSocket from 'react-use-websocket';
 // import { ReadyState } from 'react-use-websocket';
 // import Moralis from 'moralis';
-import { sortBaseQuoteTokens, toDisplayPrice, tickToPrice, CrocEnv } from '@crocswap-libs/sdk';
+import {
+    sortBaseQuoteTokens,
+    toDisplayPrice,
+    tickToPrice,
+    CrocEnv,
+    toDisplayQty,
+} from '@crocswap-libs/sdk';
 
 import { receiptData, resetReceiptData } from '../utils/state/receiptDataSlice';
 
@@ -1258,7 +1264,8 @@ export default function App() {
                     .balance(account)
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     .then((eth: any) => {
-                        setNativeBalance(eth.toString());
+                        const displayBalance = toDisplayQty(eth.toString(), 18);
+                        if (displayBalance) setNativeBalance(displayBalance);
 
                         const nativeToken: TokenIF = {
                             name: 'Native Token',
