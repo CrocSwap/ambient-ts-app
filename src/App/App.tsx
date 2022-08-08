@@ -70,7 +70,7 @@ import {
     setDenomInBase,
 } from '../utils/state/tradeDataSlice';
 // import PositionDetails from '../pages/Trade/Range/PositionDetails';
-import { memoizeQuerySpotPrice } from './functions/querySpotPrice';
+import { memoizeQuerySpotPrice, querySpotPrice } from './functions/querySpotPrice';
 import { memoizeFetchAddress } from './functions/fetchAddress';
 import { memoizeTokenBalance } from './functions/fetchTokenBalances';
 import truncateDecimals from '../utils/data/truncateDecimals';
@@ -107,6 +107,7 @@ export default function App() {
         account,
         logout,
         isAuthenticated,
+        isInitialized,
     } = useMoralis();
 
     const tokenMap = useTokenMap();
@@ -216,6 +217,21 @@ export default function App() {
         initializeUserLocalStorage();
         getImportedTokens();
     }, [tokenListsReceived]);
+
+    useEffect(() => {
+        if (isInitialized) {
+            (async () => {
+                const currentDateTime = new Date().toISOString();
+                const defaultChain = 'goerli';
+                const options = {
+                    chain: defaultChain as 'goerli', // Cheat and narrow type. We know chain string matches Moralis' chain union type
+                    date: currentDateTime,
+                };
+                const currentBlock = (await Moralis.Web3API.native.getDateToBlock(options)).block;
+                setLastBlockNumber(currentBlock);
+            })();
+        }
+    }, [isInitialized]);
 
     // hook holding values and setter functions for slippage
     // holds stable and volatile values for swap and mint transactions
@@ -913,21 +929,43 @@ export default function App() {
 
     // useEffect to get spot price when tokens change and block updates
     useEffect(() => {
-        if (baseTokenAddress && quoteTokenAddress) {
+        console.log({ baseTokenAddress });
+        console.log({ quoteTokenAddress });
+        if (
+            baseTokenAddress &&
+            quoteTokenAddress &&
+            baseTokenDecimals &&
+            quoteTokenDecimals &&
+            lastBlockNumber !== 0
+        ) {
             (async () => {
-                if (!provider) {
-                    return;
-                }
+                console.log({ baseTokenDecimals });
+                console.log({ quoteTokenDecimals });
+                const viewProvider = provider
+                    ? provider
+                    : (await new CrocEnv(chainId).context).provider;
 
-                const spotPrice = await cachedQuerySpotPrice(
-                    provider,
+                console.log({ viewProvider });
+                console.log({ chainId });
+                console.log({ lastBlockNumber });
+                const spotPrice = await querySpotPrice(
+                    viewProvider,
                     baseTokenAddress,
                     quoteTokenAddress,
                     chainId,
                     lastBlockNumber,
                 );
-                if (poolPriceNonDisplay !== spotPrice) {
-                    setPoolPriceNonDisplay(spotPrice);
+                // const spotPrice = await cachedQuerySpotPrice(
+                //     viewProvider,
+                //     baseTokenAddress,
+                //     quoteTokenAddress,
+                //     chainId,
+                //     lastBlockNumber,
+                // );
+                console.log({ spotPrice });
+
+                setPoolPriceNonDisplay(spotPrice);
+                if (spotPrice) {
                     const displayPrice = toDisplayPrice(
                         spotPrice,
                         baseTokenDecimals,
@@ -937,7 +975,15 @@ export default function App() {
                 }
             })();
         }
-    }, [lastBlockNumber, baseTokenAddress, quoteTokenAddress, chainId]);
+    }, [
+        lastBlockNumber,
+        baseTokenAddress,
+        quoteTokenAddress,
+        baseTokenDecimals,
+        quoteTokenDecimals,
+        chainId,
+        provider,
+    ]);
 
     // useEffect to update selected token balances
     useEffect(() => {
@@ -948,7 +994,7 @@ export default function App() {
                     .balanceDisplay(account)
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     .then((bal: any) => setTokenABalance(bal));
-                croc.token(tokenPair.dataTokenA.address)
+                croc.token(tokenPair.dataTokenB.address)
                     .balanceDisplay(account)
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     .then((bal: any) => setTokenBBalance(bal));
@@ -961,6 +1007,7 @@ export default function App() {
         isAuthenticated,
         JSON.stringify(tokenPair),
         lastBlockNumber,
+        provider,
     ]);
 
     const [tokenAAllowance, setTokenAAllowance] = useState<string>('');
@@ -1055,6 +1102,8 @@ export default function App() {
             chainId,
             lastBlockNumber,
         );
+
+        console.log({ poolPriceNonDisplay });
 
         try {
             const ensName = await cachedFetchAddress(viewProvider, position.user, chainId);
