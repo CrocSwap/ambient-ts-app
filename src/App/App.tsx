@@ -126,7 +126,8 @@ export default function App() {
 
     const chainId = moralisChainId ? moralisChainId : fallbackChainId;
 
-    useAppChain();
+    const currentChain = useAppChain();
+    useEffect(() => {console.log({currentChain})}, [currentChain]);
 
     const poolIndex = useMemo(() => lookupChain(chainId).poolIndex.toString(), [chainId]);
 
