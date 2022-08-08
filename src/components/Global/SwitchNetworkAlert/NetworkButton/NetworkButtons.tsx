@@ -1,18 +1,17 @@
-// import styles from './Row.module.css';
+import { Dispatch, SetStateAction } from 'react';
 import { useChain } from 'react-moralis';
-import kovanImage from '../../../../assets/images/networks/kovan.svg';
+import optimisticImage from '../../../../assets/images/networks/optimistic.svg';
 import NetworkButton from './NetworkButton';
+
 interface NetworkButtonsProps {
-    //     children: React.ReactNode;
     chainId: string;
-    setFallbackChainId: React.Dispatch<React.SetStateAction<string>>;
+    setFallbackChainId: Dispatch<SetStateAction<string>>;
     onClose: () => void;
     // }
 }
 export default function NetworkButtons(props: NetworkButtonsProps) {
     const { setFallbackChainId, onClose } = props;
     const {
-        // chainId,
         chainId: moralisChainId,
         switchNetwork,
     } = useChain();
@@ -21,12 +20,11 @@ export default function NetworkButtons(props: NetworkButtonsProps) {
         {
             name: 'Görli ',
             id: '0x5',
-            icon: kovanImage,
+            icon: optimisticImage,
             theme: '#36364a',
         },
     ];
 
-    // const currenctChain = supportedChains.filter((chain) => chain.id === chainId);
     const handleNetworkSwitch = (chainId: string) => {
         console.log('switching to ' + chainId);
         setFallbackChainId(chainId);
