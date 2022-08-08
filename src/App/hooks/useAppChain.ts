@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { useChain } from 'react-moralis';
+import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
 export const useAppChain = () => {
     const {
@@ -9,7 +10,9 @@ export const useAppChain = () => {
         // account
     } = useChain();
 
-    const currentChain = useMemo(() => chainId ?? '0x5', [chainId]);
+    const currentChain = useMemo(() => (
+        lookupChain(chainId ?? '0x5')
+    ), [chainId]);
 
     return currentChain;
 }
