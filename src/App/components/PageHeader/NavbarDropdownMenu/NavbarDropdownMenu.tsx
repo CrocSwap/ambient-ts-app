@@ -9,7 +9,6 @@ import { MdHelp, MdArrowForwardIos, MdLanguage, MdReportProblem } from 'react-ic
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 // import arbitrumImage from '../../../../assets/images/networks/arbitrum.svg';
-// // import kovanImage from '../../../../assets/images/networks/kovan.svg';
 // import optimisticImage from '../../../../assets/images/networks/optimistic.svg';
 // import polygonImage from '../../../../assets/images/networks/polygon.svg';
 // // import ethereumImage from '../../../../assets/images/networks/ethereum.png';
@@ -121,21 +120,14 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuProps) {
     //             Ethereum
     //         </NavbarDropdownItem>
     //         <NavbarDropdownItem
-    //             imageIcon={kovanImage}
-    //             rightIcon={chainId === '0x2a' ? circleIcon : null}
-    //             onClick={() => handleNetworkSwitch('0x2a')}
-    //         >
-    //             Kovan
-    //         </NavbarDropdownItem>
-    //         <NavbarDropdownItem
-    //             imageIcon={kovanImage}
+    //             imageIcon={ethereumImage}
     //             rightIcon={chainId === '0x3' ? circleIcon : null}
     //             onClick={() => handleNetworkSwitch('0x3')}
     //         >
     //             Ropsten
     //         </NavbarDropdownItem>
     //         <NavbarDropdownItem
-    //             imageIcon={kovanImage}
+    //             imageIcon={ethereumImage}
     //             rightIcon={chainId === '0x5' ? circleIcon : null}
     //             onClick={() => handleNetworkSwitch('0x5')}
     //         >
