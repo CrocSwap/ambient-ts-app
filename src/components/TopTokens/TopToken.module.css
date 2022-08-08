@@ -1,93 +1,114 @@
-.topToken_info, .options_container{
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-   
+.main_container{
+  /* margin: 3rem 0; */
+  display: grid;
+  grid-template-columns:  auto 50px;
+  align-items: center;
+  height: 40px;
+  cursor: pointer;
+}
+.tokens_container{
+  display: none;
+}
+.row_container{
+  display: flex;
+  align-items: center;
+  width: 100%;
 }
 
-.topToken_id{
-    font-weight: 500;
-    color: var(--text-grey-light); 
+.row_container section{
+  flex: 0.17 0;
+  /* flex-flow: column; */
+  align-items: center;
+  padding: 2px 8px;
+  /* font-size: 10px; */
 }
 
-.apy{
-    background: linear-gradient(90deg, #15BE6F 32.38%, #8FE9BF 51.39%, #15BE6F 68.17%);
--webkit-background-clip: text;
--webkit-text-fill-color: transparent;
-background-clip: text;
+.menu_container{
+  display: flex;
+  width: 100%;
+  justify-content: flex-end;
 
-text-shadow: 0px 0px 10px rgba(21, 190, 111, 0.75);
-}
-
-.lowPriceChange{
-  background: linear-gradient(90deg, red 32.38%, red 51.39%, red 68.17%);
--webkit-background-clip: text;
--webkit-text-fill-color: transparent;
-background-clip: text;
-
-text-shadow: 0px 0px 10px rgba(243, 5, 5, 0.75);
 }
 
 
-.token_list_text{
-  font-size: var(--header2-size);
-  line-height: var(--header2-lh);
-  color: var(--text-grey-white);
-  font-weight: 80;
+
+.display {
+  display: none;
+  color: rgba(235, 235, 255, 0.4);
+
+}
+
+
+
+/* Desktop screen Sizes */
+@media only screen and (min-width: 768px) {
+  .display {
+      display: flex;
   
-}
-
-.token_select img {
-  max-width: 100%;
-
-}
-.option_buttons{
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.option_button{
-    border-radius:6.25rem;
-    font-size: var(--body-size);
-    line-height: var(--body-lh);
-    color: var(--text-grey-light); 
-
-    padding: .5rem 1rem;
-    
-    border: solid 1px transparent;
-    background-image: linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, 0)), linear-gradient(101deg, #7371FC, #CDC1FF, #7371FC
-    );
-    background-origin: border-box;
-    background-clip: content-box, border-box;
-    box-shadow: 2px 1000px 1px var(--dark3) inset;
-    transition: box-shadow 250ms ease-in-out;
-    cursor: pointer;
-  }
-
-  .option_button:hover {
-    box-shadow: none;
-    color: black;
-    
-  }
-
-  .option_button{
-    color: var(--text-grey-white);
-    border-radius:6.25rem;
-    transition: all 0.7s ease-out;
-    background: linear-gradient(270deg, #7371FC, #CDC1FF, #7371FC , rgba(34,34,34,0), rgba(34,34,34,0));
-    background-topToken: 1% 50%;
-    background-size: 300% 300%;
-    
-    text-decoration: none;
-    border: 1px solid #7371FC;
-  }
-  .option_button:hover{
-    color: var(--text-grey-white);
-    border: 1px solid rgba(223,190,106,0);
-    color: white;
-    background-topToken: 99% 50%;
+      font-size: 10px;
+line-height: 13px; 
   }
   
+  
+  }
+
+/* Desktop screen Sizes */
+@media only screen and (min-width: 1200px) {
+  .display {
+     
+  
+      font-size: 12px;
+      line-height: 16px;  
+  }
+  
+  
+  }
+
+
+
+
+
+/* Mobile Landscape Screen Sizes */
+@media only screen and (min-width: 480px)  {
+.tokens_container{
+  display: flex;
+}
+  .main_container{
+      grid-template-columns:  50px auto 50px;
+      /* background: red; */
+  }
+}
+
+/* Desktop screen Sizes */
+@media only screen and (min-width: 768px) {
+
+}
+
+/* Large devices (laptops/desktops, 992px and up) */
+@media only screen and (min-width: 992px) {
+  .main_container{
+      grid-template-columns: 100px auto 50px;
+      /* background: blue; */
+    
+  }
+}
+
+/* Extra large devices (large laptops and desktops, 1200px and up) */
+@media only screen and (min-width: 1200px) {
+
+}
+
+/* Extra large devices (large laptops and desktops, 1200px and up) */
+@media only screen and (min-width: 1500px) {
+
+  .main_container{
+      grid-template-columns: 100px auto 250px;
+  }
+}
+/* Extra large devices (large laptops and desktops, 1200px and up) */
+@media only screen and (min-width: 1600px) {
+
+  .main_container{
+      grid-template-columns: 100px 1fr 0.6fr;
+  }
+}

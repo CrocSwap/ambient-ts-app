@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useState } from 'react';
 import { TOKEN_HIDE } from '../../constants';
 import { TokenData } from '../../state/tokens/models';
+import TokenCardHeader from './TokenCardHeader';
 import TopTokenRow from './TopTokenRow';
 import styles from './TopTokens.module.css';
 
@@ -8,16 +9,16 @@ interface TokenProps {
     tokens: TokenData[];
 }
 
-export default function TopTokens(props: TokenProps) {
-    const SORT_FIELD = {
-        name: 'name',
-        volumeUSD: 'volumeUSD',
-        tvlUSD: 'tvlUSD',
-        priceUSD: 'priceUSD',
-        priceUSDChange: 'priceUSDChange',
-        priceUSDChangeWeek: 'priceUSDChangeWeek',
-    };
+export const SORT_FIELD = {
+    name: 'name',
+    volumeUSD: 'volumeUSD',
+    tvlUSD: 'tvlUSD',
+    priceUSD: 'priceUSD',
+    priceUSDChange: 'priceUSDChange',
+    priceUSDChangeWeek: 'priceUSDChangeWeek',
+};
 
+export default function TopTokens(props: TokenProps) {
     const [sortField, setSortField] = useState(SORT_FIELD.tvlUSD);
     const [sortDirection, setSortDirection] = useState<boolean>(true);
 
@@ -91,12 +92,11 @@ export default function TopTokens(props: TokenProps) {
     );
 
     return (
-        <div className={styles.topToken_table_display}>
-            <table>
-                {topTokensHeader}
-
-                <tbody>{topTokensDisplay}</tbody>
-            </table>
+        <div className={styles.container}>
+            <div className={styles.container}>
+                <TokenCardHeader />
+                {topTokensDisplay}
+            </div>
         </div>
     );
 }

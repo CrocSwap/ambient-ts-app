@@ -98,10 +98,10 @@ export default function AnalyticsTabs() {
                     <TopTokens tokens={searchWord.length > 0 ? tokens : tokensResult} />
                 </TabContent>
                 <TabContent id='tab2' activeTab={activeTab}>
-                    <Pools pools={searchWord.length > 0 ? pools : poolsResult} propType='top' />
+                    <Pools pools={searchWord.length > 0 ? pools : poolsResult} />
                 </TabContent>
                 <TabContent id='tab3' activeTab={activeTab}>
-                    <Pools pools={searchWord.length > 0 ? pools : poolsResult} propType='trend' />
+                    <Pools pools={searchWord.length > 0 ? pools : poolsResult} />
                 </TabContent>
                 <TabContent id='tab4' activeTab={activeTab}>
                     <TopRanges />
