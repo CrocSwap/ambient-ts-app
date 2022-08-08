@@ -5,6 +5,7 @@ import { graphData } from '../../../../utils/state/graphDataSlice';
 import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { Dispatch, SetStateAction, useState, useEffect } from 'react';
+import TransactionsSkeletons from './TransactionsSkeletons/TransactionsSkeletons';
 
 interface TransactionsProps {
     isShowAllEnabled: boolean;
@@ -38,14 +39,14 @@ export default function Transactions(props: TransactionsProps) {
 
     const [transactionData, setTransactionData] = useState(swapsByPool);
     // todoJr: Finish this loading logic
-    // const [ isDataLoading, setIsDataLoading] = useState(true)
-    // useEffect(() => {
-    //     if (swapsByPool.length > 1) {
-    //         setIsDataLoading(false)
-    //     }
-    // }, [graphData])
+    const [isDataLoading, setIsDataLoading] = useState(true);
+    useEffect(() => {
+        if (swapsByPool.length) {
+            setIsDataLoading(false);
+        }
+    }, [graphData, transactionData]);
 
-    // console.log(isDataLoading)
+    console.log(isDataLoading);
 
     useEffect(() => {
         !isShowAllEnabled ? setTransactionData(swapsByUser) : setTransactionData(swapsByPool);
@@ -90,7 +91,7 @@ export default function Transactions(props: TransactionsProps) {
                 className={styles.item_container}
                 style={{ height: expandTradeTable ? '100%' : '220px' }}
             >
-                {TransactionsDisplay}
+                {isDataLoading ? <TransactionsSkeletons /> : TransactionsDisplay}
             </div>
         </div>
     );
