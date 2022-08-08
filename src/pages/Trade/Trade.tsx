@@ -14,7 +14,7 @@ import truncateDecimals from '../../utils/data/truncateDecimals';
 import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
 // import TradeTabs from '../../components/Trade/TradeTabs/TradeTabs';
 import TradeTabs2 from '../../components/Trade/TradeTabs/TradeTabs2';
-import { Dispatch, SetStateAction, useState } from 'react';
+import { Dispatch, SetStateAction, useState, useEffect } from 'react';
 import { motion, AnimateSharedLayout } from 'framer-motion';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
 
@@ -40,6 +40,7 @@ interface ITradeProps {
 
 export default function Trade(props: ITradeProps) {
     const { tokenMap } = props;
+    const [fullScreenChart, setFullScreenChart] = useState(false);
 
     // const location = useLocation();
     // const currentLocation = location.pathname;
@@ -228,12 +229,24 @@ export default function Trade(props: ITradeProps) {
         </div>
     );
 
+    console.log(fullScreenChart);
+    // eslint-disable-next-line
+    function closeOnEscapeKeyDown(e: any) {
+        if ((e.charCode || e.keyCode) === 27) setFullScreenChart(false);
+    }
+
+    useEffect(() => {
+        document.body.addEventListener('keydown', closeOnEscapeKeyDown);
+        return function cleanUp() {
+            document.body.removeEventListener('keydown', closeOnEscapeKeyDown);
+        };
+    });
     const graphSettingsContent = (
         <div className={styles.graph_settings_container}>
             <div>
                 <AiOutlineSetting size={20} />
             </div>
-            <div>
+            <div onClick={() => setFullScreenChart(true)}>
                 <AiOutlineFullscreen size={20} />
             </div>
             <div>
@@ -242,8 +255,9 @@ export default function Trade(props: ITradeProps) {
         </div>
     );
 
+    const fullScreenStyle = fullScreenChart ? styles.chart_full_screen : styles.chart_image;
     const chartImage = (
-        <div className={styles.chart_image}>
+        <div className={fullScreenStyle}>
             <img src={chart} alt='chart' />
         </div>
     );
