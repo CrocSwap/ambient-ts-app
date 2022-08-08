@@ -19,7 +19,7 @@ import {
     useMoralis,
     //  useMoralisQuery,
     //  useMoralisSubscription,
-    useChain,
+    // useChain,
 } from 'react-moralis';
 
 import useWebSocket from 'react-use-websocket';
@@ -112,7 +112,7 @@ export default function App() {
 
     const tokenMap = useTokenMap();
 
-    const { switchNetwork } = useChain();
+    // const { switchNetwork } = useChain();
 
     const location = useLocation();
 
@@ -126,16 +126,16 @@ export default function App() {
 
     const chainId = moralisChainId ? moralisChainId : fallbackChainId;
 
-    const currentChain = useAppChain();
-    useEffect(() => {console.log({currentChain})}, [currentChain]);
+    const [ chainData, setChain ] = useAppChain('0x5');
+    useEffect(() => {console.log({chainData})}, [chainData]);
 
-    useEffect(() => {
-        if (isWeb3Enabled) {
-            const newNetworkHex = '0x' + parseInt(window.ethereum?.networkVersion).toString(16);
-            console.log('switching networks because metamask network changed');
-            switchNetwork(newNetworkHex);
-        }
-    }, [window.ethereum?.networkVersion]);
+    // useEffect(() => {
+    //     if (isWeb3Enabled) {
+    //         const newNetworkHex = '0x' + parseInt(window.ethereum?.networkVersion).toString(16);
+    //         console.log('switching networks because metamask network changed');
+    //         switchNetwork(newNetworkHex);
+    //     }
+    // }, [window.ethereum?.networkVersion]);
 
     const [provider, setProvider] = useState<ethers.providers.Provider>();
 
@@ -425,7 +425,7 @@ export default function App() {
                             new URLSearchParams({
                                 base: sortedTokens[0].toLowerCase(),
                                 quote: sortedTokens[1].toLowerCase(),
-                                poolIdx: currentChain.poolIndex.toString(),
+                                poolIdx: chainData.poolIndex.toString(),
                                 chainId: chainId,
                             }),
                     )
@@ -468,7 +468,7 @@ export default function App() {
                             new URLSearchParams({
                                 base: sortedTokens[0].toLowerCase(),
                                 quote: sortedTokens[1].toLowerCase(),
-                                poolIdx: currentChain.poolIndex.toString(),
+                                poolIdx: chainData.poolIndex.toString(),
                                 chainId: chainId,
                                 // n: 10 // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
                                 // page: 0 // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
@@ -574,7 +574,7 @@ export default function App() {
                             new URLSearchParams({
                                 base: baseTokenAddress.toLowerCase(),
                                 quote: quoteTokenAddress.toLowerCase(),
-                                poolIdx: currentChain.poolIndex.toString(),
+                                poolIdx: chainData.poolIndex.toString(),
                                 period: activePeriod.toString(),
                                 // period: '86400', // 1 day
                                 // period: '300', // 5 minute
@@ -599,7 +599,7 @@ export default function App() {
                                                 pool: {
                                                     baseAddress: baseTokenAddress.toLowerCase(),
                                                     quoteAddress: quoteTokenAddress.toLowerCase(),
-                                                    poolIdx: currentChain.poolIndex,
+                                                    poolIdx: chainData.poolIndex,
                                                     network: chainId,
                                                 },
                                                 duration: activePeriod,
@@ -627,7 +627,7 @@ export default function App() {
                 // baseTokenAddress.toLowerCase() || '0x0000000000000000000000000000000000000000',
                 quote: quoteTokenAddress.toLowerCase(),
                 // quoteTokenAddress.toLowerCase() || '0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa',
-                poolIdx: currentChain.poolIndex.toString(),
+                poolIdx: chainData.poolIndex.toString(),
                 chainId: chainId,
             }),
         [baseTokenAddress, quoteTokenAddress, chainId],
@@ -677,13 +677,13 @@ export default function App() {
                 // baseTokenAddress.toLowerCase() || '0x0000000000000000000000000000000000000000',
                 quote: quoteTokenAddress.toLowerCase(),
                 // quoteTokenAddress.toLowerCase() || '0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa',
-                poolIdx: currentChain.poolIndex.toString(),
+                poolIdx: chainData.poolIndex.toString(),
                 // 	positive integer	The duration of the candle, in seconds. Must represent one of the following time intervals: 5 minutes, 15 minutes, 1 hour, 4 hours, 1 day, 7 days.
                 period: activePeriod.toString(),
                 // period: '60',
                 chainId: chainId,
             }),
-        [baseTokenAddress, quoteTokenAddress, currentChain.poolIndex, activePeriod],
+        [baseTokenAddress, quoteTokenAddress, chainData.poolIndex, activePeriod],
     );
 
     const {
@@ -716,7 +716,7 @@ export default function App() {
                             pool: {
                                 baseAddress: baseTokenAddress,
                                 quoteAddress: quoteTokenAddress,
-                                poolIdx: currentChain.poolIndex,
+                                poolIdx: chainData.poolIndex,
                                 network: chainId,
                             },
                             duration: activePeriod,
@@ -736,7 +736,7 @@ export default function App() {
             new URLSearchParams({
                 base: '0x0000000000000000000000000000000000000000',
                 quote: '0x6b175474e89094c44da98b954eedeac495271d0f',
-                poolIdx: currentChain.poolIndex.toString(),
+                poolIdx: chainData.poolIndex.toString(),
                 // 	positive integer	The duration of the candle, in seconds. Must represent one of the following time intervals: 5 minutes, 15 minutes, 1 hour, 4 hours, 1 day, 7 days.
                 period: activePeriod.toString(),
                 chainId: '0x1',
@@ -745,7 +745,7 @@ export default function App() {
         [
             baseTokenAddress,
             quoteTokenAddress,
-            currentChain.poolIndex,
+            chainData.poolIndex,
             activePeriod,
             chainId,
         ],
@@ -803,7 +803,7 @@ export default function App() {
                 // baseTokenAddress.toLowerCase() || '0x0000000000000000000000000000000000000000',
                 quote: quoteTokenAddress.toLowerCase(),
                 // quoteTokenAddress.toLowerCase() || '0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa',
-                poolIdx: currentChain.poolIndex.toString(),
+                poolIdx: chainData.poolIndex.toString(),
                 chainId: chainId,
             }),
         [baseTokenAddress, quoteTokenAddress, chainId],

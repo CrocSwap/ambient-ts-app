@@ -1,19 +1,25 @@
-import { useEffect, useMemo, useState } from 'react';
+import {
+    Dispatch,
+    SetStateAction,
+    useEffect,
+    useMemo,
+    useState
+} from 'react';
 import { useChain } from 'react-moralis';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import { ChainSpec } from '@crocswap-libs/sdk';
 
-export const useAppChain = () => {
+export const useAppChain = (defaultChain: string): [ ChainSpec, Dispatch<SetStateAction<string>> ] => {
     const {
-        // switchNetwork,
         chainId,
         // chain,
         // account
     } = useChain();
 
-    const defaultChain = '0x5';
-
     const [ currentChain, setCurrentChain ] = useState(defaultChain);
 
+    // if the chain in metamask changes, update the value in the app to match
+    // gatekeeping ensures this only runs when the user changes the chain in metamask
     useEffect(() => {
         if (chainId !== currentChain) {
             chainId ?? console.log(`updating chain to: ${chainId ?? defaultChain}`);
@@ -33,5 +39,5 @@ export const useAppChain = () => {
         return chn;
     }, [chainId]);
 
-    return chainData;
+    return [ chainData, setCurrentChain ];
 }
