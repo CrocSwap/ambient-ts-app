@@ -191,8 +191,19 @@ export default function Range(props: RangePropsIF) {
     const [rangeButtonErrorMessage, setRangeButtonErrorMessage] =
         useState<string>('Enter an Amount');
     // console.log({ poolPriceNonDisplay });
-    const currentPoolPriceTick =
-        poolPriceNonDisplay === 0 ? 0 : Math.log(poolPriceNonDisplay) / Math.log(1.0001);
+
+    const [currentPoolPriceTick, setCurrentPoolPriceTick] = useState(0);
+
+    useEffect(() => {
+        if (poolPriceNonDisplay === 0) {
+            setCurrentPoolPriceTick(0);
+        } else {
+            setCurrentPoolPriceTick(Math.log(poolPriceNonDisplay) / Math.log(1.0001));
+        }
+    }, [poolPriceNonDisplay]);
+
+    // const currentPoolPriceTick =
+    //     poolPriceNonDisplay === 0 ? 0 : Math.log(poolPriceNonDisplay) / Math.log(1.0001);
     const [rangeWidthPercentage, setRangeWidthPercentage] = useState<number>(
         tradeData.simpleRangeWidth,
     );
@@ -225,6 +236,7 @@ export default function Range(props: RangePropsIF) {
     const [maxPriceDifferencePercentage, setMaxPriceDifferencePercentage] = useState(
         defaultMaxPriceDifferencePercentage,
     );
+    const [isOutOfRange, setIsOutOfRange] = useState<boolean | undefined>();
 
     const [isAmbient, setIsAmbient] = useState(false);
 
@@ -237,6 +249,9 @@ export default function Range(props: RangePropsIF) {
             setRangeHighBoundNonDisplayPrice(Infinity);
         } else {
             setIsAmbient(false);
+            if (currentPoolPriceTick === 0) {
+                return;
+            }
             const lowTick = currentPoolPriceTick - rangeWidthPercentage * 100;
             const highTick = currentPoolPriceTick + rangeWidthPercentage * 100;
 
@@ -259,15 +274,40 @@ export default function Range(props: RangePropsIF) {
         }
 
         // console.log({ rangeWidthPercentage });
-    }, [rangeWidthPercentage, isAdvancedModeActive, denominationsInBase]);
+    }, [
+        currentPoolPriceTick,
+        rangeWidthPercentage,
+        isAdvancedModeActive,
+        denominationsInBase,
+        isOutOfRange,
+    ]);
 
     const [rangeLowTick, setRangeLowTick] = useState(tradeData.advancedLowTick);
     const [rangeHighTick, setRangeHighTick] = useState(tradeData.advancedHighTick);
 
     const rangeSpanAboveCurrentPrice = rangeHighTick - currentPoolPriceTick;
     const rangeSpanBelowCurrentPrice = currentPoolPriceTick - rangeLowTick;
+    useEffect(() => {
+        if (currentPoolPriceTick === 0 || rangeHighTick === 0 || rangeLowTick === 0) {
+            return;
+        } else {
+            setIsOutOfRange(rangeSpanAboveCurrentPrice < 0 || rangeSpanBelowCurrentPrice < 0);
+        }
+    }, [
+        rangeSpanAboveCurrentPrice,
+        rangeHighTick,
+        rangeLowTick,
+        rangeSpanBelowCurrentPrice,
+        currentPoolPriceTick,
+    ]);
 
-    const isOutOfRange = rangeSpanAboveCurrentPrice < 0 || rangeSpanBelowCurrentPrice < 0;
+    useEffect(() => {
+        setIsOutOfRange(undefined);
+        setRangeHighTick(0);
+        setRangeLowTick(0);
+        setCurrentPoolPriceTick(0);
+    }, [tokenA.address, tokenB.address]);
+
     const isInvalidRange = rangeHighTick <= rangeLowTick;
     // const inRangeSpan = isOutOfRange ? 0 : rangeSpanAboveCurrentPrice + rangeSpanBelowCurrentPrice;
 
@@ -598,8 +638,9 @@ export default function Range(props: RangePropsIF) {
         }
 
         const pool = new CrocEnv(provider).pool(tokenA.address, tokenB.address);
-
+        // console.log({ pool });
         const spot = await pool.displayPrice();
+        // console.log({ spot });
         const minPrice = spot * (1 - parseFloat(slippageTolerancePercentage) / 100);
         const maxPrice = spot * (1 + parseFloat(slippageTolerancePercentage) / 100);
 

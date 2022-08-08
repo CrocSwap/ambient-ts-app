@@ -46,7 +46,7 @@ export default function Transactions(props: TransactionsProps) {
         }
     }, [graphData, transactionData]);
 
-    console.log(isDataLoading);
+    // console.log(isDataLoading);
 
     useEffect(() => {
         !isShowAllEnabled ? setTransactionData(swapsByUser) : setTransactionData(swapsByPool);

@@ -44,7 +44,7 @@ interface RangeCurrencyConverterPropsIF {
     setRangeAllowed: Dispatch<SetStateAction<boolean>>;
     isTokenADisabled: boolean;
     isTokenBDisabled: boolean;
-    isOutOfRange: boolean;
+    isOutOfRange: boolean | undefined;
     rangeSpanAboveCurrentPrice: number;
     rangeSpanBelowCurrentPrice: number;
     activeTokenListsChanged: boolean;
@@ -337,10 +337,14 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
             dispatch(setIsTokenAPrimaryRange(true));
             dispatch(setPrimaryQuantityRange(input));
         } else {
+            if (isOutOfRange === undefined) {
+                return;
+            }
             if (!isOutOfRange) {
                 if (tokenAQtyLocal) setTokenAQtyValue(tokenAQtyLocal);
             } else {
-                // console.log({ rangeSpanAboveCurrentPrice });
+                console.log({ tokenAQtyLocal });
+                console.log({ tokenBQtyLocal });
                 if (rangeSpanAboveCurrentPrice < 0) {
                     if (isTokenABase) {
                         if (tokenAQtyLocal && tokenAQtyLocal !== 0) {
@@ -388,7 +392,9 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
             dispatch(setIsTokenAPrimaryRange(false));
             dispatch(setPrimaryQuantityRange(input));
         } else {
-            // console.log('updating for token B');
+            if (isOutOfRange === undefined) {
+                return;
+            }
             if (!isOutOfRange) {
                 if (tokenBQtyLocal) setTokenBQtyValue(tokenBQtyLocal);
             } else {
@@ -436,12 +442,14 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
             ? handleTokenAQtyFieldUpdate()
             : handleTokenBQtyFieldUpdate();
     }, [
+        isOutOfRange,
         poolPriceNonDisplay,
         depositSkew,
         tradeData.isTokenAPrimaryRange,
         tokenABalance,
         tokenBBalance,
-        tokenPair,
+        tokenPair.dataTokenA.address,
+        tokenPair.dataTokenB.address,
     ]);
 
     // props for <RangeCurrencyConverter/> React element

@@ -8,7 +8,7 @@ interface AdvancedPriceInfoIF {
     isDenomBase: boolean;
     isTokenABase: boolean;
     minimumSpan: number;
-    isOutOfRange: boolean;
+    isOutOfRange: boolean | undefined;
 }
 
 export default function AdvancedPriceInfo(props: AdvancedPriceInfoIF) {
