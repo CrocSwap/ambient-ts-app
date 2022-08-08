@@ -263,6 +263,7 @@ export const graphDataSlice = createSlice({
         },
         resetGraphData: (state) => {
             state.positionsByUser = initialState.positionsByUser;
+            state.swapsByUser = initialState.swapsByUser;
         },
     },
 });
