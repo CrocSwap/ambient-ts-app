@@ -7,7 +7,6 @@
 //     ropsten: ['testnet', 'ropsten', '0x3'],
 //     rinkeby: ['rinkeby', '0x4'],
 //     goerli: ['goerly', '0x5'],
-//     kovan: ['kovan', '0x2a'],
 //     binance: ['bsc', 'binance', 'binance smart chain', '0x38'],
 //     polygon: ['matic', 'polygon', '0x89'],
 //     mumbai: ['mumbai', 'matic testnet', 'polygon testnet', '0x13881'],
@@ -17,8 +16,6 @@
 // };
 
 // list all chains here that our app supports
-// const supportedChains = ['kovan'];
-
 const supportedChainsTemp = ['0x5'];
 
 export const validateChain = (currentChain: string) => {
