@@ -99,8 +99,8 @@ export const getPositionData = async (position: PositionIF): Promise<PositionIF>
     position.poolPriceInTicks = poolPriceInTicks;
 
     // if (baseTokenAddress === contractAddresses.ZERO_ADDR) {
-    //     position.baseTokenSymbol = 'ETH';
-    //     position.quoteTokenSymbol = 'DAI';
+    //     position.baseSymbol = 'ETH';
+    //     position.quoteSymbol = 'DAI';
     //     position.tokenAQtyDisplay = '1';
     //     position.tokenBQtyDisplay = '2000';
     //     // if (!position.ambient) {
@@ -111,8 +111,8 @@ export const getPositionData = async (position: PositionIF): Promise<PositionIF>
     //     baseTokenAddress.toLowerCase() ===
     //     '0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa'.toLowerCase()
     // ) {
-    //     position.baseTokenSymbol = 'DAI';
-    //     position.quoteTokenSymbol = 'USDC';
+    //     position.baseSymbol = 'DAI';
+    //     position.quoteSymbol = 'USDC';
     //     position.tokenAQtyDisplay = '101';
     //     position.tokenBQtyDisplay = '100';
     //     // if (!position.ambient) {
@@ -120,8 +120,8 @@ export const getPositionData = async (position: PositionIF): Promise<PositionIF>
     //     //     position.highRangeDisplay = '1.1';
     //     // }
     // } else {
-    //     position.baseTokenSymbol = 'unknownBase';
-    //     position.quoteTokenSymbol = 'unknownQuote';
+    //     position.baseSymbol = 'unknownBase';
+    //     position.quoteSymbol = 'unknownQuote';
     // }
     return position;
 };

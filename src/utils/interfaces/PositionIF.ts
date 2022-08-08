@@ -14,8 +14,8 @@ export interface PositionIF {
     quote: string;
     user: string;
     userEnsName: string;
-    baseTokenSymbol: string;
-    quoteTokenSymbol: string;
+    baseSymbol: string;
+    quoteSymbol: string;
     poolPriceInTicks: number;
     lowRangeDisplayInBase: string;
     highRangeDisplayInBase: string;

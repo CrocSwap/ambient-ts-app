@@ -115,9 +115,9 @@ export default function RangeCard(props: RangeCardProps) {
     const removeRangeProps = {
         isPositionInRange: isPositionInRange,
         isAmbient: position.ambient,
-        baseTokenSymbol: position.baseTokenSymbol,
+        baseTokenSymbol: position.baseSymbol,
         baseTokenDecimals: position.baseTokenDecimals,
-        quoteTokenSymbol: position.quoteTokenSymbol,
+        quoteTokenSymbol: position.quoteSymbol,
         quoteTokenDecimals: position.quoteTokenDecimals,
         lowRangeDisplayInBase: position.lowRangeDisplayInBase,
         highRangeDisplayInBase: position.highRangeDisplayInBase,

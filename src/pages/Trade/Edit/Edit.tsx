@@ -364,8 +364,8 @@ export default function Edit() {
     // Props for <CurrencyDisplayContainer/> React element
 
     const currencyDisplayContainerProps = {
-        quoteTokenSymbol: position.quoteTokenSymbol,
-        baseTokenSymbol: position.baseTokenSymbol,
+        quoteTokenSymbol: position.quoteSymbol,
+        baseTokenSymbol: position.baseSymbol,
         baseTokenImageURL: baseTokenImageURL,
         quoteTokenImageURL: quoteTokenImageURL,
         tokenAQtyDisplay: position.tokenAQtyDisplay,
@@ -375,8 +375,8 @@ export default function Edit() {
     const editPriceInfoProps = {
         currentPoolPriceDisplay: currentPoolPriceDisplay,
         denominationsInBase: denominationsInBase,
-        quoteTokenSymbol: position.quoteTokenSymbol,
-        baseTokenSymbol: position.baseTokenSymbol,
+        quoteTokenSymbol: position.quoteSymbol,
+        baseTokenSymbol: position.baseSymbol,
         tokenAQtyDisplay: position.tokenAQtyDisplay,
         tokenBQtyDisplay: position.tokenBQtyDisplay,
         ambient: position.ambient,
@@ -393,8 +393,8 @@ export default function Edit() {
     const editDenominationSwitchProps = {
         denominationsInBase: denominationsInBase,
         // setDenominationsInBase: dispatch(toggleDidUserFlipDenom),
-        quoteTokenSymbol: position.quoteTokenSymbol,
-        baseTokenSymbol: position.baseTokenSymbol,
+        quoteTokenSymbol: position.quoteSymbol,
+        baseTokenSymbol: position.baseSymbol,
     };
 
     return (
