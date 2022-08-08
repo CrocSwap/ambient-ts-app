@@ -62,7 +62,7 @@ export default function RangeCard(props: RangeCardProps) {
     let isPositionInRange = true;
 
     if (position.poolPriceInTicks) {
-        if (position.ambient) {
+        if (position.positionType === 'ambient') {
             isPositionInRange = true;
         } else if (
             position.bidTick <= position.poolPriceInTicks &&
@@ -106,15 +106,15 @@ export default function RangeCard(props: RangeCardProps) {
         ? position.highRangeDisplayInBase
         : position.highRangeDisplayInQuote;
 
-    const ambientMinOrNull = position.ambient ? 'ambient' : minRange;
-    const ambientMaxOrNull = position.ambient ? 'ambient' : maxRange;
+    const ambientMinOrNull = position.positionType === 'ambient' ? '0' : minRange;
+    const ambientMaxOrNull = position.positionType === 'ambient' ? '∞' : maxRange;
 
     // ---------------------------------END OF POSITIONS MIN AND MAX RANGE--------------------
 
     // --------------------------REMOVE RANGE PROPS-------------------------------
     const removeRangeProps = {
         isPositionInRange: isPositionInRange,
-        isAmbient: position.ambient,
+        isAmbient: position.positionType === 'ambient',
         baseTokenSymbol: position.baseSymbol,
         baseTokenDecimals: position.baseTokenDecimals,
         quoteTokenSymbol: position.quoteSymbol,
@@ -152,7 +152,10 @@ export default function RangeCard(props: RangeCardProps) {
                 {/* ------------------------------------------------------ */}
                 <Apy amount={10} />
                 {/* ------------------------------------------------------ */}
-                <RangeStatus isInRange={isPositionInRange} isAmbient={position.ambient} />
+                <RangeStatus
+                    isInRange={isPositionInRange}
+                    isAmbient={position.positionType === 'ambient'}
+                />
             </div>
 
             <div className={styles.menu_container}>
