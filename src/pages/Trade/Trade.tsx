@@ -96,12 +96,13 @@ export default function Trade(props: ITradeProps) {
             {/* <PageFooter lastBlockNumber={props.lastBlockNumber} /> */}
         </div>
     );
+    const expandGraphStyle = props.expandTradeTable ? styles.hide_graph : '';
 
     return (
         <AnimateSharedLayout>
             <main className={styles.main_layout}>
                 <div className={styles.middle_col}>
-                    <div className={styles.main__chart}>
+                    <div className={`${styles.main__chart} ${expandGraphStyle}`}>
                         <div className={styles.main__chart_container}>
                             <TradeCharts
                                 poolPriceDisplay={poolPriceDisplay}
