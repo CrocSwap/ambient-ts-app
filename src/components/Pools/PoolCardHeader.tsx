@@ -14,7 +14,7 @@ export default function PoolCardHeader(props: PoolCardHeaderProps) {
         <div className={styles.main_container}>
             <div className={styles.token_logos} />
             <div className={styles.row_container}>
-                <p>Pool</p>
+                <p className={styles.pool}>Pool</p>
                 <p className={styles.pCursor} onClick={() => sort(SORT_FIELD.tvlUSD)}>
                     TVL {arrow(SORT_FIELD.tvlUSD)}
                 </p>

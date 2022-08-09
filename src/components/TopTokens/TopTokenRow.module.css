@@ -48,20 +48,31 @@
 }
 
 .display {
+  display: flex;
+  color: rgba(235, 235, 255, 0.4);
+
+}
+.displayName {
   display: none;
   color: rgba(235, 235, 255, 0.4);
 
 }
 
 
-
 /* Desktop screen Sizes */
 @media only screen and (min-width: 768px) {
   .display {
-      display: flex;
   
       font-size: 10px;
-line-height: 13px; 
+      line-height: 13px; 
+  }
+
+  .displayName {
+    display: none;
+    font-size: 10px;
+      line-height: 13px; 
+    /* font-size: 10px;
+    line-height: 13px;  */
   }
   
   
@@ -69,12 +80,14 @@ line-height: 13px;
 
 /* Desktop screen Sizes */
 @media only screen and (min-width: 1200px) {
-  .display {
-     
+  .displayName {
+     display: flex;
   
-      font-size: 12px;
-      line-height: 16px;  
+     font-size: 10px;
+      line-height: 13px; 
   }
+
+  
   
   
   }

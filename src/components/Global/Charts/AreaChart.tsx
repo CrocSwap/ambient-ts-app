@@ -35,15 +35,6 @@ export default function AreaChart(props: AreaChartProps) {
     const d3Container = useRef(null);
     const chartValue = props.data;
     useEffect(() => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-
-        // if (chartValue && chartValue.length<2){
-
-        //     chartValue.push(chartValue[0])
-        //     chartValue.push(chartValue[0])
-        //     chartValue.push(chartValue[0])
-        // }
-
         const yExtent = d3fc.extentLinear().accessors([(d: any) => d.value]);
         const xExtent = d3fc.extentDate().accessors([(d: any) => d.time]);
 

@@ -26,9 +26,7 @@
     padding: 2px 8px;
     /* font-size: var(--body-size);
     line-height: var(--body-lh); */
-    color: rgba(235, 235, 255, 0.4);
-  
-  
+    color: rgba(235, 235, 255, 0.4);  
   }
 
 
@@ -36,9 +34,12 @@
       cursor: pointer;
   }
   
-  .wallet, .side, .token{
+  .token{
     display: none;
+    cursor: pointer;
   }
+
+  
   
   
   /* Mobile Landscape Screen Sizes */
@@ -51,25 +52,29 @@
     .token_logos{
       display: flex;
     }
-  
-    
-  
+   
   
   }
   
-  /* Desktop screen Sizes */
-  @media only screen and (min-width: 768px) {
+  
+/* Medium screen devices (768px and above) */
+@media only screen and (min-width: 768px) {
    
-    .wallet, .pool{
-        display: flex;
+
+    .token{
+        display: none;
+    }
+    .header_container{
+       
+    grid-template-columns:100px auto 200px;
+    }
+
+    .row{
+        grid-template-columns: 100px auto repeat(2, 50px) 40px 30px;
     }
     
-    
-    /* }
-    .price{
-        text-align: start;
-    } */
-  }
+}
+
     /* Large devices (laptops/desktops, 992px and up) */
   @media only screen and (min-width: 992px) {
     .main_container{
@@ -82,13 +87,13 @@
   /* Extra large devices (large laptops and desktops, 1200px and up) */
   @media only screen and (min-width: 1200px) {
   
-    .tokens{
-        display: none;
-    }
-  
-    .token, .side{
+    .token{
         display: flex;
     }
+  
+    /* .token, .side{
+        display: flex;
+    } */
   
   
   }

@@ -59,8 +59,8 @@
   /* Desktop screen Sizes */
   @media only screen and (min-width: 768px) {
    
-    .wallet, .pool{
-        display: flex;
+    .pool{
+        display: none;
     }
     
     

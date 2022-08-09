@@ -3,7 +3,7 @@ import { TokenData } from '../../state/tokens/models';
 import { isAddress } from '../../utils';
 import { formatDollarAmount } from '../../utils/numbers';
 import TradeButton from '../Global/Analytics/TradeButton';
-import styles from './TopToken.module.css';
+import styles from './TopTokenRow.module.css';
 
 interface TokenProps {
     token: TokenData;
@@ -47,7 +47,7 @@ export default function TopTokenRow(props: TokenProps) {
 
             <div className={styles.row_container}>
                 <>
-                    <section className={styles.display}> {tokenData.name}</section>
+                    <section className={styles.displayName}> {tokenData.name}</section>
                 </>
 
                 <>
@@ -70,7 +70,6 @@ export default function TopTokenRow(props: TokenProps) {
 
                 <>
                     <section className={styles.display}>
-                        {' '}
                         {Math.abs(tokenData.priceUSDChange).toFixed(2)}%
                     </section>
                 </>
