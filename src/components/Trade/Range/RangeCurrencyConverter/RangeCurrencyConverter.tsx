@@ -286,7 +286,6 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
                 isNaN(secondaryTokenQty) ||
                 secondaryTokenQty < 0
             ) {
-                console.log('firing');
                 setRangeAllowed(false);
                 setRangeButtonErrorMessage('Enter an Amount');
             } else {
@@ -330,7 +329,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
 
     const handleTokenAQtyFieldUpdate = (evt?: ChangeEvent<HTMLInputElement>) => {
         if (evt) {
-            console.log('new handle token A event');
+            // console.log('new handle token A event');
             const input = evt.target.value;
             setTokenAQtyValue(parseFloat(input));
             setIsTokenAPrimaryLocal(true);
