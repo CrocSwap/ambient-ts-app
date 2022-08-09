@@ -58,43 +58,10 @@ export default function TopTokens(props: TokenProps) {
         <TopTokenRow token={topToken} key={idx} index={idx + 1} />
     ));
 
-    const topTokensHeader = (
-        <thead>
-            <tr>
-                <th>#</th>
-                <th style={{ width: 350 }}>
-                    <label onClick={() => handleSort(SORT_FIELD.name)}>
-                        Name {arrow(SORT_FIELD.name)}
-                    </label>
-                </th>
-                <th>
-                    <label onClick={() => handleSort(SORT_FIELD.priceUSD)}>
-                        Price {arrow(SORT_FIELD.priceUSD)}
-                    </label>
-                </th>
-                <th>
-                    <label onClick={() => handleSort(SORT_FIELD.priceUSDChange)}>
-                        Price Change {arrow(SORT_FIELD.priceUSDChange)}
-                    </label>
-                </th>
-                <th>
-                    <label onClick={() => handleSort(SORT_FIELD.volumeUSD)}>
-                        Volume 24H {arrow(SORT_FIELD.volumeUSD)}
-                    </label>
-                </th>
-                <th>
-                    <label onClick={() => handleSort(SORT_FIELD.tvlUSD)}>
-                        TVL {arrow(SORT_FIELD.tvlUSD)}
-                    </label>
-                </th>
-            </tr>
-        </thead>
-    );
-
     return (
         <div className={styles.container}>
             <div className={styles.container}>
-                <TokenCardHeader />
+                <TokenCardHeader arrow={arrow} sort={handleSort} />
                 {topTokensDisplay}
             </div>
         </div>

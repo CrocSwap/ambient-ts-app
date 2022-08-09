@@ -30,6 +30,11 @@
   
   
   }
+
+
+  .pCursor {
+      cursor: pointer;
+  }
   
   .wallet, .side, .token{
     display: none;

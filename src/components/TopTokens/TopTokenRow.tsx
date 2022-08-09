@@ -2,9 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { TokenData } from '../../state/tokens/models';
 import { isAddress } from '../../utils';
 import { formatDollarAmount } from '../../utils/numbers';
-import TokenDisplay from '../Global/Analytics/TokenDisplay';
 import TradeButton from '../Global/Analytics/TradeButton';
-import OpenOrderStatus from '../Global/OpenOrderStatus/OpenOrderStatus';
 import styles from './TopToken.module.css';
 
 interface TokenProps {
@@ -20,18 +18,36 @@ export default function TopTokenRow(props: TokenProps) {
         navigate('/tokens/' + tokenData.address);
     }
 
+    function getTokenLogoURL() {
+        const checkSummed = isAddress(tokenData.address);
+        return `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/${checkSummed}/logo.png`;
+    }
+
+    const tokenImages = (
+        <div className={styles.tokens_container}>
+            <div className={styles.token_icon}>
+                <img
+                    className={styles.token_list}
+                    src={getTokenLogoURL()}
+                    onError={({ currentTarget }) => {
+                        currentTarget.onerror = null;
+                        currentTarget.src = '/question.svg';
+                    }}
+                    alt='token'
+                    width='30px'
+                />
+            </div>
+            <p className={styles.token_key}>{tokenData.symbol}</p>
+        </div>
+    );
+
     return (
         <div className={styles.main_container} onClick={handleRowClick}>
-            <div className={styles.tokens_container}>
-                <TokenDisplay token0={isAddress(tokenData.address)} />
-            </div>
+            {tokenImages}
 
             <div className={styles.row_container}>
                 <>
-                    <section className={styles.display}>
-                        {' '}
-                        {tokenData.name} ({tokenData.symbol})
-                    </section>
+                    <section className={styles.display}> {tokenData.name}</section>
                 </>
 
                 <>
@@ -58,10 +74,6 @@ export default function TopTokenRow(props: TokenProps) {
                         {Math.abs(tokenData.priceUSDChange).toFixed(2)}%
                     </section>
                 </>
-
-                <div className={styles.status}>
-                    <OpenOrderStatus isFilled />
-                </div>
             </div>
 
             <div className={styles.menu_container}>
@@ -69,23 +81,4 @@ export default function TopTokenRow(props: TokenProps) {
             </div>
         </div>
     );
-
-    // return (
-    //     <tr onClick={handleRowClick} style={{ cursor: 'pointer' }}>
-    //         <td className={styles.topToken_id}>{props.index}</td>
-    //         {tokenImages}
-
-    //         <td data-column='APY' className={styles.topToken_range}>
-    //             {formatDollarAmount(tokenData.priceUSD)}
-    //         </td>
-    //         <td
-    //             data-column='Range Status'
-    //             className={tokenData.priceUSDChange < 0 ? styles.lowPriceChange : styles.apy}
-    //         >
-    //             {Math.abs(tokenData.priceUSDChange).toFixed(2)}%
-    //         </td>
-    //         <td data-column='Range Status'>{formatDollarAmount(tokenData.volumeUSD)}</td>
-    //         <td data-column='Range Status'>{formatDollarAmount(tokenData.tvlUSD)}</td>
-    //     </tr>
-    // );
 }

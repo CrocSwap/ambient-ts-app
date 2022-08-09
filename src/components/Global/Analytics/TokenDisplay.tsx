@@ -2,7 +2,7 @@ import styles from '../Tabs/AccountTokensDisplay/AccountTokensDisplay.module.css
 
 interface TokenProps {
     token0: string | false;
-    token1?: string | false;
+    token1: string | false;
 }
 
 export default function TokenDisplay(props: TokenProps) {

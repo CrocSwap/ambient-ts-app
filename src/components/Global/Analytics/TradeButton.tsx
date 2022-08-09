@@ -1,4 +1,3 @@
-import { Link } from 'react-router-dom';
 import styles from './TradeButton.module.css';
 
 export default function TradeButton() {
