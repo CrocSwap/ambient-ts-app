@@ -289,7 +289,7 @@ export default function TradeCandleStickChart(props: ChartData) {
         };
 
         const render = () => {
-            console.log('Draw Volume Chart');
+            // console.log('Draw Volume Chart');
 
             d3.select('#chart-volume').datum(chartData).call(chart);
         };
@@ -408,7 +408,7 @@ export default function TradeCandleStickChart(props: ChartData) {
             .svgPlotArea(multi);
 
         function render() {
-            console.log('Draw Tvl Chart');
+            // console.log('Draw Tvl Chart');
 
             d3.select('.chart-tvl').datum(chartData).call(chart);
         }
@@ -458,7 +458,7 @@ export default function TradeCandleStickChart(props: ChartData) {
             .svgPlotArea(multi);
 
         function render() {
-            console.log('Draw fee Chart');
+            // console.log('Draw fee Chart');
 
             d3.select('.chart-fee').datum(chartData).call(chart);
         }
