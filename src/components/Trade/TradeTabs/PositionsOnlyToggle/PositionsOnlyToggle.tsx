@@ -9,6 +9,8 @@ interface PositionsOnlyToggleProps {
     isWeb3Enabled: boolean;
     setHasInitialized: Dispatch<SetStateAction<boolean>>;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
+    setIsCandleSelected: Dispatch<SetStateAction<boolean>>;
+    setTransactionFilter: Dispatch<SetStateAction<any>>;
 
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
@@ -21,6 +23,8 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
         isAuthenticated,
         isWeb3Enabled,
         setIsShowAllEnabled,
+        setIsCandleSelected,
+        setTransactionFilter,
         setHasInitialized,
         expandTradeTable,
         setExpandTradeTable,
@@ -47,6 +51,10 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
                         setHasInitialized(true);
                         console.log('toggle on', !isShowAllEnabled);
                         setIsShowAllEnabled(!isShowAllEnabled);
+                        if (!isShowAllEnabled) {
+                            setIsCandleSelected(false);
+                            setTransactionFilter({ time: null, poolHash: null });
+                        }
                     }}
                     id='positions_only_toggle'
                     disabled={!isAuthenticated || !isWeb3Enabled}

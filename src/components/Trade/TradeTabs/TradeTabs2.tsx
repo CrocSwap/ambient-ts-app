@@ -17,6 +17,11 @@ import { useTokenMap } from '../../../App/components/Sidebar/useTokenMap';
 import TabComponent from '../../Global/TabComponent/TabComponent';
 import PositionsOnlyToggle from './PositionsOnlyToggle/PositionsOnlyToggle';
 
+interface TransactionFilter {
+    time: number;
+    poolHash: string;
+}
+
 interface ITabsProps {
     account: string;
     isAuthenticated: boolean;
@@ -32,10 +37,16 @@ interface ITabsProps {
 
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
+    isCandleSelected: boolean;
+    filter: TransactionFilter | undefined;
+    setIsCandleSelected: Dispatch<SetStateAction<boolean>>;
+    setTransactionFilter: Dispatch<SetStateAction<any>>;
 }
 
 export default function TradeTabs2(props: ITabsProps) {
     const { isShowAllEnabled, setIsShowAllEnabled } = props;
+    const { isCandleSelected, setIsCandleSelected } = props;
+    const { filter, setTransactionFilter } = props;
 
     const graphData = useAppSelector((state) => state?.graphData);
 
@@ -55,7 +66,7 @@ export default function TradeTabs2(props: ITabsProps) {
         // console.log({ isShowAllEnabled });
         // console.log({ userPositions });
         if (!hasInitialized) {
-            if (!isShowAllEnabled && userPositions.length < 1) {
+            if (!isCandleSelected && !isShowAllEnabled && userPositions.length < 1) {
                 setIsShowAllEnabled(true);
             } else if (userPositions.length < 1) {
                 return;
@@ -87,6 +98,9 @@ export default function TradeTabs2(props: ITabsProps) {
 
         setCurrentTxActiveInTransactions: props.setCurrentTxActiveInTransactions,
         expandTradeTable: props.expandTradeTable,
+
+        isCandleSelected: isCandleSelected,
+        filter: filter,
     };
     // Props for <Orders/> React Element
     const ordersProps = {
@@ -100,6 +114,8 @@ export default function TradeTabs2(props: ITabsProps) {
         isWeb3Enabled: props.isWeb3Enabled,
         setHasInitialized: setHasInitialized,
         setIsShowAllEnabled: setIsShowAllEnabled,
+        setIsCandleSelected: setIsCandleSelected,
+        setTransactionFilter: setTransactionFilter,
         expandTradeTable: props.expandTradeTable,
         setExpandTradeTable: props.setExpandTradeTable,
     };

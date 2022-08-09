@@ -6,6 +6,10 @@ import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { Dispatch, SetStateAction, useState, useEffect } from 'react';
 
+interface TransactionFilter {
+    time: number;
+    poolHash: string;
+}
 interface TransactionsProps {
     isShowAllEnabled: boolean;
     portfolio?: boolean;
@@ -16,6 +20,9 @@ interface TransactionsProps {
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
 
     expandTradeTable: boolean;
+
+    isCandleSelected: boolean;
+    filter: TransactionFilter | undefined;
     // setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
 }
 export default function Transactions(props: TransactionsProps) {
@@ -27,12 +34,14 @@ export default function Transactions(props: TransactionsProps) {
         currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions,
         expandTradeTable,
+        isCandleSelected,
+        filter,
         // setExpandTradeTable,
     } = props;
 
     const swapsByUser = graphData?.swapsByUser?.swaps;
     const swapsByPool = graphData?.swapsByPool?.swaps;
-    console.log('this is graph data', graphData);
+    // console.log('this is graph data', graphData);
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
@@ -48,8 +57,19 @@ export default function Transactions(props: TransactionsProps) {
     // console.log(isDataLoading)
 
     useEffect(() => {
-        !isShowAllEnabled ? setTransactionData(swapsByUser) : setTransactionData(swapsByPool);
-    }, [isShowAllEnabled]);
+        console.log({ isCandleSelected });
+        console.log({ filter });
+
+        isCandleSelected
+            ? setTransactionData(
+                  swapsByPool.filter((data) => {
+                      data.time === filter?.time;
+                  }),
+              )
+            : !isShowAllEnabled
+            ? setTransactionData(swapsByUser)
+            : setTransactionData(swapsByPool);
+    }, [isShowAllEnabled, isCandleSelected, filter]);
 
     const isDenomBase = tradeData.isDenomBase;
 

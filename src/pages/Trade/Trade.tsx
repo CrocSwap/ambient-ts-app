@@ -14,11 +14,7 @@ import {
 } from '../../utils/state/tradeDataSlice';
 import truncateDecimals from '../../utils/data/truncateDecimals';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
-import { useMemo, useState, Dispatch, SetStateAction, useEffect } from 'react';
-import { ONE_HOUR_SECONDS, TimeWindow } from '../../constants/intervals';
-import { useTokenData, useTokenPriceData } from '../../state/tokens/hooks';
-import { currentTimestamp } from '../../utils';
-import { PriceChartEntry } from '../../types';
+import { useMemo, useState, Dispatch, SetStateAction } from 'react';
 import { usePoolChartData } from '../../state/pools/hooks';
 import TradeCandleStickChart from './TradeCharts/TradeCandleStickChart';
 import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
@@ -50,43 +46,18 @@ interface ITradeProps {
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
 }
 
-const DEFAULT_TIME_WINDOW = TimeWindow.WEEK;
+interface TransactionFilter {
+    time: number;
+    poolHash: string;
+}
 
 export default function Trade(props: ITradeProps) {
     const dispatch = useAppDispatch();
 
-    const [timeWindow] = useState(DEFAULT_TIME_WINDOW);
-    const chartData = usePoolChartData('0x8ad599c3a0ff1de082011efddc58f1908eb6e6d8'); // ETH/USDC pool address
-    const tokenData = useTokenData('0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'); // ETH address
-    const priceData = useTokenPriceData(
-        '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', // ETH address
-        ONE_HOUR_SECONDS,
-        timeWindow,
-    );
+    const [isCandleSelected, setIsCandleSelected] = useState(false);
+    const [transactionFilter, setTransactionFilter] = useState<TransactionFilter>();
 
-    const adjustedToCurrent = useMemo(() => {
-        if (priceData && tokenData && priceData.length > 0) {
-            const adjusted = Object.assign([], priceData);
-            adjusted.push({
-                time: currentTimestamp() / 1000,
-                open: priceData[priceData.length - 1].close,
-                close: tokenData?.priceUSD,
-                high: tokenData?.priceUSD,
-                low: priceData[priceData.length - 1].close,
-            });
-            return adjusted.map((item: PriceChartEntry) => {
-                return {
-                    time: new Date(item.time * 1000),
-                    high: item.high,
-                    low: item.low,
-                    open: item.open,
-                    close: item.close,
-                };
-            });
-        } else {
-            return [];
-        }
-    }, [priceData, tokenData]);
+    const chartData = usePoolChartData('0x8ad599c3a0ff1de082011efddc58f1908eb6e6d8'); // ETH/USDC pool address
 
     const formattedTvlData = useMemo(() => {
         if (chartData) {
@@ -159,10 +130,9 @@ export default function Trade(props: ITradeProps) {
         .findIndex((pool) => pool === mainnetCandlePoolDefinition);
 
     const mainnetCandleData = graphData.candlesForAllPools.pools[indexOfMainnetCandlePool];
-
-    useEffect(() => {
-        console.log({ mainnetCandleData });
-    }, [mainnetCandleData]);
+    const candleData = mainnetCandleData.candlesByPoolAndDuration.find((data) => {
+        return data.duration === tradeData.activeChartPeriod;
+    });
 
     const isTokenABase = props.isTokenABase;
     const setActivePeriod = (period: number) => {
@@ -373,7 +343,11 @@ export default function Trade(props: ITradeProps) {
                         tvlData={formattedTvlData}
                         volumeData={formattedVolumeData}
                         feeData={formattedFeesUSD}
-                        priceData={adjustedToCurrent}
+                        priceData={candleData}
+                        setIsCandleSelected={setIsCandleSelected}
+                        setTransactionFilter={setTransactionFilter}
+                        setIsShowAllEnabled={props.setIsShowAllEnabled}
+                        isCandleSelected={isCandleSelected}
                     />
 
                     <motion.div
@@ -404,6 +378,10 @@ export default function Trade(props: ITradeProps) {
                             setIsShowAllEnabled={props.setIsShowAllEnabled}
                             expandTradeTable={props.expandTradeTable}
                             setExpandTradeTable={props.setExpandTradeTable}
+                            isCandleSelected={isCandleSelected}
+                            setIsCandleSelected={setIsCandleSelected}
+                            filter={transactionFilter}
+                            setTransactionFilter={setTransactionFilter}
                         />
                     </motion.div>
                 </div>

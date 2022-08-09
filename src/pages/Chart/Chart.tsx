@@ -1,6 +1,15 @@
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
-import { DetailedHTMLProps, HTMLAttributes, useEffect, useRef, useState } from 'react';
+import {
+    DetailedHTMLProps,
+    Dispatch,
+    HTMLAttributes,
+    SetStateAction,
+    useEffect,
+    useRef,
+    useState,
+} from 'react';
+import { CandlesByPoolAndDuration } from '../../utils/state/graphDataSlice';
 import './Chart.css';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -16,8 +25,12 @@ declare global {
 }
 
 interface ChartData {
-    priceData: any[];
+    priceData: CandlesByPoolAndDuration | undefined;
     liquidityData: any[];
+    setIsCandleSelected: Dispatch<SetStateAction<boolean>>;
+    setTransactionFilter: Dispatch<SetStateAction<any>>;
+    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
+    isCandleSelected: boolean;
 }
 
 export default function Chart(props: ChartData) {
@@ -26,23 +39,42 @@ export default function Chart(props: ChartData) {
     const d3Xaxis = useRef(null);
     const d3Yaxis = useRef(null);
 
+    const { isCandleSelected, setIsCandleSelected } = props;
+
     const [targets, setTargets] = useState([
         {
             name: 'high',
-            value: 1700,
+            value: 0,
         },
         {
             name: 'low',
-            value: 1620,
+            value: 0,
         },
     ]);
 
     useEffect(() => {
-        const chartData: { date: any; open: any; high: any; low: any; close: any }[] = [];
-        props.priceData.map((data) => {
+        const chartData: {
+            date: any;
+            open: any;
+            high: any;
+            low: any;
+            close: any;
+            poolHash: any;
+            time: any;
+        }[] = [];
+        let period = 1;
+        props.priceData?.candles.map((data) => {
+            if (data.period !== undefined) {
+                period = data.period;
+            }
             chartData.push({
-                date: data.time,
-                ...data,
+                date: new Date(data.time * 1000),
+                open: data.priceOpen,
+                close: data.priceClose,
+                high: data.maxPrice,
+                low: data.minPrice,
+                poolHash: data.poolHash,
+                time: data.time,
             });
         });
         if (chartData.length > 0) {
@@ -51,7 +83,6 @@ export default function Chart(props: ChartData) {
             };
 
             const valueFormatter = d3.format('.2f');
-            const millisPerDay = 24 * 60 * 60 * 100;
 
             const priceRange = d3fc
                 .extentLinear()
@@ -63,7 +94,7 @@ export default function Chart(props: ChartData) {
                 .accessors([(d: any) => d.date])
                 .padUnit('domain')
                 // ensure that the scale is padded by one day in either direction
-                .pad([millisPerDay, 160000000]);
+                .pad([period * 5000, (period / 2) * 100000]);
 
             const xScale = d3.scaleTime();
             const yScale = d3.scaleLinear();
@@ -119,12 +150,23 @@ export default function Chart(props: ChartData) {
                         .enter()
                         .style('fill', (d: any) => (d.close > d.open ? '#7371FC' : '#CDC1FF'))
                         .style('stroke', (d: any) => (d.close > d.open ? '#7371FC' : '#CDC1FF'));
-                    selection.enter().on('mouseover', (event: any) => {
-                        tooltip.transition().duration(200).style('visibility', 'visible');
-                    });
-                    selection.enter().on('mouseout', (event: any) => {
-                        tooltip.transition().duration(200).style('visibility', 'hidden');
-                    });
+                    selection
+                        .enter()
+                        .on('mouseover', (event: any) => {
+                            d3.select(event.currentTarget).style('cursor', 'pointer');
+                        })
+                        .on('mouseout', (event: any) => {
+                            d3.select(event.currentTarget).style('cursor', 'default');
+                        })
+                        .on('click', (event: any) => {
+                            console.log(isCandleSelected);
+                            setIsCandleSelected(!isCandleSelected);
+                            props.setIsShowAllEnabled(isCandleSelected);
+                            props.setTransactionFilter({
+                                time: event.target.__data__.time,
+                                poolHash: event.target.__data__.poolHash,
+                            });
+                        });
                 })
                 .xScale(xScale)
                 .yScale(yScale);
@@ -167,25 +209,12 @@ export default function Chart(props: ChartData) {
                     .call(drag);
             });
 
-            const tooltip = d3
-                .select(d3Container.current)
-                .append('div')
-                .style('position', 'absolute')
-                .style('visibility', 'hidden')
-                .style('background-color', 'white')
-                .style('border', 'solid')
-                .style('border-width', '1px')
-                .style('border-radius', '5px')
-                .style('padding', '10px')
-                .html(
-                    '<p> a tooltip written in HTML</p><br>Fancy<br><span style="font-size: 40px;">Isnt it?</span>',
-                );
-
             const zoom = d3
                 .zoom()
                 .scaleExtent([1, 10])
                 .on('zoom', (event: any) => {
                     xScale.domain(event.transform.rescaleX(xScaleCopy).domain());
+                    yScale.domain(event.transform.rescaleY(yScaleCopy).domain());
                     render();
                 }) as any;
 

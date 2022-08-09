@@ -1,7 +1,15 @@
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
-import { DetailedHTMLProps, HTMLAttributes, useEffect, useState } from 'react';
+import {
+    DetailedHTMLProps,
+    Dispatch,
+    HTMLAttributes,
+    SetStateAction,
+    useEffect,
+    useState,
+} from 'react';
 import { formatDollarAmountAxis } from '../../../utils/numbers';
+import { CandlesByPoolAndDuration } from '../../../utils/state/graphDataSlice';
 import Chart from '../../Chart/Chart';
 import './TradeCandleStickChart.module.css';
 
@@ -21,7 +29,11 @@ interface ChartData {
     tvlData: any[];
     volumeData: any[];
     feeData: any[];
-    priceData: any[];
+    priceData: CandlesByPoolAndDuration | undefined;
+    setIsCandleSelected: Dispatch<SetStateAction<boolean>>;
+    setTransactionFilter: Dispatch<SetStateAction<any>>;
+    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
+    isCandleSelected: boolean;
 }
 
 export default function TradeCandleStickChart(props: ChartData) {
@@ -32,32 +44,8 @@ export default function TradeCandleStickChart(props: ChartData) {
         priceData: props.priceData,
     };
 
-    const [liquidityData] = useState([
-        {
-            tick: 1500,
-            value: 650,
-        },
-        {
-            tick: 1550,
-            value: 550,
-        },
-        {
-            tick: 1600,
-            value: 500,
-        },
-        {
-            tick: 1650,
-            value: 550,
-        },
-        {
-            tick: 1700,
-            value: 600,
-        },
-        {
-            tick: 1750,
-            value: 650,
-        },
-    ]);
+    const { isCandleSelected, setIsCandleSelected } = props;
+    const [liquidityData] = useState([]);
 
     // Volume Chart
     useEffect(() => {
@@ -257,7 +245,14 @@ export default function TradeCandleStickChart(props: ChartData) {
 
     return (
         <>
-            <Chart priceData={data.priceData} liquidityData={liquidityData} />
+            <Chart
+                priceData={data.priceData}
+                liquidityData={liquidityData}
+                setIsCandleSelected={setIsCandleSelected}
+                setTransactionFilter={props.setTransactionFilter}
+                setIsShowAllEnabled={props.setIsShowAllEnabled}
+                isCandleSelected={isCandleSelected}
+            />
             <hr />
             <label>Fee Rate</label>
             <div style={{ height: '15%', width: '100%' }} className='chart-fee'></div>
