@@ -124,7 +124,7 @@ export default function TradeCharts(props: TradeChartsProps) {
         { slug: 'volume', name: 'Voulme', checked: false },
     ]);
 
-    const handleChartItemChange = (slug: any) => {
+    const handleChartItemChange = (slug: string) => {
         const copyProducts = [...chartItems];
         const modifiedProducts = copyProducts.map((item) => {
             if (slug === item.slug) {
