@@ -18,6 +18,7 @@ export const useAppChain = (
     const { chainId } = useChain();
 
     const [ currentChain, setCurrentChain ] = useState(defaultChain);
+    useEffect(() => console.log({currentChain}), [currentChain]);
 
     // if the chain in metamask changes, update the value in the app to match
     // gatekeeping ensures this only runs when the user changes the chain in metamask
@@ -29,16 +30,15 @@ export const useAppChain = (
     }, [chainId]);
 
     const chainData = useMemo(() => {
-        const requestedChain = chainId ?? defaultChain;
         let chn;
         try {
-            chn = lookupChain(requestedChain);
+            chn = lookupChain(currentChain);
         } catch (err) {
             console.warn(err);
             chn = lookupChain(defaultChain);
         }
         return chn;
-    }, [chainId]);
+    }, [currentChain]);
 
     return [ chainData, setCurrentChain ];
 }

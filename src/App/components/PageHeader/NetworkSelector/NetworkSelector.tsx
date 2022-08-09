@@ -40,17 +40,11 @@ export default function NetworkSelector(props: NetworkSelectorPropsIF) {
 
     const currenctChain = chains.find((chain) => chain.id === chainId);
 
-    // TODO:  @Emily take out this function wrapper before launch
-    const handleNetworkSwitch = (chainId: string) => {
-        console.log('switching to ' + chainId);
-        switchChain(chainId);
-    };
-
     const networkMenuContent = (
         <ul className={styles.menu_content}>
             {chains.map((chain, idx) => (
                 <motion.li
-                    onClick={() => handleNetworkSwitch(chain.id)}
+                    onClick={() => switchChain(chain.id)}
                     key={chain.id}
                     className={styles.network_item}
                     custom={idx}
