@@ -12,10 +12,11 @@ import {
 } from 'react-icons/ai';
 import { HiOutlineExternalLink } from 'react-icons/hi';
 import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledTooltip';
-import { motion, AnimateSharedLayout } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 // end of icons
 import {
+    // eslint-disable-next-line
     tradeData as TradeDataIF,
     toggleDidUserFlipDenom,
     setActiveChartPeriod,
