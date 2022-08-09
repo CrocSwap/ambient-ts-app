@@ -100,13 +100,17 @@ export default function Trade(props: ITradeProps) {
     return (
         <AnimateSharedLayout>
             <main className={styles.main_layout}>
-                <div className={`${styles.middle_col}`}>
-                    <TradeCharts
-                        poolPriceDisplay={poolPriceDisplay}
-                        expandTradeTable={props.expandTradeTable}
-                        setExpandTradeTable={props.setExpandTradeTable}
-                        isTokenABase={props.isTokenABase}
-                    />
+                <div className={styles.middle_col}>
+                    <div className={styles.main__chart}>
+                        <div className={styles.main__chart_container}>
+                            <TradeCharts
+                                poolPriceDisplay={poolPriceDisplay}
+                                expandTradeTable={props.expandTradeTable}
+                                setExpandTradeTable={props.setExpandTradeTable}
+                                isTokenABase={props.isTokenABase}
+                            />
+                        </div>
+                    </div>
 
                     <motion.div
                         animate={{

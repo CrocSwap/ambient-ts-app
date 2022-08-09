@@ -378,7 +378,7 @@ export default function TradeCharts(props: TradeChartsProps) {
     const expandGraphStyle = props.expandTradeTable ? styles.hide_graph : '';
 
     return (
-        <div>
+        <>
             <div className={`${styles.graph_style} ${expandGraphStyle} ${fullScreenStyle}`}>
                 {graphSettingsContent}
                 {tokenInfo}
@@ -391,7 +391,7 @@ export default function TradeCharts(props: TradeChartsProps) {
                 feeData={formattedFeesUSD}
                 priceData={adjustedToCurrent}
             />
-        </div>
+        </>
     );
 }
 

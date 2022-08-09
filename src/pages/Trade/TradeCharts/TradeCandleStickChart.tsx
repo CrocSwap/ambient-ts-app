@@ -1,8 +1,9 @@
+import { StylesProvider } from '@material-ui/core';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { DetailedHTMLProps, HTMLAttributes, useEffect, useState } from 'react';
 import Chart from '../../Chart/Chart';
-import './TradeCandleStickChart.module.css';
+import styles from './TradeCandleStickChart.module.css';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
