@@ -33,6 +33,8 @@ interface TradeChartsProps {
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
     isTokenABase: boolean;
+    fullScreenChart: boolean;
+    setFullScreenChart: Dispatch<SetStateAction<boolean>>;
 }
 
 // trade charts
@@ -45,8 +47,8 @@ import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
 
 //
 export default function TradeCharts(props: TradeChartsProps) {
+    const { fullScreenChart, setFullScreenChart } = props;
     const dispatch = useAppDispatch();
-    const [fullScreenChart, setFullScreenChart] = useState(false);
 
     // ---------------------TRADE DATA CALCULATIONS------------------------
 
@@ -373,13 +375,12 @@ export default function TradeCharts(props: TradeChartsProps) {
         }
     }, [chartData]);
     // END OF CANDLE STICK DATA---------------------------------------------------
-    const fullScreenStyle = fullScreenChart ? styles.chart_full_screen : styles.chart_image;
 
     const expandGraphStyle = props.expandTradeTable ? styles.hide_graph : '';
 
     return (
         <>
-            <div className={`${styles.graph_style} ${expandGraphStyle} ${fullScreenStyle}`}>
+            <div className={`${styles.graph_style} ${expandGraphStyle} `}>
                 {graphSettingsContent}
                 {tokenInfo}
                 {timeFrameContent}

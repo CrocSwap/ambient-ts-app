@@ -4,7 +4,7 @@ import styles from './Trade.module.css';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 
 import { tradeData as TradeDataIF } from '../../utils/state/tradeDataSlice';
-import { Dispatch, SetStateAction, useEffect } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
 
 import TradeTabs2 from '../../components/Trade/TradeTabs/TradeTabs2';
@@ -53,6 +53,7 @@ export default function Trade(props: ITradeProps) {
             name: 'Range',
         },
     ];
+    const [fullScreenChart, setFullScreenChart] = useState(false);
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
@@ -97,18 +98,21 @@ export default function Trade(props: ITradeProps) {
         </div>
     );
     const expandGraphStyle = props.expandTradeTable ? styles.hide_graph : '';
+    const fullScreenStyle = fullScreenChart ? styles.chart_full_screen : styles.main__chart;
 
     return (
         <AnimateSharedLayout>
             <main className={styles.main_layout}>
                 <div className={styles.middle_col}>
-                    <div className={`${styles.main__chart} ${expandGraphStyle}`}>
+                    <div className={` ${expandGraphStyle} ${fullScreenStyle}`}>
                         <div className={styles.main__chart_container}>
                             <TradeCharts
                                 poolPriceDisplay={poolPriceDisplay}
                                 expandTradeTable={props.expandTradeTable}
                                 setExpandTradeTable={props.setExpandTradeTable}
                                 isTokenABase={props.isTokenABase}
+                                fullScreenChart={fullScreenChart}
+                                setFullScreenChart={setFullScreenChart}
                             />
                         </div>
                     </div>
