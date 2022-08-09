@@ -8,7 +8,6 @@ import { useModal } from '../../../components/Global/Modal/useModal';
 import Modal from '../../../components/Global/Modal/Modal';
 import TokenSelectContainer from '../../Global/TokenSelectContainer/TokenSelectContainer';
 import Toggle2 from '../../Global/Toggle/Toggle2';
-import { contractAddresses } from '@crocswap-libs/sdk';
 
 interface CurrencySelectorProps {
     tokenPair: TokenPairIF;
@@ -53,39 +52,23 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
         reverseTokens,
         activeTokenListsChanged,
         indicateActiveTokenListsChanged,
-        nativeBalance,
     } = props;
-    // const [isChecked, setIsChecked] = useState<boolean>(false);
+
     const [isModalOpen, openModal, closeModal] = useModal();
     const [showManageTokenListContent, setShowManageTokenListContent] = useState(false);
 
     const thisToken = fieldId === 'sell' ? tokenPair.dataTokenA : tokenPair.dataTokenB;
 
-    // console.log({ nativeBalance });
-
-    // const DexBalanceContent = (
-    //     <div className={styles.surplus_toggle}>
-    //         {fieldId === 'sell' ? 'Withdraw from DEX balance' : 'Withdraw to Wallet'}
-    //         <div className={styles.toggle_container}>
-    //             <Toggle
-    //                 isOn={isChecked}
-    //                 handleToggle={() => setIsChecked(!isChecked)}
-    //                 Width={36}
-    //                 id='surplus_liquidity'
-    //             />
-    //         </div>
-    //     </div>
-    // );
-
     const WithdrawTokensContent = (
         <div className={styles.surplus_toggle}>
-            {fieldId === 'sell'
+            {fieldId === 'sell' ? 'Use Exchange Surplus' : 'Save as Exchange Surplus'}
+            {/* {fieldId === 'sell'
                 ? isWithdrawFromDexChecked
                     ? 'Use Exchange Surplus'
                     : 'Use Wallet Balance'
                 : isSaveAsDexSurplusChecked
                 ? 'Save as Exchange Surplus'
-                : 'Withdraw to Wallet'}
+                : 'Withdraw to Wallet'} */}
 
             {fieldId === 'sell' ? (
                 // <Toggle
@@ -150,14 +133,10 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
     ) : null;
 
     const walletBalance =
-        props.sellToken && tokenABalance !== 'NaN'
-            ? thisToken.address === contractAddresses.ZERO_ADDR
-                ? nativeBalance
-                : tokenABalance
-            : !props.sellToken && tokenBBalance !== 'NaN'
-            ? thisToken.address === contractAddresses.ZERO_ADDR
-                ? nativeBalance
-                : tokenBBalance
+        props.sellToken && tokenABalance !== ''
+            ? parseFloat(tokenABalance).toLocaleString()
+            : !props.sellToken && tokenBBalance !== ''
+            ? parseFloat(tokenBBalance).toLocaleString()
             : '0';
 
     return (

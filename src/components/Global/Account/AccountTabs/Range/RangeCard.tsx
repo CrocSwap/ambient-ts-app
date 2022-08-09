@@ -1,12 +1,16 @@
-// import RangeStatus from '../../RangeStatus/RangeStatus';
+// // import RangeStatus from '../../RangeStatus/RangeStatus';
 import styles from './RangeCard.module.css';
 
 import { FiMoreHorizontal } from 'react-icons/fi';
 import RangeStatus from '../../../RangeStatus/RangeStatus';
-export default function RangeCard() {
-    const position = {
-        ambient: false,
-    };
+import { PositionIF } from '../../../../../utils/interfaces/PositionIF';
+
+interface RangeCardPropsIF {
+    position: PositionIF;
+}
+
+export default function RangeCard(props: RangeCardPropsIF) {
+    const { position } = props;
 
     const tokenLogos = (
         <div className={styles.token_logos}>
@@ -97,7 +101,7 @@ export default function RangeCard() {
         <div className={styles.row}>
             <div className={styles.pool_name}>ABC/XYZ</div>
             <div className={styles.account}>0xcD...134</div>
-            <div className={styles.account}>0BcD...134</div>
+            <div className={styles.account}>{position.user}</div>
 
             {accountColumn}
             {minMax}

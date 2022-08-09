@@ -3,11 +3,11 @@ import Button from '../../../Global/Button/Button';
 import CurrencyDisplayContainer from '../CurrencyDisplayContainer/CurrencyDisplayContainer';
 import Divider from '../../../Global/Divider/Divider';
 import EditPriceInfo from '../EditPriceInfo/EditPriceInfo';
-import { Position } from '../../../../utils/state/graphDataSlice';
+import { PositionIF } from '../../../../utils/interfaces/PositionIF';
 
 interface ConfirmEditModalPropsIF {
     onClose: () => void;
-    position: Position;
+    position: PositionIF;
     // position: PositionIF;
     currentPoolPriceDisplay: string;
     denominationsInBase: boolean;
@@ -37,8 +37,8 @@ export default function ConfirmEditModal(props: ConfirmEditModalPropsIF) {
     const fullTxDetails = (
         <div>
             <CurrencyDisplayContainer
-                quoteTokenSymbol={position.quoteTokenSymbol}
-                baseTokenSymbol={position.baseTokenSymbol}
+                quoteTokenSymbol={position.quoteSymbol}
+                baseTokenSymbol={position.baseSymbol}
                 tokenAQtyDisplay={position.tokenAQtyDisplay}
                 tokenBQtyDisplay={position.tokenBQtyDisplay}
                 baseTokenImageURL={baseTokenImageURL}
@@ -49,8 +49,8 @@ export default function ConfirmEditModal(props: ConfirmEditModalPropsIF) {
             <EditPriceInfo
                 currentPoolPriceDisplay={props.currentPoolPriceDisplay}
                 denominationsInBase={denominationsInBase}
-                quoteTokenSymbol={position.quoteTokenSymbol}
-                baseTokenSymbol={position.baseTokenSymbol}
+                quoteTokenSymbol={position.quoteSymbol}
+                baseTokenSymbol={position.baseSymbol}
                 tokenAQtyDisplay={position.tokenAQtyDisplay}
                 tokenBQtyDisplay={position.tokenBQtyDisplay}
                 ambient={position.ambient}

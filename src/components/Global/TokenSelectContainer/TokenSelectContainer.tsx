@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { Dispatch, SetStateAction, useMemo } from 'react';
+import { Dispatch, SetStateAction, useMemo, useState } from 'react';
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 
 // START: Import Local Files
@@ -44,6 +44,10 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
     } = props;
 
     const dispatch = useAppDispatch();
+
+    const [favePools, setFavePools] = useState(
+        JSON.parse(localStorage.getItem('user') as string).favePools,
+    );
 
     const undeletableTokens = useMemo(
         () =>
@@ -101,6 +105,8 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
                         undeletableTokens={undeletableTokens}
                         chainId={chainId}
                         setImportedTokens={setImportedTokens}
+                        favePools={favePools}
+                        setFavePools={setFavePools}
                     />
                 ))}
             </div>

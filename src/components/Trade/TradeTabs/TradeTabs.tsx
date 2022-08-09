@@ -1,19 +1,18 @@
 import styles from './TradeTabs.module.css';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Dispatch, SetStateAction } from 'react';
 import TabNavItem from '../../Global/Tabs/TabNavItem/TabNavItem';
 import Positions from './Positions/Positions';
 import TabContent from '../../Global/Tabs/TabContent/TabContent';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 
-import Transactions from './Transactions/Transactions';
+// import Transactions from './Transactions/Transactions';
 import Toggle2 from '../../Global/Toggle/Toggle2';
-import Orders from './Orders/Orders';
+// import Orders from './Orders/Orders';
 import DropdownMenu from '../../Global/DropdownMenu/DropdownMenu';
 import DropdownMenuContainer from '../../Global/DropdownMenu/DropdownMenuContainer/DropdownMenuContainer';
 import DropdownMenuItem from '../../Global/DropdownMenu/DropdownMenuItem/DropdownMenuItem';
 import { BiDownArrow } from 'react-icons/bi';
-import Ranges from './Ranges/Ranges';
-import { useTokenMap } from '../../../App/components/Sidebar/useTokenMap';
+// import Ranges from './Ranges/Ranges';
 
 interface ITabsProps {
     account: string;
@@ -21,15 +20,15 @@ interface ITabsProps {
     isWeb3Enabled: boolean;
     lastBlockNumber: number;
     chainId: string;
+    isShowAllEnabled: boolean;
+    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function TradeTabs(props: ITabsProps) {
     const [activeTab, setActiveTab] = useState('tab1');
-    const [isShowAllEnabled, setIsShowAllEnabled] = useState<boolean>(true);
+    const { isShowAllEnabled, setIsShowAllEnabled } = props;
 
     const graphData = useAppSelector((state) => state?.graphData);
-
-    const tokenMap = useTokenMap();
 
     const userPositions = graphData?.positionsByUser?.positions;
     // const poolPositions = graphData?.positionsByPool?.positions;
@@ -176,31 +175,33 @@ export default function TradeTabs(props: ITabsProps) {
                         notOnTradeRoute={false}
                         graphData={graphData}
                         lastBlockNumber={props.lastBlockNumber}
+                        chainId={props.chainId}
                     />
                 </TabContent>
 
                 <TabContent id='tab2' activeTab={activeTab}>
-                    <Orders />
+                    {/* <Orders /> */}
                 </TabContent>
                 <TabContent id='tab3' activeTab={activeTab}>
-                    <Transactions
+                    {/* <Transactions
                         isShowAllEnabled={isShowAllEnabled}
+                        setIsShowAllEnabled={setIsShowAllEnabled}
                         graphData={graphData}
                         tokenMap={tokenMap}
                         chainId={props.chainId}
-                    />
+                    /> */}
                 </TabContent>
                 <TabContent id='tab4' activeTab={activeTab}>
                     Leaderboard
                 </TabContent>
                 <TabContent id='tab5' activeTab={activeTab}>
                     Test of ranges refactor
-                    <Ranges
+                    {/* <Ranges
                         isShowAllEnabled={isShowAllEnabled}
                         notOnTradeRoute={false}
                         graphData={graphData}
                         lastBlockNumber={props.lastBlockNumber}
-                    />
+                    /> */}
                 </TabContent>
             </div>
         </div>

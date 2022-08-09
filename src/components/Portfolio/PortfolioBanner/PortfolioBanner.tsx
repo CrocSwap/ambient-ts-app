@@ -1,5 +1,6 @@
 import styles from './PortfolioBanner.module.css';
 import trimString from '../../../utils/functions/trimString';
+import noAvatarImage from '../../../assets/images/icons/avatar.svg';
 
 interface PortfolioBannerPropsIF {
     ensName: string;
@@ -17,7 +18,13 @@ export default function PortfolioBanner(props: PortfolioBannerPropsIF) {
     return (
         <div className={styles.rectangle_container}>
             <div className={styles.account_container}>
-                {imageData[0] ? <img src={imageData[0]} alt='avatar' /> : null}
+                <div className={styles.avatar_image}>
+                    {imageData[0] ? (
+                        <img src={imageData[0]} alt='avatar' />
+                    ) : (
+                        <img src={noAvatarImage} alt='no avatar' />
+                    )}
+                </div>
                 <div className={styles.account_names}>
                     <span className={styles.name}>
                         {ensNameAvailable

@@ -96,8 +96,8 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalProps) {
     const tokenACharacter = getUnicodeCharacter(dataTokenA.symbol);
     const tokenBCharacter = getUnicodeCharacter(dataTokenB.symbol);
 
-    console.log({ tokenACharacter });
-    console.log({ tokenBCharacter });
+    // console.log({ tokenACharacter });
+    // console.log({ tokenBCharacter });
 
     const feeTierDisplay = (
         <section className={styles.fee_tier_display}>

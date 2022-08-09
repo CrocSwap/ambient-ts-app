@@ -1,30 +1,9 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-
-export interface unifiedReceipt {
-    receiptType: string;
-    txHash: string;
-    isTxSuccess: boolean;
-    blockNumber: number;
-    unixTimestamp: number;
-    gasPriceInGwei: number;
-    gasUsed: number;
-    tokenAAddress: string;
-    tokenBAddress: string;
-    tokenAQtyUnscaled: number;
-    tokenAQtyScaled: number;
-    tokenBQtyUnscaled: number;
-    tokenBQtyScaled: number;
-    tokenASymbol: string;
-    tokenBSymbol: string;
-    lessExpensiveTokenSymbol: string;
-    moreExpensiveTokenSymbol: string;
-    readableConversionRate: number;
-    // isTokenAPrimary: boolean;
-    // primaryQuantity: string;
-}
+// import { ethers } from 'ethers';
 
 export interface receiptData {
-    sessionReceipts: Array<unifiedReceipt>;
+    sessionReceipts: Array<string>;
+    // sessionReceipts: Array<ethers.providers.TransactionReceipt>;
 }
 
 const initialState: receiptData = {
@@ -35,9 +14,12 @@ export const receiptDataSlice = createSlice({
     name: 'receiptData',
     initialState,
     reducers: {
-        addReceipt: (state, action: PayloadAction<unifiedReceipt>) => {
+        addReceipt: (state, action: PayloadAction<string>) => {
             state.sessionReceipts.push(action.payload);
         },
+        // addReceipt: (state, action: PayloadAction<ethers.providers.TransactionReceipt>) => {
+        //     state.sessionReceipts.push(action.payload);
+        // },
         resetReceiptData: () => initialState,
     },
 });

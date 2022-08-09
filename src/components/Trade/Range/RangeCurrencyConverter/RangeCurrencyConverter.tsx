@@ -36,8 +36,8 @@ interface RangeCurrencyConverterPropsIF {
     isAmbient: boolean;
     depositSkew: number;
     setIsSellTokenPrimary?: Dispatch<SetStateAction<boolean>>;
-    truncatedTokenABalance: string;
-    truncatedTokenBBalance: string;
+    tokenABalance: string;
+    tokenBBalance: string;
     setTokenAInputQty: Dispatch<SetStateAction<string>>;
     setTokenBInputQty: Dispatch<SetStateAction<string>>;
     setRangeButtonErrorMessage: Dispatch<SetStateAction<string>>;
@@ -70,8 +70,8 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         setIsWithdrawTokenAFromDexChecked,
         isWithdrawTokenBFromDexChecked,
         setIsWithdrawTokenBFromDexChecked,
-        truncatedTokenABalance,
-        truncatedTokenBBalance,
+        tokenABalance,
+        tokenBBalance,
         setTokenAInputQty,
         setTokenBInputQty,
         setRangeButtonErrorMessage,
@@ -255,7 +255,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         if (poolPriceNonDisplay === 0) {
             setRangeAllowed(false);
             setRangeButtonErrorMessage('Invalid Token Pair');
-        } else if (tokenAAmount > parseFloat(truncatedTokenABalance)) {
+        } else if (tokenAAmount > parseFloat(tokenABalance)) {
             setRangeAllowed(false);
             setRangeButtonErrorMessage(
                 `${tokenPair.dataTokenA.symbol} Amount Exceeds Wallet Balance`,
@@ -273,10 +273,10 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         primaryTokenQty: number,
         secondaryTokenQty: number,
     ) => {
-        console.log({ primaryTokenQty });
-        console.log({ secondaryTokenQty });
+        // console.log({ primaryTokenQty });
+        // console.log({ secondaryTokenQty });
         if (secondaryToken === 'B') {
-            if (secondaryTokenQty > parseFloat(truncatedTokenBBalance)) {
+            if (secondaryTokenQty > parseFloat(tokenBBalance)) {
                 setRangeAllowed(false);
                 setRangeButtonErrorMessage(
                     `${tokenPair.dataTokenB.symbol} Amount Exceeds Wallet Balance`,
@@ -286,14 +286,13 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
                 isNaN(secondaryTokenQty) ||
                 secondaryTokenQty < 0
             ) {
-                console.log('firing');
                 setRangeAllowed(false);
                 setRangeButtonErrorMessage('Enter an Amount');
             } else {
                 // setRangeAllowed(true);
             }
         } else {
-            if (secondaryTokenQty > parseFloat(truncatedTokenABalance)) {
+            if (secondaryTokenQty > parseFloat(tokenABalance)) {
                 setRangeAllowed(false);
                 setRangeButtonErrorMessage(
                     `${tokenPair.dataTokenA.symbol} Amount Exceeds Wallet Balance`,
@@ -315,7 +314,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         if (poolPriceNonDisplay === 0) {
             setRangeAllowed(false);
             setRangeButtonErrorMessage('Invalid Token Pair');
-        } else if (tokenBAmount > parseFloat(truncatedTokenBBalance)) {
+        } else if (tokenBAmount > parseFloat(tokenBBalance)) {
             setRangeAllowed(false);
             setRangeButtonErrorMessage(
                 `${tokenPair.dataTokenB.symbol} Amount Exceeds Wallet Balance`,
@@ -330,7 +329,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
 
     const handleTokenAQtyFieldUpdate = (evt?: ChangeEvent<HTMLInputElement>) => {
         if (evt) {
-            console.log('new handle token A event');
+            // console.log('new handle token A event');
             const input = evt.target.value;
             setTokenAQtyValue(parseFloat(input));
             setIsTokenAPrimaryLocal(true);
@@ -439,8 +438,8 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         poolPriceNonDisplay,
         depositSkew,
         tradeData.isTokenAPrimaryRange,
-        truncatedTokenABalance,
-        truncatedTokenBBalance,
+        tokenABalance,
+        tokenBBalance,
         tokenPair,
     ]);
 
@@ -456,8 +455,8 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         isWithdrawTokenBFromDexChecked: isWithdrawTokenBFromDexChecked,
         setIsWithdrawTokenBFromDexChecked: setIsWithdrawTokenBFromDexChecked,
         reverseTokens: reverseTokens,
-        truncatedTokenABalance: truncatedTokenABalance,
-        truncatedTokenBBalance: truncatedTokenBBalance,
+        tokenABalance: tokenABalance,
+        tokenBBalance: tokenBBalance,
         isTokenADisabled: isTokenADisabled,
         isTokenBDisabled: isTokenBDisabled,
         activeTokenListsChanged: activeTokenListsChanged,

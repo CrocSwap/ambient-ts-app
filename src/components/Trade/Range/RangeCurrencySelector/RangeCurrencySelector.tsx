@@ -22,8 +22,8 @@ interface RangeCurrencySelectorProps {
     setIsWithdrawTokenBFromDexChecked: Dispatch<SetStateAction<boolean>>;
     sellToken?: boolean;
     reverseTokens: () => void;
-    truncatedTokenABalance: string;
-    truncatedTokenBBalance: string;
+    tokenABalance: string;
+    tokenBBalance: string;
     isTokenADisabled: boolean;
     isTokenBDisabled: boolean;
     isAdvancedMode: boolean;
@@ -47,8 +47,8 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
         sellToken,
         updateOtherQuantity,
         reverseTokens,
-        truncatedTokenABalance,
-        truncatedTokenBBalance,
+        tokenABalance,
+        tokenBBalance,
         isTokenADisabled,
         isTokenBDisabled,
         isAdvancedMode,
@@ -105,10 +105,10 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
     );
 
     const walletBalance =
-        fieldId === 'A' && truncatedTokenABalance !== 'NaN'
-            ? truncatedTokenABalance
-            : fieldId === 'B' && truncatedTokenBBalance !== 'NaN'
-            ? truncatedTokenBBalance
+        fieldId === 'A' && tokenABalance !== ''
+            ? parseFloat(tokenABalance).toLocaleString()
+            : fieldId === 'B' && tokenBBalance !== ''
+            ? parseFloat(tokenBBalance).toLocaleString()
             : '0';
 
     // console.log({ fieldId });

@@ -105,13 +105,14 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
 
     const DexBalanceContent = (
         <span className={styles.surplus_toggle}>
-            {fieldId === 'sell'
+            {fieldId === 'sell' ? 'Use Exchange Surplus' : 'Save as Exchange Surplus'}
+            {/* {fieldId === 'sell'
                 ? isWithdrawFromDexChecked
                     ? 'Use Exchange Surplus'
                     : 'Use Wallet Balance'
                 : isSaveAsDexSurplusChecked
                 ? 'Save as Exchange Surplus'
-                : 'Withdraw to Wallet'}
+                : 'Withdraw to Wallet'} */}
 
             {fieldId === 'sell' ? (
                 // <Toggle
@@ -136,10 +137,10 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
     );
 
     const walletBalance =
-        props.sellToken && tokenABalance !== 'NaN'
-            ? tokenABalance
-            : !props.sellToken && tokenBBalance !== 'NaN'
-            ? tokenBBalance
+        props.sellToken && tokenABalance !== ''
+            ? parseFloat(tokenABalance).toLocaleString()
+            : !props.sellToken && tokenBBalance !== ''
+            ? parseFloat(tokenBBalance).toLocaleString()
             : '0';
 
     return (

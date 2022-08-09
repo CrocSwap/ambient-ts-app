@@ -3,7 +3,7 @@ import styles from './Position.module.css';
 import { useModal } from '../Modal/useModal';
 import Modal from '../Modal/Modal';
 import { useState } from 'react';
-import { Position } from '../../../utils/state/graphDataSlice';
+import { PositionIF } from '../../../utils/interfaces/PositionIF';
 import { Link, useLocation } from 'react-router-dom';
 
 import RemoveRange from '../../RemoveRange/RemoveRange';
@@ -11,11 +11,12 @@ import RangeDetails from '../../RangeDetails/RangeDetails';
 import RangeDetailsHeader from '../../RangeDetails/RangeDetailsHeader/RangeDetailsHeader';
 import trimString from '../../../utils/functions/trimString';
 import { ambientPosSlot, concPosSlot } from '@crocswap-libs/sdk';
+import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
 interface PositionProps {
     portfolio?: boolean;
     notOnTradeRoute?: boolean;
-    position: Position;
+    position: PositionIF;
     isAllPositionsEnabled: boolean;
     tokenAAddress: string;
     tokenBAddress: string;
@@ -23,6 +24,7 @@ interface PositionProps {
     account?: string;
     isDenomBase: boolean;
     lastBlockNumber: number;
+    chainId: string;
 }
 export default function Position(props: PositionProps) {
     // const navigate = useNavigate();
@@ -39,6 +41,7 @@ export default function Position(props: PositionProps) {
         notOnTradeRoute,
         isAuthenticated,
         lastBlockNumber,
+        chainId,
     } = props;
 
     const { portfolio } = props;
@@ -95,7 +98,12 @@ export default function Position(props: PositionProps) {
 
     let posHash;
     if (position.ambient) {
-        posHash = ambientPosSlot(position.user, position.base, position.quote);
+        posHash = ambientPosSlot(
+            position.user,
+            position.base,
+            position.quote,
+            lookupChain(chainId).poolIndex,
+        );
     } else {
         posHash = concPosSlot(
             position.user,
@@ -103,6 +111,7 @@ export default function Position(props: PositionProps) {
             position.quote,
             position.bidTick,
             position.askTick,
+            lookupChain(chainId).poolIndex,
         );
     }
 
@@ -145,9 +154,9 @@ export default function Position(props: PositionProps) {
     const removeRangeProps = {
         isPositionInRange: isPositionInRange,
         isAmbient: position.ambient,
-        baseTokenSymbol: position.baseTokenSymbol,
+        baseTokenSymbol: position.baseSymbol,
         baseTokenDecimals: position.baseTokenDecimals,
-        quoteTokenSymbol: position.quoteTokenSymbol,
+        quoteTokenSymbol: position.quoteSymbol,
         quoteTokenDecimals: position.quoteTokenDecimals,
         lowRangeDisplayInBase: position.lowRangeDisplayInBase,
         highRangeDisplayInBase: position.highRangeDisplayInBase,
@@ -159,6 +168,7 @@ export default function Position(props: PositionProps) {
         baseTokenAddress: props.position.base,
         quoteTokenAddress: props.position.quote,
         lastBlockNumber: lastBlockNumber,
+        chainId: props.chainId,
     };
 
     switch (currentModal) {

@@ -9,7 +9,7 @@ import { MenuItem, Menu } from '@material-ui/core';
 import { useStyles } from '../../../../../utils/functions/styles';
 import { FiMoreHorizontal } from 'react-icons/fi';
 import RangeStatus from '../../../../Global/RangeStatus/RangeStatus';
-import { Position } from '../../../../../utils/state/graphDataSlice';
+import { PositionIF } from '../../../../../utils/interfaces/PositionIF';
 
 import RemoveRange from '../../../../RemoveRange/RemoveRange';
 import RangeDetails from '../../../../RangeDetails/RangeDetails';
@@ -17,11 +17,12 @@ import RangeDetailsHeader from '../../../../RangeDetails/RangeDetailsHeader/Rang
 import trimString from '../../../../../utils/functions/trimString';
 import { ambientPosSlot, concPosSlot } from '@crocswap-libs/sdk';
 import { Tooltip } from '@mui/material';
+import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
 interface PositionCardProps {
     portfolio?: boolean;
     notOnTradeRoute?: boolean;
-    position: Position;
+    position: PositionIF;
     isAllPositionsEnabled: boolean;
     tokenAAddress: string;
     tokenBAddress: string;
@@ -30,6 +31,7 @@ interface PositionCardProps {
     isDenomBase: boolean;
     userPosition?: boolean;
     lastBlockNumber: number;
+    chainId: string;
 }
 export default function PositionCard(props: PositionCardProps) {
     const {
@@ -40,7 +42,7 @@ export default function PositionCard(props: PositionCardProps) {
         account,
         // notOnTradeRoute,
         // isAuthenticated,
-
+        chainId,
         userPosition,
         lastBlockNumber,
     } = props;
@@ -102,7 +104,12 @@ export default function PositionCard(props: PositionCardProps) {
 
     let posHash;
     if (position.ambient) {
-        posHash = ambientPosSlot(position.user, position.base, position.quote);
+        posHash = ambientPosSlot(
+            position.user,
+            position.base,
+            position.quote,
+            lookupChain(chainId).poolIndex,
+        );
     } else {
         posHash = concPosSlot(
             position.user,
@@ -110,6 +117,7 @@ export default function PositionCard(props: PositionCardProps) {
             position.quote,
             position.bidTick,
             position.askTick,
+            lookupChain(chainId).poolIndex,
         );
     }
 
@@ -157,9 +165,9 @@ export default function PositionCard(props: PositionCardProps) {
     const removeRangeProps = {
         isPositionInRange: isPositionInRange,
         isAmbient: position.ambient,
-        baseTokenSymbol: position.baseTokenSymbol,
+        baseTokenSymbol: position.baseSymbol,
         baseTokenDecimals: position.baseTokenDecimals,
-        quoteTokenSymbol: position.quoteTokenSymbol,
+        quoteTokenSymbol: position.quoteSymbol,
         quoteTokenDecimals: position.quoteTokenDecimals,
         lowRangeDisplayInBase: position.lowRangeDisplayInBase,
         highRangeDisplayInBase: position.highRangeDisplayInBase,
@@ -290,14 +298,15 @@ export default function PositionCard(props: PositionCardProps) {
                 </Tooltip>
 
                 <Tooltip
+                    classes={{
+                        tooltip: classes.customTooltip,
+                        arrow: classes.customArrow,
+                    }}
                     title={ensName ? ensName : ownerId ? ownerId : ''}
                     placement={'right'}
                     arrow
                     enterDelay={400}
                     leaveDelay={200}
-                    classes={{
-                        tooltip: classes.customTooltip,
-                    }}
                 >
                     <p
                         className={`${styles.large_device} ${styles.account_style} ${

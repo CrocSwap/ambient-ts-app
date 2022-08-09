@@ -23,3 +23,13 @@
 
     
 }
+
+@media (min-width: 940px){
+
+
+    .portfolio_container{
+        height: calc(100vh - 10.5rem);
+
+    }
+
+}
