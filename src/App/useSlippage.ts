@@ -66,12 +66,12 @@ export const useSlippage = () => {
         // swap values and setter functions
         {
             stable: { value: slipSwapStable, setValue: setSlipSwapStable },
-            volatile: { value: slipSwapVolatile, setValue: setSlipSwapVolatile }
+            volatile: { value: slipSwapVolatile, setValue: setSlipSwapVolatile },
         },
         // mint values and setter functions
         {
             stable: { value: slipMintStable, setValue: setSlipMintStable },
-            volatile: { value: slipMintVolatile, setValue: setSlipMintVolatile }
-        }
+            volatile: { value: slipMintVolatile, setValue: setSlipMintVolatile },
+        },
     ];
-}
+};

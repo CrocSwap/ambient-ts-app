@@ -253,7 +253,6 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
             {routeDisplay}
 
             <div className={styles.account}>
-
                 {<NetworkSelector chainId={chainId} setFallbackChainId={setFallbackChainId} />}
                 {(!isAuthenticated || !isWeb3Enabled) && metamaskButton}
 

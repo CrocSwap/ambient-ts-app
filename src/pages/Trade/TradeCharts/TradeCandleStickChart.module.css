@@ -1,0 +1,38 @@
+.main_layout{
+    transition: all 600ms ease-in-out;
+    width: 100%;
+    color: #BDBDBD;
+}
+
+.domain, .tick>path, .gridline-y, .gridline-x {
+    stroke: #BDBDBD;
+    stroke-opacity: 0.1;
+}
+
+.annotation-line > .redline {
+    stroke: rgba(204, 204, 204, 0.452);
+    stroke-width: 3;
+    stroke-dasharray: 6 6;
+    stroke-opacity: 0.6;
+}
+
+
+.candlestick  .down {
+    background-color: #7371FC;
+}
+
+hr {
+    display: block;
+    height: 0.5px;
+    border: 0;
+    border-top: 0.5px solid rgba(204, 204, 204, 0.452);
+    margin: 1 0;
+    padding: 0;
+}
+
+label {
+    color: rgba(204, 204, 204, 0.63);
+    padding-top: 3px;
+    padding-left: 7px;
+    font-size: 14px;
+}

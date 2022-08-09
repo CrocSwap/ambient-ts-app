@@ -11,10 +11,7 @@ interface NetworkButtonsProps {
 }
 export default function NetworkButtons(props: NetworkButtonsProps) {
     const { setFallbackChainId, onClose } = props;
-    const {
-        chainId: moralisChainId,
-        switchNetwork,
-    } = useChain();
+    const { chainId: moralisChainId, switchNetwork } = useChain();
 
     const supportedChains = [
         {

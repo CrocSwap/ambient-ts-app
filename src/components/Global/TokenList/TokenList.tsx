@@ -29,7 +29,7 @@ export default function TokenList(props: TokenListPropsIF) {
         indicateActiveTokenListsChanged,
         tokenToUpdate,
         undeletableTokens,
-        closeModal
+        closeModal,
     } = props;
 
     const [showImportedTokens, setShowImportedTokens] = useState(false);
@@ -75,10 +75,10 @@ export default function TokenList(props: TokenListPropsIF) {
     const toggleList = (list: string) => {
         // check if toggled list is currently in the active list
         const newActiveTokenList = userData.activeTokenLists.includes(list)
-            // if URI is in active list, remove it
-            ? userData.activeTokenLists.filter((uri: string) => uri !== list)
-            // if URI is not in active list, add it
-            : [...userData.activeTokenLists, list];
+            ? // if URI is in active list, remove it
+              userData.activeTokenLists.filter((uri: string) => uri !== list)
+            : // if URI is not in active list, add it
+              [...userData.activeTokenLists, list];
         // overwrite the old activeTokenLists value with the new one
         userData.activeTokenLists = newActiveTokenList;
         // send the updated user object to local storage

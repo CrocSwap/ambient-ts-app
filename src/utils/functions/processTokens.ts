@@ -2,7 +2,7 @@ import { TokenIF } from '../interfaces/exports';
 
 import { goerliDAI, goerliUSDC, goerliETH } from '../data/defaultTokens';
 
-const tempBackupTokens = [ goerliDAI, goerliUSDC, goerliETH ];
+const tempBackupTokens = [goerliDAI, goerliUSDC, goerliETH];
 
 export const filterTokensByChain = (tkns: Array<TokenIF>, chain: number) => {
     const tokensOnChain = tkns.filter((tkn: TokenIF) => tkn.chainId === chain);

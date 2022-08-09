@@ -1,6 +1,6 @@
 import { Outlet, useOutletContext, NavLink } from 'react-router-dom';
 import styles from './Trade.module.css';
-import chart from '../../assets/images/Temporary/chart.svg';
+// import chart from '../../assets/images/Temporary/chart.svg';
 
 // import { motion } from 'framer-motion';
 import { useAppSelector, useAppDispatch } from '../../utils/hooks/reduxToolkit';
@@ -20,13 +20,21 @@ import {
     setActiveChartPeriod,
 } from '../../utils/state/tradeDataSlice';
 import truncateDecimals from '../../utils/data/truncateDecimals';
+// import TradeTabs from '../../components/Trade/TradeTabs/TradeTabs';
+import { Dispatch, SetStateAction, useState, useEffect, useMemo } from 'react';
+import { DefaultTooltip } from '../../components/Global/StyledTooltip/StyledTooltip';
+import { TokenIF } from '../../utils/interfaces/TokenIF';
+import { ONE_HOUR_SECONDS, TimeWindow } from '../../constants/intervals';
+import { useTokenData, useTokenPriceData } from '../../state/tokens/hooks';
+import { currentTimestamp } from '../../utils';
+import { PriceChartEntry } from '../../types';
+import { usePoolChartData } from '../../state/pools/hooks';
+import TradeCandleStickChart from './TradeCharts/TradeCandleStickChart';
 import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
 // import TradeTabs from '../../components/Trade/TradeTabs/TradeTabs';
+// import TradeTabs from '../../components/Trade/TradeTabs/TradeTabs';
 import TradeTabs2 from '../../components/Trade/TradeTabs/TradeTabs2';
-import { Dispatch, SetStateAction, useState, useEffect } from 'react';
 import { motion, AnimateSharedLayout } from 'framer-motion';
-import { TokenIF } from '../../utils/interfaces/TokenIF';
-import { DefaultTooltip } from '../../components/Global/StyledTooltip/StyledTooltip';
 
 interface ITradeProps {
     account: string;
@@ -35,6 +43,12 @@ interface ITradeProps {
     lastBlockNumber: number;
     isTokenABase: boolean;
     poolPriceDisplay: number;
+
+    tokenMap: Map<string, TokenIF>;
+    tokenPair: {
+        dataTokenA: TokenIF;
+        dataTokenB: TokenIF;
+    };
     chainId: string;
     switchTabToTransactions: boolean;
     setSwitchTabToTransactions: Dispatch<SetStateAction<boolean>>;
@@ -45,18 +59,88 @@ interface ITradeProps {
 
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
-    tokenMap: Map<string, TokenIF>;
 }
+
+const DEFAULT_TIME_WINDOW = TimeWindow.WEEK;
 
 export default function Trade(props: ITradeProps) {
     const { tokenMap } = props;
     const [fullScreenChart, setFullScreenChart] = useState(false);
 
-    // const location = useLocation();
-    // const currentLocation = location.pathname;
     const dispatch = useAppDispatch();
 
-    // console.log(currentLocation);
+    const [timeWindow] = useState(DEFAULT_TIME_WINDOW);
+    const chartData = usePoolChartData('0x8ad599c3a0ff1de082011efddc58f1908eb6e6d8'); // ETH/USDC pool address
+    const tokenData = useTokenData('0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'); // ETH address
+    const priceData = useTokenPriceData(
+        '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', // ETH address
+        ONE_HOUR_SECONDS,
+        timeWindow,
+    );
+
+    const adjustedToCurrent = useMemo(() => {
+        if (priceData && tokenData && priceData.length > 0) {
+            const adjusted = Object.assign([], priceData);
+            adjusted.push({
+                time: currentTimestamp() / 1000,
+                open: priceData[priceData.length - 1].close,
+                close: tokenData?.priceUSD,
+                high: tokenData?.priceUSD,
+                low: priceData[priceData.length - 1].close,
+            });
+            return adjusted.map((item: PriceChartEntry) => {
+                return {
+                    time: new Date(item.time * 1000),
+                    high: item.high,
+                    low: item.low,
+                    open: item.open,
+                    close: item.close,
+                };
+            });
+        } else {
+            return [];
+        }
+    }, [priceData, tokenData]);
+
+    const formattedTvlData = useMemo(() => {
+        if (chartData) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            return chartData.map((day: any) => {
+                return {
+                    time: new Date(day.date * 1000),
+                    value: day.totalValueLockedUSD,
+                };
+            });
+        } else {
+            return [];
+        }
+    }, [chartData]);
+
+    const formattedVolumeData = useMemo(() => {
+        if (chartData) {
+            return chartData.map((day) => {
+                return {
+                    time: new Date(day.date * 1000),
+                    value: day.volumeUSD,
+                };
+            });
+        } else {
+            return [];
+        }
+    }, [chartData]);
+
+    const formattedFeesUSD = useMemo(() => {
+        if (chartData) {
+            return chartData.map((day) => {
+                return {
+                    time: new Date(day.date * 1000),
+                    value: day.feesUSD,
+                };
+            });
+        } else {
+            return [];
+        }
+    }, [chartData]);
     // const { pathname } = location;
     // console.log('I am pathname', pathname);
 
@@ -76,6 +160,26 @@ export default function Trade(props: ITradeProps) {
     ];
 
     const tradeData = useAppSelector((state) => state.tradeData);
+
+    const graphData = useAppSelector((state) => state.graphData);
+
+    const mainnetCandlePoolDefinition = JSON.stringify({
+        baseAddress: '0x0000000000000000000000000000000000000000',
+        quoteAddress: '0x6b175474e89094c44da98b954eedeac495271d0f',
+        poolIdx: 36000,
+        network: '0x1',
+    }).toLowerCase();
+
+    const indexOfMainnetCandlePool = graphData.candlesForAllPools.pools
+        .map((item) => JSON.stringify(item.pool).toLowerCase())
+        .findIndex((pool) => pool === mainnetCandlePoolDefinition);
+
+    const mainnetCandleData = graphData.candlesForAllPools.pools[indexOfMainnetCandlePool];
+
+    useEffect(() => {
+        console.log({ mainnetCandleData });
+    }, [mainnetCandleData]);
+
     const isTokenABase = props.isTokenABase;
     const setActivePeriod = (period: number) => {
         dispatch(setActiveChartPeriod(period));
@@ -292,12 +396,18 @@ export default function Trade(props: ITradeProps) {
         </div>
     );
 
+    // const chartImage = (
+    //     <div className={styles.chart_image}>
+    //         <img src={chart} alt='chart' />
+    //     </div>
+    // );
+
     const fullScreenStyle = fullScreenChart ? styles.chart_full_screen : styles.chart_image;
-    const chartImage = (
-        <div className={fullScreenStyle}>
-            <img src={chart} alt='chart' />
-        </div>
-    );
+    // const chartImage = (
+    //     <div className={fullScreenStyle}>
+    //         <img src={chart} alt='chart' />
+    //     </div>
+    // );
 
     const navigationMenu = (
         <div className={styles.navigation_menu}>
@@ -329,13 +439,19 @@ export default function Trade(props: ITradeProps) {
         // >
         <AnimateSharedLayout>
             <main className={styles.main_layout}>
-                <div className={styles.middle_col}>
-                    <div className={`${styles.graph_style} ${expandGraphStyle}`}>
+                <div className={`${styles.middle_col}`}>
+                    <div className={`${styles.graph_style} ${expandGraphStyle} ${fullScreenStyle}`}>
                         {graphSettingsContent}
                         {tokenInfo}
                         {timeFrameContent}
-                        {chartImage}
                     </div>
+
+                    <TradeCandleStickChart
+                        tvlData={formattedTvlData}
+                        volumeData={formattedVolumeData}
+                        feeData={formattedFeesUSD}
+                        priceData={adjustedToCurrent}
+                    />
 
                     <motion.div
                         animate={{
@@ -372,6 +488,8 @@ export default function Trade(props: ITradeProps) {
                 {mainContent}
             </main>
         </AnimateSharedLayout>
+
+        // </AnimateSharedLayout>
 
         // </motion.main>
     );

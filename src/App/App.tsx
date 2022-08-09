@@ -50,7 +50,6 @@ import Portfolio from '../pages/Portfolio/Portfolio';
 import Limit from '../pages/Trade/Limit/Limit';
 import Range from '../pages/Trade/Range/Range';
 import Swap from '../pages/Swap/Swap';
-import Chart from '../pages/Chart/Chart';
 import Edit from '../pages/Trade/Edit/Edit';
 import TestPage from '../pages/TestPage/TestPage';
 import NotFound from '../pages/NotFound/NotFound';
@@ -63,6 +62,7 @@ import { validateChain } from './validateChain';
 // import { IParsedPosition, parsePositionArray } from './parsePositions';
 import { defaultTokens } from '../utils/data/defaultTokens';
 import initializeUserLocalStorage from './functions/initializeUserLocalStorage';
+import TokenPage from '../pages/TokenPage/TokenPage';
 import { TokenIF, TokenListIF, PositionIF } from '../utils/interfaces/exports';
 import { fetchTokenLists } from './functions/fetchTokenLists';
 import {
@@ -72,6 +72,7 @@ import {
     setAdvancedLowTick,
     setDenomInBase,
 } from '../utils/state/tradeDataSlice';
+import PoolPage from '../pages/PoolPage/PoolPage';
 // import PositionDetails from '../pages/Trade/Range/PositionDetails';
 import { memoizeQuerySpotPrice, querySpotPrice } from './functions/querySpotPrice';
 import { memoizeFetchAddress } from './functions/fetchAddress';
@@ -647,7 +648,8 @@ export default function App() {
         {
             // share:  true,
             // onOpen: () => console.log('opened'),
-            onClose: (event) => console.log({ event }),
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            onClose: (event: any) => console.log({ event }),
             // onClose: () => console.log('allPositions websocket connection closed'),
             // Will attempt to reconnect on all close events, such as server shutting down
             shouldReconnect: () => shouldSubscriptionsReconnect,
@@ -823,7 +825,8 @@ export default function App() {
         {
             // share:  true,
             // onOpen: () => console.log('opened'),
-            onClose: (event) => console.log({ event }),
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            onClose: (event: any) => console.log({ event }),
             // Will attempt to reconnect on all close events, such as server shutting down
             shouldReconnect: () => shouldSubscriptionsReconnect,
         },
@@ -869,7 +872,8 @@ export default function App() {
         {
             // share: true,
             // onOpen: () => console.log('opened'),
-            onClose: (event) => console.log({ event }),
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            onClose: (event: any) => console.log({ event }),
             // Will attempt to reconnect on all close events, such as server shutting down
             shouldReconnect: () => shouldSubscriptionsReconnect,
         },
@@ -914,7 +918,8 @@ export default function App() {
         {
             // share: true,
             // onOpen: () => console.log('opened'),
-            onClose: (event) => console.log({ event }),
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            onClose: (event: any) => console.log({ event }),
             // onClose: () => console.log('userSwaps websocket connection closed'),
             // Will attempt to reconnect on all close events, such as server shutting down
             shouldReconnect: () => shouldSubscriptionsReconnect,
@@ -1639,6 +1644,7 @@ export default function App() {
                             path='trade'
                             element={
                                 <Trade
+                                    tokenPair={tokenPair}
                                     account={account ?? ''}
                                     isAuthenticated={isAuthenticated}
                                     isWeb3Enabled={isWeb3Enabled}
@@ -1669,6 +1675,9 @@ export default function App() {
                             <Route path='edit/' element={<Navigate to='/trade/market' replace />} />
                         </Route>
                         <Route path='analytics' element={<Analytics />} />
+                        <Route path='tokens/:address' element={<TokenPage />} />
+                        <Route path='pools/:address' element={<PoolPage />} />
+
                         {/* <Route path='details' element={<PositionDetails />} /> */}
                         <Route path='range2' element={<Range {...rangeProps} />} />
 
@@ -1698,7 +1707,6 @@ export default function App() {
                         />
 
                         <Route path='swap' element={<Swap {...swapProps} />} />
-                        <Route path='chart' element={<Chart />} />
                         <Route path='testpage' element={<TestPage />} />
                         <Route path='*' element={<Navigate to='/404' replace />} />
                         <Route path='/404' element={<NotFound />} />

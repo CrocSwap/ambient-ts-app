@@ -5,7 +5,7 @@ export default function clickStar(
     token: TokenIF,
     chain: string,
     poolId: number,
-    setFavePools: Dispatch<SetStateAction<PoolIF[]>>
+    setFavePools: Dispatch<SetStateAction<PoolIF[]>>,
 ) {
     // native token address is always 0x0[...] on every chain
     const nativeTokenAddress = '0x0000000000000000000000000000000000000000';
@@ -16,16 +16,14 @@ export default function clickStar(
 
     // if user clicked the native token, the other token is USDC
     // if user clicked any other token, the other is the native
-    const otherAddress = token.address === nativeTokenAddress
-        ? usdcAddress
-        : nativeTokenAddress;
+    const otherAddress = token.address === nativeTokenAddress ? usdcAddress : nativeTokenAddress;
 
     // bool determining if relevant pool is already in the favorites list
     const isPoolInFavorites = user.favePools.some(
         (pool: PoolIF) =>
             pool.tokens.includes(token.address) &&
             pool.tokens.includes(otherAddress) &&
-            pool.chainId === chain
+            pool.chainId === chain,
     );
 
     // function to add relevant pool to the favorites list
@@ -33,7 +31,7 @@ export default function clickStar(
         const pool: PoolIF = {
             tokens: [],
             poolId: poolId,
-            chainId: chain
+            chainId: chain,
         };
         switch (token.address) {
             case nativeTokenAddress:
@@ -46,18 +44,19 @@ export default function clickStar(
                 pool.tokens.push(token.address);
         }
         user.favePools.push(pool);
-    }
+    };
 
     // function to remove relevant pool from the favorites list
     const removePoolFromFavorites = () => {
-        const newFavePools = user.favePools.filter((pool: PoolIF) => 
-            !pool.tokens.includes(token.address) ||
-            !pool.tokens.includes(otherAddress) ||
-            pool.chainId !== chain ||
-            pool.poolId !== poolId
+        const newFavePools = user.favePools.filter(
+            (pool: PoolIF) =>
+                !pool.tokens.includes(token.address) ||
+                !pool.tokens.includes(otherAddress) ||
+                pool.chainId !== chain ||
+                pool.poolId !== poolId,
         );
         user.favePools = newFavePools;
-    }
+    };
 
     // add or remove the relevant pool from the favorites array depending on
     // ... whether or not it is already there
