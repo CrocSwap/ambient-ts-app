@@ -18,12 +18,12 @@ export default function SidebarRangePositionsCard(props: SidebarRangePositionsPr
     const rangeDisplay =
         position?.positionType === 'ambient'
             ? 'ambient'
-            : `${position?.bidTick}/${position?.askTick}`;
+            : `${position?.lowRangeDisplayInBase}-${position?.highRangeDisplayInBase}`;
 
     return (
         <div className={styles.container}>
             <div>
-                {position?.baseTokenSymbol}/{position?.quoteTokenSymbol}
+                {position?.baseSymbol}/{position?.quoteSymbol}
             </div>
             <div>{rangeDisplay}</div>
             <div className={styles.status_display}>

@@ -1,8 +1,8 @@
 import { TokenIF } from '../interfaces/exports';
 
-import { kovanDAI, kovanUSDC, kovanETH } from '../data/defaultTokens';
+import { goerliDAI, goerliUSDC, goerliETH } from '../data/defaultTokens';
 
-const tempBackupTokens = [kovanDAI, kovanUSDC, kovanETH];
+const tempBackupTokens = [goerliDAI, goerliUSDC, goerliETH];
 
 export const filterTokensByChain = (tkns: Array<TokenIF>, chain: number) => {
     const tokensOnChain = tkns.filter((tkn: TokenIF) => tkn.chainId === chain);

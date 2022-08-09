@@ -2,7 +2,6 @@
 import { Dispatch, SetStateAction, useState } from 'react';
 import { AiFillCloseSquare } from 'react-icons/ai';
 import { CgUnavailable } from 'react-icons/cg';
-import { contractAddresses, toDisplayQty } from '@crocswap-libs/sdk';
 
 // START: Import Local Files
 import styles from './TokenSelect.module.css';
@@ -11,6 +10,9 @@ import uriToHttp from '../../../utils/functions/uriToHttp';
 import clickStar from './clickStar';
 import { removeToken } from '../../Global/TokenSelectContainer/removeToken';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import { toDisplayQty } from '@crocswap-libs/sdk';
+// import truncateDecimals from '../../../utils/data/truncateDecimals';
+// import { tokenData } from '../../../utils/state/tokenDataSlice';
 
 interface TokenSelectPropsIF {
     token: TokenIF;
@@ -45,15 +47,8 @@ export default function TokenSelect(props: TokenSelectPropsIF) {
     const getTokenBalance = (address: string) => {
         let tokenBalanceDisplay = '';
         tokensInRTK.map((token) => {
-            if (token.token_address?.toLowerCase() === address.toLowerCase()) {
+            if (token.address?.toLowerCase() === address.toLowerCase()) {
                 if (token.balance && token.decimals) {
-                    if (token.address === contractAddresses.ZERO_ADDR) {
-                        const localizedNativeBalance = parseFloat(token.balance).toLocaleString(
-                            'en-US',
-                        );
-                        tokenBalanceDisplay = localizedNativeBalance;
-                        return;
-                    }
                     const untruncatedDisplayQty = toDisplayQty(token.balance, token.decimals);
                     const displayQtyNum = parseFloat(untruncatedDisplayQty);
                     const localDisplayQty = displayQtyNum.toLocaleString('en-US');

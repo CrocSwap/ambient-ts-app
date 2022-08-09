@@ -4,9 +4,9 @@ import WalletAndId from '../../../Global/Tabs/WalletAndID/WalletAndId';
 import RangeStatus from '../../../Global/RangeStatus/RangeStatus';
 import RangeMinMax from '../../../Global/Tabs/RangeMinMax/RangeMinMax';
 import Apy from '../../../Global/Tabs/Apy/Apy';
+import { PositionIF } from '../../../../utils/interfaces/PositionIF';
 import { ambientPosSlot, concPosSlot } from '@crocswap-libs/sdk';
 import RangesMenu from '../../../Global/Tabs/TableMenu/TableMenuComponents/RangesMenu';
-import { PositionIF } from '../../../../utils/interfaces/PositionIF';
 
 interface RangeCardProps {
     portfolio?: boolean;
@@ -44,7 +44,7 @@ export default function RangeCard(props: RangeCardProps) {
 
     let posHash;
     if (position.ambient) {
-        posHash = ambientPosSlot(position.user, position.base, position.quote);
+        posHash = ambientPosSlot(position.user, position.base, position.quote, 36000);
     } else {
         posHash = concPosSlot(
             position.user,
@@ -52,6 +52,7 @@ export default function RangeCard(props: RangeCardProps) {
             position.quote,
             position.bidTick,
             position.askTick,
+            36000,
         );
     }
 
@@ -61,7 +62,7 @@ export default function RangeCard(props: RangeCardProps) {
     let isPositionInRange = true;
 
     if (position.poolPriceInTicks) {
-        if (position.ambient) {
+        if (position.positionType === 'ambient') {
             isPositionInRange = true;
         } else if (
             position.bidTick <= position.poolPriceInTicks &&
@@ -105,18 +106,18 @@ export default function RangeCard(props: RangeCardProps) {
         ? position.highRangeDisplayInBase
         : position.highRangeDisplayInQuote;
 
-    const ambientMinOrNull = position.ambient ? 'ambient' : minRange;
-    const ambientMaxOrNull = position.ambient ? 'ambient' : maxRange;
+    const ambientMinOrNull = position.positionType === 'ambient' ? '0' : minRange;
+    const ambientMaxOrNull = position.positionType === 'ambient' ? '∞' : maxRange;
 
     // ---------------------------------END OF POSITIONS MIN AND MAX RANGE--------------------
 
     // --------------------------REMOVE RANGE PROPS-------------------------------
     const removeRangeProps = {
         isPositionInRange: isPositionInRange,
-        isAmbient: position.ambient,
-        baseTokenSymbol: position.baseTokenSymbol,
+        isAmbient: position.positionType === 'ambient',
+        baseTokenSymbol: position.baseSymbol,
         baseTokenDecimals: position.baseTokenDecimals,
-        quoteTokenSymbol: position.quoteTokenSymbol,
+        quoteTokenSymbol: position.quoteSymbol,
         quoteTokenDecimals: position.quoteTokenDecimals,
         lowRangeDisplayInBase: position.lowRangeDisplayInBase,
         highRangeDisplayInBase: position.highRangeDisplayInBase,
@@ -151,7 +152,10 @@ export default function RangeCard(props: RangeCardProps) {
                 {/* ------------------------------------------------------ */}
                 <Apy amount={10} />
                 {/* ------------------------------------------------------ */}
-                <RangeStatus isInRange={isPositionInRange} isAmbient={position.ambient} />
+                <RangeStatus
+                    isInRange={isPositionInRange}
+                    isAmbient={position.positionType === 'ambient'}
+                />
             </div>
 
             <div className={styles.menu_container}>

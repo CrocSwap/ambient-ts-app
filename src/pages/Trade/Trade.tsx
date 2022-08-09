@@ -1,22 +1,29 @@
-import {
-    Outlet,
-    useOutletContext,
-    NavLink,
-    // useLocation
-} from 'react-router-dom';
+import { Outlet, useOutletContext, NavLink } from 'react-router-dom';
 import styles from './Trade.module.css';
 // import chart from '../../assets/images/Temporary/chart.svg';
 
 // import { motion } from 'framer-motion';
 import { useAppSelector, useAppDispatch } from '../../utils/hooks/reduxToolkit';
 import {
+    AiOutlineCamera,
+    AiOutlineFullscreen,
+    AiOutlineSetting,
+    AiOutlineDownload,
+    AiOutlineCopy,
+    AiOutlineLink,
+    AiOutlineTwitter,
+} from 'react-icons/ai';
+import { HiOutlineExternalLink } from 'react-icons/hi';
+import {
     tradeData as TradeDataIF,
     toggleDidUserFlipDenom,
     setActiveChartPeriod,
 } from '../../utils/state/tradeDataSlice';
 import truncateDecimals from '../../utils/data/truncateDecimals';
+// import TradeTabs from '../../components/Trade/TradeTabs/TradeTabs';
+import { Dispatch, SetStateAction, useState, useEffect, useMemo } from 'react';
+import { DefaultTooltip } from '../../components/Global/StyledTooltip/StyledTooltip';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
-import { useMemo, useState, Dispatch, SetStateAction, useEffect } from 'react';
 import { ONE_HOUR_SECONDS, TimeWindow } from '../../constants/intervals';
 import { useTokenData, useTokenPriceData } from '../../state/tokens/hooks';
 import { currentTimestamp } from '../../utils';
@@ -36,6 +43,8 @@ interface ITradeProps {
     lastBlockNumber: number;
     isTokenABase: boolean;
     poolPriceDisplay: number;
+
+    tokenMap: Map<string, TokenIF>;
     tokenPair: {
         dataTokenA: TokenIF;
         dataTokenB: TokenIF;
@@ -55,6 +64,9 @@ interface ITradeProps {
 const DEFAULT_TIME_WINDOW = TimeWindow.WEEK;
 
 export default function Trade(props: ITradeProps) {
+    const { tokenMap } = props;
+    const [fullScreenChart, setFullScreenChart] = useState(false);
+
     const dispatch = useAppDispatch();
 
     const [timeWindow] = useState(DEFAULT_TIME_WINDOW);
@@ -129,6 +141,8 @@ export default function Trade(props: ITradeProps) {
             return [];
         }
     }, [chartData]);
+    // const { pathname } = location;
+    // console.log('I am pathname', pathname);
 
     const routes = [
         {
@@ -317,8 +331,9 @@ export default function Trade(props: ITradeProps) {
         <div className={styles.time_frame_container}>
             <div className={styles.left_side}>
                 <span className={styles.amount} onClick={() => dispatch(toggleDidUserFlipDenom())}>
-                    {currencyCharacter}
-                    {truncatedPoolPrice}
+                    {poolPriceDisplay === Infinity
+                        ? '...'
+                        : `${currencyCharacter}${truncatedPoolPrice}`}
                 </span>
                 <span className={styles.change}>+8.57% | 24h</span>
             </div>
@@ -329,8 +344,67 @@ export default function Trade(props: ITradeProps) {
         </div>
     );
 
+    const saveImageContent = (
+        <div className={styles.save_image_container}>
+            <div className={styles.save_image_content}>
+                <AiOutlineDownload />
+                Save Chart Image
+            </div>
+            <div className={styles.save_image_content}>
+                <AiOutlineCopy />
+                Copy Chart Image
+            </div>
+            <div className={styles.save_image_content}>
+                <AiOutlineLink />
+                Copy link to the chart image
+            </div>
+            <div className={styles.save_image_content}>
+                <HiOutlineExternalLink />
+                Open image in new tab
+            </div>
+            <div className={styles.save_image_content}>
+                <AiOutlineTwitter />
+                Tweet chart image
+            </div>
+        </div>
+    );
+
+    // eslint-disable-next-line
+    function closeOnEscapeKeyDown(e: any) {
+        if ((e.charCode || e.keyCode) === 27) setFullScreenChart(false);
+    }
+
+    useEffect(() => {
+        document.body.addEventListener('keydown', closeOnEscapeKeyDown);
+        return function cleanUp() {
+            document.body.removeEventListener('keydown', closeOnEscapeKeyDown);
+        };
+    });
+    const graphSettingsContent = (
+        <div className={styles.graph_settings_container}>
+            <div>
+                <AiOutlineSetting size={20} />
+            </div>
+            <div onClick={() => setFullScreenChart(true)}>
+                <AiOutlineFullscreen size={20} />
+            </div>
+            <DefaultTooltip interactive title={saveImageContent}>
+                <div>
+                    <AiOutlineCamera size={20} />
+                </div>
+            </DefaultTooltip>
+        </div>
+    );
+
     // const chartImage = (
     //     <div className={styles.chart_image}>
+    //         <img src={chart} alt='chart' />
+    //     </div>
+    // );
+
+    const fullScreenStyle = fullScreenChart ? styles.chart_full_screen : styles.chart_image;
+    // const chartImage = (
+    //     <div className={fullScreenStyle}>
     //         <img src={chart} alt='chart' />
     //     </div>
     // );
@@ -365,8 +439,9 @@ export default function Trade(props: ITradeProps) {
         // >
         <AnimateSharedLayout>
             <main className={styles.main_layout}>
-                <div className={`${styles.middle_col} ${expandGraphStyle}`}>
-                    <div>
+                <div className={`${styles.middle_col}`}>
+                    <div className={`${styles.graph_style} ${expandGraphStyle} ${fullScreenStyle}`}>
+                        {graphSettingsContent}
                         {tokenInfo}
                         {timeFrameContent}
                     </div>
@@ -406,12 +481,15 @@ export default function Trade(props: ITradeProps) {
                             setIsShowAllEnabled={props.setIsShowAllEnabled}
                             expandTradeTable={props.expandTradeTable}
                             setExpandTradeTable={props.setExpandTradeTable}
+                            tokenMap={tokenMap}
                         />
                     </motion.div>
                 </div>
                 {mainContent}
             </main>
         </AnimateSharedLayout>
+
+        // </AnimateSharedLayout>
 
         // </motion.main>
     );
