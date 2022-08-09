@@ -1,9 +1,8 @@
 import styles from './WalletAndId.module.css';
 import trimString from '../../../../utils/functions/trimString';
-import { Tooltip } from '@mui/material';
-import { useStyles } from '../../../../utils/functions/styles';
-import { NavLink } from 'react-router-dom';
 
+import { NavLink } from 'react-router-dom';
+import { DefaultTooltip } from '../../StyledTooltip/StyledTooltip';
 interface WalletAndIDProps {
     posHash: string;
     ownerId: string;
@@ -11,14 +10,14 @@ interface WalletAndIDProps {
 }
 export default function WalletAndId(props: WalletAndIDProps) {
     const { ownerId, posHash, ensName } = props;
-    const classes = useStyles();
 
     const ensNameTruncated = ensName ? trimString(ensName, 4, 3, '…') : null;
     const ownerIdTruncated = trimString(ownerId, 6, 0, '…');
     const posHashTruncated = trimString(posHash, 6, 0, '…');
 
     const walletWithTooltip = (
-        <Tooltip
+        <DefaultTooltip
+            interactive
             title={
                 <div>
                     <p>{ownerId}</p>
@@ -29,29 +28,25 @@ export default function WalletAndId(props: WalletAndIDProps) {
             arrow
             enterDelay={400}
             leaveDelay={200}
-            classes={{
-                tooltip: classes.customTooltip,
-            }}
         >
             <p>{ownerIdTruncated}</p>
-        </Tooltip>
+        </DefaultTooltip>
     );
     const IDWithTooltip = (
-        <Tooltip
+        <DefaultTooltip
+            interactive
             title={posHash}
             placement={'right'}
             arrow
             enterDelay={400}
             leaveDelay={200}
-            classes={{
-                tooltip: classes.customTooltip,
-            }}
         >
             <p>{posHashTruncated}</p>
-        </Tooltip>
+        </DefaultTooltip>
     );
     const ENSWithTooltip = (
-        <Tooltip
+        <DefaultTooltip
+            interactive
             title={
                 <div>
                     <p>{ensName}</p>
@@ -62,12 +57,9 @@ export default function WalletAndId(props: WalletAndIDProps) {
             arrow
             enterDelay={400}
             leaveDelay={200}
-            classes={{
-                tooltip: classes.customTooltip,
-            }}
         >
             <p className={styles.ens}>{ensNameTruncated}</p>
-        </Tooltip>
+        </DefaultTooltip>
     );
 
     const displayENSorWallet = ensName ? ENSWithTooltip : walletWithTooltip;

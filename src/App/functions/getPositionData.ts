@@ -1,9 +1,9 @@
-import { contractAddresses, tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
+import { tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 import truncateDecimals from '../../utils/data/truncateDecimals';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
 import { PositionIF } from '../../utils/interfaces/PositionIF';
 
-import { fetchAddress } from './fetchAddress';
+// import { fetchAddress } from './fetchAddress';
 
 export const getPositionData = async (position: PositionIF): Promise<PositionIF> => {
     position.base = position.base.startsWith('0x') ? position.base : '0x' + position.base;
@@ -24,12 +24,12 @@ export const getPositionData = async (position: PositionIF): Promise<PositionIF>
 
     const poolPriceNonDisplay = 0.001;
 
-    try {
-        const ensName = await fetchAddress(position.user);
-        position.userEnsName = ensName ?? '';
-    } catch (error) {
-        console.log(error);
-    }
+    // try {
+    //     const ensName = await fetchAddress(position.user);
+    //     position.userEnsName = ensName ?? '';
+    // } catch (error) {
+    //     console.log(error);
+    // }
 
     const poolPriceInTicks = Math.log(poolPriceNonDisplay) / Math.log(1.0001);
 
@@ -98,30 +98,30 @@ export const getPositionData = async (position: PositionIF): Promise<PositionIF>
 
     position.poolPriceInTicks = poolPriceInTicks;
 
-    if (baseTokenAddress === contractAddresses.ZERO_ADDR) {
-        position.baseTokenSymbol = 'ETH';
-        position.quoteTokenSymbol = 'DAI';
-        position.tokenAQtyDisplay = '1';
-        position.tokenBQtyDisplay = '2000';
-        // if (!position.ambient) {
-        //     position.lowRangeDisplay = '.001';
-        //     position.highRangeDisplay = '.002';
-        // }
-    } else if (
-        baseTokenAddress.toLowerCase() ===
-        '0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa'.toLowerCase()
-    ) {
-        position.baseTokenSymbol = 'DAI';
-        position.quoteTokenSymbol = 'USDC';
-        position.tokenAQtyDisplay = '101';
-        position.tokenBQtyDisplay = '100';
-        // if (!position.ambient) {
-        //     position.lowRangeDisplay = '0.9';
-        //     position.highRangeDisplay = '1.1';
-        // }
-    } else {
-        position.baseTokenSymbol = 'unknownBase';
-        position.quoteTokenSymbol = 'unknownQuote';
-    }
+    // if (baseTokenAddress === contractAddresses.ZERO_ADDR) {
+    //     position.baseSymbol = 'ETH';
+    //     position.quoteSymbol = 'DAI';
+    //     position.tokenAQtyDisplay = '1';
+    //     position.tokenBQtyDisplay = '2000';
+    //     // if (!position.ambient) {
+    //     //     position.lowRangeDisplay = '.001';
+    //     //     position.highRangeDisplay = '.002';
+    //     // }
+    // } else if (
+    //     baseTokenAddress.toLowerCase() ===
+    //     '0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa'.toLowerCase()
+    // ) {
+    //     position.baseSymbol = 'DAI';
+    //     position.quoteSymbol = 'USDC';
+    //     position.tokenAQtyDisplay = '101';
+    //     position.tokenBQtyDisplay = '100';
+    //     // if (!position.ambient) {
+    //     //     position.lowRangeDisplay = '0.9';
+    //     //     position.highRangeDisplay = '1.1';
+    //     // }
+    // } else {
+    //     position.baseSymbol = 'unknownBase';
+    //     position.quoteSymbol = 'unknownQuote';
+    // }
     return position;
 };

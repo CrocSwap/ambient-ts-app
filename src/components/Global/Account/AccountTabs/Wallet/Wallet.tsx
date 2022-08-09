@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { useTokenMap } from '../../../../../App/components/Sidebar/useTokenMap';
 import { fetchTokenBalances } from '../../../../../App/functions/fetchTokenBalances';
 import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
+import { TokenIF } from '../../../../../utils/interfaces/TokenIF';
 import styles from './Wallet.module.css';
 import WalletCard from './WalletCard';
 import WalletHeader from './WalletHeader';
@@ -12,16 +12,15 @@ interface WalletPropsIF {
     activeAccount: string;
     connectedAccountActive: boolean;
     chainId: string;
+    tokenMap: Map<string, TokenIF>;
 }
 export default function Wallet(props: WalletPropsIF) {
-    const tokenMap = useTokenMap();
+    const { connectedAccountActive, resolvedAddress, chainId, tokenMap } = props;
 
     const tokensInRTK = useAppSelector((state) => state.tokenData.tokens);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [resolvedAddressTokens, setResolvedAddressTokens] = useState<any[]>([]);
-
-    const { connectedAccountActive, resolvedAddress, chainId } = props;
 
     useEffect(() => {
         (async () => {

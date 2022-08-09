@@ -9,12 +9,14 @@ import { useEffect, useState } from 'react';
 import { fetchAddress } from '../../App/functions/fetchAddress';
 import { useMoralis } from 'react-moralis';
 import { ethers } from 'ethers';
+import { TokenIF } from '../../utils/interfaces/TokenIF';
 
 interface PortfolioPropsIF {
     ensName: string;
     connectedAccount: string;
     userImageData: string[];
     chainId: string;
+    tokenMap: Map<string, TokenIF>;
 }
 
 const mainnetProvider = new ethers.providers.JsonRpcProvider(
@@ -26,7 +28,7 @@ const mainnetProvider = new ethers.providers.JsonRpcProvider(
 export default function Portfolio(props: PortfolioPropsIF) {
     const { isInitialized } = useMoralis();
 
-    const { ensName, userImageData, connectedAccount, chainId } = props;
+    const { ensName, userImageData, connectedAccount, chainId, tokenMap } = props;
 
     const { address } = useParams();
 
@@ -69,7 +71,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
         (async () => {
             if (address && isInitialized) {
                 try {
-                    const ensName = await fetchAddress(address);
+                    const ensName = await fetchAddress(mainnetProvider, address, chainId);
                     if (ensName) setSecondaryEnsName(ensName);
                     else setSecondaryEnsName('');
                 } catch (error) {
@@ -84,11 +86,8 @@ export default function Portfolio(props: PortfolioPropsIF) {
         !address || resolvedAddress.toLowerCase() === connectedAccount.toLowerCase();
 
     const exchangeBalanceComponent = (
-        <div>
-            <div className={styles.title}>Exchange Balance</div>
-            <div className={styles.exchange_balance}>
-                <ExchangeBalance />
-            </div>
+        <div className={styles.exchange_balance}>
+            <ExchangeBalance />
         </div>
     );
     return (
@@ -104,6 +103,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
                 activeAccount={address ?? connectedAccount}
                 connectedAccountActive={connectedAccountActive}
                 chainId={chainId}
+                tokenMap={tokenMap}
             />
             {connectedAccountActive ? exchangeBalanceComponent : null}
         </main>
