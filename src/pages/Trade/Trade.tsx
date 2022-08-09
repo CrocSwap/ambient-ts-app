@@ -227,8 +227,9 @@ export default function Trade(props: ITradeProps) {
         <div className={styles.time_frame_container}>
             <div className={styles.left_side}>
                 <span className={styles.amount} onClick={() => dispatch(toggleDidUserFlipDenom())}>
-                    {currencyCharacter}
-                    {truncatedPoolPrice}
+                    {poolPriceDisplay === Infinity
+                        ? '...'
+                        : `${currencyCharacter}${truncatedPoolPrice}`}
                 </span>
                 <span className={styles.change}>+8.57% | 24h</span>
             </div>
