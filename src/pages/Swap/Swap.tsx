@@ -179,6 +179,8 @@ export default function Swap(props: SwapPropsIF) {
     const [isSaveAsDexSurplusChecked, setIsSaveAsDexSurplusChecked] = useState(false);
 
     const [newSwapTransactionHash, setNewSwapTransactionHash] = useState('');
+    const [txErrorCode, setTxErrorCode] = useState(0);
+    const [txErrorMessage, setTxErrorMessage] = useState('');
 
     async function initiateSwap() {
         if (!provider) {
@@ -198,12 +200,17 @@ export default function Swap(props: SwapPropsIF) {
 
         const env = new CrocEnv(provider);
 
-        const tx = await (isQtySell
-            ? env.sell(sellTokenAddress, qty).for(buyTokenAddress).swap()
-            : env.buy(buyTokenAddress, qty).with(sellTokenAddress).swap());
+        let tx;
+        try {
+            tx = await (isQtySell
+                ? env.sell(sellTokenAddress, qty).for(buyTokenAddress).swap()
+                : env.buy(buyTokenAddress, qty).with(sellTokenAddress).swap());
 
-        let newTransactionHash = (await tx).hash;
-        setNewSwapTransactionHash(newTransactionHash);
+            setNewSwapTransactionHash(tx.hash);
+        } catch (error) {
+            setTxErrorCode(error?.code);
+            setTxErrorMessage(error?.message);
+        }
 
         const newSwapCacheEndpoint = 'https://809821320828123.de:5000/new_swap?';
 
@@ -214,27 +221,29 @@ export default function Swap(props: SwapPropsIF) {
             .token(isTokenAPrimary ? tokenA.address : tokenB.address)
             .normQty(qty);
 
-        fetch(
-            newSwapCacheEndpoint +
-                new URLSearchParams({
-                    tx: newTransactionHash,
-                    user: account ?? '',
-                    base: isSellTokenBase ? sellTokenAddress : buyTokenAddress,
-                    quote: isSellTokenBase ? buyTokenAddress : sellTokenAddress,
-                    poolIdx: (await env.context).chain.poolIndex.toString(),
-                    isBuy: isSellTokenBase.toString(),
-                    inBaseQty: inBaseQty.toString(),
-                    qty: crocQty.toString(),
-                    override: 'false',
-                    chainId: chainId,
-                    limitPrice: '0',
-                    minOut: '0',
-                }),
-        );
+        if (tx?.hash) {
+            fetch(
+                newSwapCacheEndpoint +
+                    new URLSearchParams({
+                        tx: tx.hash,
+                        user: account ?? '',
+                        base: isSellTokenBase ? sellTokenAddress : buyTokenAddress,
+                        quote: isSellTokenBase ? buyTokenAddress : sellTokenAddress,
+                        poolIdx: (await env.context).chain.poolIndex.toString(),
+                        isBuy: isSellTokenBase.toString(),
+                        inBaseQty: inBaseQty.toString(),
+                        qty: crocQty.toString(),
+                        override: 'false',
+                        chainId: chainId,
+                        limitPrice: '0',
+                        minOut: '0',
+                    }),
+            );
+        }
 
         let receipt;
         try {
-            receipt = await tx.wait();
+            if (tx) receipt = await tx.wait();
         } catch (e) {
             const error = e as TransactionError;
 
@@ -242,9 +251,30 @@ export default function Swap(props: SwapPropsIF) {
             // in their client, but we now have the updated info
             if (isTransactionReplacedError(error)) {
                 console.log('repriced');
-                newTransactionHash = error.replacement.hash;
-                console.log({ newTransactionHash });
+                const newTransactionHash = error.replacement.hash;
+                setNewSwapTransactionHash(newTransactionHash);
+                console.log({ newSwapTransactionHash });
                 receipt = error.receipt;
+
+                if (newTransactionHash) {
+                    fetch(
+                        newSwapCacheEndpoint +
+                            new URLSearchParams({
+                                tx: newTransactionHash,
+                                user: account ?? '',
+                                base: isSellTokenBase ? sellTokenAddress : buyTokenAddress,
+                                quote: isSellTokenBase ? buyTokenAddress : sellTokenAddress,
+                                poolIdx: (await env.context).chain.poolIndex.toString(),
+                                isBuy: isSellTokenBase.toString(),
+                                inBaseQty: inBaseQty.toString(),
+                                qty: crocQty.toString(),
+                                override: 'false',
+                                chainId: chainId,
+                                limitPrice: '0',
+                                minOut: '0',
+                            }),
+                    );
+                }
             }
         }
 
@@ -256,6 +286,8 @@ export default function Swap(props: SwapPropsIF) {
     const handleModalClose = () => {
         closeModal();
         setNewSwapTransactionHash('');
+        setTxErrorCode(0);
+        setTxErrorMessage('');
     };
 
     // TODO:  @Emily refactor this Modal and later elements such that
@@ -265,9 +297,11 @@ export default function Swap(props: SwapPropsIF) {
             <ConfirmSwapModal
                 tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
                 initiateSwapMethod={initiateSwap}
-                onClose={closeModal}
+                onClose={handleModalClose}
                 newSwapTransactionHash={newSwapTransactionHash}
-                setNewSwapTransactionHash={setNewSwapTransactionHash}
+                // setNewSwapTransactionHash={setNewSwapTransactionHash}
+                txErrorCode={txErrorCode}
+                txErrorMessage={txErrorMessage}
             />
         </Modal>
     ) : null;
