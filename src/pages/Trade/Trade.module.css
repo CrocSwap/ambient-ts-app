@@ -80,7 +80,7 @@
     /* margin-top: 2rem; */
 }
 
-.token_info_container,
+/* .token_info_container,
 .time_frame_container {
     display: flex;
     flex-direction: row;
@@ -94,9 +94,9 @@
     flex-direction: row;
     align-items: center;
     gap: 1rem;
-}
+} */
 
-.tokens_images {
+/* .tokens_images {
     display: flex;
     flex-direction: row;
     gap: 7px;
@@ -107,10 +107,9 @@
     font-size: var(--header1-size);
     line-height: var(--header1-lh);
     color: white;
-}
+} */
 
-.settings_container,
-.time_frame_container .right_side {
+ .right_side {
     display: flex;
     flex-direction: row;
     align-items: center;

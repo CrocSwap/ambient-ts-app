@@ -447,18 +447,18 @@ export default function Trade(props: ITradeProps) {
                         setExpandTradeTable={props.setExpandTradeTable}
                         isTokenABase={props.isTokenABase}
                     />
-                    <div className={`${styles.graph_style} ${expandGraphStyle} ${fullScreenStyle}`}>
+                    {/* <div className={`${styles.graph_style} ${expandGraphStyle} ${fullScreenStyle}`}>
                         {graphSettingsContent}
                         {tokenInfo}
                         {timeFrameContent}
-                    </div>
+                    </div> */}
 
-                    <TradeCandleStickChart
+                    {/* <TradeCandleStickChart
                         tvlData={formattedTvlData}
                         volumeData={formattedVolumeData}
                         feeData={formattedFeesUSD}
                         priceData={adjustedToCurrent}
-                    />
+                    /> */}
 
                     <motion.div
                         animate={{

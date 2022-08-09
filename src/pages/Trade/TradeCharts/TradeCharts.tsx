@@ -377,7 +377,7 @@ export default function TradeCharts(props: TradeChartsProps) {
     const expandGraphStyle = props.expandTradeTable ? styles.hide_graph : '';
 
     return (
-        <div className={styles.row}>
+        <div>
             <div className={`${styles.graph_style} ${expandGraphStyle} ${fullScreenStyle}`}>
                 {graphSettingsContent}
                 {tokenInfo}
