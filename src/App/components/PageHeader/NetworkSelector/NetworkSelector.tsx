@@ -4,7 +4,7 @@ import { useChain } from 'react-moralis';
 import { FaDotCircle } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 
-// START: Impot Local Files
+// START: Import Local Files
 import styles from './NetworkSelector.module.css';
 import DropdownMenu2 from '../../../../components/Global/DropdownMenu2/DropdownMenu2';
 import ethereumImage from '../../../../assets/images/networks/ethereum.png';
