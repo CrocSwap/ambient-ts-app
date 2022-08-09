@@ -218,6 +218,8 @@ footer {
 
     .content-container {
         height: calc(100vh - var(--footer-height));
+        max-height: calc(100vh - var(--footer-height));
+        overflow: hidden;
         background: var(--dark3);
     }
 }

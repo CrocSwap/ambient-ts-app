@@ -75,7 +75,7 @@
 .right_col {
     display: flex;
     flex-direction: column;
-    /* background-color: var(--dark1); */
+    background-color: var(--dark1);
     position: relative;
 }
 
@@ -162,6 +162,7 @@
     .middle_col,
     .right_col {
         height: calc(100vh - 4rem);
+        
     }
 
     .middle_col{
@@ -193,7 +194,7 @@
     }
 
     .chart_full_screen{
-      
+      transition: all var(--animation-speed) ease-in-out;
         background: var(--dark2);
         position: fixed;
         width: 100%;

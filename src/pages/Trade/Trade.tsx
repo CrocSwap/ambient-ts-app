@@ -105,7 +105,16 @@ export default function Trade(props: ITradeProps) {
             <main className={styles.main_layout}>
                 <div className={styles.middle_col}>
                     <div className={` ${expandGraphStyle} ${fullScreenStyle}`}>
-                        <div className={styles.main__chart_container}>
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.5 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{
+                                duration: 0.8,
+                                delay: 0.5,
+                                ease: [0, 0.71, 0.2, 1.01],
+                            }}
+                            className={styles.main__chart_container}
+                        >
                             <TradeCharts
                                 poolPriceDisplay={poolPriceDisplay}
                                 expandTradeTable={props.expandTradeTable}
@@ -114,7 +123,7 @@ export default function Trade(props: ITradeProps) {
                                 fullScreenChart={fullScreenChart}
                                 setFullScreenChart={setFullScreenChart}
                             />
-                        </div>
+                        </motion.div>
                     </div>
 
                     <motion.div
