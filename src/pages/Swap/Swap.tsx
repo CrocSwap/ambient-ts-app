@@ -253,10 +253,15 @@ export default function Swap(props: SwapPropsIF) {
         }
     }
 
+    const handleModalClose = () => {
+        closeModal();
+        setNewSwapTransactionHash('');
+    };
+
     // TODO:  @Emily refactor this Modal and later elements such that
     // TODO:  ... tradeData is passed to directly instead of tokenPair
     const confirmSwapModalOrNull = isModalOpen ? (
-        <Modal onClose={closeModal} title='Swap Confirmation'>
+        <Modal onClose={handleModalClose} title='Swap Confirmation'>
             <ConfirmSwapModal
                 tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
                 initiateSwapMethod={initiateSwap}

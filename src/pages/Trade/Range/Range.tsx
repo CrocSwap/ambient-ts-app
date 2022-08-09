@@ -880,9 +880,15 @@ export default function Range(props: RangePropsIF) {
             <RangeExtraInfo {...rangeExtraInfoProps} />
         </>
     );
+
+    const handleModalClose = () => {
+        closeModal();
+        setNewRangeTransactionHash('');
+    };
+
     const confirmSwapModalOrNull = isModalOpen ? (
         <Modal
-            onClose={closeModal}
+            onClose={handleModalClose}
             title={isAmbient ? 'Ambient Confirmation' : 'Range Confirmation'}
         >
             <ConfirmRangeModal {...rangeModalProps} />

@@ -116,7 +116,7 @@ export default function Limit(props: LimitPropsIF) {
         }
     };
 
-    const [newLimitOrderTransactionHash] = useState('');
+    const [newLimitOrderTransactionHash, setNewLimitOrderTransactionHash] = useState('');
 
     const tokenADecimals = tokenPair.dataTokenA.decimals;
     const tokenBDecimals = tokenPair.dataTokenB.decimals;
@@ -222,8 +222,13 @@ export default function Limit(props: LimitPropsIF) {
         const qty = isTokenAPrimary ? sellTokenQty : buyTokenQty;*/
     };
 
+    const handleModalClose = () => {
+        closeModal();
+        setNewLimitOrderTransactionHash('');
+    };
+
     const confirmLimitModalOrNull = isModalOpen ? (
-        <Modal onClose={closeModal} title='Limit Confirmation'>
+        <Modal onClose={handleModalClose} title='Limit Confirmation'>
             <ConfirmLimitModal
                 onClose={closeModal}
                 tokenPair={tokenPair}
