@@ -45,6 +45,8 @@ import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
 
 //
 export default function TradeCharts(props: TradeChartsProps) {
+    const { poolPriceDisplay } = props;
+
     const dispatch = useAppDispatch();
     const [fullScreenChart, setFullScreenChart] = useState(false);
 
@@ -79,7 +81,7 @@ export default function TradeCharts(props: TradeChartsProps) {
     const denomInTokenA = (denomInBase && isTokenABase) || (!denomInBase && !isTokenABase);
     const tokenASymbol = tradeData.tokenA.symbol;
     const tokenBSymbol = tradeData.tokenB.symbol;
-    const poolPriceDisplay = denomInBase ? 1 / props.poolPriceDisplay : props.poolPriceDisplay;
+
     const truncatedPoolPrice =
         poolPriceDisplay < 2
             ? truncateDecimals(poolPriceDisplay, 4)
