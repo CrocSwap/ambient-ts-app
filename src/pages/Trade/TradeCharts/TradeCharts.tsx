@@ -115,6 +115,8 @@ export default function TradeCharts(props: TradeChartsProps) {
         </div>
     );
 
+    const chartSettingsContent = <div className={styles.chart_settings}></div>;
+
     // eslint-disable-next-line
     function closeOnEscapeKeyDown(e: any) {
         if ((e.charCode || e.keyCode) === 27) setFullScreenChart(false);
@@ -128,9 +130,11 @@ export default function TradeCharts(props: TradeChartsProps) {
     });
     const graphSettingsContent = (
         <div className={styles.graph_settings_container}>
-            <div>
-                <AiOutlineSetting size={20} />
-            </div>
+            <DefaultTooltip interactive title={chartSettingsContent}>
+                <div>
+                    <AiOutlineSetting size={20} />
+                </div>
+            </DefaultTooltip>
             <div onClick={() => setFullScreenChart(true)}>
                 <AiOutlineFullscreen size={20} />
             </div>
