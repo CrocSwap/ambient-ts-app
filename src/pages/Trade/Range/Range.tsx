@@ -623,27 +623,25 @@ export default function Range(props: RangePropsIF) {
         setNewRangeTransactionHash(newTransactionHash);
         console.log({ newTransactionHash });
 
-        const newPositionCacheEndpoint = 'https://809821320828123.de:5000/new_position?';
+        const newPositionCacheEndpoint = 'https://809821320828123.de:5000/new_liqchange?';
 
         fetch(
             newPositionCacheEndpoint +
                 new URLSearchParams({
+                    chainId: chainId,
                     tx: newTransactionHash,
+                    user: account ?? '',
                     base: baseTokenAddress,
                     quote: quoteTokenAddress,
                     poolIdx: lookupChain(chainId).poolIndex.toString(),
-                    user: account ?? '',
-                    ambient: isAmbient.toString(),
+                    positionType: isAmbient ? 'ambient' : 'concentrated',
+                    changeType: 'mint',
                     bidTick: rangeLowTick.toString(),
                     askTick: rangeHighTick.toString(),
-                    knockout: 'false', // boolean Whether or not the liquidity position is knockout liquidity. If true, then ambient must be false.
                     isBid: 'false', // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
-                    override: 'false', // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
-                    chainId: chainId,
+                    liq: '0', // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
                 }),
-        )
-            .then((response) => response.json())
-            .then(console.log);
+        );
 
         let receipt;
         try {
@@ -659,10 +657,9 @@ export default function Range(props: RangePropsIF) {
                 console.log({ newTransactionHash });
                 receipt = error.receipt;
             }
-
-            if (receipt) {
-                dispatch(addReceipt(receipt));
-            }
+        }
+        if (receipt) {
+            dispatch(addReceipt(JSON.stringify(receipt)));
         }
     };
 

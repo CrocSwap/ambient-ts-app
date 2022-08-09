@@ -1,8 +1,9 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { ethers } from 'ethers';
+// import { ethers } from 'ethers';
 
 export interface receiptData {
-    sessionReceipts: Array<ethers.providers.TransactionReceipt>;
+    sessionReceipts: Array<string>;
+    // sessionReceipts: Array<ethers.providers.TransactionReceipt>;
 }
 
 const initialState: receiptData = {
@@ -13,9 +14,12 @@ export const receiptDataSlice = createSlice({
     name: 'receiptData',
     initialState,
     reducers: {
-        addReceipt: (state, action: PayloadAction<ethers.providers.TransactionReceipt>) => {
+        addReceipt: (state, action: PayloadAction<string>) => {
             state.sessionReceipts.push(action.payload);
         },
+        // addReceipt: (state, action: PayloadAction<ethers.providers.TransactionReceipt>) => {
+        //     state.sessionReceipts.push(action.payload);
+        // },
         resetReceiptData: () => initialState,
     },
 });

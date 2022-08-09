@@ -3,7 +3,10 @@ import { useState, Dispatch, SetStateAction } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useMoralis } from 'react-moralis';
 import { motion } from 'framer-motion';
-import { CrocEnv } from '@crocswap-libs/sdk';
+import {
+    CrocEnv,
+    //  toDisplayQty
+} from '@crocswap-libs/sdk';
 
 // START: Import React Components
 import CurrencyConverter from '../../components/Swap/CurrencyConverter/CurrencyConverter';
@@ -224,6 +227,8 @@ export default function Swap(props: SwapPropsIF) {
                     qty: crocQty.toString(),
                     override: 'false',
                     chainId: chainId,
+                    limitPrice: '0',
+                    minOut: '0',
                 }),
         );
 
@@ -244,7 +249,7 @@ export default function Swap(props: SwapPropsIF) {
         }
 
         if (receipt) {
-            dispatch(addReceipt(receipt));
+            dispatch(addReceipt(JSON.stringify(receipt)));
         }
     }
 

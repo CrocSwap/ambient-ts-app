@@ -33,7 +33,10 @@ import {
     toDisplayQty,
 } from '@crocswap-libs/sdk';
 
-import { receiptData, resetReceiptData } from '../utils/state/receiptDataSlice';
+import {
+    // receiptData,
+    resetReceiptData,
+} from '../utils/state/receiptDataSlice';
 
 import SnackbarComponent from '../components/Global/SnackbarComponent/SnackbarComponent';
 
@@ -287,11 +290,14 @@ export default function App() {
 
     const [lastBlockNumber, setLastBlockNumber] = useState<number>(0);
 
-    const receiptData = useAppSelector((state) => state.receiptData) as receiptData;
+    const receiptData = useAppSelector((state) => state.receiptData);
 
     const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
 
-    const lastReceipt = receiptData?.sessionReceipts[receiptData.sessionReceipts.length - 1];
+    const lastReceipt =
+        receiptData?.sessionReceipts.length > 0
+            ? JSON.parse(receiptData.sessionReceipts[receiptData.sessionReceipts.length - 1])
+            : null;
 
     const isLastReceiptSuccess = lastReceipt?.confirmations >= 1;
 
