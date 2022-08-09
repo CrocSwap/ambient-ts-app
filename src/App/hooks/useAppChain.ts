@@ -9,12 +9,13 @@ import { useChain } from 'react-moralis';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { ChainSpec } from '@crocswap-libs/sdk';
 
-export const useAppChain = (defaultChain: string): [ ChainSpec, Dispatch<SetStateAction<string>> ] => {
-    const {
-        chainId,
-        // chain,
-        // account
-    } = useChain();
+export const useAppChain = (
+    defaultChain: string
+): [
+    ChainSpec,
+    Dispatch<SetStateAction<string>>
+] => {
+    const { chainId } = useChain();
 
     const [ currentChain, setCurrentChain ] = useState(defaultChain);
 

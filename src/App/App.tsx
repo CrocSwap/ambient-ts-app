@@ -126,7 +126,7 @@ export default function App() {
 
     const chainId = moralisChainId ? moralisChainId : fallbackChainId;
 
-    const [ chainData, setChain ] = useAppChain('0x5');
+    const [ chainData, switchChain ] = useAppChain('0x5');
     useEffect(() => {console.log({chainData})}, [chainData]);
 
     // useEffect(() => {
