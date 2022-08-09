@@ -1,6 +1,12 @@
 /** ***** START: Import React and Dongles *******/
+import {
+    useEffect,
+    useState,
+    useCallback,
+    Dispatch,
+    SetStateAction
+} from 'react';
 import { Link } from 'react-router-dom';
-import { useEffect, useState, useCallback } from 'react';
 import { useMoralis } from 'react-moralis';
 import { useTranslation } from 'react-i18next';
 
@@ -23,30 +29,30 @@ import { motion, AnimateSharedLayout } from 'framer-motion';
 
 /** ***** END: Import Local Files *********/
 
-interface IHeaderProps {
+interface HeaderPropsIF {
     nativeBalance: string;
     clickLogout: () => void;
     metamaskLocked: boolean;
     ensName: string;
     shouldDisplayAccountTab: boolean;
     chainId: string;
-    setFallbackChainId: React.Dispatch<React.SetStateAction<string>>;
+    setFallbackChainId: Dispatch<SetStateAction<string>>;
     isChainValid: boolean;
+    switchChain: Dispatch<SetStateAction<string>>;
 }
 
-// interface lgnData {
-//     name: keyof typeof lngs;
-// }
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-// const lngs: any = {
-//     en: { nativeName: 'English' },
-//     zh: { nativeName: '中文' },
-//     kr: { nativeName: '한국어' },
-// };
-
-export default function PageHeader(props: IHeaderProps): React.ReactElement<IHeaderProps> {
-    const { ensName, shouldDisplayAccountTab, chainId, setFallbackChainId, isChainValid } = props;
+export default function PageHeader(props: HeaderPropsIF) {
+    const {
+        ensName,
+        nativeBalance,
+        clickLogout,
+        metamaskLocked,
+        shouldDisplayAccountTab,
+        chainId,
+        setFallbackChainId,
+        isChainValid,
+        switchChain
+    } = props;
 
     const { user, account, enableWeb3, isWeb3Enabled, authenticate, isAuthenticated } =
         useMoralis();
@@ -90,24 +96,20 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
 
     useEffect(() => {
         const timer = setTimeout(() => {
-            // console.log('waited 1 second');
             reenableWeb3();
         }, 100);
         return () => clearTimeout(timer);
-    }, [user, account, props.metamaskLocked]);
+    }, [user, account, metamaskLocked]);
 
     const reenableWeb3 = useCallback(async () => {
-        // console.log('firing reenableWeb3');
         try {
-            if (user && !account && !props.metamaskLocked) {
-                // console.log('enabling web3');
-                // console.log(props.metamaskLocked);
+            if (user && !account && !metamaskLocked) {
                 await enableWeb3();
             }
         } catch (err) {
             console.warn(`Could not automatically bridge Moralis to wallet. Error follows: ${err}`);
         }
-    }, [user, account, props.metamaskLocked]);
+    }, [user, account, metamaskLocked]);
 
     // rive component
     const STATE_MACHINE_NAME = 'Basic State Machine';
@@ -158,13 +160,13 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
     const accountAddress = isAuthenticated && account ? trimString(account, 6, 6) : '';
 
     const accountProps = {
-        nativeBalance: props.nativeBalance,
+        nativeBalance: nativeBalance,
         accountAddress: accountAddress,
         accountAddressFull: isAuthenticated && account ? account : '',
         ensName: ensName,
         isAuthenticated: isAuthenticated,
         isWeb3Enabled: isWeb3Enabled,
-        clickLogout: props.clickLogout,
+        clickLogout: clickLogout,
         openModal: openModal,
         chainId: chainId,
         setFallbackChainId: setFallbackChainId,
@@ -253,13 +255,13 @@ export default function PageHeader(props: IHeaderProps): React.ReactElement<IHea
             {routeDisplay}
 
             <div className={styles.account}>
-
-                {<NetworkSelector chainId={chainId} setFallbackChainId={setFallbackChainId} />}
+                <NetworkSelector
+                    chainId={chainId}
+                    switchChain={switchChain}
+                />
                 {(!isAuthenticated || !isWeb3Enabled) && metamaskButton}
-
                 <Account {...accountProps} />
             </div>
-            {/* <SwitchNetwork showSwitchNetwork={showSwitchNetwork} /> */}
             {switchNetWorkOrNull}
             {modalOrNull}
         </header>

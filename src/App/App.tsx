@@ -1431,6 +1431,7 @@ export default function App() {
         chainId: chainId,
         setFallbackChainId: setFallbackChainId,
         isChainValid: isChainValid,
+        switchChain
     };
 
     // props for <Swap/> React element
