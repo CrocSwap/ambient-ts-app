@@ -15,6 +15,7 @@ import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
 
 // interface for component props
 interface RangeHeaderPropsIF {
+    chainId: string;
     tokenPair: TokenPairIF;
     mintSlippage: SlippagePairIF;
     isPairStable: boolean;

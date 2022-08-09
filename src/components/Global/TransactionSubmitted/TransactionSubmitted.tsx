@@ -14,7 +14,7 @@ interface TransactionSubmittedProps {
 
 export default function TransactionSubmitted(props: TransactionSubmittedProps) {
     const { hash, tokenBAddress, tokenBSymbol, tokenBDecimals, tokenBImage } = props;
-    const EthersanTx = `https://kovan.etherscan.io/tx/${hash}`;
+    const EthersanTx = `https://goerli.etherscan.io/tx/${hash}`;
 
     const logoURI = tokenBImage;
 

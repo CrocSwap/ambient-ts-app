@@ -1,41 +1,34 @@
-import Moralis from 'moralis';
-import { ethers } from 'ethers';
-import {
-    // contractAddresses,
-    // getTokenBalanceDisplay,
-    // sortBaseQuoteTokens,
-    POOL_PRIMARY,
-    // getSpotPrice,
-    // getSpotPriceDisplay,
-    // getTokenAllowance,
-    QUERY_ABI,
-    decodeCrocPrice,
-    // toDisplayPrice,
-} from '@crocswap-libs/sdk';
+import { CrocEnv } from '@crocswap-libs/sdk';
+import { Provider } from '@ethersproject/providers';
+import { memoizeProviderFn } from './memoizePromiseFn';
 
 export const querySpotPrice = async (
+    provider: Provider,
     baseTokenAddress: string,
     quoteTokenAddress: string,
-    chainId: string,
-    lastBlockNumber: number,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _chainId: string,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _lastBlockNumber: number,
 ) => {
-    // console.log({ chainId });
-    const options = {
-        chain: chainId as '0x2a' | '0x5' | '0x1',
-        address: '0x9ea4b2f9b1572ed3ac46b402d9ba9153821033c6',
-        // eslint-disable-next-line camelcase
-        function_name: 'queryPrice',
-        abi: QUERY_ABI,
-        block: lastBlockNumber,
-        params: {
-            base: baseTokenAddress,
-            quote: quoteTokenAddress,
-            poolIdx: POOL_PRIMARY,
-        },
-    };
-    const crocPrice = await Moralis.Web3API.native.runContractFunction(options);
-    // console.log({ crocPrice });
-    const spotPrice = decodeCrocPrice(ethers.BigNumber.from(crocPrice));
-    // console.log({ spotPrice });
-    return spotPrice;
+    // console.log('Query spot price ' + baseTokenAddress + ' ' + quoteTokenAddress);
+    // console.log({ provider });
+    const env = new CrocEnv(provider);
+    // console.log(
+    //     'Query spot price ' + (await env.pool(baseTokenAddress, quoteTokenAddress).spotPrice()),
+    // );
+
+    return env.pool(baseTokenAddress, quoteTokenAddress).spotPrice();
 };
+
+type SpotPriceFn = (
+    provider: Provider,
+    baseToken: string,
+    quoteToken: string,
+    chain: string,
+    blockNum: number,
+) => Promise<number>;
+
+export function memoizeQuerySpotPrice(): SpotPriceFn {
+    return memoizeProviderFn(querySpotPrice) as SpotPriceFn;
+}

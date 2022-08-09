@@ -1,9 +1,9 @@
 import styles from './TabComponent.module.css';
 import React, { useState, useEffect, Dispatch, SetStateAction, cloneElement } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimateSharedLayout } from 'framer-motion';
 import '../../../App/App.css';
-import { Tooltip } from '@mui/material';
-import { useStyles } from '../../../utils/functions/styles';
+
+import { DefaultTooltip } from '../StyledTooltip/StyledTooltip';
 type tabData = {
     label: string;
     content: React.ReactNode;
@@ -68,21 +68,17 @@ export default function TabComponent(props: TabProps) {
     }
 
     function handleMobileMenuIcon(icon: string, label: string) {
-        const classes = useStyles();
         return (
             <div className={styles.tab_iconf}>
-                <Tooltip
+                <DefaultTooltip
                     title={label}
                     placeholder={'bottom'}
                     arrow
                     enterDelay={400}
                     leaveDelay={200}
-                    classes={{
-                        tooltip: classes.customTooltip,
-                    }}
                 >
                     <img className={styles.tab_icon} src={icon} alt={label} width='15px' />
-                </Tooltip>
+                </DefaultTooltip>
             </div>
         );
     }
@@ -105,9 +101,9 @@ export default function TabComponent(props: TabProps) {
 
                         <div className={styles.item_label}> {item.label}</div>
                         {item.label === selectedTab.label && <div className={styles.underline} />}
-                        {/* {item === selectedTab ? (
-              <motion.div className={styles.underline} layoutId='underline' />
-            ) : null} */}
+                        {item === selectedTab ? (
+                            <motion.div className={styles.underline} layoutId='underline' />
+                        ) : null}
                     </li>
                 ))}
             </ul>
@@ -120,6 +116,8 @@ export default function TabComponent(props: TabProps) {
     // TAB MENU WITHOUT ANY ITEMS ON THE RIGHT
 
     const fullTabs = (
+        // <AnimateSharedLayout>
+
         <ul className={`${styles.tab_ul} ${styles.desktop_tabs}`}>
             {data.map((item) => {
                 return (
@@ -138,25 +136,28 @@ export default function TabComponent(props: TabProps) {
                 );
             })}
         </ul>
+        // </AnimateSharedLayout>
     );
 
     return (
         <div className={styles.tab_window}>
             <nav className={styles.tab_nav}>
-                {props.rightTabOptions ? tabsWithRightOption : fullTabs}
+                <AnimateSharedLayout>
+                    {props.rightTabOptions ? tabsWithRightOption : fullTabs}
+                </AnimateSharedLayout>
             </nav>
             <main className={styles.main_tab_content}>
-                <AnimatePresence exitBeforeEnter>
+                <AnimateSharedLayout>
                     <motion.div
-                    // key={selectedTab ? selectedTab.label : 'empty'}
-                    // initial={{ y: 10, opacity: 0 }}
-                    // animate={{ y: 0, opacity: 1 }}
-                    // exit={{ y: -10, opacity: 0 }}
-                    // transition={{ duration: 0.1 }}
+                        key={selectedTab ? selectedTab.label : 'empty'}
+                        initial={{ y: 10, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        exit={{ y: -10, opacity: 0 }}
+                        transition={{ duration: 0.2 }}
                     >
                         {selectedTab ? selectedTab.content : null}
                     </motion.div>
-                </AnimatePresence>
+                </AnimateSharedLayout>
             </main>
         </div>
     );

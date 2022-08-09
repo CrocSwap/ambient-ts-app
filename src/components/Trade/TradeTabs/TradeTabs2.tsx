@@ -13,9 +13,9 @@ import openOrdersImage from '../../../assets/images/sidebarImages/openOrders.svg
 import rangePositionsImage from '../../../assets/images/sidebarImages/rangePositions.svg';
 import recentTransactionsImage from '../../../assets/images/sidebarImages/recentTransactions.svg';
 import Ranges from './Ranges/Ranges';
-import { useTokenMap } from '../../../App/components/Sidebar/useTokenMap';
 import TabComponent from '../../Global/TabComponent/TabComponent';
 import PositionsOnlyToggle from './PositionsOnlyToggle/PositionsOnlyToggle';
+import { TokenIF } from '../../../utils/interfaces/TokenIF';
 
 interface ITabsProps {
     account: string;
@@ -30,16 +30,15 @@ interface ITabsProps {
     isShowAllEnabled: boolean;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
 
+    tokenMap: Map<string, TokenIF>;
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function TradeTabs2(props: ITabsProps) {
-    const { isShowAllEnabled, setIsShowAllEnabled } = props;
+    const { isShowAllEnabled, setIsShowAllEnabled, tokenMap } = props;
 
     const graphData = useAppSelector((state) => state?.graphData);
-
-    const tokenMap = useTokenMap();
 
     const userPositions = graphData?.positionsByUser?.positions;
     // const poolPositions = graphData?.positionsByPool?.positions;

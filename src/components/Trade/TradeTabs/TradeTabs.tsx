@@ -13,7 +13,6 @@ import DropdownMenuContainer from '../../Global/DropdownMenu/DropdownMenuContain
 import DropdownMenuItem from '../../Global/DropdownMenu/DropdownMenuItem/DropdownMenuItem';
 import { BiDownArrow } from 'react-icons/bi';
 // import Ranges from './Ranges/Ranges';
-// import { useTokenMap } from '../../../App/components/Sidebar/useTokenMap';
 
 interface ITabsProps {
     account: string;
@@ -30,8 +29,6 @@ export default function TradeTabs(props: ITabsProps) {
     const { isShowAllEnabled, setIsShowAllEnabled } = props;
 
     const graphData = useAppSelector((state) => state?.graphData);
-
-    // const tokenMap = useTokenMap();
 
     const userPositions = graphData?.positionsByUser?.positions;
     // const poolPositions = graphData?.positionsByPool?.positions;
@@ -178,6 +175,7 @@ export default function TradeTabs(props: ITabsProps) {
                         notOnTradeRoute={false}
                         graphData={graphData}
                         lastBlockNumber={props.lastBlockNumber}
+                        chainId={props.chainId}
                     />
                 </TabContent>
 

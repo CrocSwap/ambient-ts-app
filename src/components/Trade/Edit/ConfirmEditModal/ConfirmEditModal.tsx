@@ -37,8 +37,8 @@ export default function ConfirmEditModal(props: ConfirmEditModalPropsIF) {
     const fullTxDetails = (
         <div>
             <CurrencyDisplayContainer
-                quoteTokenSymbol={position.quoteTokenSymbol}
-                baseTokenSymbol={position.baseTokenSymbol}
+                quoteTokenSymbol={position.quoteSymbol}
+                baseTokenSymbol={position.baseSymbol}
                 tokenAQtyDisplay={position.tokenAQtyDisplay}
                 tokenBQtyDisplay={position.tokenBQtyDisplay}
                 baseTokenImageURL={baseTokenImageURL}
@@ -49,8 +49,8 @@ export default function ConfirmEditModal(props: ConfirmEditModalPropsIF) {
             <EditPriceInfo
                 currentPoolPriceDisplay={props.currentPoolPriceDisplay}
                 denominationsInBase={denominationsInBase}
-                quoteTokenSymbol={position.quoteTokenSymbol}
-                baseTokenSymbol={position.baseTokenSymbol}
+                quoteTokenSymbol={position.quoteSymbol}
+                baseTokenSymbol={position.baseSymbol}
                 tokenAQtyDisplay={position.tokenAQtyDisplay}
                 tokenBQtyDisplay={position.tokenBQtyDisplay}
                 ambient={position.ambient}

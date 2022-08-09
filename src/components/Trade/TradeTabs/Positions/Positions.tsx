@@ -9,6 +9,7 @@ interface PositionsProps {
     notOnTradeRoute?: boolean;
     graphData: graphData;
     lastBlockNumber: number;
+    chainId: string;
 }
 
 import { useMoralis } from 'react-moralis';
@@ -47,6 +48,7 @@ export default function Positions(props: PositionsProps) {
                   isAuthenticated={isAuthenticated}
                   isDenomBase={isDenomBase}
                   lastBlockNumber={props.lastBlockNumber}
+                  chainId={props.chainId}
               />
           ))
         : //   .reverse()
@@ -63,6 +65,7 @@ export default function Positions(props: PositionsProps) {
                   isAuthenticated={isAuthenticated}
                   isDenomBase={isDenomBase}
                   lastBlockNumber={props.lastBlockNumber}
+                  chainId={props.chainId}
                   userPosition
               />
           ));
