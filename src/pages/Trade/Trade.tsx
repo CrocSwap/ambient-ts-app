@@ -35,6 +35,7 @@ import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
 // import TradeTabs from '../../components/Trade/TradeTabs/TradeTabs';
 import TradeTabs2 from '../../components/Trade/TradeTabs/TradeTabs2';
 import { motion, AnimateSharedLayout } from 'framer-motion';
+import TradeCharts from './TradeCharts/TradeCharts';
 
 interface ITradeProps {
     account: string;
@@ -440,6 +441,12 @@ export default function Trade(props: ITradeProps) {
         <AnimateSharedLayout>
             <main className={styles.main_layout}>
                 <div className={`${styles.middle_col}`}>
+                    <TradeCharts
+                        poolPriceDisplay={poolPriceDisplay}
+                        expandTradeTable={props.expandTradeTable}
+                        setExpandTradeTable={props.setExpandTradeTable}
+                        isTokenABase={props.isTokenABase}
+                    />
                     <div className={`${styles.graph_style} ${expandGraphStyle} ${fullScreenStyle}`}>
                         {graphSettingsContent}
                         {tokenInfo}
