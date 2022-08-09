@@ -358,14 +358,13 @@ export default function App() {
     // check for token balances on each new block
     useEffect(() => {
         (async () => {
-            if (account) {
+            if (isAuthenticated && account) {
                 try {
                     const newTokens: TokenIF[] = await cachedFetchTokenBalances(
                         account,
                         chainId,
                         lastBlockNumber,
                     );
-
                     const tokensInRTKminusNative = tokensInRTK.slice(1);
 
                     if (
@@ -382,7 +381,7 @@ export default function App() {
                 }
             }
         })();
-    }, [account, chainId, lastBlockNumber, tokensInRTK]);
+    }, [isAuthenticated, account, chainId, lastBlockNumber, tokensInRTK]);
 
     const [baseTokenAddress, setBaseTokenAddress] = useState<string>('');
     const [quoteTokenAddress, setQuoteTokenAddress] = useState<string>('');
@@ -1318,6 +1317,7 @@ export default function App() {
         dispatch(resetTokenData());
         dispatch(resetGraphData());
         dispatch(resetReceiptData());
+        dispatch(resetTokenData());
 
         await logout();
     };
