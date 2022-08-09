@@ -1,17 +1,16 @@
-import styles from './SwitchNetwork.module.css';
+import { Dispatch, SetStateAction, useEffect } from 'react';
 import { RiErrorWarningLine } from 'react-icons/ri';
-import { useEffect } from 'react';
+import styles from './SwitchNetwork.module.css';
 import NetworkButtons from '../NetworkButton/NetworkButtons';
 
 interface SwitchNetworkProps {
-    // showSwitchNetwork: boolean;
     chainId: string;
-    setFallbackChainId: React.Dispatch<React.SetStateAction<string>>;
+    switchChain: Dispatch<SetStateAction<string>>;
     onClose: () => void;
 }
 
 export default function SwitchNetwork(props: SwitchNetworkProps) {
-    const { onClose, chainId, setFallbackChainId } = props;
+    const { onClose, chainId, switchChain } = props;
 
     // THIS ALLOWS THE USER TO CLOSE MODAL BY HITTING THE ESCAPE KEY
     // eslint-disable-next-line
@@ -38,8 +37,8 @@ export default function SwitchNetwork(props: SwitchNetworkProps) {
                         <span className={styles.content_title}>Please choose a network below</span>
                         <NetworkButtons
                             chainId={chainId}
-                            setFallbackChainId={setFallbackChainId}
                             onClose={onClose}
+                            switchChain={switchChain}
                         />
                         {/* <NetworkButton /> */}
                     </section>

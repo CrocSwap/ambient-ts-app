@@ -152,7 +152,7 @@ export default function PageHeader(props: HeaderPropsIF) {
         <SwitchNetwork
             onClose={closeSwitchNetwork}
             chainId={chainId}
-            setFallbackChainId={setFallbackChainId}
+            switchChain={switchChain}
         />
     );
 
