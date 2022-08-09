@@ -206,7 +206,7 @@ export default function Swap(props: SwapPropsIF) {
                 ? env.sell(sellTokenAddress, qty).for(buyTokenAddress).swap()
                 : env.buy(buyTokenAddress, qty).with(sellTokenAddress).swap());
 
-            setNewSwapTransactionHash(tx.hash);
+            setNewSwapTransactionHash(tx?.hash);
         } catch (error) {
             setTxErrorCode(error?.code);
             setTxErrorMessage(error?.message);
