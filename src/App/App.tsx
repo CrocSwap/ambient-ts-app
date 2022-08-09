@@ -1042,8 +1042,9 @@ export default function App() {
                     if (!tokenAAddress) {
                         return;
                     }
+
                     const allowance = await crocEnv.token(tokenAAddress).allowance(account);
-                    setTokenAAllowance(allowance.toString());
+                    setTokenAAllowance(toDisplayQty(allowance, tokenPair.dataTokenA.decimals));
                 }
             } catch (err) {
                 console.log(err);
@@ -1057,6 +1058,7 @@ export default function App() {
         provider,
         isWeb3Enabled,
         recheckTokenAApproval,
+        account,
     ]);
 
     // useEffect to check if user has approved CrocSwap to sell the token B
@@ -1069,8 +1071,10 @@ export default function App() {
                     if (!tokenBAddress) {
                         return;
                     }
+                    // console.log({ tokenBAddress });
                     const allowance = await crocEnv.token(tokenBAddress).allowance(account);
-                    setTokenBAllowance(allowance.toString());
+                    // console.log({ allowance });
+                    setTokenBAllowance(toDisplayQty(allowance, tokenPair.dataTokenB.decimals));
                 }
             } catch (err) {
                 console.log(err);
