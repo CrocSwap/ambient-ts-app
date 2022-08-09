@@ -118,7 +118,7 @@ export default function TradeCharts(props: TradeChartsProps) {
     const [openSettingsTooltip, setOpenSettingsTooltip] = useState(false);
 
     const [chartItems, setChartItems] = useState([
-        { slug: 'chart', name: 'Chart', checked: false },
+        { slug: 'chart', name: 'Chart', checked: true },
         { slug: 'feerate', name: 'Fee Rate', checked: false },
         { slug: 'tvl', name: 'Tvl', checked: false },
         { slug: 'volume', name: 'Voulme', checked: false },
@@ -182,7 +182,7 @@ export default function TradeCharts(props: TradeChartsProps) {
             <div onClick={() => setOpenSettingsTooltip(!openSettingsTooltip)}>
                 <AiOutlineSetting size={20} />
             </div>
-            <div onClick={() => setFullScreenChart(true)}>
+            <div onClick={() => setFullScreenChart(!fullScreenChart)}>
                 <AiOutlineFullscreen size={20} />
             </div>
             <DefaultTooltip interactive title={saveImageContent}>

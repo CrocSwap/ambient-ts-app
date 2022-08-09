@@ -479,26 +479,28 @@ export default function TradeCandleStickChart(props: ChartData) {
     console.log(chartItems[1].checked);
     return (
         <>
-            <Chart priceData={data.priceData} liquidityData={liquidityData} />
+            {chartItems[0].checked === true && (
+                <Chart priceData={data.priceData} liquidityData={liquidityData} />
+            )}
             {chartItems[1].checked === true && (
                 <>
                     <hr />
                     <label>Fee Rate</label>
-                    <div style={{ height: '15%', width: '80%' }} className='chart-fee'></div>
+                    <div style={{ height: '15%', width: '100%' }} className='chart-fee'></div>
                 </>
             )}
             {chartItems[2].checked === true && (
                 <>
                     <hr />
                     <label>Tvl</label>
-                    <div style={{ height: '15%', width: '80%' }} className='chart-tvl'></div>
+                    <div style={{ height: '15%', width: '100%' }} className='chart-tvl'></div>
                 </>
             )}
             {chartItems[3].checked === true && (
                 <>
                     <hr />
                     <label>Volume</label>
-                    <div style={{ height: '15%', width: '80%' }} id='chart-volume'></div>
+                    <div style={{ height: '15%', width: '100%' }} id='chart-volume'></div>
                 </>
             )}
         </>
