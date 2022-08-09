@@ -22,7 +22,14 @@ interface ChartData {
     volumeData: any[];
     feeData: any[];
     priceData: any[];
+    chartItems: chartItem[];
 }
+
+type chartItem = {
+    slug: string;
+    name: string;
+    checked: boolean;
+};
 
 export default function TradeCandleStickChart(props: ChartData) {
     const data = {

@@ -118,10 +118,10 @@ export default function TradeCharts(props: TradeChartsProps) {
     const [openSettingsTooltip, setOpenSettingsTooltip] = useState(false);
 
     const [chartItems, setChartItems] = useState([
-        { slug: 'tshirt', name: 'Tshirt', checked: false },
-        { slug: 'cup', name: 'White Mug', checked: false },
-        { slug: 'watch', name: 'G-Shock', checked: false },
-        { slug: 'shorts', name: 'Hawaiian Shorts', checked: false },
+        { slug: 'chart', name: 'Chart', checked: false },
+        { slug: 'feerate', name: 'Fee Rate', checked: false },
+        { slug: 'tvl', name: 'Tvl', checked: false },
+        { slug: 'volume', name: 'Voulme', checked: false },
     ]);
 
     const handleChartItemChange = (slug: any) => {
@@ -177,7 +177,7 @@ export default function TradeCharts(props: TradeChartsProps) {
                 onOpen={() => setOpenSettingsTooltip(true)}
                 onClose={() => setOpenSettingsTooltip(false)}
             >
-                <div></div>
+                <div />
             </DefaultTooltip>
             <div onClick={() => setOpenSettingsTooltip(!openSettingsTooltip)}>
                 <AiOutlineSetting size={20} />
@@ -442,6 +442,7 @@ export default function TradeCharts(props: TradeChartsProps) {
                 volumeData={formattedVolumeData}
                 feeData={formattedFeesUSD}
                 priceData={adjustedToCurrent}
+                chartItems={chartItems}
             />
         </>
     );
