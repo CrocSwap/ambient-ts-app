@@ -1,24 +1,26 @@
-import { Pagination } from '@mui/material';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { TOKEN_HIDE } from '../../constants';
 import { PoolData } from '../../state/pools/models';
+import PoolCardHeader from './PoolCardHeader';
 import PoolRow from './PoolRow';
 import styles from './Pools.module.css';
+import { Pagination } from '@mui/material';
+
+export const SORT_FIELD = {
+    name: 'name',
+    feeTier: 'feeTier',
+    volumeUSD: 'volumeUSD',
+    tvlUSD: 'tvlUSD',
+    volumeUSDWeek: 'volumeUSDWeek',
+};
 
 interface PoolProps {
-    propType: string;
     pools: PoolData[];
     maxItems?: number;
+    poolType: string;
 }
 
 export default function Pools(props: PoolProps) {
-    const SORT_FIELD = {
-        feeTier: 'feeTier',
-        volumeUSD: 'volumeUSD',
-        tvlUSD: 'tvlUSD',
-        volumeUSDWeek: 'volumeUSDWeek',
-    };
-
     const [sortField, setSortField] = useState(SORT_FIELD.tvlUSD);
     const [sortDirection, setSortDirection] = useState<boolean>(true);
     const [page, setPage] = useState(1);
@@ -66,53 +68,26 @@ export default function Pools(props: PoolProps) {
         [sortDirection, sortField],
     );
 
-    const poolsDisplay = sortedPools.map((pool, idx) => (
-        <PoolRow pool={pool} index={(page - 1) * maxItems + idx} key={idx} />
-    ));
-
-    const poolsHeader = (
-        <thead>
-            <tr>
-                <th>#</th>
-
-                <th>
-                    <label onClick={() => handleSort(SORT_FIELD.feeTier)}>
-                        Pool {arrow(SORT_FIELD.feeTier)}
-                    </label>
-                </th>
-                <th></th>
-                <th></th>
-                <th>
-                    <label onClick={() => handleSort(SORT_FIELD.tvlUSD)}>
-                        TVL {arrow(SORT_FIELD.tvlUSD)}
-                    </label>
-                </th>
-                <th>
-                    <label onClick={() => handleSort(SORT_FIELD.volumeUSD)}>
-                        Volume 24H {arrow(SORT_FIELD.volumeUSD)}
-                    </label>
-                </th>
-                <th>
-                    <label onClick={() => handleSort(SORT_FIELD.volumeUSDWeek)}>
-                        Volume 7D {arrow(SORT_FIELD.volumeUSDWeek)}
-                    </label>
-                </th>
-            </tr>
-        </thead>
-    );
-
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleChange = (event: any, value: number) => {
         setPage(value);
     };
 
-    return (
-        <div className={styles.pool_table_display}>
-            <table>
-                {poolsHeader}
+    const poolsDisplay = sortedPools.map((pool, idx) => (
+        <PoolRow
+            poolType={props.poolType}
+            pool={pool}
+            key={pool.address}
+            index={(page - 1) * maxItems + idx}
+        />
+    ));
 
-                <tbody>{poolsDisplay}</tbody>
-            </table>
+    return (
+        <div className={styles.container}>
+            <div className={styles.container}>
+                <PoolCardHeader poolType={props.poolType} arrow={arrow} sort={handleSort} />
+                {poolsDisplay}
+            </div>
 
             {maxItems !== pools.length ? (
                 <Pagination

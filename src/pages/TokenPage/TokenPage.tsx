@@ -2,7 +2,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Divider from '../../components/Global/Divider/Divider';
-import Pools from '../../components/Pools/Pools';
 import {
     usePoolsForToken,
     useTokenChartData,
@@ -19,6 +18,7 @@ import { ONE_HOUR_SECONDS, TimeWindow } from '../../constants/intervals';
 import { PriceChartEntry } from '../../types';
 import logo from '../../assets/images/logos/ambient_logo.svg';
 import moment from 'moment';
+import Pools from '../../components/Pools/Pools';
 
 const DEFAULT_TIME_WINDOW = TimeWindow.WEEK;
 
@@ -162,7 +162,7 @@ export default function TokenPage() {
             <Divider />
             <div className={styles.cqwlBw}>
                 <h2>Pools</h2>
-                <Pools pools={poolDatas} propType='all' maxItems={10} />
+                <Pools poolType='top' pools={poolDatas} maxItems={10} />
             </div>
         </main>
     );

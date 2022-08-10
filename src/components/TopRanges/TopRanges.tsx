@@ -1,4 +1,5 @@
 import TopRange from './TopRange';
+import TopRangeCardHeader from './TopRangeCardHeader';
 import styles from './TopRanges.module.css';
 
 export default function TopRanges() {
@@ -6,25 +7,12 @@ export default function TopRanges() {
 
     const topRangesDisplay = exampleTopRanges.map((topRange, idx) => <TopRange key={idx} />);
 
-    const topRangesHeader = (
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Price</th>
-                <th>Price Change</th>
-                <th>Volume 24H</th>
-                <th>TVL</th>
-            </tr>
-        </thead>
-    );
-
     return (
-        <div className={styles.topRange_table_display}>
-            <table>
-                {topRangesHeader}
-
-                <tbody>{topRangesDisplay}</tbody>
-            </table>
+        <div className={styles.container}>
+            <div className={styles.container}>
+                <TopRangeCardHeader />
+                {topRangesDisplay}
+            </div>
         </div>
     );
 }

@@ -4,6 +4,7 @@
   grid-template-columns:  auto 50px;
   align-items: center;
   height: 40px;
+  cursor: pointer;
 }
 .tokens_container{
   display: none;
@@ -15,7 +16,7 @@
 }
 
 .row_container section{
-  flex: 0.118 0;
+  flex: 0.25 0;
   /* flex-flow: column; */
   align-items: center;
   padding: 2px 8px;
@@ -29,30 +30,81 @@
 
 }
 
-
-
-.apy{
+.token_key{
   font-weight: 200;
- 
-  font-size: 12px;
-  line-height: 15px;
-
-  background: linear-gradient(90deg, #15BE6F 32.38%, #8FE9BF 51.39%, #15BE6F 68.17%);
--webkit-background-clip: text;
--webkit-text-fill-color: transparent;
-background-clip: text;
-
-text-shadow: 0px 0px 10px rgba(21, 190, 111, 0.75);
+  font-size: 13px;
+  line-height: 32px;
+  letter-spacing: -0.02em;
+  color: #EBEBFF;
+  /* text-align: right; */
+  padding-left: 7px;
 }
+
+.token_icon{
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  gap: 4px;
+}
+
+.display {
+  display: flex;
+  color: rgba(235, 235, 255, 0.4);
+
+}
+.displayName {
+  display: none;
+  color: rgba(235, 235, 255, 0.4);
+
+}
+
+
+/* Desktop screen Sizes */
+@media only screen and (min-width: 768px) {
+  .display {
+  
+      font-size: 10px;
+      line-height: 13px; 
+  }
+
+  .displayName {
+    display: none;
+    font-size: 10px;
+      line-height: 13px; 
+    /* font-size: 10px;
+    line-height: 13px;  */
+  }
+  
+  
+  }
+
+/* Desktop screen Sizes */
+@media only screen and (min-width: 1200px) {
+  .displayName {
+     display: flex;
+  
+     font-size: 10px;
+      line-height: 13px; 
+  }
+
+  
+  
+  
+  }
+
+
+
+
 
 /* Mobile Landscape Screen Sizes */
 @media only screen and (min-width: 480px)  {
 .tokens_container{
   display: flex;
 }
-.main_container{
-  grid-template-columns: 50px auto 50px;
-}
+  .main_container{
+      grid-template-columns:  50px auto 50px;
+      /* background: red; */
+  }
 }
 
 /* Desktop screen Sizes */
@@ -85,6 +137,6 @@ text-shadow: 0px 0px 10px rgba(21, 190, 111, 0.75);
 @media only screen and (min-width: 1600px) {
 
   .main_container{
-    grid-template-columns: 100px 1.1fr .6fr;
+      grid-template-columns: 100px 1fr 0.6fr;
   }
 }
