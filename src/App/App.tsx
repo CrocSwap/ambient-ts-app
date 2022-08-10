@@ -1367,39 +1367,6 @@ export default function App() {
                         if (JSON.stringify(tokensInRTK[0]) !== JSON.stringify(nativeToken))
                             dispatch(addNativeBalance([nativeToken]));
                     });
-                // if (
-                //     provider &&
-                //     provider.connection?.url === 'metamask' &&
-                //     account &&
-                //     isAuthenticated &&
-                //     isWeb3Enabled
-                // ) {
-                // const signer = provider.getSigner();
-
-                // const nativeEthBalance = await getTokenBalanceDisplay(
-                //     contractAddresses.ZERO_ADDR,
-                //     account,
-                //     signer,
-                // );
-                // make sure a balance was returned, initialized as null
-                // if (nativeEthBalance) {
-                //     // send value to local state
-                //     setNativeBalance(nativeEthBalance);
-                //     const nativeToken: TokenIF = {
-                //         name: 'Native Token',
-                //         address: contractAddresses.ZERO_ADDR,
-                //         // eslint-disable-next-line camelcase
-                //         token_address: contractAddresses.ZERO_ADDR,
-                //         symbol: 'ETH',
-                //         decimals: 18,
-                //         chainId: parseInt(chainId),
-                //         logoURI: '',
-                //         balance: nativeEthBalance,
-                //     };
-                //     // console.log('adding native balance: ' + nativeEthBalance);
-                //     if (JSON.stringify(tokensInRTK[0]) !== JSON.stringify(nativeToken))
-                //         dispatch(addNativeBalance([nativeToken]));
-                // }
             }
         })();
     }, [provider, account, isWeb3Enabled, isAuthenticated, lastBlockNumber]);
