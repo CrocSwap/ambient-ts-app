@@ -1625,6 +1625,7 @@ export default function App() {
                             path='trade'
                             element={
                                 <Trade
+                                    provider={provider}
                                     tokenPair={tokenPair}
                                     account={account ?? ''}
                                     isAuthenticated={isAuthenticated}

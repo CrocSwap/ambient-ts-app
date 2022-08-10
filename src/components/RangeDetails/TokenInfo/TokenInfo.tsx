@@ -1,12 +1,14 @@
 import styles from './TokenInfo.module.css';
 import { querySpotPrice } from '../../../App/functions/querySpotPrice';
-import { memoizePromiseFn } from '../../../App/functions/memoizePromiseFn';
+// import { memoizePromiseFn } from '../../../App/functions/memoizePromiseFn';
 import { useEffect, useState } from 'react';
 import { toDisplayPrice } from '@crocswap-libs/sdk';
+import { ethers } from 'ethers';
 
-const cachedQuerySpotPrice = memoizePromiseFn(querySpotPrice);
+// const cachedQuerySpotPrice = memoizePromiseFn(querySpotPrice);
 
 interface ITokenInfoProps {
+    provider: ethers.providers.Provider | undefined;
     baseTokenAddress: string;
     baseTokenDecimals: number;
     quoteTokenAddress: string;
@@ -17,6 +19,7 @@ interface ITokenInfoProps {
 
 export default function TokenInfo(props: ITokenInfoProps) {
     const {
+        provider,
         baseTokenAddress,
         baseTokenDecimals,
         quoteTokenAddress,
@@ -29,11 +32,13 @@ export default function TokenInfo(props: ITokenInfoProps) {
 
     // useEffect to get spot price when tokens change and block updates
     useEffect(() => {
-        if (baseTokenAddress && quoteTokenAddress) {
+        if (provider && baseTokenAddress && quoteTokenAddress && lastBlockNumber) {
             (async () => {
-                const spotPrice = await cachedQuerySpotPrice(
+                const spotPrice = await querySpotPrice(
+                    provider,
                     baseTokenAddress,
                     quoteTokenAddress,
+                    '0x5',
                     lastBlockNumber,
                 );
                 const displayPriceInQuote = toDisplayPrice(
@@ -51,7 +56,7 @@ export default function TokenInfo(props: ITokenInfoProps) {
                 setDisplayPrice(displayPrice);
             })();
         }
-    }, [lastBlockNumber, baseTokenAddress, quoteTokenAddress]);
+    }, [provider, lastBlockNumber, baseTokenAddress, quoteTokenAddress]);
 
     return (
         <div className={styles.token_info_container}>

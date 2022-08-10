@@ -7,8 +7,10 @@ import Apy from '../../../Global/Tabs/Apy/Apy';
 import { PositionIF } from '../../../../utils/interfaces/PositionIF';
 import { ambientPosSlot, concPosSlot } from '@crocswap-libs/sdk';
 import RangesMenu from '../../../Global/Tabs/TableMenu/TableMenuComponents/RangesMenu';
+import { ethers } from 'ethers';
 
 interface RangeCardProps {
+    provider: ethers.providers.Provider | undefined;
     portfolio?: boolean;
     notOnTradeRoute?: boolean;
     position: PositionIF;
@@ -24,6 +26,7 @@ interface RangeCardProps {
 
 export default function RangeCard(props: RangeCardProps) {
     const {
+        provider,
         position,
         // isAllPositionsEnabled,
         tokenAAddress,
@@ -113,6 +116,7 @@ export default function RangeCard(props: RangeCardProps) {
 
     // --------------------------REMOVE RANGE PROPS-------------------------------
     const removeRangeProps = {
+        provider: provider,
         isPositionInRange: isPositionInRange,
         isAmbient: position.positionType === 'ambient',
         baseTokenSymbol: position.baseSymbol,
