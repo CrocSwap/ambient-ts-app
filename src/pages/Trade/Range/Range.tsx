@@ -120,6 +120,9 @@ export default function Range(props: RangePropsIF) {
     const [isWithdrawTokenAFromDexChecked, setIsWithdrawTokenAFromDexChecked] = useState(false);
     const [isWithdrawTokenBFromDexChecked, setIsWithdrawTokenBFromDexChecked] = useState(false);
     const [newRangeTransactionHash, setNewRangeTransactionHash] = useState('');
+    const [txErrorCode, setTxErrorCode] = useState(0);
+    const [txErrorMessage, setTxErrorMessage] = useState('');
+
     const { account, isAuthenticated, isWeb3Enabled, authenticate, enableWeb3 } = useMoralis();
 
     const { tradeData } = useTradeData();
@@ -153,25 +156,40 @@ export default function Range(props: RangePropsIF) {
 
     const poolPriceDisplayNum = parseFloat(poolPriceDisplay);
 
-    const poolPriceTruncatedInQuote =
-        poolPriceDisplayNum < 2
-            ? poolPriceDisplayNum > 0.1
-                ? truncateDecimals(poolPriceDisplayNum, 4)
-                : truncateDecimals(poolPriceDisplayNum, 6)
-            : truncateDecimals(poolPriceDisplayNum, 2);
+    const displayPriceWithDenom = denominationsInBase
+        ? 1 / poolPriceDisplayNum
+        : poolPriceDisplayNum;
 
-    const invertedPoolPrice = 1 / poolPriceDisplayNum;
+    const displayPriceString =
+        displayPriceWithDenom < 2
+            ? displayPriceWithDenom.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 6,
+              })
+            : displayPriceWithDenom.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              });
 
-    const poolPriceTruncatedInBase =
-        invertedPoolPrice < 2
-            ? invertedPoolPrice > 0.1
-                ? truncateDecimals(invertedPoolPrice, 4)
-                : truncateDecimals(invertedPoolPrice, 6)
-            : truncateDecimals(invertedPoolPrice, 2);
+    // const poolPriceTruncatedInQuote =
+    //     poolPriceDisplayNum < 2
+    //         ? poolPriceDisplayNum > 0.1
+    //             ? truncateDecimals(poolPriceDisplayNum, 4)
+    //             : truncateDecimals(poolPriceDisplayNum, 6)
+    //         : truncateDecimals(poolPriceDisplayNum, 2);
 
-    const poolPriceTruncated = denominationsInBase
-        ? poolPriceTruncatedInBase
-        : poolPriceTruncatedInQuote;
+    // const invertedPoolPrice = 1 / poolPriceDisplayNum;
+
+    // const poolPriceTruncatedInBase =
+    //     invertedPoolPrice < 2
+    //         ? invertedPoolPrice > 0.1
+    //             ? truncateDecimals(invertedPoolPrice, 4)
+    //             : truncateDecimals(invertedPoolPrice, 6)
+    //         : truncateDecimals(invertedPoolPrice, 2);
+
+    // const poolPriceTruncated = denominationsInBase
+    //     ? poolPriceTruncatedInBase
+    //     : poolPriceTruncatedInQuote;
 
     const tokenA = tokenPair.dataTokenA;
     const tokenB = tokenPair.dataTokenB;
@@ -603,49 +621,54 @@ export default function Range(props: RangePropsIF) {
         const minPrice = spot * (1 - parseFloat(slippageTolerancePercentage) / 100);
         const maxPrice = spot * (1 + parseFloat(slippageTolerancePercentage) / 100);
 
-        const tx = await (isAmbient
-            ? isTokenAPrimary
-                ? pool.mintAmbientLeft(tokenAInputQty, [minPrice, maxPrice])
-                : pool.mintAmbientRight(tokenBInputQty, [minPrice, maxPrice])
-            : isTokenAPrimary
-            ? pool.mintRangeLeft(
-                  tokenAInputQty,
-                  [rangeLowTick, rangeHighTick],
-                  [minPrice, maxPrice],
-              )
-            : pool.mintRangeRight(
-                  tokenBInputQty,
-                  [rangeLowTick, rangeHighTick],
-                  [minPrice, maxPrice],
-              ));
+        let tx;
 
-        let newTransactionHash = tx.hash;
-        setNewRangeTransactionHash(newTransactionHash);
-        console.log({ newTransactionHash });
+        try {
+            tx = await (isAmbient
+                ? isTokenAPrimary
+                    ? pool.mintAmbientLeft(tokenAInputQty, [minPrice, maxPrice])
+                    : pool.mintAmbientRight(tokenBInputQty, [minPrice, maxPrice])
+                : isTokenAPrimary
+                ? pool.mintRangeLeft(
+                      tokenAInputQty,
+                      [rangeLowTick, rangeHighTick],
+                      [minPrice, maxPrice],
+                  )
+                : pool.mintRangeRight(
+                      tokenBInputQty,
+                      [rangeLowTick, rangeHighTick],
+                      [minPrice, maxPrice],
+                  ));
+            setNewRangeTransactionHash(tx?.hash);
+        } catch (error) {
+            setTxErrorCode(error?.code);
+            setTxErrorMessage(error?.message);
+        }
 
         const newPositionCacheEndpoint = 'https://809821320828123.de:5000/new_liqchange?';
-
-        fetch(
-            newPositionCacheEndpoint +
-                new URLSearchParams({
-                    chainId: chainId,
-                    tx: newTransactionHash,
-                    user: account ?? '',
-                    base: baseTokenAddress,
-                    quote: quoteTokenAddress,
-                    poolIdx: lookupChain(chainId).poolIndex.toString(),
-                    positionType: isAmbient ? 'ambient' : 'concentrated',
-                    changeType: 'mint',
-                    bidTick: rangeLowTick.toString(),
-                    askTick: rangeHighTick.toString(),
-                    isBid: 'false', // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
-                    liq: '0', // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
-                }),
-        );
+        if (tx?.hash) {
+            fetch(
+                newPositionCacheEndpoint +
+                    new URLSearchParams({
+                        chainId: chainId,
+                        tx: tx.hash,
+                        user: account ?? '',
+                        base: baseTokenAddress,
+                        quote: quoteTokenAddress,
+                        poolIdx: lookupChain(chainId).poolIndex.toString(),
+                        positionType: isAmbient ? 'ambient' : 'concentrated',
+                        changeType: 'mint',
+                        bidTick: rangeLowTick.toString(),
+                        askTick: rangeHighTick.toString(),
+                        isBid: 'false', // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
+                        liq: '0', // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
+                    }),
+            );
+        }
 
         let receipt;
         try {
-            receipt = await tx.wait();
+            if (tx) receipt = await tx.wait();
         } catch (e) {
             const error = e as TransactionError;
 
@@ -653,9 +676,30 @@ export default function Range(props: RangePropsIF) {
             // in their client, but we now have the updated info
             if (isTransactionReplacedError(error)) {
                 console.log('repriced');
-                newTransactionHash = error.replacement.hash;
+                const newTransactionHash = error.replacement.hash;
+                setNewRangeTransactionHash(newTransactionHash);
                 console.log({ newTransactionHash });
                 receipt = error.receipt;
+
+                if (tx?.hash) {
+                    fetch(
+                        newPositionCacheEndpoint +
+                            new URLSearchParams({
+                                chainId: chainId,
+                                tx: newTransactionHash,
+                                user: account ?? '',
+                                base: baseTokenAddress,
+                                quote: quoteTokenAddress,
+                                poolIdx: lookupChain(chainId).poolIndex.toString(),
+                                positionType: isAmbient ? 'ambient' : 'concentrated',
+                                changeType: 'mint',
+                                bidTick: rangeLowTick.toString(),
+                                askTick: rangeHighTick.toString(),
+                                isBid: 'false', // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
+                                liq: '0', // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
+                            }),
+                    );
+                }
             }
         }
         if (receipt) {
@@ -685,9 +729,7 @@ export default function Range(props: RangePropsIF) {
     // props for <RangePriceInfo/> React element
     const rangePriceInfoProps = {
         tokenPair: tokenPair,
-        spotPriceDisplay: poolPriceTruncated.toString(),
-        poolPriceTruncatedInBase: poolPriceTruncatedInBase.toString(),
-        poolPriceTruncatedInQuote: poolPriceTruncatedInQuote.toString(),
+        spotPriceDisplay: displayPriceString,
         maxPriceDisplay: maxPriceDisplay,
         minPriceDisplay: minPriceDisplay,
         apyPercentage: apyPercentage,
@@ -748,26 +790,33 @@ export default function Range(props: RangePropsIF) {
         [baseTokenDecimals, quoteTokenDecimals, rangeLowTick, rangeHighTick],
     );
 
+    const handleModalClose = () => {
+        closeModal();
+        setNewRangeTransactionHash('');
+        setTxErrorCode(0);
+        setTxErrorMessage('');
+    };
+
     // props for <ConfirmRangeModal/> React element
     const rangeModalProps = {
         tokenPair: tokenPair,
-        spotPriceDisplay: poolPriceTruncated.toString(),
+        spotPriceDisplay: displayPriceString,
         denominationsInBase: denominationsInBase,
         isTokenABase: isTokenABase,
         isAmbient: isAmbient,
         maxPriceDisplay: maxPriceDisplay,
         minPriceDisplay: minPriceDisplay,
         sendTransaction: sendTransaction,
-        closeModal: closeModal,
+        closeModal: handleModalClose,
         newRangeTransactionHash: newRangeTransactionHash,
         setNewRangeTransactionHash: setNewRangeTransactionHash,
+        txErrorCode: txErrorCode,
+        txErrorMessage: txErrorMessage,
         isInRange: !isOutOfRange,
         pinnedMinPriceDisplayTruncatedInBase: pinnedMinPriceDisplayTruncatedInBase,
         pinnedMinPriceDisplayTruncatedInQuote: pinnedMinPriceDisplayTruncatedInQuote,
         pinnedMaxPriceDisplayTruncatedInBase: pinnedMaxPriceDisplayTruncatedInBase,
         pinnedMaxPriceDisplayTruncatedInQuote: pinnedMaxPriceDisplayTruncatedInQuote,
-        poolPriceTruncatedInBase: poolPriceTruncatedInBase.toString(),
-        poolPriceTruncatedInQuote: poolPriceTruncatedInQuote.toString(),
     };
 
     // props for <RangeCurrencyConverter/> React element
@@ -813,11 +862,11 @@ export default function Range(props: RangePropsIF) {
     const rangeExtraInfoProps = {
         tokenPair: tokenPair,
         gasPriceinGwei: gasPriceinGwei,
-        poolPriceDisplay: Number(poolPriceDisplay),
+        poolPriceDisplay: displayPriceString,
         slippageTolerance: slippageTolerancePercentage,
         liquidityProviderFee: 0.3,
         quoteTokenIsBuy: true,
-        displayForBase: tradeData.isDenomBase,
+        isDenomBase: tradeData.isDenomBase,
         isTokenABase: isTokenABase,
         daysInRangeEstimation: daysInRangeEstimation,
     };
@@ -871,7 +920,7 @@ export default function Range(props: RangePropsIF) {
 
             <AdvancedPriceInfo
                 tokenPair={tokenPair}
-                poolPriceDisplay={poolPriceTruncated.toString()}
+                poolPriceDisplay={displayPriceString}
                 isDenomBase={denominationsInBase}
                 isTokenABase={isTokenABase}
                 minimumSpan={minimumSpan}
@@ -880,9 +929,10 @@ export default function Range(props: RangePropsIF) {
             <RangeExtraInfo {...rangeExtraInfoProps} />
         </>
     );
+
     const confirmSwapModalOrNull = isModalOpen ? (
         <Modal
-            onClose={closeModal}
+            onClose={handleModalClose}
             title={isAmbient ? 'Ambient Confirmation' : 'Range Confirmation'}
         >
             <ConfirmRangeModal {...rangeModalProps} />

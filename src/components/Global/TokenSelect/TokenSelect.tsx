@@ -45,18 +45,17 @@ export default function TokenSelect(props: TokenSelectPropsIF) {
     const tokensInRTK = useAppSelector((state) => state.tokenData.tokens);
 
     const getTokenBalance = (address: string) => {
-        let tokenBalanceDisplay = '';
+        let displayQty = '0';
         tokensInRTK.map((token) => {
-            if (token.address?.toLowerCase() === address.toLowerCase()) {
+            if (token.token_address?.toLowerCase() === address.toLowerCase()) {
                 if (token.balance && token.decimals) {
                     const untruncatedDisplayQty = toDisplayQty(token.balance, token.decimals);
                     const displayQtyNum = parseFloat(untruncatedDisplayQty);
-                    const localDisplayQty = displayQtyNum.toLocaleString('en-US');
-                    tokenBalanceDisplay = localDisplayQty;
+                    displayQty = displayQtyNum?.toLocaleString('en-US');
                 }
             }
         });
-        return tokenBalanceDisplay;
+        return displayQty;
     };
 
     const noTokenImage = <CgUnavailable size={20} />;
@@ -143,7 +142,9 @@ export default function TokenSelect(props: TokenSelectPropsIF) {
                     <span className={styles.modal_token_symbol}>{token.symbol}</span>
                     <span className={styles.modal_token_name}>{token.name}</span>
                 </div>
-                <div className={styles.modal_tokens_amount}>{getTokenBalance(token.address)}</div>
+                <div className={styles.modal_tokens_amount}>
+                    {tokensInRTK.length > 0 ? getTokenBalance(token.address) : ''}
+                </div>
             </div>
             {undeletableTokens.includes(token.address) || deleteIcon}
         </div>

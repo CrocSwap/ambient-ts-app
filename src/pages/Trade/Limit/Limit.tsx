@@ -116,7 +116,9 @@ export default function Limit(props: LimitPropsIF) {
         }
     };
 
-    const [newLimitOrderTransactionHash] = useState('');
+    const [newLimitOrderTransactionHash, setNewLimitOrderTransactionHash] = useState('');
+    const [txErrorCode, setTxErrorCode] = useState(0);
+    const [txErrorMessage, setTxErrorMessage] = useState('');
 
     const tokenADecimals = tokenPair.dataTokenA.decimals;
     const tokenBDecimals = tokenPair.dataTokenB.decimals;
@@ -174,15 +176,16 @@ export default function Limit(props: LimitPropsIF) {
 
                 // console.log({ roundedTickInsideCurrentPrice });
                 const insideTickNonDisplayPrice = tickToPrice(roundedTickInsideCurrentPrice);
-                const insideTickDisplayPrice =
-                    1 / toDisplayPrice(insideTickNonDisplayPrice, baseDecimals, quoteDecimals);
+                const insideTickDisplay = (
+                    1 / toDisplayPrice(insideTickNonDisplayPrice, baseDecimals, quoteDecimals)
+                ).toPrecision(6);
 
-                setInsideTickDisplayPrice(insideTickDisplayPrice);
+                setInsideTickDisplayPrice(parseFloat(insideTickDisplay));
 
-                pinnedInitialDisplayPrice = insideTickDisplayPrice.toString();
+                pinnedInitialDisplayPrice = insideTickDisplay;
 
                 if (limitRateInputField) {
-                    limitRateInputField.value = pinnedInitialDisplayPrice;
+                    limitRateInputField.value = insideTickDisplay;
                 }
             } else {
                 const offset = gridSize;
@@ -194,17 +197,19 @@ export default function Limit(props: LimitPropsIF) {
 
                 // console.log({ roundedTickInsideCurrentPrice });
                 const insideTickNonDisplayPrice = tickToPrice(roundedTickInsideCurrentPrice);
-                const insideTickDisplayPrice = toDisplayPrice(
+
+                const insideTickDisplay = toDisplayPrice(
                     insideTickNonDisplayPrice,
                     baseDecimals,
                     quoteDecimals,
-                );
-                setInsideTickDisplayPrice(insideTickDisplayPrice);
+                ).toPrecision(6);
 
-                pinnedInitialDisplayPrice = insideTickDisplayPrice.toString();
+                setInsideTickDisplayPrice(parseFloat(insideTickDisplay));
+
+                pinnedInitialDisplayPrice = insideTickDisplay;
 
                 if (limitRateInputField) {
-                    limitRateInputField.value = pinnedInitialDisplayPrice;
+                    limitRateInputField.value = insideTickDisplay;
                 }
             }
             dispatch(setLimitPrice(pinnedInitialDisplayPrice));
@@ -222,10 +227,17 @@ export default function Limit(props: LimitPropsIF) {
         const qty = isTokenAPrimary ? sellTokenQty : buyTokenQty;*/
     };
 
+    const handleModalClose = () => {
+        closeModal();
+        setNewLimitOrderTransactionHash('');
+        setTxErrorCode(0);
+        setTxErrorMessage('');
+    };
+
     const confirmLimitModalOrNull = isModalOpen ? (
-        <Modal onClose={closeModal} title='Limit Confirmation'>
+        <Modal onClose={handleModalClose} title='Limit Confirmation'>
             <ConfirmLimitModal
-                onClose={closeModal}
+                onClose={handleModalClose}
                 tokenPair={tokenPair}
                 initiateLimitOrderMethod={initiateLimitOrderMethod}
                 tokenAInputQty={tokenAInputQty}
@@ -233,6 +245,8 @@ export default function Limit(props: LimitPropsIF) {
                 isTokenAPrimary={isTokenAPrimary}
                 limitRate={limitRate}
                 newLimitOrderTransactionHash={newLimitOrderTransactionHash}
+                txErrorCode={txErrorCode}
+                txErrorMessage={txErrorMessage}
             />
         </Modal>
     ) : null;

@@ -358,14 +358,13 @@ export default function App() {
     // check for token balances on each new block
     useEffect(() => {
         (async () => {
-            if (account) {
+            if (isAuthenticated && account) {
                 try {
                     const newTokens: TokenIF[] = await cachedFetchTokenBalances(
                         account,
                         chainId,
                         lastBlockNumber,
                     );
-
                     const tokensInRTKminusNative = tokensInRTK.slice(1);
 
                     if (
@@ -382,7 +381,7 @@ export default function App() {
                 }
             }
         })();
-    }, [account, chainId, lastBlockNumber, tokensInRTK]);
+    }, [isAuthenticated, account, chainId, lastBlockNumber, tokensInRTK]);
 
     const [baseTokenAddress, setBaseTokenAddress] = useState<string>('');
     const [quoteTokenAddress, setQuoteTokenAddress] = useState<string>('');
@@ -1043,8 +1042,9 @@ export default function App() {
                     if (!tokenAAddress) {
                         return;
                     }
+
                     const allowance = await crocEnv.token(tokenAAddress).allowance(account);
-                    setTokenAAllowance(allowance.toString());
+                    setTokenAAllowance(toDisplayQty(allowance, tokenPair.dataTokenA.decimals));
                 }
             } catch (err) {
                 console.log(err);
@@ -1058,6 +1058,7 @@ export default function App() {
         provider,
         isWeb3Enabled,
         recheckTokenAApproval,
+        account,
     ]);
 
     // useEffect to check if user has approved CrocSwap to sell the token B
@@ -1070,8 +1071,10 @@ export default function App() {
                     if (!tokenBAddress) {
                         return;
                     }
+                    // console.log({ tokenBAddress });
                     const allowance = await crocEnv.token(tokenBAddress).allowance(account);
-                    setTokenBAllowance(allowance.toString());
+                    // console.log({ allowance });
+                    setTokenBAllowance(toDisplayQty(allowance, tokenPair.dataTokenB.decimals));
                 }
             } catch (err) {
                 console.log(err);
@@ -1318,6 +1321,7 @@ export default function App() {
         dispatch(resetTokenData());
         dispatch(resetGraphData());
         dispatch(resetReceiptData());
+        dispatch(resetTokenData());
 
         await logout();
     };
@@ -1630,9 +1634,13 @@ export default function App() {
             ? 'hide_sidebar'
             : sidebarDislayStyle;
 
+    const containerStyle = currentLocation.includes('trade')
+        ? 'content-container-trade'
+        : 'content-container';
+
     return (
         <>
-            <div className='content-container'>
+            <div className={containerStyle}>
                 {currentLocation !== '/404' && <PageHeader {...headerProps} />}
                 <main className={`${showSidebarOrNullStyle} ${swapBodyStyle}`}>
                     {sidebarRender}
