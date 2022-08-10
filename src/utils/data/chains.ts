@@ -42,3 +42,15 @@ export const allMoralisChainIds = new Map()
         'cronos',
         ['cronos', '0x19']
     );
+
+// chains supported by the Ambient app
+// this is the single source of truth for chains Ambient supports
+// add or remove chains here to add or remove support in the app
+export const ambientChains = [
+    'goerli'
+];
+
+export function validateChainId() {
+    const supportedChainIds = ambientChains.flatMap((chain: string) => allMoralisChainIds.get(chain));
+    console.log({supportedChainIds});
+}
