@@ -8,6 +8,7 @@ import {
 import { useChain } from 'react-moralis';
 import { ChainSpec } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import { validateChainId } from '../../utils/data/chains';
 
 export const useAppChain = (
     defaultChain: string
@@ -40,8 +41,7 @@ export const useAppChain = (
     }, [chainId]);
 
     const isChainSupported = useMemo(() => {
-        const supportedChains = ['0x5'];
-        return supportedChains.includes(currentChain);
+        return validateChainId(currentChain);
     }, [currentChain]);
 
     // data from the SDK about the current chain
