@@ -137,7 +137,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
     }, [poolPriceDisplay, isSellTokenBase, isTokenAPrimaryLocal, tokenABalance]);
 
     const handleSwapButtonMessage = (tokenAAmount: number) => {
-        if (poolPriceDisplay === 0) {
+        if (poolPriceDisplay === 0 || poolPriceDisplay === Infinity) {
             setSwapAllowed(false);
             setSwapButtonErrorMessage('Invalid Token Pair');
         } else if (tokenAAmount > parseFloat(tokenABalance)) {

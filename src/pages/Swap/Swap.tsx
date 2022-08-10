@@ -391,7 +391,9 @@ export default function Swap(props: SwapPropsIF) {
                         isDenomBase={tradeData.isDenomBase}
                     />
                     {isAuthenticated && isWeb3Enabled ? (
-                        !isTokenAAllowanceSufficient && parseFloat(tokenAInputQty) > 0 ? (
+                        !isTokenAAllowanceSufficient &&
+                        parseFloat(tokenAInputQty) > 0 &&
+                        tokenAInputQty !== 'Infinity' ? (
                             approvalButton
                         ) : (
                             <SwapButton
