@@ -398,13 +398,15 @@ export default function App() {
 
     const tokenPairStringified = useMemo(() => JSON.stringify(tokenPair), [tokenPair]);
 
+    useEffect(() => {
+        setPoolPriceDisplay(undefined);
+    }, [baseTokenAddress, quoteTokenAddress]);
+
     // useEffect that runs when token pair changes
     useEffect(() => {
         // reset rtk values for user specified range in ticks
         dispatch(setAdvancedLowTick(0));
         dispatch(setAdvancedHighTick(0));
-
-        setPoolPriceDisplay(0);
 
         if (tokenPair.dataTokenA.address && tokenPair.dataTokenB.address) {
             const sortedTokens = sortBaseQuoteTokens(
@@ -948,8 +950,8 @@ export default function App() {
 
     const [tokenABalance, setTokenABalance] = useState<string>('');
     const [tokenBBalance, setTokenBBalance] = useState<string>('');
-    const [poolPriceNonDisplay, setPoolPriceNonDisplay] = useState(0);
-    const [poolPriceDisplay, setPoolPriceDisplay] = useState(0);
+    const [poolPriceNonDisplay, setPoolPriceNonDisplay] = useState<number | undefined>(undefined);
+    const [poolPriceDisplay, setPoolPriceDisplay] = useState<number | undefined>(undefined);
 
     // useEffect to get spot price when tokens change and block updates
     useEffect(() => {
@@ -990,6 +992,8 @@ export default function App() {
                         quoteTokenDecimals,
                     );
                     setPoolPriceDisplay(displayPrice);
+                } else {
+                    setPoolPriceDisplay(0);
                 }
             })();
         }
@@ -1539,7 +1543,7 @@ export default function App() {
         baseTokenAddress: baseTokenAddress,
         quoteTokenAddress: quoteTokenAddress,
         poolPriceNonDisplay: poolPriceNonDisplay,
-        poolPriceDisplay: poolPriceDisplay.toString(),
+        poolPriceDisplay: poolPriceDisplay ? poolPriceDisplay.toString() : '0',
         tokenABalance: tokenABalance,
         tokenAAllowance: tokenAAllowance,
         setRecheckTokenAApproval: setRecheckTokenAApproval,
@@ -1589,7 +1593,7 @@ export default function App() {
         // if pool price is > 0.1 then denom token will be base (also cheaper one)
         // then reverse if didUserToggleDenom === true
         const isDenomInBase =
-            poolPriceDisplay < 1
+            poolPriceDisplay && poolPriceDisplay < 1
                 ? tradeData.didUserFlipDenom
                     ? false
                     : true

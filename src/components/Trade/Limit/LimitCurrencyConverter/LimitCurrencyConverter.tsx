@@ -29,7 +29,7 @@ interface LimitCurrencyConverterProps {
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     searchableTokens: Array<TokenIF>;
     chainId: string;
-    poolPriceNonDisplay: number;
+    poolPriceNonDisplay: number | undefined;
     insideTickDisplayPrice: number;
     setIsSellTokenPrimary?: Dispatch<SetStateAction<boolean>>;
     setLimitAllowed: Dispatch<SetStateAction<boolean>>;
@@ -161,7 +161,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
     }, [limitRateNumber, isSellTokenBase, isTokenAPrimaryLocal, tokenABalance]);
 
     const handleLimitButtonMessage = (tokenAAmount: number) => {
-        if (limitRateNumber === 0) {
+        if (limitRateNumber === 0 || poolPriceNonDisplay === 0) {
             setLimitAllowed(false);
             setLimitButtonErrorMessage('Invalid Token Pair');
         } else if (tokenAAmount > parseFloat(tokenABalance)) {

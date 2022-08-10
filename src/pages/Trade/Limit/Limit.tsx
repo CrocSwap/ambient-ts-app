@@ -44,8 +44,8 @@ interface LimitPropsIF {
     isSellTokenBase: boolean;
     tokenPair: TokenPairIF;
     isTokenABase: boolean;
-    poolPriceDisplay: number;
-    poolPriceNonDisplay: number;
+    poolPriceDisplay: number | undefined;
+    poolPriceNonDisplay: number | undefined;
     tokenAAllowance: string;
     setRecheckTokenAApproval: React.Dispatch<React.SetStateAction<boolean>>;
 
@@ -91,6 +91,16 @@ export default function Limit(props: LimitPropsIF) {
     const [isSaveAsDexSurplusChecked, setIsSaveAsDexSurplusChecked] = useState(false);
 
     const [limitButtonErrorMessage, setLimitButtonErrorMessage] = useState<string>('');
+
+    useEffect(() => {
+        if (poolPriceDisplay === undefined) {
+            setLimitAllowed(false);
+            setLimitButtonErrorMessage('...');
+        } else if (poolPriceDisplay === 0 || poolPriceDisplay === Infinity) {
+            setLimitAllowed(false);
+            setLimitButtonErrorMessage('Invalid Token Pair');
+        }
+    }, [poolPriceDisplay]);
 
     // login functionality
     const clickLogin = () => {
@@ -151,7 +161,9 @@ export default function Limit(props: LimitPropsIF) {
         return Math.min(tickGrid, horizon);
     };
 
-    const currentPoolPriceTick = Math.log(poolPriceNonDisplay) / Math.log(1.0001);
+    const currentPoolPriceTick = poolPriceNonDisplay
+        ? Math.log(poolPriceNonDisplay) / Math.log(1.0001)
+        : 0;
 
     useEffect(() => {
         setInitialLoad(true);
@@ -347,7 +359,7 @@ export default function Limit(props: LimitPropsIF) {
                 <LimitExtraInfo
                     tokenPair={tokenPair}
                     gasPriceinGwei={gasPriceinGwei}
-                    poolPriceDisplay={poolPriceDisplay}
+                    poolPriceDisplay={poolPriceDisplay || 0}
                     slippageTolerance={slippageTolerancePercentage}
                     liquidityProviderFee={0}
                     quoteTokenIsBuy={true}
@@ -362,7 +374,7 @@ export default function Limit(props: LimitPropsIF) {
                     ) : (
                         <LimitButton
                             onClickFn={openModal}
-                            limitAllowed={limitAllowed}
+                            limitAllowed={poolPriceNonDisplay !== 0 && limitAllowed}
                             limitButtonErrorMessage={limitButtonErrorMessage}
                         />
                     )

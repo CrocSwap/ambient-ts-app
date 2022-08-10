@@ -8,7 +8,7 @@ import { toggleDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
 interface denominationSwitchPropsIF {
     tokenPair: TokenPairIF;
     displayForBase: boolean;
-    poolPriceDisplay: number;
+    poolPriceDisplay: number | undefined;
     isOnTradeRoute?: boolean;
     isTokenABase: boolean;
     didUserFlipDenom: boolean;
@@ -28,7 +28,13 @@ export default function DenominationSwitch(props: denominationSwitchPropsIF) {
     // TODO   ... <div> elements nested inside of it
 
     const moreExpensiveToken =
-        poolPriceDisplay < 1 ? (isTokenABase ? 'A' : 'B') : isTokenABase ? 'B' : 'A';
+        poolPriceDisplay && poolPriceDisplay < 1
+            ? isTokenABase
+                ? 'A'
+                : 'B'
+            : isTokenABase
+            ? 'B'
+            : 'A';
 
     const tokenToHighlight =
         moreExpensiveToken === 'A' ? (didUserFlipDenom ? 'B' : 'A') : didUserFlipDenom ? 'A' : 'B';
