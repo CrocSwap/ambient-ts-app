@@ -36,7 +36,7 @@ export const useAppChain = (
     const { chainId, switchNetwork } = useChain();
 
     // value tracking the current chain the app is set to use
-    // initializes on the default chain parameter 
+    // initializes on the default chain parameter
     const [ currentChain, setCurrentChain ] = useState(defaultChain);
     useEffect(() => console.log({currentChain}), [currentChain]);
 
@@ -47,11 +47,16 @@ export const useAppChain = (
 
     // if the chain in metamask changes, update the value in the app to match
     // gatekeeping ensures this only runs when the user changes the chain in metamask
+    // gatekeeping also ensures app will not change to an unsupported network
     useEffect(() => {
         // only take action if Moralis and app have different chains
-        if (chainId !== currentChain) {
-            chainId ?? console.log(`updating chain to: ${chainId ?? defaultChain}`);
-            setCurrentChain(chainId ?? defaultChain);
+        // also chain must be in the chains.ts array of supported chains
+        if (
+            (chainId) &&
+            (chainId !== currentChain) &&
+            (validateChainId(chainId))
+        ) {
+            setCurrentChain(chainId);
         }
     }, [chainId]);
 
