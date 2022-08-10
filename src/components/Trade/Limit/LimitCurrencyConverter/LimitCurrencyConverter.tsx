@@ -161,7 +161,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
     }, [limitRateNumber, isSellTokenBase, isTokenAPrimaryLocal, tokenABalance]);
 
     const handleLimitButtonMessage = (tokenAAmount: number) => {
-        if (limitRateNumber === 0) {
+        if (limitRateNumber === 0 || poolPriceNonDisplay === 0) {
             setLimitAllowed(false);
             setLimitButtonErrorMessage('Invalid Token Pair');
         } else if (tokenAAmount > parseFloat(tokenABalance)) {

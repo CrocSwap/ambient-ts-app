@@ -362,7 +362,7 @@ export default function Limit(props: LimitPropsIF) {
                     ) : (
                         <LimitButton
                             onClickFn={openModal}
-                            limitAllowed={limitAllowed}
+                            limitAllowed={poolPriceNonDisplay !== 0 && limitAllowed}
                             limitButtonErrorMessage={limitButtonErrorMessage}
                         />
                     )

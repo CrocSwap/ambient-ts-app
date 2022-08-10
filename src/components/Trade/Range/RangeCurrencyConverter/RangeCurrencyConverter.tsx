@@ -268,48 +268,6 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         }
     };
 
-    const handleSecondaryTokenQty = (
-        secondaryToken: string,
-        primaryTokenQty: number,
-        secondaryTokenQty: number,
-    ) => {
-        // console.log({ primaryTokenQty });
-        // console.log({ secondaryTokenQty });
-        if (secondaryToken === 'B') {
-            if (secondaryTokenQty > parseFloat(tokenBBalance)) {
-                setRangeAllowed(false);
-                setRangeButtonErrorMessage(
-                    `${tokenPair.dataTokenB.symbol} Amount Exceeds Wallet Balance`,
-                );
-            } else if (
-                isNaN(primaryTokenQty) ||
-                isNaN(secondaryTokenQty) ||
-                secondaryTokenQty < 0
-            ) {
-                setRangeAllowed(false);
-                setRangeButtonErrorMessage('Enter an Amount');
-            } else {
-                // setRangeAllowed(true);
-            }
-        } else {
-            if (secondaryTokenQty > parseFloat(tokenABalance)) {
-                setRangeAllowed(false);
-                setRangeButtonErrorMessage(
-                    `${tokenPair.dataTokenA.symbol} Amount Exceeds Wallet Balance`,
-                );
-            } else if (
-                isNaN(primaryTokenQty) ||
-                isNaN(secondaryTokenQty) ||
-                secondaryTokenQty < 0
-            ) {
-                setRangeAllowed(false);
-                setRangeButtonErrorMessage('Enter an Amount');
-            } else {
-                setRangeAllowed(true);
-            }
-        }
-    };
-
     const handleRangeButtonMessageTokenB = (tokenBAmount: number) => {
         if (poolPriceNonDisplay === 0) {
             setRangeAllowed(false);
@@ -324,6 +282,50 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
             setRangeButtonErrorMessage('Enter an Amount');
         } else {
             setRangeAllowed(true);
+        }
+    };
+
+    const handleSecondaryTokenQty = (
+        secondaryToken: string,
+        primaryTokenQty: number,
+        secondaryTokenQty: number,
+    ) => {
+        // console.log({ primaryTokenQty });
+        // console.log({ secondaryTokenQty });
+        if (secondaryToken === 'B') {
+            handleRangeButtonMessageTokenB(secondaryTokenQty);
+            // if (secondaryTokenQty > parseFloat(tokenBBalance)) {
+            //     setRangeAllowed(false);
+            //     setRangeButtonErrorMessage(
+            //         `${tokenPair.dataTokenB.symbol} Amount Exceeds Wallet Balance`,
+            //     );
+            // } else if (
+            //     isNaN(primaryTokenQty) ||
+            //     isNaN(secondaryTokenQty) ||
+            //     secondaryTokenQty < 0
+            // ) {
+            //     setRangeAllowed(false);
+            //     setRangeButtonErrorMessage('Enter an Amount');
+            // } else {
+            //     // setRangeAllowed(true);
+            // }
+        } else {
+            handleRangeButtonMessageTokenA(secondaryTokenQty);
+            // if (secondaryTokenQty > parseFloat(tokenABalance)) {
+            //     setRangeAllowed(false);
+            //     setRangeButtonErrorMessage(
+            //         `${tokenPair.dataTokenA.symbol} Amount Exceeds Wallet Balance`,
+            //     );
+            // } else if (
+            //     isNaN(primaryTokenQty) ||
+            //     isNaN(secondaryTokenQty) ||
+            //     secondaryTokenQty < 0
+            // ) {
+            //     setRangeAllowed(false);
+            //     setRangeButtonErrorMessage('Enter an Amount');
+            // } else {
+            //     setRangeAllowed(true);
+            // }
         }
     };
 

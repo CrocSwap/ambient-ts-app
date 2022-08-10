@@ -292,12 +292,14 @@ export default function Range(props: RangePropsIF) {
     // const inRangeSpan = isOutOfRange ? 0 : rangeSpanAboveCurrentPrice + rangeSpanBelowCurrentPrice;
 
     useEffect(() => {
-        if (isInvalidRange) {
+        if (poolPriceNonDisplay === 0) {
+            setRangeButtonErrorMessage('Token Pair Invalid');
+        } else if (isInvalidRange) {
             setRangeButtonErrorMessage('Please Enter a Valid Range');
         } else {
             setRangeButtonErrorMessage('Enter an Amount');
         }
-    }, [isInvalidRange]);
+    }, [isInvalidRange, poolPriceNonDisplay]);
 
     const minimumSpan =
         rangeSpanAboveCurrentPrice < rangeSpanBelowCurrentPrice

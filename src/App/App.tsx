@@ -399,7 +399,7 @@ export default function App() {
     const tokenPairStringified = useMemo(() => JSON.stringify(tokenPair), [tokenPair]);
 
     useEffect(() => {
-        setPoolPriceDisplay(0);
+        setPoolPriceDisplay(undefined);
     }, [baseTokenAddress, quoteTokenAddress]);
 
     // useEffect that runs when token pair changes
@@ -950,8 +950,8 @@ export default function App() {
 
     const [tokenABalance, setTokenABalance] = useState<string>('');
     const [tokenBBalance, setTokenBBalance] = useState<string>('');
-    const [poolPriceNonDisplay, setPoolPriceNonDisplay] = useState(0);
-    const [poolPriceDisplay, setPoolPriceDisplay] = useState(0);
+    const [poolPriceNonDisplay, setPoolPriceNonDisplay] = useState<number | undefined>(undefined);
+    const [poolPriceDisplay, setPoolPriceDisplay] = useState<number | undefined>(undefined);
 
     // useEffect to get spot price when tokens change and block updates
     useEffect(() => {
@@ -992,6 +992,8 @@ export default function App() {
                         quoteTokenDecimals,
                     );
                     setPoolPriceDisplay(displayPrice);
+                } else {
+                    setPoolPriceDisplay(0);
                 }
             })();
         }
@@ -1518,8 +1520,8 @@ export default function App() {
         isSellTokenBase: isTokenABase,
         tokenPair: tokenPair,
         isTokenABase: isTokenABase,
-        poolPriceDisplay: poolPriceDisplay,
-        poolPriceNonDisplay: poolPriceNonDisplay,
+        poolPriceDisplay: poolPriceDisplay ?? 0,
+        poolPriceNonDisplay: poolPriceNonDisplay ?? 0,
         setRecheckTokenAApproval: setRecheckTokenAApproval,
         tokenAAllowance: tokenAAllowance,
         chainId: chainId,
@@ -1540,8 +1542,8 @@ export default function App() {
         gasPriceinGwei: gasPriceinGwei,
         baseTokenAddress: baseTokenAddress,
         quoteTokenAddress: quoteTokenAddress,
-        poolPriceNonDisplay: poolPriceNonDisplay,
-        poolPriceDisplay: poolPriceDisplay.toString(),
+        poolPriceNonDisplay: poolPriceNonDisplay ?? 0,
+        poolPriceDisplay: poolPriceDisplay ? poolPriceDisplay.toString() : '0',
         tokenABalance: tokenABalance,
         tokenAAllowance: tokenAAllowance,
         setRecheckTokenAApproval: setRecheckTokenAApproval,
@@ -1591,7 +1593,7 @@ export default function App() {
         // if pool price is > 0.1 then denom token will be base (also cheaper one)
         // then reverse if didUserToggleDenom === true
         const isDenomInBase =
-            poolPriceDisplay < 1
+            poolPriceDisplay && poolPriceDisplay < 1
                 ? tradeData.didUserFlipDenom
                     ? false
                     : true

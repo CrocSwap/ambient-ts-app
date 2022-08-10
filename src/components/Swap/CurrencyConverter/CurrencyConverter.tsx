@@ -19,7 +19,7 @@ interface CurrencyConverterPropsIF {
     searchableTokens: Array<TokenIF>;
     chainId: string;
     isLiq: boolean;
-    poolPriceDisplay: number;
+    poolPriceDisplay: number | undefined;
     isTokenAPrimary: boolean;
     nativeBalance: string;
     tokenABalance: string;
@@ -159,6 +159,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
     };
 
     const handleTokenAChangeEvent = (evt?: ChangeEvent<HTMLInputElement>) => {
+        if (!poolPriceDisplay) return;
         let rawTokenBQty;
 
         if (evt) {
@@ -194,6 +195,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
     };
 
     const handleTokenAChangeClick = (value: string) => {
+        if (!poolPriceDisplay) return;
         let rawTokenBQty;
         const tokenAInputField = document.getElementById('sell-quantity');
         if (tokenAInputField) {
@@ -232,6 +234,8 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
     };
 
     const handleTokenBChangeEvent = (evt?: ChangeEvent<HTMLInputElement>) => {
+        if (!poolPriceDisplay) return;
+
         let rawTokenAQty;
 
         if (evt) {
@@ -265,6 +269,8 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
     };
 
     const handleTokenBChangeClick = (value: string) => {
+        if (!poolPriceDisplay) return;
+
         let rawTokenAQty;
         const tokenBInputField = document.getElementById('buy-quantity');
         if (tokenBInputField) {

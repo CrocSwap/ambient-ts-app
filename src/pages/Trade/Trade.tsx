@@ -17,7 +17,7 @@ interface ITradeProps {
     isWeb3Enabled: boolean;
     lastBlockNumber: number;
     isTokenABase: boolean;
-    poolPriceDisplay: number;
+    poolPriceDisplay?: number;
 
     tokenMap: Map<string, TokenIF>;
     tokenPair: {
@@ -37,7 +37,7 @@ interface ITradeProps {
 }
 
 export default function Trade(props: ITradeProps) {
-    const { tokenMap } = props;
+    const { tokenMap, poolPriceDisplay } = props;
 
     const routes = [
         {
@@ -78,7 +78,11 @@ export default function Trade(props: ITradeProps) {
 
     const denomInBase = tradeData.isDenomBase;
 
-    const poolPriceDisplay = denomInBase ? 1 / props.poolPriceDisplay : props.poolPriceDisplay;
+    const poolPriceDisplayWithDenom = poolPriceDisplay
+        ? denomInBase
+            ? 1 / poolPriceDisplay
+            : poolPriceDisplay
+        : 0;
 
     const navigationMenu = (
         <div className={styles.navigation_menu}>
@@ -116,7 +120,7 @@ export default function Trade(props: ITradeProps) {
                             className={styles.main__chart_container}
                         >
                             <TradeCharts
-                                poolPriceDisplay={poolPriceDisplay}
+                                poolPriceDisplay={poolPriceDisplayWithDenom}
                                 expandTradeTable={props.expandTradeTable}
                                 setExpandTradeTable={props.setExpandTradeTable}
                                 isTokenABase={props.isTokenABase}
