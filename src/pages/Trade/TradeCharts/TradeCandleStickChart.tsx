@@ -32,7 +32,7 @@ type chartItem = {
 
 export default function TradeCandleStickChart(props: ChartData) {
     const { chartItems } = props;
-    console.log(chartItems);
+    // console.log(chartItems);
     const data = {
         tvlData: props.tvlData,
         volumeData: props.volumeData,
@@ -475,7 +475,7 @@ export default function TradeCandleStickChart(props: ChartData) {
         render();
     }, [data]);
 
-    console.log(chartItems[1].checked);
+    // console.log(chartItems[1].checked);
     return (
         <>
             {chartItems[0].checked === true && (

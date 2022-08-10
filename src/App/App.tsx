@@ -404,6 +404,8 @@ export default function App() {
         dispatch(setAdvancedLowTick(0));
         dispatch(setAdvancedHighTick(0));
 
+        setPoolPriceDisplay(0);
+
         if (tokenPair.dataTokenA.address && tokenPair.dataTokenB.address) {
             const sortedTokens = sortBaseQuoteTokens(
                 tokenPair.dataTokenA.address,
