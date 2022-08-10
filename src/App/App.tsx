@@ -398,13 +398,15 @@ export default function App() {
 
     const tokenPairStringified = useMemo(() => JSON.stringify(tokenPair), [tokenPair]);
 
+    useEffect(() => {
+        setPoolPriceDisplay(0);
+    }, [baseTokenAddress, quoteTokenAddress]);
+
     // useEffect that runs when token pair changes
     useEffect(() => {
         // reset rtk values for user specified range in ticks
         dispatch(setAdvancedLowTick(0));
         dispatch(setAdvancedHighTick(0));
-
-        setPoolPriceDisplay(0);
 
         if (tokenPair.dataTokenA.address && tokenPair.dataTokenB.address) {
             const sortedTokens = sortBaseQuoteTokens(
