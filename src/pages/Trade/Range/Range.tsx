@@ -156,25 +156,40 @@ export default function Range(props: RangePropsIF) {
 
     const poolPriceDisplayNum = parseFloat(poolPriceDisplay);
 
-    const poolPriceTruncatedInQuote =
-        poolPriceDisplayNum < 2
-            ? poolPriceDisplayNum > 0.1
-                ? truncateDecimals(poolPriceDisplayNum, 4)
-                : truncateDecimals(poolPriceDisplayNum, 6)
-            : truncateDecimals(poolPriceDisplayNum, 2);
+    const displayPriceWithDenom = denominationsInBase
+        ? 1 / poolPriceDisplayNum
+        : poolPriceDisplayNum;
 
-    const invertedPoolPrice = 1 / poolPriceDisplayNum;
+    const displayPriceString =
+        displayPriceWithDenom < 2
+            ? displayPriceWithDenom.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 6,
+              })
+            : displayPriceWithDenom.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              });
 
-    const poolPriceTruncatedInBase =
-        invertedPoolPrice < 2
-            ? invertedPoolPrice > 0.1
-                ? truncateDecimals(invertedPoolPrice, 4)
-                : truncateDecimals(invertedPoolPrice, 6)
-            : truncateDecimals(invertedPoolPrice, 2);
+    // const poolPriceTruncatedInQuote =
+    //     poolPriceDisplayNum < 2
+    //         ? poolPriceDisplayNum > 0.1
+    //             ? truncateDecimals(poolPriceDisplayNum, 4)
+    //             : truncateDecimals(poolPriceDisplayNum, 6)
+    //         : truncateDecimals(poolPriceDisplayNum, 2);
 
-    const poolPriceTruncated = denominationsInBase
-        ? poolPriceTruncatedInBase
-        : poolPriceTruncatedInQuote;
+    // const invertedPoolPrice = 1 / poolPriceDisplayNum;
+
+    // const poolPriceTruncatedInBase =
+    //     invertedPoolPrice < 2
+    //         ? invertedPoolPrice > 0.1
+    //             ? truncateDecimals(invertedPoolPrice, 4)
+    //             : truncateDecimals(invertedPoolPrice, 6)
+    //         : truncateDecimals(invertedPoolPrice, 2);
+
+    // const poolPriceTruncated = denominationsInBase
+    //     ? poolPriceTruncatedInBase
+    //     : poolPriceTruncatedInQuote;
 
     const tokenA = tokenPair.dataTokenA;
     const tokenB = tokenPair.dataTokenB;
@@ -714,9 +729,7 @@ export default function Range(props: RangePropsIF) {
     // props for <RangePriceInfo/> React element
     const rangePriceInfoProps = {
         tokenPair: tokenPair,
-        spotPriceDisplay: poolPriceTruncated.toString(),
-        poolPriceTruncatedInBase: poolPriceTruncatedInBase.toString(),
-        poolPriceTruncatedInQuote: poolPriceTruncatedInQuote.toString(),
+        spotPriceDisplay: displayPriceString,
         maxPriceDisplay: maxPriceDisplay,
         minPriceDisplay: minPriceDisplay,
         apyPercentage: apyPercentage,
@@ -787,7 +800,7 @@ export default function Range(props: RangePropsIF) {
     // props for <ConfirmRangeModal/> React element
     const rangeModalProps = {
         tokenPair: tokenPair,
-        spotPriceDisplay: poolPriceTruncated.toString(),
+        spotPriceDisplay: displayPriceString,
         denominationsInBase: denominationsInBase,
         isTokenABase: isTokenABase,
         isAmbient: isAmbient,
@@ -804,8 +817,6 @@ export default function Range(props: RangePropsIF) {
         pinnedMinPriceDisplayTruncatedInQuote: pinnedMinPriceDisplayTruncatedInQuote,
         pinnedMaxPriceDisplayTruncatedInBase: pinnedMaxPriceDisplayTruncatedInBase,
         pinnedMaxPriceDisplayTruncatedInQuote: pinnedMaxPriceDisplayTruncatedInQuote,
-        poolPriceTruncatedInBase: poolPriceTruncatedInBase.toString(),
-        poolPriceTruncatedInQuote: poolPriceTruncatedInQuote.toString(),
     };
 
     // props for <RangeCurrencyConverter/> React element
@@ -851,11 +862,11 @@ export default function Range(props: RangePropsIF) {
     const rangeExtraInfoProps = {
         tokenPair: tokenPair,
         gasPriceinGwei: gasPriceinGwei,
-        poolPriceDisplay: Number(poolPriceDisplay),
+        poolPriceDisplay: displayPriceString,
         slippageTolerance: slippageTolerancePercentage,
         liquidityProviderFee: 0.3,
         quoteTokenIsBuy: true,
-        displayForBase: tradeData.isDenomBase,
+        isDenomBase: tradeData.isDenomBase,
         isTokenABase: isTokenABase,
         daysInRangeEstimation: daysInRangeEstimation,
     };
@@ -909,7 +920,7 @@ export default function Range(props: RangePropsIF) {
 
             <AdvancedPriceInfo
                 tokenPair={tokenPair}
-                poolPriceDisplay={poolPriceTruncated.toString()}
+                poolPriceDisplay={displayPriceString}
                 isDenomBase={denominationsInBase}
                 isTokenABase={isTokenABase}
                 minimumSpan={minimumSpan}

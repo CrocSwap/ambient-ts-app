@@ -14,14 +14,14 @@ interface SelectedRangeProps {
     pinnedMinPriceDisplayTruncatedInQuote: string;
     pinnedMaxPriceDisplayTruncatedInBase: string;
     pinnedMaxPriceDisplayTruncatedInQuote: string;
-    poolPriceTruncatedInBase: string;
-    poolPriceTruncatedInQuote: string;
+    // poolPriceTruncatedInBase: string;
+    // poolPriceTruncatedInQuote: string;
 }
 export default function SelectedRange(props: SelectedRangeProps) {
     const {
         // minPriceDisplay,
         // maxPriceDisplay,
-        // spotPriceDisplay,
+        spotPriceDisplay,
         denominationsInBase,
         isTokenABase,
         tokenPair,
@@ -30,11 +30,7 @@ export default function SelectedRange(props: SelectedRangeProps) {
         pinnedMinPriceDisplayTruncatedInQuote,
         pinnedMaxPriceDisplayTruncatedInBase,
         pinnedMaxPriceDisplayTruncatedInQuote,
-        poolPriceTruncatedInBase,
-        poolPriceTruncatedInQuote,
     } = props;
-
-    // const reverseDisplayDefault = denominationsInBase;
 
     const reverseDisplayDefault =
         (isTokenABase && denominationsInBase) || (!isTokenABase && !denominationsInBase);
@@ -135,7 +131,7 @@ export default function SelectedRange(props: SelectedRangeProps) {
             <div className={styles.currentPrice_container}>
                 <span className={styles.currentPrice_title}>Current price</span>
                 <span className={styles.currentPrice_amount}>
-                    {denomInBase ? poolPriceTruncatedInBase : poolPriceTruncatedInQuote}
+                    {spotPriceDisplay}
                     {/* {denomInBase ? 1 / parseFloat(spotPriceDisplay) : spotPriceDisplay} */}
                 </span>
                 <span className={styles.currentPrice_info}>
