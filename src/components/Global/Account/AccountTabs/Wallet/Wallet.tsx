@@ -29,6 +29,7 @@ export default function Wallet(props: WalletPropsIF) {
                     const newTokens = await fetchTokenBalances(
                         resolvedAddress,
                         chainId,
+                        connectedAccountActive,
                         1, // arbitrary number
                     );
                     if (newTokens) setResolvedAddressTokens(newTokens);

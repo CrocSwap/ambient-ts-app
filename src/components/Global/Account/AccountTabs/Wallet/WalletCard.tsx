@@ -55,13 +55,14 @@ export default function WalletCard(props: WalletPropsIF) {
     const tokenUsdPrice = tokenPrice?.usdPrice ?? 0;
 
     if (!tokenFromMap) {
-        return <div className={styles.wallet_row}></div>;
+        return null;
     }
 
     const tokenBalance =
-        token && token.symbol === 'ETH'
-            ? token.balance
-            : token && token.balance && token?.decimals
+        // token && token.symbol === 'ETH'
+        //     ? token.balance
+        //     :
+        token && token.balance && token?.decimals
             ? toDisplayQty(token.balance, token.decimals)
             : '0';
 
