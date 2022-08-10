@@ -50,7 +50,8 @@ export const ambientChains = [
     'goerli'
 ];
 
-export function validateChainId() {
-    const supportedChainIds = ambientChains.flatMap((chain: string) => allMoralisChainIds.get(chain));
-    console.log({supportedChainIds});
+export function validateChainId(chainIdToValidate: string) {
+    return ambientChains
+        .flatMap((chain: string) => allMoralisChainIds.get(chain))
+        .includes(chainIdToValidate);
 }
