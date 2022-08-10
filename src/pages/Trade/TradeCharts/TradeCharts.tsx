@@ -453,13 +453,13 @@ export default function TradeCharts(props: TradeChartsProps) {
     const expandGraphStyle = props.expandTradeTable ? styles.hide_graph : '';
 
     return (
-        <>
+        <div style={{ width: '100%', height: '100%' }} ref={canvasRef}>
             <div className={`${styles.graph_style} ${expandGraphStyle} `}>
                 {graphSettingsContent}
                 {tokenInfo}
                 {timeFrameContent}
             </div>
-            <div style={{ width: '100%', height: '100%' }} ref={canvasRef}>
+            <div style={{ width: '100%', height: '100%' }}>
                 <TradeCandleStickChart
                     tvlData={formattedTvlData}
                     volumeData={formattedVolumeData}
@@ -468,7 +468,7 @@ export default function TradeCharts(props: TradeChartsProps) {
                     chartItems={chartItems}
                 />
             </div>
-        </>
+        </div>
     );
 }
 

@@ -5,6 +5,7 @@ import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { useMoralis } from 'react-moralis';
 import RangeCardHeader from './RangeCardHeader';
 // import { Dispatch, SetStateAction } from 'react';
+import { ethers } from 'ethers';
 
 interface RangesProps {
     isShowAllEnabled: boolean;
@@ -12,12 +13,14 @@ interface RangesProps {
     notOnTradeRoute?: boolean;
     graphData: graphData;
     lastBlockNumber: number;
+    provider: ethers.providers.Provider | undefined;
 
     expandTradeTable: boolean;
     // setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
 }
 export default function Ranges(props: RangesProps) {
-    const { portfolio, notOnTradeRoute, isShowAllEnabled, graphData, expandTradeTable } = props;
+    const { provider, portfolio, notOnTradeRoute, isShowAllEnabled, graphData, expandTradeTable } =
+        props;
 
     const { account, isAuthenticated } = useMoralis();
 
@@ -34,6 +37,7 @@ export default function Ranges(props: RangesProps) {
     const RangesDisplay = isShowAllEnabled
         ? poolPositions.map((position, idx) => (
               <RangeCard
+                  provider={provider}
                   key={idx}
                   portfolio={portfolio}
                   notOnTradeRoute={notOnTradeRoute}
@@ -50,6 +54,7 @@ export default function Ranges(props: RangesProps) {
         : //   .reverse()
           userPositions.map((position, idx) => (
               <RangeCard
+                  provider={provider}
                   key={idx}
                   portfolio={portfolio}
                   notOnTradeRoute={notOnTradeRoute}

@@ -171,24 +171,24 @@ export default function Position(props: PositionProps) {
         chainId: props.chainId,
     };
 
-    switch (currentModal) {
-        case 'remove':
-            modalContent = <RemoveRange {...removeRangeProps} />;
-            modalTitle = 'Remove Position';
-            break;
-        case 'edit':
-            modalContent = editContent;
-            modalTitle = 'Edit Position';
-            break;
-        case 'details':
-            modalContent = <RangeDetails {...removeRangeProps} />;
-            modalTitle = <RangeDetailsHeader />;
-            break;
-        case 'harvest':
-            modalContent = harvestContent;
-            modalTitle = 'Harvest Position';
-            break;
-    }
+    // switch (currentModal) {
+    //     case 'remove':
+    //         modalContent = <RemoveRange {...removeRangeProps} />;
+    //         modalTitle = 'Remove Position';
+    //         break;
+    //     case 'edit':
+    //         modalContent = editContent;
+    //         modalTitle = 'Edit Position';
+    //         break;
+    //     case 'details':
+    //         modalContent = <RangeDetails {...removeRangeProps} />;
+    //         modalTitle = <RangeDetailsHeader />;
+    //         break;
+    //     case 'harvest':
+    //         modalContent = harvestContent;
+    //         modalTitle = 'Harvest Position';
+    //         break;
+    // }
     const mainModal = (
         <Modal onClose={closeModal} title={modalTitle}>
             {modalContent}

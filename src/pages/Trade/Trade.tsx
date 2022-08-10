@@ -10,8 +10,10 @@ import { TokenIF } from '../../utils/interfaces/TokenIF';
 import TradeTabs2 from '../../components/Trade/TradeTabs/TradeTabs2';
 import { motion, AnimateSharedLayout } from 'framer-motion';
 import TradeCharts from './TradeCharts/TradeCharts';
+import { ethers } from 'ethers';
 
 interface ITradeProps {
+    provider: ethers.providers.Provider | undefined;
     account: string;
     isAuthenticated: boolean;
     isWeb3Enabled: boolean;
@@ -37,7 +39,7 @@ interface ITradeProps {
 }
 
 export default function Trade(props: ITradeProps) {
-    const { tokenMap, poolPriceDisplay } = props;
+    const { tokenMap, poolPriceDisplay, provider } = props;
 
     const routes = [
         {
@@ -141,6 +143,7 @@ export default function Trade(props: ITradeProps) {
                         }}
                     >
                         <TradeTabs2
+                            provider={provider}
                             account={props.account}
                             isAuthenticated={props.isAuthenticated}
                             isWeb3Enabled={props.isWeb3Enabled}

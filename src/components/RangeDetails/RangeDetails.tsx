@@ -3,10 +3,12 @@ import RemoveRangeHeader from '../RemoveRange/RemoveRangeHeader/RemoveRangeHeade
 import PriceInfo from './PriceInfo/PriceInfo';
 import styles from './RangeDetails.module.css';
 import TokenInfo from './TokenInfo/TokenInfo';
+import { ethers } from 'ethers';
 import { useRef } from 'react';
 import { BsDownload } from 'react-icons/bs';
 import printDomToImage from '../../utils/functions/printDomToImage';
 interface IRangeDetailsProps {
+    provider: ethers.providers.Provider | undefined;
     isPositionInRange: boolean;
     isAmbient: boolean;
     baseTokenSymbol: string;
@@ -46,6 +48,7 @@ export default function RangeDetails(props: IRangeDetailsProps) {
                 />
                 <div className={styles.main_content}>
                     <TokenInfo
+                        provider={props.provider}
                         baseTokenAddress={props.baseTokenAddress}
                         baseTokenDecimals={props.baseTokenDecimals}
                         quoteTokenAddress={props.quoteTokenAddress}
