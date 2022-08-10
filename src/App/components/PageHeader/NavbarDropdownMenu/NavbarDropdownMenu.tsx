@@ -1,11 +1,5 @@
 // START: Import React and Dongles
-import {
-    Dispatch,
-    SetStateAction,
-    ReactNode,
-    useState,
-    useRef
-} from 'react';
+import { ReactNode, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { CSSTransition } from 'react-transition-group';
@@ -40,7 +34,6 @@ interface NavbarDropdownMenuPropsIF {
     openModal: () => void;
     closeMenu?: () => void;
     chainId: string;
-    setFallbackChainId: Dispatch<SetStateAction<string>>;
 }
 
 export default function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {

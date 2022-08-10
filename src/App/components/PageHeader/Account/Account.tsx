@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { Dispatch, SetStateAction, useState } from 'react';
+import { useState } from 'react';
 import { FiMoreHorizontal } from 'react-icons/fi';
 
 // START: Import Local Files
@@ -19,7 +19,6 @@ interface AccountPropsIF {
     openModal: () => void;
     ensName: string;
     chainId: string;
-    setFallbackChainId: Dispatch<SetStateAction<string>>;
 }
 
 export default function Account(props: AccountPropsIF) {
@@ -30,10 +29,9 @@ export default function Account(props: AccountPropsIF) {
         ensName,
         openModal,
         chainId,
-        setFallbackChainId,
     } = props;
 
-    const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
+    const [openSnackbar, setOpenSnackbar] = useState(false);
     const [value, copy] = useCopyToClipboard();
 
     function handleCopyAddress() {
@@ -67,7 +65,6 @@ export default function Account(props: AccountPropsIF) {
                     clickLogout={clickLogout}
                     openModal={openModal}
                     chainId={chainId}
-                    setFallbackChainId={setFallbackChainId}
                 />
             </NavItem>
             {snackbarContent}

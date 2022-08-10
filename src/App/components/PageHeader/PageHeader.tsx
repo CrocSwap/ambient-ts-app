@@ -36,7 +36,6 @@ interface HeaderPropsIF {
     ensName: string;
     shouldDisplayAccountTab: boolean;
     chainId: string;
-    setFallbackChainId: Dispatch<SetStateAction<string>>;
     isChainValid: boolean;
     switchChain: Dispatch<SetStateAction<string>>;
 }
@@ -49,7 +48,6 @@ export default function PageHeader(props: HeaderPropsIF) {
         metamaskLocked,
         shouldDisplayAccountTab,
         chainId,
-        setFallbackChainId,
         isChainValid,
         switchChain
     } = props;
@@ -169,7 +167,6 @@ export default function PageHeader(props: HeaderPropsIF) {
         clickLogout: clickLogout,
         openModal: openModal,
         chainId: chainId,
-        setFallbackChainId: setFallbackChainId,
     };
 
     // End of Page Header Functions
