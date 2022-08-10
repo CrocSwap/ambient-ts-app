@@ -1630,9 +1630,13 @@ export default function App() {
             ? 'hide_sidebar'
             : sidebarDislayStyle;
 
+    const containerStyle = currentLocation.includes('trade')
+        ? 'content-container-trade'
+        : 'content-container';
+
     return (
         <>
-            <div className='content-container'>
+            <div className={containerStyle}>
                 {currentLocation !== '/404' && <PageHeader {...headerProps} />}
                 <main className={`${showSidebarOrNullStyle} ${swapBodyStyle}`}>
                     {sidebarRender}

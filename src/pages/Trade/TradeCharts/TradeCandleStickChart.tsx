@@ -1,9 +1,8 @@
-import { StylesProvider } from '@material-ui/core';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { DetailedHTMLProps, HTMLAttributes, useEffect, useState } from 'react';
 import Chart from '../../Chart/Chart';
-import styles from './TradeCandleStickChart.module.css';
+import './TradeCandleStickChart.css';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -486,21 +485,21 @@ export default function TradeCandleStickChart(props: ChartData) {
                 <>
                     <hr />
                     <label>Fee Rate</label>
-                    <div style={{ height: '15%', width: '100%' }} className='chart-fee'></div>
+                    <div style={{ height: '15%', width: '80%' }} className='chart-fee'></div>
                 </>
             )}
             {chartItems[2].checked === true && (
                 <>
                     <hr />
                     <label>Tvl</label>
-                    <div style={{ height: '15%', width: '100%' }} className='chart-tvl'></div>
+                    <div style={{ height: '15%', width: '80%' }} className='chart-tvl'></div>
                 </>
             )}
             {chartItems[3].checked === true && (
                 <>
                     <hr />
                     <label>Volume</label>
-                    <div style={{ height: '15%', width: '100%' }} id='chart-volume'></div>
+                    <div style={{ height: '15%', width: '80%' }} id='chart-volume'></div>
                 </>
             )}
         </>
