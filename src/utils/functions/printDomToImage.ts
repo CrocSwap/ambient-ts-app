@@ -1,4 +1,5 @@
 import domtoimage from 'dom-to-image';
+const photoName = 'ambient-chart' + new Date().toLocaleString().replace(/\s/g, '');
 
 const saveAs = (uri: string, filename: string) => {
     const link = document.createElement('a');
@@ -26,7 +27,7 @@ const printDomToImage = (node: HTMLElement) => {
         .then(function (dataUrl: any) {
             const img = new Image();
             img.src = dataUrl;
-            saveAs(dataUrl, 'slika');
+            saveAs(dataUrl, photoName);
         })
         .catch(function (error: any) {
             console.error('oops, something went wrong!', error);
