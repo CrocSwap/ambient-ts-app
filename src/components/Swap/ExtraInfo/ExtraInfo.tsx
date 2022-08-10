@@ -6,7 +6,7 @@ import { RiArrowDownSLine } from 'react-icons/ri';
 // START: Import Local Files
 import styles from './ExtraInfo.module.css';
 import truncateDecimals from '../../../utils/data/truncateDecimals';
-import makePriceDisplay from './makePriceDisplay';
+// import makePriceDisplay from './makePriceDisplay';
 import { TokenPairIF } from '../../../utils/interfaces/exports';
 import TooltipComponent from '../../Global/TooltipComponent/TooltipComponent';
 
@@ -32,7 +32,7 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
         liquidityProviderFee,
         // quoteTokenIsBuy,
         gasPriceinGwei,
-        didUserFlipDenom,
+        // didUserFlipDenom,
         isTokenABase,
         isDenomBase,
     } = props;
@@ -59,31 +59,41 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
         }
     }
 
-    const displayPriceString = isDenomBase
-        ? truncateDecimals(1 / poolPriceDisplay, 4).toString()
-        : truncateDecimals(poolPriceDisplay, 4).toString();
+    const displayPriceWithDenom = isDenomBase ? 1 / poolPriceDisplay : poolPriceDisplay;
+
+    const displayPriceString =
+        displayPriceWithDenom < 2
+            ? displayPriceWithDenom.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 6,
+              })
+            : displayPriceWithDenom.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              });
 
     const priceLimitAfterSlippageAndFee = reverseSlippage
-        ? truncateDecimals(
-              parseFloat(displayPriceString) *
-                  (1 + slippageTolerance / 100) *
-                  (1 + liquidityProviderFee / 100),
-              4,
-          )
-        : truncateDecimals(
-              parseFloat(displayPriceString) *
-                  (1 - slippageTolerance / 100) *
-                  (1 - liquidityProviderFee / 100),
-              4,
-          );
+        ? displayPriceWithDenom * (1 + slippageTolerance / 100) * (1 + liquidityProviderFee / 100)
+        : displayPriceWithDenom * (1 - slippageTolerance / 100) * (1 - liquidityProviderFee / 100);
 
-    const priceDisplay = makePriceDisplay(
-        tokenPair.dataTokenA,
-        tokenPair.dataTokenB,
-        isTokenABase,
-        poolPriceDisplay,
-        didUserFlipDenom,
-    );
+    const displayLimitPriceString =
+        priceLimitAfterSlippageAndFee < 2
+            ? priceLimitAfterSlippageAndFee.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 6,
+              })
+            : priceLimitAfterSlippageAndFee.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              });
+
+    // const priceDisplay = makePriceDisplay(
+    //     tokenPair.dataTokenA,
+    //     tokenPair.dataTokenB,
+    //     isTokenABase,
+    //     poolPriceDisplay,
+    //     didUserFlipDenom,
+    // );
 
     const extraInfoData = [
         {
@@ -97,8 +107,8 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
             title: 'Price Limit',
             tooltipTitle: 'Price Limit After Slippage and Fees',
             data: reverseDisplay
-                ? `${priceLimitAfterSlippageAndFee} ${tokenPair.dataTokenA.symbol} per ${tokenPair.dataTokenB.symbol}`
-                : `${priceLimitAfterSlippageAndFee} ${tokenPair.dataTokenB.symbol} per ${tokenPair.dataTokenA.symbol}`,
+                ? `${displayLimitPriceString} ${tokenPair.dataTokenA.symbol} per ${tokenPair.dataTokenB.symbol}`
+                : `${displayLimitPriceString} ${tokenPair.dataTokenB.symbol} per ${tokenPair.dataTokenA.symbol}`,
         },
         {
             title: 'Slippage Tolerance',
@@ -137,7 +147,9 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
                     <FaGasPump size={15} /> {truncatedGasInGwei} gwei
                 </div>
                 <div className={styles.token_amount}>
-                    {priceDisplay}
+                    {reverseDisplay
+                        ? `1 ${tokenPair.dataTokenB.symbol} ≈ ${displayPriceString} ${tokenPair.dataTokenA.symbol}`
+                        : `1 ${tokenPair.dataTokenA.symbol} ≈ ${displayPriceString} ${tokenPair.dataTokenB.symbol}`}
                     <RiArrowDownSLine size={27} />{' '}
                 </div>
             </div>

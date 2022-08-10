@@ -261,7 +261,7 @@ export default function Chart(props: ChartData) {
     }, []);
 
     return (
-        <div ref={d3Container} className='main_layout' data-testid={'chart'}>
+        <div ref={d3Container} className='main_layout_chart' data-testid={'chart'}>
             <d3fc-group
                 id='group'
                 className='hellooo'

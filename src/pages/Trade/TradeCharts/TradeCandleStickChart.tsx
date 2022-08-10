@@ -4,7 +4,7 @@ import { DetailedHTMLProps, HTMLAttributes, useEffect, useState } from 'react';
 import { formatDollarAmountAxis } from '../../../utils/numbers';
 import { CandleData, CandlesByPoolAndDuration } from '../../../utils/state/graphDataSlice';
 import Chart from '../../Chart/Chart';
-import './TradeCandleStickChart.module.css';
+import './TradeCandleStickChart.css';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -24,9 +24,18 @@ interface ChartData {
     feeData: any[];
     priceData: CandlesByPoolAndDuration | undefined;
     changeState: (isOpen: boolean | undefined, candleData: CandleData | undefined) => void;
+    chartItems: chartItem[];
 }
 
+type chartItem = {
+    slug: string;
+    name: string;
+    checked: boolean;
+};
+
 export default function TradeCandleStickChart(props: ChartData) {
+    const { chartItems } = props;
+    console.log(chartItems);
     const data = {
         tvlData: props.tvlData,
         volumeData: props.volumeData,
@@ -232,22 +241,37 @@ export default function TradeCandleStickChart(props: ChartData) {
         render();
     }, [data]);
 
+    console.log(chartItems[1].checked);
     return (
         <>
-            <Chart
-                priceData={data.priceData}
-                liquidityData={liquidityData}
-                changeState={props.changeState}
-            />
-            <hr />
-            <label>Fee Rate</label>
-            <div style={{ height: '15%', width: '100%' }} className='chart-fee'></div>
-            <hr />
-            <label>Tvl</label>
-            <div style={{ height: '15%', width: '100%' }} className='chart-tvl'></div>
-            <hr />
-            <label>Volume</label>
-            <div style={{ height: '15%', width: '100%' }} id='chart-volume'></div>
+            {chartItems[0].checked === true && (
+                <Chart
+                    priceData={data.priceData}
+                    liquidityData={liquidityData}
+                    changeState={props.changeState}
+                />
+            )}
+            {chartItems[1].checked === true && (
+                <>
+                    <hr />
+                    <label>Fee Rate</label>
+                    <div style={{ height: '15%', width: '100%' }} className='chart-fee'></div>
+                </>
+            )}
+            {chartItems[2].checked === true && (
+                <>
+                    <hr />
+                    <label>Tvl</label>
+                    <div style={{ height: '15%', width: '100%' }} className='chart-tvl'></div>
+                </>
+            )}
+            {chartItems[3].checked === true && (
+                <>
+                    <hr />
+                    <label>Volume</label>
+                    <div style={{ height: '15%', width: '100%' }} id='chart-volume'></div>
+                </>
+            )}
         </>
     );
 }
