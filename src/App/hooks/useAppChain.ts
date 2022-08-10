@@ -17,21 +17,6 @@ export const useAppChain = (
     boolean,
     Dispatch<SetStateAction<string>>
 ] => {
-
-/*
-    PSEUDOCODE!!!
-
-    ** User Changes Network in Ambient App **
-        Is the chain supported?
-            Yes => Switch chains in app and Metamask
-            No => This is not possible
-
-    ** User Changes Network in Metamask **
-        Is the chain supported?
-            Yes => Switch chains in app and Metamask
-            No => Leave app on the current chain
-*/
-
     // chain from connected wallet via Moralis
     const { chainId, switchNetwork } = useChain();
 
@@ -39,6 +24,10 @@ export const useAppChain = (
     // initializes on the default chain parameter
     const [ currentChain, setCurrentChain ] = useState(defaultChain);
     useEffect(() => console.log({currentChain}), [currentChain]);
+
+    useEffect(() => {
+        if (chainId && validateChainId(chainId)) switchNetwork(defaultChain);
+    }, []);
 
     // change the network in Moralis after user changes in the app
     useEffect(() => {
@@ -53,10 +42,9 @@ export const useAppChain = (
         // also chain must be in the chains.ts array of supported chains
         if (
             (chainId) &&
-            (chainId !== currentChain) &&
-            (validateChainId(chainId))
+            (chainId !== currentChain)
         ) {
-            setCurrentChain(chainId);
+            setCurrentChain(validateChainId(chainId) ? chainId : defaultChain);
         }
     }, [chainId]);
 
