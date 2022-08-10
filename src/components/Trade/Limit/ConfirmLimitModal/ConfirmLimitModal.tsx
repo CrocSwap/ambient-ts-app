@@ -23,7 +23,7 @@ interface ConfirmLimitModalProps {
 
 export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
     const {
-        onClose,
+        // onClose,
         tokenPair,
         initiateLimitOrderMethod,
         limitRate,
@@ -129,13 +129,13 @@ export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
         />
     );
 
-    function onConfirmLimitClose() {
-        setConfirmDetails(true);
+    // function onConfirmLimitClose() {
+    //     setConfirmDetails(true);
 
-        onClose();
-    }
+    //     onClose();
+    // }
 
-    const closeButton = <Button title='Close' action={onConfirmLimitClose} />;
+    // const closeButton = <Button title='Close' action={onConfirmLimitClose} />;
 
     const modal = (
         <div className={styles.modal_container}>
@@ -143,7 +143,7 @@ export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
                 {confirmDetails ? fullTxDetails : confirmationDisplay}
             </section>
             <footer className={styles.modal_footer}>
-                {confirmDetails ? confirmLimitButton : closeButton}
+                {confirmDetails ? confirmLimitButton : null}
             </footer>
         </div>
     );
