@@ -8,7 +8,7 @@ import styles from './LimitExtraInfo.module.css';
 import { TokenPairIF } from '../../../../utils/interfaces/exports';
 import TooltipComponent from '../../../Global/TooltipComponent/TooltipComponent';
 import truncateDecimals from '../../../../utils/data/truncateDecimals';
-import makePriceDisplay from './makePriceDisplay';
+// import makePriceDisplay from './makePriceDisplay';
 
 // interface for component props
 interface LimitExtraInfoPropsIF {
@@ -33,15 +33,12 @@ export default function LimitExtraInfo(props: LimitExtraInfoPropsIF) {
         poolPriceDisplay,
         slippageTolerance,
         liquidityProviderFee,
-        didUserFlipDenom,
+        // didUserFlipDenom,
         isTokenABase,
         isDenomBase,
-        limitRate,
+        // limitRate,
     } = props;
     const [showExtraDetails, setShowExtraDetails] = useState<boolean>(false);
-
-    // TEMP DATA TO RENDER UI
-    // const spotPriceDisplayQuoteForBase = truncateDecimals(1 / poolPriceDisplay, 4);
 
     const reverseDisplay = (isTokenABase && !isDenomBase) || (!isTokenABase && isDenomBase);
 
@@ -61,25 +58,52 @@ export default function LimitExtraInfo(props: LimitExtraInfoPropsIF) {
         }
     }
 
-    const limitRateString = truncateDecimals(parseFloat(limitRate), 2);
+    const displayPriceWithDenom = isDenomBase ? 1 / poolPriceDisplay : poolPriceDisplay;
 
-    const displayPriceString = isDenomBase
-        ? truncateDecimals(1 / poolPriceDisplay, 2)
-        : truncateDecimals(poolPriceDisplay, 2);
+    const displayPriceString =
+        displayPriceWithDenom < 2
+            ? displayPriceWithDenom.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 6,
+              })
+            : displayPriceWithDenom.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              });
+
+    // const limitRateString = truncateDecimals(parseFloat(limitRate), 2);
+
+    // const displayPriceString = isDenomBase
+    //     ? truncateDecimals(1 / poolPriceDisplay, 2)
+    //     : truncateDecimals(poolPriceDisplay, 2);
 
     const priceLimitAfterSlippageAndFee = reverseSlippage
-        ? truncateDecimals(
-              parseFloat(limitRateString) *
-                  (1 + slippageTolerance / 100) *
-                  (1 + liquidityProviderFee / 100),
-              4,
-          )
-        : truncateDecimals(
-              parseFloat(limitRateString) *
-                  (1 - slippageTolerance / 100) *
-                  (1 - liquidityProviderFee / 100),
-              4,
-          );
+        ? displayPriceWithDenom * (1 + slippageTolerance / 100) * (1 + liquidityProviderFee / 100)
+        : displayPriceWithDenom * (1 - slippageTolerance / 100) * (1 - liquidityProviderFee / 100);
+
+    const displayLimitPriceString =
+        priceLimitAfterSlippageAndFee < 2
+            ? priceLimitAfterSlippageAndFee.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 6,
+              })
+            : priceLimitAfterSlippageAndFee.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              });
+    // const priceLimitAfterSlippageAndFee = reverseSlippage
+    //     ? truncateDecimals(
+    //           parseFloat(limitRateString) *
+    //               (1 + slippageTolerance / 100) *
+    //               (1 + liquidityProviderFee / 100),
+    //           4,
+    //       )
+    //     : truncateDecimals(
+    //           parseFloat(limitRateString) *
+    //               (1 - slippageTolerance / 100) *
+    //               (1 - liquidityProviderFee / 100),
+    //           4,
+    //       );
 
     const truncatedGasInGwei = truncateDecimals(parseFloat(gasPriceinGwei), 2);
 
@@ -102,8 +126,8 @@ export default function LimitExtraInfo(props: LimitExtraInfoPropsIF) {
             title: 'Limit Price',
             tooltipTitle: 'Price Limit After Maximum Slippage',
             data: reverseDisplay
-                ? `${priceLimitAfterSlippageAndFee} ${tokenPair.dataTokenA.symbol} per ${tokenPair.dataTokenB.symbol}`
-                : `${priceLimitAfterSlippageAndFee} ${tokenPair.dataTokenB.symbol} per ${tokenPair.dataTokenA.symbol}`,
+                ? `${displayLimitPriceString} ${tokenPair.dataTokenA.symbol} per ${tokenPair.dataTokenB.symbol}`
+                : `${displayLimitPriceString} ${tokenPair.dataTokenB.symbol} per ${tokenPair.dataTokenA.symbol}`,
         },
         {
             title: 'Slippage Tolerance',
@@ -133,13 +157,13 @@ export default function LimitExtraInfo(props: LimitExtraInfoPropsIF) {
 
     const extraDetailsOrNull = showExtraDetails ? limitExtraInfoDetails : null;
 
-    const priceDisplay = makePriceDisplay(
-        tokenPair.dataTokenA,
-        tokenPair.dataTokenB,
-        isTokenABase,
-        poolPriceDisplay,
-        didUserFlipDenom,
-    );
+    // const priceDisplay = makePriceDisplay(
+    //     tokenPair.dataTokenA,
+    //     tokenPair.dataTokenB,
+    //     isTokenABase,
+    //     poolPriceDisplay,
+    //     didUserFlipDenom,
+    // );
 
     return (
         <>
@@ -151,7 +175,9 @@ export default function LimitExtraInfo(props: LimitExtraInfoPropsIF) {
                     <FaGasPump size={15} /> {truncatedGasInGwei} gwei
                 </div>
                 <div className={styles.token_amount}>
-                    {priceDisplay}
+                    {reverseDisplay
+                        ? `1 ${tokenPair.dataTokenB.symbol} ≈ ${displayPriceString} ${tokenPair.dataTokenA.symbol}`
+                        : `1 ${tokenPair.dataTokenA.symbol} ≈ ${displayPriceString} ${tokenPair.dataTokenB.symbol}`}
                     <RiArrowDownSLine size={27} />{' '}
                 </div>
             </div>

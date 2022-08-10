@@ -176,15 +176,16 @@ export default function Limit(props: LimitPropsIF) {
 
                 // console.log({ roundedTickInsideCurrentPrice });
                 const insideTickNonDisplayPrice = tickToPrice(roundedTickInsideCurrentPrice);
-                const insideTickDisplayPrice =
-                    1 / toDisplayPrice(insideTickNonDisplayPrice, baseDecimals, quoteDecimals);
+                const insideTickDisplay = (
+                    1 / toDisplayPrice(insideTickNonDisplayPrice, baseDecimals, quoteDecimals)
+                ).toPrecision(6);
 
-                setInsideTickDisplayPrice(insideTickDisplayPrice);
+                setInsideTickDisplayPrice(parseFloat(insideTickDisplay));
 
-                pinnedInitialDisplayPrice = insideTickDisplayPrice.toString();
+                pinnedInitialDisplayPrice = insideTickDisplay;
 
                 if (limitRateInputField) {
-                    limitRateInputField.value = pinnedInitialDisplayPrice;
+                    limitRateInputField.value = insideTickDisplay;
                 }
             } else {
                 const offset = gridSize;
@@ -196,17 +197,19 @@ export default function Limit(props: LimitPropsIF) {
 
                 // console.log({ roundedTickInsideCurrentPrice });
                 const insideTickNonDisplayPrice = tickToPrice(roundedTickInsideCurrentPrice);
-                const insideTickDisplayPrice = toDisplayPrice(
+
+                const insideTickDisplay = toDisplayPrice(
                     insideTickNonDisplayPrice,
                     baseDecimals,
                     quoteDecimals,
-                );
-                setInsideTickDisplayPrice(insideTickDisplayPrice);
+                ).toPrecision(6);
 
-                pinnedInitialDisplayPrice = insideTickDisplayPrice.toString();
+                setInsideTickDisplayPrice(parseFloat(insideTickDisplay));
+
+                pinnedInitialDisplayPrice = insideTickDisplay;
 
                 if (limitRateInputField) {
-                    limitRateInputField.value = pinnedInitialDisplayPrice;
+                    limitRateInputField.value = insideTickDisplay;
                 }
             }
             dispatch(setLimitPrice(pinnedInitialDisplayPrice));

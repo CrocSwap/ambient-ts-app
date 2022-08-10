@@ -27,8 +27,6 @@ interface ConfirmRangeModalProps {
     pinnedMinPriceDisplayTruncatedInQuote: string;
     pinnedMaxPriceDisplayTruncatedInBase: string;
     pinnedMaxPriceDisplayTruncatedInQuote: string;
-    poolPriceTruncatedInBase: string;
-    poolPriceTruncatedInQuote: string;
     txErrorCode: number;
     txErrorMessage: string;
 }
@@ -51,8 +49,6 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalProps) {
         pinnedMinPriceDisplayTruncatedInQuote,
         pinnedMaxPriceDisplayTruncatedInBase,
         pinnedMaxPriceDisplayTruncatedInQuote,
-        poolPriceTruncatedInBase,
-        poolPriceTruncatedInQuote,
         txErrorCode,
         txErrorMessage,
     } = props;
@@ -147,8 +143,8 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalProps) {
             pinnedMinPriceDisplayTruncatedInQuote={pinnedMinPriceDisplayTruncatedInQuote}
             pinnedMaxPriceDisplayTruncatedInBase={pinnedMaxPriceDisplayTruncatedInBase}
             pinnedMaxPriceDisplayTruncatedInQuote={pinnedMaxPriceDisplayTruncatedInQuote}
-            poolPriceTruncatedInBase={poolPriceTruncatedInBase}
-            poolPriceTruncatedInQuote={poolPriceTruncatedInQuote}
+            // poolPriceTruncatedInBase={poolPriceTruncatedInBase}
+            // poolPriceTruncatedInQuote={poolPriceTruncatedInQuote}
         />
     ) : null;
 
