@@ -132,6 +132,8 @@ export default function Trade(props: ITradeProps) {
                                 isTokenABase={props.isTokenABase}
                                 fullScreenChart={fullScreenChart}
                                 setFullScreenChart={setFullScreenChart}
+                                changeState={changeState}
+                                candleData={candleData}
                             />
                         </motion.div>
                     </div>
