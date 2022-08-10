@@ -104,7 +104,6 @@ export default function Trade(props: ITradeProps) {
     const fullScreenStyle = fullScreenChart ? styles.chart_full_screen : styles.main__chart;
 
     const changeState = (isOpen: boolean | undefined, candleData: CandleData | undefined) => {
-        console.log(isOpen);
         setIsCandleSelected(isOpen);
         props.setIsShowAllEnabled(!isOpen);
         setTransactionFilter(candleData);

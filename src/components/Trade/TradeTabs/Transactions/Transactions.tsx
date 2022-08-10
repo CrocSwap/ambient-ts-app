@@ -54,10 +54,12 @@ export default function Transactions(props: TransactionsProps) {
     // console.log(isDataLoading);
 
     useEffect(() => {
+        // console.log({ filter });
+        // console.log({ swapsByPool });
         isCandleSelected
             ? setTransactionData(
                   swapsByPool.filter((data) => {
-                      data.time === filter?.time;
+                      filter?.allSwaps.includes(data.id);
                   }),
               )
             : !isShowAllEnabled

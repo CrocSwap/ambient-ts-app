@@ -47,6 +47,7 @@ export interface CandleData {
     quote: string;
     poolIdx: number;
     period: number;
+    allSwaps: Array<string>;
 }
 
 export interface PositionsByUser {

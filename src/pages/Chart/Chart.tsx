@@ -50,6 +50,7 @@ export default function Chart(props: ChartData) {
             low: any;
             close: any;
             time: any;
+            allSwaps: any;
         }[] = [];
         let period = 1;
         props.priceData?.candles.map((data) => {
@@ -63,6 +64,7 @@ export default function Chart(props: ChartData) {
                 high: data.maxPrice,
                 low: data.minPrice,
                 time: data.time,
+                allSwaps: data.allSwaps,
             });
         });
 
@@ -70,6 +72,31 @@ export default function Chart(props: ChartData) {
     }, [props.priceData, targets]);
 
     useEffect(() => {
+        setTargets((prevState) => {
+            const newTargets = [...prevState];
+            newTargets.filter((target: any) => target.name === 'high')[0].value =
+                props.priceData !== undefined
+                    ? Math.max(
+                          ...props.priceData.candles.map((o) => {
+                              return o.priceOpen !== undefined ? o.priceOpen : 0;
+                          }),
+                      )
+                    : 0;
+            newTargets.filter((target: any) => target.name === 'low')[0].value =
+                props.priceData !== undefined
+                    ? Math.min(
+                          ...props.priceData.candles.map((o) => {
+                              return o.priceClose !== undefined ? o.priceClose : Infinity;
+                          }),
+                      )
+                    : 0;
+            return newTargets;
+        });
+    }, [props.priceData]);
+
+    useEffect(() => {
+        console.log({ isChartSelected });
+        console.log({ transactionFilter });
         if (isChartSelected !== undefined && transactionFilter !== undefined) {
             props.changeState(isChartSelected, transactionFilter);
         }
@@ -81,7 +108,7 @@ export default function Chart(props: ChartData) {
                 nd.requestRedraw();
             };
 
-            const valueFormatter = d3.format('.2f');
+            const valueFormatter = d3.format('.8f');
 
             const priceRange = d3fc
                 .extentLinear()
@@ -163,9 +190,7 @@ export default function Chart(props: ChartData) {
                                 return !prevState;
                             });
                             setTransactionFilter(() => {
-                                return props.priceData?.candles.find(
-                                    (data) => data.time === event.target.__data__.time,
-                                );
+                                return event.target.__data__;
                             });
                         });
                 })
@@ -179,7 +204,9 @@ export default function Chart(props: ChartData) {
                 .yScale(yScale);
 
             const drag = d3.drag().on('drag', function (event, d: any) {
-                const newValue = yScale.invert(d3.pointer(event)[1] - 140);
+                console.log('eski: ', d3.pointer(event)[1]);
+
+                const newValue = yScaleCopy.invert(d3.pointer(event)[1] - 182);
                 setTargets((prevState) => {
                     const newTargets = [...prevState];
                     newTargets.filter((target: any) => target.name === d.name)[0].value = newValue;
