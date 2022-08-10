@@ -1,15 +1,8 @@
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
-import {
-    DetailedHTMLProps,
-    Dispatch,
-    HTMLAttributes,
-    SetStateAction,
-    useEffect,
-    useState,
-} from 'react';
+import { DetailedHTMLProps, HTMLAttributes, useEffect, useState } from 'react';
 import { formatDollarAmountAxis } from '../../../utils/numbers';
-import { CandlesByPoolAndDuration } from '../../../utils/state/graphDataSlice';
+import { CandleData, CandlesByPoolAndDuration } from '../../../utils/state/graphDataSlice';
 import Chart from '../../Chart/Chart';
 import './TradeCandleStickChart.module.css';
 
@@ -30,10 +23,7 @@ interface ChartData {
     volumeData: any[];
     feeData: any[];
     priceData: CandlesByPoolAndDuration | undefined;
-    setIsCandleSelected: Dispatch<SetStateAction<boolean>>;
-    setTransactionFilter: Dispatch<SetStateAction<any>>;
-    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
-    isCandleSelected: boolean;
+    changeState: (isOpen: boolean | undefined, candleData: CandleData | undefined) => void;
 }
 
 export default function TradeCandleStickChart(props: ChartData) {
@@ -44,7 +34,6 @@ export default function TradeCandleStickChart(props: ChartData) {
         priceData: props.priceData,
     };
 
-    const { isCandleSelected, setIsCandleSelected } = props;
     const [liquidityData] = useState([]);
 
     // Volume Chart
@@ -248,10 +237,7 @@ export default function TradeCandleStickChart(props: ChartData) {
             <Chart
                 priceData={data.priceData}
                 liquidityData={liquidityData}
-                setIsCandleSelected={setIsCandleSelected}
-                setTransactionFilter={props.setTransactionFilter}
-                setIsShowAllEnabled={props.setIsShowAllEnabled}
-                isCandleSelected={isCandleSelected}
+                changeState={props.changeState}
             />
             <hr />
             <label>Fee Rate</label>

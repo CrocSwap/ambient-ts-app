@@ -16,11 +16,7 @@ import Ranges from './Ranges/Ranges';
 import TabComponent from '../../Global/TabComponent/TabComponent';
 import PositionsOnlyToggle from './PositionsOnlyToggle/PositionsOnlyToggle';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
-
-interface TransactionFilter {
-    time: number;
-    poolHash: string;
-}
+import { CandleData } from '../../../utils/state/graphDataSlice';
 
 interface ITabsProps {
     account: string;
@@ -38,10 +34,10 @@ interface ITabsProps {
     tokenMap: Map<string, TokenIF>;
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
-    isCandleSelected: boolean;
-    filter: TransactionFilter | undefined;
-    setIsCandleSelected: Dispatch<SetStateAction<boolean>>;
-    setTransactionFilter: Dispatch<SetStateAction<any>>;
+    isCandleSelected: boolean | undefined;
+    filter: CandleData | undefined;
+    setIsCandleSelected: Dispatch<SetStateAction<boolean | undefined>>;
+    setTransactionFilter: Dispatch<SetStateAction<CandleData | undefined>>;
 }
 
 export default function TradeTabs2(props: ITabsProps) {

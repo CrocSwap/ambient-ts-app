@@ -22,10 +22,6 @@ import truncateDecimals from '../../utils/data/truncateDecimals';
 import { Dispatch, SetStateAction, useState, useEffect, useMemo } from 'react';
 import { DefaultTooltip } from '../../components/Global/StyledTooltip/StyledTooltip';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
-import { ONE_HOUR_SECONDS, TimeWindow } from '../../constants/intervals';
-import { useTokenData, useTokenPriceData } from '../../state/tokens/hooks';
-import { currentTimestamp } from '../../utils';
-import { PriceChartEntry } from '../../types';
 import { usePoolChartData } from '../../state/pools/hooks';
 import TradeCandleStickChart from './TradeCharts/TradeCandleStickChart';
 import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
@@ -33,6 +29,7 @@ import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
 // import TradeTabs from '../../components/Trade/TradeTabs/TradeTabs';
 import TradeTabs2 from '../../components/Trade/TradeTabs/TradeTabs2';
 import { motion, AnimateSharedLayout } from 'framer-motion';
+import { CandleData } from '../../utils/state/graphDataSlice';
 
 interface ITradeProps {
     account: string;
@@ -59,19 +56,14 @@ interface ITradeProps {
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
 }
 
-interface TransactionFilter {
-    time: number;
-    poolHash: string;
-}
-
 export default function Trade(props: ITradeProps) {
     const { tokenMap } = props;
     const [fullScreenChart, setFullScreenChart] = useState(false);
 
     const dispatch = useAppDispatch();
 
-    const [isCandleSelected, setIsCandleSelected] = useState(false);
-    const [transactionFilter, setTransactionFilter] = useState<TransactionFilter>();
+    const [isCandleSelected, setIsCandleSelected] = useState<boolean | undefined>();
+    const [transactionFilter, setTransactionFilter] = useState<CandleData>();
 
     const chartData = usePoolChartData('0x8ad599c3a0ff1de082011efddc58f1908eb6e6d8'); // ETH/USDC pool address
 
@@ -402,6 +394,13 @@ export default function Trade(props: ITradeProps) {
     const expandGraphStyle = props.expandTradeTable ? styles.hide_graph : '';
     // const expandTradeTableStyle = props.expandTradeTable ? styles.expand_table : styles.trade_style;
 
+    const changeState = (isOpen: boolean | undefined, candleData: CandleData | undefined) => {
+        console.log(isOpen);
+        setIsCandleSelected(isOpen);
+        props.setIsShowAllEnabled(!isOpen);
+        setTransactionFilter(candleData);
+    };
+
     return (
         // <motion.main
         //     initial={{ width: 0 }}
@@ -423,10 +422,7 @@ export default function Trade(props: ITradeProps) {
                         volumeData={formattedVolumeData}
                         feeData={formattedFeesUSD}
                         priceData={candleData}
-                        setIsCandleSelected={setIsCandleSelected}
-                        setTransactionFilter={setTransactionFilter}
-                        setIsShowAllEnabled={props.setIsShowAllEnabled}
-                        isCandleSelected={isCandleSelected}
+                        changeState={changeState}
                     />
 
                     <motion.div

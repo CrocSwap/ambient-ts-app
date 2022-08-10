@@ -1,16 +1,12 @@
 import styles from './Transactions.module.css';
 import TransactionCard from './TransactionCard';
 import TransactionCardHeader from './TransactionCardHeader';
-import { graphData } from '../../../../utils/state/graphDataSlice';
+import { CandleData, graphData } from '../../../../utils/state/graphDataSlice';
 import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { Dispatch, SetStateAction, useState, useEffect } from 'react';
 import TransactionsSkeletons from './TransactionsSkeletons/TransactionsSkeletons';
 
-interface TransactionFilter {
-    time: number;
-    poolHash: string;
-}
 interface TransactionsProps {
     isShowAllEnabled: boolean;
     portfolio?: boolean;
@@ -22,8 +18,8 @@ interface TransactionsProps {
 
     expandTradeTable: boolean;
 
-    isCandleSelected: boolean;
-    filter: TransactionFilter | undefined;
+    isCandleSelected: boolean | undefined;
+    filter: CandleData | undefined;
     // setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
 }
 export default function Transactions(props: TransactionsProps) {
@@ -58,9 +54,6 @@ export default function Transactions(props: TransactionsProps) {
     // console.log(isDataLoading);
 
     useEffect(() => {
-        console.log({ isCandleSelected });
-        console.log({ filter });
-
         isCandleSelected
             ? setTransactionData(
                   swapsByPool.filter((data) => {

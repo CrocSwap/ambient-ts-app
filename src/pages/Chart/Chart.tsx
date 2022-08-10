@@ -1,15 +1,7 @@
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
-import {
-    DetailedHTMLProps,
-    Dispatch,
-    HTMLAttributes,
-    SetStateAction,
-    useEffect,
-    useRef,
-    useState,
-} from 'react';
-import { CandlesByPoolAndDuration } from '../../utils/state/graphDataSlice';
+import { DetailedHTMLProps, HTMLAttributes, useCallback, useEffect, useRef, useState } from 'react';
+import { CandleData, CandlesByPoolAndDuration } from '../../utils/state/graphDataSlice';
 import './Chart.css';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -27,10 +19,7 @@ declare global {
 interface ChartData {
     priceData: CandlesByPoolAndDuration | undefined;
     liquidityData: any[];
-    setIsCandleSelected: Dispatch<SetStateAction<boolean>>;
-    setTransactionFilter: Dispatch<SetStateAction<any>>;
-    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
-    isCandleSelected: boolean;
+    changeState: (isOpen: boolean | undefined, candleData: CandleData | undefined) => void;
 }
 
 export default function Chart(props: ChartData) {
@@ -38,8 +27,6 @@ export default function Chart(props: ChartData) {
     const d3PlotArea = useRef(null);
     const d3Xaxis = useRef(null);
     const d3Yaxis = useRef(null);
-
-    const { isCandleSelected, setIsCandleSelected } = props;
 
     const [targets, setTargets] = useState([
         {
@@ -52,6 +39,9 @@ export default function Chart(props: ChartData) {
         },
     ]);
 
+    const [isChartSelected, setIsChartSelected] = useState<boolean>(false);
+    const [transactionFilter, setTransactionFilter] = useState<CandleData>();
+
     useEffect(() => {
         const chartData: {
             date: any;
@@ -59,7 +49,6 @@ export default function Chart(props: ChartData) {
             high: any;
             low: any;
             close: any;
-            poolHash: any;
             time: any;
         }[] = [];
         let period = 1;
@@ -73,10 +62,20 @@ export default function Chart(props: ChartData) {
                 close: data.priceClose,
                 high: data.maxPrice,
                 low: data.minPrice,
-                poolHash: data.poolHash,
                 time: data.time,
             });
         });
+
+        drawChart(chartData, period, targets);
+    }, [props.priceData, targets]);
+
+    useEffect(() => {
+        if (isChartSelected !== undefined && transactionFilter !== undefined) {
+            props.changeState(isChartSelected, transactionFilter);
+        }
+    }, [isChartSelected, transactionFilter]);
+
+    const drawChart = useCallback((chartData: any, period: any, targets: any) => {
         if (chartData.length > 0) {
             const render = () => {
                 nd.requestRedraw();
@@ -98,6 +97,13 @@ export default function Chart(props: ChartData) {
 
             const xScale = d3.scaleTime();
             const yScale = d3.scaleLinear();
+
+            xScale.domain(xExtent(chartData));
+            yScale.domain(priceRange(chartData));
+
+            const xScaleCopy = xScale.copy();
+            const yScaleCopy = yScale.copy();
+
             const liquidityTickScale = d3.scaleBand();
             const liquidityScale = d3.scaleLinear();
             const barThreshold = 1650;
@@ -107,12 +113,6 @@ export default function Chart(props: ChartData) {
                 .extentLinear(props.liquidityData)
                 .include([0])
                 .accessors([(d: any) => d.value]);
-
-            xScale.domain(xExtent(chartData));
-            yScale.domain(priceRange(chartData));
-
-            const xScaleCopy = xScale.copy();
-            const yScaleCopy = yScale.copy();
 
             liquidityScale.domain(liquidityExtent(props.liquidityData));
 
@@ -159,12 +159,13 @@ export default function Chart(props: ChartData) {
                             d3.select(event.currentTarget).style('cursor', 'default');
                         })
                         .on('click', (event: any) => {
-                            console.log(isCandleSelected);
-                            setIsCandleSelected(!isCandleSelected);
-                            props.setIsShowAllEnabled(isCandleSelected);
-                            props.setTransactionFilter({
-                                time: event.target.__data__.time,
-                                poolHash: event.target.__data__.poolHash,
+                            setIsChartSelected((prevState) => {
+                                return !prevState;
+                            });
+                            setTransactionFilter(() => {
+                                return props.priceData?.candles.find(
+                                    (data) => data.time === event.target.__data__.time,
+                                );
                             });
                         });
                 })
@@ -257,7 +258,7 @@ export default function Chart(props: ChartData) {
             const nd = d3.select('#group').node() as any;
             render();
         }
-    }, [targets, props.priceData, props.liquidityData]);
+    }, []);
 
     return (
         <div ref={d3Container} className='main_layout' data-testid={'chart'}>
