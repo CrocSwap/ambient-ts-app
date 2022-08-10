@@ -1,9 +1,40 @@
-const goerliData = {
-    name: 'goerli',
-    dex: '0xfafcd1f5530827e7398b6d3c509f450b1b24a209',
-    query: '0x9ea4b2f9b1572ed3ac46b402d9ba9153821033c6',
-    testnet: true,
-    moralisIds: []
-}
-
-export const chains = new Map().set('goerli', goerliData);
+export const allMoralisChainIds = new Map()
+    .set(
+        'ethereum',
+        ['eth', 'mainnet', '0x1']
+    )
+    .set(
+        'goerli',
+        ['goerli', '0x5']
+    )
+    .set(
+        'binance mainnet',
+        ['bsc', 'binance', 'binance smart chain', '0x38']
+    )
+    .set(
+        'binance testnet',
+        ['bsc testnet', 'binance testnet', 'binance smart chain testnet', '0x61']
+    )
+    .set(
+        'polygon',
+        ['matic', 'polygon', '0x89']
+    )
+    .set(
+        'mumbai',
+        ['mumbai', 'matic testnet', 'polygon testnet', '0x13881']
+    )
+    .set(
+        'avalanche mainnet',
+        ['avalanche', '0xa86a']
+    )
+    .set(
+        'avalanche testnet',
+        ['avalanche testnet', '0xa869']
+    )
+    .set(
+        'fantom',
+        ['fantom', '0xfa'])
+    .set(
+        'cronos',
+        ['cronos', '0x19']
+    );

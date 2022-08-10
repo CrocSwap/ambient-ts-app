@@ -27,7 +27,6 @@ import {
     CrocEnv,
     toDisplayQty
 } from '@crocswap-libs/sdk';
-
 import { receiptData, resetReceiptData } from '../utils/state/receiptDataSlice';
 
 import SnackbarComponent from '../components/Global/SnackbarComponent/SnackbarComponent';
