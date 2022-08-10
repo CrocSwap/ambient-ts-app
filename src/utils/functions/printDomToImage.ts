@@ -24,11 +24,13 @@ const printDomToImage = (node: HTMLElement) => {
     // if (canvasRef.current) {
     domtoimage
         .toPng(node)
+        // eslint-disable-next-line
         .then(function (dataUrl: any) {
             const img = new Image();
             img.src = dataUrl;
             saveAs(dataUrl, photoName);
         })
+        // eslint-disable-next-line
         .catch(function (error: any) {
             console.error('oops, something went wrong!', error);
         });
