@@ -1,3 +1,7 @@
+// map of all chains supported by Moralis and recognized chain id values
+// all chains supported by Moralis are here regardless of Ambient support
+// keys === name of the network (human readable)
+// values === chain ids Moralis will recognize
 export const allMoralisChainIds = new Map()
     .set(
         'ethereum',
