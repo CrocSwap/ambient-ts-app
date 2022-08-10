@@ -1019,8 +1019,6 @@ export default function Range(props: RangePropsIF) {
         />
     );
 
-    // const isAmountEntered = parseFloat(tokenAInputQty) > 0 && parseFloat(tokenBInputQty) > 0;
-
     return (
         <section data-testid={'range'}>
             <ContentContainer isOnTradeRoute>
@@ -1056,7 +1054,7 @@ export default function Range(props: RangePropsIF) {
                 ) : (
                     <RangeButton
                         onClickFn={openModal}
-                        rangeAllowed={rangeAllowed && !isInvalidRange}
+                        rangeAllowed={poolPriceNonDisplay !== 0 && rangeAllowed && !isInvalidRange}
                         rangeButtonErrorMessage={rangeButtonErrorMessage}
                     />
                 )}
