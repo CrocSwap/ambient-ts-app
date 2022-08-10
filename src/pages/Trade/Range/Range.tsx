@@ -161,7 +161,9 @@ export default function Range(props: RangePropsIF) {
         : poolPriceDisplayNum;
 
     const displayPriceString =
-        displayPriceWithDenom < 2
+        displayPriceWithDenom === Infinity || displayPriceWithDenom === 0
+            ? '...'
+            : displayPriceWithDenom < 2
             ? displayPriceWithDenom.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 6,

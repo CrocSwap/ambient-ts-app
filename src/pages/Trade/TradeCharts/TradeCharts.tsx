@@ -85,7 +85,9 @@ export default function TradeCharts(props: TradeChartsProps) {
     const tokenBSymbol = tradeData.tokenB.symbol;
 
     const truncatedPoolPrice =
-        poolPriceDisplay < 2
+        poolPriceDisplay === Infinity || poolPriceDisplay === 0
+            ? '...'
+            : poolPriceDisplay < 2
             ? poolPriceDisplay.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 6,
