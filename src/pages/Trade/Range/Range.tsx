@@ -120,6 +120,9 @@ export default function Range(props: RangePropsIF) {
     const [isWithdrawTokenAFromDexChecked, setIsWithdrawTokenAFromDexChecked] = useState(false);
     const [isWithdrawTokenBFromDexChecked, setIsWithdrawTokenBFromDexChecked] = useState(false);
     const [newRangeTransactionHash, setNewRangeTransactionHash] = useState('');
+    const [txErrorCode, setTxErrorCode] = useState(0);
+    const [txErrorMessage, setTxErrorMessage] = useState('');
+
     const { account, isAuthenticated, isWeb3Enabled, authenticate, enableWeb3 } = useMoralis();
 
     const { tradeData } = useTradeData();
@@ -603,49 +606,54 @@ export default function Range(props: RangePropsIF) {
         const minPrice = spot * (1 - parseFloat(slippageTolerancePercentage) / 100);
         const maxPrice = spot * (1 + parseFloat(slippageTolerancePercentage) / 100);
 
-        const tx = await (isAmbient
-            ? isTokenAPrimary
-                ? pool.mintAmbientLeft(tokenAInputQty, [minPrice, maxPrice])
-                : pool.mintAmbientRight(tokenBInputQty, [minPrice, maxPrice])
-            : isTokenAPrimary
-            ? pool.mintRangeLeft(
-                  tokenAInputQty,
-                  [rangeLowTick, rangeHighTick],
-                  [minPrice, maxPrice],
-              )
-            : pool.mintRangeRight(
-                  tokenBInputQty,
-                  [rangeLowTick, rangeHighTick],
-                  [minPrice, maxPrice],
-              ));
+        let tx;
 
-        let newTransactionHash = tx.hash;
-        setNewRangeTransactionHash(newTransactionHash);
-        console.log({ newTransactionHash });
+        try {
+            tx = await (isAmbient
+                ? isTokenAPrimary
+                    ? pool.mintAmbientLeft(tokenAInputQty, [minPrice, maxPrice])
+                    : pool.mintAmbientRight(tokenBInputQty, [minPrice, maxPrice])
+                : isTokenAPrimary
+                ? pool.mintRangeLeft(
+                      tokenAInputQty,
+                      [rangeLowTick, rangeHighTick],
+                      [minPrice, maxPrice],
+                  )
+                : pool.mintRangeRight(
+                      tokenBInputQty,
+                      [rangeLowTick, rangeHighTick],
+                      [minPrice, maxPrice],
+                  ));
+            setNewRangeTransactionHash(tx?.hash);
+        } catch (error) {
+            setTxErrorCode(error?.code);
+            setTxErrorMessage(error?.message);
+        }
 
         const newPositionCacheEndpoint = 'https://809821320828123.de:5000/new_liqchange?';
-
-        fetch(
-            newPositionCacheEndpoint +
-                new URLSearchParams({
-                    chainId: chainId,
-                    tx: newTransactionHash,
-                    user: account ?? '',
-                    base: baseTokenAddress,
-                    quote: quoteTokenAddress,
-                    poolIdx: lookupChain(chainId).poolIndex.toString(),
-                    positionType: isAmbient ? 'ambient' : 'concentrated',
-                    changeType: 'mint',
-                    bidTick: rangeLowTick.toString(),
-                    askTick: rangeHighTick.toString(),
-                    isBid: 'false', // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
-                    liq: '0', // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
-                }),
-        );
+        if (tx?.hash) {
+            fetch(
+                newPositionCacheEndpoint +
+                    new URLSearchParams({
+                        chainId: chainId,
+                        tx: tx.hash,
+                        user: account ?? '',
+                        base: baseTokenAddress,
+                        quote: quoteTokenAddress,
+                        poolIdx: lookupChain(chainId).poolIndex.toString(),
+                        positionType: isAmbient ? 'ambient' : 'concentrated',
+                        changeType: 'mint',
+                        bidTick: rangeLowTick.toString(),
+                        askTick: rangeHighTick.toString(),
+                        isBid: 'false', // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
+                        liq: '0', // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
+                    }),
+            );
+        }
 
         let receipt;
         try {
-            receipt = await tx.wait();
+            if (tx) receipt = await tx.wait();
         } catch (e) {
             const error = e as TransactionError;
 
@@ -653,9 +661,30 @@ export default function Range(props: RangePropsIF) {
             // in their client, but we now have the updated info
             if (isTransactionReplacedError(error)) {
                 console.log('repriced');
-                newTransactionHash = error.replacement.hash;
+                const newTransactionHash = error.replacement.hash;
+                setNewRangeTransactionHash(newTransactionHash);
                 console.log({ newTransactionHash });
                 receipt = error.receipt;
+
+                if (tx?.hash) {
+                    fetch(
+                        newPositionCacheEndpoint +
+                            new URLSearchParams({
+                                chainId: chainId,
+                                tx: newTransactionHash,
+                                user: account ?? '',
+                                base: baseTokenAddress,
+                                quote: quoteTokenAddress,
+                                poolIdx: lookupChain(chainId).poolIndex.toString(),
+                                positionType: isAmbient ? 'ambient' : 'concentrated',
+                                changeType: 'mint',
+                                bidTick: rangeLowTick.toString(),
+                                askTick: rangeHighTick.toString(),
+                                isBid: 'false', // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
+                                liq: '0', // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
+                            }),
+                    );
+                }
             }
         }
         if (receipt) {
@@ -748,6 +777,13 @@ export default function Range(props: RangePropsIF) {
         [baseTokenDecimals, quoteTokenDecimals, rangeLowTick, rangeHighTick],
     );
 
+    const handleModalClose = () => {
+        closeModal();
+        setNewRangeTransactionHash('');
+        setTxErrorCode(0);
+        setTxErrorMessage('');
+    };
+
     // props for <ConfirmRangeModal/> React element
     const rangeModalProps = {
         tokenPair: tokenPair,
@@ -758,9 +794,11 @@ export default function Range(props: RangePropsIF) {
         maxPriceDisplay: maxPriceDisplay,
         minPriceDisplay: minPriceDisplay,
         sendTransaction: sendTransaction,
-        closeModal: closeModal,
+        closeModal: handleModalClose,
         newRangeTransactionHash: newRangeTransactionHash,
         setNewRangeTransactionHash: setNewRangeTransactionHash,
+        txErrorCode: txErrorCode,
+        txErrorMessage: txErrorMessage,
         isInRange: !isOutOfRange,
         pinnedMinPriceDisplayTruncatedInBase: pinnedMinPriceDisplayTruncatedInBase,
         pinnedMinPriceDisplayTruncatedInQuote: pinnedMinPriceDisplayTruncatedInQuote,
@@ -880,11 +918,6 @@ export default function Range(props: RangePropsIF) {
             <RangeExtraInfo {...rangeExtraInfoProps} />
         </>
     );
-
-    const handleModalClose = () => {
-        closeModal();
-        setNewRangeTransactionHash('');
-    };
 
     const confirmSwapModalOrNull = isModalOpen ? (
         <Modal
