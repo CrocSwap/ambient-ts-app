@@ -5,12 +5,13 @@ import { formatDollarAmount } from '../../utils/numbers';
 import PoolDisplay from '../Global/Analytics/PoolDisplay';
 import TokenDisplay from '../Global/Analytics/TokenDisplay';
 import TradeButton from '../Global/Analytics/TradeButton';
-import OpenOrderStatus from '../Global/OpenOrderStatus/OpenOrderStatus';
-import styles from './Pool.module.css';
+import Apy from '../Global/Tabs/Apy/Apy';
+import styles from './PoolRow.module.css';
 
 interface PoolProps {
     pool: PoolData;
     index: number;
+    poolType: string;
 }
 
 export default function PoolRow(props: PoolProps) {
@@ -52,12 +53,14 @@ export default function PoolRow(props: PoolProps) {
                 </>
 
                 <>
-                    <section className={styles.display}>{feeTierPercent(poolData.feeTier)}</section>
+                    <section
+                        className={props.poolType === 'trend' ? styles.feeTierHide : styles.display}
+                    >
+                        {feeTierPercent(poolData.feeTier)}
+                    </section>
                 </>
 
-                <div className={styles.status}>
-                    <OpenOrderStatus isFilled />
-                </div>
+                <Apy amount={50} />
             </div>
 
             <div className={styles.menu_container}>

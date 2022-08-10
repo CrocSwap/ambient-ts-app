@@ -17,6 +17,7 @@ export const SORT_FIELD = {
 interface PoolProps {
     pools: PoolData[];
     maxItems?: number;
+    poolType: string;
 }
 
 export default function Pools(props: PoolProps) {
@@ -73,13 +74,18 @@ export default function Pools(props: PoolProps) {
     };
 
     const poolsDisplay = sortedPools.map((pool, idx) => (
-        <PoolRow pool={pool} key={pool.address} index={(page - 1) * maxItems + idx} />
+        <PoolRow
+            poolType={props.poolType}
+            pool={pool}
+            key={pool.address}
+            index={(page - 1) * maxItems + idx}
+        />
     ));
 
     return (
         <div className={styles.container}>
             <div className={styles.container}>
-                <PoolCardHeader arrow={arrow} sort={handleSort} />
+                <PoolCardHeader poolType={props.poolType} arrow={arrow} sort={handleSort} />
                 {poolsDisplay}
             </div>
 

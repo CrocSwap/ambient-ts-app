@@ -4,6 +4,7 @@ import styles from './PoolCardHeader.module.css';
 interface PoolCardHeaderProps {
     arrow: (field: string) => '↑' | '↓' | '';
     sort(newField: string): void;
+    poolType?: string;
 }
 
 export default function PoolCardHeader(props: PoolCardHeaderProps) {
@@ -24,7 +25,10 @@ export default function PoolCardHeader(props: PoolCardHeaderProps) {
                 <p className={styles.pCursor} onClick={() => sort(SORT_FIELD.volumeUSDWeek)}>
                     Volume 7D {arrow(SORT_FIELD.volumeUSDWeek)}
                 </p>
-                <p className={styles.pCursor} onClick={() => sort(SORT_FIELD.feeTier)}>
+                <p
+                    className={props.poolType === 'trend' ? styles.pool : styles.pCursor}
+                    onClick={() => sort(SORT_FIELD.feeTier)}
+                >
                     TVL Change {arrow(SORT_FIELD.feeTier)}
                 </p>
                 <p>APY</p>

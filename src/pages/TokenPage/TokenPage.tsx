@@ -162,7 +162,7 @@ export default function TokenPage() {
             <Divider />
             <div className={styles.cqwlBw}>
                 <h2>Pools</h2>
-                <Pools pools={poolDatas} maxItems={10} />
+                <Pools poolType='top' pools={poolDatas} maxItems={10} />
             </div>
         </main>
     );

@@ -15,7 +15,7 @@
 }
 
 .row_container section{
-  flex: 0.4 0;
+  flex: 0.118 0;
   /* flex-flow: column; */
   align-items: center;
   padding: 2px 8px;
@@ -31,16 +31,28 @@
 
 
 
+.apy{
+  font-weight: 200;
+ 
+  font-size: 12px;
+  line-height: 15px;
+
+  background: linear-gradient(90deg, #15BE6F 32.38%, #8FE9BF 51.39%, #15BE6F 68.17%);
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+background-clip: text;
+
+text-shadow: 0px 0px 10px rgba(21, 190, 111, 0.75);
+}
 
 /* Mobile Landscape Screen Sizes */
 @media only screen and (min-width: 480px)  {
 .tokens_container{
   display: flex;
 }
-  .main_container{
-      grid-template-columns:  50px auto 50px;
-      /* background: red; */
-  }
+.main_container{
+  grid-template-columns: 50px auto 50px;
+}
 }
 
 /* Desktop screen Sizes */
@@ -73,6 +85,6 @@
 @media only screen and (min-width: 1600px) {
 
   .main_container{
-      grid-template-columns: 100px 1fr 0.6fr;
+    grid-template-columns: 100px 1.1fr .6fr;
   }
 }

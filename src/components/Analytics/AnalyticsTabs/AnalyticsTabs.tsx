@@ -74,11 +74,11 @@ export default function AnalyticsTabs() {
         },
         {
             label: 'Top Pools',
-            content: <Pools pools={searchWord.length > 0 ? pools : poolsResult} />,
+            content: <Pools poolType='top' pools={searchWord.length > 0 ? pools : poolsResult} />,
         },
         {
             label: 'Trending Pools',
-            content: <Pools pools={searchWord.length > 0 ? pools : poolsResult} />,
+            content: <Pools poolType='trend' pools={searchWord.length > 0 ? pools : poolsResult} />,
         },
         { label: 'Top Ranges', content: <TopRanges /> },
     ];

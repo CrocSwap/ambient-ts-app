@@ -15,6 +15,12 @@
   width: 100%;
 }
 
+.feeTierHide {
+  color: rgba(235, 235, 255, 0.4);
+
+  display: none;
+}
+
 .row_container section{
   flex: 0.17 0;
   /* flex-flow: column; */
@@ -33,7 +39,6 @@
 
 
 .display {
-  display: none;
   color: rgba(235, 235, 255, 0.4);
 
 }
@@ -43,30 +48,30 @@
 /* Desktop screen Sizes */
 @media only screen and (min-width: 768px) {
   .display {
-      display: flex;
-  
-      font-size: 10px;
-line-height: 13px; 
+       
+    font-size: 10px;
+    line-height: 13px; 
   }
   
+    .feeTierHide {
+      display: none;
+    }
   
   }
 
 /* Desktop screen Sizes */
 @media only screen and (min-width: 1200px) {
-  .display {
-     
-  
+  .display  {
+      display: flex;  
       font-size: 12px;
       line-height: 16px;  
   }
-  
-  
+  .feeTierHide {
+    display: flex;  
+      font-size: 12px;
+      line-height: 16px;  
   }
-
-
-
-
+}
 
 /* Mobile Landscape Screen Sizes */
 @media only screen and (min-width: 480px)  {

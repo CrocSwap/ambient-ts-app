@@ -1,4 +1,4 @@
-import styles from '../Tabs/AccountPoolDisplay/AccountPoolDisplay.module.css';
+import styles from './PoolDisplay.module.css';
 
 interface TokenNameData {
     token0: string;
