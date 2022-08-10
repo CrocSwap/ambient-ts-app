@@ -135,8 +135,8 @@ export default function TradeCharts(props: TradeChartsProps) {
     const [chartItems, setChartItems] = useState([
         { slug: 'chart', name: 'Chart', checked: true },
         { slug: 'feerate', name: 'Fee Rate', checked: false },
-        { slug: 'tvl', name: 'Tvl', checked: false },
-        { slug: 'volume', name: 'Voulme', checked: false },
+        { slug: 'tvl', name: 'TVL', checked: false },
+        { slug: 'volume', name: 'Volume', checked: false },
     ]);
 
     const handleChartItemChange = (slug: string) => {
