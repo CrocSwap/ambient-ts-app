@@ -3,6 +3,7 @@ import Animation from '../../Global/Animation/Animation';
 import completed from '../../../assets/animations/completed.json';
 import addTokenToWallet from './addTokenToWallet';
 import Button from '../../Global/Button/Button';
+import { FiExternalLink } from 'react-icons/fi';
 
 interface TransactionSubmittedProps {
     hash: string;
@@ -30,6 +31,13 @@ export default function TransactionSubmitted(props: TransactionSubmittedProps) {
             disabled={false}
         ></Button>
     );
+
+    const etherscanButton = (
+        <a href={EthersanTx} target='_blank' rel='noreferrer' className={styles.view_etherscan}>
+            View on Etherscan
+            <FiExternalLink size={20} color='black' />
+        </a>
+    );
     return (
         <div className={styles.transaction_submitted}>
             <div className={styles.completed_animation}>
@@ -37,9 +45,7 @@ export default function TransactionSubmitted(props: TransactionSubmittedProps) {
             </div>
             <h2>Transaction Submitted</h2>
             <p>
-                <a href={EthersanTx} target='_blank' rel='noreferrer'>
-                    View on Etherscan
-                </a>
+                {EthersanTx && etherscanButton}
                 {tokenBSymbol === 'ETH' ? null : addToMetamaskButton}
             </p>
         </div>

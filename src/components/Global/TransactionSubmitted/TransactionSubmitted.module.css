@@ -12,9 +12,8 @@
   .transaction_submitted p a {
     cursor: pointer;
     text-decoration: none;
-  font-size: var(--body-size);
-  line-height: var(--body-lh);
-    color: var(--text-grey-light);
+  /* font-size: var(--body-size);
+  line-height: var(--body-lh); */
   }
   .completed_animation {
     display: flex;
@@ -42,3 +41,28 @@
     background-color: rgb(33, 36, 41);
   }
   
+  .view_etherscan{
+padding: 0.3rem;
+background: var(--title-gradient);
+text-decoration: none;
+color: black;
+border-radius: 4px;
+width: 100%;
+display: flex;
+flex-direction: row;
+justify-content:center;
+align-items: center;
+gap: 8px;
+position: relative;
+margin: 8px 0;
+
+
+  }
+
+  .view_etherscan:hover{
+    cursor: pointer;
+    background:  linear-gradient(90deg, #6361d7 0%, #b0a6db 49.48%, #6361d7 100%);
+   
+    transition: all var(--animation-speed) ease-in-out
+
+  }
