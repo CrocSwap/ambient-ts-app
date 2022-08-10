@@ -1542,7 +1542,7 @@ export default function App() {
         gasPriceinGwei: gasPriceinGwei,
         baseTokenAddress: baseTokenAddress,
         quoteTokenAddress: quoteTokenAddress,
-        poolPriceNonDisplay: poolPriceNonDisplay ?? 0,
+        poolPriceNonDisplay: poolPriceNonDisplay,
         poolPriceDisplay: poolPriceDisplay ? poolPriceDisplay.toString() : '0',
         tokenABalance: tokenABalance,
         tokenAAllowance: tokenAAllowance,

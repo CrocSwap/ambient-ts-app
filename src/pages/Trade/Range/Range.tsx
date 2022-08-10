@@ -77,7 +77,7 @@ interface RangePropsIF {
     baseTokenAddress: string;
     quoteTokenAddress: string;
     poolPriceDisplay: string;
-    poolPriceNonDisplay: number;
+    poolPriceNonDisplay: number | undefined;
     tokenABalance: string;
     tokenBBalance: string;
     tokenAAllowance: string;
@@ -212,7 +212,7 @@ export default function Range(props: RangePropsIF) {
         useState<string>('Enter an Amount');
     // console.log({ poolPriceNonDisplay });
     const currentPoolPriceTick =
-        poolPriceNonDisplay === 0 ? 0 : Math.log(poolPriceNonDisplay) / Math.log(1.0001);
+        poolPriceNonDisplay === undefined ? 0 : Math.log(poolPriceNonDisplay) / Math.log(1.0001);
     const [rangeWidthPercentage, setRangeWidthPercentage] = useState<number>(
         tradeData.simpleRangeWidth,
     );
@@ -292,7 +292,9 @@ export default function Range(props: RangePropsIF) {
     // const inRangeSpan = isOutOfRange ? 0 : rangeSpanAboveCurrentPrice + rangeSpanBelowCurrentPrice;
 
     useEffect(() => {
-        if (poolPriceNonDisplay === 0) {
+        if (poolPriceNonDisplay === undefined) {
+            setRangeButtonErrorMessage('...');
+        } else if (poolPriceNonDisplay === 0) {
             setRangeButtonErrorMessage('Token Pair Invalid');
         } else if (isInvalidRange) {
             setRangeButtonErrorMessage('Please Enter a Valid Range');
@@ -577,7 +579,7 @@ export default function Range(props: RangePropsIF) {
     const depositSkew = useMemo(
         () =>
             concDepositSkew(
-                poolPriceNonDisplay,
+                poolPriceNonDisplay ?? 0,
                 rangeLowBoundNonDisplayPrice,
                 rangeHighBoundNonDisplayPrice,
             ),

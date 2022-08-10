@@ -27,7 +27,7 @@ interface RangeCurrencyConverterPropsIF {
     isWithdrawTokenBFromDexChecked: boolean;
     setIsWithdrawTokenBFromDexChecked: Dispatch<SetStateAction<boolean>>;
     isLiq?: boolean;
-    poolPriceNonDisplay: number;
+    poolPriceNonDisplay: number | undefined;
     isAdvancedMode: boolean;
     tokenPair: TokenPairIF;
     isTokenAPrimaryLocal: boolean;
@@ -141,6 +141,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
     }, []);
 
     const setTokenAQtyValue = (value: number) => {
+        if (poolPriceNonDisplay === undefined) return;
         // console.log({ value });
         setTokenAQtyLocal(value);
         setTokenAInputQty(value.toString());
@@ -187,6 +188,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
     };
 
     const setTokenBQtyValue = (value: number) => {
+        if (poolPriceNonDisplay === undefined) return;
         setTokenBQtyLocal(value);
         setTokenBInputQty(value.toString());
 
