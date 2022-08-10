@@ -50,8 +50,11 @@ export const ambientChains = [
     'goerli'
 ];
 
+// function to validate any given value as a proper id for a supported chain
 export function validateChainId(chainIdToValidate: string) {
     return ambientChains
+        // create an array of all valid ID values for chains supported by Ambient
         .flatMap((chain: string) => allMoralisChainIds.get(chain))
+        // check if the argument provided to the function is in the array of IDs
         .includes(chainIdToValidate);
 }
