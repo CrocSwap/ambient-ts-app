@@ -182,7 +182,6 @@ export default function Swap(props: SwapPropsIF) {
     const [txErrorCode, setTxErrorCode] = useState(0);
     const [txErrorMessage, setTxErrorMessage] = useState('');
 
-    console.log({ poolPriceDisplay });
     useEffect(() => {
         if (poolPriceDisplay === undefined) {
             setSwapAllowed(false);

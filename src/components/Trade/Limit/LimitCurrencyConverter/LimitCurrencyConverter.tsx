@@ -29,7 +29,7 @@ interface LimitCurrencyConverterProps {
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     searchableTokens: Array<TokenIF>;
     chainId: string;
-    poolPriceNonDisplay: number;
+    poolPriceNonDisplay: number | undefined;
     insideTickDisplayPrice: number;
     setIsSellTokenPrimary?: Dispatch<SetStateAction<boolean>>;
     setLimitAllowed: Dispatch<SetStateAction<boolean>>;
