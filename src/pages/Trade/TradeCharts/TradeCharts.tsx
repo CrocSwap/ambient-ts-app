@@ -13,7 +13,7 @@ import {
 import { HiOutlineExternalLink } from 'react-icons/hi';
 import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledTooltip';
 import { motion } from 'framer-motion';
-
+import printDomToImage from '../../../utils/functions/printDomToImage';
 // end of icons
 import {
     // eslint-disable-next-line
@@ -22,7 +22,7 @@ import {
     setActiveChartPeriod,
 } from '../../../utils/state/tradeDataSlice';
 import { useAppSelector, useAppDispatch } from '../../../utils/hooks/reduxToolkit';
-import { Dispatch, SetStateAction, useState, useEffect, useMemo } from 'react';
+import { Dispatch, SetStateAction, useState, useEffect, useMemo, useRef } from 'react';
 // import truncateDecimals from '../../../utils/data/truncateDecimals';
 import TradeCandleStickChart from './TradeCandleStickChart';
 interface TradeChartsProps {
@@ -104,10 +104,15 @@ export default function TradeCharts(props: TradeChartsProps) {
     // ---------------------END OF TRADE DATA CALCULATIONS------------------------
 
     // GRAPH SETTINGS CONTENT------------------------------------------------------
-
+    const canvasRef = useRef(null);
+    const downloadAsImage = () => {
+        if (canvasRef.current) {
+            printDomToImage(canvasRef.current);
+        }
+    };
     const saveImageContent = (
         <div className={styles.save_image_container}>
-            <div className={styles.save_image_content}>
+            <div className={styles.save_image_content} onClick={downloadAsImage}>
                 <AiOutlineDownload />
                 Save Chart Image
             </div>
@@ -454,14 +459,15 @@ export default function TradeCharts(props: TradeChartsProps) {
                 {tokenInfo}
                 {timeFrameContent}
             </div>
-
-            <TradeCandleStickChart
-                tvlData={formattedTvlData}
-                volumeData={formattedVolumeData}
-                feeData={formattedFeesUSD}
-                priceData={adjustedToCurrent}
-                chartItems={chartItems}
-            />
+            <div style={{ width: '100%', height: '100%' }} ref={canvasRef}>
+                <TradeCandleStickChart
+                    tvlData={formattedTvlData}
+                    volumeData={formattedVolumeData}
+                    feeData={formattedFeesUSD}
+                    priceData={adjustedToCurrent}
+                    chartItems={chartItems}
+                />
+            </div>
         </>
     );
 }
