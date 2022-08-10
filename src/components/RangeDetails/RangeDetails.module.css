@@ -8,3 +8,10 @@
     gap: 1rem;
     padding: 0 2rem;
 }
+
+.share_container{
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
+}
