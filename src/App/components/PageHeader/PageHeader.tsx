@@ -36,7 +36,7 @@ interface HeaderPropsIF {
     ensName: string;
     shouldDisplayAccountTab: boolean;
     chainId: string;
-    isChainValid: boolean;
+    isChainSupported: boolean;
     switchChain: Dispatch<SetStateAction<string>>;
 }
 
@@ -48,7 +48,7 @@ export default function PageHeader(props: HeaderPropsIF) {
         metamaskLocked,
         shouldDisplayAccountTab,
         chainId,
-        isChainValid,
+        isChainSupported,
         switchChain
     } = props;
 
@@ -146,7 +146,7 @@ export default function PageHeader(props: HeaderPropsIF) {
         setShowSwitchNetwork(false);
     }, [setShowSwitchNetwork]);
 
-    const switchNetWorkOrNull = isChainValid ? null : (
+    const switchNetWorkOrNull = isChainSupported ? null : (
         <SwitchNetwork
             onClose={closeSwitchNetwork}
             chainId={chainId}
@@ -259,7 +259,7 @@ export default function PageHeader(props: HeaderPropsIF) {
                 {(!isAuthenticated || !isWeb3Enabled) && metamaskButton}
                 <Account {...accountProps} />
             </div>
-            {switchNetWorkOrNull}
+            {false && switchNetWorkOrNull}
             {modalOrNull}
         </header>
     );

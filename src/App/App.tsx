@@ -51,8 +51,6 @@ import Trade from '../pages/Trade/Trade';
 /** * **** Import Local Files *******/
 import './App.css';
 import { useAppDispatch, useAppSelector } from '../utils/hooks/reduxToolkit';
-import { validateChain } from './validateChain';
-// import { IParsedPosition, parsePositionArray } from './parsePositions';
 import { defaultTokens } from '../utils/data/defaultTokens';
 import initializeUserLocalStorage from './functions/initializeUserLocalStorage';
 import { TokenIF, TokenListIF, PositionIF } from '../utils/interfaces/exports';
@@ -110,10 +108,11 @@ export default function App() {
 
     // custom hook to manage chain the app is using
     // `chainData` is data on the current chain retrieved from our SDK
+    // `isChainSupported` is a boolean indicating whether the chain is supported by Ambient
     // `switchChain` is a function to switch to a different chain
     // `'0x5'` is the chain the app should be on by default
-    const [ chainData, switchChain ] = useAppChain('0x5');
-    useEffect(() => {console.log({chainData})}, [chainData]);
+    const [ chainData, isChainSupported, switchChain ] = useAppChain('0x5');
+    useEffect(() => {console.log({isChainSupported, chainData})}, [chainData]);
     
     const [switchTabToTransactions, setSwitchTabToTransactions] = useState<boolean>(false);
 
@@ -1246,7 +1245,7 @@ export default function App() {
     // ... connected at all are both reflected as `false`
     // later we can make this available to the rest of the app through
     // ... the React Router context provider API
-    const isChainValid = chainData.chainId ? validateChain(chainData.chainId as string) : false;
+    // const isChainValid = chainData.chainId ? validateChain(chainData.chainId as string) : false;
 
     const currentLocation = location.pathname;
 
@@ -1362,7 +1361,7 @@ export default function App() {
         ensName: ensName,
         shouldDisplayAccountTab: shouldDisplayAccountTab,
         chainId: chainData.chainId,
-        isChainValid: isChainValid,
+        isChainSupported: isChainSupported,
         switchChain
     };
 

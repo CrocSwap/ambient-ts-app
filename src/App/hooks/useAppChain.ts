@@ -13,6 +13,7 @@ export const useAppChain = (
     defaultChain: string
 ): [
     ChainSpec,
+    boolean,
     Dispatch<SetStateAction<string>>
 ] => {
     // chain from connected wallet via Moralis
@@ -38,6 +39,11 @@ export const useAppChain = (
         }
     }, [chainId]);
 
+    const isChainSupported = useMemo(() => {
+        const supportedChains = ['0x5'];
+        return supportedChains.includes(currentChain);
+    }, [currentChain]);
+
     // data from the SDK about the current chain
     // refreshed every time the the value of currentChain is updated
     const chainData = useMemo(() => {
@@ -52,5 +58,5 @@ export const useAppChain = (
         return chn;
     }, [currentChain]);
 
-    return [ chainData, setCurrentChain ];
+    return [ chainData, isChainSupported, setCurrentChain ];
 }

@@ -297,7 +297,7 @@ export default function Limit(props: LimitPropsIF) {
                         isSellTokenBase={isSellTokenBase}
                         tokensBank={importedTokens}
                         setImportedTokens={setImportedTokens}
-                        chainId={chainId ?? '0x2a'}
+                        chainId={chainId}
                         setLimitAllowed={setLimitAllowed}
                         tokenABalance={truncateDecimals(parseFloat(tokenABalance), 4).toString()}
                         tokenBBalance={truncateDecimals(parseFloat(tokenBBalance), 4).toString()}
