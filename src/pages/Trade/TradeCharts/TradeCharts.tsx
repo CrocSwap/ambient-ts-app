@@ -23,7 +23,7 @@ import {
 } from '../../../utils/state/tradeDataSlice';
 import { useAppSelector, useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import { Dispatch, SetStateAction, useState, useEffect, useMemo } from 'react';
-import truncateDecimals from '../../../utils/data/truncateDecimals';
+// import truncateDecimals from '../../../utils/data/truncateDecimals';
 import TradeCandleStickChart from './TradeCandleStickChart';
 interface TradeChartsProps {
     // denomInTokenA: boolean;
@@ -84,8 +84,19 @@ export default function TradeCharts(props: TradeChartsProps) {
 
     const truncatedPoolPrice =
         poolPriceDisplay < 2
-            ? truncateDecimals(poolPriceDisplay, 4)
-            : truncateDecimals(poolPriceDisplay, 2);
+            ? poolPriceDisplay.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 6,
+              })
+            : poolPriceDisplay.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              });
+
+    // const truncatedPoolPrice =
+    //     poolPriceDisplay < 2
+    //         ? truncateDecimals(poolPriceDisplay, 4)
+    //         : truncateDecimals(poolPriceDisplay, 2);
     // ---------------------END OF TRADE DATA CALCULATIONS------------------------
 
     // GRAPH SETTINGS CONTENT------------------------------------------------------
@@ -283,7 +294,10 @@ export default function TradeCharts(props: TradeChartsProps) {
     const timeFrameContent = (
         <div className={styles.time_frame_container}>
             <div className={styles.left_side}>
-                <span className={styles.amount} onClick={() => dispatch(toggleDidUserFlipDenom())}>
+                <span
+                    className={styles.amount}
+                    // onClick={() => dispatch(toggleDidUserFlipDenom())}
+                >
                     {poolPriceDisplay === Infinity
                         ? '...'
                         : `${currencyCharacter}${truncatedPoolPrice}`}
