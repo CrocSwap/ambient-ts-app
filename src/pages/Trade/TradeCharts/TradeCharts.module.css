@@ -136,15 +136,10 @@
     /*     gap: 1rem;; */
 }
 
-.chart_image img {
-    /* width: 100%;
-    object-fit: contain;
-    max-height: 100%; */
-    object-fit: contain;
-    /* width: 100%; */
-}
 
-.save_image_container{
+
+
+.save_image_container, .chart_settings{
     display: flex;
     flex-direction: column;
     /* align-items: center; */
@@ -172,6 +167,65 @@ color: var(--text-grey-white);
 transition: all var(--animation-speed) ease-in-out  
 
 }
+.chart_item_container{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+}
+.chart_item_container{
+    padding: 1rem
+}
+
+.chart_ite_container input[type=checkbox] + label {
+    display: block;
+    margin: 0.2em;
+    cursor: pointer;
+    padding: 0.2em;
+  }
+  
+  .chart_item_container input[type=checkbox] {
+    display: none;
+  }
+  
+  .chart_item_container input[type=checkbox] + label:before {
+    content: "\2714";
+    border: 0.1em solid var(--text-grey-light);
+    border-radius: 0.2em;
+    display: inline-block;
+    width: 1.5em;
+    height: 1.5em;
+    padding-left: 0.2em;
+    padding-bottom: 0.3em;
+    margin: 0 10px;
+    vertical-align: bottom;
+    color: transparent;
+    transition: .2s;
+  }
+  
+  .chart_item_container input[type=checkbox] + label:active:before {
+    transform: scale(0);
+  }
+  
+  .chart_item_container input[type=checkbox]:checked + label:before {
+    background: var(--title-gradient);
+    border-color: #7371FC;
+    color: #fff;
+  }
+  
+  /* .chart_item_container input[type=checkbox]:disabled + label:before {
+    transform: scale(1);
+    border-color: #7371FC;
+  }
+  
+  .chart_item_container input[type=checkbox]:checked:disabled + label:before {
+    transform: scale(1);
+    background: var(--title-gradient);
+
+    border-color: #7371FC;
+  }
+   */
 @media only screen and (min-device-width: 320px) and (max-device-width: 568px) and (-webkit-min-device-pixel-ratio: 2) {
     .graph_container {
         /* display: none; */
@@ -228,12 +282,9 @@ transition: all var(--animation-speed) ease-in-out
         cursor: pointer;
     }
 
-    .graph_style{
-        resize: vertical;
-        overflow: auto;
-    }
+ 
 
-    .chart_full_screen{
+    /* .chart_full_screen{
         width: 100%;
         height: 100%;
 
@@ -248,16 +299,7 @@ transition: all var(--animation-speed) ease-in-out
         left:0px;
         z-index: 2; 
     }
-    .chart_full_screen img {
-        /* width: 100%;
-        object-fit: contain;
-        max-height: 100%; */
-        /* object-fit: cover; */
-        width: 100%;
-        height: 100%;
-        /* width: 100%; */
-    }
-  
+  */
 
 
 }

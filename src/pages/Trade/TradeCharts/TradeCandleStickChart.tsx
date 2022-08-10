@@ -2,7 +2,7 @@ import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { DetailedHTMLProps, HTMLAttributes, useEffect, useState } from 'react';
 import Chart from '../../Chart/Chart';
-import './TradeCandleStickChart.module.css';
+import './TradeCandleStickChart.css';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -21,9 +21,18 @@ interface ChartData {
     volumeData: any[];
     feeData: any[];
     priceData: any[];
+    chartItems: chartItem[];
 }
 
+type chartItem = {
+    slug: string;
+    name: string;
+    checked: boolean;
+};
+
 export default function TradeCandleStickChart(props: ChartData) {
+    const { chartItems } = props;
+    console.log(chartItems);
     const data = {
         tvlData: props.tvlData,
         volumeData: props.volumeData,
@@ -466,18 +475,33 @@ export default function TradeCandleStickChart(props: ChartData) {
         render();
     }, [data]);
 
+    console.log(chartItems[1].checked);
     return (
         <>
-            <Chart priceData={data.priceData} liquidityData={liquidityData} />
-            <hr />
-            <label>Fee Rate</label>
-            <div style={{ height: '15%', width: '80%' }} className='chart-fee'></div>
-            <hr />
-            <label>Tvl</label>
-            <div style={{ height: '15%', width: '80%' }} className='chart-tvl'></div>
-            <hr />
-            <label>Volume</label>
-            <div style={{ height: '15%', width: '80%' }} id='chart-volume'></div>
+            {chartItems[0].checked === true && (
+                <Chart priceData={data.priceData} liquidityData={liquidityData} />
+            )}
+            {chartItems[1].checked === true && (
+                <>
+                    <hr />
+                    <label>Fee Rate</label>
+                    <div style={{ height: '15%', width: '80%' }} className='chart-fee'></div>
+                </>
+            )}
+            {chartItems[2].checked === true && (
+                <>
+                    <hr />
+                    <label>Tvl</label>
+                    <div style={{ height: '15%', width: '80%' }} className='chart-tvl'></div>
+                </>
+            )}
+            {chartItems[3].checked === true && (
+                <>
+                    <hr />
+                    <label>Volume</label>
+                    <div style={{ height: '15%', width: '80%' }} id='chart-volume'></div>
+                </>
+            )}
         </>
     );
 }

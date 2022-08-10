@@ -33,6 +33,8 @@ interface TradeChartsProps {
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
     isTokenABase: boolean;
+    fullScreenChart: boolean;
+    setFullScreenChart: Dispatch<SetStateAction<boolean>>;
 }
 
 // trade charts
@@ -45,10 +47,10 @@ import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
 
 //
 export default function TradeCharts(props: TradeChartsProps) {
+    const { fullScreenChart, setFullScreenChart } = props;
     const { poolPriceDisplay } = props;
 
     const dispatch = useAppDispatch();
-    const [fullScreenChart, setFullScreenChart] = useState(false);
 
     // ---------------------TRADE DATA CALCULATIONS------------------------
 
@@ -125,6 +127,48 @@ export default function TradeCharts(props: TradeChartsProps) {
             </div>
         </div>
     );
+    // CHART SETTINGS------------------------------------------------------------
+    const [openSettingsTooltip, setOpenSettingsTooltip] = useState(false);
+
+    const [chartItems, setChartItems] = useState([
+        { slug: 'chart', name: 'Chart', checked: true },
+        { slug: 'feerate', name: 'Fee Rate', checked: false },
+        { slug: 'tvl', name: 'Tvl', checked: false },
+        { slug: 'volume', name: 'Voulme', checked: false },
+    ]);
+
+    const handleChartItemChange = (slug: string) => {
+        const copyProducts = [...chartItems];
+        const modifiedProducts = copyProducts.map((item) => {
+            if (slug === item.slug) {
+                item.checked = !item.checked;
+            }
+
+            return item;
+        });
+
+        setChartItems(modifiedProducts);
+    };
+
+    const chartSettingsContent = (
+        <div className={styles.chart_settings}>
+            {chartItems.map((item, idx) => (
+                <div className={styles.chart_item_container} key={idx}>
+                    <input
+                        type='checkbox'
+                        className={styles.custom_control_input}
+                        id={`customCheck1-${item.slug}`}
+                        checked={item.checked}
+                        onChange={() => handleChartItemChange(item.slug)}
+                    />
+                    <label className='custom-control-label' htmlFor={`customCheck1-${item.slug}`}>
+                        {item.name}
+                    </label>
+                </div>
+            ))}
+        </div>
+    );
+    // END OF CHART SETTINGS------------------------------------------------------------
 
     // eslint-disable-next-line
     function closeOnEscapeKeyDown(e: any) {
@@ -139,10 +183,19 @@ export default function TradeCharts(props: TradeChartsProps) {
     });
     const graphSettingsContent = (
         <div className={styles.graph_settings_container}>
-            <div>
+            <DefaultTooltip
+                interactive
+                title={chartSettingsContent}
+                open={openSettingsTooltip}
+                onOpen={() => setOpenSettingsTooltip(true)}
+                onClose={() => setOpenSettingsTooltip(false)}
+            >
+                <div />
+            </DefaultTooltip>
+            <div onClick={() => setOpenSettingsTooltip(!openSettingsTooltip)}>
                 <AiOutlineSetting size={20} />
             </div>
-            <div onClick={() => setFullScreenChart(true)}>
+            <div onClick={() => setFullScreenChart(!fullScreenChart)}>
                 <AiOutlineFullscreen size={20} />
             </div>
             <DefaultTooltip interactive title={saveImageContent}>
@@ -389,13 +442,12 @@ export default function TradeCharts(props: TradeChartsProps) {
         }
     }, [chartData]);
     // END OF CANDLE STICK DATA---------------------------------------------------
-    const fullScreenStyle = fullScreenChart ? styles.chart_full_screen : styles.chart_image;
 
     const expandGraphStyle = props.expandTradeTable ? styles.hide_graph : '';
 
     return (
-        <div>
-            <div className={`${styles.graph_style} ${expandGraphStyle} ${fullScreenStyle}`}>
+        <>
+            <div className={`${styles.graph_style} ${expandGraphStyle} `}>
                 {graphSettingsContent}
                 {tokenInfo}
                 {timeFrameContent}
@@ -406,8 +458,9 @@ export default function TradeCharts(props: TradeChartsProps) {
                 volumeData={formattedVolumeData}
                 feeData={formattedFeesUSD}
                 priceData={adjustedToCurrent}
+                chartItems={chartItems}
             />
-        </div>
+        </>
     );
 }
 
