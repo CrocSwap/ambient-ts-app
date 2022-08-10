@@ -38,7 +38,7 @@ export default function NetworkSelector(props: NetworkSelectorPropsIF) {
         },
     ];
 
-    const currenctChain = chains.find((chain) => chain.id === chainId);
+    const currentChain = chains.find((chain) => chain.id === chainId);
 
     const networkMenuContent = (
         <ul className={styles.menu_content}>
@@ -67,7 +67,7 @@ export default function NetworkSelector(props: NetworkSelectorPropsIF) {
                 <DropdownMenu2
                     marginTop={'50px'}
                     titleWidth={'130px'}
-                    title={currenctChain ? currenctChain.name : ''}
+                    title={currentChain ? currentChain.name : ''}
                 >
                     {networkMenuContent}
                 </DropdownMenu2>
