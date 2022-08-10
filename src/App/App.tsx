@@ -15,12 +15,7 @@ import {
 } from '../utils/state/graphDataSlice';
 import { ethers } from 'ethers';
 // import { request, gql } from 'graphql-request';
-import {
-    useMoralis,
-    //  useMoralisQuery,
-    //  useMoralisSubscription,
-    // useChain,
-} from 'react-moralis';
+import { useMoralis } from 'react-moralis';
 
 import useWebSocket from 'react-use-websocket';
 // import { ReadyState } from 'react-use-websocket';
@@ -111,19 +106,21 @@ export default function App() {
 
     const tokenMap = useTokenMap();
 
-    // const { switchNetwork } = useChain();
-
     const location = useLocation();
 
+    // custom hook to manage chain the app is using
+    // `chainData` is data on the current chain retrieved from our SDK
+    // `switchChain` is a function to switch to a different chain
+    // `'0x5'` is the chain the app should be on by default
+    const [ chainData, switchChain ] = useAppChain('0x5');
+    useEffect(() => {console.log({chainData})}, [chainData]);
+    
     const [switchTabToTransactions, setSwitchTabToTransactions] = useState<boolean>(false);
 
     const [isShowAllEnabled, setIsShowAllEnabled] = useState<boolean>(true);
     const [currentTxActiveInTransactions, setCurrentTxActiveInTransactions] = useState<string>('');
 
     const [expandTradeTable, setExpandTradeTable] = useState(false);
-
-    const [ chainData, switchChain ] = useAppChain('0x5');
-    useEffect(() => {console.log({chainData})}, [chainData]);
 
     const [provider, setProvider] = useState<ethers.providers.Provider>();
 
