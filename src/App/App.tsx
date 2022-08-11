@@ -1010,7 +1010,14 @@ export default function App() {
     // useEffect to update selected token balances
     useEffect(() => {
         (async () => {
-            if (provider && account && isAuthenticated && isWeb3Enabled) {
+            if (
+                provider &&
+                account &&
+                isAuthenticated &&
+                isWeb3Enabled &&
+                tokenPair?.dataTokenA?.address &&
+                tokenPair?.dataTokenB?.address
+            ) {
                 const croc = new CrocEnv(provider);
                 croc.token(tokenPair.dataTokenA.address)
                     .balanceDisplay(account)
@@ -1027,7 +1034,8 @@ export default function App() {
         account,
         isWeb3Enabled,
         isAuthenticated,
-        JSON.stringify(tokenPair),
+        tokenPair?.dataTokenA?.address,
+        tokenPair?.dataTokenB?.address,
         lastBlockNumber,
         provider,
     ]);
@@ -1041,24 +1049,22 @@ export default function App() {
     // useEffect to check if user has approved CrocSwap to sell the token A
     useEffect(() => {
         (async () => {
-            try {
-                const tokenAAddress = tokenPair.dataTokenA.address;
-                if (provider && isWeb3Enabled && account !== null) {
-                    const crocEnv = new CrocEnv(provider);
-                    if (!tokenAAddress) {
-                        return;
+            if (tokenPair?.dataTokenA?.address) {
+                try {
+                    const tokenAAddress = tokenPair.dataTokenA.address;
+                    if (provider && isWeb3Enabled && account !== null) {
+                        const crocEnv = new CrocEnv(provider);
+                        const allowance = await crocEnv.token(tokenAAddress).allowance(account);
+                        setTokenAAllowance(toDisplayQty(allowance, tokenPair.dataTokenA.decimals));
                     }
-
-                    const allowance = await crocEnv.token(tokenAAddress).allowance(account);
-                    setTokenAAllowance(toDisplayQty(allowance, tokenPair.dataTokenA.decimals));
+                } catch (err) {
+                    console.log(err);
                 }
-            } catch (err) {
-                console.log(err);
+                setRecheckTokenAApproval(false);
             }
-            setRecheckTokenAApproval(false);
         })();
     }, [
-        tokenPair.dataTokenA.address,
+        tokenPair?.dataTokenA?.address,
         lastBlockNumber,
         account,
         provider,
@@ -1070,25 +1076,22 @@ export default function App() {
     // useEffect to check if user has approved CrocSwap to sell the token B
     useEffect(() => {
         (async () => {
-            try {
-                const tokenBAddress = tokenPair.dataTokenB.address;
-                if (provider && isWeb3Enabled && account !== null) {
-                    const crocEnv = new CrocEnv(provider);
-                    if (!tokenBAddress) {
-                        return;
+            if (tokenPair?.dataTokenB?.address) {
+                try {
+                    const tokenBAddress = tokenPair.dataTokenB.address;
+                    if (provider && isWeb3Enabled && account !== null) {
+                        const crocEnv = new CrocEnv(provider);
+                        const allowance = await crocEnv.token(tokenBAddress).allowance(account);
+                        setTokenBAllowance(toDisplayQty(allowance, tokenPair.dataTokenB.decimals));
                     }
-                    // console.log({ tokenBAddress });
-                    const allowance = await crocEnv.token(tokenBAddress).allowance(account);
-                    // console.log({ allowance });
-                    setTokenBAllowance(toDisplayQty(allowance, tokenPair.dataTokenB.decimals));
+                } catch (err) {
+                    console.log(err);
                 }
-            } catch (err) {
-                console.log(err);
+                setRecheckTokenBApproval(false);
             }
-            setRecheckTokenBApproval(false);
         })();
     }, [
-        tokenPair.dataTokenB.address,
+        tokenPair?.dataTokenB?.address,
         lastBlockNumber,
         account,
         provider,
