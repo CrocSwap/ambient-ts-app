@@ -107,12 +107,11 @@ export default function RangesMenu(props: RangesMenu) {
             Remove
         </button>
     ) : null;
-    const copyButton =
-        userPosition && isPositionInRange ? (
-            <button className={styles.option_button} onClick={handleCopyAddress}>
-                Copy
-            </button>
-        ) : null;
+    const copyButton = isPositionInRange ? (
+        <button className={styles.option_button} onClick={handleCopyAddress}>
+            Copy
+        </button>
+    ) : null;
 
     const detailsButton = (
         <button className={styles.option_button} onClick={openDetailsModal}>
@@ -154,9 +153,9 @@ export default function RangesMenu(props: RangesMenu) {
         <div className={styles.dropdown_menu}>
             <DropdownMenu title={<FiMoreHorizontal size={20} />}>
                 <DropdownMenuContainer>
-                    <DropdownMenuItem>{editButton}</DropdownMenuItem>
-                    <DropdownMenuItem>{harvestButton}</DropdownMenuItem>
-                    <DropdownMenuItem>{removeButton}</DropdownMenuItem>
+                    {userPosition ? <DropdownMenuItem>{editButton}</DropdownMenuItem> : null}
+                    {userPosition ? <DropdownMenuItem>{harvestButton}</DropdownMenuItem> : null}
+                    {userPosition ? <DropdownMenuItem>{removeButton}</DropdownMenuItem> : null}
                     <DropdownMenuItem>{detailsButton}</DropdownMenuItem>
                     <DropdownMenuItem>{copyButton}</DropdownMenuItem>
                 </DropdownMenuContainer>

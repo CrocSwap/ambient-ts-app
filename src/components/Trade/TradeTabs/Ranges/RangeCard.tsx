@@ -21,7 +21,6 @@ interface RangeCardProps {
     isAuthenticated: boolean;
     account?: string;
     isDenomBase: boolean;
-    userPosition?: boolean;
     lastBlockNumber: number;
 }
 
@@ -36,8 +35,7 @@ export default function RangeCard(props: RangeCardProps) {
         // account,
         // notOnTradeRoute,
         // isAuthenticated,
-
-        userPosition,
+        account,
         lastBlockNumber,
     } = props;
 
@@ -96,7 +94,8 @@ export default function RangeCard(props: RangeCardProps) {
         (positionBaseAddressLowerCase === tokenBAddressLowerCase ||
             positionQuoteAddressLowerCase === tokenBAddressLowerCase);
 
-    // const accountAddress = account ? account.toLowerCase() : null;
+    const accountAddress = account ? account.toLowerCase() : null;
+    const userMatchesConnectedAccount = accountAddress === position.user.toLowerCase();
 
     // const positionOwnedByConnectedAccount = ownerId === accountAddress;
 
@@ -165,7 +164,7 @@ export default function RangeCard(props: RangeCardProps) {
 
             <div className={styles.menu_container}>
                 <RangesMenu
-                    userPosition={userPosition}
+                    userPosition={userMatchesConnectedAccount}
                     rangeDetailsProps={rangeDetailsProps}
                     posHash={posHash as string}
                     positionData={positionData}

@@ -76,7 +76,6 @@ export default function Ranges(props: RangesProps) {
                   isAuthenticated={isAuthenticated}
                   isDenomBase={isDenomBase}
                   lastBlockNumber={props.lastBlockNumber}
-                  userPosition
               />
           ));
     //   .reverse();
