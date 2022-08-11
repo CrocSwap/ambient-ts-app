@@ -44,35 +44,62 @@ export function getPinnedPriceValuesFromTicks(
     const pinnedMinPriceNonDisplay = tickToPrice(pinnedLowTick);
     const pinnedMaxPriceNonDisplay = tickToPrice(pinnedHighTick);
 
-    const pinnedMinPriceDisplay = isDenomInBase
-        ? 1 / toDisplayPrice(pinnedMaxPriceNonDisplay, baseTokenDecimals, quoteTokenDecimals, false)
-        : toDisplayPrice(pinnedMinPriceNonDisplay, baseTokenDecimals, quoteTokenDecimals, false);
+    const lowPriceDisplayInQuote = toDisplayPrice(
+        pinnedMinPriceNonDisplay,
+        baseTokenDecimals,
+        quoteTokenDecimals,
+    );
 
-    const pinnedMaxPriceDisplay = isDenomInBase
-        ? 1 / toDisplayPrice(pinnedMinPriceNonDisplay, baseTokenDecimals, quoteTokenDecimals, false)
-        : toDisplayPrice(pinnedMaxPriceNonDisplay, baseTokenDecimals, quoteTokenDecimals, false);
+    const highPriceDisplayInQuote = toDisplayPrice(
+        pinnedMaxPriceNonDisplay,
+        baseTokenDecimals,
+        quoteTokenDecimals,
+    );
+    const lowPriceDisplayInBase = 1 / highPriceDisplayInQuote;
+    const highPriceDisplayInBase = 1 / lowPriceDisplayInQuote;
 
-    const pinnedMinPriceDisplayTruncated =
-        pinnedMinPriceDisplay < 2
-            ? pinnedMinPriceDisplay > 0.1
-                ? truncateDecimals(pinnedMinPriceDisplay, 4).toString()
-                : truncateDecimals(pinnedMinPriceDisplay, 6).toString()
-            : truncateDecimals(pinnedMinPriceDisplay, 2).toString();
+    const lowPriceDisplay = isDenomInBase ? lowPriceDisplayInBase : lowPriceDisplayInQuote;
+    const highPriceDisplay = isDenomInBase ? highPriceDisplayInBase : highPriceDisplayInQuote;
 
-    // console.log({ pinnedMinPriceDisplay });
+    const lowPriceDisplayTruncated =
+        lowPriceDisplay < 2
+            ? truncateDecimals(lowPriceDisplay, 4)
+            : truncateDecimals(lowPriceDisplay, 2);
 
-    const pinnedMaxPriceDisplayTruncated =
-        pinnedMaxPriceDisplay < 2
-            ? pinnedMinPriceDisplay > 0.1
-                ? truncateDecimals(pinnedMaxPriceDisplay, 4).toString()
-                : truncateDecimals(pinnedMaxPriceDisplay, 6).toString()
-            : truncateDecimals(pinnedMaxPriceDisplay, 2).toString();
+    const highPriceDisplayTruncated =
+        highPriceDisplay < 2
+            ? truncateDecimals(highPriceDisplay, 4)
+            : truncateDecimals(highPriceDisplay, 2);
+
+    // const pinnedMinPriceDisplay = isDenomInBase
+    //     ? 1 / toDisplayPrice(pinnedMaxPriceNonDisplay, baseTokenDecimals, quoteTokenDecimals, false)
+    //     : toDisplayPrice(pinnedMinPriceNonDisplay, baseTokenDecimals, quoteTokenDecimals, false);
+
+    // const pinnedMaxPriceDisplay = isDenomInBase
+    //     ? 1 / toDisplayPrice(pinnedMinPriceNonDisplay, baseTokenDecimals, quoteTokenDecimals, false)
+    //     : toDisplayPrice(pinnedMaxPriceNonDisplay, baseTokenDecimals, quoteTokenDecimals, false);
+
+    // const pinnedMinPriceDisplayTruncated =
+    //     pinnedMinPriceDisplay < 2
+    //         ? pinnedMinPriceDisplay > 0.1
+    //             ? truncateDecimals(pinnedMinPriceDisplay, 4).toString()
+    //             : truncateDecimals(pinnedMinPriceDisplay, 6).toString()
+    //         : truncateDecimals(pinnedMinPriceDisplay, 2).toString();
+
+    // // console.log({ pinnedMinPriceDisplay });
+
+    // const pinnedMaxPriceDisplayTruncated =
+    //     pinnedMaxPriceDisplay < 2
+    //         ? pinnedMinPriceDisplay > 0.1
+    //             ? truncateDecimals(pinnedMaxPriceDisplay, 4).toString()
+    //             : truncateDecimals(pinnedMaxPriceDisplay, 6).toString()
+    //         : truncateDecimals(pinnedMaxPriceDisplay, 2).toString();
 
     return {
-        pinnedMinPriceDisplay: pinnedMinPriceDisplay.toString(),
-        pinnedMaxPriceDisplay: pinnedMaxPriceDisplay.toString(),
-        pinnedMinPriceDisplayTruncated: pinnedMinPriceDisplayTruncated,
-        pinnedMaxPriceDisplayTruncated: pinnedMaxPriceDisplayTruncated,
+        pinnedMinPriceDisplay: lowPriceDisplay.toString(),
+        pinnedMaxPriceDisplay: highPriceDisplay.toString(),
+        pinnedMinPriceDisplayTruncated: lowPriceDisplayTruncated,
+        pinnedMaxPriceDisplayTruncated: highPriceDisplayTruncated,
         pinnedLowTick: pinnedLowTick,
         pinnedHighTick: pinnedHighTick,
         pinnedMinPriceNonDisplay: pinnedMinPriceNonDisplay,
