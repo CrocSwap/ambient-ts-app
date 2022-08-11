@@ -274,7 +274,7 @@ export default function TradeCharts(props: TradeChartsProps) {
         { label: '4h', activePeriod: 14400 },
         { label: '1d', activePeriod: 86400 },
     ];
-    const [activeTimeFrame, setActiveTimeFrame] = useState('1m');
+    const [activeTimeFrame, setActiveTimeFrame] = useState('5m');
 
     function handleTimeFrameButtonClick(label: string, time: number) {
         setActiveTimeFrame(label);
@@ -453,13 +453,13 @@ export default function TradeCharts(props: TradeChartsProps) {
     const expandGraphStyle = props.expandTradeTable ? styles.hide_graph : '';
 
     return (
-        <div style={{ width: '100%', height: '100%' }} ref={canvasRef}>
-            <div className={`${styles.graph_style} ${expandGraphStyle} `}>
+        <>
+            <div className={`${styles.graph_style} ${expandGraphStyle}`}>
                 {graphSettingsContent}
                 {tokenInfo}
                 {timeFrameContent}
             </div>
-            <div style={{ width: '100%', height: '100%' }}>
+            <div style={{ width: '100%', height: '100%' }} ref={canvasRef}>
                 <TradeCandleStickChart
                     tvlData={formattedTvlData}
                     volumeData={formattedVolumeData}
@@ -468,7 +468,7 @@ export default function TradeCharts(props: TradeChartsProps) {
                     chartItems={chartItems}
                 />
             </div>
-        </div>
+        </>
     );
 }
 
