@@ -9,13 +9,17 @@ import { setTokenA, setTokenB } from '../../../utils/state/tradeDataSlice';
 
 import { topPools } from '../../../App/mockData';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
+import { ethers } from 'ethers';
 
 interface TopPoolsProps {
     tokenMap: Map<string, TokenIF>;
+    lastBlockNumber: number;
+    provider: ethers.providers.Provider | undefined;
+    chainId: string;
 }
 
 export default function TopPools(props: TopPoolsProps) {
-    const { tokenMap } = props;
+    const { tokenMap, lastBlockNumber, provider, chainId } = props;
 
     const { t } = useTranslation();
 
@@ -69,6 +73,9 @@ export default function TopPools(props: TopPoolsProps) {
                                 dispatch(setTokenB(pool.tokenB));
                             }}
                             tokenMap={tokenMap}
+                            lastBlockNumber={lastBlockNumber}
+                            provider={provider}
+                            chainId={chainId}
                         />
                     </NavLink>
                 ))}
