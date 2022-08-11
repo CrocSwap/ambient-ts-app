@@ -77,7 +77,7 @@ import PoolPage from '../pages/PoolPage/PoolPage';
 import { memoizeQuerySpotPrice, querySpotPrice } from './functions/querySpotPrice';
 import { memoizeFetchAddress } from './functions/fetchAddress';
 import { memoizeTokenBalance } from './functions/fetchTokenBalances';
-import truncateDecimals from '../utils/data/truncateDecimals';
+// import truncateDecimals from '../utils/data/truncateDecimals';
 import { getNFTs } from './functions/getNFTs';
 import { memoizeTokenDecimals } from './functions/queryTokenDecimals';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
@@ -1178,6 +1178,34 @@ export default function App() {
             quoteTokenDecimals,
         );
 
+        position.lowRangeShortDisplayInBase =
+            lowerPriceDisplayInBase < 2
+                ? lowerPriceDisplayInBase.toPrecision(2)
+                : lowerPriceDisplayInBase.toLocaleString(undefined, {
+                      maximumFractionDigits: 0,
+                  });
+
+        position.lowRangeShortDisplayInQuote =
+            lowerPriceDisplayInQuote < 2
+                ? lowerPriceDisplayInQuote.toPrecision(2)
+                : lowerPriceDisplayInQuote.toLocaleString(undefined, {
+                      maximumFractionDigits: 0,
+                  });
+
+        position.highRangeShortDisplayInBase =
+            upperPriceDisplayInBase < 2
+                ? upperPriceDisplayInBase.toPrecision(2)
+                : upperPriceDisplayInBase.toLocaleString(undefined, {
+                      maximumFractionDigits: 0,
+                  });
+
+        position.highRangeShortDisplayInQuote =
+            upperPriceDisplayInQuote < 2
+                ? upperPriceDisplayInQuote.toPrecision(2)
+                : upperPriceDisplayInQuote.toLocaleString(undefined, {
+                      maximumFractionDigits: 0,
+                  });
+
         const baseTokenLogoURI = importedTokens.find(
             (token) => token.address.toLowerCase() === baseTokenAddress.toLowerCase(),
         )?.logoURI;
@@ -1191,23 +1219,47 @@ export default function App() {
         if (!position.ambient) {
             position.lowRangeDisplayInBase =
                 lowerPriceDisplayInBase < 2
-                    ? truncateDecimals(lowerPriceDisplayInBase, 4).toString()
-                    : truncateDecimals(lowerPriceDisplayInBase, 2).toString();
+                    ? lowerPriceDisplayInBase.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 6,
+                      })
+                    : lowerPriceDisplayInBase.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                      });
             position.highRangeDisplayInBase =
                 upperPriceDisplayInBase < 2
-                    ? truncateDecimals(upperPriceDisplayInBase, 4).toString()
-                    : truncateDecimals(upperPriceDisplayInBase, 2).toString();
+                    ? upperPriceDisplayInBase.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 6,
+                      })
+                    : upperPriceDisplayInBase.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                      });
         }
 
         if (!position.ambient) {
             position.lowRangeDisplayInQuote =
                 lowerPriceDisplayInQuote < 2
-                    ? truncateDecimals(lowerPriceDisplayInQuote, 4).toString()
-                    : truncateDecimals(lowerPriceDisplayInQuote, 2).toString();
+                    ? lowerPriceDisplayInQuote.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 6,
+                      })
+                    : lowerPriceDisplayInQuote.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                      });
             position.highRangeDisplayInQuote =
                 upperPriceDisplayInQuote < 2
-                    ? truncateDecimals(upperPriceDisplayInQuote, 4).toString()
-                    : truncateDecimals(upperPriceDisplayInQuote, 2).toString();
+                    ? upperPriceDisplayInQuote.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 6,
+                      })
+                    : upperPriceDisplayInQuote.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                      });
         }
 
         position.poolPriceInTicks = poolPriceInTicks;
@@ -1532,6 +1584,7 @@ export default function App() {
     }
     // props for <Sidebar/> React element
     const sidebarProps = {
+        isDenomBase: tradeData.isDenomBase,
         showSidebar: showSidebar,
         toggleSidebar: toggleSidebar,
         chainId: chainId,

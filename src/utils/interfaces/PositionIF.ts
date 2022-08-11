@@ -18,9 +18,13 @@ export interface PositionIF {
     quoteSymbol: string;
     poolPriceInTicks: number;
     lowRangeDisplayInBase: string;
+    lowRangeShortDisplayInBase: string;
     highRangeDisplayInBase: string;
+    highRangeShortDisplayInBase: string;
+    lowRangeShortDisplayInQuote: string;
     lowRangeDisplayInQuote: string;
     highRangeDisplayInQuote: string;
+    highRangeShortDisplayInQuote: string;
     tokenAQtyDisplay: string;
     tokenBQtyDisplay: string;
     baseTokenDecimals: number;
