@@ -92,7 +92,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
 
     const outsideTabControl = {
         switchToTab: props.switchTabToTransactions,
-        tabToSwitchTo: 2,
+        tabToSwitchTo: 4,
         stateHandler: props.setSwitchTabToTransactions,
     };
 
@@ -106,7 +106,11 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
 
     return (
         <div className={styles.tabs_container}>
-            <TabComponent data={accountTabData} rightTabOptions={false} />
+            <TabComponent
+                data={accountTabData}
+                rightTabOptions={false}
+                outsideTabControl={outsideTabControl}
+            />
         </div>
     );
 }
