@@ -1713,6 +1713,8 @@ export default function App() {
                                     userImageData={imageData}
                                     chainId={chainId}
                                     tokenMap={tokenMap}
+                                    switchTabToTransactions={switchTabToTransactions}
+                                    setSwitchTabToTransactions={setSwitchTabToTransactions}
                                 />
                             }
                         />
@@ -1725,6 +1727,8 @@ export default function App() {
                                     chainId={chainId}
                                     userImageData={imageData}
                                     tokenMap={tokenMap}
+                                    switchTabToTransactions={switchTabToTransactions}
+                                    setSwitchTabToTransactions={setSwitchTabToTransactions}
                                 />
                             }
                         />

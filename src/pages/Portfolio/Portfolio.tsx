@@ -4,7 +4,7 @@ import PortfolioTabs from '../../components/Portfolio/PortfolioTabs/PortfolioTab
 import styles from './Portfolio.module.css';
 import { useParams } from 'react-router-dom';
 import { getNFTs } from '../../App/functions/getNFTs';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Dispatch, SetStateAction } from 'react';
 // import { memoizePromiseFn } from '../../App/functions/memoizePromiseFn';
 import { fetchAddress } from '../../App/functions/fetchAddress';
 import { useMoralis } from 'react-moralis';
@@ -17,6 +17,8 @@ interface PortfolioPropsIF {
     userImageData: string[];
     chainId: string;
     tokenMap: Map<string, TokenIF>;
+    switchTabToTransactions: boolean;
+    setSwitchTabToTransactions: Dispatch<SetStateAction<boolean>>;
 }
 
 const mainnetProvider = new ethers.providers.JsonRpcProvider(
@@ -104,6 +106,8 @@ export default function Portfolio(props: PortfolioPropsIF) {
                 connectedAccountActive={connectedAccountActive}
                 chainId={chainId}
                 tokenMap={tokenMap}
+                switchTabToTransactions={props.switchTabToTransactions}
+                setSwitchTabToTransactions={props.setSwitchTabToTransactions}
             />
             {connectedAccountActive ? exchangeBalanceComponent : null}
         </main>

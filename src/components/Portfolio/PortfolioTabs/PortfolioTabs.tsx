@@ -1,5 +1,5 @@
 import styles from './PortfolioTabs.module.css';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Dispatch, SetStateAction } from 'react';
 
 import Wallet from '../../Global/Account/AccountTabs/Wallet/Wallet';
 import Exchange from '../../Global/Account/AccountTabs/Exchange/Exchange';
@@ -31,6 +31,8 @@ interface PortfolioTabsPropsIF {
     connectedAccountActive: boolean;
     chainId: string;
     tokenMap: Map<string, TokenIF>;
+    switchTabToTransactions: boolean;
+    setSwitchTabToTransactions: Dispatch<SetStateAction<boolean>>;
 }
 export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
     const { resolvedAddress, activeAccount, connectedAccountActive, chainId, tokenMap } = props;
@@ -86,6 +88,12 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
     // props for <Range/> React Element
     const rangeProps = {
         positions: activeAccountPositionData,
+    };
+
+    const outsideTabControl = {
+        switchToTab: props.switchTabToTransactions,
+        tabToSwitchTo: 2,
+        stateHandler: props.setSwitchTabToTransactions,
     };
 
     const accountTabData = [
