@@ -9,7 +9,7 @@ export default function TransactionsTable() {
     return (
         <div className={styles.container}>
             <TransactionCardHeader />
-            {ItemContent}
+            <div className={styles.item_container}>{ItemContent}</div>
         </div>
     );
 }

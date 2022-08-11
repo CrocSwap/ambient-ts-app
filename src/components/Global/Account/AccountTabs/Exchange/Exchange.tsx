@@ -9,7 +9,7 @@ export default function Exchange() {
     return (
         <div className={styles.container}>
             <ExchangeHeader />
-            {ItemContent}
+            <div className={styles.item_container}>{ItemContent}</div>
         </div>
     );
 }
