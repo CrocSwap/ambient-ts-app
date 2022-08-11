@@ -121,7 +121,7 @@ export default function BarChart(props: BarData) {
             .crossValue((d: any) => d.time)
             .mainValue((d: any) => d.value)
             .decorate((selection: any) => {
-                selection.enter().style('fill', '#4169E1');
+                selection.enter().style('fill', '#7371FC');
             });
 
         const gridlines = d3fc.annotationSvgGridline().xScale(xScale).yScale(yScale);
