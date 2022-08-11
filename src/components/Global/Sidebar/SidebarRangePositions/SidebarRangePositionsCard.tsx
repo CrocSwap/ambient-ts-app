@@ -26,7 +26,9 @@ export default function SidebarRangePositionsCard(props: SidebarRangePositionsPr
     return (
         <div className={styles.container}>
             <div>
-                {position?.baseSymbol}/{position?.quoteSymbol}
+                {isDenomBase
+                    ? `${position?.baseSymbol}/${position?.quoteSymbol}`
+                    : `${position?.quoteSymbol}/${position?.baseSymbol}`}
             </div>
             <div>{rangeDisplay}</div>
             <div className={styles.status_display}>
