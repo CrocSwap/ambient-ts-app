@@ -9,16 +9,15 @@ import { BsDownload } from 'react-icons/bs';
 import printDomToImage from '../../utils/functions/printDomToImage';
 interface IRangeDetailsProps {
     provider: ethers.providers.Provider | undefined;
+    chainId: string;
     isPositionInRange: boolean;
     isAmbient: boolean;
     baseTokenSymbol: string;
     baseTokenDecimals: number;
     quoteTokenSymbol: string;
     quoteTokenDecimals: number;
-    lowRangeDisplayInBase: string;
-    highRangeDisplayInBase: string;
-    lowRangeDisplayInQuote: string;
-    highRangeDisplayInQuote: string;
+    lowRangeDisplay: string;
+    highRangeDisplay: string;
     isDenomBase: boolean;
     baseTokenLogoURI: string;
     quoteTokenLogoURI: string;
@@ -28,6 +27,8 @@ interface IRangeDetailsProps {
 }
 
 export default function RangeDetails(props: IRangeDetailsProps) {
+    const { lowRangeDisplay, highRangeDisplay, chainId } = props;
+
     const detailsRef = useRef(null);
     const downloadAsImage = () => {
         if (detailsRef.current) {
@@ -49,6 +50,7 @@ export default function RangeDetails(props: IRangeDetailsProps) {
                 <div className={styles.main_content}>
                     <TokenInfo
                         provider={props.provider}
+                        chainId={chainId}
                         baseTokenAddress={props.baseTokenAddress}
                         baseTokenDecimals={props.baseTokenDecimals}
                         quoteTokenAddress={props.quoteTokenAddress}
@@ -58,18 +60,7 @@ export default function RangeDetails(props: IRangeDetailsProps) {
                     />
                     <Divider />
                 </div>
-                <PriceInfo
-                    lowRangeDisplay={
-                        props.isDenomBase
-                            ? props.lowRangeDisplayInBase
-                            : props.lowRangeDisplayInQuote
-                    }
-                    highRangeDisplay={
-                        props.isDenomBase
-                            ? props.highRangeDisplayInBase
-                            : props.highRangeDisplayInQuote
-                    }
-                />
+                <PriceInfo lowRangeDisplay={lowRangeDisplay} highRangeDisplay={highRangeDisplay} />
             </div>
             <div onClick={downloadAsImage} className={styles.share_container}>
                 <BsDownload size={15} />

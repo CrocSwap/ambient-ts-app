@@ -1,5 +1,7 @@
 import RangeStatus from '../../Global/RangeStatus/RangeStatus';
 import styles from './RemoveRangeHeader.module.css';
+import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
+import { toggleDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
 
 interface IRemoveRangeHeaderProps {
     isPositionInRange: boolean;
@@ -12,9 +14,16 @@ interface IRemoveRangeHeaderProps {
 }
 
 export default function RemoveRangeHeader(props: IRemoveRangeHeaderProps) {
+    const dispatch = useAppDispatch();
+
     return (
         <div className={styles.container}>
-            <div className={styles.token_info}>
+            <div
+                className={styles.token_info}
+                onClick={() => {
+                    dispatch(toggleDidUserFlipDenom());
+                }}
+            >
                 <img
                     src={props.isDenomBase ? props.baseTokenLogoURI : props.quoteTokenLogoURI}
                     // src='https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png'

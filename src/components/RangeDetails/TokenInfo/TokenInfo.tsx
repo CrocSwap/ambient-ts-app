@@ -9,6 +9,7 @@ import { ethers } from 'ethers';
 
 interface ITokenInfoProps {
     provider: ethers.providers.Provider | undefined;
+    chainId: string;
     baseTokenAddress: string;
     baseTokenDecimals: number;
     quoteTokenAddress: string;
@@ -20,6 +21,7 @@ interface ITokenInfoProps {
 export default function TokenInfo(props: ITokenInfoProps) {
     const {
         provider,
+        chainId,
         baseTokenAddress,
         baseTokenDecimals,
         quoteTokenAddress,
@@ -38,25 +40,31 @@ export default function TokenInfo(props: ITokenInfoProps) {
                     provider,
                     baseTokenAddress,
                     quoteTokenAddress,
-                    '0x5',
+                    chainId,
                     lastBlockNumber,
                 );
-                const displayPriceInQuote = toDisplayPrice(
+                const displayPrice = toDisplayPrice(
                     spotPrice,
                     baseTokenDecimals,
                     quoteTokenDecimals,
                 );
 
-                const displayPriceInBase = 1 / displayPriceInQuote;
+                const displayPriceWithDenom = isDenomBase ? 1 / displayPrice : displayPrice;
 
-                const displayPrice = isDenomBase
-                    ? displayPriceInBase.toPrecision(6)
-                    : displayPriceInQuote.toPrecision(6);
+                const displayPriceString =
+                    displayPriceWithDenom === Infinity || displayPriceWithDenom === 0
+                        ? '...'
+                        : displayPriceWithDenom < 2
+                        ? displayPriceWithDenom.toPrecision(4)
+                        : displayPriceWithDenom.toLocaleString(undefined, {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                          });
 
-                setDisplayPrice(displayPrice);
+                setDisplayPrice(displayPriceString);
             })();
         }
-    }, [provider, lastBlockNumber, baseTokenAddress, quoteTokenAddress]);
+    }, [provider, isDenomBase, lastBlockNumber, baseTokenAddress, quoteTokenAddress]);
 
     return (
         <div className={styles.token_info_container}>

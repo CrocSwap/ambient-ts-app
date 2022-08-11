@@ -11,6 +11,7 @@ import { ethers } from 'ethers';
 
 interface RangeCardProps {
     provider: ethers.providers.Provider | undefined;
+    chainId: string;
     portfolio?: boolean;
     notOnTradeRoute?: boolean;
     position: PositionIF;
@@ -20,13 +21,13 @@ interface RangeCardProps {
     isAuthenticated: boolean;
     account?: string;
     isDenomBase: boolean;
-    userPosition?: boolean;
     lastBlockNumber: number;
 }
 
 export default function RangeCard(props: RangeCardProps) {
     const {
         provider,
+        chainId,
         position,
         // isAllPositionsEnabled,
         tokenAAddress,
@@ -34,8 +35,7 @@ export default function RangeCard(props: RangeCardProps) {
         // account,
         // notOnTradeRoute,
         // isAuthenticated,
-
-        userPosition,
+        account,
         lastBlockNumber,
     } = props;
 
@@ -94,7 +94,8 @@ export default function RangeCard(props: RangeCardProps) {
         (positionBaseAddressLowerCase === tokenBAddressLowerCase ||
             positionQuoteAddressLowerCase === tokenBAddressLowerCase);
 
-    // const accountAddress = account ? account.toLowerCase() : null;
+    const accountAddress = account ? account.toLowerCase() : null;
+    const userMatchesConnectedAccount = accountAddress === position.user.toLowerCase();
 
     // const positionOwnedByConnectedAccount = ownerId === accountAddress;
 
@@ -115,18 +116,17 @@ export default function RangeCard(props: RangeCardProps) {
     // ---------------------------------END OF POSITIONS MIN AND MAX RANGE--------------------
 
     // --------------------------REMOVE RANGE PROPS-------------------------------
-    const removeRangeProps = {
+    const rangeDetailsProps = {
         provider: provider,
+        chainId: chainId,
         isPositionInRange: isPositionInRange,
         isAmbient: position.positionType === 'ambient',
         baseTokenSymbol: position.baseSymbol,
         baseTokenDecimals: position.baseTokenDecimals,
         quoteTokenSymbol: position.quoteSymbol,
         quoteTokenDecimals: position.quoteTokenDecimals,
-        lowRangeDisplayInBase: position.lowRangeDisplayInBase,
-        highRangeDisplayInBase: position.highRangeDisplayInBase,
-        lowRangeDisplayInQuote: position.lowRangeDisplayInQuote,
-        highRangeDisplayInQuote: position.highRangeDisplayInQuote,
+        lowRangeDisplay: ambientMinOrNull,
+        highRangeDisplay: ambientMaxOrNull,
         baseTokenLogoURI: position.baseTokenLogoURI,
         quoteTokenLogoURI: position.quoteTokenLogoURI,
         isDenomBase: props.isDenomBase,
@@ -164,8 +164,8 @@ export default function RangeCard(props: RangeCardProps) {
 
             <div className={styles.menu_container}>
                 <RangesMenu
-                    userPosition={userPosition}
-                    removeRangeProps={removeRangeProps}
+                    userPosition={userMatchesConnectedAccount}
+                    rangeDetailsProps={rangeDetailsProps}
                     posHash={posHash as string}
                     positionData={positionData}
                 />
