@@ -2,13 +2,12 @@
     width: 100%;
     height: calc(100% /3);
     margin-top: 1rem;
-    /* min-height: 260px; */
     border-radius: var(--border-radius);
     background: var(--dark1);
    
 
 }
-
+/* 
 .tabs{
     display: flex;
     flex-direction: row;
@@ -75,4 +74,4 @@ ul.tab_navs{
    .option_toggles{
        display: none;
    }
-}
+} */

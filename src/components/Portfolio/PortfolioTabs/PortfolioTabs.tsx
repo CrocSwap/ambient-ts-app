@@ -1,5 +1,5 @@
 import styles from './PortfolioTabs.module.css';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Dispatch, SetStateAction } from 'react';
 
 import Wallet from '../../Global/Account/AccountTabs/Wallet/Wallet';
 import Exchange from '../../Global/Account/AccountTabs/Exchange/Exchange';
@@ -31,6 +31,8 @@ interface PortfolioTabsPropsIF {
     connectedAccountActive: boolean;
     chainId: string;
     tokenMap: Map<string, TokenIF>;
+    switchTabToTransactions: boolean;
+    setSwitchTabToTransactions: Dispatch<SetStateAction<boolean>>;
 }
 export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
     const { resolvedAddress, activeAccount, connectedAccountActive, chainId, tokenMap } = props;
@@ -88,6 +90,12 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
         positions: activeAccountPositionData,
     };
 
+    const outsideTabControl = {
+        switchToTab: props.switchTabToTransactions,
+        tabToSwitchTo: 4,
+        stateHandler: props.setSwitchTabToTransactions,
+    };
+
     const accountTabData = [
         { label: 'Wallet', content: <Wallet {...walletProps} />, icon: walletImage },
         { label: 'Exchange', content: <Exchange />, icon: exchangeImage },
@@ -98,7 +106,11 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
 
     return (
         <div className={styles.tabs_container}>
-            <TabComponent data={accountTabData} rightTabOptions={false} />
+            <TabComponent
+                data={accountTabData}
+                rightTabOptions={false}
+                outsideTabControl={outsideTabControl}
+            />
         </div>
     );
 }

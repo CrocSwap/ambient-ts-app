@@ -52,7 +52,7 @@ export default function Wallet(props: WalletPropsIF) {
     return (
         <div className={styles.container}>
             <WalletHeader />
-            {ItemContent}
+            <div className={styles.item_container}>{ItemContent}</div>
         </div>
     );
 }
