@@ -3,8 +3,9 @@ import styles from './TradeButton.module.css';
 
 export default function TradeButton() {
     const navigate = useNavigate();
-    function openTradePage() {
+    function openTradePage(event: React.MouseEvent<HTMLButtonElement>) {
         navigate('/trade/market');
+        event.stopPropagation();
     }
 
     return (
