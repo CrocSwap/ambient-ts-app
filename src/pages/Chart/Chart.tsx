@@ -1,6 +1,7 @@
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
-import { DetailedHTMLProps, HTMLAttributes, useEffect, useRef, useState } from 'react';
+import { DetailedHTMLProps, HTMLAttributes, useCallback, useEffect, useRef, useState } from 'react';
+import { CandleData, CandlesByPoolAndDuration } from '../../utils/state/graphDataSlice';
 import './Chart.css';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -16,8 +17,9 @@ declare global {
 }
 
 interface ChartData {
-    priceData: any[];
+    priceData: CandlesByPoolAndDuration | undefined;
     liquidityData: any[];
+    changeState: (isOpen: boolean | undefined, candleData: CandleData | undefined) => void;
 }
 
 export default function Chart(props: ChartData) {
@@ -29,29 +31,84 @@ export default function Chart(props: ChartData) {
     const [targets, setTargets] = useState([
         {
             name: 'high',
-            value: 1700,
+            value: 0,
         },
         {
             name: 'low',
-            value: 1620,
+            value: 0,
         },
     ]);
 
+    const [isChartSelected, setIsChartSelected] = useState<boolean>(false);
+    const [transactionFilter, setTransactionFilter] = useState<CandleData>();
+
     useEffect(() => {
-        const chartData: { date: any; open: any; high: any; low: any; close: any }[] = [];
-        props.priceData.map((data) => {
+        const chartData: {
+            date: any;
+            open: any;
+            high: any;
+            low: any;
+            close: any;
+            time: any;
+            allSwaps: any;
+        }[] = [];
+        let period = 1;
+        props.priceData?.candles.map((data) => {
+            if (data.period !== undefined) {
+                period = data.period;
+            }
             chartData.push({
-                date: data.time,
-                ...data,
+                date: new Date(data.time * 1000),
+                open: data.priceOpen,
+                close: data.priceClose,
+                high: data.maxPrice,
+                low: data.minPrice,
+                time: data.time,
+                allSwaps: data.allSwaps,
             });
         });
+
+        drawChart(chartData, period, targets);
+    }, [props.priceData, targets]);
+
+    useEffect(() => {
+        setTargets((prevState) => {
+            const newTargets = [...prevState];
+            newTargets.filter((target: any) => target.name === 'high')[0].value =
+                props.priceData !== undefined
+                    ? Math.max(
+                          ...props.priceData.candles.map((o) => {
+                              return o.priceOpen !== undefined ? o.priceOpen : 0;
+                          }),
+                      )
+                    : 0;
+            newTargets.filter((target: any) => target.name === 'low')[0].value =
+                props.priceData !== undefined
+                    ? Math.min(
+                          ...props.priceData.candles.map((o) => {
+                              return o.priceClose !== undefined ? o.priceClose : Infinity;
+                          }),
+                      )
+                    : 0;
+            return newTargets;
+        });
+    }, [props.priceData]);
+
+    useEffect(() => {
+        console.log({ isChartSelected });
+        console.log({ transactionFilter });
+        if (isChartSelected !== undefined && transactionFilter !== undefined) {
+            props.changeState(isChartSelected, transactionFilter);
+        }
+    }, [isChartSelected, transactionFilter]);
+
+    const drawChart = useCallback((chartData: any, period: any, targets: any) => {
         if (chartData.length > 0) {
             const render = () => {
                 nd.requestRedraw();
             };
 
-            const valueFormatter = d3.format('.2f');
-            const millisPerDay = 24 * 60 * 60 * 100;
+            const valueFormatter = d3.format('.8f');
 
             const priceRange = d3fc
                 .extentLinear()
@@ -63,16 +120,20 @@ export default function Chart(props: ChartData) {
                 .accessors([(d: any) => d.date])
                 .padUnit('domain')
                 // ensure that the scale is padded by one day in either direction
-                .pad([millisPerDay, 160000000]);
+                .pad([period * 5000, (period / 2) * 100000]);
 
             const xScale = d3.scaleTime();
             const yScale = d3.scaleLinear();
-            const liquidityTickScale = d3.scaleBand();
-            const liquidityScale = d3.scaleLinear();
-            const barThreshold = 1650;
+
+            xScale.domain(xExtent(chartData));
+            yScale.domain(priceRange(chartData));
 
             const xScaleCopy = xScale.copy();
             const yScaleCopy = yScale.copy();
+
+            const liquidityTickScale = d3.scaleBand();
+            const liquidityScale = d3.scaleLinear();
+            const barThreshold = 1650;
 
             // bar chart
             const liquidityExtent = d3fc
@@ -80,8 +141,6 @@ export default function Chart(props: ChartData) {
                 .include([0])
                 .accessors([(d: any) => d.value]);
 
-            xScale.domain(xExtent(chartData));
-            yScale.domain(priceRange(chartData));
             liquidityScale.domain(liquidityExtent(props.liquidityData));
 
             const liqScale = liquidityScale
@@ -118,6 +177,22 @@ export default function Chart(props: ChartData) {
                         .enter()
                         .style('fill', (d: any) => (d.close > d.open ? '#7371FC' : '#CDC1FF'))
                         .style('stroke', (d: any) => (d.close > d.open ? '#7371FC' : '#CDC1FF'));
+                    selection
+                        .enter()
+                        .on('mouseover', (event: any) => {
+                            d3.select(event.currentTarget).style('cursor', 'pointer');
+                        })
+                        .on('mouseout', (event: any) => {
+                            d3.select(event.currentTarget).style('cursor', 'default');
+                        })
+                        .on('click', (event: any) => {
+                            setIsChartSelected((prevState) => {
+                                return !prevState;
+                            });
+                            setTransactionFilter(() => {
+                                return event.target.__data__;
+                            });
+                        });
                 })
                 .xScale(xScale)
                 .yScale(yScale);
@@ -129,7 +204,9 @@ export default function Chart(props: ChartData) {
                 .yScale(yScale);
 
             const drag = d3.drag().on('drag', function (event, d: any) {
-                const newValue = yScale.invert(d3.pointer(event)[1] - 140);
+                // console.log('eski: ', d3.pointer(event)[1]);
+
+                const newValue = yScaleCopy.invert(d3.pointer(event)[1] - 182);
                 setTargets((prevState) => {
                     const newTargets = [...prevState];
                     newTargets.filter((target: any) => target.name === d.name)[0].value = newValue;
@@ -160,14 +237,14 @@ export default function Chart(props: ChartData) {
                     .call(drag);
             });
 
-            // const zoom = d3
-            //     .zoom()
-            //     // .scaleExtent([100, 1])
-            //     .on('zoom', (event: any) => {
-            //         xScale.domain(event.transform.rescaleX(xScaleCopy).domain());
-            //         yScale.domain(event.transform.rescaleY(yScaleCopy).domain());
-            //         render();
-            //     }) as any;
+            const zoom = d3
+                .zoom()
+                .scaleExtent([1, 10])
+                .on('zoom', (event: any) => {
+                    xScale.domain(event.transform.rescaleX(xScaleCopy).domain());
+                    yScale.domain(event.transform.rescaleY(yScaleCopy).domain());
+                    render();
+                }) as any;
 
             const candleJoin = d3fc.dataJoin('g', 'candle');
             const targetsJoin = d3fc.dataJoin('g', 'targets');
@@ -177,9 +254,6 @@ export default function Chart(props: ChartData) {
             d3.select(d3PlotArea.current).on('measure', function (event: any) {
                 xScale.range([0, event.detail.width]);
                 yScale.range([event.detail.height, 0]);
-
-                xScaleCopy.range([0, event.detail.width]);
-                yScaleCopy.range([event.detail.height, 0]);
 
                 liquidityTickScale.range([event.detail.height, 0]);
                 liquidityScale.range([event.detail.width, event.detail.width / 2]);
@@ -201,24 +275,29 @@ export default function Chart(props: ChartData) {
                 d3.select(event.target).select('svg').call(yAxis);
             });
 
-            // d3.select(d3PlotArea.current).on('measure.range', function (event: any) {
-            //     const svg = d3.select(event.target).select('svg');
-            //     xScaleCopy.range([0, event.detail.width]);
-            //     yScaleCopy.range([event.detail.height, 0]);
-            //     svg.call(zoom)
-            // })
+            d3.select(d3PlotArea.current).on('measure.range', function (event: any) {
+                const svg = d3.select(event.target).select('svg');
+                xScaleCopy.range([0, event.detail.width]);
+                yScaleCopy.range([event.detail.height, 0]);
+                svg.call(zoom);
+            });
 
             const nd = d3.select('#group').node() as any;
             render();
         }
-    }, [targets, props.priceData, props.liquidityData]);
+    }, []);
 
     return (
         <div ref={d3Container} className='main_layout_chart' data-testid={'chart'}>
             <d3fc-group
                 id='group'
                 className='hellooo'
-                style={{ display: 'flex', height: '100%', width: '100%', flexDirection: 'column' }}
+                style={{
+                    display: 'flex',
+                    height: '100%',
+                    width: '100%',
+                    flexDirection: 'column',
+                }}
                 auto-resize
             >
                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>

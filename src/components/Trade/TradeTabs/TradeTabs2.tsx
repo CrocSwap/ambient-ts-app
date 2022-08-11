@@ -17,6 +17,7 @@ import Ranges from './Ranges/Ranges';
 import TabComponent from '../../Global/TabComponent/TabComponent';
 import PositionsOnlyToggle from './PositionsOnlyToggle/PositionsOnlyToggle';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
+import { CandleData } from '../../../utils/state/graphDataSlice';
 
 interface ITabsProps {
     provider: ethers.providers.Provider | undefined;
@@ -35,10 +36,24 @@ interface ITabsProps {
     tokenMap: Map<string, TokenIF>;
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
+    isCandleSelected: boolean | undefined;
+    filter: CandleData | undefined;
+    setIsCandleSelected: Dispatch<SetStateAction<boolean | undefined>>;
+    setTransactionFilter: Dispatch<SetStateAction<CandleData | undefined>>;
 }
 
 export default function TradeTabs2(props: ITabsProps) {
-    const { chainId, isShowAllEnabled, setIsShowAllEnabled, tokenMap, provider } = props;
+    const {
+        chainId,
+        isShowAllEnabled,
+        setIsShowAllEnabled,
+        tokenMap,
+        provider,
+        isCandleSelected,
+        setIsCandleSelected,
+        filter,
+        setTransactionFilter,
+    } = props;
 
     const graphData = useAppSelector((state) => state?.graphData);
 
@@ -56,7 +71,7 @@ export default function TradeTabs2(props: ITabsProps) {
         // console.log({ isShowAllEnabled });
         // console.log({ userPositions });
         if (!hasInitialized) {
-            if (!isShowAllEnabled && userPositions.length < 1) {
+            if (!isCandleSelected && !isShowAllEnabled && userPositions.length < 1) {
                 setIsShowAllEnabled(true);
             } else if (userPositions.length < 1) {
                 return;
@@ -90,6 +105,9 @@ export default function TradeTabs2(props: ITabsProps) {
 
         setCurrentTxActiveInTransactions: props.setCurrentTxActiveInTransactions,
         expandTradeTable: props.expandTradeTable,
+
+        isCandleSelected: isCandleSelected,
+        filter: filter,
     };
     // Props for <Orders/> React Element
     const ordersProps = {
@@ -103,6 +121,8 @@ export default function TradeTabs2(props: ITabsProps) {
         isWeb3Enabled: props.isWeb3Enabled,
         setHasInitialized: setHasInitialized,
         setIsShowAllEnabled: setIsShowAllEnabled,
+        setIsCandleSelected: setIsCandleSelected,
+        setTransactionFilter: setTransactionFilter,
         expandTradeTable: props.expandTradeTable,
         setExpandTradeTable: props.setExpandTradeTable,
     };

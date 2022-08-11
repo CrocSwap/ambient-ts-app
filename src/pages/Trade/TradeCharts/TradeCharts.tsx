@@ -35,15 +35,14 @@ interface TradeChartsProps {
     isTokenABase: boolean;
     fullScreenChart: boolean;
     setFullScreenChart: Dispatch<SetStateAction<boolean>>;
+    changeState: (isOpen: boolean | undefined, candleData: CandleData | undefined) => void;
+    candleData: CandlesByPoolAndDuration | undefined;
 }
 
 // trade charts
-import { ONE_HOUR_SECONDS, TimeWindow } from '../../../constants/intervals';
-import { currentTimestamp } from '../../../utils';
-import { PriceChartEntry } from '../../../types';
 import { usePoolChartData } from '../../../state/pools/hooks';
-import { useTokenData, useTokenPriceData } from '../../../state/tokens/hooks';
 import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
+import { CandleData, CandlesByPoolAndDuration } from '../../../utils/state/graphDataSlice';
 
 //
 export default function TradeCharts(props: TradeChartsProps) {
@@ -374,40 +373,7 @@ export default function TradeCharts(props: TradeChartsProps) {
     // END OF TIME FRAME CONTENT--------------------------------------------------------------
 
     // CANDLE STICK DATA---------------------------------------------------
-    const DEFAULT_TIME_WINDOW = TimeWindow.WEEK;
-
-    const [timeWindow] = useState(DEFAULT_TIME_WINDOW);
     const chartData = usePoolChartData('0x8ad599c3a0ff1de082011efddc58f1908eb6e6d8'); // ETH/USDC pool address
-    const tokenData = useTokenData('0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'); // ETH address
-    const priceData = useTokenPriceData(
-        '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', // ETH address
-        ONE_HOUR_SECONDS,
-        timeWindow,
-    );
-
-    const adjustedToCurrent = useMemo(() => {
-        if (priceData && tokenData && priceData.length > 0) {
-            const adjusted = Object.assign([], priceData);
-            adjusted.push({
-                time: currentTimestamp() / 1000,
-                open: priceData[priceData.length - 1].close,
-                close: tokenData?.priceUSD,
-                high: tokenData?.priceUSD,
-                low: priceData[priceData.length - 1].close,
-            });
-            return adjusted.map((item: PriceChartEntry) => {
-                return {
-                    time: new Date(item.time * 1000),
-                    high: item.high,
-                    low: item.low,
-                    open: item.open,
-                    close: item.close,
-                };
-            });
-        } else {
-            return [];
-        }
-    }, [priceData, tokenData]);
 
     const formattedTvlData = useMemo(() => {
         if (chartData) {
@@ -464,7 +430,8 @@ export default function TradeCharts(props: TradeChartsProps) {
                     tvlData={formattedTvlData}
                     volumeData={formattedVolumeData}
                     feeData={formattedFeesUSD}
-                    priceData={adjustedToCurrent}
+                    priceData={props.candleData}
+                    changeState={props.changeState}
                     chartItems={chartItems}
                 />
             </div>
