@@ -3,6 +3,8 @@ import { ISwap } from '../../../../utils/state/graphDataSlice';
 
 import styles from './SidebarRecentTransactionsCard.module.css';
 import { Dispatch, SetStateAction } from 'react';
+import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
+import { setTokenA, setTokenB } from '../../../../utils/state/tradeDataSlice';
 
 interface TransactionProps {
     tx: ISwap;
@@ -30,6 +32,8 @@ export default function SidebarRecentTransactionsCard(props: TransactionProps) {
         switchTabToTransactions,
     } = props;
 
+    const dispatch = useAppDispatch();
+
     // console.log(tx.source);
     // console.log(tx.block);
 
@@ -56,6 +60,8 @@ export default function SidebarRecentTransactionsCard(props: TransactionProps) {
         setIsShowAllEnabled(false);
 
         setCurrentTxActiveInTransactions(tx.id);
+        if (baseToken) dispatch(setTokenA(baseToken));
+        if (quoteToken) dispatch(setTokenB(quoteToken));
     }
 
     return (
