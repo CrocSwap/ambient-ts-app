@@ -38,7 +38,7 @@ interface ITabsProps {
 }
 
 export default function TradeTabs2(props: ITabsProps) {
-    const { isShowAllEnabled, setIsShowAllEnabled, tokenMap, provider } = props;
+    const { chainId, isShowAllEnabled, setIsShowAllEnabled, tokenMap, provider } = props;
 
     const graphData = useAppSelector((state) => state?.graphData);
 
@@ -72,6 +72,7 @@ export default function TradeTabs2(props: ITabsProps) {
     // Props for <Ranges/> React Element
     const rangesProps = {
         provider: provider,
+        chainId: chainId,
         isShowAllEnabled: isShowAllEnabled,
         notOnTradeRoute: false,
         graphData: graphData,

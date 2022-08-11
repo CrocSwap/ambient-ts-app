@@ -39,7 +39,7 @@ interface ITradeProps {
 }
 
 export default function Trade(props: ITradeProps) {
-    const { tokenMap, poolPriceDisplay, provider } = props;
+    const { chainId, tokenMap, poolPriceDisplay, provider } = props;
 
     const routes = [
         {
@@ -148,7 +148,7 @@ export default function Trade(props: ITradeProps) {
                             isAuthenticated={props.isAuthenticated}
                             isWeb3Enabled={props.isWeb3Enabled}
                             lastBlockNumber={props.lastBlockNumber}
-                            chainId={props.chainId}
+                            chainId={chainId}
                             switchTabToTransactions={props.switchTabToTransactions}
                             setSwitchTabToTransactions={props.setSwitchTabToTransactions}
                             currentTxActiveInTransactions={props.currentTxActiveInTransactions}

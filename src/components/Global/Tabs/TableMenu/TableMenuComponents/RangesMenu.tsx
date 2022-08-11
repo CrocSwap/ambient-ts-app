@@ -13,7 +13,7 @@ interface RangesMenu {
     userPosition: boolean | undefined;
     // todoFromJr: Assign the correct types to these data -Jr
     // eslint-disable-next-line
-    removeRangeProps: any;
+    rangeDetailsProps: any;
     // eslint-disable-next-line
     positionData: any;
     posHash: string;
@@ -23,9 +23,9 @@ import RemoveRange from '../../../../RemoveRange/RemoveRange';
 import RangeDetails from '../../../../RangeDetails/RangeDetails';
 export default function RangesMenu(props: RangesMenu) {
     const currentLocation = location.pathname;
-    const { isAmbient, isPositionInRange } = props.removeRangeProps;
+    const { isAmbient, isPositionInRange } = props.rangeDetailsProps;
     const { posHash, positionData } = props;
-    const { userPosition, removeRangeProps } = props;
+    const { userPosition, rangeDetailsProps } = props;
     // eslint-disable-next-line
     const [value, copy] = useCopyToClipboard();
     const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
@@ -71,13 +71,13 @@ export default function RangesMenu(props: RangesMenu) {
 
     switch (currentModal) {
         case 'remove':
-            modalContent = <RemoveRange {...removeRangeProps} />;
+            modalContent = <RemoveRange {...rangeDetailsProps} />;
             modalTitle = 'Remove Position';
             break;
 
         case 'details':
             // modalContent = <RangeDetails {...removeRangeProps} />;
-            modalContent = <RangeDetails {...removeRangeProps} />;
+            modalContent = <RangeDetails {...rangeDetailsProps} />;
             modalTitle = <RangeDetailsHeader />;
             break;
         case 'harvest':
