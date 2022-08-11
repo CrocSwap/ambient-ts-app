@@ -1180,28 +1180,28 @@ export default function App() {
 
         position.lowRangeShortDisplayInBase =
             lowerPriceDisplayInBase < 2
-                ? lowerPriceDisplayInBase.toPrecision(2)
+                ? lowerPriceDisplayInBase.toPrecision(3)
                 : lowerPriceDisplayInBase.toLocaleString(undefined, {
                       maximumFractionDigits: 0,
                   });
 
         position.lowRangeShortDisplayInQuote =
             lowerPriceDisplayInQuote < 2
-                ? lowerPriceDisplayInQuote.toPrecision(2)
+                ? lowerPriceDisplayInQuote.toPrecision(3)
                 : lowerPriceDisplayInQuote.toLocaleString(undefined, {
                       maximumFractionDigits: 0,
                   });
 
         position.highRangeShortDisplayInBase =
             upperPriceDisplayInBase < 2
-                ? upperPriceDisplayInBase.toPrecision(2)
+                ? upperPriceDisplayInBase.toPrecision(3)
                 : upperPriceDisplayInBase.toLocaleString(undefined, {
                       maximumFractionDigits: 0,
                   });
 
         position.highRangeShortDisplayInQuote =
             upperPriceDisplayInQuote < 2
-                ? upperPriceDisplayInQuote.toPrecision(2)
+                ? upperPriceDisplayInQuote.toPrecision(3)
                 : upperPriceDisplayInQuote.toLocaleString(undefined, {
                       maximumFractionDigits: 0,
                   });
@@ -1219,20 +1219,14 @@ export default function App() {
         if (!position.ambient) {
             position.lowRangeDisplayInBase =
                 lowerPriceDisplayInBase < 2
-                    ? lowerPriceDisplayInBase.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 6,
-                      })
+                    ? lowerPriceDisplayInBase.toPrecision(3)
                     : lowerPriceDisplayInBase.toLocaleString(undefined, {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
                       });
             position.highRangeDisplayInBase =
                 upperPriceDisplayInBase < 2
-                    ? upperPriceDisplayInBase.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 6,
-                      })
+                    ? upperPriceDisplayInBase.toPrecision(3)
                     : upperPriceDisplayInBase.toLocaleString(undefined, {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
@@ -1242,20 +1236,14 @@ export default function App() {
         if (!position.ambient) {
             position.lowRangeDisplayInQuote =
                 lowerPriceDisplayInQuote < 2
-                    ? lowerPriceDisplayInQuote.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 6,
-                      })
+                    ? lowerPriceDisplayInQuote.toPrecision(3)
                     : lowerPriceDisplayInQuote.toLocaleString(undefined, {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
                       });
             position.highRangeDisplayInQuote =
                 upperPriceDisplayInQuote < 2
-                    ? upperPriceDisplayInQuote.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 6,
-                      })
+                    ? upperPriceDisplayInQuote.toPrecision(3)
                     : upperPriceDisplayInQuote.toLocaleString(undefined, {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,

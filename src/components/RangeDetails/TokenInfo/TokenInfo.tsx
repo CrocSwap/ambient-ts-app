@@ -55,10 +55,7 @@ export default function TokenInfo(props: ITokenInfoProps) {
                     displayPriceWithDenom === Infinity || displayPriceWithDenom === 0
                         ? '...'
                         : displayPriceWithDenom < 2
-                        ? displayPriceWithDenom.toLocaleString(undefined, {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 6,
-                          })
+                        ? displayPriceWithDenom.toPrecision(4)
                         : displayPriceWithDenom.toLocaleString(undefined, {
                               minimumFractionDigits: 2,
                               maximumFractionDigits: 2,
