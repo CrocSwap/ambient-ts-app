@@ -143,8 +143,8 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
     const setTokenAQtyValue = (value: number) => {
         if (poolPriceNonDisplay === undefined) return;
         // console.log({ value });
-        setTokenAQtyLocal(value);
-        setTokenAInputQty(value.toString());
+        setTokenAQtyLocal(parseFloat(truncateDecimals(value, tokenPair.dataTokenA.decimals)));
+        setTokenAInputQty(truncateDecimals(value, tokenPair.dataTokenA.decimals));
         handleRangeButtonMessageTokenA(value);
 
         const qtyTokenB =
@@ -189,9 +189,8 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
 
     const setTokenBQtyValue = (value: number) => {
         if (poolPriceNonDisplay === undefined) return;
-        setTokenBQtyLocal(value);
-        setTokenBInputQty(value.toString());
-
+        setTokenBQtyLocal(parseFloat(truncateDecimals(value, tokenPair.dataTokenB.decimals)));
+        setTokenBInputQty(truncateDecimals(value, tokenPair.dataTokenB.decimals));
         handleRangeButtonMessageTokenB(value);
 
         const qtyTokenA =
