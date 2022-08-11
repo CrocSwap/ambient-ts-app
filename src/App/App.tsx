@@ -133,12 +133,12 @@ export default function App() {
     const poolIndex = useMemo(() => lookupChain(chainId).poolIndex.toString(), [chainId]);
 
     useEffect(() => {
-        if (isWeb3Enabled) {
+        if (isWeb3Enabled && window.ethereum?.networkVersion) {
             const newNetworkHex = '0x' + parseInt(window.ethereum?.networkVersion).toString(16);
             console.log('switching networks because metamask network changed');
             switchNetwork(newNetworkHex);
         }
-    }, [window.ethereum?.networkVersion]);
+    }, [isWeb3Enabled, window.ethereum?.networkVersion]);
 
     const [provider, setProvider] = useState<ethers.providers.Provider>();
 
