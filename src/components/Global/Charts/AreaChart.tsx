@@ -35,15 +35,6 @@ export default function AreaChart(props: AreaChartProps) {
     const d3Container = useRef(null);
     const chartValue = props.data;
     useEffect(() => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-
-        // if (chartValue && chartValue.length<2){
-
-        //     chartValue.push(chartValue[0])
-        //     chartValue.push(chartValue[0])
-        //     chartValue.push(chartValue[0])
-        // }
-
         const yExtent = d3fc.extentLinear().accessors([(d: any) => d.value]);
         const xExtent = d3fc.extentDate().accessors([(d: any) => d.time]);
 
@@ -142,28 +133,41 @@ export default function AreaChart(props: AreaChartProps) {
 
         const pointer = d3fc.pointer().on('point', (event: any) => {
             if (event.length > 0) {
-                const xVal = xScale.invert(event[0].x);
-
-                const parsed = data.series.find(
-                    (item) =>
-                        moment(new Date(item.time)).format('DD/MM/YYYY') ===
-                        moment(xVal).format('DD/MM/YYYY'),
-                );
-
-                if (parsed) {
-                    data.crosshair = [
-                        {
-                            x: event[0].x,
-                            y: yScale(parsed?.value),
-                        },
-                    ];
-
-                    props.setValue?.(parsed?.value);
-                    props.setLabel?.(getDate(xVal));
-                }
+                data.crosshair = snap(lineSeries, data.series, event[0]);
             }
             render();
         });
+
+        const snap = (series: any, data: any, point: any) => {
+            if (point == undefined) return [];
+            const xScale = series.xScale(),
+                xValue = series.crossValue();
+            const filtered = data.length > 1 ? data.filter((d: any) => xValue(d) != null) : data;
+            const nearest = minimum(filtered, (d: any) => Math.abs(point.x - xScale(xValue(d))))[1];
+            const newX = new Date(nearest.time.getTime());
+            const value = new Date(newX.setTime(newX.getTime()));
+            props.setValue?.(nearest?.value);
+            props.setLabel?.(getDate(value));
+            return [
+                {
+                    x: xScale(value),
+                    y: yScale(nearest.value),
+                },
+            ];
+        };
+
+        const minimum = (data: any, accessor: any) => {
+            return data
+                .map(function (dataPoint: any, index: any) {
+                    return [accessor(dataPoint, index), dataPoint, index];
+                })
+                .reduce(
+                    function (accumulator: any, dataPoint: any) {
+                        return accumulator[0] > dataPoint[0] ? dataPoint : accumulator;
+                    },
+                    [Number.MAX_VALUE, null, -1],
+                );
+        };
 
         const getDate = (date: any) => {
             return date === undefined ? '-' : moment.utc(date).format('MMM D, YYYY');

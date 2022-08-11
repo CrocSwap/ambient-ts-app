@@ -2,6 +2,7 @@ import styles from './PositionsOnlyToggle.module.css';
 import { Dispatch, SetStateAction } from 'react';
 import Toggle2 from '../../../Global/Toggle/Toggle2';
 import { MdExpand, MdCloseFullscreen } from 'react-icons/md';
+import { CandleData } from '../../../../utils/state/graphDataSlice';
 
 interface PositionsOnlyToggleProps {
     isShowAllEnabled: boolean;
@@ -9,6 +10,8 @@ interface PositionsOnlyToggleProps {
     isWeb3Enabled: boolean;
     setHasInitialized: Dispatch<SetStateAction<boolean>>;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
+    setIsCandleSelected: Dispatch<SetStateAction<boolean | undefined>>;
+    setTransactionFilter: Dispatch<SetStateAction<CandleData | undefined>>;
 
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
@@ -21,6 +24,8 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
         isAuthenticated,
         isWeb3Enabled,
         setIsShowAllEnabled,
+        setIsCandleSelected,
+        setTransactionFilter,
         setHasInitialized,
         expandTradeTable,
         setExpandTradeTable,
@@ -47,6 +52,10 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
                         setHasInitialized(true);
                         console.log('toggle on', !isShowAllEnabled);
                         setIsShowAllEnabled(!isShowAllEnabled);
+                        if (!isShowAllEnabled) {
+                            setIsCandleSelected(false);
+                            setTransactionFilter(undefined);
+                        }
                     }}
                     id='positions_only_toggle'
                     disabled={!isAuthenticated || !isWeb3Enabled}

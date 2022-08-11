@@ -4,12 +4,13 @@ import styles from './Trade.module.css';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 
 import { tradeData as TradeDataIF } from '../../utils/state/tradeDataSlice';
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useState } from 'react';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
 
 import TradeTabs2 from '../../components/Trade/TradeTabs/TradeTabs2';
 import { motion, AnimateSharedLayout } from 'framer-motion';
 import TradeCharts from './TradeCharts/TradeCharts';
+import { CandleData } from '../../utils/state/graphDataSlice';
 import { ethers } from 'ethers';
 
 interface ITradeProps {
@@ -40,6 +41,9 @@ interface ITradeProps {
 
 export default function Trade(props: ITradeProps) {
     const { chainId, tokenMap, poolPriceDisplay, provider } = props;
+
+    const [isCandleSelected, setIsCandleSelected] = useState<boolean | undefined>();
+    const [transactionFilter, setTransactionFilter] = useState<CandleData>();
 
     const routes = [
         {
@@ -72,11 +76,10 @@ export default function Trade(props: ITradeProps) {
         .map((item) => JSON.stringify(item.pool).toLowerCase())
         .findIndex((pool) => pool === mainnetCandlePoolDefinition);
 
-    const mainnetCandleData = graphData.candlesForAllPools.pools[indexOfMainnetCandlePool];
-
-    useEffect(() => {
-        console.log({ mainnetCandleData });
-    }, [mainnetCandleData]);
+    const mainnetCandleData = graphData?.candlesForAllPools?.pools[indexOfMainnetCandlePool];
+    const candleData = mainnetCandleData?.candlesByPoolAndDuration.find((data) => {
+        return data.duration === tradeData.activeChartPeriod;
+    });
 
     const denomInBase = tradeData.isDenomBase;
 
@@ -106,6 +109,12 @@ export default function Trade(props: ITradeProps) {
     const expandGraphStyle = props.expandTradeTable ? styles.hide_graph : '';
     const fullScreenStyle = fullScreenChart ? styles.chart_full_screen : styles.main__chart;
 
+    const changeState = (isOpen: boolean | undefined, candleData: CandleData | undefined) => {
+        setIsCandleSelected(isOpen);
+        props.setIsShowAllEnabled(!isOpen);
+        setTransactionFilter(candleData);
+    };
+
     return (
         <AnimateSharedLayout>
             <main className={styles.main_layout}>
@@ -128,6 +137,8 @@ export default function Trade(props: ITradeProps) {
                                 isTokenABase={props.isTokenABase}
                                 fullScreenChart={fullScreenChart}
                                 setFullScreenChart={setFullScreenChart}
+                                changeState={changeState}
+                                candleData={candleData}
                             />
                         </motion.div>
                     </div>
@@ -160,6 +171,10 @@ export default function Trade(props: ITradeProps) {
                             expandTradeTable={props.expandTradeTable}
                             setExpandTradeTable={props.setExpandTradeTable}
                             tokenMap={tokenMap}
+                            isCandleSelected={isCandleSelected}
+                            setIsCandleSelected={setIsCandleSelected}
+                            filter={transactionFilter}
+                            setTransactionFilter={setTransactionFilter}
                         />
                     </motion.div>
                 </div>
