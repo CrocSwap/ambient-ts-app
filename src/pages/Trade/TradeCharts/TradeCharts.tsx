@@ -138,48 +138,9 @@ export default function TradeCharts(props: TradeChartsProps) {
     const [showTvl, setShowTvl] = useState(false);
     const [showFeeRate, setShowFeeRate] = useState(false);
     const [showVolume, setShowVolume] = useState(false);
-    const [exampleState, setExampleState] = useState(false);
-
-    const [chartItems, setChartItems] = useState([
-        { slug: 'chart', name: 'Chart', checked: true },
-        { slug: 'feerate', name: 'Fee Rate', checked: false },
-        { slug: 'tvl', name: 'TVL', checked: false },
-        { slug: 'volume', name: 'Volume', checked: false },
-    ]);
 
     const chartItemStates = { showFeeRate, showTvl, showVolume };
 
-    const handleChartItemChange = (slug: string) => {
-        const copyProducts = [...chartItems];
-        const modifiedProducts = copyProducts.map((item) => {
-            if (slug === item.slug) {
-                item.checked = !item.checked;
-            }
-
-            return item;
-        });
-
-        setChartItems(modifiedProducts);
-    };
-
-    const chartSettingsContent = (
-        <div className={styles.chart_settings}>
-            {chartItems.map((item, idx) => (
-                <div className={styles.chart_item_container} key={idx}>
-                    <input
-                        type='checkbox'
-                        className={styles.custom_control_input}
-                        id={`customCheck1-${item.slug}`}
-                        checked={item.checked}
-                        onChange={() => handleChartItemChange(item.slug)}
-                    />
-                    <label className='custom-control-label' htmlFor={`customCheck1-${item.slug}`}>
-                        {item.name}
-                    </label>
-                </div>
-            ))}
-        </div>
-    );
     // END OF CHART SETTINGS------------------------------------------------------------
 
     // eslint-disable-next-line
@@ -197,7 +158,7 @@ export default function TradeCharts(props: TradeChartsProps) {
         <div className={styles.graph_settings_container}>
             <DefaultTooltip
                 interactive
-                title={chartSettingsContent}
+                title={'nothing yet'}
                 open={openSettingsTooltip}
                 onOpen={() => setOpenSettingsTooltip(true)}
                 onClose={() => setOpenSettingsTooltip(false)}
@@ -236,8 +197,6 @@ export default function TradeCharts(props: TradeChartsProps) {
         // { name: 'Curve', function: () => console.log('Curve')  },
         // { name: 'Depth', function: () => console.log('Depth')  },
     ];
-
-    console.log(showTvl);
 
     const chartOverlayButtons = chartOverlayButtonData.map((button, idx) => (
         <div className={styles.settings_container} key={idx}>
@@ -424,7 +383,6 @@ export default function TradeCharts(props: TradeChartsProps) {
                     feeData={formattedFeesUSD}
                     priceData={props.candleData}
                     changeState={props.changeState}
-                    chartItems={chartItems}
                     chartItemStates={chartItemStates}
                 />
             </div>

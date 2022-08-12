@@ -24,15 +24,8 @@ interface ChartData {
     feeData: any[];
     priceData: CandlesByPoolAndDuration | undefined;
     changeState: (isOpen: boolean | undefined, candleData: CandleData | undefined) => void;
-    chartItems: chartItem[];
     chartItemStates: chartItemStates;
 }
-
-type chartItem = {
-    slug: string;
-    name: string;
-    checked: boolean;
-};
 
 type chartItemStates = {
     showTvl: boolean;
@@ -41,7 +34,14 @@ type chartItemStates = {
 };
 
 export default function TradeCandleStickChart(props: ChartData) {
-    const { chartItems } = props;
+    const { showFeeRate, showTvl, showVolume } = props.chartItemStates;
+
+    const numberOfActiveItems = [showFeeRate, showTvl, showVolume].filter(Boolean);
+
+    const chartHeight = 85 - numberOfActiveItems.length * 15;
+    console.log(chartHeight);
+    console.log(numberOfActiveItems.length);
+
     const data = {
         tvlData: props.tvlData,
         volumeData: props.volumeData,
@@ -249,28 +249,29 @@ export default function TradeCandleStickChart(props: ChartData) {
 
     return (
         <>
-            {chartItems[0].checked === true && (
+            <div style={{ height: `${chartHeight}%`, width: '100%' }}>
                 <Chart
                     priceData={data.priceData}
                     liquidityData={liquidityData}
                     changeState={props.changeState}
                 />
-            )}
-            {chartItems[1].checked === true && (
+            </div>
+
+            {showFeeRate && (
                 <>
                     <hr />
                     <label>Fee Rate</label>
                     <div style={{ height: '15%', width: '100%' }} className='chart-fee'></div>
                 </>
             )}
-            {chartItems[2].checked === true && (
+            {showTvl && (
                 <>
                     <hr />
                     <label>TVL</label>
                     <div style={{ height: '15%', width: '80%' }} className='chart-tvl'></div>
                 </>
             )}
-            {chartItems[3].checked === true && (
+            {showVolume === true && (
                 <>
                     <hr />
                     <label>Volume</label>
