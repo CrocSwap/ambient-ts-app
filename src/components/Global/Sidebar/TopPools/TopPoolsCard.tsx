@@ -60,8 +60,8 @@ export default function TopPoolsCard(props: TopPoolsCardProps) {
             }}
         >
             <div>{pool.name}</div>
-            <div>{poolVolume}</div>
-            <div>{poolTVL}</div>
+            <div>${poolVolume}</div>
+            <div>${poolTVL}</div>
         </div>
     );
 }
