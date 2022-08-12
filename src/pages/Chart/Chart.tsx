@@ -1,6 +1,14 @@
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
-import { DetailedHTMLProps, HTMLAttributes, useCallback, useEffect, useRef, useState } from 'react';
+import {
+    DetailedHTMLProps,
+    HTMLAttributes,
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 import { CandleData, CandlesByPoolAndDuration } from '../../utils/state/graphDataSlice';
 import './Chart.css';
 
@@ -22,6 +30,21 @@ interface ChartData {
     changeState: (isOpen: boolean | undefined, candleData: CandleData | undefined) => void;
 }
 
+interface CandleChartData {
+    date: any;
+    open: any;
+    high: any;
+    low: any;
+    close: any;
+    time: any;
+    allSwaps: any;
+}
+
+interface ChartUtils {
+    period: any;
+    chartData: CandleChartData[];
+}
+
 export default function Chart(props: ChartData) {
     const d3Container = useRef(null);
     const d3PlotArea = useRef(null);
@@ -41,17 +64,11 @@ export default function Chart(props: ChartData) {
 
     const [isChartSelected, setIsChartSelected] = useState<boolean>(false);
     const [transactionFilter, setTransactionFilter] = useState<CandleData>();
+    const [scaleData, setScaleData] = useState<any>();
 
-    useEffect(() => {
-        const chartData: {
-            date: any;
-            open: any;
-            high: any;
-            low: any;
-            close: any;
-            time: any;
-            allSwaps: any;
-        }[] = [];
+    const parsedChartData = useMemo(() => {
+        console.log('useMemo');
+        const chartData: CandleChartData[] = [];
         let period = 1;
         props.priceData?.candles.map((data) => {
             if (data.period !== undefined) {
@@ -68,9 +85,14 @@ export default function Chart(props: ChartData) {
             });
         });
 
-        drawChart(chartData, period, targets);
-    }, [props.priceData, targets]);
+        const chartUtils: ChartUtils = {
+            period: period,
+            chartData: chartData,
+        };
+        return chartUtils;
+    }, [props.priceData]);
 
+    // Set Targets
     useEffect(() => {
         setTargets((prevState) => {
             const newTargets = [...prevState];
@@ -92,23 +114,12 @@ export default function Chart(props: ChartData) {
                     : 0;
             return newTargets;
         });
-    }, [props.priceData]);
+    }, [parsedChartData.period]);
 
     useEffect(() => {
-        console.log({ isChartSelected });
-        console.log({ transactionFilter });
-        if (isChartSelected !== undefined && transactionFilter !== undefined) {
-            props.changeState(isChartSelected, transactionFilter);
-        }
-    }, [isChartSelected, transactionFilter]);
-
-    const drawChart = useCallback((chartData: any, period: any, targets: any) => {
-        if (chartData.length > 0) {
-            const render = () => {
-                nd.requestRedraw();
-            };
-
-            const valueFormatter = d3.format('.8f');
+        console.log(parsedChartData);
+        if (parsedChartData !== undefined) {
+            console.log('scale');
 
             const priceRange = d3fc
                 .extentLinear()
@@ -120,16 +131,42 @@ export default function Chart(props: ChartData) {
                 .accessors([(d: any) => d.date])
                 .padUnit('domain')
                 // ensure that the scale is padded by one day in either direction
-                .pad([period * 5000, (period / 2) * 100000]);
+                .pad([parsedChartData.period * 5000, (parsedChartData.period / 2) * 100000]);
 
             const xScale = d3.scaleTime();
             const yScale = d3.scaleLinear();
 
-            xScale.domain(xExtent(chartData));
-            yScale.domain(priceRange(chartData));
+            xScale.domain(xExtent(parsedChartData.chartData));
+            yScale.domain(priceRange(parsedChartData.chartData));
 
             const xScaleCopy = xScale.copy();
             const yScaleCopy = yScale.copy();
+
+            setScaleData(() => {
+                return {
+                    xScale: xScale,
+                    yScale: yScale,
+                    xScaleCopy: xScaleCopy,
+                    yScaleCopy: yScaleCopy,
+                };
+            });
+        }
+    }, [parsedChartData.period]);
+
+    useEffect(() => {
+        console.log(scaleData);
+        if (parsedChartData !== undefined && scaleData !== undefined) {
+            drawChart(parsedChartData.chartData, parsedChartData.period, targets, scaleData);
+        }
+    }, [parsedChartData, scaleData]);
+
+    const drawChart = useCallback((chartData: any, period: any, targets: any, scaleData: any) => {
+        if (chartData.length > 0) {
+            const render = () => {
+                nd.requestRedraw();
+            };
+
+            const valueFormatter = d3.format('.8f');
 
             const liquidityTickScale = d3.scaleBand();
             const liquidityScale = d3.scaleLinear();
@@ -151,8 +188,8 @@ export default function Chart(props: ChartData) {
                 ]);
 
             // axes
-            const xAxis = d3fc.axisBottom().scale(xScale);
-            const yAxis = d3fc.axisRight().scale(yScale);
+            const xAxis = d3fc.axisBottom().scale(scaleData.xScale);
+            const yAxis = d3fc.axisRight().scale(scaleData.yScale);
 
             const barSeries = d3fc
                 .autoBandwidth(d3fc.seriesSvgBar())
@@ -161,7 +198,7 @@ export default function Chart(props: ChartData) {
                 .mainValue((d: any) => liqScale.invert(d.value))
                 .crossValue((d: any) => d.tick)
                 .xScale(liquidityScale)
-                .yScale(yScale)
+                .yScale(scaleData.yScale)
                 .decorate((selection: any) => {
                     selection.select('.bar > path').style('fill', (d: any) => {
                         return d.tick < barThreshold
@@ -194,22 +231,21 @@ export default function Chart(props: ChartData) {
                             });
                         });
                 })
-                .xScale(xScale)
-                .yScale(yScale);
+                .xScale(scaleData.xScale)
+                .yScale(scaleData.yScale);
 
             const horizontalLine = d3fc
                 .annotationSvgLine()
                 .value((d: any) => d.value)
-                .xScale(xScale)
-                .yScale(yScale);
+                .xScale(scaleData.xScale)
+                .yScale(scaleData.yScale);
 
             const drag = d3.drag().on('drag', function (event, d: any) {
-                console.log('eski: ', d3.pointer(event)[1]);
-
-                const newValue = yScaleCopy.invert(d3.pointer(event)[1] - 182);
+                const newValue = scaleData.yScale.invert(d3.pointer(event)[1] - 182);
                 setTargets((prevState) => {
                     const newTargets = [...prevState];
                     newTargets.filter((target: any) => target.name === d.name)[0].value = newValue;
+                    render();
                     return newTargets;
                 });
             });
@@ -241,8 +277,12 @@ export default function Chart(props: ChartData) {
                 .zoom()
                 .scaleExtent([1, 10])
                 .on('zoom', (event: any) => {
-                    xScale.domain(event.transform.rescaleX(xScaleCopy).domain());
-                    yScale.domain(event.transform.rescaleY(yScaleCopy).domain());
+                    scaleData.xScale.domain(
+                        event.transform.rescaleX(scaleData.xScaleCopy).domain(),
+                    );
+                    scaleData.yScale.domain(
+                        event.transform.rescaleY(scaleData.yScaleCopy).domain(),
+                    );
                     render();
                 }) as any;
 
@@ -252,8 +292,8 @@ export default function Chart(props: ChartData) {
 
             // handle the plot area measure event in order to compute the scale ranges
             d3.select(d3PlotArea.current).on('measure', function (event: any) {
-                xScale.range([0, event.detail.width]);
-                yScale.range([event.detail.height, 0]);
+                scaleData.xScale.range([0, event.detail.width]);
+                scaleData.yScale.range([event.detail.height, 0]);
 
                 liquidityTickScale.range([event.detail.height, 0]);
                 liquidityScale.range([event.detail.width, event.detail.width / 2]);
@@ -277,8 +317,8 @@ export default function Chart(props: ChartData) {
 
             d3.select(d3PlotArea.current).on('measure.range', function (event: any) {
                 const svg = d3.select(event.target).select('svg');
-                xScaleCopy.range([0, event.detail.width]);
-                yScaleCopy.range([event.detail.height, 0]);
+                scaleData.xScaleCopy.range([0, event.detail.width]);
+                scaleData.yScaleCopy.range([event.detail.height, 0]);
                 svg.call(zoom);
             });
 
@@ -286,6 +326,12 @@ export default function Chart(props: ChartData) {
             render();
         }
     }, []);
+
+    useEffect(() => {
+        if (isChartSelected !== undefined && transactionFilter !== undefined) {
+            props.changeState(isChartSelected, transactionFilter);
+        }
+    }, [isChartSelected, transactionFilter]);
 
     return (
         <div ref={d3Container} className='main_layout_chart' data-testid={'chart'}>
