@@ -46,14 +46,16 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
     const dispatch = useAppDispatch();
 
     const [favePools, setFavePools] = useState(
-        JSON.parse(localStorage.getItem('user') as string).favePools
+        JSON.parse(localStorage.getItem('user') as string).favePools,
     );
 
-    const undeletableTokens = useMemo(() => (
-        JSON.parse(localStorage.getItem('allTokenLists') as string)
-            .find((tokenList: TokenListIF) => tokenList.uri === '/ambient-token-list.json')
-            .tokens.map((tkn: TokenIF) => tkn.address)
-    ), []);
+    const undeletableTokens = useMemo(
+        () =>
+            JSON.parse(localStorage.getItem('allTokenLists') as string)
+                .find((tokenList: TokenListIF) => tokenList.uri === '/ambient-token-list.json')
+                .tokens.map((tkn: TokenIF) => tkn.address),
+        [],
+    );
 
     const [matchingImportedTokens, matchingSearchableTokens, setSearchInput] = useSearch(
         tokensBank,
@@ -119,11 +121,8 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
                             key={`tss_${idx}`}
                             token={tkn}
                             clickHandler={() =>
-                                importToken(
-                                    tkn,
-                                    tokensBank,
-                                    setImportedTokens,
-                                    () => chooseToken(tkn),
+                                importToken(tkn, tokensBank, setImportedTokens, () =>
+                                    chooseToken(tkn),
                                 )
                             }
                         />

@@ -1,29 +1,32 @@
 import { Outlet, useOutletContext, NavLink } from 'react-router-dom';
 import styles from './Trade.module.css';
-import chart from '../../assets/images/Temporary/chart.svg';
 
-// import { motion } from 'framer-motion';
-import { useAppSelector, useAppDispatch } from '../../utils/hooks/reduxToolkit';
-import {
-    tradeData as TradeDataIF,
-    toggleDidUserFlipDenom,
-    setActiveChartPeriod,
-} from '../../utils/state/tradeDataSlice';
-import truncateDecimals from '../../utils/data/truncateDecimals';
-import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
-// import TradeTabs from '../../components/Trade/TradeTabs/TradeTabs';
-import TradeTabs2 from '../../components/Trade/TradeTabs/TradeTabs2';
+import { useAppSelector } from '../../utils/hooks/reduxToolkit';
+
+import { tradeData as TradeDataIF } from '../../utils/state/tradeDataSlice';
 import { Dispatch, SetStateAction, useState } from 'react';
-import { motion, AnimateSharedLayout } from 'framer-motion';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
 
+import TradeTabs2 from '../../components/Trade/TradeTabs/TradeTabs2';
+import { motion, AnimateSharedLayout } from 'framer-motion';
+import TradeCharts from './TradeCharts/TradeCharts';
+import { CandleData } from '../../utils/state/graphDataSlice';
+import { ethers } from 'ethers';
+
 interface ITradeProps {
+    provider: ethers.providers.Provider | undefined;
     account: string;
     isAuthenticated: boolean;
     isWeb3Enabled: boolean;
     lastBlockNumber: number;
     isTokenABase: boolean;
-    poolPriceDisplay: number;
+    poolPriceDisplay?: number;
+
+    tokenMap: Map<string, TokenIF>;
+    tokenPair: {
+        dataTokenA: TokenIF;
+        dataTokenB: TokenIF;
+    };
     chainId: string;
     switchTabToTransactions: boolean;
     setSwitchTabToTransactions: Dispatch<SetStateAction<boolean>>;
@@ -34,19 +37,13 @@ interface ITradeProps {
 
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
-    tokenMap: Map<string, TokenIF>;
 }
 
 export default function Trade(props: ITradeProps) {
-    const { tokenMap } = props;
+    const { chainId, tokenMap, poolPriceDisplay, provider } = props;
 
-    // const location = useLocation();
-    // const currentLocation = location.pathname;
-    const dispatch = useAppDispatch();
-
-    // console.log(currentLocation);
-    // const { pathname } = location;
-    // console.log('I am pathname', pathname);
+    const [isCandleSelected, setIsCandleSelected] = useState<boolean | undefined>();
+    const [transactionFilter, setTransactionFilter] = useState<CandleData>();
 
     const routes = [
         {
@@ -62,176 +59,35 @@ export default function Trade(props: ITradeProps) {
             name: 'Range',
         },
     ];
+    const [fullScreenChart, setFullScreenChart] = useState(false);
 
     const tradeData = useAppSelector((state) => state.tradeData);
-    const isTokenABase = props.isTokenABase;
-    const setActivePeriod = (period: number) => {
-        dispatch(setActiveChartPeriod(period));
-    };
+
+    const graphData = useAppSelector((state) => state.graphData);
+
+    const mainnetCandlePoolDefinition = JSON.stringify({
+        baseAddress: '0x0000000000000000000000000000000000000000',
+        quoteAddress: '0x6b175474e89094c44da98b954eedeac495271d0f',
+        poolIdx: 36000,
+        network: '0x1',
+    }).toLowerCase();
+
+    const indexOfMainnetCandlePool = graphData.candlesForAllPools.pools
+        .map((item) => JSON.stringify(item.pool).toLowerCase())
+        .findIndex((pool) => pool === mainnetCandlePoolDefinition);
+
+    const mainnetCandleData = graphData?.candlesForAllPools?.pools[indexOfMainnetCandlePool];
+    const candleData = mainnetCandleData?.candlesByPoolAndDuration.find((data) => {
+        return data.duration === tradeData.activeChartPeriod;
+    });
+
     const denomInBase = tradeData.isDenomBase;
-    const denomInTokenA = (denomInBase && isTokenABase) || (!denomInBase && !isTokenABase);
-    const tokenASymbol = tradeData.tokenA.symbol;
-    const tokenBSymbol = tradeData.tokenB.symbol;
-    const poolPriceDisplay = denomInBase ? 1 / props.poolPriceDisplay : props.poolPriceDisplay;
-    const truncatedPoolPrice =
-        poolPriceDisplay < 2
-            ? truncateDecimals(poolPriceDisplay, 4)
-            : truncateDecimals(poolPriceDisplay, 2);
 
-    // These would be move to their own components, presumably the graph component
-
-    // ---------------------------ACTIVE OVERLAY BUTTON FUNCTIONALITY-------------------------------
-    const [activerOverlayButton, setActiveOverlayButton] = useState('Curve');
-    const chartOverlayButtonData = [
-        { name: 'Volume' },
-        { name: 'TVL' },
-        { name: 'Fee Rate' },
-        { name: 'Heatmap' },
-        { name: 'Liquidity Profile' },
-        { name: 'Curve' },
-        { name: 'Depth' },
-    ];
-
-    function handleOverlayButtonClick(name: string) {
-        setActiveOverlayButton(name);
-    }
-
-    const chartOverlayButtons = chartOverlayButtonData.map((button, idx) => (
-        <motion.div
-            initial={{ y: 10, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: -10, opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className={styles.settings_container}
-            key={idx}
-        >
-            <button
-                onClick={() => handleOverlayButtonClick(button.name)}
-                className={
-                    button.name === activerOverlayButton
-                        ? styles.active_button
-                        : styles.non_active_button
-                }
-            >
-                {button.name}
-
-                {button.name === activerOverlayButton && (
-                    <motion.div
-                        layoutId='outline'
-                        className={styles.outline}
-                        initial={false}
-                        // animate={{ borderColor: 'red' }}
-                        transition={spring}
-                    />
-                )}
-            </button>
-        </motion.div>
-    ));
-    // --------------------------- END OF ACTIVE OVERLAY BUTTON FUNCTIONALITY-------------------------------
-
-    // --------------------------- TIME FRAME BUTTON FUNCTIONALITY-------------------------------
-
-    const activeTimeFrameData = [
-        { label: '1m', activePeriod: 60 },
-        { label: '5m', activePeriod: 300 },
-        { label: '15m', activePeriod: 900 },
-        { label: '1h', activePeriod: 3600 },
-        { label: '4h', activePeriod: 14400 },
-        { label: '1d', activePeriod: 86400 },
-    ];
-    const [activeTimeFrame, setActiveTimeFrame] = useState('1m');
-
-    function handleTimeFrameButtonClick(label: string, time: number) {
-        setActiveTimeFrame(label);
-        setActivePeriod(time);
-    }
-
-    const activeTimeFrameDisplay = activeTimeFrameData.map((time, idx) => (
-        <motion.div
-            initial={{ y: 10, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: -10, opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className={styles.settings_container}
-            key={idx}
-        >
-            <button
-                onClick={() => handleTimeFrameButtonClick(time.label, time.activePeriod)}
-                className={
-                    time.label === activeTimeFrame
-                        ? styles.active_button2
-                        : styles.non_active_button2
-                }
-            >
-                {time.label}
-
-                {time.label === activeTimeFrame && (
-                    <motion.div
-                        layoutId='outline2'
-                        className={styles.outline2}
-                        initial={false}
-                        // animate={{ borderColor: 'red' }}
-                        transition={spring}
-                    />
-                )}
-            </button>
-        </motion.div>
-    ));
-
-    // --------------------------- END OF TIME FRAME BUTTON FUNCTIONALITY-------------------------------
-    const tokenInfo = (
-        <div className={styles.token_info_container}>
-            <div className={styles.tokens_info} onClick={() => dispatch(toggleDidUserFlipDenom())}>
-                <div className={styles.tokens_images}>
-                    <img
-                        src={denomInTokenA ? tradeData.tokenA.logoURI : tradeData.tokenB.logoURI}
-                        // src='https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png'
-                        alt='token'
-                        width='30px'
-                    />
-                    <img
-                        src={denomInTokenA ? tradeData.tokenB.logoURI : tradeData.tokenA.logoURI}
-                        // src='https://cryptologos.cc/logos/usd-coin-usdc-logo.png'
-                        alt='token'
-                        width='30px'
-                    />
-                </div>
-                <span className={styles.tokens_name}>
-                    {denomInTokenA ? tokenASymbol : tokenBSymbol} /{' '}
-                    {denomInTokenA ? tokenBSymbol : tokenASymbol}
-                </span>
-            </div>
-            <div className={styles.chart_overlay_container}>{chartOverlayButtons}</div>
-        </div>
-    );
-
-    const currencyCharacter = denomInTokenA
-        ? // denom in a, return token b character
-          getUnicodeCharacter(tradeData.tokenB.symbol)
-        : // denom in b, return token a character
-          getUnicodeCharacter(tradeData.tokenA.symbol);
-
-    const timeFrameContent = (
-        <div className={styles.time_frame_container}>
-            <div className={styles.left_side}>
-                <span className={styles.amount} onClick={() => dispatch(toggleDidUserFlipDenom())}>
-                    {currencyCharacter}
-                    {truncatedPoolPrice}
-                </span>
-                <span className={styles.change}>+8.57% | 24h</span>
-            </div>
-            <div className={styles.right_side}>
-                <span>Timeframe</span>
-                {activeTimeFrameDisplay}
-            </div>
-        </div>
-    );
-
-    const chartImage = (
-        <div className={styles.chart_image}>
-            <img src={chart} alt='chart' />
-        </div>
-    );
+    const poolPriceDisplayWithDenom = poolPriceDisplay
+        ? denomInBase
+            ? 1 / poolPriceDisplay
+            : poolPriceDisplay
+        : 0;
 
     const navigationMenu = (
         <div className={styles.navigation_menu}>
@@ -250,24 +106,41 @@ export default function Trade(props: ITradeProps) {
             {/* <PageFooter lastBlockNumber={props.lastBlockNumber} /> */}
         </div>
     );
-
     const expandGraphStyle = props.expandTradeTable ? styles.hide_graph : '';
-    // const expandTradeTableStyle = props.expandTradeTable ? styles.expand_table : styles.trade_style;
+    const fullScreenStyle = fullScreenChart ? styles.chart_full_screen : styles.main__chart;
+
+    const changeState = (isOpen: boolean | undefined, candleData: CandleData | undefined) => {
+        setIsCandleSelected(isOpen);
+        props.setIsShowAllEnabled(!isOpen);
+        setTransactionFilter(candleData);
+    };
 
     return (
-        // <motion.main
-        //     initial={{ width: 0 }}
-        //     animate={{ width: '100%' }}
-        //     exit={{ x: window.innerWidth, transition: { duration: 0.4 } }}
-        //     data-testid={'trade'}
-        // >
         <AnimateSharedLayout>
             <main className={styles.main_layout}>
                 <div className={styles.middle_col}>
-                    <div className={`${styles.graph_style} ${expandGraphStyle}`}>
-                        {tokenInfo}
-                        {timeFrameContent}
-                        {chartImage}
+                    <div className={` ${expandGraphStyle} ${fullScreenStyle}`}>
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.5 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{
+                                duration: 0.8,
+                                delay: 0.5,
+                                ease: [0, 0.71, 0.2, 1.01],
+                            }}
+                            className={styles.main__chart_container}
+                        >
+                            <TradeCharts
+                                poolPriceDisplay={poolPriceDisplayWithDenom}
+                                expandTradeTable={props.expandTradeTable}
+                                setExpandTradeTable={props.setExpandTradeTable}
+                                isTokenABase={props.isTokenABase}
+                                fullScreenChart={fullScreenChart}
+                                setFullScreenChart={setFullScreenChart}
+                                changeState={changeState}
+                                candleData={candleData}
+                            />
+                        </motion.div>
                     </div>
 
                     <motion.div
@@ -279,15 +152,14 @@ export default function Trade(props: ITradeProps) {
                                 damping: 10,
                             },
                         }}
-
-                        // className={` ${expandTradeTableStyle}`}
                     >
                         <TradeTabs2
+                            provider={provider}
                             account={props.account}
                             isAuthenticated={props.isAuthenticated}
                             isWeb3Enabled={props.isWeb3Enabled}
                             lastBlockNumber={props.lastBlockNumber}
-                            chainId={props.chainId}
+                            chainId={chainId}
                             switchTabToTransactions={props.switchTabToTransactions}
                             setSwitchTabToTransactions={props.setSwitchTabToTransactions}
                             currentTxActiveInTransactions={props.currentTxActiveInTransactions}
@@ -299,14 +171,16 @@ export default function Trade(props: ITradeProps) {
                             expandTradeTable={props.expandTradeTable}
                             setExpandTradeTable={props.setExpandTradeTable}
                             tokenMap={tokenMap}
+                            isCandleSelected={isCandleSelected}
+                            setIsCandleSelected={setIsCandleSelected}
+                            filter={transactionFilter}
+                            setTransactionFilter={setTransactionFilter}
                         />
                     </motion.div>
                 </div>
                 {mainContent}
             </main>
         </AnimateSharedLayout>
-
-        // </motion.main>
     );
 }
 
@@ -315,9 +189,3 @@ type ContextType = { tradeData: TradeDataIF; navigationMenu: JSX.Element };
 export function useTradeData() {
     return useOutletContext<ContextType>();
 }
-
-const spring = {
-    type: 'spring',
-    stiffness: 500,
-    damping: 30,
-};

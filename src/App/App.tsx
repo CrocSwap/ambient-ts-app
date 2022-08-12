@@ -27,7 +27,9 @@ import {
     CrocEnv,
     toDisplayQty
 } from '@crocswap-libs/sdk';
-import { receiptData, resetReceiptData } from '../utils/state/receiptDataSlice';
+import {
+    resetReceiptData,
+} from '../utils/state/receiptDataSlice';
 
 import SnackbarComponent from '../components/Global/SnackbarComponent/SnackbarComponent';
 
@@ -41,7 +43,6 @@ import Portfolio from '../pages/Portfolio/Portfolio';
 import Limit from '../pages/Trade/Limit/Limit';
 import Range from '../pages/Trade/Range/Range';
 import Swap from '../pages/Swap/Swap';
-import Chart from '../pages/Chart/Chart';
 import Edit from '../pages/Trade/Edit/Edit';
 import TestPage from '../pages/TestPage/TestPage';
 import NotFound from '../pages/NotFound/NotFound';
@@ -52,6 +53,7 @@ import './App.css';
 import { useAppDispatch, useAppSelector } from '../utils/hooks/reduxToolkit';
 import { defaultTokens } from '../utils/data/defaultTokens';
 import initializeUserLocalStorage from './functions/initializeUserLocalStorage';
+import TokenPage from '../pages/TokenPage/TokenPage';
 import { TokenIF, TokenListIF, PositionIF } from '../utils/interfaces/exports';
 import { fetchTokenLists } from './functions/fetchTokenLists';
 import {
@@ -61,11 +63,12 @@ import {
     setAdvancedLowTick,
     setDenomInBase,
 } from '../utils/state/tradeDataSlice';
+import PoolPage from '../pages/PoolPage/PoolPage';
 // import PositionDetails from '../pages/Trade/Range/PositionDetails';
 import { memoizeQuerySpotPrice, querySpotPrice } from './functions/querySpotPrice';
 import { memoizeFetchAddress } from './functions/fetchAddress';
 import { memoizeTokenBalance } from './functions/fetchTokenBalances';
-import truncateDecimals from '../utils/data/truncateDecimals';
+// import truncateDecimals from '../utils/data/truncateDecimals';
 import { getNFTs } from './functions/getNFTs';
 import { memoizeTokenDecimals } from './functions/queryTokenDecimals';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
@@ -271,11 +274,14 @@ export default function App() {
 
     const [lastBlockNumber, setLastBlockNumber] = useState<number>(0);
 
-    const receiptData = useAppSelector((state) => state.receiptData) as receiptData;
+    const receiptData = useAppSelector((state) => state.receiptData);
 
     const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
 
-    const lastReceipt = receiptData?.sessionReceipts[receiptData.sessionReceipts.length - 1];
+    const lastReceipt =
+        receiptData?.sessionReceipts.length > 0
+            ? JSON.parse(receiptData.sessionReceipts[receiptData.sessionReceipts.length - 1])
+            : null;
 
     const isLastReceiptSuccess = lastReceipt?.confirmations >= 1;
 
@@ -335,14 +341,13 @@ export default function App() {
     // check for token balances on each new block
     useEffect(() => {
         (async () => {
-            if (account) {
+            if (isAuthenticated && account) {
                 try {
                     const newTokens: TokenIF[] = await cachedFetchTokenBalances(
                         account,
                         chainData.chainId,
                         lastBlockNumber,
                     );
-
                     const tokensInRTKminusNative = tokensInRTK.slice(1);
 
                     if (
@@ -376,6 +381,10 @@ export default function App() {
     };
 
     const tokenPairStringified = useMemo(() => JSON.stringify(tokenPair), [tokenPair]);
+
+    useEffect(() => {
+        setPoolPriceDisplay(undefined);
+    }, [baseTokenAddress, quoteTokenAddress]);
 
     // useEffect that runs when token pair changes
     useEffect(() => {
@@ -626,7 +635,8 @@ export default function App() {
         {
             // share:  true,
             // onOpen: () => console.log('opened'),
-            onClose: (event) => console.log({ event }),
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            onClose: (event: any) => console.log({ event }),
             // onClose: () => console.log('allPositions websocket connection closed'),
             // Will attempt to reconnect on all close events, such as server shutting down
             shouldReconnect: () => shouldSubscriptionsReconnect,
@@ -802,7 +812,8 @@ export default function App() {
         {
             // share:  true,
             // onOpen: () => console.log('opened'),
-            onClose: (event) => console.log({ event }),
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            onClose: (event: any) => console.log({ event }),
             // Will attempt to reconnect on all close events, such as server shutting down
             shouldReconnect: () => shouldSubscriptionsReconnect,
         },
@@ -848,7 +859,8 @@ export default function App() {
         {
             // share: true,
             // onOpen: () => console.log('opened'),
-            onClose: (event) => console.log({ event }),
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            onClose: (event: any) => console.log({ event }),
             // Will attempt to reconnect on all close events, such as server shutting down
             shouldReconnect: () => shouldSubscriptionsReconnect,
         },
@@ -889,7 +901,8 @@ export default function App() {
         {
             // share: true,
             // onOpen: () => console.log('opened'),
-            onClose: (event) => console.log({ event }),
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            onClose: (event: any) => console.log({ event }),
             // onClose: () => console.log('userSwaps websocket connection closed'),
             // Will attempt to reconnect on all close events, such as server shutting down
             shouldReconnect: () => shouldSubscriptionsReconnect,
@@ -916,8 +929,8 @@ export default function App() {
 
     const [tokenABalance, setTokenABalance] = useState<string>('');
     const [tokenBBalance, setTokenBBalance] = useState<string>('');
-    const [poolPriceNonDisplay, setPoolPriceNonDisplay] = useState(0);
-    const [poolPriceDisplay, setPoolPriceDisplay] = useState(0);
+    const [poolPriceNonDisplay, setPoolPriceNonDisplay] = useState<number | undefined>(undefined);
+    const [poolPriceDisplay, setPoolPriceDisplay] = useState<number | undefined>(undefined);
 
     // useEffect to get spot price when tokens change and block updates
     useEffect(() => {
@@ -949,6 +962,8 @@ export default function App() {
                         quoteTokenDecimals,
                     );
                     setPoolPriceDisplay(displayPrice);
+                } else {
+                    setPoolPriceDisplay(0);
                 }
             })();
         }
@@ -965,7 +980,14 @@ export default function App() {
     // useEffect to update selected token balances
     useEffect(() => {
         (async () => {
-            if (provider && account && isAuthenticated && isWeb3Enabled) {
+            if (
+                provider &&
+                account &&
+                isAuthenticated &&
+                isWeb3Enabled &&
+                tokenPair?.dataTokenA?.address &&
+                tokenPair?.dataTokenB?.address
+            ) {
                 const croc = new CrocEnv(provider);
                 croc.token(tokenPair.dataTokenA.address)
                     .balanceDisplay(account)
@@ -982,7 +1004,8 @@ export default function App() {
         account,
         isWeb3Enabled,
         isAuthenticated,
-        JSON.stringify(tokenPair),
+        tokenPair?.dataTokenA?.address,
+        tokenPair?.dataTokenB?.address,
         lastBlockNumber,
         provider,
     ]);
@@ -996,50 +1019,49 @@ export default function App() {
     // useEffect to check if user has approved CrocSwap to sell the token A
     useEffect(() => {
         (async () => {
-            try {
-                const tokenAAddress = tokenPair.dataTokenA.address;
-                if (provider && isWeb3Enabled && account !== null) {
-                    const crocEnv = new CrocEnv(provider);
-                    if (!tokenAAddress) {
-                        return;
+            if (tokenPair?.dataTokenA?.address) {
+                try {
+                    const tokenAAddress = tokenPair.dataTokenA.address;
+                    if (provider && isWeb3Enabled && account !== null) {
+                        const crocEnv = new CrocEnv(provider);
+                        const allowance = await crocEnv.token(tokenAAddress).allowance(account);
+                        setTokenAAllowance(toDisplayQty(allowance, tokenPair.dataTokenA.decimals));
                     }
-                    const allowance = await crocEnv.token(tokenAAddress).allowance(account);
-                    setTokenAAllowance(allowance.toString());
+                } catch (err) {
+                    console.log(err);
                 }
-            } catch (err) {
-                console.log(err);
+                setRecheckTokenAApproval(false);
             }
-            setRecheckTokenAApproval(false);
         })();
     }, [
-        tokenPair.dataTokenA.address,
+        tokenPair?.dataTokenA?.address,
         lastBlockNumber,
         account,
         provider,
         isWeb3Enabled,
         recheckTokenAApproval,
+        account,
     ]);
 
     // useEffect to check if user has approved CrocSwap to sell the token B
     useEffect(() => {
         (async () => {
-            try {
-                const tokenBAddress = tokenPair.dataTokenB.address;
-                if (provider && isWeb3Enabled && account !== null) {
-                    const crocEnv = new CrocEnv(provider);
-                    if (!tokenBAddress) {
-                        return;
+            if (tokenPair?.dataTokenB?.address) {
+                try {
+                    const tokenBAddress = tokenPair.dataTokenB.address;
+                    if (provider && isWeb3Enabled && account !== null) {
+                        const crocEnv = new CrocEnv(provider);
+                        const allowance = await crocEnv.token(tokenBAddress).allowance(account);
+                        setTokenBAllowance(toDisplayQty(allowance, tokenPair.dataTokenB.decimals));
                     }
-                    const allowance = await crocEnv.token(tokenBAddress).allowance(account);
-                    setTokenBAllowance(allowance.toString());
+                } catch (err) {
+                    console.log(err);
                 }
-            } catch (err) {
-                console.log(err);
+                setRecheckTokenBApproval(false);
             }
-            setRecheckTokenBApproval(false);
         })();
     }, [
-        tokenPair.dataTokenB.address,
+        tokenPair?.dataTokenB?.address,
         lastBlockNumber,
         account,
         provider,
@@ -1123,6 +1145,50 @@ export default function App() {
             quoteTokenDecimals,
         );
 
+        position.lowRangeShortDisplayInBase =
+            lowerPriceDisplayInBase < 0.0001
+                ? lowerPriceDisplayInBase.toExponential(2)
+                : lowerPriceDisplayInBase < 2
+                ? lowerPriceDisplayInBase.toPrecision(3)
+                : lowerPriceDisplayInBase >= 1000000
+                ? lowerPriceDisplayInBase.toExponential(2)
+                : lowerPriceDisplayInBase.toLocaleString(undefined, {
+                      maximumFractionDigits: 0,
+                  });
+
+        position.lowRangeShortDisplayInQuote =
+            lowerPriceDisplayInQuote < 0.0001
+                ? lowerPriceDisplayInQuote.toExponential(2)
+                : lowerPriceDisplayInQuote < 2
+                ? lowerPriceDisplayInQuote.toPrecision(3)
+                : lowerPriceDisplayInQuote >= 1000000
+                ? lowerPriceDisplayInQuote.toExponential(2)
+                : lowerPriceDisplayInQuote.toLocaleString(undefined, {
+                      maximumFractionDigits: 0,
+                  });
+
+        position.highRangeShortDisplayInBase =
+            upperPriceDisplayInBase < 0.0001
+                ? upperPriceDisplayInBase.toExponential(2)
+                : upperPriceDisplayInBase < 2
+                ? upperPriceDisplayInBase.toPrecision(3)
+                : upperPriceDisplayInBase >= 1000000
+                ? upperPriceDisplayInBase.toExponential(2)
+                : upperPriceDisplayInBase.toLocaleString(undefined, {
+                      maximumFractionDigits: 0,
+                  });
+
+        position.highRangeShortDisplayInQuote =
+            upperPriceDisplayInQuote < 0.0001
+                ? upperPriceDisplayInQuote.toExponential(2)
+                : upperPriceDisplayInQuote < 2
+                ? upperPriceDisplayInQuote.toPrecision(3)
+                : upperPriceDisplayInQuote >= 1000000
+                ? upperPriceDisplayInQuote.toExponential(2)
+                : upperPriceDisplayInQuote.toLocaleString(undefined, {
+                      maximumFractionDigits: 0,
+                  });
+
         const baseTokenLogoURI = importedTokens.find(
             (token) => token.address.toLowerCase() === baseTokenAddress.toLowerCase(),
         )?.logoURI;
@@ -1135,24 +1201,52 @@ export default function App() {
 
         if (!position.ambient) {
             position.lowRangeDisplayInBase =
-                lowerPriceDisplayInBase < 2
-                    ? truncateDecimals(lowerPriceDisplayInBase, 4).toString()
-                    : truncateDecimals(lowerPriceDisplayInBase, 2).toString();
+                lowerPriceDisplayInBase < 0.0001
+                    ? lowerPriceDisplayInBase.toExponential(2)
+                    : lowerPriceDisplayInBase < 2
+                    ? lowerPriceDisplayInBase.toPrecision(3)
+                    : lowerPriceDisplayInBase >= 1000000
+                    ? lowerPriceDisplayInBase.toExponential(2)
+                    : lowerPriceDisplayInBase.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                      });
             position.highRangeDisplayInBase =
-                upperPriceDisplayInBase < 2
-                    ? truncateDecimals(upperPriceDisplayInBase, 4).toString()
-                    : truncateDecimals(upperPriceDisplayInBase, 2).toString();
+                upperPriceDisplayInBase < 0.0001
+                    ? upperPriceDisplayInBase.toExponential(2)
+                    : upperPriceDisplayInBase < 2
+                    ? upperPriceDisplayInBase.toPrecision(3)
+                    : upperPriceDisplayInBase >= 1000000
+                    ? upperPriceDisplayInBase.toExponential(2)
+                    : upperPriceDisplayInBase.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                      });
         }
 
         if (!position.ambient) {
             position.lowRangeDisplayInQuote =
-                lowerPriceDisplayInQuote < 2
-                    ? truncateDecimals(lowerPriceDisplayInQuote, 4).toString()
-                    : truncateDecimals(lowerPriceDisplayInQuote, 2).toString();
+                lowerPriceDisplayInQuote < 0.0001
+                    ? lowerPriceDisplayInQuote.toExponential(2)
+                    : lowerPriceDisplayInQuote < 2
+                    ? lowerPriceDisplayInQuote.toPrecision(3)
+                    : lowerPriceDisplayInQuote >= 1000000
+                    ? lowerPriceDisplayInQuote.toExponential(2)
+                    : lowerPriceDisplayInQuote.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                      });
             position.highRangeDisplayInQuote =
-                upperPriceDisplayInQuote < 2
-                    ? truncateDecimals(upperPriceDisplayInQuote, 4).toString()
-                    : truncateDecimals(upperPriceDisplayInQuote, 2).toString();
+                upperPriceDisplayInQuote < 0.0001
+                    ? upperPriceDisplayInQuote.toExponential(2)
+                    : upperPriceDisplayInQuote < 2
+                    ? upperPriceDisplayInQuote.toPrecision(3)
+                    : upperPriceDisplayInQuote >= 1000000
+                    ? upperPriceDisplayInQuote.toExponential(2)
+                    : upperPriceDisplayInQuote.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                      });
         }
 
         position.poolPriceInTicks = poolPriceInTicks;
@@ -1272,6 +1366,7 @@ export default function App() {
         dispatch(resetTokenData());
         dispatch(resetGraphData());
         dispatch(resetReceiptData());
+        dispatch(resetTokenData());
 
         await logout();
     };
@@ -1450,7 +1545,7 @@ export default function App() {
         baseTokenAddress: baseTokenAddress,
         quoteTokenAddress: quoteTokenAddress,
         poolPriceNonDisplay: poolPriceNonDisplay,
-        poolPriceDisplay: poolPriceDisplay.toString(),
+        poolPriceDisplay: poolPriceDisplay ? poolPriceDisplay.toString() : '0',
         tokenABalance: tokenABalance,
         tokenAAllowance: tokenAAllowance,
         setRecheckTokenAApproval: setRecheckTokenAApproval,
@@ -1472,6 +1567,7 @@ export default function App() {
     }
     // props for <Sidebar/> React element
     const sidebarProps = {
+        isDenomBase: tradeData.isDenomBase,
         showSidebar: showSidebar,
         toggleSidebar: toggleSidebar,
         chainId: chainData.chainId,
@@ -1500,7 +1596,7 @@ export default function App() {
         // if pool price is > 0.1 then denom token will be base (also cheaper one)
         // then reverse if didUserToggleDenom === true
         const isDenomInBase =
-            poolPriceDisplay < 1
+            poolPriceDisplay && poolPriceDisplay < 1
                 ? tradeData.didUserFlipDenom
                     ? false
                     : true
@@ -1547,18 +1643,34 @@ export default function App() {
             ? 'hide_sidebar'
             : sidebarDislayStyle;
 
+    const containerStyle = currentLocation.includes('trade')
+        ? 'content-container-trade'
+        : 'content-container';
+
     return (
         <>
-            <div className='content-container'>
+            <div className={containerStyle}>
                 {currentLocation !== '/404' && <PageHeader {...headerProps} />}
                 <main className={`${showSidebarOrNullStyle} ${swapBodyStyle}`}>
                     {sidebarRender}
                     <Routes>
-                        <Route index element={<Home tokenMap={tokenMap} />} />
+                        <Route
+                            index
+                            element={
+                                <Home
+                                    tokenMap={tokenMap}
+                                    lastBlockNumber={lastBlockNumber}
+                                    provider={provider}
+                                    chainId={chainData.chainId}
+                                />
+                            }
+                        />
                         <Route
                             path='trade'
                             element={
                                 <Trade
+                                    provider={provider}
+                                    tokenPair={tokenPair}
                                     account={account ?? ''}
                                     isAuthenticated={isAuthenticated}
                                     isWeb3Enabled={isWeb3Enabled}
@@ -1589,6 +1701,9 @@ export default function App() {
                             <Route path='edit/' element={<Navigate to='/trade/market' replace />} />
                         </Route>
                         <Route path='analytics' element={<Analytics />} />
+                        <Route path='tokens/:address' element={<TokenPage />} />
+                        <Route path='pools/:address' element={<PoolPage />} />
+
                         <Route path='range2' element={<Range {...rangeProps} />} />
 
                         <Route
@@ -1600,6 +1715,8 @@ export default function App() {
                                     userImageData={imageData}
                                     chainId={chainData.chainId}
                                     tokenMap={tokenMap}
+                                    switchTabToTransactions={switchTabToTransactions}
+                                    setSwitchTabToTransactions={setSwitchTabToTransactions}
                                 />
                             }
                         />
@@ -1612,12 +1729,13 @@ export default function App() {
                                     chainId={chainData.chainId}
                                     userImageData={imageData}
                                     tokenMap={tokenMap}
+                                    switchTabToTransactions={switchTabToTransactions}
+                                    setSwitchTabToTransactions={setSwitchTabToTransactions}
                                 />
                             }
                         />
 
                         <Route path='swap' element={<Swap {...swapProps} />} />
-                        <Route path='chart' element={<Chart />} />
                         <Route path='testpage' element={<TestPage />} />
                         <Route path='*' element={<Navigate to='/404' replace />} />
                         <Route path='/404' element={<NotFound />} />

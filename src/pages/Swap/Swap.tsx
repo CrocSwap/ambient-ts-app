@@ -1,9 +1,12 @@
 // START: Import React and Dongles
-import { useState, Dispatch, SetStateAction } from 'react';
+import { useState, Dispatch, SetStateAction, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useMoralis } from 'react-moralis';
 import { motion } from 'framer-motion';
-import { CrocEnv } from '@crocswap-libs/sdk';
+import {
+    CrocEnv,
+    //  toDisplayQty
+} from '@crocswap-libs/sdk';
 
 // START: Import React Components
 import CurrencyConverter from '../../components/Swap/CurrencyConverter/CurrencyConverter';
@@ -45,7 +48,7 @@ interface SwapPropsIF {
     tokenBBalance: string;
     isSellTokenBase: boolean;
     tokenPair: TokenPairIF;
-    poolPriceDisplay: number;
+    poolPriceDisplay: number | undefined;
     tokenAAllowance: string;
     setRecheckTokenAApproval: Dispatch<SetStateAction<boolean>>;
     chainId: string;
@@ -103,20 +106,28 @@ export default function Swap(props: SwapPropsIF) {
         ? parseFloat(swapSlippage.stable.value)
         : parseFloat(swapSlippage.volatile.value);
 
+    const signingMessage = `Welcome to Ambient Finance!
+
+Click to sign in and accept the Ambient Terms of Service: https://ambient-finance.netlify.app/tos
+
+This request will not trigger a blockchain transaction or cost any gas fees.
+
+Your authentication status will reset on logout.`;
+
     // login functionality
     const clickLogin = () => {
         console.log('user clicked Login');
         if (!isAuthenticated || !isWeb3Enabled) {
             authenticate({
                 provider: 'metamask',
-                signingMessage: 'Ambient API Authentication.',
+                signingMessage: signingMessage,
                 onSuccess: () => {
                     enableWeb3();
                 },
                 onError: () => {
                     authenticate({
                         provider: 'metamask',
-                        signingMessage: 'Ambient API Authentication.',
+                        signingMessage: signingMessage,
                         onSuccess: () => {
                             enableWeb3;
                             // alert('🎉');
@@ -176,6 +187,18 @@ export default function Swap(props: SwapPropsIF) {
     const [isSaveAsDexSurplusChecked, setIsSaveAsDexSurplusChecked] = useState(false);
 
     const [newSwapTransactionHash, setNewSwapTransactionHash] = useState('');
+    const [txErrorCode, setTxErrorCode] = useState(0);
+    const [txErrorMessage, setTxErrorMessage] = useState('');
+
+    useEffect(() => {
+        if (poolPriceDisplay === undefined) {
+            setSwapAllowed(false);
+            setSwapButtonErrorMessage('...');
+        } else if (poolPriceDisplay === 0 || poolPriceDisplay === Infinity) {
+            setSwapAllowed(false);
+            setSwapButtonErrorMessage('Invalid Token Pair');
+        }
+    }, [poolPriceDisplay]);
 
     async function initiateSwap() {
         if (!provider) {
@@ -195,12 +218,17 @@ export default function Swap(props: SwapPropsIF) {
 
         const env = new CrocEnv(provider);
 
-        const tx = await (isQtySell
-            ? env.sell(sellTokenAddress, qty).for(buyTokenAddress).swap()
-            : env.buy(buyTokenAddress, qty).with(sellTokenAddress).swap());
+        let tx;
+        try {
+            tx = await (isQtySell
+                ? env.sell(sellTokenAddress, qty).for(buyTokenAddress).swap()
+                : env.buy(buyTokenAddress, qty).with(sellTokenAddress).swap());
 
-        let newTransactionHash = (await tx).hash;
-        setNewSwapTransactionHash(newTransactionHash);
+            setNewSwapTransactionHash(tx?.hash);
+        } catch (error) {
+            setTxErrorCode(error?.code);
+            setTxErrorMessage(error?.message);
+        }
 
         const newSwapCacheEndpoint = 'https://809821320828123.de:5000/new_swap?';
 
@@ -211,25 +239,29 @@ export default function Swap(props: SwapPropsIF) {
             .token(isTokenAPrimary ? tokenA.address : tokenB.address)
             .normQty(qty);
 
-        fetch(
-            newSwapCacheEndpoint +
-                new URLSearchParams({
-                    tx: newTransactionHash,
-                    user: account ?? '',
-                    base: isSellTokenBase ? sellTokenAddress : buyTokenAddress,
-                    quote: isSellTokenBase ? buyTokenAddress : sellTokenAddress,
-                    poolIdx: (await env.context).chain.poolIndex.toString(),
-                    isBuy: isSellTokenBase.toString(),
-                    inBaseQty: inBaseQty.toString(),
-                    qty: crocQty.toString(),
-                    override: 'false',
-                    chainId: chainId,
-                }),
-        );
+        if (tx?.hash) {
+            fetch(
+                newSwapCacheEndpoint +
+                    new URLSearchParams({
+                        tx: tx.hash,
+                        user: account ?? '',
+                        base: isSellTokenBase ? sellTokenAddress : buyTokenAddress,
+                        quote: isSellTokenBase ? buyTokenAddress : sellTokenAddress,
+                        poolIdx: (await env.context).chain.poolIndex.toString(),
+                        isBuy: isSellTokenBase.toString(),
+                        inBaseQty: inBaseQty.toString(),
+                        qty: crocQty.toString(),
+                        override: 'false',
+                        chainId: chainId,
+                        limitPrice: '0',
+                        minOut: '0',
+                    }),
+            );
+        }
 
         let receipt;
         try {
-            receipt = await tx.wait();
+            if (tx) receipt = await tx.wait();
         } catch (e) {
             const error = e as TransactionError;
 
@@ -237,27 +269,57 @@ export default function Swap(props: SwapPropsIF) {
             // in their client, but we now have the updated info
             if (isTransactionReplacedError(error)) {
                 console.log('repriced');
-                newTransactionHash = error.replacement.hash;
-                console.log({ newTransactionHash });
+                const newTransactionHash = error.replacement.hash;
+                setNewSwapTransactionHash(newTransactionHash);
+                console.log({ newSwapTransactionHash });
                 receipt = error.receipt;
+
+                if (newTransactionHash) {
+                    fetch(
+                        newSwapCacheEndpoint +
+                            new URLSearchParams({
+                                tx: newTransactionHash,
+                                user: account ?? '',
+                                base: isSellTokenBase ? sellTokenAddress : buyTokenAddress,
+                                quote: isSellTokenBase ? buyTokenAddress : sellTokenAddress,
+                                poolIdx: (await env.context).chain.poolIndex.toString(),
+                                isBuy: isSellTokenBase.toString(),
+                                inBaseQty: inBaseQty.toString(),
+                                qty: crocQty.toString(),
+                                override: 'false',
+                                chainId: chainId,
+                                limitPrice: '0',
+                                minOut: '0',
+                            }),
+                    );
+                }
             }
         }
 
         if (receipt) {
-            dispatch(addReceipt(receipt));
+            dispatch(addReceipt(JSON.stringify(receipt)));
         }
     }
+
+    const handleModalClose = () => {
+        closeModal();
+        setNewSwapTransactionHash('');
+        setTxErrorCode(0);
+        setTxErrorMessage('');
+    };
 
     // TODO:  @Emily refactor this Modal and later elements such that
     // TODO:  ... tradeData is passed to directly instead of tokenPair
     const confirmSwapModalOrNull = isModalOpen ? (
-        <Modal onClose={closeModal} title='Swap Confirmation'>
+        <Modal onClose={handleModalClose} title='Swap Confirmation'>
             <ConfirmSwapModal
                 tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
                 initiateSwapMethod={initiateSwap}
-                onClose={closeModal}
+                onClose={handleModalClose}
                 newSwapTransactionHash={newSwapTransactionHash}
-                setNewSwapTransactionHash={setNewSwapTransactionHash}
+                // setNewSwapTransactionHash={setNewSwapTransactionHash}
+                txErrorCode={txErrorCode}
+                txErrorMessage={txErrorMessage}
             />
         </Modal>
     ) : null;
@@ -307,14 +369,10 @@ export default function Swap(props: SwapPropsIF) {
                                 parseFloat(nativeBalance),
                                 4,
                             ).toString()}
-                            tokenABalance={truncateDecimals(
-                                parseFloat(tokenABalance),
-                                4,
-                            ).toString()}
-                            tokenBBalance={truncateDecimals(
-                                parseFloat(tokenBBalance),
-                                4,
-                            ).toString()}
+                            // tokenABalance={parseFloat(tokenABalance).toLocaleString()}
+                            // tokenBBalance={parseFloat(tokenBBalance).toLocaleString()}
+                            tokenABalance={tokenABalance}
+                            tokenBBalance={tokenBBalance}
                             tokenAInputQty={tokenAInputQty}
                             tokenBInputQty={tokenBInputQty}
                             setTokenAInputQty={setTokenAInputQty}
@@ -342,7 +400,7 @@ export default function Swap(props: SwapPropsIF) {
                     <ExtraInfo
                         tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
                         isTokenABase={isSellTokenBase}
-                        poolPriceDisplay={poolPriceDisplay}
+                        poolPriceDisplay={poolPriceDisplay || 0}
                         slippageTolerance={slippageTolerancePercentage}
                         liquidityProviderFee={0.3}
                         quoteTokenIsBuy={true}
@@ -351,7 +409,9 @@ export default function Swap(props: SwapPropsIF) {
                         isDenomBase={tradeData.isDenomBase}
                     />
                     {isAuthenticated && isWeb3Enabled ? (
-                        !isTokenAAllowanceSufficient && parseFloat(tokenAInputQty) > 0 ? (
+                        !isTokenAAllowanceSufficient &&
+                        parseFloat(tokenAInputQty) > 0 &&
+                        tokenAInputQty !== 'Infinity' ? (
                             approvalButton
                         ) : (
                             <SwapButton

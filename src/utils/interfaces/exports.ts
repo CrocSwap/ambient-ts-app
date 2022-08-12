@@ -15,5 +15,5 @@ export type {
     TokenIF,
     TokenListIF,
     TokenPairIF,
-    UserIF
+    UserIF,
 };

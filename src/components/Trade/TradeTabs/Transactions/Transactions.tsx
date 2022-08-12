@@ -1,7 +1,7 @@
 import styles from './Transactions.module.css';
 import TransactionCard from './TransactionCard';
 import TransactionCardHeader from './TransactionCardHeader';
-import { graphData } from '../../../../utils/state/graphDataSlice';
+import { CandleData, graphData } from '../../../../utils/state/graphDataSlice';
 import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { Dispatch, SetStateAction, useState, useEffect } from 'react';
@@ -17,6 +17,9 @@ interface TransactionsProps {
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
 
     expandTradeTable: boolean;
+
+    isCandleSelected: boolean | undefined;
+    filter: CandleData | undefined;
     // setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
 }
 export default function Transactions(props: TransactionsProps) {
@@ -28,6 +31,8 @@ export default function Transactions(props: TransactionsProps) {
         currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions,
         expandTradeTable,
+        isCandleSelected,
+        filter,
         // setExpandTradeTable,
     } = props;
 
@@ -46,11 +51,21 @@ export default function Transactions(props: TransactionsProps) {
         }
     }, [graphData, transactionData]);
 
-    console.log(isDataLoading);
+    // console.log(isDataLoading);
 
     useEffect(() => {
-        !isShowAllEnabled ? setTransactionData(swapsByUser) : setTransactionData(swapsByPool);
-    }, [isShowAllEnabled]);
+        // console.log({ filter });
+        // console.log({ swapsByPool });
+        isCandleSelected
+            ? setTransactionData(
+                  swapsByPool.filter((data) => {
+                      filter?.allSwaps.includes(data.id);
+                  }),
+              )
+            : !isShowAllEnabled
+            ? setTransactionData(swapsByUser)
+            : setTransactionData(swapsByPool);
+    }, [isShowAllEnabled, isCandleSelected, filter]);
 
     const isDenomBase = tradeData.isDenomBase;
 

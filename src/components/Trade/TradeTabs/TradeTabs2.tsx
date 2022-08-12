@@ -1,6 +1,7 @@
 import { useState, useEffect, Dispatch, SetStateAction } from 'react';
 
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import { ethers } from 'ethers';
 
 import Transactions from './Transactions/Transactions';
 import Orders from './Orders/Orders';
@@ -16,8 +17,10 @@ import Ranges from './Ranges/Ranges';
 import TabComponent from '../../Global/TabComponent/TabComponent';
 import PositionsOnlyToggle from './PositionsOnlyToggle/PositionsOnlyToggle';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
+import { CandleData } from '../../../utils/state/graphDataSlice';
 
 interface ITabsProps {
+    provider: ethers.providers.Provider | undefined;
     account: string;
     isAuthenticated: boolean;
     isWeb3Enabled: boolean;
@@ -33,10 +36,24 @@ interface ITabsProps {
     tokenMap: Map<string, TokenIF>;
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
+    isCandleSelected: boolean | undefined;
+    filter: CandleData | undefined;
+    setIsCandleSelected: Dispatch<SetStateAction<boolean | undefined>>;
+    setTransactionFilter: Dispatch<SetStateAction<CandleData | undefined>>;
 }
 
 export default function TradeTabs2(props: ITabsProps) {
-    const { isShowAllEnabled, setIsShowAllEnabled, tokenMap } = props;
+    const {
+        chainId,
+        isShowAllEnabled,
+        setIsShowAllEnabled,
+        tokenMap,
+        provider,
+        isCandleSelected,
+        setIsCandleSelected,
+        filter,
+        setTransactionFilter,
+    } = props;
 
     const graphData = useAppSelector((state) => state?.graphData);
 
@@ -54,7 +71,7 @@ export default function TradeTabs2(props: ITabsProps) {
         // console.log({ isShowAllEnabled });
         // console.log({ userPositions });
         if (!hasInitialized) {
-            if (!isShowAllEnabled && userPositions.length < 1) {
+            if (!isCandleSelected && !isShowAllEnabled && userPositions.length < 1) {
                 setIsShowAllEnabled(true);
             } else if (userPositions.length < 1) {
                 return;
@@ -69,6 +86,8 @@ export default function TradeTabs2(props: ITabsProps) {
 
     // Props for <Ranges/> React Element
     const rangesProps = {
+        provider: provider,
+        chainId: chainId,
         isShowAllEnabled: isShowAllEnabled,
         notOnTradeRoute: false,
         graphData: graphData,
@@ -86,6 +105,9 @@ export default function TradeTabs2(props: ITabsProps) {
 
         setCurrentTxActiveInTransactions: props.setCurrentTxActiveInTransactions,
         expandTradeTable: props.expandTradeTable,
+
+        isCandleSelected: isCandleSelected,
+        filter: filter,
     };
     // Props for <Orders/> React Element
     const ordersProps = {
@@ -99,6 +121,8 @@ export default function TradeTabs2(props: ITabsProps) {
         isWeb3Enabled: props.isWeb3Enabled,
         setHasInitialized: setHasInitialized,
         setIsShowAllEnabled: setIsShowAllEnabled,
+        setIsCandleSelected: setIsCandleSelected,
+        setTransactionFilter: setTransactionFilter,
         expandTradeTable: props.expandTradeTable,
         setExpandTradeTable: props.setExpandTradeTable,
     };

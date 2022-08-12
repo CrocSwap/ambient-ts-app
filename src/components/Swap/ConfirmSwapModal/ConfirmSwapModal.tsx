@@ -3,6 +3,7 @@ import { useState } from 'react';
 import CurrencyDisplay from '../../Global/CurrencyDisplay/CurrencyDisplay';
 import WaitingConfirmation from '../../Global/WaitingConfirmation/WaitingConfirmation';
 import TransactionSubmitted from '../../Global/TransactionSubmitted/TransactionSubmitted';
+import TransactionDenied from '../../Global/TransactionDenied/TransactionDenied';
 import Button from '../../Global/Button/Button';
 import { TokenPairIF } from '../../../utils/interfaces/exports';
 import Divider from '../../Global/Divider/Divider';
@@ -11,20 +12,25 @@ interface ConfirmSwapModalProps {
     initiateSwapMethod: () => void;
     onClose: () => void;
     newSwapTransactionHash: string;
-    setNewSwapTransactionHash: React.Dispatch<React.SetStateAction<string>>;
     tokenPair: TokenPairIF;
+    txErrorCode: number;
+    txErrorMessage: string;
 }
 
 export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
     const {
         initiateSwapMethod,
-        onClose,
+        // onClose,
         newSwapTransactionHash,
-        setNewSwapTransactionHash,
         tokenPair,
+        txErrorCode,
+        txErrorMessage,
     } = props;
     const [confirmDetails, setConfirmDetails] = useState<boolean>(true);
     const transactionApproved = newSwapTransactionHash !== '';
+    const isTransactionDenied =
+        txErrorCode === 4001 &&
+        txErrorMessage === 'MetaMask Tx Signature: User denied transaction signature.';
     const sellTokenQty = (document.getElementById('sell-quantity') as HTMLInputElement)?.value;
     const buyTokenQty = (document.getElementById('buy-quantity') as HTMLInputElement)?.value;
 
@@ -107,6 +113,8 @@ export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
         />
     );
 
+    const transactionDenied = <TransactionDenied />;
+
     const transactionSubmitted = (
         <TransactionSubmitted
             hash={newSwapTransactionHash}
@@ -134,15 +142,18 @@ export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
             }}
         />
     );
-    function onConfirmSwapClose() {
-        setConfirmDetails(true);
-        setNewSwapTransactionHash('');
-        onClose();
-    }
+    // function onConfirmSwapClose() {
+    //     setConfirmDetails(true);
+    //     onClose();
+    // }
 
-    const closeButton = <Button title='Close' action={onConfirmSwapClose} />;
+    // const closeButton = <Button title='Close' action={onConfirmSwapClose} />;
 
-    const confirmationDisplay = transactionApproved ? transactionSubmitted : confirmSendMessage;
+    const confirmationDisplay = isTransactionDenied
+        ? transactionDenied
+        : transactionApproved
+        ? transactionSubmitted
+        : confirmSendMessage;
 
     const modal = (
         <div className={styles.modal_container}>
@@ -150,7 +161,7 @@ export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
                 {confirmDetails ? fullTxDetails : confirmationDisplay}
             </section>
             <footer className={styles.modal_footer}>
-                {confirmDetails ? confirmSwapButton : closeButton}
+                {confirmDetails ? confirmSwapButton : null}
             </footer>
         </div>
     );

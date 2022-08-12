@@ -181,24 +181,24 @@ export default function PositionCard(props: PositionCardProps) {
         lastBlockNumber: lastBlockNumber,
     };
 
-    switch (currentModal) {
-        case 'remove':
-            modalContent = <RemoveRange {...removeRangeProps} />;
-            modalTitle = 'Remove Position';
-            break;
-        case 'edit':
-            modalContent = editContent;
-            modalTitle = 'Edit Position';
-            break;
-        case 'details':
-            modalContent = <RangeDetails {...removeRangeProps} />;
-            modalTitle = <RangeDetailsHeader />;
-            break;
-        case 'harvest':
-            modalContent = harvestContent;
-            modalTitle = 'Harvest Position';
-            break;
-    }
+    // switch (currentModal) {
+    //     case 'remove':
+    //         modalContent = <RemoveRange {...removeRangeProps} />;
+    //         modalTitle = 'Remove Position';
+    //         break;
+    //     case 'edit':
+    //         modalContent = editContent;
+    //         modalTitle = 'Edit Position';
+    //         break;
+    //     case 'details':
+    //         modalContent = <RangeDetails {...removeRangeProps} />;
+    //         modalTitle = <RangeDetailsHeader />;
+    //         break;
+    //     case 'harvest':
+    //         modalContent = harvestContent;
+    //         modalTitle = 'Harvest Position';
+    //         break;
+    // }
     const mainModal = (
         <Modal onClose={closeModal} title={modalTitle}>
             {modalContent}
@@ -298,14 +298,15 @@ export default function PositionCard(props: PositionCardProps) {
                 </Tooltip>
 
                 <Tooltip
+                    classes={{
+                        tooltip: classes.customTooltip,
+                        arrow: classes.customArrow,
+                    }}
                     title={ensName ? ensName : ownerId ? ownerId : ''}
                     placement={'right'}
                     arrow
                     enterDelay={400}
                     leaveDelay={200}
-                    classes={{
-                        tooltip: classes.customTooltip,
-                    }}
                 >
                     <p
                         className={`${styles.large_device} ${styles.account_style} ${

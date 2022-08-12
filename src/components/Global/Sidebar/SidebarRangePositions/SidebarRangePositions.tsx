@@ -3,10 +3,11 @@ import SidebarRangePositionsCard from './SidebarRangePositionsCard';
 import { PositionIF } from '../../../../utils/interfaces/PositionIF';
 
 interface SidebarRangeProps {
+    isDenomBase: boolean;
     mostRecentPositions?: PositionIF[];
 }
 export default function SidebarRangePositions(props: SidebarRangeProps) {
-    const { mostRecentPositions } = props;
+    const { isDenomBase, mostRecentPositions } = props;
 
     const header = (
         <div className={styles.header}>
@@ -23,7 +24,11 @@ export default function SidebarRangePositions(props: SidebarRangeProps) {
             <div className={styles.content}>
                 {mostRecentPositions &&
                     mostRecentPositions.map((position, idx) => (
-                        <SidebarRangePositionsCard key={idx} position={position} />
+                        <SidebarRangePositionsCard
+                            key={idx}
+                            position={position}
+                            isDenomBase={isDenomBase}
+                        />
                     ))}
             </div>
         </div>

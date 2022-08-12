@@ -79,7 +79,8 @@ export const goerliETH = {
     symbol: 'ETH',
     decimals: 18,
     chainId: 5,
-    logoURI: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
+    logoURI:
+        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
     fromList: '/ambient-token-list.json',
 };
 
@@ -89,9 +90,10 @@ export const goerliUSDC = {
     symbol: 'USDC',
     decimals: 6,
     chainId: 5,
-    logoURI: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
+    logoURI:
+        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
     fromList: '/ambient-token-list.json',
-}
+};
 
 export const goerliDAI = {
     name: 'Dai Stablecoin',
@@ -101,7 +103,7 @@ export const goerliDAI = {
     chainId: 5,
     logoURI: 'https://tokens.1inch.io/0x6b175474e89094c44da98b954eedeac495271d0f.png',
     fromList: '/ambient-token-list.json',
-}
+};
 
 export const defaultTokens = [
     ropstenETH,
@@ -113,5 +115,5 @@ export const defaultTokens = [
     mainnetWBTC,
     goerliDAI,
     goerliETH,
-    goerliUSDC
+    goerliUSDC,
 ];

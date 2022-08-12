@@ -25,8 +25,11 @@ export const useAppChain = (
     const [ currentChain, setCurrentChain ] = useState(defaultChain);
     useEffect(() => console.log({currentChain}), [currentChain]);
 
+    // if there's a chain ID from moralis and it validates, switch app to default chain
     useEffect(() => {
-        if (chainId && validateChainId(chainId)) switchNetwork(defaultChain);
+        console.log(chainId);
+        chainId && console.log(validateChainId(chainId));
+        if (chainId && !validateChainId(chainId)) switchNetwork(defaultChain);
     }, []);
 
     // change the network in Moralis after user changes in the app

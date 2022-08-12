@@ -119,12 +119,11 @@ export default function CustomTokens(props: CustomTokensPropsIF) {
                             <h4 className={styles.token_name}>{token.name}</h4>
                         </div>
                         <div className={styles.action_menu}>
-                            {
-                                undeletableTokens.includes(token.address) ||
+                            {undeletableTokens.includes(token.address) || (
                                 <div onClick={() => deleteToken(token)}>
                                     <AiOutlineDelete size={15} />
                                 </div>
-                            }
+                            )}
                             <a
                                 href={`https://etherscan.io/address/${token?.address}`}
                                 target='_blank'

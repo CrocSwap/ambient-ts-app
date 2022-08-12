@@ -36,9 +36,8 @@ export default function EditPriceInfo(props: EditPriceInfoIF) {
         <div className={styles.price_info_row}>
             <span>Current Price</span>
             <span>
-                {currentPoolPriceDisplay}{' '}
-                {denominationsInBase ? quoteTokenSymbol : baseTokenSymbol} per{' '}
-                {denominationsInBase ? baseTokenSymbol : quoteTokenSymbol}
+                {currentPoolPriceDisplay} {denominationsInBase ? quoteTokenSymbol : baseTokenSymbol}{' '}
+                per {denominationsInBase ? baseTokenSymbol : quoteTokenSymbol}
             </span>
         </div>
     );

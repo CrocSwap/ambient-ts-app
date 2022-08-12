@@ -18,7 +18,7 @@ import DividerDark from '../../../components/Global/DividerDark/DividerDark';
 import Modal from '../../../components/Global/Modal/Modal';
 import ConfirmLimitModal from '../../../components/Trade/Limit/ConfirmLimitModal/ConfirmLimitModal';
 import styles from './Limit.module.css';
-import truncateDecimals from '../../../utils/data/truncateDecimals';
+// import truncateDecimals from '../../../utils/data/truncateDecimals';
 
 // START: Import Local Files
 import { useTradeData } from '../Trade';
@@ -44,8 +44,8 @@ interface LimitPropsIF {
     isSellTokenBase: boolean;
     tokenPair: TokenPairIF;
     isTokenABase: boolean;
-    poolPriceDisplay: number;
-    poolPriceNonDisplay: number;
+    poolPriceDisplay: number | undefined;
+    poolPriceNonDisplay: number | undefined;
     tokenAAllowance: string;
     setRecheckTokenAApproval: React.Dispatch<React.SetStateAction<boolean>>;
 
@@ -92,20 +92,38 @@ export default function Limit(props: LimitPropsIF) {
 
     const [limitButtonErrorMessage, setLimitButtonErrorMessage] = useState<string>('');
 
+    useEffect(() => {
+        if (poolPriceDisplay === undefined) {
+            setLimitAllowed(false);
+            setLimitButtonErrorMessage('...');
+        } else if (poolPriceDisplay === 0 || poolPriceDisplay === Infinity) {
+            setLimitAllowed(false);
+            setLimitButtonErrorMessage('Invalid Token Pair');
+        }
+    }, [poolPriceDisplay]);
+
+    const signingMessage = `Welcome to Ambient Finance!
+
+Click to sign in and accept the Ambient Terms of Service: https://ambient-finance.netlify.app/tos
+
+This request will not trigger a blockchain transaction or cost any gas fees.
+
+Your authentication status will reset on logout.`;
+
     // login functionality
     const clickLogin = () => {
         console.log('user clicked Login');
         if (!isAuthenticated || !isWeb3Enabled) {
             authenticate({
                 provider: 'metamask',
-                signingMessage: 'Ambient API Authentication.',
+                signingMessage: signingMessage,
                 onSuccess: () => {
                     enableWeb3();
                 },
                 onError: () => {
                     authenticate({
                         provider: 'metamask',
-                        signingMessage: 'Ambient API Authentication.',
+                        signingMessage: signingMessage,
                         onSuccess: () => {
                             enableWeb3;
                             // alert('🎉');
@@ -116,7 +134,9 @@ export default function Limit(props: LimitPropsIF) {
         }
     };
 
-    const [newLimitOrderTransactionHash] = useState('');
+    const [newLimitOrderTransactionHash, setNewLimitOrderTransactionHash] = useState('');
+    const [txErrorCode, setTxErrorCode] = useState(0);
+    const [txErrorMessage, setTxErrorMessage] = useState('');
 
     const tokenADecimals = tokenPair.dataTokenA.decimals;
     const tokenBDecimals = tokenPair.dataTokenB.decimals;
@@ -149,7 +169,9 @@ export default function Limit(props: LimitPropsIF) {
         return Math.min(tickGrid, horizon);
     };
 
-    const currentPoolPriceTick = Math.log(poolPriceNonDisplay) / Math.log(1.0001);
+    const currentPoolPriceTick = poolPriceNonDisplay
+        ? Math.log(poolPriceNonDisplay) / Math.log(1.0001)
+        : 0;
 
     useEffect(() => {
         setInitialLoad(true);
@@ -174,15 +196,16 @@ export default function Limit(props: LimitPropsIF) {
 
                 // console.log({ roundedTickInsideCurrentPrice });
                 const insideTickNonDisplayPrice = tickToPrice(roundedTickInsideCurrentPrice);
-                const insideTickDisplayPrice =
-                    1 / toDisplayPrice(insideTickNonDisplayPrice, baseDecimals, quoteDecimals);
+                const insideTickDisplay = (
+                    1 / toDisplayPrice(insideTickNonDisplayPrice, baseDecimals, quoteDecimals)
+                ).toPrecision(6);
 
-                setInsideTickDisplayPrice(insideTickDisplayPrice);
+                setInsideTickDisplayPrice(parseFloat(insideTickDisplay));
 
-                pinnedInitialDisplayPrice = insideTickDisplayPrice.toString();
+                pinnedInitialDisplayPrice = insideTickDisplay;
 
                 if (limitRateInputField) {
-                    limitRateInputField.value = pinnedInitialDisplayPrice;
+                    limitRateInputField.value = insideTickDisplay;
                 }
             } else {
                 const offset = gridSize;
@@ -194,17 +217,19 @@ export default function Limit(props: LimitPropsIF) {
 
                 // console.log({ roundedTickInsideCurrentPrice });
                 const insideTickNonDisplayPrice = tickToPrice(roundedTickInsideCurrentPrice);
-                const insideTickDisplayPrice = toDisplayPrice(
+
+                const insideTickDisplay = toDisplayPrice(
                     insideTickNonDisplayPrice,
                     baseDecimals,
                     quoteDecimals,
-                );
-                setInsideTickDisplayPrice(insideTickDisplayPrice);
+                ).toPrecision(6);
 
-                pinnedInitialDisplayPrice = insideTickDisplayPrice.toString();
+                setInsideTickDisplayPrice(parseFloat(insideTickDisplay));
+
+                pinnedInitialDisplayPrice = insideTickDisplay;
 
                 if (limitRateInputField) {
-                    limitRateInputField.value = pinnedInitialDisplayPrice;
+                    limitRateInputField.value = insideTickDisplay;
                 }
             }
             dispatch(setLimitPrice(pinnedInitialDisplayPrice));
@@ -222,10 +247,17 @@ export default function Limit(props: LimitPropsIF) {
         const qty = isTokenAPrimary ? sellTokenQty : buyTokenQty;*/
     };
 
+    const handleModalClose = () => {
+        closeModal();
+        setNewLimitOrderTransactionHash('');
+        setTxErrorCode(0);
+        setTxErrorMessage('');
+    };
+
     const confirmLimitModalOrNull = isModalOpen ? (
-        <Modal onClose={closeModal} title='Limit Confirmation'>
+        <Modal onClose={handleModalClose} title='Limit Confirmation'>
             <ConfirmLimitModal
-                onClose={closeModal}
+                onClose={handleModalClose}
                 tokenPair={tokenPair}
                 initiateLimitOrderMethod={initiateLimitOrderMethod}
                 tokenAInputQty={tokenAInputQty}
@@ -233,6 +265,8 @@ export default function Limit(props: LimitPropsIF) {
                 isTokenAPrimary={isTokenAPrimary}
                 limitRate={limitRate}
                 newLimitOrderTransactionHash={newLimitOrderTransactionHash}
+                txErrorCode={txErrorCode}
+                txErrorMessage={txErrorMessage}
             />
         </Modal>
     ) : null;
@@ -299,8 +333,10 @@ export default function Limit(props: LimitPropsIF) {
                         setImportedTokens={setImportedTokens}
                         chainId={chainId}
                         setLimitAllowed={setLimitAllowed}
-                        tokenABalance={truncateDecimals(parseFloat(tokenABalance), 4).toString()}
-                        tokenBBalance={truncateDecimals(parseFloat(tokenBBalance), 4).toString()}
+                        tokenABalance={tokenABalance}
+                        tokenBBalance={tokenBBalance}
+                        // tokenABalance={truncateDecimals(parseFloat(tokenABalance), 4).toString()}
+                        // tokenBBalance={truncateDecimals(parseFloat(tokenBBalance), 4).toString()}
                         tokenAInputQty={tokenAInputQty}
                         tokenBInputQty={tokenBInputQty}
                         setTokenAInputQty={setTokenAInputQty}
@@ -331,7 +367,7 @@ export default function Limit(props: LimitPropsIF) {
                 <LimitExtraInfo
                     tokenPair={tokenPair}
                     gasPriceinGwei={gasPriceinGwei}
-                    poolPriceDisplay={poolPriceDisplay}
+                    poolPriceDisplay={poolPriceDisplay || 0}
                     slippageTolerance={slippageTolerancePercentage}
                     liquidityProviderFee={0}
                     quoteTokenIsBuy={true}
@@ -346,7 +382,7 @@ export default function Limit(props: LimitPropsIF) {
                     ) : (
                         <LimitButton
                             onClickFn={openModal}
-                            limitAllowed={limitAllowed}
+                            limitAllowed={poolPriceNonDisplay !== 0 && limitAllowed}
                             limitButtonErrorMessage={limitButtonErrorMessage}
                         />
                     )

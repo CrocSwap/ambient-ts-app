@@ -8,6 +8,7 @@ import WaitingConfirmation from '../../../Global/WaitingConfirmation/WaitingConf
 import TransactionSubmitted from '../../../Global/TransactionSubmitted/TransactionSubmitted';
 import { TokenPairIF } from '../../../../utils/interfaces/exports';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
+import TransactionDenied from '../../../Global/TransactionDenied/TransactionDenied';
 
 interface ConfirmRangeModalProps {
     sendTransaction: () => void;
@@ -26,16 +27,16 @@ interface ConfirmRangeModalProps {
     pinnedMinPriceDisplayTruncatedInQuote: string;
     pinnedMaxPriceDisplayTruncatedInBase: string;
     pinnedMaxPriceDisplayTruncatedInQuote: string;
-    poolPriceTruncatedInBase: string;
-    poolPriceTruncatedInQuote: string;
+    txErrorCode: number;
+    txErrorMessage: string;
 }
 
 export default function ConfirmRangeModal(props: ConfirmRangeModalProps) {
     const {
         sendTransaction,
-        closeModal,
+        // closeModal,
         newRangeTransactionHash,
-        setNewRangeTransactionHash,
+        // setNewRangeTransactionHash,
         minPriceDisplay,
         maxPriceDisplay,
         spotPriceDisplay,
@@ -48,8 +49,8 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalProps) {
         pinnedMinPriceDisplayTruncatedInQuote,
         pinnedMaxPriceDisplayTruncatedInBase,
         pinnedMaxPriceDisplayTruncatedInQuote,
-        poolPriceTruncatedInBase,
-        poolPriceTruncatedInQuote,
+        txErrorCode,
+        txErrorMessage,
     } = props;
 
     const tokenA = tokenPair.dataTokenA;
@@ -58,6 +59,9 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalProps) {
     // console.log(tokenPair);
     const [confirmDetails, setConfirmDetails] = useState(true);
     const transactionApproved = newRangeTransactionHash !== '';
+    const isTransactionDenied =
+        txErrorCode === 4001 &&
+        txErrorMessage === 'MetaMask Tx Signature: User denied transaction signature.';
     const tokenAQty = (document.getElementById('A-range-quantity') as HTMLInputElement)?.value;
     const tokenBQty = (document.getElementById('B-range-quantity') as HTMLInputElement)?.value;
 
@@ -96,8 +100,8 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalProps) {
     const tokenACharacter = getUnicodeCharacter(dataTokenA.symbol);
     const tokenBCharacter = getUnicodeCharacter(dataTokenB.symbol);
 
-    console.log({ tokenACharacter });
-    console.log({ tokenBCharacter });
+    // console.log({ tokenACharacter });
+    // console.log({ tokenBCharacter });
 
     const feeTierDisplay = (
         <section className={styles.fee_tier_display}>
@@ -139,8 +143,8 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalProps) {
             pinnedMinPriceDisplayTruncatedInQuote={pinnedMinPriceDisplayTruncatedInQuote}
             pinnedMaxPriceDisplayTruncatedInBase={pinnedMaxPriceDisplayTruncatedInBase}
             pinnedMaxPriceDisplayTruncatedInQuote={pinnedMaxPriceDisplayTruncatedInQuote}
-            poolPriceTruncatedInBase={poolPriceTruncatedInBase}
-            poolPriceTruncatedInQuote={poolPriceTruncatedInQuote}
+            // poolPriceTruncatedInBase={poolPriceTruncatedInBase}
+            // poolPriceTruncatedInQuote={poolPriceTruncatedInQuote}
         />
     ) : null;
 
@@ -172,7 +176,7 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalProps) {
             } ${tokenB.symbol}`}
         />
     );
-
+    const transactionDenied = <TransactionDenied />;
     const transactionSubmitted = (
         <TransactionSubmitted
             hash={newRangeTransactionHash}
@@ -199,21 +203,25 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalProps) {
         />
     );
 
-    function onConfirmRangeClose() {
-        setConfirmDetails(true);
-        setNewRangeTransactionHash('');
-        closeModal();
-    }
+    // function onConfirmRangeClose() {
+    //     setConfirmDetails(true);
+    //     setNewRangeTransactionHash('');
+    //     closeModal();
+    // }
 
-    const closeButton = <Button title='Close' action={onConfirmRangeClose} />;
+    // const closeButton = <Button title='Close' action={onConfirmRangeClose} />;
 
-    const confirmationDisplay = transactionApproved ? transactionSubmitted : confirmSendMessage;
+    const confirmationDisplay = isTransactionDenied
+        ? transactionDenied
+        : transactionApproved
+        ? transactionSubmitted
+        : confirmSendMessage;
 
     return (
         <div className={styles.confirm_range_modal_container}>
             <div>{confirmDetails ? fullTxDetails : confirmationDisplay}</div>
             <footer className={styles.modal_footer}>
-                {confirmDetails ? confirmTradeButton : closeButton}
+                {confirmDetails ? confirmTradeButton : null}
             </footer>
         </div>
     );

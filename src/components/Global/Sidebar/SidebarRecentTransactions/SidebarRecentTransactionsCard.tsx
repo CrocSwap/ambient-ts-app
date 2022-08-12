@@ -3,6 +3,8 @@ import { ISwap } from '../../../../utils/state/graphDataSlice';
 
 import styles from './SidebarRecentTransactionsCard.module.css';
 import { Dispatch, SetStateAction } from 'react';
+import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
+import { setTokenA, setTokenB } from '../../../../utils/state/tradeDataSlice';
 
 interface TransactionProps {
     tx: ISwap;
@@ -17,9 +19,8 @@ interface TransactionProps {
     switchTabToTransactions: boolean;
 }
 
-
 export default function SidebarRecentTransactionsCard(props: TransactionProps) {
-  const {
+    const {
         tx,
         coinGeckoTokenMap,
         chainId,
@@ -30,6 +31,8 @@ export default function SidebarRecentTransactionsCard(props: TransactionProps) {
         setSwitchTabToTransactions,
         switchTabToTransactions,
     } = props;
+
+    const dispatch = useAppDispatch();
 
     // console.log(tx.source);
     // console.log(tx.block);
@@ -52,15 +55,17 @@ export default function SidebarRecentTransactionsCard(props: TransactionProps) {
     //     </div>
     // );
 
- function handleRecentTransactionClick(tx: ISwap) {
+    function handleRecentTransactionClick(tx: ISwap) {
         switchTabToTransactions ? null : setSwitchTabToTransactions(true);
         setIsShowAllEnabled(false);
 
         setCurrentTxActiveInTransactions(tx.id);
+        if (baseToken) dispatch(setTokenA(baseToken));
+        if (quoteToken) dispatch(setTokenB(quoteToken));
     }
 
     return (
-         <div className={styles.container} onClick={() => handleRecentTransactionClick(tx)}>
+        <div className={styles.container} onClick={() => handleRecentTransactionClick(tx)}>
             <div>
                 {baseToken?.symbol} / {quoteToken?.symbol}
             </div>

@@ -6,6 +6,7 @@ import TransactionSubmitted from '../../../Global/TransactionSubmitted/Transacti
 import Button from '../../../Global/Button/Button';
 import { TokenPairIF } from '../../../../utils/interfaces/exports';
 import Divider from '../../../Global/Divider/Divider';
+import TransactionDenied from '../../../Global/TransactionDenied/TransactionDenied';
 
 interface ConfirmLimitModalProps {
     onClose: () => void;
@@ -16,19 +17,25 @@ interface ConfirmLimitModalProps {
     isTokenAPrimary: boolean;
     limitRate: string;
     newLimitOrderTransactionHash: string;
+    txErrorCode: number;
+    txErrorMessage: string;
 }
 
 export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
     const {
-        onClose,
+        // onClose,
         tokenPair,
         initiateLimitOrderMethod,
         limitRate,
         newLimitOrderTransactionHash,
+        txErrorCode,
+        txErrorMessage,
     } = props;
     const [confirmDetails, setConfirmDetails] = useState<boolean>(true);
     const [transactionApproved] = useState<boolean>(false);
-
+    const isTransactionDenied =
+        txErrorCode === 4001 &&
+        txErrorMessage === 'MetaMask Tx Signature: User denied transaction signature.';
     const sellTokenQty = (document.getElementById('sell-limit-quantity') as HTMLInputElement)
         ?.value;
     const buyTokenQty = (document.getElementById('buy-limit-quantity') as HTMLInputElement)?.value;
@@ -87,6 +94,8 @@ export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
         />
     );
 
+    const transactionDenied = <TransactionDenied />;
+
     const transactionSubmitted = (
         <TransactionSubmitted
             hash={newLimitOrderTransactionHash}
@@ -97,7 +106,11 @@ export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
         />
     );
 
-    const confirmationDisplay = transactionApproved ? transactionSubmitted : confirmSendMessage;
+    const confirmationDisplay = isTransactionDenied
+        ? transactionDenied
+        : transactionApproved
+        ? transactionSubmitted
+        : confirmSendMessage;
 
     const confirmLimitButton = (
         <Button
@@ -116,13 +129,13 @@ export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
         />
     );
 
-    function onConfirmLimitClose() {
-        setConfirmDetails(true);
+    // function onConfirmLimitClose() {
+    //     setConfirmDetails(true);
 
-        onClose();
-    }
+    //     onClose();
+    // }
 
-    const closeButton = <Button title='Close' action={onConfirmLimitClose} />;
+    // const closeButton = <Button title='Close' action={onConfirmLimitClose} />;
 
     const modal = (
         <div className={styles.modal_container}>
@@ -130,7 +143,7 @@ export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
                 {confirmDetails ? fullTxDetails : confirmationDisplay}
             </section>
             <footer className={styles.modal_footer}>
-                {confirmDetails ? confirmLimitButton : closeButton}
+                {confirmDetails ? confirmLimitButton : null}
             </footer>
         </div>
     );

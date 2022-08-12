@@ -21,27 +21,12 @@ export interface tradeData {
 }
 
 const initialState: tradeData = {
-    tokenA: {
-        name: 'Native Ether',
-        address: '0x0000000000000000000000000000000000000000',
-        symbol: 'ETH',
-        decimals: 18,
-        chainId: 5,
-        logoURI:
-            'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
-    },
-    tokenB: {
-        name: 'USDCoin',
-        address: '0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C',
-        symbol: 'USDC',
-        decimals: 6,
-        chainId: 5,
-        logoURI: 'https://tokens.1inch.io/0x6b175474e89094c44da98b954eedeac495271d0f.png',
-    },
+    tokenA: goerliETH,
+    tokenB: goerliUSDC,
     // addressTokenA: '0x0000000000000000000000000000000000000000',
     // addressTokenB: '0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa',
     didUserFlipDenom: false,
-    isDenomBase: true,
+    isDenomBase: false,
     advancedMode: false,
     isTokenAPrimary: true,
     primaryQuantity: '',
@@ -52,7 +37,7 @@ const initialState: tradeData = {
     advancedHighTick: 0,
     simpleRangeWidth: 100,
     slippageTolerance: 0.05,
-    activeChartPeriod: 60,
+    activeChartPeriod: 300,
 };
 
 export const tradeDataSlice = createSlice({
@@ -118,9 +103,6 @@ export const tradeDataSlice = createSlice({
         },
         resetTokens: (state, action: PayloadAction<string>) => {
             if (action.payload === '0x5') {
-                state.tokenA = goerliETH;
-                state.tokenB = goerliUSDC;
-            } else if (action.payload === '0x2a') {
                 state.tokenA = initialState.tokenA;
                 state.tokenB = initialState.tokenB;
             }

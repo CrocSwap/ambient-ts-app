@@ -20,7 +20,7 @@ interface TransactionProps {
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
 }
 export default function TransactionCard(props: TransactionProps) {
-const {
+    const {
         swap,
         tokenMap,
         chainId,
@@ -114,7 +114,7 @@ const {
 
     if (!transactionMatchesSelectedTokens) return null;
 
-const activeTransactionStyle =
+    const activeTransactionStyle =
         swap.id === currentTxActiveInTransactions ? styles.active_tx_style : '';
 
     return (

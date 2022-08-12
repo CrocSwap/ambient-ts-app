@@ -12,12 +12,12 @@ import truncateDecimals from '../../../../utils/data/truncateDecimals';
 // interface for component props
 interface RangeExtraInfoPropsIF {
     tokenPair: TokenPairIF;
-    poolPriceDisplay: number;
+    poolPriceDisplay: string;
     slippageTolerance: string;
     liquidityProviderFee: number;
     quoteTokenIsBuy?: boolean;
     gasPriceinGwei: string;
-    displayForBase: boolean;
+    isDenomBase: boolean;
     isTokenABase: boolean;
     daysInRangeEstimation: number;
 }
@@ -31,15 +31,15 @@ export default function RangeExtraInfo(props: RangeExtraInfoPropsIF) {
         poolPriceDisplay,
         slippageTolerance,
         liquidityProviderFee,
-        displayForBase,
+        isDenomBase,
         isTokenABase,
         daysInRangeEstimation,
     } = props;
 
     const [showExtraDetails, setShowExtraDetails] = useState<boolean>(false);
 
-    const reverseDisplay = (isTokenABase && !displayForBase) || (!isTokenABase && displayForBase);
-    const invertPrice = displayForBase;
+    const reverseDisplay = (isTokenABase && !isDenomBase) || (!isTokenABase && isDenomBase);
+    // const invertPrice = displayForBase;
 
     // console.log({ isTokenABase });
     // console.log({ displayForBase });
@@ -47,11 +47,11 @@ export default function RangeExtraInfo(props: RangeExtraInfoPropsIF) {
     // console.log({ invertPrice });
     // console.log({ poolPriceDisplay });
 
-    const displayPrice = invertPrice ? 1 / poolPriceDisplay : poolPriceDisplay;
-    const displayPriceStringTruncated =
-        displayPrice < 2
-            ? truncateDecimals(displayPrice, 6).toString()
-            : truncateDecimals(displayPrice, 2).toString();
+    // const displayPrice = invertPrice ? 1 / poolPriceDisplay : poolPriceDisplay;
+    // const displayPriceStringTruncated =
+    //     displayPrice < 2
+    //         ? truncateDecimals(displayPrice, 6).toString()
+    //         : truncateDecimals(displayPrice, 2).toString();
 
     // const priceLimitAfterSlippageAndFee = quoteTokenIsBuy
     //     ? truncateDecimals(
@@ -71,8 +71,8 @@ export default function RangeExtraInfo(props: RangeExtraInfoPropsIF) {
             title: 'Spot Price',
             tooltipTitle: 'spot price explanation',
             data: reverseDisplay
-                ? `${displayPriceStringTruncated} ${tokenPair.dataTokenA.symbol} per ${tokenPair.dataTokenB.symbol}`
-                : `${displayPriceStringTruncated} ${tokenPair.dataTokenB.symbol} per ${tokenPair.dataTokenA.symbol}`,
+                ? `${poolPriceDisplay} ${tokenPair.dataTokenA.symbol} per ${tokenPair.dataTokenB.symbol}`
+                : `${poolPriceDisplay} ${tokenPair.dataTokenB.symbol} per ${tokenPair.dataTokenA.symbol}`,
         },
         {
             title: 'Slippage Tolerance',
@@ -111,9 +111,9 @@ export default function RangeExtraInfo(props: RangeExtraInfoPropsIF) {
     //     ? [tokenPair.dataTokenA, tokenPair.dataTokenB]
     //     : [tokenPair.dataTokenB, tokenPair.dataTokenA];
 
-    const defaultDisplay = `1 ${tokenPair.dataTokenA.symbol} ≈ ${displayPriceStringTruncated} ${tokenPair.dataTokenB.symbol}`;
+    // const defaultDisplay = `1 ${tokenPair.dataTokenA.symbol} ≈ ${displayPriceStringTruncated} ${tokenPair.dataTokenB.symbol}`;
 
-    const flippedDisplay = `1 ${tokenPair.dataTokenB.symbol} ≈ ${displayPriceStringTruncated} ${tokenPair.dataTokenA.symbol}`;
+    // const flippedDisplay = `1 ${tokenPair.dataTokenB.symbol} ≈ ${displayPriceStringTruncated} ${tokenPair.dataTokenA.symbol}`;
 
     return (
         <>
@@ -125,7 +125,9 @@ export default function RangeExtraInfo(props: RangeExtraInfoPropsIF) {
                     <FaGasPump size={15} /> {truncatedGasInGwei} gwei
                 </div>
                 <div className={styles.token_amount}>
-                    {reverseDisplay ? flippedDisplay : defaultDisplay}
+                    {reverseDisplay
+                        ? `1 ${tokenPair.dataTokenB.symbol} ≈ ${poolPriceDisplay} ${tokenPair.dataTokenA.symbol}`
+                        : `1 ${tokenPair.dataTokenA.symbol} ≈ ${poolPriceDisplay} ${tokenPair.dataTokenB.symbol}`}
                     <RiArrowDownSLine size={27} />{' '}
                 </div>
             </div>

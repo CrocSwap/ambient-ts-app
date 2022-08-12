@@ -47,6 +47,7 @@ export interface CandleData {
     quote: string;
     poolIdx: number;
     period: number;
+    allSwaps: Array<string>;
 }
 
 export interface PositionsByUser {
@@ -263,6 +264,7 @@ export const graphDataSlice = createSlice({
         },
         resetGraphData: (state) => {
             state.positionsByUser = initialState.positionsByUser;
+            state.swapsByUser = initialState.swapsByUser;
         },
     },
 });
