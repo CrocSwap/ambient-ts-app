@@ -19,6 +19,8 @@ export const useAppChain = (
 ] => {
     // chain from connected wallet via Moralis
     const { chainId, switchNetwork } = useChain();
+    console.log({chainId})
+    console.log('window.ethereum.chainId: ', window.ethereum.chainId);
 
     // value tracking the current chain the app is set to use
     // initializes on the default chain parameter
@@ -26,14 +28,15 @@ export const useAppChain = (
     useEffect(() => console.log({currentChain}), [currentChain]);
 
     // if there's a chain ID from moralis and it validates, switch app to default chain
-    useEffect(() => {
-        console.log(chainId);
-        chainId && console.log(validateChainId(chainId));
-        if (chainId && !validateChainId(chainId)) switchNetwork(defaultChain);
-    }, []);
+    // useEffect(() => {
+    //     console.log(chainId);
+    //     chainId && console.log(validateChainId(chainId));
+    //     if (chainId && !validateChainId(chainId)) switchNetwork(defaultChain);
+    // }, []);
 
     // change the network in Moralis after user changes in the app
     useEffect(() => {
+        console.log('change chain in Moralis!');
         if (chainId !== currentChain) switchNetwork(currentChain);
     }, [currentChain]);
 
@@ -43,6 +46,13 @@ export const useAppChain = (
     useEffect(() => {
         // only take action if Moralis and app have different chains
         // also chain must be in the chains.ts array of supported chains
+        console.log('chain in Moralis: ' + chainId);
+        console.log('chain in app: ' + currentChain);
+        chainId && console.log(validateChainId(chainId) ? chainId : defaultChain);
+        if (chainId && !validateChainId(chainId)) {
+            switchNetwork(currentChain);
+            alert('uh oh');
+        }
         if (
             (chainId) &&
             (chainId !== currentChain)

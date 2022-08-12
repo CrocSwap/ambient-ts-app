@@ -79,6 +79,7 @@ import { checkIsStable } from '../utils/data/stablePairs';
 import { useTokenMap } from '../utils/hooks/useTokenMap';
 import Reposition from '../pages/Trade/Reposition/Reposition';
 import SidebarFooter from '../components/Global/SIdebarFooter/SidebarFooter';
+import { validateChain } from './validateChain';
 // import SidebarFooter from '../components/Global/SIdebarFooter/SidebarFooter';
 
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
@@ -145,6 +146,7 @@ export default function App() {
     useEffect(() => {
         try {
             const url = exposeProviderUrl(provider);
+            console.log(chainData.chainId)
             const onChain = exposeProviderChain(provider) === parseInt(chainData.chainId);
 
             if (isAuthenticated) {
@@ -152,7 +154,8 @@ export default function App() {
                     return;
                 } else if (provider && url === 'metamask' && metamaskLocked) {
                     clickLogout();
-                } else if (window.ethereum && !metamaskLocked) {
+                } else if (window.ethereum && !metamaskLocked && validateChain(window.ethereum.chainId)) {
+                    // console.log(window.ethereum.chainId)
                     const metamaskProvider = new ethers.providers.Web3Provider(window.ethereum);
                     console.log('Metamask Provider');
                     setProvider(metamaskProvider);
@@ -942,6 +945,7 @@ export default function App() {
             lastBlockNumber !== 0
         ) {
             (async () => {
+                console.log(chainData);
                 const viewProvider = provider
                     ? provider
                     : (await new CrocEnv(chainData.chainId).context).provider;
