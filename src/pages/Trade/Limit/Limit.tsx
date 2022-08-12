@@ -102,20 +102,28 @@ export default function Limit(props: LimitPropsIF) {
         }
     }, [poolPriceDisplay]);
 
+    const signingMessage = `Welcome to Ambient Finance!
+
+Click to sign in and accept the Ambient Terms of Service: https://ambient-finance.netlify.app/tos
+
+This request will not trigger a blockchain transaction or cost any gas fees.
+
+Your authentication status will reset on logout.`;
+
     // login functionality
     const clickLogin = () => {
         console.log('user clicked Login');
         if (!isAuthenticated || !isWeb3Enabled) {
             authenticate({
                 provider: 'metamask',
-                signingMessage: 'Ambient API Authentication.',
+                signingMessage: signingMessage,
                 onSuccess: () => {
                     enableWeb3();
                 },
                 onError: () => {
                     authenticate({
                         provider: 'metamask',
-                        signingMessage: 'Ambient API Authentication.',
+                        signingMessage: signingMessage,
                         onSuccess: () => {
                             enableWeb3;
                             // alert('🎉');
