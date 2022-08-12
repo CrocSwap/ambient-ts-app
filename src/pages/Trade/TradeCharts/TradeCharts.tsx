@@ -135,6 +135,10 @@ export default function TradeCharts(props: TradeChartsProps) {
     );
     // CHART SETTINGS------------------------------------------------------------
     const [openSettingsTooltip, setOpenSettingsTooltip] = useState(false);
+    const [showTvl, setShowTvl] = useState(false);
+    const [showFeeRate, setShowFeeRate] = useState(false);
+    const [showVolume, setShowVolume] = useState(false);
+    const [exampleState, setExampleState] = useState(false);
 
     const [chartItems, setChartItems] = useState([
         { slug: 'chart', name: 'Chart', checked: true },
@@ -216,19 +220,23 @@ export default function TradeCharts(props: TradeChartsProps) {
 
     // ---------------------------ACTIVE OVERLAY BUTTON FUNCTIONALITY-------------------------------
     const [activerOverlayButton, setActiveOverlayButton] = useState('Curve');
+
+    // this could be simplify into 1 reusable function but I figured we might have to do some other calculations for each of these so I am sepearing it for now. -Jr
+    const handleVolumeToggle = () => setShowVolume(!showVolume);
+    const handleTvlToggle = () => setShowTvl(!showTvl);
+    const handleFeeRateToggle = () => setShowFeeRate(!showFeeRate);
+
     const chartOverlayButtonData = [
-        { name: 'Volume' },
-        { name: 'TVL' },
-        { name: 'Fee Rate' },
-        { name: 'Heatmap' },
-        { name: 'Liquidity Profile' },
-        { name: 'Curve' },
-        { name: 'Depth' },
+        { name: 'Volume', selected: showVolume, action: handleVolumeToggle },
+        { name: 'TVL', selected: showTvl, action: handleTvlToggle },
+        { name: 'Fee Rate', selected: showFeeRate, action: handleFeeRateToggle },
+        // { name: 'Heatmap', function: () => console.log('heatmap') },
+        // { name: 'Liquidity Profile', function: () => console.log('heatmap')  },
+        // { name: 'Curve', function: () => console.log('Curve')  },
+        // { name: 'Depth', function: () => console.log('Depth')  },
     ];
 
-    function handleOverlayButtonClick(name: string) {
-        setActiveOverlayButton(name);
-    }
+    console.log(showTvl);
 
     const chartOverlayButtons = chartOverlayButtonData.map((button, idx) => (
         <motion.div
@@ -240,24 +248,14 @@ export default function TradeCharts(props: TradeChartsProps) {
             key={idx}
         >
             <button
-                onClick={() => handleOverlayButtonClick(button.name)}
+                onClick={button.action}
                 className={
-                    button.name === activerOverlayButton
-                        ? styles.active_button
-                        : styles.non_active_button
+                    button.selected
+                        ? styles.active_selected_button
+                        : styles.non_active_selected_button
                 }
             >
                 {button.name}
-
-                {button.name === activerOverlayButton && (
-                    <motion.div
-                        layoutId='outline'
-                        className={styles.outline}
-                        initial={false}
-                        // animate={{ borderColor: 'red' }}
-                        transition={spring}
-                    />
-                )}
             </button>
         </motion.div>
     ));
