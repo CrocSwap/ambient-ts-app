@@ -67,7 +67,6 @@ export default function Chart(props: ChartData) {
     const [scaleData, setScaleData] = useState<any>();
 
     const parsedChartData = useMemo(() => {
-        console.log('useMemo');
         const chartData: CandleChartData[] = [];
         let period = 1;
         props.priceData?.candles.map((data) => {
@@ -117,10 +116,7 @@ export default function Chart(props: ChartData) {
     }, [parsedChartData.period]);
 
     useEffect(() => {
-        console.log(parsedChartData);
         if (parsedChartData !== undefined) {
-            console.log('scale');
-
             const priceRange = d3fc
                 .extentLinear()
                 .accessors([(d: any) => d.high, (d: any) => d.low])
@@ -154,7 +150,6 @@ export default function Chart(props: ChartData) {
     }, [parsedChartData.period]);
 
     useEffect(() => {
-        console.log(scaleData);
         if (parsedChartData !== undefined && scaleData !== undefined) {
             drawChart(parsedChartData.chartData, parsedChartData.period, targets, scaleData);
         }
