@@ -25,12 +25,19 @@ interface ChartData {
     priceData: CandlesByPoolAndDuration | undefined;
     changeState: (isOpen: boolean | undefined, candleData: CandleData | undefined) => void;
     chartItems: chartItem[];
+    chartItemStates: chartItemStates;
 }
 
 type chartItem = {
     slug: string;
     name: string;
     checked: boolean;
+};
+
+type chartItemStates = {
+    showTvl: boolean;
+    showVolume: boolean;
+    showFeeRate: boolean;
 };
 
 export default function TradeCandleStickChart(props: ChartData) {

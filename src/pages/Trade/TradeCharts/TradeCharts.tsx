@@ -147,6 +147,8 @@ export default function TradeCharts(props: TradeChartsProps) {
         { slug: 'volume', name: 'Volume', checked: false },
     ]);
 
+    const chartItemStates = { showFeeRate, showTvl, showVolume };
+
     const handleChartItemChange = (slug: string) => {
         const copyProducts = [...chartItems];
         const modifiedProducts = copyProducts.map((item) => {
@@ -219,7 +221,6 @@ export default function TradeCharts(props: TradeChartsProps) {
     // END OF GRAPH SETTINGS CONTENT------------------------------------------------------
 
     // ---------------------------ACTIVE OVERLAY BUTTON FUNCTIONALITY-------------------------------
-    const [activerOverlayButton, setActiveOverlayButton] = useState('Curve');
 
     // this could be simplify into 1 reusable function but I figured we might have to do some other calculations for each of these so I am sepearing it for now. -Jr
     const handleVolumeToggle = () => setShowVolume(!showVolume);
@@ -239,14 +240,7 @@ export default function TradeCharts(props: TradeChartsProps) {
     console.log(showTvl);
 
     const chartOverlayButtons = chartOverlayButtonData.map((button, idx) => (
-        <motion.div
-            initial={{ y: 10, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: -10, opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className={styles.settings_container}
-            key={idx}
-        >
+        <div className={styles.settings_container} key={idx}>
             <button
                 onClick={button.action}
                 className={
@@ -257,7 +251,7 @@ export default function TradeCharts(props: TradeChartsProps) {
             >
                 {button.name}
             </button>
-        </motion.div>
+        </div>
     ));
     // --------------------------- END OF ACTIVE OVERLAY BUTTON FUNCTIONALITY-------------------------------
 
@@ -431,6 +425,7 @@ export default function TradeCharts(props: TradeChartsProps) {
                     priceData={props.candleData}
                     changeState={props.changeState}
                     chartItems={chartItems}
+                    chartItemStates={chartItemStates}
                 />
             </div>
         </>
