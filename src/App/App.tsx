@@ -1184,6 +1184,8 @@ export default function App() {
         position.lowRangeShortDisplayInBase =
             lowerPriceDisplayInBase < 2
                 ? lowerPriceDisplayInBase.toPrecision(3)
+                : lowerPriceDisplayInBase >= 1000000
+                ? lowerPriceDisplayInBase.toExponential(2)
                 : lowerPriceDisplayInBase.toLocaleString(undefined, {
                       maximumFractionDigits: 0,
                   });
@@ -1191,6 +1193,8 @@ export default function App() {
         position.lowRangeShortDisplayInQuote =
             lowerPriceDisplayInQuote < 2
                 ? lowerPriceDisplayInQuote.toPrecision(3)
+                : lowerPriceDisplayInQuote >= 1000000
+                ? lowerPriceDisplayInQuote.toExponential(2)
                 : lowerPriceDisplayInQuote.toLocaleString(undefined, {
                       maximumFractionDigits: 0,
                   });
@@ -1198,6 +1202,8 @@ export default function App() {
         position.highRangeShortDisplayInBase =
             upperPriceDisplayInBase < 2
                 ? upperPriceDisplayInBase.toPrecision(3)
+                : upperPriceDisplayInBase >= 1000000
+                ? upperPriceDisplayInBase.toExponential(2)
                 : upperPriceDisplayInBase.toLocaleString(undefined, {
                       maximumFractionDigits: 0,
                   });
@@ -1205,6 +1211,8 @@ export default function App() {
         position.highRangeShortDisplayInQuote =
             upperPriceDisplayInQuote < 2
                 ? upperPriceDisplayInQuote.toPrecision(3)
+                : upperPriceDisplayInQuote >= 1000000
+                ? upperPriceDisplayInQuote.toExponential(2)
                 : upperPriceDisplayInQuote.toLocaleString(undefined, {
                       maximumFractionDigits: 0,
                   });
@@ -1223,6 +1231,8 @@ export default function App() {
             position.lowRangeDisplayInBase =
                 lowerPriceDisplayInBase < 2
                     ? lowerPriceDisplayInBase.toPrecision(3)
+                    : lowerPriceDisplayInBase >= 1000000
+                    ? lowerPriceDisplayInBase.toExponential(2)
                     : lowerPriceDisplayInBase.toLocaleString(undefined, {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
@@ -1230,6 +1240,8 @@ export default function App() {
             position.highRangeDisplayInBase =
                 upperPriceDisplayInBase < 2
                     ? upperPriceDisplayInBase.toPrecision(3)
+                    : upperPriceDisplayInBase >= 1000000
+                    ? upperPriceDisplayInBase.toExponential(2)
                     : upperPriceDisplayInBase.toLocaleString(undefined, {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
@@ -1240,6 +1252,8 @@ export default function App() {
             position.lowRangeDisplayInQuote =
                 lowerPriceDisplayInQuote < 2
                     ? lowerPriceDisplayInQuote.toPrecision(3)
+                    : lowerPriceDisplayInQuote >= 1000000
+                    ? lowerPriceDisplayInQuote.toExponential(2)
                     : lowerPriceDisplayInQuote.toLocaleString(undefined, {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
@@ -1247,6 +1261,8 @@ export default function App() {
             position.highRangeDisplayInQuote =
                 upperPriceDisplayInQuote < 2
                     ? upperPriceDisplayInQuote.toPrecision(3)
+                    : upperPriceDisplayInQuote >= 1000000
+                    ? upperPriceDisplayInQuote.toExponential(2)
                     : upperPriceDisplayInQuote.toLocaleString(undefined, {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
