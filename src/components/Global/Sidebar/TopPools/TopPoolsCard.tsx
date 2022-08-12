@@ -4,28 +4,49 @@ import { setTokenA, setTokenB } from '../../../../utils/state/tradeDataSlice';
 import { TokenIF } from '../../../../utils/interfaces/exports';
 import { getPoolVolume, getPoolTVL } from '../../../../App/functions/getPoolStats';
 import { useEffect, useState } from 'react';
-
+import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import { formatAmount } from '../../../../utils/numbers';
 interface TopPoolsCardProps {
     pool: { name: string; tokenA: TokenIF; tokenB: TokenIF };
+    chainId: string;
 }
 
 export default function TopPoolsCard(props: TopPoolsCardProps) {
+    const { pool, chainId } = props;
+
     const dispatch = useAppDispatch();
 
-    const tokenAAddress = props.pool.tokenA.address;
-    const tokenBAddress = props.pool.tokenB.address;
+    const tokenAAddress = pool.tokenA.address;
+    const tokenBAddress = pool.tokenB.address;
 
-    const [poolVolume, setPoolVolume] = useState(0);
-    const [poolTVL, setPoolTVL] = useState(0);
+    const [poolVolume, setPoolVolume] = useState<string | undefined>(undefined);
+    const [poolTVL, setPoolTVL] = useState<string | undefined>(undefined);
+
+    const poolIndex = lookupChain(chainId).poolIndex;
 
     useEffect(() => {
         (async () => {
             if (tokenAAddress && tokenBAddress) {
-                const volumeResult = await getPoolVolume(tokenAAddress, tokenBAddress, 36000);
-                if (volumeResult) setPoolVolume(volumeResult);
+                const volumeResult = await getPoolVolume(tokenAAddress, tokenBAddress, poolIndex);
 
-                const tvlResult = await getPoolTVL(tokenAAddress, tokenBAddress, 36000);
-                if (tvlResult) setPoolTVL(tvlResult);
+                if (volumeResult) {
+                    // const volumeString =
+                    //     volumeResult >= 1000000
+                    //         ? volumeResult.toExponential(2)
+                    //         : volumeResult.toLocaleString(undefined, {
+                    //               maximumFractionDigits: 0,
+                    //           });
+                    const volumeString = formatAmount(volumeResult);
+
+                    setPoolVolume(volumeString);
+                }
+
+                const tvlResult = await getPoolTVL(tokenAAddress, tokenBAddress, poolIndex);
+                if (tvlResult) {
+                    const tvString = formatAmount(tvlResult);
+
+                    setPoolTVL(tvString);
+                }
             }
         })();
     }, [tokenAAddress, tokenBAddress]);
@@ -38,7 +59,7 @@ export default function TopPoolsCard(props: TopPoolsCardProps) {
                 dispatch(setTokenB(props.pool.tokenB));
             }}
         >
-            <div>{props.pool.name}</div>
+            <div>{pool.name}</div>
             <div>{poolVolume}</div>
             <div>{poolTVL}</div>
         </div>

@@ -1,6 +1,6 @@
 const getPoolVolume = async (tokenA: string, tokenB: string, poolIdx: number): Promise<number> => {
     if (tokenA && tokenB && poolIdx) {
-        return 1000;
+        return 1000000000 * Math.random();
     } else {
         return 0;
     }
@@ -8,7 +8,7 @@ const getPoolVolume = async (tokenA: string, tokenB: string, poolIdx: number): P
 
 const getPoolTVL = async (tokenA: string, tokenB: string, poolIdx: number): Promise<number> => {
     if (tokenA && tokenB && poolIdx) {
-        return 2000;
+        return 1000000000 * Math.random();
     } else {
         return 0;
     }
