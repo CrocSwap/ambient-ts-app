@@ -11,7 +11,7 @@ interface WalletAndIDProps {
 export default function WalletAndId(props: WalletAndIDProps) {
     const { ownerId, posHash, ensName } = props;
 
-    const ensNameTruncated = ensName ? trimString(ensName, 4, 3, '…') : null;
+    const ensNameTruncated = ensName ? trimString(ensName, 5, 3, '…') : null;
     const ownerIdTruncated = trimString(ownerId, 6, 0, '…');
     const posHashTruncated = trimString(posHash, 6, 0, '…');
 
@@ -58,7 +58,9 @@ export default function WalletAndId(props: WalletAndIDProps) {
             enterDelay={400}
             leaveDelay={200}
         >
-            <p className={styles.ens}>{ensNameTruncated}</p>
+            <p className={styles.ens}>
+                {ensName && ensName.length > 9 ? ensNameTruncated : ensName}
+            </p>
         </DefaultTooltip>
     );
 
