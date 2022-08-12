@@ -6,7 +6,7 @@ import { CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
 import { querySpotPrice } from '../../../App/functions/querySpotPrice';
 import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { getPoolTVL, getPoolVolume } from '../../../App/functions/getPoolStats';
+import { getPoolVolume } from '../../../App/functions/getPoolStats';
 import { formatAmount } from '../../../utils/numbers';
 
 interface PoolCardProps {
