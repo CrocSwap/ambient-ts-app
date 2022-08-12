@@ -88,6 +88,7 @@ import { useTokenMap } from '../utils/hooks/useTokenMap';
 
 import Reposition from '../pages/Trade/Reposition/Reposition';
 import SidebarFooter from '../components/Global/SIdebarFooter/SidebarFooter';
+import ChatPanel from '../components/Chat/ChatPanel';
 // import SidebarFooter from '../components/Global/SIdebarFooter/SidebarFooter';
 
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
@@ -1722,6 +1723,7 @@ export default function App() {
                 </main>
                 {snackbarContent}
             </div>
+
             <div className='footer_container'>
                 <PageFooter lastBlockNumber={lastBlockNumber} />
             </div>
