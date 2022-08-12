@@ -1182,7 +1182,9 @@ export default function App() {
         );
 
         position.lowRangeShortDisplayInBase =
-            lowerPriceDisplayInBase < 2
+            lowerPriceDisplayInBase < 0.0001
+                ? lowerPriceDisplayInBase.toExponential(2)
+                : lowerPriceDisplayInBase < 2
                 ? lowerPriceDisplayInBase.toPrecision(3)
                 : lowerPriceDisplayInBase >= 1000000
                 ? lowerPriceDisplayInBase.toExponential(2)
@@ -1191,7 +1193,9 @@ export default function App() {
                   });
 
         position.lowRangeShortDisplayInQuote =
-            lowerPriceDisplayInQuote < 2
+            lowerPriceDisplayInQuote < 0.0001
+                ? lowerPriceDisplayInQuote.toExponential(2)
+                : lowerPriceDisplayInQuote < 2
                 ? lowerPriceDisplayInQuote.toPrecision(3)
                 : lowerPriceDisplayInQuote >= 1000000
                 ? lowerPriceDisplayInQuote.toExponential(2)
@@ -1200,7 +1204,9 @@ export default function App() {
                   });
 
         position.highRangeShortDisplayInBase =
-            upperPriceDisplayInBase < 2
+            upperPriceDisplayInBase < 0.0001
+                ? upperPriceDisplayInBase.toExponential(2)
+                : upperPriceDisplayInBase < 2
                 ? upperPriceDisplayInBase.toPrecision(3)
                 : upperPriceDisplayInBase >= 1000000
                 ? upperPriceDisplayInBase.toExponential(2)
@@ -1209,7 +1215,9 @@ export default function App() {
                   });
 
         position.highRangeShortDisplayInQuote =
-            upperPriceDisplayInQuote < 2
+            upperPriceDisplayInQuote < 0.0001
+                ? upperPriceDisplayInQuote.toExponential(2)
+                : upperPriceDisplayInQuote < 2
                 ? upperPriceDisplayInQuote.toPrecision(3)
                 : upperPriceDisplayInQuote >= 1000000
                 ? upperPriceDisplayInQuote.toExponential(2)
@@ -1229,7 +1237,9 @@ export default function App() {
 
         if (!position.ambient) {
             position.lowRangeDisplayInBase =
-                lowerPriceDisplayInBase < 2
+                lowerPriceDisplayInBase < 0.0001
+                    ? lowerPriceDisplayInBase.toExponential(2)
+                    : lowerPriceDisplayInBase < 2
                     ? lowerPriceDisplayInBase.toPrecision(3)
                     : lowerPriceDisplayInBase >= 1000000
                     ? lowerPriceDisplayInBase.toExponential(2)
@@ -1238,7 +1248,9 @@ export default function App() {
                           maximumFractionDigits: 2,
                       });
             position.highRangeDisplayInBase =
-                upperPriceDisplayInBase < 2
+                upperPriceDisplayInBase < 0.0001
+                    ? upperPriceDisplayInBase.toExponential(2)
+                    : upperPriceDisplayInBase < 2
                     ? upperPriceDisplayInBase.toPrecision(3)
                     : upperPriceDisplayInBase >= 1000000
                     ? upperPriceDisplayInBase.toExponential(2)
@@ -1250,7 +1262,9 @@ export default function App() {
 
         if (!position.ambient) {
             position.lowRangeDisplayInQuote =
-                lowerPriceDisplayInQuote < 2
+                lowerPriceDisplayInQuote < 0.0001
+                    ? lowerPriceDisplayInQuote.toExponential(2)
+                    : lowerPriceDisplayInQuote < 2
                     ? lowerPriceDisplayInQuote.toPrecision(3)
                     : lowerPriceDisplayInQuote >= 1000000
                     ? lowerPriceDisplayInQuote.toExponential(2)
@@ -1259,7 +1273,9 @@ export default function App() {
                           maximumFractionDigits: 2,
                       });
             position.highRangeDisplayInQuote =
-                upperPriceDisplayInQuote < 2
+                upperPriceDisplayInQuote < 0.0001
+                    ? upperPriceDisplayInQuote.toExponential(2)
+                    : upperPriceDisplayInQuote < 2
                     ? upperPriceDisplayInQuote.toPrecision(3)
                     : upperPriceDisplayInQuote >= 1000000
                     ? upperPriceDisplayInQuote.toExponential(2)
