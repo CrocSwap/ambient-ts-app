@@ -2,12 +2,13 @@
 import { Dispatch, SetStateAction } from 'react';
 import { FaDotCircle } from 'react-icons/fa';
 import { motion } from 'framer-motion';
+import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
 // START: Import Local Files
 import styles from './NetworkSelector.module.css';
 import DropdownMenu2 from '../../../../components/Global/DropdownMenu2/DropdownMenu2';
-import ethereumImage from '../../../../assets/images/networks/ethereum.png';
 import { ItemEnterAnimation } from '../../../../utils/others/FramerMotionAnimations';
+import { ambientChains } from '../../../../utils/data/chains';
 
 interface NetworkSelectorPropsIF {
     chainId: string;
@@ -17,43 +18,21 @@ interface NetworkSelectorPropsIF {
 export default function NetworkSelector(props: NetworkSelectorPropsIF) {
     const { chainId, switchChain } = props;
 
-    const chains = [
-        {
-            name: 'Görli ',
-            id: '0x5',
-            icon: ethereumImage,
-            theme: '#36364a',
-        },
-        {
-            name: 'Avalanche ',
-            id: '0xa869',
-            icon: ethereumImage,
-            theme: 'red',
-        },
-        {
-            name: 'Ethereum ',
-            id: '0x1',
-            icon: ethereumImage,
-            theme: 'blue',
-        },
-    ];
-
-    const currentChain = chains.find((chain) => chain.id === chainId);
+    const chains = ambientChains.map((chain: string) => lookupChain(chain));
 
     const networkMenuContent = (
         <ul className={styles.menu_content}>
             {chains.map((chain, idx) => (
                 <motion.li
-                    onClick={() => switchChain(chain.id)}
-                    key={chain.id}
+                    onClick={() => switchChain(chain.chainId)}
+                    key={chain.chainId}
                     className={styles.network_item}
                     custom={idx}
                     variants={ItemEnterAnimation}
                 >
-                    <img src={chain.icon} className={styles.icon_button} alt={chain.name} />
                     <div className={styles.chain_name_status}>
-                        {chain.name}
-                        {chain.id == chainId && <FaDotCircle color='#CDC1FF' size={10} />}
+                        <p>(chain name here)</p>
+                        {chain.chainId == chainId && <FaDotCircle color='#CDC1FF' size={10} />}
                     </div>
                 </motion.li>
             ))}
@@ -67,7 +46,7 @@ export default function NetworkSelector(props: NetworkSelectorPropsIF) {
                 <DropdownMenu2
                     marginTop={'50px'}
                     titleWidth={'130px'}
-                    title={currentChain ? currentChain.name : ''}
+                    title={''}
                 >
                     {networkMenuContent}
                 </DropdownMenu2>
