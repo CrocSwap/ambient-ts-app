@@ -259,8 +259,8 @@ export default function TradeCandleStickChart(props: ChartData) {
             {chartItems[2].checked === true && (
                 <>
                     <hr />
-                    <label>Tvl</label>
-                    <div style={{ height: '15%', width: '100%' }} className='chart-tvl'></div>
+                    <label>TVL</label>
+                    <div style={{ height: '15%', width: '80%' }} className='chart-tvl'></div>
                 </>
             )}
             {chartItems[3].checked === true && (

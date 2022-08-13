@@ -11,14 +11,16 @@ import TradeTabs2 from '../../components/Trade/TradeTabs/TradeTabs2';
 import { motion, AnimateSharedLayout } from 'framer-motion';
 import TradeCharts from './TradeCharts/TradeCharts';
 import { CandleData } from '../../utils/state/graphDataSlice';
+import { ethers } from 'ethers';
 
 interface ITradeProps {
+    provider: ethers.providers.Provider | undefined;
     account: string;
     isAuthenticated: boolean;
     isWeb3Enabled: boolean;
     lastBlockNumber: number;
     isTokenABase: boolean;
-    poolPriceDisplay: number;
+    poolPriceDisplay?: number;
 
     tokenMap: Map<string, TokenIF>;
     tokenPair: {
@@ -38,7 +40,7 @@ interface ITradeProps {
 }
 
 export default function Trade(props: ITradeProps) {
-    const { tokenMap } = props;
+    const { chainId, tokenMap, poolPriceDisplay, provider } = props;
 
     const [isCandleSelected, setIsCandleSelected] = useState<boolean | undefined>();
     const [transactionFilter, setTransactionFilter] = useState<CandleData>();
@@ -74,14 +76,18 @@ export default function Trade(props: ITradeProps) {
         .map((item) => JSON.stringify(item.pool).toLowerCase())
         .findIndex((pool) => pool === mainnetCandlePoolDefinition);
 
-    const mainnetCandleData = graphData.candlesForAllPools.pools[indexOfMainnetCandlePool];
-    const candleData = mainnetCandleData.candlesByPoolAndDuration.find((data) => {
+    const mainnetCandleData = graphData?.candlesForAllPools?.pools[indexOfMainnetCandlePool];
+    const candleData = mainnetCandleData?.candlesByPoolAndDuration.find((data) => {
         return data.duration === tradeData.activeChartPeriod;
     });
 
     const denomInBase = tradeData.isDenomBase;
 
-    const poolPriceDisplay = denomInBase ? 1 / props.poolPriceDisplay : props.poolPriceDisplay;
+    const poolPriceDisplayWithDenom = poolPriceDisplay
+        ? denomInBase
+            ? 1 / poolPriceDisplay
+            : poolPriceDisplay
+        : 0;
 
     const navigationMenu = (
         <div className={styles.navigation_menu}>
@@ -125,7 +131,7 @@ export default function Trade(props: ITradeProps) {
                             className={styles.main__chart_container}
                         >
                             <TradeCharts
-                                poolPriceDisplay={poolPriceDisplay}
+                                poolPriceDisplay={poolPriceDisplayWithDenom}
                                 expandTradeTable={props.expandTradeTable}
                                 setExpandTradeTable={props.setExpandTradeTable}
                                 isTokenABase={props.isTokenABase}
@@ -148,11 +154,12 @@ export default function Trade(props: ITradeProps) {
                         }}
                     >
                         <TradeTabs2
+                            provider={provider}
                             account={props.account}
                             isAuthenticated={props.isAuthenticated}
                             isWeb3Enabled={props.isWeb3Enabled}
                             lastBlockNumber={props.lastBlockNumber}
-                            chainId={props.chainId}
+                            chainId={chainId}
                             switchTabToTransactions={props.switchTabToTransactions}
                             setSwitchTabToTransactions={props.setSwitchTabToTransactions}
                             currentTxActiveInTransactions={props.currentTxActiveInTransactions}

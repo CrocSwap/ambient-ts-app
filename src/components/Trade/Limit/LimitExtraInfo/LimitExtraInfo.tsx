@@ -61,7 +61,9 @@ export default function LimitExtraInfo(props: LimitExtraInfoPropsIF) {
     const displayPriceWithDenom = isDenomBase ? 1 / poolPriceDisplay : poolPriceDisplay;
 
     const displayPriceString =
-        displayPriceWithDenom < 2
+        displayPriceWithDenom === Infinity || displayPriceWithDenom === 0
+            ? '...'
+            : displayPriceWithDenom < 2
             ? displayPriceWithDenom.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 6,
@@ -82,7 +84,9 @@ export default function LimitExtraInfo(props: LimitExtraInfoPropsIF) {
         : displayPriceWithDenom * (1 - slippageTolerance / 100) * (1 - liquidityProviderFee / 100);
 
     const displayLimitPriceString =
-        priceLimitAfterSlippageAndFee < 2
+        displayPriceWithDenom === Infinity || displayPriceWithDenom === 0
+            ? '...'
+            : priceLimitAfterSlippageAndFee < 2
             ? priceLimitAfterSlippageAndFee.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 6,

@@ -204,7 +204,7 @@ export default function Chart(props: ChartData) {
                 .yScale(yScale);
 
             const drag = d3.drag().on('drag', function (event, d: any) {
-                console.log('eski: ', d3.pointer(event)[1]);
+                // console.log('eski: ', d3.pointer(event)[1]);
 
                 const newValue = yScaleCopy.invert(d3.pointer(event)[1] - 182);
                 setTargets((prevState) => {

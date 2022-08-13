@@ -77,7 +77,7 @@ import PoolPage from '../pages/PoolPage/PoolPage';
 import { memoizeQuerySpotPrice, querySpotPrice } from './functions/querySpotPrice';
 import { memoizeFetchAddress } from './functions/fetchAddress';
 import { memoizeTokenBalance } from './functions/fetchTokenBalances';
-import truncateDecimals from '../utils/data/truncateDecimals';
+// import truncateDecimals from '../utils/data/truncateDecimals';
 import { getNFTs } from './functions/getNFTs';
 import { memoizeTokenDecimals } from './functions/queryTokenDecimals';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
@@ -133,12 +133,12 @@ export default function App() {
     const poolIndex = useMemo(() => lookupChain(chainId).poolIndex.toString(), [chainId]);
 
     useEffect(() => {
-        if (isWeb3Enabled) {
+        if (isWeb3Enabled && window.ethereum?.networkVersion) {
             const newNetworkHex = '0x' + parseInt(window.ethereum?.networkVersion).toString(16);
             console.log('switching networks because metamask network changed');
             switchNetwork(newNetworkHex);
         }
-    }, [window.ethereum?.networkVersion]);
+    }, [isWeb3Enabled, window.ethereum?.networkVersion]);
 
     const [provider, setProvider] = useState<ethers.providers.Provider>();
 
@@ -397,6 +397,10 @@ export default function App() {
     };
 
     const tokenPairStringified = useMemo(() => JSON.stringify(tokenPair), [tokenPair]);
+
+    useEffect(() => {
+        setPoolPriceDisplay(undefined);
+    }, [baseTokenAddress, quoteTokenAddress]);
 
     // useEffect that runs when token pair changes
     useEffect(() => {
@@ -946,8 +950,8 @@ export default function App() {
 
     const [tokenABalance, setTokenABalance] = useState<string>('');
     const [tokenBBalance, setTokenBBalance] = useState<string>('');
-    const [poolPriceNonDisplay, setPoolPriceNonDisplay] = useState(0);
-    const [poolPriceDisplay, setPoolPriceDisplay] = useState(0);
+    const [poolPriceNonDisplay, setPoolPriceNonDisplay] = useState<number | undefined>(undefined);
+    const [poolPriceDisplay, setPoolPriceDisplay] = useState<number | undefined>(undefined);
 
     // useEffect to get spot price when tokens change and block updates
     useEffect(() => {
@@ -988,6 +992,8 @@ export default function App() {
                         quoteTokenDecimals,
                     );
                     setPoolPriceDisplay(displayPrice);
+                } else {
+                    setPoolPriceDisplay(0);
                 }
             })();
         }
@@ -1004,7 +1010,14 @@ export default function App() {
     // useEffect to update selected token balances
     useEffect(() => {
         (async () => {
-            if (provider && account && isAuthenticated && isWeb3Enabled) {
+            if (
+                provider &&
+                account &&
+                isAuthenticated &&
+                isWeb3Enabled &&
+                tokenPair?.dataTokenA?.address &&
+                tokenPair?.dataTokenB?.address
+            ) {
                 const croc = new CrocEnv(provider);
                 croc.token(tokenPair.dataTokenA.address)
                     .balanceDisplay(account)
@@ -1021,7 +1034,8 @@ export default function App() {
         account,
         isWeb3Enabled,
         isAuthenticated,
-        JSON.stringify(tokenPair),
+        tokenPair?.dataTokenA?.address,
+        tokenPair?.dataTokenB?.address,
         lastBlockNumber,
         provider,
     ]);
@@ -1035,24 +1049,22 @@ export default function App() {
     // useEffect to check if user has approved CrocSwap to sell the token A
     useEffect(() => {
         (async () => {
-            try {
-                const tokenAAddress = tokenPair.dataTokenA.address;
-                if (provider && isWeb3Enabled && account !== null) {
-                    const crocEnv = new CrocEnv(provider);
-                    if (!tokenAAddress) {
-                        return;
+            if (tokenPair?.dataTokenA?.address) {
+                try {
+                    const tokenAAddress = tokenPair.dataTokenA.address;
+                    if (provider && isWeb3Enabled && account !== null) {
+                        const crocEnv = new CrocEnv(provider);
+                        const allowance = await crocEnv.token(tokenAAddress).allowance(account);
+                        setTokenAAllowance(toDisplayQty(allowance, tokenPair.dataTokenA.decimals));
                     }
-
-                    const allowance = await crocEnv.token(tokenAAddress).allowance(account);
-                    setTokenAAllowance(toDisplayQty(allowance, tokenPair.dataTokenA.decimals));
+                } catch (err) {
+                    console.log(err);
                 }
-            } catch (err) {
-                console.log(err);
+                setRecheckTokenAApproval(false);
             }
-            setRecheckTokenAApproval(false);
         })();
     }, [
-        tokenPair.dataTokenA.address,
+        tokenPair?.dataTokenA?.address,
         lastBlockNumber,
         account,
         provider,
@@ -1064,25 +1076,22 @@ export default function App() {
     // useEffect to check if user has approved CrocSwap to sell the token B
     useEffect(() => {
         (async () => {
-            try {
-                const tokenBAddress = tokenPair.dataTokenB.address;
-                if (provider && isWeb3Enabled && account !== null) {
-                    const crocEnv = new CrocEnv(provider);
-                    if (!tokenBAddress) {
-                        return;
+            if (tokenPair?.dataTokenB?.address) {
+                try {
+                    const tokenBAddress = tokenPair.dataTokenB.address;
+                    if (provider && isWeb3Enabled && account !== null) {
+                        const crocEnv = new CrocEnv(provider);
+                        const allowance = await crocEnv.token(tokenBAddress).allowance(account);
+                        setTokenBAllowance(toDisplayQty(allowance, tokenPair.dataTokenB.decimals));
                     }
-                    // console.log({ tokenBAddress });
-                    const allowance = await crocEnv.token(tokenBAddress).allowance(account);
-                    // console.log({ allowance });
-                    setTokenBAllowance(toDisplayQty(allowance, tokenPair.dataTokenB.decimals));
+                } catch (err) {
+                    console.log(err);
                 }
-            } catch (err) {
-                console.log(err);
+                setRecheckTokenBApproval(false);
             }
-            setRecheckTokenBApproval(false);
         })();
     }, [
-        tokenPair.dataTokenB.address,
+        tokenPair?.dataTokenB?.address,
         lastBlockNumber,
         account,
         provider,
@@ -1172,6 +1181,34 @@ export default function App() {
             quoteTokenDecimals,
         );
 
+        position.lowRangeShortDisplayInBase =
+            lowerPriceDisplayInBase < 2
+                ? lowerPriceDisplayInBase.toPrecision(3)
+                : lowerPriceDisplayInBase.toLocaleString(undefined, {
+                      maximumFractionDigits: 0,
+                  });
+
+        position.lowRangeShortDisplayInQuote =
+            lowerPriceDisplayInQuote < 2
+                ? lowerPriceDisplayInQuote.toPrecision(3)
+                : lowerPriceDisplayInQuote.toLocaleString(undefined, {
+                      maximumFractionDigits: 0,
+                  });
+
+        position.highRangeShortDisplayInBase =
+            upperPriceDisplayInBase < 2
+                ? upperPriceDisplayInBase.toPrecision(3)
+                : upperPriceDisplayInBase.toLocaleString(undefined, {
+                      maximumFractionDigits: 0,
+                  });
+
+        position.highRangeShortDisplayInQuote =
+            upperPriceDisplayInQuote < 2
+                ? upperPriceDisplayInQuote.toPrecision(3)
+                : upperPriceDisplayInQuote.toLocaleString(undefined, {
+                      maximumFractionDigits: 0,
+                  });
+
         const baseTokenLogoURI = importedTokens.find(
             (token) => token.address.toLowerCase() === baseTokenAddress.toLowerCase(),
         )?.logoURI;
@@ -1185,23 +1222,35 @@ export default function App() {
         if (!position.ambient) {
             position.lowRangeDisplayInBase =
                 lowerPriceDisplayInBase < 2
-                    ? truncateDecimals(lowerPriceDisplayInBase, 4).toString()
-                    : truncateDecimals(lowerPriceDisplayInBase, 2).toString();
+                    ? lowerPriceDisplayInBase.toPrecision(3)
+                    : lowerPriceDisplayInBase.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                      });
             position.highRangeDisplayInBase =
                 upperPriceDisplayInBase < 2
-                    ? truncateDecimals(upperPriceDisplayInBase, 4).toString()
-                    : truncateDecimals(upperPriceDisplayInBase, 2).toString();
+                    ? upperPriceDisplayInBase.toPrecision(3)
+                    : upperPriceDisplayInBase.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                      });
         }
 
         if (!position.ambient) {
             position.lowRangeDisplayInQuote =
                 lowerPriceDisplayInQuote < 2
-                    ? truncateDecimals(lowerPriceDisplayInQuote, 4).toString()
-                    : truncateDecimals(lowerPriceDisplayInQuote, 2).toString();
+                    ? lowerPriceDisplayInQuote.toPrecision(3)
+                    : lowerPriceDisplayInQuote.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                      });
             position.highRangeDisplayInQuote =
                 upperPriceDisplayInQuote < 2
-                    ? truncateDecimals(upperPriceDisplayInQuote, 4).toString()
-                    : truncateDecimals(upperPriceDisplayInQuote, 2).toString();
+                    ? upperPriceDisplayInQuote.toPrecision(3)
+                    : upperPriceDisplayInQuote.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                      });
         }
 
         position.poolPriceInTicks = poolPriceInTicks;
@@ -1361,39 +1410,6 @@ export default function App() {
                         if (JSON.stringify(tokensInRTK[0]) !== JSON.stringify(nativeToken))
                             dispatch(addNativeBalance([nativeToken]));
                     });
-                // if (
-                //     provider &&
-                //     provider.connection?.url === 'metamask' &&
-                //     account &&
-                //     isAuthenticated &&
-                //     isWeb3Enabled
-                // ) {
-                // const signer = provider.getSigner();
-
-                // const nativeEthBalance = await getTokenBalanceDisplay(
-                //     contractAddresses.ZERO_ADDR,
-                //     account,
-                //     signer,
-                // );
-                // make sure a balance was returned, initialized as null
-                // if (nativeEthBalance) {
-                //     // send value to local state
-                //     setNativeBalance(nativeEthBalance);
-                //     const nativeToken: TokenIF = {
-                //         name: 'Native Token',
-                //         address: contractAddresses.ZERO_ADDR,
-                //         // eslint-disable-next-line camelcase
-                //         token_address: contractAddresses.ZERO_ADDR,
-                //         symbol: 'ETH',
-                //         decimals: 18,
-                //         chainId: parseInt(chainId),
-                //         logoURI: '',
-                //         balance: nativeEthBalance,
-                //     };
-                //     // console.log('adding native balance: ' + nativeEthBalance);
-                //     if (JSON.stringify(tokensInRTK[0]) !== JSON.stringify(nativeToken))
-                //         dispatch(addNativeBalance([nativeToken]));
-                // }
             }
         })();
     }, [provider, account, isWeb3Enabled, isAuthenticated, lastBlockNumber]);
@@ -1537,7 +1553,7 @@ export default function App() {
         baseTokenAddress: baseTokenAddress,
         quoteTokenAddress: quoteTokenAddress,
         poolPriceNonDisplay: poolPriceNonDisplay,
-        poolPriceDisplay: poolPriceDisplay.toString(),
+        poolPriceDisplay: poolPriceDisplay ? poolPriceDisplay.toString() : '0',
         tokenABalance: tokenABalance,
         tokenAAllowance: tokenAAllowance,
         setRecheckTokenAApproval: setRecheckTokenAApproval,
@@ -1559,6 +1575,7 @@ export default function App() {
     }
     // props for <Sidebar/> React element
     const sidebarProps = {
+        isDenomBase: tradeData.isDenomBase,
         showSidebar: showSidebar,
         toggleSidebar: toggleSidebar,
         chainId: chainId,
@@ -1587,7 +1604,7 @@ export default function App() {
         // if pool price is > 0.1 then denom token will be base (also cheaper one)
         // then reverse if didUserToggleDenom === true
         const isDenomInBase =
-            poolPriceDisplay < 1
+            poolPriceDisplay && poolPriceDisplay < 1
                 ? tradeData.didUserFlipDenom
                     ? false
                     : true
@@ -1647,11 +1664,22 @@ export default function App() {
                     {/* <div className={`${noSidebarStyle} ${swapBodyStyle}`}> */}
 
                     <Routes>
-                        <Route index element={<Home tokenMap={tokenMap} />} />
+                        <Route
+                            index
+                            element={
+                                <Home
+                                    tokenMap={tokenMap}
+                                    lastBlockNumber={lastBlockNumber}
+                                    provider={provider}
+                                    chainId={chainId}
+                                />
+                            }
+                        />
                         <Route
                             path='trade'
                             element={
                                 <Trade
+                                    provider={provider}
                                     tokenPair={tokenPair}
                                     account={account ?? ''}
                                     isAuthenticated={isAuthenticated}
@@ -1698,6 +1726,8 @@ export default function App() {
                                     userImageData={imageData}
                                     chainId={chainId}
                                     tokenMap={tokenMap}
+                                    switchTabToTransactions={switchTabToTransactions}
+                                    setSwitchTabToTransactions={setSwitchTabToTransactions}
                                 />
                             }
                         />
@@ -1710,6 +1740,8 @@ export default function App() {
                                     chainId={chainId}
                                     userImageData={imageData}
                                     tokenMap={tokenMap}
+                                    switchTabToTransactions={switchTabToTransactions}
+                                    setSwitchTabToTransactions={setSwitchTabToTransactions}
                                 />
                             }
                         />

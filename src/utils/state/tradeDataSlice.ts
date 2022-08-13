@@ -26,7 +26,7 @@ const initialState: tradeData = {
     // addressTokenA: '0x0000000000000000000000000000000000000000',
     // addressTokenB: '0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa',
     didUserFlipDenom: false,
-    isDenomBase: true,
+    isDenomBase: false,
     advancedMode: false,
     isTokenAPrimary: true,
     primaryQuantity: '',
@@ -37,7 +37,7 @@ const initialState: tradeData = {
     advancedHighTick: 0,
     simpleRangeWidth: 100,
     slippageTolerance: 0.05,
-    activeChartPeriod: 60,
+    activeChartPeriod: 300,
 };
 
 export const tradeDataSlice = createSlice({

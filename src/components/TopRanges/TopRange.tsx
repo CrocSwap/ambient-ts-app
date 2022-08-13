@@ -56,7 +56,7 @@ export default function TopRange() {
             <div className={styles.menu_container}>
                 <RangesMenu
                     userPosition={true}
-                    removeRangeProps={true}
+                    rangeDetailsProps={true}
                     posHash={tempPosHash as string}
                     positionData={undefined}
                 />
