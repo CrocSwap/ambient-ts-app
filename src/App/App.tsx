@@ -25,11 +25,9 @@ import {
     toDisplayPrice,
     tickToPrice,
     CrocEnv,
-    toDisplayQty
+    toDisplayQty,
 } from '@crocswap-libs/sdk';
-import {
-    resetReceiptData,
-} from '../utils/state/receiptDataSlice';
+import { resetReceiptData } from '../utils/state/receiptDataSlice';
 
 import SnackbarComponent from '../components/Global/SnackbarComponent/SnackbarComponent';
 
@@ -96,14 +94,8 @@ const shouldSubscriptionsReconnect = false;
 
 /** ***** React Function *******/
 export default function App() {
-    const {
-        Moralis,
-        isWeb3Enabled,
-        account,
-        logout,
-        isAuthenticated,
-        isInitialized,
-    } = useMoralis();
+    const { Moralis, isWeb3Enabled, account, logout, isAuthenticated, isInitialized } =
+        useMoralis();
 
     const tokenMap = useTokenMap();
 
@@ -114,8 +106,8 @@ export default function App() {
     // `isChainSupported` is a boolean indicating whether the chain is supported by Ambient
     // `switchChain` is a function to switch to a different chain
     // `'0x5'` is the chain the app should be on by default
-    const [ chainData, isChainSupported, switchChain, switchNetworkInMoralis ] = useAppChain('0x5');
-    
+    const [chainData, isChainSupported, switchChain, switchNetworkInMoralis] = useAppChain('0x5');
+
     const [switchTabToTransactions, setSwitchTabToTransactions] = useState<boolean>(false);
 
     const [isShowAllEnabled, setIsShowAllEnabled] = useState<boolean>(true);
@@ -157,7 +149,7 @@ export default function App() {
     useEffect(() => {
         try {
             const url = exposeProviderUrl(provider);
-            console.log(chainData.chainId)
+            // console.log(chainData.chainId)
             const onChain = exposeProviderChain(provider) === parseInt(chainData.chainId);
 
             if (isAuthenticated) {
@@ -165,7 +157,11 @@ export default function App() {
                     return;
                 } else if (provider && url === 'metamask' && metamaskLocked) {
                     clickLogout();
-                } else if (window.ethereum && !metamaskLocked && validateChain(window.ethereum.chainId)) {
+                } else if (
+                    window.ethereum &&
+                    !metamaskLocked &&
+                    validateChain(window.ethereum.chainId)
+                ) {
                     // console.log(window.ethereum.chainId)
                     const metamaskProvider = new ethers.providers.Web3Provider(window.ethereum);
                     console.log('Metamask Provider');
@@ -750,13 +746,7 @@ export default function App() {
                 chainId: '0x1',
                 dex: 'all',
             }),
-        [
-            baseTokenAddress,
-            quoteTokenAddress,
-            chainData.poolIndex,
-            activePeriod,
-            chainData.chainId,
-        ],
+        [baseTokenAddress, quoteTokenAddress, chainData.poolIndex, activePeriod, chainData.chainId],
     );
 
     const {
@@ -1106,7 +1096,9 @@ export default function App() {
         const baseTokenAddress = position.base;
         const quoteTokenAddress = position.quote;
 
-        const viewProvider = provider ? provider : (await new CrocEnv(chainData.chainId).context).provider;
+        const viewProvider = provider
+            ? provider
+            : (await new CrocEnv(chainData.chainId).context).provider;
         const poolPriceNonDisplay = await cachedQuerySpotPrice(
             viewProvider,
             baseTokenAddress,
@@ -1116,7 +1108,11 @@ export default function App() {
         );
 
         try {
-            const ensName = await cachedFetchAddress(viewProvider, position.user, chainData.chainId);
+            const ensName = await cachedFetchAddress(
+                viewProvider,
+                position.user,
+                chainData.chainId,
+            );
             if (ensName) position.userEnsName = ensName;
         } catch (error) {
             console.warn(error);
@@ -1471,7 +1467,7 @@ export default function App() {
         chainId: chainData.chainId,
         isChainSupported: isChainSupported,
         switchChain: switchChain,
-        switchNetworkInMoralis: switchNetworkInMoralis
+        switchNetworkInMoralis: switchNetworkInMoralis,
     };
 
     // props for <Swap/> React element
