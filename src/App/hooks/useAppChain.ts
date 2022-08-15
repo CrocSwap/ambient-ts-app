@@ -33,10 +33,10 @@ export const useAppChain = (
     const [isChainSupported, setIsChainSupported] = useState(validateChainId(defaultChain));
 
     // change the network in Moralis after user changes in the app
-    useEffect(() => {
-        console.log('change chain in Moralis!');
-        if (isWeb3Enabled && chainId !== currentChain) switchNetwork(currentChain);
-    }, [currentChain, isWeb3Enabled]);
+    // useEffect(() => {
+    //     console.log('change chain in Moralis!');
+    //     if (isWeb3Enabled && chainId !== currentChain) switchNetwork(currentChain);
+    // }, [currentChain, isWeb3Enabled]);
 
     // if the chain in metamask changes, update the value in the app to match
     // gatekeeping ensures this only runs when the user changes the chain in metamask
@@ -65,8 +65,8 @@ export const useAppChain = (
 
     useEffect(() => {
         console.log({isAuthenticated});
-        if (isAuthenticated && (chainId !== currentChain)) switchNetwork(currentChain);
-    }, [isAuthenticated]);
+        if (isAuthenticated && isWeb3Enabled && (chainId !== currentChain)) setIsChainSupported(false);
+    }, [isAuthenticated, isWeb3Enabled]);
 
     // data from the SDK about the current chain
     // refreshed every time the the value of currentChain is updated
