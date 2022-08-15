@@ -66,7 +66,9 @@ export default function Chart(props: ChartData) {
     const [transactionFilter, setTransactionFilter] = useState<CandleData>();
     const [scaleData, setScaleData] = useState<any>();
 
+    // Parse price data
     const parsedChartData = useMemo(() => {
+        console.log('useMemo');
         const chartData: CandleChartData[] = [];
         let period = 1;
         props.priceData?.candles.map((data) => {
@@ -115,6 +117,7 @@ export default function Chart(props: ChartData) {
         });
     }, [parsedChartData.period]);
 
+    // Set Scale
     useEffect(() => {
         if (parsedChartData !== undefined) {
             const priceRange = d3fc
@@ -149,12 +152,14 @@ export default function Chart(props: ChartData) {
         }
     }, [parsedChartData.period]);
 
+    // Call drawChart()
     useEffect(() => {
         if (parsedChartData !== undefined && scaleData !== undefined) {
             drawChart(parsedChartData.chartData, parsedChartData.period, targets, scaleData);
         }
     }, [parsedChartData, scaleData]);
 
+    // Draw Chart
     const drawChart = useCallback((chartData: any, period: any, targets: any, scaleData: any) => {
         if (chartData.length > 0) {
             const render = () => {
@@ -322,6 +327,7 @@ export default function Chart(props: ChartData) {
         }
     }, []);
 
+    // Set selected candle transactions
     useEffect(() => {
         if (isChartSelected !== undefined && transactionFilter !== undefined) {
             props.changeState(isChartSelected, transactionFilter);
