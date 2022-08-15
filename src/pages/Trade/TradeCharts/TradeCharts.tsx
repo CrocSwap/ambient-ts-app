@@ -4,7 +4,7 @@ import styles from './TradeCharts.module.css';
 import {
     AiOutlineCamera,
     AiOutlineFullscreen,
-    AiOutlineSetting,
+    // AiOutlineSetting,
     AiOutlineDownload,
     AiOutlineCopy,
     AiOutlineLink,
@@ -134,7 +134,7 @@ export default function TradeCharts(props: TradeChartsProps) {
         </div>
     );
     // CHART SETTINGS------------------------------------------------------------
-    const [openSettingsTooltip, setOpenSettingsTooltip] = useState(false);
+    // const [openSettingsTooltip, setOpenSettingsTooltip] = useState(false);
     const [showTvl, setShowTvl] = useState(false);
     const [showFeeRate, setShowFeeRate] = useState(false);
     const [showVolume, setShowVolume] = useState(false);
@@ -156,7 +156,7 @@ export default function TradeCharts(props: TradeChartsProps) {
     });
     const graphSettingsContent = (
         <div className={styles.graph_settings_container}>
-            <DefaultTooltip
+            {/* <DefaultTooltip
                 interactive
                 title={'nothing yet'}
                 open={openSettingsTooltip}
@@ -167,7 +167,7 @@ export default function TradeCharts(props: TradeChartsProps) {
             </DefaultTooltip>
             <div onClick={() => setOpenSettingsTooltip(!openSettingsTooltip)}>
                 <AiOutlineSetting size={20} />
-            </div>
+            </div> */}
             <div onClick={() => setFullScreenChart(!fullScreenChart)}>
                 <AiOutlineFullscreen size={20} />
             </div>
