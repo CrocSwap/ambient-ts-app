@@ -15,7 +15,8 @@ export const useAppChain = (
 ): [
     ChainSpec,
     boolean,
-    Dispatch<SetStateAction<string>>
+    Dispatch<SetStateAction<string>>,
+    (providedChainId: string) => Promise<void>
 ] => {
     // chain from connected wallet via Moralis
     const { chainId, switchNetwork } = useChain();
@@ -30,7 +31,6 @@ export const useAppChain = (
 
     // change the network in Moralis after user changes in the app
     useEffect(() => {
-        console.log('change chain in Moralis!');
         if (chainId !== currentChain) switchNetwork(currentChain);
     }, [currentChain]);
 
@@ -71,5 +71,5 @@ export const useAppChain = (
         return chn;
     }, [currentChain]);
 
-    return [ chainData, isChainSupported, setCurrentChain ];
+    return [ chainData, isChainSupported, setCurrentChain, switchNetwork ];
 }

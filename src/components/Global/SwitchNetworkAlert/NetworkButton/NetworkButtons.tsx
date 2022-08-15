@@ -1,14 +1,11 @@
-import { Dispatch, SetStateAction } from 'react';
 import optimisticImage from '../../../../assets/images/networks/optimistic.svg';
 import NetworkButton from './NetworkButton';
 
 interface NetworkButtonsPropsIF {
-    chainId: string;
-    selectChain: (newChain: string) => void;
-
+    switchNetworkInMoralis: (providedChainId: string) => Promise<void>;
 }
 export default function NetworkButtons(props: NetworkButtonsPropsIF) {
-    const { chainId, selectChain } = props;
+    const { switchNetworkInMoralis } = props;
 
     const supportedChains = [
         {
@@ -28,7 +25,7 @@ export default function NetworkButtons(props: NetworkButtonsPropsIF) {
                     icon={chain.icon}
                     theme={chain.theme}
                     id={chain.id}
-                    clickHandler={() => selectChain(chain.id)}
+                    clickHandler={() => switchNetworkInMoralis(chain.id)}
                 />
             ))}
         </div>

@@ -11,8 +11,6 @@ import { Link } from 'react-router-dom';
 import { useMoralis } from 'react-moralis';
 import { useTranslation } from 'react-i18next';
 
-/** ***** END: Import React and Dongles *********/
-
 /** ***** START: Import Local Files *******/
 import styles from './PageHeader.module.css';
 import { useRive, useStateMachineInput } from 'rive-react';
@@ -39,6 +37,7 @@ interface HeaderPropsIF {
     chainId: string;
     isChainSupported: boolean;
     switchChain: Dispatch<SetStateAction<string>>;
+    switchNetworkInMoralis: (providedChainId: string) => Promise<void>;
 }
 
 export default function PageHeader(props: HeaderPropsIF) {
@@ -50,7 +49,8 @@ export default function PageHeader(props: HeaderPropsIF) {
         shouldDisplayAccountTab,
         chainId,
         isChainSupported,
-        switchChain
+        switchChain,
+        switchNetworkInMoralis
     } = props;
 
     const { user, account, enableWeb3, isWeb3Enabled, authenticate, isAuthenticated } =
@@ -225,12 +225,9 @@ Your authentication status will reset on logout.`;
         </AnimateSharedLayout>
     );
 
-    console.log({isChainSupported});
-    const [showNetworkSwitcher, setShowNetworkSwitcher] = useState(!isChainSupported);
-    console.log({showNetworkSwitcher});
 
     const networkSwitcher = useMemo(() => {
-        const element = <SwitchNetwork onClose={() => setShowNetworkSwitcher(false)} chainId={chainId} switchChain={switchChain} />;
+        const element = <SwitchNetwork switchNetworkInMoralis={switchNetworkInMoralis} />;
         const elementOrNull = isChainSupported ? null : element;
         return elementOrNull;
     }, [isChainSupported]);
@@ -239,7 +236,6 @@ Your authentication status will reset on logout.`;
 
     return (
         <header data-testid={'page-header'} className={styles.primary_header}>
-            {/* <div className={styles.header_gradient}> </div> */}
             <Link to='/' className={styles.logo_container}>
                 <img src={ambientLogo} alt='ambient' />
                 <h1>ambient</h1>

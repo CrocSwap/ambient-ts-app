@@ -114,7 +114,7 @@ export default function App() {
     // `isChainSupported` is a boolean indicating whether the chain is supported by Ambient
     // `switchChain` is a function to switch to a different chain
     // `'0x5'` is the chain the app should be on by default
-    const [ chainData, isChainSupported, switchChain ] = useAppChain('0x5');
+    const [ chainData, isChainSupported, switchChain, switchNetworkInMoralis ] = useAppChain('0x5');
     
     const [switchTabToTransactions, setSwitchTabToTransactions] = useState<boolean>(false);
 
@@ -1470,7 +1470,8 @@ export default function App() {
         shouldDisplayAccountTab: shouldDisplayAccountTab,
         chainId: chainData.chainId,
         isChainSupported: isChainSupported,
-        switchChain: switchChain
+        switchChain: switchChain,
+        switchNetworkInMoralis: switchNetworkInMoralis
     };
 
     // props for <Swap/> React element
