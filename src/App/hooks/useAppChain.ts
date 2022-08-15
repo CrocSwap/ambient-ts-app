@@ -5,7 +5,7 @@ import {
     useMemo,
     useState
 } from 'react';
-import { useChain } from 'react-moralis';
+import { useChain, useMoralis } from 'react-moralis';
 import { ChainSpec } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { validateChainId } from '../../utils/data/chains';
@@ -19,6 +19,7 @@ export const useAppChain = (
     (providedChainId: string) => Promise<void>
 ] => {
     // chain from connected wallet via Moralis
+    const { isAuthenticated } = useMoralis();
     const { chainId, switchNetwork } = useChain();
 
     // value tracking the current chain the app is set to use
@@ -39,21 +40,23 @@ export const useAppChain = (
     // gatekeeping also ensures app will not change to an unsupported network
     // TODO: plan for pathways supporting de-authentication
     useEffect(() => {
-        // if Moralis has a chain ID which does not match the in-app chain ID
-        //      Moralis chain ID is supported => switch app to that ID
-        //      Moralis chain Id is NOT supported => switch app to default chain
-        if (chainId && (chainId !== currentChain)) {
-            if (validateChainId(chainId)) {
-                setCurrentChain(chainId);
-            } else if (!validateChainId(chainId)) {
-                setIsChainSupported(false);
-            } else {
-                console.warn(`Issue validating network. Received value <<${chainId}>> from Moralis. Refer to useAppChain.ts for debugging why equality check crashed. Refer to chains.ts file for acceptable values.`);
+        if (isAuthenticated) {
+            // if Moralis has a chain ID which does not match the in-app chain ID
+            //      Moralis chain ID is supported => switch app to that ID
+            //      Moralis chain Id is NOT supported => switch app to default chain
+            if (chainId && (chainId !== currentChain)) {
+                if (validateChainId(chainId)) {
+                    setCurrentChain(chainId);
+                } else if (!validateChainId(chainId)) {
+                    setIsChainSupported(false);
+                } else {
+                    console.warn(`Issue validating network. Received value <<${chainId}>> from Moralis. Refer to useAppChain.ts for debugging why equality check crashed. Refer to chains.ts file for acceptable values.`);
+                }
+            // if Moralis and local state are already on the same chain,
+            // ... indicate chain is supported in local state
+            } else if (chainId === currentChain) {
+                setIsChainSupported(true);
             }
-        // if Moralis and local state are already on the same chain,
-        // ... indicate chain is supported in local state
-        } else if (chainId === currentChain) {
-            setIsChainSupported(true);
         }
     }, [chainId]);
 
