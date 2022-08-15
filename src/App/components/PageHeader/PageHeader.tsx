@@ -1,11 +1,5 @@
 // START: Import React and Dongles
-import {
-    useCallback,
-    useEffect,
-    useState,
-    Dispatch,
-    SetStateAction
-} from 'react';
+import { useCallback, useEffect, useState, Dispatch, SetStateAction } from 'react';
 import { Link } from 'react-router-dom';
 import { useMoralis, useChain } from 'react-moralis';
 import { useTranslation } from 'react-i18next';
@@ -47,13 +41,13 @@ export default function PageHeader(props: HeaderPropsIF) {
         chainId,
         isChainSupported,
         switchChain,
-        switchNetworkInMoralis
+        switchNetworkInMoralis,
     } = props;
 
     const { user, account, enableWeb3, isWeb3Enabled, authenticate, isAuthenticated } =
         useMoralis();
 
-        const { switchNetwork } = useChain();
+    const { switchNetwork } = useChain();
 
     const { t } = useTranslation();
 
@@ -86,8 +80,8 @@ Your authentication status will reset on logout.`;
                 chainId: 5,
                 signingMessage: signingMessage,
                 // signingMessage: 'Ambient API Authentication.',
-                onSuccess: () => {
-                    enableWeb3();
+                onSuccess: async () => {
+                    await enableWeb3();
                     switchNetwork('0x5');
                 },
                 onError: () => {
@@ -96,8 +90,8 @@ Your authentication status will reset on logout.`;
                         provider: 'metamask',
                         chainId: 5,
                         signingMessage: signingMessage,
-                        onSuccess: () => {
-                            enableWeb3();
+                        onSuccess: async () => {
+                            await enableWeb3();
                             switchNetwork('0x5');
                             // alert('🎉');
                         },
@@ -245,10 +239,7 @@ Your authentication status will reset on logout.`;
             {routeDisplay}
 
             <div className={styles.account}>
-                <NetworkSelector
-                    chainId={chainId}
-                    switchChain={switchChain}
-                />
+                <NetworkSelector chainId={chainId} switchChain={switchChain} />
                 {(!isAuthenticated || !isWeb3Enabled) && metamaskButton}
                 <Account {...accountProps} />
             </div>
