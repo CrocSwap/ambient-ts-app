@@ -218,14 +218,14 @@ footer {
 
     .content-container {
         height: calc(100vh - var(--footer-height));
-      
+
         background: var(--dark3);
     }
     .content-container-trade {
         height: calc(100vh - var(--footer-height));
         max-height: calc(100vh - var(--footer-height));
         overflow: hidden;
-      
+
         background: var(--dark3);
     }
 }

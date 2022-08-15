@@ -1,13 +1,12 @@
-
-  .currency_quantity {
+.currency_quantity {
     font-weight: 200;
-font-size: 18px;
-line-height: 22px;
+    font-size: 18px;
+    line-height: 22px;
     color: #fffefd;
     text-align: start;
     width: 100%;
     height: calc(1.5em + 0.75rem + 2px);
-    padding:0 ;
+    padding: 0;
     max-height: 23px;
     margin: 8.5px 0;
     margin-left: 32px;
@@ -16,14 +15,13 @@ line-height: 22px;
     outline: 0;
     background-color: transparent;
     background-clip: padding-box;
-  
-    transition: border-color var(--animation-speed) ease-in-out, box-shadow var(--animation-speed) ease-in-out;
-  
-  }
-  .currency_quantity::placeholder {
+
+    transition: border-color var(--animation-speed) ease-in-out,
+        box-shadow var(--animation-speed) ease-in-out;
+}
+.currency_quantity::placeholder {
     color: var(--text-grey-dark);
     font-weight: 200;
     font-size: 18px;
     line-height: 22px;
-  }
-  
+}

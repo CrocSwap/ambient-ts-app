@@ -1,8 +1,6 @@
 :root {
- 
     --nav-size: 60px;
- 
-  }
+}
 
 /* <li> */
 .nav_item {
@@ -10,10 +8,10 @@
     display: flex;
     align-items: center;
     justify-content: center;
-  }
-  
-  /* Icon Button */
-  .icon_button {
+}
+
+/* Icon Button */
+.icon_button {
     --button-size: calc(var(--nav-size) * 0.5);
     width: var(--button-size);
     height: var(--button-size);
@@ -25,17 +23,16 @@
     align-items: center;
     justify-content: center;
     transition: filter var(--animation-speed);
-  }
-  
-  .icon_button:hover {
+}
+
+.icon_button:hover {
     filter: brightness(1.2);
     background: var(--dark3);
     transition: all var(--animation-speed) ease;
-  }
-  
-  .icon_button svg { 
+}
+
+.icon_button svg {
     fill: #dadce1;
     width: 20px;
     height: 20px;
-  }
-  
+}

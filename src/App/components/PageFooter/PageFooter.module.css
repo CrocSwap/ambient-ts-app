@@ -1,5 +1,4 @@
-.footer{
- 
+.footer {
     display: flex;
     justify-content: flex-end;
     flex-direction: row;
@@ -8,69 +7,59 @@
     /* padding: 16px 0; */
     height: var(--footer-height);
 
-    font-size:  var(--body-size);
-line-height: var(--body-lh);
-gap: var(--gap, 1rem);
-z-index: 999;
-
-
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    gap: var(--gap, 1rem);
+    z-index: 999;
 }
 
-.footer svg{
+.footer svg {
     color: rgb(213, 226, 231);
 }
 
-.footer a{
+.footer a {
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 0.25rem;
-    
 }
 
 /* page block sign */
-.page_block_sign{
-width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: 
-    linear-gradient(45deg, transparent, transparent 40%, yellow),
-    linear-gradient(#262626, #141414);
-  animation: rotate 9.5s linear infinite;
-  color: white;
+.page_block_sign {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, transparent, transparent 40%, yellow),
+        linear-gradient(#262626, #141414);
+    animation: rotate 9.5s linear infinite;
+    color: white;
 }
 .page_block_sign:before,
 .page_block_sign:after {
-  content: " ";
-  position: absolute;
-  /* top: 8px;
+    content: ' ';
+    position: absolute;
+    /* top: 8px;
   left: 8px;
   right: 8px;
   bottom: 8px; */
-  background: linear-gradient(#161616, #262626);
-  border-radius: inherit;
+    background: linear-gradient(#161616, #262626);
+    border-radius: inherit;
 }
 .page_block_sign:before {
-  background: 
-    linear-gradient(45deg, transparent, transparent 40%, rgb(40, 2, 2));
-  filter: blur(32px);
+    background: linear-gradient(45deg, transparent, transparent 40%, rgb(40, 2, 2));
+    filter: blur(32px);
 }
 
 @keyframes rotate {
-  100% {
-    transform: rotate(360deg);
-    filter: hue-rotate(360deg);
-  }
+    100% {
+        transform: rotate(360deg);
+        filter: hue-rotate(360deg);
+    }
 }
 
-
-
-
-@media( max-width: 35em){
-.footer{
-    flex-direction: column;
-    display: none;
+@media (max-width: 35em) {
+    .footer {
+        flex-direction: column;
+        display: none;
+    }
 }
-
-}
-

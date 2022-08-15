@@ -1,35 +1,23 @@
-.portfolio_container{
+.portfolio_container {
     padding: 2rem;
     background: var(--dark3);
-  
-    
-
-   
 }
-.exchange_balance{
+.exchange_balance {
     /* max-width: 516px; */
-   display: flex;
-   justify-content: center;
-   align-items: center;
-  
-
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
-.title{
+.title {
     margin-top: 1rem;
     font-size: var(--header1-size);
     line-height: var(--header1-lh);
     letter-spacing: -0.02em;
     color: var(--text-grey-white);
-
-    
 }
 
-@media (min-width: 940px){
-
-
-    .portfolio_container{
+@media (min-width: 940px) {
+    .portfolio_container {
         height: calc(100vh - 10.5rem);
-
     }
-
 }

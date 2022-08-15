@@ -1,4 +1,4 @@
-.range_details_container{
+.range_details_container {
     /* max-width: 800px; */
     display: flex;
     justify-content: center;
@@ -6,7 +6,7 @@
     padding: 120px 16px 0px;
 }
 
-.main_content{
+.main_content {
     display: flex;
     flex-direction: column;
     gap: 1rem;

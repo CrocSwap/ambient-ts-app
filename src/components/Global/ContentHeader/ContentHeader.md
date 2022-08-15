@@ -10,5 +10,3 @@ An example of a fully rendered `ContentHeader`
         <FiSettings />
       </div>
     </ContentHeader>
-
-    

@@ -1,19 +1,22 @@
 /* I do not want to change the classnames of the file to CSS modules since I am aware those classnames are being used for the pgrah data */
 
-.chart-fee, .chart-tvl, #chart-volume{
-    transition: all 600ms ease-in-out
+.chart-fee,
+.chart-tvl,
+#chart-volume {
+    transition: all 600ms ease-in-out;
 }
 
-
-
-.main_layout{
+.main_layout {
     transition: all 600ms ease-in-out;
     width: 100%;
-    color: #BDBDBD;
+    color: #bdbdbd;
 }
 
-.domain, .tick>path, .gridline-y, .gridline-x {
-    stroke: #BDBDBD;
+.domain,
+.tick > path,
+.gridline-y,
+.gridline-x {
+    stroke: #bdbdbd;
     stroke-opacity: 0.1;
 }
 
@@ -24,9 +27,8 @@
     stroke-opacity: 0.6;
 }
 
-
-.candlestick  .down {
-    background-color: #7371FC;
+.candlestick .down {
+    background-color: #7371fc;
 }
 
 hr {

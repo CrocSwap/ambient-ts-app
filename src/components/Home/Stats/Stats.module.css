@@ -1,31 +1,28 @@
-
-.container{
+.container {
     display: flex;
     flex-direction: column;
     gap: 1rem;
     padding: 4rem 0;
-    
 }
-.title{
+.title {
     font-style: normal;
-font-weight: 300;
-font-size: 24px;
-line-height: 30px;
-text-align: center;
-letter-spacing: -0.02em;
-color: var(--text-grey-white)
+    font-weight: 300;
+    font-size: 24px;
+    line-height: 30px;
+    text-align: center;
+    letter-spacing: -0.02em;
+    color: var(--text-grey-white);
 }
 
-.content{
+.content {
     max-width: 1120px;
     margin: 0 auto;
-  
+
     display: grid;
     grid-gap: 1rem;
 }
 
-
-.stat_card_container{
+.stat_card_container {
     background: var(--dark3);
     display: flex;
     flex-direction: column;
@@ -36,33 +33,37 @@ color: var(--text-grey-white)
     height: 100px;
     cursor: pointer;
 }
-.stat_card_container:hover{
-    transition: all var(--animation-speed)ease-in-out;
-    box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2), 0px 0px 21px rgba(205, 193, 255, 0.2), 0px 0px 12px rgba(205, 193, 255, 0.2), 0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px #CDC1FF, 0px 0px 2px rgba(205, 193, 255, 0.2);
+.stat_card_container:hover {
+    transition: all var(--animation-speed) ease-in-out;
+    box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2), 0px 0px 21px rgba(205, 193, 255, 0.2),
+        0px 0px 12px rgba(205, 193, 255, 0.2), 0px 0px 7px rgba(205, 193, 255, 0.2),
+        0px 0px 4px #cdc1ff, 0px 0px 2px rgba(205, 193, 255, 0.2);
 }
 
-
-.title{
+.title {
     font-style: normal;
     font-weight: 300;
     font-size: 24px;
     line-height: 30px;
     text-align: center;
     letter-spacing: -0.02em;
-    color: var(--text-grey-white)
+    color: var(--text-grey-white);
 }
-.value{
+.value {
     font-weight: 200;
-font-size: 18px;
-line-height: 22px;
-letter-spacing: -0.02em;
-color: var(--text-grey-white);
-
+    font-size: 18px;
+    line-height: 22px;
+    letter-spacing: -0.02em;
+    color: var(--text-grey-white);
 }
 @media (min-width: 600px) {
-    .content { grid-template-columns: repeat(2, 1fr); }
-  }
+    .content {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
 
-  @media (min-width: 900px) {
-    .content { grid-template-columns: repeat(3, 1fr); }
-  }
+@media (min-width: 900px) {
+    .content {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}

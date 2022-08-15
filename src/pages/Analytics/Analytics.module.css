@@ -5,9 +5,8 @@
     height: 100%;
 } */
 
-.analytics_container{
+.analytics_container {
     /* min-height: 86vh; */
     padding: 2rem;
     background: var(--dark3);
 }
-

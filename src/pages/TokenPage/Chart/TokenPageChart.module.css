@@ -73,7 +73,8 @@
     font-size: 12px;
 }
 
-.settings_container button, .right_side button{
+.settings_container button,
+.right_side button {
     outline: none;
     border: none;
     cursor: pointer;

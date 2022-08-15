@@ -1,5 +1,5 @@
-.TabContent{
-    padding: 10px  4px ;
+.TabContent {
+    padding: 10px 4px;
     transition: all var(--animation-speed) ease-in-out;
 
     /* background: rgb(72, 72, 20);

@@ -1,12 +1,11 @@
-
-.settings_container svg{
+.settings_container svg {
     margin: 0 5px;
 }
 
-.token_info{
+.token_info {
     font-size: var(--header1-size);
     line-height: var(--header1-lh);
     letter-spacing: -0.02em;
     font-weight: 300;
-    color: var(--text-grey-white)
+    color: var(--text-grey-white);
 }

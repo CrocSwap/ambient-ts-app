@@ -1,42 +1,37 @@
-.main_container{
+.main_container {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     width: 100%;
-    height: calc(100%/3);
-    
-    
+    height: calc(100% / 3);
 }
 
-.tabs_container{
+.tabs_container {
     width: 100%;
     max-width: 516px;
     height: auto;
     margin-top: 1rem;
     /* height: 300px; */
-  /* min-height: 260px; */
-  border-radius: var(--border-radius);
-  background: var(--dark1)
-
+    /* min-height: 260px; */
+    border-radius: var(--border-radius);
+    background: var(--dark1);
 }
 
-.tabs{
+.tabs {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    
 }
-.tab_navs{
-   
+.tab_navs {
     width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
-ul.tab_navs{
+ul.tab_navs {
     color: var(--text-grey-dark);
     font-weight: 500;
     font-size: var(--body-size);
@@ -45,7 +40,7 @@ ul.tab_navs{
     cursor: pointer;
 }
 
-.title{
+.title {
     width: 100%;
     display: flex;
     justify-content: flex-start;
@@ -54,47 +49,35 @@ ul.tab_navs{
     line-height: var(--header1-lh);
     letter-spacing: -0.02em;
     color: var(--text-grey-white);
-
-    
 }
 
-
-
-.toggle_container{
-   
+.toggle_container {
     margin-left: 10px;
     margin-bottom: 14px;
-   
-  }
+}
 
-  .options_toggle{
-      
+.options_toggle {
     display: flex;
     justify-content: flex-end;
     margin-right: 0.5rem;
     flex-direction: row;
     align-items: center;
-  }
-  .info_text{
-      font-size: var(--body-size);
-      line-height: var(--body-lh);
-      color: var(--text-grey-light);
-      /* margin: 1rem; */
-      position: absolute;
-      bottom: 5px;
+}
+.info_text {
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    color: var(--text-grey-light);
+    /* margin: 1rem; */
+    position: absolute;
+    bottom: 5px;
+}
 
-  }
+@media only screen and (min-device-width: 320px) and (max-device-width: 568px) and (-webkit-min-device-pixel-ratio: 2) {
+    .option_toggles {
+        display: none;
+    }
 
-  @media only screen 
-  and (min-device-width: 320px) 
-  and (max-device-width: 568px)
-  and (-webkit-min-device-pixel-ratio: 2) {
- 
-   .option_toggles{
-       display: none;
-   }
-
-   .info_text{
-    display: none;
-   }
+    .info_text {
+        display: none;
+    }
 }

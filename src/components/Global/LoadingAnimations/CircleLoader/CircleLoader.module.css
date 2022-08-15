@@ -1,4 +1,4 @@
-.circle{
+.circle {
     display: block;
     width: 3rem;
     height: 3rem;
@@ -8,5 +8,5 @@
     /* position: absolute; */
     box-sizing: border-box;
     top: 0;
-    left: 0
+    left: 0;
 }
