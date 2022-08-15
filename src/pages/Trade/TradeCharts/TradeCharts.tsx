@@ -4,7 +4,7 @@ import styles from './TradeCharts.module.css';
 import {
     AiOutlineCamera,
     AiOutlineFullscreen,
-    AiOutlineSetting,
+    // AiOutlineSetting,
     AiOutlineDownload,
     AiOutlineCopy,
     AiOutlineLink,
@@ -134,46 +134,13 @@ export default function TradeCharts(props: TradeChartsProps) {
         </div>
     );
     // CHART SETTINGS------------------------------------------------------------
-    const [openSettingsTooltip, setOpenSettingsTooltip] = useState(false);
+    // const [openSettingsTooltip, setOpenSettingsTooltip] = useState(false);
+    const [showTvl, setShowTvl] = useState(false);
+    const [showFeeRate, setShowFeeRate] = useState(false);
+    const [showVolume, setShowVolume] = useState(false);
 
-    const [chartItems, setChartItems] = useState([
-        { slug: 'chart', name: 'Chart', checked: true },
-        { slug: 'feerate', name: 'Fee Rate', checked: false },
-        { slug: 'tvl', name: 'TVL', checked: false },
-        { slug: 'volume', name: 'Volume', checked: false },
-    ]);
+    const chartItemStates = { showFeeRate, showTvl, showVolume };
 
-    const handleChartItemChange = (slug: string) => {
-        const copyProducts = [...chartItems];
-        const modifiedProducts = copyProducts.map((item) => {
-            if (slug === item.slug) {
-                item.checked = !item.checked;
-            }
-
-            return item;
-        });
-
-        setChartItems(modifiedProducts);
-    };
-
-    const chartSettingsContent = (
-        <div className={styles.chart_settings}>
-            {chartItems.map((item, idx) => (
-                <div className={styles.chart_item_container} key={idx}>
-                    <input
-                        type='checkbox'
-                        className={styles.custom_control_input}
-                        id={`customCheck1-${item.slug}`}
-                        checked={item.checked}
-                        onChange={() => handleChartItemChange(item.slug)}
-                    />
-                    <label className='custom-control-label' htmlFor={`customCheck1-${item.slug}`}>
-                        {item.name}
-                    </label>
-                </div>
-            ))}
-        </div>
-    );
     // END OF CHART SETTINGS------------------------------------------------------------
 
     // eslint-disable-next-line
@@ -189,9 +156,9 @@ export default function TradeCharts(props: TradeChartsProps) {
     });
     const graphSettingsContent = (
         <div className={styles.graph_settings_container}>
-            <DefaultTooltip
+            {/* <DefaultTooltip
                 interactive
-                title={chartSettingsContent}
+                title={'nothing yet'}
                 open={openSettingsTooltip}
                 onOpen={() => setOpenSettingsTooltip(true)}
                 onClose={() => setOpenSettingsTooltip(false)}
@@ -200,7 +167,7 @@ export default function TradeCharts(props: TradeChartsProps) {
             </DefaultTooltip>
             <div onClick={() => setOpenSettingsTooltip(!openSettingsTooltip)}>
                 <AiOutlineSetting size={20} />
-            </div>
+            </div> */}
             <div onClick={() => setFullScreenChart(!fullScreenChart)}>
                 <AiOutlineFullscreen size={20} />
             </div>
@@ -215,51 +182,35 @@ export default function TradeCharts(props: TradeChartsProps) {
     // END OF GRAPH SETTINGS CONTENT------------------------------------------------------
 
     // ---------------------------ACTIVE OVERLAY BUTTON FUNCTIONALITY-------------------------------
-    const [activerOverlayButton, setActiveOverlayButton] = useState('Curve');
+
+    // this could be simplify into 1 reusable function but I figured we might have to do some other calculations for each of these so I am sepearing it for now. -Jr
+    const handleVolumeToggle = () => setShowVolume(!showVolume);
+    const handleTvlToggle = () => setShowTvl(!showTvl);
+    const handleFeeRateToggle = () => setShowFeeRate(!showFeeRate);
+
     const chartOverlayButtonData = [
-        { name: 'Volume' },
-        { name: 'TVL' },
-        { name: 'Fee Rate' },
-        { name: 'Heatmap' },
-        { name: 'Liquidity Profile' },
-        { name: 'Curve' },
-        { name: 'Depth' },
+        { name: 'Volume', selected: showVolume, action: handleVolumeToggle },
+        { name: 'TVL', selected: showTvl, action: handleTvlToggle },
+        { name: 'Fee Rate', selected: showFeeRate, action: handleFeeRateToggle },
+        // { name: 'Heatmap', function: () => console.log('heatmap') },
+        // { name: 'Liquidity Profile', function: () => console.log('heatmap')  },
+        // { name: 'Curve', function: () => console.log('Curve')  },
+        // { name: 'Depth', function: () => console.log('Depth')  },
     ];
 
-    function handleOverlayButtonClick(name: string) {
-        setActiveOverlayButton(name);
-    }
-
     const chartOverlayButtons = chartOverlayButtonData.map((button, idx) => (
-        <motion.div
-            initial={{ y: 10, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: -10, opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className={styles.settings_container}
-            key={idx}
-        >
+        <div className={styles.settings_container} key={idx}>
             <button
-                onClick={() => handleOverlayButtonClick(button.name)}
+                onClick={button.action}
                 className={
-                    button.name === activerOverlayButton
-                        ? styles.active_button
-                        : styles.non_active_button
+                    button.selected
+                        ? styles.active_selected_button
+                        : styles.non_active_selected_button
                 }
             >
                 {button.name}
-
-                {button.name === activerOverlayButton && (
-                    <motion.div
-                        layoutId='outline'
-                        className={styles.outline}
-                        initial={false}
-                        // animate={{ borderColor: 'red' }}
-                        transition={spring}
-                    />
-                )}
             </button>
-        </motion.div>
+        </div>
     ));
     // --------------------------- END OF ACTIVE OVERLAY BUTTON FUNCTIONALITY-------------------------------
 
@@ -432,7 +383,7 @@ export default function TradeCharts(props: TradeChartsProps) {
                     feeData={formattedFeesUSD}
                     priceData={props.candleData}
                     changeState={props.changeState}
-                    chartItems={chartItems}
+                    chartItemStates={chartItemStates}
                 />
             </div>
         </>

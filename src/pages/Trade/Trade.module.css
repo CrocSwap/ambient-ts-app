@@ -190,8 +190,11 @@
     height: 100%;
     overflow: auto;
    
-    resize: vertical;
+   
     }
+    .main__chart_container::-webkit-scrollbar {
+        display: none;
+      }
 
     .chart_full_screen{
       transition: all var(--animation-speed) ease-in-out;
