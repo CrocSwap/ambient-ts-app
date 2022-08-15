@@ -19,14 +19,13 @@ export const useAppChain = (
 ] => {
     // chain from connected wallet via Moralis
     const { chainId, switchNetwork } = useChain();
-    // console.log({chainId})
-    // console.log('window.ethereum.chainId: ', window.ethereum.chainId);
 
     // value tracking the current chain the app is set to use
     // initializes on the default chain parameter
+    // we need this value so the app can be used without a wallet
     const [ currentChain, setCurrentChain ] = useState(defaultChain);
-    useEffect(() => console.log({currentChain}), [currentChain]);
-
+    // boolean representing if the current chain is supported by the app
+    // we use this value to populate the SwitchNetwork.tsx modal
     const [ isChainSupported, setIsChainSupported ] = useState(validateChainId(defaultChain));
 
     // change the network in Moralis after user changes in the app

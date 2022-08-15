@@ -115,7 +115,6 @@ export default function App() {
     // `switchChain` is a function to switch to a different chain
     // `'0x5'` is the chain the app should be on by default
     const [ chainData, isChainSupported, switchChain ] = useAppChain('0x5');
-    useEffect(() => {console.log(isChainSupported)}, [isChainSupported]);
     
     const [switchTabToTransactions, setSwitchTabToTransactions] = useState<boolean>(false);
 
@@ -1471,7 +1470,7 @@ export default function App() {
         shouldDisplayAccountTab: shouldDisplayAccountTab,
         chainId: chainData.chainId,
         isChainSupported: isChainSupported,
-        switchChain
+        switchChain: switchChain
     };
 
     // props for <Swap/> React element
