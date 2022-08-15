@@ -1,44 +1,43 @@
 .transaction_submitted {
     display: flex;
     flex-direction: column;
-  
+
     justify-content: center;
     align-items: center;
-  }
-  .transaction_submitted h2{
-      font-size: var(--header2-size);
-      line-height: var(--header2-lh);
-  }
-  .transaction_submitted p a {
+}
+.transaction_submitted h2 {
+    font-size: var(--header2-size);
+    line-height: var(--header2-lh);
+}
+.transaction_submitted p a {
     cursor: pointer;
     text-decoration: none;
-  font-size: var(--body-size);
-  line-height: var(--body-lh);
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
     color: var(--text-grey-light);
-  }
-  .completed_animation {
+}
+.completed_animation {
     display: flex;
-  
+
     /* min-width: 400px;
     max-width: 400px; */
-  
+
     justify-content: center;
     align-items: center;
-  }
-  
-  .arrow {
+}
+
+.arrow {
     position: relative;
     z-index: 1;
     left: calc(50% - 16px);
-  
+
     width: 32px;
     height: 32px;
     margin-top: -14px;
     margin-bottom: -14px;
     padding: 4px;
-  
+
     border: 4px solid var(--header-color);
     border-radius: var(--border-radius);
     background-color: rgb(33, 36, 41);
-  }
-  
+}

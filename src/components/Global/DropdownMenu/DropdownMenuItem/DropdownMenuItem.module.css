@@ -1,21 +1,14 @@
- 
-  .menu_item {
-   
+.menu_item {
     display: flex;
     justify-content: center;
     align-items: center;
     border-radius: 4px;
     transition: background 500ms;
-   /* background:var(--dark3); */
-   padding: 8px 0;
-   cursor: pointer;
-  }
-  
+    /* background:var(--dark3); */
+    padding: 8px 0;
+    cursor: pointer;
+}
 
-  
-
-  .menu_item:hover {
+.menu_item:hover {
     background-color: var(--dark2);
-  }
-
-  
+}

@@ -1,12 +1,12 @@
-.denomination_switch_container{
+.denomination_switch_container {
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
-.header_container{
+.header_container {
     /* background: blue; */
     display: flex;
     flex-direction: column;
-    gap: 4px
+    gap: 4px;
 }

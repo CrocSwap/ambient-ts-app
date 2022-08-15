@@ -1,13 +1,13 @@
 .rectangle_container {
     font-family: var(--font-family);
     width: 100%;
-    height: calc(100%/3);
+    height: calc(100% / 3);
     background-color: red;
     /* background: linear-gradient(180deg, rgba(23, 29, 39, 0) 0%, var(--dark3) 100%),
         url('../../../assets/images/Temporary/nft/lightningBackground.png') no-repeat center center;
     background: linear-gradient(180deg, rgba(23, 29, 39, 0) 0%, var(--dark3) 100%),
         url('../../../assets/images/waveform.svg') no-repeat center center; */
-        background:url('../../../assets/images/backgrounds/account_image.png') no-repeat center center;
+    background: url('../../../assets/images/backgrounds/account_image.png') no-repeat center center;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
@@ -16,7 +16,7 @@
     justify-content: space-between;
     align-items: flex-end;
 
-    border-radius: 24px ;
+    border-radius: 24px;
 
     padding: 1rem;
 }
@@ -44,17 +44,17 @@
     z-index: 2;
 }
 
-.avatar_image{
+.avatar_image {
     width: 56px;
     height: 56px;
-   
+
     border-radius: 50%;
     background: var(--title-gradient);
     padding: 2px;
 }
 .account_container img {
-   max-width: 100%;
-   
+    max-width: 100%;
+
     border-radius: 50%;
 }
 

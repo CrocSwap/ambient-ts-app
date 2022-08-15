@@ -3,7 +3,7 @@
 /* .swap{
     height: 100vh;
     width: 100vw;
-} */ 
+} */
 
 /* .footer{
     position: relative;
@@ -18,25 +18,24 @@
     gap: 4px;
 } */
 
-.swap_page{
+.swap_page {
     /* height: calc(100vh - var(--footer-height));  */
     height: 100%;
 
-    background: url(../../assets/images/backgrounds/background.png) no-repeat center center fixed; 
+    background: url(../../assets/images/backgrounds/background.png) no-repeat center center fixed;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
     background-size: cover;
 }
 
-.swap_page_container{
+.swap_page_container {
     margin-top: 64px;
 }
 
-.header_container{
+.header_container {
     /* background: blue; */
     display: flex;
     flex-direction: column;
-    gap: 4px
+    gap: 4px;
 }
-

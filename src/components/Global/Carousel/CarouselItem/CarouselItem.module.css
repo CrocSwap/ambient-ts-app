@@ -1,4 +1,4 @@
-.carousel_item{
+.carousel_item {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -6,5 +6,4 @@
     /* height: 600px; */
     /* background-color: blue; */
     color: white;
-   
 }

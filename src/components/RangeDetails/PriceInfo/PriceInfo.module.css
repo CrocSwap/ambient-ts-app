@@ -1,80 +1,74 @@
-
-.main_container{
+.main_container {
     display: flex;
     flex-direction: column;
 }
 
-.price_info_container{
+.price_info_container {
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    background: url('../../../assets/images/waveform.svg') ;
-    
+    background: url('../../../assets/images/waveform.svg');
 }
 
-.remove_position_info{
-    
+.remove_position_info {
     border-radius: var(--border-radius);
     padding: 1rem;
     width: 48%;
-    
+
     display: flex;
     flex-direction: column;
     gap: 8px;
-    
+
     font-weight: 300;
     color: var(--text-grey-light);
     font-size: var(--body-size);
     line-height: var(--body-lh);
 }
-.token_price{
+.token_price {
     display: flex;
-    flex-direction:row;
+    flex-direction: row;
     align-items: center;
-    gap: 1.125em
+    gap: 1.125em;
 }
 
-.token_price img{
+.token_price img {
     width: 15px;
 }
-.graph_image_container{
+.graph_image_container {
     width: 48%;
-    
 }
-.graph_image_container img{
+.graph_image_container img {
     width: 100%;
-    
-    
 }
-.min_max_price{
+.min_max_price {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-top: 1rem;
 }
-.min_max_content{
+.min_max_content {
     display: flex;
     flex-direction: column;
     width: 48%;
     justify-content: center;
     align-items: center;
-    
+
     font-size: var(--body-size);
     line-height: var(--body-lh);
-        color: var(--text-grey-light);
-    }
-    .min_price, .max_price{
-        font-size: var(--header2-size);
-        line-height: var(--header2-lh);
-        font-weight: 200;
-        letter-spacing: -0.02em;
+    color: var(--text-grey-light);
+}
+.min_price,
+.max_price {
+    font-size: var(--header2-size);
+    line-height: var(--header2-lh);
+    font-weight: 200;
+    letter-spacing: -0.02em;
+}
 
-    }
-
-    .max_price{
-        color: #7371FC;
-    }
-    .min_price{
-        color:  #CDC1FF;
-    }
+.max_price {
+    color: #7371fc;
+}
+.min_price {
+    color: #cdc1ff;
+}

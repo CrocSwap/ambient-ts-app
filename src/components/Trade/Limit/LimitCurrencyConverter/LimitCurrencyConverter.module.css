@@ -1,19 +1,17 @@
-
-.arrow_container{
-
+.arrow_container {
     width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
 }
-.arrow{
+.arrow {
     height: 1.3rem;
-  width: 1.3rem;
-  border-style: solid;
-  border-width: 0px 4px 4px 0px;
-  border-image-slice: 1;
+    width: 1.3rem;
+    border-style: solid;
+    border-width: 0px 4px 4px 0px;
+    border-image-slice: 1;
 
-  border-image-source: linear-gradient(90deg, #7371FC 0%, #CDC1FF 49.48%, #7371FC 100%);
-  transform: rotate(45deg);
-  transition: border-width var(--animation-speed) ease-in-out;
+    border-image-source: linear-gradient(90deg, #7371fc 0%, #cdc1ff 49.48%, #7371fc 100%);
+    transform: rotate(45deg);
+    transition: border-width var(--animation-speed) ease-in-out;
 }

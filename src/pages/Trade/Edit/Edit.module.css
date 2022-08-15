@@ -1,9 +1,9 @@
-.editContainer{
+.editContainer {
     display: flex;
     flex-direction: column;
     gap: 1rem;
 }
-.edit_content{
+.edit_content {
     padding: 0 1rem;
 
     display: flex;

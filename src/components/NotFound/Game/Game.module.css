@@ -1,4 +1,4 @@
-.game_container{
+.game_container {
     max-width: 600px;
     height: calc(100vh - 3rem);
     /* margin: 0 auto; */
@@ -7,17 +7,16 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-  }
+}
 
-  .game_container button{
-      max-width: 200px;
-      margin: 5px 0;
-  }
+.game_container button {
+    max-width: 200px;
+    margin: 5px 0;
+}
 
-.card_grid{
+.card_grid {
     margin: 40px;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr;
     grid-gap: 20px;
-
 }
