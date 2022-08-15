@@ -126,6 +126,18 @@ export default function App() {
 
     const [provider, setProvider] = useState<ethers.providers.Provider>();
 
+    const [userIsOnline, setUserIsOnline] = useState(navigator.onLine);
+
+    window.ononline = () => {
+        setUserIsOnline(true);
+        // console.log('Back Online');
+    };
+
+    window.onoffline = () => {
+        setUserIsOnline(false);
+        // console.log('Connection Lost');
+    };
+
     function exposeProviderUrl(provider?: ethers.providers.Provider): string {
         if (provider && 'connection' in provider) {
             return (provider as ethers.providers.JsonRpcProvider).connection?.url;
@@ -1747,7 +1759,9 @@ export default function App() {
                 {snackbarContent}
             </div>
             <div className='footer_container'>
-                <PageFooter lastBlockNumber={lastBlockNumber} />
+                {currentLocation !== '/' && (
+                    <PageFooter lastBlockNumber={lastBlockNumber} userIsOnline={userIsOnline} />
+                )}
             </div>
             <SidebarFooter />
         </>

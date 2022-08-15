@@ -1,28 +1,28 @@
-.pool_name{
+.pool_name {
     font-size: 10px;
-line-height: 12px;
-color: rgba(235, 235, 255, 0.4);
-text-transform: capitalize;
+    line-height: 12px;
+    color: rgba(235, 235, 255, 0.4);
+    text-transform: capitalize;
 }
 
-.token_logos{
+.token_logos {
     display: flex;
     flex-direction: row;
     align-items: center;
     gap: 4px;
 }
-.token_logos img{
+.token_logos img {
     width: 15px;
 }
 
-.min_max{
+.min_max {
     display: flex;
     flex-direction: column;
     font-size: 10px;
-line-height: 12px;
-    color: #5FFFF2;
+    line-height: 12px;
+    color: #5ffff2;
 }
-.min_max_range{
+.min_max_range {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -30,9 +30,9 @@ line-height: 12px;
     padding: 0 4px;
     font-size: 10px;
     line-height: 12px;
-        color: #5FFFF2;
+    color: #5ffff2;
 }
-.token_qty{
+.token_qty {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -42,18 +42,15 @@ line-height: 12px;
     color: rgba(235, 235, 255, 0.4);
 }
 
-
-.token_qty img{
+.token_qty img {
     width: 15px;
 }
 
-.token_qty_column, .account_column{
+.token_qty_column,
+.account_column {
     flex-direction: column;
     align-items: center;
- 
 }
-
-
 
 /* .range_icon, .range_icon_2{
     width: 11px;
@@ -62,34 +59,33 @@ line-height: 12px;
     border-radius: 50%;;
 } */
 
-.account{
+.account {
     margin: 0 4px;
     font-size: 10px;
-line-height: 13px;
-color: rgba(235, 235, 255, 0.4);
+    line-height: 13px;
+    color: rgba(235, 235, 255, 0.4);
 }
 
-.account_column{
+.account_column {
     font-size: 10px;
     line-height: 13px;
-   
 }
-.apy{
+.apy {
     font-weight: 200;
-   
+
     font-size: 12px;
     line-height: 15px;
 
-    background: linear-gradient(90deg, #15BE6F 32.38%, #8FE9BF 51.39%, #15BE6F 68.17%);
--webkit-background-clip: text;
--webkit-text-fill-color: transparent;
-background-clip: text;
-text-fill-color: transparent;
+    background: linear-gradient(90deg, #15be6f 32.38%, #8fe9bf 51.39%, #15be6f 68.17%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-fill-color: transparent;
 
-text-shadow: 0px 0px 10px rgba(21, 190, 111, 0.75);
+    text-shadow: 0px 0px 10px rgba(21, 190, 111, 0.75);
 }
 
-.menu_buttons{
+.menu_buttons {
     display: flex;
     justify-content: flex-end;
     flex-direction: row;
@@ -98,249 +94,214 @@ text-shadow: 0px 0px 10px rgba(21, 190, 111, 0.75);
     font-size: 12px;
 }
 
-.option_button{
+.option_button {
     display: flex;
-   justify-content: center;
-   align-items: center;
-   border-radius:6.25rem;
-   cursor: pointer;
-   font-size: 12px;
-   line-height: 15px;
-   color: #bdbdbd; 
-   height: 23px;
-   padding: 5px 8px;
-   
-  
-   background: #0D1117;
-   border: 1px solid #242F3F;
-   box-shadow: 2px 1000px 1px #242f37 inset;
-  
-   cursor: pointer;
- }
+    justify-content: center;
+    align-items: center;
+    border-radius: 6.25rem;
+    cursor: pointer;
+    font-size: 12px;
+    line-height: 15px;
+    color: #bdbdbd;
+    height: 23px;
+    padding: 5px 8px;
 
+    background: #0d1117;
+    border: 1px solid #242f3f;
+    box-shadow: 2px 1000px 1px #242f37 inset;
 
-.reposition_button{
-   
+    cursor: pointer;
+}
 
-
+.reposition_button {
     cursor: pointer;
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-white); 
+    color: var(--text-grey-white);
     height: 23px;
     padding: 5px 8px;
     display: flex;
     justify-content: center;
     align-items: center;
 
+    background: linear-gradient(
+        90deg,
+        rgba(115, 113, 252, 0) 0%,
+        rgba(115, 113, 252, 0) 71.21%,
+        #7371fc 100%
+    );
 
+    border: 1px solid #7371fc;
+    border-radius: 50px;
 
+    transition: background var(--animation-speed) ease-in-out;
+}
 
-background: linear-gradient(90deg, rgba(115, 113, 252, 0) 0%, rgba(115, 113, 252, 0) 71.21%, #7371FC 100%);
-
-border: 1px solid #7371FC;
-border-radius: 50px;
-
-
-transition: background var(--animation-speed) ease-in-out;
-
-
-
-  }
-
-
-
-
-
-  .reposition_button:hover{
+.reposition_button:hover {
     box-shadow: none;
-   
-    border: 1px solid rgba(223,190,106,0);
+
+    border: 1px solid rgba(223, 190, 106, 0);
     color: rgb(0, 0, 0);
     background: var(--title-gradient);
-  }
+}
 
- .min_buttons{
+.min_buttons {
     display: flex;
     flex-direction: row;
     align-items: center;
-    gap: 4px
- }
- .menu_icon{
-
+    gap: 4px;
+}
+.menu_icon {
     flex-direction: row;
     justify-content: center;
     align-items: center;
     padding: 5px 8px;
     gap: 10px;
     width: 38.51px;
-    background: #0D1117;
-    border: 1px solid #242F3F;
+    background: #0d1117;
+    border: 1px solid #242f3f;
     border-radius: 50px;
     color: white;
-   
-    
-    }
-    .min_buttons{
-        justify-content: center;
-        /* justify-content: flex-end; */
-       
-    }
+}
+.min_buttons {
+    justify-content: center;
+    /* justify-content: flex-end; */
+}
 
-    .main_container{
-        display: grid;
-        grid-template-columns:50px auto 50px;
-        font-size: 10px;
-    }
-    .row{
-        display: grid;
+.main_container {
+    display: grid;
+    grid-template-columns: 50px auto 50px;
+    font-size: 10px;
+}
+.row {
+    display: grid;
     grid-template-columns: 1fr repeat(2, 50px) 40px 20px;
     grid-gap: 4px;
-    
+
     align-items: center;
     height: 48px;
-    }
+}
 
-    .menu_buttons,
- .account, 
- .range_status, 
-
- .pool_name, 
- .min_max_range, .min_buttons button {
+.menu_buttons,
+.account,
+.range_status,
+.pool_name,
+.min_max_range,
+.min_buttons button {
     display: none;
 }
-    
 
 /* Small screen devices (540px and above) */
 @media only screen and (min-width: 540px) {
-    .main_container{
+    .main_container {
         display: grid;
-    grid-template-columns:50px auto 200px;
-
+        grid-template-columns: 50px auto 200px;
     }
 
-    .row{
+    .row {
         display: grid;
-    grid-template-columns: auto repeat(2, 75px) 80px 20px;
-    grid-gap: 4px;
-   
-    align-items: center;
+        grid-template-columns: auto repeat(2, 75px) 80px 20px;
+        grid-gap: 4px;
+
+        align-items: center;
     }
-    .min_buttons button{
+    .min_buttons button {
         display: flex;
     }
-  
-
 }
 
 /* Medium screen devices (768px and above) */
 @media only screen and (min-width: 768px) {
-    .token_logos img{
+    .token_logos img {
         width: 30px;
     }
 
-    .pool_name{
+    .pool_name {
         display: flex;
     }
-    .main_container{
-       
-    grid-template-columns:100px auto 200px;
+    .main_container {
+        grid-template-columns: 100px auto 200px;
     }
 
-    .row{
+    .row {
         /* background: red; */
         grid-template-columns: 100px auto repeat(2, 50px) 40px 30px;
-
     }
-    
 }
-
 
 /* Big screen devices (889px and above) */
 @media only screen and (min-width: 889px) {
-
-    .range_icon_2{
+    .range_icon_2 {
         display: none;
     }
-    .range_status{
+    .range_status {
         display: flex;
     }
 
-    .pool_name, .min_max p, .min_max_range, .token_qty{
+    .pool_name,
+    .min_max p,
+    .min_max_range,
+    .token_qty {
         font-size: 12px;
-line-height: 15px;
+        line-height: 15px;
     }
 
-    .apy{
+    .apy {
         font-weight: 200;
-font-size: 18px;
-line-height: 22px;
+        font-size: 18px;
+        line-height: 22px;
     }
 
-    .account, .account_column{
+    .account,
+    .account_column {
         font-size: 12px;
-line-height: 16px;
+        line-height: 16px;
     }
-    
-    .row{
+
+    .row {
         /* background: blue; */
         grid-template-columns: 100px auto repeat(2, 70px) 40px 100px;
     }
-
-    
 }
 
 @media only screen and (min-width: 1100px) {
-
-    .account_column{
+    .account_column {
         display: none;
     }
-  
 
-    .account{
+    .account {
         display: flex;
     }
 
-    .token_qty_column{
+    .token_qty_column {
         display: none;
     }
-    .token_qty{
+    .token_qty {
         display: flex;
     }
-    .row{
+    .row {
         grid-template-columns: 100px auto auto repeat(3, 95px) 80px 100px;
-
     }
-
 }
-
 
 /* Extra big screen devices(MONITORS) (1200px and above) */
 @media only screen and (min-width: 1200px) {
-
-    .main_container{
-       
-        grid-template-columns:100px auto auto ;
-        grid-template-columns:100px auto  minmax(200px, auto);;
-
-        }
-    
-    .row{
-        grid-template-columns: 100px auto auto repeat(3, 95px) 80px 100px;
-
+    .main_container {
+        grid-template-columns: 100px auto auto;
+        grid-template-columns: 100px auto minmax(200px, auto);
     }
-    .menu_buttons{
+
+    .row {
+        grid-template-columns: 100px auto auto repeat(3, 95px) 80px 100px;
+    }
+    .menu_buttons {
         display: flex;
         justify-content: flex-end;
-        
     }
-    .min_buttons{
+    .min_buttons {
         display: none;
     }
-
-
 }
-
 
 /* THESE MEDIA QUERIES ARE NORMALLY NOT NEEDED. SINCE THIS IS A DEX AND WE WILL MOST LIKELY HAVE USERS WITH EXTRA BIG MONITORS, I AM MAKING SOME CUSTOMIZATIONS TO MAKE USE OF THE EXTRA SPACES */
 /* @media only screen and (min-width: 1400px) {

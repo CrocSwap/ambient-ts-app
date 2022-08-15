@@ -1,20 +1,20 @@
-.container{
+.container {
     display: flex;
     flex-direction: column;
     gap: 1rem;
     padding: 1rem 0;
 }
-.title{
+.title {
     font-style: normal;
-font-weight: 300;
-font-size: 24px;
-line-height: 30px;
-text-align: center;
-letter-spacing: -0.02em;
-color: var(--text-grey-white)
+    font-weight: 300;
+    font-size: 24px;
+    line-height: 30px;
+    text-align: center;
+    letter-spacing: -0.02em;
+    color: var(--text-grey-white);
 }
 
-.content{
+.content {
     --auto-grid-min-size: 300px;
     max-width: 1120px;
     margin: 0 auto;
@@ -24,10 +24,13 @@ color: var(--text-grey-white)
 }
 
 @media (min-width: 600px) {
-    .content { grid-template-columns: repeat(2, 1fr); }
-  }
+    .content {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
 
-  @media (min-width: 900px) {
-    .content { grid-template-columns: repeat(4, 1fr); }
-  }
-
+@media (min-width: 900px) {
+    .content {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}

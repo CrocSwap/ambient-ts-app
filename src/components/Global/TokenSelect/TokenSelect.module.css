@@ -1,101 +1,97 @@
-.main_container{
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
+.main_container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
 
-
-
-  position: relative;
+    position: relative;
 }
 
-
-.modal_content{
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10.5px 5px;
-  border-radius: var(--border-radius);
-  width: 80%;
+.modal_content {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10.5px 5px;
+    border-radius: var(--border-radius);
+    width: 80%;
 }
 
-.star_icon, .close_icon{
-  /* background: red; */
-  
-  width: 10%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
+.star_icon,
+.close_icon {
+    /* background: red; */
 
+    width: 10%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
 /* .main_container:hover .delete_container{
   width: 100%;
   left: 0;
 } */
-.close_icon_svg:hover{
+.close_icon_svg:hover {
     color: #f6385b;
-    transition: all var(--animation-speed) ease-in-out
-  }
-  .modal_content:hover{
-      background: var(--dark2);
-      transition: all var(--animation-speed) ease-in-out;
-      cursor: pointer;
-  }
+    transition: all var(--animation-speed) ease-in-out;
+}
+.modal_content:hover {
+    background: var(--dark2);
+    transition: all var(--animation-speed) ease-in-out;
+    cursor: pointer;
+}
 
-  .modal_tokens_info{
+.modal_tokens_info {
     display: flex;
     flex-direction: row;
     align-items: center;
     transition: all var(--animation-speed) ease-in-out;
     cursor: pointer;
     gap: 1rem;
-  }
+}
 
-  .modal_tokens_info img{
+.modal_tokens_info img {
     background: linear-gradient(90deg, #af99ff 0%, #46b7db 49.48%, #f13d70 100%);
 
     border-radius: 50%;
-  }
- 
-  .star_svg{
+}
+
+.star_svg {
     cursor: pointer;
-    
-  }
-  
-  .star_svg:hover {
+}
+
+.star_svg:hover {
     fill: var(--text-grey-light);
     cursor: pointer;
-    transition: all var(--animation-speed) ease-in-out
-  }
+    transition: all var(--animation-speed) ease-in-out;
+}
 
- 
-  .modal_token_symbol,   .modal_tokens_amount{
+.modal_token_symbol,
+.modal_tokens_amount {
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
     /* font-weight: 400; */
-  }
-  .modal_token_name{
+}
+.modal_token_name {
     font-size: var(--body-size);
     line-height: var(--body-lh);
     color: var(--text-grey-light);
     /* font-weight: 400; */
-  }
+}
 
-  /* toggle buttons */
+/* toggle buttons */
 
-  .delete_container{
+.delete_container {
     padding: 0 10px;
     position: absolute;
-   border-radius: var(--border-radius);
+    border-radius: var(--border-radius);
     bottom: 0;
     right: 0;
     background-color: var(--dark3);
     overflow: hidden;
     height: 100%;
-    transition: .5s ease;
-  
+    transition: 0.5s ease;
+
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -104,84 +100,80 @@
     font-size: var(--body-size);
     font-size: 13px;
     line-height: var(--body-lh);
-    
-  }
-  
-  .delete_active{
+}
+
+.delete_active {
     left: 100%;
     width: 0;
-    
-  }
-  
-  .delete_inactive{
+}
+
+.delete_inactive {
     width: 100%;
     left: 0;
-  }
+}
 
-  .toggle_container{
+.toggle_container {
     display: flex;
     flex-direction: row;
     align-items: center;
     gap: 10px;
-  }
+}
 
 .liqtype_buttons_container {
-  font-size: 0;
+    font-size: 0;
 
-  /* width: 100%; */
- 
+    /* width: 100%; */
 }
 .liqtype_buttons_container button {
-  font-size: var(--body-size);
- 
-  line-height: var(--body-lh);
-  /* padding: 5px 0; */
-  /* width: 50%; */
-  cursor: pointer;
-  transition: all var(--animation-speed) ease-in-out;
-  padding: 5px 12px;
+    font-size: var(--body-size);
 
-  border: none;
-  /* border: 1px solid #f6385b; */
-  border: 1px solid var(--text-highlight);
-  outline: none;
+    line-height: var(--body-lh);
+    /* padding: 5px 0; */
+    /* width: 50%; */
+    cursor: pointer;
+    transition: all var(--animation-speed) ease-in-out;
+    padding: 5px 12px;
+
+    border: none;
+    /* border: 1px solid #f6385b; */
+    border: 1px solid var(--text-highlight);
+    outline: none;
 }
 
-.liqtype_buttons_container button:first-child{
-  border-top-left-radius: var(--border-radius);
-  border-bottom-left-radius: var(--border-radius);
+.liqtype_buttons_container button:first-child {
+    border-top-left-radius: var(--border-radius);
+    border-bottom-left-radius: var(--border-radius);
 }
 
-.liqtype_buttons_container button:nth-child(2){
-  border-top-right-radius: var(--border-radius);
-  border-bottom-right-radius: var(--border-radius);
+.liqtype_buttons_container button:nth-child(2) {
+    border-top-right-radius: var(--border-radius);
+    border-bottom-right-radius: var(--border-radius);
 }
 .liqtype_buttons_container button:hover {
-  color: var(--text-grey-light);
+    color: var(--text-grey-light);
 }
 .active_button {
-  color: rgb(0, 0, 0);
-  /* background-color: #f6385b; */
-  background: var(--title-gradient)
+    color: rgb(0, 0, 0);
+    /* background-color: #f6385b; */
+    background: var(--title-gradient);
 }
 .non_active_button {
-  color: white;
-  background-color: transparent;
+    color: white;
+    background-color: transparent;
 }
 
-.confirm{
-  cursor: pointer;
+.confirm {
+    cursor: pointer;
 }
-.primary_style{
-  color: var(--text-highlight);
-
-}
-
-.danger_style{
-color: #f6385b;
+.primary_style {
+    color: var(--text-highlight);
 }
 
-.confirm:hover{
-transform: scale(1.03);
-transition: all var(--animation-speed) ease
+.danger_style {
+    color: #f6385b;
+}
+
+.confirm:hover {
+    transform: scale(1.03);
+    transition: all var(--animation-speed) ease;
 }

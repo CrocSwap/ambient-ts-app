@@ -1,12 +1,10 @@
-
-.token_arrow{
+.token_arrow {
     cursor: pointer;
-  background-color: transparent;
+    background-color: transparent;
 }
-.token_arrow:hover  {
-    transition: all  var(--animation-speed) ease-in-out;
+.token_arrow:hover {
+    transition: all var(--animation-speed) ease-in-out;
 
-filter: drop-shadow(0 -0.5mm 0.8mm #7371FC);
-transform: scale(1.08)
-
+    filter: drop-shadow(0 -0.5mm 0.8mm #7371fc);
+    transform: scale(1.08);
 }

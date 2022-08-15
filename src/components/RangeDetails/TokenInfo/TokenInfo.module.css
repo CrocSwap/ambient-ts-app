@@ -1,42 +1,39 @@
-.token_info_container{
+.token_info_container {
     display: flex;
     flex-direction: column;
     gap: 1rem;
 }
 
-.price_info{
+.price_info {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
 }
-.price_info .price{
-font-size: var(--header2-size);
-line-height: var(--header2-lh);
-color: var(--text-grey-light);
-font-weight: 200;
-letter-spacing: -0.02em;
+.price_info .price {
+    font-size: var(--header2-size);
+    line-height: var(--header2-lh);
+    color: var(--text-grey-light);
+    font-weight: 200;
+    letter-spacing: -0.02em;
 }
-.price_info .price_change{
+.price_info .price_change {
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: #15BE6F;
-
+    color: #15be6f;
 }
-.apy{
-
+.apy {
     display: flex;
     justify-content: center;
     align-items: center;
     font-size: var(--header1-size);
     line-height: var(--header1-lh);
     letter-spacing: -0.02em;
-    background: linear-gradient(90deg, #15BE6F 32.38%, #8FE9BF 51.39%, #15BE6F 68.17%);
--webkit-background-clip: text;
--webkit-text-fill-color: transparent;
-background-clip: text;
-text-fill-color: transparent;
+    background: linear-gradient(90deg, #15be6f 32.38%, #8fe9bf 51.39%, #15be6f 68.17%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-fill-color: transparent;
 
-
-text-shadow: 0px 0px 10px rgba(21, 190, 111, 0.75);
-    }
+    text-shadow: 0px 0px 10px rgba(21, 190, 111, 0.75);
+}
