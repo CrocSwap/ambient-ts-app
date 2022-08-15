@@ -1,8 +1,7 @@
-/** ***** START: Import React and Dongles *******/
+// START: Import React and Dongles
 import {
     useCallback,
     useEffect,
-    useMemo,
     useState,
     Dispatch,
     SetStateAction
@@ -10,23 +9,21 @@ import {
 import { Link } from 'react-router-dom';
 import { useMoralis } from 'react-moralis';
 import { useTranslation } from 'react-i18next';
-
-/** ***** START: Import Local Files *******/
-import styles from './PageHeader.module.css';
 import { useRive, useStateMachineInput } from 'rive-react';
-import Account from './Account/Account';
-import NetworkSelector from './NetworkSelector/NetworkSelector';
-import trimString from '../../../utils/functions/trimString';
-import ambientLogo from '../../../assets/images/logos/ambient_logo.svg';
-
-import { useModal } from '../../../components/Global/Modal/useModal';
-import Modal from '../../../components/Global/Modal/Modal';
-import MagicLogin from './MagicLogin';
-import SwitchNetwork from '../../../components/Global/SwitchNetworkAlert/SwitchNetwork/SwitchNetwork';
-
 import { motion, AnimateSharedLayout } from 'framer-motion';
 
-/** ***** END: Import Local Files *********/
+// START: Import JSX Elements
+import Account from './Account/Account';
+import MagicLogin from './MagicLogin';
+import NetworkSelector from './NetworkSelector/NetworkSelector';
+import SwitchNetwork from '../../../components/Global/SwitchNetworkAlert/SwitchNetwork/SwitchNetwork';
+import Modal from '../../../components/Global/Modal/Modal';
+
+// START: Import Local Files
+import styles from './PageHeader.module.css';
+import trimString from '../../../utils/functions/trimString';
+import ambientLogo from '../../../assets/images/logos/ambient_logo.svg';
+import { useModal } from '../../../components/Global/Modal/useModal';
 
 interface HeaderPropsIF {
     nativeBalance: string;
@@ -225,13 +222,6 @@ Your authentication status will reset on logout.`;
         </AnimateSharedLayout>
     );
 
-
-    const networkSwitcher = useMemo(() => {
-        const element = <SwitchNetwork switchNetworkInMoralis={switchNetworkInMoralis} />;
-        const elementOrNull = isChainSupported ? null : element;
-        return elementOrNull;
-    }, [isChainSupported]);
-
     // ----------------------------END OF NAVIGATION FUNCTIONALITY-------------------------------------
 
     return (
@@ -259,8 +249,7 @@ Your authentication status will reset on logout.`;
                 {(!isAuthenticated || !isWeb3Enabled) && metamaskButton}
                 <Account {...accountProps} />
             </div>
-            {/* {!showNetworkSwitcher || <SwitchNetwork onClose={() => setShowNetworkSwitcher(false)} chainId={chainId} switchChain={switchChain} />} */}
-            {networkSwitcher}
+            {isChainSupported || <SwitchNetwork switchNetworkInMoralis={switchNetworkInMoralis} />}
             {modalOrNull}
         </header>
     );
