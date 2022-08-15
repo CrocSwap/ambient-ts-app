@@ -26,6 +26,7 @@ import { TokenIF } from '../../../utils/interfaces/TokenIF';
 
 // interface for component props
 interface SidebarPropsIF {
+    isDenomBase: boolean;
     showSidebar: boolean;
     toggleSidebar: (event: MouseEvent<HTMLDivElement> | MouseEvent<HTMLLIElement>) => void;
     chainId: string;
@@ -43,6 +44,7 @@ interface SidebarPropsIF {
 
 export default function Sidebar(props: SidebarPropsIF) {
     const {
+        isDenomBase,
         toggleSidebar,
         showSidebar,
         chainId,
@@ -73,7 +75,12 @@ export default function Sidebar(props: SidebarPropsIF) {
         {
             name: 'Range Positions',
             icon: rangePositionsImage,
-            data: <SidebarRangePositions mostRecentPositions={mostRecentPositions} />,
+            data: (
+                <SidebarRangePositions
+                    mostRecentPositions={mostRecentPositions}
+                    isDenomBase={isDenomBase}
+                />
+            ),
         },
     ];
     const recentLimitOrders = [

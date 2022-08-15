@@ -20,7 +20,7 @@ interface ConfirmSwapModalProps {
 export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
     const {
         initiateSwapMethod,
-        onClose,
+        // onClose,
         newSwapTransactionHash,
         tokenPair,
         txErrorCode,
@@ -142,12 +142,12 @@ export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
             }}
         />
     );
-    function onConfirmSwapClose() {
-        setConfirmDetails(true);
-        onClose();
-    }
+    // function onConfirmSwapClose() {
+    //     setConfirmDetails(true);
+    //     onClose();
+    // }
 
-    const closeButton = <Button title='Close' action={onConfirmSwapClose} />;
+    // const closeButton = <Button title='Close' action={onConfirmSwapClose} />;
 
     const confirmationDisplay = isTransactionDenied
         ? transactionDenied
@@ -161,7 +161,7 @@ export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
                 {confirmDetails ? fullTxDetails : confirmationDisplay}
             </section>
             <footer className={styles.modal_footer}>
-                {confirmDetails ? confirmSwapButton : closeButton}
+                {confirmDetails ? confirmSwapButton : null}
             </footer>
         </div>
     );

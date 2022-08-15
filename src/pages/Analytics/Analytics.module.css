@@ -7,7 +7,6 @@
 
 .analytics_container{
     /* min-height: 86vh; */
- height: calc(100vh - 3.5rem); 
     padding: 2rem;
     background: var(--dark3);
 }

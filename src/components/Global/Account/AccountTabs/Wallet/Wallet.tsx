@@ -29,6 +29,7 @@ export default function Wallet(props: WalletPropsIF) {
                     const newTokens = await fetchTokenBalances(
                         resolvedAddress,
                         chainId,
+                        connectedAccountActive,
                         1, // arbitrary number
                     );
                     if (newTokens) setResolvedAddressTokens(newTokens);
@@ -51,7 +52,7 @@ export default function Wallet(props: WalletPropsIF) {
     return (
         <div className={styles.container}>
             <WalletHeader />
-            {ItemContent}
+            <div className={styles.item_container}>{ItemContent}</div>
         </div>
     );
 }

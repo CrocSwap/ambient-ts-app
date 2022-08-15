@@ -171,7 +171,7 @@ export default function GraphContainer() {
             <div className={styles.title}>Ambient Analytics</div>
             <div className={styles.right_side}>
                 <span>Timeframe</span>
-                {/* <button
+                <button
                     style={{
                         backgroundColor:
                             volumeWindow === ChartDataTimeframe.oneDay ? '#7371FC' : '',
@@ -180,7 +180,7 @@ export default function GraphContainer() {
                     onClick={() => setChartDataValues(ChartDataTimeframe.oneDay)}
                 >
                     1d
-                </button> */}
+                </button>
                 <button
                     style={{
                         backgroundColor:
@@ -246,7 +246,7 @@ export default function GraphContainer() {
                 </label>
                 <div className={styles.chart_container}>
                     {' '}
-                    {chartData ? (
+                    {chartData && chartData.length > 0 ? (
                         <AreaChart
                             data={formattedTvlData}
                             value={latestValueTvl}
@@ -271,7 +271,7 @@ export default function GraphContainer() {
                     {valueLabelVolume ? valueLabelVolume + ' (UTC) ' : '-'}
                 </label>
                 <div className={styles.chart_container}>
-                    {chartData ? (
+                    {chartData && chartData.length > 0 ? (
                         <BarChart
                             data={formattedVolumeData}
                             value={latestValueVolume}

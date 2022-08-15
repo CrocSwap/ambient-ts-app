@@ -20,7 +20,7 @@ interface LimitRateProps {
     disable?: boolean;
     reverseTokens: () => void;
     setLimitRate: React.Dispatch<React.SetStateAction<string>>;
-    poolPriceNonDisplay: number;
+    poolPriceNonDisplay: number | undefined;
     insideTickDisplayPrice: number;
     // updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
 }

@@ -1,6 +1,7 @@
 import { useState, useEffect, Dispatch, SetStateAction } from 'react';
 
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import { ethers } from 'ethers';
 
 import Transactions from './Transactions/Transactions';
 import Orders from './Orders/Orders';
@@ -19,6 +20,7 @@ import { TokenIF } from '../../../utils/interfaces/TokenIF';
 import { CandleData } from '../../../utils/state/graphDataSlice';
 
 interface ITabsProps {
+    provider: ethers.providers.Provider | undefined;
     account: string;
     isAuthenticated: boolean;
     isWeb3Enabled: boolean;
@@ -41,9 +43,17 @@ interface ITabsProps {
 }
 
 export default function TradeTabs2(props: ITabsProps) {
-    const { isShowAllEnabled, setIsShowAllEnabled, tokenMap } = props;
-    const { isCandleSelected, setIsCandleSelected } = props;
-    const { filter, setTransactionFilter } = props;
+    const {
+        chainId,
+        isShowAllEnabled,
+        setIsShowAllEnabled,
+        tokenMap,
+        provider,
+        isCandleSelected,
+        setIsCandleSelected,
+        filter,
+        setTransactionFilter,
+    } = props;
 
     const graphData = useAppSelector((state) => state?.graphData);
 
@@ -76,6 +86,8 @@ export default function TradeTabs2(props: ITabsProps) {
 
     // Props for <Ranges/> React Element
     const rangesProps = {
+        provider: provider,
+        chainId: chainId,
         isShowAllEnabled: isShowAllEnabled,
         notOnTradeRoute: false,
         graphData: graphData,

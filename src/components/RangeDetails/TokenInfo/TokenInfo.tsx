@@ -1,12 +1,15 @@
 import styles from './TokenInfo.module.css';
 import { querySpotPrice } from '../../../App/functions/querySpotPrice';
-import { memoizePromiseFn } from '../../../App/functions/memoizePromiseFn';
+// import { memoizePromiseFn } from '../../../App/functions/memoizePromiseFn';
 import { useEffect, useState } from 'react';
 import { toDisplayPrice } from '@crocswap-libs/sdk';
+import { ethers } from 'ethers';
 
-const cachedQuerySpotPrice = memoizePromiseFn(querySpotPrice);
+// const cachedQuerySpotPrice = memoizePromiseFn(querySpotPrice);
 
 interface ITokenInfoProps {
+    provider: ethers.providers.Provider | undefined;
+    chainId: string;
     baseTokenAddress: string;
     baseTokenDecimals: number;
     quoteTokenAddress: string;
@@ -17,6 +20,8 @@ interface ITokenInfoProps {
 
 export default function TokenInfo(props: ITokenInfoProps) {
     const {
+        provider,
+        chainId,
         baseTokenAddress,
         baseTokenDecimals,
         quoteTokenAddress,
@@ -29,29 +34,37 @@ export default function TokenInfo(props: ITokenInfoProps) {
 
     // useEffect to get spot price when tokens change and block updates
     useEffect(() => {
-        if (baseTokenAddress && quoteTokenAddress) {
+        if (provider && baseTokenAddress && quoteTokenAddress && lastBlockNumber) {
             (async () => {
-                const spotPrice = await cachedQuerySpotPrice(
+                const spotPrice = await querySpotPrice(
+                    provider,
                     baseTokenAddress,
                     quoteTokenAddress,
+                    chainId,
                     lastBlockNumber,
                 );
-                const displayPriceInQuote = toDisplayPrice(
+                const displayPrice = toDisplayPrice(
                     spotPrice,
                     baseTokenDecimals,
                     quoteTokenDecimals,
                 );
 
-                const displayPriceInBase = 1 / displayPriceInQuote;
+                const displayPriceWithDenom = isDenomBase ? 1 / displayPrice : displayPrice;
 
-                const displayPrice = isDenomBase
-                    ? displayPriceInBase.toPrecision(6)
-                    : displayPriceInQuote.toPrecision(6);
+                const displayPriceString =
+                    displayPriceWithDenom === Infinity || displayPriceWithDenom === 0
+                        ? '...'
+                        : displayPriceWithDenom < 2
+                        ? displayPriceWithDenom.toPrecision(4)
+                        : displayPriceWithDenom.toLocaleString(undefined, {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                          });
 
-                setDisplayPrice(displayPrice);
+                setDisplayPrice(displayPriceString);
             })();
         }
-    }, [lastBlockNumber, baseTokenAddress, quoteTokenAddress]);
+    }, [provider, isDenomBase, lastBlockNumber, baseTokenAddress, quoteTokenAddress]);
 
     return (
         <div className={styles.token_info_container}>

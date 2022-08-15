@@ -50,6 +50,10 @@ export default function Edit() {
 
     const { position } = state;
 
+    // useEffect(() => {
+    //     console.log({ position });
+    // }, [position]);
+
     // const minPricePercentage = -15;
     // const maxPricePercentage = 15;
 
@@ -63,8 +67,6 @@ export default function Edit() {
     const denominationsInBase = tradeData.isDenomBase;
 
     useEffect(() => {
-        // console.log({ rangeLowTick });
-        // console.log({ rangeHighTick });
         const rangeLowBoundDisplayField = document.getElementById(
             'edit-base-price-input-quantity',
         ) as HTMLInputElement;
@@ -83,15 +85,8 @@ export default function Edit() {
     const baseTokenDecimals = position.baseTokenDecimals;
     const quoteTokenDecimals = position.quoteTokenDecimals;
 
-    // const [rangeLowBoundNonDisplayPrice, setRangeLowBoundNonDisplayPrice] = useState(0);
-    // const [rangeHighBoundNonDisplayPrice, setRangeHighBoundNonDisplayPrice] = useState(0);
-
-    const [pinnedMinPriceDisplayTruncated, setPinnedMinPriceDisplayTruncated] = useState(
-        position.lowRangeDisplayInBase,
-    );
-    const [pinnedMaxPriceDisplayTruncated, setPinnedMaxPriceDisplayTruncated] = useState(
-        position.highRangeDisplayInBase,
-    );
+    const [pinnedMinPriceDisplayTruncated, setPinnedMinPriceDisplayTruncated] = useState('');
+    const [pinnedMaxPriceDisplayTruncated, setPinnedMaxPriceDisplayTruncated] = useState('');
 
     const currentPoolPriceTick = position.poolPriceInTicks ?? 0;
     const currentPoolPriceNonDisplay = tickToPrice(currentPoolPriceTick);
@@ -149,12 +144,6 @@ export default function Edit() {
                 rangeHighTick,
                 lookupChain(position.chainId).gridSize,
             );
-            // console.log({ pinnedDisplayPrices });
-            // setRangeLowBoundNonDisplayPrice(pinnedDisplayPrices.pinnedMinPriceNonDisplay);
-            // setRangeHighBoundNonDisplayPrice(pinnedDisplayPrices.pinnedMaxPriceNonDisplay);
-
-            // setPinnedMinPriceDisplay(pinnedDisplayPrices.pinnedMinPriceDisplay);
-            // setPinnedMaxPriceDisplay(pinnedDisplayPrices.pinnedMaxPriceDisplay);
 
             setPinnedMinPriceDisplayTruncated(pinnedDisplayPrices.pinnedMinPriceDisplayTruncated);
             setPinnedMaxPriceDisplayTruncated(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated);
@@ -207,6 +196,8 @@ export default function Edit() {
         }
     }, [
         currentPoolPriceTick,
+        rangeLowTick,
+        rangeHighTick,
         initializationComplete,
         isAdvancedModeActive,
         denominationsInBase,
@@ -217,14 +208,14 @@ export default function Edit() {
     const [minPriceInputString, setMinPriceInputString] = useState<string>('');
     const [maxPriceInputString, setMaxPriceInputString] = useState<string>('');
 
-    const [rangeLowBoundFieldBlurred, setRangeLowBoundFieldBlurred] = useState(true);
+    const [rangeLowBoundFieldBlurred, setRangeLowBoundFieldBlurred] = useState(false);
 
     const lowBoundOnBlur = () => setRangeLowBoundFieldBlurred(true);
 
     // const rangeLowBoundDisplayPrice = 1;
     // const rangeHighBoundDisplayPrice = 1;
 
-    const [rangeHighBoundFieldBlurred, setRangeHighBoundFieldBlurred] = useState(true);
+    const [rangeHighBoundFieldBlurred, setRangeHighBoundFieldBlurred] = useState(false);
     const highBoundOnBlur = () => setRangeHighBoundFieldBlurred(true);
 
     useEffect(() => {
@@ -297,6 +288,7 @@ export default function Edit() {
 
     const lowPriceNonDisplay = tickToPrice(position.bidTick);
     const highPriceNonDisplay = tickToPrice(position.askTick);
+
     const lowPriceDisplayInQuote = toDisplayPrice(
         lowPriceNonDisplay,
         baseTokenDecimals,
@@ -324,6 +316,14 @@ export default function Edit() {
         highPriceDisplay < 2
             ? truncateDecimals(highPriceDisplay, 4)
             : truncateDecimals(highPriceDisplay, 2);
+
+    // useEffect(() => {
+    //     console.log({ lowPriceDisplayTruncated });
+    // }, [lowPriceDisplayTruncated]);
+
+    // useEffect(() => {
+    //     console.log({ highPriceDisplayTruncated });
+    // }, [highPriceDisplayTruncated]);
 
     const confirmEditModal = isModalOpen ? (
         <Modal onClose={closeModal} title='Edit Position'>
@@ -379,7 +379,7 @@ export default function Edit() {
         baseTokenSymbol: position.baseSymbol,
         tokenAQtyDisplay: position.tokenAQtyDisplay,
         tokenBQtyDisplay: position.tokenBQtyDisplay,
-        ambient: position.ambient,
+        ambient: position.positionType === 'ambient',
         lowTick: position.bidTick,
         highTick: position.askTick,
         lowRangeDisplay: position.lowRangeDisplayInBase,
@@ -404,7 +404,9 @@ export default function Edit() {
                 <CurrencyDisplayContainer {...currencyDisplayContainerProps} />
                 <Divider />
                 <EditDenominationSwitch {...editDenominationSwitchProps} />
-                {position.ambient == false && <EditMinMaxPrice {...editMinMaxPriceProps} />}
+                {position.positionType === 'concentrated' && (
+                    <EditMinMaxPrice {...editMinMaxPriceProps} />
+                )}
                 <EditPriceInfo {...editPriceInfoProps} />
                 <EditButton onClickFn={openModal} />
             </div>

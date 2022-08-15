@@ -34,9 +34,9 @@ interface ConfirmRangeModalProps {
 export default function ConfirmRangeModal(props: ConfirmRangeModalProps) {
     const {
         sendTransaction,
-        closeModal,
+        // closeModal,
         newRangeTransactionHash,
-        setNewRangeTransactionHash,
+        // setNewRangeTransactionHash,
         minPriceDisplay,
         maxPriceDisplay,
         spotPriceDisplay,
@@ -203,13 +203,13 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalProps) {
         />
     );
 
-    function onConfirmRangeClose() {
-        setConfirmDetails(true);
-        setNewRangeTransactionHash('');
-        closeModal();
-    }
+    // function onConfirmRangeClose() {
+    //     setConfirmDetails(true);
+    //     setNewRangeTransactionHash('');
+    //     closeModal();
+    // }
 
-    const closeButton = <Button title='Close' action={onConfirmRangeClose} />;
+    // const closeButton = <Button title='Close' action={onConfirmRangeClose} />;
 
     const confirmationDisplay = isTransactionDenied
         ? transactionDenied
@@ -221,7 +221,7 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalProps) {
         <div className={styles.confirm_range_modal_container}>
             <div>{confirmDetails ? fullTxDetails : confirmationDisplay}</div>
             <footer className={styles.modal_footer}>
-                {confirmDetails ? confirmTradeButton : closeButton}
+                {confirmDetails ? confirmTradeButton : null}
             </footer>
         </div>
     );

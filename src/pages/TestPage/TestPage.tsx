@@ -14,6 +14,7 @@
 // import { TokenListIF } from '../../utils/interfaces/exports';
 import styles from './TestPage.module.css';
 import { DefaultTooltip } from '../../components/Global/StyledTooltip/StyledTooltip';
+import TransactionSubmitted from '../../components/Global/TransactionSubmitted/TransactionSubmitted';
 
 // // import Range from '../../components/Global/Account/Range/Range';
 // import Transaction from '../../components/Transaction/Transaction';
@@ -129,6 +130,13 @@ export default function TestPage() {
                         Hover to see blue-on-green tooltip customized via withStyles
                     </div>
                 </DefaultTooltip>
+                <TransactionSubmitted
+                    hash='123'
+                    tokenBAddress='123'
+                    tokenBSymbol='123'
+                    tokenBDecimals={23}
+                    tokenBImage='123'
+                />
             </div>
         </main>
     );

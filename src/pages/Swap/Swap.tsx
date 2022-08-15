@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useState, Dispatch, SetStateAction } from 'react';
+import { useState, Dispatch, SetStateAction, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useMoralis } from 'react-moralis';
 import { motion } from 'framer-motion';
@@ -48,7 +48,7 @@ interface SwapPropsIF {
     tokenBBalance: string;
     isSellTokenBase: boolean;
     tokenPair: TokenPairIF;
-    poolPriceDisplay: number;
+    poolPriceDisplay: number | undefined;
     tokenAAllowance: string;
     setRecheckTokenAApproval: Dispatch<SetStateAction<boolean>>;
     chainId: string;
@@ -181,6 +181,16 @@ export default function Swap(props: SwapPropsIF) {
     const [newSwapTransactionHash, setNewSwapTransactionHash] = useState('');
     const [txErrorCode, setTxErrorCode] = useState(0);
     const [txErrorMessage, setTxErrorMessage] = useState('');
+
+    useEffect(() => {
+        if (poolPriceDisplay === undefined) {
+            setSwapAllowed(false);
+            setSwapButtonErrorMessage('...');
+        } else if (poolPriceDisplay === 0 || poolPriceDisplay === Infinity) {
+            setSwapAllowed(false);
+            setSwapButtonErrorMessage('Invalid Token Pair');
+        }
+    }, [poolPriceDisplay]);
 
     async function initiateSwap() {
         if (!provider) {
@@ -382,7 +392,7 @@ export default function Swap(props: SwapPropsIF) {
                     <ExtraInfo
                         tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
                         isTokenABase={isSellTokenBase}
-                        poolPriceDisplay={poolPriceDisplay}
+                        poolPriceDisplay={poolPriceDisplay || 0}
                         slippageTolerance={slippageTolerancePercentage}
                         liquidityProviderFee={0.3}
                         quoteTokenIsBuy={true}
@@ -391,7 +401,9 @@ export default function Swap(props: SwapPropsIF) {
                         isDenomBase={tradeData.isDenomBase}
                     />
                     {isAuthenticated && isWeb3Enabled ? (
-                        !isTokenAAllowanceSufficient && parseFloat(tokenAInputQty) > 0 ? (
+                        !isTokenAAllowanceSufficient &&
+                        parseFloat(tokenAInputQty) > 0 &&
+                        tokenAInputQty !== 'Infinity' ? (
                             approvalButton
                         ) : (
                             <SwapButton

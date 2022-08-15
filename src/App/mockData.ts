@@ -57,12 +57,12 @@ export const topPools = [
         },
         tokenB: {
             name: 'Wrapped BTC',
-            address: '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599',
+            address: '0xC04B0d3107736C32e19F1c62b2aF67BE61d63a05',
             symbol: 'WBTC',
             decimals: 8,
             chainId: 0x5,
             logoURI:
-                'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
+                'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599/logo.png',
         },
         speed: 0.5,
         id: 3,

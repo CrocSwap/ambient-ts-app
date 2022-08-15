@@ -1,3 +1,4 @@
+import { ethers } from 'ethers';
 import DividerDark from '../../components/Global/DividerDark/DividerDark';
 import Investors from '../../components/Home/Investors/Investors';
 import Slides from '../../components/Home/Landing/Slides';
@@ -9,9 +10,12 @@ import styles from './Home.module.css';
 
 interface HomeProps {
     tokenMap: Map<string, TokenIF>;
+    lastBlockNumber: number;
+    provider: ethers.providers.Provider | undefined;
+    chainId: string;
 }
 export default function Home(props: HomeProps) {
-    const { tokenMap } = props;
+    const { tokenMap, lastBlockNumber, provider, chainId } = props;
 
     return (
         <main data-testid={'home'} className={styles.home_container}>
@@ -19,7 +23,12 @@ export default function Home(props: HomeProps) {
             <Slides />
             <DividerDark />
             <div className={styles.pools_container}>
-                <TopPools tokenMap={tokenMap} />
+                <TopPools
+                    tokenMap={tokenMap}
+                    lastBlockNumber={lastBlockNumber}
+                    provider={provider}
+                    chainId={chainId}
+                />
                 <DividerDark />
                 <Stats />
             </div>

@@ -13,7 +13,7 @@ import {
 import { HiOutlineExternalLink } from 'react-icons/hi';
 import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledTooltip';
 import { motion } from 'framer-motion';
-
+import printDomToImage from '../../../utils/functions/printDomToImage';
 // end of icons
 import {
     // eslint-disable-next-line
@@ -22,7 +22,7 @@ import {
     setActiveChartPeriod,
 } from '../../../utils/state/tradeDataSlice';
 import { useAppSelector, useAppDispatch } from '../../../utils/hooks/reduxToolkit';
-import { Dispatch, SetStateAction, useState, useEffect, useMemo } from 'react';
+import { Dispatch, SetStateAction, useState, useEffect, useMemo, useRef } from 'react';
 // import truncateDecimals from '../../../utils/data/truncateDecimals';
 import TradeCandleStickChart from './TradeCandleStickChart';
 interface TradeChartsProps {
@@ -84,7 +84,9 @@ export default function TradeCharts(props: TradeChartsProps) {
     const tokenBSymbol = tradeData.tokenB.symbol;
 
     const truncatedPoolPrice =
-        poolPriceDisplay < 2
+        poolPriceDisplay === Infinity || poolPriceDisplay === 0
+            ? '...'
+            : poolPriceDisplay < 2
             ? poolPriceDisplay.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 6,
@@ -101,10 +103,15 @@ export default function TradeCharts(props: TradeChartsProps) {
     // ---------------------END OF TRADE DATA CALCULATIONS------------------------
 
     // GRAPH SETTINGS CONTENT------------------------------------------------------
-
+    const canvasRef = useRef(null);
+    const downloadAsImage = () => {
+        if (canvasRef.current) {
+            printDomToImage(canvasRef.current);
+        }
+    };
     const saveImageContent = (
         <div className={styles.save_image_container}>
-            <div className={styles.save_image_content}>
+            <div className={styles.save_image_content} onClick={downloadAsImage}>
                 <AiOutlineDownload />
                 Save Chart Image
             </div>
@@ -132,8 +139,8 @@ export default function TradeCharts(props: TradeChartsProps) {
     const [chartItems, setChartItems] = useState([
         { slug: 'chart', name: 'Chart', checked: true },
         { slug: 'feerate', name: 'Fee Rate', checked: false },
-        { slug: 'tvl', name: 'Tvl', checked: false },
-        { slug: 'volume', name: 'Voulme', checked: false },
+        { slug: 'tvl', name: 'TVL', checked: false },
+        { slug: 'volume', name: 'Volume', checked: false },
     ]);
 
     const handleChartItemChange = (slug: string) => {
@@ -266,7 +273,7 @@ export default function TradeCharts(props: TradeChartsProps) {
         { label: '4h', activePeriod: 14400 },
         { label: '1d', activePeriod: 86400 },
     ];
-    const [activeTimeFrame, setActiveTimeFrame] = useState('1m');
+    const [activeTimeFrame, setActiveTimeFrame] = useState('5m');
 
     function handleTimeFrameButtonClick(label: string, time: number) {
         setActiveTimeFrame(label);
@@ -413,20 +420,21 @@ export default function TradeCharts(props: TradeChartsProps) {
 
     return (
         <>
-            <div className={`${styles.graph_style} ${expandGraphStyle} `}>
+            <div className={`${styles.graph_style} ${expandGraphStyle}`}>
                 {graphSettingsContent}
                 {tokenInfo}
                 {timeFrameContent}
             </div>
-
-            <TradeCandleStickChart
-                tvlData={formattedTvlData}
-                volumeData={formattedVolumeData}
-                feeData={formattedFeesUSD}
-                priceData={props.candleData}
-                changeState={props.changeState}
-                chartItems={chartItems}
-            />
+            <div style={{ width: '100%', height: '100%' }} ref={canvasRef}>
+                <TradeCandleStickChart
+                    tvlData={formattedTvlData}
+                    volumeData={formattedVolumeData}
+                    feeData={formattedFeesUSD}
+                    priceData={props.candleData}
+                    changeState={props.changeState}
+                    chartItems={chartItems}
+                />
+            </div>
         </>
     );
 }

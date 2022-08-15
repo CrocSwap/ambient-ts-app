@@ -17,7 +17,7 @@ export default function Order() {
     return (
         <div className={styles.container}>
             <OrderCardHeader />
-            {ItemContent}
+            <div className={styles.item_container}>{ItemContent}</div>
         </div>
     );
 }
