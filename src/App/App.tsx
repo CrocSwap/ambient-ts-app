@@ -1787,7 +1787,7 @@ export default function App() {
                 {snackbarContent}
             </div>
             <div className='footer_container'>
-                <PageFooter lastBlockNumber={lastBlockNumber} />
+                {currentLocation !== '/' && <PageFooter lastBlockNumber={lastBlockNumber} />}
             </div>
             <SidebarFooter />
         </>
