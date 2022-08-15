@@ -7,7 +7,7 @@ import {
     SetStateAction
 } from 'react';
 import { Link } from 'react-router-dom';
-import { useMoralis } from 'react-moralis';
+import { useMoralis, useChain } from 'react-moralis';
 import { useTranslation } from 'react-i18next';
 import { useRive, useStateMachineInput } from 'rive-react';
 import { motion, AnimateSharedLayout } from 'framer-motion';
@@ -53,6 +53,8 @@ export default function PageHeader(props: HeaderPropsIF) {
     const { user, account, enableWeb3, isWeb3Enabled, authenticate, isAuthenticated } =
         useMoralis();
 
+        const { switchNetwork } = useChain();
+
     const { t } = useTranslation();
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -77,20 +79,26 @@ Your authentication status will reset on logout.`;
     // function to authenticate wallet with Moralis server
     const clickLogin = () => {
         console.log('user clicked Login');
+        console.log(`authenticating on chain: ${parseInt(chainId)}`);
         if (!isAuthenticated || !isWeb3Enabled) {
             authenticate({
                 provider: 'metamask',
+                chainId: 5,
                 signingMessage: signingMessage,
                 // signingMessage: 'Ambient API Authentication.',
                 onSuccess: () => {
                     enableWeb3();
+                    switchNetwork('0x5');
                 },
                 onError: () => {
+                    console.log(`authenticating on chain: ${parseInt(chainId)}`);
                     authenticate({
                         provider: 'metamask',
+                        chainId: 5,
                         signingMessage: signingMessage,
                         onSuccess: () => {
-                            enableWeb3;
+                            enableWeb3();
+                            switchNetwork('0x5');
                             // alert('🎉');
                         },
                     });

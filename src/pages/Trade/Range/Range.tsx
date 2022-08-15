@@ -959,6 +959,7 @@ Your authentication status will reset on logout.`;
         if (!isAuthenticated || !isWeb3Enabled) {
             authenticate({
                 provider: 'metamask',
+                chainId: parseInt(chainId),
                 signingMessage: signingMessage,
                 onSuccess: () => {
                     enableWeb3();
@@ -966,6 +967,7 @@ Your authentication status will reset on logout.`;
                 onError: () => {
                     authenticate({
                         provider: 'metamask',
+                        chainId: parseInt(chainId),
                         signingMessage: signingMessage,
                         onSuccess: () => {
                             enableWeb3;

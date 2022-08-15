@@ -60,6 +60,11 @@ export const useAppChain = (
         }
     }, [chainId]);
 
+    useEffect(() => {
+        console.log({isAuthenticated});
+        if (isAuthenticated && (chainId !== currentChain)) switchNetwork(currentChain);
+    }, [isAuthenticated]);
+
     // data from the SDK about the current chain
     // refreshed every time the the value of currentChain is updated
     const chainData = useMemo(() => {
