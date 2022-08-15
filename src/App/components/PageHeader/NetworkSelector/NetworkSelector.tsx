@@ -31,7 +31,7 @@ export default function NetworkSelector(props: NetworkSelectorPropsIF) {
                     variants={ItemEnterAnimation}
                 >
                     <div className={styles.chain_name_status}>
-                        <p>(chain name here)</p>
+                        <p>{chain.displayName}</p>
                         {chain.chainId == chainId && <FaDotCircle color='#CDC1FF' size={10} />}
                     </div>
                 </motion.li>
@@ -42,6 +42,7 @@ export default function NetworkSelector(props: NetworkSelectorPropsIF) {
     // TODO:  @Junior is the wrapper in the return necessary?
     return (
         <div className={styles.selector_select_container}>
+            <h3>{lookupChain(chainId).displayName}</h3>
             <div className={styles.dropdown_menu_container}>
                 <DropdownMenu2
                     marginTop={'50px'}

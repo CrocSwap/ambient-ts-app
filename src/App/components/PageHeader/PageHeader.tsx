@@ -132,7 +132,6 @@ Your authentication status will reset on logout.`;
 
     // Page Header states
     const [mobileNavToggle, setMobileNavToggle] = useState<boolean>(false);
-
     // End of Page Header States
 
     // Page Header functions
@@ -140,10 +139,6 @@ Your authentication status will reset on logout.`;
         setMobileNavToggle(!mobileNavToggle);
         onClickInput?.fire();
     }
-
-    // -----------------SWITCH NETWORK FUNCTIONALITY--------------------------------------
-
-
 
     // -----------------END OF SWITCH NETWORK FUNCTIONALITY--------------------------------------
     const accountAddress = isAuthenticated && account ? trimString(account, 6, 6) : '';
