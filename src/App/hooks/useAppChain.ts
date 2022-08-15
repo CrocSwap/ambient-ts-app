@@ -11,29 +11,32 @@ import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { validateChainId } from '../../utils/data/chains';
 
 export const useAppChain = (
-    defaultChain: string
+    defaultChain: string,
 ): [
     ChainSpec,
     boolean,
     Dispatch<SetStateAction<string>>,
-    (providedChainId: string) => Promise<void>
+    (providedChainId: string) => Promise<void>,
 ] => {
     // chain from connected wallet via Moralis
     const { isAuthenticated } = useMoralis();
     const { chainId, switchNetwork } = useChain();
 
+    const { isWeb3Enabled } = useMoralis();
+
     // value tracking the current chain the app is set to use
     // initializes on the default chain parameter
     // we need this value so the app can be used without a wallet
-    const [ currentChain, setCurrentChain ] = useState(defaultChain);
+    const [currentChain, setCurrentChain] = useState(defaultChain);
     // boolean representing if the current chain is supported by the app
     // we use this value to populate the SwitchNetwork.tsx modal
-    const [ isChainSupported, setIsChainSupported ] = useState(validateChainId(defaultChain));
+    const [isChainSupported, setIsChainSupported] = useState(validateChainId(defaultChain));
 
     // change the network in Moralis after user changes in the app
     useEffect(() => {
-        if (chainId !== currentChain) switchNetwork(currentChain);
-    }, [currentChain]);
+        console.log('change chain in Moralis!');
+        if (isWeb3Enabled && chainId !== currentChain) switchNetwork(currentChain);
+    }, [currentChain, isWeb3Enabled]);
 
     // if the chain in metamask changes, update the value in the app to match
     // gatekeeping ensures this only runs when the user changes the chain in metamask
@@ -79,5 +82,5 @@ export const useAppChain = (
         return chn;
     }, [currentChain]);
 
-    return [ chainData, isChainSupported, setCurrentChain, switchNetwork ];
-}
+    return [chainData, isChainSupported, setCurrentChain, switchNetwork];
+};
