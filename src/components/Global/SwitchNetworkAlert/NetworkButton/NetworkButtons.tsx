@@ -4,11 +4,11 @@ import NetworkButton from './NetworkButton';
 
 interface NetworkButtonsPropsIF {
     chainId: string;
-    switchChain: Dispatch<SetStateAction<string>>;
-    onClose: () => void;
+    selectChain: (newChain: string) => void;
+
 }
 export default function NetworkButtons(props: NetworkButtonsPropsIF) {
-    const { chainId, switchChain, onClose } = props;
+    const { chainId, selectChain } = props;
 
     const supportedChains = [
         {
@@ -19,18 +19,6 @@ export default function NetworkButtons(props: NetworkButtonsPropsIF) {
         },
     ];
 
-    const handleNetworkSwitch = (chain: string) => {
-        if (chainId) {
-            switchChain(chain);
-        } else if (window.ethereum) {
-            window.ethereum.request({
-                method: 'wallet_switchEthereumChain',
-                params: [{ chain }],
-            });
-        }
-        onClose();
-    };
-
     return (
         <div>
             {supportedChains.map((chain, idx) => (
@@ -40,7 +28,7 @@ export default function NetworkButtons(props: NetworkButtonsPropsIF) {
                     icon={chain.icon}
                     theme={chain.theme}
                     id={chain.id}
-                    handleClick={handleNetworkSwitch}
+                    clickHandler={() => selectChain(chain.id)}
                 />
             ))}
         </div>

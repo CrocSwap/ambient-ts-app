@@ -115,7 +115,7 @@ export default function App() {
     // `switchChain` is a function to switch to a different chain
     // `'0x5'` is the chain the app should be on by default
     const [ chainData, isChainSupported, switchChain ] = useAppChain('0x5');
-    useEffect(() => {console.log({isChainSupported, chainData})}, [chainData]);
+    useEffect(() => {console.log(isChainSupported)}, [isChainSupported]);
     
     const [switchTabToTransactions, setSwitchTabToTransactions] = useState<boolean>(false);
 
@@ -945,7 +945,6 @@ export default function App() {
             lastBlockNumber !== 0
         ) {
             (async () => {
-                console.log(chainData);
                 const viewProvider = provider
                     ? provider
                     : (await new CrocEnv(chainData.chainId).context).provider;

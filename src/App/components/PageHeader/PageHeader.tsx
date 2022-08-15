@@ -1,8 +1,9 @@
 /** ***** START: Import React and Dongles *******/
 import {
-    useEffect,
-    useState,
     useCallback,
+    useEffect,
+    useMemo,
+    useState,
     Dispatch,
     SetStateAction
 } from 'react';
@@ -144,24 +145,8 @@ Your authentication status will reset on logout.`;
     }
 
     // -----------------SWITCH NETWORK FUNCTIONALITY--------------------------------------
-    // eslint-disable-next-line
-    const [showSwitchNetwork, setShowSwitchNetwork] = useState(true);
-    // eslint-disable-next-line
-    // const openSwitchNetwork = useCallback(() => {
-    //     setShowSwitchNetwork(true);
-    // }, [setShowSwitchNetwork]);
-    // eslint-disable-next-line
-    const closeSwitchNetwork = useCallback(() => {
-        setShowSwitchNetwork(false);
-    }, [setShowSwitchNetwork]);
 
-    const switchNetWorkOrNull = isChainSupported ? null : (
-        <SwitchNetwork
-            onClose={closeSwitchNetwork}
-            chainId={chainId}
-            switchChain={switchChain}
-        />
-    );
+
 
     // -----------------END OF SWITCH NETWORK FUNCTIONALITY--------------------------------------
     const accountAddress = isAuthenticated && account ? trimString(account, 6, 6) : '';
@@ -240,6 +225,16 @@ Your authentication status will reset on logout.`;
         </AnimateSharedLayout>
     );
 
+    console.log({isChainSupported});
+    const [showNetworkSwitcher, setShowNetworkSwitcher] = useState(!isChainSupported);
+    console.log({showNetworkSwitcher});
+
+    const networkSwitcher = useMemo(() => {
+        const element = <SwitchNetwork onClose={() => setShowNetworkSwitcher(false)} chainId={chainId} switchChain={switchChain} />;
+        const elementOrNull = isChainSupported ? null : element;
+        return elementOrNull;
+    }, [isChainSupported]);
+
     // ----------------------------END OF NAVIGATION FUNCTIONALITY-------------------------------------
 
     return (
@@ -268,7 +263,8 @@ Your authentication status will reset on logout.`;
                 {(!isAuthenticated || !isWeb3Enabled) && metamaskButton}
                 <Account {...accountProps} />
             </div>
-            {false && switchNetWorkOrNull}
+            {/* {!showNetworkSwitcher || <SwitchNetwork onClose={() => setShowNetworkSwitcher(false)} chainId={chainId} switchChain={switchChain} />} */}
+            {networkSwitcher}
             {modalOrNull}
         </header>
     );

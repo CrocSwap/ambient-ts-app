@@ -1,5 +1,6 @@
 // START: Import React and Dongles
-import { Dispatch, SetStateAction, useEffect } from 'react';
+import { Dispatch, SetStateAction } from 'react';
+import { useChain } from 'react-moralis';
 import { RiErrorWarningLine } from 'react-icons/ri';
 
 // START: Import Local Files
@@ -13,18 +14,16 @@ interface SwitchNetworkPropsIF {
 }
 
 export default function SwitchNetwork(props: SwitchNetworkPropsIF) {
-    const { onClose, chainId, switchChain } = props;
+    const { chainId, switchChain, onClose } = props;
 
-    function closeOnEscapeKeyDown(e: KeyboardEvent) {
-        if (e.key === 'Escape') onClose();
+    const { switchNetwork } = useChain();
+
+    function selectChain(newChain:string) {
+        // GOAL ONE: switch Moralis to a valid chain
+        switchNetwork(newChain);
+        // GOAL TWO: toggle modal display boolean to false
+        onClose();
     }
-
-    useEffect(() => {
-        document.body.addEventListener('keydown', closeOnEscapeKeyDown);
-        return function cleanUp() {
-            document.body.removeEventListener('keydown', closeOnEscapeKeyDown);
-        };
-    });
 
     return (
         <div className={styles.outside_modal}>
@@ -37,8 +36,7 @@ export default function SwitchNetwork(props: SwitchNetworkPropsIF) {
                     <span className={styles.content_title}>Please choose a network below</span>
                     <NetworkButtons
                         chainId={chainId}
-                        onClose={onClose}
-                        switchChain={switchChain}
+                        selectChain={selectChain}
                     />
                 </section>
             </div>
