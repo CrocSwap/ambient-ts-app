@@ -23,6 +23,7 @@ import topTokensImage from '../../../assets/images/sidebarImages/topTokens.svg';
 import closeSidebarImage from '../../../assets/images/sidebarImages/closeSidebar.svg';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
+import { teardown } from '@mui/utils/useIsFocusVisible';
 
 // interface for component props
 interface SidebarPropsIF {
@@ -119,6 +120,13 @@ export default function Sidebar(props: SidebarPropsIF) {
 
     function search(text: string) {
         console.log({text});
+        if (
+            text.substring(1, text.length-1).includes(' ') ||
+            text.substring(1, text.length-1).includes('/') ||
+            text.substring(1, text.length-1).includes('\\')
+        ) {
+            console.log('yes it is in the middle!')
+        }
     }
 
     const searchContainer = (
@@ -132,7 +140,7 @@ export default function Sidebar(props: SidebarPropsIF) {
                     id='box'
                     placeholder='Search anything...'
                     className={styles.search__box}
-                    onChange={(e) => search(e.target.value)}
+                    onChange={(e) => search(e.target.value.trim().toLowerCase())}
                 />
             </div>
             <img src={closeSidebarImage} alt='close sidebar' onClick={toggleSidebar} />
