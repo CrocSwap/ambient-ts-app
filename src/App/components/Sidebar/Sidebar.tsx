@@ -117,6 +117,10 @@ export default function Sidebar(props: SidebarPropsIF) {
         },
     ];
 
+    function search(text: string) {
+        console.log({text});
+    }
+
     const searchContainer = (
         <div className={styles.main_search_container}>
             <div className={styles.search_container}>
@@ -128,6 +132,7 @@ export default function Sidebar(props: SidebarPropsIF) {
                     id='box'
                     placeholder='Search anything...'
                     className={styles.search__box}
+                    onChange={(e) => search(e.target.value)}
                 />
             </div>
             <img src={closeSidebarImage} alt='close sidebar' onClick={toggleSidebar} />
