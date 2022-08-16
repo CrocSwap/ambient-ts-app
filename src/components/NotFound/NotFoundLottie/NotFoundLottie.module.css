@@ -1,4 +1,4 @@
-.notfound_container{
+.notfound_container {
     width: 50%;
     flex-direction: column;
     display: flex;
@@ -6,13 +6,12 @@
     align-items: center;
 }
 
-.content{
+.content {
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
-    
 }
 
-.content a{
+.content a {
     cursor: pointer;
     padding: 0 0.3rem;
     font-size: var(--header1-size);
@@ -22,6 +21,4 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-
 }
-

@@ -55,24 +55,24 @@ export default function TradeCharts(props: TradeChartsProps) {
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
-    const graphData = useAppSelector((state) => state.graphData);
+    // const graphData = useAppSelector((state) => state.graphData);
 
-    const mainnetCandlePoolDefinition = JSON.stringify({
-        baseAddress: '0x0000000000000000000000000000000000000000',
-        quoteAddress: '0x6b175474e89094c44da98b954eedeac495271d0f',
-        poolIdx: 36000,
-        network: '0x1',
-    }).toLowerCase();
+    // const mainnetCandlePoolDefinition = JSON.stringify({
+    //     baseAddress: '0x0000000000000000000000000000000000000000',
+    //     quoteAddress: '0x6b175474e89094c44da98b954eedeac495271d0f',
+    //     poolIdx: 36000,
+    //     network: '0x1',
+    // }).toLowerCase();
 
-    const indexOfMainnetCandlePool = graphData.candlesForAllPools.pools
-        .map((item) => JSON.stringify(item.pool).toLowerCase())
-        .findIndex((pool) => pool === mainnetCandlePoolDefinition);
+    // const indexOfMainnetCandlePool = graphData.candlesForAllPools.pools
+    //     .map((item) => JSON.stringify(item.pool).toLowerCase())
+    //     .findIndex((pool) => pool === mainnetCandlePoolDefinition);
 
-    const mainnetCandleData = graphData.candlesForAllPools.pools[indexOfMainnetCandlePool];
+    // const mainnetCandleData = graphData.candlesForAllPools.pools[indexOfMainnetCandlePool];
 
-    useEffect(() => {
-        console.log({ mainnetCandleData });
-    }, [mainnetCandleData]);
+    // useEffect(() => {
+    //     console.log({ mainnetCandleData });
+    // }, [mainnetCandleData]);
 
     const isTokenABase = props.isTokenABase;
     const setActivePeriod = (period: number) => {

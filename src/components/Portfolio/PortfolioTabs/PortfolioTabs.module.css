@@ -1,11 +1,9 @@
-.tabs_container{
+.tabs_container {
     width: 100%;
-    height: calc(100% /3);
+    height: calc(100% / 3);
     margin-top: 1rem;
     border-radius: var(--border-radius);
     background: var(--dark1);
-   
-
 }
 /* 
 .tabs{

@@ -1,8 +1,8 @@
-.animation_container span:nth-child(odd){
-    background: #7371FC;
+.animation_container span:nth-child(odd) {
+    background: #7371fc;
 }
-.animation_container span:nth-child(even){
-    background: #CDC1FF;
+.animation_container span:nth-child(even) {
+    background: #cdc1ff;
 }
 
 /* .ball{

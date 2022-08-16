@@ -1,23 +1,21 @@
-.settings_container{
-  height: 300px;
-  /* width: 300px; */
+.settings_container {
+    height: 300px;
+    /* width: 300px; */
 
     row-gap: 12px;
     margin-top: 0.2rem;
     position: relative;
-   
-  }
-  .settings_title{
+}
+.settings_title {
     display: flex;
     justify-content: center;
     font-size: var(--header-size);
     line-height: var(--header2-lh);
     margin-bottom: 1rem;
-  }
-  .button_container{
- position: absolute;
- bottom: 0;
- width: 100%;
- padding: 0 2rem;
-
-  }
+}
+.button_container {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    padding: 0 2rem;
+}

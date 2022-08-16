@@ -1,34 +1,30 @@
-.range_column{
+.range_column {
     display: flex;
     flex-direction: column;
     align-items: center;
 }
-.range_sing{
+.range_sing {
     display: none;
 }
 
-.range_column p, .range_sing p {
+.range_column p,
+.range_sing p {
     font-size: 10px;
-    line-height: 12px; 
-    color: #5FFFF2;
+    line-height: 12px;
+    color: #5ffff2;
 }
 
-    /* Extra large devices (large laptops and desktops, 1200px and up) */
-    @media only screen and (min-width: 1200px) {
+/* Extra large devices (large laptops and desktops, 1200px and up) */
+@media only screen and (min-width: 1200px) {
+    .range_column {
+        display: none;
+    }
+    .range_column p {
+        font-size: 12px;
+        line-height: 15px;
+    }
 
-        .range_column{
-             display: none;
-         }
-         .range_column p{
-            font-size: 12px;
-line-height: 15px;
-         }
-     
-         .range_sing{
-             display: flex;
-         }
-     
-     
-       
-     
-     }
+    .range_sing {
+        display: flex;
+    }
+}
