@@ -39,6 +39,7 @@ interface SidebarPropsIF {
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
     tokenMap: Map<string, TokenIF>;
+    lastBlockNumber: number;
 }
 
 export default function Sidebar(props: SidebarPropsIF) {
@@ -56,6 +57,7 @@ export default function Sidebar(props: SidebarPropsIF) {
         expandTradeTable,
         setExpandTradeTable,
         tokenMap,
+        lastBlockNumber,
     } = props;
 
     const graphData = useAppSelector((state) => state.graphData);
@@ -72,7 +74,11 @@ export default function Sidebar(props: SidebarPropsIF) {
         { name: 'Top Tokens', icon: topTokensImage, data: <TopTokens chainId={chainId} /> },
     ];
     const topPoolsSection = [
-        { name: 'Top Pools', icon: topPoolsImage, data: <TopPools chainId={chainId} /> },
+        {
+            name: 'Top Pools',
+            icon: topPoolsImage,
+            data: <TopPools chainId={chainId} lastBlockNumber={lastBlockNumber} />,
+        },
     ];
 
     const recentRangePositions = [
