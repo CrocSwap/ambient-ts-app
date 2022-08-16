@@ -1,9 +1,8 @@
 // START: Import React and Dongles
-import { MouseEvent, SetStateAction, Dispatch } from 'react';
-import { BiSearch } from 'react-icons/bi';
+import { MouseEvent, SetStateAction, Dispatch, useState, useEffect } from 'react';
 
 // START: Import JSX Elements
-import SidebarAccordion from './SidebarAccordion';
+import SidebarAccordion from './SidebarAccordion/SidebarAccordion';
 import TopTokens from '../../../components/Global/Sidebar/TopTokens/TopTokens';
 import TopPools from '../../../components/Global/Sidebar/TopPools/TopPools';
 import FavoritePools from '../../../components/Global/Sidebar/FavoritePools/FavoritePools';
@@ -23,6 +22,7 @@ import topTokensImage from '../../../assets/images/sidebarImages/topTokens.svg';
 import closeSidebarImage from '../../../assets/images/sidebarImages/closeSidebar.svg';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
+import SearchAccordion from './SearchAccordion/SearchAccordion';
 
 // interface for component props
 interface SidebarPropsIF {
@@ -75,6 +75,7 @@ export default function Sidebar(props: SidebarPropsIF) {
     const topPoolsSection = [
         { name: 'Top Pools', icon: topPoolsImage, data: <TopPools chainId={chainId} /> },
     ];
+
     const recentRangePositions = [
         {
             name: 'Range Positions',
@@ -117,51 +118,65 @@ export default function Sidebar(props: SidebarPropsIF) {
         },
     ];
 
-    const searchContainer = (
-        <div className={styles.main_search_container}>
-            <div className={styles.search_container}>
-                <div className={styles.search__icon} onClick={toggleSidebar}>
-                    <BiSearch size={20} color='#CDC1FF' />
-                </div>
-                <input
-                    type='text'
-                    id='box'
-                    placeholder='Search anything...'
-                    className={styles.search__box}
+    const [searchMode, setSearchMode] = useState(false);
+
+    const sidebarStyle = showSidebar ? styles.sidebar_active : styles.sidebar;
+
+    useEffect(() => {
+        if (showSidebar === false) {
+            setSearchMode(false);
+        }
+    }, [showSidebar]);
+
+    function handleSearchModeToggle() {
+        toggleSidebar;
+
+        setSearchMode(!searchMode);
+    }
+
+    const topElementsDisplay = (
+        <div style={{ width: '100%' }}>
+            {topTokens.map((item, idx) => (
+                <SidebarAccordion
+                    showSidebar={showSidebar}
+                    idx={idx}
+                    item={item}
+                    toggleSidebar={toggleSidebar}
+                    key={idx}
+
+                    // mostRecent={mostRecentPositions}
                 />
-            </div>
-            <img src={closeSidebarImage} alt='close sidebar' onClick={toggleSidebar} />
+            ))}
+            {topPoolsSection.map((item, idx) => (
+                <SidebarAccordion
+                    showSidebar={showSidebar}
+                    idx={idx}
+                    item={item}
+                    toggleSidebar={toggleSidebar}
+                    key={idx}
+                    mostRecent={['should open automatically']}
+                />
+            ))}
         </div>
     );
 
-    const sidebarStyle = showSidebar ? styles.sidebar_active : styles.sidebar;
+    console.log(searchMode);
     return (
         <div>
             <nav className={`${styles.sidebar} ${sidebarStyle}`}>
                 <ul className={styles.sidebar_nav}>
-                    {searchContainer}
+                    <SearchAccordion
+                        showSidebar={showSidebar}
+                        toggleSidebar={toggleSidebar}
+                        searchMode={searchMode}
+                        handleSearchModeToggle={handleSearchModeToggle}
+                        setSearchMode={setSearchMode}
+                    />
 
-                    {topTokens.map((item, idx) => (
-                        <SidebarAccordion
-                            showSidebar={showSidebar}
-                            idx={idx}
-                            item={item}
-                            toggleSidebar={toggleSidebar}
-                            key={idx}
-                            // mostRecent={mostRecentPositions}
-                        />
-                    ))}
-                    {topPoolsSection.map((item, idx) => (
-                        <SidebarAccordion
-                            showSidebar={showSidebar}
-                            idx={idx}
-                            item={item}
-                            toggleSidebar={toggleSidebar}
-                            key={idx}
-                            mostRecent={['should open automatically']}
-                        />
-                    ))}
+                    {!searchMode && topElementsDisplay}
                     <div className={styles.bottom_elements}>
+                        {searchMode && topElementsDisplay}
+
                         {recentRangePositions.map((item, idx) => (
                             <SidebarAccordion
                                 toggleSidebar={toggleSidebar}
