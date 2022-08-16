@@ -1,6 +1,3 @@
-import DropdownMenu from '../../../DropdownMenu/DropdownMenu';
-import DropdownMenuContainer from '../../../DropdownMenu/DropdownMenuContainer/DropdownMenuContainer';
-import DropdownMenuItem from '../../../DropdownMenu/DropdownMenuItem/DropdownMenuItem';
 import { FiMoreHorizontal } from 'react-icons/fi';
 import styles from './TableMenuComponents.module.css';
 import { useModal } from '../../../../Global/Modal/useModal';
@@ -9,6 +6,8 @@ import { useState } from 'react';
 import RangeDetailsHeader from '../../../../RangeDetails/RangeDetailsHeader/RangeDetailsHeader';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import SnackbarComponent from '../../../../../components/Global/SnackbarComponent/SnackbarComponent';
+import { DefaultTooltip } from '../../../StyledTooltip/StyledTooltip';
+
 interface RangesMenu {
     userPosition: boolean | undefined;
     // todoFromJr: Assign the correct types to these data -Jr
@@ -32,6 +31,8 @@ export default function RangesMenu(props: RangesMenu) {
 
     const [isModalOpen, openModal, closeModal] = useModal();
     const [currentModal, setCurrentModal] = useState<string>('edit');
+
+    const [openMenuTooltip, setOpenMenuTooltip] = useState(false);
 
     // ---------------------MODAL FUNCTIONALITY----------------
     let modalContent: React.ReactNode;
@@ -149,19 +150,36 @@ export default function RangesMenu(props: RangesMenu) {
 
     // console.log(posHash);
 
-    const dropdownRangesMenu = (
-        <div className={styles.dropdown_menu}>
-            <DropdownMenu title={<FiMoreHorizontal size={20} />}>
-                <DropdownMenuContainer>
-                    {userPosition ? <DropdownMenuItem>{editButton}</DropdownMenuItem> : null}
-                    {userPosition ? <DropdownMenuItem>{harvestButton}</DropdownMenuItem> : null}
-                    {userPosition ? <DropdownMenuItem>{removeButton}</DropdownMenuItem> : null}
-                    <DropdownMenuItem>{detailsButton}</DropdownMenuItem>
-                    <DropdownMenuItem>{copyButton}</DropdownMenuItem>
-                </DropdownMenuContainer>
-            </DropdownMenu>
+    const menuContent = (
+        <div className={styles.menu_column}>
+            {userPosition && editButton}
+            {userPosition && harvestButton}
+            {userPosition && removeButton}
+            {detailsButton}
+            {copyButton}
         </div>
     );
+
+    const dropdownRangesMenu = (
+        <div className={styles.dropdown_menu}>
+            <DefaultTooltip
+                open={openMenuTooltip}
+                onOpen={() => setOpenMenuTooltip(true)}
+                onClose={() => setOpenMenuTooltip(false)}
+                interactive
+                placement='left'
+                title={menuContent}
+            >
+                <div
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => setOpenMenuTooltip(!openMenuTooltip)}
+                >
+                    <FiMoreHorizontal size={20} />
+                </div>
+            </DefaultTooltip>
+        </div>
+    );
+
     return (
         <>
             {rangesMenu}
