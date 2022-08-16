@@ -119,14 +119,28 @@ export default function Sidebar(props: SidebarPropsIF) {
     ];
 
     function search(text: string) {
-        console.log({text});
-        if (
-            text.substring(1, text.length-1).includes(' ') ||
-            text.substring(1, text.length-1).includes('/') ||
-            text.substring(1, text.length-1).includes('\\')
-        ) {
-            console.log('yes it is in the middle!')
+        const inputAsArray = text.toLowerCase().split('');
+        const separators = [' ', '/', '\\'];
+
+        while (separators.includes(inputAsArray[0])) {
+            inputAsArray.shift();
         }
+
+        const outputArray = [];
+        let builtString = '';
+
+        while (inputAsArray.length && outputArray.length < 2) {
+            const character = inputAsArray.shift();
+            if (!separators.includes(character as string)) {
+                builtString += character;
+            } else {
+                outputArray.push(builtString);
+                builtString = '';
+            }
+        }
+
+        builtString.length && outputArray.push(builtString);
+        console.log(outputArray);
     }
 
     const searchContainer = (
@@ -140,7 +154,7 @@ export default function Sidebar(props: SidebarPropsIF) {
                     id='box'
                     placeholder='Search anything...'
                     className={styles.search__box}
-                    onChange={(e) => search(e.target.value.trim().toLowerCase())}
+                    onChange={(e) => search(e.target.value)}
                 />
             </div>
             <img src={closeSidebarImage} alt='close sidebar' onClick={toggleSidebar} />
