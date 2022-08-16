@@ -1,13 +1,13 @@
 // import styles from './SidebarAccordion.module.css';
 import { MdPlayArrow } from 'react-icons/md';
-import styles from './Sidebar.module.css';
+import styles from '../Sidebar.module.css';
 import {
     // useEffect,
     useState,
 } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ISwap } from '../../../utils/state/graphDataSlice';
-import { PositionIF } from '../../../utils/interfaces/PositionIF';
+import { ISwap } from '../../../../utils/state/graphDataSlice';
+import { PositionIF } from '../../../../utils/interfaces/PositionIF';
 interface Item {
     name: string;
     icon: string;
@@ -20,8 +20,12 @@ interface SidebarAccordionProps {
     toggleSidebar: (
         event: React.MouseEvent<HTMLDivElement> | React.MouseEvent<HTMLLIElement>,
     ) => void;
+    // toggleSearchMode: (
+    //     event: React.MouseEvent<HTMLDivElement> | React.MouseEvent<HTMLLIElement>,
+    // ) => void;
     item: Item;
-    idx: number;
+    idx: number | string;
+
     mostRecent?: PositionIF[] | ISwap[] | string[];
 }
 
@@ -31,30 +35,12 @@ export default function SidebarAccordion(props: SidebarAccordionProps) {
         idx,
         item,
         toggleSidebar,
+
         // mostRecent = []
     } = props;
 
-    // const userHasRecent = mostRecent.length > 0;
-
     const [isOpen, setIsOpen] = useState(false);
 
-    // useEffect(() => {
-    //     if (userHasRecent) {
-    //         setIsOpen(true);
-    //     } else {
-    //         setIsOpen(false);
-    //     }
-    // }, [userHasRecent]);
-
-    // useEffect(() => {
-    //     if (mostRecent.length > 0) {
-    //         setIsOpen(true);
-    //     } else {
-    //         setIsOpen(false);
-    //     }
-    // }, [JSON.stringify(mostRecent)]);
-
-    // console.log(showSidebar);
     const openStateContent = (
         <motion.div
             className={styles.accordion_container}
@@ -78,6 +64,7 @@ export default function SidebarAccordion(props: SidebarAccordionProps) {
     const sidebarIconStyle = isOpen ? styles.open_link : null;
     // console.log({ isOpen });
     // console.log({ showSidebar });
+
     return (
         <>
             <motion.li
