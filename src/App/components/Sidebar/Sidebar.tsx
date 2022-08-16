@@ -23,7 +23,6 @@ import topTokensImage from '../../../assets/images/sidebarImages/topTokens.svg';
 import closeSidebarImage from '../../../assets/images/sidebarImages/closeSidebar.svg';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
-import { teardown } from '@mui/utils/useIsFocusVisible';
 
 // interface for component props
 interface SidebarPropsIF {
@@ -140,7 +139,13 @@ export default function Sidebar(props: SidebarPropsIF) {
         }
 
         builtString.length && outputArray.push(builtString);
-        console.log(outputArray);
+
+        const outputTuples = outputArray.map((searchText: string) => [
+            searchText.startsWith('0x') ? 'address' : 'name',
+            searchText
+        ]);
+
+        console.log(outputTuples);
     }
 
     const searchContainer = (
