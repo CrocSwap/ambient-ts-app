@@ -1593,6 +1593,7 @@ export default function App() {
         expandTradeTable: expandTradeTable,
         setExpandTradeTable: setExpandTradeTable,
         tokenMap: tokenMap,
+        lastBlockNumber: lastBlockNumber,
 
         // setShowSidebar : setShowSidebar
     };

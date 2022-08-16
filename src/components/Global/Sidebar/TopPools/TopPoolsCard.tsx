@@ -9,10 +9,11 @@ import { formatAmount } from '../../../../utils/numbers';
 interface TopPoolsCardProps {
     pool: { name: string; tokenA: TokenIF; tokenB: TokenIF };
     chainId: string;
+    lastBlockNumber: number;
 }
 
 export default function TopPoolsCard(props: TopPoolsCardProps) {
-    const { pool, chainId } = props;
+    const { pool, chainId, lastBlockNumber } = props;
 
     const dispatch = useAppDispatch();
 
@@ -30,26 +31,18 @@ export default function TopPoolsCard(props: TopPoolsCardProps) {
                 const volumeResult = await getPoolVolume(tokenAAddress, tokenBAddress, poolIndex);
 
                 if (volumeResult) {
-                    // const volumeString =
-                    //     volumeResult >= 1000000
-                    //         ? volumeResult.toExponential(2)
-                    //         : volumeResult.toLocaleString(undefined, {
-                    //               maximumFractionDigits: 0,
-                    //           });
                     const volumeString = formatAmount(volumeResult);
-
                     setPoolVolume(volumeString);
                 }
 
                 const tvlResult = await getPoolTVL(tokenAAddress, tokenBAddress, poolIndex);
                 if (tvlResult) {
-                    const tvString = formatAmount(tvlResult);
-
-                    setPoolTVL(tvString);
+                    const tvlString = formatAmount(tvlResult);
+                    setPoolTVL(tvlString);
                 }
             }
         })();
-    }, [tokenAAddress, tokenBAddress]);
+    }, [tokenAAddress, tokenBAddress, lastBlockNumber]);
 
     return (
         <div
