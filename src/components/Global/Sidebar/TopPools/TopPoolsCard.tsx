@@ -13,7 +13,7 @@ interface TopPoolsCardProps {
 }
 
 export default function TopPoolsCard(props: TopPoolsCardProps) {
-    const { pool, chainId, lastBlockNumber } = props;
+    const { pool, chainId } = props;
 
     const dispatch = useAppDispatch();
 
@@ -25,24 +25,34 @@ export default function TopPoolsCard(props: TopPoolsCardProps) {
 
     const poolIndex = lookupChain(chainId).poolIndex;
 
-    useEffect(() => {
-        (async () => {
-            if (tokenAAddress && tokenBAddress) {
-                const volumeResult = await getPoolVolume(tokenAAddress, tokenBAddress, poolIndex);
+    const getTopPoolMetrics = async (
+        tokenAAddress: string,
+        tokenBAddress: string,
+        poolIndex: number,
+    ) => {
+        if (tokenAAddress && tokenBAddress) {
+            const volumeResult = await getPoolVolume(tokenAAddress, tokenBAddress, poolIndex);
 
-                if (volumeResult) {
-                    const volumeString = formatAmount(volumeResult);
-                    setPoolVolume(volumeString);
-                }
-
-                const tvlResult = await getPoolTVL(tokenAAddress, tokenBAddress, poolIndex);
-                if (tvlResult) {
-                    const tvlString = formatAmount(tvlResult);
-                    setPoolTVL(tvlString);
-                }
+            if (volumeResult) {
+                const volumeString = formatAmount(volumeResult);
+                setPoolVolume(volumeString);
             }
-        })();
-    }, [tokenAAddress, tokenBAddress, lastBlockNumber]);
+
+            const tvlResult = await getPoolTVL(tokenAAddress, tokenBAddress, poolIndex);
+            if (tvlResult) {
+                const tvlString = formatAmount(tvlResult);
+                setPoolTVL(tvlString);
+            }
+        }
+    };
+
+    useEffect(() => {
+        getTopPoolMetrics(tokenAAddress, tokenBAddress, poolIndex);
+        const timer = setTimeout(async () => {
+            getTopPoolMetrics(tokenAAddress, tokenBAddress, poolIndex);
+        }, 60000); // run every 10 minutes
+        return () => clearTimeout(timer);
+    }, [tokenAAddress, tokenBAddress]);
 
     return (
         <div
