@@ -8,6 +8,8 @@ import { useEffect, useState, SetStateAction, Dispatch } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import SidebarSearchResults from '../SidebarSearchResults/SidebarSearchResults';
 
+import formatSearchText from '../formatSeachText';
+
 interface SearchAccordionProps {
     children?: React.ReactNode;
     showSidebar: boolean;
@@ -22,17 +24,18 @@ interface SearchAccordionProps {
 
 export default function SearchAccordion(props: SearchAccordionProps) {
     const { showSidebar, toggleSidebar, searchMode, setSearchMode } = props;
-    const [isOpen, setIsOpen] = useState(false);
-    const [searchInput, setSearchInput] = useState(false);
+    const [isOpen, setIsOpen] = useState<boolean>(false);
+    const [searchInput, setSearchInput] = useState<string[][]>();
     useEffect(() => {
         if (!showSidebar) {
             setIsOpen(false);
         }
     }, [showSidebar]);
 
-    // eslint-disable-next-line
-    const searchInputChangeHandler = (event: any) => {
-        setSearchInput(event.target.value);
+    const searchInputChangeHandler = (event: string) => {
+        const formatText = formatSearchText(event);
+
+        setSearchInput(formatText);
     };
 
     const searchContainer = (
@@ -49,7 +52,7 @@ export default function SearchAccordion(props: SearchAccordionProps) {
                     id='box'
                     placeholder='Search anything...'
                     className={styles.search__box}
-                    onChange={(e) => searchInputChangeHandler(e)}
+                    onChange={(e) => searchInputChangeHandler(e.target.value)}
                 />
             </div>
         </div>
