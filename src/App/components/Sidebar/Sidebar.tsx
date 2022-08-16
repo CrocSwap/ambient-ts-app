@@ -13,7 +13,6 @@ import SidebarRecentTransactions from '../../../components/Global/Sidebar/Sideba
 
 // START: Import Local Files
 import styles from './Sidebar.module.css';
-
 import favouritePoolsImage from '../../../assets/images/sidebarImages/favouritePools.svg';
 import openOrdersImage from '../../../assets/images/sidebarImages/openOrders.svg';
 import rangePositionsImage from '../../../assets/images/sidebarImages/rangePositions.svg';
@@ -21,6 +20,7 @@ import recentTransactionsImage from '../../../assets/images/sidebarImages/recent
 import topPoolsImage from '../../../assets/images/sidebarImages/topPools.svg';
 import topTokensImage from '../../../assets/images/sidebarImages/topTokens.svg';
 import closeSidebarImage from '../../../assets/images/sidebarImages/closeSidebar.svg';
+import formatSearchText from './formatSeachText';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
 
@@ -65,9 +65,6 @@ export default function Sidebar(props: SidebarPropsIF) {
 
     const mostRecentTransactions = swapsByUser.slice(0, 4);
     const mostRecentPositions = positionsByUser.slice(0, 4);
-
-    // TODO:  @Ben this is the map with all the coin gecko token data objects
-    // console.assert(coinGeckoTokenMap, 'no map present');
 
     const topTokens = [
         { name: 'Top Tokens', icon: topTokensImage, data: <TopTokens chainId={chainId} /> },
@@ -128,6 +125,7 @@ export default function Sidebar(props: SidebarPropsIF) {
                     id='box'
                     placeholder='Search anything...'
                     className={styles.search__box}
+                    onChange={(e) => formatSearchText(e.target.value)}
                 />
             </div>
             <img src={closeSidebarImage} alt='close sidebar' onClick={toggleSidebar} />
