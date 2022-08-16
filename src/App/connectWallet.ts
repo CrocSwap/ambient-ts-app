@@ -3,8 +3,6 @@ import { CrocEnv } from '@crocswap-libs/sdk';
 import { Provider } from '@ethersproject/providers';
 
 export const connectWallet = async (provider: Provider) => {
-    // console.log(useMoralis());
-    // console.log(useChain());
     const { Moralis, chainId, isWeb3Enabled, account } = useMoralis();
     async function getStuff() {
         let nativeEthBalance = null;

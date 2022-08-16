@@ -1,55 +1,53 @@
-/** ***** START: Import React and Dongles *******/
+// START: Import React and Dongles
+import { useCallback, useEffect, useState, Dispatch, SetStateAction } from 'react';
 import { Link } from 'react-router-dom';
-import { useEffect, useState, useCallback } from 'react';
-import { useMoralis } from 'react-moralis';
+import { useMoralis, useChain } from 'react-moralis';
 import { useTranslation } from 'react-i18next';
-
-/** ***** END: Import React and Dongles *********/
-
-/** ***** START: Import Local Files *******/
-import styles from './PageHeader.module.css';
 import { useRive, useStateMachineInput } from 'rive-react';
-import Account from './Account/Account';
-import NetworkSelector from './NetworkSelector/NetworkSelector';
-import trimString from '../../../utils/functions/trimString';
-import ambientLogo from '../../../assets/images/logos/ambient_logo.svg';
-
-import { useModal } from '../../../components/Global/Modal/useModal';
-import Modal from '../../../components/Global/Modal/Modal';
-import MagicLogin from './MagicLogin';
-import SwitchNetwork from '../../../components/Global/SwitchNetworkAlert/SwitchNetwork/SwitchNetwork';
-
 import { motion, AnimateSharedLayout } from 'framer-motion';
 
-/** ***** END: Import Local Files *********/
+// START: Import JSX Elements
+import Account from './Account/Account';
+import MagicLogin from './MagicLogin';
+import NetworkSelector from './NetworkSelector/NetworkSelector';
+import SwitchNetwork from '../../../components/Global/SwitchNetworkAlert/SwitchNetwork/SwitchNetwork';
+import Modal from '../../../components/Global/Modal/Modal';
 
-interface IHeaderProps {
+// START: Import Local Files
+import styles from './PageHeader.module.css';
+import trimString from '../../../utils/functions/trimString';
+import ambientLogo from '../../../assets/images/logos/ambient_logo.svg';
+import { useModal } from '../../../components/Global/Modal/useModal';
+
+interface HeaderPropsIF {
     nativeBalance: string;
     clickLogout: () => void;
     metamaskLocked: boolean;
     ensName: string;
     shouldDisplayAccountTab: boolean;
     chainId: string;
-    setFallbackChainId: React.Dispatch<React.SetStateAction<string>>;
-    isChainValid: boolean;
+    isChainSupported: boolean;
+    switchChain: Dispatch<SetStateAction<string>>;
+    switchNetworkInMoralis: (providedChainId: string) => Promise<void>;
 }
 
-// interface lgnData {
-//     name: keyof typeof lngs;
-// }
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-// const lngs: any = {
-//     en: { nativeName: 'English' },
-//     zh: { nativeName: '中文' },
-//     kr: { nativeName: '한국어' },
-// };
-
-export default function PageHeader(props: IHeaderProps): React.ReactElement<IHeaderProps> {
-    const { ensName, shouldDisplayAccountTab, chainId, setFallbackChainId, isChainValid } = props;
+export default function PageHeader(props: HeaderPropsIF) {
+    const {
+        ensName,
+        nativeBalance,
+        clickLogout,
+        metamaskLocked,
+        shouldDisplayAccountTab,
+        chainId,
+        isChainSupported,
+        switchChain,
+        switchNetworkInMoralis,
+    } = props;
 
     const { user, account, enableWeb3, isWeb3Enabled, authenticate, isAuthenticated } =
         useMoralis();
+
+    const { switchNetwork } = useChain();
 
     const { t } = useTranslation();
 
@@ -75,20 +73,26 @@ Your authentication status will reset on logout.`;
     // function to authenticate wallet with Moralis server
     const clickLogin = () => {
         console.log('user clicked Login');
+        console.log(`authenticating on chain: ${parseInt(chainId)}`);
         if (!isAuthenticated || !isWeb3Enabled) {
             authenticate({
                 provider: 'metamask',
+                chainId: 5,
                 signingMessage: signingMessage,
                 // signingMessage: 'Ambient API Authentication.',
-                onSuccess: () => {
-                    enableWeb3();
+                onSuccess: async () => {
+                    await enableWeb3();
+                    switchNetwork('0x5');
                 },
                 onError: () => {
+                    console.log(`authenticating on chain: ${parseInt(chainId)}`);
                     authenticate({
                         provider: 'metamask',
+                        chainId: 5,
                         signingMessage: signingMessage,
-                        onSuccess: () => {
-                            enableWeb3;
+                        onSuccess: async () => {
+                            await enableWeb3();
+                            switchNetwork('0x5');
                             // alert('🎉');
                         },
                     });
@@ -99,24 +103,20 @@ Your authentication status will reset on logout.`;
 
     useEffect(() => {
         const timer = setTimeout(() => {
-            // console.log('waited 1 second');
             reenableWeb3();
         }, 100);
         return () => clearTimeout(timer);
-    }, [user, account, props.metamaskLocked]);
+    }, [user, account, metamaskLocked]);
 
     const reenableWeb3 = useCallback(async () => {
-        // console.log('firing reenableWeb3');
         try {
-            if (user && !account && !props.metamaskLocked) {
-                // console.log('enabling web3');
-                // console.log(props.metamaskLocked);
+            if (user && !account && !metamaskLocked) {
                 await enableWeb3();
             }
         } catch (err) {
             console.warn(`Could not automatically bridge Moralis to wallet. Error follows: ${err}`);
         }
-    }, [user, account, props.metamaskLocked]);
+    }, [user, account, metamaskLocked]);
 
     // rive component
     const STATE_MACHINE_NAME = 'Basic State Machine';
@@ -134,7 +134,6 @@ Your authentication status will reset on logout.`;
 
     // Page Header states
     const [mobileNavToggle, setMobileNavToggle] = useState<boolean>(false);
-
     // End of Page Header States
 
     // Page Header functions
@@ -143,40 +142,19 @@ Your authentication status will reset on logout.`;
         onClickInput?.fire();
     }
 
-    // -----------------SWITCH NETWORK FUNCTIONALITY--------------------------------------
-    // eslint-disable-next-line
-    const [showSwitchNetwork, setShowSwitchNetwork] = useState(true);
-    // eslint-disable-next-line
-    // const openSwitchNetwork = useCallback(() => {
-    //     setShowSwitchNetwork(true);
-    // }, [setShowSwitchNetwork]);
-    // eslint-disable-next-line
-    const closeSwitchNetwork = useCallback(() => {
-        setShowSwitchNetwork(false);
-    }, [setShowSwitchNetwork]);
-
-    const switchNetWorkOrNull = isChainValid ? null : (
-        <SwitchNetwork
-            onClose={closeSwitchNetwork}
-            chainId={chainId}
-            setFallbackChainId={setFallbackChainId}
-        />
-    );
-
     // -----------------END OF SWITCH NETWORK FUNCTIONALITY--------------------------------------
     const accountAddress = isAuthenticated && account ? trimString(account, 6, 6) : '';
 
     const accountProps = {
-        nativeBalance: props.nativeBalance,
+        nativeBalance: nativeBalance,
         accountAddress: accountAddress,
         accountAddressFull: isAuthenticated && account ? account : '',
         ensName: ensName,
         isAuthenticated: isAuthenticated,
         isWeb3Enabled: isWeb3Enabled,
-        clickLogout: props.clickLogout,
+        clickLogout: clickLogout,
         openModal: openModal,
         chainId: chainId,
-        setFallbackChainId: setFallbackChainId,
     };
 
     // End of Page Header Functions
@@ -245,7 +223,6 @@ Your authentication status will reset on logout.`;
 
     return (
         <header data-testid={'page-header'} className={styles.primary_header}>
-            {/* <div className={styles.header_gradient}> </div> */}
             <Link to='/' className={styles.logo_container}>
                 <img src={ambientLogo} alt='ambient' />
                 <h1>ambient</h1>
@@ -262,13 +239,11 @@ Your authentication status will reset on logout.`;
             {routeDisplay}
 
             <div className={styles.account}>
-                {<NetworkSelector chainId={chainId} setFallbackChainId={setFallbackChainId} />}
+                <NetworkSelector chainId={chainId} switchChain={switchChain} />
                 {(!isAuthenticated || !isWeb3Enabled) && metamaskButton}
-
                 <Account {...accountProps} />
             </div>
-            {/* <SwitchNetwork showSwitchNetwork={showSwitchNetwork} /> */}
-            {switchNetWorkOrNull}
+            {isChainSupported || <SwitchNetwork switchNetworkInMoralis={switchNetworkInMoralis} />}
             {modalOrNull}
         </header>
     );

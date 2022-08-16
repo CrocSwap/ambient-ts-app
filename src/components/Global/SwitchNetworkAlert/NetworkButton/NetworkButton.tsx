@@ -1,3 +1,4 @@
+import { Dispatch, SetStateAction } from 'react';
 import styles from './NetworkButton.module.css';
 
 interface NetworkButtonProps {
@@ -5,16 +6,16 @@ interface NetworkButtonProps {
     icon: string;
     theme: string;
     id: string;
-    handleClick: (chainId: string) => void;
+    clickHandler: Dispatch<SetStateAction<string>>;
 }
 
 export default function NetworkButton(props: NetworkButtonProps) {
-    const { name, icon, theme, id, handleClick } = props;
+    const { name, icon, theme, id, clickHandler } = props;
 
     return (
         <button
             className={styles.networkButton}
-            onClick={() => handleClick(id)}
+            onClick={() => clickHandler(id)}
             style={{ background: theme }}
         >
             <img src={icon} alt={name} />
