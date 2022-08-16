@@ -18,6 +18,10 @@
     height: 100px;
     border-radius: 50%;
 }
+
+.skeleton_circle_style{
+    border-radius: 50%;
+}
 .skeleton.thumbnail {
     width: 100px;
     height: 100px;
