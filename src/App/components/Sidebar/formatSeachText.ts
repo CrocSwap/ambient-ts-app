@@ -17,7 +17,7 @@ export default function formatSearchText(input: string) {
         builtString.length && outputArray.push(builtString);
         // reset value of builtString
         builtString = '';
-    }
+    };
 
     while (inputAsArray.length && outputArray.length < 2) {
         // remove first character from array (mutated) and hold in a variable
@@ -25,7 +25,7 @@ export default function formatSearchText(input: string) {
         // accumulate character or break if it is a separator
         separators.includes(character as string)
             ? pushAndResetString()
-            : builtString += character;
+            : (builtString += character);
     }
 
     // add second search string to the output array if there is one
@@ -34,9 +34,11 @@ export default function formatSearchText(input: string) {
     // format output array of raw strings into tuples
     const outputTuples = outputArray.map((searchText: string) => [
         searchText.startsWith('0x') ? 'address' : 'name',
-        searchText
+        searchText,
     ]);
 
     // log searches in console
     console.log(outputTuples);
+
+    return outputTuples;
 }

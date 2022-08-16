@@ -159,7 +159,6 @@ export default function Sidebar(props: SidebarPropsIF) {
         </div>
     );
 
-    console.log(searchMode);
     return (
         <div>
             <nav className={`${styles.sidebar} ${sidebarStyle}`}>
