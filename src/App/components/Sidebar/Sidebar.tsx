@@ -19,7 +19,6 @@ import rangePositionsImage from '../../../assets/images/sidebarImages/rangePosit
 import recentTransactionsImage from '../../../assets/images/sidebarImages/recentTransactions.svg';
 import topPoolsImage from '../../../assets/images/sidebarImages/topPools.svg';
 import topTokensImage from '../../../assets/images/sidebarImages/topTokens.svg';
-import closeSidebarImage from '../../../assets/images/sidebarImages/closeSidebar.svg';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
 import SearchAccordion from './SearchAccordion/SearchAccordion';
