@@ -120,27 +120,34 @@ export default function PoolCard(props: PoolCardProps) {
                     setPoolVolume(volumeString);
                 }
 
-                const priceChangeResult = await get24hChange(
-                    chainId,
-                    tokenAAddress,
-                    tokenBAddress,
-                    poolIndex,
-                );
+                try {
+                    const priceChangeResult = await get24hChange(
+                        chainId,
+                        tokenAAddress,
+                        tokenBAddress,
+                        poolIndex,
+                        true, // denomInBase
+                    );
 
-                if (priceChangeResult) {
-                    const priceChangeString =
-                        priceChangeResult > 0
-                            ? '+' +
-                              priceChangeResult.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                              }) +
-                              '%'
-                            : priceChangeResult.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                              }) + '%';
-                    setPoolPriceChangePercent(priceChangeString);
+                    if (priceChangeResult) {
+                        const priceChangeString =
+                            priceChangeResult > 0
+                                ? '+' +
+                                  priceChangeResult.toLocaleString(undefined, {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 2,
+                                  }) +
+                                  '%'
+                                : priceChangeResult.toLocaleString(undefined, {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 2,
+                                  }) + '%';
+                        setPoolPriceChangePercent(priceChangeString);
+                    } else {
+                        setPoolPriceChangePercent(undefined);
+                    }
+                } catch (error) {
+                    setPoolPriceChangePercent(undefined);
                 }
             }
         })();

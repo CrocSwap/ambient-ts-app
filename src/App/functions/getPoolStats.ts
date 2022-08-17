@@ -36,6 +36,7 @@ const get24hChange = async (
     tokenA: string,
     tokenB: string,
     poolIdx: number,
+    denomInBase: boolean,
 ): Promise<number> => {
     if (tokenA && tokenB && poolIdx) {
         const changePercentage = fetch(
@@ -49,7 +50,8 @@ const get24hChange = async (
         )
             .then((response) => response.json())
             .then((json) => {
-                return json?.data?.changeQuoteOverBase;
+                if (denomInBase) return json?.data?.changeQuoteOverBase;
+                return json?.data?.changeBaseOverQuote;
             });
         return changePercentage;
     } else {

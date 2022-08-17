@@ -195,9 +195,10 @@ export default function TradeCharts(props: TradeChartsProps) {
                 try {
                     const priceChangeResult = await get24hChange(
                         '0x5',
-                        tokenAAddress,
-                        tokenBAddress,
+                        isTokenABase ? tokenAAddress : tokenBAddress,
+                        isTokenABase ? tokenBAddress : tokenAAddress,
                         36000,
+                        denomInBase,
                     );
 
                     if (priceChangeResult) {
@@ -223,7 +224,7 @@ export default function TradeCharts(props: TradeChartsProps) {
                 }
             }
         })();
-    }, [tokenAAddress, tokenBAddress, lastBlockNumber]);
+    }, [denomInBase, tokenAAddress, tokenBAddress, lastBlockNumber]);
 
     // ---------------------------ACTIVE OVERLAY BUTTON FUNCTIONALITY-------------------------------
 
