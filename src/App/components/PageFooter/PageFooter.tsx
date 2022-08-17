@@ -2,6 +2,8 @@ import styles from './PageFooter.module.css';
 import { FaDiscord, FaGithub } from 'react-icons/fa';
 import { BsMedium } from 'react-icons/bs';
 import { AiFillTwitterCircle } from 'react-icons/ai';
+import ChatPanel from '../../../components/Chat/ChatPanel';
+import { useState } from 'react';
 // import { useLocation} from 'react-router-dom'
 
 interface IFooterProps {
@@ -11,9 +13,12 @@ interface IFooterProps {
 const pageBlockSign = <div className={styles.page_block_sign}></div>;
 
 export default function PageFooter(props: IFooterProps) {
+    const [chatStatus, setChatStatus] = useState(false);
     // const  location = useLocation()
     return (
         <footer data-testid={'page-footer'} className={styles.footer}>
+            <ChatPanel onClose={() => setChatStatus(false)} chatStatus={chatStatus} />
+            <a onClick={() => setChatStatus(!chatStatus)}>Chat</a>
             <a href='#'>
                 <AiFillTwitterCircle size={15} />
                 {/* <span>Twitter</span> */}

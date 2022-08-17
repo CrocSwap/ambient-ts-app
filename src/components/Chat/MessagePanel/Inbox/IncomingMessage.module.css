@@ -1,0 +1,106 @@
+.income_message{
+    box-sizing: border-box;
+
+    /* Auto layout */
+
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    padding: 0px 4px 8px;
+    gap: 7px;
+
+    width: 254px;
+    height: 100%;
+    /* dark/tertiary */
+
+    background: #242F3F;
+    /* accent/primary */
+
+    border-left: 1px solid #7371FC;
+    border-radius: 0px 0px 4px 4px;
+
+    /* Inside auto layout */
+
+    flex: none;
+    order: 5;
+    align-self: stretch;
+    flex-grow: 0;
+}
+
+.avatar_image{
+    max-width: 25px;
+    max-height: 25px;
+    border-radius: 50%;
+    background: var(--title-gradient);
+    padding: 2px;
+    flex-grow: 1;
+    align-self: flex-end;
+
+}
+
+.message {
+
+    font-family: 'Lexend Deca';
+    font-style: normal;
+    font-weight: 300;
+    font-size: 13px;
+    line-height: 15px;
+    color: #EBEBFF;
+    white-space: pre-line;
+    align-self: stretch;
+
+}
+
+.name {
+    width: 82px;
+height: 14px;
+
+/* small */
+
+font-family: 'Lexend Deca';
+font-style: normal;
+font-weight: 300;
+font-size: 12px;
+line-height: 15px;
+display: flex;
+align-items: center;
+
+/* accent/secondary */
+
+color: #E480FF;
+
+
+/* Inside auto layout */
+
+flex: none;
+order: 0;
+flex-grow: 0;
+}
+
+.message_body {
+    flex-grow: 5!important;
+    display: flex;
+    flex-direction: column;
+}
+
+.message_date {
+    width: 50px;
+    height: 14px;
+
+    /* extra small */
+
+    font-family: 'Lexend Deca';
+    font-style: normal;
+    font-weight: 300;
+    font-size: 10px;
+    line-height: 12px;
+    align-self: flex-end;
+
+    /* text/grey dark */
+
+    color: rgba(235, 235, 255, 0.25);
+
+    /* Inside auto layout */
+    order: 0;
+    
+}

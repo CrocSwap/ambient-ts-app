@@ -1754,6 +1754,7 @@ export default function App() {
                 </main>
                 {snackbarContent}
             </div>
+
             <div className='footer_container'>
                 <PageFooter lastBlockNumber={lastBlockNumber} />
             </div>
