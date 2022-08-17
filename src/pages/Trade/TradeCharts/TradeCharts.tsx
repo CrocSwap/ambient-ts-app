@@ -29,6 +29,7 @@ interface TradeChartsProps {
     // denomInTokenA: boolean;
     // tokenASymbol: string;
     // tokenBSymbol: string;
+    lastBlockNumber: number;
     poolPriceDisplay: number;
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
@@ -43,10 +44,11 @@ interface TradeChartsProps {
 import { usePoolChartData } from '../../../state/pools/hooks';
 import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
 import { CandleData, CandlesByPoolAndDuration } from '../../../utils/state/graphDataSlice';
+import { get24hChange } from '../../../App/functions/getPoolStats';
 
 //
 export default function TradeCharts(props: TradeChartsProps) {
-    const { fullScreenChart, setFullScreenChart } = props;
+    const { fullScreenChart, setFullScreenChart, lastBlockNumber } = props;
     const { poolPriceDisplay } = props;
 
     const dispatch = useAppDispatch();
@@ -82,6 +84,8 @@ export default function TradeCharts(props: TradeChartsProps) {
     const denomInTokenA = (denomInBase && isTokenABase) || (!denomInBase && !isTokenABase);
     const tokenASymbol = tradeData.tokenA.symbol;
     const tokenBSymbol = tradeData.tokenB.symbol;
+    const tokenAAddress = tradeData.tokenA.address;
+    const tokenBAddress = tradeData.tokenB.address;
 
     const truncatedPoolPrice =
         poolPriceDisplay === Infinity || poolPriceDisplay === 0
@@ -180,6 +184,46 @@ export default function TradeCharts(props: TradeChartsProps) {
     );
 
     // END OF GRAPH SETTINGS CONTENT------------------------------------------------------
+
+    const [poolPriceChangePercent, setPoolPriceChangePercent] = useState<string | undefined>(
+        undefined,
+    );
+
+    useEffect(() => {
+        (async () => {
+            if (tokenAAddress && tokenBAddress) {
+                try {
+                    const priceChangeResult = await get24hChange(
+                        '0x5',
+                        tokenAAddress,
+                        tokenBAddress,
+                        36000,
+                    );
+
+                    if (priceChangeResult) {
+                        console.log({ priceChangeResult });
+                        const priceChangeString =
+                            priceChangeResult > 0
+                                ? '+' +
+                                  priceChangeResult.toLocaleString(undefined, {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 2,
+                                  }) +
+                                  '%'
+                                : priceChangeResult.toLocaleString(undefined, {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 2,
+                                  }) + '%';
+                        setPoolPriceChangePercent(priceChangeString);
+                    } else {
+                        setPoolPriceChangePercent(undefined);
+                    }
+                } catch (error) {
+                    setPoolPriceChangePercent(undefined);
+                }
+            }
+        })();
+    }, [tokenAAddress, tokenBAddress, lastBlockNumber]);
 
     // ---------------------------ACTIVE OVERLAY BUTTON FUNCTIONALITY-------------------------------
 
@@ -312,7 +356,11 @@ export default function TradeCharts(props: TradeChartsProps) {
                         ? '...'
                         : `${currencyCharacter}${truncatedPoolPrice}`}
                 </span>
-                <span className={styles.change}>+8.57% | 24h</span>
+                <span className={styles.change}>
+                    {poolPriceChangePercent === undefined
+                        ? '...'
+                        : poolPriceChangePercent + ' | 24h'}
+                </span>
             </div>
             <div className={styles.right_side}>
                 <span>Timeframe</span>
