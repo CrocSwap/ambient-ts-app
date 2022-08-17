@@ -192,14 +192,17 @@ export default function TradeCharts(props: TradeChartsProps) {
         undefined,
     );
 
+    const baseTokenAddress = isTokenABase ? tokenAAddress : tokenBAddress;
+    const quoteTokenAddress = isTokenABase ? tokenBAddress : tokenAAddress;
+
     useEffect(() => {
         (async () => {
             if (tokenAAddress && tokenBAddress) {
                 try {
                     const priceChangeResult = await get24hChange(
                         chainId,
-                        isTokenABase ? tokenAAddress : tokenBAddress,
-                        isTokenABase ? tokenBAddress : tokenAAddress,
+                        baseTokenAddress,
+                        quoteTokenAddress,
                         poolIndex,
                         denomInBase,
                     );
@@ -226,7 +229,7 @@ export default function TradeCharts(props: TradeChartsProps) {
                 }
             }
         })();
-    }, [denomInBase, tokenAAddress, tokenBAddress, lastBlockNumber]);
+    }, [denomInBase, baseTokenAddress, quoteTokenAddress, lastBlockNumber]);
 
     // ---------------------------ACTIVE OVERLAY BUTTON FUNCTIONALITY-------------------------------
 

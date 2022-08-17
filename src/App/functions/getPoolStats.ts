@@ -33,25 +33,25 @@ const poolPriceChangeCacheEndpoint = 'https://809821320828123.de:5000/pool_price
 
 const get24hChange = async (
     chainId: string,
-    tokenA: string,
-    tokenB: string,
+    baseToken: string,
+    quoteToken: string,
     poolIdx: number,
     denomInBase: boolean,
 ): Promise<number> => {
-    if (tokenA && tokenB && poolIdx) {
+    if (baseToken && quoteToken && poolIdx) {
         const changePercentage = fetch(
             poolPriceChangeCacheEndpoint +
                 new URLSearchParams({
                     chainId: chainId,
-                    base: tokenA,
-                    quote: tokenB,
+                    base: baseToken,
+                    quote: quoteToken,
                     poolIdx: poolIdx.toString(),
                 }),
         )
             .then((response) => response.json())
             .then((json) => {
-                if (denomInBase) return json?.data?.changeBaseOverQuote;
-                return json?.data?.changeQuoteOverBase;
+                if (denomInBase) return json?.data?.changeQuoteOverBase;
+                return json?.data?.changeBaseOverQuote;
             });
         return changePercentage;
     } else {
