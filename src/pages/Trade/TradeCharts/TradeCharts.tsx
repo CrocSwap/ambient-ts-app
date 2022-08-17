@@ -29,6 +29,7 @@ interface TradeChartsProps {
     // denomInTokenA: boolean;
     // tokenASymbol: string;
     // tokenBSymbol: string;
+    chainId: string;
     lastBlockNumber: number;
     poolPriceDisplay: number;
     expandTradeTable: boolean;
@@ -45,10 +46,11 @@ import { usePoolChartData } from '../../../state/pools/hooks';
 import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
 import { CandleData, CandlesByPoolAndDuration } from '../../../utils/state/graphDataSlice';
 import { get24hChange } from '../../../App/functions/getPoolStats';
+import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
 //
 export default function TradeCharts(props: TradeChartsProps) {
-    const { fullScreenChart, setFullScreenChart, lastBlockNumber } = props;
+    const { fullScreenChart, setFullScreenChart, lastBlockNumber, chainId } = props;
     const { poolPriceDisplay } = props;
 
     const dispatch = useAppDispatch();
@@ -56,6 +58,7 @@ export default function TradeCharts(props: TradeChartsProps) {
     // ---------------------TRADE DATA CALCULATIONS------------------------
 
     const tradeData = useAppSelector((state) => state.tradeData);
+    const poolIndex = lookupChain(chainId).poolIndex;
 
     // const graphData = useAppSelector((state) => state.graphData);
 
@@ -194,15 +197,14 @@ export default function TradeCharts(props: TradeChartsProps) {
             if (tokenAAddress && tokenBAddress) {
                 try {
                     const priceChangeResult = await get24hChange(
-                        '0x5',
+                        chainId,
                         isTokenABase ? tokenAAddress : tokenBAddress,
                         isTokenABase ? tokenBAddress : tokenAAddress,
-                        36000,
+                        poolIndex,
                         denomInBase,
                     );
 
                     if (priceChangeResult) {
-                        console.log({ priceChangeResult });
                         const priceChangeString =
                             priceChangeResult > 0
                                 ? '+' +

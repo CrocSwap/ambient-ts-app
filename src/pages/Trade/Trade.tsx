@@ -139,6 +139,7 @@ export default function Trade(props: ITradeProps) {
                                 changeState={changeState}
                                 candleData={candleData}
                                 lastBlockNumber={lastBlockNumber}
+                                chainId={chainId}
                             />
                         </motion.div>
                     </div>
