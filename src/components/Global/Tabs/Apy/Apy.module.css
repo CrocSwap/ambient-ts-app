@@ -1,54 +1,45 @@
-
-
-.apy p{
+.apy p {
     font-size: 10px;
     line-height: 13px;
     font-weight: 200;
     letter-spacing: -0.02em;
-
 }
 
-.apy_green p{
-
-  /* apy/green */
-
-background: linear-gradient(90deg, #15BE6F 32.38%, #8FE9BF 51.39%, #15BE6F 68.17%);
--webkit-background-clip: text;
--webkit-text-fill-color: transparent;
-background-clip: text;
-text-fill-color: transparent;
-
-text-shadow: 0px 0px 10px rgba(21, 190, 111, 0.75);
-}
-
-.apy_red p{
+.apy_green p {
     /* apy/green */
 
-background: linear-gradient(90deg, #be4515 32.38%, #de5a2e 51.39%, #be5315 68.17%);
--webkit-background-clip: text;
--webkit-text-fill-color: transparent;
-background-clip: text;
-text-fill-color: transparent;
+    background: linear-gradient(90deg, #15be6f 32.38%, #8fe9bf 51.39%, #15be6f 68.17%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-fill-color: transparent;
 
-text-shadow: 0px 0px 10px rgba(190, 100, 21, 0.75);
+    text-shadow: 0px 0px 10px rgba(21, 190, 111, 0.75);
+}
+
+.apy_red p {
+    /* apy/green */
+
+    background: linear-gradient(90deg, #be4515 32.38%, #de5a2e 51.39%, #be5315 68.17%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-fill-color: transparent;
+
+    text-shadow: 0px 0px 10px rgba(190, 100, 21, 0.75);
 }
 /* Desktop screen Sizes */
 @media only screen and (min-width: 768px) {
-
-.apy p{
-    font-size: 12px;
-        line-height: 16px; 
-}
-    
+    .apy p {
+        font-size: 12px;
+        line-height: 16px;
     }
+}
 
-    /* Extra large devices (large laptops and desktops, 1200px and up) */
+/* Extra large devices (large laptops and desktops, 1200px and up) */
 @media only screen and (min-width: 1200px) {
-
- .apy p{
-    font-size: 18px;
-line-height: 22px;
- }
-  
-
+    .apy p {
+        font-size: 18px;
+        line-height: 22px;
+    }
 }

@@ -6,14 +6,16 @@ import { AiFillTwitterCircle } from 'react-icons/ai';
 
 interface IFooterProps {
     lastBlockNumber: number;
+    userIsOnline: boolean;
 }
 
 const pageBlockSign = <div className={styles.page_block_sign}></div>;
 
 export default function PageFooter(props: IFooterProps) {
-    // const  location = useLocation()
+    const { userIsOnline, lastBlockNumber } = props;
     return (
         <footer data-testid={'page-footer'} className={styles.footer}>
+            {userIsOnline ? '' : 'Offline'}
             <a href='#'>
                 <AiFillTwitterCircle size={15} />
                 {/* <span>Twitter</span> */}
@@ -37,7 +39,7 @@ export default function PageFooter(props: IFooterProps) {
 
             <a href='#'>
                 {pageBlockSign}
-                <span>{props.lastBlockNumber}</span>
+                <span>{lastBlockNumber}</span>
             </a>
             {/* // )} */}
         </footer>

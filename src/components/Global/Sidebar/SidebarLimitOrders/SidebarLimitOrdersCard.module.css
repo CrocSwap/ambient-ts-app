@@ -1,4 +1,4 @@
-.container{
+.container {
     width: 100%;
     width: 100%;
     display: grid;
@@ -6,38 +6,34 @@
     font-weight: 300;
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: #BDBDBD;
+    color: #bdbdbd;
     cursor: pointer;
     padding: 5px;
-
-
-
 }
 
-.container div{
+.container div {
     display: flex;
     justify-content: center;
     align-items: center;
 }
-.status_display{
+.status_display {
     display: flex;
     flex-direction: row;
     align-items: center;
     gap: 4px;
 }
-.token_container{
+.token_container {
     width: 15px;
     height: 15px;
     display: flex;
     justify-content: center;
     align-items: center;
     /* padding: 2px; */
-   
 
     background: #ffffff;
     border-radius: 50%;
 }
 
-.token_container img{
+.token_container img {
     width: 12.68px;
 }

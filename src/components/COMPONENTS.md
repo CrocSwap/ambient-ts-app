@@ -10,9 +10,9 @@ Each sub-directory in this directory contains the `.tsx` file encoding a React f
 
 # Location and Files
 
-- This file `COMPONENTS.md` is located in the directory `/src/components`
-- The `/Home` sub-directory contains all files necessary to render components exclusive to the `Home.tsx` page file
-- The `/Trade` sub-directory contains all files necessary to render components exclusive to the `Trade.tsx` page file
-- The `/Analytics` sub-directory contains all files necessary to render components exclusive to the `Analytics.tsx` page file
-- The `/Portfolio` sub-directory contains all files necessary to render components exclusive to the `Portfolio.tsx` page file
-- The `/Global` sub-directory contains all files necessary to render components in multiple files throughout the app.
+-   This file `COMPONENTS.md` is located in the directory `/src/components`
+-   The `/Home` sub-directory contains all files necessary to render components exclusive to the `Home.tsx` page file
+-   The `/Trade` sub-directory contains all files necessary to render components exclusive to the `Trade.tsx` page file
+-   The `/Analytics` sub-directory contains all files necessary to render components exclusive to the `Analytics.tsx` page file
+-   The `/Portfolio` sub-directory contains all files necessary to render components exclusive to the `Portfolio.tsx` page file
+-   The `/Global` sub-directory contains all files necessary to render components in multiple files throughout the app.

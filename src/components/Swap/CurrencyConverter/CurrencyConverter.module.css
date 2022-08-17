@@ -1,19 +1,17 @@
-
-.arrow_container{
-
+.arrow_container {
     width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-.arrow_container img{
-  cursor: pointer;
+.arrow_container img {
+    cursor: pointer;
 }
 
 .arrow_container img:hover > path {
-  transition: box-shadow  var(--animation-speed) ease-in-out;
-display: none;
+    transition: box-shadow var(--animation-speed) ease-in-out;
+    display: none;
 }
 /* .arrow{
   cursor: pointer;

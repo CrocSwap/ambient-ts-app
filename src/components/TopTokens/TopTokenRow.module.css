@@ -1,142 +1,122 @@
-.main_container{
-  /* margin: 3rem 0; */
-  display: grid;
-  grid-template-columns:  auto 50px;
-  align-items: center;
-  height: 40px;
-  cursor: pointer;
+.main_container {
+    /* margin: 3rem 0; */
+    display: grid;
+    grid-template-columns: auto 50px;
+    align-items: center;
+    height: 40px;
+    cursor: pointer;
 }
-.tokens_container{
-  display: none;
+.tokens_container {
+    display: none;
 }
-.row_container{
-  display: flex;
-  align-items: center;
-  width: 100%;
-}
-
-.row_container section{
-  flex: 0.25 0;
-  /* flex-flow: column; */
-  align-items: center;
-  padding: 2px 8px;
-  /* font-size: 10px; */
+.row_container {
+    display: flex;
+    align-items: center;
+    width: 100%;
 }
 
-.menu_container{
-  display: flex;
-  width: 100%;
-  justify-content: flex-end;
-
+.row_container section {
+    flex: 0.25 0;
+    /* flex-flow: column; */
+    align-items: center;
+    padding: 2px 8px;
+    /* font-size: 10px; */
 }
 
-.token_key{
-  font-weight: 200;
-  font-size: 13px;
-  line-height: 32px;
-  letter-spacing: -0.02em;
-  color: #EBEBFF;
-  /* text-align: right; */
-  padding-left: 7px;
+.menu_container {
+    display: flex;
+    width: 100%;
+    justify-content: flex-end;
 }
 
-.token_icon{
-  display: flex;
-  align-items: center;
-  flex-direction: row;
-  gap: 4px;
+.token_key {
+    font-weight: 200;
+    font-size: 13px;
+    line-height: 32px;
+    letter-spacing: -0.02em;
+    color: #ebebff;
+    /* text-align: right; */
+    padding-left: 7px;
+}
+
+.token_icon {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    gap: 4px;
 }
 
 .display {
-  display: flex;
-  color: rgba(235, 235, 255, 0.4);
-
+    display: flex;
+    color: rgba(235, 235, 255, 0.4);
 }
 .displayName {
-  display: none;
-  color: rgba(235, 235, 255, 0.4);
-
+    display: none;
+    color: rgba(235, 235, 255, 0.4);
 }
-
 
 /* Desktop screen Sizes */
 @media only screen and (min-width: 768px) {
-  .display {
-  
-      font-size: 10px;
-      line-height: 13px; 
-  }
+    .display {
+        font-size: 10px;
+        line-height: 13px;
+    }
 
-  .displayName {
-    display: none;
-    font-size: 10px;
-      line-height: 13px; 
-    /* font-size: 10px;
+    .displayName {
+        display: none;
+        font-size: 10px;
+        line-height: 13px;
+        /* font-size: 10px;
     line-height: 13px;  */
-  }
-  
-  
-  }
+    }
+}
 
 /* Desktop screen Sizes */
 @media only screen and (min-width: 1200px) {
-  .displayName {
-     display: flex;
-  
-     font-size: 10px;
-      line-height: 13px; 
-  }
+    .displayName {
+        display: flex;
 
-  
-  
-  
-  }
-
-
-
-
+        font-size: 10px;
+        line-height: 13px;
+    }
+}
 
 /* Mobile Landscape Screen Sizes */
-@media only screen and (min-width: 480px)  {
-.tokens_container{
-  display: flex;
-}
-  .main_container{
-      grid-template-columns:  50px auto 50px;
-      /* background: red; */
-  }
+@media only screen and (min-width: 480px) {
+    .tokens_container {
+        display: flex;
+    }
+    .main_container {
+        grid-template-columns: 50px auto 50px;
+        /* background: red; */
+    }
 }
 
 /* Desktop screen Sizes */
 @media only screen and (min-width: 768px) {
-
 }
 
 /* Large devices (laptops/desktops, 992px and up) */
 @media only screen and (min-width: 992px) {
-  .main_container{
-      grid-template-columns: 100px auto 50px;
-      /* background: blue; */
-    
-  }
+    .main_container {
+        grid-template-columns: 100px auto 50px;
+        /* background: blue; */
+    }
 }
 
 /* Extra large devices (large laptops and desktops, 1200px and up) */
 @media only screen and (min-width: 1200px) {
-
 }
 
 /* Extra large devices (large laptops and desktops, 1200px and up) */
 @media only screen and (min-width: 1500px) {
-
-  .main_container{
-      grid-template-columns: 100px auto 250px;
-  }
+    .main_container {
+        grid-template-columns: 100px auto 250px;
+    }
 }
 /* Extra large devices (large laptops and desktops, 1200px and up) */
 @media only screen and (min-width: 1600px) {
-
-  .main_container{
-      grid-template-columns: 100px 1fr 0.6fr;
-  }
+    .main_container {
+        grid-template-columns: 100px 1fr 0.6fr;
+    }
 }

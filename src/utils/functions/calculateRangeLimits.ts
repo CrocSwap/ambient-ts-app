@@ -3,7 +3,7 @@ import {
     pinTickLower,
     pinTickUpper,
     tickToPrice,
-    toDisplayPrice,
+    toDisplayPrice
 } from '@crocswap-libs/sdk';
 
 export const calculateRangeLimitsSimple = (

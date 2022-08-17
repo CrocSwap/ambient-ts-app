@@ -1,9 +1,8 @@
-.menu_icon{
+.menu_icon {
     cursor: pointer;
 }
 
-
-.dropdown_control{
+.dropdown_control {
     display: flex;
     justify-content: center;
     align-items: center;

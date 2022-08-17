@@ -4,7 +4,7 @@ import styles from './TradeCharts.module.css';
 import {
     AiOutlineCamera,
     AiOutlineFullscreen,
-    AiOutlineSetting,
+    // AiOutlineSetting,
     AiOutlineDownload,
     AiOutlineCopy,
     AiOutlineLink,
@@ -29,6 +29,8 @@ interface TradeChartsProps {
     // denomInTokenA: boolean;
     // tokenASymbol: string;
     // tokenBSymbol: string;
+    chainId: string;
+    lastBlockNumber: number;
     poolPriceDisplay: number;
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
@@ -43,10 +45,12 @@ interface TradeChartsProps {
 import { usePoolChartData } from '../../../state/pools/hooks';
 import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
 import { CandleData, CandlesByPoolAndDuration } from '../../../utils/state/graphDataSlice';
+import { get24hChange } from '../../../App/functions/getPoolStats';
+import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
 //
 export default function TradeCharts(props: TradeChartsProps) {
-    const { fullScreenChart, setFullScreenChart } = props;
+    const { fullScreenChart, setFullScreenChart, lastBlockNumber, chainId } = props;
     const { poolPriceDisplay } = props;
 
     const dispatch = useAppDispatch();
@@ -54,25 +58,26 @@ export default function TradeCharts(props: TradeChartsProps) {
     // ---------------------TRADE DATA CALCULATIONS------------------------
 
     const tradeData = useAppSelector((state) => state.tradeData);
+    const poolIndex = lookupChain(chainId).poolIndex;
 
-    const graphData = useAppSelector((state) => state.graphData);
+    // const graphData = useAppSelector((state) => state.graphData);
 
-    const mainnetCandlePoolDefinition = JSON.stringify({
-        baseAddress: '0x0000000000000000000000000000000000000000',
-        quoteAddress: '0x6b175474e89094c44da98b954eedeac495271d0f',
-        poolIdx: 36000,
-        network: '0x1',
-    }).toLowerCase();
+    // const mainnetCandlePoolDefinition = JSON.stringify({
+    //     baseAddress: '0x0000000000000000000000000000000000000000',
+    //     quoteAddress: '0x6b175474e89094c44da98b954eedeac495271d0f',
+    //     poolIdx: 36000,
+    //     network: '0x1',
+    // }).toLowerCase();
 
-    const indexOfMainnetCandlePool = graphData.candlesForAllPools.pools
-        .map((item) => JSON.stringify(item.pool).toLowerCase())
-        .findIndex((pool) => pool === mainnetCandlePoolDefinition);
+    // const indexOfMainnetCandlePool = graphData.candlesForAllPools.pools
+    //     .map((item) => JSON.stringify(item.pool).toLowerCase())
+    //     .findIndex((pool) => pool === mainnetCandlePoolDefinition);
 
-    const mainnetCandleData = graphData.candlesForAllPools.pools[indexOfMainnetCandlePool];
+    // const mainnetCandleData = graphData.candlesForAllPools.pools[indexOfMainnetCandlePool];
 
-    useEffect(() => {
-        console.log({ mainnetCandleData });
-    }, [mainnetCandleData]);
+    // useEffect(() => {
+    //     console.log({ mainnetCandleData });
+    // }, [mainnetCandleData]);
 
     const isTokenABase = props.isTokenABase;
     const setActivePeriod = (period: number) => {
@@ -82,6 +87,8 @@ export default function TradeCharts(props: TradeChartsProps) {
     const denomInTokenA = (denomInBase && isTokenABase) || (!denomInBase && !isTokenABase);
     const tokenASymbol = tradeData.tokenA.symbol;
     const tokenBSymbol = tradeData.tokenB.symbol;
+    const tokenAAddress = tradeData.tokenA.address;
+    const tokenBAddress = tradeData.tokenB.address;
 
     const truncatedPoolPrice =
         poolPriceDisplay === Infinity || poolPriceDisplay === 0
@@ -134,46 +141,13 @@ export default function TradeCharts(props: TradeChartsProps) {
         </div>
     );
     // CHART SETTINGS------------------------------------------------------------
-    const [openSettingsTooltip, setOpenSettingsTooltip] = useState(false);
+    // const [openSettingsTooltip, setOpenSettingsTooltip] = useState(false);
+    const [showTvl, setShowTvl] = useState(false);
+    const [showFeeRate, setShowFeeRate] = useState(false);
+    const [showVolume, setShowVolume] = useState(false);
 
-    const [chartItems, setChartItems] = useState([
-        { slug: 'chart', name: 'Chart', checked: true },
-        { slug: 'feerate', name: 'Fee Rate', checked: false },
-        { slug: 'tvl', name: 'TVL', checked: false },
-        { slug: 'volume', name: 'Volume', checked: false },
-    ]);
+    const chartItemStates = { showFeeRate, showTvl, showVolume };
 
-    const handleChartItemChange = (slug: string) => {
-        const copyProducts = [...chartItems];
-        const modifiedProducts = copyProducts.map((item) => {
-            if (slug === item.slug) {
-                item.checked = !item.checked;
-            }
-
-            return item;
-        });
-
-        setChartItems(modifiedProducts);
-    };
-
-    const chartSettingsContent = (
-        <div className={styles.chart_settings}>
-            {chartItems.map((item, idx) => (
-                <div className={styles.chart_item_container} key={idx}>
-                    <input
-                        type='checkbox'
-                        className={styles.custom_control_input}
-                        id={`customCheck1-${item.slug}`}
-                        checked={item.checked}
-                        onChange={() => handleChartItemChange(item.slug)}
-                    />
-                    <label className='custom-control-label' htmlFor={`customCheck1-${item.slug}`}>
-                        {item.name}
-                    </label>
-                </div>
-            ))}
-        </div>
-    );
     // END OF CHART SETTINGS------------------------------------------------------------
 
     // eslint-disable-next-line
@@ -189,9 +163,9 @@ export default function TradeCharts(props: TradeChartsProps) {
     });
     const graphSettingsContent = (
         <div className={styles.graph_settings_container}>
-            <DefaultTooltip
+            {/* <DefaultTooltip
                 interactive
-                title={chartSettingsContent}
+                title={'nothing yet'}
                 open={openSettingsTooltip}
                 onOpen={() => setOpenSettingsTooltip(true)}
                 onClose={() => setOpenSettingsTooltip(false)}
@@ -200,7 +174,7 @@ export default function TradeCharts(props: TradeChartsProps) {
             </DefaultTooltip>
             <div onClick={() => setOpenSettingsTooltip(!openSettingsTooltip)}>
                 <AiOutlineSetting size={20} />
-            </div>
+            </div> */}
             <div onClick={() => setFullScreenChart(!fullScreenChart)}>
                 <AiOutlineFullscreen size={20} />
             </div>
@@ -214,52 +188,84 @@ export default function TradeCharts(props: TradeChartsProps) {
 
     // END OF GRAPH SETTINGS CONTENT------------------------------------------------------
 
+    const [poolPriceChangePercent, setPoolPriceChangePercent] = useState<string | undefined>(
+        undefined,
+    );
+    const [isPoolPriceChangePositive, setIsPoolPriceChangePositive] = useState<boolean>(true);
+
+    const baseTokenAddress = isTokenABase ? tokenAAddress : tokenBAddress;
+    const quoteTokenAddress = isTokenABase ? tokenBAddress : tokenAAddress;
+
+    useEffect(() => {
+        (async () => {
+            if (tokenAAddress && tokenBAddress) {
+                try {
+                    const priceChangeResult = await get24hChange(
+                        chainId,
+                        baseTokenAddress,
+                        quoteTokenAddress,
+                        poolIndex,
+                        denomInBase,
+                    );
+
+                    if (priceChangeResult) {
+                        priceChangeResult > 0
+                            ? setIsPoolPriceChangePositive(true)
+                            : setIsPoolPriceChangePositive(false);
+
+                        const priceChangeString =
+                            priceChangeResult > 0
+                                ? '+' +
+                                  priceChangeResult.toLocaleString(undefined, {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 2,
+                                  }) +
+                                  '%'
+                                : priceChangeResult.toLocaleString(undefined, {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 2,
+                                  }) + '%';
+                        setPoolPriceChangePercent(priceChangeString);
+                    } else {
+                        setPoolPriceChangePercent(undefined);
+                    }
+                } catch (error) {
+                    setPoolPriceChangePercent(undefined);
+                }
+            }
+        })();
+    }, [denomInBase, baseTokenAddress, quoteTokenAddress, lastBlockNumber]);
+
     // ---------------------------ACTIVE OVERLAY BUTTON FUNCTIONALITY-------------------------------
-    const [activerOverlayButton, setActiveOverlayButton] = useState('Curve');
+
+    // this could be simplify into 1 reusable function but I figured we might have to do some other calculations for each of these so I am sepearing it for now. -Jr
+    const handleVolumeToggle = () => setShowVolume(!showVolume);
+    const handleTvlToggle = () => setShowTvl(!showTvl);
+    const handleFeeRateToggle = () => setShowFeeRate(!showFeeRate);
+
     const chartOverlayButtonData = [
-        { name: 'Volume' },
-        { name: 'TVL' },
-        { name: 'Fee Rate' },
-        { name: 'Heatmap' },
-        { name: 'Liquidity Profile' },
-        { name: 'Curve' },
-        { name: 'Depth' },
+        { name: 'Volume', selected: showVolume, action: handleVolumeToggle },
+        { name: 'TVL', selected: showTvl, action: handleTvlToggle },
+        { name: 'Fee Rate', selected: showFeeRate, action: handleFeeRateToggle },
+        // { name: 'Heatmap', function: () => console.log('heatmap') },
+        // { name: 'Liquidity Profile', function: () => console.log('heatmap')  },
+        // { name: 'Curve', function: () => console.log('Curve')  },
+        // { name: 'Depth', function: () => console.log('Depth')  },
     ];
 
-    function handleOverlayButtonClick(name: string) {
-        setActiveOverlayButton(name);
-    }
-
     const chartOverlayButtons = chartOverlayButtonData.map((button, idx) => (
-        <motion.div
-            initial={{ y: 10, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: -10, opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className={styles.settings_container}
-            key={idx}
-        >
+        <div className={styles.settings_container} key={idx}>
             <button
-                onClick={() => handleOverlayButtonClick(button.name)}
+                onClick={button.action}
                 className={
-                    button.name === activerOverlayButton
-                        ? styles.active_button
-                        : styles.non_active_button
+                    button.selected
+                        ? styles.active_selected_button
+                        : styles.non_active_selected_button
                 }
             >
                 {button.name}
-
-                {button.name === activerOverlayButton && (
-                    <motion.div
-                        layoutId='outline'
-                        className={styles.outline}
-                        initial={false}
-                        // animate={{ borderColor: 'red' }}
-                        transition={spring}
-                    />
-                )}
             </button>
-        </motion.div>
+        </div>
     ));
     // --------------------------- END OF ACTIVE OVERLAY BUTTON FUNCTIONALITY-------------------------------
 
@@ -361,7 +367,15 @@ export default function TradeCharts(props: TradeChartsProps) {
                         ? '...'
                         : `${currencyCharacter}${truncatedPoolPrice}`}
                 </span>
-                <span className={styles.change}>+8.57% | 24h</span>
+                <span
+                    className={
+                        isPoolPriceChangePositive ? styles.change_positive : styles.change_negative
+                    }
+                >
+                    {poolPriceChangePercent === undefined
+                        ? '...'
+                        : poolPriceChangePercent + ' | 24h'}
+                </span>
             </div>
             <div className={styles.right_side}>
                 <span>Timeframe</span>
@@ -432,7 +446,7 @@ export default function TradeCharts(props: TradeChartsProps) {
                     feeData={formattedFeesUSD}
                     priceData={props.candleData}
                     changeState={props.changeState}
-                    chartItems={chartItems}
+                    chartItemStates={chartItemStates}
                 />
             </div>
         </>

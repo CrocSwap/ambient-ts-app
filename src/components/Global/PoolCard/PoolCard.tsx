@@ -5,6 +5,9 @@ import { useEffect, useState } from 'react';
 import { CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
 import { querySpotPrice } from '../../../App/functions/querySpotPrice';
 import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
+import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import { get24hChange, getPoolVolume } from '../../../App/functions/getPoolStats';
+import { formatAmount } from '../../../utils/numbers';
 
 interface PoolCardProps {
     onClick: () => void;
@@ -20,8 +23,11 @@ interface PoolCardProps {
 export default function PoolCard(props: PoolCardProps) {
     const { onClick, tokenMap, tokenA, tokenB, lastBlockNumber, provider, chainId } = props;
 
-    const tokenAKey = tokenA?.address.toLowerCase() + '_0x' + tokenA?.chainId.toString();
-    const tokenBKey = tokenB?.address.toLowerCase() + '_0x' + tokenB?.chainId.toString();
+    const tokenAAddress = tokenA?.address ? tokenA?.address : tokenA.token_address ?? null;
+    const tokenBAddress = tokenB?.address ? tokenB?.address : tokenB.token_address ?? null;
+
+    const tokenAKey = tokenAAddress?.toLowerCase() + '_0x' + tokenA?.chainId.toString();
+    const tokenBKey = tokenBAddress?.toLowerCase() + '_0x' + tokenB?.chainId.toString();
 
     const tokenAFromMap = tokenMap && tokenA?.address ? tokenMap.get(tokenAKey) : null;
 
@@ -35,8 +41,8 @@ export default function PoolCard(props: PoolCardProps) {
     // useEffect to get spot price when tokens change and block updates
     useEffect(() => {
         if (
-            tokenA?.address &&
-            tokenB?.address &&
+            tokenAAddress &&
+            tokenBAddress &&
             tokenA?.decimals &&
             tokenB?.decimals &&
             lastBlockNumber !== 0
@@ -97,6 +103,61 @@ export default function PoolCard(props: PoolCardProps) {
         }
     }, [lastBlockNumber, tokenA, tokenB, chainId, provider]);
 
+    const [poolVolume, setPoolVolume] = useState<string | undefined>(undefined);
+    const [poolPriceChangePercent, setPoolPriceChangePercent] = useState<string | undefined>(
+        undefined,
+    );
+
+    const [isPoolPriceChangePositive, setIsPoolPriceChangePositive] = useState<boolean>(true);
+
+    const poolIndex = lookupChain(chainId).poolIndex;
+
+    useEffect(() => {
+        (async () => {
+            if (tokenAAddress && tokenBAddress) {
+                const volumeResult = await getPoolVolume(tokenAAddress, tokenBAddress, poolIndex);
+
+                if (volumeResult) {
+                    const volumeString = formatAmount(volumeResult);
+                    setPoolVolume(volumeString);
+                }
+
+                try {
+                    const priceChangeResult = await get24hChange(
+                        chainId,
+                        tokenAAddress,
+                        tokenBAddress,
+                        poolIndex,
+                        true, // denomInBase
+                    );
+
+                    if (priceChangeResult) {
+                        priceChangeResult > 0
+                            ? setIsPoolPriceChangePositive(true)
+                            : setIsPoolPriceChangePositive(false);
+                        const priceChangeString =
+                            priceChangeResult > 0
+                                ? '+' +
+                                  priceChangeResult.toLocaleString(undefined, {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 2,
+                                  }) +
+                                  '%'
+                                : priceChangeResult.toLocaleString(undefined, {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 2,
+                                  }) + '%';
+                        setPoolPriceChangePercent(priceChangeString);
+                    } else {
+                        setPoolPriceChangePercent(undefined);
+                    }
+                } catch (error) {
+                    setPoolPriceChangePercent(undefined);
+                }
+            }
+        })();
+    }, [tokenAAddress, tokenBAddress, lastBlockNumber]);
+
     return (
         <div className={styles.pool_card} onClick={onClick}>
             <div className={styles.row}>
@@ -123,14 +184,18 @@ export default function PoolCard(props: PoolCardProps) {
                 <div></div>
                 <div>
                     <div className={styles.row_title}>APY</div>
-                    <div className={styles.apy}>35.68%</div>
+                    <div className={styles.apy}>
+                        {poolPriceDisplay === undefined ? '...' : '35.34'}
+                    </div>
                 </div>
             </div>
             <div className={styles.row}>
                 <div></div>
                 <div>
                     <div className={styles.row_title}>Vol.</div>
-                    <div className={styles.vol}>$62m</div>
+                    <div className={styles.vol}>
+                        {poolPriceDisplay === undefined ? '...' : `$${poolVolume}`}
+                    </div>
                 </div>
             </div>
 
@@ -144,7 +209,15 @@ export default function PoolCard(props: PoolCardProps) {
                 </div>
                 <div>
                     <div className={styles.row_title}>24h</div>
-                    <div className={styles.hours}>1.54%</div>
+                    <div
+                        className={
+                            isPoolPriceChangePositive
+                                ? styles.change_positive
+                                : styles.change_negative
+                        }
+                    >
+                        {poolPriceChangePercent === undefined ? '...' : poolPriceChangePercent}
+                    </div>
                 </div>
             </div>
         </div>

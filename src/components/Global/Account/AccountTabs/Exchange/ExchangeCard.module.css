@@ -1,46 +1,44 @@
-.token_info{
+.token_info {
     display: flex;
     flex-direction: row;
     align-items: center;
     gap: 3rem;
 }
 
-.token_icon{
+.token_icon {
     display: flex;
     align-items: center;
     flex-direction: row;
     gap: 4px;
 }
 
-.exchange_row{
-    display: grid; 
+.exchange_row {
+    display: grid;
     color: white;
-   grid-template-columns: 2fr 1fr 1fr;
-   align-items: center;
-   height: 48px;
+    grid-template-columns: 2fr 1fr 1fr;
+    align-items: center;
+    height: 48px;
 }
 
 .exchange_row {
     font-size: var(--body-size);
     line-height: var(--body-lh);
     color: rgba(235, 235, 255, 0.4);
-    
-
 }
 
-.token_key, .amount{
+.token_key,
+.amount {
     font-weight: 200;
     font-size: 18px;
-line-height: 22px;
-letter-spacing: -0.02em;
-color: #EBEBFF;
+    line-height: 22px;
+    letter-spacing: -0.02em;
+    color: #ebebff;
 
-
-/* text-align: right; */
+    /* text-align: right; */
 }
 
-.value, .amount{
+.value,
+.amount {
     display: flex;
-justify-content: flex-end;
+    justify-content: flex-end;
 }
-

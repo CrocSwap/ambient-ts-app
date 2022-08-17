@@ -1,64 +1,65 @@
 .btn {
-  width: 100%;
-  
-  padding: 12px 16px;
+    width: 100%;
+
+    padding: 12px 16px;
     font-size: 16px;
- 
+
     line-height: 24px;
-  
+
     display: block;
-    
+
     max-height: 3rem;
     cursor: pointer;
     text-align: center;
 
     background: transparent;
     text-transform: uppercase;
-   
-   
-    color: #CDC1FF;
+
+    color: #cdc1ff;
     border-radius: 4px;
     transition: all var(--animation-speed) ease-out;
-    background: linear-gradient(270deg, #7371FC, #CDC1FF, #7371FC , rgba(34,34,34,0), rgba(34,34,34,0));
+    background: linear-gradient(
+        270deg,
+        #7371fc,
+        #cdc1ff,
+        #7371fc,
+        rgba(34, 34, 34, 0),
+        rgba(34, 34, 34, 0)
+    );
     background-position: 1% 50%;
     background-size: 300% 300%;
     text-decoration: none;
-    border: 1px solid #7371FC;
-  
+    border: 1px solid #7371fc;
+}
 
-  }
-
-  .btn:hover{
+.btn:hover {
     color: var(--text-grey-white);
-    border: 1px solid rgba(223,190,106,0);
+    border: 1px solid rgba(223, 190, 106, 0);
     background-position: 99% 50%;
-  }
-  
-  .disabled_btn {
+}
+
+.disabled_btn {
     font-size: 18px;
     /* font-weight: 400; */
     line-height: 24px;
     color: var(--text-grey-light);
-  
+
     display: block;
-  
+
     width: 100%;
     padding: 12px 16px;
     border: none;
-  
+
     cursor: pointer;
     transition: color var(--animation-speed) ease-in;
     text-align: center;
-  
-    border-radius: var(--border-radius);
-  
-    background-color: var(--dark2);
-  }
 
-  
-  .disabled_btn {
-    
-   color: var(--text-grey-light);
-   pointer-events: none;
-  }
- 
+    border-radius: var(--border-radius);
+
+    background-color: var(--dark2);
+}
+
+.disabled_btn {
+    color: var(--text-grey-light);
+    pointer-events: none;
+}

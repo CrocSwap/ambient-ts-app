@@ -1,16 +1,14 @@
-.modal_container{
+.modal_container {
     width: 400px;
     min-height: 300px;
-  }
-  
-  .modal_footer {
+}
 
-  
+.modal_footer {
     width: 100%;
     padding: 0 20px;
     margin-top: 10px;
-  }
-  
-  .modal_content {
+}
+
+.modal_content {
     padding: 0 20px;
-  }
+}
