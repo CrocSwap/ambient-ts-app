@@ -1,16 +1,19 @@
-.main_layout_chart{
+.main_layout_chart {
     transition: all 600ms ease-in-out;
     width: 100%;
-    height:100%;
-    color: #BDBDBD;
+    height: 100%;
+    color: #bdbdbd;
 }
 
 text {
-    fill: #BDBDBD;    
+    fill: #bdbdbd;
 }
 
-.domain, .tick>path, .gridline-y, .gridline-x {
-    stroke: #BDBDBD;
+.domain,
+.tick > path,
+.gridline-y,
+.gridline-x {
+    stroke: #bdbdbd;
     stroke-opacity: 0.1;
 }
 
@@ -21,7 +24,34 @@ text {
     stroke-opacity: 0.6;
 }
 
+.candlestick .down {
+    background-color: #7371fc;
+}
 
-.candlestick  .down {
-    background-color: #7371FC;
+div.tooltip {
+    position: absolute;
+    text-align: center;
+    pointer-events: none;
+
+    background: rgba(10, 10, 19, 0.47);
+    padding: 6px;
+
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.47);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border-radius: var(--border-radius);
+
+}
+
+@keyframes hideAnimation {
+    to {
+      visibility: hidden;
+    }
+  }
+
+.crosshair {
+    stroke: rgb(238, 238, 238);
+    stroke-width: 1px;
+    stroke-dasharray: 3 3;
+    stroke-opacity: 0.8;
 }
