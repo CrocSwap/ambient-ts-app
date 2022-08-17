@@ -129,15 +129,22 @@ export default function PoolCard(props: PoolCardProps) {
 
                 if (priceChangeResult) {
                     const priceChangeString =
-                        priceChangeResult.toLocaleString(undefined, {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                        }) + '%';
+                        priceChangeResult > 0
+                            ? '+' +
+                              priceChangeResult.toLocaleString(undefined, {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 2,
+                              }) +
+                              '%'
+                            : priceChangeResult.toLocaleString(undefined, {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 2,
+                              }) + '%';
                     setPoolPriceChangePercent(priceChangeString);
                 }
             }
         })();
-    }, [tokenAAddress, tokenBAddress]);
+    }, [tokenAAddress, tokenBAddress, lastBlockNumber]);
 
     return (
         <div className={styles.pool_card} onClick={onClick}>
