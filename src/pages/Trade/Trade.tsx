@@ -82,6 +82,7 @@ export default function Trade(props: ITradeProps) {
     });
 
     const denomInBase = tradeData.isDenomBase;
+    const targetData = tradeData.targetData;
 
     const poolPriceDisplayWithDenom = poolPriceDisplay
         ? denomInBase
@@ -139,6 +140,7 @@ export default function Trade(props: ITradeProps) {
                                 setFullScreenChart={setFullScreenChart}
                                 changeState={changeState}
                                 candleData={candleData}
+                                targetData={targetData}
                             />
                         </motion.div>
                     </div>

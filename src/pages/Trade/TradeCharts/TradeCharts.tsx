@@ -20,6 +20,7 @@ import {
     tradeData as TradeDataIF,
     toggleDidUserFlipDenom,
     setActiveChartPeriod,
+    targetData,
 } from '../../../utils/state/tradeDataSlice';
 import { useAppSelector, useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import { Dispatch, SetStateAction, useState, useEffect, useMemo, useRef } from 'react';
@@ -37,6 +38,7 @@ interface TradeChartsProps {
     setFullScreenChart: Dispatch<SetStateAction<boolean>>;
     changeState: (isOpen: boolean | undefined, candleData: CandleData | undefined) => void;
     candleData: CandlesByPoolAndDuration | undefined;
+    targetData: targetData[] | undefined;
 }
 
 // trade charts
@@ -433,6 +435,7 @@ export default function TradeCharts(props: TradeChartsProps) {
                     priceData={props.candleData}
                     changeState={props.changeState}
                     chartItems={chartItems}
+                    targetData={props.targetData}
                 />
             </div>
         </>
