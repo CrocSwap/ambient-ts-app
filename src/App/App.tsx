@@ -15,12 +15,7 @@ import {
 } from '../utils/state/graphDataSlice';
 import { ethers } from 'ethers';
 // import { request, gql } from 'graphql-request';
-import {
-    useMoralis,
-    //  useMoralisQuery,
-    //  useMoralisSubscription,
-    useChain,
-} from 'react-moralis';
+import { useMoralis } from 'react-moralis';
 
 import useWebSocket from 'react-use-websocket';
 // import { ReadyState } from 'react-use-websocket';
@@ -32,11 +27,7 @@ import {
     CrocEnv,
     toDisplayQty,
 } from '@crocswap-libs/sdk';
-
-import {
-    // receiptData,
-    resetReceiptData,
-} from '../utils/state/receiptDataSlice';
+import { resetReceiptData } from '../utils/state/receiptDataSlice';
 
 import SnackbarComponent from '../components/Global/SnackbarComponent/SnackbarComponent';
 
@@ -58,8 +49,6 @@ import Trade from '../pages/Trade/Trade';
 /** * **** Import Local Files *******/
 import './App.css';
 import { useAppDispatch, useAppSelector } from '../utils/hooks/reduxToolkit';
-import { validateChain } from './validateChain';
-// import { IParsedPosition, parsePositionArray } from './parsePositions';
 import { defaultTokens } from '../utils/data/defaultTokens';
 import initializeUserLocalStorage from './functions/initializeUserLocalStorage';
 import TokenPage from '../pages/TokenPage/TokenPage';
@@ -82,12 +71,13 @@ import { getNFTs } from './functions/getNFTs';
 import { memoizeTokenDecimals } from './functions/queryTokenDecimals';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { useSlippage } from './useSlippage';
+import { useAppChain } from './hooks/useAppChain';
 import { addNativeBalance, resetTokenData, setTokens } from '../utils/state/tokenDataSlice';
 import { checkIsStable } from '../utils/data/stablePairs';
 import { useTokenMap } from '../utils/hooks/useTokenMap';
-
 import Reposition from '../pages/Trade/Reposition/Reposition';
 import SidebarFooter from '../components/Global/SIdebarFooter/SidebarFooter';
+import { validateChain } from './validateChain';
 // import SidebarFooter from '../components/Global/SIdebarFooter/SidebarFooter';
 
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
@@ -104,23 +94,20 @@ const shouldSubscriptionsReconnect = false;
 
 /** ***** React Function *******/
 export default function App() {
-    const {
-        Moralis,
-        chainId: moralisChainId,
-        isWeb3Enabled,
-        account,
-        logout,
-        isAuthenticated,
-        isInitialized,
-    } = useMoralis();
+    const { Moralis, isWeb3Enabled, account, logout, isAuthenticated, isInitialized } =
+        useMoralis();
 
     const tokenMap = useTokenMap();
 
-    const { switchNetwork } = useChain();
-
     const location = useLocation();
 
-    const [fallbackChainId, setFallbackChainId] = useState('0x5');
+    // custom hook to manage chain the app is using
+    // `chainData` is data on the current chain retrieved from our SDK
+    // `isChainSupported` is a boolean indicating whether the chain is supported by Ambient
+    // `switchChain` is a function to switch to a different chain
+    // `'0x5'` is the chain the app should be on by default
+    const [chainData, isChainSupported, switchChain, switchNetworkInMoralis] = useAppChain('0x5');
+
     const [switchTabToTransactions, setSwitchTabToTransactions] = useState<boolean>(false);
 
     const [isShowAllEnabled, setIsShowAllEnabled] = useState<boolean>(true);
@@ -128,19 +115,19 @@ export default function App() {
 
     const [expandTradeTable, setExpandTradeTable] = useState(false);
 
-    const chainId = moralisChainId ? moralisChainId : fallbackChainId;
-
-    const poolIndex = useMemo(() => lookupChain(chainId).poolIndex.toString(), [chainId]);
-
-    useEffect(() => {
-        if (isWeb3Enabled && window.ethereum?.networkVersion) {
-            const newNetworkHex = '0x' + parseInt(window.ethereum?.networkVersion).toString(16);
-            console.log('switching networks because metamask network changed');
-            switchNetwork(newNetworkHex);
-        }
-    }, [isWeb3Enabled, window.ethereum?.networkVersion]);
-
     const [provider, setProvider] = useState<ethers.providers.Provider>();
+
+    const [userIsOnline, setUserIsOnline] = useState(navigator.onLine);
+
+    window.ononline = () => {
+        setUserIsOnline(true);
+        // console.log('Back Online');
+    };
+
+    window.onoffline = () => {
+        setUserIsOnline(false);
+        // console.log('Connection Lost');
+    };
 
     function exposeProviderUrl(provider?: ethers.providers.Provider): string {
         if (provider && 'connection' in provider) {
@@ -162,31 +149,37 @@ export default function App() {
     useEffect(() => {
         try {
             const url = exposeProviderUrl(provider);
-            const onChain = exposeProviderChain(provider) === parseInt(chainId);
+            // console.log(chainData.chainId)
+            const onChain = exposeProviderChain(provider) === parseInt(chainData.chainId);
 
             if (isAuthenticated) {
                 if (provider && url === 'metamask' && !metamaskLocked && onChain) {
                     return;
                 } else if (provider && url === 'metamask' && metamaskLocked) {
                     clickLogout();
-                } else if (window.ethereum && !metamaskLocked) {
+                } else if (
+                    window.ethereum &&
+                    !metamaskLocked &&
+                    validateChain(window.ethereum.chainId)
+                ) {
+                    // console.log(window.ethereum.chainId)
                     const metamaskProvider = new ethers.providers.Web3Provider(window.ethereum);
                     console.log('Metamask Provider');
                     setProvider(metamaskProvider);
                 }
             } else if (!provider || !onChain) {
-                const url = lookupChain(chainId).nodeUrl;
+                const url = lookupChain(chainData.chainId).nodeUrl;
                 setProvider(new ethers.providers.JsonRpcProvider(url));
             }
         } catch (error) {
             console.log(error);
         }
-    }, [isAuthenticated, chainId, metamaskLocked]);
+    }, [isAuthenticated, chainData.chainId, metamaskLocked]);
 
     useEffect(() => {
-        dispatch(resetTokens(chainId));
+        dispatch(resetTokens(chainData.chainId));
         dispatch(resetTokenData());
-    }, [chainId]);
+    }, [chainData.chainId]);
 
     const dispatch = useAppDispatch();
 
@@ -243,8 +236,8 @@ export default function App() {
 
     //
     const isPairStable = useMemo(
-        () => checkIsStable(tradeData.tokenA.address, tradeData.tokenA.address, chainId),
-        [tradeData.tokenA.address, tradeData.tokenA.address, chainId],
+        () => checkIsStable(tradeData.tokenA.address, tradeData.tokenA.address, chainData.chainId),
+        [tradeData.tokenA.address, tradeData.tokenA.address, chainData.chainId],
     );
 
     // useEffect(() => {
@@ -343,7 +336,7 @@ export default function App() {
         (async () => {
             if (account && provider) {
                 try {
-                    const ensName = await cachedFetchAddress(provider, account, chainId);
+                    const ensName = await cachedFetchAddress(provider, account, chainData.chainId);
                     if (ensName) setEnsName(ensName);
                     else setEnsName('');
                 } catch (error) {
@@ -351,7 +344,7 @@ export default function App() {
                 }
             }
         })();
-    }, [account, chainId]);
+    }, [account, chainData.chainId]);
 
     const tokensInRTK = useAppSelector((state) => state.tokenData.tokens);
 
@@ -362,7 +355,7 @@ export default function App() {
                 try {
                     const newTokens: TokenIF[] = await cachedFetchTokenBalances(
                         account,
-                        chainId,
+                        chainData.chainId,
                         lastBlockNumber,
                     );
                     const tokensInRTKminusNative = tokensInRTK.slice(1);
@@ -381,7 +374,7 @@ export default function App() {
                 }
             }
         })();
-    }, [isAuthenticated, account, chainId, lastBlockNumber, tokensInRTK]);
+    }, [account, chainData.chainId, lastBlockNumber, tokensInRTK]);
 
     const [baseTokenAddress, setBaseTokenAddress] = useState<string>('');
     const [quoteTokenAddress, setQuoteTokenAddress] = useState<string>('');
@@ -391,6 +384,7 @@ export default function App() {
 
     const [isTokenABase, setIsTokenABase] = useState<boolean>(true);
 
+    // TODO:  @Emily useMemo() this value
     const tokenPair = {
         dataTokenA: tradeData.tokenA,
         dataTokenB: tradeData.tokenB,
@@ -434,8 +428,8 @@ export default function App() {
                             new URLSearchParams({
                                 base: sortedTokens[0].toLowerCase(),
                                 quote: sortedTokens[1].toLowerCase(),
-                                poolIdx: poolIndex,
-                                chainId: chainId,
+                                poolIdx: chainData.poolIndex.toString(),
+                                chainId: chainData.chainId,
                             }),
                     )
                         .then((response) => response.json())
@@ -477,8 +471,8 @@ export default function App() {
                             new URLSearchParams({
                                 base: sortedTokens[0].toLowerCase(),
                                 quote: sortedTokens[1].toLowerCase(),
-                                poolIdx: poolIndex,
-                                chainId: chainId,
+                                poolIdx: chainData.poolIndex.toString(),
+                                chainId: chainData.chainId,
                                 // n: 10 // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
                                 // page: 0 // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
                             }),
@@ -511,7 +505,7 @@ export default function App() {
                 console.log;
             }
         }
-    }, [tokenPairStringified, chainId]);
+    }, [tokenPairStringified, chainData.chainId]);
 
     const activePeriod = tradeData.activeChartPeriod;
 
@@ -583,14 +577,14 @@ export default function App() {
                             new URLSearchParams({
                                 base: baseTokenAddress.toLowerCase(),
                                 quote: quoteTokenAddress.toLowerCase(),
-                                poolIdx: poolIndex,
+                                poolIdx: chainData.poolIndex.toString(),
                                 period: activePeriod.toString(),
                                 // period: '86400', // 1 day
                                 // period: '300', // 5 minute
                                 // time: '1657833300', // optional
                                 n: '200', // positive integer
                                 page: '0', // nonnegative integer
-                                chainId: chainId,
+                                chainId: chainData.chainId,
                             }),
                     )
                         .then((response) => response?.json())
@@ -608,8 +602,8 @@ export default function App() {
                                                 pool: {
                                                     baseAddress: baseTokenAddress.toLowerCase(),
                                                     quoteAddress: quoteTokenAddress.toLowerCase(),
-                                                    poolIdx: parseInt(poolIndex),
-                                                    network: chainId,
+                                                    poolIdx: chainData.poolIndex,
+                                                    network: chainData.chainId,
                                                 },
                                                 duration: activePeriod,
                                                 candles: updatedCandles,
@@ -625,7 +619,7 @@ export default function App() {
                 console.log({ error });
             }
         }
-    }, [baseTokenAddress, quoteTokenAddress, activePeriod, chainId]);
+    }, [baseTokenAddress, quoteTokenAddress, activePeriod, chainData.chainId]);
 
     const allPositionsCacheSubscriptionEndpoint = useMemo(
         () =>
@@ -636,10 +630,10 @@ export default function App() {
                 // baseTokenAddress.toLowerCase() || '0x0000000000000000000000000000000000000000',
                 quote: quoteTokenAddress.toLowerCase(),
                 // quoteTokenAddress.toLowerCase() || '0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa',
-                poolIdx: poolIndex,
-                chainId: chainId,
+                poolIdx: chainData.poolIndex.toString(),
+                chainId: chainData.chainId,
             }),
-        [baseTokenAddress, quoteTokenAddress, chainId],
+        [baseTokenAddress, quoteTokenAddress, chainData.chainId],
     );
 
     const {
@@ -687,13 +681,13 @@ export default function App() {
                 // baseTokenAddress.toLowerCase() || '0x0000000000000000000000000000000000000000',
                 quote: quoteTokenAddress.toLowerCase(),
                 // quoteTokenAddress.toLowerCase() || '0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa',
-                poolIdx: poolIndex,
+                poolIdx: chainData.poolIndex.toString(),
                 // 	positive integer	The duration of the candle, in seconds. Must represent one of the following time intervals: 5 minutes, 15 minutes, 1 hour, 4 hours, 1 day, 7 days.
                 period: activePeriod.toString(),
                 // period: '60',
-                chainId: chainId,
+                chainId: chainData.chainId,
             }),
-        [baseTokenAddress, quoteTokenAddress, poolIndex, activePeriod],
+        [baseTokenAddress, quoteTokenAddress, chainData.poolIndex, activePeriod],
     );
 
     const {
@@ -726,8 +720,8 @@ export default function App() {
                             pool: {
                                 baseAddress: baseTokenAddress,
                                 quoteAddress: quoteTokenAddress,
-                                poolIdx: parseInt(poolIndex),
-                                network: chainId,
+                                poolIdx: chainData.poolIndex,
+                                network: chainData.chainId,
                             },
                             duration: activePeriod,
                             candles: updatedCandles,
@@ -746,19 +740,13 @@ export default function App() {
             new URLSearchParams({
                 base: '0x0000000000000000000000000000000000000000',
                 quote: '0x6b175474e89094c44da98b954eedeac495271d0f',
-                poolIdx: parseInt(poolIndex).toString(),
+                poolIdx: chainData.poolIndex.toString(),
                 // 	positive integer	The duration of the candle, in seconds. Must represent one of the following time intervals: 5 minutes, 15 minutes, 1 hour, 4 hours, 1 day, 7 days.
                 period: activePeriod.toString(),
                 chainId: '0x1',
                 dex: 'all',
             }),
-        [
-            baseTokenAddress,
-            quoteTokenAddress,
-            parseInt(poolIndex).toString(),
-            activePeriod,
-            chainId,
-        ],
+        [baseTokenAddress, quoteTokenAddress, chainData.poolIndex, activePeriod, chainData.chainId],
     );
 
     const {
@@ -813,10 +801,10 @@ export default function App() {
                 // baseTokenAddress.toLowerCase() || '0x0000000000000000000000000000000000000000',
                 quote: quoteTokenAddress.toLowerCase(),
                 // quoteTokenAddress.toLowerCase() || '0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa',
-                poolIdx: poolIndex,
-                chainId: chainId,
+                poolIdx: chainData.poolIndex.toString(),
+                chainId: chainData.chainId,
             }),
-        [baseTokenAddress, quoteTokenAddress, chainId],
+        [baseTokenAddress, quoteTokenAddress, chainData.chainId],
     );
 
     const {
@@ -860,10 +848,10 @@ export default function App() {
             '/subscribe_user_positions?' +
             new URLSearchParams({
                 user: account || '',
-                chainId: chainId,
+                chainId: chainData.chainId,
                 // user: account || '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc',
             }),
-        [account, chainId],
+        [account, chainData.chainId],
     );
 
     const {
@@ -907,16 +895,12 @@ export default function App() {
             '/subscribe_user_swaps?' +
             new URLSearchParams({
                 user: account || '',
-                chainId: chainId,
+                chainId: chainData.chainId,
             }),
-        [account, chainId],
+        [account, chainData.chainId],
     );
 
-    const {
-        //  sendMessage,
-        lastMessage: lastUserSwapsMessage,
-        //  readyState
-    } = useWebSocket(
+    const { lastMessage: lastUserSwapsMessage } = useWebSocket(
         userSwapsCacheSubscriptionEndpoint,
         {
             // share: true,
@@ -934,7 +918,6 @@ export default function App() {
     useEffect(() => {
         if (lastUserSwapsMessage !== null) {
             const lastMessageData = JSON.parse(lastUserSwapsMessage.data).data;
-
             if (lastMessageData) {
                 Promise.all(lastMessageData.map(getSwapData)).then((updatedSwaps) => {
                     dispatch(
@@ -965,24 +948,15 @@ export default function App() {
             (async () => {
                 const viewProvider = provider
                     ? provider
-                    : (await new CrocEnv(chainId).context).provider;
+                    : (await new CrocEnv(chainData.chainId).context).provider;
 
                 const spotPrice = await querySpotPrice(
                     viewProvider,
                     baseTokenAddress,
                     quoteTokenAddress,
-                    chainId,
+                    chainData.chainId,
                     lastBlockNumber,
                 );
-
-                // const spotPrice = await cachedQuerySpotPrice(
-                //     viewProvider,
-                //     baseTokenAddress,
-                //     quoteTokenAddress,
-                //     chainId,
-                //     lastBlockNumber,
-                // );
-                // console.log({ spotPrice });
 
                 setPoolPriceNonDisplay(spotPrice);
                 if (spotPrice) {
@@ -1003,7 +977,7 @@ export default function App() {
         quoteTokenAddress,
         baseTokenDecimals,
         quoteTokenDecimals,
-        chainId,
+        chainData.chainId,
         provider,
     ]);
 
@@ -1030,7 +1004,7 @@ export default function App() {
             }
         })();
     }, [
-        chainId,
+        chainData.chainId,
         account,
         isWeb3Enabled,
         isAuthenticated,
@@ -1122,26 +1096,26 @@ export default function App() {
         const baseTokenAddress = position.base;
         const quoteTokenAddress = position.quote;
 
-        // console.log({ baseTokenAddress });
-        // console.log({ quoteTokenAddress });
-
-        const viewProvider = provider ? provider : (await new CrocEnv(chainId).context).provider;
-        // const poolPriceNonDisplay = 0;
+        const viewProvider = provider
+            ? provider
+            : (await new CrocEnv(chainData.chainId).context).provider;
         const poolPriceNonDisplay = await cachedQuerySpotPrice(
             viewProvider,
             baseTokenAddress,
             quoteTokenAddress,
-            chainId,
+            chainData.chainId,
             lastBlockNumber,
         );
 
         try {
-            const ensName = await cachedFetchAddress(viewProvider, position.user, chainId);
-            if (ensName) {
-                position.userEnsName = ensName;
-            }
+            const ensName = await cachedFetchAddress(
+                viewProvider,
+                position.user,
+                chainData.chainId,
+            );
+            if (ensName) position.userEnsName = ensName;
         } catch (error) {
-            console.log(error);
+            console.warn(error);
         }
 
         const poolPriceInTicks = Math.log(poolPriceNonDisplay) / Math.log(1.0001);
@@ -1149,12 +1123,12 @@ export default function App() {
         const baseTokenDecimals = await cachedGetTokenDecimals(
             viewProvider,
             baseTokenAddress,
-            chainId,
+            chainData.chainId,
         );
         const quoteTokenDecimals = await cachedGetTokenDecimals(
             viewProvider,
             quoteTokenAddress,
-            chainId,
+            chainData.chainId,
         );
 
         if (baseTokenDecimals) position.baseTokenDecimals = baseTokenDecimals;
@@ -1182,29 +1156,45 @@ export default function App() {
         );
 
         position.lowRangeShortDisplayInBase =
-            lowerPriceDisplayInBase < 2
+            lowerPriceDisplayInBase < 0.0001
+                ? lowerPriceDisplayInBase.toExponential(2)
+                : lowerPriceDisplayInBase < 2
                 ? lowerPriceDisplayInBase.toPrecision(3)
+                : lowerPriceDisplayInBase >= 1000000
+                ? lowerPriceDisplayInBase.toExponential(2)
                 : lowerPriceDisplayInBase.toLocaleString(undefined, {
                       maximumFractionDigits: 0,
                   });
 
         position.lowRangeShortDisplayInQuote =
-            lowerPriceDisplayInQuote < 2
+            lowerPriceDisplayInQuote < 0.0001
+                ? lowerPriceDisplayInQuote.toExponential(2)
+                : lowerPriceDisplayInQuote < 2
                 ? lowerPriceDisplayInQuote.toPrecision(3)
+                : lowerPriceDisplayInQuote >= 1000000
+                ? lowerPriceDisplayInQuote.toExponential(2)
                 : lowerPriceDisplayInQuote.toLocaleString(undefined, {
                       maximumFractionDigits: 0,
                   });
 
         position.highRangeShortDisplayInBase =
-            upperPriceDisplayInBase < 2
+            upperPriceDisplayInBase < 0.0001
+                ? upperPriceDisplayInBase.toExponential(2)
+                : upperPriceDisplayInBase < 2
                 ? upperPriceDisplayInBase.toPrecision(3)
+                : upperPriceDisplayInBase >= 1000000
+                ? upperPriceDisplayInBase.toExponential(2)
                 : upperPriceDisplayInBase.toLocaleString(undefined, {
                       maximumFractionDigits: 0,
                   });
 
         position.highRangeShortDisplayInQuote =
-            upperPriceDisplayInQuote < 2
+            upperPriceDisplayInQuote < 0.0001
+                ? upperPriceDisplayInQuote.toExponential(2)
+                : upperPriceDisplayInQuote < 2
                 ? upperPriceDisplayInQuote.toPrecision(3)
+                : upperPriceDisplayInQuote >= 1000000
+                ? upperPriceDisplayInQuote.toExponential(2)
                 : upperPriceDisplayInQuote.toLocaleString(undefined, {
                       maximumFractionDigits: 0,
                   });
@@ -1221,15 +1211,23 @@ export default function App() {
 
         if (!position.ambient) {
             position.lowRangeDisplayInBase =
-                lowerPriceDisplayInBase < 2
+                lowerPriceDisplayInBase < 0.0001
+                    ? lowerPriceDisplayInBase.toExponential(2)
+                    : lowerPriceDisplayInBase < 2
                     ? lowerPriceDisplayInBase.toPrecision(3)
+                    : lowerPriceDisplayInBase >= 1000000
+                    ? lowerPriceDisplayInBase.toExponential(2)
                     : lowerPriceDisplayInBase.toLocaleString(undefined, {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
                       });
             position.highRangeDisplayInBase =
-                upperPriceDisplayInBase < 2
+                upperPriceDisplayInBase < 0.0001
+                    ? upperPriceDisplayInBase.toExponential(2)
+                    : upperPriceDisplayInBase < 2
                     ? upperPriceDisplayInBase.toPrecision(3)
+                    : upperPriceDisplayInBase >= 1000000
+                    ? upperPriceDisplayInBase.toExponential(2)
                     : upperPriceDisplayInBase.toLocaleString(undefined, {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
@@ -1238,15 +1236,23 @@ export default function App() {
 
         if (!position.ambient) {
             position.lowRangeDisplayInQuote =
-                lowerPriceDisplayInQuote < 2
+                lowerPriceDisplayInQuote < 0.0001
+                    ? lowerPriceDisplayInQuote.toExponential(2)
+                    : lowerPriceDisplayInQuote < 2
                     ? lowerPriceDisplayInQuote.toPrecision(3)
+                    : lowerPriceDisplayInQuote >= 1000000
+                    ? lowerPriceDisplayInQuote.toExponential(2)
                     : lowerPriceDisplayInQuote.toLocaleString(undefined, {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
                       });
             position.highRangeDisplayInQuote =
-                upperPriceDisplayInQuote < 2
+                upperPriceDisplayInQuote < 0.0001
+                    ? upperPriceDisplayInQuote.toExponential(2)
+                    : upperPriceDisplayInQuote < 2
                     ? upperPriceDisplayInQuote.toPrecision(3)
+                    : upperPriceDisplayInQuote >= 1000000
+                    ? upperPriceDisplayInQuote.toExponential(2)
                     : upperPriceDisplayInQuote.toLocaleString(undefined, {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
@@ -1266,7 +1272,7 @@ export default function App() {
                     allUserPositionsCacheEndpoint +
                         new URLSearchParams({
                             user: account,
-                            chainId: chainId,
+                            chainId: chainData.chainId,
                         }),
                 )
                     .then((response) => response?.json())
@@ -1303,7 +1309,7 @@ export default function App() {
                     allUserSwapsCacheEndpoint +
                         new URLSearchParams({
                             user: account,
-                            chainId: chainId,
+                            chainId: chainData.chainId,
                         }),
                 )
                     .then((response) => response?.json())
@@ -1331,7 +1337,7 @@ export default function App() {
                 console.log;
             }
         }
-    }, [isAuthenticated, account, chainId]);
+    }, [isAuthenticated, account, chainData.chainId]);
 
     // run function to initialize local storage
     // internal controls will only initialize values that don't exist
@@ -1342,7 +1348,7 @@ export default function App() {
     // ... connected at all are both reflected as `false`
     // later we can make this available to the rest of the app through
     // ... the React Router context provider API
-    const isChainValid = chainId ? validateChain(chainId as string) : false;
+    // const isChainValid = chainData.chainId ? validateChain(chainData.chainId as string) : false;
 
     const currentLocation = location.pathname;
 
@@ -1403,7 +1409,7 @@ export default function App() {
                             token_address: '0x0000000000000000000000000000000000000000',
                             symbol: 'ETH',
                             decimals: 18,
-                            chainId: parseInt(chainId),
+                            chainId: parseInt(chainData.chainId),
                             logoURI: '',
                             balance: eth.toString(),
                         };
@@ -1435,7 +1441,7 @@ export default function App() {
     useEffect(() => {
         const interval = setInterval(async () => {
             const currentDateTime = new Date().toISOString();
-            const chain = chainId;
+            const chain = chainData.chainId;
             const options = {
                 chain: chain as 'goerli', // Cheat and narrow type. We know chain string matches Moralis' chain union type
                 date: currentDateTime,
@@ -1447,7 +1453,7 @@ export default function App() {
         }, 10000);
 
         return () => clearInterval(interval);
-    }, [chainId, lastBlockNumber]);
+    }, [chainData.chainId, lastBlockNumber]);
 
     const shouldDisplayAccountTab = isAuthenticated && isWeb3Enabled && account != '';
 
@@ -1458,9 +1464,10 @@ export default function App() {
         metamaskLocked: metamaskLocked,
         ensName: ensName,
         shouldDisplayAccountTab: shouldDisplayAccountTab,
-        chainId: chainId,
-        setFallbackChainId: setFallbackChainId,
-        isChainValid: isChainValid,
+        chainId: chainData.chainId,
+        isChainSupported: isChainSupported,
+        switchChain: switchChain,
+        switchNetworkInMoralis: switchNetworkInMoralis,
     };
 
     // props for <Swap/> React element
@@ -1470,7 +1477,6 @@ export default function App() {
         searchableTokens: searchableTokens,
         provider: provider,
         swapSlippage: swapSlippage,
-        // provider: provider as JsonRpcProvider,
         isPairStable: isPairStable,
         gasPriceinGwei: gasPriceinGwei,
         nativeBalance: nativeBalance,
@@ -1482,7 +1488,7 @@ export default function App() {
         poolPriceDisplay: poolPriceDisplay,
         tokenAAllowance: tokenAAllowance,
         setRecheckTokenAApproval: setRecheckTokenAApproval,
-        chainId: chainId,
+        chainId: chainData.chainId,
         activeTokenListsChanged: activeTokenListsChanged,
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
     };
@@ -1494,7 +1500,6 @@ export default function App() {
         searchableTokens: searchableTokens,
         provider: provider,
         swapSlippage: swapSlippage,
-        // provider: provider as JsonRpcProvider,
         isPairStable: isPairStable,
         isOnTradeRoute: true,
         gasPriceinGwei: gasPriceinGwei,
@@ -1507,7 +1512,7 @@ export default function App() {
         poolPriceDisplay: poolPriceDisplay,
         setRecheckTokenAApproval: setRecheckTokenAApproval,
         tokenAAllowance: tokenAAllowance,
-        chainId: chainId,
+        chainId: chainData.chainId,
         activeTokenListsChanged: activeTokenListsChanged,
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
     };
@@ -1519,7 +1524,6 @@ export default function App() {
         searchableTokens: searchableTokens,
         provider: provider,
         mintSlippage: mintSlippage,
-        // provider: provider as JsonRpcProvider,
         isPairStable: isPairStable,
         isOnTradeRoute: true,
         gasPriceinGwei: gasPriceinGwei,
@@ -1534,7 +1538,7 @@ export default function App() {
         poolPriceNonDisplay: poolPriceNonDisplay,
         setRecheckTokenAApproval: setRecheckTokenAApproval,
         tokenAAllowance: tokenAAllowance,
-        chainId: chainId,
+        chainId: chainData.chainId,
         activeTokenListsChanged: activeTokenListsChanged,
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
     };
@@ -1546,7 +1550,6 @@ export default function App() {
         searchableTokens: searchableTokens,
         provider: provider,
         mintSlippage: mintSlippage,
-        // provider: provider as JsonRpcProvider,
         isPairStable: isPairStable,
         lastBlockNumber: lastBlockNumber,
         gasPriceinGwei: gasPriceinGwei,
@@ -1560,7 +1563,7 @@ export default function App() {
         tokenBBalance: tokenBBalance,
         tokenBAllowance: tokenBAllowance,
         setRecheckTokenBApproval: setRecheckTokenBApproval,
-        chainId: chainId,
+        chainId: chainData.chainId,
         activeTokenListsChanged: activeTokenListsChanged,
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
     };
@@ -1578,7 +1581,7 @@ export default function App() {
         isDenomBase: tradeData.isDenomBase,
         showSidebar: showSidebar,
         toggleSidebar: toggleSidebar,
-        chainId: chainId,
+        chainId: chainData.chainId,
         switchTabToTransactions: switchTabToTransactions,
         handleSetTradeTabToTransaction: handleSetTradeTabToTransaction,
         setSwitchTabToTransactions: setSwitchTabToTransactions,
@@ -1590,6 +1593,7 @@ export default function App() {
         expandTradeTable: expandTradeTable,
         setExpandTradeTable: setExpandTradeTable,
         tokenMap: tokenMap,
+        lastBlockNumber: lastBlockNumber,
 
         // setShowSidebar : setShowSidebar
     };
@@ -1661,8 +1665,6 @@ export default function App() {
                 {currentLocation !== '/404' && <PageHeader {...headerProps} />}
                 <main className={`${showSidebarOrNullStyle} ${swapBodyStyle}`}>
                     {sidebarRender}
-                    {/* <div className={`${noSidebarStyle} ${swapBodyStyle}`}> */}
-
                     <Routes>
                         <Route
                             index
@@ -1671,7 +1673,7 @@ export default function App() {
                                     tokenMap={tokenMap}
                                     lastBlockNumber={lastBlockNumber}
                                     provider={provider}
-                                    chainId={chainId}
+                                    chainId={chainData.chainId}
                                 />
                             }
                         />
@@ -1687,7 +1689,7 @@ export default function App() {
                                     lastBlockNumber={lastBlockNumber}
                                     isTokenABase={isTokenABase}
                                     poolPriceDisplay={poolPriceDisplay}
-                                    chainId={chainId}
+                                    chainId={chainData.chainId}
                                     switchTabToTransactions={switchTabToTransactions}
                                     setSwitchTabToTransactions={setSwitchTabToTransactions}
                                     currentTxActiveInTransactions={currentTxActiveInTransactions}
@@ -1714,7 +1716,6 @@ export default function App() {
                         <Route path='tokens/:address' element={<TokenPage />} />
                         <Route path='pools/:address' element={<PoolPage />} />
 
-                        {/* <Route path='details' element={<PositionDetails />} /> */}
                         <Route path='range2' element={<Range {...rangeProps} />} />
 
                         <Route
@@ -1724,7 +1725,7 @@ export default function App() {
                                     ensName={ensName}
                                     connectedAccount={account ? account : ''}
                                     userImageData={imageData}
-                                    chainId={chainId}
+                                    chainId={chainData.chainId}
                                     tokenMap={tokenMap}
                                     switchTabToTransactions={switchTabToTransactions}
                                     setSwitchTabToTransactions={setSwitchTabToTransactions}
@@ -1737,7 +1738,7 @@ export default function App() {
                                 <Portfolio
                                     ensName={ensName}
                                     connectedAccount={account ? account : ''}
-                                    chainId={chainId}
+                                    chainId={chainData.chainId}
                                     userImageData={imageData}
                                     tokenMap={tokenMap}
                                     switchTabToTransactions={switchTabToTransactions}
@@ -1755,7 +1756,9 @@ export default function App() {
                 {snackbarContent}
             </div>
             <div className='footer_container'>
-                <PageFooter lastBlockNumber={lastBlockNumber} />
+                {currentLocation !== '/' && (
+                    <PageFooter lastBlockNumber={lastBlockNumber} userIsOnline={userIsOnline} />
+                )}
             </div>
             <SidebarFooter />
         </>

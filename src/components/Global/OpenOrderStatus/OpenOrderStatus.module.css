@@ -1,32 +1,27 @@
-.non_filled{
+.non_filled {
     width: 15px;
-height: 15px;
-border-radius: 50%;
-border: 1px solid var(--text-grey-light);
-background: transparent
+    height: 15px;
+    border-radius: 50%;
+    border: 1px solid var(--text-grey-light);
+    background: transparent;
 }
-.filled{
+.filled {
     width: 15px;
-height: 15px;
-border-radius: 50%;
-border: 1px solid #41D18E;;
-background: transparent;
+    height: 15px;
+    border-radius: 50%;
+    border: 1px solid #41d18e;
+    background: transparent;
 
-display: flex;
-justify-content: center;
-align-items: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
-
-
-
-
 
 /* Desktop screen Sizes */
 @media only screen and (min-width: 992px) {
-.filled, .non_filled{
-    width: 24px;
-    height: 24px;
-}
-	
-
+    .filled,
+    .non_filled {
+        width: 24px;
+        height: 24px;
+    }
 }

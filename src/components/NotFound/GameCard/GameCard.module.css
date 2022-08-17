@@ -1,29 +1,28 @@
-.card{
+.card {
     position: relative;
     padding: 1px;
-    background: linear-gradient(90deg, #7371FC 0%, #CDC1FF 49.48%, #7371FC 100%);
+    background: linear-gradient(90deg, #7371fc 0%, #cdc1ff 49.48%, #7371fc 100%);
     border: 4px;
 }
 
-.card img{
+.card img {
     width: 100%;
     display: block;
 
     border-radius: var(--border-radius);
 }
 
-.card .front{
+.card .front {
     transform: rotateY(90deg);
     position: absolute;
     transition: all ease-in 0.2s;
 }
 
-.flipped .front{
+.flipped .front {
     transform: rotateY(0deg);
     transition-delay: 0.2s;
 }
-.card .back{
+.card .back {
     transition: all ease-in 0.2s;
-    transition-delay: 0s
-
+    transition-delay: 0s;
 }

@@ -1,67 +1,62 @@
 .tippy-box[data-theme~='custom'] {
-  background-color: #f7f7f7;
-  color: black;
-  border: 1px solid #ededed;
-  border-radius: 0;
+    background-color: #f7f7f7;
+    color: black;
+    border: 1px solid #ededed;
+    border-radius: 0;
 }
 
-.pool_card{
-  position: relative;
-  width: 268px;
-  height: 125px;
-  background: var(--dark3);
-  padding: 8px;
-  z-index: 1;
+.pool_card {
+    position: relative;
+    width: 268px;
+    height: 125px;
+    background: var(--dark3);
+    padding: 8px;
+    z-index: 1;
 }
 
 .outline {
-  
-  position: relative;
-  width: 268px;
-  height: 125px;
-  background: var(--dark3);
-  padding: 8px;
-  z-index: 1;
+    position: relative;
+    width: 268px;
+    height: 125px;
+    background: var(--dark3);
+    padding: 8px;
+    z-index: 1;
 
-box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 );
-backdrop-filter: blur( 4px );
--webkit-backdrop-filter: blur( 4px );
-border-radius: var(--border-radius);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border-radius: var(--border-radius);
 
-/* background-image:
+    /* background-image:
   linear-gradient(to bottom, rgba(205, 193, 255, 0.32), rgba(115, 113, 252, 0.53)),
   url('../../../assets/images/waveform.svg'); */
-
-
 }
 
 .kHKQUR {
-  
-  display: grid;
-  grid-auto-rows: auto;
-  row-gap: 6px;
+    display: grid;
+    grid-auto-rows: auto;
+    row-gap: 6px;
 }
 
 .centerBox {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .singleBox {
-margin: 15px
+    margin: 15px;
 }
-
 
 .currentPink {
-  margin-top: 2px;
-  height: 6px;
-  width: 6px;
-  border-radius: 50%;
-  background-color: rgb(255, 0, 122);
+    margin-top: 2px;
+    height: 6px;
+    width: 6px;
+    border-radius: 50%;
+    background-color: rgb(255, 0, 122);
 }
 
-.eJnjNO{
+.eJnjNO {
     box-sizing: border-box;
     margin: 1px;
     min-width: 0px;
@@ -73,4 +68,3 @@ margin: 15px
     justify-content: flex-start;
     width: fit-content;
 }
-

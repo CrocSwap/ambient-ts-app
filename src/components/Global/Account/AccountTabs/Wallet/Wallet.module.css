@@ -1,15 +1,11 @@
-
-
-
-.item_container{
-    max-height: 220px; 
+.item_container {
+    max-height: 220px;
     overflow-y: scroll;
-    overflow-x: hidden; 
-    padding: 0 8px;     
+    overflow-x: hidden;
+    padding: 0 8px;
 }
 
 .item_container::-webkit-scrollbar {
     width: 1px;
     display: none;
-
-  }
+}

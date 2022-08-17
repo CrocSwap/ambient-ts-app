@@ -1,15 +1,14 @@
-
-   .in_range_display{
-     display: flex;
-     flex-direction: row;
-     align-items: center;
-     gap: 4px;
+.in_range_display {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
     -webkit-box-align: center;
     align-items: center;
     background: var(--dark2);
     border: unset;
     min-width: 6rem;
-  padding: 4px 6px;
+    padding: 4px 6px;
     border-radius: 100px;
     color: var(--text-grey-white);
     display: inline-flex;
@@ -18,12 +17,9 @@
     border-radius: 12px;
     -webkit-box-pack: center;
     justify-content: space-between;
+}
 
-   
-   
-   }
-
-   .range_container{
+.range_container {
     width: 10.5px;
     height: 10.5px;
     background: #555555;
@@ -32,39 +28,36 @@
     display: flex;
     justify-content: center;
     align-items: center;
-   }
-   .range_text_positive{
+}
+.range_text_positive {
     width: 9px;
     height: 9px;
-    background: #15BE6F;
+    background: #15be6f;
     border-radius: 50%;
-   }
-   .range_text_negative{
+}
+.range_text_negative {
     width: 9px;
     height: 9px;
 
-    background: #F7385B;
+    background: #f7385b;
     border-radius: 50%;
-   }
-   .range_text_ambient{
+}
+.range_text_ambient {
     width: 9px;
     height: 9px;
 
     background: var(--title-gradient);
     border-radius: 50%;
-   }
-   .in_range_display{
+}
+.in_range_display {
     display: none;
-   }
+}
 
-   @media only screen and (min-width: 1200px) {
-
-    .in_range_display{
-      display: flex;
+@media only screen and (min-width: 1200px) {
+    .in_range_display {
+        display: flex;
     }
-    .symbol_only_display{
-      display: none;
+    .symbol_only_display {
+        display: none;
     }
-        }
-    
-   
+}

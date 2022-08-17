@@ -137,6 +137,8 @@ export default function TestPage() {
                     tokenBDecimals={23}
                     tokenBImage='123'
                 />
+
+                {/* <PoolCardSkeleton /> */}
             </div>
         </main>
     );
