@@ -191,6 +191,7 @@ export default function TradeCharts(props: TradeChartsProps) {
     const [poolPriceChangePercent, setPoolPriceChangePercent] = useState<string | undefined>(
         undefined,
     );
+    const [isPoolPriceChangePositive, setIsPoolPriceChangePositive] = useState<boolean>(true);
 
     const baseTokenAddress = isTokenABase ? tokenAAddress : tokenBAddress;
     const quoteTokenAddress = isTokenABase ? tokenBAddress : tokenAAddress;
@@ -208,6 +209,10 @@ export default function TradeCharts(props: TradeChartsProps) {
                     );
 
                     if (priceChangeResult) {
+                        priceChangeResult > 0
+                            ? setIsPoolPriceChangePositive(true)
+                            : setIsPoolPriceChangePositive(false);
+
                         const priceChangeString =
                             priceChangeResult > 0
                                 ? '+' +
@@ -362,7 +367,11 @@ export default function TradeCharts(props: TradeChartsProps) {
                         ? '...'
                         : `${currencyCharacter}${truncatedPoolPrice}`}
                 </span>
-                <span className={styles.change}>
+                <span
+                    className={
+                        isPoolPriceChangePositive ? styles.change_positive : styles.change_negative
+                    }
+                >
                     {poolPriceChangePercent === undefined
                         ? '...'
                         : poolPriceChangePercent + ' | 24h'}

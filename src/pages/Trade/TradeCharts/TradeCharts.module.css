@@ -148,10 +148,15 @@
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
 }
-.time_frame_container .change {
+.time_frame_container .change_positive {
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: #15be6f;
+    color: var(--positive);
+}
+.time_frame_container .change_negative {
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    color: var(--negative);
 }
 
 .graph_settings_container {

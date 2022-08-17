@@ -108,6 +108,8 @@ export default function PoolCard(props: PoolCardProps) {
         undefined,
     );
 
+    const [isPoolPriceChangePositive, setIsPoolPriceChangePositive] = useState<boolean>(true);
+
     const poolIndex = lookupChain(chainId).poolIndex;
 
     useEffect(() => {
@@ -130,6 +132,9 @@ export default function PoolCard(props: PoolCardProps) {
                     );
 
                     if (priceChangeResult) {
+                        priceChangeResult > 0
+                            ? setIsPoolPriceChangePositive(true)
+                            : setIsPoolPriceChangePositive(false);
                         const priceChangeString =
                             priceChangeResult > 0
                                 ? '+' +
@@ -204,7 +209,13 @@ export default function PoolCard(props: PoolCardProps) {
                 </div>
                 <div>
                     <div className={styles.row_title}>24h</div>
-                    <div className={styles.hours}>
+                    <div
+                        className={
+                            isPoolPriceChangePositive
+                                ? styles.change_positive
+                                : styles.change_negative
+                        }
+                    >
                         {poolPriceChangePercent === undefined ? '...' : poolPriceChangePercent}
                     </div>
                 </div>
