@@ -49,7 +49,7 @@ const get24hChange = async (
         )
             .then((response) => response.json())
             .then((json) => {
-                return json?.data?.changeBaseOverQuote;
+                return json?.data?.changeQuoteOverBase;
             });
         return changePercentage;
     } else {
