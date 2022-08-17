@@ -34,13 +34,12 @@ interface ITradeProps {
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     isShowAllEnabled: boolean;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
-
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function Trade(props: ITradeProps) {
-    const { chainId, tokenMap, poolPriceDisplay, provider } = props;
+    const { chainId, tokenMap, poolPriceDisplay, provider, lastBlockNumber } = props;
 
     const [isCandleSelected, setIsCandleSelected] = useState<boolean | undefined>();
     const [transactionFilter, setTransactionFilter] = useState<CandleData>();
@@ -139,6 +138,8 @@ export default function Trade(props: ITradeProps) {
                                 setFullScreenChart={setFullScreenChart}
                                 changeState={changeState}
                                 candleData={candleData}
+                                lastBlockNumber={lastBlockNumber}
+                                chainId={chainId}
                             />
                         </motion.div>
                     </div>

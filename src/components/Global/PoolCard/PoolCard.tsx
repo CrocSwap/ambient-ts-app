@@ -108,6 +108,8 @@ export default function PoolCard(props: PoolCardProps) {
         undefined,
     );
 
+    const [isPoolPriceChangePositive, setIsPoolPriceChangePositive] = useState<boolean>(true);
+
     const poolIndex = lookupChain(chainId).poolIndex;
 
     useEffect(() => {
@@ -120,27 +122,37 @@ export default function PoolCard(props: PoolCardProps) {
                     setPoolVolume(volumeString);
                 }
 
-                const priceChangeResult = await get24hChange(
-                    chainId,
-                    tokenAAddress,
-                    tokenBAddress,
-                    poolIndex,
-                );
+                try {
+                    const priceChangeResult = await get24hChange(
+                        chainId,
+                        tokenAAddress,
+                        tokenBAddress,
+                        poolIndex,
+                        true, // denomInBase
+                    );
 
-                if (priceChangeResult) {
-                    const priceChangeString =
+                    if (priceChangeResult) {
                         priceChangeResult > 0
-                            ? '+' +
-                              priceChangeResult.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                              }) +
-                              '%'
-                            : priceChangeResult.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                              }) + '%';
-                    setPoolPriceChangePercent(priceChangeString);
+                            ? setIsPoolPriceChangePositive(true)
+                            : setIsPoolPriceChangePositive(false);
+                        const priceChangeString =
+                            priceChangeResult > 0
+                                ? '+' +
+                                  priceChangeResult.toLocaleString(undefined, {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 2,
+                                  }) +
+                                  '%'
+                                : priceChangeResult.toLocaleString(undefined, {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 2,
+                                  }) + '%';
+                        setPoolPriceChangePercent(priceChangeString);
+                    } else {
+                        setPoolPriceChangePercent(undefined);
+                    }
+                } catch (error) {
+                    setPoolPriceChangePercent(undefined);
                 }
             }
         })();
@@ -197,7 +209,13 @@ export default function PoolCard(props: PoolCardProps) {
                 </div>
                 <div>
                     <div className={styles.row_title}>24h</div>
-                    <div className={styles.hours}>
+                    <div
+                        className={
+                            isPoolPriceChangePositive
+                                ? styles.change_positive
+                                : styles.change_negative
+                        }
+                    >
                         {poolPriceChangePercent === undefined ? '...' : poolPriceChangePercent}
                     </div>
                 </div>

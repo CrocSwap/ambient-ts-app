@@ -29,6 +29,8 @@ interface TradeChartsProps {
     // denomInTokenA: boolean;
     // tokenASymbol: string;
     // tokenBSymbol: string;
+    chainId: string;
+    lastBlockNumber: number;
     poolPriceDisplay: number;
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
@@ -43,10 +45,12 @@ interface TradeChartsProps {
 import { usePoolChartData } from '../../../state/pools/hooks';
 import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
 import { CandleData, CandlesByPoolAndDuration } from '../../../utils/state/graphDataSlice';
+import { get24hChange } from '../../../App/functions/getPoolStats';
+import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
 //
 export default function TradeCharts(props: TradeChartsProps) {
-    const { fullScreenChart, setFullScreenChart } = props;
+    const { fullScreenChart, setFullScreenChart, lastBlockNumber, chainId } = props;
     const { poolPriceDisplay } = props;
 
     const dispatch = useAppDispatch();
@@ -54,6 +58,7 @@ export default function TradeCharts(props: TradeChartsProps) {
     // ---------------------TRADE DATA CALCULATIONS------------------------
 
     const tradeData = useAppSelector((state) => state.tradeData);
+    const poolIndex = lookupChain(chainId).poolIndex;
 
     // const graphData = useAppSelector((state) => state.graphData);
 
@@ -82,6 +87,8 @@ export default function TradeCharts(props: TradeChartsProps) {
     const denomInTokenA = (denomInBase && isTokenABase) || (!denomInBase && !isTokenABase);
     const tokenASymbol = tradeData.tokenA.symbol;
     const tokenBSymbol = tradeData.tokenB.symbol;
+    const tokenAAddress = tradeData.tokenA.address;
+    const tokenBAddress = tradeData.tokenB.address;
 
     const truncatedPoolPrice =
         poolPriceDisplay === Infinity || poolPriceDisplay === 0
@@ -180,6 +187,54 @@ export default function TradeCharts(props: TradeChartsProps) {
     );
 
     // END OF GRAPH SETTINGS CONTENT------------------------------------------------------
+
+    const [poolPriceChangePercent, setPoolPriceChangePercent] = useState<string | undefined>(
+        undefined,
+    );
+    const [isPoolPriceChangePositive, setIsPoolPriceChangePositive] = useState<boolean>(true);
+
+    const baseTokenAddress = isTokenABase ? tokenAAddress : tokenBAddress;
+    const quoteTokenAddress = isTokenABase ? tokenBAddress : tokenAAddress;
+
+    useEffect(() => {
+        (async () => {
+            if (tokenAAddress && tokenBAddress) {
+                try {
+                    const priceChangeResult = await get24hChange(
+                        chainId,
+                        baseTokenAddress,
+                        quoteTokenAddress,
+                        poolIndex,
+                        denomInBase,
+                    );
+
+                    if (priceChangeResult) {
+                        priceChangeResult > 0
+                            ? setIsPoolPriceChangePositive(true)
+                            : setIsPoolPriceChangePositive(false);
+
+                        const priceChangeString =
+                            priceChangeResult > 0
+                                ? '+' +
+                                  priceChangeResult.toLocaleString(undefined, {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 2,
+                                  }) +
+                                  '%'
+                                : priceChangeResult.toLocaleString(undefined, {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 2,
+                                  }) + '%';
+                        setPoolPriceChangePercent(priceChangeString);
+                    } else {
+                        setPoolPriceChangePercent(undefined);
+                    }
+                } catch (error) {
+                    setPoolPriceChangePercent(undefined);
+                }
+            }
+        })();
+    }, [denomInBase, baseTokenAddress, quoteTokenAddress, lastBlockNumber]);
 
     // ---------------------------ACTIVE OVERLAY BUTTON FUNCTIONALITY-------------------------------
 
@@ -312,7 +367,15 @@ export default function TradeCharts(props: TradeChartsProps) {
                         ? '...'
                         : `${currencyCharacter}${truncatedPoolPrice}`}
                 </span>
-                <span className={styles.change}>+8.57% | 24h</span>
+                <span
+                    className={
+                        isPoolPriceChangePositive ? styles.change_positive : styles.change_negative
+                    }
+                >
+                    {poolPriceChangePercent === undefined
+                        ? '...'
+                        : poolPriceChangePercent + ' | 24h'}
+                </span>
             </div>
             <div className={styles.right_side}>
                 <span>Timeframe</span>
