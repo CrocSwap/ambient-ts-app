@@ -29,4 +29,32 @@ const getPoolTVL = async (tokenA: string, tokenB: string, poolIdx: number): Prom
     }
 };
 
-export { getPoolVolume, getPoolTVL };
+const poolPriceChangeCacheEndpoint = 'https://809821320828123.de:5000/pool_price_change?';
+
+const get24hChange = async (
+    chainId: string,
+    tokenA: string,
+    tokenB: string,
+    poolIdx: number,
+): Promise<number> => {
+    if (tokenA && tokenB && poolIdx) {
+        const changePercentage = fetch(
+            poolPriceChangeCacheEndpoint +
+                new URLSearchParams({
+                    chainId: chainId,
+                    base: tokenA,
+                    quote: tokenB,
+                    poolIdx: poolIdx.toString(),
+                }),
+        )
+            .then((response) => response.json())
+            .then((json) => {
+                return json?.data?.changeQuoteOverBase;
+            });
+        return changePercentage;
+    } else {
+        return 0;
+    }
+};
+
+export { getPoolVolume, getPoolTVL, get24hChange };

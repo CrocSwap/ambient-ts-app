@@ -6,7 +6,7 @@ import { CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
 import { querySpotPrice } from '../../../App/functions/querySpotPrice';
 import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { getPoolVolume } from '../../../App/functions/getPoolStats';
+import { get24hChange, getPoolVolume } from '../../../App/functions/getPoolStats';
 import { formatAmount } from '../../../utils/numbers';
 
 interface PoolCardProps {
@@ -104,6 +104,9 @@ export default function PoolCard(props: PoolCardProps) {
     }, [lastBlockNumber, tokenA, tokenB, chainId, provider]);
 
     const [poolVolume, setPoolVolume] = useState<string | undefined>(undefined);
+    const [poolPriceChangePercent, setPoolPriceChangePercent] = useState<string | undefined>(
+        undefined,
+    );
 
     const poolIndex = lookupChain(chainId).poolIndex;
 
@@ -113,19 +116,35 @@ export default function PoolCard(props: PoolCardProps) {
                 const volumeResult = await getPoolVolume(tokenAAddress, tokenBAddress, poolIndex);
 
                 if (volumeResult) {
-                    // const volumeString =
-                    //     volumeResult >= 1000000
-                    //         ? volumeResult.toExponential(2)
-                    //         : volumeResult.toLocaleString(undefined, {
-                    //               maximumFractionDigits: 0,
-                    //           });
                     const volumeString = formatAmount(volumeResult);
-
                     setPoolVolume(volumeString);
+                }
+
+                const priceChangeResult = await get24hChange(
+                    chainId,
+                    tokenAAddress,
+                    tokenBAddress,
+                    poolIndex,
+                );
+
+                if (priceChangeResult) {
+                    const priceChangeString =
+                        priceChangeResult > 0
+                            ? '+' +
+                              priceChangeResult.toLocaleString(undefined, {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 2,
+                              }) +
+                              '%'
+                            : priceChangeResult.toLocaleString(undefined, {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 2,
+                              }) + '%';
+                    setPoolPriceChangePercent(priceChangeString);
                 }
             }
         })();
-    }, [tokenAAddress, tokenBAddress]);
+    }, [tokenAAddress, tokenBAddress, lastBlockNumber]);
 
     return (
         <div className={styles.pool_card} onClick={onClick}>
@@ -154,7 +173,7 @@ export default function PoolCard(props: PoolCardProps) {
                 <div>
                     <div className={styles.row_title}>APY</div>
                     <div className={styles.apy}>
-                        {poolPriceDisplay === undefined ? '...' : '35.68%'}
+                        {poolPriceDisplay === undefined ? '...' : '35.34'}
                     </div>
                 </div>
             </div>
@@ -179,7 +198,7 @@ export default function PoolCard(props: PoolCardProps) {
                 <div>
                     <div className={styles.row_title}>24h</div>
                     <div className={styles.hours}>
-                        {poolPriceDisplay === undefined ? '...' : '1.54%'}
+                        {poolPriceChangePercent === undefined ? '...' : poolPriceChangePercent}
                     </div>
                 </div>
             </div>
