@@ -483,8 +483,6 @@ export default function App() {
                         .then((json) => {
                             const poolSwaps = json?.data;
 
-                            console.log({ poolSwaps });
-
                             if (poolSwaps) {
                                 Promise.all(poolSwaps.map(getSwapData)).then((updatedSwaps) => {
                                     if (
@@ -531,9 +529,6 @@ export default function App() {
                                   .get(quoteTokenAddress.toLowerCase() + '_' + chainData.chainId)
                                   ?.split('_')[0];
 
-                    console.log({ mainnetBaseAddress });
-                    console.log({ mainnetQuoteAddress });
-
                     if (mainnetBaseAddress && mainnetQuoteAddress) {
                         fetch(
                             candleSeriesCacheEndpoint +
@@ -554,7 +549,7 @@ export default function App() {
                             .then((response) => response?.json())
                             .then((json) => {
                                 const candles = json?.data;
-                                console.log({ candles });
+
                                 if (candles) {
                                     Promise.all(candles.map(getCandleData)).then(
                                         (updatedCandles) => {
