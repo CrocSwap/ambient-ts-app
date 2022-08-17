@@ -17,8 +17,8 @@ export default function PageFooter(props: IFooterProps) {
     // const  location = useLocation()
     return (
         <footer data-testid={'page-footer'} className={styles.footer}>
-            <ChatPanel chatStatus={chatStatus} />
-            <a onClick={() => setChatStatus(!chatStatus)}>aaa</a>
+            <ChatPanel onClose={() => setChatStatus(false)} chatStatus={chatStatus} />
+            <a onClick={() => setChatStatus(!chatStatus)}>Chat</a>
             <a href='#'>
                 <AiFillTwitterCircle size={15} />
                 {/* <span>Twitter</span> */}
