@@ -792,6 +792,8 @@ export default function App() {
             new URLSearchParams({
                 user: account || '',
                 chainId: chainData.chainId,
+                // eslint-disable-next-line camelcase
+                token_quantities: 'true',
                 // user: account || '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc',
             }),
         [account, chainData.chainId],
