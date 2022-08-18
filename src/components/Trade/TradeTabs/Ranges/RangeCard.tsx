@@ -8,7 +8,7 @@ import { PositionIF } from '../../../../utils/interfaces/PositionIF';
 import { ambientPosSlot, concPosSlot, toDisplayQty } from '@crocswap-libs/sdk';
 import RangesMenu from '../../../Global/Tabs/TableMenu/TableMenuComponents/RangesMenu';
 import { ethers } from 'ethers';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Dispatch, SetStateAction } from 'react';
 
 interface RangeCardProps {
     provider: ethers.providers.Provider | undefined;
@@ -23,6 +23,8 @@ interface RangeCardProps {
     account?: string;
     isDenomBase: boolean;
     lastBlockNumber: number;
+    currentPositionActive: string;
+    setCurrentPositionActive: Dispatch<SetStateAction<string>>;
 }
 
 export default function RangeCard(props: RangeCardProps) {
@@ -38,6 +40,8 @@ export default function RangeCard(props: RangeCardProps) {
         // isAuthenticated,
         account,
         lastBlockNumber,
+        currentPositionActive,
+        setCurrentPositionActive,
     } = props;
 
     const positionData = {
@@ -179,9 +183,18 @@ export default function RangeCard(props: RangeCardProps) {
     }, [JSON.stringify(position)]);
 
     // ------------------------------END OF REMOVE RANGE PROPS-----------------
+
+    const activePositionStyle =
+        position.id === currentPositionActive ? styles.active_position_style : '';
+
     if (!positionMatchesSelectedTokens) return null;
     return (
-        <div className={styles.main_container}>
+        <div
+            className={`${styles.main_container} ${activePositionStyle}`}
+            onClick={() =>
+                position.id === currentPositionActive ? null : setCurrentPositionActive('')
+            }
+        >
             <div className={styles.row_container}>
                 {/* ------------------------------------------------------ */}
 

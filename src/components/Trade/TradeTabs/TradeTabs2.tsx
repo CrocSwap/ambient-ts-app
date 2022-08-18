@@ -44,6 +44,9 @@ interface ITabsProps {
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
     outsideControl: boolean;
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
+
+    currentPositionActive: string;
+    setCurrentPositionActive: Dispatch<SetStateAction<string>>;
 }
 
 export default function TradeTabs2(props: ITabsProps) {
@@ -98,6 +101,9 @@ export default function TradeTabs2(props: ITabsProps) {
         lastBlockNumber: props.lastBlockNumber,
 
         expandTradeTable: props.expandTradeTable,
+
+        currentPositionActive: props.currentPositionActive,
+        setCurrentPositionActive: props.setCurrentPositionActive,
     };
     // Props for <Transactions/> React Element
     const transactionsProps = {
