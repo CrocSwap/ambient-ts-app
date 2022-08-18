@@ -228,7 +228,8 @@ export default function App() {
     // holds stable and volatile values for swap and mint transactions
     const [swapSlippage, mintSlippage] = useSlippage();
 
-    useFavePools();
+    const [ favePools ] = useFavePools();
+    console.log({favePools});
 
     //
     const isPairStable = useMemo(
