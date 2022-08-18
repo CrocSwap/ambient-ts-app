@@ -458,6 +458,8 @@ export default function App() {
                                 quote: sortedTokens[1].toLowerCase(),
                                 poolIdx: chainData.poolIndex.toString(),
                                 chainId: chainData.chainId,
+                                // eslint-disable-next-line camelcase
+                                token_quantities: 'true',
                             }),
                     )
                         .then((response) => response.json())
@@ -1206,14 +1208,16 @@ export default function App() {
 
     useEffect(() => {
         if (isAuthenticated && account) {
-            const allUserPositionsCacheEndpoint = httpGraphCacheServerDomain + '/user_positions?';
+            const userPositionsCacheEndpoint = httpGraphCacheServerDomain + '/user_positions?';
 
             try {
                 fetch(
-                    allUserPositionsCacheEndpoint +
+                    userPositionsCacheEndpoint +
                         new URLSearchParams({
                             user: account,
                             chainId: chainData.chainId,
+                            // eslint-disable-next-line camelcase
+                            token_quantities: 'true',
                         }),
                 )
                     .then((response) => response?.json())
