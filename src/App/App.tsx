@@ -14,12 +14,9 @@ import {
     addCandles,
 } from '../utils/state/graphDataSlice';
 import { ethers } from 'ethers';
-// import { request, gql } from 'graphql-request';
 import { useMoralis } from 'react-moralis';
 
 import useWebSocket from 'react-use-websocket';
-// import { ReadyState } from 'react-use-websocket';
-// import Moralis from 'moralis';
 import {
     sortBaseQuoteTokens,
     toDisplayPrice,
@@ -62,15 +59,14 @@ import {
     setDenomInBase,
 } from '../utils/state/tradeDataSlice';
 import PoolPage from '../pages/PoolPage/PoolPage';
-// import PositionDetails from '../pages/Trade/Range/PositionDetails';
 import { memoizeQuerySpotPrice, querySpotPrice } from './functions/querySpotPrice';
 import { memoizeFetchAddress } from './functions/fetchAddress';
 import { memoizeTokenBalance } from './functions/fetchTokenBalances';
-// import truncateDecimals from '../utils/data/truncateDecimals';
 import { getNFTs } from './functions/getNFTs';
 import { memoizeTokenDecimals } from './functions/queryTokenDecimals';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { useSlippage } from './useSlippage';
+import { useFavePools } from './hooks/useFavePools';
 import { useAppChain } from './hooks/useAppChain';
 import { addNativeBalance, resetTokenData, setTokens } from '../utils/state/tokenDataSlice';
 import { checkIsStable } from '../utils/data/stablePairs';
@@ -80,7 +76,6 @@ import SidebarFooter from '../components/Global/SIdebarFooter/SidebarFooter';
 import { validateChain } from './validateChain';
 import { testTokenMap } from '../utils/data/testTokenMap';
 import { ZERO_ADDRESS } from '../constants';
-// import SidebarFooter from '../components/Global/SIdebarFooter/SidebarFooter';
 
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 const cachedFetchAddress = memoizeFetchAddress();
@@ -88,10 +83,7 @@ const cachedFetchTokenBalances = memoizeTokenBalance();
 const cachedGetTokenDecimals = memoizeTokenDecimals();
 
 const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
-// const httpGraphCacheServerDomain = '';
 const wssGraphCacheServerDomain = 'wss://809821320828123.de:5000';
-// const wssGraphCacheServerDomain = '';
-
 const shouldSubscriptionsReconnect = false;
 
 /** ***** React Function *******/
@@ -235,6 +227,8 @@ export default function App() {
     // hook holding values and setter functions for slippage
     // holds stable and volatile values for swap and mint transactions
     const [swapSlippage, mintSlippage] = useSlippage();
+
+    useFavePools();
 
     //
     const isPairStable = useMemo(
