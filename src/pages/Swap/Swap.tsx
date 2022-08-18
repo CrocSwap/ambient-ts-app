@@ -1,7 +1,7 @@
 // START: Import React and Dongles
 import { useState, Dispatch, SetStateAction, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { useMoralis } from 'react-moralis';
+import { useMoralis, useChain } from 'react-moralis';
 import { motion } from 'framer-motion';
 import {
     CrocEnv,
@@ -24,6 +24,7 @@ import Button from '../../components/Global/Button/Button';
 // START: Import Local Files
 import styles from './Swap.module.css';
 import truncateDecimals from '../../utils/data/truncateDecimals';
+import authenticateUser from '../../utils/functions/authenticateUser';
 import { isTransactionReplacedError, TransactionError } from '../../utils/TransactionError';
 import { useTradeData } from '../Trade/Trade';
 import { useAppSelector, useAppDispatch } from '../../utils/hooks/reduxToolkit';
@@ -106,39 +107,16 @@ export default function Swap(props: SwapPropsIF) {
         ? parseFloat(swapSlippage.stable.value)
         : parseFloat(swapSlippage.volatile.value);
 
-    const signingMessage = `Welcome to Ambient Finance!
-
-Click to sign in and accept the Ambient Terms of Service: https://ambient-finance.netlify.app/tos
-
-This request will not trigger a blockchain transaction or cost any gas fees.
-
-Your authentication status will reset on logout.`;
+    const { switchNetwork } = useChain();
 
     // login functionality
-    const clickLogin = () => {
-        console.log('user clicked Login');
-        if (!isAuthenticated || !isWeb3Enabled) {
-            authenticate({
-                provider: 'metamask',
-                chainId: parseInt(chainId),
-                signingMessage: signingMessage,
-                onSuccess: () => {
-                    enableWeb3();
-                },
-                onError: () => {
-                    authenticate({
-                        provider: 'metamask',
-                        chainId: parseInt(chainId),
-                        signingMessage: signingMessage,
-                        onSuccess: () => {
-                            enableWeb3;
-                            // alert('🎉');
-                        },
-                    });
-                },
-            });
-        }
-    };
+    const clickLogin = () => authenticateUser(
+        isAuthenticated,
+        isWeb3Enabled,
+        authenticate,
+        enableWeb3,
+        switchNetwork
+    );
 
     const loginButton = <Button title='Login' action={clickLogin} />;
 
