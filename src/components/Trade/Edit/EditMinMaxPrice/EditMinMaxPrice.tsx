@@ -75,7 +75,7 @@ export default function EditMinMaxPrice(props: EditMinMaxPriceProps) {
         //   }
     };
 
-    const tickSize = lookupChain(chainId).poolIndex;
+    const tickSize = lookupChain(chainId).gridSize;
 
     const increaseLowTick = () => {
         setRangeLowTick(rangeLowTick + tickSize);

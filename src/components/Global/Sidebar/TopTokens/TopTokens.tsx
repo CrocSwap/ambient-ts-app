@@ -1,6 +1,13 @@
 import styles from './TopTokens.module.css';
 import TopTokensCard from './TopTokensCard';
-export default function TopTokens() {
+
+interface TopTokensProps {
+    chainId: string;
+}
+
+export default function TopTokens(props: TopTokensProps) {
+    const { chainId } = props;
+
     const header = (
         <div className={styles.header}>
             <div>Pool</div>
@@ -15,7 +22,7 @@ export default function TopTokens() {
             {header}
             <div className={styles.content}>
                 {mapItems.map((item, idx) => (
-                    <TopTokensCard key={idx} />
+                    <TopTokensCard key={idx} chainId={chainId} />
                 ))}
             </div>
         </div>

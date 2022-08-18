@@ -1,7 +1,7 @@
-.icon svg{
+.icon svg {
     color: #bdbdbd;
 }
-.icon svg:hover{
+.icon svg:hover {
     color: white;
     transition: all var(--animation-speed) ease-in-out;
 }

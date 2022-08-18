@@ -37,7 +37,7 @@ export const useTokenMap = () => {
         try {
             let tokenLists = [];
             if (localStorage.allTokenLists) {
-                console.log('getting coinGeckoTokens from localStorage...');
+                // console.log('getting coinGeckoTokens from localStorage...');
 
                 tokenLists = JSON.parse(localStorage.getItem('allTokenLists') as string);
                 const coinGeckoListPresent = tokenLists.some(

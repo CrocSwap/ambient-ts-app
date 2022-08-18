@@ -1,17 +1,11 @@
-import { Dispatch, SetStateAction } from 'react';
-import { useChain } from 'react-moralis';
 import optimisticImage from '../../../../assets/images/networks/optimistic.svg';
 import NetworkButton from './NetworkButton';
 
-interface NetworkButtonsProps {
-    chainId: string;
-    setFallbackChainId: Dispatch<SetStateAction<string>>;
-    onClose: () => void;
-    // }
+interface NetworkButtonsPropsIF {
+    switchNetworkInMoralis: (providedChainId: string) => Promise<void>;
 }
-export default function NetworkButtons(props: NetworkButtonsProps) {
-    const { setFallbackChainId, onClose } = props;
-    const { chainId: moralisChainId, switchNetwork } = useChain();
+export default function NetworkButtons(props: NetworkButtonsPropsIF) {
+    const { switchNetworkInMoralis } = props;
 
     const supportedChains = [
         {
@@ -22,20 +16,6 @@ export default function NetworkButtons(props: NetworkButtonsProps) {
         },
     ];
 
-    const handleNetworkSwitch = (chainId: string) => {
-        console.log('switching to ' + chainId);
-        setFallbackChainId(chainId);
-        if (moralisChainId) {
-            switchNetwork(chainId);
-        } else if (window.ethereum) {
-            window.ethereum.request({
-                method: 'wallet_switchEthereumChain',
-                params: [{ chainId: chainId }],
-            });
-        }
-        onClose();
-    };
-
     return (
         <div>
             {supportedChains.map((chain, idx) => (
@@ -45,7 +25,7 @@ export default function NetworkButtons(props: NetworkButtonsProps) {
                     icon={chain.icon}
                     theme={chain.theme}
                     id={chain.id}
-                    handleClick={handleNetworkSwitch}
+                    clickHandler={() => switchNetworkInMoralis(chain.id)}
                 />
             ))}
         </div>

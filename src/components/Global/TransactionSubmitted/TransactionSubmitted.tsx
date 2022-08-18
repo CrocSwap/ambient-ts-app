@@ -4,6 +4,7 @@ import completed from '../../../assets/animations/completed.json';
 import addTokenToWallet from './addTokenToWallet';
 import Button from '../../Global/Button/Button';
 import { FiExternalLink } from 'react-icons/fi';
+import { useLocation } from 'react-router-dom';
 
 interface TransactionSubmittedProps {
     hash: string;
@@ -16,6 +17,7 @@ interface TransactionSubmittedProps {
 export default function TransactionSubmitted(props: TransactionSubmittedProps) {
     const { hash, tokenBAddress, tokenBSymbol, tokenBDecimals, tokenBImage } = props;
     const EthersanTx = `https://goerli.etherscan.io/tx/${hash}`;
+    const currentLocation = useLocation()?.pathname;
 
     const logoURI = tokenBImage;
 
@@ -46,7 +48,9 @@ export default function TransactionSubmitted(props: TransactionSubmittedProps) {
             <h2>Transaction Submitted</h2>
             <p>
                 {EthersanTx && etherscanButton}
-                {tokenBSymbol === 'ETH' ? null : addToMetamaskButton}
+                {tokenBSymbol === 'ETH' || currentLocation === '/trade/range'
+                    ? null
+                    : addToMetamaskButton}
             </p>
         </div>
     );

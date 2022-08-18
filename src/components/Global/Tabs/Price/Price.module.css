@@ -1,38 +1,27 @@
-.buy_style{
+.buy_style {
     color: #7371fc;
 }
-.sell_style{
+.sell_style {
     color: #3480ff;
 }
-.add_style{
-    color: #5FFFF2;
+.add_style {
+    color: #5ffff2;
 }
-.min_max{
+.min_max {
     display: flex;
     flex-direction: column;
-/* align-items: center; */
+    /* align-items: center; */
 }
 
-.price{
+.price {
     font-size: 10px;
-line-height: 13px;
-
+    line-height: 13px;
 }
 
 /* Desktop screen Sizes */
 @media only screen and (min-width: 768px) {
-
-   
-   
-    
-   
-  
-    
-    .price{
+    .price {
         font-size: 12px;
-        line-height: 15px; 
-      
+        line-height: 15px;
     }
-    
-    
-    }
+}

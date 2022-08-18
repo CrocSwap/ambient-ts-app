@@ -1,59 +1,56 @@
-import styles from './NavbarDropdownMenu.module.css';
-import { useState, useRef } from 'react';
-import '../../../App.css';
-import { BiArrowBack } from 'react-icons/bi';
-import { FiSettings, FiMoreHorizontal } from 'react-icons/fi';
-import { CSSTransition } from 'react-transition-group';
-import { FaDiscord, FaSun, FaGithub, FaDotCircle } from 'react-icons/fa';
-import { MdHelp, MdArrowForwardIos, MdLanguage, MdReportProblem } from 'react-icons/md';
-import { motion } from 'framer-motion';
+// START: Import React and Dongles
+import { ReactNode, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-// import arbitrumImage from '../../../../assets/images/networks/arbitrum.svg';
-// import optimisticImage from '../../../../assets/images/networks/optimistic.svg';
-// import polygonImage from '../../../../assets/images/networks/polygon.svg';
-// // import ethereumImage from '../../../../assets/images/networks/ethereum.png';
-
-import { HiOutlineDocumentText } from 'react-icons/hi';
-
-import { GoRequestChanges } from 'react-icons/go';
-import { BsBook, BsMedium } from 'react-icons/bs';
+import { motion } from 'framer-motion';
+import { CSSTransition } from 'react-transition-group';
 import { AiFillTwitterCircle, AiFillInfoCircle } from 'react-icons/ai';
+import { BiArrowBack } from 'react-icons/bi';
+import { BsBook, BsMedium } from 'react-icons/bs';
+import { FiSettings, FiMoreHorizontal } from 'react-icons/fi';
+import { FaDiscord, FaSun, FaGithub, FaDotCircle } from 'react-icons/fa';
+import { GoRequestChanges } from 'react-icons/go';
+import { HiOutlineDocumentText } from 'react-icons/hi';
+import { MdHelp, MdArrowForwardIos, MdLanguage, MdReportProblem } from 'react-icons/md';
 
-// networks
+// START: Import Local Files
+import '../../../App.css';
+import styles from './NavbarDropdownMenu.module.css';
 
-interface NavbarDropdownItemProps {
+interface NavbarDropdownItemPropsIF {
     goToMenu?: string;
-    leftIcon?: React.ReactNode | string;
+    leftIcon?: ReactNode | string;
     topLevel?: boolean;
     goBackItem?: boolean;
     imageIcon?: string;
     onClick?: () => void;
-    children: React.ReactNode;
-    rightIcon?: React.ReactNode;
+    children: ReactNode;
+    rightIcon?: ReactNode;
 }
 
-interface NavbarDropdownMenuProps {
+interface NavbarDropdownMenuPropsIF {
     isAuthenticated?: boolean;
     isWeb3Enabled?: boolean;
     clickLogout: () => void;
     openModal: () => void;
     closeMenu?: () => void;
     chainId: string;
-    setFallbackChainId: React.Dispatch<React.SetStateAction<string>>;
 }
 
-export default function NavbarDropdownMenu(props: NavbarDropdownMenuProps) {
-    const { isAuthenticated, isWeb3Enabled, clickLogout, openModal, closeMenu } = props;
-    // console.log(props.closeMenu);
+export default function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
+    const {
+        isAuthenticated,
+        isWeb3Enabled,
+        clickLogout,
+        openModal,
+        closeMenu
+    } = props;
+
+    const { i18n } = useTranslation();
 
     const [activeMenu, setActiveMenu] = useState('main');
     // eslint-disable-next-line
     const [menuHeight, setMenuHeight] = useState(null);
     const dropdownRef = useRef(null);
-
-    // useEffect(() => {
-    //     setMenuHeight(dropdownRef.current?.firstChild.offsetHeight);
-    // }, []);
 
     // eslint-disable-next-line
     function calcHeight(el: any) {
@@ -61,7 +58,7 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuProps) {
         setMenuHeight(height);
     }
 
-    function NavbarDropdownItem(props: NavbarDropdownItemProps) {
+    function NavbarDropdownItem(props: NavbarDropdownItemPropsIF) {
         const topLevelItemStyle = props.topLevel
             ? styles.topLevelContainer
             : styles.nonTopLevelContainer;
@@ -74,7 +71,6 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuProps) {
         const itemIcon = <div className={styles.icon_button}>{props.leftIcon}</div>;
 
         return (
-            <>
                 <div
                     className={`${styles.menu_item} ${topLevelItemStyle} ${goBackItemStyle}`}
                     onClick={() => {
@@ -87,68 +83,8 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuProps) {
                     {props.children}
                     <span className={styles.icon_right}>{props.rightIcon}</span>
                 </div>
-            </>
         );
     }
-
-    // const handleNetworkSwitch = (chainId: string) => {
-    //     console.log('switching to ' + chainId);
-    //     setFallbackChainId(chainId);
-    //     if (moralisChainId) {
-    //         switchNetwork(chainId);
-    //     }
-    //     // else if (window.ethereum) {
-    //     //     window.ethereum.request({
-    //     //         method: 'wallet_switchEthereumChain',
-    //     //         params: [{ chainId: chainId }],
-    //     //     });
-    //     // }
-    //     // closeMenu ? closeMenu() : null;
-    // };
-
-    // const networksItems = (
-    //     <motion.div
-    //         initial={{ opacity: 0 }}
-    //         animate={{ opacity: 1 }}
-    //         transition={{ duration: 0.5 }}
-    //     >
-    //         <NavbarDropdownItem
-    //             imageIcon={ethereumImage}
-    //             rightIcon={chainId === '0x1' ? circleIcon : null}
-    //             onClick={() => handleNetworkSwitch('0x1')}
-    //         >
-    //             Ethereum
-    //         </NavbarDropdownItem>
-    //         <NavbarDropdownItem
-    //             imageIcon={ethereumImage}
-    //             rightIcon={chainId === '0x3' ? circleIcon : null}
-    //             onClick={() => handleNetworkSwitch('0x3')}
-    //         >
-    //             Ropsten
-    //         </NavbarDropdownItem>
-    //         <NavbarDropdownItem
-    //             imageIcon={ethereumImage}
-    //             rightIcon={chainId === '0x5' ? circleIcon : null}
-    //             onClick={() => handleNetworkSwitch('0x5')}
-    //         >
-    //             Görli
-    //         </NavbarDropdownItem>
-    //         <NavbarDropdownItem
-    //             imageIcon={optimisticImage}
-    //             rightIcon={chainId === '0xa86a' ? circleIcon : null}
-    //             onClick={() => handleNetworkSwitch('0xa86a')}
-    //         >
-    //             Avalanche
-    //         </NavbarDropdownItem>
-    //         <NavbarDropdownItem
-    //             imageIcon={arbitrumImage}
-    //             rightIcon={chainId === '0xa869' ? circleIcon : null}
-    //             onClick={() => handleNetworkSwitch('0xa869')}
-    //         >
-    //             Fuji
-    //         </NavbarDropdownItem>
-    //     </motion.div>
-    // );
 
     const socialsItems = (
         <>
@@ -194,9 +130,7 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuProps) {
             <NavbarDropdownItem leftIcon={<HiOutlineDocumentText size={20} />}>
                 Legal & Privacy
             </NavbarDropdownItem>
-
             {isAuthenticated && isWeb3Enabled && logoutButton}
-
             {(!isAuthenticated || !isWeb3Enabled) && magicButton}
         </>
     );
@@ -214,7 +148,6 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuProps) {
     );
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
 
-    const { i18n } = useTranslation();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const lngs: any = {
         en: { nativeName: 'English' },
@@ -247,11 +180,6 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuProps) {
     );
 
     const NavbardropdownItemData = [
-        // // {
-        // //     title: 'Networks',
-        // //     data: networksItems,
-        // //     leftIcon: <FaNetworkWired size={20} />,
-        // // },
         {
             title: 'Settings & Privacy',
             data: settingsItems,
@@ -275,11 +203,7 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuProps) {
     ];
 
     return (
-        <div
-            className={styles.dropdown}
-            // style={{ height: menuHeight }}
-            ref={dropdownRef}
-        >
+        <div className={styles.dropdown} ref={dropdownRef}>
             <CSSTransition
                 in={activeMenu === 'main'}
                 unmountOnExit
@@ -308,8 +232,6 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuProps) {
                 </motion.div>
             </CSSTransition>
 
-            {/* Dropdown item data that will slide in when clicked */}
-
             {NavbardropdownItemData.map((item) => (
                 <CSSTransition
                     in={activeMenu === item.title}
@@ -331,7 +253,6 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuProps) {
                 <CSSTransition
                     in={activeMenu === 'languages'}
                     unmountOnExit
-                    // key={item.title}
                     timeout={500}
                     classNames='menu-secondary'
                     onEnter={calcHeight}

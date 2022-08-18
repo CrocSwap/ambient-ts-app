@@ -8,15 +8,17 @@ import { useState } from 'react';
 
 interface IFooterProps {
     lastBlockNumber: number;
+    userIsOnline: boolean;
 }
 
 const pageBlockSign = <div className={styles.page_block_sign}></div>;
 
 export default function PageFooter(props: IFooterProps) {
     const [chatStatus, setChatStatus] = useState(false);
-    // const  location = useLocation()
+    const { userIsOnline, lastBlockNumber } = props;
     return (
         <footer data-testid={'page-footer'} className={styles.footer}>
+            {userIsOnline ? '' : 'Offline'}
             <ChatPanel onClose={() => setChatStatus(false)} chatStatus={chatStatus} />
             <a onClick={() => setChatStatus(!chatStatus)}>Chat</a>
             <a href='#'>
@@ -42,7 +44,7 @@ export default function PageFooter(props: IFooterProps) {
 
             <a href='#'>
                 {pageBlockSign}
-                <span>{props.lastBlockNumber}</span>
+                <span>{lastBlockNumber}</span>
             </a>
             {/* // )} */}
         </footer>

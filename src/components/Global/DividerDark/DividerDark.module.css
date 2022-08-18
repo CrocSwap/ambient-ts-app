@@ -1,22 +1,21 @@
-.divider_container{
-   background: transparent;
+.divider_container {
+    background: transparent;
     height: 8px;
-/* margin: 4px 0; */
+    /* margin: 4px 0; */
 }
 
-.divider{
-    background: #171D27;
+.divider {
+    background: #171d27;
     width: 100%;
     /* margin: 0.5rem 0; */
     height: 1px;
 }
 
-.add_margin_top{
+.add_margin_top {
     margin-top: 4px;
- 
 }
 
-.add_margin_bottom{
+.add_margin_bottom {
     margin-bottom: 4px;
 }
 

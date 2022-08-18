@@ -1,10 +1,9 @@
-
-.menu{
+.menu {
     display: flex;
     flex-direction: row;
-align-items: center;
+    align-items: center;
     color: white;
-  width: 100%;
+    width: 100%;
     padding: 5px 10px;
     border-right: 4px solid transparent;
     transition: 0.2s cubic-bezier(0.6, -0.28, 0.735, 0.045);
@@ -16,13 +15,12 @@ align-items: center;
     display: flex;
     gap: 10px;
     cursor: pointer;
-  }
+}
 
-.menu_container{
+.menu_container {
     width: 100%;
     display: flex;
     flex-direction: column;
-   
 
     position: absolute;
     /* top: 30px; */
@@ -32,11 +30,11 @@ align-items: center;
     white-space: nowrap;
     font-size: 15px;
     color: white;
-  }
+}
 
-.icon{
+.icon {
     cursor: pointer;
 }
-.menu svg{
+.menu svg {
     cursor: pointer;
 }

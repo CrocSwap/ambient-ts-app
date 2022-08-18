@@ -1,0 +1,19 @@
+.container{
+    /* background: var(--dark1); */
+    padding: 1rem 0;
+    margin: 0 8px;
+    height: 100%;
+    height: 400px;
+    overflow-y: scroll;
+}
+
+
+.container::-webkit-scrollbar {
+   display: none;
+}
+
+.search_input_container{
+    font-size:  var(--body-size);
+    line-height: var(--body-lh);
+    color: var(--text-grey-light)
+}

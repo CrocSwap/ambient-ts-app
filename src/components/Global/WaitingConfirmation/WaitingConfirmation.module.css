@@ -1,17 +1,14 @@
-
-
-.wallet_confirm{
+.wallet_confirm {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     text-align: center;
-
 }
-.waiting_detail{
+.waiting_detail {
     padding: 10px 0;
 }
-.waiting_detail p{
+.waiting_detail p {
     opacity: 0.7;
 }
 /* .loading_animation{
@@ -21,27 +18,28 @@
 
 } */
 
-
-.loading_animation{
-    background:  linear-gradient(
-        rgba(69, 170, 204, 0.45), 
-        rgba(4, 0, 11, 0.45)
-      ), url('../../../assets//images/logos/ambient_logo.svg')  no-repeat center center fixed;
-      -webkit-background-size: cover;
-      -moz-background-size: cover;
-      -o-background-size: cover;
-      background-size: cover;
-      width: 160px;
-      height: 160px;
-      border: 3px solid var(--dark3);
-      border-radius: 50%;
-      border-top-color: rgb(255, 255, 255);
-      animation: spin 1s ease-in-out infinite;
-      -webkit-animation: spin 1s ease-in-out infinite;
+.loading_animation {
+    background: linear-gradient(rgba(69, 170, 204, 0.45), rgba(4, 0, 11, 0.45)),
+        url('../../../assets//images/logos/ambient_logo.svg') no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    width: 160px;
+    height: 160px;
+    border: 3px solid var(--dark3);
+    border-radius: 50%;
+    border-top-color: rgb(255, 255, 255);
+    animation: spin 1s ease-in-out infinite;
+    -webkit-animation: spin 1s ease-in-out infinite;
 }
 @keyframes spin {
-    to { -webkit-transform: rotate(360deg); }
-  }
-  @-webkit-keyframes spin {
-    to { -webkit-transform: rotate(360deg); }
-  }
+    to {
+        -webkit-transform: rotate(360deg);
+    }
+}
+@-webkit-keyframes spin {
+    to {
+        -webkit-transform: rotate(360deg);
+    }
+}

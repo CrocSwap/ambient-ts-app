@@ -1,6 +1,3 @@
-import DropdownMenu from '../../../DropdownMenu/DropdownMenu';
-import DropdownMenuContainer from '../../../DropdownMenu/DropdownMenuContainer/DropdownMenuContainer';
-import DropdownMenuItem from '../../../DropdownMenu/DropdownMenuItem/DropdownMenuItem';
 import { FiMoreHorizontal } from 'react-icons/fi';
 import styles from './TableMenuComponents.module.css';
 import { useModal } from '../../../../Global/Modal/useModal';
@@ -10,7 +7,7 @@ import RangeDetailsHeader from '../../../../RangeDetails/RangeDetailsHeader/Rang
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import SnackbarComponent from '../../../../../components/Global/SnackbarComponent/SnackbarComponent';
 import { Link } from 'react-router-dom';
-
+import { DefaultTooltip } from '../../../StyledTooltip/StyledTooltip';
 interface TransactionMenu {
     userPosition: boolean | undefined;
 }
@@ -21,7 +18,7 @@ export default function TransactionsMenu(props: TransactionMenu) {
 
     const [isModalOpen, openModal, closeModal] = useModal();
     const [currentModal, setCurrentModal] = useState<string>('edit');
-
+    const [openMenuTooltip, setOpenMenuTooltip] = useState(false);
     // ---------------------MODAL FUNCTIONALITY----------------
     let modalContent: React.ReactNode;
 
@@ -115,23 +112,38 @@ export default function TransactionsMenu(props: TransactionMenu) {
         <div className={styles.actions_menu}>
             {editButton}
             {removeButton}
-
+            {harvestButton}
             {detailsButton}
             {copyButton}
         </div>
     );
 
+    const menuContent = (
+        <div className={styles.menu_column}>
+            {editButton}
+            {removeButton}
+            {harvestButton}
+            {detailsButton}
+            {copyButton}
+        </div>
+    );
     const dropdownTransactionsMenu = (
         <div className={styles.dropdown_menu}>
-            <DropdownMenu title={<FiMoreHorizontal size={20} />}>
-                <DropdownMenuContainer>
-                    <DropdownMenuItem>{editButton}</DropdownMenuItem>
-                    <DropdownMenuItem>{removeButton}</DropdownMenuItem>
-                    <DropdownMenuItem>{detailsButton}</DropdownMenuItem>
-                    <DropdownMenuItem>{copyButton}</DropdownMenuItem>
-                    <DropdownMenuItem>{harvestButton}</DropdownMenuItem>
-                </DropdownMenuContainer>
-            </DropdownMenu>
+            <DefaultTooltip
+                open={openMenuTooltip}
+                onOpen={() => setOpenMenuTooltip(true)}
+                onClose={() => setOpenMenuTooltip(false)}
+                interactive
+                placement='left'
+                title={menuContent}
+            >
+                <div
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => setOpenMenuTooltip(!openMenuTooltip)}
+                >
+                    <FiMoreHorizontal size={20} />
+                </div>
+            </DefaultTooltip>
         </div>
     );
     return (

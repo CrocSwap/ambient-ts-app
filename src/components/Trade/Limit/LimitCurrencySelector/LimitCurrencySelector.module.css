@@ -1,29 +1,28 @@
-
-  /* swapbox */
-  .swapbox {
+/* swapbox */
+.swapbox {
     display: flex;
     overflow: auto;
     flex-direction: column;
     overflow-y: hidden;
     color: white;
-  }
-  
-  .modalSwapbox {
-    background-color: var(--dark2); 
-  }
+}
 
-  .direction{
+.modalSwapbox {
+    background-color: var(--dark2);
+}
+
+.direction {
     padding: 0.4.5px 0;
     margin: 4px 0;
-   
 }
-  .direction, .swapbox_bottom{
-      font-size: var(--body-size);
-      line-height: var(--body-lh);
-      color: var(--text-grey-light);
-  }
-  
-  .swapbox_top {
+.direction,
+.swapbox_bottom {
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    color: var(--text-grey-light);
+}
+
+.swapbox_top {
     border-radius: var(--border-radius);
     background-color: var(--dark2);
     display: flex;
@@ -33,86 +32,83 @@
     /* padding: 0.5rem 0; */
     min-height: 40px;
     /* height: 40px; */
-  }
-
-  .swap_input{
-width: 70%;
-  }
-.token_select {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 30%;
-  cursor: pointer;
 }
 
-  .token_select img {
-    max-width: 100%;
- 
-  }
+.swap_input {
+    width: 70%;
+}
+.token_select {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 30%;
+    cursor: pointer;
+}
 
-  .token_list_text{
-      font-size: var(--header2-size);
-      line-height: var(--header2-lh);
-      color: var(--text-grey-white);
-      font-weight: 200;
-  }
-  
-  /* bottom info */
-  .swapbox_bottom {
+.token_select img {
+    max-width: 100%;
+}
+
+.token_list_text {
+    font-size: var(--header2-size);
+    line-height: var(--header2-lh);
+    color: var(--text-grey-white);
+    font-weight: 200;
+}
+
+/* bottom info */
+.swapbox_bottom {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
- min-height: 33px;
-   margin: 4px 0;
-  }
-  
-  
-  .token_select_button {
+    min-height: 33px;
+    margin: 4px 0;
+}
+
+.token_select_button {
     cursor: pointer;
-  }
-  
-  .buy_token {
+}
+
+.buy_token {
     display: none;
-  }
-  
-  .sellAllButton {
+}
+
+.sellAllButton {
     cursor: pointer;
     transition: all var(--animation-speed) ease-out;
-  
+
     color: green;
-  }
-  
-  .sellAllButton:hover {
+}
+
+.sellAllButton:hover {
     color: hotpink;
-  }
+}
 
-
-  .surplus_toggle{
+.surplus_toggle {
     display: flex;
     flex-direction: row;
     align-items: center;
     gap: 8px;
-  }
+}
 
-  /* modal */
+/* modal */
 
-  .pool_modal{
+.pool_modal {
     max-height: 400px;
     overflow-y: scroll;
-  overflow-x: hidden;
-  transition: all var(--animation-speed) cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  }
+    overflow-x: hidden;
+    transition: all var(--animation-speed) cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
 
-  .pool_modal::-webkit-scrollbar {
+.pool_modal::-webkit-scrollbar {
     display: none;
-  }
+}
 
-  .search_input input{
+.search_input input {
     width: 100%;
     background: var(--dark2);
-    
+
     text-align: center;
     color: var(--text-grey-light);
     font-size: var(--body-size);
@@ -121,6 +117,4 @@ width: 70%;
     border-radius: var(--border-radius);
     border: none;
     outline: none;
-    
-
-  }
+}
