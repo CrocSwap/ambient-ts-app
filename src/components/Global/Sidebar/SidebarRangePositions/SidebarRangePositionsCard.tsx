@@ -15,7 +15,6 @@ interface SidebarRangePositionsProps {
 }
 
 export default function SidebarRangePositionsCard(props: SidebarRangePositionsProps) {
-
     const location = useLocation();
 
     const { isDenomBase, position, setOutsideControl, setSelectedOutsideTab } = props;
@@ -28,7 +27,7 @@ export default function SidebarRangePositionsCard(props: SidebarRangePositionsPr
     function handleRangePositionClick() {
         setOutsideControl(true);
         setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
-
+    }
 
     const [baseLiquidityDisplay, setBaseLiquidityDisplay] = useState<string | undefined>(undefined);
     const [quoteLiquidityDisplay, setQuoteLiquidityDisplay] = useState<string | undefined>(
