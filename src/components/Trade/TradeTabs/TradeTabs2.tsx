@@ -28,6 +28,7 @@ interface ITabsProps {
     chainId: string;
     switchTabToTransactions: boolean;
     setSwitchTabToTransactions: Dispatch<SetStateAction<boolean>>;
+    setSwitchTabToOrders: Dispatch<SetStateAction<boolean>>;
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     isShowAllEnabled: boolean;
@@ -40,6 +41,13 @@ interface ITabsProps {
     filter: CandleData | undefined;
     setIsCandleSelected: Dispatch<SetStateAction<boolean | undefined>>;
     setTransactionFilter: Dispatch<SetStateAction<CandleData | undefined>>;
+
+    switchTabToOrders: boolean;
+
+    selectedOutsideTab: number;
+    setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
+    outsideControl: boolean;
+    setOutsideControl: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function TradeTabs2(props: ITabsProps) {
@@ -53,6 +61,9 @@ export default function TradeTabs2(props: ITabsProps) {
         setIsCandleSelected,
         filter,
         setTransactionFilter,
+        switchTabToOrders,
+        setSwitchTabToOrders,
+        setSwitchTabToTransactions,
     } = props;
 
     const graphData = useAppSelector((state) => state?.graphData);
@@ -137,11 +148,31 @@ export default function TradeTabs2(props: ITabsProps) {
         },
     ];
 
+    console.log({ switchTabToOrders });
+    console.log(props.switchTabToTransactions);
+
+    const [tabToSwitchTo, setTabToSwitchTo] = useState(0);
+
+    function handleSwitchState() {
+        if (switchTabToOrders) {
+            setSwitchTabToTransactions(false);
+            setTabToSwitchTo(1);
+        } else if (props.switchTabToTransactions) {
+            setSwitchTabToOrders(false);
+            setTabToSwitchTo(2);
+        }
+    }
+
+    console.log(tabToSwitchTo);
+
     const outsideTabControl = {
         switchToTab: props.switchTabToTransactions,
-        tabToSwitchTo: 2,
+        tabToSwitchTo: tabToSwitchTo,
         stateHandler: props.setSwitchTabToTransactions,
     };
+    useEffect(() => {
+        handleSwitchState();
+    }, [switchTabToOrders, props.switchTabToTransactions, outsideTabControl]);
     // -------------------------------END OF DATA-----------------------------------------
     return (
         <>
@@ -150,6 +181,10 @@ export default function TradeTabs2(props: ITabsProps) {
                     data={tradeTabData}
                     outsideTabControl={outsideTabControl}
                     rightTabOptions={<PositionsOnlyToggle {...positionsOnlyToggleProps} />}
+                    selectedOutsideTab={props.selectedOutsideTab}
+                    setSelectedOutsideTab={props.setSelectedOutsideTab}
+                    outsideControl={props.outsideControl}
+                    setOutsideControl={props.setOutsideControl}
                 />
             }
         </>

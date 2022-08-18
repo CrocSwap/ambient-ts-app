@@ -20,52 +20,63 @@ interface TabProps {
     data: tabData[];
     rightTabOptions?: React.ReactNode;
     outsideTabControl?: outsideTab;
+
+    selectedOutsideTab: number;
+    setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
+    outsideControl: boolean;
+    setOutsideControl: Dispatch<SetStateAction<boolean>>;
+    // this props is for components that do not need outside control such as exchange balance
 }
 
 export default function TabComponent(props: TabProps) {
-    const { data, outsideTabControl } = props;
+    const {
+        data,
+        outsideTabControl,
+        selectedOutsideTab,
+        setSelectedOutsideTab,
+        outsideControl,
+        setOutsideControl,
+    } = props;
 
     const [selectedTab, setSelectedTab] = useState(data[0]);
+
+    function handleSelectedTab(item: tabData) {
+        setOutsideControl(false);
+        setSelectedTab(item);
+    }
 
     useEffect(() => {
         const currentTabData = data.find((item) => item.label === selectedTab.label);
         if (currentTabData) setSelectedTab(currentTabData);
-    }, [data, outsideTabControl]);
+    }, [data, outsideTabControl, outsideControl]);
 
-    function handleOutsideControl() {
-        if (outsideTabControl) {
-            if (selectedTab.label === data[outsideTabControl.tabToSwitchTo].label) {
-                return;
-            } else if (outsideTabControl.switchToTab) {
-                setSelectedTab(data[outsideTabControl.tabToSwitchTo]);
+    function handleOutside2() {
+        if (!outsideControl) {
+            return;
+        } else {
+            if (outsideControl) {
+                if (data[selectedOutsideTab]) {
+                    setSelectedTab(data[selectedOutsideTab]);
+                } else {
+                    setSelectedTab(data[0]);
+                }
             }
         }
-        return;
     }
 
     useEffect(() => {
-        handleOutsideControl();
-    }, [selectedTab, outsideTabControl]);
+        handleOutside2();
+    }, [selectedTab, selectedOutsideTab, outsideControl]);
+
+    // useEffect(() => {
+    //     handleOutsideControl();
+    // }, [selectedTab, outsideTabControl]);
 
     // const firstTwoNavs = [...data].slice(0, 2);
     // const remainingNavs = [...data].splice(2, data.length - 1);
 
     // We can honestly refactor one jsx to take care of both full nav items and nav items on the left but this is simpler to understand and refactor down the line.
     // TAB MENU WITH ITEMS ON THE RIGHT
-
-    function handleSelectedTab(item: tabData) {
-        if (outsideTabControl) {
-            if (outsideTabControl.switchToTab) {
-                outsideTabControl.stateHandler(false);
-
-                setSelectedTab(item);
-            } else {
-                setSelectedTab(item);
-            }
-        }
-
-        setSelectedTab(item);
-    }
 
     function handleMobileMenuIcon(icon: string, label: string) {
         return (
@@ -90,6 +101,8 @@ export default function TabComponent(props: TabProps) {
 
     const tabsWithRightOption = (
         <div className={styles.tab_with_option_container}>
+            {/* <button onClick={limitControl}>jere</button>
+            <button onClick={rangeControl}>range</button> */}
             <ul className={`${styles.tab_ul_left} ${styles.desktop_tabs} `}>
                 {data.map((item) => (
                     <li

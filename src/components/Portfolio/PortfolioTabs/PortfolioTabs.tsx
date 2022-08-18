@@ -33,6 +33,11 @@ interface PortfolioTabsPropsIF {
     tokenMap: Map<string, TokenIF>;
     switchTabToTransactions: boolean;
     setSwitchTabToTransactions: Dispatch<SetStateAction<boolean>>;
+
+    selectedOutsideTab: number;
+    setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
+    outsideControl: boolean;
+    setOutsideControl: Dispatch<SetStateAction<boolean>>;
 }
 export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
     const { resolvedAddress, activeAccount, connectedAccountActive, chainId, tokenMap } = props;
@@ -110,6 +115,10 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
                 data={accountTabData}
                 rightTabOptions={false}
                 outsideTabControl={outsideTabControl}
+                selectedOutsideTab={props.selectedOutsideTab}
+                setSelectedOutsideTab={props.setSelectedOutsideTab}
+                outsideControl={props.outsideControl}
+                setOutsideControl={props.setOutsideControl}
             />
         </div>
     );

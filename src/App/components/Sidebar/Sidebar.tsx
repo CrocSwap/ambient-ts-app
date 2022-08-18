@@ -30,8 +30,11 @@ interface SidebarPropsIF {
     toggleSidebar: (event: MouseEvent<HTMLDivElement> | MouseEvent<HTMLLIElement>) => void;
     chainId: string;
     switchTabToTransactions: boolean;
+    switchTabToOrders: boolean;
     handleSetTradeTabToTransaction: () => void;
+    handleSetTradeTabToOrders: () => void;
     setSwitchTabToTransactions: Dispatch<SetStateAction<boolean>>;
+    setSwitchTabToOrders: Dispatch<SetStateAction<boolean>>;
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     isShowAllEnabled: boolean;
@@ -40,6 +43,11 @@ interface SidebarPropsIF {
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
     tokenMap: Map<string, TokenIF>;
     lastBlockNumber: number;
+
+    selectedOutsideTab: number;
+    outsideControl: boolean;
+    setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
+    setOutsideControl: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function Sidebar(props: SidebarPropsIF) {
@@ -80,6 +88,18 @@ export default function Sidebar(props: SidebarPropsIF) {
             data: <TopPools chainId={chainId} lastBlockNumber={lastBlockNumber} />,
         },
     ];
+    const sidebarLimitOrderProps = {
+        selectedOutsideTab: props.selectedOutsideTab,
+        setSelectedOutsideTab: props.setSelectedOutsideTab,
+        outsideControl: props.outsideControl,
+        setOutsideControl: props.setOutsideControl,
+    };
+    const sidebarRangePositionProps = {
+        selectedOutsideTab: props.selectedOutsideTab,
+        setSelectedOutsideTab: props.setSelectedOutsideTab,
+        outsideControl: props.outsideControl,
+        setOutsideControl: props.setOutsideControl,
+    };
 
     const recentRangePositions = [
         {
@@ -89,12 +109,18 @@ export default function Sidebar(props: SidebarPropsIF) {
                 <SidebarRangePositions
                     mostRecentPositions={mostRecentPositions}
                     isDenomBase={isDenomBase}
+                    {...sidebarRangePositionProps}
                 />
             ),
         },
     ];
+
     const recentLimitOrders = [
-        { name: 'Limit Orders', icon: openOrdersImage, data: <SidebarLimitOrders /> },
+        {
+            name: 'Limit Orders',
+            icon: openOrdersImage,
+            data: <SidebarLimitOrders {...sidebarLimitOrderProps} />,
+        },
     ];
 
     const favoritePools = [
@@ -118,6 +144,10 @@ export default function Sidebar(props: SidebarPropsIF) {
                     setSwitchTabToTransactions={setSwitchTabToTransactions}
                     expandTradeTable={expandTradeTable}
                     setExpandTradeTable={setExpandTradeTable}
+                    selectedOutsideTab={props.selectedOutsideTab}
+                    setSelectedOutsideTab={props.setSelectedOutsideTab}
+                    setOutsideControl={props.setOutsideControl}
+                    outsideControl={props.outsideControl}
                 />
             ),
         },
@@ -165,6 +195,19 @@ export default function Sidebar(props: SidebarPropsIF) {
         </div>
     );
 
+    function setToOrders() {
+        props.setOutsideControl(true);
+        props.setSelectedOutsideTab(1);
+    }
+    function setToRanges() {
+        props.setOutsideControl(true);
+        props.setSelectedOutsideTab(0);
+    }
+    function setToTransactions() {
+        props.setOutsideControl(true);
+        props.setSelectedOutsideTab(2);
+    }
+
     return (
         <div>
             <nav className={`${styles.sidebar} ${sidebarStyle}`}>
@@ -179,6 +222,9 @@ export default function Sidebar(props: SidebarPropsIF) {
 
                     {!searchMode && topElementsDisplay}
                     <div className={styles.bottom_elements}>
+                        <button onClick={() => setToOrders()}>SET TO ORDERS</button>
+                        <button onClick={() => setToTransactions()}>SET TO TX</button>
+                        <button onClick={() => setToRanges()}>SET TO Ranges</button>
                         {searchMode && topElementsDisplay}
 
                         {recentRangePositions.map((item, idx) => (

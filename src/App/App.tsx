@@ -108,9 +108,17 @@ export default function App() {
     // `'0x5'` is the chain the app should be on by default
     const [chainData, isChainSupported, switchChain, switchNetworkInMoralis] = useAppChain('0x5');
 
-    const [switchTabToTransactions, setSwitchTabToTransactions] = useState<boolean>(false);
-
     const [isShowAllEnabled, setIsShowAllEnabled] = useState<boolean>(true);
+
+    // const outsideTabControl = {
+    //     switchToTab: props.switchTabToTransactions,
+    //     tabToSwitchTo: 2,
+    //     stateHandler: props.setSwitchTabToTransactions,
+    // };
+
+    const [switchTabToOrders, setSwitchTabToOrders] = useState<boolean>(false);
+
+    const [switchTabToTransactions, setSwitchTabToTransactions] = useState<boolean>(false);
     const [currentTxActiveInTransactions, setCurrentTxActiveInTransactions] = useState<string>('');
 
     const [expandTradeTable, setExpandTradeTable] = useState(false);
@@ -1576,6 +1584,13 @@ export default function App() {
     function handleSetTradeTabToTransaction() {
         setSwitchTabToTransactions(!switchTabToTransactions);
     }
+
+    function handleSetTradeTabToOrders() {
+        setSwitchTabToOrders(!switchTabToOrders);
+    }
+    const [selectedOutsideTab, setSelectedOutsideTab] = useState(0);
+    const [outsideControl, setOutsideControl] = useState(false);
+
     // props for <Sidebar/> React element
     const sidebarProps = {
         isDenomBase: tradeData.isDenomBase,
@@ -1595,7 +1610,21 @@ export default function App() {
         tokenMap: tokenMap,
         lastBlockNumber: lastBlockNumber,
 
+        switchTabToOrders: switchTabToOrders,
+        setSwitchTabToOrders: setSwitchTabToOrders,
+        handleSetTradeTabToOrders: handleSetTradeTabToOrders,
+
+        selectedOutsideTab: selectedOutsideTab,
+        setSelectedOutsideTab: setSelectedOutsideTab,
+        outsideControl: outsideControl,
+        setOutsideControl: setOutsideControl,
+
         // setShowSidebar : setShowSidebar
+    };
+
+    const analyticsProps = {
+        setSelectedOutsideTab: setSelectedOutsideTab,
+        setOutsideControl: setOutsideControl,
     };
 
     function updateDenomIsInBase() {
@@ -1701,6 +1730,12 @@ export default function App() {
                                     expandTradeTable={expandTradeTable}
                                     setExpandTradeTable={setExpandTradeTable}
                                     tokenMap={tokenMap}
+                                    switchTabToOrders={switchTabToOrders}
+                                    setSwitchTabToOrders={setSwitchTabToOrders}
+                                    selectedOutsideTab={selectedOutsideTab}
+                                    setSelectedOutsideTab={setSelectedOutsideTab}
+                                    outsideControl={outsideControl}
+                                    setOutsideControl={setOutsideControl}
                                 />
                             }
                         >
@@ -1712,7 +1747,7 @@ export default function App() {
                             <Route path='reposition' element={<Reposition />} />
                             <Route path='edit/' element={<Navigate to='/trade/market' replace />} />
                         </Route>
-                        <Route path='analytics' element={<Analytics />} />
+                        <Route path='analytics' element={<Analytics {...analyticsProps} />} />
                         <Route path='tokens/:address' element={<TokenPage />} />
                         <Route path='pools/:address' element={<PoolPage />} />
 
@@ -1729,6 +1764,10 @@ export default function App() {
                                     tokenMap={tokenMap}
                                     switchTabToTransactions={switchTabToTransactions}
                                     setSwitchTabToTransactions={setSwitchTabToTransactions}
+                                    selectedOutsideTab={selectedOutsideTab}
+                                    setSelectedOutsideTab={setSelectedOutsideTab}
+                                    outsideControl={outsideControl}
+                                    setOutsideControl={setOutsideControl}
                                 />
                             }
                         />
@@ -1743,6 +1782,10 @@ export default function App() {
                                     tokenMap={tokenMap}
                                     switchTabToTransactions={switchTabToTransactions}
                                     setSwitchTabToTransactions={setSwitchTabToTransactions}
+                                    selectedOutsideTab={selectedOutsideTab}
+                                    setSelectedOutsideTab={setSelectedOutsideTab}
+                                    outsideControl={outsideControl}
+                                    setOutsideControl={setOutsideControl}
                                 />
                             }
                         />

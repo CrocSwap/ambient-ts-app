@@ -17,6 +17,11 @@ interface SidebarRecentTransactionsPropsIF {
     switchTabToTransactions: boolean;
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
+
+    selectedOutsideTab: number;
+    setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
+    outsideControl: boolean;
+    setOutsideControl: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function SidebarRecentTransactions(props: SidebarRecentTransactionsPropsIF) {
@@ -59,6 +64,10 @@ export default function SidebarRecentTransactions(props: SidebarRecentTransactio
                         setIsShowAllEnabled={setIsShowAllEnabled}
                         setSwitchTabToTransactions={setSwitchTabToTransactions}
                         switchTabToTransactions={switchTabToTransactions}
+                        selectedOutsideTab={props.selectedOutsideTab}
+                        setSelectedOutsideTab={props.setSelectedOutsideTab}
+                        outsideControl={props.outsideControl}
+                        setOutsideControl={props.setOutsideControl}
                     />
                 ))}
             </div>

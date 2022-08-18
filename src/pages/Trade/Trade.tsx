@@ -30,6 +30,7 @@ interface ITradeProps {
     chainId: string;
     switchTabToTransactions: boolean;
     setSwitchTabToTransactions: Dispatch<SetStateAction<boolean>>;
+    setSwitchTabToOrders: Dispatch<SetStateAction<boolean>>;
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     isShowAllEnabled: boolean;
@@ -37,10 +38,25 @@ interface ITradeProps {
 
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
+
+    switchTabToOrders: boolean;
+
+    selectedOutsideTab: number;
+    setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
+    outsideControl: boolean;
+    setOutsideControl: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function Trade(props: ITradeProps) {
-    const { chainId, tokenMap, poolPriceDisplay, provider } = props;
+    const {
+        chainId,
+        tokenMap,
+        poolPriceDisplay,
+        provider,
+        switchTabToOrders,
+        setSwitchTabToOrders,
+        setSwitchTabToTransactions,
+    } = props;
 
     const [isCandleSelected, setIsCandleSelected] = useState<boolean | undefined>();
     const [transactionFilter, setTransactionFilter] = useState<CandleData>();
@@ -175,6 +191,12 @@ export default function Trade(props: ITradeProps) {
                             setIsCandleSelected={setIsCandleSelected}
                             filter={transactionFilter}
                             setTransactionFilter={setTransactionFilter}
+                            switchTabToOrders={switchTabToOrders}
+                            setSwitchTabToOrders={setSwitchTabToOrders}
+                            selectedOutsideTab={props.selectedOutsideTab}
+                            setSelectedOutsideTab={props.setSelectedOutsideTab}
+                            outsideControl={props.outsideControl}
+                            setOutsideControl={props.setOutsideControl}
                         />
                     </motion.div>
                 </div>
