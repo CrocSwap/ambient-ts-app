@@ -1,0 +1,55 @@
+.input_box {
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 0px 8px;
+    gap: 4px;
+    width: 100%;
+    height: 25px;
+    
+    /* dark/tertiary */
+    
+    background: #242F3F;
+    border-radius: 4px;
+    
+    /* Inside auto layout */
+    
+    flex: none;
+    order: 3;
+    align-self: stretch;
+    flex-grow: 0;
+
+}
+
+.input_text:focus {
+    outline: none;
+  }
+
+.input_text {
+
+    width: 212px;
+    height: 22px;
+
+/* small */
+
+    font-family: 'Lexend Deca';
+    font-style: normal;
+    font-weight: 300;
+    font-size: 12px;
+    line-height: 15px;
+    display: flex;
+    align-items: center;
+    outline: none;
+
+    /* text/grey dark */
+    border-color: transparent;
+    color: rgba(235, 235, 255, 0.25);
+    background-color: transparent;
+
+    /* Inside auto layout */
+
+    flex: none;
+    order: 0;
+    flex-grow: 1;
+}

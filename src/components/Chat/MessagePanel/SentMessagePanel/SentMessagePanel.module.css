@@ -1,0 +1,59 @@
+
+.avatar_image{
+    max-width: 25px;
+    max-height: 25px;
+   
+    border-radius: 50%;
+    background: var(--title-gradient);
+    padding: 2px;
+    flex-grow: 1;
+    align-self: flex-end;
+
+}
+
+.message_date {
+    width: 50px;
+    height: 14px;
+
+    /* extra small */
+
+    font-family: 'Lexend Deca';
+    font-style: normal;
+    font-weight: 300;
+    font-size: 10px;
+    line-height: 12px;
+    align-self: flex-end;
+
+    /* text/grey dark */
+
+    color: rgba(235, 235, 255, 0.25);
+
+    /* Inside auto layout */
+    order: 0;
+    
+}
+
+.message {
+
+    width: 158px;
+    height: 45px;
+    
+    white-space: pre-line;
+    font-family: 'Lexend Deca';
+    font-style: normal;
+    font-weight: 300;
+    font-size: 13px;
+    line-height: 15px;
+
+    flex-grow: 5!important;
+    color: #EBEBFF;
+    align-self: stretch;
+
+}
+
+.sent_message_body {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    padding: 5px;
+}

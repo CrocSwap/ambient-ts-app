@@ -252,7 +252,7 @@ export default function LiquidityChart(props: LiquidtiyData) {
                         .enter()
                         .style('fill', (d: any) =>
                             d.isCurrent
-                                ? '#E6274A'
+                                ? '#F7385B'
                                 : d.index < (chartData.lineseries.length - 1) / 2
                                 ? '#CDC1FF'
                                 : '#7371FC',

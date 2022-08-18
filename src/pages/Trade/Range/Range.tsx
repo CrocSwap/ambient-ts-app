@@ -136,6 +136,11 @@ export default function Range(props: RangePropsIF) {
 
     const denominationsInBase = tradeData.isDenomBase;
     const isTokenAPrimary = tradeData.isTokenAPrimaryRange;
+    const targetData = tradeData.targetData;
+
+    useEffect(() => {
+        console.error({ targetData });
+    }, [tradeData.targetData]);
 
     const [rangeAllowed, setRangeAllowed] = useState<boolean>(false);
 
@@ -920,6 +925,7 @@ export default function Range(props: RangePropsIF) {
                     setRangeHighTick={setRangeHighTick}
                     disable={isInvalidRange}
                     chainId={chainId.toString()}
+                    targetData={targetData}
                 />
             </motion.div>
             <DividerDark addMarginTop />
