@@ -97,6 +97,64 @@ export default function Chart(props: ChartData) {
         return chartUtils;
     }, [props.priceData]);
 
+    // Set Scale
+    useEffect(() => {
+        if (parsedChartData !== undefined) {
+            const priceRange = d3fc
+                .extentLinear()
+                .accessors([(d: any) => d.high, (d: any) => d.low])
+                .pad([0.05, 0.05]);
+
+            const xExtent = d3fc
+                .extentDate()
+                .accessors([(d: any) => d.date])
+                .padUnit('domain')
+                // ensure that the scale is padded by one day in either direction
+                .pad([parsedChartData.period * 5000, (parsedChartData.period / 2) * 100000]);
+
+            const xScale = d3.scaleTime();
+            const yScale = d3.scaleLinear();
+
+            xScale.domain(xExtent(parsedChartData.chartData));
+            yScale.domain(priceRange(parsedChartData.chartData));
+
+            const xScaleCopy = xScale.copy();
+            const yScaleCopy = yScale.copy();
+
+            const liquidityTickScale = d3.scaleBand();
+            const liquidityScale = d3.scaleLinear();
+            const barThreshold = 1650;
+
+            // bar chart
+            const liquidityExtent = d3fc
+                .extentLinear(props.liquidityData)
+                .include([0])
+                .accessors([(d: any) => d.value]);
+
+            liquidityScale.domain(liquidityExtent(props.liquidityData));
+
+            const liqScale = liquidityScale
+                .copy()
+                .range([
+                    Math.min(...props.liquidityData.map((o) => o.value)) / 2.5,
+                    Math.max(...props.liquidityData.map((o) => o.value)) * 2.5,
+                ]);
+
+            setScaleData(() => {
+                return {
+                    xScale: xScale,
+                    yScale: yScale,
+                    liquidityTickScale: liquidityTickScale,
+                    liquidityScale: liquidityScale,
+                    liqScale: liqScale,
+                    xScaleCopy: xScaleCopy,
+                    yScaleCopy: yScaleCopy,
+                    barThreshold: barThreshold,
+                };
+            });
+        }
+    }, [parsedChartData.period]);
+
     // Set Targets
     useEffect(() => {
         const reustls: boolean[] = [];
@@ -131,6 +189,7 @@ export default function Chart(props: ChartData) {
                               }),
                           )
                         : 0;
+
                 return newTargets;
             });
         } else if (reustls.length < 2) {
@@ -183,42 +242,7 @@ export default function Chart(props: ChartData) {
                 ];
             });
         }
-    }, [parsedChartData.period, props.targetData]);
-
-    // Set Scale
-    useEffect(() => {
-        if (parsedChartData !== undefined) {
-            const priceRange = d3fc
-                .extentLinear()
-                .accessors([(d: any) => d.high, (d: any) => d.low])
-                .pad([0.05, 0.05]);
-
-            const xExtent = d3fc
-                .extentDate()
-                .accessors([(d: any) => d.date])
-                .padUnit('domain')
-                // ensure that the scale is padded by one day in either direction
-                .pad([parsedChartData.period * 5000, (parsedChartData.period / 2) * 100000]);
-
-            const xScale = d3.scaleTime();
-            const yScale = d3.scaleLinear();
-
-            xScale.domain(xExtent(parsedChartData.chartData));
-            yScale.domain(priceRange(parsedChartData.chartData));
-
-            const xScaleCopy = xScale.copy();
-            const yScaleCopy = yScale.copy();
-
-            setScaleData(() => {
-                return {
-                    xScale: xScale,
-                    yScale: yScale,
-                    xScaleCopy: xScaleCopy,
-                    yScaleCopy: yScaleCopy,
-                };
-            });
-        }
-    }, [parsedChartData.period]);
+    }, [props.targetData]);
 
     // Call drawChart()
     useEffect(() => {
@@ -239,25 +263,6 @@ export default function Chart(props: ChartData) {
 
             const valueFormatter = d3.format('.8f');
 
-            const liquidityTickScale = d3.scaleBand();
-            const liquidityScale = d3.scaleLinear();
-            const barThreshold = 1650;
-
-            // bar chart
-            const liquidityExtent = d3fc
-                .extentLinear(props.liquidityData)
-                .include([0])
-                .accessors([(d: any) => d.value]);
-
-            liquidityScale.domain(liquidityExtent(props.liquidityData));
-
-            const liqScale = liquidityScale
-                .copy()
-                .range([
-                    Math.min(...props.liquidityData.map((o) => o.value)) / 2.5,
-                    Math.max(...props.liquidityData.map((o) => o.value)) * 2.5,
-                ]);
-
             // axes
             const xAxis = d3fc.axisBottom().scale(scaleData.xScale);
             const yAxis = d3fc.axisRight().scale(scaleData.yScale);
@@ -266,13 +271,13 @@ export default function Chart(props: ChartData) {
                 .autoBandwidth(d3fc.seriesSvgBar())
                 .widthFraction(1)
                 .orient('horizontal')
-                .mainValue((d: any) => liqScale.invert(d.value))
+                .mainValue((d: any) => scaleData.liqScale.invert(d.value))
                 .crossValue((d: any) => d.tick)
-                .xScale(liquidityScale)
+                .xScale(scaleData.liquidityScale)
                 .yScale(scaleData.yScale)
                 .decorate((selection: any) => {
                     selection.select('.bar > path').style('fill', (d: any) => {
-                        return d.tick < barThreshold
+                        return d.tick < scaleData.barThreshold
                             ? 'rgba(205, 193, 255, 0.25)'
                             : 'rgba(115, 113, 252, 0.25)';
                     });
@@ -306,13 +311,7 @@ export default function Chart(props: ChartData) {
                 .decorate((selection: any) => {
                     selection
                         .enter()
-                        .style('fill', (d: any) =>
-                            selectedCandle?.time === d.time
-                                ? '#F7385B'
-                                : d.close > d.open
-                                ? '#7371FC'
-                                : '#CDC1FF',
-                        )
+                        .style('fill', (d: any) => (d.close > d.open ? '#7371FC' : '#CDC1FF'))
                         .style('stroke', (d: any) => (d.close > d.open ? '#7371FC' : '#CDC1FF'));
                     selection
                         .enter()
@@ -323,16 +322,39 @@ export default function Chart(props: ChartData) {
                             d3.select(event.currentTarget).style('cursor', 'default');
                         })
                         .on('click', (event: any) => {
-                            if (event.target.__data__ === selectedCandle) {
+                            if (
+                                selectedCandle !== undefined &&
+                                event.currentTarget !== selectedCandle
+                            ) {
+                                d3.select(selectedCandle)
+                                    .style('fill', (d: any) =>
+                                        d.close > d.open ? '#7371FC' : '#CDC1FF',
+                                    )
+                                    .style('stroke', (d: any) =>
+                                        d.close > d.open ? '#7371FC' : '#CDC1FF',
+                                    );
+                            }
+                            if (event.currentTarget === selectedCandle) {
                                 tooltip.style('visibility', 'hidden');
+                                d3.select(event.currentTarget)
+                                    .style('fill', (d: any) =>
+                                        d.close > d.open ? '#7371FC' : '#CDC1FF',
+                                    )
+                                    .style('stroke', (d: any) =>
+                                        d.close > d.open ? '#7371FC' : '#CDC1FF',
+                                    );
                                 setIsChartSelected(false);
                                 selectedCandle = undefined;
                             } else {
-                                selectedCandle = event.target.__data__;
+                                selectedCandle = event.currentTarget;
                                 setIsChartSelected(true);
                                 setTransactionFilter(() => {
                                     return event.target.__data__;
                                 });
+
+                                d3.select(event.currentTarget)
+                                    .style('fill', '#F7385B')
+                                    .style('stroke', '#F7385B');
 
                                 tooltip
                                     .style('visibility', 'visible')
@@ -400,6 +422,9 @@ export default function Chart(props: ChartData) {
                     .call(drag);
             });
 
+            let lastY = 0;
+            let yOffset = 0;
+
             const zoom = d3
                 .zoom()
                 .scaleExtent([1, 10])
@@ -407,11 +432,32 @@ export default function Chart(props: ChartData) {
                     scaleData.xScale.domain(
                         event.transform.rescaleX(scaleData.xScaleCopy).domain(),
                     );
+
+                    if (event.sourceEvent && event.sourceEvent.type != 'wheel') {
+                        lastY = event.transform.y - yOffset;
+                        const translate = d3.zoomIdentity.translate(0, lastY);
+                        scaleData.yScale.domain(translate.rescaleY(scaleData.yScaleCopy).domain());
+                    } else {
+                        yOffset = event.transform.y - lastY;
+                    }
+
+                    render();
+                }) as any;
+
+            const yAxisZoom = d3
+                .zoom()
+                .scaleExtent([1, 10])
+                .on('zoom', (event: any) => {
                     scaleData.yScale.domain(
                         event.transform.rescaleY(scaleData.yScaleCopy).domain(),
                     );
                     render();
                 }) as any;
+
+            const yAxisDrag = d3.drag().on('drag', (event: any) => {
+                const factor = Math.pow(2, -event.dy * 0.01);
+                d3.select(d3PlotArea.current).call(yAxisZoom.scaleBy, factor);
+            }) as any;
 
             const candleJoin = d3fc.dataJoin('g', 'candle');
             const targetsJoin = d3fc.dataJoin('g', 'targets');
@@ -423,8 +469,8 @@ export default function Chart(props: ChartData) {
                 scaleData.xScale.range([0, event.detail.width]);
                 scaleData.yScale.range([event.detail.height, 0]);
 
-                liquidityTickScale.range([event.detail.height, 0]);
-                liquidityScale.range([event.detail.width, event.detail.width / 2]);
+                scaleData.liquidityTickScale.range([event.detail.height, 0]);
+                scaleData.liquidityScale.range([event.detail.width, event.detail.width / 2]);
             });
 
             d3.select(d3PlotArea.current).on('draw', function (event: any) {
@@ -459,6 +505,12 @@ export default function Chart(props: ChartData) {
                 render();
             });
 
+            d3.select(d3Yaxis.current)
+                .on('mouseover', (event: any) => {
+                    d3.select(event.currentTarget).style('cursor', 'ns-resize');
+                })
+                .call(yAxisDrag);
+
             const nd = d3.select('#group').node() as any;
             render();
         }
@@ -473,7 +525,6 @@ export default function Chart(props: ChartData) {
 
     useEffect(() => {
         const timer = setTimeout(() => {
-            console.log('setTarget');
             const newTargetData: targetData[] = [
                 {
                     name: 'high',
@@ -510,7 +561,11 @@ export default function Chart(props: ChartData) {
                             className='plot-area'
                             style={{ flex: 1, overflow: 'hidden' }}
                         ></d3fc-svg>
-                        <d3fc-svg ref={d3Yaxis} style={{ width: '3em' }}></d3fc-svg>
+                        <d3fc-svg
+                            className='y-axis'
+                            ref={d3Yaxis}
+                            style={{ width: '3em' }}
+                        ></d3fc-svg>
                     </div>
                     <d3fc-svg
                         ref={d3Xaxis}
