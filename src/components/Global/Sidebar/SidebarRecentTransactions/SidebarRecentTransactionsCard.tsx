@@ -5,6 +5,7 @@ import styles from './SidebarRecentTransactionsCard.module.css';
 import { Dispatch, SetStateAction } from 'react';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import { setTokenA, setTokenB } from '../../../../utils/state/tradeDataSlice';
+import { useLocation } from 'react-router-dom';
 
 interface TransactionProps {
     tx: ISwap;
@@ -15,11 +16,21 @@ interface TransactionProps {
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     isShowAllEnabled: boolean;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
-    setSwitchTabToTransactions: Dispatch<SetStateAction<boolean>>;
-    switchTabToTransactions: boolean;
+
+    selectedOutsideTab: number;
+    setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
+    outsideControl: boolean;
+    setOutsideControl: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function SidebarRecentTransactionsCard(props: TransactionProps) {
+    const location = useLocation();
+
+    const onTradeRoute = location.pathname.includes('trade');
+    const onAccountRoute = location.pathname.includes('account');
+
+    const tabToSwitchToBasedOnRoute = onTradeRoute ? 2 : onAccountRoute ? 4 : 0;
+
     const {
         tx,
         coinGeckoTokenMap,
@@ -28,8 +39,11 @@ export default function SidebarRecentTransactionsCard(props: TransactionProps) {
         setCurrentTxActiveInTransactions,
         // isShowAllEnabled,
         setIsShowAllEnabled,
-        setSwitchTabToTransactions,
-        switchTabToTransactions,
+
+        // selectedOutsideTab,
+        setSelectedOutsideTab,
+        // outsideControl,
+        setOutsideControl,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -56,7 +70,8 @@ export default function SidebarRecentTransactionsCard(props: TransactionProps) {
     // );
 
     function handleRecentTransactionClick(tx: ISwap) {
-        switchTabToTransactions ? null : setSwitchTabToTransactions(true);
+        setOutsideControl(true);
+        setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
         setIsShowAllEnabled(false);
 
         setCurrentTxActiveInTransactions(tx.id);

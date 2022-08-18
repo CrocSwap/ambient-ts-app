@@ -30,14 +30,18 @@ interface ITradeProps {
         dataTokenB: TokenIF;
     };
     chainId: string;
-    switchTabToTransactions: boolean;
-    setSwitchTabToTransactions: Dispatch<SetStateAction<boolean>>;
+
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     isShowAllEnabled: boolean;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
+
+    selectedOutsideTab: number;
+    setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
+    outsideControl: boolean;
+    setOutsideControl: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function Trade(props: ITradeProps) {
@@ -178,8 +182,6 @@ export default function Trade(props: ITradeProps) {
                             isWeb3Enabled={props.isWeb3Enabled}
                             lastBlockNumber={props.lastBlockNumber}
                             chainId={chainId}
-                            switchTabToTransactions={props.switchTabToTransactions}
-                            setSwitchTabToTransactions={props.setSwitchTabToTransactions}
                             currentTxActiveInTransactions={props.currentTxActiveInTransactions}
                             setCurrentTxActiveInTransactions={
                                 props.setCurrentTxActiveInTransactions
@@ -193,6 +195,10 @@ export default function Trade(props: ITradeProps) {
                             setIsCandleSelected={setIsCandleSelected}
                             filter={transactionFilter}
                             setTransactionFilter={setTransactionFilter}
+                            selectedOutsideTab={props.selectedOutsideTab}
+                            setSelectedOutsideTab={props.setSelectedOutsideTab}
+                            outsideControl={props.outsideControl}
+                            setOutsideControl={props.setOutsideControl}
                         />
                     </motion.div>
                 </div>

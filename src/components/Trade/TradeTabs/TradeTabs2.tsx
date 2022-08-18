@@ -26,8 +26,7 @@ interface ITabsProps {
     isWeb3Enabled: boolean;
     lastBlockNumber: number;
     chainId: string;
-    switchTabToTransactions: boolean;
-    setSwitchTabToTransactions: Dispatch<SetStateAction<boolean>>;
+
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     isShowAllEnabled: boolean;
@@ -40,6 +39,11 @@ interface ITabsProps {
     filter: CandleData | undefined;
     setIsCandleSelected: Dispatch<SetStateAction<boolean | undefined>>;
     setTransactionFilter: Dispatch<SetStateAction<CandleData | undefined>>;
+
+    selectedOutsideTab: number;
+    setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
+    outsideControl: boolean;
+    setOutsideControl: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function TradeTabs2(props: ITabsProps) {
@@ -137,19 +141,17 @@ export default function TradeTabs2(props: ITabsProps) {
         },
     ];
 
-    const outsideTabControl = {
-        switchToTab: props.switchTabToTransactions,
-        tabToSwitchTo: 2,
-        stateHandler: props.setSwitchTabToTransactions,
-    };
     // -------------------------------END OF DATA-----------------------------------------
     return (
         <>
             {
                 <TabComponent
                     data={tradeTabData}
-                    outsideTabControl={outsideTabControl}
                     rightTabOptions={<PositionsOnlyToggle {...positionsOnlyToggleProps} />}
+                    selectedOutsideTab={props.selectedOutsideTab}
+                    setSelectedOutsideTab={props.setSelectedOutsideTab}
+                    outsideControl={props.outsideControl}
+                    setOutsideControl={props.setOutsideControl}
                 />
             }
         </>

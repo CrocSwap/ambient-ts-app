@@ -110,9 +110,8 @@ export default function App() {
     // `'0x5'` is the chain the app should be on by default
     const [chainData, isChainSupported, switchChain, switchNetworkInMoralis] = useAppChain('0x5');
 
-    const [switchTabToTransactions, setSwitchTabToTransactions] = useState<boolean>(false);
-
     const [isShowAllEnabled, setIsShowAllEnabled] = useState<boolean>(true);
+
     const [currentTxActiveInTransactions, setCurrentTxActiveInTransactions] = useState<string>('');
 
     const [expandTradeTable, setExpandTradeTable] = useState(false);
@@ -1520,18 +1519,15 @@ export default function App() {
         setSidebarManuallySet(true);
     }
 
-    function handleSetTradeTabToTransaction() {
-        setSwitchTabToTransactions(!switchTabToTransactions);
-    }
+    const [selectedOutsideTab, setSelectedOutsideTab] = useState(0);
+    const [outsideControl, setOutsideControl] = useState(false);
+
     // props for <Sidebar/> React element
     const sidebarProps = {
         isDenomBase: tradeData.isDenomBase,
         showSidebar: showSidebar,
         toggleSidebar: toggleSidebar,
         chainId: chainData.chainId,
-        switchTabToTransactions: switchTabToTransactions,
-        handleSetTradeTabToTransaction: handleSetTradeTabToTransaction,
-        setSwitchTabToTransactions: setSwitchTabToTransactions,
 
         currentTxActiveInTransactions: currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions: setCurrentTxActiveInTransactions,
@@ -1542,7 +1538,17 @@ export default function App() {
         tokenMap: tokenMap,
         lastBlockNumber: lastBlockNumber,
 
+        selectedOutsideTab: selectedOutsideTab,
+        setSelectedOutsideTab: setSelectedOutsideTab,
+        outsideControl: outsideControl,
+        setOutsideControl: setOutsideControl,
+
         // setShowSidebar : setShowSidebar
+    };
+
+    const analyticsProps = {
+        setSelectedOutsideTab: setSelectedOutsideTab,
+        setOutsideControl: setOutsideControl,
     };
 
     function updateDenomIsInBase() {
@@ -1639,8 +1645,6 @@ export default function App() {
                                     isTokenABase={isTokenABase}
                                     poolPriceDisplay={poolPriceDisplay}
                                     chainId={chainData.chainId}
-                                    switchTabToTransactions={switchTabToTransactions}
-                                    setSwitchTabToTransactions={setSwitchTabToTransactions}
                                     currentTxActiveInTransactions={currentTxActiveInTransactions}
                                     setCurrentTxActiveInTransactions={
                                         setCurrentTxActiveInTransactions
@@ -1650,6 +1654,10 @@ export default function App() {
                                     expandTradeTable={expandTradeTable}
                                     setExpandTradeTable={setExpandTradeTable}
                                     tokenMap={tokenMap}
+                                    selectedOutsideTab={selectedOutsideTab}
+                                    setSelectedOutsideTab={setSelectedOutsideTab}
+                                    outsideControl={outsideControl}
+                                    setOutsideControl={setOutsideControl}
                                 />
                             }
                         >
@@ -1661,7 +1669,7 @@ export default function App() {
                             <Route path='reposition' element={<Reposition />} />
                             <Route path='edit/' element={<Navigate to='/trade/market' replace />} />
                         </Route>
-                        <Route path='analytics' element={<Analytics />} />
+                        <Route path='analytics' element={<Analytics {...analyticsProps} />} />
                         <Route path='tokens/:address' element={<TokenPage />} />
                         <Route path='pools/:address' element={<PoolPage />} />
 
@@ -1676,8 +1684,10 @@ export default function App() {
                                     userImageData={imageData}
                                     chainId={chainData.chainId}
                                     tokenMap={tokenMap}
-                                    switchTabToTransactions={switchTabToTransactions}
-                                    setSwitchTabToTransactions={setSwitchTabToTransactions}
+                                    selectedOutsideTab={selectedOutsideTab}
+                                    setSelectedOutsideTab={setSelectedOutsideTab}
+                                    outsideControl={outsideControl}
+                                    setOutsideControl={setOutsideControl}
                                 />
                             }
                         />
@@ -1690,8 +1700,10 @@ export default function App() {
                                     chainId={chainData.chainId}
                                     userImageData={imageData}
                                     tokenMap={tokenMap}
-                                    switchTabToTransactions={switchTabToTransactions}
-                                    setSwitchTabToTransactions={setSwitchTabToTransactions}
+                                    selectedOutsideTab={selectedOutsideTab}
+                                    setSelectedOutsideTab={setSelectedOutsideTab}
+                                    outsideControl={outsideControl}
+                                    setOutsideControl={setOutsideControl}
                                 />
                             }
                         />

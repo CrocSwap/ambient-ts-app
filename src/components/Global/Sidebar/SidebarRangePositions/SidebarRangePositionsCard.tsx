@@ -1,15 +1,33 @@
 import styles from './SidebarRangePositionsCard.module.css';
 import { PositionIF } from '../../../../utils/interfaces/PositionIF';
+import { useLocation } from 'react-router-dom';
 import { toDisplayQty } from '@crocswap-libs/sdk';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, SetStateAction, Dispatch } from 'react';
 
 interface SidebarRangePositionsProps {
     isDenomBase: boolean;
     position: PositionIF;
+
+    selectedOutsideTab: number;
+    setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
+    outsideControl: boolean;
+    setOutsideControl: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function SidebarRangePositionsCard(props: SidebarRangePositionsProps) {
-    const { isDenomBase, position } = props;
+    const location = useLocation();
+
+    const { isDenomBase, position, setOutsideControl, setSelectedOutsideTab } = props;
+
+    const onTradeRoute = location.pathname.includes('trade');
+    const onAccountRoute = location.pathname.includes('account');
+
+    const tabToSwitchToBasedOnRoute = onTradeRoute ? 0 : onAccountRoute ? 2 : 0;
+
+    function handleRangePositionClick() {
+        setOutsideControl(true);
+        setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
+    }
 
     const [baseLiquidityDisplay, setBaseLiquidityDisplay] = useState<string | undefined>(undefined);
     const [quoteLiquidityDisplay, setQuoteLiquidityDisplay] = useState<string | undefined>(
@@ -69,7 +87,7 @@ export default function SidebarRangePositionsCard(props: SidebarRangePositionsPr
             : `${position?.lowRangeShortDisplayInQuote}-${position?.highRangeShortDisplayInQuote}`;
 
     return (
-        <div className={styles.container}>
+        <div className={styles.container} onClick={handleRangePositionClick}>
             <div>
                 {isDenomBase
                     ? `${position?.baseSymbol}/${position?.quoteSymbol}`

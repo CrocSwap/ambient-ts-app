@@ -17,8 +17,11 @@ interface PortfolioPropsIF {
     userImageData: string[];
     chainId: string;
     tokenMap: Map<string, TokenIF>;
-    switchTabToTransactions: boolean;
-    setSwitchTabToTransactions: Dispatch<SetStateAction<boolean>>;
+
+    selectedOutsideTab: number;
+    setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
+    outsideControl: boolean;
+    setOutsideControl: Dispatch<SetStateAction<boolean>>;
 }
 
 const mainnetProvider = new ethers.providers.JsonRpcProvider(
@@ -89,7 +92,10 @@ export default function Portfolio(props: PortfolioPropsIF) {
 
     const exchangeBalanceComponent = (
         <div className={styles.exchange_balance}>
-            <ExchangeBalance />
+            <ExchangeBalance
+                setSelectedOutsideTab={props.setSelectedOutsideTab}
+                setOutsideControl={props.setOutsideControl}
+            />
         </div>
     );
     return (
@@ -106,8 +112,10 @@ export default function Portfolio(props: PortfolioPropsIF) {
                 connectedAccountActive={connectedAccountActive}
                 chainId={chainId}
                 tokenMap={tokenMap}
-                switchTabToTransactions={props.switchTabToTransactions}
-                setSwitchTabToTransactions={props.setSwitchTabToTransactions}
+                selectedOutsideTab={props.selectedOutsideTab}
+                setSelectedOutsideTab={props.setSelectedOutsideTab}
+                setOutsideControl={props.setOutsideControl}
+                outsideControl={props.outsideControl}
             />
             {connectedAccountActive ? exchangeBalanceComponent : null}
         </main>

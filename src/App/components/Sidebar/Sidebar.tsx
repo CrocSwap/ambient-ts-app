@@ -29,9 +29,7 @@ interface SidebarPropsIF {
     showSidebar: boolean;
     toggleSidebar: (event: MouseEvent<HTMLDivElement> | MouseEvent<HTMLLIElement>) => void;
     chainId: string;
-    switchTabToTransactions: boolean;
-    handleSetTradeTabToTransaction: () => void;
-    setSwitchTabToTransactions: Dispatch<SetStateAction<boolean>>;
+
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     isShowAllEnabled: boolean;
@@ -40,6 +38,11 @@ interface SidebarPropsIF {
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
     tokenMap: Map<string, TokenIF>;
     lastBlockNumber: number;
+
+    selectedOutsideTab: number;
+    outsideControl: boolean;
+    setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
+    setOutsideControl: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function Sidebar(props: SidebarPropsIF) {
@@ -48,12 +51,11 @@ export default function Sidebar(props: SidebarPropsIF) {
         toggleSidebar,
         showSidebar,
         chainId,
-        setSwitchTabToTransactions,
         currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions,
         isShowAllEnabled,
         setIsShowAllEnabled,
-        switchTabToTransactions,
+
         expandTradeTable,
         setExpandTradeTable,
         tokenMap,
@@ -80,6 +82,18 @@ export default function Sidebar(props: SidebarPropsIF) {
             data: <TopPools chainId={chainId} lastBlockNumber={lastBlockNumber} />,
         },
     ];
+    const sidebarLimitOrderProps = {
+        selectedOutsideTab: props.selectedOutsideTab,
+        setSelectedOutsideTab: props.setSelectedOutsideTab,
+        outsideControl: props.outsideControl,
+        setOutsideControl: props.setOutsideControl,
+    };
+    const sidebarRangePositionProps = {
+        selectedOutsideTab: props.selectedOutsideTab,
+        setSelectedOutsideTab: props.setSelectedOutsideTab,
+        outsideControl: props.outsideControl,
+        setOutsideControl: props.setOutsideControl,
+    };
 
     const recentRangePositions = [
         {
@@ -89,12 +103,18 @@ export default function Sidebar(props: SidebarPropsIF) {
                 <SidebarRangePositions
                     mostRecentPositions={mostRecentPositions}
                     isDenomBase={isDenomBase}
+                    {...sidebarRangePositionProps}
                 />
             ),
         },
     ];
+
     const recentLimitOrders = [
-        { name: 'Limit Orders', icon: openOrdersImage, data: <SidebarLimitOrders /> },
+        {
+            name: 'Limit Orders',
+            icon: openOrdersImage,
+            data: <SidebarLimitOrders {...sidebarLimitOrderProps} />,
+        },
     ];
 
     const favoritePools = [
@@ -114,10 +134,12 @@ export default function Sidebar(props: SidebarPropsIF) {
                     chainId={chainId}
                     isShowAllEnabled={isShowAllEnabled}
                     setIsShowAllEnabled={setIsShowAllEnabled}
-                    switchTabToTransactions={switchTabToTransactions}
-                    setSwitchTabToTransactions={setSwitchTabToTransactions}
                     expandTradeTable={expandTradeTable}
                     setExpandTradeTable={setExpandTradeTable}
+                    selectedOutsideTab={props.selectedOutsideTab}
+                    setSelectedOutsideTab={props.setSelectedOutsideTab}
+                    setOutsideControl={props.setOutsideControl}
+                    outsideControl={props.outsideControl}
                 />
             ),
         },

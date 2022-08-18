@@ -38,24 +38,42 @@ export default function Transactions(props: TransactionsProps) {
 
     const swapsByUser = graphData?.swapsByUser?.swaps;
     const swapsByPool = graphData?.swapsByPool?.swaps;
-    // console.log('this is graph data', graphData);
+
+    const dataReceivedByUser = graphData?.swapsByUser?.dataReceived;
+    const dataReceivedByPool = graphData?.swapsByPool?.dataReceived;
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
     const [transactionData, setTransactionData] = useState(swapsByPool);
+    const [dataReceived, setDataReceived] = useState(dataReceivedByPool);
     // todoJr: Finish this loading logic
     const [isDataLoading, setIsDataLoading] = useState(true);
-    useEffect(() => {
-        if (swapsByPool.length) {
-            setIsDataLoading(false);
-        }
-    }, [graphData, transactionData]);
+    const [dataToDisplay, setDataToDisplay] = useState(false);
 
-    // console.log(isDataLoading);
+    // check to see if data is received
+    // if it is, set data is loading to false
+    // check to see if we have items to display
+    // if we do, set data to display to true
+    // else set data to display to false
+    // else set data is loading to true
+
+    // 0x0000000000000000000000000000000000000000
+    // 0xdc31Ee1784292379Fbb2964b3B9C4124D8F89C60
+
+    function handleDataReceived() {
+        setIsDataLoading(false);
+        transactionData.length ? setDataToDisplay(true) : setDataToDisplay(false);
+    }
+    function handleUserPoolSelected() {
+        setTransactionData(swapsByUser);
+        setDataReceived(dataReceivedByUser);
+    }
+    function handleAllPoolSelected() {
+        setTransactionData(swapsByPool);
+        setDataReceived(dataReceivedByPool);
+    }
 
     useEffect(() => {
-        // console.log({ filter });
-        // console.log({ swapsByPool });
         isCandleSelected
             ? setTransactionData(
                   swapsByPool.filter((data) => {
@@ -63,9 +81,15 @@ export default function Transactions(props: TransactionsProps) {
                   }),
               )
             : !isShowAllEnabled
-            ? setTransactionData(swapsByUser)
-            : setTransactionData(swapsByPool);
+            ? handleUserPoolSelected()
+            : handleAllPoolSelected();
     }, [isShowAllEnabled, isCandleSelected, filter]);
+
+    useEffect(() => {
+        console.log({ dataReceived });
+        console.log({ isDataLoading });
+        dataReceived ? handleDataReceived() : setIsDataLoading(true);
+    }, [graphData, transactionData, dataReceived]);
 
     const isDenomBase = tradeData.isDenomBase;
 
@@ -86,18 +110,9 @@ export default function Transactions(props: TransactionsProps) {
             setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
         />
     ));
-    // : //   .reverse()
-    //   swapsByUser?.map((swap, idx) => (
-    //       <TransactionCard
-    //           key={idx}
-    //           swap={swap}
-    //           tokenMap={tokenMap}
-    //           chainId={chainId}
-    //           tokenAAddress={tokenAAddress}
-    //           tokenBAddress={tokenBAddress}
-    //           isDenomBase={isDenomBase}
-    //       />
-    //   ));
+
+    const noData = <div className={styles.no_data}>No Data to Display</div>;
+    const transactionDataOrNull = dataToDisplay ? TransactionsDisplay : noData;
 
     return (
         <div className={styles.container}>
@@ -106,7 +121,7 @@ export default function Transactions(props: TransactionsProps) {
                 className={styles.item_container}
                 style={{ height: expandTradeTable ? '100%' : '220px' }}
             >
-                {isDataLoading ? <TransactionsSkeletons /> : TransactionsDisplay}
+                {isDataLoading ? <TransactionsSkeletons /> : transactionDataOrNull}
             </div>
         </div>
     );
