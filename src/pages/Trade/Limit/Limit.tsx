@@ -1,6 +1,6 @@
 // START: Import React and Dongles
 import { useState, useEffect, Dispatch, SetStateAction } from 'react';
-import { useMoralis, useChain } from 'react-moralis';
+import { useMoralis } from 'react-moralis';
 import { ethers } from 'ethers';
 import { motion } from 'framer-motion';
 import { MIN_TICK, MAX_TICK, tickToPrice, toDisplayPrice, CrocEnv } from '@crocswap-libs/sdk';
@@ -47,7 +47,6 @@ interface LimitPropsIF {
     poolPriceNonDisplay: number | undefined;
     tokenAAllowance: string;
     setRecheckTokenAApproval: Dispatch<SetStateAction<boolean>>;
-
     chainId: string;
     activeTokenListsChanged: boolean;
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
@@ -80,7 +79,6 @@ export default function Limit(props: LimitPropsIF) {
     const { navigationMenu } = useTradeData();
     const dispatch = useAppDispatch();
     const { enableWeb3, isWeb3Enabled, authenticate, isAuthenticated } = useMoralis();
-    const { switchNetwork } = useChain();
     const [isModalOpen, openModal, closeModal] = useModal();
     const [limitAllowed, setLimitAllowed] = useState<boolean>(false);
 
@@ -107,7 +105,6 @@ export default function Limit(props: LimitPropsIF) {
         isWeb3Enabled,
         authenticate,
         enableWeb3,
-        switchNetwork
     );
 
     const [newLimitOrderTransactionHash, setNewLimitOrderTransactionHash] = useState('');

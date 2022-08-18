@@ -1,7 +1,7 @@
 // START: Import React and Dongles
 import { useCallback, useEffect, useState, Dispatch, SetStateAction } from 'react';
 import { Link } from 'react-router-dom';
-import { useMoralis, useChain } from 'react-moralis';
+import { useMoralis } from 'react-moralis';
 import { useTranslation } from 'react-i18next';
 import { useRive, useStateMachineInput } from 'rive-react';
 import { motion, AnimateSharedLayout } from 'framer-motion';
@@ -48,8 +48,6 @@ export default function PageHeader(props: HeaderPropsIF) {
     const { user, account, enableWeb3, isWeb3Enabled, authenticate, isAuthenticated } =
         useMoralis();
 
-    const { switchNetwork } = useChain();
-
     const { t } = useTranslation();
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -68,7 +66,6 @@ export default function PageHeader(props: HeaderPropsIF) {
         isWeb3Enabled,
         authenticate,
         enableWeb3,
-        switchNetwork
     );
 
     useEffect(() => {

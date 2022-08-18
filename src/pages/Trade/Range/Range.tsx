@@ -1,6 +1,6 @@
 // START: Import React and Dongles
 import { useState, useEffect, useMemo, Dispatch, SetStateAction } from 'react';
-import { useMoralis, useChain } from 'react-moralis';
+import { useMoralis } from 'react-moralis';
 import { ethers } from 'ethers';
 import { motion } from 'framer-motion';
 import {
@@ -111,7 +111,6 @@ export default function Range(props: RangePropsIF) {
     const [txErrorMessage, setTxErrorMessage] = useState('');
 
     const { account, isAuthenticated, isWeb3Enabled, authenticate, enableWeb3 } = useMoralis();
-    const { switchNetwork } = useChain();
 
     const { tradeData } = useTradeData();
     const { navigationMenu } = useTradeData();
@@ -894,7 +893,6 @@ export default function Range(props: RangePropsIF) {
         isWeb3Enabled,
         authenticate,
         enableWeb3,
-        switchNetwork
     );
 
     const isTokenAAllowanceSufficient = parseFloat(tokenAAllowance) >= parseFloat(tokenAInputQty);

@@ -8,7 +8,6 @@ export default function authenticateUser (
     isWeb3Enabled: boolean,
     authenticate: (options?: AuthenticateOptions | undefined) => Promise<Moralis.User<Moralis.Attributes> | undefined>,
     enableWeb3: (options?: Web3EnableOptions | undefined) => Promise<Moralis.Web3Provider | undefined>,
-    switchNetwork: (providedChainId: string) => Promise<void>,
 ) {
     const signingMessage = `Welcome to Ambient Finance!
         Click to sign in and accept the Ambient Terms of Service: https://ambient-finance.netlify.app/tos
@@ -20,7 +19,6 @@ export default function authenticateUser (
             signingMessage: signingMessage,
             onSuccess: async () => {
                 await enableWeb3();
-                switchNetwork('0x5');
             },
             onError: () => {
                 authenticate({
@@ -28,7 +26,6 @@ export default function authenticateUser (
                     signingMessage: signingMessage,
                     onSuccess: async () => {
                         await enableWeb3();
-                        switchNetwork('0x5');
                     },
                 });
             },
