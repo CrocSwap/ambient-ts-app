@@ -17,6 +17,7 @@ import Modal from '../../../components/Global/Modal/Modal';
 import styles from './PageHeader.module.css';
 import trimString from '../../../utils/functions/trimString';
 import ambientLogo from '../../../assets/images/logos/ambient_logo.svg';
+import authenticateUser from '../../../utils/functions/authenticateUser';
 import { useModal } from '../../../components/Global/Modal/useModal';
 
 interface HeaderPropsIF {
@@ -62,44 +63,13 @@ export default function PageHeader(props: HeaderPropsIF) {
 
     const modalOrNull = isModalOpen ? mainModal : null;
 
-    const signingMessage = `Welcome to Ambient Finance!
-
-Click to sign in and accept the Ambient Terms of Service: https://ambient-finance.netlify.app/tos
-
-This request will not trigger a blockchain transaction or cost any gas fees.
-
-Your authentication status will reset on logout.`;
-
-    // function to authenticate wallet with Moralis server
-    const clickLogin = () => {
-        console.log('user clicked Login');
-        console.log(`authenticating on chain: ${parseInt(chainId)}`);
-        if (!isAuthenticated || !isWeb3Enabled) {
-            authenticate({
-                provider: 'metamask',
-                chainId: 5,
-                signingMessage: signingMessage,
-                // signingMessage: 'Ambient API Authentication.',
-                onSuccess: async () => {
-                    await enableWeb3();
-                    switchNetwork('0x5');
-                },
-                onError: () => {
-                    console.log(`authenticating on chain: ${parseInt(chainId)}`);
-                    authenticate({
-                        provider: 'metamask',
-                        chainId: 5,
-                        signingMessage: signingMessage,
-                        onSuccess: async () => {
-                            await enableWeb3();
-                            switchNetwork('0x5');
-                            // alert('🎉');
-                        },
-                    });
-                },
-            });
-        }
-    };
+    const clickLogin = () => authenticateUser(
+        isAuthenticated,
+        isWeb3Enabled,
+        authenticate,
+        enableWeb3,
+        switchNetwork
+    );
 
     useEffect(() => {
         const timer = setTimeout(() => {
