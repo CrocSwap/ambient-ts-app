@@ -381,6 +381,9 @@ export default function App() {
     const [baseTokenAddress, setBaseTokenAddress] = useState<string>('');
     const [quoteTokenAddress, setQuoteTokenAddress] = useState<string>('');
 
+    const [mainnetBaseTokenAddress, setMainnetBaseTokenAddress] = useState<string>('');
+    const [mainnetQuoteTokenAddress, setMainnetQuoteTokenAddress] = useState<string>('');
+
     const [baseTokenDecimals, setBaseTokenDecimals] = useState<number>(0);
     const [quoteTokenDecimals, setQuoteTokenDecimals] = useState<number>(0);
 
@@ -404,11 +407,34 @@ export default function App() {
         dispatch(setAdvancedLowTick(0));
         dispatch(setAdvancedHighTick(0));
 
-        if (tokenPair.dataTokenA.address && tokenPair.dataTokenB.address) {
-            const sortedTokens = sortBaseQuoteTokens(
-                tokenPair.dataTokenA.address,
-                tokenPair.dataTokenB.address,
-            );
+        const tokenAAddress = tokenPair?.dataTokenA?.address;
+        const tokenBAddress = tokenPair?.dataTokenB?.address;
+
+        if (tokenAAddress && tokenBAddress) {
+            const sortedTokens = sortBaseQuoteTokens(tokenAAddress, tokenBAddress);
+            const tokenAMainnetEquivalent =
+                tokenAAddress === ZERO_ADDRESS
+                    ? tokenAAddress
+                    : testTokenMap
+                          .get(tokenAAddress.toLowerCase() + '_' + chainData.chainId)
+                          ?.split('_')[0];
+            const tokenBMainnetEquivalent =
+                tokenBAddress === ZERO_ADDRESS
+                    ? tokenBAddress
+                    : testTokenMap
+                          .get(tokenBAddress.toLowerCase() + '_' + chainData.chainId)
+                          ?.split('_')[0];
+
+            if (tokenAMainnetEquivalent && tokenBMainnetEquivalent) {
+                const sortedMainnetTokens = sortBaseQuoteTokens(
+                    tokenAMainnetEquivalent,
+                    tokenBMainnetEquivalent,
+                );
+
+                setMainnetBaseTokenAddress(sortedMainnetTokens[0]);
+                setMainnetQuoteTokenAddress(sortedMainnetTokens[1]);
+            }
+
             setBaseTokenAddress(sortedTokens[0]);
             setQuoteTokenAddress(sortedTokens[1]);
             if (tokenPair.dataTokenA.address === sortedTokens[0]) {
@@ -510,81 +536,87 @@ export default function App() {
     const activePeriod = tradeData.activeChartPeriod;
 
     useEffect(() => {
-        if (baseTokenAddress && quoteTokenAddress && activePeriod) {
+        if (
+            baseTokenAddress &&
+            quoteTokenAddress &&
+            mainnetBaseTokenAddress &&
+            mainnetQuoteTokenAddress &&
+            activePeriod
+        ) {
             try {
                 if (httpGraphCacheServerDomain) {
                     const candleSeriesCacheEndpoint =
                         httpGraphCacheServerDomain + '/candle_series?';
 
-                    const mainnetBaseAddress =
-                        baseTokenAddress === ZERO_ADDRESS
-                            ? baseTokenAddress
-                            : testTokenMap
-                                  .get(baseTokenAddress.toLowerCase() + '_' + chainData.chainId)
-                                  ?.split('_')[0];
-                    const mainnetQuoteAddress =
-                        quoteTokenAddress === ZERO_ADDRESS
-                            ? quoteTokenAddress
-                            : testTokenMap
-                                  .get(quoteTokenAddress.toLowerCase() + '_' + chainData.chainId)
-                                  ?.split('_')[0];
+                    // const mainnetBaseAddress =
+                    //     baseTokenAddress === ZERO_ADDRESS
+                    //         ? baseTokenAddress
+                    //         : testTokenMap
+                    //               .get(baseTokenAddress.toLowerCase() + '_' + chainData.chainId)
+                    //               ?.split('_')[0];
+                    // const mainnetQuoteAddress =
+                    //     quoteTokenAddress === ZERO_ADDRESS
+                    //         ? quoteTokenAddress
+                    //         : testTokenMap
+                    //               .get(quoteTokenAddress.toLowerCase() + '_' + chainData.chainId)
+                    //               ?.split('_')[0];
 
-                    if (mainnetBaseAddress && mainnetQuoteAddress) {
-                        fetch(
-                            candleSeriesCacheEndpoint +
-                                new URLSearchParams({
-                                    base: mainnetBaseAddress,
-                                    quote: mainnetQuoteAddress,
-                                    poolIdx: chainData.poolIndex.toString(),
-                                    period: activePeriod.toString(),
-                                    // period: '86400', // 1 day
-                                    // period: '300', // 5 minute
-                                    // time: '1657833300', // optional
-                                    n: '200', // positive integer
-                                    page: '0', // nonnegative integer
-                                    chainId: '0x1',
-                                    dex: 'all',
-                                }),
-                        )
-                            .then((response) => response?.json())
-                            .then((json) => {
-                                const candles = json?.data;
+                    fetch(
+                        candleSeriesCacheEndpoint +
+                            new URLSearchParams({
+                                base: mainnetBaseTokenAddress,
+                                quote: mainnetQuoteTokenAddress,
+                                poolIdx: chainData.poolIndex.toString(),
+                                period: activePeriod.toString(),
+                                // period: '86400', // 1 day
+                                // period: '300', // 5 minute
+                                // time: '1657833300', // optional
+                                n: '200', // positive integer
+                                page: '0', // nonnegative integer
+                                chainId: '0x1',
+                                dex: 'all',
+                            }),
+                    )
+                        .then((response) => response?.json())
+                        .then((json) => {
+                            const candles = json?.data;
 
-                                if (candles) {
-                                    Promise.all(candles.map(getCandleData)).then(
-                                        (updatedCandles) => {
-                                            if (
-                                                JSON.stringify(
-                                                    graphData.candlesForAllPools.pools,
-                                                ) !== JSON.stringify(updatedCandles)
-                                            ) {
-                                                dispatch(
-                                                    setCandles({
-                                                        pool: {
-                                                            baseAddress:
-                                                                baseTokenAddress.toLowerCase(),
-                                                            quoteAddress:
-                                                                quoteTokenAddress.toLowerCase(),
-                                                            poolIdx: chainData.poolIndex,
-                                                            network: chainData.chainId,
-                                                        },
-                                                        duration: activePeriod,
-                                                        candles: updatedCandles,
-                                                    }),
-                                                );
-                                            }
-                                        },
-                                    );
-                                }
-                            })
-                            .catch(console.log);
-                    }
+                            if (candles) {
+                                Promise.all(candles.map(getCandleData)).then((updatedCandles) => {
+                                    if (
+                                        JSON.stringify(graphData.candlesForAllPools.pools) !==
+                                        JSON.stringify(updatedCandles)
+                                    ) {
+                                        dispatch(
+                                            setCandles({
+                                                pool: {
+                                                    baseAddress: baseTokenAddress.toLowerCase(),
+                                                    quoteAddress: quoteTokenAddress.toLowerCase(),
+                                                    poolIdx: chainData.poolIndex,
+                                                    network: chainData.chainId,
+                                                },
+                                                duration: activePeriod,
+                                                candles: updatedCandles,
+                                            }),
+                                        );
+                                    }
+                                });
+                            }
+                        })
+                        .catch(console.log);
                 }
             } catch (error) {
                 console.log({ error });
             }
         }
-    }, [baseTokenAddress, quoteTokenAddress, activePeriod, chainData.chainId]);
+    }, [
+        baseTokenAddress,
+        quoteTokenAddress,
+        mainnetBaseTokenAddress,
+        mainnetQuoteTokenAddress,
+        activePeriod,
+        chainData.chainId,
+    ]);
 
     const allPositionsCacheSubscriptionEndpoint = useMemo(
         () =>
@@ -642,9 +674,10 @@ export default function App() {
             wssGraphCacheServerDomain +
             '/subscribe_candles?' +
             new URLSearchParams({
-                base: baseTokenAddress.toLowerCase(),
-                // baseTokenAddress.toLowerCase() || '0x0000000000000000000000000000000000000000',
-                quote: quoteTokenAddress.toLowerCase(),
+                base: mainnetBaseTokenAddress.toLowerCase(),
+                // base: baseTokenAddress.toLowerCase(),
+                quote: mainnetQuoteTokenAddress.toLowerCase(),
+                // quote: quoteTokenAddress.toLowerCase(),
                 // quoteTokenAddress.toLowerCase() || '0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa',
                 poolIdx: chainData.poolIndex.toString(),
                 // 	positive integer	The duration of the candle, in seconds. Must represent one of the following time intervals: 5 minutes, 15 minutes, 1 hour, 4 hours, 1 day, 7 days.
@@ -654,7 +687,7 @@ export default function App() {
                 // chainId: chainData.chainId,
                 dex: 'all',
             }),
-        [baseTokenAddress, quoteTokenAddress, chainData.poolIndex, activePeriod],
+        [mainnetBaseTokenAddress, mainnetQuoteTokenAddress, chainData.poolIndex, activePeriod],
     );
 
     const {
@@ -672,7 +705,7 @@ export default function App() {
             shouldReconnect: () => shouldSubscriptionsReconnect,
         },
         // only connect if base/quote token addresses are available
-        baseTokenAddress !== '' && quoteTokenAddress !== '',
+        mainnetBaseTokenAddress !== '' && mainnetQuoteTokenAddress !== '',
     );
 
     useEffect(() => {
