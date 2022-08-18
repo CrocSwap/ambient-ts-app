@@ -14,6 +14,9 @@ interface SidebarRangePositionsProps {
     outsideControl: boolean;
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
 
+    isShowAllEnabled: boolean;
+    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
+
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
 }
@@ -26,8 +29,9 @@ export default function SidebarRangePositionsCard(props: SidebarRangePositionsPr
         position,
         setOutsideControl,
         setSelectedOutsideTab,
-        currentPositionActive,
+        // currentPositionActive,
         setCurrentPositionActive,
+        setIsShowAllEnabled,
     } = props;
 
     const onTradeRoute = location.pathname.includes('trade');
@@ -39,15 +43,13 @@ export default function SidebarRangePositionsCard(props: SidebarRangePositionsPr
         setOutsideControl(true);
         setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
         setCurrentPositionActive(pos.id);
-        // setIsShowAllEnabled(false);
+        setIsShowAllEnabled(false);
     }
 
     const [baseLiquidityDisplay, setBaseLiquidityDisplay] = useState<string | undefined>(undefined);
     const [quoteLiquidityDisplay, setQuoteLiquidityDisplay] = useState<string | undefined>(
         undefined,
     );
-    console.log({ position });
-    console.log({ currentPositionActive });
 
     useEffect(() => {
         if (position.positionLiqBase && position.baseTokenDecimals) {

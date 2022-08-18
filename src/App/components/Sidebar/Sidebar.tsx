@@ -100,6 +100,9 @@ export default function Sidebar(props: SidebarPropsIF) {
         setOutsideControl: props.setOutsideControl,
         currentPositionActive: currentPositionActive,
         setCurrentPositionActive: setCurrentPositionActive,
+
+        isShowAllEnabled: props.isShowAllEnabled,
+        setIsShowAllEnabled: props.setIsShowAllEnabled,
     };
 
     const recentRangePositions = [
