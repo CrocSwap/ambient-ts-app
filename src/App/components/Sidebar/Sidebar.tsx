@@ -29,12 +29,7 @@ interface SidebarPropsIF {
     showSidebar: boolean;
     toggleSidebar: (event: MouseEvent<HTMLDivElement> | MouseEvent<HTMLLIElement>) => void;
     chainId: string;
-    switchTabToTransactions: boolean;
-    switchTabToOrders: boolean;
-    handleSetTradeTabToTransaction: () => void;
-    handleSetTradeTabToOrders: () => void;
-    setSwitchTabToTransactions: Dispatch<SetStateAction<boolean>>;
-    setSwitchTabToOrders: Dispatch<SetStateAction<boolean>>;
+
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     isShowAllEnabled: boolean;
@@ -56,12 +51,11 @@ export default function Sidebar(props: SidebarPropsIF) {
         toggleSidebar,
         showSidebar,
         chainId,
-        setSwitchTabToTransactions,
         currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions,
         isShowAllEnabled,
         setIsShowAllEnabled,
-        switchTabToTransactions,
+
         expandTradeTable,
         setExpandTradeTable,
         tokenMap,
@@ -140,8 +134,6 @@ export default function Sidebar(props: SidebarPropsIF) {
                     chainId={chainId}
                     isShowAllEnabled={isShowAllEnabled}
                     setIsShowAllEnabled={setIsShowAllEnabled}
-                    switchTabToTransactions={switchTabToTransactions}
-                    setSwitchTabToTransactions={setSwitchTabToTransactions}
                     expandTradeTable={expandTradeTable}
                     setExpandTradeTable={setExpandTradeTable}
                     selectedOutsideTab={props.selectedOutsideTab}
@@ -195,19 +187,6 @@ export default function Sidebar(props: SidebarPropsIF) {
         </div>
     );
 
-    function setToOrders() {
-        props.setOutsideControl(true);
-        props.setSelectedOutsideTab(1);
-    }
-    function setToRanges() {
-        props.setOutsideControl(true);
-        props.setSelectedOutsideTab(0);
-    }
-    function setToTransactions() {
-        props.setOutsideControl(true);
-        props.setSelectedOutsideTab(2);
-    }
-
     return (
         <div>
             <nav className={`${styles.sidebar} ${sidebarStyle}`}>
@@ -222,9 +201,6 @@ export default function Sidebar(props: SidebarPropsIF) {
 
                     {!searchMode && topElementsDisplay}
                     <div className={styles.bottom_elements}>
-                        <button onClick={() => setToOrders()}>SET TO ORDERS</button>
-                        <button onClick={() => setToTransactions()}>SET TO TX</button>
-                        <button onClick={() => setToRanges()}>SET TO Ranges</button>
                         {searchMode && topElementsDisplay}
 
                         {recentRangePositions.map((item, idx) => (

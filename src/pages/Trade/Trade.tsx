@@ -28,9 +28,7 @@ interface ITradeProps {
         dataTokenB: TokenIF;
     };
     chainId: string;
-    switchTabToTransactions: boolean;
-    setSwitchTabToTransactions: Dispatch<SetStateAction<boolean>>;
-    setSwitchTabToOrders: Dispatch<SetStateAction<boolean>>;
+
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     isShowAllEnabled: boolean;
@@ -39,8 +37,6 @@ interface ITradeProps {
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
 
-    switchTabToOrders: boolean;
-
     selectedOutsideTab: number;
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
     outsideControl: boolean;
@@ -48,15 +44,7 @@ interface ITradeProps {
 }
 
 export default function Trade(props: ITradeProps) {
-    const {
-        chainId,
-        tokenMap,
-        poolPriceDisplay,
-        provider,
-        switchTabToOrders,
-        setSwitchTabToOrders,
-        setSwitchTabToTransactions,
-    } = props;
+    const { chainId, tokenMap, poolPriceDisplay, provider } = props;
 
     const [isCandleSelected, setIsCandleSelected] = useState<boolean | undefined>();
     const [transactionFilter, setTransactionFilter] = useState<CandleData>();
@@ -176,8 +164,6 @@ export default function Trade(props: ITradeProps) {
                             isWeb3Enabled={props.isWeb3Enabled}
                             lastBlockNumber={props.lastBlockNumber}
                             chainId={chainId}
-                            switchTabToTransactions={props.switchTabToTransactions}
-                            setSwitchTabToTransactions={props.setSwitchTabToTransactions}
                             currentTxActiveInTransactions={props.currentTxActiveInTransactions}
                             setCurrentTxActiveInTransactions={
                                 props.setCurrentTxActiveInTransactions
@@ -191,8 +177,6 @@ export default function Trade(props: ITradeProps) {
                             setIsCandleSelected={setIsCandleSelected}
                             filter={transactionFilter}
                             setTransactionFilter={setTransactionFilter}
-                            switchTabToOrders={switchTabToOrders}
-                            setSwitchTabToOrders={setSwitchTabToOrders}
                             selectedOutsideTab={props.selectedOutsideTab}
                             setSelectedOutsideTab={props.setSelectedOutsideTab}
                             outsideControl={props.outsideControl}

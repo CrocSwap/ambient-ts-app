@@ -31,8 +31,6 @@ interface PortfolioTabsPropsIF {
     connectedAccountActive: boolean;
     chainId: string;
     tokenMap: Map<string, TokenIF>;
-    switchTabToTransactions: boolean;
-    setSwitchTabToTransactions: Dispatch<SetStateAction<boolean>>;
 
     selectedOutsideTab: number;
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
@@ -95,12 +93,6 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
         positions: activeAccountPositionData,
     };
 
-    const outsideTabControl = {
-        switchToTab: props.switchTabToTransactions,
-        tabToSwitchTo: 4,
-        stateHandler: props.setSwitchTabToTransactions,
-    };
-
     const accountTabData = [
         { label: 'Wallet', content: <Wallet {...walletProps} />, icon: walletImage },
         { label: 'Exchange', content: <Exchange />, icon: exchangeImage },
@@ -114,7 +106,6 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
             <TabComponent
                 data={accountTabData}
                 rightTabOptions={false}
-                outsideTabControl={outsideTabControl}
                 selectedOutsideTab={props.selectedOutsideTab}
                 setSelectedOutsideTab={props.setSelectedOutsideTab}
                 outsideControl={props.outsideControl}

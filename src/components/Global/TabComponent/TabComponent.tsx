@@ -10,16 +10,15 @@ type tabData = {
     icon?: string;
 };
 
-type outsideTab = {
-    switchToTab: boolean;
-    tabToSwitchTo: number;
-    stateHandler: Dispatch<SetStateAction<boolean>>;
-};
+// type outsideTab = {
+//     switchToTab: boolean;
+//     tabToSwitchTo: number;
+//     stateHandler: Dispatch<SetStateAction<boolean>>;
+// };
 
 interface TabProps {
     data: tabData[];
     rightTabOptions?: React.ReactNode;
-    outsideTabControl?: outsideTab;
 
     selectedOutsideTab: number;
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
@@ -31,9 +30,9 @@ interface TabProps {
 export default function TabComponent(props: TabProps) {
     const {
         data,
-        outsideTabControl,
+
         selectedOutsideTab,
-        setSelectedOutsideTab,
+        // setSelectedOutsideTab,
         outsideControl,
         setOutsideControl,
     } = props;
@@ -48,7 +47,7 @@ export default function TabComponent(props: TabProps) {
     useEffect(() => {
         const currentTabData = data.find((item) => item.label === selectedTab.label);
         if (currentTabData) setSelectedTab(currentTabData);
-    }, [data, outsideTabControl, outsideControl]);
+    }, [data, outsideControl]);
 
     function handleOutside2() {
         if (!outsideControl) {

@@ -110,15 +110,6 @@ export default function App() {
 
     const [isShowAllEnabled, setIsShowAllEnabled] = useState<boolean>(true);
 
-    // const outsideTabControl = {
-    //     switchToTab: props.switchTabToTransactions,
-    //     tabToSwitchTo: 2,
-    //     stateHandler: props.setSwitchTabToTransactions,
-    // };
-
-    const [switchTabToOrders, setSwitchTabToOrders] = useState<boolean>(false);
-
-    const [switchTabToTransactions, setSwitchTabToTransactions] = useState<boolean>(false);
     const [currentTxActiveInTransactions, setCurrentTxActiveInTransactions] = useState<string>('');
 
     const [expandTradeTable, setExpandTradeTable] = useState(false);
@@ -1581,13 +1572,6 @@ export default function App() {
         setSidebarManuallySet(true);
     }
 
-    function handleSetTradeTabToTransaction() {
-        setSwitchTabToTransactions(!switchTabToTransactions);
-    }
-
-    function handleSetTradeTabToOrders() {
-        setSwitchTabToOrders(!switchTabToOrders);
-    }
     const [selectedOutsideTab, setSelectedOutsideTab] = useState(0);
     const [outsideControl, setOutsideControl] = useState(false);
 
@@ -1597,9 +1581,6 @@ export default function App() {
         showSidebar: showSidebar,
         toggleSidebar: toggleSidebar,
         chainId: chainData.chainId,
-        switchTabToTransactions: switchTabToTransactions,
-        handleSetTradeTabToTransaction: handleSetTradeTabToTransaction,
-        setSwitchTabToTransactions: setSwitchTabToTransactions,
 
         currentTxActiveInTransactions: currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions: setCurrentTxActiveInTransactions,
@@ -1609,10 +1590,6 @@ export default function App() {
         setExpandTradeTable: setExpandTradeTable,
         tokenMap: tokenMap,
         lastBlockNumber: lastBlockNumber,
-
-        switchTabToOrders: switchTabToOrders,
-        setSwitchTabToOrders: setSwitchTabToOrders,
-        handleSetTradeTabToOrders: handleSetTradeTabToOrders,
 
         selectedOutsideTab: selectedOutsideTab,
         setSelectedOutsideTab: setSelectedOutsideTab,
@@ -1719,8 +1696,6 @@ export default function App() {
                                     isTokenABase={isTokenABase}
                                     poolPriceDisplay={poolPriceDisplay}
                                     chainId={chainData.chainId}
-                                    switchTabToTransactions={switchTabToTransactions}
-                                    setSwitchTabToTransactions={setSwitchTabToTransactions}
                                     currentTxActiveInTransactions={currentTxActiveInTransactions}
                                     setCurrentTxActiveInTransactions={
                                         setCurrentTxActiveInTransactions
@@ -1730,8 +1705,6 @@ export default function App() {
                                     expandTradeTable={expandTradeTable}
                                     setExpandTradeTable={setExpandTradeTable}
                                     tokenMap={tokenMap}
-                                    switchTabToOrders={switchTabToOrders}
-                                    setSwitchTabToOrders={setSwitchTabToOrders}
                                     selectedOutsideTab={selectedOutsideTab}
                                     setSelectedOutsideTab={setSelectedOutsideTab}
                                     outsideControl={outsideControl}
@@ -1762,8 +1735,6 @@ export default function App() {
                                     userImageData={imageData}
                                     chainId={chainData.chainId}
                                     tokenMap={tokenMap}
-                                    switchTabToTransactions={switchTabToTransactions}
-                                    setSwitchTabToTransactions={setSwitchTabToTransactions}
                                     selectedOutsideTab={selectedOutsideTab}
                                     setSelectedOutsideTab={setSelectedOutsideTab}
                                     outsideControl={outsideControl}
@@ -1780,8 +1751,6 @@ export default function App() {
                                     chainId={chainData.chainId}
                                     userImageData={imageData}
                                     tokenMap={tokenMap}
-                                    switchTabToTransactions={switchTabToTransactions}
-                                    setSwitchTabToTransactions={setSwitchTabToTransactions}
                                     selectedOutsideTab={selectedOutsideTab}
                                     setSelectedOutsideTab={setSelectedOutsideTab}
                                     outsideControl={outsideControl}

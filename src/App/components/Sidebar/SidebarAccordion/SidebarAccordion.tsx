@@ -4,7 +4,6 @@ import styles from '../Sidebar.module.css';
 import {
     // useEffect,
     useState,
-    cloneElement,
 } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ISwap } from '../../../../utils/state/graphDataSlice';

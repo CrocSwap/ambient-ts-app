@@ -16,8 +16,6 @@ interface TransactionProps {
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     isShowAllEnabled: boolean;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
-    setSwitchTabToTransactions: Dispatch<SetStateAction<boolean>>;
-    switchTabToTransactions: boolean;
 
     selectedOutsideTab: number;
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
@@ -41,12 +39,10 @@ export default function SidebarRecentTransactionsCard(props: TransactionProps) {
         setCurrentTxActiveInTransactions,
         // isShowAllEnabled,
         setIsShowAllEnabled,
-        setSwitchTabToTransactions,
-        switchTabToTransactions,
 
-        selectedOutsideTab,
+        // selectedOutsideTab,
         setSelectedOutsideTab,
-        outsideControl,
+        // outsideControl,
         setOutsideControl,
     } = props;
 
