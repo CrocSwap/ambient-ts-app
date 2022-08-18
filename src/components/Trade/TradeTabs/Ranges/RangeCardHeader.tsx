@@ -1,6 +1,14 @@
+import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import styles from './RangeCardHeader.module.css';
 
-export default function RangeCardHeader() {
+interface RangeCardHeaderProps {
+    baseToken: TokenIF;
+    quoteToken: TokenIF;
+}
+
+export default function RangeCardHeader(props: RangeCardHeaderProps) {
+    const { baseToken, quoteToken } = props;
+
     return (
         <div className={styles.main_container}>
             <div className={styles.row_container}>
@@ -12,9 +20,9 @@ export default function RangeCardHeader() {
                 <p className={styles.range}>Range</p>
                 <p className={styles.range_sing}>Range Min</p>
                 <p className={styles.range_sing}>Range Max</p>
-                <p className={styles.tokens}>ETH/USDC</p>
-                <p className={styles.token}>ETH</p>
-                <p className={styles.token}>USDC</p>
+                {/* <p className={styles.tokens}>ETH/USDC</p> */}
+                <p className={styles.token}>{baseToken.symbol}</p>
+                <p className={styles.token}>{quoteToken.symbol}</p>
                 <p>APY</p>
                 <p>Status</p>
             </div>

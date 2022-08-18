@@ -458,6 +458,8 @@ export default function App() {
                                 quote: sortedTokens[1].toLowerCase(),
                                 poolIdx: chainData.poolIndex.toString(),
                                 chainId: chainData.chainId,
+                                // eslint-disable-next-line camelcase
+                                token_quantities: 'true',
                             }),
                     )
                         .then((response) => response.json())
@@ -790,6 +792,8 @@ export default function App() {
             new URLSearchParams({
                 user: account || '',
                 chainId: chainData.chainId,
+                // eslint-disable-next-line camelcase
+                token_quantities: 'true',
                 // user: account || '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc',
             }),
         [account, chainData.chainId],
@@ -1206,14 +1210,16 @@ export default function App() {
 
     useEffect(() => {
         if (isAuthenticated && account) {
-            const allUserPositionsCacheEndpoint = httpGraphCacheServerDomain + '/user_positions?';
+            const userPositionsCacheEndpoint = httpGraphCacheServerDomain + '/user_positions?';
 
             try {
                 fetch(
-                    allUserPositionsCacheEndpoint +
+                    userPositionsCacheEndpoint +
                         new URLSearchParams({
                             user: account,
                             chainId: chainData.chainId,
+                            // eslint-disable-next-line camelcase
+                            token_quantities: 'true',
                         }),
                 )
                     .then((response) => response?.json())
