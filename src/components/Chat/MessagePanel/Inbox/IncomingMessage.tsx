@@ -1,8 +1,9 @@
 import styles from './IncomingMessage.module.css';
 import noAvatarImage from '../../../../assets/images/icons/avatar.svg';
+import { Message } from '../../Model/MessageModel';
 
 export interface IncomingMessageProps {
-    message: string;
+    message: Message;
 }
 export default function IncomingMessage(props: IncomingMessageProps) {
     return (
@@ -13,7 +14,7 @@ export default function IncomingMessage(props: IncomingMessageProps) {
 
             <div className={styles.message_body}>
                 <div className={styles.name}>name</div>
-                <p className={styles.message}>{props.message}</p>
+                <p className={styles.message}>{props.message.message}</p>
             </div>
 
             <p className={styles.message_date}>2:41pm</p>
