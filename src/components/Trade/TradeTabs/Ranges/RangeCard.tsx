@@ -5,9 +5,10 @@ import RangeStatus from '../../../Global/RangeStatus/RangeStatus';
 import RangeMinMax from '../../../Global/Tabs/RangeMinMax/RangeMinMax';
 import Apy from '../../../Global/Tabs/Apy/Apy';
 import { PositionIF } from '../../../../utils/interfaces/PositionIF';
-import { ambientPosSlot, concPosSlot } from '@crocswap-libs/sdk';
+import { ambientPosSlot, concPosSlot, toDisplayQty } from '@crocswap-libs/sdk';
 import RangesMenu from '../../../Global/Tabs/TableMenu/TableMenuComponents/RangesMenu';
 import { ethers } from 'ethers';
+import { useEffect, useState } from 'react';
 
 interface RangeCardProps {
     provider: ethers.providers.Provider | undefined;
@@ -135,6 +136,48 @@ export default function RangeCard(props: RangeCardProps) {
         lastBlockNumber: lastBlockNumber,
     };
 
+    const [baseLiquidityDisplay, setBaseLiquidityDisplay] = useState<string | undefined>(undefined);
+    const [quoteLiquidityDisplay, setQuoteLiquidityDisplay] = useState<string | undefined>(
+        undefined,
+    );
+
+    useEffect(() => {
+        if (position.positionLiqBase && position.baseTokenDecimals) {
+            const baseLiqDisplayNum = parseFloat(
+                toDisplayQty(position.positionLiqBase, position.baseTokenDecimals),
+            );
+            const baseLiqDisplayTruncated =
+                baseLiqDisplayNum < 0.0001
+                    ? baseLiqDisplayNum.toExponential(2)
+                    : baseLiqDisplayNum < 2
+                    ? baseLiqDisplayNum.toPrecision(3)
+                    : baseLiqDisplayNum >= 1000000
+                    ? baseLiqDisplayNum.toExponential(2)
+                    : baseLiqDisplayNum.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                      });
+            setBaseLiquidityDisplay(baseLiqDisplayTruncated);
+        }
+        if (position.positionLiqQuote && position.quoteTokenDecimals) {
+            const quoteLiqDisplayNum = parseFloat(
+                toDisplayQty(position.positionLiqQuote, position.quoteTokenDecimals),
+            );
+            const quoteLiqDisplayTruncated =
+                quoteLiqDisplayNum < 0.0001
+                    ? quoteLiqDisplayNum.toExponential(2)
+                    : quoteLiqDisplayNum < 2
+                    ? quoteLiqDisplayNum.toPrecision(3)
+                    : quoteLiqDisplayNum >= 1000000
+                    ? quoteLiqDisplayNum.toExponential(2)
+                    : quoteLiqDisplayNum.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                      });
+            setQuoteLiquidityDisplay(quoteLiqDisplayTruncated);
+        }
+    }, [JSON.stringify(position)]);
+
     // ------------------------------END OF REMOVE RANGE PROPS-----------------
     if (!positionMatchesSelectedTokens) return null;
     return (
@@ -152,7 +195,7 @@ export default function RangeCard(props: RangeCardProps) {
                 <RangeMinMax min={ambientMinOrNull} max={ambientMaxOrNull} />
                 {/* ------------------------------------------------------ */}
 
-                <TokenQty />
+                <TokenQty baseQty={baseLiquidityDisplay} quoteQty={quoteLiquidityDisplay} />
                 {/* ------------------------------------------------------ */}
                 <Apy amount={10} />
                 {/* ------------------------------------------------------ */}

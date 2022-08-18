@@ -15,6 +15,8 @@ import { ethers } from 'ethers';
 
 interface ITradeProps {
     provider: ethers.providers.Provider | undefined;
+    baseTokenAddress: string;
+    quoteTokenAddress: string;
     account: string;
     isAuthenticated: boolean;
     isWeb3Enabled: boolean;
@@ -33,7 +35,6 @@ interface ITradeProps {
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     isShowAllEnabled: boolean;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
-
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
 
@@ -44,7 +45,15 @@ interface ITradeProps {
 }
 
 export default function Trade(props: ITradeProps) {
-    const { chainId, tokenMap, poolPriceDisplay, provider } = props;
+    const {
+        chainId,
+        tokenMap,
+        poolPriceDisplay,
+        provider,
+        lastBlockNumber,
+        baseTokenAddress,
+        quoteTokenAddress,
+    } = props;
 
     const [isCandleSelected, setIsCandleSelected] = useState<boolean | undefined>();
     const [transactionFilter, setTransactionFilter] = useState<CandleData>();
@@ -69,19 +78,26 @@ export default function Trade(props: ITradeProps) {
 
     const graphData = useAppSelector((state) => state.graphData);
 
-    const mainnetCandlePoolDefinition = JSON.stringify({
-        baseAddress: '0x0000000000000000000000000000000000000000',
-        quoteAddress: '0x6b175474e89094c44da98b954eedeac495271d0f',
+    // const mainnetCandlePoolDefinition = JSON.stringify({
+    //     baseAddress: '0x0000000000000000000000000000000000000000',
+    //     quoteAddress: '0x6b175474e89094c44da98b954eedeac495271d0f',
+    //     poolIdx: 36000,
+    //     network: '0x1',
+    // }).toLowerCase();
+
+    const activePoolDefinition = JSON.stringify({
+        baseAddress: baseTokenAddress,
+        quoteAddress: quoteTokenAddress,
         poolIdx: 36000,
-        network: '0x1',
+        network: chainId,
     }).toLowerCase();
 
-    const indexOfMainnetCandlePool = graphData.candlesForAllPools.pools
+    const indexOfActivePool = graphData.candlesForAllPools.pools
         .map((item) => JSON.stringify(item.pool).toLowerCase())
-        .findIndex((pool) => pool === mainnetCandlePoolDefinition);
+        .findIndex((pool) => pool === activePoolDefinition);
 
-    const mainnetCandleData = graphData?.candlesForAllPools?.pools[indexOfMainnetCandlePool];
-    const candleData = mainnetCandleData?.candlesByPoolAndDuration.find((data) => {
+    const activePoolCandleData = graphData?.candlesForAllPools?.pools[indexOfActivePool];
+    const candleData = activePoolCandleData?.candlesByPoolAndDuration.find((data) => {
         return data.duration === tradeData.activeChartPeriod;
     });
 
@@ -143,6 +159,8 @@ export default function Trade(props: ITradeProps) {
                                 setFullScreenChart={setFullScreenChart}
                                 changeState={changeState}
                                 candleData={candleData}
+                                lastBlockNumber={lastBlockNumber}
+                                chainId={chainId}
                             />
                         </motion.div>
                     </div>

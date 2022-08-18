@@ -78,6 +78,8 @@ import { useTokenMap } from '../utils/hooks/useTokenMap';
 import Reposition from '../pages/Trade/Reposition/Reposition';
 import SidebarFooter from '../components/Global/SIdebarFooter/SidebarFooter';
 import { validateChain } from './validateChain';
+import { testTokenMap } from '../utils/data/testTokenMap';
+import { ZERO_ADDRESS } from '../constants';
 // import SidebarFooter from '../components/Global/SIdebarFooter/SidebarFooter';
 
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
@@ -378,6 +380,9 @@ export default function App() {
     const [baseTokenAddress, setBaseTokenAddress] = useState<string>('');
     const [quoteTokenAddress, setQuoteTokenAddress] = useState<string>('');
 
+    const [mainnetBaseTokenAddress, setMainnetBaseTokenAddress] = useState<string>('');
+    const [mainnetQuoteTokenAddress, setMainnetQuoteTokenAddress] = useState<string>('');
+
     const [baseTokenDecimals, setBaseTokenDecimals] = useState<number>(0);
     const [quoteTokenDecimals, setQuoteTokenDecimals] = useState<number>(0);
 
@@ -401,11 +406,34 @@ export default function App() {
         dispatch(setAdvancedLowTick(0));
         dispatch(setAdvancedHighTick(0));
 
-        if (tokenPair.dataTokenA.address && tokenPair.dataTokenB.address) {
-            const sortedTokens = sortBaseQuoteTokens(
-                tokenPair.dataTokenA.address,
-                tokenPair.dataTokenB.address,
-            );
+        const tokenAAddress = tokenPair?.dataTokenA?.address;
+        const tokenBAddress = tokenPair?.dataTokenB?.address;
+
+        if (tokenAAddress && tokenBAddress) {
+            const sortedTokens = sortBaseQuoteTokens(tokenAAddress, tokenBAddress);
+            const tokenAMainnetEquivalent =
+                tokenAAddress === ZERO_ADDRESS
+                    ? tokenAAddress
+                    : testTokenMap
+                          .get(tokenAAddress.toLowerCase() + '_' + chainData.chainId)
+                          ?.split('_')[0];
+            const tokenBMainnetEquivalent =
+                tokenBAddress === ZERO_ADDRESS
+                    ? tokenBAddress
+                    : testTokenMap
+                          .get(tokenBAddress.toLowerCase() + '_' + chainData.chainId)
+                          ?.split('_')[0];
+
+            if (tokenAMainnetEquivalent && tokenBMainnetEquivalent) {
+                const sortedMainnetTokens = sortBaseQuoteTokens(
+                    tokenAMainnetEquivalent,
+                    tokenBMainnetEquivalent,
+                );
+
+                setMainnetBaseTokenAddress(sortedMainnetTokens[0]);
+                setMainnetQuoteTokenAddress(sortedMainnetTokens[1]);
+            }
+
             setBaseTokenAddress(sortedTokens[0]);
             setQuoteTokenAddress(sortedTokens[1]);
             if (tokenPair.dataTokenA.address === sortedTokens[0]) {
@@ -429,6 +457,8 @@ export default function App() {
                                 quote: sortedTokens[1].toLowerCase(),
                                 poolIdx: chainData.poolIndex.toString(),
                                 chainId: chainData.chainId,
+                                // eslint-disable-next-line camelcase
+                                token_quantities: 'true',
                             }),
                     )
                         .then((response) => response.json())
@@ -480,8 +510,6 @@ export default function App() {
                         .then((json) => {
                             const poolSwaps = json?.data;
 
-                            console.log({ poolSwaps });
-
                             if (poolSwaps) {
                                 Promise.all(poolSwaps.map(getSwapData)).then((updatedSwaps) => {
                                     if (
@@ -509,73 +537,36 @@ export default function App() {
     const activePeriod = tradeData.activeChartPeriod;
 
     useEffect(() => {
-        if (activePeriod) {
+        if (
+            baseTokenAddress &&
+            quoteTokenAddress &&
+            mainnetBaseTokenAddress &&
+            mainnetQuoteTokenAddress &&
+            activePeriod
+        ) {
             try {
                 if (httpGraphCacheServerDomain) {
                     const candleSeriesCacheEndpoint =
                         httpGraphCacheServerDomain + '/candle_series?';
 
-                    fetch(
-                        candleSeriesCacheEndpoint +
-                            new URLSearchParams({
-                                base: '0x0000000000000000000000000000000000000000',
-                                quote: '0x6b175474e89094c44da98b954eedeac495271d0f',
-                                poolIdx: '36000',
-                                period: activePeriod.toString(),
-                                dex: 'all',
-                                n: '200', // positive integer
-                                page: '0', // nonnegative integer
-                                chainId: '0x1',
-                            }),
-                    )
-                        .then((response) => response?.json())
-                        .then((json) => {
-                            const candles = json?.data;
-                            // console.log({ candles });
-                            if (candles) {
-                                Promise.all(candles.map(getCandleData)).then((updatedCandles) => {
-                                    // if (
-                                    //     JSON.stringify(graphData.candlesForAllPools.pools) !==
-                                    //     JSON.stringify(updatedCandles)
-                                    // ) {
-                                    dispatch(
-                                        setCandles({
-                                            pool: {
-                                                baseAddress:
-                                                    '0x0000000000000000000000000000000000000000',
-                                                quoteAddress:
-                                                    '0x6b175474e89094c44da98b954eedeac495271d0f',
-                                                poolIdx: 36000,
-                                                network: '0x1',
-                                            },
-                                            duration: activePeriod,
-                                            candles: updatedCandles,
-                                        }),
-                                    );
-                                    // }
-                                });
-                            }
-                        })
-                        .catch(console.log);
-                }
-            } catch (error) {
-                console.log({ error });
-            }
-        }
-    }, [activePeriod]);
-
-    useEffect(() => {
-        if (baseTokenAddress && quoteTokenAddress && activePeriod) {
-            try {
-                if (httpGraphCacheServerDomain) {
-                    const candleSeriesCacheEndpoint =
-                        httpGraphCacheServerDomain + '/candle_series?';
+                    // const mainnetBaseAddress =
+                    //     baseTokenAddress === ZERO_ADDRESS
+                    //         ? baseTokenAddress
+                    //         : testTokenMap
+                    //               .get(baseTokenAddress.toLowerCase() + '_' + chainData.chainId)
+                    //               ?.split('_')[0];
+                    // const mainnetQuoteAddress =
+                    //     quoteTokenAddress === ZERO_ADDRESS
+                    //         ? quoteTokenAddress
+                    //         : testTokenMap
+                    //               .get(quoteTokenAddress.toLowerCase() + '_' + chainData.chainId)
+                    //               ?.split('_')[0];
 
                     fetch(
                         candleSeriesCacheEndpoint +
                             new URLSearchParams({
-                                base: baseTokenAddress.toLowerCase(),
-                                quote: quoteTokenAddress.toLowerCase(),
+                                base: mainnetBaseTokenAddress,
+                                quote: mainnetQuoteTokenAddress,
                                 poolIdx: chainData.poolIndex.toString(),
                                 period: activePeriod.toString(),
                                 // period: '86400', // 1 day
@@ -583,7 +574,8 @@ export default function App() {
                                 // time: '1657833300', // optional
                                 n: '200', // positive integer
                                 page: '0', // nonnegative integer
-                                chainId: chainData.chainId,
+                                chainId: '0x1',
+                                dex: 'all',
                             }),
                     )
                         .then((response) => response?.json())
@@ -618,7 +610,14 @@ export default function App() {
                 console.log({ error });
             }
         }
-    }, [baseTokenAddress, quoteTokenAddress, activePeriod, chainData.chainId]);
+    }, [
+        baseTokenAddress,
+        quoteTokenAddress,
+        mainnetBaseTokenAddress,
+        mainnetQuoteTokenAddress,
+        activePeriod,
+        chainData.chainId,
+    ]);
 
     const allPositionsCacheSubscriptionEndpoint = useMemo(
         () =>
@@ -676,17 +675,20 @@ export default function App() {
             wssGraphCacheServerDomain +
             '/subscribe_candles?' +
             new URLSearchParams({
-                base: baseTokenAddress.toLowerCase(),
-                // baseTokenAddress.toLowerCase() || '0x0000000000000000000000000000000000000000',
-                quote: quoteTokenAddress.toLowerCase(),
+                base: mainnetBaseTokenAddress.toLowerCase(),
+                // base: baseTokenAddress.toLowerCase(),
+                quote: mainnetQuoteTokenAddress.toLowerCase(),
+                // quote: quoteTokenAddress.toLowerCase(),
                 // quoteTokenAddress.toLowerCase() || '0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa',
                 poolIdx: chainData.poolIndex.toString(),
                 // 	positive integer	The duration of the candle, in seconds. Must represent one of the following time intervals: 5 minutes, 15 minutes, 1 hour, 4 hours, 1 day, 7 days.
                 period: activePeriod.toString(),
                 // period: '60',
-                chainId: chainData.chainId,
+                chainId: '0x1',
+                // chainId: chainData.chainId,
+                dex: 'all',
             }),
-        [baseTokenAddress, quoteTokenAddress, chainData.poolIndex, activePeriod],
+        [mainnetBaseTokenAddress, mainnetQuoteTokenAddress, chainData.poolIndex, activePeriod],
     );
 
     const {
@@ -704,7 +706,7 @@ export default function App() {
             shouldReconnect: () => shouldSubscriptionsReconnect,
         },
         // only connect if base/quote token addresses are available
-        baseTokenAddress !== '' && quoteTokenAddress !== '',
+        mainnetBaseTokenAddress !== '' && mainnetQuoteTokenAddress !== '',
     );
 
     useEffect(() => {
@@ -731,65 +733,6 @@ export default function App() {
             // console.log({ lastMessageData });
         }
     }, [candlesMessage]);
-
-    const mainnetCandleSubscriptionEndpoint = useMemo(
-        () =>
-            wssGraphCacheServerDomain +
-            '/subscribe_candles?' +
-            new URLSearchParams({
-                base: '0x0000000000000000000000000000000000000000',
-                quote: '0x6b175474e89094c44da98b954eedeac495271d0f',
-                poolIdx: chainData.poolIndex.toString(),
-                // 	positive integer	The duration of the candle, in seconds. Must represent one of the following time intervals: 5 minutes, 15 minutes, 1 hour, 4 hours, 1 day, 7 days.
-                period: activePeriod.toString(),
-                chainId: '0x1',
-                dex: 'all',
-            }),
-        [baseTokenAddress, quoteTokenAddress, chainData.poolIndex, activePeriod, chainData.chainId],
-    );
-
-    const {
-        //  sendMessage,
-        lastMessage: mainnetCandlesMessage,
-        //  readyState
-    } = useWebSocket(
-        mainnetCandleSubscriptionEndpoint,
-        {
-            // share:  true,
-            onOpen: () => console.log({ mainnetCandleSubscriptionEndpoint }),
-            onClose: (event) => console.log({ event }),
-            // onClose: () => console.log('candles websocket connection closed'),
-            // Will attempt to reconnect on all close events, such as server shutting down
-            shouldReconnect: () => shouldSubscriptionsReconnect,
-        },
-        // only connect if base/quote token addresses are available
-        // baseTokenAddress !== '' && quoteTokenAddress !== '',
-    );
-
-    useEffect(() => {
-        if (mainnetCandlesMessage !== null) {
-            const lastMessageData = JSON.parse(mainnetCandlesMessage.data).data;
-            if (lastMessageData) {
-                // console.log({ lastMessageData });
-                Promise.all(lastMessageData.map(getCandleData)).then((updatedCandles) => {
-                    // console.log({ updatedCandles });
-                    dispatch(
-                        addCandles({
-                            pool: {
-                                baseAddress: '0x0000000000000000000000000000000000000000',
-                                quoteAddress: '0x6b175474e89094c44da98b954eedeac495271d0f',
-                                poolIdx: 36000,
-                                network: '0x1',
-                            },
-                            duration: activePeriod,
-                            candles: updatedCandles,
-                        }),
-                    );
-                });
-            }
-            // console.log({ lastMessageData });
-        }
-    }, [mainnetCandlesMessage]);
 
     const poolSwapsCacheSubscriptionEndpoint = useMemo(
         () =>
@@ -848,6 +791,8 @@ export default function App() {
             new URLSearchParams({
                 user: account || '',
                 chainId: chainData.chainId,
+                // eslint-disable-next-line camelcase
+                token_quantities: 'true',
                 // user: account || '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc',
             }),
         [account, chainData.chainId],
@@ -1264,14 +1209,16 @@ export default function App() {
 
     useEffect(() => {
         if (isAuthenticated && account) {
-            const allUserPositionsCacheEndpoint = httpGraphCacheServerDomain + '/user_positions?';
+            const userPositionsCacheEndpoint = httpGraphCacheServerDomain + '/user_positions?';
 
             try {
                 fetch(
-                    allUserPositionsCacheEndpoint +
+                    userPositionsCacheEndpoint +
                         new URLSearchParams({
                             user: account,
                             chainId: chainData.chainId,
+                            // eslint-disable-next-line camelcase
+                            token_quantities: 'true',
                         }),
                 )
                     .then((response) => response?.json())
@@ -1688,6 +1635,8 @@ export default function App() {
                             element={
                                 <Trade
                                     provider={provider}
+                                    baseTokenAddress={baseTokenAddress}
+                                    quoteTokenAddress={quoteTokenAddress}
                                     tokenPair={tokenPair}
                                     account={account ?? ''}
                                     isAuthenticated={isAuthenticated}

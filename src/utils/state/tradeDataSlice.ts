@@ -1,3 +1,4 @@
+import { sortBaseQuoteTokens } from '@crocswap-libs/sdk';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { goerliETH, goerliUSDC } from '../data/defaultTokens';
 import { TokenIF } from '../interfaces/TokenIF';
@@ -5,6 +6,8 @@ import { TokenIF } from '../interfaces/TokenIF';
 export interface tradeData {
     tokenA: TokenIF;
     tokenB: TokenIF;
+    baseToken: TokenIF;
+    quoteToken: TokenIF;
     didUserFlipDenom: boolean;
     isDenomBase: boolean;
     advancedMode: boolean;
@@ -23,8 +26,8 @@ export interface tradeData {
 const initialState: tradeData = {
     tokenA: goerliETH,
     tokenB: goerliUSDC,
-    // addressTokenA: '0x0000000000000000000000000000000000000000',
-    // addressTokenB: '0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa',
+    baseToken: goerliETH,
+    quoteToken: goerliUSDC,
     didUserFlipDenom: false,
     isDenomBase: false,
     advancedMode: false,
@@ -46,9 +49,31 @@ export const tradeDataSlice = createSlice({
     reducers: {
         setTokenA: (state, action: PayloadAction<TokenIF>) => {
             state.tokenA = action.payload;
+            const [baseTokenAddress, quoteTokenAddress] = sortBaseQuoteTokens(
+                action.payload.address,
+                state.tokenB.address,
+            );
+            if (action.payload.address.toLowerCase() === baseTokenAddress.toLowerCase()) {
+                state.baseToken = action.payload;
+                state.quoteToken = state.tokenB;
+            } else if (action.payload.address.toLowerCase() === quoteTokenAddress.toLowerCase()) {
+                state.quoteToken = action.payload;
+                state.baseToken = state.tokenB;
+            }
         },
         setTokenB: (state, action: PayloadAction<TokenIF>) => {
             state.tokenB = action.payload;
+            const [baseTokenAddress, quoteTokenAddress] = sortBaseQuoteTokens(
+                action.payload.address,
+                state.tokenA.address,
+            );
+            if (action.payload.address.toLowerCase() === baseTokenAddress.toLowerCase()) {
+                state.baseToken = action.payload;
+                state.quoteToken = state.tokenA;
+            } else if (action.payload.address.toLowerCase() === quoteTokenAddress.toLowerCase()) {
+                state.quoteToken = action.payload;
+                state.baseToken = state.tokenA;
+            }
         },
         setDidUserFlipDenom: (state, action: PayloadAction<boolean>) => {
             state.didUserFlipDenom = action.payload;

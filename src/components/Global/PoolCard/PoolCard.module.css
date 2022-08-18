@@ -76,7 +76,7 @@
 
     color: #ffffff;
 }
-.hours {
+.change_positive {
     font-weight: 200;
     font-size: 18px;
     line-height: 22px;
@@ -85,7 +85,18 @@
 
     /* other/positive */
 
-    color: #15be6f;
+    color: var(--positive);
+}
+.change_negative {
+    font-weight: 200;
+    font-size: 18px;
+    line-height: 22px;
+
+    letter-spacing: -0.02em;
+
+    /* other/positive */
+
+    color: var(--negative);
 }
 .price {
     font-weight: 300;
