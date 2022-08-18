@@ -82,7 +82,7 @@ export default function Ranges(props: RangesProps) {
 
     return (
         <div className={styles.container}>
-            <RangeCardHeader />
+            <RangeCardHeader baseToken={tradeData.baseToken} quoteToken={tradeData.quoteToken} />
             <div
                 className={styles.item_container}
                 style={{ height: expandTradeTable ? '100%' : '220px' }}
