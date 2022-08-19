@@ -227,9 +227,7 @@ export default function App() {
         removePoolFromFaves,
         checkFavoritePools
     ] = useFavePools();
-    console.log({favePools});
 
-    //
     const isPairStable = useMemo(
         () => checkIsStable(tradeData.tokenA.address, tradeData.tokenA.address, chainData.chainId),
         [tradeData.tokenA.address, tradeData.tokenA.address, chainData.chainId],

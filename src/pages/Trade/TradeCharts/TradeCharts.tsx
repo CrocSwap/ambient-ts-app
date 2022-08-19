@@ -58,10 +58,8 @@ export default function TradeCharts(props: TradeChartsProps) {
         setFullScreenChart,
         lastBlockNumber,
         chainId,
-        favePools,
         addPoolToFaves,
         removePoolFromFaves,
-        checkFavoritePools
     } = props;
 
     const dispatch = useAppDispatch();
@@ -69,8 +67,7 @@ export default function TradeCharts(props: TradeChartsProps) {
     // ---------------------TRADE DATA CALCULATIONS------------------------
 
     const { tradeData } = useAppSelector((state) => state);
-    console.log(tradeData);
-    const poolIndex = lookupChain(chainId).poolIndex;
+    const { poolIndex } = lookupChain(chainId);
 
     const setActivePeriod = (period: number) => {
         dispatch(setActiveChartPeriod(period));
