@@ -102,10 +102,10 @@ export default function App() {
     // `'0x5'` is the chain the app should be on by default
     const [chainData, isChainSupported, switchChain, switchNetworkInMoralis] = useAppChain('0x5');
 
-    const [switchTabToTransactions, setSwitchTabToTransactions] = useState<boolean>(false);
-
     const [isShowAllEnabled, setIsShowAllEnabled] = useState<boolean>(true);
+
     const [currentTxActiveInTransactions, setCurrentTxActiveInTransactions] = useState<string>('');
+    const [currentPositionActive, setCurrentPositionActive] = useState<string>('');
 
     const [expandTradeTable, setExpandTradeTable] = useState(false);
 
@@ -444,6 +444,8 @@ export default function App() {
                                 quote: sortedTokens[1].toLowerCase(),
                                 poolIdx: chainData.poolIndex.toString(),
                                 chainId: chainData.chainId,
+                                // eslint-disable-next-line camelcase
+                                token_quantities: 'true',
                             }),
                     )
                         .then((response) => response.json())
@@ -776,6 +778,8 @@ export default function App() {
             new URLSearchParams({
                 user: account || '',
                 chainId: chainData.chainId,
+                // eslint-disable-next-line camelcase
+                token_quantities: 'true',
                 // user: account || '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc',
             }),
         [account, chainData.chainId],
@@ -1192,14 +1196,16 @@ export default function App() {
 
     useEffect(() => {
         if (isAuthenticated && account) {
-            const allUserPositionsCacheEndpoint = httpGraphCacheServerDomain + '/user_positions?';
+            const userPositionsCacheEndpoint = httpGraphCacheServerDomain + '/user_positions?';
 
             try {
                 fetch(
-                    allUserPositionsCacheEndpoint +
+                    userPositionsCacheEndpoint +
                         new URLSearchParams({
                             user: account,
                             chainId: chainData.chainId,
+                            // eslint-disable-next-line camelcase
+                            token_quantities: 'true',
                         }),
                 )
                     .then((response) => response?.json())
@@ -1500,18 +1506,15 @@ export default function App() {
         setSidebarManuallySet(true);
     }
 
-    function handleSetTradeTabToTransaction() {
-        setSwitchTabToTransactions(!switchTabToTransactions);
-    }
+    const [selectedOutsideTab, setSelectedOutsideTab] = useState(0);
+    const [outsideControl, setOutsideControl] = useState(false);
+
     // props for <Sidebar/> React element
     const sidebarProps = {
         isDenomBase: tradeData.isDenomBase,
         showSidebar: showSidebar,
         toggleSidebar: toggleSidebar,
         chainId: chainData.chainId,
-        switchTabToTransactions: switchTabToTransactions,
-        handleSetTradeTabToTransaction: handleSetTradeTabToTransaction,
-        setSwitchTabToTransactions: setSwitchTabToTransactions,
 
         currentTxActiveInTransactions: currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions: setCurrentTxActiveInTransactions,
@@ -1521,7 +1524,20 @@ export default function App() {
         setExpandTradeTable: setExpandTradeTable,
         tokenMap: tokenMap,
         lastBlockNumber: lastBlockNumber,
-        favePools: favePools
+        favePools: favePools,
+
+        selectedOutsideTab: selectedOutsideTab,
+        setSelectedOutsideTab: setSelectedOutsideTab,
+        outsideControl: outsideControl,
+        setOutsideControl: setOutsideControl,
+
+        currentPositionActive: currentPositionActive,
+        setCurrentPositionActive: setCurrentPositionActive,
+    };
+
+    const analyticsProps = {
+        setSelectedOutsideTab: setSelectedOutsideTab,
+        setOutsideControl: setOutsideControl,
     };
 
     function updateDenomIsInBase() {
@@ -1618,8 +1634,6 @@ export default function App() {
                                     isTokenABase={isTokenABase}
                                     poolPriceDisplay={poolPriceDisplay}
                                     chainId={chainData.chainId}
-                                    switchTabToTransactions={switchTabToTransactions}
-                                    setSwitchTabToTransactions={setSwitchTabToTransactions}
                                     currentTxActiveInTransactions={currentTxActiveInTransactions}
                                     setCurrentTxActiveInTransactions={
                                         setCurrentTxActiveInTransactions
@@ -1633,6 +1647,12 @@ export default function App() {
                                     addPoolToFaves={addPoolToFaves}
                                     removePoolFromFaves={removePoolFromFaves}
                                     checkFavoritePools={checkFavoritePools}
+                                    selectedOutsideTab={selectedOutsideTab}
+                                    setSelectedOutsideTab={setSelectedOutsideTab}
+                                    outsideControl={outsideControl}
+                                    setOutsideControl={setOutsideControl}
+                                    currentPositionActive={currentPositionActive}
+                                    setCurrentPositionActive={setCurrentPositionActive}
                                 />
                             }
                         >
@@ -1644,7 +1664,7 @@ export default function App() {
                             <Route path='reposition' element={<Reposition />} />
                             <Route path='edit/' element={<Navigate to='/trade/market' replace />} />
                         </Route>
-                        <Route path='analytics' element={<Analytics />} />
+                        <Route path='analytics' element={<Analytics {...analyticsProps} />} />
                         <Route path='tokens/:address' element={<TokenPage />} />
                         <Route path='pools/:address' element={<PoolPage />} />
 
@@ -1659,8 +1679,10 @@ export default function App() {
                                     userImageData={imageData}
                                     chainId={chainData.chainId}
                                     tokenMap={tokenMap}
-                                    switchTabToTransactions={switchTabToTransactions}
-                                    setSwitchTabToTransactions={setSwitchTabToTransactions}
+                                    selectedOutsideTab={selectedOutsideTab}
+                                    setSelectedOutsideTab={setSelectedOutsideTab}
+                                    outsideControl={outsideControl}
+                                    setOutsideControl={setOutsideControl}
                                 />
                             }
                         />
@@ -1673,8 +1695,10 @@ export default function App() {
                                     chainId={chainData.chainId}
                                     userImageData={imageData}
                                     tokenMap={tokenMap}
-                                    switchTabToTransactions={switchTabToTransactions}
-                                    setSwitchTabToTransactions={setSwitchTabToTransactions}
+                                    selectedOutsideTab={selectedOutsideTab}
+                                    setSelectedOutsideTab={setSelectedOutsideTab}
+                                    outsideControl={outsideControl}
+                                    setOutsideControl={setOutsideControl}
                                 />
                             }
                         />

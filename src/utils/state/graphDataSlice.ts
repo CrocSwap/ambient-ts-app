@@ -88,18 +88,28 @@ export interface pool {
 
 export interface ISwap {
     base: string;
+    baseDecimals: number;
+    baseFlow: string;
+    baseSymbol: string;
     block: number;
+    chainId: string;
+    network: string;
+    dex: string;
     id: string;
     inBaseQty: boolean;
     isBuy: boolean;
     limitPrice: number;
-    minOut: number;
+    minOut: string;
     poolHash: string;
     poolIdx: number;
-    qty: number;
+    qty: string;
     quote: string;
+    quoteDecimals: number;
+    quoteFlow: string;
+    quoteSymbol: string;
     source: string;
     time: number;
+    tx: string;
     user: string;
 }
 

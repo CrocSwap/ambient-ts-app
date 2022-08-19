@@ -3,7 +3,7 @@
     justify-content: flex-end;
     flex-direction: row;
     align-items: center;
-    margin-top: auto;
+    /* margin-top: auto; */
     /* padding: 16px 0; */
     height: var(--footer-height);
 

@@ -1,8 +1,8 @@
-import { useState, useEffect, Dispatch, SetStateAction } from 'react';
+import { useState, useEffect, Dispatch, SetStateAction, useRef } from 'react';
 
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { ethers } from 'ethers';
-
+import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import Transactions from './Transactions/Transactions';
 import Orders from './Orders/Orders';
 // import DropdownMenu from '../../Global/DropdownMenu/DropdownMenu';
@@ -26,8 +26,7 @@ interface ITabsProps {
     isWeb3Enabled: boolean;
     lastBlockNumber: number;
     chainId: string;
-    switchTabToTransactions: boolean;
-    setSwitchTabToTransactions: Dispatch<SetStateAction<boolean>>;
+
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     isShowAllEnabled: boolean;
@@ -40,6 +39,14 @@ interface ITabsProps {
     filter: CandleData | undefined;
     setIsCandleSelected: Dispatch<SetStateAction<boolean | undefined>>;
     setTransactionFilter: Dispatch<SetStateAction<CandleData | undefined>>;
+
+    selectedOutsideTab: number;
+    setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
+    outsideControl: boolean;
+    setOutsideControl: Dispatch<SetStateAction<boolean>>;
+
+    currentPositionActive: string;
+    setCurrentPositionActive: Dispatch<SetStateAction<string>>;
 }
 
 export default function TradeTabs2(props: ITabsProps) {
@@ -94,6 +101,9 @@ export default function TradeTabs2(props: ITabsProps) {
         lastBlockNumber: props.lastBlockNumber,
 
         expandTradeTable: props.expandTradeTable,
+
+        currentPositionActive: props.currentPositionActive,
+        setCurrentPositionActive: props.setCurrentPositionActive,
     };
     // Props for <Transactions/> React Element
     const transactionsProps = {
@@ -137,21 +147,28 @@ export default function TradeTabs2(props: ITabsProps) {
         },
     ];
 
-    const outsideTabControl = {
-        switchToTab: props.switchTabToTransactions,
-        tabToSwitchTo: 2,
-        stateHandler: props.setSwitchTabToTransactions,
-    };
     // -------------------------------END OF DATA-----------------------------------------
+    const tabComponentRef = useRef<HTMLDivElement>(null);
+
+    const clickOutsideHandler = () => {
+        props.setCurrentTxActiveInTransactions('');
+        props.setCurrentPositionActive('');
+    };
+
+    useOnClickOutside(tabComponentRef, clickOutsideHandler);
+
     return (
-        <>
+        <div ref={tabComponentRef}>
             {
                 <TabComponent
                     data={tradeTabData}
-                    outsideTabControl={outsideTabControl}
                     rightTabOptions={<PositionsOnlyToggle {...positionsOnlyToggleProps} />}
+                    selectedOutsideTab={props.selectedOutsideTab}
+                    setSelectedOutsideTab={props.setSelectedOutsideTab}
+                    outsideControl={props.outsideControl}
+                    setOutsideControl={props.setOutsideControl}
                 />
             }
-        </>
+        </div>
     );
 }

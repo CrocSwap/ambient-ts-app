@@ -82,11 +82,11 @@ export default function OrdersMenu(props: OrdersMenu) {
 
     // ------------------  END OF MODAL FUNCTIONALITY-----------------
 
-    const repositionButton = (
+    const repositionButton = userPosition ? (
         <Link className={styles.reposition_button} to={'/trade/reposition'}>
             Reposition
         </Link>
-    );
+    ) : null;
 
     const removeButton = userPosition ? (
         <button className={styles.option_button} onClick={openRemoveModal}>

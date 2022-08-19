@@ -92,7 +92,7 @@
 .surplus_toggle {
     display: flex;
     flex-direction: row;
-    justify-content: flex-end;
+    justify-content: flex-start;
     align-items: center;
     font-size: var(--body-size);
     line-height: var(--body-lh);

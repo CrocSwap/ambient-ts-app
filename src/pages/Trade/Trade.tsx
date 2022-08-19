@@ -26,8 +26,7 @@ interface ITradeProps {
     tokenMap: Map<string, TokenIF>;
     tokenPair: TokenPairIF;
     chainId: string;
-    switchTabToTransactions: boolean;
-    setSwitchTabToTransactions: Dispatch<SetStateAction<boolean>>;
+
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     isShowAllEnabled: boolean;
@@ -38,6 +37,13 @@ interface ITradeProps {
     addPoolToFaves: (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) => void;
     removePoolFromFaves: (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) => void;
     checkFavoritePools: (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) => boolean;
+    selectedOutsideTab: number;
+    setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
+    outsideControl: boolean;
+    setOutsideControl: Dispatch<SetStateAction<boolean>>;
+
+    currentPositionActive: string;
+    setCurrentPositionActive: Dispatch<SetStateAction<string>>;
 }
 
 export default function Trade(props: ITradeProps) {
@@ -177,8 +183,6 @@ export default function Trade(props: ITradeProps) {
                             isWeb3Enabled={props.isWeb3Enabled}
                             lastBlockNumber={props.lastBlockNumber}
                             chainId={chainId}
-                            switchTabToTransactions={props.switchTabToTransactions}
-                            setSwitchTabToTransactions={props.setSwitchTabToTransactions}
                             currentTxActiveInTransactions={props.currentTxActiveInTransactions}
                             setCurrentTxActiveInTransactions={
                                 props.setCurrentTxActiveInTransactions
@@ -192,6 +196,12 @@ export default function Trade(props: ITradeProps) {
                             setIsCandleSelected={setIsCandleSelected}
                             filter={transactionFilter}
                             setTransactionFilter={setTransactionFilter}
+                            selectedOutsideTab={props.selectedOutsideTab}
+                            setSelectedOutsideTab={props.setSelectedOutsideTab}
+                            outsideControl={props.outsideControl}
+                            setOutsideControl={props.setOutsideControl}
+                            currentPositionActive={props.currentPositionActive}
+                            setCurrentPositionActive={props.setCurrentPositionActive}
                         />
                     </motion.div>
                 </div>

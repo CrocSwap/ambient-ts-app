@@ -25,7 +25,7 @@ export default function TopPoolsCard(props: TopPoolsCardProps) {
 
     const poolIndex = lookupChain(chainId).poolIndex;
 
-    const getTopPoolMetrics = async (
+    const getTopPoolsMetrics = async (
         tokenAAddress: string,
         tokenBAddress: string,
         poolIndex: number,
@@ -47,9 +47,9 @@ export default function TopPoolsCard(props: TopPoolsCardProps) {
     };
 
     useEffect(() => {
-        getTopPoolMetrics(tokenAAddress, tokenBAddress, poolIndex);
+        getTopPoolsMetrics(tokenAAddress, tokenBAddress, poolIndex);
         const timer = setTimeout(async () => {
-            getTopPoolMetrics(tokenAAddress, tokenBAddress, poolIndex);
+            getTopPoolsMetrics(tokenAAddress, tokenBAddress, poolIndex);
         }, 60000); // run every 10 minutes
         return () => clearTimeout(timer);
     }, [tokenAAddress, tokenBAddress]);
