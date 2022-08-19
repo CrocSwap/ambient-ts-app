@@ -146,7 +146,6 @@ export default function TokenPage() {
             {tokenInfo}
             <div className={styles.hsPAQl}>
                 <TokenCardInfo token={tokenData} />
-
                 {chartData && tokenData && priceData ? (
                     <TokenPageChart
                         tvlData={formattedTvlData}

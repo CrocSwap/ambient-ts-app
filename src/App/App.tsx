@@ -113,15 +113,8 @@ export default function App() {
 
     const [userIsOnline, setUserIsOnline] = useState(navigator.onLine);
 
-    window.ononline = () => {
-        setUserIsOnline(true);
-        // console.log('Back Online');
-    };
-
-    window.onoffline = () => {
-        setUserIsOnline(false);
-        // console.log('Connection Lost');
-    };
+    window.ononline = () => setUserIsOnline(true);
+    window.onoffline = () => setUserIsOnline(false);
 
     function exposeProviderUrl(provider?: ethers.providers.Provider): string {
         if (provider && 'connection' in provider) {
@@ -228,7 +221,7 @@ export default function App() {
     // holds stable and volatile values for swap and mint transactions
     const [swapSlippage, mintSlippage] = useSlippage();
 
-    const [ favePools ] = useFavePools();
+    const [ favePools, addPoolToFaves, removePoolFromFaves ] = useFavePools();
     console.log({favePools});
 
     //
@@ -236,10 +229,6 @@ export default function App() {
         () => checkIsStable(tradeData.tokenA.address, tradeData.tokenA.address, chainData.chainId),
         [tradeData.tokenA.address, tradeData.tokenA.address, chainData.chainId],
     );
-
-    // useEffect(() => {
-    //     console.log({ isPairStable });
-    // }, [isPairStable]);
 
     // update local state with searchable tokens once after initial load of app
     useEffect(() => {
@@ -1639,6 +1628,8 @@ export default function App() {
                                     expandTradeTable={expandTradeTable}
                                     setExpandTradeTable={setExpandTradeTable}
                                     tokenMap={tokenMap}
+                                    addPoolToFaves={addPoolToFaves}
+                                    removePoolFromFaves={removePoolFromFaves}
                                 />
                             }
                         >

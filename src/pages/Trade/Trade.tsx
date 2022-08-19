@@ -38,6 +38,8 @@ interface ITradeProps {
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
+    addPoolToFaves: () => void;
+    removePoolFromFaves: () => void;
 }
 
 export default function Trade(props: ITradeProps) {
@@ -49,6 +51,8 @@ export default function Trade(props: ITradeProps) {
         lastBlockNumber,
         baseTokenAddress,
         quoteTokenAddress,
+        addPoolToFaves,
+        removePoolFromFaves
     } = props;
 
     const [isCandleSelected, setIsCandleSelected] = useState<boolean | undefined>();
@@ -73,13 +77,6 @@ export default function Trade(props: ITradeProps) {
     const tradeData = useAppSelector((state) => state.tradeData);
 
     const graphData = useAppSelector((state) => state.graphData);
-
-    // const mainnetCandlePoolDefinition = JSON.stringify({
-    //     baseAddress: '0x0000000000000000000000000000000000000000',
-    //     quoteAddress: '0x6b175474e89094c44da98b954eedeac495271d0f',
-    //     poolIdx: 36000,
-    //     network: '0x1',
-    // }).toLowerCase();
 
     const activePoolDefinition = JSON.stringify({
         baseAddress: baseTokenAddress,
@@ -117,9 +114,7 @@ export default function Trade(props: ITradeProps) {
 
     const mainContent = (
         <div className={styles.right_col}>
-            {/* {currentLocation.slice(0, 11) !== '/trade/edit' && navigationMenu} */}
             <Outlet context={{ tradeData: tradeData, navigationMenu: navigationMenu }} />
-            {/* <PageFooter lastBlockNumber={props.lastBlockNumber} /> */}
         </div>
     );
     const expandGraphStyle = props.expandTradeTable ? styles.hide_graph : '';
@@ -157,6 +152,8 @@ export default function Trade(props: ITradeProps) {
                                 candleData={candleData}
                                 lastBlockNumber={lastBlockNumber}
                                 chainId={chainId}
+                                addPoolToFaves={addPoolToFaves}
+                                removePoolFromFaves={removePoolFromFaves}
                             />
                         </motion.div>
                     </div>

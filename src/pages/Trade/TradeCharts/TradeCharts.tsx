@@ -4,7 +4,6 @@ import styles from './TradeCharts.module.css';
 import {
     AiOutlineCamera,
     AiOutlineFullscreen,
-    // AiOutlineSetting,
     AiOutlineDownload,
     AiOutlineCopy,
     AiOutlineLink,
@@ -23,12 +22,8 @@ import {
 } from '../../../utils/state/tradeDataSlice';
 import { useAppSelector, useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import { Dispatch, SetStateAction, useState, useEffect, useMemo, useRef } from 'react';
-// import truncateDecimals from '../../../utils/data/truncateDecimals';
 import TradeCandleStickChart from './TradeCandleStickChart';
 interface TradeChartsProps {
-    // denomInTokenA: boolean;
-    // tokenASymbol: string;
-    // tokenBSymbol: string;
     chainId: string;
     lastBlockNumber: number;
     poolPriceDisplay: number;
@@ -39,6 +34,8 @@ interface TradeChartsProps {
     setFullScreenChart: Dispatch<SetStateAction<boolean>>;
     changeState: (isOpen: boolean | undefined, candleData: CandleData | undefined) => void;
     candleData: CandlesByPoolAndDuration | undefined;
+    addPoolToFaves: () => void;
+    removePoolFromFaves: () => void;
 }
 
 // trade charts
@@ -57,27 +54,8 @@ export default function TradeCharts(props: TradeChartsProps) {
 
     // ---------------------TRADE DATA CALCULATIONS------------------------
 
-    const tradeData = useAppSelector((state) => state.tradeData);
+    const { tradeData } = useAppSelector((state) => state);
     const poolIndex = lookupChain(chainId).poolIndex;
-
-    // const graphData = useAppSelector((state) => state.graphData);
-
-    // const mainnetCandlePoolDefinition = JSON.stringify({
-    //     baseAddress: '0x0000000000000000000000000000000000000000',
-    //     quoteAddress: '0x6b175474e89094c44da98b954eedeac495271d0f',
-    //     poolIdx: 36000,
-    //     network: '0x1',
-    // }).toLowerCase();
-
-    // const indexOfMainnetCandlePool = graphData.candlesForAllPools.pools
-    //     .map((item) => JSON.stringify(item.pool).toLowerCase())
-    //     .findIndex((pool) => pool === mainnetCandlePoolDefinition);
-
-    // const mainnetCandleData = graphData.candlesForAllPools.pools[indexOfMainnetCandlePool];
-
-    // useEffect(() => {
-    //     console.log({ mainnetCandleData });
-    // }, [mainnetCandleData]);
 
     const isTokenABase = props.isTokenABase;
     const setActivePeriod = (period: number) => {
@@ -103,10 +81,6 @@ export default function TradeCharts(props: TradeChartsProps) {
                   maximumFractionDigits: 2,
               });
 
-    // const truncatedPoolPrice =
-    //     poolPriceDisplay < 2
-    //         ? truncateDecimals(poolPriceDisplay, 4)
-    //         : truncateDecimals(poolPriceDisplay, 2);
     // ---------------------END OF TRADE DATA CALCULATIONS------------------------
 
     // GRAPH SETTINGS CONTENT------------------------------------------------------
@@ -163,18 +137,6 @@ export default function TradeCharts(props: TradeChartsProps) {
     });
     const graphSettingsContent = (
         <div className={styles.graph_settings_container}>
-            {/* <DefaultTooltip
-                interactive
-                title={'nothing yet'}
-                open={openSettingsTooltip}
-                onOpen={() => setOpenSettingsTooltip(true)}
-                onClose={() => setOpenSettingsTooltip(false)}
-            >
-                <div />
-            </DefaultTooltip>
-            <div onClick={() => setOpenSettingsTooltip(!openSettingsTooltip)}>
-                <AiOutlineSetting size={20} />
-            </div> */}
             <div onClick={() => setFullScreenChart(!fullScreenChart)}>
                 <AiOutlineFullscreen size={20} />
             </div>
@@ -327,13 +289,11 @@ export default function TradeCharts(props: TradeChartsProps) {
                 <div className={styles.tokens_images}>
                     <img
                         src={denomInTokenA ? tradeData.tokenA.logoURI : tradeData.tokenB.logoURI}
-                        // src='https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png'
                         alt='token'
                         width='30px'
                     />
                     <img
                         src={denomInTokenA ? tradeData.tokenB.logoURI : tradeData.tokenA.logoURI}
-                        // src='https://cryptologos.cc/logos/usd-coin-usdc-logo.png'
                         alt='token'
                         width='30px'
                     />
@@ -342,6 +302,9 @@ export default function TradeCharts(props: TradeChartsProps) {
                     {denomInTokenA ? tokenASymbol : tokenBSymbol} /{' '}
                     {denomInTokenA ? tokenBSymbol : tokenASymbol}
                 </span>
+                <button>Add Pool</button>
+                <button>Remove Pool</button>
+                <button>Log Pools</button>
             </div>
             <div className={styles.chart_overlay_container}>{chartOverlayButtons}</div>
         </div>
