@@ -5,7 +5,7 @@ import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 
 import { tradeData as TradeDataIF } from '../../utils/state/tradeDataSlice';
 import { Dispatch, SetStateAction, useState } from 'react';
-import { TokenIF, TokenPairIF } from '../../utils/interfaces/exports';
+import { PoolIF, TokenIF, TokenPairIF } from '../../utils/interfaces/exports';
 
 import TradeTabs2 from '../../components/Trade/TradeTabs/TradeTabs2';
 import { motion, AnimateSharedLayout } from 'framer-motion';
@@ -34,8 +34,10 @@ interface ITradeProps {
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
+    favePools: PoolIF[];
     addPoolToFaves: (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) => void;
     removePoolFromFaves: (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) => void;
+    checkFavoritePools: (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) => boolean;
 }
 
 export default function Trade(props: ITradeProps) {
@@ -47,8 +49,10 @@ export default function Trade(props: ITradeProps) {
         lastBlockNumber,
         baseTokenAddress,
         quoteTokenAddress,
+        favePools,
         addPoolToFaves,
-        removePoolFromFaves
+        removePoolFromFaves,
+        checkFavoritePools
     } = props;
 
     const [isCandleSelected, setIsCandleSelected] = useState<boolean | undefined>();
@@ -148,8 +152,10 @@ export default function Trade(props: ITradeProps) {
                                 candleData={candleData}
                                 lastBlockNumber={lastBlockNumber}
                                 chainId={chainId}
+                                favePools={favePools}
                                 addPoolToFaves={addPoolToFaves}
                                 removePoolFromFaves={removePoolFromFaves}
+                                checkFavoritePools={checkFavoritePools}
                             />
                         </motion.div>
                     </div>

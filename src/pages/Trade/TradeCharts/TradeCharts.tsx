@@ -23,7 +23,7 @@ import {
 } from '../../../utils/state/tradeDataSlice';
 import { useAppSelector, useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import TradeCandleStickChart from './TradeCandleStickChart';
-import { TokenIF } from '../../../utils/interfaces/exports';
+import { PoolIF, TokenIF } from '../../../utils/interfaces/exports';
 
 interface TradeChartsProps {
     chainId: string;
@@ -36,8 +36,10 @@ interface TradeChartsProps {
     setFullScreenChart: Dispatch<SetStateAction<boolean>>;
     changeState: (isOpen: boolean | undefined, candleData: CandleData | undefined) => void;
     candleData: CandlesByPoolAndDuration | undefined;
+    favePools: PoolIF[];
     addPoolToFaves: (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) => void;
     removePoolFromFaves: (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) => void;
+    checkFavoritePools: (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) => boolean;
 }
 
 // trade charts
@@ -50,13 +52,14 @@ import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 //
 export default function TradeCharts(props: TradeChartsProps) {
     const {
+        isTokenABase,
         poolPriceDisplay,
         fullScreenChart,
         setFullScreenChart,
         lastBlockNumber,
         chainId,
         addPoolToFaves,
-        removePoolFromFaves
+        removePoolFromFaves,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -67,7 +70,6 @@ export default function TradeCharts(props: TradeChartsProps) {
     console.log(tradeData);
     const poolIndex = lookupChain(chainId).poolIndex;
 
-    const isTokenABase = props.isTokenABase;
     const setActivePeriod = (period: number) => {
         dispatch(setActiveChartPeriod(period));
     };

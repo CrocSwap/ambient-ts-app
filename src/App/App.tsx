@@ -221,7 +221,12 @@ export default function App() {
     // holds stable and volatile values for swap and mint transactions
     const [swapSlippage, mintSlippage] = useSlippage();
 
-    const [ favePools, addPoolToFaves, removePoolFromFaves ] = useFavePools();
+    const [
+        favePools,
+        addPoolToFaves,
+        removePoolFromFaves,
+        checkFavoritePools
+    ] = useFavePools();
     console.log({favePools});
 
     //
@@ -1627,8 +1632,10 @@ export default function App() {
                                     expandTradeTable={expandTradeTable}
                                     setExpandTradeTable={setExpandTradeTable}
                                     tokenMap={tokenMap}
+                                    favePools={favePools}
                                     addPoolToFaves={addPoolToFaves}
                                     removePoolFromFaves={removePoolFromFaves}
+                                    checkFavoritePools={checkFavoritePools}
                                 />
                             }
                         >
