@@ -41,7 +41,7 @@ export default function SidebarRecentTransactions(props: SidebarRecentTransactio
         <div className={styles.header}>
             <div>Pool</div>
             <div>Type</div>
-            <div>Status</div>
+            <div>Amount</div>
         </div>
     );
 
