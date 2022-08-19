@@ -130,43 +130,8 @@ export default function TransactionCard(props: TransactionProps) {
         }
     }, [JSON.stringify(swap)]);
 
-    // const qtyIsExponential = swapQtyString.includes('e');
-
-    // const baseQty =
-    //     swap.inBaseQty && !qtyIsExponential
-    //         ? toDisplayQty(swapQtyString, baseToken?.decimals ?? 0)
-    //         : undefined;
-
-    // const quoteQty =
-    //     !swap.inBaseQty && !qtyIsExponential
-    //         ? toDisplayQty(swapQtyString, quoteToken?.decimals ?? 0)
-    //         : undefined;
-
-    // const truncatedBaseQty = baseQty
-    //     ? parseFloat(baseQty)
-    //           .toPrecision(6)
-    //           .replace(/(?:\.0+|(\.\d+?)0+)$/, '$1')
-    //     : '0';
-    // const truncatedQuoteQty = quoteQty
-    //     ? parseFloat(quoteQty)
-    //           .toPrecision(6)
-    //           .replace(/(?:\.0+|(\.\d+?)0+)$/, '$1')
-    //     : '0';
-
-    // const qty = swap.qty;
-    // const sellQty = swap.isBuy // sell token is base
-    //     ? swap.inBaseQty
-    //         ? swap.qty
-    //         : swap.quote
-    //     : swap.inBaseQty
-    //     ? swap.quote
-    //     : swap.base;
-
-    // const qty = swap.isBuy // sell token is base
-    //     ? swap.inBaseQty
-    //         ? swap.qty
-
-    const priceType = 'priceBuy';
+    const priceType = swap.isBuy ? 'priceBuy' : 'priceSell';
+    const sideType = swap.isBuy ? 'buy' : 'sell';
 
     if (!transactionMatchesSelectedTokens) return null;
 
@@ -192,7 +157,7 @@ export default function TransactionCard(props: TransactionProps) {
                 <Price priceType={priceType} displayPrice={truncatedDisplayPrice} />
                 {/* ------------------------------------------------------ */}
 
-                <TransactionTypeSide type='remove' side='rangeAdd' />
+                <TransactionTypeSide type={sideType} side='market' />
                 {/* ------------------------------------------------------ */}
 
                 <TokenQty
