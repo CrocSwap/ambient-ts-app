@@ -23,6 +23,7 @@ import {
 import { useAppSelector, useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import { Dispatch, SetStateAction, useState, useEffect, useMemo, useRef } from 'react';
 import TradeCandleStickChart from './TradeCandleStickChart';
+
 interface TradeChartsProps {
     chainId: string;
     lastBlockNumber: number;
@@ -34,8 +35,8 @@ interface TradeChartsProps {
     setFullScreenChart: Dispatch<SetStateAction<boolean>>;
     changeState: (isOpen: boolean | undefined, candleData: CandleData | undefined) => void;
     candleData: CandlesByPoolAndDuration | undefined;
-    addPoolToFaves: () => void;
-    removePoolFromFaves: () => void;
+    addPoolToFaves: (addrTokenA: string, addrTokenB: string, chainId: string, poolId: number) => void;
+    removePoolFromFaves: (addrTokenA: string, addrTokenB: string, chainId: string, poolId: number) => void;
 }
 
 // trade charts
@@ -47,14 +48,22 @@ import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
 //
 export default function TradeCharts(props: TradeChartsProps) {
-    const { fullScreenChart, setFullScreenChart, lastBlockNumber, chainId } = props;
-    const { poolPriceDisplay } = props;
+    const {
+        poolPriceDisplay,
+        fullScreenChart,
+        setFullScreenChart,
+        lastBlockNumber,
+        chainId,
+        addPoolToFaves,
+        removePoolFromFaves
+    } = props;
 
     const dispatch = useAppDispatch();
 
     // ---------------------TRADE DATA CALCULATIONS------------------------
 
     const { tradeData } = useAppSelector((state) => state);
+    console.log(tradeData);
     const poolIndex = lookupChain(chainId).poolIndex;
 
     const isTokenABase = props.isTokenABase;
@@ -209,10 +218,6 @@ export default function TradeCharts(props: TradeChartsProps) {
         { name: 'Volume', selected: showVolume, action: handleVolumeToggle },
         { name: 'TVL', selected: showTvl, action: handleTvlToggle },
         { name: 'Fee Rate', selected: showFeeRate, action: handleFeeRateToggle },
-        // { name: 'Heatmap', function: () => console.log('heatmap') },
-        // { name: 'Liquidity Profile', function: () => console.log('heatmap')  },
-        // { name: 'Curve', function: () => console.log('Curve')  },
-        // { name: 'Depth', function: () => console.log('Depth')  },
     ];
 
     const chartOverlayButtons = chartOverlayButtonData.map((button, idx) => (
@@ -272,7 +277,6 @@ export default function TradeCharts(props: TradeChartsProps) {
                         layoutId='outline2'
                         className={styles.outline2}
                         initial={false}
-                        // animate={{ borderColor: 'red' }}
                         transition={spring}
                     />
                 )}
@@ -302,8 +306,8 @@ export default function TradeCharts(props: TradeChartsProps) {
                     {denomInTokenA ? tokenASymbol : tokenBSymbol} /{' '}
                     {denomInTokenA ? tokenBSymbol : tokenASymbol}
                 </span>
-                <button>Add Pool</button>
-                <button>Remove Pool</button>
+                <button onClick={() => addPoolToFaves(tradeData.tokenA.address, tradeData.tokenB.address, chainId, 36000)}>Add Pool</button>
+                <button onClick={() => removePoolFromFaves(tradeData.tokenA.address, tradeData.tokenB.address, chainId, 36000)}>Remove Pool</button>
                 <button>Log Pools</button>
             </div>
             <div className={styles.chart_overlay_container}>{chartOverlayButtons}</div>

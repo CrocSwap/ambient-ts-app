@@ -38,8 +38,8 @@ interface ITradeProps {
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
-    addPoolToFaves: () => void;
-    removePoolFromFaves: () => void;
+    addPoolToFaves: (addrTokenA: string, addrTokenB: string, chainId: string, poolId: number) => void;
+    removePoolFromFaves: (addrTokenA: string, addrTokenB: string, chainId: string, poolId: number) => void;
 }
 
 export default function Trade(props: ITradeProps) {
