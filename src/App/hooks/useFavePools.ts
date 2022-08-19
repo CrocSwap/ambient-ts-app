@@ -64,7 +64,7 @@ export const useFavePools = () => {
         poolId: number
     ) => {
         const [baseAddr, quoteAddr] = sortBaseQuoteTokens(tokenA.address, tokenB.address);
-        const poolIsFavorite = favePools.some((pool: PoolIF) => (
+        const poolIsFavorite = favePools?.some((pool: PoolIF) => (
             pool.base.address !== baseAddr &&
             pool.quote.address !== quoteAddr &&
             pool.chainId !== chainId &&

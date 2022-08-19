@@ -253,8 +253,7 @@ export default function App() {
                   // remove all lists with URIs not included in the URIs array passed as argument
                   .filter((tokenList: TokenListIF) => tokenListURIs.includes(tokenList.uri ?? ''))
                   // extract array of tokens from active lists and flatten into single array
-                  .map((tokenList: TokenListIF) => tokenList.tokens)
-                  .flat()
+                  .flatMap((tokenList: TokenListIF) => tokenList.tokens)
             : defaultTokens;
         // return array of all tokens from lists as specified by token list URI
         return tokensFromLists;

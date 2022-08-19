@@ -58,8 +58,10 @@ export default function TradeCharts(props: TradeChartsProps) {
         setFullScreenChart,
         lastBlockNumber,
         chainId,
+        favePools,
         addPoolToFaves,
         removePoolFromFaves,
+        checkFavoritePools
     } = props;
 
     const dispatch = useAppDispatch();
@@ -309,10 +311,13 @@ export default function TradeCharts(props: TradeChartsProps) {
                     {denomInTokenA ? tokenASymbol : tokenBSymbol} /{' '}
                     {denomInTokenA ? tokenBSymbol : tokenASymbol}
                 </span>
-                <button onClick={() => addPoolToFaves(tradeData.tokenA, tradeData.tokenB, chainId, 36000)}>Add Pool</button>
-                <button onClick={() => removePoolFromFaves(tradeData.tokenA, tradeData.tokenB, chainId, 36000)}>Remove Pool</button>
-                <button>Log Pools</button>
+                
+                
             </div>
+
+            <button onClick={() => removePoolFromFaves(tradeData.tokenA, tradeData.tokenB, chainId, 36000)}>Remove Pool</button>
+            <button onClick={() => addPoolToFaves(tradeData.tokenA, tradeData.tokenB, chainId, 36000)}>Add Pool</button>
+
             <div className={styles.chart_overlay_container}>{chartOverlayButtons}</div>
         </div>
     );
@@ -329,10 +334,7 @@ export default function TradeCharts(props: TradeChartsProps) {
     const timeFrameContent = (
         <div className={styles.time_frame_container}>
             <div className={styles.left_side}>
-                <span
-                    className={styles.amount}
-                    // onClick={() => dispatch(toggleDidUserFlipDenom())}
-                >
+                <span className={styles.amount}>
                     {poolPriceDisplay === Infinity
                         ? '...'
                         : `${currencyCharacter}${truncatedPoolPrice}`}
