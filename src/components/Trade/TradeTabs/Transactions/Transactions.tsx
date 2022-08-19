@@ -116,7 +116,7 @@ export default function Transactions(props: TransactionsProps) {
 
     return (
         <div className={styles.container}>
-            <TransactionCardHeader />
+            <TransactionCardHeader tradeData={tradeData} />
             <div
                 className={styles.item_container}
                 style={{ height: expandTradeTable ? '100%' : '170px' }}
