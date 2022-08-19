@@ -1,3 +1,4 @@
+import { Dispatch, SetStateAction, useState, useEffect, useMemo, useRef } from 'react';
 import styles from './TradeCharts.module.css';
 
 // icons
@@ -21,8 +22,8 @@ import {
     setActiveChartPeriod,
 } from '../../../utils/state/tradeDataSlice';
 import { useAppSelector, useAppDispatch } from '../../../utils/hooks/reduxToolkit';
-import { Dispatch, SetStateAction, useState, useEffect, useMemo, useRef } from 'react';
 import TradeCandleStickChart from './TradeCandleStickChart';
+import { TokenIF } from '../../../utils/interfaces/exports';
 
 interface TradeChartsProps {
     chainId: string;
@@ -35,8 +36,8 @@ interface TradeChartsProps {
     setFullScreenChart: Dispatch<SetStateAction<boolean>>;
     changeState: (isOpen: boolean | undefined, candleData: CandleData | undefined) => void;
     candleData: CandlesByPoolAndDuration | undefined;
-    addPoolToFaves: (addrTokenA: string, addrTokenB: string, chainId: string, poolId: number) => void;
-    removePoolFromFaves: (addrTokenA: string, addrTokenB: string, chainId: string, poolId: number) => void;
+    addPoolToFaves: (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) => void;
+    removePoolFromFaves: (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) => void;
 }
 
 // trade charts
@@ -306,8 +307,8 @@ export default function TradeCharts(props: TradeChartsProps) {
                     {denomInTokenA ? tokenASymbol : tokenBSymbol} /{' '}
                     {denomInTokenA ? tokenBSymbol : tokenASymbol}
                 </span>
-                <button onClick={() => addPoolToFaves(tradeData.tokenA.address, tradeData.tokenB.address, chainId, 36000)}>Add Pool</button>
-                <button onClick={() => removePoolFromFaves(tradeData.tokenA.address, tradeData.tokenB.address, chainId, 36000)}>Remove Pool</button>
+                <button onClick={() => addPoolToFaves(tradeData.tokenA, tradeData.tokenB, chainId, 36000)}>Add Pool</button>
+                <button onClick={() => removePoolFromFaves(tradeData.tokenA, tradeData.tokenB, chainId, 36000)}>Remove Pool</button>
                 <button>Log Pools</button>
             </div>
             <div className={styles.chart_overlay_container}>{chartOverlayButtons}</div>

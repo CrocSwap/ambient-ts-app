@@ -1,21 +1,24 @@
 import { useState } from 'react';
 import { sortBaseQuoteTokens } from '@crocswap-libs/sdk';
-import { PoolIF } from '../../utils/interfaces/exports';
+import { PoolIF, TokenIF } from '../../utils/interfaces/exports';
 
 export const useFavePools = () => {
     const userData = JSON.parse(localStorage.user);
     const [ favePools, setFavePools ] = useState(userData.favePools);
 
     const addPoolToFaves = (
-        addrTokenA: string,
-        addrTokenB: string,
+        tokenA: TokenIF,
+        tokenB: TokenIF,
         chainId: string,
         poolId: number
     ) => {
-        const [baseAddr, quoteAddr] = sortBaseQuoteTokens(addrTokenA, addrTokenB);
+        const [baseAddr] = sortBaseQuoteTokens(tokenA.address, tokenB.address);
+        const [baseToken, quoteToken] = baseAddr === tokenA.address
+            ? [tokenA, tokenB]
+            : [tokenB, tokenA];
         const newPool = {
-            base: baseAddr,
-            quote: quoteAddr,
+            base: baseToken,
+            quote: quoteToken,
             chainId: chainId,
             poolId: poolId
         };
@@ -26,15 +29,15 @@ export const useFavePools = () => {
     }
 
     const removePoolFromFaves = (
-        addrTokenA: string,
-        addrTokenB: string,
+        tokenA: TokenIF,
+        tokenB: TokenIF,
         chainId: string,
         poolId: number
     ) => {
-        const [baseAddr, quoteAddr] = sortBaseQuoteTokens(addrTokenA, addrTokenB);
+        const [baseAddr, quoteAddr] = sortBaseQuoteTokens(tokenA.address, tokenB.address);
         const updatedPoolsArray = favePools.filter((pool: PoolIF) => (
-            pool.base !== baseAddr ||
-            pool.quote !== quoteAddr ||
+            pool.base.address !== baseAddr ||
+            pool.quote.address !== quoteAddr ||
             pool.chainId !== chainId ||
             pool.poolId !== poolId
         ));

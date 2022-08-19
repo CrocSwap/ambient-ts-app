@@ -1519,8 +1519,7 @@ export default function App() {
         setExpandTradeTable: setExpandTradeTable,
         tokenMap: tokenMap,
         lastBlockNumber: lastBlockNumber,
-
-        // setShowSidebar : setShowSidebar
+        favePools: favePools
     };
 
     function updateDenomIsInBase() {

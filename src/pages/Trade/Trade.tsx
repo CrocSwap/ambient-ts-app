@@ -5,7 +5,7 @@ import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 
 import { tradeData as TradeDataIF } from '../../utils/state/tradeDataSlice';
 import { Dispatch, SetStateAction, useState } from 'react';
-import { TokenIF } from '../../utils/interfaces/TokenIF';
+import { TokenIF, TokenPairIF } from '../../utils/interfaces/exports';
 
 import TradeTabs2 from '../../components/Trade/TradeTabs/TradeTabs2';
 import { motion, AnimateSharedLayout } from 'framer-motion';
@@ -23,12 +23,8 @@ interface ITradeProps {
     lastBlockNumber: number;
     isTokenABase: boolean;
     poolPriceDisplay?: number;
-
     tokenMap: Map<string, TokenIF>;
-    tokenPair: {
-        dataTokenA: TokenIF;
-        dataTokenB: TokenIF;
-    };
+    tokenPair: TokenPairIF;
     chainId: string;
     switchTabToTransactions: boolean;
     setSwitchTabToTransactions: Dispatch<SetStateAction<boolean>>;
@@ -38,8 +34,8 @@ interface ITradeProps {
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
-    addPoolToFaves: (addrTokenA: string, addrTokenB: string, chainId: string, poolId: number) => void;
-    removePoolFromFaves: (addrTokenA: string, addrTokenB: string, chainId: string, poolId: number) => void;
+    addPoolToFaves: (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) => void;
+    removePoolFromFaves: (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) => void;
 }
 
 export default function Trade(props: ITradeProps) {
