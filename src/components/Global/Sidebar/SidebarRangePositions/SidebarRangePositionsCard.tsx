@@ -71,7 +71,9 @@ export default function SidebarRangePositionsCard(props: SidebarRangePositionsPr
                 toDisplayQty(position.positionLiqBase, position.baseTokenDecimals),
             );
             const baseLiqDisplayTruncated =
-                baseLiqDisplayNum < 0.0001
+                baseLiqDisplayNum === 0
+                    ? '0'
+                    : baseLiqDisplayNum < 0.0001
                     ? baseLiqDisplayNum.toExponential(2)
                     : baseLiqDisplayNum < 2
                     ? baseLiqDisplayNum.toPrecision(3)
@@ -88,7 +90,9 @@ export default function SidebarRangePositionsCard(props: SidebarRangePositionsPr
                 toDisplayQty(position.positionLiqQuote, position.quoteTokenDecimals),
             );
             const quoteLiqDisplayTruncated =
-                quoteLiqDisplayNum < 0.0001
+                quoteLiqDisplayNum === 0
+                    ? '0'
+                    : quoteLiqDisplayNum < 0.0001
                     ? quoteLiqDisplayNum.toExponential(2)
                     : quoteLiqDisplayNum < 2
                     ? quoteLiqDisplayNum.toPrecision(3)
