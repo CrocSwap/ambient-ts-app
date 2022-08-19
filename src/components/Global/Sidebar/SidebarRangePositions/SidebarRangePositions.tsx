@@ -10,10 +10,17 @@ interface SidebarRangeProps {
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
     outsideControl: boolean;
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
+
+    currentPositionActive: string;
+    setCurrentPositionActive: Dispatch<SetStateAction<string>>;
+
+    isShowAllEnabled: boolean;
+    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function SidebarRangePositions(props: SidebarRangeProps) {
-    const { isDenomBase, mostRecentPositions } = props;
+    const { isDenomBase, mostRecentPositions, currentPositionActive, setCurrentPositionActive } =
+        props;
 
     const header = (
         <div className={styles.header}>
@@ -28,6 +35,10 @@ export default function SidebarRangePositions(props: SidebarRangeProps) {
         setSelectedOutsideTab: props.setSelectedOutsideTab,
         outsideControl: props.outsideControl,
         setOutsideControl: props.setOutsideControl,
+        currentPositionActive: currentPositionActive,
+        setCurrentPositionActive: setCurrentPositionActive,
+        isShowAllEnabled: props.isShowAllEnabled,
+        setIsShowAllEnabled: props.setIsShowAllEnabled,
     };
     // const mapItems = [1, 2, 3, 4, 5, 6, 7];
     return (

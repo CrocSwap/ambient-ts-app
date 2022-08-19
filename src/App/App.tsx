@@ -113,6 +113,7 @@ export default function App() {
     const [isShowAllEnabled, setIsShowAllEnabled] = useState<boolean>(true);
 
     const [currentTxActiveInTransactions, setCurrentTxActiveInTransactions] = useState<string>('');
+    const [currentPositionActive, setCurrentPositionActive] = useState<string>('');
 
     const [expandTradeTable, setExpandTradeTable] = useState(false);
 
@@ -1543,6 +1544,9 @@ export default function App() {
         outsideControl: outsideControl,
         setOutsideControl: setOutsideControl,
 
+        currentPositionActive: currentPositionActive,
+        setCurrentPositionActive: setCurrentPositionActive,
+
         // setShowSidebar : setShowSidebar
     };
 
@@ -1658,6 +1662,8 @@ export default function App() {
                                     setSelectedOutsideTab={setSelectedOutsideTab}
                                     outsideControl={outsideControl}
                                     setOutsideControl={setOutsideControl}
+                                    currentPositionActive={currentPositionActive}
+                                    setCurrentPositionActive={setCurrentPositionActive}
                                 />
                             }
                         >

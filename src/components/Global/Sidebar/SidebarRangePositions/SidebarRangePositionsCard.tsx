@@ -1,5 +1,6 @@
 import styles from './SidebarRangePositionsCard.module.css';
 import { PositionIF } from '../../../../utils/interfaces/PositionIF';
+
 import { useLocation } from 'react-router-dom';
 import { toDisplayQty } from '@crocswap-libs/sdk';
 import { useEffect, useState, SetStateAction, Dispatch } from 'react';
@@ -12,21 +13,37 @@ interface SidebarRangePositionsProps {
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
     outsideControl: boolean;
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
+
+    isShowAllEnabled: boolean;
+    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
+
+    currentPositionActive: string;
+    setCurrentPositionActive: Dispatch<SetStateAction<string>>;
 }
 
 export default function SidebarRangePositionsCard(props: SidebarRangePositionsProps) {
     const location = useLocation();
 
-    const { isDenomBase, position, setOutsideControl, setSelectedOutsideTab } = props;
+    const {
+        isDenomBase,
+        position,
+        setOutsideControl,
+        setSelectedOutsideTab,
+        // currentPositionActive,
+        setCurrentPositionActive,
+        setIsShowAllEnabled,
+    } = props;
 
     const onTradeRoute = location.pathname.includes('trade');
     const onAccountRoute = location.pathname.includes('account');
 
     const tabToSwitchToBasedOnRoute = onTradeRoute ? 0 : onAccountRoute ? 2 : 0;
 
-    function handleRangePositionClick() {
+    function handleRangePositionClick(pos: PositionIF) {
         setOutsideControl(true);
         setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
+        setCurrentPositionActive(pos.id);
+        setIsShowAllEnabled(false);
     }
 
     const [baseLiquidityDisplay, setBaseLiquidityDisplay] = useState<string | undefined>(undefined);
@@ -87,7 +104,7 @@ export default function SidebarRangePositionsCard(props: SidebarRangePositionsPr
             : `${position?.lowRangeShortDisplayInQuote}-${position?.highRangeShortDisplayInQuote}`;
 
     return (
-        <div className={styles.container} onClick={handleRangePositionClick}>
+        <div className={styles.container} onClick={() => handleRangePositionClick(position)}>
             <div>
                 {isDenomBase
                     ? `${position?.baseSymbol}/${position?.quoteSymbol}`

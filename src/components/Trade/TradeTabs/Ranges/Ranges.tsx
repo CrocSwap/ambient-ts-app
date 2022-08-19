@@ -6,6 +6,7 @@ import { useMoralis } from 'react-moralis';
 import RangeCardHeader from './RangeCardHeader';
 // import { Dispatch, SetStateAction } from 'react';
 import { ethers } from 'ethers';
+import { Dispatch, SetStateAction } from 'react';
 
 interface RangesProps {
     chainId: string;
@@ -17,6 +18,8 @@ interface RangesProps {
     provider: ethers.providers.Provider | undefined;
 
     expandTradeTable: boolean;
+    currentPositionActive: string;
+    setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     // setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
 }
 export default function Ranges(props: RangesProps) {
@@ -28,6 +31,8 @@ export default function Ranges(props: RangesProps) {
         isShowAllEnabled,
         graphData,
         expandTradeTable,
+        currentPositionActive,
+        setCurrentPositionActive,
     } = props;
 
     const { account, isAuthenticated } = useMoralis();
@@ -58,6 +63,8 @@ export default function Ranges(props: RangesProps) {
                   isAuthenticated={isAuthenticated}
                   isDenomBase={isDenomBase}
                   lastBlockNumber={props.lastBlockNumber}
+                  currentPositionActive={currentPositionActive}
+                  setCurrentPositionActive={setCurrentPositionActive}
               />
           ))
         : //   .reverse()
@@ -76,6 +83,8 @@ export default function Ranges(props: RangesProps) {
                   isAuthenticated={isAuthenticated}
                   isDenomBase={isDenomBase}
                   lastBlockNumber={props.lastBlockNumber}
+                  currentPositionActive={currentPositionActive}
+                  setCurrentPositionActive={setCurrentPositionActive}
               />
           ));
     //   .reverse();

@@ -42,6 +42,9 @@ interface ITradeProps {
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
     outsideControl: boolean;
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
+
+    currentPositionActive: string;
+    setCurrentPositionActive: Dispatch<SetStateAction<string>>;
 }
 
 export default function Trade(props: ITradeProps) {
@@ -199,6 +202,8 @@ export default function Trade(props: ITradeProps) {
                             setSelectedOutsideTab={props.setSelectedOutsideTab}
                             outsideControl={props.outsideControl}
                             setOutsideControl={props.setOutsideControl}
+                            currentPositionActive={props.currentPositionActive}
+                            setCurrentPositionActive={props.setCurrentPositionActive}
                         />
                     </motion.div>
                 </div>

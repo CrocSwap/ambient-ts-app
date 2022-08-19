@@ -32,6 +32,8 @@ interface SidebarPropsIF {
 
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
+    currentPositionActive: string;
+    setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     isShowAllEnabled: boolean;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
     expandTradeTable: boolean;
@@ -53,6 +55,9 @@ export default function Sidebar(props: SidebarPropsIF) {
         chainId,
         currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions,
+
+        currentPositionActive,
+        setCurrentPositionActive,
         isShowAllEnabled,
         setIsShowAllEnabled,
 
@@ -93,6 +98,11 @@ export default function Sidebar(props: SidebarPropsIF) {
         setSelectedOutsideTab: props.setSelectedOutsideTab,
         outsideControl: props.outsideControl,
         setOutsideControl: props.setOutsideControl,
+        currentPositionActive: currentPositionActive,
+        setCurrentPositionActive: setCurrentPositionActive,
+
+        isShowAllEnabled: props.isShowAllEnabled,
+        setIsShowAllEnabled: props.setIsShowAllEnabled,
     };
 
     const recentRangePositions = [
