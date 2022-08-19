@@ -98,6 +98,21 @@ export default function Portfolio(props: PortfolioPropsIF) {
             />
         </div>
     );
+
+    const fullLayout = <div className={styles.full_layout_svg}></div>;
+    const halfLayout = <div className={styles.half_layout_svg}></div>;
+    const sharedLayoutSVG = (
+        <div className={styles.shared_layout_svg}>
+            {fullLayout}
+            {halfLayout}
+        </div>
+    );
+    const rightTabOptions = (
+        <div className={styles.right_tab_option}>
+            {fullLayout}
+            {sharedLayoutSVG}
+        </div>
+    );
     return (
         <main data-testid={'portfolio'} className={styles.portfolio_container}>
             <PortfolioBanner
@@ -117,6 +132,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
                     setSelectedOutsideTab={props.setSelectedOutsideTab}
                     setOutsideControl={props.setOutsideControl}
                     outsideControl={props.outsideControl}
+                    rightTabOptions={rightTabOptions}
                 />
                 {connectedAccountActive ? exchangeBalanceComponent : null}
             </div>

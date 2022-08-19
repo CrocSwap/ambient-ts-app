@@ -3,6 +3,38 @@
     background: var(--dark3);
 }
 
+/* layouts */
+
+.right_tab_option{
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    background: var(--dark3);
+    padding: 4px;
+    border-radius: 4px;
+}
+.full_layout_svg{
+    width: 30px;
+    height: 20px;
+    border-radius: 4px;
+    background: red;
+}
+
+.half_layout_svg{
+    width: 10px;
+    height: 20px;
+    border-radius: 4px;
+    background: red;
+} 
+.shared_layout_svg{
+    display: flex;
+    flex-direction: row;
+    gap: 2px;
+}
+
+.shared_layout_svg .full_layout_svg{
+    width: 20px;
+}
 
 @media (min-width: 940px) {
    
