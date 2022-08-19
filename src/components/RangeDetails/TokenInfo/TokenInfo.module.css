@@ -17,10 +17,15 @@
     font-weight: 200;
     letter-spacing: -0.02em;
 }
-.price_info .price_change {
+.price_info .price_change_positive {
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: #15be6f;
+    color: var(--positive);
+}
+.price_info .price_change_negative {
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    color: var(--negative);
 }
 .apy {
     display: flex;

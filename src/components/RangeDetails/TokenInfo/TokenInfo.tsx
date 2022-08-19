@@ -4,6 +4,8 @@ import { querySpotPrice } from '../../../App/functions/querySpotPrice';
 import { useEffect, useState } from 'react';
 import { toDisplayPrice } from '@crocswap-libs/sdk';
 import { ethers } from 'ethers';
+import { get24hChange } from '../../../App/functions/getPoolStats';
+import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
 // const cachedQuerySpotPrice = memoizePromiseFn(querySpotPrice);
 
@@ -31,6 +33,52 @@ export default function TokenInfo(props: ITokenInfoProps) {
     } = props;
 
     const [displayPrice, setDisplayPrice] = useState('');
+    const [poolPriceChangePercent, setPoolPriceChangePercent] = useState<string | undefined>(
+        undefined,
+    );
+    const [isPoolPriceChangePositive, setIsPoolPriceChangePositive] = useState<boolean>(true);
+
+    useEffect(() => {
+        (async () => {
+            if (baseTokenAddress && quoteTokenAddress) {
+                try {
+                    const poolIndex = lookupChain(chainId).poolIndex;
+
+                    const priceChangeResult = await get24hChange(
+                        chainId,
+                        baseTokenAddress,
+                        quoteTokenAddress,
+                        poolIndex,
+                        isDenomBase,
+                    );
+
+                    if (priceChangeResult) {
+                        priceChangeResult > 0
+                            ? setIsPoolPriceChangePositive(true)
+                            : setIsPoolPriceChangePositive(false);
+
+                        const priceChangeString =
+                            priceChangeResult > 0
+                                ? '+' +
+                                  priceChangeResult.toLocaleString(undefined, {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 2,
+                                  }) +
+                                  '%'
+                                : priceChangeResult.toLocaleString(undefined, {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 2,
+                                  }) + '%';
+                        setPoolPriceChangePercent(priceChangeString);
+                    } else {
+                        setPoolPriceChangePercent(undefined);
+                    }
+                } catch (error) {
+                    setPoolPriceChangePercent(undefined);
+                }
+            }
+        })();
+    }, [isDenomBase, baseTokenAddress, quoteTokenAddress, lastBlockNumber]);
 
     // useEffect to get spot price when tokens change and block updates
     useEffect(() => {
@@ -70,7 +118,17 @@ export default function TokenInfo(props: ITokenInfoProps) {
         <div className={styles.token_info_container}>
             <div className={styles.price_info}>
                 <span className={styles.price}>${displayPrice}</span>
-                <span className={styles.price_change}>+8.57% | 24h</span>
+                <span
+                    className={
+                        isPoolPriceChangePositive
+                            ? styles.price_change_positive
+                            : styles.price_change_negative
+                    }
+                >
+                    {poolPriceChangePercent === undefined
+                        ? '...'
+                        : poolPriceChangePercent + ' | 24h'}
+                </span>
             </div>
             <div className={styles.apy}>APY | 35.65%</div>
         </div>
