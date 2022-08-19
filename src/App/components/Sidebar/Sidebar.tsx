@@ -100,7 +100,7 @@ export default function Sidebar(props: SidebarPropsIF) {
         setOutsideControl: props.setOutsideControl,
         currentPositionActive: currentPositionActive,
         setCurrentPositionActive: setCurrentPositionActive,
-
+        tokenMap: tokenMap,
         isShowAllEnabled: props.isShowAllEnabled,
         setIsShowAllEnabled: props.setIsShowAllEnabled,
     };

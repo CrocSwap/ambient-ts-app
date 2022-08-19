@@ -4,11 +4,14 @@ import { PositionIF } from '../../../../utils/interfaces/PositionIF';
 import { useLocation } from 'react-router-dom';
 import { toDisplayQty } from '@crocswap-libs/sdk';
 import { useEffect, useState, SetStateAction, Dispatch } from 'react';
+import { TokenIF } from '../../../../utils/interfaces/TokenIF';
+import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
+import { setTokenA, setTokenB } from '../../../../utils/state/tradeDataSlice';
 
 interface SidebarRangePositionsProps {
     isDenomBase: boolean;
     position: PositionIF;
-
+    tokenMap: Map<string, TokenIF>;
     selectedOutsideTab: number;
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
     outsideControl: boolean;
@@ -25,6 +28,7 @@ export default function SidebarRangePositionsCard(props: SidebarRangePositionsPr
     const location = useLocation();
 
     const {
+        tokenMap,
         isDenomBase,
         position,
         setOutsideControl,
@@ -33,6 +37,14 @@ export default function SidebarRangePositionsCard(props: SidebarRangePositionsPr
         setCurrentPositionActive,
         setIsShowAllEnabled,
     } = props;
+
+    const dispatch = useAppDispatch();
+
+    const baseId = position.base + '_' + position.chainId;
+    const quoteId = position.quote + '_' + position.chainId;
+
+    const baseToken = tokenMap ? tokenMap.get(baseId.toLowerCase()) : null;
+    const quoteToken = tokenMap ? tokenMap.get(quoteId.toLowerCase()) : null;
 
     const onTradeRoute = location.pathname.includes('trade');
     const onAccountRoute = location.pathname.includes('account');
@@ -44,6 +56,8 @@ export default function SidebarRangePositionsCard(props: SidebarRangePositionsPr
         setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
         setCurrentPositionActive(pos.id);
         setIsShowAllEnabled(false);
+        if (baseToken) dispatch(setTokenA(baseToken));
+        if (quoteToken) dispatch(setTokenB(quoteToken));
     }
 
     const [baseLiquidityDisplay, setBaseLiquidityDisplay] = useState<string | undefined>(undefined);
@@ -112,7 +126,7 @@ export default function SidebarRangePositionsCard(props: SidebarRangePositionsPr
             </div>
             <div>{rangeDisplay}</div>
             <div className={styles.status_display}>
-                {`${baseLiquidityDisplay}/${quoteLiquidityDisplay}`}
+                {`${baseLiquidityDisplay || '… '}/${quoteLiquidityDisplay || '…'}`}
                 {rangeStatusDisplay}
             </div>
         </div>

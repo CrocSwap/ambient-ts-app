@@ -2,6 +2,7 @@ import styles from './SidebarRangePositions.module.css';
 import SidebarRangePositionsCard from './SidebarRangePositionsCard';
 import { PositionIF } from '../../../../utils/interfaces/PositionIF';
 import { SetStateAction, Dispatch } from 'react';
+import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 
 interface SidebarRangeProps {
     isDenomBase: boolean;
@@ -10,6 +11,7 @@ interface SidebarRangeProps {
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
     outsideControl: boolean;
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
+    tokenMap: Map<string, TokenIF>;
 
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
@@ -19,8 +21,13 @@ interface SidebarRangeProps {
 }
 
 export default function SidebarRangePositions(props: SidebarRangeProps) {
-    const { isDenomBase, mostRecentPositions, currentPositionActive, setCurrentPositionActive } =
-        props;
+    const {
+        tokenMap,
+        isDenomBase,
+        mostRecentPositions,
+        currentPositionActive,
+        setCurrentPositionActive,
+    } = props;
 
     const header = (
         <div className={styles.header}>
@@ -31,6 +38,7 @@ export default function SidebarRangePositions(props: SidebarRangeProps) {
     );
 
     const sidebarRangePositionCardProps = {
+        tokenMap: tokenMap,
         selectedOutsideTab: props.selectedOutsideTab,
         setSelectedOutsideTab: props.setSelectedOutsideTab,
         outsideControl: props.outsideControl,
