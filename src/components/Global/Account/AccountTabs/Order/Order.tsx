@@ -10,7 +10,6 @@ export default function Order() {
             {items.map((item, idx) => (
                 <OrderCard key={idx} />
             ))}
-            ;
         </div>
     );
 

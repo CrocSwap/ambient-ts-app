@@ -106,18 +106,20 @@ export default function Portfolio(props: PortfolioPropsIF) {
                 activeAccount={address ?? connectedAccount}
                 imageData={address ? secondaryImageData : userImageData}
             />
-            <PortfolioTabs
-                resolvedAddress={resolvedAddress}
-                activeAccount={address ?? connectedAccount}
-                connectedAccountActive={connectedAccountActive}
-                chainId={chainId}
-                tokenMap={tokenMap}
-                selectedOutsideTab={props.selectedOutsideTab}
-                setSelectedOutsideTab={props.setSelectedOutsideTab}
-                setOutsideControl={props.setOutsideControl}
-                outsideControl={props.outsideControl}
-            />
-            {connectedAccountActive ? exchangeBalanceComponent : null}
+            <div className={styles.tabs_exchange_balance_container}>
+                <PortfolioTabs
+                    resolvedAddress={resolvedAddress}
+                    activeAccount={address ?? connectedAccount}
+                    connectedAccountActive={connectedAccountActive}
+                    chainId={chainId}
+                    tokenMap={tokenMap}
+                    selectedOutsideTab={props.selectedOutsideTab}
+                    setSelectedOutsideTab={props.setSelectedOutsideTab}
+                    setOutsideControl={props.setOutsideControl}
+                    outsideControl={props.outsideControl}
+                />
+                {connectedAccountActive ? exchangeBalanceComponent : null}
+            </div>
         </main>
     );
 }

@@ -2,22 +2,19 @@
     padding: 2rem;
     background: var(--dark3);
 }
-.exchange_balance {
-    /* max-width: 516px; */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-.title {
-    margin-top: 1rem;
-    font-size: var(--header1-size);
-    line-height: var(--header1-lh);
-    letter-spacing: -0.02em;
-    color: var(--text-grey-white);
-}
+
 
 @media (min-width: 940px) {
-    .portfolio_container {
-        height: calc(100vh - 10.5rem);
+   
+    .tabs_exchange_balance_container{
+      
+        /* I wish I had a logical answer to this calculation but it was through trial and error. The higher level containers of the app needs to be refactored to prevent this workflow */
+        height: calc(100vh - 23.2rem);
+       
+        display: grid;
+        grid-template-columns: auto 380px;
+        gap: 1rem;
+      
+
     }
 }
