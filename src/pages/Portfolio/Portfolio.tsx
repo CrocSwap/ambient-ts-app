@@ -10,7 +10,6 @@ import { fetchAddress } from '../../App/functions/fetchAddress';
 import { useMoralis } from 'react-moralis';
 import { ethers } from 'ethers';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
-import { motion, AnimatePresence } from 'framer-motion';
 
 interface PortfolioPropsIF {
     ensName: string;

@@ -97,7 +97,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
     const accountTabData = [
         { label: 'Wallet', content: <Wallet {...walletProps} />, icon: walletImage },
         { label: 'Exchange', content: <Exchange />, icon: exchangeImage },
-        // { label: 'Ranges', content: <Range {...rangeProps} />, icon: rangePositionsImage },
+        { label: 'Ranges', content: <Range {...rangeProps} />, icon: rangePositionsImage },
         { label: ' Orders', content: <Order />, icon: openOrdersImage },
         { label: 'Transactions', content: <TransactionsTable />, icon: recentTransactionsImage },
     ];
