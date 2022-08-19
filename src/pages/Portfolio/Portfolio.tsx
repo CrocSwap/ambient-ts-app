@@ -98,6 +98,49 @@ export default function Portfolio(props: PortfolioPropsIF) {
             />
         </div>
     );
+    const [fullLayoutActive, setFullLayoutActive] = useState(false);
+    console.log(fullLayoutActive);
+
+    const fullLayout = (
+        <div
+            className={`${styles.full_layout_svg} ${
+                fullLayoutActive ? styles.active_layout_style : null
+            }`}
+            onClick={() => setFullLayoutActive(!fullLayoutActive)}
+        />
+    );
+    const fullLayoutCopied = (
+        <div
+            className={`${styles.full_layout_svg_copied} ${
+                !fullLayoutActive ? styles.active_layout_style : null
+            }`}
+        />
+    );
+    const halfLayout = (
+        <div
+            className={`${styles.half_layout_svg} ${
+                !fullLayoutActive ? styles.active_layout_style : null
+            }`}
+        />
+    );
+
+    const sharedLayoutSVG = (
+        <>
+            <div
+                className={styles.shared_layout_svg}
+                onClick={() => setFullLayoutActive(!fullLayoutActive)}
+            >
+                {fullLayoutCopied}
+                {halfLayout}
+            </div>
+        </>
+    );
+    const rightTabOptions = (
+        <div className={styles.right_tab_option}>
+            {fullLayout}
+            {sharedLayoutSVG}
+        </div>
+    );
     return (
         <main data-testid={'portfolio'} className={styles.portfolio_container}>
             <PortfolioBanner
@@ -106,18 +149,27 @@ export default function Portfolio(props: PortfolioPropsIF) {
                 activeAccount={address ?? connectedAccount}
                 imageData={address ? secondaryImageData : userImageData}
             />
-            <PortfolioTabs
-                resolvedAddress={resolvedAddress}
-                activeAccount={address ?? connectedAccount}
-                connectedAccountActive={connectedAccountActive}
-                chainId={chainId}
-                tokenMap={tokenMap}
-                selectedOutsideTab={props.selectedOutsideTab}
-                setSelectedOutsideTab={props.setSelectedOutsideTab}
-                setOutsideControl={props.setOutsideControl}
-                outsideControl={props.outsideControl}
-            />
-            {connectedAccountActive ? exchangeBalanceComponent : null}
+            <div
+                className={
+                    fullLayoutActive
+                        ? styles.full_layout_container
+                        : styles.tabs_exchange_balance_container
+                }
+            >
+                <PortfolioTabs
+                    resolvedAddress={resolvedAddress}
+                    activeAccount={address ?? connectedAccount}
+                    connectedAccountActive={connectedAccountActive}
+                    chainId={chainId}
+                    tokenMap={tokenMap}
+                    selectedOutsideTab={props.selectedOutsideTab}
+                    setSelectedOutsideTab={props.setSelectedOutsideTab}
+                    setOutsideControl={props.setOutsideControl}
+                    outsideControl={props.outsideControl}
+                    rightTabOptions={rightTabOptions}
+                />
+                {connectedAccountActive && !fullLayoutActive ? exchangeBalanceComponent : null}
+            </div>
         </main>
     );
 }

@@ -25,7 +25,7 @@ export default function ExchangeBalance(props: ExchangeBalanceProps) {
 
     return (
         <div className={styles.main_container}>
-            <div className={styles.title}>Exchange Balance</div>
+            {/* <div className={styles.title}>Exchange Balance</div> */}
 
             <div className={styles.tabs_container}>
                 <TabComponent

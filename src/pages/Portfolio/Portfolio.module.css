@@ -1,23 +1,75 @@
 .portfolio_container {
     padding: 2rem;
     background: var(--dark3);
-}
-.exchange_balance {
-    /* max-width: 516px; */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-.title {
-    margin-top: 1rem;
-    font-size: var(--header1-size);
-    line-height: var(--header1-lh);
-    letter-spacing: -0.02em;
-    color: var(--text-grey-white);
+    transition: all var(--animation-speed) ease-in-out
 }
 
+/* layouts */
+
+.right_tab_option{
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    background: var(--dark3);
+    padding: 4px;
+    border-radius: 4px;
+    transition: all var(--animation-speed) ease-in-out
+}
+.full_layout_svg{
+    width: 30px;
+    height: 20px;
+    border-radius: 4px;
+    background: var(--dark2);
+    cursor: pointer;
+    transition: all var(--animation-speed) ease-in-out
+}
+
+.half_layout_svg{
+    width: 10px;
+    height: 20px;
+    border-radius: 4px;
+    background: var(--dark2);
+} 
+.shared_layout_svg{
+    display: flex;
+    flex-direction: row;
+    gap: 2px;
+    position: relative;
+    cursor: pointer;
+    transition: all var(--animation-speed) ease-in-out
+}
+.full_layout_svg_copied{
+    width: 30px;
+    height: 20px;
+    border-radius: 4px;
+    background: var(--dark2);
+    cursor: pointer;
+}
+.active_layout_style{
+  background: var(--title-gradient)
+}
+
+
+
+
 @media (min-width: 940px) {
-    .portfolio_container {
-        height: calc(100vh - 10.5rem);
+
+    .tabs_exchange_balance_container, .full_layout_container{
+        /* I wish I had a logical answer to this calculation but it was through trial and error. The higher level containers of the app needs to be refactored to prevent this workflow */
+        height: calc(100vh - 23.2rem);
+       
+        display: grid;
+        transition: all var(--animation-speed) ease-in-out
+    }
+   
+    .tabs_exchange_balance_container{
+
+        grid-template-columns: auto 380px;
+        gap: 1rem;
+      
+
+    }
+ .full_layout_container{
+   grid-template-columns: auto ;
     }
 }

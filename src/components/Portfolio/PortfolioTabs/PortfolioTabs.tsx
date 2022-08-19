@@ -36,6 +36,7 @@ interface PortfolioTabsPropsIF {
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
     outsideControl: boolean;
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
+    rightTabOptions: React.ReactNode;
 }
 export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
     const { resolvedAddress, activeAccount, connectedAccountActive, chainId, tokenMap } = props;
@@ -105,7 +106,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
         <div className={styles.tabs_container}>
             <TabComponent
                 data={accountTabData}
-                rightTabOptions={false}
+                rightTabOptions={props.rightTabOptions}
                 selectedOutsideTab={props.selectedOutsideTab}
                 setSelectedOutsideTab={props.setSelectedOutsideTab}
                 outsideControl={props.outsideControl}
