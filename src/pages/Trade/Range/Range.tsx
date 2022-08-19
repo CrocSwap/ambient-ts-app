@@ -3,12 +3,7 @@ import { useState, useEffect, useMemo, Dispatch, SetStateAction } from 'react';
 import { useMoralis } from 'react-moralis';
 import { ethers } from 'ethers';
 import { motion } from 'framer-motion';
-import {
-    concDepositSkew,
-    MIN_TICK,
-    MAX_TICK,
-    CrocEnv
-} from '@crocswap-libs/sdk';
+import { concDepositSkew, MIN_TICK, MAX_TICK, CrocEnv } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
 // START: Import JSX Elements
@@ -36,10 +31,7 @@ import {
     getPinnedPriceValuesFromTicks,
 } from './rangeFunctions';
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
-import {
-    isTransactionReplacedError,
-    TransactionError
-} from '../../../utils/TransactionError';
+import { isTransactionReplacedError, TransactionError } from '../../../utils/TransactionError';
 import truncateDecimals from '../../../utils/data/truncateDecimals';
 import { SlippagePairIF, TokenIF } from '../../../utils/interfaces/exports';
 import { useTradeData } from '../Trade';
@@ -169,10 +161,8 @@ export default function Range(props: RangePropsIF) {
         ? getUnicodeCharacter(tokenB.symbol)
         : getUnicodeCharacter(tokenA.symbol);
 
-    const [
-        rangeButtonErrorMessage,
-        setRangeButtonErrorMessage
-    ] = useState<string>('Enter an Amount');
+    const [rangeButtonErrorMessage, setRangeButtonErrorMessage] =
+        useState<string>('Enter an Amount');
     const currentPoolPriceTick =
         poolPriceNonDisplay === undefined ? 0 : Math.log(poolPriceNonDisplay) / Math.log(1.0001);
     const [rangeWidthPercentage, setRangeWidthPercentage] = useState<number>(
@@ -888,12 +878,8 @@ export default function Range(props: RangePropsIF) {
         </Modal>
     ) : null;
 
-    const clickLogin = () => authenticateUser(
-        isAuthenticated,
-        isWeb3Enabled,
-        authenticate,
-        enableWeb3,
-    );
+    const clickLogin = () =>
+        authenticateUser(isAuthenticated, isWeb3Enabled, authenticate, enableWeb3);
 
     const isTokenAAllowanceSufficient = parseFloat(tokenAAllowance) >= parseFloat(tokenAInputQty);
     const isTokenBAllowanceSufficient = parseFloat(tokenBAllowance) >= parseFloat(tokenBInputQty);
