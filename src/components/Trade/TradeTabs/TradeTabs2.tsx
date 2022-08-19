@@ -1,8 +1,8 @@
-import { useState, useEffect, Dispatch, SetStateAction } from 'react';
+import { useState, useEffect, Dispatch, SetStateAction, useRef } from 'react';
 
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { ethers } from 'ethers';
-
+import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import Transactions from './Transactions/Transactions';
 import Orders from './Orders/Orders';
 // import DropdownMenu from '../../Global/DropdownMenu/DropdownMenu';
@@ -148,8 +148,17 @@ export default function TradeTabs2(props: ITabsProps) {
     ];
 
     // -------------------------------END OF DATA-----------------------------------------
+    const tabComponentRef = useRef<HTMLDivElement>(null);
+
+    const clickOutsideHandler = () => {
+        props.setCurrentTxActiveInTransactions('');
+        props.setCurrentPositionActive('');
+    };
+
+    useOnClickOutside(tabComponentRef, clickOutsideHandler);
+
     return (
-        <>
+        <div ref={tabComponentRef}>
             {
                 <TabComponent
                     data={tradeTabData}
@@ -160,6 +169,6 @@ export default function TradeTabs2(props: ITabsProps) {
                     setOutsideControl={props.setOutsideControl}
                 />
             }
-        </>
+        </div>
     );
 }

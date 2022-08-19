@@ -119,7 +119,7 @@ export default function Transactions(props: TransactionsProps) {
             <TransactionCardHeader />
             <div
                 className={styles.item_container}
-                style={{ height: expandTradeTable ? '100%' : '220px' }}
+                style={{ height: expandTradeTable ? '100%' : '170px' }}
             >
                 {isDataLoading ? <TransactionsSkeletons /> : transactionDataOrNull}
             </div>
