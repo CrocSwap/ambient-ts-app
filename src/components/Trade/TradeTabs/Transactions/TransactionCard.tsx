@@ -7,7 +7,8 @@ import { ISwap } from '../../../../utils/state/graphDataSlice';
 import TransactionsMenu from '../../../Global/Tabs/TableMenu/TableMenuComponents/TransactionsMenu';
 import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import { toDisplayPrice, toDisplayQty } from '@crocswap-libs/sdk';
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { formatAmount } from '../../../../utils/numbers';
 
 interface TransactionProps {
     swap: ISwap;
@@ -72,45 +73,65 @@ export default function TransactionCard(props: TransactionProps) {
         : displayPrice.toPrecision(6);
     // console.log({ limitPrice });
     // console.log({ displayPrice });
+    // console.log({ swap });
+    // const swapQtyString = swap.qty.toString();
 
-    const swapQtyString = swap.qty.toString();
-    const qtyIsExponential = swapQtyString.includes('e');
+    const [baseFlowDisplay, setBaseFlowDisplay] = useState<string | undefined>(undefined);
+    const [quoteFlowDisplay, setQuoteFlowDisplay] = useState<string | undefined>(undefined);
 
-    const baseQty =
-        swap.inBaseQty && !qtyIsExponential
-            ? toDisplayQty(swapQtyString, baseToken?.decimals ?? 0)
-            : undefined;
+    useEffect(() => {
+        if (swap.baseFlow && swap.baseDecimals) {
+            const baseFlowDisplayNum = parseFloat(toDisplayQty(swap.baseFlow, swap.baseDecimals));
+            const baseFlowAbsNum = Math.abs(baseFlowDisplayNum);
+            const isBaseFlowNegative = baseFlowDisplayNum < 0;
+            const baseFlowDisplayTruncated =
+                baseFlowAbsNum === 0
+                    ? '0'
+                    : baseFlowAbsNum < 0.0001
+                    ? baseFlowDisplayNum.toExponential(2)
+                    : baseFlowAbsNum < 2
+                    ? baseFlowAbsNum.toPrecision(3)
+                    : baseFlowAbsNum >= 100000
+                    ? formatAmount(baseFlowAbsNum)
+                    : // ? baseLiqDisplayNum.toExponential(2)
+                      baseFlowAbsNum.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                      });
+            const baseFlowDisplayString = isBaseFlowNegative
+                ? `(${baseFlowDisplayTruncated})`
+                : baseFlowDisplayTruncated;
+            setBaseFlowDisplay(baseFlowDisplayString);
+        }
+        if (swap.quoteFlow && swap.quoteDecimals) {
+            const quoteFlowDisplayNum = parseFloat(
+                toDisplayQty(swap.quoteFlow, swap.quoteDecimals),
+            );
+            const quoteFlowAbsNum = Math.abs(quoteFlowDisplayNum);
+            const isQuoteFlowNegative = quoteFlowDisplayNum < 0;
+            const quoteFlowDisplayTruncated =
+                quoteFlowAbsNum === 0
+                    ? '0'
+                    : quoteFlowAbsNum < 0.0001
+                    ? quoteFlowDisplayNum.toExponential(2)
+                    : quoteFlowAbsNum < 2
+                    ? quoteFlowAbsNum.toPrecision(3)
+                    : quoteFlowAbsNum >= 100000
+                    ? formatAmount(quoteFlowAbsNum)
+                    : // ? quoteLiqDisplayNum.toExponential(2)
+                      quoteFlowAbsNum.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                      });
+            const quoteFlowDisplayString = isQuoteFlowNegative
+                ? `(${quoteFlowDisplayTruncated})`
+                : quoteFlowDisplayTruncated;
+            setQuoteFlowDisplay(quoteFlowDisplayString);
+        }
+    }, [JSON.stringify(swap)]);
 
-    const quoteQty =
-        !swap.inBaseQty && !qtyIsExponential
-            ? toDisplayQty(swapQtyString, quoteToken?.decimals ?? 0)
-            : undefined;
-
-    const truncatedBaseQty = baseQty
-        ? parseFloat(baseQty)
-              .toPrecision(6)
-              .replace(/(?:\.0+|(\.\d+?)0+)$/, '$1')
-        : '0';
-    const truncatedQuoteQty = quoteQty
-        ? parseFloat(quoteQty)
-              .toPrecision(6)
-              .replace(/(?:\.0+|(\.\d+?)0+)$/, '$1')
-        : '0';
-
-    // const qty = swap.qty;
-    // const sellQty = swap.isBuy // sell token is base
-    //     ? swap.inBaseQty
-    //         ? swap.qty
-    //         : swap.quote
-    //     : swap.inBaseQty
-    //     ? swap.quote
-    //     : swap.base;
-
-    // const qty = swap.isBuy // sell token is base
-    //     ? swap.inBaseQty
-    //         ? swap.qty
-
-    const priceType = 'priceBuy';
+    const priceType = swap.isBuy ? 'priceBuy' : 'priceSell';
+    const sideType = swap.isBuy ? 'buy' : 'sell';
 
     if (!transactionMatchesSelectedTokens) return null;
 
@@ -136,14 +157,14 @@ export default function TransactionCard(props: TransactionProps) {
                 <Price priceType={priceType} displayPrice={truncatedDisplayPrice} />
                 {/* ------------------------------------------------------ */}
 
-                <TransactionTypeSide type='remove' side='rangeAdd' />
+                <TransactionTypeSide type={sideType} side='market' />
                 {/* ------------------------------------------------------ */}
 
                 <TokenQty
                     baseToken={baseToken}
                     quoteToken={quoteToken}
-                    baseQty={truncatedBaseQty}
-                    quoteQty={truncatedQuoteQty}
+                    baseQty={baseFlowDisplay}
+                    quoteQty={quoteFlowDisplay}
                 />
             </div>
 
