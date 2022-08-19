@@ -100,6 +100,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
         </div>
     );
     const [fullLayoutActive, setFullLayoutActive] = useState(false);
+    console.log(fullLayoutActive);
 
     const fullLayout = (
         <div
@@ -149,7 +150,13 @@ export default function Portfolio(props: PortfolioPropsIF) {
                 activeAccount={address ?? connectedAccount}
                 imageData={address ? secondaryImageData : userImageData}
             />
-            <div className={styles.tabs_exchange_balance_container}>
+            <div
+                className={
+                    fullLayoutActive
+                        ? styles.full_layout_container
+                        : styles.tabs_exchange_balance_container
+                }
+            >
                 <PortfolioTabs
                     resolvedAddress={resolvedAddress}
                     activeAccount={address ?? connectedAccount}
@@ -162,7 +169,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
                     outsideControl={props.outsideControl}
                     rightTabOptions={rightTabOptions}
                 />
-                {connectedAccountActive ? exchangeBalanceComponent : null}
+                {connectedAccountActive && !fullLayoutActive ? exchangeBalanceComponent : null}
             </div>
         </main>
     );
