@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { sortBaseQuoteTokens } from '@crocswap-libs/sdk';
+import { PoolIF } from '../../utils/interfaces/exports';
 
 export const useFavePools = () => {
     const userData = JSON.parse(localStorage.user);
@@ -31,13 +32,15 @@ export const useFavePools = () => {
         poolId: number
     ) => {
         const [baseAddr, quoteAddr] = sortBaseQuoteTokens(addrTokenA, addrTokenB);
-        const newPool = {
-            base: baseAddr,
-            quote: quoteAddr,
-            chainId: chainId,
-            poolId: poolId
-        };
-        console.log(newPool);
+        const updatedPoolsArray = favePools.filter((pool: PoolIF) => (
+            pool.base !== baseAddr ||
+            pool.quote !== quoteAddr ||
+            pool.chainId !== chainId ||
+            pool.poolId !== poolId
+        ));
+        setFavePools(updatedPoolsArray);
+        userData.favePools = updatedPoolsArray;
+        localStorage.setItem('user', JSON.stringify(userData));
     }
 
     return [
