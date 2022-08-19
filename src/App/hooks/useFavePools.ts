@@ -46,9 +46,26 @@ export const useFavePools = () => {
         localStorage.setItem('user', JSON.stringify(userData));
     }
 
+    const checkFavoritePools = (
+        tokenA: TokenIF,
+        tokenB: TokenIF,
+        chainId: string,
+        poolId: number
+    ) => {
+        const [baseAddr, quoteAddr] = sortBaseQuoteTokens(tokenA.address, tokenB.address);
+        const poolIsFavorite = favePools.some((pool: PoolIF) => (
+            pool.base.address !== baseAddr &&
+            pool.quote.address !== quoteAddr &&
+            pool.chainId !== chainId &&
+            pool.poolId !== poolId
+        ));
+        return poolIsFavorite;
+    }
+
     return [
         favePools,
         addPoolToFaves,
-        removePoolFromFaves
+        removePoolFromFaves,
+        checkFavoritePools
     ];
 }
