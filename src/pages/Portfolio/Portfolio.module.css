@@ -17,24 +17,36 @@
     width: 30px;
     height: 20px;
     border-radius: 4px;
-    background: red;
+    background: var(--dark2);
+    cursor: pointer;
 }
 
 .half_layout_svg{
     width: 10px;
     height: 20px;
     border-radius: 4px;
-    background: red;
+    background: var(--dark2);
 } 
 .shared_layout_svg{
     display: flex;
     flex-direction: row;
     gap: 2px;
+    position: relative;
+    cursor: pointer;
+}
+.full_layout_svg_copied{
+    width: 30px;
+    height: 20px;
+    border-radius: 4px;
+    background: var(--dark2);
+    cursor: pointer;
+}
+.active_layout_style{
+  background: var(--title-gradient)
 }
 
-.shared_layout_svg .full_layout_svg{
-    width: 20px;
-}
+
+
 
 @media (min-width: 940px) {
    
