@@ -7,6 +7,7 @@ import { useEffect, useState, SetStateAction, Dispatch } from 'react';
 import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import { setTokenA, setTokenB } from '../../../../utils/state/tradeDataSlice';
+import { formatAmount } from '../../../../utils/numbers';
 
 interface SidebarRangePositionsProps {
     isDenomBase: boolean;
@@ -77,8 +78,8 @@ export default function SidebarRangePositionsCard(props: SidebarRangePositionsPr
                     ? baseLiqDisplayNum.toExponential(2)
                     : baseLiqDisplayNum < 2
                     ? baseLiqDisplayNum.toPrecision(3)
-                    : baseLiqDisplayNum >= 1000000
-                    ? baseLiqDisplayNum.toExponential(2)
+                    : baseLiqDisplayNum >= 100000
+                    ? formatAmount(baseLiqDisplayNum)
                     : baseLiqDisplayNum.toLocaleString(undefined, {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
@@ -96,8 +97,8 @@ export default function SidebarRangePositionsCard(props: SidebarRangePositionsPr
                     ? quoteLiqDisplayNum.toExponential(2)
                     : quoteLiqDisplayNum < 2
                     ? quoteLiqDisplayNum.toPrecision(3)
-                    : quoteLiqDisplayNum >= 1000000
-                    ? quoteLiqDisplayNum.toExponential(2)
+                    : quoteLiqDisplayNum >= 100000
+                    ? formatAmount(quoteLiqDisplayNum)
                     : quoteLiqDisplayNum.toLocaleString(undefined, {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,

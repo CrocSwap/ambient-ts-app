@@ -9,6 +9,7 @@ import { ambientPosSlot, concPosSlot, toDisplayQty } from '@crocswap-libs/sdk';
 import RangesMenu from '../../../Global/Tabs/TableMenu/TableMenuComponents/RangesMenu';
 import { ethers } from 'ethers';
 import { useEffect, useState, Dispatch, SetStateAction } from 'react';
+import { formatAmount } from '../../../../utils/numbers';
 
 interface RangeCardProps {
     provider: ethers.providers.Provider | undefined;
@@ -157,9 +158,10 @@ export default function RangeCard(props: RangeCardProps) {
                     ? baseLiqDisplayNum.toExponential(2)
                     : baseLiqDisplayNum < 2
                     ? baseLiqDisplayNum.toPrecision(3)
-                    : baseLiqDisplayNum >= 1000000
-                    ? baseLiqDisplayNum.toExponential(2)
-                    : baseLiqDisplayNum.toLocaleString(undefined, {
+                    : baseLiqDisplayNum >= 100000
+                    ? formatAmount(baseLiqDisplayNum)
+                    : // ? baseLiqDisplayNum.toExponential(2)
+                      baseLiqDisplayNum.toLocaleString(undefined, {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
                       });
@@ -176,9 +178,10 @@ export default function RangeCard(props: RangeCardProps) {
                     ? quoteLiqDisplayNum.toExponential(2)
                     : quoteLiqDisplayNum < 2
                     ? quoteLiqDisplayNum.toPrecision(3)
-                    : quoteLiqDisplayNum >= 1000000
-                    ? quoteLiqDisplayNum.toExponential(2)
-                    : quoteLiqDisplayNum.toLocaleString(undefined, {
+                    : quoteLiqDisplayNum >= 100000
+                    ? formatAmount(quoteLiqDisplayNum)
+                    : // ? quoteLiqDisplayNum.toExponential(2)
+                      quoteLiqDisplayNum.toLocaleString(undefined, {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
                       });
