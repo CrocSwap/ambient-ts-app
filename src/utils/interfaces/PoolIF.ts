@@ -1,5 +1,6 @@
 export interface PoolIF {
-    tokens: string[];
+    base: string;
+    quote: string;
     chainId: string;
     poolId: number;
 }
