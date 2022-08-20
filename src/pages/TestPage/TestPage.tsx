@@ -1,7 +1,7 @@
 import { useTermsOfService } from '../../App/hooks/useTermsOfService';
 
 export default function TestPage() {
-    const [tosText, agreeToS] = useTermsOfService();
+    const [tosText, agreeToS, rejectToS] = useTermsOfService();
 
     return (
         <main>
@@ -9,6 +9,9 @@ export default function TestPage() {
             <p>{tosText}</p>
             <button onClick={() => agreeToS(new Date().toISOString())}>
                 Agree to ToS
+            </button>
+            <button onClick={() => rejectToS(new Date().toISOString())}>
+                Reject ToS
             </button>
         </main>
     );
