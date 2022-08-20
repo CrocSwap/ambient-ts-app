@@ -93,8 +93,6 @@ export default function TabComponent(props: TabPropsIF) {
 
     const tabsWithRightOption = (
         <div className={styles.tab_with_option_container}>
-            {/* <button onClick={limitControl}>jere</button>
-            <button onClick={rangeControl}>range</button> */}
             <ul className={`${styles.tab_ul_left} ${styles.desktop_tabs} `}>
                 {data.map((item) => (
                     <li
@@ -121,8 +119,6 @@ export default function TabComponent(props: TabPropsIF) {
     // TAB MENU WITHOUT ANY ITEMS ON THE RIGHT
 
     const fullTabs = (
-        // <AnimateSharedLayout>
-
         <ul className={`${styles.tab_ul} ${styles.desktop_tabs}`}>
             {data.map((item) => {
                 return (
