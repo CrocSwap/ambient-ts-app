@@ -14,7 +14,7 @@ export default function TestPage() {
             <h1>Hi there!</h1>
             <p>{tosText}</p>
             <p>You {agreement ? 'accepted' : 'rejected'} the Terms of Service on {agreementDate}</p>
-            <button onClick={() => agreeToS(new Date().toISOString())}>
+            <button onClick={() => agreeToS()}>
                 Agree to ToS
             </button>
             <button onClick={() => rejectToS(new Date().toISOString())}>

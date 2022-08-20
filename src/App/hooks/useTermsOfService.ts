@@ -33,23 +33,7 @@ export const useTermsOfService = (): [
     const tosText = 'Doug will have to put something here.'
 
     // function to reflect user accepting ToS
-    const agreeToS = (date: string) => {
-        // data conformed to shape used in local storage
-        const details = {
-            agreed: true,
-            date: date
-        }
-        // update agreement status in local state
-        setAgreement(details.agreed);
-        // update agreement date in local state
-        setAgreementDate(details.date);
-        // make a local copy of the userData value from local state
-        const newUserData = userData;
-        // update terms of service in copy of user data object
-        newUserData.termsOfService = details;
-        // send updated user data to local storage
-        localStorage.setItem('user', JSON.stringify(newUserData));
-    }
+    const agreeToS = () => updateUserAgreement(true, new Date().toISOString());
 
     // function to reflect user rejecting ToS
     // same logic as in the function above
