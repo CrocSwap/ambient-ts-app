@@ -1,15 +1,16 @@
+import { ChangeEventHandler } from 'react';
 import styles from './Toggle.module.css';
 
-interface ToggleProps {
+interface TogglePropsIF {
     isOn: boolean;
     onColor?: string;
     Width?: boolean | number;
     id: string;
-    handleToggle: React.ChangeEventHandler<HTMLElement>;
+    handleToggle: ChangeEventHandler<HTMLElement>;
     buttonColor?: string;
     disabled?: boolean;
 }
-export default function Toggle(props: ToggleProps) {
+export default function Toggle(props: TogglePropsIF) {
     const { isOn, handleToggle, onColor, Width, id, buttonColor, disabled } = props;
 
     const labelStyle = Width ? `${Width}px` : '100px';
