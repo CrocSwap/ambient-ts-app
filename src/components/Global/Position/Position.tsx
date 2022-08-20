@@ -1,19 +1,19 @@
-import RangeStatus from '../RangeStatus/RangeStatus';
-import styles from './Position.module.css';
-import { useModal } from '../Modal/useModal';
-import Modal from '../Modal/Modal';
-import { useState } from 'react';
-import { PositionIF } from '../../../utils/interfaces/PositionIF';
+// START: Import React and Dongles
+import { useState, ReactNode } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-
-import RemoveRange from '../../RemoveRange/RemoveRange';
-import RangeDetails from '../../RangeDetails/RangeDetails';
-import RangeDetailsHeader from '../../RangeDetails/RangeDetailsHeader/RangeDetailsHeader';
-import trimString from '../../../utils/functions/trimString';
 import { ambientPosSlot, concPosSlot } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
-interface PositionProps {
+// START: Import Local Files
+import styles from './Position.module.css';
+import RangeStatus from '../RangeStatus/RangeStatus';
+import Modal from '../Modal/Modal';
+import { useModal } from '../Modal/useModal';
+import { PositionIF } from '../../../utils/interfaces/PositionIF';
+import trimString from '../../../utils/functions/trimString';
+
+// interface for React functional component props
+interface PositionPropsIF {
     portfolio?: boolean;
     notOnTradeRoute?: boolean;
     position: PositionIF;
@@ -26,12 +26,9 @@ interface PositionProps {
     lastBlockNumber: number;
     chainId: string;
 }
-export default function Position(props: PositionProps) {
-    // const navigate = useNavigate();
-    const location = useLocation();
 
-    const currentLocation = location.pathname;
-
+// React functional component
+export default function Position(props: PositionPropsIF) {
     const {
         position,
         isAllPositionsEnabled,
@@ -40,20 +37,20 @@ export default function Position(props: PositionProps) {
         account,
         notOnTradeRoute,
         isAuthenticated,
-        lastBlockNumber,
+        isDenomBase,
         chainId,
+        portfolio
     } = props;
+    
+    const location = useLocation();
+    const currentLocation = location.pathname;
 
-    const { portfolio } = props;
     const [isModalOpen, openModal, closeModal] = useModal();
 
     const [currentModal, setCurrentModal] = useState<string>('edit');
 
-    const harvestContent = <div>I am harvest</div>;
-    const editContent = <div>I am edit</div>;
-
     // MODAL FUNCTIONALITY
-    let modalContent: React.ReactNode;
+    let modalContent: ReactNode;
     let modalTitle;
 
     function openRemoveModal() {
@@ -151,44 +148,6 @@ export default function Position(props: PositionProps) {
     const notDisplayAllOrOwned =
         !isAllPositionsEnabled || (ownerId === accountAddress && isAuthenticated);
 
-    const removeRangeProps = {
-        isPositionInRange: isPositionInRange,
-        isAmbient: position.ambient,
-        baseTokenSymbol: position.baseSymbol,
-        baseTokenDecimals: position.baseTokenDecimals,
-        quoteTokenSymbol: position.quoteSymbol,
-        quoteTokenDecimals: position.quoteTokenDecimals,
-        lowRangeDisplayInBase: position.lowRangeDisplayInBase,
-        highRangeDisplayInBase: position.highRangeDisplayInBase,
-        lowRangeDisplayInQuote: position.lowRangeDisplayInQuote,
-        highRangeDisplayInQuote: position.highRangeDisplayInQuote,
-        baseTokenLogoURI: position.baseTokenLogoURI,
-        quoteTokenLogoURI: position.quoteTokenLogoURI,
-        isDenomBase: props.isDenomBase,
-        baseTokenAddress: props.position.base,
-        quoteTokenAddress: props.position.quote,
-        lastBlockNumber: lastBlockNumber,
-        chainId: props.chainId,
-    };
-
-    // switch (currentModal) {
-    //     case 'remove':
-    //         modalContent = <RemoveRange {...removeRangeProps} />;
-    //         modalTitle = 'Remove Position';
-    //         break;
-    //     case 'edit':
-    //         modalContent = editContent;
-    //         modalTitle = 'Edit Position';
-    //         break;
-    //     case 'details':
-    //         modalContent = <RangeDetails {...removeRangeProps} />;
-    //         modalTitle = <RangeDetailsHeader />;
-    //         break;
-    //     case 'harvest':
-    //         modalContent = harvestContent;
-    //         modalTitle = 'Harvest Position';
-    //         break;
-    // }
     const mainModal = (
         <Modal onClose={closeModal} title={modalTitle}>
             {modalContent}
@@ -197,7 +156,7 @@ export default function Position(props: PositionProps) {
 
     const modalOrNull = isModalOpen ? mainModal : null;
 
-    const rangeDisplay = props.isDenomBase
+    const rangeDisplay = isDenomBase
         ? `${position.lowRangeDisplayInBase} - ${position.highRangeDisplayInBase}`
         : `${position.lowRangeDisplayInQuote} - ${position.highRangeDisplayInQuote}`;
 
