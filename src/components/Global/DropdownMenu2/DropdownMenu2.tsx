@@ -1,28 +1,31 @@
-import styles from './DropdownMenu2.module.css';
-import { useState, useRef } from 'react';
+// START: Import React and Dongles
+import { useState, useRef, ReactNode } from 'react';
 import { FaAngleDown } from 'react-icons/fa';
 import { AnimatePresence, motion } from 'framer-motion';
+
+// START: Import Local Files
+import styles from './DropdownMenu2.module.css';
 import { dropdownAnimation } from '../../../utils/others/FramerMotionAnimations';
 import UseOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 
-interface DropdownMenuProps {
+// interface for React functional components
+interface DropdownMenuPropsIF {
     title: string;
-    children: React.ReactNode;
+    children: ReactNode;
     marginTop?: string;
     titleWidth?: string;
     titleBackground?: string;
 }
-export default function DropdownMenu2(props: DropdownMenuProps) {
+
+// react functional component
+export default function DropdownMenu2(props: DropdownMenuPropsIF) {
     const { title, children, marginTop, titleWidth, titleBackground } = props;
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const dropdownRefItem = useRef<HTMLDivElement>(null);
 
-    const toggleMenu = () => {
-        setIsMenuOpen(!isMenuOpen);
-    };
-    const clickOutsideHandler = () => {
-        setIsMenuOpen(false);
-    };
+    const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+    const clickOutsideHandler = () => setIsMenuOpen(false);
+
     UseOnClickOutside(dropdownRefItem, clickOutsideHandler);
 
     const dropdownMenuContent = (
@@ -43,6 +46,7 @@ export default function DropdownMenu2(props: DropdownMenuProps) {
         </AnimatePresence>
     );
 
+    // TODO:   @Junior do we need the wrapper below?  See `menu_item`  -Emily
     return (
         <div ref={dropdownRefItem}>
             <div
@@ -56,7 +60,6 @@ export default function DropdownMenu2(props: DropdownMenuProps) {
                 <div className={styles.menu_item}>
                     <div className={styles.icon}>{title}</div>
                 </div>
-
                 <FaAngleDown />
             </div>
             {dropdownMenuContent}

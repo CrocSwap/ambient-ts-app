@@ -1,35 +1,34 @@
-// import styles from './SidebarAccordion.module.css';
-import { MdPlayArrow } from 'react-icons/md';
-import styles from '../Sidebar.module.css';
-import { BiSearch } from 'react-icons/bi';
-import closeSidebarImage from '../../../../assets/images/sidebarImages/closeSidebar.svg';
-
-import { useEffect, useState, SetStateAction, Dispatch } from 'react';
+// START: Import React and Dongles
+import { useEffect, useState, SetStateAction, Dispatch, MouseEvent, ReactNode } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import SidebarSearchResults from '../SidebarSearchResults/SidebarSearchResults';
+import { BiSearch } from 'react-icons/bi';
+import { MdPlayArrow } from 'react-icons/md';
 
+// START: Import Local Files
+import styles from '../Sidebar.module.css';
+import closeSidebarImage from '../../../../assets/images/sidebarImages/closeSidebar.svg';
+import SidebarSearchResults from '../SidebarSearchResults/SidebarSearchResults';
 import formatSearchText from '../formatSeachText';
 
-interface SearchAccordionProps {
-    children?: React.ReactNode;
+// interface for React functional component props
+interface SearchAccordionPropsIF {
+    children?: ReactNode;
     showSidebar: boolean;
     toggleSidebar: (
-        event: React.MouseEvent<HTMLDivElement> | React.MouseEvent<HTMLLIElement>,
+        event: MouseEvent<HTMLDivElement> | MouseEvent<HTMLLIElement>,
     ) => void;
-
     setSearchMode: Dispatch<SetStateAction<boolean>>;
     searchMode?: boolean;
     handleSearchModeToggle: () => void;
 }
 
-export default function SearchAccordion(props: SearchAccordionProps) {
+// react functional component
+export default function SearchAccordion(props: SearchAccordionPropsIF) {
     const { showSidebar, toggleSidebar, searchMode, setSearchMode } = props;
-    const [isOpen, setIsOpen] = useState<boolean>(false);
+    const [isOpen, setIsOpen] = useState(false);
     const [searchInput, setSearchInput] = useState<string[][]>();
     useEffect(() => {
-        if (!showSidebar) {
-            setIsOpen(false);
-        }
+        !showSidebar && setIsOpen(false);
     }, [showSidebar]);
 
     const searchInputChangeHandler = (event: string) => {
@@ -41,10 +40,7 @@ export default function SearchAccordion(props: SearchAccordionProps) {
     const searchContainer = (
         <div className={styles.main_search_container}>
             <div className={styles.search_container}>
-                <div
-                    className={styles.search__icon}
-                    // onClick={toggleSidebar}
-                >
+                <div className={styles.search__icon}>
                     <BiSearch size={18} color='#CDC1FF' />
                 </div>
                 <input

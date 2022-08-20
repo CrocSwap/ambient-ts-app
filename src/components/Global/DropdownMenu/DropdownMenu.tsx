@@ -1,12 +1,13 @@
+import { useState, ReactNode } from 'react';
 import styles from './DropdownMenu.module.css';
-import { useState } from 'react';
 
 interface DropdownMenuProps {
-    children: React.ReactNode;
-    title: string | React.ReactNode;
+    children: ReactNode;
+    title: string | ReactNode;
 }
 
 export default function DropdownMenu(props: DropdownMenuProps) {
+    const { children, title } = props;
     const [open, setOpen] = useState(false);
 
     // There is a mouse leave issue. I am currently getting around it by wrapping the children in a div and applying the mouse leave to that div. This still requires the user to enter the children before that function fires.
@@ -15,9 +16,9 @@ export default function DropdownMenu(props: DropdownMenuProps) {
     return (
         <div className={styles.dropdown_control}>
             <div className={styles.menu_icon} onClick={() => setOpen(!open)}>
-                {props.title}
+                {title}
             </div>
-            <div onMouseLeave={() => setOpen(false)}>{open && props.children}</div>
+            <div onMouseLeave={() => setOpen(false)}>{open && children}</div>
         </div>
     );
 }

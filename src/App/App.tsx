@@ -14,12 +14,9 @@ import {
     addCandles,
 } from '../utils/state/graphDataSlice';
 import { ethers } from 'ethers';
-// import { request, gql } from 'graphql-request';
 import { useMoralis } from 'react-moralis';
 
 import useWebSocket from 'react-use-websocket';
-// import { ReadyState } from 'react-use-websocket';
-// import Moralis from 'moralis';
 import {
     sortBaseQuoteTokens,
     toDisplayPrice,
@@ -62,15 +59,14 @@ import {
     setDenomInBase,
 } from '../utils/state/tradeDataSlice';
 import PoolPage from '../pages/PoolPage/PoolPage';
-// import PositionDetails from '../pages/Trade/Range/PositionDetails';
 import { memoizeQuerySpotPrice, querySpotPrice } from './functions/querySpotPrice';
 import { memoizeFetchAddress } from './functions/fetchAddress';
 import { memoizeTokenBalance } from './functions/fetchTokenBalances';
-// import truncateDecimals from '../utils/data/truncateDecimals';
 import { getNFTs } from './functions/getNFTs';
 import { memoizeTokenDecimals } from './functions/queryTokenDecimals';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { useSlippage } from './useSlippage';
+import { useFavePools } from './hooks/useFavePools';
 import { useAppChain } from './hooks/useAppChain';
 import { addNativeBalance, resetTokenData, setTokens } from '../utils/state/tokenDataSlice';
 import { checkIsStable } from '../utils/data/stablePairs';
@@ -80,7 +76,6 @@ import SidebarFooter from '../components/Global/SIdebarFooter/SidebarFooter';
 import { validateChain } from './validateChain';
 import { testTokenMap } from '../utils/data/testTokenMap';
 import { ZERO_ADDRESS } from '../constants';
-// import SidebarFooter from '../components/Global/SIdebarFooter/SidebarFooter';
 
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 const cachedFetchAddress = memoizeFetchAddress();
@@ -88,10 +83,7 @@ const cachedFetchTokenBalances = memoizeTokenBalance();
 const cachedGetTokenDecimals = memoizeTokenDecimals();
 
 const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
-// const httpGraphCacheServerDomain = '';
 const wssGraphCacheServerDomain = 'wss://809821320828123.de:5000';
-// const wssGraphCacheServerDomain = '';
-
 const shouldSubscriptionsReconnect = false;
 
 /** ***** React Function *******/
@@ -121,15 +113,8 @@ export default function App() {
 
     const [userIsOnline, setUserIsOnline] = useState(navigator.onLine);
 
-    window.ononline = () => {
-        setUserIsOnline(true);
-        // console.log('Back Online');
-    };
-
-    window.onoffline = () => {
-        setUserIsOnline(false);
-        // console.log('Connection Lost');
-    };
+    window.ononline = () => setUserIsOnline(true);
+    window.onoffline = () => setUserIsOnline(false);
 
     function exposeProviderUrl(provider?: ethers.providers.Provider): string {
         if (provider && 'connection' in provider) {
@@ -236,15 +221,16 @@ export default function App() {
     // holds stable and volatile values for swap and mint transactions
     const [swapSlippage, mintSlippage] = useSlippage();
 
-    //
+    const [
+        favePools,
+        addPoolToFaves,
+        removePoolFromFaves,
+    ] = useFavePools();
+
     const isPairStable = useMemo(
         () => checkIsStable(tradeData.tokenA.address, tradeData.tokenA.address, chainData.chainId),
         [tradeData.tokenA.address, tradeData.tokenA.address, chainData.chainId],
     );
-
-    // useEffect(() => {
-    //     console.log({ isPairStable });
-    // }, [isPairStable]);
 
     // update local state with searchable tokens once after initial load of app
     useEffect(() => {
@@ -264,8 +250,7 @@ export default function App() {
                   // remove all lists with URIs not included in the URIs array passed as argument
                   .filter((tokenList: TokenListIF) => tokenListURIs.includes(tokenList.uri ?? ''))
                   // extract array of tokens from active lists and flatten into single array
-                  .map((tokenList: TokenListIF) => tokenList.tokens)
-                  .flat()
+                  .flatMap((tokenList: TokenListIF) => tokenList.tokens)
             : defaultTokens;
         // return array of all tokens from lists as specified by token list URI
         return tokensFromLists;
@@ -677,33 +662,22 @@ export default function App() {
             '/subscribe_candles?' +
             new URLSearchParams({
                 base: mainnetBaseTokenAddress.toLowerCase(),
-                // base: baseTokenAddress.toLowerCase(),
                 quote: mainnetQuoteTokenAddress.toLowerCase(),
-                // quote: quoteTokenAddress.toLowerCase(),
-                // quoteTokenAddress.toLowerCase() || '0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa',
                 poolIdx: chainData.poolIndex.toString(),
-                // 	positive integer	The duration of the candle, in seconds. Must represent one of the following time intervals: 5 minutes, 15 minutes, 1 hour, 4 hours, 1 day, 7 days.
                 period: activePeriod.toString(),
-                // period: '60',
                 chainId: '0x1',
-                // chainId: chainData.chainId,
                 dex: 'all',
             }),
         [mainnetBaseTokenAddress, mainnetQuoteTokenAddress, chainData.poolIndex, activePeriod],
     );
 
     const {
-        //  sendMessage,
         lastMessage: candlesMessage,
-        //  readyState
     } = useWebSocket(
         candleSubscriptionEndpoint,
         {
-            // share:  true,
             onOpen: () => console.log({ candleSubscriptionEndpoint }),
             onClose: (event) => console.log({ event }),
-            // onClose: () => console.log('candles websocket connection closed'),
-            // Will attempt to reconnect on all close events, such as server shutting down
             shouldReconnect: () => shouldSubscriptionsReconnect,
         },
         // only connect if base/quote token addresses are available
@@ -741,9 +715,7 @@ export default function App() {
             '/subscribe_pool_swaps?' +
             new URLSearchParams({
                 base: baseTokenAddress.toLowerCase(),
-                // baseTokenAddress.toLowerCase() || '0x0000000000000000000000000000000000000000',
                 quote: quoteTokenAddress.toLowerCase(),
-                // quoteTokenAddress.toLowerCase() || '0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa',
                 poolIdx: chainData.poolIndex.toString(),
                 chainId: chainData.chainId,
             }),
@@ -1333,13 +1305,6 @@ export default function App() {
     useEffect(() => {
         (async () => {
             if (provider && account && isAuthenticated && isWeb3Enabled) {
-                // console.log('Provider Native Balance');
-                // console.dir(provider);
-                // console.log(
-                //     provider
-                //         .getBalance('0x01e650ABfc761C6A0Fc60f62A4E4b3832bb1178b')
-                //         .then(console.log),
-                // );
                 new CrocEnv(provider)
                     .tokenEth()
                     .balance(account)
@@ -1538,6 +1503,7 @@ export default function App() {
         setExpandTradeTable: setExpandTradeTable,
         tokenMap: tokenMap,
         lastBlockNumber: lastBlockNumber,
+        favePools: favePools,
 
         selectedOutsideTab: selectedOutsideTab,
         setSelectedOutsideTab: setSelectedOutsideTab,
@@ -1546,8 +1512,6 @@ export default function App() {
 
         currentPositionActive: currentPositionActive,
         setCurrentPositionActive: setCurrentPositionActive,
-
-        // setShowSidebar : setShowSidebar
     };
 
     const analyticsProps = {
@@ -1658,6 +1622,9 @@ export default function App() {
                                     expandTradeTable={expandTradeTable}
                                     setExpandTradeTable={setExpandTradeTable}
                                     tokenMap={tokenMap}
+                                    favePools={favePools}
+                                    addPoolToFaves={addPoolToFaves}
+                                    removePoolFromFaves={removePoolFromFaves}
                                     selectedOutsideTab={selectedOutsideTab}
                                     setSelectedOutsideTab={setSelectedOutsideTab}
                                     outsideControl={outsideControl}

@@ -20,7 +20,7 @@ import recentTransactionsImage from '../../../assets/images/sidebarImages/recent
 import topPoolsImage from '../../../assets/images/sidebarImages/topPools.svg';
 import topTokensImage from '../../../assets/images/sidebarImages/topTokens.svg';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import { TokenIF } from '../../../utils/interfaces/TokenIF';
+import { PoolIF, TokenIF } from '../../../utils/interfaces/exports';
 import SearchAccordion from './SearchAccordion/SearchAccordion';
 
 // interface for component props
@@ -40,7 +40,7 @@ interface SidebarPropsIF {
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
     tokenMap: Map<string, TokenIF>;
     lastBlockNumber: number;
-
+    favePools: PoolIF[];
     selectedOutsideTab: number;
     outsideControl: boolean;
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
@@ -65,6 +65,7 @@ export default function Sidebar(props: SidebarPropsIF) {
         setExpandTradeTable,
         tokenMap,
         lastBlockNumber,
+        favePools
     } = props;
 
     const graphData = useAppSelector((state) => state.graphData);
@@ -128,7 +129,7 @@ export default function Sidebar(props: SidebarPropsIF) {
     ];
 
     const favoritePools = [
-        { name: 'Favorite Pools', icon: favouritePoolsImage, data: <FavoritePools /> },
+        { name: 'Favorite Pools', icon: favouritePoolsImage, data: <FavoritePools favePools={favePools} /> },
     ];
 
     const recentTransactions = [

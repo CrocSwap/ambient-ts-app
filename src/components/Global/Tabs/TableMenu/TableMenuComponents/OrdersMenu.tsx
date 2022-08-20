@@ -1,22 +1,26 @@
-import { FiMoreHorizontal } from 'react-icons/fi';
-import { useModal } from '../../../../Global/Modal/useModal';
-import Modal from '../../../../Global/Modal/Modal';
-import styles from './TableMenuComponents.module.css';
-import { useState } from 'react';
-// import RemoveRange from '../../../../RemoveRange/RemoveRange';
-// import RangeDetails from '../../../../RangeDetails/RangeDetails';
-import RangeDetailsHeader from '../../../../RangeDetails/RangeDetailsHeader/RangeDetailsHeader';
-import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
-import SnackbarComponent from '../../../../../components/Global/SnackbarComponent/SnackbarComponent';
-
+// START: Import React and Dongles
+import { useState, ReactNode } from 'react';
 import { Link } from 'react-router-dom';
-import { DefaultTooltip } from '../../../StyledTooltip/StyledTooltip';
+import { FiMoreHorizontal } from 'react-icons/fi';
 
-interface OrdersMenu {
+// START: Import JSX Functional Components
+import SnackbarComponent from '../../../../../components/Global/SnackbarComponent/SnackbarComponent';
+import RangeDetailsHeader from '../../../../RangeDetails/RangeDetailsHeader/RangeDetailsHeader';
+import Modal from '../../../../Global/Modal/Modal';
+
+// START: Import Local Files
+import styles from './TableMenuComponents.module.css';
+import { useModal } from '../../../../Global/Modal/useModal';
+import { DefaultTooltip } from '../../../StyledTooltip/StyledTooltip';
+import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
+
+// interface for React functional component props
+interface OrdersMenuIF {
     userPosition: boolean | undefined;
 }
 
-export default function OrdersMenu(props: OrdersMenu) {
+// React functional component
+export default function OrdersMenu(props: OrdersMenuIF) {
     const { userPosition } = props;
     const [value, copy] = useCopyToClipboard();
     const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
@@ -27,7 +31,7 @@ export default function OrdersMenu(props: OrdersMenu) {
     const [openMenuTooltip, setOpenMenuTooltip] = useState(false);
 
     // ---------------------MODAL FUNCTIONALITY----------------
-    let modalContent: React.ReactNode;
+    let modalContent: ReactNode;
 
     let modalTitle;
 

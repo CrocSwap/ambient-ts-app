@@ -1,37 +1,35 @@
+import { ChangeEvent, Dispatch, SetStateAction } from 'react';
+import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import styles from './MinMaxPrice.module.css';
 import PriceInput from '../PriceInput/PriceInput';
-import { ChangeEvent } from 'react';
-
 import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
 import { setAdvancedHighTick, setAdvancedLowTick } from '../../../../../utils/state/tradeDataSlice';
-import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
-interface IMinMaxPrice {
+interface MinMaxPriceIF {
     minPricePercentage: number;
     maxPricePercentage: number;
     minPriceInputString: string;
     maxPriceInputString: string;
-    setMinPriceInputString: React.Dispatch<React.SetStateAction<string>>;
-    setMaxPriceInputString: React.Dispatch<React.SetStateAction<string>>;
-    // disable?: boolean;
+    setMinPriceInputString: Dispatch<SetStateAction<string>>;
+    setMaxPriceInputString: Dispatch<SetStateAction<string>>;
     disable?: boolean;
     isDenomBase: boolean;
-    // highBoundOnFocus: () => void;
     lowBoundOnBlur: () => void;
     highBoundOnBlur: () => void;
     rangeLowTick: number;
     rangeHighTick: number;
-    setRangeLowTick: React.Dispatch<React.SetStateAction<number>>;
-    setRangeHighTick: React.Dispatch<React.SetStateAction<number>>;
+    setRangeLowTick: Dispatch<SetStateAction<number>>;
+    setRangeHighTick: Dispatch<SetStateAction<number>>;
     chainId: string;
 }
 
-export default function MinMaxPrice(props: IMinMaxPrice) {
+export default function MinMaxPrice(props: MinMaxPriceIF) {
     const {
         minPricePercentage,
         maxPricePercentage,
         setMinPriceInputString,
         setMaxPriceInputString,
+        disable,
         isDenomBase,
         lowBoundOnBlur,
         highBoundOnBlur,
@@ -51,13 +49,8 @@ export default function MinMaxPrice(props: IMinMaxPrice) {
         } else {
             console.log('no event');
         }
-
-        //   const buyQtyField = document.getElementById('buy-limit-quantity') as HTMLInputElement;
-
-        //   if (buyQtyField) {
-        //       buyQtyField.value = truncatedTokenBQty === 'NaN' ? '' : truncatedTokenBQty;
-        //   }
     };
+
     const handleMaxPriceChangeEvent = (evt?: ChangeEvent<HTMLInputElement>) => {
         if (evt) {
             const maxPriceInput = evt.target.value;
@@ -65,12 +58,6 @@ export default function MinMaxPrice(props: IMinMaxPrice) {
         } else {
             console.log('no event');
         }
-
-        //   const buyQtyField = document.getElementById('buy-limit-quantity') as HTMLInputElement;
-
-        //   if (buyQtyField) {
-        //       buyQtyField.value = truncatedTokenBQty === 'NaN' ? '' : truncatedTokenBQty;
-        //   }
     };
 
     const disableInputContent = (
@@ -108,7 +95,6 @@ export default function MinMaxPrice(props: IMinMaxPrice) {
                     handleChangeEvent={
                         !isDenomBase ? handleMaxPriceChangeEvent : handleMinPriceChangeEvent
                     }
-                    // onFocus={highBoundOnFocus}
                     onBlur={lowBoundOnBlur}
                     increaseTick={!isDenomBase ? increaseLowTick : decreaseHighTick}
                     decreaseTick={!isDenomBase ? decreaseLowTick : increaseHighTick}
@@ -120,13 +106,12 @@ export default function MinMaxPrice(props: IMinMaxPrice) {
                     handleChangeEvent={
                         !isDenomBase ? handleMinPriceChangeEvent : handleMaxPriceChangeEvent
                     }
-                    // onFocus={highBoundOnFocus}
                     onBlur={highBoundOnBlur}
                     increaseTick={!isDenomBase ? increaseHighTick : decreaseLowTick}
                     decreaseTick={!isDenomBase ? decreaseHighTick : increaseLowTick}
                 />
             </div>
-            {props.disable && disableInputContent}
+            {disable && disableInputContent}
         </div>
     );
 }

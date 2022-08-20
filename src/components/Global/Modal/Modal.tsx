@@ -1,23 +1,28 @@
-import styles from './Modal.module.css';
-import { RiCloseFill } from 'react-icons/ri';
-import { BiArrowBack } from 'react-icons/bi';
-
-import { useCallback, useEffect } from 'react';
+// START: Import React and Dongles
+import { useCallback, useEffect, ReactNode } from 'react';
 import { motion } from 'framer-motion';
-interface ModalProps {
-    content?: React.ReactNode;
+import { BiArrowBack } from 'react-icons/bi';
+import { RiCloseFill } from 'react-icons/ri';
+
+// START: Import Local Files
+import styles from './Modal.module.css';
+
+// interface for React functional component
+interface ModalPropsIF {
+    content?: ReactNode;
     onClose: () => void;
     handleBack?: () => void;
     showBackButton?: boolean;
-    title: string | React.ReactNode;
-    footer?: React.ReactNode;
+    title: string | ReactNode;
+    footer?: ReactNode;
     noHeader?: boolean;
     noBackground?: boolean;
-    children: React.ReactNode;
+    children: ReactNode;
     centeredTitle?: boolean;
 }
 
-export default function Modal(props: ModalProps) {
+// React functional component
+export default function Modal(props: ModalPropsIF) {
     const {
         onClose,
         handleBack,
@@ -38,7 +43,6 @@ export default function Modal(props: ModalProps) {
 
     useEffect(() => {
         document.addEventListener('keydown', escFunction, false);
-
         return () => {
             document.removeEventListener('keydown', escFunction, false);
         };

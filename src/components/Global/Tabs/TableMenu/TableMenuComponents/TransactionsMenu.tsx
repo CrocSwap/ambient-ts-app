@@ -1,26 +1,35 @@
+// START: Import React and Dongles
+import { useState, ReactNode } from 'react';
+import { Link } from 'react-router-dom';
 import { FiMoreHorizontal } from 'react-icons/fi';
+
+// START: Import JSX Functional Components
+import Modal from '../../../../Global/Modal/Modal';
+import RangeDetailsHeader from '../../../../RangeDetails/RangeDetailsHeader/RangeDetailsHeader';
+import SnackbarComponent from '../../../../../components/Global/SnackbarComponent/SnackbarComponent';
+
+// START: Import Local Files
 import styles from './TableMenuComponents.module.css';
 import { useModal } from '../../../../Global/Modal/useModal';
-import Modal from '../../../../Global/Modal/Modal';
-import { useState } from 'react';
-import RangeDetailsHeader from '../../../../RangeDetails/RangeDetailsHeader/RangeDetailsHeader';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
-import SnackbarComponent from '../../../../../components/Global/SnackbarComponent/SnackbarComponent';
-import { Link } from 'react-router-dom';
 import { DefaultTooltip } from '../../../StyledTooltip/StyledTooltip';
-interface TransactionMenu {
+
+// interface for React functional component props
+interface TransactionMenuIF {
     userPosition: boolean | undefined;
 }
-export default function TransactionsMenu(props: TransactionMenu) {
-    const { userPosition } = props;
-    const [value, copy] = useCopyToClipboard();
-    const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
 
+// React functional component
+export default function TransactionsMenu(props: TransactionMenuIF) {
+    const { userPosition } = props;
+
+    const [value, copy] = useCopyToClipboard();
+    const [openSnackbar, setOpenSnackbar] = useState(false);
     const [isModalOpen, openModal, closeModal] = useModal();
-    const [currentModal, setCurrentModal] = useState<string>('edit');
+    const [currentModal, setCurrentModal] = useState('edit');
     const [openMenuTooltip, setOpenMenuTooltip] = useState(false);
     // ---------------------MODAL FUNCTIONALITY----------------
-    let modalContent: React.ReactNode;
+    let modalContent: ReactNode;
 
     let modalTitle;
 
@@ -55,20 +64,18 @@ export default function TransactionsMenu(props: TransactionMenu) {
     );
     // -----------------END OF SNACKBAR----------------
 
+    // TODO:  @Junior please add a `default` to this with debugging code
     switch (currentModal) {
         case 'remove':
-            // modalContent = <RemoveRange {...removeRangeProps} />;
             modalContent = 'Remove';
             modalTitle = 'Remove Position';
             break;
 
         case 'details':
-            // modalContent = <RangeDetails {...removeRangeProps} />;
             modalContent = 'details';
             modalTitle = <RangeDetailsHeader />;
             break;
         case 'harvest':
-            // modalContent = <RangeDetails {...removeRangeProps} />;
             modalContent = 'harvest';
             modalTitle = 'Harvest';
             break;
@@ -146,12 +153,12 @@ export default function TransactionsMenu(props: TransactionMenu) {
             </DefaultTooltip>
         </div>
     );
+
     return (
         <>
             {transactionsMenu}
             {dropdownTransactionsMenu}
             {modalOrNull}
-
             {snackbarContent}
         </>
     );

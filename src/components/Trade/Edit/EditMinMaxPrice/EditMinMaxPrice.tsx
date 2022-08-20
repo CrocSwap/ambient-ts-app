@@ -1,37 +1,42 @@
-import styles from './EditMinMaxPrice.module.css';
-import EditPriceInput from '../EditPriceInput/EditPriceInput';
+// START: Import React and Dongles
+import { ChangeEvent, Dispatch, SetStateAction } from 'react';
 import { motion } from 'framer-motion';
-import { ChangeEvent } from 'react';
-import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
-import { setAdvancedHighTick, setAdvancedLowTick } from '../../../../utils/state/tradeDataSlice';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
-interface EditMinMaxPriceProps {
+// START: Import Local Files
+import styles from './EditMinMaxPrice.module.css';
+import EditPriceInput from '../EditPriceInput/EditPriceInput';
+import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
+import { setAdvancedHighTick, setAdvancedLowTick } from '../../../../utils/state/tradeDataSlice';
+
+// interface for React functional component props
+interface EditMinMaxPricePropsIF {
     minPrice: string;
     maxPrice: string;
-
     minPricePercentage: number;
     maxPricePercentage: number;
     minPriceInputString: string;
     maxPriceInputString: string;
-    setMinPriceInputString: React.Dispatch<React.SetStateAction<string>>;
-    setMaxPriceInputString: React.Dispatch<React.SetStateAction<string>>;
-    // disable?: boolean;
+    setMinPriceInputString: Dispatch<SetStateAction<string>>;
+    setMaxPriceInputString: Dispatch<SetStateAction<string>>;
     disable?: boolean;
     isDenomBase: boolean;
-    // highBoundOnFocus: () => void;
     lowBoundOnBlur: () => void;
     highBoundOnBlur: () => void;
     rangeLowTick: number;
     rangeHighTick: number;
-    setRangeLowTick: React.Dispatch<React.SetStateAction<number>>;
-    setRangeHighTick: React.Dispatch<React.SetStateAction<number>>;
+    setRangeLowTick: Dispatch<SetStateAction<number>>;
+    setRangeHighTick: Dispatch<SetStateAction<number>>;
     chainId: string;
 }
-export default function EditMinMaxPrice(props: EditMinMaxPriceProps) {
+
+// React functional component
+export default function EditMinMaxPrice(props: EditMinMaxPricePropsIF) {
     const dispatch = useAppDispatch();
 
     const {
+        minPrice,
+        maxPrice,
         minPricePercentage,
         maxPricePercentage,
         setMinPriceInputString,
@@ -53,13 +58,8 @@ export default function EditMinMaxPrice(props: EditMinMaxPriceProps) {
         } else {
             console.log('no event');
         }
-
-        //   const buyQtyField = document.getElementById('buy-limit-quantity') as HTMLInputElement;
-
-        //   if (buyQtyField) {
-        //       buyQtyField.value = truncatedTokenBQty === 'NaN' ? '' : truncatedTokenBQty;
-        //   }
     };
+
     const handleMaxPriceChangeEvent = (evt?: ChangeEvent<HTMLInputElement>) => {
         if (evt) {
             const maxPriceInput = evt.target.value;
@@ -67,12 +67,6 @@ export default function EditMinMaxPrice(props: EditMinMaxPriceProps) {
         } else {
             console.log('no event');
         }
-
-        //   const buyQtyField = document.getElementById('buy-limit-quantity') as HTMLInputElement;
-
-        //   if (buyQtyField) {
-        //       buyQtyField.value = truncatedTokenBQty === 'NaN' ? '' : truncatedTokenBQty;
-        //   }
     };
 
     const tickSize = lookupChain(chainId).gridSize;
@@ -105,11 +99,10 @@ export default function EditMinMaxPrice(props: EditMinMaxPriceProps) {
                 fieldId='edit-base'
                 title='Min Price'
                 percentageDifference={minPricePercentage}
-                value={props.minPrice}
+                value={minPrice}
                 handleChangeEvent={
                     !isDenomBase ? handleMaxPriceChangeEvent : handleMinPriceChangeEvent
                 }
-                // onFocus={highBoundOnFocus}
                 onBlur={lowBoundOnBlur}
                 increaseTick={!isDenomBase ? increaseLowTick : decreaseHighTick}
                 decreaseTick={!isDenomBase ? decreaseLowTick : increaseHighTick}
@@ -118,11 +111,10 @@ export default function EditMinMaxPrice(props: EditMinMaxPriceProps) {
                 fieldId='edit-quote'
                 title='Max Price'
                 percentageDifference={maxPricePercentage}
-                value={props.maxPrice}
+                value={maxPrice}
                 handleChangeEvent={
                     !isDenomBase ? handleMinPriceChangeEvent : handleMaxPriceChangeEvent
                 }
-                // onFocus={highBoundOnFocus}
                 onBlur={highBoundOnBlur}
                 increaseTick={!isDenomBase ? increaseHighTick : decreaseLowTick}
                 decreaseTick={!isDenomBase ? decreaseHighTick : increaseLowTick}
