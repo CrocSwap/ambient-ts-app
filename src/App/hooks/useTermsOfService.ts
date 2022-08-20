@@ -66,6 +66,27 @@ export const useTermsOfService = (): [
         localStorage.setItem('user', JSON.stringify(newUserData));
     }
 
+    function updateUserAgreement(
+        didUserAgree: boolean,
+        timeOfUpdate: string,
+    ) {
+        // data conformed to shape used in local storage
+        const details = {
+            agreed: didUserAgree,
+            date: timeOfUpdate
+        }
+        // update agreement status in local state
+        setAgreement(details.agreed);
+        // update agreement date in local state
+        setAgreementDate(details.date);
+        // make a local copy of the userData value from local state
+        const newUserData = userData;
+        // update terms of service in copy of user data object
+        newUserData.termsOfService = details;
+        // send updated user data to local storage
+        localStorage.setItem('user', JSON.stringify(newUserData));
+    }
+
     return [
         tosText,
         agreement,
