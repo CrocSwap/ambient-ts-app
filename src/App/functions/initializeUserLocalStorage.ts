@@ -72,6 +72,7 @@ export default function initializeUserLocalStorage() {
             agreed: false,
             date: null
         }
+        userUpdated = true;
     }
 
     if (!user.theme) {
