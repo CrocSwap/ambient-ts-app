@@ -1,9 +1,11 @@
+import { ReactNode } from 'react';
 import styles from './Row.module.css';
 
-interface RowProps {
-    children: React.ReactNode;
+interface RowPropsIF {
+    children: ReactNode;
 }
 
-export default function Row(props: RowProps) {
-    return <div className={styles.row}>{props.children}</div>;
+export default function Row(props: RowPropsIF) {
+    const { children } = props;
+    return <div className={styles.row}>{children}</div>;
 }
