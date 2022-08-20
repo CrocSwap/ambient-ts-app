@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 
 export const useTermsOfService = (): [
     string,
+    boolean,
+    string,
     (date: string) => void,
     (date: string) => void
 ] => {
@@ -19,7 +21,6 @@ export const useTermsOfService = (): [
     useEffect(() => {
         userData && setAgreement(userData.termsOfService);
     }, [userData]);
-    useEffect(() => console.log(agreement), [agreement]);
 
     const tosText = 'Doug will have to put something here.'
 
@@ -47,5 +48,5 @@ export const useTermsOfService = (): [
         localStorage.setItem('user', JSON.stringify(newUserData));
     }
 
-    return [tosText, agreeToS, rejectToS];
+    return [tosText, agreement, agreementDate, agreeToS, rejectToS];
 }
