@@ -33,7 +33,7 @@ export const useFavePools = () => {
             chainId: chainId,
             poolId: poolId
         };
-        const updatedPoolsArray = [...favePools, newPool ];
+        const updatedPoolsArray = [ newPool, ...favePools ];
         setFavePools(updatedPoolsArray);
         userData.favePools = updatedPoolsArray;
         localStorage.setItem('user', JSON.stringify(userData));
