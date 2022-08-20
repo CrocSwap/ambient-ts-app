@@ -1,19 +1,22 @@
-import { Outlet, useOutletContext, NavLink } from 'react-router-dom';
-import styles from './Trade.module.css';
-
-import { useAppSelector } from '../../utils/hooks/reduxToolkit';
-
-import { tradeData as TradeDataIF } from '../../utils/state/tradeDataSlice';
+// START: Import React and Dongles
 import { Dispatch, SetStateAction, useState } from 'react';
+import { Outlet, useOutletContext, NavLink } from 'react-router-dom';
+import { ethers } from 'ethers';
+import { motion, AnimateSharedLayout } from 'framer-motion';
+
+// START: Import JSX Components
+import TradeCharts from './TradeCharts/TradeCharts';
+import TradeTabs2 from '../../components/Trade/TradeTabs/TradeTabs2';
+
+// START: Import Local Files
+import styles from './Trade.module.css';
+import { useAppSelector } from '../../utils/hooks/reduxToolkit';
+import { tradeData as TradeDataIF } from '../../utils/state/tradeDataSlice';
+import { CandleData } from '../../utils/state/graphDataSlice';
 import { PoolIF, TokenIF, TokenPairIF } from '../../utils/interfaces/exports';
 
-import TradeTabs2 from '../../components/Trade/TradeTabs/TradeTabs2';
-import { motion, AnimateSharedLayout } from 'framer-motion';
-import TradeCharts from './TradeCharts/TradeCharts';
-import { CandleData } from '../../utils/state/graphDataSlice';
-import { ethers } from 'ethers';
-
-interface ITradeProps {
+// interface for React functional component props
+interface TradePropsIF {
     provider: ethers.providers.Provider | undefined;
     baseTokenAddress: string;
     quoteTokenAddress: string;
@@ -43,7 +46,8 @@ interface ITradeProps {
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
 }
 
-export default function Trade(props: ITradeProps) {
+// React functional component
+export default function Trade(props: TradePropsIF) {
     const {
         chainId,
         tokenMap,
