@@ -33,7 +33,7 @@ export const useTermsOfService = (): [
     const tosText = 'Doug will have to put something here.'
 
     // meta functions to reflect user accepting or rejecting ToS
-    const agreeToS = () => updateUserAgreement(true);
+    const acceptToS = () => updateUserAgreement(true);
     const rejectToS = () => updateUserAgreement(false);
 
     // function to update the app for ToS being rejected or accepted
@@ -59,7 +59,7 @@ export const useTermsOfService = (): [
         tosText,
         agreement,
         agreementDate,
-        agreeToS,
+        acceptToS,
         rejectToS
     ];
 }
