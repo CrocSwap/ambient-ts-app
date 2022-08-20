@@ -15,7 +15,6 @@ import {
 } from '../utils/state/graphDataSlice';
 import { ethers } from 'ethers';
 import { useMoralis } from 'react-moralis';
-
 import useWebSocket from 'react-use-websocket';
 import {
     sortBaseQuoteTokens,
@@ -42,6 +41,8 @@ import Edit from '../pages/Trade/Edit/Edit';
 import TestPage from '../pages/TestPage/TestPage';
 import NotFound from '../pages/NotFound/NotFound';
 import Trade from '../pages/Trade/Trade';
+import Reposition from '../pages/Trade/Reposition/Reposition';
+import SidebarFooter from '../components/Global/SIdebarFooter/SidebarFooter';
 
 /** * **** Import Local Files *******/
 import './App.css';
@@ -67,12 +68,11 @@ import { memoizeTokenDecimals } from './functions/queryTokenDecimals';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { useSlippage } from './useSlippage';
 import { useFavePools } from './hooks/useFavePools';
+import { useTermsOfService } from './hooks/useTermsOfService';
 import { useAppChain } from './hooks/useAppChain';
 import { addNativeBalance, resetTokenData, setTokens } from '../utils/state/tokenDataSlice';
 import { checkIsStable } from '../utils/data/stablePairs';
 import { useTokenMap } from '../utils/hooks/useTokenMap';
-import Reposition from '../pages/Trade/Reposition/Reposition';
-import SidebarFooter from '../components/Global/SIdebarFooter/SidebarFooter';
 import { validateChain } from './validateChain';
 import { testTokenMap } from '../utils/data/testTokenMap';
 import { ZERO_ADDRESS } from '../constants';
@@ -102,15 +102,11 @@ export default function App() {
     // `'0x5'` is the chain the app should be on by default
     const [chainData, isChainSupported, switchChain, switchNetworkInMoralis] = useAppChain('0x5');
 
-    const [isShowAllEnabled, setIsShowAllEnabled] = useState<boolean>(true);
-
-    const [currentTxActiveInTransactions, setCurrentTxActiveInTransactions] = useState<string>('');
-    const [currentPositionActive, setCurrentPositionActive] = useState<string>('');
-
+    const [isShowAllEnabled, setIsShowAllEnabled] = useState(true);
+    const [currentTxActiveInTransactions, setCurrentTxActiveInTransactions] = useState('');
+    const [currentPositionActive, setCurrentPositionActive] = useState('');
     const [expandTradeTable, setExpandTradeTable] = useState(false);
-
     const [provider, setProvider] = useState<ethers.providers.Provider>();
-
     const [userIsOnline, setUserIsOnline] = useState(navigator.onLine);
 
     window.ononline = () => setUserIsOnline(true);
@@ -226,6 +222,8 @@ export default function App() {
         addPoolToFaves,
         removePoolFromFaves,
     ] = useFavePools();
+
+    false && useTermsOfService();
 
     const isPairStable = useMemo(
         () => checkIsStable(tradeData.tokenA.address, tradeData.tokenA.address, chainData.chainId),
