@@ -32,20 +32,16 @@ export const useTermsOfService = (): [
     // we may want to put this in its own data file and import it
     const tosText = 'Doug will have to put something here.'
 
-    // function to reflect user accepting ToS
-    const agreeToS = () => updateUserAgreement(true, new Date().toISOString());
+    // meta functions to reflect user accepting or rejecting ToS
+    const agreeToS = () => updateUserAgreement(true);
+    const rejectToS = () => updateUserAgreement(false);
 
-    // function to reflect user rejecting ToS
-    const rejectToS = () => updateUserAgreement(false, new Date().toISOString());
-
-    function updateUserAgreement(
-        didUserAgree: boolean,
-        timeOfUpdate: string,
-    ) {
+    // function to update the app for ToS being rejected or accepted
+    function updateUserAgreement(didUserAgree: boolean) {
         // data conformed to shape used in local storage
         const details = {
             agreed: didUserAgree,
-            date: timeOfUpdate
+            date: new Date().toISOString()
         }
         // update agreement status in local state
         setAgreement(details.agreed);
