@@ -1,7 +1,6 @@
+// START: Import React and Dongles
 import { Dispatch, SetStateAction, useState, useEffect, useMemo, useRef } from 'react';
-import styles from './TradeCharts.module.css';
-
-// icons
+import { motion } from 'framer-motion';
 import {
     AiOutlineCamera,
     AiOutlineFullscreen,
@@ -11,21 +10,30 @@ import {
     AiOutlineTwitter,
 } from 'react-icons/ai';
 import { HiOutlineExternalLink } from 'react-icons/hi';
+import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+
+// START: Import JSX Components
 import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledTooltip';
-import { motion } from 'framer-motion';
+
+// START: Import Local Files
+import styles from './TradeCharts.module.css';
 import printDomToImage from '../../../utils/functions/printDomToImage';
-// end of icons
+import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
 import {
     // eslint-disable-next-line
     tradeData as TradeDataIF,
     toggleDidUserFlipDenom,
     setActiveChartPeriod,
 } from '../../../utils/state/tradeDataSlice';
+import { CandleData, CandlesByPoolAndDuration } from '../../../utils/state/graphDataSlice';
+import { usePoolChartData } from '../../../state/pools/hooks';
 import { useAppSelector, useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import TradeCandleStickChart from './TradeCandleStickChart';
 import { PoolIF, TokenIF } from '../../../utils/interfaces/exports';
+import { get24hChange } from '../../../App/functions/getPoolStats';
 
-interface TradeChartsProps {
+// interface for React functional component props
+interface TradeChartsPropsIF {
     chainId: string;
     lastBlockNumber: number;
     poolPriceDisplay: number;
@@ -41,15 +49,8 @@ interface TradeChartsProps {
     removePoolFromFaves: (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) => void;
 }
 
-// trade charts
-import { usePoolChartData } from '../../../state/pools/hooks';
-import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
-import { CandleData, CandlesByPoolAndDuration } from '../../../utils/state/graphDataSlice';
-import { get24hChange } from '../../../App/functions/getPoolStats';
-import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-
-//
-export default function TradeCharts(props: TradeChartsProps) {
+// React functional component
+export default function TradeCharts(props: TradeChartsPropsIF) {
     const {
         isTokenABase,
         poolPriceDisplay,
