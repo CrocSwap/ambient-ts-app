@@ -1,17 +1,18 @@
+import { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import styles from './Landing3.module.css';
 
-interface circleItemProps {
+interface circleItemPropsIF {
     width: string;
     background: string;
-    children: React.ReactNode;
+    children: ReactNode;
     big?: boolean;
 }
 
 export default function Landing3() {
     const { t } = useTranslation();
 
-    const CircleItem = (props: circleItemProps) => {
+    const CircleItem = (props: circleItemPropsIF) => {
         const { width, background, children, big } = props;
 
         return (
