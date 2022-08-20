@@ -63,7 +63,7 @@ export default function PositionCard(props: PositionCardPropsIF) {
 
     const [isModalOpen, openModal, closeModal] = useModal();
 
-    const [currentModal, setCurrentModal] = useState<string>('edit');
+    const [currentModal, setCurrentModal] = useState('edit');
 
     // MODAL FUNCTIONALITY
     let modalContent: ReactNode;
