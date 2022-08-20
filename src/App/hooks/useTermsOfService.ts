@@ -15,4 +15,8 @@ export const useTermsOfService = () => {
         userData && setUserAgreement(userData.termsOfService);
     }, [userData]);
     useEffect(() => console.log(userAgreement), [userAgreement]);
+
+    const tosText = 'Doug will have to put something here.'
+
+    return [tosText];
 }
