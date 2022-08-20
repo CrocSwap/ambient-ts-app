@@ -48,5 +48,11 @@ export const useTermsOfService = (): [
         localStorage.setItem('user', JSON.stringify(newUserData));
     }
 
-    return [tosText, agreement, agreementDate, agreeToS, rejectToS];
+    return [
+        tosText,
+        agreement,
+        agreementDate,
+        agreeToS,
+        rejectToS
+    ];
 }
