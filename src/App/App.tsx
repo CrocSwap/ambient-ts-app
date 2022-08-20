@@ -15,7 +15,6 @@ import {
 } from '../utils/state/graphDataSlice';
 import { ethers } from 'ethers';
 import { useMoralis } from 'react-moralis';
-
 import useWebSocket from 'react-use-websocket';
 import {
     sortBaseQuoteTokens,
@@ -67,6 +66,7 @@ import { memoizeTokenDecimals } from './functions/queryTokenDecimals';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { useSlippage } from './useSlippage';
 import { useFavePools } from './hooks/useFavePools';
+import { useTermsOfService } from './hooks/useTermsOfService';
 import { useAppChain } from './hooks/useAppChain';
 import { addNativeBalance, resetTokenData, setTokens } from '../utils/state/tokenDataSlice';
 import { checkIsStable } from '../utils/data/stablePairs';
@@ -226,6 +226,8 @@ export default function App() {
         addPoolToFaves,
         removePoolFromFaves,
     ] = useFavePools();
+
+    useTermsOfService();
 
     const isPairStable = useMemo(
         () => checkIsStable(tradeData.tokenA.address, tradeData.tokenA.address, chainData.chainId),
