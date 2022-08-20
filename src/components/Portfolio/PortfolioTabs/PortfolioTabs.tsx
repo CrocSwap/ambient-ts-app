@@ -1,45 +1,60 @@
-import styles from './PortfolioTabs.module.css';
-import { useEffect, useState, Dispatch, SetStateAction } from 'react';
+// START: Import React and Dongles
+import {
+    useEffect,
+    useState,
+    Dispatch,
+    SetStateAction,
+    ReactNode
+} from 'react';
 
+// START: Import JSX Functional Components
 import Wallet from '../../Global/Account/AccountTabs/Wallet/Wallet';
 import Exchange from '../../Global/Account/AccountTabs/Exchange/Exchange';
 import Range from '../../Global/Account/AccountTabs/Range/Range';
 import Order from '../../Global/Account/AccountTabs/Order/Order';
 import TransactionsTable from '../../Global/Account/AccountTabs/Transaction/TransactionsTable';
+import TabComponent from '../../Global/TabComponent/TabComponent';
+
+// START: Import Local Files
+import styles from './PortfolioTabs.module.css';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { getPositionData } from '../../../App/functions/getPositionData';
 import { PositionIF } from '../../../utils/interfaces/PositionIF';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
-
 import openOrdersImage from '../../../assets/images/sidebarImages/openOrders.svg';
 import rangePositionsImage from '../../../assets/images/sidebarImages/rangePositions.svg';
 import recentTransactionsImage from '../../../assets/images/sidebarImages/recentTransactions.svg';
 import walletImage from '../../../assets/images/sidebarImages/wallet.svg';
 import exchangeImage from '../../../assets/images/sidebarImages/exchange.svg';
 
-import TabComponent from '../../Global/TabComponent/TabComponent';
-
-// import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-// import Wallet from '../../Global/Account/Wallet/Wallet';
-// import Exchange from '../../Global/Account/Exchange/Exchange';
-// import Range from '../../Global/Account/Range/Range';
-// import Order from '../../Global/Account/Order/Order';
-// import TransactionsTable from '../../Global/Account/Transaction/TransactionsTable';
+// interface for React functional component props
 interface PortfolioTabsPropsIF {
     resolvedAddress: string;
     activeAccount: string;
     connectedAccountActive: boolean;
     chainId: string;
     tokenMap: Map<string, TokenIF>;
-
     selectedOutsideTab: number;
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
     outsideControl: boolean;
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
-    rightTabOptions: React.ReactNode;
+    rightTabOptions: ReactNode;
 }
+
+// React functional component
 export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
-    const { resolvedAddress, activeAccount, connectedAccountActive, chainId, tokenMap } = props;
+    const {
+        resolvedAddress,
+        activeAccount,
+        connectedAccountActive,
+        chainId,
+        tokenMap,
+        selectedOutsideTab,
+        setSelectedOutsideTab,
+        rightTabOptions,
+        outsideControl,
+        setOutsideControl
+    } = props;
 
     const graphData = useAppSelector((state) => state?.graphData);
     const connectedAccountPositionData = graphData.positionsByUser.positions;
@@ -106,11 +121,11 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
         <div className={styles.tabs_container}>
             <TabComponent
                 data={accountTabData}
-                rightTabOptions={props.rightTabOptions}
-                selectedOutsideTab={props.selectedOutsideTab}
-                setSelectedOutsideTab={props.setSelectedOutsideTab}
-                outsideControl={props.outsideControl}
-                setOutsideControl={props.setOutsideControl}
+                rightTabOptions={rightTabOptions}
+                selectedOutsideTab={selectedOutsideTab}
+                setSelectedOutsideTab={setSelectedOutsideTab}
+                outsideControl={outsideControl}
+                setOutsideControl={setOutsideControl}
             />
         </div>
     );
