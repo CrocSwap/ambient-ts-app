@@ -17,7 +17,7 @@ export default function TestPage() {
             <button onClick={() => agreeToS()}>
                 Agree to ToS
             </button>
-            <button onClick={() => rejectToS(new Date().toISOString())}>
+            <button onClick={() => rejectToS()}>
                 Reject ToS
             </button>
         </main>

@@ -4,8 +4,8 @@ export const useTermsOfService = (): [
     string,
     boolean,
     string,
-    (date: string) => void,
-    (date: string) => void
+    () => void,
+    () => void
 ] => {
     // user data object from local storage
     const [ userData, setUserData ] = useState(JSON.parse(localStorage.getItem('user') as string));
@@ -36,19 +36,7 @@ export const useTermsOfService = (): [
     const agreeToS = () => updateUserAgreement(true, new Date().toISOString());
 
     // function to reflect user rejecting ToS
-    // same logic as in the function above
-    // this could stand to be more centralized
-    const rejectToS = (date: string) => {
-        const details = {
-            agreed: false,
-            date: date
-        }
-        setAgreement(details.agreed);
-        setAgreementDate(details.date);
-        const newUserData = userData;
-        newUserData.termsOfService = details;
-        localStorage.setItem('user', JSON.stringify(newUserData));
-    }
+    const rejectToS = () => updateUserAgreement(false, new Date().toISOString());
 
     function updateUserAgreement(
         didUserAgree: boolean,
