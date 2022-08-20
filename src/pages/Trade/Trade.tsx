@@ -26,7 +26,6 @@ interface ITradeProps {
     tokenMap: Map<string, TokenIF>;
     tokenPair: TokenPairIF;
     chainId: string;
-
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     isShowAllEnabled: boolean;
@@ -36,12 +35,10 @@ interface ITradeProps {
     favePools: PoolIF[];
     addPoolToFaves: (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) => void;
     removePoolFromFaves: (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) => void;
-    checkFavoritePools: (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) => boolean;
     selectedOutsideTab: number;
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
     outsideControl: boolean;
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
-
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
 }
@@ -58,7 +55,6 @@ export default function Trade(props: ITradeProps) {
         favePools,
         addPoolToFaves,
         removePoolFromFaves,
-        checkFavoritePools
     } = props;
 
     const [isCandleSelected, setIsCandleSelected] = useState<boolean | undefined>();
@@ -161,7 +157,6 @@ export default function Trade(props: ITradeProps) {
                                 favePools={favePools}
                                 addPoolToFaves={addPoolToFaves}
                                 removePoolFromFaves={removePoolFromFaves}
-                                checkFavoritePools={checkFavoritePools}
                             />
                         </motion.div>
                     </div>

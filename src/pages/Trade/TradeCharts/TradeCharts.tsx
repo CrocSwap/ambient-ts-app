@@ -39,7 +39,6 @@ interface TradeChartsProps {
     favePools: PoolIF[];
     addPoolToFaves: (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) => void;
     removePoolFromFaves: (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) => void;
-    checkFavoritePools: (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) => boolean;
 }
 
 // trade charts

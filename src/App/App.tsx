@@ -225,7 +225,6 @@ export default function App() {
         favePools,
         addPoolToFaves,
         removePoolFromFaves,
-        checkFavoritePools
     ] = useFavePools();
 
     const isPairStable = useMemo(
@@ -663,33 +662,22 @@ export default function App() {
             '/subscribe_candles?' +
             new URLSearchParams({
                 base: mainnetBaseTokenAddress.toLowerCase(),
-                // base: baseTokenAddress.toLowerCase(),
                 quote: mainnetQuoteTokenAddress.toLowerCase(),
-                // quote: quoteTokenAddress.toLowerCase(),
-                // quoteTokenAddress.toLowerCase() || '0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa',
                 poolIdx: chainData.poolIndex.toString(),
-                // 	positive integer	The duration of the candle, in seconds. Must represent one of the following time intervals: 5 minutes, 15 minutes, 1 hour, 4 hours, 1 day, 7 days.
                 period: activePeriod.toString(),
-                // period: '60',
                 chainId: '0x1',
-                // chainId: chainData.chainId,
                 dex: 'all',
             }),
         [mainnetBaseTokenAddress, mainnetQuoteTokenAddress, chainData.poolIndex, activePeriod],
     );
 
     const {
-        //  sendMessage,
         lastMessage: candlesMessage,
-        //  readyState
     } = useWebSocket(
         candleSubscriptionEndpoint,
         {
-            // share:  true,
             onOpen: () => console.log({ candleSubscriptionEndpoint }),
             onClose: (event) => console.log({ event }),
-            // onClose: () => console.log('candles websocket connection closed'),
-            // Will attempt to reconnect on all close events, such as server shutting down
             shouldReconnect: () => shouldSubscriptionsReconnect,
         },
         // only connect if base/quote token addresses are available
@@ -727,9 +715,7 @@ export default function App() {
             '/subscribe_pool_swaps?' +
             new URLSearchParams({
                 base: baseTokenAddress.toLowerCase(),
-                // baseTokenAddress.toLowerCase() || '0x0000000000000000000000000000000000000000',
                 quote: quoteTokenAddress.toLowerCase(),
-                // quoteTokenAddress.toLowerCase() || '0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa',
                 poolIdx: chainData.poolIndex.toString(),
                 chainId: chainData.chainId,
             }),
@@ -1319,13 +1305,6 @@ export default function App() {
     useEffect(() => {
         (async () => {
             if (provider && account && isAuthenticated && isWeb3Enabled) {
-                // console.log('Provider Native Balance');
-                // console.dir(provider);
-                // console.log(
-                //     provider
-                //         .getBalance('0x01e650ABfc761C6A0Fc60f62A4E4b3832bb1178b')
-                //         .then(console.log),
-                // );
                 new CrocEnv(provider)
                     .tokenEth()
                     .balance(account)
@@ -1646,7 +1625,6 @@ export default function App() {
                                     favePools={favePools}
                                     addPoolToFaves={addPoolToFaves}
                                     removePoolFromFaves={removePoolFromFaves}
-                                    checkFavoritePools={checkFavoritePools}
                                     selectedOutsideTab={selectedOutsideTab}
                                     setSelectedOutsideTab={setSelectedOutsideTab}
                                     outsideControl={outsideControl}
