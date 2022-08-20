@@ -67,6 +67,13 @@ export default function initializeUserLocalStorage() {
         userUpdated = true;
     }
 
+    if (!user.termsOfService) {
+        user.termsOfService = {
+            agreed: false,
+            date: null
+        }
+    }
+
     if (!user.theme) {
         user.theme = 'purple_dark';
         userUpdated = true;
