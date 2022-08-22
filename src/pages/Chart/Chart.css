@@ -28,7 +28,7 @@ text {
     background-color: #7371fc;
 }
 
-div.tooltip {
+div.popup {
     position: absolute;
     text-align: center;
     pointer-events: none;
@@ -43,6 +43,23 @@ div.tooltip {
 
 }
 
+div.tooltip {
+    position: absolute;
+    pointer-events: none;
+    background: rgba(10, 10, 19, 0.35);
+    padding: 8px;
+    width:15%;
+    box-shadow: 0 8px 24px 0 rgba(31, 38, 135, 0.35);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border-radius: var(--border-radius);
+    -webkit-transition: 2s all ease-in-out;
+    -moz-transition: 2s all ease-in-out;
+    -o-transition: 2s all ease-in-out;
+    transition: 0.8s all ease-in-out;
+
+}
+
 @keyframes hideAnimation {
     to {
       visibility: hidden;
@@ -54,4 +71,39 @@ div.tooltip {
     stroke-width: 1px;
     stroke-dasharray: 3 3;
     stroke-opacity: 0.8;
+}
+
+.kHKQUR {
+    display: grid;
+    grid-auto-rows: auto;
+    row-gap: 6px;
+}
+
+.eJnjNO {
+    box-sizing: border-box;
+    margin: 1px;
+    min-width: 0px;
+    display: flex;
+    padding: 0px;
+    -webkit-box-align: center;
+    align-items: center;
+    -webkit-box-pack: start;
+    justify-content: flex-start;
+    width: fit-content;
+}
+
+.block {
+    display: flex;
+    flex-direction: row;
+}
+
+.value_title {
+    flex-grow: 8!important;
+    font-weight: 500;
+    font-size: 12px
+}
+
+.value {
+    font-weight: 500;
+    font-size: 12px
 }

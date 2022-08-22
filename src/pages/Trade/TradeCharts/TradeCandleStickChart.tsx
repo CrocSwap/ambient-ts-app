@@ -27,6 +27,9 @@ interface ChartData {
     changeState: (isOpen: boolean | undefined, candleData: CandleData | undefined) => void;
     chartItemStates: chartItemStates;
     targetData: targetData[] | undefined;
+    limitPrice: string | undefined;
+    setLimitRate: React.Dispatch<React.SetStateAction<string>>;
+    limitRate: string;
 }
 
 type chartItemStates = {
@@ -257,6 +260,9 @@ export default function TradeCandleStickChart(props: ChartData) {
                     liquidityData={liquidityData}
                     changeState={props.changeState}
                     targetData={props.targetData}
+                    limitPrice={props.limitPrice}
+                    setLimitRate={props.setLimitRate}
+                    limitRate={props.limitRate}
                 />
             </div>
 

@@ -193,6 +193,8 @@ export default function App() {
     // all tokens from active token lists
     const [searchableTokens, setSearchableTokens] = useState<TokenIF[]>(defaultTokens);
 
+    const [limitRate, setLimitRate] = useState<string>(tradeData.limitPrice);
+
     // prevent multiple fetch requests to external URIs for token lists
     const [needTokenLists, setNeedTokenLists] = useState(true);
 
@@ -1449,6 +1451,8 @@ export default function App() {
         chainId: chainData.chainId,
         activeTokenListsChanged: activeTokenListsChanged,
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
+        limitRate: limitRate,
+        setLimitRate: setLimitRate,
     };
 
     // props for <Range/> React element
@@ -1611,6 +1615,8 @@ export default function App() {
                                     expandTradeTable={expandTradeTable}
                                     setExpandTradeTable={setExpandTradeTable}
                                     tokenMap={tokenMap}
+                                    setLimitRate={setLimitRate}
+                                    limitRate={limitRate}
                                 />
                             }
                         >

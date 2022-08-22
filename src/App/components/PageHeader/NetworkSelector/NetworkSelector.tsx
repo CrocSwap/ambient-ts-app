@@ -31,6 +31,7 @@ export default function NetworkSelector(props: NetworkSelectorPropsIF) {
                     variants={ItemEnterAnimation}
                 >
                     <div className={styles.chain_name_status}>
+                        {lookupChain(chainId).displayName}
                         {chain.chainId == chainId && <FaDotCircle color='#CDC1FF' size={10} />}
                     </div>
                 </motion.li>
@@ -45,7 +46,7 @@ export default function NetworkSelector(props: NetworkSelectorPropsIF) {
                 <DropdownMenu2
                     marginTop={'50px'}
                     titleWidth={'130px'}
-                    title={'lookupChain(chainId).displayName'}
+                    title={lookupChain(chainId).displayName}
                 >
                     {networkMenuContent}
                 </DropdownMenu2>

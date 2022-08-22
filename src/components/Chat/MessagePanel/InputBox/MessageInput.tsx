@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { BsSlashSquare } from 'react-icons/bs';
 import { FiSmile } from 'react-icons/fi';
 import { Message } from '../../Model/MessageModel';
@@ -22,9 +22,12 @@ export default function MessageInput(props: MessageInputProps) {
         // _socket.disconnect();
     }, [_socket]);
 
+    const [message, setMesage] = useState('');
+
     const _handleKeyDown = (e: any) => {
         if (e.key === 'Enter') {
             handleSendMsg(e.target.value);
+            setMesage('');
         }
     };
 
@@ -38,6 +41,10 @@ export default function MessageInput(props: MessageInputProps) {
         });
     };
 
+    const onChangeMessage = (e: any) => {
+        setMesage(e.target.value);
+    };
+
     return (
         <div className={styles.input_box}>
             <input
@@ -46,6 +53,8 @@ export default function MessageInput(props: MessageInputProps) {
                 placeholder='Enter message...'
                 className={styles.input_text}
                 onKeyDown={_handleKeyDown}
+                value={message}
+                onChange={onChangeMessage}
             />
             <BsSlashSquare />
             <FiSmile />
