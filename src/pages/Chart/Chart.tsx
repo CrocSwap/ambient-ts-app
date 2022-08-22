@@ -20,9 +20,12 @@ interface ChartData {
     priceData: CandlesByPoolAndDuration | undefined;
     liquidityData: any[];
     changeState: (isOpen: boolean | undefined, candleData: CandleData | undefined) => void;
+    denomInBase: boolean;
 }
 
 export default function Chart(props: ChartData) {
+    const { denomInBase } = props;
+
     const d3Container = useRef(null);
     const d3PlotArea = useRef(null);
     const d3Xaxis = useRef(null);
@@ -59,17 +62,23 @@ export default function Chart(props: ChartData) {
             }
             chartData.push({
                 date: new Date(data.time * 1000),
-                open: data.priceOpen,
-                close: data.priceClose,
-                high: data.maxPrice,
-                low: data.minPrice,
+                open: denomInBase
+                    ? data.invPriceOpenDecimalCorrected
+                    : data.priceOpenDecimalCorrected,
+                close: denomInBase
+                    ? data.invPriceCloseDecimalCorrected
+                    : data.priceCloseDecimalCorrected,
+                high: denomInBase
+                    ? data.invMinPriceDecimalCorrected
+                    : data.maxPriceDecimalCorrected,
+                low: denomInBase ? data.invMaxPriceDecimalCorrected : data.minPriceDecimalCorrected,
                 time: data.time,
                 allSwaps: data.allSwaps,
             });
         });
 
         drawChart(chartData, period, targets);
-    }, [props.priceData, targets]);
+    }, [props.priceData, targets, denomInBase]);
 
     useEffect(() => {
         setTargets((prevState) => {
@@ -78,7 +87,9 @@ export default function Chart(props: ChartData) {
                 props.priceData !== undefined
                     ? Math.max(
                           ...props.priceData.candles.map((o) => {
-                              return o.priceOpen !== undefined ? o.priceOpen : 0;
+                              return o.invPriceOpenDecimalCorrected !== undefined
+                                  ? o.invPriceOpenDecimalCorrected
+                                  : 0;
                           }),
                       )
                     : 0;
@@ -86,13 +97,15 @@ export default function Chart(props: ChartData) {
                 props.priceData !== undefined
                     ? Math.min(
                           ...props.priceData.candles.map((o) => {
-                              return o.priceClose !== undefined ? o.priceClose : Infinity;
+                              return o.invPriceCloseDecimalCorrected !== undefined
+                                  ? o.invPriceCloseDecimalCorrected
+                                  : Infinity;
                           }),
                       )
                     : 0;
             return newTargets;
         });
-    }, [props.priceData]);
+    }, [props.priceData, denomInBase]);
 
     useEffect(() => {
         console.log({ isChartSelected });

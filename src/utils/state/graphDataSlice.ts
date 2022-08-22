@@ -60,10 +60,14 @@ export interface CandleData {
     poolHash: string;
     firstBlock: number;
     lastBlock: number;
-    minPrice: number;
-    maxPrice: number;
-    priceOpen: number;
-    priceClose: number;
+    minPriceDecimalCorrected: number;
+    maxPriceDecimalCorrected: number;
+    priceOpenDecimalCorrected: number;
+    priceCloseDecimalCorrected: number;
+    invMinPriceDecimalCorrected: number;
+    invMaxPriceDecimalCorrected: number;
+    invPriceOpenDecimalCorrected: number;
+    invPriceCloseDecimalCorrected: number;
     numSwaps: number;
     netBaseFlow: string;
     netQuoteFlow: string;

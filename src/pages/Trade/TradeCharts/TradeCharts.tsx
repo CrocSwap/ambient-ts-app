@@ -432,6 +432,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                     priceData={props.candleData}
                     changeState={props.changeState}
                     chartItemStates={chartItemStates}
+                    denomInBase={denomInBase}
                 />
             </div>
         </>
