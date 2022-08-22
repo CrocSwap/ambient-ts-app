@@ -6,47 +6,61 @@ import graphImage from '../../../assets/images/Temporary/chart.svg';
 interface IPriceInfoProps {
     lowRangeDisplay: string;
     highRangeDisplay: string;
+    baseLiquidityDisplay: string | undefined;
+    quoteLiquidityDisplay: string | undefined;
+    baseFeesDisplay: string | undefined;
+    quoteFeesDisplay: string | undefined;
+    baseTokenLogoURI: string;
+    quoteTokenLogoURI: string;
+    baseTokenSymbol: string;
+    quoteTokenSymbol: string;
 }
 
 export default function PriceInfo(props: IPriceInfoProps) {
+    const {
+        lowRangeDisplay,
+        highRangeDisplay,
+        baseLiquidityDisplay,
+        quoteLiquidityDisplay,
+        baseFeesDisplay,
+        quoteFeesDisplay,
+        baseTokenLogoURI,
+        quoteTokenLogoURI,
+        baseTokenSymbol,
+        quoteTokenSymbol,
+    } = props;
     const removePositionInfo = (
         <div className={styles.remove_position_info}>
             <Row>
-                <span>Pooled ETH</span>
+                <span>Pooled {baseTokenSymbol}</span>
                 <div className={styles.token_price}>
-                    1.69
-                    <img
-                        src='https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png'
-                        alt=''
-                    />
+                    {baseLiquidityDisplay}
+                    <img src={baseTokenLogoURI} alt='' />
                 </div>
             </Row>
             {/*  */}
             <Row>
-                <span>Pooled USDC</span>
+                <span>Pooled {quoteTokenSymbol}</span>
                 <div className={styles.token_price}>
-                    1690.0
-                    <img src='https://cryptologos.cc/logos/usd-coin-usdc-logo.png' alt='' />
+                    {quoteLiquidityDisplay}
+                    <img src={quoteTokenLogoURI} alt='' />
                 </div>
             </Row>
             {/*  */}
             <DividerDark />
             <Row>
-                <span>ETH Fees Earned</span>
+                <span>{baseTokenSymbol} Fees Earned</span>
                 <div className={styles.token_price}>
-                    0.06
-                    <img
-                        src='https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png'
-                        alt=''
-                    />
+                    {baseFeesDisplay}
+                    <img src={baseTokenLogoURI} alt='' />
                 </div>
             </Row>
             {/*  */}
             <Row>
-                <span>USDC Fees Earned</span>
+                <span>{quoteTokenSymbol} Fees Earned</span>
                 <div className={styles.token_price}>
-                    60.9
-                    <img src='https://cryptologos.cc/logos/usd-coin-usdc-logo.png' alt='' />
+                    {quoteFeesDisplay}
+                    <img src={quoteTokenLogoURI} alt='' />
                 </div>
             </Row>
         </div>
@@ -62,11 +76,11 @@ export default function PriceInfo(props: IPriceInfoProps) {
             <div className={styles.min_max_price}>
                 <div className={styles.min_max_content}>
                     Min Price
-                    <span className={styles.min_price}>{props.lowRangeDisplay ?? 0}</span>
+                    <span className={styles.min_price}>{lowRangeDisplay ?? 0}</span>
                 </div>
                 <div className={styles.min_max_content}>
                     Max Price
-                    <span className={styles.max_price}>{props.highRangeDisplay ?? 'Infinity'}</span>
+                    <span className={styles.max_price}>{highRangeDisplay ?? 'Infinity'}</span>
                 </div>
             </div>
         </div>

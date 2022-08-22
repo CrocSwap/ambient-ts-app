@@ -71,11 +71,10 @@ export default function RangeCard(props: RangeCardProps) {
     let isPositionInRange = true;
 
     if (position.poolPriceInTicks) {
-        if (position.positionType === 'ambient') {
-            isPositionInRange = true;
-        } else if (
-            position.bidTick <= position.poolPriceInTicks &&
-            position.poolPriceInTicks <= position.askTick
+        if (
+            position.positionType === 'ambient' ||
+            (position.bidTick <= position.poolPriceInTicks &&
+                position.poolPriceInTicks <= position.askTick)
         ) {
             isPositionInRange = true;
         } else {
@@ -127,6 +126,9 @@ export default function RangeCard(props: RangeCardProps) {
         chainId: chainId,
         isPositionInRange: isPositionInRange,
         isAmbient: position.positionType === 'ambient',
+        user: position.user,
+        bidTick: position.bidTick,
+        askTick: position.askTick,
         baseTokenSymbol: position.baseSymbol,
         baseTokenDecimals: position.baseTokenDecimals,
         quoteTokenSymbol: position.quoteSymbol,
