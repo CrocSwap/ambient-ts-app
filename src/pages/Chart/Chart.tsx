@@ -32,6 +32,7 @@ interface ChartData {
     priceData: CandlesByPoolAndDuration | undefined;
     liquidityData: any[];
     changeState: (isOpen: boolean | undefined, candleData: CandleData | undefined) => void;
+    denomInBase: boolean;
     targetData: targetData[] | undefined;
     limitPrice: string | undefined;
     setLimitRate: React.Dispatch<React.SetStateAction<string>>;
@@ -54,6 +55,8 @@ interface ChartUtils {
 }
 
 export default function Chart(props: ChartData) {
+    const { denomInBase } = props;
+
     const d3Container = useRef(null);
     const d3PlotArea = useRef(null);
     const d3Xaxis = useRef(null);
@@ -103,10 +106,16 @@ export default function Chart(props: ChartData) {
             }
             chartData.push({
                 date: new Date(data.time * 1000),
-                open: data.priceOpen,
-                close: data.priceClose,
-                high: data.maxPrice,
-                low: data.minPrice,
+                open: denomInBase
+                    ? data.invPriceOpenDecimalCorrected
+                    : data.priceOpenDecimalCorrected,
+                close: denomInBase
+                    ? data.invPriceCloseDecimalCorrected
+                    : data.priceCloseDecimalCorrected,
+                high: denomInBase
+                    ? data.invMinPriceDecimalCorrected
+                    : data.maxPriceDecimalCorrected,
+                low: denomInBase ? data.invMaxPriceDecimalCorrected : data.minPriceDecimalCorrected,
                 time: data.time,
                 allSwaps: data.allSwaps,
             });
@@ -117,7 +126,7 @@ export default function Chart(props: ChartData) {
             chartData: chartData,
         };
         return chartUtils;
-    }, [props.priceData]);
+    }, [props.priceData, denomInBase]);
 
     // Set Scale
     useEffect(() => {
@@ -175,14 +184,14 @@ export default function Chart(props: ChartData) {
                 };
             });
         }
-    }, [parsedChartData.period]);
+    }, [parsedChartData.period, denomInBase]);
 
     // Set Targets
     useEffect(() => {
         const reustls: boolean[] = [];
 
         if (location.pathname.includes('market')) {
-            const lastCandlePrice = props.priceData?.candles[0].priceClose;
+            const lastCandlePrice = props.priceData?.candles[0].invPriceCloseDecimalCorrected;
             setMarket(() => {
                 return [
                     {
@@ -223,7 +232,9 @@ export default function Chart(props: ChartData) {
                         props.priceData !== undefined
                             ? Math.max(
                                   ...props.priceData.candles.map((o) => {
-                                      return o.priceOpen !== undefined ? o.priceOpen : 0;
+                                      return o.invPriceOpenDecimalCorrected !== undefined
+                                          ? o.invPriceOpenDecimalCorrected
+                                          : 0;
                                   }),
                               )
                             : 0;
@@ -231,7 +242,9 @@ export default function Chart(props: ChartData) {
                         props.priceData !== undefined
                             ? Math.min(
                                   ...props.priceData.candles.map((o) => {
-                                      return o.priceClose !== undefined ? o.priceClose : Infinity;
+                                      return o.invPriceCloseDecimalCorrected !== undefined
+                                          ? o.invPriceCloseDecimalCorrected
+                                          : Infinity;
                                   }),
                               )
                             : 0;
@@ -259,8 +272,9 @@ export default function Chart(props: ChartData) {
                                         : props.priceData !== undefined
                                         ? Math.max(
                                               ...props.priceData.candles.map((o) => {
-                                                  return o.priceOpen !== undefined
-                                                      ? o.priceOpen
+                                                  return o.invPriceOpenDecimalCorrected !==
+                                                      undefined
+                                                      ? o.invPriceOpenDecimalCorrected
                                                       : 0;
                                               }),
                                           )
@@ -274,8 +288,9 @@ export default function Chart(props: ChartData) {
                                         : props.priceData !== undefined
                                         ? Math.min(
                                               ...props.priceData.candles.map((o) => {
-                                                  return o.priceClose !== undefined
-                                                      ? o.priceClose
+                                                  return o.invPriceCloseDecimalCorrected !==
+                                                      undefined
+                                                      ? o.invPriceCloseDecimalCorrected
                                                       : Infinity;
                                               }),
                                           )
@@ -291,7 +306,7 @@ export default function Chart(props: ChartData) {
                 });
             }
         }
-    }, [location, props.limitPrice, props.targetData]);
+    }, [location, props.limitPrice, props.targetData, denomInBase]);
 
     // Set Tooltip
     useEffect(() => {

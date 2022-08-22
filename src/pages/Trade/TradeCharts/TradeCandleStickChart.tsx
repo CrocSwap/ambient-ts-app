@@ -26,6 +26,7 @@ interface ChartData {
     priceData: CandlesByPoolAndDuration | undefined;
     changeState: (isOpen: boolean | undefined, candleData: CandleData | undefined) => void;
     chartItemStates: chartItemStates;
+    denomInBase: boolean;
     targetData: targetData[] | undefined;
     limitPrice: string | undefined;
     setLimitRate: React.Dispatch<React.SetStateAction<string>>;
@@ -263,6 +264,7 @@ export default function TradeCandleStickChart(props: ChartData) {
                     limitPrice={props.limitPrice}
                     setLimitRate={props.setLimitRate}
                     limitRate={props.limitRate}
+                    denomInBase={props.denomInBase}
                 />
             </div>
 
