@@ -46,7 +46,12 @@ interface TradeChartsPropsIF {
     candleData: CandlesByPoolAndDuration | undefined;
     favePools: PoolIF[];
     addPoolToFaves: (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) => void;
-    removePoolFromFaves: (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) => void;
+    removePoolFromFaves: (
+        tokenA: TokenIF,
+        tokenB: TokenIF,
+        chainId: string,
+        poolId: number,
+    ) => void;
 }
 
 // React functional component
@@ -181,7 +186,9 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                         denomInBase,
                     );
 
-                    if (priceChangeResult) {
+                    if (priceChangeResult > -0.01 && priceChangeResult < 0.01) {
+                        setPoolPriceChangePercent('No Change');
+                    } else if (priceChangeResult) {
                         priceChangeResult > 0
                             ? setIsPoolPriceChangePositive(true)
                             : setIsPoolPriceChangePositive(false);
@@ -308,12 +315,20 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                     {denomInTokenA ? tokenASymbol : tokenBSymbol} /{' '}
                     {denomInTokenA ? tokenBSymbol : tokenASymbol}
                 </span>
-                
-                
             </div>
 
-            <button onClick={() => removePoolFromFaves(tradeData.tokenA, tradeData.tokenB, chainId, 36000)}>Remove Pool</button>
-            <button onClick={() => addPoolToFaves(tradeData.tokenA, tradeData.tokenB, chainId, 36000)}>Add Pool</button>
+            <button
+                onClick={() =>
+                    removePoolFromFaves(tradeData.tokenA, tradeData.tokenB, chainId, 36000)
+                }
+            >
+                Remove Pool
+            </button>
+            <button
+                onClick={() => addPoolToFaves(tradeData.tokenA, tradeData.tokenB, chainId, 36000)}
+            >
+                Add Pool
+            </button>
 
             <div className={styles.chart_overlay_container}>{chartOverlayButtons}</div>
         </div>
@@ -328,6 +343,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
         : // denom in b, return token a character
           getUnicodeCharacter(tradeData.tokenA.symbol);
 
+    // console.log({ poolPriceChangePercent });
     const timeFrameContent = (
         <div className={styles.time_frame_container}>
             <div className={styles.left_side}>
