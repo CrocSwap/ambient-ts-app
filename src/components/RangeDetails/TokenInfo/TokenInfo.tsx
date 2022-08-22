@@ -51,8 +51,9 @@ export default function TokenInfo(props: ITokenInfoProps) {
                         poolIndex,
                         isDenomBase,
                     );
-
-                    if (priceChangeResult) {
+                    if (priceChangeResult > -0.01 && priceChangeResult < 0.01) {
+                        setPoolPriceChangePercent('No Change');
+                    } else if (priceChangeResult) {
                         priceChangeResult > 0
                             ? setIsPoolPriceChangePositive(true)
                             : setIsPoolPriceChangePositive(false);

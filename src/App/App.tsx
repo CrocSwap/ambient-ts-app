@@ -12,6 +12,7 @@ import {
     CandleData,
     setCandles,
     addCandles,
+    setLiquidity,
 } from '../utils/state/graphDataSlice';
 import { ethers } from 'ethers';
 import { useMoralis } from 'react-moralis';
@@ -513,6 +514,46 @@ export default function App() {
             } catch (error) {
                 console.log;
             }
+            try {
+                if (httpGraphCacheServerDomain) {
+                    const poolLiquidityCacheEndpoint =
+                        httpGraphCacheServerDomain + '/pool_liquidity_distribution?';
+
+                    fetch(
+                        poolLiquidityCacheEndpoint +
+                            new URLSearchParams({
+                                base: sortedTokens[0].toLowerCase(),
+                                quote: sortedTokens[1].toLowerCase(),
+                                poolIdx: chainData.poolIndex.toString(),
+                                chainId: chainData.chainId,
+                                concise: 'true',
+                                // n: 10 // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
+                                // page: 0 // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
+                            }),
+                    )
+                        .then((response) => response?.json())
+                        .then((json) => {
+                            const poolLiquidity = json?.data;
+
+                            if (poolLiquidity) {
+                                dispatch(
+                                    setLiquidity({
+                                        pool: {
+                                            baseAddress: sortedTokens[0].toLowerCase(),
+                                            quoteAddress: sortedTokens[1].toLowerCase(),
+                                            poolIdx: chainData.poolIndex,
+                                            chainId: chainData.chainId,
+                                        },
+                                        liquidityData: poolLiquidity,
+                                    }),
+                                );
+                            }
+                        })
+                        .catch(console.log);
+                }
+            } catch (error) {
+                console.log;
+            }
         }
     }, [tokenPairStringified, chainData.chainId]);
 
@@ -558,6 +599,7 @@ export default function App() {
                                 page: '0', // nonnegative integer
                                 chainId: '0x1',
                                 dex: 'all',
+                                concise: 'true',
                             }),
                     )
                         .then((response) => response?.json())
@@ -663,6 +705,7 @@ export default function App() {
                 period: activePeriod.toString(),
                 chainId: '0x1',
                 dex: 'all',
+                concise: 'true',
             }),
         [mainnetBaseTokenAddress, mainnetQuoteTokenAddress, chainData.poolIndex, activePeriod],
     );
