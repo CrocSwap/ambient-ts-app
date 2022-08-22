@@ -95,7 +95,6 @@ export default function Chart(props: ChartData) {
 
     // Parse price data
     const parsedChartData = useMemo(() => {
-        console.log('useMemo');
         const chartData: CandleChartData[] = [];
         let period = 1;
         props.priceData?.candles.map((data) => {
@@ -517,6 +516,7 @@ export default function Chart(props: ChartData) {
 
             horizontalLine.decorate((selection: any) => {
                 selection.enter().select('g.left-handle').append('text').attr('x', 5).attr('y', -5);
+                selection.enter().select('g.right-handle').remove();
                 selection.enter().select('line').attr('class', 'redline').attr('stroke', 'red');
                 selection
                     .select('g.left-handle text')
@@ -615,8 +615,6 @@ export default function Chart(props: ChartData) {
 
             d3.select(d3PlotArea.current).on('mousemove', function (event: any) {
                 crosshairData[0] = snap(candlestick, chartData, event)[0];
-
-                console.log(event.x);
 
                 tooltip
                     .style('visibility', 'visible')
