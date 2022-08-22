@@ -30,4 +30,6 @@ export interface PositionIF {
     baseTokenDecimals: number;
     quoteTokenDecimals: number;
     positionType?: string;
+    positionLiqBase?: string;
+    positionLiqQuote?: string;
 }

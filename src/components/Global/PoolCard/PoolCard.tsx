@@ -6,7 +6,11 @@ import { CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
 import { querySpotPrice } from '../../../App/functions/querySpotPrice';
 import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { get24hChange, getPoolVolume } from '../../../App/functions/getPoolStats';
+import {
+    get24hChange,
+    getPoolTVL,
+    // getPoolVolume
+} from '../../../App/functions/getPoolStats';
 import { formatAmount } from '../../../utils/numbers';
 
 interface PoolCardProps {
@@ -115,10 +119,11 @@ export default function PoolCard(props: PoolCardProps) {
     useEffect(() => {
         (async () => {
             if (tokenAAddress && tokenBAddress) {
-                const volumeResult = await getPoolVolume(tokenAAddress, tokenBAddress, poolIndex);
+                const tvlResult = await getPoolTVL(tokenAAddress, tokenBAddress, poolIndex);
+                // const volumeResult = await getPoolVolume(tokenAAddress, tokenBAddress, poolIndex);
 
-                if (volumeResult) {
-                    const volumeString = formatAmount(volumeResult);
+                if (tvlResult) {
+                    const volumeString = formatAmount(tvlResult);
                     setPoolVolume(volumeString);
                 }
 
@@ -130,8 +135,9 @@ export default function PoolCard(props: PoolCardProps) {
                         poolIndex,
                         true, // denomInBase
                     );
-
-                    if (priceChangeResult) {
+                    if (priceChangeResult > -0.01 && priceChangeResult < 0.01) {
+                        setPoolPriceChangePercent('No Change');
+                    } else if (priceChangeResult) {
                         priceChangeResult > 0
                             ? setIsPoolPriceChangePositive(true)
                             : setIsPoolPriceChangePositive(false);
@@ -192,7 +198,8 @@ export default function PoolCard(props: PoolCardProps) {
             <div className={styles.row}>
                 <div></div>
                 <div>
-                    <div className={styles.row_title}>Vol.</div>
+                    <div className={styles.row_title}>TVL</div>
+                    {/* <div className={styles.row_title}>Vol.</div> */}
                     <div className={styles.vol}>
                         {poolPriceDisplay === undefined ? '...' : `$${poolVolume}`}
                     </div>

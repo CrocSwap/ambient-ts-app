@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-// import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction } from 'react';
 
 // START: Import Local Files
 import { tokenListURIs } from '../../utils/data/tokenListURIs';
@@ -9,7 +9,7 @@ import uriToHttp from '../../utils/functions/uriToHttp';
 
 export function fetchTokenLists(
     tokenListsReceived: boolean,
-    indicateTokenListsReceived: React.Dispatch<React.SetStateAction<boolean>>,
+    indicateTokenListsReceived: Dispatch<SetStateAction<boolean>>,
 ) {
     // create an array of promises to fetch all token lists in the URIs file
     // middleware will add the source URI to every return

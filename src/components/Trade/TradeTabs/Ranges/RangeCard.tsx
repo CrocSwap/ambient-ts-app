@@ -5,9 +5,11 @@ import RangeStatus from '../../../Global/RangeStatus/RangeStatus';
 import RangeMinMax from '../../../Global/Tabs/RangeMinMax/RangeMinMax';
 import Apy from '../../../Global/Tabs/Apy/Apy';
 import { PositionIF } from '../../../../utils/interfaces/PositionIF';
-import { ambientPosSlot, concPosSlot } from '@crocswap-libs/sdk';
+import { ambientPosSlot, concPosSlot, toDisplayQty } from '@crocswap-libs/sdk';
 import RangesMenu from '../../../Global/Tabs/TableMenu/TableMenuComponents/RangesMenu';
 import { ethers } from 'ethers';
+import { useEffect, useState, Dispatch, SetStateAction } from 'react';
+import { formatAmount } from '../../../../utils/numbers';
 
 interface RangeCardProps {
     provider: ethers.providers.Provider | undefined;
@@ -22,6 +24,8 @@ interface RangeCardProps {
     account?: string;
     isDenomBase: boolean;
     lastBlockNumber: number;
+    currentPositionActive: string;
+    setCurrentPositionActive: Dispatch<SetStateAction<string>>;
 }
 
 export default function RangeCard(props: RangeCardProps) {
@@ -37,6 +41,8 @@ export default function RangeCard(props: RangeCardProps) {
         // isAuthenticated,
         account,
         lastBlockNumber,
+        currentPositionActive,
+        setCurrentPositionActive,
     } = props;
 
     const positionData = {
@@ -135,10 +141,67 @@ export default function RangeCard(props: RangeCardProps) {
         lastBlockNumber: lastBlockNumber,
     };
 
+    const [baseLiquidityDisplay, setBaseLiquidityDisplay] = useState<string | undefined>(undefined);
+    const [quoteLiquidityDisplay, setQuoteLiquidityDisplay] = useState<string | undefined>(
+        undefined,
+    );
+
+    useEffect(() => {
+        if (position.positionLiqBase && position.baseTokenDecimals) {
+            const baseLiqDisplayNum = parseFloat(
+                toDisplayQty(position.positionLiqBase, position.baseTokenDecimals),
+            );
+            const baseLiqDisplayTruncated =
+                baseLiqDisplayNum === 0
+                    ? '0'
+                    : baseLiqDisplayNum < 0.0001
+                    ? baseLiqDisplayNum.toExponential(2)
+                    : baseLiqDisplayNum < 2
+                    ? baseLiqDisplayNum.toPrecision(3)
+                    : baseLiqDisplayNum >= 100000
+                    ? formatAmount(baseLiqDisplayNum)
+                    : // ? baseLiqDisplayNum.toExponential(2)
+                      baseLiqDisplayNum.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                      });
+            setBaseLiquidityDisplay(baseLiqDisplayTruncated);
+        }
+        if (position.positionLiqQuote && position.quoteTokenDecimals) {
+            const quoteLiqDisplayNum = parseFloat(
+                toDisplayQty(position.positionLiqQuote, position.quoteTokenDecimals),
+            );
+            const quoteLiqDisplayTruncated =
+                quoteLiqDisplayNum === 0
+                    ? '0'
+                    : quoteLiqDisplayNum < 0.0001
+                    ? quoteLiqDisplayNum.toExponential(2)
+                    : quoteLiqDisplayNum < 2
+                    ? quoteLiqDisplayNum.toPrecision(3)
+                    : quoteLiqDisplayNum >= 100000
+                    ? formatAmount(quoteLiqDisplayNum)
+                    : // ? quoteLiqDisplayNum.toExponential(2)
+                      quoteLiqDisplayNum.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                      });
+            setQuoteLiquidityDisplay(quoteLiqDisplayTruncated);
+        }
+    }, [JSON.stringify(position)]);
+
     // ------------------------------END OF REMOVE RANGE PROPS-----------------
+
+    const activePositionStyle =
+        position.id === currentPositionActive ? styles.active_position_style : '';
+
     if (!positionMatchesSelectedTokens) return null;
     return (
-        <div className={styles.main_container}>
+        <div
+            className={`${styles.main_container} ${activePositionStyle}`}
+            onClick={() =>
+                position.id === currentPositionActive ? null : setCurrentPositionActive('')
+            }
+        >
             <div className={styles.row_container}>
                 {/* ------------------------------------------------------ */}
 
@@ -152,7 +215,7 @@ export default function RangeCard(props: RangeCardProps) {
                 <RangeMinMax min={ambientMinOrNull} max={ambientMaxOrNull} />
                 {/* ------------------------------------------------------ */}
 
-                <TokenQty />
+                <TokenQty baseQty={baseLiquidityDisplay} quoteQty={quoteLiquidityDisplay} />
                 {/* ------------------------------------------------------ */}
                 <Apy amount={10} />
                 {/* ------------------------------------------------------ */}

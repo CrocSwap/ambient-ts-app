@@ -9,7 +9,14 @@ import withdrawImage from '../../../assets/images/sidebarImages/withdraw.svg';
 import depositImage from '../../../assets/images/sidebarImages/deposit.svg';
 import TabComponent from '../../Global/TabComponent/TabComponent';
 
-export default function ExchangeBalance() {
+import { SetStateAction, Dispatch } from 'react';
+
+interface ExchangeBalanceProps {
+    setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
+    setOutsideControl: Dispatch<SetStateAction<boolean>>;
+}
+
+export default function ExchangeBalance(props: ExchangeBalanceProps) {
     const accountData = [
         { label: 'Deposit', content: <Deposit />, icon: depositImage },
         { label: 'Withdraw', content: <Withdraw />, icon: withdrawImage },
@@ -18,10 +25,17 @@ export default function ExchangeBalance() {
 
     return (
         <div className={styles.main_container}>
-            <div className={styles.title}>Exchange Balance</div>
+            {/* <div className={styles.title}>Exchange Balance</div> */}
 
             <div className={styles.tabs_container}>
-                <TabComponent data={accountData} rightTabOptions={false} />
+                <TabComponent
+                    data={accountData}
+                    rightTabOptions={false}
+                    setSelectedOutsideTab={props.setSelectedOutsideTab}
+                    setOutsideControl={props.setOutsideControl}
+                    outsideControl={false}
+                    selectedOutsideTab={0}
+                />
             </div>
             <div className={styles.info_text}>
                 {' '}

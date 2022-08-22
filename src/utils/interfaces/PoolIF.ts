@@ -1,5 +1,8 @@
+import { TokenIF } from './TokenIF';
+
 export interface PoolIF {
-    tokens: string[];
+    base: TokenIF;
+    quote: TokenIF;
     chainId: string;
     poolId: number;
 }

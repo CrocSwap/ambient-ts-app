@@ -1,6 +1,13 @@
 import styles from './FavoritePools.module.css';
 import FavoritePoolsCard from './FavoritePoolsCard';
-export default function FavoritePools() {
+import { PoolIF } from '../../../../utils/interfaces/exports';
+
+interface FavoritePoolsIF {
+    favePools: PoolIF[];
+}
+
+export default function FavoritePools(props: FavoritePoolsIF) {
+    const { favePools } = props;
     const header = (
         <div className={styles.header}>
             <div>Pool</div>
@@ -9,13 +16,12 @@ export default function FavoritePools() {
         </div>
     );
 
-    const mapItems = [1, 2, 3, 4, 5, 6, 7];
     return (
         <div className={styles.container}>
             {header}
             <div className={styles.content}>
-                {mapItems.map((item, idx) => (
-                    <FavoritePoolsCard key={idx} />
+                {favePools.map((pool, idx) => (
+                    <FavoritePoolsCard key={idx} pool={pool} />
                 ))}
             </div>
         </div>

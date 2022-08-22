@@ -1,14 +1,14 @@
+import { ReactNode } from 'react';
 import styles from './WaitingConfirmation.module.css';
-// import Animation from '../../Global/Animation/Animation';
-// import loading4 from '../../../assets/animations/loading4.json';
 
-interface WaitingConfirmationProps {
-    content: React.ReactNode;
+interface WaitingConfirmationPropsIF {
+    content: ReactNode;
 }
 
-export default function WaitingConfirmation(props: WaitingConfirmationProps) {
+export default function WaitingConfirmation(props: WaitingConfirmationPropsIF) {
     const { content } = props;
 
+    // TODO:  @Junior seriously you're killing me with these wrappers  -Emily
     return (
         <div className={styles.wallet_confirm}>
             <div className={styles.loading_animation}>

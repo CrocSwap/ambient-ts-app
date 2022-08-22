@@ -23,7 +23,7 @@ export default function Orders(props: OrdersProps) {
             <OrderCardHeader />
             <div
                 className={styles.item_container}
-                style={{ height: expandTradeTable ? '100%' : '220px' }}
+                style={{ height: expandTradeTable ? '100%' : '170px' }}
             >
                 {ItemContent}
             </div>

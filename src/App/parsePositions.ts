@@ -1,8 +1,9 @@
+import { Dispatch, SetStateAction } from 'react';
 import { AmbientLiqPos, CrocEnv, RangeLiqPos, toDisplayPrice } from '@crocswap-libs/sdk';
 import Moralis from 'moralis';
 import { ethers } from 'ethers';
 
-export interface IParsedPosition {
+export interface ParsedPositionIF {
     posHash: string;
     lpType: string;
     positionStatus: string;
@@ -24,13 +25,12 @@ export interface IParsedPosition {
 export async function parsePositionArray(
     data: Moralis.Object<Moralis.Attributes>[],
     provider: ethers.providers.Provider,
-    setParsedPositionArray: React.Dispatch<React.SetStateAction<IParsedPosition[]>>,
+    setParsedPositionArray: Dispatch<SetStateAction<ParsedPositionIF[]>>,
 ) {
     if (!provider) {
         return;
     }
-    // console.log('Successfully retrieved ' + data?.length + ' UserPositions.');
-    let positions: IParsedPosition[] = [];
+    let positions: ParsedPositionIF[] = [];
 
     for (let i = 0; i < data?.length; i++) {
         const object = data[i];

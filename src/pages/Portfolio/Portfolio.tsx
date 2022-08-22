@@ -17,8 +17,11 @@ interface PortfolioPropsIF {
     userImageData: string[];
     chainId: string;
     tokenMap: Map<string, TokenIF>;
-    switchTabToTransactions: boolean;
-    setSwitchTabToTransactions: Dispatch<SetStateAction<boolean>>;
+
+    selectedOutsideTab: number;
+    setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
+    outsideControl: boolean;
+    setOutsideControl: Dispatch<SetStateAction<boolean>>;
 }
 
 const mainnetProvider = new ethers.providers.JsonRpcProvider(
@@ -89,7 +92,53 @@ export default function Portfolio(props: PortfolioPropsIF) {
 
     const exchangeBalanceComponent = (
         <div className={styles.exchange_balance}>
-            <ExchangeBalance />
+            <ExchangeBalance
+                setSelectedOutsideTab={props.setSelectedOutsideTab}
+                setOutsideControl={props.setOutsideControl}
+            />
+        </div>
+    );
+    const [fullLayoutActive, setFullLayoutActive] = useState(false);
+    console.log(fullLayoutActive);
+
+    const fullLayout = (
+        <div
+            className={`${styles.full_layout_svg} ${
+                fullLayoutActive ? styles.active_layout_style : null
+            }`}
+            onClick={() => setFullLayoutActive(!fullLayoutActive)}
+        />
+    );
+    const fullLayoutCopied = (
+        <div
+            className={`${styles.full_layout_svg_copied} ${
+                !fullLayoutActive ? styles.active_layout_style : null
+            }`}
+        />
+    );
+    const halfLayout = (
+        <div
+            className={`${styles.half_layout_svg} ${
+                !fullLayoutActive ? styles.active_layout_style : null
+            }`}
+        />
+    );
+
+    const sharedLayoutSVG = (
+        <>
+            <div
+                className={styles.shared_layout_svg}
+                onClick={() => setFullLayoutActive(!fullLayoutActive)}
+            >
+                {fullLayoutCopied}
+                {halfLayout}
+            </div>
+        </>
+    );
+    const rightTabOptions = (
+        <div className={styles.right_tab_option}>
+            {fullLayout}
+            {sharedLayoutSVG}
         </div>
     );
     return (
@@ -100,16 +149,27 @@ export default function Portfolio(props: PortfolioPropsIF) {
                 activeAccount={address ?? connectedAccount}
                 imageData={address ? secondaryImageData : userImageData}
             />
-            <PortfolioTabs
-                resolvedAddress={resolvedAddress}
-                activeAccount={address ?? connectedAccount}
-                connectedAccountActive={connectedAccountActive}
-                chainId={chainId}
-                tokenMap={tokenMap}
-                switchTabToTransactions={props.switchTabToTransactions}
-                setSwitchTabToTransactions={props.setSwitchTabToTransactions}
-            />
-            {connectedAccountActive ? exchangeBalanceComponent : null}
+            <div
+                className={
+                    fullLayoutActive
+                        ? styles.full_layout_container
+                        : styles.tabs_exchange_balance_container
+                }
+            >
+                <PortfolioTabs
+                    resolvedAddress={resolvedAddress}
+                    activeAccount={address ?? connectedAccount}
+                    connectedAccountActive={connectedAccountActive}
+                    chainId={chainId}
+                    tokenMap={tokenMap}
+                    selectedOutsideTab={props.selectedOutsideTab}
+                    setSelectedOutsideTab={props.setSelectedOutsideTab}
+                    setOutsideControl={props.setOutsideControl}
+                    outsideControl={props.outsideControl}
+                    rightTabOptions={rightTabOptions}
+                />
+                {connectedAccountActive && !fullLayoutActive ? exchangeBalanceComponent : null}
+            </div>
         </main>
     );
 }

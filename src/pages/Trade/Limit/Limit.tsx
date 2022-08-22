@@ -1,11 +1,10 @@
 // START: Import React and Dongles
-import { useMoralis } from 'react-moralis';
-import { motion } from 'framer-motion';
 import { useState, useEffect, Dispatch, SetStateAction } from 'react';
-import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
-import Button from '../../../components/Global/Button/Button';
-
+import { useMoralis } from 'react-moralis';
+import { ethers } from 'ethers';
+import { motion } from 'framer-motion';
 import { MIN_TICK, MAX_TICK, tickToPrice, toDisplayPrice, CrocEnv } from '@crocswap-libs/sdk';
+import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
 // START: Import React Functional Components
 import ContentContainer from '../../../components/Global/ContentContainer/ContentContainer';
@@ -16,17 +15,17 @@ import LimitExtraInfo from '../../../components/Trade/Limit/LimitExtraInfo/Limit
 import LimitHeader from '../../../components/Trade/Limit/LimitHeader/LimitHeader';
 import DividerDark from '../../../components/Global/DividerDark/DividerDark';
 import Modal from '../../../components/Global/Modal/Modal';
+import Button from '../../../components/Global/Button/Button';
 import ConfirmLimitModal from '../../../components/Trade/Limit/ConfirmLimitModal/ConfirmLimitModal';
-import styles from './Limit.module.css';
-// import truncateDecimals from '../../../utils/data/truncateDecimals';
 
 // START: Import Local Files
+import styles from './Limit.module.css';
+import authenticateUser from '../../../utils/functions/authenticateUser';
 import { useTradeData } from '../Trade';
+import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import { SlippagePairIF, TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
 import { setLimitPrice } from '../../../utils/state/tradeDataSlice';
-import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { ethers } from 'ethers';
 
 interface LimitPropsIF {
     importedTokens: Array<TokenIF>;
@@ -47,8 +46,7 @@ interface LimitPropsIF {
     poolPriceDisplay: number | undefined;
     poolPriceNonDisplay: number | undefined;
     tokenAAllowance: string;
-    setRecheckTokenAApproval: React.Dispatch<React.SetStateAction<boolean>>;
-
+    setRecheckTokenAApproval: Dispatch<SetStateAction<boolean>>;
     chainId: string;
     activeTokenListsChanged: boolean;
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
@@ -102,39 +100,12 @@ export default function Limit(props: LimitPropsIF) {
         }
     }, [poolPriceDisplay]);
 
-    const signingMessage = `Welcome to Ambient Finance!
-
-Click to sign in and accept the Ambient Terms of Service: https://ambient-finance.netlify.app/tos
-
-This request will not trigger a blockchain transaction or cost any gas fees.
-
-Your authentication status will reset on logout.`;
-
-    // login functionality
-    const clickLogin = () => {
-        console.log('user clicked Login');
-        if (!isAuthenticated || !isWeb3Enabled) {
-            authenticate({
-                provider: 'metamask',
-                chainId: parseInt(chainId),
-                signingMessage: signingMessage,
-                onSuccess: () => {
-                    enableWeb3();
-                },
-                onError: () => {
-                    authenticate({
-                        provider: 'metamask',
-                        chainId: parseInt(chainId),
-                        signingMessage: signingMessage,
-                        onSuccess: () => {
-                            enableWeb3;
-                            // alert('🎉');
-                        },
-                    });
-                },
-            });
-        }
-    };
+    const clickLogin = () => authenticateUser(
+        isAuthenticated,
+        isWeb3Enabled,
+        authenticate,
+        enableWeb3,
+    );
 
     const [newLimitOrderTransactionHash, setNewLimitOrderTransactionHash] = useState('');
     const [txErrorCode, setTxErrorCode] = useState(0);
