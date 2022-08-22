@@ -38,6 +38,8 @@ interface ITradeProps {
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
+    setLimitRate: React.Dispatch<React.SetStateAction<string>>;
+    limitRate: string;
 }
 
 export default function Trade(props: ITradeProps) {
@@ -99,6 +101,7 @@ export default function Trade(props: ITradeProps) {
 
     const denomInBase = tradeData.isDenomBase;
     const targetData = tradeData.targetData;
+    const limitPrice = tradeData.limitPrice;
 
     const poolPriceDisplayWithDenom = poolPriceDisplay
         ? denomInBase
@@ -159,6 +162,9 @@ export default function Trade(props: ITradeProps) {
                                 targetData={targetData}
                                 lastBlockNumber={lastBlockNumber}
                                 chainId={chainId}
+                                limitPrice={limitPrice}
+                                setLimitRate={props.setLimitRate}
+                                limitRate={props.limitRate}
                             />
                         </motion.div>
                     </div>

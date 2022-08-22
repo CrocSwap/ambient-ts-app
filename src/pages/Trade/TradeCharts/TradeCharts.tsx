@@ -41,6 +41,9 @@ interface TradeChartsProps {
     changeState: (isOpen: boolean | undefined, candleData: CandleData | undefined) => void;
     candleData: CandlesByPoolAndDuration | undefined;
     targetData: targetData[] | undefined;
+    limitPrice: string | undefined;
+    setLimitRate: React.Dispatch<React.SetStateAction<string>>;
+    limitRate: string;
 }
 
 // trade charts
@@ -450,6 +453,9 @@ export default function TradeCharts(props: TradeChartsProps) {
                     changeState={props.changeState}
                     chartItemStates={chartItemStates}
                     targetData={props.targetData}
+                    limitPrice={props.limitPrice}
+                    setLimitRate={props.setLimitRate}
+                    limitRate={props.limitRate}
                 />
             </div>
         </>

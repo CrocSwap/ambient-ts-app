@@ -6,7 +6,10 @@ import MessageInput from './MessagePanel/InputBox/MessageInput';
 import IncomingMessage from './MessagePanel/Inbox/IncomingMessage';
 import Room from './MessagePanel/Room/Room';
 import { RiCloseFill } from 'react-icons/ri';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { recieveMessageRoute, socket } from './Service/chatApi';
+import axios from 'axios';
+import { Message } from './Model/MessageModel';
 
 interface ChatProps {
     chatStatus: boolean;
@@ -15,6 +18,32 @@ interface ChatProps {
 
 export default function ChatPanel(props: ChatProps) {
     const messageEnd = useRef<HTMLInputElement | null>(null);
+    const _socket = socket;
+    const [messages, setMessages] = useState<Message[]>([]);
+
+    // const messages = [
+    //   {  message: 'dasd' ,
+    //     users: ['',''],
+    //     sender:'5'},
+    //     {  message: 'dasd' ,
+    //     users: ['',''],
+    //     sender:'6'}
+    // ]
+
+    const currentUser = '62f24f3ff40188d467c532e8';
+
+    useEffect(() => {
+        _socket.on('msg-recieve', (data) => {
+            console.error('dataaa', data);
+        });
+        getMsg();
+        scrollToBottom();
+    }, [props.chatStatus, messages]);
+
+    const getMsg = async () => {
+        const response = await axios.get(recieveMessageRoute);
+        setMessages(response.data);
+    };
 
     const scrollToBottom = () => {
         messageEnd.current?.scrollTo({ top: messageEnd.current?.scrollHeight });
@@ -51,10 +80,26 @@ export default function ChatPanel(props: ChatProps) {
                             <DividerDark changeColor addMarginTop addMarginBottom />
                         </div>
 
-                        <MessageInput />
+                        <MessageInput message={messages[0]} />
 
                         <div className={styles.scrollable_div} ref={messageEnd}>
-                            <div style={{ width: '90%' }}>
+                            {/* 
+                            {messages.map((item:Message) => {
+                              <div style={{ width: '90%' }}>
+                                </div>                            })} */}
+                            {messages.map((item) => (
+                                <div key={item.sender} style={{ width: '90%', marginBottom: 4 }}>
+                                    {item.sender === currentUser ? (
+                                        <>
+                                            <DividerDark changeColor addMarginTop addMarginBottom />
+                                            <SentMessagePanel message={item} />
+                                        </>
+                                    ) : (
+                                        <IncomingMessage message={item} />
+                                    )}
+                                </div>
+                            ))}
+                            {/* <div style={{ width: '90%' }}>
                                 <DividerDark changeColor addMarginTop addMarginBottom />
                                 <SentMessagePanel message='message blah blah blah blah blah blah blah blah blah blah' />
                             </div>
@@ -79,7 +124,7 @@ export default function ChatPanel(props: ChatProps) {
                             <div style={{ width: '90%' }}>
                                 <DividerDark changeColor addMarginTop addMarginBottom />
                                 <SentMessagePanel message='message blah blah blah blah blah blah blah blah blah blah' />
-                            </div>
+                            </div> */}
                         </div>
                     </div>
                 </motion.div>

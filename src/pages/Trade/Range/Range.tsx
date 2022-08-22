@@ -138,10 +138,6 @@ export default function Range(props: RangePropsIF) {
     const isTokenAPrimary = tradeData.isTokenAPrimaryRange;
     const targetData = tradeData.targetData;
 
-    useEffect(() => {
-        console.error({ targetData });
-    }, [tradeData.targetData]);
-
     const [rangeAllowed, setRangeAllowed] = useState<boolean>(false);
 
     const [tokenAInputQty, setTokenAInputQty] = useState<string>('');

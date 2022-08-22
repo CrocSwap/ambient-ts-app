@@ -6,6 +6,7 @@ import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { Dispatch, SetStateAction, useState, useEffect } from 'react';
 import TransactionsSkeletons from './TransactionsSkeletons/TransactionsSkeletons';
+import SelectedCandleData from '../../../Global/Tabs/SelectedCanleData/SelectedCandleData';
 
 interface TransactionsProps {
     isShowAllEnabled: boolean;
@@ -54,8 +55,6 @@ export default function Transactions(props: TransactionsProps) {
     // console.log(isDataLoading);
 
     useEffect(() => {
-        // console.log({ filter });
-        // console.log({ swapsByPool });
         isCandleSelected
             ? setTransactionData(
                   swapsByPool.filter((data) => {
@@ -72,20 +71,26 @@ export default function Transactions(props: TransactionsProps) {
     const tokenAAddress = tradeData.tokenA.address;
     const tokenBAddress = tradeData.tokenB.address;
 
-    const TransactionsDisplay = transactionData?.map((swap, idx) => (
-        //   />
-        <TransactionCard
-            key={idx}
-            swap={swap}
-            tokenMap={tokenMap}
-            chainId={chainId}
-            tokenAAddress={tokenAAddress}
-            tokenBAddress={tokenBAddress}
-            isDenomBase={isDenomBase}
-            currentTxActiveInTransactions={currentTxActiveInTransactions}
-            setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
-        />
-    ));
+    const TransactionsDisplay = (
+        <>
+            {isCandleSelected && <SelectedCandleData filter={filter} />}
+
+            {transactionData?.map((swap, idx) => (
+                <TransactionCard
+                    key={idx}
+                    swap={swap}
+                    tokenMap={tokenMap}
+                    chainId={chainId}
+                    tokenAAddress={tokenAAddress}
+                    tokenBAddress={tokenBAddress}
+                    isDenomBase={isDenomBase}
+                    currentTxActiveInTransactions={currentTxActiveInTransactions}
+                    setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
+                />
+            ))}
+        </>
+    );
+
     // : //   .reverse()
     //   swapsByUser?.map((swap, idx) => (
     //       <TransactionCard

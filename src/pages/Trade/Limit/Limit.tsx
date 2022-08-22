@@ -52,6 +52,8 @@ interface LimitPropsIF {
     chainId: string;
     activeTokenListsChanged: boolean;
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
+    setLimitRate: React.Dispatch<React.SetStateAction<string>>;
+    limitRate: string;
 }
 
 export default function Limit(props: LimitPropsIF) {
@@ -75,6 +77,8 @@ export default function Limit(props: LimitPropsIF) {
         chainId,
         activeTokenListsChanged,
         indicateActiveTokenListsChanged,
+        setLimitRate,
+        limitRate,
     } = props;
 
     const { tradeData } = useTradeData();
@@ -150,7 +154,6 @@ Your authentication status will reset on logout.`;
 
     const slippageTolerancePercentage = tradeData.slippageTolerance;
 
-    const [limitRate, setLimitRate] = useState<string>(tradeData.limitPrice);
     const [insideTickDisplayPrice, setInsideTickDisplayPrice] = useState<number>(0);
 
     const [initialLoad, setInitialLoad] = useState<boolean>(true);

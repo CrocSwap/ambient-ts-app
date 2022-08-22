@@ -22,6 +22,7 @@ interface LimitRateProps {
     setLimitRate: React.Dispatch<React.SetStateAction<string>>;
     poolPriceNonDisplay: number | undefined;
     insideTickDisplayPrice: number;
+    limitRate: string;
     // updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
 }
 
@@ -77,6 +78,7 @@ export default function LimitRate(props: LimitRateProps) {
                 pattern='^[0-9]*[.,]?[0-9]*$'
                 disabled={disable}
                 required
+                value={props.limitRate}
             />
         </div>
     );
