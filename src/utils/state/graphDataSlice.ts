@@ -6,6 +6,38 @@ export interface graphData {
     swapsByUser: SwapsByUser;
     swapsByPool: SwapsByPool;
     candlesForAllPools: CandlesForAllPools;
+    liquidityForAllPools: LiquidityForAllPools;
+}
+
+export interface LiquidityForAllPools {
+    pools: Array<LiquidityByPool>;
+}
+
+export interface LiquidityByPool {
+    pool: { baseAddress: string; quoteAddress: string; poolIdx: number; chainId: string };
+    liquidityData: Array<Range>;
+}
+
+export interface Range {
+    lowerBound: number | string;
+    lowerBoundPrice: number;
+    lowerBoundInvPrice: number | string;
+    lowerBoundPriceDecimalCorrected: number;
+    lowerBoundInvPriceDecimalCorrected: number | string;
+    upperBound: number;
+    upperBoundPrice: number;
+    upperBoundInvPrice: number;
+    upperBoundPriceDecimalCorrected: number;
+    upperBoundInvPriceDecimalCorrected: number;
+    activeLiq: string;
+    activeAmbientLiq: string;
+    activeConcLiq: string;
+    cumAskLiq: string;
+    cumAmbientAskLiq: string;
+    cumConcAskLiq: string;
+    cumBidLiq: string;
+    cumAmbientBidLiq: string;
+    cumConcBidLiq: string;
 }
 
 export interface CandlesForAllPools {
@@ -129,6 +161,7 @@ const initialState: graphData = {
     swapsByUser: { dataReceived: false, swaps: [] },
     swapsByPool: { dataReceived: false, swaps: [] },
     candlesForAllPools: { pools: [] },
+    liquidityForAllPools: { pools: [] },
 };
 
 export const graphDataSlice = createSlice({
@@ -146,6 +179,30 @@ export const graphDataSlice = createSlice({
         },
         setSwapsByPool: (state, action: PayloadAction<SwapsByPool>) => {
             state.swapsByPool = action.payload;
+        },
+        setLiquidity: (state, action: PayloadAction<LiquidityByPool>) => {
+            const poolToFind = JSON.stringify(action.payload.pool);
+            const indexOfPool = state.liquidityForAllPools.pools
+                .map((item) => JSON.stringify(item.pool))
+                .findIndex((pool) => pool === poolToFind);
+
+            // if candles for pool not yet saved in RTK, add to RTK
+            if (indexOfPool === -1) {
+                // console.log('pool not found in RTK for new candle data');
+
+                state.liquidityForAllPools.pools = state.liquidityForAllPools.pools.concat({
+                    pool: action.payload.pool,
+                    liquidityData: action.payload.liquidityData,
+                });
+                // else, check if duration exists
+            } else {
+                // console.log('pool found in RTK for new liquidity data');
+
+                state.liquidityForAllPools.pools[indexOfPool].liquidityData =
+                    state.liquidityForAllPools.pools[indexOfPool].liquidityData.concat(
+                        action.payload.liquidityData,
+                    );
+            }
         },
         setCandles: (state, action: PayloadAction<CandlesByPoolAndDuration>) => {
             const poolToFind = JSON.stringify(action.payload.pool);
@@ -283,6 +340,7 @@ export const graphDataSlice = createSlice({
 export const {
     setPositionsByUser,
     setPositionsByPool,
+    setLiquidity,
     setCandles,
     addCandles,
     setSwapsByUser,
