@@ -3,6 +3,7 @@ import * as d3fc from 'd3fc';
 import { DetailedHTMLProps, HTMLAttributes, useEffect, useState } from 'react';
 import { formatDollarAmountAxis } from '../../../utils/numbers';
 import { CandleData, CandlesByPoolAndDuration } from '../../../utils/state/graphDataSlice';
+import { targetData } from '../../../utils/state/tradeDataSlice';
 import Chart from '../../Chart/Chart';
 import './TradeCandleStickChart.css';
 
@@ -25,6 +26,10 @@ interface ChartData {
     priceData: CandlesByPoolAndDuration | undefined;
     changeState: (isOpen: boolean | undefined, candleData: CandleData | undefined) => void;
     chartItemStates: chartItemStates;
+    targetData: targetData[] | undefined;
+    limitPrice: string | undefined;
+    setLimitRate: React.Dispatch<React.SetStateAction<string>>;
+    limitRate: string;
 }
 
 type chartItemStates = {
@@ -254,6 +259,10 @@ export default function TradeCandleStickChart(props: ChartData) {
                     priceData={data.priceData}
                     liquidityData={liquidityData}
                     changeState={props.changeState}
+                    targetData={props.targetData}
+                    limitPrice={props.limitPrice}
+                    setLimitRate={props.setLimitRate}
+                    limitRate={props.limitRate}
                 />
             </div>
 

@@ -35,9 +35,16 @@ interface TradePropsIF {
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
+    setLimitRate: React.Dispatch<React.SetStateAction<string>>;
+    limitRate: string;
     favePools: PoolIF[];
     addPoolToFaves: (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) => void;
-    removePoolFromFaves: (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) => void;
+    removePoolFromFaves: (
+        tokenA: TokenIF,
+        tokenB: TokenIF,
+        chainId: string,
+        poolId: number,
+    ) => void;
     selectedOutsideTab: number;
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
     outsideControl: boolean;
@@ -101,6 +108,8 @@ export default function Trade(props: TradePropsIF) {
     });
 
     const denomInBase = tradeData.isDenomBase;
+    const targetData = tradeData.targetData;
+    const limitPrice = tradeData.limitPrice;
 
     const poolPriceDisplayWithDenom = poolPriceDisplay
         ? denomInBase
@@ -156,8 +165,12 @@ export default function Trade(props: TradePropsIF) {
                                 setFullScreenChart={setFullScreenChart}
                                 changeState={changeState}
                                 candleData={candleData}
+                                targetData={targetData}
                                 lastBlockNumber={lastBlockNumber}
                                 chainId={chainId}
+                                limitPrice={limitPrice}
+                                setLimitRate={props.setLimitRate}
+                                limitRate={props.limitRate}
                                 favePools={favePools}
                                 addPoolToFaves={addPoolToFaves}
                                 removePoolFromFaves={removePoolFromFaves}

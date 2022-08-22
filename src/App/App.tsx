@@ -174,6 +174,8 @@ export default function App() {
     // all tokens from active token lists
     const [searchableTokens, setSearchableTokens] = useState<TokenIF[]>(defaultTokens);
 
+    const [limitRate, setLimitRate] = useState<string>(tradeData.limitPrice);
+
     // prevent multiple fetch requests to external URIs for token lists
     const [needTokenLists, setNeedTokenLists] = useState(true);
 
@@ -217,11 +219,7 @@ export default function App() {
     // holds stable and volatile values for swap and mint transactions
     const [swapSlippage, mintSlippage] = useSlippage();
 
-    const [
-        favePools,
-        addPoolToFaves,
-        removePoolFromFaves,
-    ] = useFavePools();
+    const [favePools, addPoolToFaves, removePoolFromFaves] = useFavePools();
 
     false && useTermsOfService();
 
@@ -669,9 +667,7 @@ export default function App() {
         [mainnetBaseTokenAddress, mainnetQuoteTokenAddress, chainData.poolIndex, activePeriod],
     );
 
-    const {
-        lastMessage: candlesMessage,
-    } = useWebSocket(
+    const { lastMessage: candlesMessage } = useWebSocket(
         candleSubscriptionEndpoint,
         {
             onOpen: () => console.log({ candleSubscriptionEndpoint }),
@@ -1451,6 +1447,8 @@ export default function App() {
         chainId: chainData.chainId,
         activeTokenListsChanged: activeTokenListsChanged,
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
+        limitRate: limitRate,
+        setLimitRate: setLimitRate,
     };
 
     // props for <Range/> React element
@@ -1620,6 +1618,8 @@ export default function App() {
                                     expandTradeTable={expandTradeTable}
                                     setExpandTradeTable={setExpandTradeTable}
                                     tokenMap={tokenMap}
+                                    setLimitRate={setLimitRate}
+                                    limitRate={limitRate}
                                     favePools={favePools}
                                     addPoolToFaves={addPoolToFaves}
                                     removePoolFromFaves={removePoolFromFaves}
@@ -1687,6 +1687,7 @@ export default function App() {
                 </main>
                 {snackbarContent}
             </div>
+
             <div className='footer_container'>
                 {currentLocation !== '/' && (
                     <PageFooter lastBlockNumber={lastBlockNumber} userIsOnline={userIsOnline} />

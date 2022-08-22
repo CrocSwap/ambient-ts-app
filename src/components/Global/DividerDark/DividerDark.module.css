@@ -18,3 +18,8 @@
 .add_margin_bottom {
     margin-bottom: 4px;
 }
+
+.change_color {
+    background: #242F3F;
+    height: 3px;
+}

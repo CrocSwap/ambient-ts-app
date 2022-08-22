@@ -329,6 +329,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 setLimitRate={setLimitRate}
                 poolPriceNonDisplay={poolPriceNonDisplay}
                 insideTickDisplayPrice={insideTickDisplayPrice}
+                limitRate={limitRate}
             />
         </section>
     );

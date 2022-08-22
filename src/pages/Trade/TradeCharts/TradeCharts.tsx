@@ -24,6 +24,7 @@ import {
     tradeData as TradeDataIF,
     toggleDidUserFlipDenom,
     setActiveChartPeriod,
+    targetData,
 } from '../../../utils/state/tradeDataSlice';
 import { CandleData, CandlesByPoolAndDuration } from '../../../utils/state/graphDataSlice';
 import { usePoolChartData } from '../../../state/pools/hooks';
@@ -44,6 +45,10 @@ interface TradeChartsPropsIF {
     setFullScreenChart: Dispatch<SetStateAction<boolean>>;
     changeState: (isOpen: boolean | undefined, candleData: CandleData | undefined) => void;
     candleData: CandlesByPoolAndDuration | undefined;
+    targetData: targetData[] | undefined;
+    limitPrice: string | undefined;
+    setLimitRate: React.Dispatch<React.SetStateAction<string>>;
+    limitRate: string;
     favePools: PoolIF[];
     addPoolToFaves: (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) => void;
     removePoolFromFaves: (
@@ -71,9 +76,29 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
 
     // ---------------------TRADE DATA CALCULATIONS------------------------
 
-    const { tradeData } = useAppSelector((state) => state);
-    const { poolIndex } = lookupChain(chainId);
+    const tradeData = useAppSelector((state) => state.tradeData);
+    const poolIndex = lookupChain(chainId).poolIndex;
 
+    // const graphData = useAppSelector((state) => state.graphData);
+
+    // const mainnetCandlePoolDefinition = JSON.stringify({
+    //     baseAddress: '0x0000000000000000000000000000000000000000',
+    //     quoteAddress: '0x6b175474e89094c44da98b954eedeac495271d0f',
+    //     poolIdx: 36000,
+    //     network: '0x1',
+    // }).toLowerCase();
+
+    // const indexOfMainnetCandlePool = graphData.candlesForAllPools.pools
+    //     .map((item) => JSON.stringify(item.pool).toLowerCase())
+    //     .findIndex((pool) => pool === mainnetCandlePoolDefinition);
+
+    // const mainnetCandleData = graphData.candlesForAllPools.pools[indexOfMainnetCandlePool];
+
+    // useEffect(() => {
+    //     console.log({ mainnetCandleData });
+    // }, [mainnetCandleData]);
+
+    // const isTokenABase = props.isTokenABase;
     const setActivePeriod = (period: number) => {
         dispatch(setActiveChartPeriod(period));
     };
@@ -432,6 +457,10 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                     priceData={props.candleData}
                     changeState={props.changeState}
                     chartItemStates={chartItemStates}
+                    targetData={props.targetData}
+                    limitPrice={props.limitPrice}
+                    setLimitRate={props.setLimitRate}
+                    limitRate={props.limitRate}
                 />
             </div>
         </>
