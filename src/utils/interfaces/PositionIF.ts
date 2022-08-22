@@ -32,4 +32,6 @@ export interface PositionIF {
     positionType?: string;
     positionLiqBase?: string;
     positionLiqQuote?: string;
+    feesLiqBase?: string;
+    feesLiqQuote?: string;
 }
