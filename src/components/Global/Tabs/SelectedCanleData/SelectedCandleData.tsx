@@ -11,7 +11,7 @@ export default function SelectedCandleData(props: InformationData) {
             className='infoBar'
             style={{
                 width: '100%',
-                backgroundColor: 'rgba(247, 56, 91, 0.70)',
+                backgroundColor: 'rgba(247, 56, 91, 0.50)',
                 textAlign: 'center',
             }}
         >

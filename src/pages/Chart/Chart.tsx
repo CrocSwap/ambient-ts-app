@@ -83,11 +83,7 @@ export default function Chart(props: ChartData) {
 
     const [market, setMarket] = useState([
         {
-            name: 'high',
-            value: 0,
-        },
-        {
-            name: 'low',
+            name: 'Market Value',
             value: 0,
         },
     ]);
@@ -95,9 +91,11 @@ export default function Chart(props: ChartData) {
     const [isChartSelected, setIsChartSelected] = useState<boolean>(false);
     const [transactionFilter, setTransactionFilter] = useState<CandleData>();
     const [scaleData, setScaleData] = useState<any>();
+    const [tooltip, setTooltip] = useState<any>();
 
     // Parse price data
     const parsedChartData = useMemo(() => {
+        console.log('useMemo');
         const chartData: CandleChartData[] = [];
         let period = 1;
         props.priceData?.candles.map((data) => {
@@ -185,10 +183,16 @@ export default function Chart(props: ChartData) {
         const reustls: boolean[] = [];
 
         if (location.pathname.includes('market')) {
-            console.log('market');
+            const lastCandlePrice = props.priceData?.candles[0].priceClose;
+            setMarket(() => {
+                return [
+                    {
+                        name: 'Current Market Price',
+                        value: lastCandlePrice !== undefined ? lastCandlePrice : 0,
+                    },
+                ];
+            });
         } else if (location.pathname.includes('limit')) {
-            console.log('limit');
-
             if (props.limitPrice === undefined || parseFloat(props.limitPrice) === 0) {
                 setLimit((prevState) => {
                     const newTargets = [...prevState];
@@ -201,8 +205,6 @@ export default function Chart(props: ChartData) {
                 });
             }
         } else if (location.pathname.includes('range')) {
-            console.log('range');
-
             ranges.map((mapData) => {
                 props.targetData?.map((data) => {
                     if (mapData.name === data.name && mapData.value == data.value) {
@@ -291,6 +293,18 @@ export default function Chart(props: ChartData) {
         }
     }, [location, props.limitPrice, props.targetData]);
 
+    // Set Tooltip
+    useEffect(() => {
+        const tooltip = d3
+            .select(d3Container.current)
+            .append('div')
+            .attr('class', 'tooltip')
+            .style('width', '18%')
+            .style('visibility', 'hidden');
+
+        setTooltip(tooltip);
+    }, []);
+
     // Call drawChart()
     useEffect(() => {
         if (parsedChartData !== undefined && scaleData !== undefined) {
@@ -301,12 +315,12 @@ export default function Chart(props: ChartData) {
                 : location.pathname.includes('market')
                 ? market
                 : undefined;
-            drawChart(parsedChartData.chartData, targetData, scaleData);
+            drawChart(parsedChartData.chartData, targetData, scaleData, tooltip);
         }
     }, [parsedChartData, scaleData, location, ranges, limit, market]);
 
     // Draw Chart
-    const drawChart = useCallback((chartData: any, targets: any, scaleData: any) => {
+    const drawChart = useCallback((chartData: any, targets: any, scaleData: any, tooltip: any) => {
         if (chartData.length > 0) {
             let selectedCandle: any;
             let nearestCandleData: any;
@@ -376,13 +390,6 @@ export default function Chart(props: ChartData) {
                 .select(d3Container.current)
                 .append('div')
                 .attr('class', 'popup')
-                .style('visibility', 'hidden');
-
-            const tooltip = d3
-                .select(d3Container.current)
-                .append('div')
-                .attr('class', 'tooltip')
-                .style('width', '18%')
                 .style('visibility', 'hidden');
 
             const crosshair = d3fc
@@ -455,9 +462,13 @@ export default function Chart(props: ChartData) {
                                 popup
                                     .style('visibility', 'visible')
                                     .html(
-                                        '<p>Showing Transactions for <span style="color: #E6274A">selected</span> Candle</p>',
+                                        '<p>Showing Transactions for <span style="color: #E6274A">' +
+                                            moment(event.target.__data__.date).format(
+                                                'DD MMM  HH:mm',
+                                            ) +
+                                            '</span> Candle</p>',
                                     )
-                                    .style('left', '37%')
+                                    .style('left', '34%')
                                     .style('top', 500 + 'px');
                             }
                         });
@@ -473,7 +484,6 @@ export default function Chart(props: ChartData) {
 
             const dragRange = d3.drag().on('drag', function (event, d: any) {
                 const newValue = scaleData.yScale.invert(d3.pointer(event)[1] - 182);
-                d3.select(d3Container.current).select('.tooltip').remove();
                 setRanges((prevState) => {
                     const newTargets = [...prevState];
                     if (
@@ -497,8 +507,6 @@ export default function Chart(props: ChartData) {
             });
 
             const dragLimit = d3.drag().on('drag', function (event) {
-                console.log('drag limit');
-                d3.select(d3Container.current).select('.tooltip').remove();
                 const newValue = scaleData.yScale.invert(d3.pointer(event)[1] - 182);
                 setLimit(() => {
                     return [{ name: 'Limit', value: newValue }];
@@ -608,6 +616,8 @@ export default function Chart(props: ChartData) {
             d3.select(d3PlotArea.current).on('mousemove', function (event: any) {
                 crosshairData[0] = snap(candlestick, chartData, event)[0];
 
+                console.log(event.x);
+
                 tooltip
                     .style('visibility', 'visible')
                     .html(
@@ -634,7 +644,7 @@ export default function Chart(props: ChartData) {
                             '</div></div>' +
                             '</div>',
                     )
-                    .style('left', event.x - 250 + 'px')
+                    .style('left', (event.x < 1250 ? event.x - 250 : 1000) + 'px')
                     .style('top', event.y - 50 + 'px');
 
                 render();
