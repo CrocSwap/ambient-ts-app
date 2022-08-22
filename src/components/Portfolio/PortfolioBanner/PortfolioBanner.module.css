@@ -1,12 +1,10 @@
 .rectangle_container {
     font-family: var(--font-family);
     width: 100%;
-    height: calc(100% / 3);
+    /* height: calc(100% / 3); */
+    height: 250px;
     background-color: red;
-    /* background: linear-gradient(180deg, rgba(23, 29, 39, 0) 0%, var(--dark3) 100%),
-        url('../../../assets/images/Temporary/nft/lightningBackground.png') no-repeat center center;
-    background: linear-gradient(180deg, rgba(23, 29, 39, 0) 0%, var(--dark3) 100%),
-        url('../../../assets/images/waveform.svg') no-repeat center center; */
+  
     background: url('../../../assets/images/backgrounds/account_image.png') no-repeat center center;
     -webkit-background-size: cover;
     -moz-background-size: cover;

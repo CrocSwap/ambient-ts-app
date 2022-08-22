@@ -1,12 +1,13 @@
-import styles from './TabContent.module.css';
+import { ReactNode } from 'react';
 import { motion } from 'framer-motion';
+import styles from './TabContent.module.css';
 
-interface TabContentProps {
-    children: React.ReactNode;
+interface TabContentPropsIF {
+    children: ReactNode;
     id: string;
     activeTab: string;
 }
-export default function Toggle(props: TabContentProps) {
+export default function Toggle(props: TabContentPropsIF) {
     const { children, id, activeTab } = props;
 
     return activeTab === id ? (

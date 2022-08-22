@@ -1,5 +1,5 @@
 import styles from './AnalyticsTabs.module.css';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, SetStateAction, Dispatch } from 'react';
 // import Positions from '../../Trade/TradeTabs/Positions/Positions';
 import { BiSearch } from 'react-icons/bi';
 import TopTokens from '../../TopTokens/TopTokens';
@@ -13,7 +13,11 @@ import { PoolData } from '../../../state/pools/models';
 import TabComponent from '../../Global/TabComponent/TabComponent';
 // import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 
-export default function AnalyticsTabs() {
+interface AnalyticsProps {
+    setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
+    setOutsideControl: Dispatch<SetStateAction<boolean>>;
+}
+export default function AnalyticsTabs(props: AnalyticsProps) {
     const allTokens = useAllTokenData();
     const allPoolData = useAllPoolData();
 
@@ -87,7 +91,14 @@ export default function AnalyticsTabs() {
         <div className={styles.tabs_container}>
             <div className={styles.option_toggles}>{searchContainer}</div>
 
-            <TabComponent data={analyticTabData} rightTabOptions={false} />
+            <TabComponent
+                data={analyticTabData}
+                rightTabOptions={false}
+                selectedOutsideTab={0}
+                outsideControl={false}
+                setOutsideControl={props.setOutsideControl}
+                setSelectedOutsideTab={props.setSelectedOutsideTab}
+            />
         </div>
     );
 }

@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+// import { useEffect } from 'react';
 import io from 'socket.io-client';
 
 export const host = 'http://localhost:5000';

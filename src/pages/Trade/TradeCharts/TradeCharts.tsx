@@ -1,20 +1,24 @@
-import styles from './TradeCharts.module.css';
-
-// icons
+// START: Import React and Dongles
+import { Dispatch, SetStateAction, useState, useEffect, useMemo, useRef } from 'react';
+import { motion } from 'framer-motion';
 import {
     AiOutlineCamera,
     AiOutlineFullscreen,
-    // AiOutlineSetting,
     AiOutlineDownload,
     AiOutlineCopy,
     AiOutlineLink,
     AiOutlineTwitter,
 } from 'react-icons/ai';
 import { HiOutlineExternalLink } from 'react-icons/hi';
+import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+
+// START: Import JSX Components
 import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledTooltip';
-import { motion } from 'framer-motion';
+
+// START: Import Local Files
+import styles from './TradeCharts.module.css';
 import printDomToImage from '../../../utils/functions/printDomToImage';
-// end of icons
+import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
 import {
     // eslint-disable-next-line
     tradeData as TradeDataIF,
@@ -22,14 +26,15 @@ import {
     setActiveChartPeriod,
     targetData,
 } from '../../../utils/state/tradeDataSlice';
+import { CandleData, CandlesByPoolAndDuration } from '../../../utils/state/graphDataSlice';
+import { usePoolChartData } from '../../../state/pools/hooks';
 import { useAppSelector, useAppDispatch } from '../../../utils/hooks/reduxToolkit';
-import { Dispatch, SetStateAction, useState, useEffect, useMemo, useRef } from 'react';
-// import truncateDecimals from '../../../utils/data/truncateDecimals';
 import TradeCandleStickChart from './TradeCandleStickChart';
-interface TradeChartsProps {
-    // denomInTokenA: boolean;
-    // tokenASymbol: string;
-    // tokenBSymbol: string;
+import { PoolIF, TokenIF } from '../../../utils/interfaces/exports';
+import { get24hChange } from '../../../App/functions/getPoolStats';
+
+// interface for React functional component props
+interface TradeChartsPropsIF {
     chainId: string;
     lastBlockNumber: number;
     poolPriceDisplay: number;
@@ -44,19 +49,28 @@ interface TradeChartsProps {
     limitPrice: string | undefined;
     setLimitRate: React.Dispatch<React.SetStateAction<string>>;
     limitRate: string;
+    favePools: PoolIF[];
+    addPoolToFaves: (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) => void;
+    removePoolFromFaves: (
+        tokenA: TokenIF,
+        tokenB: TokenIF,
+        chainId: string,
+        poolId: number,
+    ) => void;
 }
 
-// trade charts
-import { usePoolChartData } from '../../../state/pools/hooks';
-import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
-import { CandleData, CandlesByPoolAndDuration } from '../../../utils/state/graphDataSlice';
-import { get24hChange } from '../../../App/functions/getPoolStats';
-import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-
-//
-export default function TradeCharts(props: TradeChartsProps) {
-    const { fullScreenChart, setFullScreenChart, lastBlockNumber, chainId } = props;
-    const { poolPriceDisplay } = props;
+// React functional component
+export default function TradeCharts(props: TradeChartsPropsIF) {
+    const {
+        isTokenABase,
+        poolPriceDisplay,
+        fullScreenChart,
+        setFullScreenChart,
+        lastBlockNumber,
+        chainId,
+        addPoolToFaves,
+        removePoolFromFaves,
+    } = props;
 
     const dispatch = useAppDispatch();
 
@@ -84,7 +98,7 @@ export default function TradeCharts(props: TradeChartsProps) {
     //     console.log({ mainnetCandleData });
     // }, [mainnetCandleData]);
 
-    const isTokenABase = props.isTokenABase;
+    // const isTokenABase = props.isTokenABase;
     const setActivePeriod = (period: number) => {
         dispatch(setActiveChartPeriod(period));
     };
@@ -108,10 +122,6 @@ export default function TradeCharts(props: TradeChartsProps) {
                   maximumFractionDigits: 2,
               });
 
-    // const truncatedPoolPrice =
-    //     poolPriceDisplay < 2
-    //         ? truncateDecimals(poolPriceDisplay, 4)
-    //         : truncateDecimals(poolPriceDisplay, 2);
     // ---------------------END OF TRADE DATA CALCULATIONS------------------------
 
     // GRAPH SETTINGS CONTENT------------------------------------------------------
@@ -168,18 +178,6 @@ export default function TradeCharts(props: TradeChartsProps) {
     });
     const graphSettingsContent = (
         <div className={styles.graph_settings_container}>
-            {/* <DefaultTooltip
-                interactive
-                title={'nothing yet'}
-                open={openSettingsTooltip}
-                onOpen={() => setOpenSettingsTooltip(true)}
-                onClose={() => setOpenSettingsTooltip(false)}
-            >
-                <div />
-            </DefaultTooltip>
-            <div onClick={() => setOpenSettingsTooltip(!openSettingsTooltip)}>
-                <AiOutlineSetting size={20} />
-            </div> */}
             <div onClick={() => setFullScreenChart(!fullScreenChart)}>
                 <AiOutlineFullscreen size={20} />
             </div>
@@ -213,7 +211,9 @@ export default function TradeCharts(props: TradeChartsProps) {
                         denomInBase,
                     );
 
-                    if (priceChangeResult) {
+                    if (priceChangeResult > -0.01 && priceChangeResult < 0.01) {
+                        setPoolPriceChangePercent('No Change');
+                    } else if (priceChangeResult) {
                         priceChangeResult > 0
                             ? setIsPoolPriceChangePositive(true)
                             : setIsPoolPriceChangePositive(false);
@@ -252,10 +252,6 @@ export default function TradeCharts(props: TradeChartsProps) {
         { name: 'Volume', selected: showVolume, action: handleVolumeToggle },
         { name: 'TVL', selected: showTvl, action: handleTvlToggle },
         { name: 'Fee Rate', selected: showFeeRate, action: handleFeeRateToggle },
-        // { name: 'Heatmap', function: () => console.log('heatmap') },
-        // { name: 'Liquidity Profile', function: () => console.log('heatmap')  },
-        // { name: 'Curve', function: () => console.log('Curve')  },
-        // { name: 'Depth', function: () => console.log('Depth')  },
     ];
 
     const chartOverlayButtons = chartOverlayButtonData.map((button, idx) => (
@@ -315,7 +311,6 @@ export default function TradeCharts(props: TradeChartsProps) {
                         layoutId='outline2'
                         className={styles.outline2}
                         initial={false}
-                        // animate={{ borderColor: 'red' }}
                         transition={spring}
                     />
                 )}
@@ -332,13 +327,11 @@ export default function TradeCharts(props: TradeChartsProps) {
                 <div className={styles.tokens_images}>
                     <img
                         src={denomInTokenA ? tradeData.tokenA.logoURI : tradeData.tokenB.logoURI}
-                        // src='https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png'
                         alt='token'
                         width='30px'
                     />
                     <img
                         src={denomInTokenA ? tradeData.tokenB.logoURI : tradeData.tokenA.logoURI}
-                        // src='https://cryptologos.cc/logos/usd-coin-usdc-logo.png'
                         alt='token'
                         width='30px'
                     />
@@ -348,6 +341,20 @@ export default function TradeCharts(props: TradeChartsProps) {
                     {denomInTokenA ? tokenBSymbol : tokenASymbol}
                 </span>
             </div>
+
+            <button
+                onClick={() =>
+                    removePoolFromFaves(tradeData.tokenA, tradeData.tokenB, chainId, 36000)
+                }
+            >
+                Remove Pool
+            </button>
+            <button
+                onClick={() => addPoolToFaves(tradeData.tokenA, tradeData.tokenB, chainId, 36000)}
+            >
+                Add Pool
+            </button>
+
             <div className={styles.chart_overlay_container}>{chartOverlayButtons}</div>
         </div>
     );
@@ -361,13 +368,11 @@ export default function TradeCharts(props: TradeChartsProps) {
         : // denom in b, return token a character
           getUnicodeCharacter(tradeData.tokenA.symbol);
 
+    // console.log({ poolPriceChangePercent });
     const timeFrameContent = (
         <div className={styles.time_frame_container}>
             <div className={styles.left_side}>
-                <span
-                    className={styles.amount}
-                    // onClick={() => dispatch(toggleDidUserFlipDenom())}
-                >
+                <span className={styles.amount}>
                     {poolPriceDisplay === Infinity
                         ? '...'
                         : `${currencyCharacter}${truncatedPoolPrice}`}

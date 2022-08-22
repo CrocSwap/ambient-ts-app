@@ -1,13 +1,12 @@
-// import { ChangeEvent } from 'react';
-
+import { Dispatch, SetStateAction } from 'react';
 import styles from './RemoveRangeWidth.module.css';
 
-interface IRemoveRangeWidthProps {
+interface RemoveRangeWidthPropsIF {
     removalPercentage: number;
-    setRemovalPercentage: React.Dispatch<React.SetStateAction<number>>;
+    setRemovalPercentage: Dispatch<SetStateAction<number>>;
 }
 
-export default function RemoveRangeWidth(props: IRemoveRangeWidthProps) {
+export default function RemoveRangeWidth(props: RemoveRangeWidthPropsIF) {
     const { removalPercentage, setRemovalPercentage } = props;
     const handlePercentageUpdate = (percentage: number) => {
         setRemovalPercentage(percentage);
@@ -64,7 +63,6 @@ export default function RemoveRangeWidth(props: IRemoveRangeWidthProps) {
             <span className={styles.title}>Amount</span>
             <div className={styles.range_width_content}>
                 {PercentageOptionContent}
-
                 <div className={styles.range_width_input}>
                     <input
                         size={28}
@@ -79,7 +77,6 @@ export default function RemoveRangeWidth(props: IRemoveRangeWidthProps) {
                         onChange={(e) => handlePercentageUpdate(parseInt(e.target.value))}
                     />
                 </div>
-
                 <div className={styles.percentage_container}></div>
             </div>
         </div>

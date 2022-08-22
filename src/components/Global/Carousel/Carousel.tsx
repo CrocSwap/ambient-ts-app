@@ -1,51 +1,47 @@
-import styles from './Carousel.module.css';
-import React, { cloneElement, useState, useEffect } from 'react';
-// import { HiArrowNarrowLeft, HiArrowNarrowRight} from 'react-icons/hi'
+// START: Import React and Dongles
+import {
+    cloneElement,
+    Children,
+    ReactElement,
+    ReactNode,
+    useState,
+    useEffect
+} from 'react';
 
-interface CarouselProps {
-    children?: React.ReactNode;
+// START: Import Local Files
+import styles from './Carousel.module.css';
+
+// interface for React functional component props
+interface CarouselPropsIF {
+    children?: ReactNode;
 }
 
-export default function Carousel(props: CarouselProps) {
+// react functional component
+export default function Carousel(props: CarouselPropsIF) {
     const { children } = props;
     const [activeIndex, setActiveIndex] = useState(0);
     const [paused, setPaused] = useState(false);
 
     const updateIndex = (newIndex: number) => {
         if (newIndex < 0) {
-            newIndex = React.Children.count(children) - 1;
-        } else if (newIndex >= React.Children.count(children)) {
+            newIndex = Children.count(children) - 1;
+        } else if (newIndex >= Children.count(children)) {
             newIndex = 0;
         }
-
         setActiveIndex(newIndex);
     };
 
     // auto carousel
     useEffect(() => {
         const interval = setInterval(() => {
-            if (!paused) {
-                updateIndex(activeIndex + 1);
-            }
+            !paused && updateIndex(activeIndex + 1);
         }, 30000);
-
-        return () => {
-            if (interval) {
-                clearInterval(interval);
-            }
-        };
+        return () => interval && clearInterval(interval);
     });
 
     const triggerButtons = (
         <div className={styles.indicators}>
-            {/* <span
-                onClick={() => {
-                    updateIndex(activeIndex - 1);
-                }}
-            >
-                <HiArrowNarrowLeft size={20}  color='#bdbdbd'/>
-            </span> */}
-            {React.Children.map(children, (child, index) => {
+            {Children.map(children, (child, index) => {
                 return (
                     <div
                         className={`${index === activeIndex ? styles.active : ''}`}
@@ -57,13 +53,6 @@ export default function Carousel(props: CarouselProps) {
                     </div>
                 );
             })}
-            {/* <span
-                onClick={() => {
-                    updateIndex(activeIndex + 1);
-                }}
-            >
-               <HiArrowNarrowRight size={20}  color='#bdbdbd'  />
-            </span> */}
         </div>
     );
 
@@ -77,9 +66,9 @@ export default function Carousel(props: CarouselProps) {
                 className={styles.inner}
                 style={{ transform: `translateX(-${activeIndex * 100}%)` }}
             >
-                {React.Children.map(children, (child) =>
+                {Children.map(children, (child) =>
                     // eslint-disable-next-line
-                    cloneElement(child as React.ReactElement<any>, { width: '100%' }),
+                    cloneElement(child as ReactElement<any>, { width: '100%' }),
                 )}
             </div>
             {triggerButtons}

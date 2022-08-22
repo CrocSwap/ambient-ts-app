@@ -1,8 +1,8 @@
+// START: Import React and Dongles
+import { forwardRef, Dispatch, SetStateAction, ReactNode, SyntheticEvent } from 'react';
 import { Snackbar } from '@material-ui/core';
 import { Alert, AlertProps, AlertColor } from '@mui/material';
 import { motion } from 'framer-motion';
-
-import { forwardRef, SetStateAction } from 'react';
 
 const SnackbarAlert = forwardRef<HTMLDivElement, AlertProps>(function SnackbarAlert(props, ref) {
     return (
@@ -18,30 +18,40 @@ const SnackbarAlert = forwardRef<HTMLDivElement, AlertProps>(function SnackbarAl
     );
 });
 
-interface SnackbarProps {
-    children: React.ReactNode;
+// interface for React functional component props
+interface SnackbarPropsIF {
+    children: ReactNode;
     severity: AlertColor;
-    setOpenSnackbar: React.Dispatch<SetStateAction<boolean>>;
+    setOpenSnackbar: Dispatch<SetStateAction<boolean>>;
     openSnackbar: boolean;
 }
 
-export default function SnackbarComponent(props: SnackbarProps) {
-    const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+// React functional component
+export default function SnackbarComponent(props: SnackbarPropsIF) {
+    const {
+        openSnackbar,
+        setOpenSnackbar,
+        children,
+        severity
+    } = props;
+
+    const handleClose = (event?: SyntheticEvent | Event, reason?: string) => {
         if (reason === 'clickaway') {
             return;
         }
-        props.setOpenSnackbar(false);
+        setOpenSnackbar(false);
     };
+
     return (
         <motion.div>
-            <Snackbar open={props.openSnackbar} autoHideDuration={8000} onClose={handleClose}>
+            <Snackbar open={openSnackbar} autoHideDuration={8000} onClose={handleClose}>
                 <motion.div
                     initial={{ scale: 0.5 }}
                     animate={{ scale: 1 }}
                     transition={{ duration: 0.3 }}
                 >
-                    <SnackbarAlert onClose={handleClose} severity={props.severity}>
-                        {props.children}
+                    <SnackbarAlert onClose={handleClose} severity={severity}>
+                        {children}
                     </SnackbarAlert>
                 </motion.div>
             </Snackbar>

@@ -1,71 +1,74 @@
-import styles from './TabComponent.module.css';
-import React, { useState, useEffect, Dispatch, SetStateAction, cloneElement } from 'react';
+// START: Import React and Dongles
+import {
+    useState,
+    useEffect,
+    Dispatch,
+    SetStateAction,
+    cloneElement,
+    ReactNode,
+    ReactElement
+} from 'react';
 import { motion, AnimateSharedLayout } from 'framer-motion';
-import '../../../App/App.css';
 
+// START: Import Local Files
+import styles from './TabComponent.module.css';
+import '../../../App/App.css';
 import { DefaultTooltip } from '../StyledTooltip/StyledTooltip';
+
 type tabData = {
     label: string;
-    content: React.ReactNode;
+    content: ReactNode;
     icon?: string;
 };
 
-type outsideTab = {
-    switchToTab: boolean;
-    tabToSwitchTo: number;
-    stateHandler: Dispatch<SetStateAction<boolean>>;
-};
-
-interface TabProps {
+interface TabPropsIF {
     data: tabData[];
-    rightTabOptions?: React.ReactNode;
-    outsideTabControl?: outsideTab;
+    rightTabOptions?: ReactNode;
+    selectedOutsideTab: number;
+    setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
+    outsideControl: boolean;
+    setOutsideControl: Dispatch<SetStateAction<boolean>>;
+    // this props is for components that do not need outside control such as exchange balance
 }
 
-export default function TabComponent(props: TabProps) {
-    const { data, outsideTabControl } = props;
+export default function TabComponent(props: TabPropsIF) {
+    const {
+        data,
+        selectedOutsideTab,
+        rightTabOptions,
+        outsideControl,
+        setOutsideControl,
+    } = props;
 
     const [selectedTab, setSelectedTab] = useState(data[0]);
+
+    function handleSelectedTab(item: tabData) {
+        setOutsideControl(false);
+        setSelectedTab(item);
+    }
 
     useEffect(() => {
         const currentTabData = data.find((item) => item.label === selectedTab.label);
         if (currentTabData) setSelectedTab(currentTabData);
-    }, [data, outsideTabControl]);
+    }, [data, outsideControl]);
 
-    function handleOutsideControl() {
-        if (outsideTabControl) {
-            if (selectedTab.label === data[outsideTabControl.tabToSwitchTo].label) {
-                return;
-            } else if (outsideTabControl.switchToTab) {
-                setSelectedTab(data[outsideTabControl.tabToSwitchTo]);
+    function handleOutside2() {
+        if (!outsideControl) {
+            return;
+        } else {
+            if (outsideControl) {
+                if (data[selectedOutsideTab]) {
+                    setSelectedTab(data[selectedOutsideTab]);
+                } else {
+                    setSelectedTab(data[0]);
+                }
             }
         }
-        return;
     }
 
     useEffect(() => {
-        handleOutsideControl();
-    }, [selectedTab, outsideTabControl]);
-
-    // const firstTwoNavs = [...data].slice(0, 2);
-    // const remainingNavs = [...data].splice(2, data.length - 1);
-
-    // We can honestly refactor one jsx to take care of both full nav items and nav items on the left but this is simpler to understand and refactor down the line.
-    // TAB MENU WITH ITEMS ON THE RIGHT
-
-    function handleSelectedTab(item: tabData) {
-        if (outsideTabControl) {
-            if (outsideTabControl.switchToTab) {
-                outsideTabControl.stateHandler(false);
-
-                setSelectedTab(item);
-            } else {
-                setSelectedTab(item);
-            }
-        }
-
-        setSelectedTab(item);
-    }
+        handleOutside2();
+    }, [selectedTab, selectedOutsideTab, outsideControl]);
 
     function handleMobileMenuIcon(icon: string, label: string) {
         return (
@@ -84,7 +87,7 @@ export default function TabComponent(props: TabProps) {
     }
     const rightOptionWithProps =
         // eslint-disable-next-line
-        cloneElement(props.rightTabOptions as React.ReactElement<any>, {
+        cloneElement(rightTabOptions as ReactElement<any>, {
             currentTab: selectedTab.label,
         });
 
@@ -108,7 +111,7 @@ export default function TabComponent(props: TabProps) {
                 ))}
             </ul>
             <div className={styles.tap_option_right}>
-                {props.rightTabOptions ? rightOptionWithProps : null}
+                {rightTabOptions ? rightOptionWithProps : null}
             </div>
         </div>
     );
@@ -116,8 +119,6 @@ export default function TabComponent(props: TabProps) {
     // TAB MENU WITHOUT ANY ITEMS ON THE RIGHT
 
     const fullTabs = (
-        // <AnimateSharedLayout>
-
         <ul className={`${styles.tab_ul} ${styles.desktop_tabs}`}>
             {data.map((item) => {
                 return (
@@ -136,14 +137,13 @@ export default function TabComponent(props: TabProps) {
                 );
             })}
         </ul>
-        // </AnimateSharedLayout>
     );
 
     return (
         <div className={styles.tab_window}>
             <nav className={styles.tab_nav}>
                 <AnimateSharedLayout>
-                    {props.rightTabOptions ? tabsWithRightOption : fullTabs}
+                    {rightTabOptions ? tabsWithRightOption : fullTabs}
                 </AnimateSharedLayout>
             </nav>
             <main className={styles.main_tab_content}>

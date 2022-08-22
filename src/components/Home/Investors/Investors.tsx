@@ -1,5 +1,10 @@
-import styles from './Investors.module.css';
+// START: Import React and Dongles
+import { ReactNode } from 'react';
+import { motion, useViewportScroll, useTransform } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 
+// START: Import Local Files
+import styles from './Investors.module.css';
 import blocktowerImage from '../../../assets/images/Investors/Blocktower.png';
 import amberImage from '../../../assets/images/Investors/amber.png';
 import tensaiImage from '../../../assets/images/Investors/tensai.png';
@@ -13,17 +18,15 @@ import susaImage from '../../../assets/images/Investors/susa.svg';
 import hypotenuseImage from '../../../assets/images/Investors/hypotenuse.svg';
 import grugImage from '../../../assets/images/Investors/grug.svg';
 
-import { motion, useViewportScroll, useTransform } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
-
-interface RowAnimateProps {
-    children?: React.ReactNode;
+interface RowAnimatePropsIF {
+    children?: ReactNode;
     speed: number;
 }
 
-function RowAnimate(props: RowAnimateProps) {
+function RowAnimate(props: RowAnimatePropsIF) {
+    const { children, speed } = props;
     const { scrollYProgress } = useViewportScroll();
-    const yValue = useTransform(scrollYProgress, [0, 0.5, 1], [0, 50, 100 * props.speed]);
+    const yValue = useTransform(scrollYProgress, [0, 0.5, 1], [0, 50, 100 * speed]);
 
     return (
         <motion.div
@@ -32,7 +35,7 @@ function RowAnimate(props: RowAnimateProps) {
             transition={{ duration: 0.2 }}
             style={{ y: yValue }}
         >
-            {props.children}
+            {children}
         </motion.div>
     );
 }

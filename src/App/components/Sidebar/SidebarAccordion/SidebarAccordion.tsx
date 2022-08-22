@@ -1,42 +1,35 @@
-// import styles from './SidebarAccordion.module.css';
-import { MdPlayArrow } from 'react-icons/md';
-import styles from '../Sidebar.module.css';
-import {
-    // useEffect,
-    useState,
-} from 'react';
+// START: Import React and Dongles
+import { useState, MouseEvent, ReactNode } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { MdPlayArrow } from 'react-icons/md';
+
+// START: Import Local Files
+import styles from '../Sidebar.module.css';
 import { ISwap } from '../../../../utils/state/graphDataSlice';
 import { PositionIF } from '../../../../utils/interfaces/PositionIF';
-interface Item {
-    name: string;
-    icon: string;
-    data: React.ReactNode;
-}
 
-interface SidebarAccordionProps {
-    children?: React.ReactNode;
+// interface for React functional component props
+interface SidebarAccordionPropsIF {
+    children?: ReactNode;
     showSidebar: boolean;
     toggleSidebar: (
-        event: React.MouseEvent<HTMLDivElement> | React.MouseEvent<HTMLLIElement>,
+        event: MouseEvent<HTMLDivElement> | MouseEvent<HTMLLIElement>,
     ) => void;
-    // toggleSearchMode: (
-    //     event: React.MouseEvent<HTMLDivElement> | React.MouseEvent<HTMLLIElement>,
-    // ) => void;
-    item: Item;
+    item: {
+        name: string;
+        icon: string;
+        data: ReactNode;
+    };
     idx: number | string;
-
     mostRecent?: PositionIF[] | ISwap[] | string[];
 }
 
-export default function SidebarAccordion(props: SidebarAccordionProps) {
+export default function SidebarAccordion(props: SidebarAccordionPropsIF) {
     const {
         showSidebar,
         idx,
         item,
         toggleSidebar,
-
-        // mostRecent = []
     } = props;
 
     const [isOpen, setIsOpen] = useState(false);
@@ -62,8 +55,6 @@ export default function SidebarAccordion(props: SidebarAccordionProps) {
     const showOpenContentOrNull = showSidebar ? openStateContent : '';
 
     const sidebarIconStyle = isOpen ? styles.open_link : null;
-    // console.log({ isOpen });
-    // console.log({ showSidebar });
 
     return (
         <>

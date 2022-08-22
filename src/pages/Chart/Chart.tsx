@@ -200,6 +200,7 @@ export default function Chart(props: ChartData) {
                 });
             } else {
                 setLimit(() => {
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                     return [{ name: 'Limit', value: parseFloat(props.limitPrice!) }];
                 });
             }
@@ -356,7 +357,7 @@ export default function Chart(props: ChartData) {
                 nearestCandleData = nearest;
                 return [
                     {
-                        x: nearest.date,
+                        x: nearest?.date,
                         y: -1,
                     },
                 ];
@@ -481,29 +482,29 @@ export default function Chart(props: ChartData) {
                 .xScale(scaleData.xScale)
                 .yScale(scaleData.yScale);
 
-            const dragRange = d3.drag().on('drag', function (event, d: any) {
-                const newValue = scaleData.yScale.invert(d3.pointer(event)[1] - 182);
-                setRanges((prevState) => {
-                    const newTargets = [...prevState];
-                    if (
-                        d.name === 'high' &&
-                        newValue >
-                            newTargets.filter((target: any) => target.name === 'low')[0].value
-                    ) {
-                        newTargets.filter((target: any) => target.name === d.name)[0].value =
-                            newValue;
-                    } else if (
-                        d.name === 'low' &&
-                        newValue <
-                            newTargets.filter((target: any) => target.name === 'high')[0].value
-                    ) {
-                        newTargets.filter((target: any) => target.name === d.name)[0].value =
-                            newValue;
-                    }
-                    render();
-                    return newTargets;
-                });
-            });
+            // const dragRange = d3.drag().on('drag', function (event, d: any) {
+            //     const newValue = scaleData.yScale.invert(d3.pointer(event)[1] - 182);
+            //     setRanges((prevState) => {
+            //         const newTargets = [...prevState];
+            //         if (
+            //             d.name === 'high' &&
+            //             newValue >
+            //                 newTargets.filter((target: any) => target.name === 'low')[0].value
+            //         ) {
+            //             newTargets.filter((target: any) => target.name === d.name)[0].value =
+            //                 newValue;
+            //         } else if (
+            //             d.name === 'low' &&
+            //             newValue <
+            //                 newTargets.filter((target: any) => target.name === 'high')[0].value
+            //         ) {
+            //             newTargets.filter((target: any) => target.name === d.name)[0].value =
+            //                 newValue;
+            //         }
+            //         render();
+            //         return newTargets;
+            //     });
+            // });
 
             const dragLimit = d3.drag().on('drag', function (event) {
                 const newValue = scaleData.yScale.invert(d3.pointer(event)[1] - 182);

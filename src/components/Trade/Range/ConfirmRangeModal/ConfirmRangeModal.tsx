@@ -1,20 +1,25 @@
+// START: Import React and Dongles
+import { useState, Dispatch, SetStateAction } from 'react';
+
+// START: Import JSX Functional Components
 import Divider from '../../../Global/Divider/Divider';
 import RangeStatus from '../../../Global/RangeStatus/RangeStatus';
-import styles from './ConfirmRangeModal.module.css';
-import SelectedRange from './SelectedRange/SelectedRange';
 import Button from '../../../Global/Button/Button';
-import { useState } from 'react';
 import WaitingConfirmation from '../../../Global/WaitingConfirmation/WaitingConfirmation';
 import TransactionSubmitted from '../../../Global/TransactionSubmitted/TransactionSubmitted';
-import { TokenPairIF } from '../../../../utils/interfaces/exports';
-import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import TransactionDenied from '../../../Global/TransactionDenied/TransactionDenied';
 
-interface ConfirmRangeModalProps {
+// START: Import Local Files
+import styles from './ConfirmRangeModal.module.css';
+import SelectedRange from './SelectedRange/SelectedRange';
+import { TokenPairIF } from '../../../../utils/interfaces/exports';
+import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
+
+interface ConfirmRangeModalPropsIF {
     sendTransaction: () => void;
     closeModal: () => void;
     newRangeTransactionHash: string;
-    setNewRangeTransactionHash: React.Dispatch<React.SetStateAction<string>>;
+    setNewRangeTransactionHash: Dispatch<SetStateAction<string>>;
     tokenPair: TokenPairIF;
     spotPriceDisplay: string;
     maxPriceDisplay: string;
@@ -31,12 +36,10 @@ interface ConfirmRangeModalProps {
     txErrorMessage: string;
 }
 
-export default function ConfirmRangeModal(props: ConfirmRangeModalProps) {
+export default function ConfirmRangeModal(props: ConfirmRangeModalPropsIF) {
     const {
         sendTransaction,
-        // closeModal,
         newRangeTransactionHash,
-        // setNewRangeTransactionHash,
         minPriceDisplay,
         maxPriceDisplay,
         spotPriceDisplay,
@@ -56,7 +59,6 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalProps) {
     const tokenA = tokenPair.dataTokenA;
     const tokenB = tokenPair.dataTokenB;
 
-    // console.log(tokenPair);
     const [confirmDetails, setConfirmDetails] = useState(true);
     const transactionApproved = newRangeTransactionHash !== '';
     const isTransactionDenied =
@@ -65,21 +67,8 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalProps) {
     const tokenAQty = (document.getElementById('A-range-quantity') as HTMLInputElement)?.value;
     const tokenBQty = (document.getElementById('B-range-quantity') as HTMLInputElement)?.value;
 
-    // const dataTokenA = {
-    //     icon: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png',
-    //     altText: 'Ethereum',
-    //     shortName: 'ETH',
-    //     qty: 0.0001,
-    // };
     const dataTokenA = tokenPair.dataTokenA;
     const dataTokenB = tokenPair.dataTokenB;
-    // const dataTokenB = {
-    //     icon: 'https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.png',
-    //     altText: 'dai',
-    //     shortName: 'DAI',
-    //     qty: 0.0898121212,
-    // };
-    // RANGE HEADER DISPLAY
 
     const rangeHeader = (
         <section className={styles.position_display}>
@@ -95,13 +84,9 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalProps) {
             <RangeStatus isInRange={isInRange} isAmbient={isAmbient} />
         </section>
     );
-    // FEE TIER DISPLAY
 
     const tokenACharacter = getUnicodeCharacter(dataTokenA.symbol);
     const tokenBCharacter = getUnicodeCharacter(dataTokenB.symbol);
-
-    // console.log({ tokenACharacter });
-    // console.log({ tokenBCharacter });
 
     const feeTierDisplay = (
         <section className={styles.fee_tier_display}>
@@ -123,7 +108,6 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalProps) {
                 <Divider />
                 <div className={styles.detail_line}>
                     <span>CURRENT FEE TIER</span>
-
                     <span>{0.05}%</span>
                 </div>
             </div>
@@ -143,8 +127,6 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalProps) {
             pinnedMinPriceDisplayTruncatedInQuote={pinnedMinPriceDisplayTruncatedInQuote}
             pinnedMaxPriceDisplayTruncatedInBase={pinnedMaxPriceDisplayTruncatedInBase}
             pinnedMaxPriceDisplayTruncatedInQuote={pinnedMaxPriceDisplayTruncatedInQuote}
-            // poolPriceTruncatedInBase={poolPriceTruncatedInBase}
-            // poolPriceTruncatedInQuote={poolPriceTruncatedInQuote}
         />
     ) : null;
 
@@ -155,18 +137,6 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalProps) {
             {selectedRangeOrNull}
         </>
     );
-
-    // const tokenAData = {
-    //     symbol: 'ETH',
-    //     logoAltText: 'eth',
-    //     logoLocal:
-    //         'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png',
-    // };
-    // const tokenBData = {
-    //     symbol: 'DAI',
-    //     logoAltText: 'dai',
-    //     logoLocal: 'https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.png',
-    // };
 
     // CONFIRMATION LOGIC STARTS HERE
     const confirmSendMessage = (
@@ -202,14 +172,6 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalProps) {
             }}
         />
     );
-
-    // function onConfirmRangeClose() {
-    //     setConfirmDetails(true);
-    //     setNewRangeTransactionHash('');
-    //     closeModal();
-    // }
-
-    // const closeButton = <Button title='Close' action={onConfirmRangeClose} />;
 
     const confirmationDisplay = isTransactionDenied
         ? transactionDenied

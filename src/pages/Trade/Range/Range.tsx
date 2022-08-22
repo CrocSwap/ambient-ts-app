@@ -1,28 +1,10 @@
 // START: Import React and Dongles
 import { useState, useEffect, useMemo, Dispatch, SetStateAction } from 'react';
 import { useMoralis } from 'react-moralis';
+import { ethers } from 'ethers';
 import { motion } from 'framer-motion';
-// import { JsonRpcProvider } from '@ethersproject/providers';
-import {
-    // sendAmbientMint,
-    // liquidityForBaseQty,
-    // liquidityForQuoteQty,
-    // fromDisplayQty,
-    // sendConcMint,
-    // parseMintEthersReceipt,
-    // EthersNativeReceipt,
-    // ambientPosSlot,
-    concDepositSkew,
-    MIN_TICK,
-    MAX_TICK,
-    CrocEnv,
-    // concPosSlot,
-    // approveToken,
-    // contractAddresses,
-    // POOL_PRIMARY,
-} from '@crocswap-libs/sdk';
-
-import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
+import { concDepositSkew, MIN_TICK, MAX_TICK, CrocEnv } from '@crocswap-libs/sdk';
+import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
 // START: Import JSX Elements
 import ContentContainer from '../../../components/Global/ContentContainer/ContentContainer';
@@ -38,32 +20,29 @@ import AdvancedPriceInfo from '../../../components/Trade/Range/AdvancedModeCompo
 import DividerDark from '../../../components/Global/DividerDark/DividerDark';
 import Modal from '../../../components/Global/Modal/Modal';
 import Button from '../../../components/Global/Button/Button';
+import RangeExtraInfo from '../../../components/Trade/Range/RangeExtraInfo/RangeExtraInfo';
+import ConfirmRangeModal from '../../../components/Trade/Range/ConfirmRangeModal/ConfirmRangeModal';
 
 // START: Import Local Files
 import styles from './Range.module.css';
+import authenticateUser from '../../../utils/functions/authenticateUser';
 import {
     getPinnedPriceValuesFromDisplayPrices,
     getPinnedPriceValuesFromTicks,
 } from './rangeFunctions';
+import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import { isTransactionReplacedError, TransactionError } from '../../../utils/TransactionError';
 import truncateDecimals from '../../../utils/data/truncateDecimals';
-import ConfirmRangeModal from '../../../components/Trade/Range/ConfirmRangeModal/ConfirmRangeModal';
 import { SlippagePairIF, TokenIF } from '../../../utils/interfaces/exports';
 import { useTradeData } from '../Trade';
 import { useModal } from '../../../components/Global/Modal/useModal';
-import RangeExtraInfo from '../../../components/Trade/Range/RangeExtraInfo/RangeExtraInfo';
 import {
     setAdvancedHighTick,
     setAdvancedLowTick,
     setSimpleRangeWidth,
 } from '../../../utils/state/tradeDataSlice';
 import { addReceipt } from '../../../utils/state/receiptDataSlice';
-import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
-import {
-    ethers,
-    //  BigNumber
-} from 'ethers';
 
 interface RangePropsIF {
     importedTokens: Array<TokenIF>;
@@ -145,15 +124,9 @@ export default function Range(props: RangePropsIF) {
 
     const isTokenABase = tokenPair?.dataTokenA.address === baseTokenAddress;
 
-    // const slippageTolerancePercentage = tradeData.slippageTolerance;
     const slippageTolerancePercentage = isPairStable
         ? mintSlippage.stable.value
         : mintSlippage.volatile.value;
-
-    // const poolWeiPriceLowLimit =
-    //     poolPriceNonDisplay * (1 - parseFloat(slippageTolerancePercentage) / 100);
-    // const poolWeiPriceHighLimit =
-    //     poolPriceNonDisplay * (1 + parseFloat(slippageTolerancePercentage) / 100);
 
     const poolPriceDisplayNum = parseFloat(poolPriceDisplay);
 
@@ -174,26 +147,6 @@ export default function Range(props: RangePropsIF) {
                   maximumFractionDigits: 2,
               });
 
-    // const poolPriceTruncatedInQuote =
-    //     poolPriceDisplayNum < 2
-    //         ? poolPriceDisplayNum > 0.1
-    //             ? truncateDecimals(poolPriceDisplayNum, 4)
-    //             : truncateDecimals(poolPriceDisplayNum, 6)
-    //         : truncateDecimals(poolPriceDisplayNum, 2);
-
-    // const invertedPoolPrice = 1 / poolPriceDisplayNum;
-
-    // const poolPriceTruncatedInBase =
-    //     invertedPoolPrice < 2
-    //         ? invertedPoolPrice > 0.1
-    //             ? truncateDecimals(invertedPoolPrice, 4)
-    //             : truncateDecimals(invertedPoolPrice, 6)
-    //         : truncateDecimals(invertedPoolPrice, 2);
-
-    // const poolPriceTruncated = denominationsInBase
-    //     ? poolPriceTruncatedInBase
-    //     : poolPriceTruncatedInQuote;
-
     const tokenA = tokenPair.dataTokenA;
     const tokenB = tokenPair.dataTokenB;
     const tokenADecimals = tokenA.decimals;
@@ -211,7 +164,6 @@ export default function Range(props: RangePropsIF) {
 
     const [rangeButtonErrorMessage, setRangeButtonErrorMessage] =
         useState<string>('Enter an Amount');
-    // console.log({ poolPriceNonDisplay });
     const currentPoolPriceTick =
         poolPriceNonDisplay === undefined ? 0 : Math.log(poolPriceNonDisplay) / Math.log(1.0001);
     const [rangeWidthPercentage, setRangeWidthPercentage] = useState<number>(
@@ -278,8 +230,6 @@ export default function Range(props: RangePropsIF) {
             setRangeLowTick(pinnedDisplayPrices.pinnedLowTick);
             setRangeHighTick(pinnedDisplayPrices.pinnedHighTick);
         }
-
-        // console.log({ rangeWidthPercentage });
     }, [rangeWidthPercentage, isAdvancedModeActive, denominationsInBase]);
 
     const [rangeLowTick, setRangeLowTick] = useState(tradeData.advancedLowTick);
@@ -290,7 +240,6 @@ export default function Range(props: RangePropsIF) {
 
     const isOutOfRange = rangeSpanAboveCurrentPrice < 0 || rangeSpanBelowCurrentPrice < 0;
     const isInvalidRange = rangeHighTick <= rangeLowTick;
-    // const inRangeSpan = isOutOfRange ? 0 : rangeSpanAboveCurrentPrice + rangeSpanBelowCurrentPrice;
 
     useEffect(() => {
         if (poolPriceNonDisplay === undefined) {
@@ -349,9 +298,6 @@ export default function Range(props: RangePropsIF) {
     const [rangeLowBoundNonDisplayPrice, setRangeLowBoundNonDisplayPrice] = useState(0);
     const [rangeHighBoundNonDisplayPrice, setRangeHighBoundNonDisplayPrice] = useState(0);
 
-    // const [pinnedMinPriceDisplay, setPinnedMinPriceDisplay] = useState('');
-    // const [pinnedMaxPriceDisplay, setPinnedMaxPriceDisplay] = useState('');
-
     const [pinnedMinPriceDisplayTruncated, setPinnedMinPriceDisplayTruncated] = useState('');
     const [pinnedMaxPriceDisplayTruncated, setPinnedMaxPriceDisplayTruncated] = useState('');
 
@@ -369,7 +315,6 @@ export default function Range(props: RangePropsIF) {
                 'min-price-input-quantity',
             ) as HTMLInputElement;
             if (rangeLowBoundDisplayField) {
-                // console.log(rangeLowBoundDisplayField.value);
                 setInitializationComplete(false);
             }
             const rangeHighBoundDisplayField = document.getElementById(
@@ -381,7 +326,6 @@ export default function Range(props: RangePropsIF) {
         }
     }, [isAdvancedModeActive, rangeLowTick, rangeHighTick]);
 
-    // initialize based on MinPriceDifferencePercentage & MaxPriceDifferencePercentage
     useEffect(() => {
         if (!initializationComplete && isAdvancedModeActive) {
             const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
@@ -394,9 +338,6 @@ export default function Range(props: RangePropsIF) {
             );
             setRangeLowBoundNonDisplayPrice(pinnedDisplayPrices.pinnedMinPriceNonDisplay);
             setRangeHighBoundNonDisplayPrice(pinnedDisplayPrices.pinnedMaxPriceNonDisplay);
-
-            // setPinnedMinPriceDisplay(pinnedDisplayPrices.pinnedMinPriceDisplay);
-            // setPinnedMaxPriceDisplay(pinnedDisplayPrices.pinnedMaxPriceDisplay);
 
             setPinnedMinPriceDisplayTruncated(pinnedDisplayPrices.pinnedMinPriceDisplayTruncated);
             setPinnedMaxPriceDisplayTruncated(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated);
@@ -457,7 +398,6 @@ export default function Range(props: RangePropsIF) {
     ]);
     useEffect(() => {
         if (rangeLowBoundFieldBlurred) {
-            // console.log('low bound blurred');
             const rangeLowBoundDisplayField = document.getElementById(
                 'min-price-input-quantity',
             ) as HTMLInputElement;
@@ -503,7 +443,6 @@ export default function Range(props: RangePropsIF) {
                 setPinnedMinPriceDisplayTruncated(
                     pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
                 );
-                // setPinnedMaxPriceDisplayTruncated(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated);
 
                 if (rangeLowBoundDisplayField) {
                     rangeLowBoundDisplayField.value =
@@ -561,7 +500,6 @@ export default function Range(props: RangePropsIF) {
                     ? setMaxPriceDifferencePercentage(-lowGeometricDifferencePercentage)
                     : setMaxPriceDifferencePercentage(highGeometricDifferencePercentage);
 
-                // setPinnedMinPriceDisplayTruncated(pinnedDisplayPrices.pinnedMinPriceDisplayTruncated);
                 setPinnedMaxPriceDisplayTruncated(
                     pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
                 );
@@ -613,9 +551,6 @@ export default function Range(props: RangePropsIF) {
     } else {
         minPriceDisplay = pinnedMinPriceDisplayTruncated;
     }
-
-    // const truncatedTokenABalance = truncateDecimals(parseFloat(tokenABalance), 4).toString();
-    // const truncatedTokenBBalance = truncateDecimals(parseFloat(tokenBBalance), 4).toString();
 
     const sendTransaction = async () => {
         if (!provider || !(provider as ethers.providers.JsonRpcProvider).getSigner()) {
@@ -845,8 +780,6 @@ export default function Range(props: RangePropsIF) {
         setIsWithdrawTokenBFromDexChecked: setIsWithdrawTokenBFromDexChecked,
         tokenABalance: tokenABalance,
         tokenBBalance: tokenBBalance,
-        // truncatedTokenABalance: truncatedTokenABalance,
-        // truncatedTokenBBalance: truncatedTokenBBalance,
         setTokenAInputQty: setTokenAInputQty,
         setTokenBInputQty: setTokenBInputQty,
         setRangeButtonErrorMessage: setRangeButtonErrorMessage,
@@ -947,39 +880,8 @@ export default function Range(props: RangePropsIF) {
         </Modal>
     ) : null;
 
-    const signingMessage = `Welcome to Ambient Finance!
-
-Click to sign in and accept the Ambient Terms of Service: https://ambient-finance.netlify.app/tos
-
-This request will not trigger a blockchain transaction or cost any gas fees.
-
-Your authentication status will reset on logout.`;
-
-    // login functionality
-    const clickLogin = () => {
-        console.log('user clicked Login');
-        if (!isAuthenticated || !isWeb3Enabled) {
-            authenticate({
-                provider: 'metamask',
-                chainId: parseInt(chainId),
-                signingMessage: signingMessage,
-                onSuccess: () => {
-                    enableWeb3();
-                },
-                onError: () => {
-                    authenticate({
-                        provider: 'metamask',
-                        chainId: parseInt(chainId),
-                        signingMessage: signingMessage,
-                        onSuccess: () => {
-                            enableWeb3;
-                            // alert('🎉');
-                        },
-                    });
-                },
-            });
-        }
-    };
+    const clickLogin = () =>
+        authenticateUser(isAuthenticated, isWeb3Enabled, authenticate, enableWeb3);
 
     const isTokenAAllowanceSufficient = parseFloat(tokenAAllowance) >= parseFloat(tokenAInputQty);
     const isTokenBAllowanceSufficient = parseFloat(tokenBAllowance) >= parseFloat(tokenBInputQty);

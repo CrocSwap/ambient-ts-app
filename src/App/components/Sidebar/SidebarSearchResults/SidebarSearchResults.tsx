@@ -1,11 +1,12 @@
+import { ReactNode } from 'react';
 import styles from './SidebarSearchResults.module.css';
-
 import TransactionsSkeletons from '../../../../components/Trade/TradeTabs/Transactions/TransactionsSkeletons/TransactionsSkeletons';
 
-interface SidebarSearchResultsProps {
-    searchInput: React.ReactNode;
+interface SidebarSearchResultsPropsIF {
+    searchInput: ReactNode;
 }
-export default function SidebarSearchResults(props: SidebarSearchResultsProps) {
+
+export default function SidebarSearchResults(props: SidebarSearchResultsPropsIF) {
     const { searchInput } = props;
 
     return (

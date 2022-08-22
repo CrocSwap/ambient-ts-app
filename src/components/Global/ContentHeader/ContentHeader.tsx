@@ -1,9 +1,11 @@
+import { ReactNode } from 'react';
 import styles from './ContentHeader.module.css';
 
-interface ContentProps {
-    children: React.ReactNode;
+interface ContentPropsIF {
+    children: ReactNode;
 }
 
-export default function ContentHeader(props: ContentProps) {
-    return <div className={styles.content_header}>{props.children}</div>;
+export default function ContentHeader(props: ContentPropsIF) {
+    const { children } = props;
+    return <div className={styles.content_header}>{children}</div>;
 }

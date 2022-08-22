@@ -1,19 +1,9 @@
-// import { ChangeEvent } from 'react';
-
-import styles from './RepositionRangeWidth.module.css';
-import { MdAdd } from 'react-icons/md';
-import { FiMinus } from 'react-icons/fi';
 import { AiOutlineInfoCircle } from 'react-icons/ai';
-// import { updateRangeWithButton, handleRangeSlider } from './rangeWidthFunctions';
-
-// interface IRepositionRangeWidthProps {
-//     rangeWidthPercentage: number;
-//     setRangeWidthPercentage: React.Dispatch<React.SetStateAction<number>>;
-// }
+import { FiMinus } from 'react-icons/fi';
+import { MdAdd } from 'react-icons/md';
+import styles from './RepositionRangeWidth.module.css';
 
 export default function RepositionRangeWidth() {
-    // const { rangeWidthPercentage, setRangeWidthPercentage } = props;
-
     const rangeWidthPercentage = 100;
 
     // todo
@@ -21,58 +11,25 @@ export default function RepositionRangeWidth() {
     // Also, don't forget the input ids will be different. -JR
 
     const PercentageOptionContent = (
-        <>
-            <div className={styles.percentage_options}>
-                <div className={styles.add_minus_icons}>
-                    <MdAdd size={22} />
-                    <FiMinus size={22} />
-                </div>
-                <button
-                    className={styles.percentage_option_buttons}
-                    // onClick={
-                    //     () => {
-                    //     updateRangeWithButton((1 / 10) * 100, setRangeWidthPercentage);
-                    //     }
-
-                    // }
-                >
-                    10%
-                </button>
-                <button
-                    className={styles.percentage_option_buttons}
-                    // onClick={
-                    //     () => {
-                    //     updateRangeWithButton((1 / 4) * 100, setRangeWidthPercentage);
-                    //     }
-                    // }
-                >
-                    25%
-                </button>
-                <button
-                    className={styles.percentage_option_buttons}
-                    // onClick={
-                    //     () => {
-                    //     updateRangeWithButton((1 / 2) * 100, setRangeWidthPercentage);
-                    //     }
-
-                    // }
-                >
-                    50%
-                </button>
-
-                <button
-                    className={styles.percentage_option_buttons}
-                    // onClick={
-                    //     () => {
-                    //     updateRangeWithButton(100, setRangeWidthPercentage);
-                    //     }
-                    // }
-                >
-                    Ambient
-                </button>
-                <AiOutlineInfoCircle color='#ffffff' />
+        <div className={styles.percentage_options}>
+            <div className={styles.add_minus_icons}>
+                <MdAdd size={22} />
+                <FiMinus size={22} />
             </div>
-        </>
+            <button className={styles.percentage_option_buttons}>
+                10%
+            </button>
+            <button className={styles.percentage_option_buttons}>
+                25%
+            </button>
+            <button className={styles.percentage_option_buttons}>
+                50%
+            </button>
+            <button className={styles.percentage_option_buttons}>
+                Ambient
+            </button>
+            <AiOutlineInfoCircle color='#ffffff' />
+        </div>
     );
 
     return (
@@ -93,7 +50,6 @@ export default function RepositionRangeWidth() {
                         defaultValue={rangeWidthPercentage}
                         type='range'
                         className={styles.percentage_input}
-                        // onChange={(event) => handleRangeSlider(event, setRangeWidthPercentage)}
                     />
                 </div>
 

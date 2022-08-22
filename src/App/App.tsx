@@ -14,12 +14,8 @@ import {
     addCandles,
 } from '../utils/state/graphDataSlice';
 import { ethers } from 'ethers';
-// import { request, gql } from 'graphql-request';
 import { useMoralis } from 'react-moralis';
-
 import useWebSocket from 'react-use-websocket';
-// import { ReadyState } from 'react-use-websocket';
-// import Moralis from 'moralis';
 import {
     sortBaseQuoteTokens,
     toDisplayPrice,
@@ -45,6 +41,8 @@ import Edit from '../pages/Trade/Edit/Edit';
 import TestPage from '../pages/TestPage/TestPage';
 import NotFound from '../pages/NotFound/NotFound';
 import Trade from '../pages/Trade/Trade';
+import Reposition from '../pages/Trade/Reposition/Reposition';
+import SidebarFooter from '../components/Global/SIdebarFooter/SidebarFooter';
 
 /** * **** Import Local Files *******/
 import './App.css';
@@ -62,25 +60,22 @@ import {
     setDenomInBase,
 } from '../utils/state/tradeDataSlice';
 import PoolPage from '../pages/PoolPage/PoolPage';
-// import PositionDetails from '../pages/Trade/Range/PositionDetails';
 import { memoizeQuerySpotPrice, querySpotPrice } from './functions/querySpotPrice';
 import { memoizeFetchAddress } from './functions/fetchAddress';
 import { memoizeTokenBalance } from './functions/fetchTokenBalances';
-// import truncateDecimals from '../utils/data/truncateDecimals';
 import { getNFTs } from './functions/getNFTs';
 import { memoizeTokenDecimals } from './functions/queryTokenDecimals';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { useSlippage } from './useSlippage';
+import { useFavePools } from './hooks/useFavePools';
+import { useTermsOfService } from './hooks/useTermsOfService';
 import { useAppChain } from './hooks/useAppChain';
 import { addNativeBalance, resetTokenData, setTokens } from '../utils/state/tokenDataSlice';
 import { checkIsStable } from '../utils/data/stablePairs';
 import { useTokenMap } from '../utils/hooks/useTokenMap';
-import Reposition from '../pages/Trade/Reposition/Reposition';
-import SidebarFooter from '../components/Global/SIdebarFooter/SidebarFooter';
 import { validateChain } from './validateChain';
 import { testTokenMap } from '../utils/data/testTokenMap';
 import { ZERO_ADDRESS } from '../constants';
-// import SidebarFooter from '../components/Global/SIdebarFooter/SidebarFooter';
 
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 const cachedFetchAddress = memoizeFetchAddress();
@@ -88,10 +83,7 @@ const cachedFetchTokenBalances = memoizeTokenBalance();
 const cachedGetTokenDecimals = memoizeTokenDecimals();
 
 const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
-// const httpGraphCacheServerDomain = '';
 const wssGraphCacheServerDomain = 'wss://809821320828123.de:5000';
-// const wssGraphCacheServerDomain = '';
-
 const shouldSubscriptionsReconnect = false;
 
 /** ***** React Function *******/
@@ -110,26 +102,15 @@ export default function App() {
     // `'0x5'` is the chain the app should be on by default
     const [chainData, isChainSupported, switchChain, switchNetworkInMoralis] = useAppChain('0x5');
 
-    const [switchTabToTransactions, setSwitchTabToTransactions] = useState<boolean>(false);
-
-    const [isShowAllEnabled, setIsShowAllEnabled] = useState<boolean>(true);
-    const [currentTxActiveInTransactions, setCurrentTxActiveInTransactions] = useState<string>('');
-
+    const [isShowAllEnabled, setIsShowAllEnabled] = useState(true);
+    const [currentTxActiveInTransactions, setCurrentTxActiveInTransactions] = useState('');
+    const [currentPositionActive, setCurrentPositionActive] = useState('');
     const [expandTradeTable, setExpandTradeTable] = useState(false);
-
     const [provider, setProvider] = useState<ethers.providers.Provider>();
-
     const [userIsOnline, setUserIsOnline] = useState(navigator.onLine);
 
-    window.ononline = () => {
-        setUserIsOnline(true);
-        // console.log('Back Online');
-    };
-
-    window.onoffline = () => {
-        setUserIsOnline(false);
-        // console.log('Connection Lost');
-    };
+    window.ononline = () => setUserIsOnline(true);
+    window.onoffline = () => setUserIsOnline(false);
 
     function exposeProviderUrl(provider?: ethers.providers.Provider): string {
         if (provider && 'connection' in provider) {
@@ -238,15 +219,14 @@ export default function App() {
     // holds stable and volatile values for swap and mint transactions
     const [swapSlippage, mintSlippage] = useSlippage();
 
-    //
+    const [favePools, addPoolToFaves, removePoolFromFaves] = useFavePools();
+
+    false && useTermsOfService();
+
     const isPairStable = useMemo(
         () => checkIsStable(tradeData.tokenA.address, tradeData.tokenA.address, chainData.chainId),
         [tradeData.tokenA.address, tradeData.tokenA.address, chainData.chainId],
     );
-
-    // useEffect(() => {
-    //     console.log({ isPairStable });
-    // }, [isPairStable]);
 
     // update local state with searchable tokens once after initial load of app
     useEffect(() => {
@@ -266,8 +246,7 @@ export default function App() {
                   // remove all lists with URIs not included in the URIs array passed as argument
                   .filter((tokenList: TokenListIF) => tokenListURIs.includes(tokenList.uri ?? ''))
                   // extract array of tokens from active lists and flatten into single array
-                  .map((tokenList: TokenListIF) => tokenList.tokens)
-                  .flat()
+                  .flatMap((tokenList: TokenListIF) => tokenList.tokens)
             : defaultTokens;
         // return array of all tokens from lists as specified by token list URI
         return tokensFromLists;
@@ -383,6 +362,9 @@ export default function App() {
     const [baseTokenAddress, setBaseTokenAddress] = useState<string>('');
     const [quoteTokenAddress, setQuoteTokenAddress] = useState<string>('');
 
+    const [mainnetBaseTokenAddress, setMainnetBaseTokenAddress] = useState<string>('');
+    const [mainnetQuoteTokenAddress, setMainnetQuoteTokenAddress] = useState<string>('');
+
     const [baseTokenDecimals, setBaseTokenDecimals] = useState<number>(0);
     const [quoteTokenDecimals, setQuoteTokenDecimals] = useState<number>(0);
 
@@ -406,11 +388,34 @@ export default function App() {
         dispatch(setAdvancedLowTick(0));
         dispatch(setAdvancedHighTick(0));
 
-        if (tokenPair.dataTokenA.address && tokenPair.dataTokenB.address) {
-            const sortedTokens = sortBaseQuoteTokens(
-                tokenPair.dataTokenA.address,
-                tokenPair.dataTokenB.address,
-            );
+        const tokenAAddress = tokenPair?.dataTokenA?.address;
+        const tokenBAddress = tokenPair?.dataTokenB?.address;
+
+        if (tokenAAddress && tokenBAddress) {
+            const sortedTokens = sortBaseQuoteTokens(tokenAAddress, tokenBAddress);
+            const tokenAMainnetEquivalent =
+                tokenAAddress === ZERO_ADDRESS
+                    ? tokenAAddress
+                    : testTokenMap
+                          .get(tokenAAddress.toLowerCase() + '_' + chainData.chainId)
+                          ?.split('_')[0];
+            const tokenBMainnetEquivalent =
+                tokenBAddress === ZERO_ADDRESS
+                    ? tokenBAddress
+                    : testTokenMap
+                          .get(tokenBAddress.toLowerCase() + '_' + chainData.chainId)
+                          ?.split('_')[0];
+
+            if (tokenAMainnetEquivalent && tokenBMainnetEquivalent) {
+                const sortedMainnetTokens = sortBaseQuoteTokens(
+                    tokenAMainnetEquivalent,
+                    tokenBMainnetEquivalent,
+                );
+
+                setMainnetBaseTokenAddress(sortedMainnetTokens[0]);
+                setMainnetQuoteTokenAddress(sortedMainnetTokens[1]);
+            }
+
             setBaseTokenAddress(sortedTokens[0]);
             setQuoteTokenAddress(sortedTokens[1]);
             if (tokenPair.dataTokenA.address === sortedTokens[0]) {
@@ -434,6 +439,8 @@ export default function App() {
                                 quote: sortedTokens[1].toLowerCase(),
                                 poolIdx: chainData.poolIndex.toString(),
                                 chainId: chainData.chainId,
+                                // eslint-disable-next-line camelcase
+                                token_quantities: 'true',
                             }),
                     )
                         .then((response) => response.json())
@@ -512,81 +519,87 @@ export default function App() {
     const activePeriod = tradeData.activeChartPeriod;
 
     useEffect(() => {
-        if (baseTokenAddress && quoteTokenAddress && activePeriod) {
+        if (
+            baseTokenAddress &&
+            quoteTokenAddress &&
+            mainnetBaseTokenAddress &&
+            mainnetQuoteTokenAddress &&
+            activePeriod
+        ) {
             try {
                 if (httpGraphCacheServerDomain) {
                     const candleSeriesCacheEndpoint =
                         httpGraphCacheServerDomain + '/candle_series?';
 
-                    const mainnetBaseAddress =
-                        baseTokenAddress === ZERO_ADDRESS
-                            ? baseTokenAddress
-                            : testTokenMap
-                                  .get(baseTokenAddress.toLowerCase() + '_' + chainData.chainId)
-                                  ?.split('_')[0];
-                    const mainnetQuoteAddress =
-                        quoteTokenAddress === ZERO_ADDRESS
-                            ? quoteTokenAddress
-                            : testTokenMap
-                                  .get(quoteTokenAddress.toLowerCase() + '_' + chainData.chainId)
-                                  ?.split('_')[0];
+                    // const mainnetBaseAddress =
+                    //     baseTokenAddress === ZERO_ADDRESS
+                    //         ? baseTokenAddress
+                    //         : testTokenMap
+                    //               .get(baseTokenAddress.toLowerCase() + '_' + chainData.chainId)
+                    //               ?.split('_')[0];
+                    // const mainnetQuoteAddress =
+                    //     quoteTokenAddress === ZERO_ADDRESS
+                    //         ? quoteTokenAddress
+                    //         : testTokenMap
+                    //               .get(quoteTokenAddress.toLowerCase() + '_' + chainData.chainId)
+                    //               ?.split('_')[0];
 
-                    if (mainnetBaseAddress && mainnetQuoteAddress) {
-                        fetch(
-                            candleSeriesCacheEndpoint +
-                                new URLSearchParams({
-                                    base: mainnetBaseAddress,
-                                    quote: mainnetQuoteAddress,
-                                    poolIdx: chainData.poolIndex.toString(),
-                                    period: activePeriod.toString(),
-                                    // period: '86400', // 1 day
-                                    // period: '300', // 5 minute
-                                    // time: '1657833300', // optional
-                                    n: '200', // positive integer
-                                    page: '0', // nonnegative integer
-                                    chainId: '0x1',
-                                    dex: 'all',
-                                }),
-                        )
-                            .then((response) => response?.json())
-                            .then((json) => {
-                                const candles = json?.data;
+                    fetch(
+                        candleSeriesCacheEndpoint +
+                            new URLSearchParams({
+                                base: mainnetBaseTokenAddress,
+                                quote: mainnetQuoteTokenAddress,
+                                poolIdx: chainData.poolIndex.toString(),
+                                period: activePeriod.toString(),
+                                // period: '86400', // 1 day
+                                // period: '300', // 5 minute
+                                // time: '1657833300', // optional
+                                n: '200', // positive integer
+                                page: '0', // nonnegative integer
+                                chainId: '0x1',
+                                dex: 'all',
+                            }),
+                    )
+                        .then((response) => response?.json())
+                        .then((json) => {
+                            const candles = json?.data;
 
-                                if (candles) {
-                                    Promise.all(candles.map(getCandleData)).then(
-                                        (updatedCandles) => {
-                                            if (
-                                                JSON.stringify(
-                                                    graphData.candlesForAllPools.pools,
-                                                ) !== JSON.stringify(updatedCandles)
-                                            ) {
-                                                dispatch(
-                                                    setCandles({
-                                                        pool: {
-                                                            baseAddress:
-                                                                baseTokenAddress.toLowerCase(),
-                                                            quoteAddress:
-                                                                quoteTokenAddress.toLowerCase(),
-                                                            poolIdx: chainData.poolIndex,
-                                                            network: chainData.chainId,
-                                                        },
-                                                        duration: activePeriod,
-                                                        candles: updatedCandles,
-                                                    }),
-                                                );
-                                            }
-                                        },
-                                    );
-                                }
-                            })
-                            .catch(console.log);
-                    }
+                            if (candles) {
+                                Promise.all(candles.map(getCandleData)).then((updatedCandles) => {
+                                    if (
+                                        JSON.stringify(graphData.candlesForAllPools.pools) !==
+                                        JSON.stringify(updatedCandles)
+                                    ) {
+                                        dispatch(
+                                            setCandles({
+                                                pool: {
+                                                    baseAddress: baseTokenAddress.toLowerCase(),
+                                                    quoteAddress: quoteTokenAddress.toLowerCase(),
+                                                    poolIdx: chainData.poolIndex,
+                                                    network: chainData.chainId,
+                                                },
+                                                duration: activePeriod,
+                                                candles: updatedCandles,
+                                            }),
+                                        );
+                                    }
+                                });
+                            }
+                        })
+                        .catch(console.log);
                 }
             } catch (error) {
                 console.log({ error });
             }
         }
-    }, [baseTokenAddress, quoteTokenAddress, activePeriod, chainData.chainId]);
+    }, [
+        baseTokenAddress,
+        quoteTokenAddress,
+        mainnetBaseTokenAddress,
+        mainnetQuoteTokenAddress,
+        activePeriod,
+        chainData.chainId,
+    ]);
 
     const allPositionsCacheSubscriptionEndpoint = useMemo(
         () =>
@@ -644,37 +657,25 @@ export default function App() {
             wssGraphCacheServerDomain +
             '/subscribe_candles?' +
             new URLSearchParams({
-                base: baseTokenAddress.toLowerCase(),
-                // baseTokenAddress.toLowerCase() || '0x0000000000000000000000000000000000000000',
-                quote: quoteTokenAddress.toLowerCase(),
-                // quoteTokenAddress.toLowerCase() || '0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa',
+                base: mainnetBaseTokenAddress.toLowerCase(),
+                quote: mainnetQuoteTokenAddress.toLowerCase(),
                 poolIdx: chainData.poolIndex.toString(),
-                // 	positive integer	The duration of the candle, in seconds. Must represent one of the following time intervals: 5 minutes, 15 minutes, 1 hour, 4 hours, 1 day, 7 days.
                 period: activePeriod.toString(),
-                // period: '60',
                 chainId: '0x1',
-                // chainId: chainData.chainId,
                 dex: 'all',
             }),
-        [baseTokenAddress, quoteTokenAddress, chainData.poolIndex, activePeriod],
+        [mainnetBaseTokenAddress, mainnetQuoteTokenAddress, chainData.poolIndex, activePeriod],
     );
 
-    const {
-        //  sendMessage,
-        lastMessage: candlesMessage,
-        //  readyState
-    } = useWebSocket(
+    const { lastMessage: candlesMessage } = useWebSocket(
         candleSubscriptionEndpoint,
         {
-            // share:  true,
             onOpen: () => console.log({ candleSubscriptionEndpoint }),
             onClose: (event) => console.log({ event }),
-            // onClose: () => console.log('candles websocket connection closed'),
-            // Will attempt to reconnect on all close events, such as server shutting down
             shouldReconnect: () => shouldSubscriptionsReconnect,
         },
         // only connect if base/quote token addresses are available
-        baseTokenAddress !== '' && quoteTokenAddress !== '',
+        mainnetBaseTokenAddress !== '' && mainnetQuoteTokenAddress !== '',
     );
 
     useEffect(() => {
@@ -708,9 +709,7 @@ export default function App() {
             '/subscribe_pool_swaps?' +
             new URLSearchParams({
                 base: baseTokenAddress.toLowerCase(),
-                // baseTokenAddress.toLowerCase() || '0x0000000000000000000000000000000000000000',
                 quote: quoteTokenAddress.toLowerCase(),
-                // quoteTokenAddress.toLowerCase() || '0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa',
                 poolIdx: chainData.poolIndex.toString(),
                 chainId: chainData.chainId,
             }),
@@ -759,6 +758,8 @@ export default function App() {
             new URLSearchParams({
                 user: account || '',
                 chainId: chainData.chainId,
+                // eslint-disable-next-line camelcase
+                token_quantities: 'true',
                 // user: account || '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc',
             }),
         [account, chainData.chainId],
@@ -1175,14 +1176,16 @@ export default function App() {
 
     useEffect(() => {
         if (isAuthenticated && account) {
-            const allUserPositionsCacheEndpoint = httpGraphCacheServerDomain + '/user_positions?';
+            const userPositionsCacheEndpoint = httpGraphCacheServerDomain + '/user_positions?';
 
             try {
                 fetch(
-                    allUserPositionsCacheEndpoint +
+                    userPositionsCacheEndpoint +
                         new URLSearchParams({
                             user: account,
                             chainId: chainData.chainId,
+                            // eslint-disable-next-line camelcase
+                            token_quantities: 'true',
                         }),
                 )
                     .then((response) => response?.json())
@@ -1296,13 +1299,6 @@ export default function App() {
     useEffect(() => {
         (async () => {
             if (provider && account && isAuthenticated && isWeb3Enabled) {
-                // console.log('Provider Native Balance');
-                // console.dir(provider);
-                // console.log(
-                //     provider
-                //         .getBalance('0x01e650ABfc761C6A0Fc60f62A4E4b3832bb1178b')
-                //         .then(console.log),
-                // );
                 new CrocEnv(provider)
                     .tokenEth()
                     .balance(account)
@@ -1485,18 +1481,15 @@ export default function App() {
         setSidebarManuallySet(true);
     }
 
-    function handleSetTradeTabToTransaction() {
-        setSwitchTabToTransactions(!switchTabToTransactions);
-    }
+    const [selectedOutsideTab, setSelectedOutsideTab] = useState(0);
+    const [outsideControl, setOutsideControl] = useState(false);
+
     // props for <Sidebar/> React element
     const sidebarProps = {
         isDenomBase: tradeData.isDenomBase,
         showSidebar: showSidebar,
         toggleSidebar: toggleSidebar,
         chainId: chainData.chainId,
-        switchTabToTransactions: switchTabToTransactions,
-        handleSetTradeTabToTransaction: handleSetTradeTabToTransaction,
-        setSwitchTabToTransactions: setSwitchTabToTransactions,
 
         currentTxActiveInTransactions: currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions: setCurrentTxActiveInTransactions,
@@ -1506,8 +1499,20 @@ export default function App() {
         setExpandTradeTable: setExpandTradeTable,
         tokenMap: tokenMap,
         lastBlockNumber: lastBlockNumber,
+        favePools: favePools,
 
-        // setShowSidebar : setShowSidebar
+        selectedOutsideTab: selectedOutsideTab,
+        setSelectedOutsideTab: setSelectedOutsideTab,
+        outsideControl: outsideControl,
+        setOutsideControl: setOutsideControl,
+
+        currentPositionActive: currentPositionActive,
+        setCurrentPositionActive: setCurrentPositionActive,
+    };
+
+    const analyticsProps = {
+        setSelectedOutsideTab: setSelectedOutsideTab,
+        setOutsideControl: setOutsideControl,
     };
 
     function updateDenomIsInBase() {
@@ -1604,8 +1609,6 @@ export default function App() {
                                     isTokenABase={isTokenABase}
                                     poolPriceDisplay={poolPriceDisplay}
                                     chainId={chainData.chainId}
-                                    switchTabToTransactions={switchTabToTransactions}
-                                    setSwitchTabToTransactions={setSwitchTabToTransactions}
                                     currentTxActiveInTransactions={currentTxActiveInTransactions}
                                     setCurrentTxActiveInTransactions={
                                         setCurrentTxActiveInTransactions
@@ -1617,6 +1620,15 @@ export default function App() {
                                     tokenMap={tokenMap}
                                     setLimitRate={setLimitRate}
                                     limitRate={limitRate}
+                                    favePools={favePools}
+                                    addPoolToFaves={addPoolToFaves}
+                                    removePoolFromFaves={removePoolFromFaves}
+                                    selectedOutsideTab={selectedOutsideTab}
+                                    setSelectedOutsideTab={setSelectedOutsideTab}
+                                    outsideControl={outsideControl}
+                                    setOutsideControl={setOutsideControl}
+                                    currentPositionActive={currentPositionActive}
+                                    setCurrentPositionActive={setCurrentPositionActive}
                                 />
                             }
                         >
@@ -1628,7 +1640,7 @@ export default function App() {
                             <Route path='reposition' element={<Reposition />} />
                             <Route path='edit/' element={<Navigate to='/trade/market' replace />} />
                         </Route>
-                        <Route path='analytics' element={<Analytics />} />
+                        <Route path='analytics' element={<Analytics {...analyticsProps} />} />
                         <Route path='tokens/:address' element={<TokenPage />} />
                         <Route path='pools/:address' element={<PoolPage />} />
 
@@ -1643,8 +1655,10 @@ export default function App() {
                                     userImageData={imageData}
                                     chainId={chainData.chainId}
                                     tokenMap={tokenMap}
-                                    switchTabToTransactions={switchTabToTransactions}
-                                    setSwitchTabToTransactions={setSwitchTabToTransactions}
+                                    selectedOutsideTab={selectedOutsideTab}
+                                    setSelectedOutsideTab={setSelectedOutsideTab}
+                                    outsideControl={outsideControl}
+                                    setOutsideControl={setOutsideControl}
                                 />
                             }
                         />
@@ -1657,8 +1671,10 @@ export default function App() {
                                     chainId={chainData.chainId}
                                     userImageData={imageData}
                                     tokenMap={tokenMap}
-                                    switchTabToTransactions={switchTabToTransactions}
-                                    setSwitchTabToTransactions={setSwitchTabToTransactions}
+                                    selectedOutsideTab={selectedOutsideTab}
+                                    setSelectedOutsideTab={setSelectedOutsideTab}
+                                    outsideControl={outsideControl}
+                                    setOutsideControl={setOutsideControl}
                                 />
                             }
                         />
