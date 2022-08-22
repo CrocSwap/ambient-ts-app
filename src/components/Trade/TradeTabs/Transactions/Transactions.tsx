@@ -102,28 +102,28 @@ export default function Transactions(props: TransactionsProps) {
     const tokenAAddress = tradeData.tokenA.address;
     const tokenBAddress = tradeData.tokenB.address;
 
+    const noData = <div className={styles.no_data}>No Data to Display</div>;
+    const transactionDataMap = transactionData?.map((swap, idx) => (
+        <TransactionCard
+            key={idx}
+            swap={swap}
+            tokenMap={tokenMap}
+            chainId={chainId}
+            tokenAAddress={tokenAAddress}
+            tokenBAddress={tokenBAddress}
+            isDenomBase={isDenomBase}
+            currentTxActiveInTransactions={currentTxActiveInTransactions}
+            setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
+        />
+    ));
     const TransactionsDisplay = (
         <>
             {isCandleSelected && <SelectedCandleData filter={filter} />}
-
-            {transactionData?.map((swap, idx) => (
-                <TransactionCard
-                    key={idx}
-                    swap={swap}
-                    tokenMap={tokenMap}
-                    chainId={chainId}
-                    tokenAAddress={tokenAAddress}
-                    tokenBAddress={tokenBAddress}
-                    isDenomBase={isDenomBase}
-                    currentTxActiveInTransactions={currentTxActiveInTransactions}
-                    setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
-                />
-            ))}
+            {dataToDisplay ? transactionDataMap : noData}
         </>
     );
 
-    const noData = <div className={styles.no_data}>No Data to Display</div>;
-    const transactionDataOrNull = dataToDisplay ? TransactionsDisplay : noData;
+    // const transactionDataOrNull = dataToDisplay ? TransactionsDisplay : noData;
 
     return (
         <div className={styles.container}>
@@ -132,7 +132,7 @@ export default function Transactions(props: TransactionsProps) {
                 className={styles.item_container}
                 style={{ height: expandTradeTable ? '100%' : '170px' }}
             >
-                {isDataLoading ? <TransactionsSkeletons /> : transactionDataOrNull}
+                {isDataLoading ? <TransactionsSkeletons /> : TransactionsDisplay}
             </div>
         </div>
     );
