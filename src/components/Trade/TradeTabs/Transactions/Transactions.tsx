@@ -87,6 +87,11 @@ export default function Transactions(props: TransactionsProps) {
     }, [isShowAllEnabled, isCandleSelected, filter]);
 
     useEffect(() => {
+        const filteredMainnetSwaps = filter?.allSwaps;
+        console.log({ filteredMainnetSwaps });
+    }, [filter]);
+
+    useEffect(() => {
         console.log({ dataReceived });
         console.log({ isDataLoading });
         dataReceived ? handleDataReceived() : setIsDataLoading(true);
