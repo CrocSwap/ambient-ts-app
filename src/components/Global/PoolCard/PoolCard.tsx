@@ -135,8 +135,10 @@ export default function PoolCard(props: PoolCardProps) {
                         poolIndex,
                         true, // denomInBase
                     );
-
-                    if (priceChangeResult) {
+                    console.log({ priceChangeResult });
+                    if (priceChangeResult > -0.01 && priceChangeResult < 0.01) {
+                        setPoolPriceChangePercent('No Change');
+                    } else if (priceChangeResult) {
                         priceChangeResult > 0
                             ? setIsPoolPriceChangePositive(true)
                             : setIsPoolPriceChangePositive(false);
