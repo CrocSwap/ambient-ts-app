@@ -61,12 +61,12 @@ export interface CandleData {
     firstBlock: number;
     lastBlock: number;
     minPriceDecimalCorrected: number;
-    invMinPriceDecimalCorrected: number;
     maxPriceDecimalCorrected: number;
-    invMaxPriceDecimalCorrected: number;
     priceOpenDecimalCorrected: number;
-    invPriceOpenDecimalCorrected: number;
     priceCloseDecimalCorrected: number;
+    invMinPriceDecimalCorrected: number;
+    invMaxPriceDecimalCorrected: number;
+    invPriceOpenDecimalCorrected: number;
     invPriceCloseDecimalCorrected: number;
     numSwaps: number;
     netBaseFlow: string;
