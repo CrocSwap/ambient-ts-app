@@ -36,6 +36,8 @@ export default function RangeDetails(props: IRangeDetailsProps) {
     const {
         baseTokenAddress,
         quoteTokenAddress,
+        baseTokenLogoURI,
+        quoteTokenLogoURI,
         lowRangeDisplay,
         highRangeDisplay,
         chainId,
@@ -201,6 +203,10 @@ export default function RangeDetails(props: IRangeDetailsProps) {
                     quoteLiquidityDisplay={quoteLiquidityDisplay || '0.00'}
                     baseFeesDisplay={baseFeesDisplay || '0.00'}
                     quoteFeesDisplay={quoteFeesDisplay || '0.00'}
+                    baseTokenLogoURI={baseTokenLogoURI}
+                    quoteTokenLogoURI={quoteTokenLogoURI}
+                    baseTokenSymbol={props.baseTokenSymbol}
+                    quoteTokenSymbol={props.quoteTokenSymbol}
                 />
             </div>
             <div onClick={downloadAsImage} className={styles.share_container}>

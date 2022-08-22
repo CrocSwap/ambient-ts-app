@@ -10,6 +10,10 @@ interface IPriceInfoProps {
     quoteLiquidityDisplay: string | undefined;
     baseFeesDisplay: string | undefined;
     quoteFeesDisplay: string | undefined;
+    baseTokenLogoURI: string;
+    quoteTokenLogoURI: string;
+    baseTokenSymbol: string;
+    quoteTokenSymbol: string;
 }
 
 export default function PriceInfo(props: IPriceInfoProps) {
@@ -20,45 +24,43 @@ export default function PriceInfo(props: IPriceInfoProps) {
         quoteLiquidityDisplay,
         baseFeesDisplay,
         quoteFeesDisplay,
+        baseTokenLogoURI,
+        quoteTokenLogoURI,
+        baseTokenSymbol,
+        quoteTokenSymbol,
     } = props;
     const removePositionInfo = (
         <div className={styles.remove_position_info}>
             <Row>
-                <span>Pooled ETH</span>
+                <span>Pooled {baseTokenSymbol}</span>
                 <div className={styles.token_price}>
                     {baseLiquidityDisplay}
-                    <img
-                        src='https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png'
-                        alt=''
-                    />
+                    <img src={baseTokenLogoURI} alt='' />
                 </div>
             </Row>
             {/*  */}
             <Row>
-                <span>Pooled USDC</span>
+                <span>Pooled {quoteTokenSymbol}</span>
                 <div className={styles.token_price}>
                     {quoteLiquidityDisplay}
-                    <img src='https://cryptologos.cc/logos/usd-coin-usdc-logo.png' alt='' />
+                    <img src={quoteTokenLogoURI} alt='' />
                 </div>
             </Row>
             {/*  */}
             <DividerDark />
             <Row>
-                <span>ETH Fees Earned</span>
+                <span>{baseTokenSymbol} Fees Earned</span>
                 <div className={styles.token_price}>
                     {baseFeesDisplay}
-                    <img
-                        src='https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png'
-                        alt=''
-                    />
+                    <img src={baseTokenLogoURI} alt='' />
                 </div>
             </Row>
             {/*  */}
             <Row>
-                <span>USDC Fees Earned</span>
+                <span>{quoteTokenSymbol} Fees Earned</span>
                 <div className={styles.token_price}>
                     {quoteFeesDisplay}
-                    <img src='https://cryptologos.cc/logos/usd-coin-usdc-logo.png' alt='' />
+                    <img src={quoteTokenLogoURI} alt='' />
                 </div>
             </Row>
         </div>
