@@ -4,22 +4,28 @@ import { BsMedium } from 'react-icons/bs';
 import { AiFillTwitterCircle } from 'react-icons/ai';
 import ChatPanel from '../../../components/Chat/ChatPanel';
 import { useState } from 'react';
+import { PoolIF } from '../../../utils/interfaces/PoolIF';
 // import { useLocation} from 'react-router-dom'
 
 interface IFooterProps {
     lastBlockNumber: number;
     userIsOnline: boolean;
+    favePools: PoolIF[];
 }
 
 const pageBlockSign = <div className={styles.page_block_sign}></div>;
 
 export default function PageFooter(props: IFooterProps) {
     const [chatStatus, setChatStatus] = useState(false);
-    const { userIsOnline, lastBlockNumber } = props;
+    const { userIsOnline, lastBlockNumber, favePools } = props;
     return (
         <footer data-testid={'page-footer'} className={styles.footer}>
             {userIsOnline ? '' : 'Offline'}
-            <ChatPanel onClose={() => setChatStatus(false)} chatStatus={chatStatus} />
+            <ChatPanel
+                onClose={() => setChatStatus(false)}
+                chatStatus={chatStatus}
+                favePools={favePools}
+            />
             <a onClick={() => setChatStatus(!chatStatus)}>Chat</a>
             <a href='#'>
                 <AiFillTwitterCircle size={15} />

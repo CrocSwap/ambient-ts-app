@@ -6,7 +6,6 @@ import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { Dispatch, SetStateAction, useState, useEffect } from 'react';
 import TransactionsSkeletons from './TransactionsSkeletons/TransactionsSkeletons';
-import SelectedCandleData from '../../../Global/Tabs/SelectedCanleData/SelectedCandleData';
 
 interface TransactionsProps {
     isShowAllEnabled: boolean;
@@ -78,22 +77,17 @@ export default function Transactions(props: TransactionsProps) {
         isCandleSelected
             ? setTransactionData(
                   swapsByPool.filter((data) => {
-                      filter?.allSwaps.includes(data.id);
+                      filter?.allSwaps?.includes(data.id);
                   }),
               )
             : !isShowAllEnabled
             ? handleUserPoolSelected()
             : handleAllPoolSelected();
-    }, [isShowAllEnabled, isCandleSelected, filter]);
+    }, [isShowAllEnabled, isCandleSelected, filter, swapsByUser, swapsByPool]);
 
     useEffect(() => {
-        const filteredMainnetSwaps = filter?.allSwaps;
-        console.log({ filteredMainnetSwaps });
-    }, [filter]);
-
-    useEffect(() => {
-        console.log({ dataReceived });
-        console.log({ isDataLoading });
+        // console.log({ dataReceived });
+        // console.log({ isDataLoading });
         dataReceived ? handleDataReceived() : setIsDataLoading(true);
     }, [graphData, transactionData, dataReceived]);
 
@@ -102,8 +96,8 @@ export default function Transactions(props: TransactionsProps) {
     const tokenAAddress = tradeData.tokenA.address;
     const tokenBAddress = tradeData.tokenB.address;
 
-    const noData = <div className={styles.no_data}>No Data to Display</div>;
-    const transactionDataMap = transactionData?.map((swap, idx) => (
+    const TransactionsDisplay = transactionData?.map((swap, idx) => (
+        //   />
         <TransactionCard
             key={idx}
             swap={swap}
@@ -116,14 +110,9 @@ export default function Transactions(props: TransactionsProps) {
             setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
         />
     ));
-    const TransactionsDisplay = (
-        <>
-            {isCandleSelected && <SelectedCandleData filter={filter} />}
-            {dataToDisplay ? transactionDataMap : noData}
-        </>
-    );
 
-    // const transactionDataOrNull = dataToDisplay ? TransactionsDisplay : noData;
+    const noData = <div className={styles.no_data}>No Data to Display</div>;
+    const transactionDataOrNull = dataToDisplay ? TransactionsDisplay : noData;
 
     return (
         <div className={styles.container}>
@@ -132,7 +121,7 @@ export default function Transactions(props: TransactionsProps) {
                 className={styles.item_container}
                 style={{ height: expandTradeTable ? '100%' : '170px' }}
             >
-                {isDataLoading ? <TransactionsSkeletons /> : TransactionsDisplay}
+                {isDataLoading ? <TransactionsSkeletons /> : transactionDataOrNull}
             </div>
         </div>
     );

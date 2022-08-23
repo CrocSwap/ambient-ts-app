@@ -35,7 +35,7 @@ const initialState: tradeData = {
     baseToken: goerliETH,
     quoteToken: goerliUSDC,
     didUserFlipDenom: false,
-    isDenomBase: false,
+    isDenomBase: true,
     advancedMode: false,
     isTokenAPrimary: true,
     primaryQuantity: '',

@@ -1,130 +1,89 @@
-.row p {
-    font-size: var(--body-size);
-    line-height: var(--body-lh);
-    color: rgba(235, 235, 255, 0.4);
-}
-
-.wallet_id {
-    display: flex;
-    flex-direction: column;
-}
-
-.id,
-.wallet,
-.eth,
-.usdc,
-.pool,
-.status,
-.token1,
-.token2 {
-    display: none;
-}
-
-.range {
-    padding: 0 4px;
-}
-
-.account {
-    margin: 0 4px;
-}
-
-.header_container {
+.main_container {
     display: grid;
-    grid-template-columns: 50px auto 50px;
-    font-size: 10px;
-}
-.row {
-    display: grid;
-    grid-template-columns: 1fr repeat(2, 50px) 40px 20px;
-    grid-gap: 4px;
-
+    grid-template-columns: auto 50px;
     align-items: center;
+
     font-size: 10px;
 
     padding-bottom: 4px;
     border-bottom: 1px solid var(--dark3);
 }
+.token_logos,
+.pool {
+    display: none;
+}
+.row_container {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+.row_container p {
+    flex: 0.4 0;
+    /* flex-flow: column; */
+    align-items: center;
 
-/* Small screen devices (540px and above) */
-@media only screen and (min-width: 540px) {
-    .header_container {
-        display: grid;
-        grid-template-columns: 50px auto 200px;
+    padding: 2px 8px;
+    /* font-size: var(--body-size);
+    line-height: var(--body-lh); */
+    color: rgba(235, 235, 255, 0.4);
+}
+
+.wallet,
+.range_sing,
+.token {
+    display: none;
+}
+
+
+
+/* Mobile Landscape Screen Sizes */
+@media only screen and (min-width: 480px) {
+    .main_container {
+        grid-template-columns: 50px auto 50px;
     }
 
-    .row {
-        display: grid;
-        grid-template-columns: auto repeat(2, 75px) 80px 20px;
-        grid-gap: 4px;
-
-        align-items: center;
+ 
+    .token_logos {
+        display: flex;
     }
 }
 
-/* Medium screen devices (768px and above) */
+/* Desktop screen Sizes */
 @media only screen and (min-width: 768px) {
-    .pool {
+    .wallet, .pool {
         display: flex;
     }
-    .header_container {
-        grid-template-columns: 100px auto 200px;
-    }
-
-    .row {
-        grid-template-columns: 100px auto repeat(2, 50px) 40px 30px;
+}
+/* Large devices (laptops/desktops, 992px and up) */
+@media only screen and (min-width: 992px) {
+    .main_container {
+        grid-template-columns: 100px auto 50px;
     }
 }
 
-/* Big screen devices (889px and above) */
-@media only screen and (min-width: 889px) {
-    .status {
-        display: flex;
-    }
-
-    .row {
-        grid-template-columns: 100px auto repeat(2, 70px) 40px 100px;
-    }
-}
-
-/* Extra big screen devices (1100px and above) */
-@media only screen and (min-width: 1100px) {
-    .account,
-    .amount {
-        display: none;
-    }
-    .id,
-    .wallet,
-    .token1,
-    .token2 {
-        display: flex;
-    }
-
-    .row {
-        grid-template-columns: 100px auto auto repeat(3, 95px) 80px 100px;
-    }
-}
-
-/* Extra big screen devices(MONITORS) (1200px and above) */
+/* Extra large devices (large laptops and desktops, 1200px and up) */
 @media only screen and (min-width: 1200px) {
-    .header_container {
-        grid-template-columns: 100px auto minmax(200px, auto);
+    .tokens, .range {
+        display: none;
+        
     }
 
-    .row {
-        grid-template-columns: 100px auto auto repeat(3, 95px) 80px 100px;
+    .token,
+    .range_sing {
+        display: flex;
     }
 }
 
-/* @media only screen and (min-width: 1400px) {
-   
-    .row{
-        grid-template-columns: 100px auto auto 300px repeat(2, 95px) 80px 100px;
-
+/* Extra large devices (large laptops and desktops, 1200px and up) */
+@media only screen and (min-width: 1500px) {
+    .main_container {
+        grid-template-columns: 80px auto 150px;
     }
+}
 
-    .range{
-        margin: 0 1rem;
-        text-align: center;
+/* Extra large devices (large laptops and desktops, 1200px and up) */
+@media only screen and (min-width: 1600px) {
+    .main_container {
+        grid-template-columns:100px 1fr 0.6fr;
     }
-
-} */
+}

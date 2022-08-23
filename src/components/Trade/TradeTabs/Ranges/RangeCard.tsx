@@ -168,6 +168,8 @@ export default function RangeCard(props: RangeCardProps) {
                           maximumFractionDigits: 2,
                       });
             setBaseLiquidityDisplay(baseLiqDisplayTruncated);
+        } else {
+            setBaseLiquidityDisplay(undefined);
         }
         if (position.positionLiqQuote && position.quoteTokenDecimals) {
             const quoteLiqDisplayNum = parseFloat(
@@ -188,6 +190,8 @@ export default function RangeCard(props: RangeCardProps) {
                           maximumFractionDigits: 2,
                       });
             setQuoteLiquidityDisplay(quoteLiqDisplayTruncated);
+        } else {
+            setQuoteLiquidityDisplay(undefined);
         }
     }, [JSON.stringify(position)]);
 
@@ -217,7 +221,12 @@ export default function RangeCard(props: RangeCardProps) {
                 <RangeMinMax min={ambientMinOrNull} max={ambientMaxOrNull} />
                 {/* ------------------------------------------------------ */}
 
-                <TokenQty baseQty={baseLiquidityDisplay} quoteQty={quoteLiquidityDisplay} />
+                <TokenQty
+                    baseQty={baseLiquidityDisplay}
+                    quoteQty={quoteLiquidityDisplay}
+                    baseTokenSymbol={position.baseSymbol}
+                    quoteTokenSymbol={position.quoteSymbol}
+                />
                 {/* ------------------------------------------------------ */}
                 <Apy amount={10} />
                 {/* ------------------------------------------------------ */}
