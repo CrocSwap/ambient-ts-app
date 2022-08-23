@@ -65,6 +65,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
         chainId,
         addPoolToFaves,
         removePoolFromFaves,
+        favePools,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -296,6 +297,31 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
     // --------------------------- END OF TIME FRAME BUTTON FUNCTIONALITY-------------------------------
 
     // TOKEN INFO----------------------------------------------------------------
+
+    const currentPoolData = {
+        base: tradeData.tokenA,
+        quote: tradeData.tokenB,
+        chainId: chainId,
+        poolId: 36000,
+    };
+    // eslint-disable-next-line
+    const removeButton = (
+        <button
+            onClick={() => removePoolFromFaves(tradeData.tokenA, tradeData.tokenB, chainId, 36000)}
+        >
+            Remove Pool
+        </button>
+    );
+    // eslint-disable-next-line
+    const addButton = (
+        <button onClick={() => addPoolToFaves(tradeData.tokenA, tradeData.tokenB, chainId, 36000)}>
+            Add Pool
+        </button>
+    );
+    console.log({ currentPoolData });
+    console.log({ favePools });
+    // console.log('results', favePools.some( pool => ))
+
     const tokenInfo = (
         <div className={styles.token_info_container}>
             <div className={styles.tokens_info} onClick={() => dispatch(toggleDidUserFlipDenom())}>
