@@ -1,19 +1,19 @@
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
-import { TokenIF } from '../../../../utils/interfaces/TokenIF';
+// import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import styles from './TokenQty.module.css';
 
 interface TokenQtyProps {
-    baseToken?: TokenIF;
-    quoteToken?: TokenIF;
+    baseTokenSymbol?: string;
+    quoteTokenSymbol?: string;
     baseQty?: string;
     quoteQty?: string;
 }
 
 export default function TokenQty(props: TokenQtyProps) {
-    const { baseToken, quoteToken, baseQty, quoteQty } = props;
+    const { baseTokenSymbol, quoteTokenSymbol, baseQty, quoteQty } = props;
 
-    const baseTokenCharacter = baseToken ? getUnicodeCharacter(baseToken?.symbol) : null;
-    const quoteTokenCharacter = quoteToken ? getUnicodeCharacter(quoteToken?.symbol) : null;
+    const baseTokenCharacter = baseTokenSymbol ? getUnicodeCharacter(baseTokenSymbol) : '';
+    const quoteTokenCharacter = quoteTokenSymbol ? getUnicodeCharacter(quoteTokenSymbol) : '';
 
     const baseDisplay = (
         <section className={styles.qty_sing}>
