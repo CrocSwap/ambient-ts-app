@@ -184,8 +184,8 @@ export default function TransactionCard(props: TransactionProps) {
                 {/* ------------------------------------------------------ */}
 
                 <TokenQty
-                    baseToken={baseToken}
-                    quoteToken={quoteToken}
+                    baseTokenSymbol={baseToken?.symbol}
+                    quoteTokenSymbol={quoteToken?.symbol}
                     baseQty={baseFlowDisplay}
                     quoteQty={quoteFlowDisplay}
                 />
