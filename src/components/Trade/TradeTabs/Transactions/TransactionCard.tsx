@@ -106,8 +106,8 @@ export default function TransactionCard(props: TransactionProps) {
                 : baseFlowDisplayTruncated;
             setBaseFlowDisplay(baseFlowDisplayString);
         } else {
-            console.log(swap.tx);
-            console.log({ swap });
+            // console.log({ swap });
+            // console.log(swap.tx);
             if (swap.inBaseQty) {
                 if (!swap.isBuy) {
                     setBaseFlowDisplay(toDisplayQty(swap.qty, swap.baseDecimals));

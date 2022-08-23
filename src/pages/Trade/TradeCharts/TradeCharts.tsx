@@ -298,7 +298,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
 
     // TOKEN INFO----------------------------------------------------------------
 
-    console.log({ favePools });
+    // console.log({ favePools });
     const currentPoolData = {
         base: tradeData.tokenA,
         quote: tradeData.tokenB,
