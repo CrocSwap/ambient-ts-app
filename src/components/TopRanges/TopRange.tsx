@@ -43,8 +43,8 @@ export default function TopRange() {
                 <RangeMinMax min={100} max={1000} />
 
                 <TokenQty
-                    baseToken={baseToken}
-                    quoteToken={quoteToken}
+                    baseTokenSymbol={baseToken.symbol}
+                    quoteTokenSymbol={quoteToken.symbol}
                     baseQty={undefined}
                     quoteQty={undefined}
                 />
