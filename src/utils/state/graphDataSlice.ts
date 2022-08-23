@@ -203,9 +203,8 @@ export const graphDataSlice = createSlice({
                 // console.log('pool found in RTK for new liquidity data');
 
                 state.liquidityForAllPools.pools[indexOfPool].liquidityData =
-                    state.liquidityForAllPools.pools[indexOfPool].liquidityData.concat(
-                        action.payload.liquidityData,
-                    );
+                    state.liquidityForAllPools.pools[indexOfPool].liquidityData =
+                        action.payload.liquidityData;
             }
         },
         setCandles: (state, action: PayloadAction<CandlesByPoolAndDuration>) => {
