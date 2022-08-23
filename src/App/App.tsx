@@ -87,7 +87,9 @@ const cachedGetTokenDecimals = memoizeTokenDecimals();
 
 const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
 const wssGraphCacheServerDomain = 'wss://809821320828123.de:5000';
-const shouldSubscriptionsReconnect = false;
+
+const shouldCandleSubscriptionsReconnect = false;
+const shouldNonCandleSubscriptionsReconnect = true;
 
 /** ***** React Function *******/
 export default function App() {
@@ -671,7 +673,7 @@ export default function App() {
             onClose: (event: any) => console.log({ event }),
             // onClose: () => console.log('allPositions websocket connection closed'),
             // Will attempt to reconnect on all close events, such as server shutting down
-            shouldReconnect: () => shouldSubscriptionsReconnect,
+            shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
         },
         // only connect if base/quote token addresses are available
         baseTokenAddress !== '' && quoteTokenAddress !== '',
@@ -715,7 +717,7 @@ export default function App() {
         {
             onOpen: () => console.log({ candleSubscriptionEndpoint }),
             onClose: (event) => console.log({ event }),
-            shouldReconnect: () => shouldSubscriptionsReconnect,
+            shouldReconnect: () => shouldCandleSubscriptionsReconnect,
         },
         // only connect if base/quote token addresses are available
         mainnetBaseTokenAddress !== '' && mainnetQuoteTokenAddress !== '',
@@ -771,7 +773,7 @@ export default function App() {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             onClose: (event: any) => console.log({ event }),
             // Will attempt to reconnect on all close events, such as server shutting down
-            shouldReconnect: () => shouldSubscriptionsReconnect,
+            shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
         },
         // only connect if base/quote token addresses are available
         baseTokenAddress !== '' && quoteTokenAddress !== '',
@@ -813,7 +815,7 @@ export default function App() {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             onClose: (event: any) => console.log({ event }),
             // Will attempt to reconnect on all close events, such as server shutting down
-            shouldReconnect: () => shouldSubscriptionsReconnect,
+            shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
         },
         // only connect is account is available
         account !== null && account !== '',
@@ -856,7 +858,7 @@ export default function App() {
             onClose: (event: any) => console.log({ event }),
             // onClose: () => console.log('userSwaps websocket connection closed'),
             // Will attempt to reconnect on all close events, such as server shutting down
-            shouldReconnect: () => shouldSubscriptionsReconnect,
+            shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
         },
         // only connect if account is available
         account !== null && account !== '',

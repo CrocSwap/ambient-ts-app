@@ -86,8 +86,8 @@ export default function Transactions(props: TransactionsProps) {
     }, [isShowAllEnabled, isCandleSelected, filter, swapsByUser, swapsByPool]);
 
     useEffect(() => {
-        console.log({ dataReceived });
-        console.log({ isDataLoading });
+        // console.log({ dataReceived });
+        // console.log({ isDataLoading });
         dataReceived ? handleDataReceived() : setIsDataLoading(true);
     }, [graphData, transactionData, dataReceived]);
 
