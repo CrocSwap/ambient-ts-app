@@ -200,7 +200,14 @@ export default function Chart(props: ChartData) {
                 });
             } else {
                 setLimit(() => {
-                    return [{ name: 'Limit', value: parseFloat(props.limitPrice!) }];
+                    return [
+                        {
+                            name: 'Limit',
+                            value: parseFloat(
+                                props.limitPrice !== undefined ? props.limitPrice : '0',
+                            ),
+                        },
+                    ];
                 });
             }
         } else if (location.pathname.includes('range')) {
@@ -481,29 +488,29 @@ export default function Chart(props: ChartData) {
                 .xScale(scaleData.xScale)
                 .yScale(scaleData.yScale);
 
-            const dragRange = d3.drag().on('drag', function (event, d: any) {
-                const newValue = scaleData.yScale.invert(d3.pointer(event)[1] - 182);
-                setRanges((prevState) => {
-                    const newTargets = [...prevState];
-                    if (
-                        d.name === 'high' &&
-                        newValue >
-                            newTargets.filter((target: any) => target.name === 'low')[0].value
-                    ) {
-                        newTargets.filter((target: any) => target.name === d.name)[0].value =
-                            newValue;
-                    } else if (
-                        d.name === 'low' &&
-                        newValue <
-                            newTargets.filter((target: any) => target.name === 'high')[0].value
-                    ) {
-                        newTargets.filter((target: any) => target.name === d.name)[0].value =
-                            newValue;
-                    }
-                    render();
-                    return newTargets;
-                });
-            });
+            // const dragRange = d3.drag().on('drag', function (event, d: any) {
+            //     const newValue = scaleData.yScale.invert(d3.pointer(event)[1] - 182);
+            //     setRanges((prevState) => {
+            //         const newTargets = [...prevState];
+            //         if (
+            //             d.name === 'high' &&
+            //             newValue >
+            //                 newTargets.filter((target: any) => target.name === 'low')[0].value
+            //         ) {
+            //             newTargets.filter((target: any) => target.name === d.name)[0].value =
+            //                 newValue;
+            //         } else if (
+            //             d.name === 'low' &&
+            //             newValue <
+            //                 newTargets.filter((target: any) => target.name === 'high')[0].value
+            //         ) {
+            //             newTargets.filter((target: any) => target.name === d.name)[0].value =
+            //                 newValue;
+            //         }
+            //         render();
+            //         return newTargets;
+            //     });
+            // });
 
             const dragLimit = d3.drag().on('drag', function (event) {
                 const newValue = scaleData.yScale.invert(d3.pointer(event)[1] - 182);
