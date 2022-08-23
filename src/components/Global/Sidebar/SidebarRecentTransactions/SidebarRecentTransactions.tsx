@@ -13,10 +13,14 @@ interface SidebarRecentTransactionsPropsIF {
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     isShowAllEnabled: boolean;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
-    setSwitchTabToTransactions: Dispatch<SetStateAction<boolean>>;
-    switchTabToTransactions: boolean;
+
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
+
+    selectedOutsideTab: number;
+    setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
+    outsideControl: boolean;
+    setOutsideControl: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function SidebarRecentTransactions(props: SidebarRecentTransactionsPropsIF) {
@@ -28,8 +32,7 @@ export default function SidebarRecentTransactions(props: SidebarRecentTransactio
         setCurrentTxActiveInTransactions,
         isShowAllEnabled,
         setIsShowAllEnabled,
-        setSwitchTabToTransactions,
-        switchTabToTransactions,
+
         expandTradeTable,
         setExpandTradeTable,
     } = props;
@@ -38,7 +41,7 @@ export default function SidebarRecentTransactions(props: SidebarRecentTransactio
         <div className={styles.header}>
             <div>Pool</div>
             <div>Type</div>
-            <div>Status</div>
+            <div>Amount</div>
         </div>
     );
 
@@ -57,8 +60,10 @@ export default function SidebarRecentTransactions(props: SidebarRecentTransactio
                         setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
                         isShowAllEnabled={isShowAllEnabled}
                         setIsShowAllEnabled={setIsShowAllEnabled}
-                        setSwitchTabToTransactions={setSwitchTabToTransactions}
-                        switchTabToTransactions={switchTabToTransactions}
+                        selectedOutsideTab={props.selectedOutsideTab}
+                        setSelectedOutsideTab={props.setSelectedOutsideTab}
+                        outsideControl={props.outsideControl}
+                        setOutsideControl={props.setOutsideControl}
                     />
                 ))}
             </div>

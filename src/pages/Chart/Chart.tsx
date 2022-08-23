@@ -363,7 +363,7 @@ export default function Chart(props: ChartData) {
                 nearestCandleData = nearest;
                 return [
                     {
-                        x: nearest.date,
+                        x: nearest?.date,
                         y: -1,
                     },
                 ];

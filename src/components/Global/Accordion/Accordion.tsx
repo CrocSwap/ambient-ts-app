@@ -1,22 +1,19 @@
+import { useState, ReactNode } from 'react';
 import styles from './Accordion.module.css';
-import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface AccordionProps {
     id: number | string;
-    children?: React.ReactNode;
+    children?: ReactNode;
 }
 
 export default function Accordion(props: AccordionProps) {
-    const [isOpen, setIsOpen] = useState(false);
     const { children } = props;
+    const [isOpen, setIsOpen] = useState(false);
 
     return (
         <>
-            <motion.div onClick={() => setIsOpen((prev) => !prev)}>
-                {/* Accordion {props.id} is {isOpen ? 'open' : 'closed'} */}
-                {children}
-            </motion.div>
+            <motion.div onClick={() => setIsOpen((prev) => !prev)}>{children}</motion.div>
             <AnimatePresence>
                 {isOpen && (
                     <motion.div

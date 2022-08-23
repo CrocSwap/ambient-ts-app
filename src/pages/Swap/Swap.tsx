@@ -1,12 +1,10 @@
 // START: Import React and Dongles
 import { useState, Dispatch, SetStateAction, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import { ethers } from 'ethers';
 import { useMoralis } from 'react-moralis';
 import { motion } from 'framer-motion';
-import {
-    CrocEnv,
-    //  toDisplayQty
-} from '@crocswap-libs/sdk';
+import { CrocEnv } from '@crocswap-libs/sdk';
 
 // START: Import React Components
 import CurrencyConverter from '../../components/Swap/CurrencyConverter/CurrencyConverter';
@@ -23,6 +21,7 @@ import Button from '../../components/Global/Button/Button';
 
 // START: Import Local Files
 import styles from './Swap.module.css';
+import authenticateUser from '../../utils/functions/authenticateUser';
 import truncateDecimals from '../../utils/data/truncateDecimals';
 import { isTransactionReplacedError, TransactionError } from '../../utils/TransactionError';
 import { useTradeData } from '../Trade/Trade';
@@ -31,7 +30,6 @@ import { SlippagePairIF, TokenIF, TokenPairIF } from '../../utils/interfaces/exp
 import { useModal } from '../../components/Global/Modal/useModal';
 import { useRelativeModal } from '../../components/Global/RelativeModal/useRelativeModal';
 import { addReceipt } from '../../utils/state/receiptDataSlice';
-import { ethers } from 'ethers';
 
 interface SwapPropsIF {
     importedTokens: Array<TokenIF>;
@@ -100,54 +98,19 @@ export default function Swap(props: SwapPropsIF) {
 
     const { tokenA, tokenB } = tradeData;
 
-    // const slippageTolerancePercentage = tradeData.slippageTolerance;
-
     const slippageTolerancePercentage = isPairStable
         ? parseFloat(swapSlippage.stable.value)
         : parseFloat(swapSlippage.volatile.value);
 
-    const signingMessage = `Welcome to Ambient Finance!
-
-Click to sign in and accept the Ambient Terms of Service: https://ambient-finance.netlify.app/tos
-
-This request will not trigger a blockchain transaction or cost any gas fees.
-
-Your authentication status will reset on logout.`;
-
-    // login functionality
-    const clickLogin = () => {
-        console.log('user clicked Login');
-        if (!isAuthenticated || !isWeb3Enabled) {
-            authenticate({
-                provider: 'metamask',
-                chainId: parseInt(chainId),
-                signingMessage: signingMessage,
-                onSuccess: () => {
-                    enableWeb3();
-                },
-                onError: () => {
-                    authenticate({
-                        provider: 'metamask',
-                        chainId: parseInt(chainId),
-                        signingMessage: signingMessage,
-                        onSuccess: () => {
-                            enableWeb3;
-                            // alert('🎉');
-                        },
-                    });
-                },
-            });
-        }
-    };
+    const clickLogin = () =>
+        authenticateUser(isAuthenticated, isWeb3Enabled, authenticate, enableWeb3);
 
     const loginButton = <Button title='Login' action={clickLogin} />;
 
     const [isApprovalPending, setIsApprovalPending] = useState(false);
 
     const approve = async (tokenAddress: string) => {
-        if (!provider) {
-            return;
-        }
+        if (!provider) return;
         setIsApprovalPending(true);
         try {
             const tx = await new CrocEnv(provider).token(tokenAddress).approve();
@@ -155,7 +118,7 @@ Your authentication status will reset on logout.`;
                 await tx.wait();
             }
         } catch (error) {
-            console.log({ error });
+            console.warn({ error });
         } finally {
             setIsApprovalPending(false);
             setRecheckTokenAApproval(true);
@@ -178,16 +141,11 @@ Your authentication status will reset on logout.`;
 
     const [tokenAInputQty, setTokenAInputQty] = useState<string>('');
     const [tokenBInputQty, setTokenBInputQty] = useState<string>('');
-
     const [swapAllowed, setSwapAllowed] = useState<boolean>(false);
-
     const [swapButtonErrorMessage, setSwapButtonErrorMessage] = useState<string>('');
-
-    // const [isTokenAPrimary, setIsTokenAPrimary] = useState<boolean>(tradeData.isTokenAPrimary);
     const isTokenAPrimary = tradeData.isTokenAPrimary;
     const [isWithdrawFromDexChecked, setIsWithdrawFromDexChecked] = useState(false);
     const [isSaveAsDexSurplusChecked, setIsSaveAsDexSurplusChecked] = useState(false);
-
     const [newSwapTransactionHash, setNewSwapTransactionHash] = useState('');
     const [txErrorCode, setTxErrorCode] = useState(0);
     const [txErrorMessage, setTxErrorMessage] = useState('');
@@ -203,9 +161,7 @@ Your authentication status will reset on logout.`;
     }, [poolPriceDisplay]);
 
     async function initiateSwap() {
-        if (!provider) {
-            return;
-        }
+        if (!provider) return;
 
         if (!(provider as ethers.providers.JsonRpcProvider).getSigner()) {
             return;
@@ -334,7 +290,6 @@ Your authentication status will reset on logout.`;
     ) : null;
 
     const isTokenAAllowanceSufficient = parseFloat(tokenAAllowance) >= parseFloat(tokenAInputQty);
-    // console.log(pathname);
 
     const swapContainerStyle = pathname == '/swap' ? styles.swap_page_container : null;
     const swapPageStyle = pathname == '/swap' ? styles.swap_page : null;
@@ -371,8 +326,6 @@ Your authentication status will reset on logout.`;
                                 parseFloat(nativeBalance),
                                 4,
                             ).toString()}
-                            // tokenABalance={parseFloat(tokenABalance).toLocaleString()}
-                            // tokenBBalance={parseFloat(tokenBBalance).toLocaleString()}
                             tokenABalance={tokenABalance}
                             tokenBBalance={tokenBBalance}
                             tokenAInputQty={tokenAInputQty}

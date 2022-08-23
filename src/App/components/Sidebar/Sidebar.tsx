@@ -20,7 +20,7 @@ import recentTransactionsImage from '../../../assets/images/sidebarImages/recent
 import topPoolsImage from '../../../assets/images/sidebarImages/topPools.svg';
 import topTokensImage from '../../../assets/images/sidebarImages/topTokens.svg';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import { TokenIF } from '../../../utils/interfaces/TokenIF';
+import { PoolIF, TokenIF } from '../../../utils/interfaces/exports';
 import SearchAccordion from './SearchAccordion/SearchAccordion';
 
 // interface for component props
@@ -29,17 +29,22 @@ interface SidebarPropsIF {
     showSidebar: boolean;
     toggleSidebar: (event: MouseEvent<HTMLDivElement> | MouseEvent<HTMLLIElement>) => void;
     chainId: string;
-    switchTabToTransactions: boolean;
-    handleSetTradeTabToTransaction: () => void;
-    setSwitchTabToTransactions: Dispatch<SetStateAction<boolean>>;
+
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
+    currentPositionActive: string;
+    setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     isShowAllEnabled: boolean;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
     tokenMap: Map<string, TokenIF>;
     lastBlockNumber: number;
+    favePools: PoolIF[];
+    selectedOutsideTab: number;
+    outsideControl: boolean;
+    setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
+    setOutsideControl: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function Sidebar(props: SidebarPropsIF) {
@@ -48,16 +53,19 @@ export default function Sidebar(props: SidebarPropsIF) {
         toggleSidebar,
         showSidebar,
         chainId,
-        setSwitchTabToTransactions,
         currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions,
+
+        currentPositionActive,
+        setCurrentPositionActive,
         isShowAllEnabled,
         setIsShowAllEnabled,
-        switchTabToTransactions,
+
         expandTradeTable,
         setExpandTradeTable,
         tokenMap,
         lastBlockNumber,
+        favePools,
     } = props;
 
     const graphData = useAppSelector((state) => state.graphData);
@@ -80,6 +88,23 @@ export default function Sidebar(props: SidebarPropsIF) {
             data: <TopPools chainId={chainId} lastBlockNumber={lastBlockNumber} />,
         },
     ];
+    const sidebarLimitOrderProps = {
+        selectedOutsideTab: props.selectedOutsideTab,
+        setSelectedOutsideTab: props.setSelectedOutsideTab,
+        outsideControl: props.outsideControl,
+        setOutsideControl: props.setOutsideControl,
+    };
+    const sidebarRangePositionProps = {
+        selectedOutsideTab: props.selectedOutsideTab,
+        setSelectedOutsideTab: props.setSelectedOutsideTab,
+        outsideControl: props.outsideControl,
+        setOutsideControl: props.setOutsideControl,
+        currentPositionActive: currentPositionActive,
+        setCurrentPositionActive: setCurrentPositionActive,
+        tokenMap: tokenMap,
+        isShowAllEnabled: props.isShowAllEnabled,
+        setIsShowAllEnabled: props.setIsShowAllEnabled,
+    };
 
     const recentRangePositions = [
         {
@@ -89,16 +114,26 @@ export default function Sidebar(props: SidebarPropsIF) {
                 <SidebarRangePositions
                     mostRecentPositions={mostRecentPositions}
                     isDenomBase={isDenomBase}
+                    {...sidebarRangePositionProps}
                 />
             ),
         },
     ];
+
     const recentLimitOrders = [
-        { name: 'Limit Orders', icon: openOrdersImage, data: <SidebarLimitOrders /> },
+        {
+            name: 'Limit Orders',
+            icon: openOrdersImage,
+            data: <SidebarLimitOrders {...sidebarLimitOrderProps} />,
+        },
     ];
 
     const favoritePools = [
-        { name: 'Favorite Pools', icon: favouritePoolsImage, data: <FavoritePools /> },
+        {
+            name: 'Favorite Pools',
+            icon: favouritePoolsImage,
+            data: <FavoritePools favePools={favePools} />,
+        },
     ];
 
     const recentTransactions = [
@@ -114,10 +149,12 @@ export default function Sidebar(props: SidebarPropsIF) {
                     chainId={chainId}
                     isShowAllEnabled={isShowAllEnabled}
                     setIsShowAllEnabled={setIsShowAllEnabled}
-                    switchTabToTransactions={switchTabToTransactions}
-                    setSwitchTabToTransactions={setSwitchTabToTransactions}
                     expandTradeTable={expandTradeTable}
                     setExpandTradeTable={setExpandTradeTable}
+                    selectedOutsideTab={props.selectedOutsideTab}
+                    setSelectedOutsideTab={props.setSelectedOutsideTab}
+                    setOutsideControl={props.setOutsideControl}
+                    outsideControl={props.outsideControl}
                 />
             ),
         },

@@ -13,7 +13,7 @@ interface TopPoolsCardProps {
 }
 
 export default function TopPoolsCard(props: TopPoolsCardProps) {
-    const { pool, chainId } = props;
+    const { pool, chainId, lastBlockNumber } = props;
 
     const dispatch = useAppDispatch();
 
@@ -25,7 +25,7 @@ export default function TopPoolsCard(props: TopPoolsCardProps) {
 
     const poolIndex = lookupChain(chainId).poolIndex;
 
-    const getTopPoolMetrics = async (
+    const getTopPoolsMetrics = async (
         tokenAAddress: string,
         tokenBAddress: string,
         poolIndex: number,
@@ -46,13 +46,17 @@ export default function TopPoolsCard(props: TopPoolsCardProps) {
         }
     };
 
+    // useEffect(() => {
+    //     getTopPoolsMetrics(tokenAAddress, tokenBAddress, poolIndex);
+    //     const timer = setTimeout(async () => {
+    //         getTopPoolsMetrics(tokenAAddress, tokenBAddress, poolIndex);
+    //     }, 60000); // run every 10 minutes
+    //     return () => clearTimeout(timer);
+    // }, [tokenAAddress, tokenBAddress]);
+
     useEffect(() => {
-        getTopPoolMetrics(tokenAAddress, tokenBAddress, poolIndex);
-        const timer = setTimeout(async () => {
-            getTopPoolMetrics(tokenAAddress, tokenBAddress, poolIndex);
-        }, 60000); // run every 10 minutes
-        return () => clearTimeout(timer);
-    }, [tokenAAddress, tokenBAddress]);
+        getTopPoolsMetrics(tokenAAddress, tokenBAddress, poolIndex);
+    }, [tokenAAddress, tokenBAddress, lastBlockNumber]);
 
     return (
         <div

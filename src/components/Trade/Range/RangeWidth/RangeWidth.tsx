@@ -1,17 +1,21 @@
-// import { ChangeEvent } from 'react';
-
-import styles from './RangeWidth.module.css';
-import { MdAdd } from 'react-icons/md';
-import { FiMinus } from 'react-icons/fi';
+// START: Import React and Dongles
+import { Dispatch, SetStateAction } from 'react';
 import { AiOutlineInfoCircle } from 'react-icons/ai';
+import { FiMinus } from 'react-icons/fi';
+import { MdAdd } from 'react-icons/md';
+
+// START: Import Local Files
+import styles from './RangeWidth.module.css';
 import { updateRangeWithButton, handleRangeSlider } from './rangeWidthFunctions';
 
-interface IRangeWidthProps {
+// interface for React functional component props
+interface RangeWidthPropsIF {
     rangeWidthPercentage: number;
-    setRangeWidthPercentage: React.Dispatch<React.SetStateAction<number>>;
+    setRangeWidthPercentage: Dispatch<SetStateAction<number>>;
 }
 
-export default function RangeWidth(props: IRangeWidthProps) {
+// React functional component
+export default function RangeWidth(props: RangeWidthPropsIF) {
     const { rangeWidthPercentage, setRangeWidthPercentage } = props;
 
     const PercentageOptionContent = (

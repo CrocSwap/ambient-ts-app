@@ -1,12 +1,14 @@
+import { useState, useRef, Children, ReactNode, ReactElement, cloneElement } from 'react';
 import styles from './NavItem.module.css';
-import React, { useState, useRef } from 'react';
 import UseOnClickOutside from '../../../../utils/hooks/useOnClickOutside';
-interface NavItemProps {
-    children: React.ReactNode;
-    icon: React.ReactNode;
+
+interface NavItemPropsIF {
+    children: ReactNode;
+    icon: ReactNode;
 }
 
-export default function NavItem(props: NavItemProps) {
+export default function NavItem(props: NavItemPropsIF) {
+    const { children, icon } = props;
     const navItemRef = useRef<HTMLDivElement>(null);
 
     const [open, setOpen] = useState(false);
@@ -17,12 +19,10 @@ export default function NavItem(props: NavItemProps) {
 
     UseOnClickOutside(navItemRef, clickOutsideHandler);
 
-    const childrenWithProps = React.Children.map(props.children, (child, index) => {
+    const childrenWithProps = Children.map(children, (child, index) => {
         // eslint-disable-next-line
-        return React.cloneElement(child as React.ReactElement<any>, {
-            closeMenu: () => {
-                setOpen(false);
-            },
+        return cloneElement(child as ReactElement<any>, {
+            closeMenu: () => setOpen(false),
             index,
         });
     });
@@ -30,10 +30,8 @@ export default function NavItem(props: NavItemProps) {
     return (
         <div className={styles.nav_item} ref={navItemRef}>
             <div className={styles.icon_button} onClick={() => setOpen(!open)}>
-                {props.icon}
+                {icon}
             </div>
-
-            {/* {open && props.children} */}
             {open && childrenWithProps}
         </div>
     );

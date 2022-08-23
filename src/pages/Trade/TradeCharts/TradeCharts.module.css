@@ -28,7 +28,7 @@
 }
 
 .settings_container,
-.time_frame_container .right_side {
+.time_frame_container .right_side , .time_frame_container .left_side{
     display: flex;
     flex-direction: row;
     align-items: center;

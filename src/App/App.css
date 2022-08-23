@@ -110,9 +110,20 @@ footer {
 }
 
 .footer_container {
-    display: flex;
+    /* display: flex;
+    flex-direction: column;
+
     justify-content: flex-end;
+    align-items: flex-end; */
     color: white;
+    /* background: red; */
+
+    position: fixed;
+    display: flex;
+    -webkit-box-align: center;
+    align-items: center;
+    right: 0px;
+    bottom: 0px;
     /* background: var(--dark3); */
 }
 

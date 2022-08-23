@@ -5,9 +5,9 @@ import { CgUnavailable } from 'react-icons/cg';
 
 // START: Import Local Files
 import styles from './TokenSelect.module.css';
-import { PoolIF, TokenIF } from '../../../utils/interfaces/exports';
+import { TokenIF } from '../../../utils/interfaces/exports';
 import uriToHttp from '../../../utils/functions/uriToHttp';
-import clickStar from './clickStar';
+// import clickStar from './clickStar';
 import { removeToken } from '../../Global/TokenSelectContainer/removeToken';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { toDisplayQty } from '@crocswap-libs/sdk';
@@ -21,23 +21,10 @@ interface TokenSelectPropsIF {
     chainId: string;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     chooseToken: (tok: TokenIF) => void;
-    favePools: PoolIF[];
-    setFavePools: Dispatch<SetStateAction<PoolIF[]>>;
 }
 
 export default function TokenSelect(props: TokenSelectPropsIF) {
-    const {
-        token,
-        chooseToken,
-        tokensBank,
-        undeletableTokens,
-        chainId,
-        setImportedTokens,
-        // favePools,
-        setFavePools,
-    } = props;
-
-    // console.log({favePools});
+    const { token, chooseToken, tokensBank, undeletableTokens, chainId, setImportedTokens } = props;
 
     const [showDelete, setShowDelete] = useState(false);
     const [toggleDeleteOn, setToggleDeleteOn] = useState(false);
@@ -68,7 +55,6 @@ export default function TokenSelect(props: TokenSelectPropsIF) {
             viewBox='0 0 23 23'
             fill='none'
             xmlns='http://www.w3.org/2000/svg'
-            onClick={() => clickStar(token, chainId, 36000, setFavePools)}
         >
             <path
                 d='M11.5 1.58301L14.7187 8.10384L21.9166 9.15593L16.7083 14.2288L17.9375 21.3955L11.5 18.0101L5.06248 21.3955L6.29165 14.2288L1.08331 9.15593L8.28123 8.10384L11.5 1.58301Z'

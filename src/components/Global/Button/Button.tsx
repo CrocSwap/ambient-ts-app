@@ -1,13 +1,12 @@
 import styles from './Button.module.css';
 
-interface ButtonProps {
+interface ButtonPropsIF {
     disabled?: boolean;
     title: string;
-
-    // action: React.MouseEventHandler<HTMLElement>;
     action: () => void;
 }
-export default function Toggle(props: ButtonProps) {
+
+export default function Toggle(props: ButtonPropsIF) {
     const { disabled, action, title } = props;
     return (
         <button

@@ -1,17 +1,26 @@
-import { useEffect, useRef, useState } from 'react';
+import {
+    useEffect,
+    //  useRef,
+    useState,
+} from 'react';
 import { BsSlashSquare } from 'react-icons/bs';
 import { FiSmile } from 'react-icons/fi';
 import { Message } from '../../Model/MessageModel';
-import { host, sendMessageRoute, socket } from '../../Service/chatApi';
+import {
+    // host,
+    sendMessageRoute,
+    socket,
+} from '../../Service/chatApi';
 import styles from './MessageInput.module.css';
 import axios from 'axios';
-import { io } from 'socket.io-client';
+// import { io } from 'socket.io-client';
 
 interface MessageInputProps {
     message: Message;
 }
 
 export default function MessageInput(props: MessageInputProps) {
+    console.log({ props });
     const _socket = socket;
 
     useEffect(() => {
@@ -24,6 +33,7 @@ export default function MessageInput(props: MessageInputProps) {
 
     const [message, setMesage] = useState('');
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const _handleKeyDown = (e: any) => {
         if (e.key === 'Enter') {
             handleSendMsg(e.target.value);
@@ -41,6 +51,7 @@ export default function MessageInput(props: MessageInputProps) {
         });
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const onChangeMessage = (e: any) => {
         setMesage(e.target.value);
     };

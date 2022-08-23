@@ -1,19 +1,22 @@
-import { Outlet, useOutletContext, NavLink } from 'react-router-dom';
-import styles from './Trade.module.css';
-
-import { useAppSelector } from '../../utils/hooks/reduxToolkit';
-
-import { tradeData as TradeDataIF } from '../../utils/state/tradeDataSlice';
+// START: Import React and Dongles
 import { Dispatch, SetStateAction, useState } from 'react';
-import { TokenIF } from '../../utils/interfaces/TokenIF';
-
-import TradeTabs2 from '../../components/Trade/TradeTabs/TradeTabs2';
-import { motion, AnimateSharedLayout } from 'framer-motion';
-import TradeCharts from './TradeCharts/TradeCharts';
-import { CandleData } from '../../utils/state/graphDataSlice';
+import { Outlet, useOutletContext, NavLink } from 'react-router-dom';
 import { ethers } from 'ethers';
+import { motion, AnimateSharedLayout } from 'framer-motion';
 
-interface ITradeProps {
+// START: Import JSX Components
+import TradeCharts from './TradeCharts/TradeCharts';
+import TradeTabs2 from '../../components/Trade/TradeTabs/TradeTabs2';
+
+// START: Import Local Files
+import styles from './Trade.module.css';
+import { useAppSelector } from '../../utils/hooks/reduxToolkit';
+import { tradeData as TradeDataIF } from '../../utils/state/tradeDataSlice';
+import { CandleData } from '../../utils/state/graphDataSlice';
+import { PoolIF, TokenIF, TokenPairIF } from '../../utils/interfaces/exports';
+
+// interface for React functional component props
+interface TradePropsIF {
     provider: ethers.providers.Provider | undefined;
     baseTokenAddress: string;
     quoteTokenAddress: string;
@@ -23,15 +26,9 @@ interface ITradeProps {
     lastBlockNumber: number;
     isTokenABase: boolean;
     poolPriceDisplay?: number;
-
     tokenMap: Map<string, TokenIF>;
-    tokenPair: {
-        dataTokenA: TokenIF;
-        dataTokenB: TokenIF;
-    };
+    tokenPair: TokenPairIF;
     chainId: string;
-    switchTabToTransactions: boolean;
-    setSwitchTabToTransactions: Dispatch<SetStateAction<boolean>>;
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     isShowAllEnabled: boolean;
@@ -40,9 +37,24 @@ interface ITradeProps {
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
     setLimitRate: React.Dispatch<React.SetStateAction<string>>;
     limitRate: string;
+    favePools: PoolIF[];
+    addPoolToFaves: (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) => void;
+    removePoolFromFaves: (
+        tokenA: TokenIF,
+        tokenB: TokenIF,
+        chainId: string,
+        poolId: number,
+    ) => void;
+    selectedOutsideTab: number;
+    setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
+    outsideControl: boolean;
+    setOutsideControl: Dispatch<SetStateAction<boolean>>;
+    currentPositionActive: string;
+    setCurrentPositionActive: Dispatch<SetStateAction<string>>;
 }
 
-export default function Trade(props: ITradeProps) {
+// React functional component
+export default function Trade(props: TradePropsIF) {
     const {
         chainId,
         tokenMap,
@@ -51,6 +63,9 @@ export default function Trade(props: ITradeProps) {
         lastBlockNumber,
         baseTokenAddress,
         quoteTokenAddress,
+        favePools,
+        addPoolToFaves,
+        removePoolFromFaves,
     } = props;
 
     const [isCandleSelected, setIsCandleSelected] = useState<boolean | undefined>();
@@ -75,13 +90,6 @@ export default function Trade(props: ITradeProps) {
     const tradeData = useAppSelector((state) => state.tradeData);
 
     const graphData = useAppSelector((state) => state.graphData);
-
-    // const mainnetCandlePoolDefinition = JSON.stringify({
-    //     baseAddress: '0x0000000000000000000000000000000000000000',
-    //     quoteAddress: '0x6b175474e89094c44da98b954eedeac495271d0f',
-    //     poolIdx: 36000,
-    //     network: '0x1',
-    // }).toLowerCase();
 
     const activePoolDefinition = JSON.stringify({
         baseAddress: baseTokenAddress,
@@ -121,9 +129,7 @@ export default function Trade(props: ITradeProps) {
 
     const mainContent = (
         <div className={styles.right_col}>
-            {/* {currentLocation.slice(0, 11) !== '/trade/edit' && navigationMenu} */}
             <Outlet context={{ tradeData: tradeData, navigationMenu: navigationMenu }} />
-            {/* <PageFooter lastBlockNumber={props.lastBlockNumber} /> */}
         </div>
     );
     const expandGraphStyle = props.expandTradeTable ? styles.hide_graph : '';
@@ -165,6 +171,9 @@ export default function Trade(props: ITradeProps) {
                                 limitPrice={limitPrice}
                                 setLimitRate={props.setLimitRate}
                                 limitRate={props.limitRate}
+                                favePools={favePools}
+                                addPoolToFaves={addPoolToFaves}
+                                removePoolFromFaves={removePoolFromFaves}
                             />
                         </motion.div>
                     </div>
@@ -186,8 +195,6 @@ export default function Trade(props: ITradeProps) {
                             isWeb3Enabled={props.isWeb3Enabled}
                             lastBlockNumber={props.lastBlockNumber}
                             chainId={chainId}
-                            switchTabToTransactions={props.switchTabToTransactions}
-                            setSwitchTabToTransactions={props.setSwitchTabToTransactions}
                             currentTxActiveInTransactions={props.currentTxActiveInTransactions}
                             setCurrentTxActiveInTransactions={
                                 props.setCurrentTxActiveInTransactions
@@ -201,6 +208,12 @@ export default function Trade(props: ITradeProps) {
                             setIsCandleSelected={setIsCandleSelected}
                             filter={transactionFilter}
                             setTransactionFilter={setTransactionFilter}
+                            selectedOutsideTab={props.selectedOutsideTab}
+                            setSelectedOutsideTab={props.setSelectedOutsideTab}
+                            outsideControl={props.outsideControl}
+                            setOutsideControl={props.setOutsideControl}
+                            currentPositionActive={props.currentPositionActive}
+                            setCurrentPositionActive={props.setCurrentPositionActive}
                         />
                     </motion.div>
                 </div>

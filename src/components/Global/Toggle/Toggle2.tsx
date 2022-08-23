@@ -1,15 +1,17 @@
+import { ChangeEventHandler } from 'react';
 import styles from './Toggle2.module.css';
 
-interface ToggleProps {
+interface TogglePropsIF {
     isOn: boolean;
     onColor?: string;
     Width?: boolean | number;
     id: string;
-    handleToggle: React.ChangeEventHandler<HTMLElement>;
+    handleToggle: ChangeEventHandler<HTMLElement>;
     buttonColor?: string;
     disabled?: boolean;
 }
-function Toggle2(props: ToggleProps) {
+
+export default function Toggle2(props: TogglePropsIF) {
     const { isOn, handleToggle, id, disabled } = props;
     const diabledStyle = disabled ? styles.disabled : '';
 
@@ -21,4 +23,3 @@ function Toggle2(props: ToggleProps) {
         </label>
     );
 }
-export default Toggle2;

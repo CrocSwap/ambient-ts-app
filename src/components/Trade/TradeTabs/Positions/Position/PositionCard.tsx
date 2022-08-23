@@ -1,25 +1,27 @@
 // Unfinished file - Currently not in used.
-import { useModal } from '../../../../Global/Modal/useModal';
-import Modal from '../../../../Global/Modal/Modal';
+
+// START: Import React and Dongles
+import { useState, MouseEvent, ReactNode } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-
-import styles from './PositionCard.module.css';
-import { useState } from 'react';
-import { MenuItem, Menu } from '@material-ui/core';
-import { useStyles } from '../../../../../utils/functions/styles';
 import { FiMoreHorizontal } from 'react-icons/fi';
-import RangeStatus from '../../../../Global/RangeStatus/RangeStatus';
-import { PositionIF } from '../../../../../utils/interfaces/PositionIF';
-
-import RemoveRange from '../../../../RemoveRange/RemoveRange';
-import RangeDetails from '../../../../RangeDetails/RangeDetails';
-import RangeDetailsHeader from '../../../../RangeDetails/RangeDetailsHeader/RangeDetailsHeader';
-import trimString from '../../../../../utils/functions/trimString';
-import { ambientPosSlot, concPosSlot } from '@crocswap-libs/sdk';
+import { MenuItem, Menu } from '@material-ui/core';
 import { Tooltip } from '@mui/material';
+import { ambientPosSlot, concPosSlot } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
-interface PositionCardProps {
+// START: Import JSX Functional Components
+import RangeStatus from '../../../../Global/RangeStatus/RangeStatus';
+import Modal from '../../../../Global/Modal/Modal';
+
+// START: Import Local Files
+import styles from './PositionCard.module.css';
+import { useModal } from '../../../../Global/Modal/useModal';
+import { useStyles } from '../../../../../utils/functions/styles';
+import { PositionIF } from '../../../../../utils/interfaces/PositionIF';
+import trimString from '../../../../../utils/functions/trimString';
+
+// interface for React functional component props
+interface PositionCardPropsIF {
     portfolio?: boolean;
     notOnTradeRoute?: boolean;
     position: PositionIF;
@@ -33,26 +35,14 @@ interface PositionCardProps {
     lastBlockNumber: number;
     chainId: string;
 }
-export default function PositionCard(props: PositionCardProps) {
-    const {
-        position,
-        // isAllPositionsEnabled,
-        tokenAAddress,
-        tokenBAddress,
-        account,
-        // notOnTradeRoute,
-        // isAuthenticated,
-        chainId,
-        userPosition,
-        lastBlockNumber,
-    } = props;
+export default function PositionCard(props: PositionCardPropsIF) {
+    const { position, tokenAAddress, tokenBAddress, account, chainId, userPosition } = props;
+
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const location = useLocation();
 
     const currentLocation = location.pathname;
-    const handleClick = (
-        event: React.MouseEvent<HTMLButtonElement> | React.MouseEvent<HTMLDivElement>,
-    ) => {
+    const handleClick = (event: MouseEvent<HTMLButtonElement> | MouseEvent<HTMLDivElement>) => {
         console.log('handleClick', event.currentTarget);
         setAnchorEl(event.currentTarget);
     };
@@ -64,13 +54,10 @@ export default function PositionCard(props: PositionCardProps) {
 
     const [isModalOpen, openModal, closeModal] = useModal();
 
-    const [currentModal, setCurrentModal] = useState<string>('edit');
-
-    const harvestContent = <div>I am harvest</div>;
-    const editContent = <div>I am edit</div>;
+    const [currentModal, setCurrentModal] = useState('edit');
 
     // MODAL FUNCTIONALITY
-    let modalContent: React.ReactNode;
+    let modalContent: ReactNode;
     let modalTitle;
 
     function openRemoveModal() {
@@ -125,8 +112,6 @@ export default function PositionCard(props: PositionCardProps) {
 
     const mobilePosHash = trimString(posHash as string, 4, 0, '…');
 
-    // console.log(mobilePosHash);
-
     let isPositionInRange = true;
 
     if (position.poolPriceInTicks) {
@@ -157,48 +142,7 @@ export default function PositionCard(props: PositionCardProps) {
     const accountAddress = account ? account.toLowerCase() : null;
 
     const positionOwnedByConnectedAccount = ownerId === accountAddress;
-    // const displayAllOrOwned =
-    //     isAllPositionsEnabled || (ownerId === accountAddress && isAuthenticated);
-    // const notDisplayAllOrOwned =
-    //     !isAllPositionsEnabled || (ownerId === accountAddress && isAuthenticated);
 
-    const removeRangeProps = {
-        isPositionInRange: isPositionInRange,
-        isAmbient: position.ambient,
-        baseTokenSymbol: position.baseSymbol,
-        baseTokenDecimals: position.baseTokenDecimals,
-        quoteTokenSymbol: position.quoteSymbol,
-        quoteTokenDecimals: position.quoteTokenDecimals,
-        lowRangeDisplayInBase: position.lowRangeDisplayInBase,
-        highRangeDisplayInBase: position.highRangeDisplayInBase,
-        lowRangeDisplayInQuote: position.lowRangeDisplayInQuote,
-        highRangeDisplayInQuote: position.highRangeDisplayInQuote,
-        baseTokenLogoURI: position.baseTokenLogoURI,
-        quoteTokenLogoURI: position.quoteTokenLogoURI,
-        isDenomBase: props.isDenomBase,
-        baseTokenAddress: props.position.base,
-        quoteTokenAddress: props.position.quote,
-        lastBlockNumber: lastBlockNumber,
-    };
-
-    // switch (currentModal) {
-    //     case 'remove':
-    //         modalContent = <RemoveRange {...removeRangeProps} />;
-    //         modalTitle = 'Remove Position';
-    //         break;
-    //     case 'edit':
-    //         modalContent = editContent;
-    //         modalTitle = 'Edit Position';
-    //         break;
-    //     case 'details':
-    //         modalContent = <RangeDetails {...removeRangeProps} />;
-    //         modalTitle = <RangeDetailsHeader />;
-    //         break;
-    //     case 'harvest':
-    //         modalContent = harvestContent;
-    //         modalTitle = 'Harvest Position';
-    //         break;
-    // }
     const mainModal = (
         <Modal onClose={closeModal} title={modalTitle}>
             {modalContent}
@@ -206,10 +150,6 @@ export default function PositionCard(props: PositionCardProps) {
     );
 
     const modalOrNull = isModalOpen ? mainModal : null;
-
-    // const rangeDisplay = props.isDenomBase
-    //     ? `${position.lowRangeDisplayInBase} - ${position.highRangeDisplayInBase}`
-    //     : `${position.lowRangeDisplayInQuote} - ${position.highRangeDisplayInQuote}`;
 
     const minRange = props.isDenomBase
         ? position.lowRangeDisplayInBase
@@ -333,12 +273,7 @@ export default function PositionCard(props: PositionCardProps) {
                 </div>
 
                 <div className={`${''} ${styles.min_max}`}>{ambientRangeOrNull}</div>
-                {/* <p className={`${styles.hide_ipad} ${styles.min_max}`}> {maxRange} </p> */}
 
-                {/* <div className={''}>
-                <p className={styles.min_max}>Min</p>
-                <p className={styles.min_max}>Max</p>
-            </div> */}
                 <p className={`${styles.large_device} ${styles.qty}`}>T1 Qty</p>
                 <p className={`${styles.large_device} ${styles.qty}`}>T2 Qty</p>
                 <div className={styles.column_display}>

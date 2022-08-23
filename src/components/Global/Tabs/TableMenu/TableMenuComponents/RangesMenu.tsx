@@ -1,14 +1,23 @@
+// START: Import React and Dongles
+import { useState, ReactNode } from 'react';
+import { Link } from 'react-router-dom';
 import { FiMoreHorizontal } from 'react-icons/fi';
+
+// START: Import JSX Functional Components
+import RemoveRange from '../../../../RemoveRange/RemoveRange';
+import RangeDetails from '../../../../RangeDetails/RangeDetails';
+import SnackbarComponent from '../../../../../components/Global/SnackbarComponent/SnackbarComponent';
+import Modal from '../../../../Global/Modal/Modal';
+import RangeDetailsHeader from '../../../../RangeDetails/RangeDetailsHeader/RangeDetailsHeader';
+
+// START: Import Local Files
 import styles from './TableMenuComponents.module.css';
 import { useModal } from '../../../../Global/Modal/useModal';
-import Modal from '../../../../Global/Modal/Modal';
-import { useState } from 'react';
-import RangeDetailsHeader from '../../../../RangeDetails/RangeDetailsHeader/RangeDetailsHeader';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
-import SnackbarComponent from '../../../../../components/Global/SnackbarComponent/SnackbarComponent';
 import { DefaultTooltip } from '../../../StyledTooltip/StyledTooltip';
 
-interface RangesMenu {
+// interface for React functional component props
+interface RangesMenuIF {
     userPosition: boolean | undefined;
     // todoFromJr: Assign the correct types to these data -Jr
     // eslint-disable-next-line
@@ -17,14 +26,13 @@ interface RangesMenu {
     positionData: any;
     posHash: string;
 }
-import { Link } from 'react-router-dom';
-import RemoveRange from '../../../../RemoveRange/RemoveRange';
-import RangeDetails from '../../../../RangeDetails/RangeDetails';
-export default function RangesMenu(props: RangesMenu) {
+
+// React functional component
+export default function RangesMenu(props: RangesMenuIF) {
+    const { userPosition, rangeDetailsProps, posHash, positionData } = props;
+
     const currentLocation = location.pathname;
-    const { isAmbient, isPositionInRange } = props.rangeDetailsProps;
-    const { posHash, positionData } = props;
-    const { userPosition, rangeDetailsProps } = props;
+    const { isAmbient, isPositionInRange } = rangeDetailsProps;
     // eslint-disable-next-line
     const [value, copy] = useCopyToClipboard();
     const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
@@ -35,7 +43,7 @@ export default function RangesMenu(props: RangesMenu) {
     const [openMenuTooltip, setOpenMenuTooltip] = useState(false);
 
     // ---------------------MODAL FUNCTIONALITY----------------
-    let modalContent: React.ReactNode;
+    let modalContent: ReactNode;
 
     let modalTitle;
 
