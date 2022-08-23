@@ -320,7 +320,12 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
     );
     console.log({ currentPoolData });
     console.log({ favePools });
-    // console.log('results', favePools.some( pool => ))
+    console.log('results', favePools.some((pool: PoolIF) => (
+        pool.base.address === currentPoolData.base.address &&
+        pool.quote.address === currentPoolData.quote.address &&
+        pool.poolId === currentPoolData.poolId &&
+        pool.chainId.toString() === currentPoolData.chainId.toString()
+    )));
 
     const tokenInfo = (
         <div className={styles.token_info_container}>
