@@ -9,6 +9,8 @@ import {
     setSwapsByUser,
     ISwap,
     setSwapsByPool,
+    addSwapsByUser,
+    addSwapsByPool,
     CandleData,
     setCandles,
     addCandles,
@@ -780,14 +782,7 @@ export default function App() {
             const lastMessageData = JSON.parse(lastPoolSwapsMessage.data).data;
 
             if (lastMessageData) {
-                Promise.all(lastMessageData.map(getSwapData)).then((updatedSwaps) => {
-                    dispatch(
-                        setSwapsByPool({
-                            dataReceived: true,
-                            swaps: updatedSwaps.concat(graphData.swapsByPool.swaps),
-                        }),
-                    );
-                });
+                dispatch(addSwapsByPool(lastMessageData));
             }
         }
     }, [lastPoolSwapsMessage]);
@@ -863,7 +858,7 @@ export default function App() {
             // Will attempt to reconnect on all close events, such as server shutting down
             shouldReconnect: () => shouldSubscriptionsReconnect,
         },
-        // only connect is account is available
+        // only connect if account is available
         account !== null && account !== '',
     );
 
@@ -871,14 +866,7 @@ export default function App() {
         if (lastUserSwapsMessage !== null) {
             const lastMessageData = JSON.parse(lastUserSwapsMessage.data).data;
             if (lastMessageData) {
-                Promise.all(lastMessageData.map(getSwapData)).then((updatedSwaps) => {
-                    dispatch(
-                        setSwapsByUser({
-                            dataReceived: true,
-                            swaps: updatedSwaps.concat(graphData.swapsByUser.swaps),
-                        }),
-                    );
-                });
+                dispatch(addSwapsByUser(lastMessageData));
             }
         }
     }, [lastUserSwapsMessage]);
@@ -1028,10 +1016,10 @@ export default function App() {
     const graphData = useAppSelector((state) => state.graphData);
 
     const getSwapData = async (swap: ISwap): Promise<ISwap> => {
-        swap.base = swap.base.startsWith('0x') ? swap.base : '0x' + swap.base;
-        swap.quote = swap.quote.startsWith('0x') ? swap.quote : '0x' + swap.quote;
-        swap.user = swap.user.startsWith('0x') ? swap.user : '0x' + swap.user;
-        swap.id = '0x' + swap.id.slice(6);
+        // swap.base = swap.base.startsWith('0x') ? swap.base : '0x' + swap.base;
+        // swap.quote = swap.quote.startsWith('0x') ? swap.quote : '0x' + swap.quote;
+        // swap.user = swap.user.startsWith('0x') ? swap.user : '0x' + swap.user;
+        // swap.id = '0x' + swap.id.slice(6);
 
         return swap;
     };
