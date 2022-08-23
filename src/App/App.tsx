@@ -10,6 +10,7 @@ import {
     ISwap,
     setSwapsByPool,
     addSwapsByUser,
+    addSwapsByPool,
     CandleData,
     setCandles,
     addCandles,
@@ -781,14 +782,7 @@ export default function App() {
             const lastMessageData = JSON.parse(lastPoolSwapsMessage.data).data;
 
             if (lastMessageData) {
-                Promise.all(lastMessageData.map(getSwapData)).then((updatedSwaps) => {
-                    dispatch(
-                        setSwapsByPool({
-                            dataReceived: true,
-                            swaps: updatedSwaps.concat(graphData.swapsByPool.swaps),
-                        }),
-                    );
-                });
+                dispatch(addSwapsByPool(lastMessageData));
             }
         }
     }, [lastPoolSwapsMessage]);
@@ -872,7 +866,6 @@ export default function App() {
         if (lastUserSwapsMessage !== null) {
             const lastMessageData = JSON.parse(lastUserSwapsMessage.data).data;
             if (lastMessageData) {
-                console.log({ lastMessageData });
                 dispatch(addSwapsByUser(lastMessageData));
             }
         }

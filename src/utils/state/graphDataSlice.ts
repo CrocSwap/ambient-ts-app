@@ -195,6 +195,17 @@ export const graphDataSlice = createSlice({
         setSwapsByPool: (state, action: PayloadAction<SwapsByPool>) => {
             state.swapsByPool = action.payload;
         },
+        addSwapsByPool: (state, action: PayloadAction<Array<ISwap>>) => {
+            const swapTxToFind = action.payload[0].tx.toLowerCase();
+            const indexOfTx = state.swapsByPool.swaps
+                .map((item) => item.tx.toLowerCase())
+                .findIndex((tx) => tx === swapTxToFind);
+            if (indexOfTx === -1) {
+                state.swapsByPool.swaps = action.payload.concat(state.swapsByPool.swaps);
+            } else {
+                state.swapsByPool.swaps[indexOfTx] = action.payload[0];
+            }
+        },
         setLiquidity: (state, action: PayloadAction<LiquidityByPool>) => {
             const poolToFind = JSON.stringify(action.payload.pool);
             const indexOfPool = state.liquidityForAllPools.pools
@@ -358,6 +369,7 @@ export const {
     addCandles,
     setSwapsByUser,
     addSwapsByUser,
+    addSwapsByPool,
     setSwapsByPool,
     resetGraphData,
 } = graphDataSlice.actions;
