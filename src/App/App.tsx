@@ -1727,7 +1727,11 @@ export default function App() {
 
             <div className='footer_container'>
                 {currentLocation !== '/' && (
-                    <PageFooter lastBlockNumber={lastBlockNumber} userIsOnline={userIsOnline} />
+                    <PageFooter
+                        lastBlockNumber={lastBlockNumber}
+                        userIsOnline={userIsOnline}
+                        favePools={favePools}
+                    />
                 )}
             </div>
             <SidebarFooter />
