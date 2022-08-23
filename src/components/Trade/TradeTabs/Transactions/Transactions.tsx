@@ -83,7 +83,7 @@ export default function Transactions(props: TransactionsProps) {
             : !isShowAllEnabled
             ? handleUserPoolSelected()
             : handleAllPoolSelected();
-    }, [isShowAllEnabled, isCandleSelected, filter]);
+    }, [isShowAllEnabled, isCandleSelected, filter, swapsByUser, swapsByPool]);
 
     useEffect(() => {
         console.log({ dataReceived });

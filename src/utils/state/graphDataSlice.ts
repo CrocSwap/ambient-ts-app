@@ -181,6 +181,17 @@ export const graphDataSlice = createSlice({
         setSwapsByUser: (state, action: PayloadAction<SwapsByUser>) => {
             state.swapsByUser = action.payload;
         },
+        addSwapsByUser: (state, action: PayloadAction<Array<ISwap>>) => {
+            const swapTxToFind = action.payload[0].tx.toLowerCase();
+            const indexOfTx = state.swapsByUser.swaps
+                .map((item) => item.tx.toLowerCase())
+                .findIndex((tx) => tx === swapTxToFind);
+            if (indexOfTx === -1) {
+                state.swapsByUser.swaps = action.payload.concat(state.swapsByUser.swaps);
+            } else {
+                state.swapsByUser.swaps[indexOfTx] = action.payload[0];
+            }
+        },
         setSwapsByPool: (state, action: PayloadAction<SwapsByPool>) => {
             state.swapsByPool = action.payload;
         },
@@ -203,8 +214,7 @@ export const graphDataSlice = createSlice({
                 // console.log('pool found in RTK for new liquidity data');
 
                 state.liquidityForAllPools.pools[indexOfPool].liquidityData =
-                    state.liquidityForAllPools.pools[indexOfPool].liquidityData =
-                        action.payload.liquidityData;
+                    action.payload.liquidityData;
             }
         },
         setCandles: (state, action: PayloadAction<CandlesByPoolAndDuration>) => {
@@ -347,6 +357,7 @@ export const {
     setCandles,
     addCandles,
     setSwapsByUser,
+    addSwapsByUser,
     setSwapsByPool,
     resetGraphData,
 } = graphDataSlice.actions;

@@ -33,7 +33,7 @@ export default function TransactionCard(props: TransactionProps) {
     } = props;
 
     // const tempOwnerId = '0xa2b398145b7fc8fd9a01142698f15d329ebb5ff5090cfcc8caae440867ab9919';
-    const PosHash = swap.id;
+    const txHash = swap.tx;
     const ownerId = swap.user;
 
     const baseId = swap.base + '_' + chainId;
@@ -66,11 +66,13 @@ export default function TransactionCard(props: TransactionProps) {
     const displayPrice =
         limitPrice && baseToken?.decimals && quoteToken?.decimals
             ? toDisplayPrice(limitPrice, baseToken.decimals, quoteToken.decimals)
-            : 2;
+            : undefined;
 
-    const truncatedDisplayPrice = isDenomBase
-        ? (1 / displayPrice).toPrecision(6)
-        : displayPrice.toPrecision(6);
+    const truncatedDisplayPrice = displayPrice
+        ? isDenomBase
+            ? (1 / displayPrice).toPrecision(6)
+            : displayPrice.toPrecision(6)
+        : undefined;
     // console.log({ limitPrice });
     // console.log({ displayPrice });
     // console.log({ swap });
@@ -80,10 +82,11 @@ export default function TransactionCard(props: TransactionProps) {
     const [quoteFlowDisplay, setQuoteFlowDisplay] = useState<string | undefined>(undefined);
 
     useEffect(() => {
+        // console.log({ swap });
         if (swap.baseFlow && swap.baseDecimals) {
             const baseFlowDisplayNum = parseFloat(toDisplayQty(swap.baseFlow, swap.baseDecimals));
             const baseFlowAbsNum = Math.abs(baseFlowDisplayNum);
-            const isBaseFlowNegative = baseFlowDisplayNum < 0;
+            const isBaseFlowNegative = baseFlowDisplayNum > 0;
             const baseFlowDisplayTruncated =
                 baseFlowAbsNum === 0
                     ? '0'
@@ -102,13 +105,21 @@ export default function TransactionCard(props: TransactionProps) {
                 ? `(${baseFlowDisplayTruncated})`
                 : baseFlowDisplayTruncated;
             setBaseFlowDisplay(baseFlowDisplayString);
+        } else {
+            if (swap.isBuy && swap.inBaseQty) {
+                setBaseFlowDisplay('(' + toDisplayQty(swap.qty, swap.baseDecimals) + ')');
+                setQuoteFlowDisplay(undefined);
+            } else {
+                setQuoteFlowDisplay(toDisplayQty(swap.qty, swap.quoteDecimals));
+                setBaseFlowDisplay(undefined);
+            }
         }
         if (swap.quoteFlow && swap.quoteDecimals) {
             const quoteFlowDisplayNum = parseFloat(
                 toDisplayQty(swap.quoteFlow, swap.quoteDecimals),
             );
             const quoteFlowAbsNum = Math.abs(quoteFlowDisplayNum);
-            const isQuoteFlowNegative = quoteFlowDisplayNum < 0;
+            const isQuoteFlowNegative = quoteFlowDisplayNum > 0;
             const quoteFlowDisplayTruncated =
                 quoteFlowAbsNum === 0
                     ? '0'
@@ -150,7 +161,7 @@ export default function TransactionCard(props: TransactionProps) {
             <div className={styles.row_container}>
                 {/* ------------------------------------------------------ */}
 
-                <WalletAndId ownerId={ownerId} posHash={PosHash} />
+                <WalletAndId ownerId={ownerId} posHash={txHash} />
 
                 {/* ------------------------------------------------------ */}
 
