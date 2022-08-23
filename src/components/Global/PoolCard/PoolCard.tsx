@@ -201,7 +201,7 @@ export default function PoolCard(props: PoolCardProps) {
                     <div className={styles.row_title}>TVL</div>
                     {/* <div className={styles.row_title}>Vol.</div> */}
                     <div className={styles.vol}>
-                        {poolPriceDisplay === undefined ? '...' : `$${poolVolume}`}
+                        {poolVolume === undefined ? '...' : `$${poolVolume}`}
                     </div>
                 </div>
             </div>
