@@ -53,6 +53,7 @@ export const useTermsOfService = (): [
         newUserData.termsOfService = details;
         // send updated user data to local storage
         localStorage.setItem('user', JSON.stringify(newUserData));
+        
     }
 
     return [
