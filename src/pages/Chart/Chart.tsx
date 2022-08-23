@@ -32,6 +32,7 @@ interface ChartData {
     priceData: CandlesByPoolAndDuration | undefined;
     liquidityData: any[];
     changeState: (isOpen: boolean | undefined, candleData: CandleData | undefined) => void;
+    denomInBase: boolean;
     targetData: targetData[] | undefined;
     limitPrice: string | undefined;
     setLimitRate: React.Dispatch<React.SetStateAction<string>>;
@@ -54,6 +55,8 @@ interface ChartUtils {
 }
 
 export default function Chart(props: ChartData) {
+    const { denomInBase } = props;
+
     const d3Container = useRef(null);
     const d3PlotArea = useRef(null);
     const d3Xaxis = useRef(null);
@@ -104,10 +107,16 @@ export default function Chart(props: ChartData) {
             }
             chartData.push({
                 date: new Date(data.time * 1000),
-                open: data.invPriceOpenDecimalCorrected,
-                close: data.invPriceCloseDecimalCorrected,
-                high: data.invMaxPriceDecimalCorrected,
-                low: data.invMinPriceDecimalCorrected,
+                open: denomInBase
+                    ? data.invPriceOpenDecimalCorrected
+                    : data.priceOpenDecimalCorrected,
+                close: denomInBase
+                    ? data.invPriceCloseDecimalCorrected
+                    : data.priceCloseDecimalCorrected,
+                high: denomInBase
+                    ? data.invMinPriceDecimalCorrected
+                    : data.maxPriceDecimalCorrected,
+                low: denomInBase ? data.invMaxPriceDecimalCorrected : data.minPriceDecimalCorrected,
                 time: data.time,
                 allSwaps: data.allSwaps,
             });
@@ -118,7 +127,7 @@ export default function Chart(props: ChartData) {
             chartData: chartData,
         };
         return chartUtils;
-    }, [props.priceData]);
+    }, [props.priceData, denomInBase]);
 
     // Set Scale
     useEffect(() => {
@@ -176,7 +185,7 @@ export default function Chart(props: ChartData) {
                 };
             });
         }
-    }, [parsedChartData.period]);
+    }, [parsedChartData.period, denomInBase]);
 
     // Set Targets
     useEffect(() => {
@@ -304,7 +313,7 @@ export default function Chart(props: ChartData) {
                 });
             }
         }
-    }, [location, props.limitPrice, props.targetData]);
+    }, [location, props.limitPrice, props.targetData, denomInBase]);
 
     // Set Tooltip
     useEffect(() => {
