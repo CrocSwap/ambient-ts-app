@@ -298,39 +298,64 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
 
     // TOKEN INFO----------------------------------------------------------------
 
+    console.log({ favePools });
     const currentPoolData = {
         base: tradeData.tokenA,
         quote: tradeData.tokenB,
         chainId: chainId,
         poolId: 36000,
     };
-    // eslint-disable-next-line
-    const removeButton = (
-        <button
-            onClick={() => removePoolFromFaves(tradeData.tokenA, tradeData.tokenB, chainId, 36000)}
+
+    const isButtonFavorited = favePools.some(
+        (pool: PoolIF) =>
+            pool.base.address === currentPoolData.base.address &&
+            pool.quote.address === currentPoolData.quote.address &&
+            pool.poolId === currentPoolData.poolId &&
+            pool.chainId.toString() === currentPoolData.chainId.toString(),
+    );
+
+    const handleFavButton = () =>
+        isButtonFavorited
+            ? removePoolFromFaves(tradeData.tokenA, tradeData.tokenB, chainId, 36000)
+            : addPoolToFaves(tradeData.tokenA, tradeData.tokenB, chainId, 36000);
+
+    const favButton = (
+        <motion.div
+            whileTap={{ scale: 3 }}
+            transition={{ duration: 0.5 }}
+            onClick={handleFavButton}
+            style={{
+                cursor: 'pointer',
+            }}
         >
-            Remove Pool
-        </button>
+            <svg
+                width='23'
+                height='23'
+                viewBox='0 0 23 23'
+                fill='none'
+                xmlns='http://www.w3.org/2000/svg'
+            >
+                <path
+                    d='M11.5 1.58301L14.7187 8.10384L21.9166 9.15593L16.7083 14.2288L17.9375 21.3955L11.5 18.0101L5.06248 21.3955L6.29165 14.2288L1.08331 9.15593L8.28123 8.10384L11.5 1.58301Z'
+                    stroke='#ebebff'
+                    fill={isButtonFavorited ? '#ebebff' : 'none'}
+                    strokeWidth='2'
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    className={styles.star_svg}
+                />
+            </svg>
+        </motion.div>
     );
-    // eslint-disable-next-line
-    const addButton = (
-        <button onClick={() => addPoolToFaves(tradeData.tokenA, tradeData.tokenB, chainId, 36000)}>
-            Add Pool
-        </button>
-    );
-    console.log({ currentPoolData });
-    console.log({ favePools });
-    console.log('results', favePools.some((pool: PoolIF) => (
-        pool.base.address === currentPoolData.base.address &&
-        pool.quote.address === currentPoolData.quote.address &&
-        pool.poolId === currentPoolData.poolId &&
-        pool.chainId.toString() === currentPoolData.chainId.toString()
-    )));
 
     const tokenInfo = (
         <div className={styles.token_info_container}>
-            <div className={styles.tokens_info} onClick={() => dispatch(toggleDidUserFlipDenom())}>
-                <div className={styles.tokens_images}>
+            <div className={styles.tokens_info}>
+                {favButton}
+                <div
+                    className={styles.tokens_images}
+                    onClick={() => dispatch(toggleDidUserFlipDenom())}
+                >
                     <img
                         src={denomInTokenA ? tradeData.tokenA.logoURI : tradeData.tokenB.logoURI}
                         alt='token'
@@ -342,24 +367,14 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                         width='30px'
                     />
                 </div>
-                <span className={styles.tokens_name}>
+                <span
+                    className={styles.tokens_name}
+                    onClick={() => dispatch(toggleDidUserFlipDenom())}
+                >
                     {denomInTokenA ? tokenASymbol : tokenBSymbol} /{' '}
                     {denomInTokenA ? tokenBSymbol : tokenASymbol}
                 </span>
             </div>
-
-            <button
-                onClick={() =>
-                    removePoolFromFaves(tradeData.tokenA, tradeData.tokenB, chainId, 36000)
-                }
-            >
-                Remove Pool
-            </button>
-            <button
-                onClick={() => addPoolToFaves(tradeData.tokenA, tradeData.tokenB, chainId, 36000)}
-            >
-                Add Pool
-            </button>
 
             <div className={styles.chart_overlay_container}>{chartOverlayButtons}</div>
         </div>
