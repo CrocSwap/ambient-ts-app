@@ -106,12 +106,24 @@ export default function TransactionCard(props: TransactionProps) {
                 : baseFlowDisplayTruncated;
             setBaseFlowDisplay(baseFlowDisplayString);
         } else {
-            if (swap.isBuy && swap.inBaseQty) {
-                setBaseFlowDisplay('(' + toDisplayQty(swap.qty, swap.baseDecimals) + ')');
-                setQuoteFlowDisplay(undefined);
+            console.log(swap.tx);
+            console.log({ swap });
+            if (swap.inBaseQty) {
+                if (!swap.isBuy) {
+                    setBaseFlowDisplay(toDisplayQty(swap.qty, swap.baseDecimals));
+                    setQuoteFlowDisplay(undefined);
+                } else {
+                    setBaseFlowDisplay('(' + toDisplayQty(swap.qty, swap.baseDecimals) + ')');
+                    setQuoteFlowDisplay(undefined);
+                }
             } else {
-                setQuoteFlowDisplay(toDisplayQty(swap.qty, swap.quoteDecimals));
-                setBaseFlowDisplay(undefined);
+                if (!swap.isBuy) {
+                    setQuoteFlowDisplay('(' + toDisplayQty(swap.qty, swap.quoteDecimals) + ')');
+                    setBaseFlowDisplay(undefined);
+                } else {
+                    setQuoteFlowDisplay(toDisplayQty(swap.qty, swap.quoteDecimals));
+                    setBaseFlowDisplay(undefined);
+                }
             }
         }
         if (swap.quoteFlow && swap.quoteDecimals) {
