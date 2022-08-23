@@ -75,6 +75,7 @@ export default function Transactions(props: TransactionsProps) {
     }
 
     useEffect(() => {
+        console.log({ filter });
         isCandleSelected
             ? setTransactionData(
                   swapsByPool.filter((data) => {

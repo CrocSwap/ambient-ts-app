@@ -26,7 +26,7 @@ import {
     setActiveChartPeriod,
     targetData,
 } from '../../../utils/state/tradeDataSlice';
-import { CandleData, CandlesByPoolAndDuration } from '../../../utils/state/graphDataSlice';
+import { CandleData, CandlesByPoolAndDuration, Range } from '../../../utils/state/graphDataSlice';
 import { usePoolChartData } from '../../../state/pools/hooks';
 import { useAppSelector, useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import TradeCandleStickChart from './TradeCandleStickChart';
@@ -57,6 +57,7 @@ interface TradeChartsPropsIF {
         chainId: string,
         poolId: number,
     ) => void;
+    liquidityData: any;
 }
 
 // React functional component
@@ -442,6 +443,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                     setLimitRate={props.setLimitRate}
                     limitRate={props.limitRate}
                     denomInBase={denomInBase}
+                    liquidityData={props.liquidityData}
                 />
             </div>
         </>

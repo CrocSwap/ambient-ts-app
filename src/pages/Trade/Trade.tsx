@@ -107,6 +107,8 @@ export default function Trade(props: TradePropsIF) {
         return data.duration === tradeData.activeChartPeriod;
     });
 
+    const activePoolLiquidityData = graphData?.liquidityForAllPools?.pools[indexOfActivePool];
+    const liquidityData = activePoolLiquidityData?.liquidityData;
     const denomInBase = tradeData.isDenomBase;
     const targetData = tradeData.targetData;
     const limitPrice = tradeData.limitPrice;
@@ -165,6 +167,7 @@ export default function Trade(props: TradePropsIF) {
                                 setFullScreenChart={setFullScreenChart}
                                 changeState={changeState}
                                 candleData={candleData}
+                                liquidityData={liquidityData}
                                 targetData={targetData}
                                 lastBlockNumber={lastBlockNumber}
                                 chainId={chainId}
