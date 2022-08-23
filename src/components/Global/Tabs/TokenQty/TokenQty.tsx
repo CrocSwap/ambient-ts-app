@@ -17,15 +17,17 @@ export default function TokenQty(props: TokenQtyProps) {
 
     const baseDisplay = (
         <section className={styles.qty_sing}>
-            {baseTokenCharacter} <p>{baseQty}</p>
+            {baseQty ? `${baseTokenCharacter}${baseQty}` : '...'}
+            {/* {baseTokenCharacter} <p>{baseQty}</p> */}
             {/* <img src={baseToken ? baseToken.logoURI : undefined} alt='' /> */}
         </section>
     );
 
     const quoteDisplay = (
         <section className={styles.qty_sing}>
-            {quoteTokenCharacter}
-            <p>{quoteQty}</p>
+            {quoteQty ? `${quoteTokenCharacter}${quoteQty}` : '...'}
+
+            {/* {quoteTokenCharacter}<p>{quoteQty}</p> */}
             {/* <img src={quoteToken ? quoteToken.logoURI : undefined} alt='' /> */}
         </section>
     );
