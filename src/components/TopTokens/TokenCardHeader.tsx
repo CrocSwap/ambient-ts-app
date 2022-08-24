@@ -16,6 +16,10 @@ export default function TokenCardHeader(props: TokenCardHeaderProps) {
                 <p className={styles.token} onClick={() => sort(SORT_FIELD.name)}>
                     Name {arrow(SORT_FIELD.name)}
                 </p>
+                <p className={styles.name} onClick={() => sort(SORT_FIELD.address)}>
+                    Address {arrow(SORT_FIELD.address)}
+                </p>
+
                 <p className={styles.pCursor} onClick={() => sort(SORT_FIELD.priceUSD)}>
                     Price {arrow(SORT_FIELD.priceUSD)}
                 </p>

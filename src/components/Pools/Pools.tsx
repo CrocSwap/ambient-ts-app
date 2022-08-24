@@ -23,18 +23,7 @@ interface PoolProps {
 export default function Pools(props: PoolProps) {
     const [sortField, setSortField] = useState(SORT_FIELD.tvlUSD);
     const [sortDirection, setSortDirection] = useState<boolean>(true);
-    const [page, setPage] = useState(1);
-    const [maxPage, setMaxPage] = useState(1);
     const pools = props.pools;
-    const maxItems = props.maxItems ? props.maxItems : pools.length;
-
-    useEffect(() => {
-        let extraPages = 1;
-        if (pools.length % maxItems === 0) {
-            extraPages = 0;
-        }
-        setMaxPage(Math.floor(pools.length / maxItems) + extraPages);
-    }, [maxItems, pools]);
 
     const sortedPools = useMemo(() => {
         return pools
@@ -49,9 +38,8 @@ export default function Pools(props: PoolProps) {
                           return -1;
                       }
                   })
-                  .slice(maxItems * (page - 1), page * maxItems)
             : [];
-    }, [pools, sortDirection, sortField, page]);
+    }, [pools, sortDirection, sortField]);
 
     const handleSort = useCallback(
         (newField: string) => {
@@ -68,18 +56,8 @@ export default function Pools(props: PoolProps) {
         [sortDirection, sortField],
     );
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const handleChange = (event: any, value: number) => {
-        setPage(value);
-    };
-
-    const poolsDisplay = sortedPools.map((pool, idx) => (
-        <PoolRow
-            poolType={props.poolType}
-            pool={pool}
-            key={pool.address}
-            index={(page - 1) * maxItems + idx}
-        />
+    const poolsDisplay = sortedPools.map((pool) => (
+        <PoolRow poolType={props.poolType} pool={pool} key={pool.address} />
     ));
 
     return (
@@ -88,20 +66,6 @@ export default function Pools(props: PoolProps) {
                 <PoolCardHeader poolType={props.poolType} arrow={arrow} sort={handleSort} />
                 {poolsDisplay}
             </div>
-
-            {maxItems !== pools.length ? (
-                <Pagination
-                    count={maxPage}
-                    size='large'
-                    page={page}
-                    variant='outlined'
-                    shape='rounded'
-                    onChange={handleChange}
-                    color='primary'
-                />
-            ) : (
-                <></>
-            )}
         </div>
     );
 }

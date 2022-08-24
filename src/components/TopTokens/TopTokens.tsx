@@ -11,6 +11,7 @@ interface TokenProps {
 
 export const SORT_FIELD = {
     name: 'name',
+    address: 'address',
     volumeUSD: 'volumeUSD',
     tvlUSD: 'tvlUSD',
     priceUSD: 'priceUSD',

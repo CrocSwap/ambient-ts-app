@@ -1,30 +1,53 @@
 import { useNavigate } from 'react-router-dom';
 import { PoolData } from '../../state/pools/models';
 import { feeTierPercent, isAddress } from '../../utils';
+import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
+import { TokenIF } from '../../utils/interfaces/TokenIF';
 import { formatDollarAmount } from '../../utils/numbers';
+import { setTokenA, setTokenB } from '../../utils/state/tradeDataSlice';
 import PoolDisplay from '../Global/Analytics/PoolDisplay';
 import TokenDisplay from '../Global/Analytics/TokenDisplay';
-import TradeButton from '../Global/Analytics/TradeButton';
 import Apy from '../Global/Tabs/Apy/Apy';
 import styles from './PoolRow.module.css';
+import favouritePoolsImage from '../../assets/images/sidebarImages/favouritePools.svg';
 
 interface PoolProps {
     pool: PoolData;
-    index: number;
     poolType: string;
 }
 
 export default function PoolRow(props: PoolProps) {
     const poolData = props.pool;
-
+    const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
+    const token0 = {
+        address: poolData.token0.address,
+        name: poolData.token0.name,
+        symbol: poolData.token0.symbol,
+        logoURI: `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/${isAddress(
+            poolData.token0.address,
+        )}/logo.png`,
+    } as TokenIF;
+    const token1 = {
+        address: poolData.token1.address,
+        name: poolData.token1.name,
+        symbol: poolData.token1.symbol,
+        logoURI: `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/${isAddress(
+            poolData.token1.address,
+        )}/logo.png`,
+    } as TokenIF;
+
     function handleRowClick() {
-        navigate('/pools/' + poolData.address);
+        dispatch(setTokenA(token0));
+        dispatch(setTokenB(token1));
+        navigate('/trade/market');
     }
 
     return (
         <div className={styles.main_container} onClick={handleRowClick}>
+            <div>{favouritePoolsImage}</div>
+
             <div className={styles.tokens_container}>
                 <TokenDisplay
                     token0={isAddress(poolData.token0.address)}
@@ -64,7 +87,11 @@ export default function PoolRow(props: PoolProps) {
             </div>
 
             <div className={styles.menu_container}>
-                <TradeButton />
+                <section>
+                    <button className={styles.trade_button} onClick={handleRowClick}>
+                        Trade
+                    </button>
+                </section>
             </div>
         </div>
     );

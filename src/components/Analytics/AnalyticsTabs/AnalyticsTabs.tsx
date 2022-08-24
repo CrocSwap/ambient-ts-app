@@ -41,15 +41,22 @@ export default function AnalyticsTabs(props: AnalyticsProps) {
         setSearchWord(value);
         if (value.length > 0) {
             setTokens(
-                tokensResult.filter((item) =>
-                    item.name.toLowerCase().includes(value.toLowerCase()),
+                tokensResult.filter(
+                    (item) =>
+                        item.name.toLowerCase().includes(value.toLowerCase()) ||
+                        item.symbol.toLowerCase().includes(value.toLowerCase()) ||
+                        item.address.toLowerCase().includes(value.toLowerCase()),
                 ),
             );
             setPools(
                 poolsResult.filter(
                     (item) =>
                         item.token0.name.toLowerCase().includes(value.toLowerCase()) ||
-                        item.token1.name.toLowerCase().includes(value.toLowerCase()),
+                        item.token1.name.toLowerCase().includes(value.toLowerCase()) ||
+                        item.token0.symbol.toLowerCase().includes(value.toLowerCase()) ||
+                        item.token1.symbol.toLowerCase().includes(value.toLowerCase()) ||
+                        item.token0.address.toLowerCase().includes(value.toLowerCase()) ||
+                        item.token1.address.toLowerCase().includes(value.toLowerCase()),
                 ),
             );
         }
