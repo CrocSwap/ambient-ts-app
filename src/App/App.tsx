@@ -1410,7 +1410,7 @@ export default function App() {
     const walletModal = (
         <Modal 
             onClose={closeModalWallet}
-            title='Connect Wallet'
+            title='Choose a Wallet'
             footer={tosText}
         >
             <button onClick={() => {
