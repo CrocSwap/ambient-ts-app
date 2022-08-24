@@ -34,6 +34,7 @@ import SnackbarComponent from '../components/Global/SnackbarComponent/SnackbarCo
 import PageHeader from './components/PageHeader/PageHeader';
 import Sidebar from './components/Sidebar/Sidebar';
 import PageFooter from './components/PageFooter/PageFooter';
+import Modal from '../components/Global/Modal/Modal';
 import Home from '../pages/Home/Home';
 import Analytics from '../pages/Analytics/Analytics';
 import Portfolio from '../pages/Portfolio/Portfolio';
@@ -41,6 +42,7 @@ import Limit from '../pages/Trade/Limit/Limit';
 import Range from '../pages/Trade/Range/Range';
 import Swap from '../pages/Swap/Swap';
 import Edit from '../pages/Trade/Edit/Edit';
+import TermsOfService from '../pages/TermsOfService/TermsOfService';
 import TestPage from '../pages/TestPage/TestPage';
 import NotFound from '../pages/NotFound/NotFound';
 import Trade from '../pages/Trade/Trade';
@@ -79,6 +81,8 @@ import { useTokenMap } from '../utils/hooks/useTokenMap';
 import { validateChain } from './validateChain';
 import { testTokenMap } from '../utils/data/testTokenMap';
 import { ZERO_ADDRESS } from '../constants';
+import { useModal } from '../components/Global/Modal/useModal';
+import authenticateUser from '../utils/functions/authenticateUser';
 
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 const cachedFetchAddress = memoizeFetchAddress();
@@ -93,7 +97,16 @@ const shouldNonCandleSubscriptionsReconnect = true;
 
 /** ***** React Function *******/
 export default function App() {
-    const { Moralis, isWeb3Enabled, account, logout, isAuthenticated, isInitialized } =
+    const {
+        Moralis,
+        isWeb3Enabled,
+        account,
+        logout,
+        isAuthenticated,
+        isInitialized,
+        authenticate,
+        enableWeb3
+    } =
         useMoralis();
 
     const tokenMap = useTokenMap();
@@ -223,8 +236,6 @@ export default function App() {
     const [swapSlippage, mintSlippage] = useSlippage();
 
     const [favePools, addPoolToFaves, removePoolFromFaves] = useFavePools();
-
-    false && useTermsOfService();
 
     const isPairStable = useMemo(
         () => checkIsStable(tradeData.tokenA.address, tradeData.tokenA.address, chainData.chainId),
@@ -1395,6 +1406,34 @@ export default function App() {
 
     const shouldDisplayAccountTab = isAuthenticated && isWeb3Enabled && account != '';
 
+    const [isModalOpenWallet, openModalWallet, closeModalWallet] = useModal();
+
+    const { tosText, acceptToS } = useTermsOfService();
+
+    // todo: style mouse as a pointer finger
+    const walletModal = (
+        <Modal 
+            onClose={closeModalWallet}
+            title='Choose a Wallet'
+            footer={tosText}
+        >
+            <button
+                onClick={() => {
+                    authenticateUser(
+                        isAuthenticated,
+                        isWeb3Enabled,
+                        authenticate,
+                        enableWeb3,
+                    );
+                    acceptToS();
+                    closeModalWallet();
+                }}
+            >
+                Metamask
+            </button>
+        </Modal>
+    );
+
     // props for <PageHeader/> React element
     const headerProps = {
         nativeBalance: nativeBalance,
@@ -1406,6 +1445,7 @@ export default function App() {
         isChainSupported: isChainSupported,
         switchChain: switchChain,
         switchNetworkInMoralis: switchNetworkInMoralis,
+        openModalWallet: openModalWallet,
     };
 
     // props for <Swap/> React element
@@ -1720,6 +1760,7 @@ export default function App() {
                         />
 
                         <Route path='swap' element={<Swap {...swapProps} />} />
+                        <Route path='tos' element={<TermsOfService />} />
                         <Route path='testpage' element={<TestPage />} />
                         <Route path='*' element={<Navigate to='/404' replace />} />
                         <Route path='/404' element={<NotFound />} />
@@ -1733,6 +1774,7 @@ export default function App() {
                 )}
             </div>
             <SidebarFooter />
+            {isModalOpenWallet && walletModal}
         </>
     );
 }
