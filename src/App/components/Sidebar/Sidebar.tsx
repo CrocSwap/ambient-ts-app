@@ -22,6 +22,7 @@ import topTokensImage from '../../../assets/images/sidebarImages/topTokens.svg';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { PoolIF, TokenIF } from '../../../utils/interfaces/exports';
 import SearchAccordion from './SearchAccordion/SearchAccordion';
+import SidebarSearchResults from './SidebarSearchResults/SidebarSearchResults';
 
 // interface for component props
 interface SidebarPropsIF {
@@ -48,7 +49,6 @@ interface SidebarPropsIF {
 }
 
 export default function Sidebar(props: SidebarPropsIF) {
-    console.log(location);
     const {
         isDenomBase,
         toggleSidebar,
@@ -203,6 +203,48 @@ export default function Sidebar(props: SidebarPropsIF) {
         </div>
     );
 
+    const bottomElementsDisplay = (
+        <div className={styles.bottom_elements}>
+            {recentRangePositions.map((item, idx) => (
+                <SidebarAccordion
+                    toggleSidebar={toggleSidebar}
+                    showSidebar={showSidebar}
+                    idx={idx}
+                    item={item}
+                    key={idx}
+                    mostRecent={mostRecentPositions}
+                />
+            ))}
+            {recentLimitOrders.map((item, idx) => (
+                <SidebarAccordion
+                    toggleSidebar={toggleSidebar}
+                    showSidebar={showSidebar}
+                    idx={idx}
+                    item={item}
+                    key={idx}
+                />
+            ))}
+            {favoritePools.map((item, idx) => (
+                <SidebarAccordion
+                    toggleSidebar={toggleSidebar}
+                    showSidebar={showSidebar}
+                    idx={idx}
+                    item={item}
+                    key={idx}
+                />
+            ))}
+            {recentTransactions.map((item, idx) => (
+                <SidebarAccordion
+                    toggleSidebar={toggleSidebar}
+                    showSidebar={showSidebar}
+                    idx={idx}
+                    item={item}
+                    key={idx}
+                    mostRecent={mostRecentTransactions}
+                />
+            ))}
+        </div>
+    );
     return (
         <div>
             <nav className={`${styles.sidebar} ${sidebarStyle}`}>
@@ -215,51 +257,8 @@ export default function Sidebar(props: SidebarPropsIF) {
                         setSearchMode={setSearchMode}
                     />
 
-                    {!searchMode && topElementsDisplay}
-                    <div className={styles.bottom_elements}>
-                        {searchMode && topElementsDisplay}
-
-                        {recentRangePositions.map((item, idx) => (
-                            <SidebarAccordion
-                                toggleSidebar={toggleSidebar}
-                                showSidebar={showSidebar}
-                                idx={idx}
-                                item={item}
-                                key={idx}
-                                mostRecent={mostRecentPositions}
-                            />
-                        ))}
-                        {recentLimitOrders.map((item, idx) => (
-                            <SidebarAccordion
-                                toggleSidebar={toggleSidebar}
-                                showSidebar={showSidebar}
-                                idx={idx}
-                                item={item}
-                                key={idx}
-                                // mostRecent={mostRecentTransactions}
-                            />
-                        ))}
-                        {favoritePools.map((item, idx) => (
-                            <SidebarAccordion
-                                toggleSidebar={toggleSidebar}
-                                showSidebar={showSidebar}
-                                idx={idx}
-                                item={item}
-                                key={idx}
-                                // mostRecent={mostRecentTransactions}
-                            />
-                        ))}
-                        {recentTransactions.map((item, idx) => (
-                            <SidebarAccordion
-                                toggleSidebar={toggleSidebar}
-                                showSidebar={showSidebar}
-                                idx={idx}
-                                item={item}
-                                key={idx}
-                                mostRecent={mostRecentTransactions}
-                            />
-                        ))}
-                    </div>
+                    {topElementsDisplay}
+                    {bottomElementsDisplay}
                 </ul>
             </nav>
         </div>
