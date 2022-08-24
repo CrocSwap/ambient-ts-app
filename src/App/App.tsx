@@ -1420,7 +1420,11 @@ export default function App() {
 
     // todo: style mouse as a pointer finger
     const walletModal = (
-        <Modal onClose={closeModalWallet} title='Connect Wallet'>
+        <Modal 
+            onClose={closeModalWallet}
+            title='Connect Wallet'
+            footer='By connecting a wallet you agree to the Ambient Terms of Service.'
+        >
             <button onClick={() => authenticateUser(
                 isAuthenticated,
                 isWeb3Enabled,
@@ -1428,7 +1432,8 @@ export default function App() {
                 enableWeb3,
             )}
         >
-                Metamask</button>
+                Metamask
+            </button>
         </Modal>
     );
 

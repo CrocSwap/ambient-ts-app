@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 
-export const useTermsOfService = (): [
-    string,
-    boolean,
-    string,
-    () => void,
-    () => void
-] => {
+export const useTermsOfService = (): {
+    tosText: string;
+    agreement: boolean;
+    agreementDate: string;
+    acceptToS: () => void;
+    rejectToS: () => void;
+} => {
     // user data object from local storage
     const [ userData, setUserData ] = useState(JSON.parse(localStorage.getItem('user') as string));
     // boolean agreement status whether user has accepted ToS
@@ -55,11 +55,11 @@ export const useTermsOfService = (): [
         localStorage.setItem('user', JSON.stringify(newUserData));
     }
 
-    return [
+    return {
         tosText,
         agreement,
         agreementDate,
         acceptToS,
         rejectToS
-    ];
+    };
 }

@@ -1,13 +1,13 @@
 import { useTermsOfService } from '../../App/hooks/useTermsOfService';
 
 export default function TestPage() {
-    const [
+    const {
         tosText,
         agreement,
         agreementDate,
         acceptToS,
         rejectToS
-    ] = useTermsOfService();
+    } = useTermsOfService();
 
     return (
         <main>
