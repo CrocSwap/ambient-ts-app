@@ -153,8 +153,9 @@ export default function TransactionCard(props: TransactionProps) {
         }
     }, [JSON.stringify(swap)]);
 
-    const priceType = swap.isBuy ? 'priceBuy' : 'priceSell';
-    const sideType = swap.isBuy ? 'buy' : 'sell';
+    const priceType =
+        (isDenomBase && !swap.isBuy) || (!isDenomBase && swap.isBuy) ? 'priceBuy' : 'priceSell';
+    const sideType = (isDenomBase && !swap.isBuy) || (!isDenomBase && swap.isBuy) ? 'buy' : 'sell';
 
     if (!transactionMatchesSelectedTokens) return null;
 
