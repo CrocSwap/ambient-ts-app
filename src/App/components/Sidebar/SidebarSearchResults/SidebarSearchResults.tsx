@@ -3,6 +3,7 @@ import styles from './SidebarSearchResults.module.css';
 import TransactionsSkeletons from '../../../../components/Trade/TradeTabs/Transactions/TransactionsSkeletons/TransactionsSkeletons';
 import PoolsSearchResults from './PoolsSearchResults/PoolsSearchResults';
 import PositionsSearchResults from './PositionsSearchResults/PositionsSearchResults';
+import OrdersSearchResults from './OrdersSearchResults/OrdersSearchResults';
 
 interface SidebarSearchResultsPropsIF {
     searchInput: ReactNode;
@@ -18,6 +19,7 @@ export default function SidebarSearchResults(props: SidebarSearchResultsPropsIF)
             <TransactionsSkeletons /> */}
             <PoolsSearchResults />
             <PositionsSearchResults />
+            <OrdersSearchResults />
         </div>
     );
 }
