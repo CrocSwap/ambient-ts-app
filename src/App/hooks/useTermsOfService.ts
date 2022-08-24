@@ -30,7 +30,7 @@ export const useTermsOfService = (): {
 
     // text of the ToS
     // we may want to put this in its own data file and import it
-    const tosText = 'Doug will have to put something here.'
+    const tosText = 'By connecting a wallet you agree to the Terms of Service.';
 
     // meta functions to reflect user accepting or rejecting ToS
     const acceptToS = () => updateUserAgreement(true);

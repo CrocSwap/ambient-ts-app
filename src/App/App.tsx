@@ -232,8 +232,6 @@ export default function App() {
 
     const [favePools, addPoolToFaves, removePoolFromFaves] = useFavePools();
 
-    false && useTermsOfService();
-
     const isPairStable = useMemo(
         () => checkIsStable(tradeData.tokenA.address, tradeData.tokenA.address, chainData.chainId),
         [tradeData.tokenA.address, tradeData.tokenA.address, chainData.chainId],
@@ -1418,19 +1416,25 @@ export default function App() {
 
     const [isModalOpenWallet, openModalWallet, closeModalWallet] = useModal();
 
+    const { tosText, acceptToS } = useTermsOfService();
+
     // todo: style mouse as a pointer finger
     const walletModal = (
         <Modal 
             onClose={closeModalWallet}
             title='Connect Wallet'
-            footer='By connecting a wallet you agree to the Ambient Terms of Service.'
+            footer={tosText}
         >
-            <button onClick={() => authenticateUser(
-                isAuthenticated,
-                isWeb3Enabled,
-                authenticate,
-                enableWeb3,
-            )}
+            <button onClick={() => {
+                authenticateUser(
+                    isAuthenticated,
+                    isWeb3Enabled,
+                    authenticate,
+                    enableWeb3,
+                );
+                acceptToS();
+                closeModalWallet();
+            }}
         >
                 Metamask
             </button>
