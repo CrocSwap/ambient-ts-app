@@ -324,6 +324,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
             whileTap={{ scale: 3 }}
             transition={{ duration: 0.5 }}
             onClick={handleFavButton}
+            className={styles.fav_button}
             style={{
                 cursor: 'pointer',
             }}

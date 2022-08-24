@@ -8,6 +8,7 @@ import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { get24hChange, getPoolTVL, getPoolVolume } from '../../../App/functions/getPoolStats';
 import { formatAmount } from '../../../utils/numbers';
+import PoolCardSkeleton from './PoolCardSkeleton/PoolCardSkeleton';
 
 interface PoolCardProps {
     onClick: () => void;
@@ -175,6 +176,9 @@ export default function PoolCard(props: PoolCardProps) {
         })();
     }, [tokenAAddress, tokenBAddress, lastBlockNumber]);
 
+    console.log(tokenA);
+
+    if (!tokenA || !tokenB) return <PoolCardSkeleton />;
     return (
         <div className={styles.pool_card} onClick={onClick}>
             <div className={styles.row}>
