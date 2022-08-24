@@ -14,9 +14,7 @@ import formatSearchText from '../formatSeachText';
 interface SearchAccordionPropsIF {
     children?: ReactNode;
     showSidebar: boolean;
-    toggleSidebar: (
-        event: MouseEvent<HTMLDivElement> | MouseEvent<HTMLLIElement>,
-    ) => void;
+    toggleSidebar: (event: MouseEvent<HTMLDivElement> | MouseEvent<HTMLLIElement>) => void;
     setSearchMode: Dispatch<SetStateAction<boolean>>;
     searchMode?: boolean;
     handleSearchModeToggle: () => void;
@@ -40,7 +38,7 @@ export default function SearchAccordion(props: SearchAccordionPropsIF) {
     const searchContainer = (
         <div className={styles.main_search_container}>
             <div className={styles.search_container}>
-                <div className={styles.search__icon}>
+                <div className={styles.search__icon} onClick={toggleSidebar}>
                     <BiSearch size={18} color='#CDC1FF' />
                 </div>
                 <input
@@ -48,6 +46,8 @@ export default function SearchAccordion(props: SearchAccordionPropsIF) {
                     id='box'
                     placeholder='Search anything...'
                     className={styles.search__box}
+                    onFocus={() => setSearchMode(true)}
+                    onBlur={() => setSearchMode(false)}
                     onChange={(e) => searchInputChangeHandler(e.target.value)}
                 />
             </div>
@@ -95,25 +95,14 @@ export default function SearchAccordion(props: SearchAccordionPropsIF) {
                 // onClick={showSidebar ? searchModeToggle : toggleSidebar}
             >
                 <div className={`${styles.sidebar_link} ${styles.sidebar_link_search}`}>
-                    <div
-                        className={styles.align_center}
-                        onClick={showSidebar ? searchModeToggle : toggleSidebar}
-                    >
-                        {showSidebar && (
-                            <MdPlayArrow size={12} color='#ffffff' className={sidebarIconStyle} />
-                        )}
-
-                        {!isOpen && <BiSearch color='#CDC1FF' size={20} />}
-
-                        <span className={styles.link_text}>Search</span>
-                    </div>
+                    {searchContainer}
 
                     <div>
                         <img src={closeSidebarImage} alt='close sidebar' onClick={toggleSidebar} />
                     </div>
                 </div>
             </motion.li>
-            <AnimatePresence>{isOpen && showOpenContentOrNull}</AnimatePresence>
+            {/* <AnimatePresence>{isOpen && showOpenContentOrNull}</AnimatePresence> */}
         </>
     );
 }

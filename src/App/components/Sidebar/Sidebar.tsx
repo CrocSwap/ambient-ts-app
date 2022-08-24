@@ -245,6 +245,13 @@ export default function Sidebar(props: SidebarPropsIF) {
             ))}
         </div>
     );
+
+    const regularSidebarDisplay = (
+        <>
+            {topElementsDisplay}
+            {bottomElementsDisplay}
+        </>
+    );
     return (
         <div>
             <nav className={`${styles.sidebar} ${sidebarStyle}`}>
@@ -256,9 +263,11 @@ export default function Sidebar(props: SidebarPropsIF) {
                         handleSearchModeToggle={handleSearchModeToggle}
                         setSearchMode={setSearchMode}
                     />
-
-                    {topElementsDisplay}
-                    {bottomElementsDisplay}
+                    {searchMode ? (
+                        <SidebarSearchResults searchInput='yes' />
+                    ) : (
+                        regularSidebarDisplay
+                    )}
                 </ul>
             </nav>
         </div>
