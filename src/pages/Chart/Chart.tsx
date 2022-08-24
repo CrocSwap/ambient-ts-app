@@ -12,7 +12,7 @@ import {
 } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
-import { CandleData, CandlesByPoolAndDuration, Range } from '../../utils/state/graphDataSlice';
+import { CandleData, CandlesByPoolAndDuration } from '../../utils/state/graphDataSlice';
 import { setLimitPrice, setTargetData, targetData } from '../../utils/state/tradeDataSlice';
 import './Chart.css';
 
@@ -37,6 +37,8 @@ interface ChartData {
     limitPrice: string | undefined;
     setLimitRate: React.Dispatch<React.SetStateAction<string>>;
     limitRate: string;
+    isAdvancedModeActive: boolean | undefined;
+    simpleRangeWidth: number | undefined;
 }
 
 interface CandleChartData {
@@ -55,7 +57,7 @@ interface ChartUtils {
 }
 
 export default function Chart(props: ChartData) {
-    const { denomInBase } = props;
+    const { denomInBase, isAdvancedModeActive } = props;
 
     const d3Container = useRef(null);
     const d3PlotArea = useRef(null);
@@ -95,6 +97,34 @@ export default function Chart(props: ChartData) {
     const [transactionFilter, setTransactionFilter] = useState<CandleData>();
     const [scaleData, setScaleData] = useState<any>();
     const [tooltip, setTooltip] = useState<any>();
+
+    const setDefaultRangeData = () => {
+        setRanges((prevState) => {
+            const newTargets = [...prevState];
+            newTargets.filter((target: any) => target.name === 'high')[0].value =
+                props.priceData !== undefined
+                    ? Math.max(
+                          ...props.priceData.candles.map((o) => {
+                              return o.invPriceOpenDecimalCorrected !== undefined
+                                  ? o.invPriceOpenDecimalCorrected
+                                  : 0;
+                          }),
+                      )
+                    : 0;
+            newTargets.filter((target: any) => target.name === 'low')[0].value =
+                props.priceData !== undefined
+                    ? Math.min(
+                          ...props.priceData.candles.map((o) => {
+                              return o.invPriceCloseDecimalCorrected !== undefined
+                                  ? o.invPriceCloseDecimalCorrected
+                                  : Infinity;
+                          }),
+                      )
+                    : 0;
+
+            return newTargets;
+        });
+    };
 
     // Parse price data
     const parsedChartData = useMemo(() => {
@@ -228,99 +258,85 @@ export default function Chart(props: ChartData) {
                 });
             }
         } else if (location.pathname.includes('range')) {
-            ranges.map((mapData) => {
-                props.targetData?.map((data) => {
-                    if (mapData.name === data.name && mapData.value == data.value) {
-                        reustls.push(true);
-                    }
-                });
-            });
-
-            if (
-                props.targetData === undefined ||
-                (props.targetData[0].value === 0 && props.targetData[1].value === 0)
-            ) {
-                setRanges((prevState) => {
-                    const newTargets = [...prevState];
-                    newTargets.filter((target: any) => target.name === 'high')[0].value =
-                        props.priceData !== undefined
-                            ? Math.max(
-                                  ...props.priceData.candles.map((o) => {
-                                      return o.invPriceOpenDecimalCorrected !== undefined
-                                          ? o.invPriceOpenDecimalCorrected
-                                          : 0;
-                                  }),
-                              )
-                            : 0;
-                    newTargets.filter((target: any) => target.name === 'low')[0].value =
-                        props.priceData !== undefined
-                            ? Math.min(
-                                  ...props.priceData.candles.map((o) => {
-                                      return o.invPriceCloseDecimalCorrected !== undefined
-                                          ? o.invPriceCloseDecimalCorrected
-                                          : Infinity;
-                                  }),
-                              )
-                            : 0;
-
-                    return newTargets;
-                });
-            } else if (reustls.length < 2) {
-                setRanges(() => {
-                    let high = props.targetData?.filter((target: any) => target.name === 'high')[0]
-                        .value;
-                    const low = props.targetData?.filter((target: any) => target.name === 'low')[0]
-                        .value;
-
-                    if (high !== undefined && low !== undefined) {
-                        if (high !== 0 && high < low) {
-                            high = low + low / 100;
+            if (!isAdvancedModeActive) {
+                if (props.simpleRangeWidth === 100) {
+                    setDefaultRangeData();
+                } else {
+                    console.log(props.simpleRangeWidth);
+                }
+            } else {
+                ranges.map((mapData) => {
+                    props.targetData?.map((data) => {
+                        if (mapData.name === data.name && mapData.value == data.value) {
+                            reustls.push(true);
                         }
-
-                        const chartTargets = [
-                            {
-                                name: 'high',
-                                value:
-                                    high !== undefined && high !== 0
-                                        ? high
-                                        : props.priceData !== undefined
-                                        ? Math.max(
-                                              ...props.priceData.candles.map((o) => {
-                                                  return o.invPriceOpenDecimalCorrected !==
-                                                      undefined
-                                                      ? o.invPriceOpenDecimalCorrected
-                                                      : 0;
-                                              }),
-                                          )
-                                        : 0,
-                            },
-                            {
-                                name: 'low',
-                                value:
-                                    low !== undefined && low !== 0
-                                        ? low
-                                        : props.priceData !== undefined
-                                        ? Math.min(
-                                              ...props.priceData.candles.map((o) => {
-                                                  return o.invPriceCloseDecimalCorrected !==
-                                                      undefined
-                                                      ? o.invPriceCloseDecimalCorrected
-                                                      : Infinity;
-                                              }),
-                                          )
-                                        : 0,
-                            },
-                        ];
-                        return chartTargets;
-                    }
-                    return [
-                        { name: 'low', value: 0 },
-                        { name: 'high', value: 0 },
-                    ];
+                    });
                 });
+
+                if (
+                    props.targetData === undefined ||
+                    (props.targetData[0].value === 0 && props.targetData[1].value === 0)
+                ) {
+                    setDefaultRangeData();
+                } else if (reustls.length < 2) {
+                    setRanges(() => {
+                        let high = props.targetData?.filter(
+                            (target: any) => target.name === 'high',
+                        )[0].value;
+                        const low = props.targetData?.filter(
+                            (target: any) => target.name === 'low',
+                        )[0].value;
+
+                        if (high !== undefined && low !== undefined) {
+                            if (high !== 0 && high < low) {
+                                high = low + low / 100;
+                            }
+
+                            const chartTargets = [
+                                {
+                                    name: 'high',
+                                    value:
+                                        high !== undefined && high !== 0
+                                            ? high
+                                            : props.priceData !== undefined
+                                            ? Math.max(
+                                                  ...props.priceData.candles.map((o) => {
+                                                      return o.invPriceOpenDecimalCorrected !==
+                                                          undefined
+                                                          ? o.invPriceOpenDecimalCorrected
+                                                          : 0;
+                                                  }),
+                                              )
+                                            : 0,
+                                },
+                                {
+                                    name: 'low',
+                                    value:
+                                        low !== undefined && low !== 0
+                                            ? low
+                                            : props.priceData !== undefined
+                                            ? Math.min(
+                                                  ...props.priceData.candles.map((o) => {
+                                                      return o.invPriceCloseDecimalCorrected !==
+                                                          undefined
+                                                          ? o.invPriceCloseDecimalCorrected
+                                                          : Infinity;
+                                                  }),
+                                              )
+                                            : 0,
+                                },
+                            ];
+                            return chartTargets;
+                        }
+                        return [
+                            { name: 'low', value: 0 },
+                            { name: 'high', value: 0 },
+                        ];
+                    });
+                }
             }
         }
-    }, [location, props.limitPrice, props.targetData, denomInBase]);
+    }, [location, props.limitPrice, props.targetData, denomInBase, isAdvancedModeActive]);
 
     // Set Tooltip
     useEffect(() => {
@@ -525,38 +541,37 @@ export default function Chart(props: ChartData) {
                     .xScale(scaleData.xScale)
                     .yScale(scaleData.yScale);
 
-                // const dragRange = d3.drag().on('drag', function (event, d: any) {
-                //     const newValue = scaleData.yScale.invert(d3.pointer(event)[1] - 182);
-                //     setRanges((prevState) => {
-                //         const newTargets = [...prevState];
-                //         if (
-                //             d.name === 'high' &&
-                //             newValue >
-                //                 newTargets.filter((target: any) => target.name === 'low')[0].value
-                //         ) {
-                //             newTargets.filter((target: any) => target.name === d.name)[0].value =
-                //                 newValue;
-                //         } else if (
-                //             d.name === 'low' &&
-                //             newValue <
-                //                 newTargets.filter((target: any) => target.name === 'high')[0].value
-                //         ) {
-                //             newTargets.filter((target: any) => target.name === d.name)[0].value =
-                //                 newValue;
-                //         }
-                //         render();
-                //         return newTargets;
-                //     });
-                // });
-
-                const dragLimit = d3.drag().on('drag', function (event) {
+                const dragRange = d3.drag().on('drag', function (event, d: any) {
                     const newValue = scaleData.yScale.invert(d3.pointer(event)[1] - 182);
-                    setLimit(() => {
-                        return [{ name: 'Limit', value: newValue }];
+                    console.log('why');
+                    setRanges((prevState) => {
+                        const newTargets = [...prevState];
+                        if (
+                            d.name === 'high' &&
+                            newValue >
+                                newTargets.filter((target: any) => target.name === 'low')[0].value
+                        ) {
+                            newTargets.filter((target: any) => target.name === d.name)[0].value =
+                                newValue;
+                        } else if (
+                            d.name === 'low' &&
+                            newValue <
+                                newTargets.filter((target: any) => target.name === 'high')[0].value
+                        ) {
+                            newTargets.filter((target: any) => target.name === d.name)[0].value =
+                                newValue;
+                        }
+                        render();
+                        return newTargets;
                     });
                 });
 
-                const drag = dragLimit;
+                // const dragLimit = d3.drag().on('drag', function (event) {
+                //     const newValue = scaleData.yScale.invert(d3.pointer(event)[1] - 182);
+                //     setLimit(() => {
+                //         return [{ name: 'Limit', value: newValue }];
+                //     });
+                // });
 
                 horizontalLine.decorate((selection: any) => {
                     selection
@@ -584,7 +599,7 @@ export default function Chart(props: ChartData) {
                         .on('mouseout', (event: any) => {
                             d3.select(event.currentTarget).style('cursor', 'default');
                         })
-                        .call(drag);
+                        .call(dragRange);
                 });
 
                 let lastY = 0;

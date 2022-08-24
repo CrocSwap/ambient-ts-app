@@ -113,6 +113,9 @@ export default function Trade(props: TradePropsIF) {
     const targetData = tradeData.targetData;
     const limitPrice = tradeData.limitPrice;
 
+    const isAdvancedModeActive = tradeData.advancedMode;
+    const simpleRangeWidth = tradeData.simpleRangeWidth;
+
     const poolPriceDisplayWithDenom = poolPriceDisplay
         ? denomInBase
             ? 1 / poolPriceDisplay
@@ -177,6 +180,8 @@ export default function Trade(props: TradePropsIF) {
                                 favePools={favePools}
                                 addPoolToFaves={addPoolToFaves}
                                 removePoolFromFaves={removePoolFromFaves}
+                                isAdvancedModeActive={isAdvancedModeActive}
+                                simpleRangeWidth={simpleRangeWidth}
                             />
                         </motion.div>
                     </div>
