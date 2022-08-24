@@ -32,6 +32,7 @@ import SnackbarComponent from '../components/Global/SnackbarComponent/SnackbarCo
 import PageHeader from './components/PageHeader/PageHeader';
 import Sidebar from './components/Sidebar/Sidebar';
 import PageFooter from './components/PageFooter/PageFooter';
+import Modal from '../components/Global/Modal/Modal';
 import Home from '../pages/Home/Home';
 import Analytics from '../pages/Analytics/Analytics';
 import Portfolio from '../pages/Portfolio/Portfolio';
@@ -77,6 +78,7 @@ import { useTokenMap } from '../utils/hooks/useTokenMap';
 import { validateChain } from './validateChain';
 import { testTokenMap } from '../utils/data/testTokenMap';
 import { ZERO_ADDRESS } from '../constants';
+import { useModal } from '../components/Global/Modal/useModal';
 
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 const cachedFetchAddress = memoizeFetchAddress();
@@ -1404,6 +1406,14 @@ export default function App() {
 
     const shouldDisplayAccountTab = isAuthenticated && isWeb3Enabled && account != '';
 
+    const [isModalOpenWallet, openModalWallet, closeModalWallet] = useModal();
+
+    const walletModal = (
+        <Modal onClose={closeModalWallet} title='Connect Wallet'>
+            <button>Metamask</button>
+        </Modal>
+    );
+
     // props for <PageHeader/> React element
     const headerProps = {
         nativeBalance: nativeBalance,
@@ -1415,6 +1425,7 @@ export default function App() {
         isChainSupported: isChainSupported,
         switchChain: switchChain,
         switchNetworkInMoralis: switchNetworkInMoralis,
+        openModalWallet: openModalWallet,
     };
 
     // props for <Swap/> React element
@@ -1730,6 +1741,7 @@ export default function App() {
                 )}
             </div>
             <SidebarFooter />
+            {isModalOpenWallet && walletModal}
         </>
     );
 }

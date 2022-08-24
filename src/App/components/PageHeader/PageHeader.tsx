@@ -30,6 +30,7 @@ interface HeaderPropsIF {
     isChainSupported: boolean;
     switchChain: Dispatch<SetStateAction<string>>;
     switchNetworkInMoralis: (providedChainId: string) => Promise<void>;
+    openModalWallet: () => void;
 }
 
 export default function PageHeader(props: HeaderPropsIF) {
@@ -43,6 +44,7 @@ export default function PageHeader(props: HeaderPropsIF) {
         isChainSupported,
         switchChain,
         switchNetworkInMoralis,
+        openModalWallet
     } = props;
 
     const { user, account, enableWeb3, isWeb3Enabled, authenticate, isAuthenticated } =
@@ -210,6 +212,7 @@ export default function PageHeader(props: HeaderPropsIF) {
                 {(!isAuthenticated || !isWeb3Enabled) && metamaskButton}
                 <Account {...accountProps} />
             </div>
+            <button onClick={() => openModalWallet()}>Connect Wallet</button>
             {isChainSupported || <SwitchNetwork switchNetworkInMoralis={switchNetworkInMoralis} />}
             {modalOrNull}
         </header>
