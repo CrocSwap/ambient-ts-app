@@ -63,23 +63,9 @@ export default function TransactionCard(props: TransactionProps) {
 
     //    const qtyDecimals = swap.inBaseQty ? baseToken?.decimals : quoteToken?.decimals
 
+    const [truncatedDisplayPrice, setTruncatedDisplayPrice] = useState<string | undefined>();
     // const limitPrice = swap.limitPrice;
-    const priceDecimalCorrected = swap.priceDecimalCorrected;
-    const invPriceDecimalCorrected = swap.invPriceDecimalCorrected;
 
-    // if (transactionMatchesSelectedTokens) {
-    //     console.log(baseToken?.decimals);
-    //     console.log(quoteToken?.decimals);
-    // }
-
-    // const displayPrice =
-    //     limitPrice && baseToken?.decimals && quoteToken?.decimals
-    //         ? toDisplayPrice(limitPrice, baseToken.decimals, quoteToken.decimals)
-    //         : undefined;
-
-    const truncatedDisplayPrice = isDenomBase
-        ? invPriceDecimalCorrected?.toPrecision(6)
-        : priceDecimalCorrected?.toPrecision(6);
     // console.log({ limitPrice });
     // console.log({ displayPrice });
     // console.log({ swap });
@@ -90,6 +76,18 @@ export default function TransactionCard(props: TransactionProps) {
 
     useEffect(() => {
         // console.log({ swap });
+        if (swap.priceDecimalCorrected && swap.invPriceDecimalCorrected) {
+            const priceDecimalCorrected = swap.priceDecimalCorrected;
+            const invPriceDecimalCorrected = swap.invPriceDecimalCorrected;
+
+            const truncatedDisplayPrice = isDenomBase
+                ? invPriceDecimalCorrected?.toPrecision(6)
+                : priceDecimalCorrected?.toPrecision(6);
+
+            setTruncatedDisplayPrice(truncatedDisplayPrice);
+        } else {
+            setTruncatedDisplayPrice(undefined);
+        }
         if (swap.baseFlow && swap.baseDecimals) {
             const baseFlowDisplayNum = parseFloat(toDisplayQty(swap.baseFlow, swap.baseDecimals));
             const baseFlowAbsNum = Math.abs(baseFlowDisplayNum);
