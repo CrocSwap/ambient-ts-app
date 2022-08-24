@@ -87,7 +87,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
 
     const truncatedPoolPrice =
         poolPriceDisplay === Infinity || poolPriceDisplay === 0
-            ? '...'
+            ? '…'
             : poolPriceDisplay < 2
             ? poolPriceDisplay.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
@@ -453,7 +453,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
             <div className={styles.left_side}>
                 <span className={styles.amount}>
                     {poolPriceDisplay === Infinity
-                        ? '...'
+                        ? '…'
                         : `${currencyCharacter}${truncatedPoolPrice}`}
                 </span>
                 <span
@@ -461,9 +461,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                         isPoolPriceChangePositive ? styles.change_positive : styles.change_negative
                     }
                 >
-                    {poolPriceChangePercent === undefined
-                        ? '...'
-                        : poolPriceChangePercent + ' | 24h'}
+                    {poolPriceChangePercent === undefined ? '…' : poolPriceChangePercent + ' | 24h'}
                 </span>
             </div>
             <div className={styles.right_side}>

@@ -63,7 +63,7 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
 
     const displayPriceString =
         displayPriceWithDenom === Infinity || displayPriceWithDenom === 0
-            ? '...'
+            ? '…'
             : displayPriceWithDenom < 2
             ? displayPriceWithDenom.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
@@ -80,7 +80,7 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
 
     const displayLimitPriceString =
         displayPriceWithDenom === Infinity || displayPriceWithDenom === 0
-            ? '...'
+            ? '…'
             : priceLimitAfterSlippageAndFee < 2
             ? priceLimitAfterSlippageAndFee.toLocaleString(undefined, {
                   minimumFractionDigits: 2,

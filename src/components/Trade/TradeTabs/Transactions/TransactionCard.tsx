@@ -6,7 +6,10 @@ import styles from './TransactionCard.module.css';
 import { ISwap } from '../../../../utils/state/graphDataSlice';
 import TransactionsMenu from '../../../Global/Tabs/TableMenu/TableMenuComponents/TransactionsMenu';
 import { TokenIF } from '../../../../utils/interfaces/TokenIF';
-import { toDisplayPrice, toDisplayQty } from '@crocswap-libs/sdk';
+import {
+    //  toDisplayPrice,
+    toDisplayQty,
+} from '@crocswap-libs/sdk';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { formatAmount } from '../../../../utils/numbers';
 
@@ -60,23 +63,9 @@ export default function TransactionCard(props: TransactionProps) {
 
     //    const qtyDecimals = swap.inBaseQty ? baseToken?.decimals : quoteToken?.decimals
 
-    const limitPrice = swap.limitPrice;
+    const [truncatedDisplayPrice, setTruncatedDisplayPrice] = useState<string | undefined>();
+    // const limitPrice = swap.limitPrice;
 
-    // if (transactionMatchesSelectedTokens) {
-    //     console.log(baseToken?.decimals);
-    //     console.log(quoteToken?.decimals);
-    // }
-
-    const displayPrice =
-        limitPrice && baseToken?.decimals && quoteToken?.decimals
-            ? toDisplayPrice(limitPrice, baseToken.decimals, quoteToken.decimals)
-            : undefined;
-
-    const truncatedDisplayPrice = displayPrice
-        ? isDenomBase
-            ? (1 / displayPrice).toPrecision(6)
-            : displayPrice.toPrecision(6)
-        : undefined;
     // console.log({ limitPrice });
     // console.log({ displayPrice });
     // console.log({ swap });
@@ -87,6 +76,18 @@ export default function TransactionCard(props: TransactionProps) {
 
     useEffect(() => {
         // console.log({ swap });
+        if (swap.priceDecimalCorrected && swap.invPriceDecimalCorrected) {
+            const priceDecimalCorrected = swap.priceDecimalCorrected;
+            const invPriceDecimalCorrected = swap.invPriceDecimalCorrected;
+
+            const truncatedDisplayPrice = isDenomBase
+                ? invPriceDecimalCorrected?.toPrecision(6)
+                : priceDecimalCorrected?.toPrecision(6);
+
+            setTruncatedDisplayPrice(truncatedDisplayPrice);
+        } else {
+            setTruncatedDisplayPrice(undefined);
+        }
         if (swap.baseFlow && swap.baseDecimals) {
             const baseFlowDisplayNum = parseFloat(toDisplayQty(swap.baseFlow, swap.baseDecimals));
             const baseFlowAbsNum = Math.abs(baseFlowDisplayNum);
