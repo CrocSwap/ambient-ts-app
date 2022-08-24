@@ -96,7 +96,7 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
     ) : null;
     const copyButton = (
         <button className={styles.option_button} onClick={handleCopyAddress}>
-            Copy
+            Clone
         </button>
     );
     const detailsButton = (

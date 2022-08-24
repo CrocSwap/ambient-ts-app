@@ -52,6 +52,7 @@ interface ITabsProps {
 export default function TradeTabs2(props: ITabsProps) {
     const {
         chainId,
+        account,
         isShowAllEnabled,
         setIsShowAllEnabled,
         tokenMap,
@@ -112,7 +113,7 @@ export default function TradeTabs2(props: ITabsProps) {
         graphData: graphData,
         chainId: props.chainId,
         currentTxActiveInTransactions: props.currentTxActiveInTransactions,
-
+        account: account,
         setCurrentTxActiveInTransactions: props.setCurrentTxActiveInTransactions,
         expandTradeTable: props.expandTradeTable,
 
@@ -122,6 +123,7 @@ export default function TradeTabs2(props: ITabsProps) {
     // Props for <Orders/> React Element
     const ordersProps = {
         expandTradeTable: props.expandTradeTable,
+        account: account,
     };
     // props for <PositionsOnlyToggle/> React Element
 

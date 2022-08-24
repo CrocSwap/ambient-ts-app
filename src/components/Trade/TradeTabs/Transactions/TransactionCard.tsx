@@ -12,6 +12,7 @@ import { formatAmount } from '../../../../utils/numbers';
 
 interface TransactionProps {
     swap: ISwap;
+    account: string;
     tokenMap: Map<string, TokenIF>;
     chainId: string;
     tokenAAddress: string;
@@ -23,6 +24,7 @@ interface TransactionProps {
 export default function TransactionCard(props: TransactionProps) {
     const {
         swap,
+        account,
         tokenMap,
         chainId,
         tokenAAddress,
@@ -33,8 +35,10 @@ export default function TransactionCard(props: TransactionProps) {
     } = props;
 
     // const tempOwnerId = '0xa2b398145b7fc8fd9a01142698f15d329ebb5ff5090cfcc8caae440867ab9919';
-    const PosHash = swap.id;
+    const txHash = swap.tx;
     const ownerId = swap.user;
+
+    const isOwnerActiveAccount = ownerId.toLowerCase() === account.toLowerCase();
 
     const baseId = swap.base + '_' + chainId;
     const quoteId = swap.quote + '_' + chainId;
@@ -66,11 +70,13 @@ export default function TransactionCard(props: TransactionProps) {
     const displayPrice =
         limitPrice && baseToken?.decimals && quoteToken?.decimals
             ? toDisplayPrice(limitPrice, baseToken.decimals, quoteToken.decimals)
-            : 2;
+            : undefined;
 
-    const truncatedDisplayPrice = isDenomBase
-        ? (1 / displayPrice).toPrecision(6)
-        : displayPrice.toPrecision(6);
+    const truncatedDisplayPrice = displayPrice
+        ? isDenomBase
+            ? (1 / displayPrice).toPrecision(6)
+            : displayPrice.toPrecision(6)
+        : undefined;
     // console.log({ limitPrice });
     // console.log({ displayPrice });
     // console.log({ swap });
@@ -80,10 +86,11 @@ export default function TransactionCard(props: TransactionProps) {
     const [quoteFlowDisplay, setQuoteFlowDisplay] = useState<string | undefined>(undefined);
 
     useEffect(() => {
+        // console.log({ swap });
         if (swap.baseFlow && swap.baseDecimals) {
             const baseFlowDisplayNum = parseFloat(toDisplayQty(swap.baseFlow, swap.baseDecimals));
             const baseFlowAbsNum = Math.abs(baseFlowDisplayNum);
-            const isBaseFlowNegative = baseFlowDisplayNum < 0;
+            const isBaseFlowNegative = baseFlowDisplayNum > 0;
             const baseFlowDisplayTruncated =
                 baseFlowAbsNum === 0
                     ? '0'
@@ -102,13 +109,33 @@ export default function TransactionCard(props: TransactionProps) {
                 ? `(${baseFlowDisplayTruncated})`
                 : baseFlowDisplayTruncated;
             setBaseFlowDisplay(baseFlowDisplayString);
+        } else {
+            // console.log({ swap });
+            // console.log(swap.tx);
+            if (swap.inBaseQty) {
+                if (!swap.isBuy) {
+                    setBaseFlowDisplay(toDisplayQty(swap.qty, swap.baseDecimals));
+                    setQuoteFlowDisplay(undefined);
+                } else {
+                    setBaseFlowDisplay('(' + toDisplayQty(swap.qty, swap.baseDecimals) + ')');
+                    setQuoteFlowDisplay(undefined);
+                }
+            } else {
+                if (!swap.isBuy) {
+                    setQuoteFlowDisplay('(' + toDisplayQty(swap.qty, swap.quoteDecimals) + ')');
+                    setBaseFlowDisplay(undefined);
+                } else {
+                    setQuoteFlowDisplay(toDisplayQty(swap.qty, swap.quoteDecimals));
+                    setBaseFlowDisplay(undefined);
+                }
+            }
         }
         if (swap.quoteFlow && swap.quoteDecimals) {
             const quoteFlowDisplayNum = parseFloat(
                 toDisplayQty(swap.quoteFlow, swap.quoteDecimals),
             );
             const quoteFlowAbsNum = Math.abs(quoteFlowDisplayNum);
-            const isQuoteFlowNegative = quoteFlowDisplayNum < 0;
+            const isQuoteFlowNegative = quoteFlowDisplayNum > 0;
             const quoteFlowDisplayTruncated =
                 quoteFlowAbsNum === 0
                     ? '0'
@@ -130,8 +157,9 @@ export default function TransactionCard(props: TransactionProps) {
         }
     }, [JSON.stringify(swap)]);
 
-    const priceType = swap.isBuy ? 'priceBuy' : 'priceSell';
-    const sideType = swap.isBuy ? 'buy' : 'sell';
+    const priceType =
+        (isDenomBase && !swap.isBuy) || (!isDenomBase && swap.isBuy) ? 'priceBuy' : 'priceSell';
+    const sideType = (isDenomBase && !swap.isBuy) || (!isDenomBase && swap.isBuy) ? 'buy' : 'sell';
 
     if (!transactionMatchesSelectedTokens) return null;
 
@@ -150,7 +178,11 @@ export default function TransactionCard(props: TransactionProps) {
             <div className={styles.row_container}>
                 {/* ------------------------------------------------------ */}
 
-                <WalletAndId ownerId={ownerId} posHash={PosHash} />
+                <WalletAndId
+                    ownerId={ownerId}
+                    posHash={txHash}
+                    isOwnerActiveAccount={isOwnerActiveAccount}
+                />
 
                 {/* ------------------------------------------------------ */}
 
@@ -161,8 +193,8 @@ export default function TransactionCard(props: TransactionProps) {
                 {/* ------------------------------------------------------ */}
 
                 <TokenQty
-                    baseToken={baseToken}
-                    quoteToken={quoteToken}
+                    baseTokenSymbol={baseToken?.symbol}
+                    quoteTokenSymbol={quoteToken?.symbol}
                     baseQty={baseFlowDisplay}
                     quoteQty={quoteFlowDisplay}
                 />

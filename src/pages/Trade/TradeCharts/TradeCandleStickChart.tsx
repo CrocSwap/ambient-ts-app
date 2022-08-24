@@ -39,7 +39,7 @@ export default function TradeCandleStickChart(props: ChartData) {
 
     const numberOfActiveItems = [showFeeRate, showTvl, showVolume].filter(Boolean);
 
-    const chartHeight = 85 - numberOfActiveItems.length * 15;
+    const chartHeight = 100 - numberOfActiveItems.length * 15;
     // console.log(chartHeight);
     // console.log(numberOfActiveItems.length);
 

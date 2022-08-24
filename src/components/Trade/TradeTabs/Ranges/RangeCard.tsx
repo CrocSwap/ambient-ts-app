@@ -168,6 +168,8 @@ export default function RangeCard(props: RangeCardProps) {
                           maximumFractionDigits: 2,
                       });
             setBaseLiquidityDisplay(baseLiqDisplayTruncated);
+        } else {
+            setBaseLiquidityDisplay(undefined);
         }
         if (position.positionLiqQuote && position.quoteTokenDecimals) {
             const quoteLiqDisplayNum = parseFloat(
@@ -188,20 +190,24 @@ export default function RangeCard(props: RangeCardProps) {
                           maximumFractionDigits: 2,
                       });
             setQuoteLiquidityDisplay(quoteLiqDisplayTruncated);
+        } else {
+            setQuoteLiquidityDisplay(undefined);
         }
     }, [JSON.stringify(position)]);
 
     // ------------------------------END OF REMOVE RANGE PROPS-----------------
 
     const activePositionStyle =
-        position.id === currentPositionActive ? styles.active_position_style : '';
+        position.positionStorageSlot === currentPositionActive ? styles.active_position_style : '';
 
     if (!positionMatchesSelectedTokens) return null;
     return (
         <div
             className={`${styles.main_container} ${activePositionStyle}`}
             onClick={() =>
-                position.id === currentPositionActive ? null : setCurrentPositionActive('')
+                position.positionStorageSlot === currentPositionActive
+                    ? null
+                    : setCurrentPositionActive('')
             }
         >
             <div className={styles.row_container}>
@@ -211,13 +217,19 @@ export default function RangeCard(props: RangeCardProps) {
                     ownerId={position.user}
                     posHash={posHash as string}
                     ensName={position.userEnsName ? position.userEnsName : null}
+                    isOwnerActiveAccount={userMatchesConnectedAccount}
                 />
 
                 {/* ------------------------------------------------------ */}
                 <RangeMinMax min={ambientMinOrNull} max={ambientMaxOrNull} />
                 {/* ------------------------------------------------------ */}
 
-                <TokenQty baseQty={baseLiquidityDisplay} quoteQty={quoteLiquidityDisplay} />
+                <TokenQty
+                    baseQty={baseLiquidityDisplay}
+                    quoteQty={quoteLiquidityDisplay}
+                    baseTokenSymbol={position.baseSymbol}
+                    quoteTokenSymbol={position.quoteSymbol}
+                />
                 {/* ------------------------------------------------------ */}
                 <Apy amount={10} />
                 {/* ------------------------------------------------------ */}

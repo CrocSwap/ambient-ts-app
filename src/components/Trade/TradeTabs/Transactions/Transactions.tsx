@@ -15,7 +15,7 @@ interface TransactionsProps {
     chainId: string;
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
-
+    account: string;
     expandTradeTable: boolean;
 
     isCandleSelected: boolean | undefined;
@@ -25,6 +25,7 @@ interface TransactionsProps {
 export default function Transactions(props: TransactionsProps) {
     const {
         isShowAllEnabled,
+        account,
         graphData,
         tokenMap,
         chainId,
@@ -83,11 +84,11 @@ export default function Transactions(props: TransactionsProps) {
             : !isShowAllEnabled
             ? handleUserPoolSelected()
             : handleAllPoolSelected();
-    }, [isShowAllEnabled, isCandleSelected, filter]);
+    }, [isShowAllEnabled, isCandleSelected, filter, swapsByUser, swapsByPool]);
 
     useEffect(() => {
-        console.log({ dataReceived });
-        console.log({ isDataLoading });
+        // console.log({ dataReceived });
+        // console.log({ isDataLoading });
         dataReceived ? handleDataReceived() : setIsDataLoading(true);
     }, [graphData, transactionData, dataReceived]);
 
@@ -106,6 +107,7 @@ export default function Transactions(props: TransactionsProps) {
             tokenAAddress={tokenAAddress}
             tokenBAddress={tokenBAddress}
             isDenomBase={isDenomBase}
+            account={account}
             currentTxActiveInTransactions={currentTxActiveInTransactions}
             setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
         />
