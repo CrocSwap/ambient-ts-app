@@ -78,8 +78,8 @@ export default function TransactionCard(props: TransactionProps) {
     //         : undefined;
 
     const truncatedDisplayPrice = isDenomBase
-        ? invPriceDecimalCorrected.toPrecision(6)
-        : priceDecimalCorrected.toPrecision(6);
+        ? invPriceDecimalCorrected?.toPrecision(6)
+        : priceDecimalCorrected?.toPrecision(6);
     // console.log({ limitPrice });
     // console.log({ displayPrice });
     // console.log({ swap });

@@ -102,7 +102,7 @@ export default function TokenInfo(props: ITokenInfoProps) {
 
                 const displayPriceString =
                     displayPriceWithDenom === Infinity || displayPriceWithDenom === 0
-                        ? '...'
+                        ? '…'
                         : displayPriceWithDenom < 2
                         ? displayPriceWithDenom.toPrecision(4)
                         : displayPriceWithDenom.toLocaleString(undefined, {
@@ -126,9 +126,7 @@ export default function TokenInfo(props: ITokenInfoProps) {
                             : styles.price_change_negative
                     }
                 >
-                    {poolPriceChangePercent === undefined
-                        ? '...'
-                        : poolPriceChangePercent + ' | 24h'}
+                    {poolPriceChangePercent === undefined ? '…' : poolPriceChangePercent + ' | 24h'}
                 </span>
             </div>
             <div className={styles.apy}>APY | 35.65%</div>
