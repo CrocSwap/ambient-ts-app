@@ -4,6 +4,7 @@ import TransactionsSkeletons from '../../../../components/Trade/TradeTabs/Transa
 import PoolsSearchResults from './PoolsSearchResults/PoolsSearchResults';
 import PositionsSearchResults from './PositionsSearchResults/PositionsSearchResults';
 import OrdersSearchResults from './OrdersSearchResults/OrdersSearchResults';
+import TransactionsSearchResults from './TransactionsResults/TransactionsResults';
 
 interface SidebarSearchResultsPropsIF {
     searchInput: ReactNode;
@@ -20,6 +21,7 @@ export default function SidebarSearchResults(props: SidebarSearchResultsPropsIF)
             <PoolsSearchResults />
             <PositionsSearchResults />
             <OrdersSearchResults />
+            <TransactionsSearchResults />
         </div>
     );
 }
