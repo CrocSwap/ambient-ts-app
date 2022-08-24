@@ -176,79 +176,100 @@ export default function PoolCard(props: PoolCardProps) {
         })();
     }, [tokenAAddress, tokenBAddress, lastBlockNumber]);
 
-    // console.log(tokenA);
+
+    const tokenImagesDisplay = (
+        <div>
+            <img
+                src={shouldInvertDisplay ? tokenAFromMap?.logoURI : tokenBFromMap?.logoURI}
+                alt=''
+            />
+            <img
+                src={shouldInvertDisplay ? tokenBFromMap?.logoURI : tokenAFromMap?.logoURI}
+                alt=''
+            />
+        </div>
+    );
+
+
+
+    const tokenNamesDisplay = (
+        <div className={styles.tokens_name}>
+            {shouldInvertDisplay
+                ? `${tokenA.symbol} / ${tokenB.symbol}`
+                : `${tokenB.symbol} / ${tokenA.symbol}`}
+        </div>
+    );
+
+    const apyDisplay = (
+        <>
+            <div></div>
+            <div>
+                <div className={styles.row_title}>APY</div>
+                <div className={styles.apy}>{poolPriceDisplay === undefined ? '...' : '35.34'}</div>
+            </div>
+        </>
+    );
+
+    const volumeDisplay = (
+        <>
+            <div></div>
+            <div>
+                <div className={styles.row_title}>Volume</div>
+                <div className={styles.vol}>
+                    {poolVolume === undefined ? '...' : `$${poolVolume}`}
+                </div>
+            </div>
+        </>
+    );
+
+    const tvlDisplay = (
+        <>
+            <div></div>
+            <div>
+                <div className={styles.row_title}>TVL</div>
+                <div className={styles.vol}>{poolTvl === undefined ? '...' : `$${poolTvl}`}</div>
+            </div>
+        </>
+    );
+
+    const poolPriceDisplayDOM = (
+        <div className={styles.price}>
+            {poolPriceDisplay === undefined
+                ? '...'
+                : shouldInvertDisplay
+                ? `${tokenBCharacter}${poolPriceDisplay}`
+                : `${tokenACharacter}${poolPriceDisplay}`}
+        </div>
+    );
+
+    const poolPriceChangeDisplay = (
+        <div>
+            <div className={styles.row_title}>24h</div>
+            <div
+                className={
+                    isPoolPriceChangePositive ? styles.change_positive : styles.change_negative
+                }
+            >
+                {poolPriceChangePercent === undefined ? '...' : poolPriceChangePercent}
+            </div>
+        </div>
+    );
 
     if (!tokenA || !tokenB) return <PoolCardSkeleton />;
     return (
         <div className={styles.pool_card} onClick={onClick}>
             <div className={styles.row}>
-                <div>
-                    <img
-                        src={shouldInvertDisplay ? tokenAFromMap?.logoURI : tokenBFromMap?.logoURI}
-                        // src='https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png'
-                        alt=''
-                    />
-                    <img
-                        src={shouldInvertDisplay ? tokenBFromMap?.logoURI : tokenAFromMap?.logoURI}
-                        // src='https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.png'
-                        alt=''
-                    />
-                </div>
-                <div className={styles.tokens_name}>
-                    {shouldInvertDisplay
-                        ? `${tokenA.symbol} / ${tokenB.symbol}`
-                        : `${tokenB.symbol} / ${tokenA.symbol}`}
-                </div>
+                {tokenImagesDisplay}
+                {tokenNamesDisplay}
             </div>
 
-            <div className={styles.row}>
-                <div></div>
-                <div>
-                    <div className={styles.row_title}>APY</div>
-                    <div className={styles.apy}>
-                        {poolPriceDisplay === undefined ? '...' : '35.34'}
-                    </div>
-                </div>
-            </div>
-            <div className={styles.row}>
-                <div></div>
-                <div>
-                    <div className={styles.row_title}>Volume</div>
-                    <div className={styles.vol}>
-                        {poolVolume === undefined ? '...' : `$${poolVolume}`}
-                    </div>
-                </div>
-            </div>
-            <div className={styles.row}>
-                <div></div>
-                <div>
-                    <div className={styles.row_title}>TVL</div>
-                    <div className={styles.vol}>
-                        {poolTvl === undefined ? '...' : `$${poolTvl}`}
-                    </div>
-                </div>
-            </div>
+            <div className={styles.row}>{apyDisplay}</div>
+            <div className={styles.row}>{volumeDisplay}</div>
+            <div className={styles.row}>{tvlDisplay}</div>
 
             <div className={styles.row}>
-                <div className={styles.price}>
-                    {poolPriceDisplay === undefined
-                        ? '...'
-                        : shouldInvertDisplay
-                        ? `${tokenBCharacter}${poolPriceDisplay}`
-                        : `${tokenACharacter}${poolPriceDisplay}`}
-                </div>
-                <div>
-                    <div className={styles.row_title}>24h</div>
-                    <div
-                        className={
-                            isPoolPriceChangePositive
-                                ? styles.change_positive
-                                : styles.change_negative
-                        }
-                    >
-                        {poolPriceChangePercent === undefined ? '...' : poolPriceChangePercent}
-                    </div>
-                </div>
+                {poolPriceDisplayDOM}
+                {poolPriceChangeDisplay}
             </div>
         </div>
     );
