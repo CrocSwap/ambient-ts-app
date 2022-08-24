@@ -12,6 +12,7 @@ import { formatAmount } from '../../../../utils/numbers';
 
 interface TransactionProps {
     swap: ISwap;
+    account: string;
     tokenMap: Map<string, TokenIF>;
     chainId: string;
     tokenAAddress: string;
@@ -23,6 +24,7 @@ interface TransactionProps {
 export default function TransactionCard(props: TransactionProps) {
     const {
         swap,
+        account,
         tokenMap,
         chainId,
         tokenAAddress,
@@ -35,6 +37,8 @@ export default function TransactionCard(props: TransactionProps) {
     // const tempOwnerId = '0xa2b398145b7fc8fd9a01142698f15d329ebb5ff5090cfcc8caae440867ab9919';
     const txHash = swap.tx;
     const ownerId = swap.user;
+
+    const isOwnerActiveAccount = ownerId.toLowerCase() === account.toLowerCase();
 
     const baseId = swap.base + '_' + chainId;
     const quoteId = swap.quote + '_' + chainId;
@@ -174,7 +178,11 @@ export default function TransactionCard(props: TransactionProps) {
             <div className={styles.row_container}>
                 {/* ------------------------------------------------------ */}
 
-                <WalletAndId ownerId={ownerId} posHash={txHash} />
+                <WalletAndId
+                    ownerId={ownerId}
+                    posHash={txHash}
+                    isOwnerActiveAccount={isOwnerActiveAccount}
+                />
 
                 {/* ------------------------------------------------------ */}
 

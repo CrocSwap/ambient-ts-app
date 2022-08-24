@@ -4,16 +4,17 @@ import OrderCardHeader from './OrderCardHeader';
 // import { Dispatch, SetStateAction } from 'react';
 interface OrdersProps {
     expandTradeTable: boolean;
+    account: string;
     // setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
 }
 export default function Orders(props: OrdersProps) {
-    const { expandTradeTable } = props;
+    const { expandTradeTable, account } = props;
     const items = [1, 2, 3, 4, 5, 6];
 
     const ItemContent = (
         <div className={styles.item_container}>
             {items.map((item, idx) => (
-                <OrderCard key={idx} />
+                <OrderCard key={idx} account={account} />
             ))}
         </div>
     );

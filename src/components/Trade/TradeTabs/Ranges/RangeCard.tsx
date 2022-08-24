@@ -217,6 +217,7 @@ export default function RangeCard(props: RangeCardProps) {
                     ownerId={position.user}
                     posHash={posHash as string}
                     ensName={position.userEnsName ? position.userEnsName : null}
+                    isOwnerActiveAccount={userMatchesConnectedAccount}
                 />
 
                 {/* ------------------------------------------------------ */}
