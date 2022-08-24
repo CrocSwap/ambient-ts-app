@@ -176,7 +176,7 @@ export default function PoolCard(props: PoolCardProps) {
         })();
     }, [tokenAAddress, tokenBAddress, lastBlockNumber]);
 
-    console.log(tokenA);
+    // console.log(tokenA);
 
     if (!tokenA || !tokenB) return <PoolCardSkeleton />;
     return (
