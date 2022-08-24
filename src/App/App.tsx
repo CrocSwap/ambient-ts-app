@@ -9,6 +9,8 @@ import {
     setSwapsByUser,
     ISwap,
     setSwapsByPool,
+    addSwapsByUser,
+    addSwapsByPool,
     CandleData,
     setCandles,
     addCandles,
@@ -85,7 +87,9 @@ const cachedGetTokenDecimals = memoizeTokenDecimals();
 
 const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
 const wssGraphCacheServerDomain = 'wss://809821320828123.de:5000';
-const shouldSubscriptionsReconnect = false;
+
+const shouldCandleSubscriptionsReconnect = false;
+const shouldNonCandleSubscriptionsReconnect = true;
 
 /** ***** React Function *******/
 export default function App() {
@@ -671,7 +675,7 @@ export default function App() {
             onClose: (event: any) => console.log({ event }),
             // onClose: () => console.log('allPositions websocket connection closed'),
             // Will attempt to reconnect on all close events, such as server shutting down
-            shouldReconnect: () => shouldSubscriptionsReconnect,
+            shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
         },
         // only connect if base/quote token addresses are available
         baseTokenAddress !== '' && quoteTokenAddress !== '',
@@ -715,7 +719,7 @@ export default function App() {
         {
             onOpen: () => console.log({ candleSubscriptionEndpoint }),
             onClose: (event) => console.log({ event }),
-            shouldReconnect: () => shouldSubscriptionsReconnect,
+            shouldReconnect: () => shouldCandleSubscriptionsReconnect,
         },
         // only connect if base/quote token addresses are available
         mainnetBaseTokenAddress !== '' && mainnetQuoteTokenAddress !== '',
@@ -771,7 +775,7 @@ export default function App() {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             onClose: (event: any) => console.log({ event }),
             // Will attempt to reconnect on all close events, such as server shutting down
-            shouldReconnect: () => shouldSubscriptionsReconnect,
+            shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
         },
         // only connect if base/quote token addresses are available
         baseTokenAddress !== '' && quoteTokenAddress !== '',
@@ -782,14 +786,7 @@ export default function App() {
             const lastMessageData = JSON.parse(lastPoolSwapsMessage.data).data;
 
             if (lastMessageData) {
-                Promise.all(lastMessageData.map(getSwapData)).then((updatedSwaps) => {
-                    dispatch(
-                        setSwapsByPool({
-                            dataReceived: true,
-                            swaps: updatedSwaps.concat(graphData.swapsByPool.swaps),
-                        }),
-                    );
-                });
+                dispatch(addSwapsByPool(lastMessageData));
             }
         }
     }, [lastPoolSwapsMessage]);
@@ -820,7 +817,7 @@ export default function App() {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             onClose: (event: any) => console.log({ event }),
             // Will attempt to reconnect on all close events, such as server shutting down
-            shouldReconnect: () => shouldSubscriptionsReconnect,
+            shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
         },
         // only connect is account is available
         account !== null && account !== '',
@@ -863,9 +860,9 @@ export default function App() {
             onClose: (event: any) => console.log({ event }),
             // onClose: () => console.log('userSwaps websocket connection closed'),
             // Will attempt to reconnect on all close events, such as server shutting down
-            shouldReconnect: () => shouldSubscriptionsReconnect,
+            shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
         },
-        // only connect is account is available
+        // only connect if account is available
         account !== null && account !== '',
     );
 
@@ -873,14 +870,7 @@ export default function App() {
         if (lastUserSwapsMessage !== null) {
             const lastMessageData = JSON.parse(lastUserSwapsMessage.data).data;
             if (lastMessageData) {
-                Promise.all(lastMessageData.map(getSwapData)).then((updatedSwaps) => {
-                    dispatch(
-                        setSwapsByUser({
-                            dataReceived: true,
-                            swaps: updatedSwaps.concat(graphData.swapsByUser.swaps),
-                        }),
-                    );
-                });
+                dispatch(addSwapsByUser(lastMessageData));
             }
         }
     }, [lastUserSwapsMessage]);
@@ -1030,10 +1020,10 @@ export default function App() {
     const graphData = useAppSelector((state) => state.graphData);
 
     const getSwapData = async (swap: ISwap): Promise<ISwap> => {
-        swap.base = swap.base.startsWith('0x') ? swap.base : '0x' + swap.base;
-        swap.quote = swap.quote.startsWith('0x') ? swap.quote : '0x' + swap.quote;
-        swap.user = swap.user.startsWith('0x') ? swap.user : '0x' + swap.user;
-        swap.id = '0x' + swap.id.slice(6);
+        // swap.base = swap.base.startsWith('0x') ? swap.base : '0x' + swap.base;
+        // swap.quote = swap.quote.startsWith('0x') ? swap.quote : '0x' + swap.quote;
+        // swap.user = swap.user.startsWith('0x') ? swap.user : '0x' + swap.user;
+        // swap.id = '0x' + swap.id.slice(6);
 
         return swap;
     };
@@ -1567,6 +1557,8 @@ export default function App() {
         // if pool price is < 0.1 then denom token will be quote (cheaper one)
         // if pool price is > 0.1 then denom token will be base (also cheaper one)
         // then reverse if didUserToggleDenom === true
+
+        if (!poolPriceDisplay) return;
         const isDenomInBase =
             poolPriceDisplay && poolPriceDisplay < 1
                 ? tradeData.didUserFlipDenom
@@ -1580,8 +1572,10 @@ export default function App() {
 
     useEffect(() => {
         const isDenomBase = updateDenomIsInBase();
-        if (tradeData.isDenomBase !== isDenomBase) {
-            dispatch(setDenomInBase(isDenomBase));
+        if (isDenomBase !== undefined) {
+            if (tradeData.isDenomBase !== isDenomBase) {
+                dispatch(setDenomInBase(isDenomBase));
+            }
         }
     }, [tradeData.didUserFlipDenom, tokenPair]);
 
@@ -1733,7 +1727,11 @@ export default function App() {
 
             <div className='footer_container'>
                 {currentLocation !== '/' && (
-                    <PageFooter lastBlockNumber={lastBlockNumber} userIsOnline={userIsOnline} />
+                    <PageFooter
+                        lastBlockNumber={lastBlockNumber}
+                        userIsOnline={userIsOnline}
+                        favePools={favePools}
+                    />
                 )}
             </div>
             <SidebarFooter />
