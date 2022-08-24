@@ -176,6 +176,7 @@ export default function PoolCard(props: PoolCardProps) {
         })();
     }, [tokenAAddress, tokenBAddress, lastBlockNumber]);
 
+
     const tokenImagesDisplay = (
         <div>
             <img
@@ -188,6 +189,8 @@ export default function PoolCard(props: PoolCardProps) {
             />
         </div>
     );
+
+
 
     const tokenNamesDisplay = (
         <div className={styles.tokens_name}>
