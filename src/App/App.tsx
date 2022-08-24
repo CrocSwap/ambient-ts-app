@@ -1507,6 +1507,12 @@ export default function App() {
         setSidebarManuallySet(true);
     }
 
+    useEffect(() => {
+        if (location.pathname.includes('account') || location.pathname.includes('analytics')) {
+            setShowSidebar(false);
+        }
+    }, [location.pathname]);
+
     const [selectedOutsideTab, setSelectedOutsideTab] = useState(0);
     const [outsideControl, setOutsideControl] = useState(false);
 
@@ -1687,6 +1693,7 @@ export default function App() {
                                     setSelectedOutsideTab={setSelectedOutsideTab}
                                     outsideControl={outsideControl}
                                     setOutsideControl={setOutsideControl}
+                                    userAccount={true}
                                 />
                             }
                         />
@@ -1703,6 +1710,7 @@ export default function App() {
                                     setSelectedOutsideTab={setSelectedOutsideTab}
                                     outsideControl={outsideControl}
                                     setOutsideControl={setOutsideControl}
+                                    userAccount={false}
                                 />
                             }
                         />
