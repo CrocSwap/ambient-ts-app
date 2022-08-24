@@ -118,7 +118,7 @@ export default function RangesMenu(props: RangesMenuIF) {
     ) : null;
     const copyButton = isPositionInRange ? (
         <button className={styles.option_button} onClick={handleCopyAddress}>
-            Copy
+            Clone
         </button>
     ) : null;
 
