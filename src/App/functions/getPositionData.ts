@@ -13,7 +13,7 @@ export const getPositionData = async (position: PositionIF): Promise<PositionIF>
     const baseTokenAddress = position.base;
     const quoteTokenAddress = position.quote;
 
-    console.log({ position });
+    // console.log({ position });
 
     // const poolPriceNonDisplay = await cachedQuerySpotPrice(
     //     baseTokenAddress,

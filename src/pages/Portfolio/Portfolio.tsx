@@ -99,7 +99,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
         </div>
     );
     const [fullLayoutActive, setFullLayoutActive] = useState(false);
-    console.log(fullLayoutActive);
+    // console.log(fullLayoutActive);
 
     const fullLayout = (
         <div
