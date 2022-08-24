@@ -134,7 +134,6 @@ export interface ISwap {
     id: string;
     inBaseQty: boolean;
     isBuy: boolean;
-    limitPrice: number;
     minOut: string;
     poolHash: string;
     poolIdx: number;
@@ -147,6 +146,11 @@ export interface ISwap {
     time: number;
     tx: string;
     user: string;
+    limitPrice: number;
+    price: number;
+    invPrice: number;
+    priceDecimalCorrected: number;
+    invPriceDecimalCorrected: number;
 }
 
 export interface SwapsByUser {
