@@ -102,12 +102,8 @@ export default function Swap(props: SwapPropsIF) {
         ? parseFloat(swapSlippage.stable.value)
         : parseFloat(swapSlippage.volatile.value);
 
-    const clickLogin = () => authenticateUser(
-        isAuthenticated,
-        isWeb3Enabled,
-        authenticate,
-        enableWeb3
-    );
+    const clickLogin = () =>
+        authenticateUser(isAuthenticated, isWeb3Enabled, authenticate, enableWeb3);
 
     const loginButton = <Button title='Login' action={clickLogin} />;
 
@@ -182,11 +178,26 @@ export default function Swap(props: SwapPropsIF) {
 
         let tx;
         try {
-            tx = await (isQtySell
-                ? env.sell(sellTokenAddress, qty).for(buyTokenAddress).swap()
-                : env.buy(buyTokenAddress, qty).with(sellTokenAddress).swap());
-
-            setNewSwapTransactionHash(tx?.hash);
+            (tx = await (isQtySell
+                ? env
+                      .sell(sellTokenAddress, qty)
+                      .for(
+                          buyTokenAddress,
+                          //     {
+                          //       slippage: slippageTolerancePercentage,
+                          //   }
+                      )
+                      .swap()
+                : env
+                      .buy(buyTokenAddress, qty)
+                      .with(
+                          sellTokenAddress,
+                          //     {
+                          //       slippage: slippageTolerancePercentage,
+                          //   }
+                      )
+                      .swap())),
+                setNewSwapTransactionHash(tx?.hash);
         } catch (error) {
             setTxErrorCode(error?.code);
             setTxErrorMessage(error?.message);
