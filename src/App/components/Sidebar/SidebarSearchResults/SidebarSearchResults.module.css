@@ -44,3 +44,15 @@
 
     border-bottom: 1px solid var(--dark3);
 }
+
+.card_title{
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 500;
+font-size: 12px;
+line-height: 15px;
+color: #CDC1FF;
+
+}
