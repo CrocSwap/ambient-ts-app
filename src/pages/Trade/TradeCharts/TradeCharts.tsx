@@ -341,7 +341,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
             </button>
         </motion.div>
     ));
-
+    // eslint-disable-next-line
     const liquidityTypeContent = (
         <div className={styles.liquidity_type_container}>
             <div />
