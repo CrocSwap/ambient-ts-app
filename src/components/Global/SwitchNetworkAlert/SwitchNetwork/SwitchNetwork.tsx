@@ -14,15 +14,17 @@ export default function SwitchNetwork(props: SwitchNetworkPropsIF) {
 
     return (
         <div className={styles.outside_modal}>
-            <div className={styles.modal}>
-                <header className={styles.modal_header}>
-                    <RiErrorWarningLine size={20} color='#ffffff' />
-                    <h2>Unsupported Network</h2>
-                </header>
-                <section className={styles.modal_content}>
-                    <span className={styles.content_title}>Please choose a network below</span>
-                    <NetworkButtons switchNetworkInMoralis={switchNetworkInMoralis} />
-                </section>
+            <div className={styles.modal_container}>
+                <div className={styles.modal}>
+                    <header className={styles.modal_header}>
+                        <RiErrorWarningLine size={24} color='#171D27' />
+                        <h2>Unsupported Network</h2>
+                    </header>
+                    <section className={styles.modal_content}>
+                        <span className={styles.content_title}>Please choose a network below</span>
+                        <NetworkButtons switchNetworkInMoralis={switchNetworkInMoralis} />
+                    </section>
+                </div>
             </div>
         </div>
     );

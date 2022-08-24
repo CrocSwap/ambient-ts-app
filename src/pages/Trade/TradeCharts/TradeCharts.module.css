@@ -29,6 +29,14 @@
     cursor: pointer;
 }
 
+.tokens_images:hover, .tokens_name:hover, .fav_button:hover, .settings_container button:hover{
+
+        transition: all 0.3s ease-out;
+    
+        filter: brightness(75%);
+    
+}
+
 .settings_container,
 .time_frame_container .right_side , .time_frame_container .left_side{
     display: flex;

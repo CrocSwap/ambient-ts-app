@@ -1,6 +1,6 @@
 .networkButton {
     font-size: var(--header2-size);
-    font-weight: 300;
+    font-weight: 200;
     line-height: var(--header2-lh);
 
     display: flex;
@@ -17,7 +17,7 @@
     transition: color 0.15s ease-in-out;
     text-align: center;
 
-    color: white;
+    color: #EBEBFF;
     border: 1px solid #565656;
     border-radius: 4px;
     outline: none;
