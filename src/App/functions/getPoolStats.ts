@@ -13,7 +13,7 @@ const getPoolVolume = async (
                     chainId: chainId,
                     base: tokenA,
                     quote: tokenB,
-                    poolIdx: '36000',
+                    poolIdx: poolIdx.toString(),
                     concise: 'true',
                 }),
         )
@@ -42,7 +42,7 @@ const getPoolTVL = async (
                     chainId: chainId,
                     base: tokenA,
                     quote: tokenB,
-                    poolIdx: '36000',
+                    poolIdx: poolIdx.toString(),
                     concise: 'true',
                 }),
         )
