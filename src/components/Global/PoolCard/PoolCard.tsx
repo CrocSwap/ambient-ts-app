@@ -6,11 +6,7 @@ import { CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
 import { querySpotPrice } from '../../../App/functions/querySpotPrice';
 import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import {
-    get24hChange,
-    getPoolTVL,
-    // getPoolVolume
-} from '../../../App/functions/getPoolStats';
+import { get24hChange, getPoolTVL, getPoolVolume } from '../../../App/functions/getPoolStats';
 import { formatAmount } from '../../../utils/numbers';
 
 interface PoolCardProps {
@@ -108,6 +104,7 @@ export default function PoolCard(props: PoolCardProps) {
     }, [lastBlockNumber, tokenA, tokenB, chainId, provider]);
 
     const [poolVolume, setPoolVolume] = useState<string | undefined>(undefined);
+    const [poolTvl, setPoolTvl] = useState<string | undefined>(undefined);
     const [poolPriceChangePercent, setPoolPriceChangePercent] = useState<string | undefined>(
         undefined,
     );
@@ -118,12 +115,26 @@ export default function PoolCard(props: PoolCardProps) {
 
     useEffect(() => {
         (async () => {
-            if (tokenAAddress && tokenBAddress) {
-                const tvlResult = await getPoolTVL(tokenAAddress, tokenBAddress, poolIndex);
-                // const volumeResult = await getPoolVolume(tokenAAddress, tokenBAddress, poolIndex);
+            if (tokenAAddress && tokenBAddress && poolIndex && chainId) {
+                const tvlResult = await getPoolTVL(
+                    tokenAAddress,
+                    tokenBAddress,
+                    poolIndex,
+                    chainId,
+                );
+                const volumeResult = await getPoolVolume(
+                    tokenAAddress,
+                    tokenBAddress,
+                    poolIndex,
+                    chainId,
+                );
 
                 if (tvlResult) {
-                    const volumeString = formatAmount(tvlResult);
+                    const tvlString = formatAmount(tvlResult);
+                    setPoolTvl(tvlString);
+                }
+                if (volumeResult) {
+                    const volumeString = formatAmount(volumeResult);
                     setPoolVolume(volumeString);
                 }
 
@@ -198,10 +209,18 @@ export default function PoolCard(props: PoolCardProps) {
             <div className={styles.row}>
                 <div></div>
                 <div>
-                    <div className={styles.row_title}>TVL</div>
-                    {/* <div className={styles.row_title}>Vol.</div> */}
+                    <div className={styles.row_title}>Volume</div>
                     <div className={styles.vol}>
                         {poolVolume === undefined ? '...' : `$${poolVolume}`}
+                    </div>
+                </div>
+            </div>
+            <div className={styles.row}>
+                <div></div>
+                <div>
+                    <div className={styles.row_title}>TVL</div>
+                    <div className={styles.vol}>
+                        {poolTvl === undefined ? '...' : `$${poolTvl}`}
                     </div>
                 </div>
             </div>
