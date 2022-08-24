@@ -67,7 +67,7 @@ export default function SidebarRecentTransactionsCard(props: TransactionProps) {
         if (tx.baseFlow && tx.baseDecimals) {
             const baseFlowDisplayNum = parseFloat(toDisplayQty(tx.baseFlow, tx.baseDecimals));
             const baseFlowAbsNum = Math.abs(baseFlowDisplayNum);
-            const isBaseFlowNegative = baseFlowDisplayNum < 0;
+            const isBaseFlowNegative = baseFlowDisplayNum > 0;
             const baseFlowDisplayTruncated =
                 baseFlowAbsNum === 0
                     ? '0'
@@ -86,44 +86,10 @@ export default function SidebarRecentTransactionsCard(props: TransactionProps) {
                 ? `(${baseFlowDisplayTruncated})`
                 : baseFlowDisplayTruncated;
             setBaseFlowDisplay(baseFlowDisplayString);
+        } else {
+            setBaseFlowDisplay(undefined);
         }
-        //  if (swap.quoteFlow && swap.quoteDecimals) {
-        //      const quoteFlowDisplayNum = parseFloat(
-        //          toDisplayQty(swap.quoteFlow, swap.quoteDecimals),
-        //      );
-        //      const quoteFlowAbsNum = Math.abs(quoteFlowDisplayNum);
-        //      const isQuoteFlowNegative = quoteFlowDisplayNum < 0;
-        //      const quoteFlowDisplayTruncated =
-        //          quoteFlowAbsNum === 0
-        //              ? '0'
-        //              : quoteFlowAbsNum < 0.0001
-        //              ? quoteFlowDisplayNum.toExponential(2)
-        //              : quoteFlowAbsNum < 2
-        //              ? quoteFlowAbsNum.toPrecision(3)
-        //              : quoteFlowAbsNum >= 100000
-        //              ? formatAmount(quoteFlowAbsNum)
-        //              : // ? quoteLiqDisplayNum.toExponential(2)
-        //                quoteFlowAbsNum.toLocaleString(undefined, {
-        //                    minimumFractionDigits: 2,
-        //                    maximumFractionDigits: 2,
-        //                });
-        //      const quoteFlowDisplayString = isQuoteFlowNegative
-        //          ? `(${quoteFlowDisplayTruncated})`
-        //          : quoteFlowDisplayTruncated;
-        //      setQuoteFlowDisplay(quoteFlowDisplayString);
-        //  }
     }, [JSON.stringify(tx)]);
-    // const baseTokenDisplay = (
-    //     <div className={styles.token_container}>
-    //         <img src={baseToken?.logoURI} alt='base token image' />
-    //     </div>
-    // );
-
-    // const quoteTokenDisplay = (
-    //     <div className={styles.token_container}>
-    //         <img src={quoteToken?.logoURI} alt='quote token image' />
-    //     </div>
-    // );
 
     function handleRecentTransactionClick(tx: ISwap) {
         setOutsideControl(true);
@@ -143,7 +109,7 @@ export default function SidebarRecentTransactionsCard(props: TransactionProps) {
             </div>
             <div>Market</div>
             <div className={styles.status_display}>
-                {baseTokenCharacter} {baseFlowDisplay}
+                {baseFlowDisplay ? `${baseTokenCharacter}${baseFlowDisplay}` : '…'}
                 {/* {baseTokenDisplay} / {quoteTokenDisplay} */}
             </div>
         </div>
