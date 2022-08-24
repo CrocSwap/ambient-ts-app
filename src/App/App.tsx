@@ -1413,17 +1413,18 @@ export default function App() {
             title='Choose a Wallet'
             footer={tosText}
         >
-            <button onClick={() => {
-                authenticateUser(
-                    isAuthenticated,
-                    isWeb3Enabled,
-                    authenticate,
-                    enableWeb3,
-                );
-                acceptToS();
-                closeModalWallet();
-            }}
-        >
+            <button
+                onClick={() => {
+                    authenticateUser(
+                        isAuthenticated,
+                        isWeb3Enabled,
+                        authenticate,
+                        enableWeb3,
+                    );
+                    acceptToS();
+                    closeModalWallet();
+                }}
+            >
                 Metamask
             </button>
         </Modal>
