@@ -151,6 +151,7 @@ export interface ISwap {
     invPrice: number;
     priceDecimalCorrected: number;
     invPriceDecimalCorrected: number;
+    valueUSD: number;
 }
 
 export interface SwapsByUser {

@@ -486,6 +486,7 @@ export default function App() {
                                 quote: sortedTokens[1].toLowerCase(),
                                 poolIdx: chainData.poolIndex.toString(),
                                 chainId: chainData.chainId,
+                                addValue: 'true',
                                 // n: 10 // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
                                 // page: 0 // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
                             }),
@@ -756,6 +757,7 @@ export default function App() {
                 quote: quoteTokenAddress.toLowerCase(),
                 poolIdx: chainData.poolIndex.toString(),
                 chainId: chainData.chainId,
+                addValue: 'true',
             }),
         [baseTokenAddress, quoteTokenAddress, chainData.chainId],
     );
@@ -843,6 +845,7 @@ export default function App() {
             new URLSearchParams({
                 user: account || '',
                 chainId: chainData.chainId,
+                addValue: 'true',
             }),
         [account, chainData.chainId],
     );
@@ -1251,6 +1254,7 @@ export default function App() {
                         new URLSearchParams({
                             user: account,
                             chainId: chainData.chainId,
+                            addValue: 'true',
                         }),
                 )
                     .then((response) => response?.json())
