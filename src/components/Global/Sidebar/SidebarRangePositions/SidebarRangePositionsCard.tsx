@@ -56,7 +56,7 @@ export default function SidebarRangePositionsCard(props: SidebarRangePositionsPr
     function handleRangePositionClick(pos: PositionIF) {
         setOutsideControl(true);
         setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
-        setCurrentPositionActive(pos.id);
+        setCurrentPositionActive(pos.positionStorageSlot);
         setIsShowAllEnabled(false);
         if (baseToken) dispatch(setTokenA(baseToken));
         if (quoteToken) dispatch(setTokenB(quoteToken));

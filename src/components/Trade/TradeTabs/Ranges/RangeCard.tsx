@@ -198,14 +198,16 @@ export default function RangeCard(props: RangeCardProps) {
     // ------------------------------END OF REMOVE RANGE PROPS-----------------
 
     const activePositionStyle =
-        position.id === currentPositionActive ? styles.active_position_style : '';
+        position.positionStorageSlot === currentPositionActive ? styles.active_position_style : '';
 
     if (!positionMatchesSelectedTokens) return null;
     return (
         <div
             className={`${styles.main_container} ${activePositionStyle}`}
             onClick={() =>
-                position.id === currentPositionActive ? null : setCurrentPositionActive('')
+                position.positionStorageSlot === currentPositionActive
+                    ? null
+                    : setCurrentPositionActive('')
             }
         >
             <div className={styles.row_container}>
