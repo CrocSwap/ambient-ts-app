@@ -212,7 +212,12 @@ export default function PageHeader(props: HeaderPropsIF) {
                 {(!isAuthenticated || !isWeb3Enabled) && metamaskButton}
                 <Account {...accountProps} />
             </div>
-            <button onClick={() => openModalWallet()}>Connect Wallet</button>
+            <button
+                className={styles.authenticate_button}
+                onClick={() => openModalWallet()}
+            >
+                Connect Wallet
+            </button>
             {isChainSupported || <SwitchNetwork switchNetworkInMoralis={switchNetworkInMoralis} />}
             {modalOrNull}
         </header>
