@@ -129,8 +129,8 @@ export default function PageHeader(props: HeaderPropsIF) {
     // End of Page Header Functions
 
     const metamaskButton = (
-        <button className={styles.authenticate_button} onClick={clickLogin}>
-            Connect Metamask
+        <button className={styles.authenticate_button} onClick={() => openModalWallet()}>
+            Connect Wallet
         </button>
     );
 
