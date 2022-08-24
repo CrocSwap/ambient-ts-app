@@ -79,6 +79,7 @@ import { validateChain } from './validateChain';
 import { testTokenMap } from '../utils/data/testTokenMap';
 import { ZERO_ADDRESS } from '../constants';
 import { useModal } from '../components/Global/Modal/useModal';
+import authenticateUser from '../utils/functions/authenticateUser';
 
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 const cachedFetchAddress = memoizeFetchAddress();
@@ -91,7 +92,16 @@ const shouldSubscriptionsReconnect = false;
 
 /** ***** React Function *******/
 export default function App() {
-    const { Moralis, isWeb3Enabled, account, logout, isAuthenticated, isInitialized } =
+    const {
+        Moralis,
+        isWeb3Enabled,
+        account,
+        logout,
+        isAuthenticated,
+        isInitialized,
+        authenticate,
+        enableWeb3
+    } =
         useMoralis();
 
     const tokenMap = useTokenMap();
@@ -1408,9 +1418,17 @@ export default function App() {
 
     const [isModalOpenWallet, openModalWallet, closeModalWallet] = useModal();
 
+    // todo: style mouse as a pointer finger
     const walletModal = (
         <Modal onClose={closeModalWallet} title='Connect Wallet'>
-            <button>Metamask</button>
+            <button onClick={() => authenticateUser(
+                isAuthenticated,
+                isWeb3Enabled,
+                authenticate,
+                enableWeb3,
+            )}
+        >
+                Metamask</button>
         </Modal>
     );
 
