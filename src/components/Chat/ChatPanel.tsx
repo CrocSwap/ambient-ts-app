@@ -10,16 +10,23 @@ import { useEffect, useRef, useState } from 'react';
 import { recieveMessageRoute, socket } from './Service/chatApi';
 import axios from 'axios';
 import { Message } from './Model/MessageModel';
+import { PoolIF } from '../../utils/interfaces/PoolIF';
 
 interface ChatProps {
     chatStatus: boolean;
     onClose: () => void;
+    favePools: PoolIF[];
 }
 
 export default function ChatPanel(props: ChatProps) {
+    const { favePools } = props;
     const messageEnd = useRef<HTMLInputElement | null>(null);
     const _socket = socket;
     const [messages, setMessages] = useState<Message[]>([]);
+
+    useEffect(() => {
+        console.log({ favePools });
+    }, [favePools]);
 
     // const messages = [
     //   {  message: 'dasd' ,

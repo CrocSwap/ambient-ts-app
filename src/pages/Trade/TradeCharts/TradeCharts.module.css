@@ -18,13 +18,15 @@
     display: flex;
     flex-direction: row;
     gap: 7px;
+    cursor: pointer;
 }
 
-.token_names {
+.tokens_name {
     letter-spacing: -0.02em;
     font-size: var(--header1-size);
     line-height: var(--header1-lh);
     color: white;
+    cursor: pointer;
 }
 
 .settings_container,
