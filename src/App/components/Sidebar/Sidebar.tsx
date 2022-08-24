@@ -48,7 +48,7 @@ interface SidebarPropsIF {
 }
 
 export default function Sidebar(props: SidebarPropsIF) {
-    console.log(location);
+    // console.log(location);
     const {
         isDenomBase,
         toggleSidebar,
