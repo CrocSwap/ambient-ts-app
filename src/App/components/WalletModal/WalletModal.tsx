@@ -68,10 +68,19 @@ export default function WalletModal(props: WalletModalPropsIF) {
         }
     }, [page]);
 
+    const clickBackArrow = useMemo(() => {
+        switch(page) {
+            case 'wallets': return closeModalWallet;
+            default: closeModalWallet;
+        }
+    }, [page]);
+
     return (
         <div className={styles.wallet_modal}>
             <Modal 
                 onClose={closeModalWallet}
+                handleBack={clickBackArrow}
+                showBackButton={true}
                 title={activeTitle}
                 footer={tosText}
             >
