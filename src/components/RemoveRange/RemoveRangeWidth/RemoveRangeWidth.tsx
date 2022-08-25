@@ -60,7 +60,7 @@ export default function RemoveRangeWidth(props: RemoveRangeWidthPropsIF) {
 
     return (
         <div className={styles.range_width_container}>
-            <span className={styles.title}>Amount</span>
+            <span className={styles.title}>Removal Percentage</span>
             <div className={styles.range_width_content}>
                 {PercentageOptionContent}
                 <div className={styles.range_width_input}>
@@ -68,7 +68,7 @@ export default function RemoveRangeWidth(props: RemoveRangeWidthPropsIF) {
                         size={28}
                         aria-labelledby='input slider'
                         id='remove-range-slider'
-                        min='10'
+                        min='1'
                         max='100'
                         step='1'
                         defaultValue={100}

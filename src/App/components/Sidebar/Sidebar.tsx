@@ -53,6 +53,7 @@ interface SidebarPropsIF {
 }
 
 export default function Sidebar(props: SidebarPropsIF) {
+
     const {
         isDenomBase,
         toggleSidebar,

@@ -73,6 +73,7 @@ const get24hChange = async (
                     base: baseToken,
                     quote: quoteToken,
                     poolIdx: poolIdx.toString(),
+                    concise: 'true',
                 }),
         )
             .then((response) => response.json())

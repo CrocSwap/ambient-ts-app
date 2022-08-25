@@ -6,8 +6,8 @@ interface PriceProps {
 }
 export default function Price(props: PriceProps) {
     const { priceType, displayPrice } = props;
-    const priceBuy = <p className={styles.buy_style}>{displayPrice ?? '...'}</p>;
-    const priceSell = <p className={styles.sell_style}>{displayPrice ?? '...'}</p>;
+    const priceBuy = <p className={styles.buy_style}>{displayPrice ?? '…'}</p>;
+    const priceSell = <p className={styles.sell_style}>{displayPrice ?? '…'}</p>;
 
     const minMaxBuy = (
         <div className={styles.min_max}>

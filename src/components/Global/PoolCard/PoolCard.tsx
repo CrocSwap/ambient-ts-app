@@ -176,7 +176,6 @@ export default function PoolCard(props: PoolCardProps) {
         })();
     }, [tokenAAddress, tokenBAddress, lastBlockNumber]);
 
-
     const tokenImagesDisplay = (
         <div>
             <img
@@ -189,8 +188,6 @@ export default function PoolCard(props: PoolCardProps) {
             />
         </div>
     );
-
-
 
     const tokenNamesDisplay = (
         <div className={styles.tokens_name}>
@@ -205,7 +202,7 @@ export default function PoolCard(props: PoolCardProps) {
             <div></div>
             <div>
                 <div className={styles.row_title}>APY</div>
-                <div className={styles.apy}>{poolPriceDisplay === undefined ? '...' : '35.34'}</div>
+                <div className={styles.apy}>{poolPriceDisplay === undefined ? '…' : '35.34'}</div>
             </div>
         </>
     );
@@ -216,7 +213,7 @@ export default function PoolCard(props: PoolCardProps) {
             <div>
                 <div className={styles.row_title}>Volume</div>
                 <div className={styles.vol}>
-                    {poolVolume === undefined ? '...' : `$${poolVolume}`}
+                    {poolVolume === undefined ? '…' : `$${poolVolume}`}
                 </div>
             </div>
         </>
@@ -227,7 +224,7 @@ export default function PoolCard(props: PoolCardProps) {
             <div></div>
             <div>
                 <div className={styles.row_title}>TVL</div>
-                <div className={styles.vol}>{poolTvl === undefined ? '...' : `$${poolTvl}`}</div>
+                <div className={styles.vol}>{poolTvl === undefined ? '…' : `$${poolTvl}`}</div>
             </div>
         </>
     );
@@ -235,7 +232,7 @@ export default function PoolCard(props: PoolCardProps) {
     const poolPriceDisplayDOM = (
         <div className={styles.price}>
             {poolPriceDisplay === undefined
-                ? '...'
+                ? '…'
                 : shouldInvertDisplay
                 ? `${tokenBCharacter}${poolPriceDisplay}`
                 : `${tokenACharacter}${poolPriceDisplay}`}
@@ -250,7 +247,7 @@ export default function PoolCard(props: PoolCardProps) {
                     isPoolPriceChangePositive ? styles.change_positive : styles.change_negative
                 }
             >
-                {poolPriceChangePercent === undefined ? '...' : poolPriceChangePercent}
+                {poolPriceChangePercent === undefined ? '…' : poolPriceChangePercent}
             </div>
         </div>
     );

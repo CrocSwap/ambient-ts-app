@@ -93,19 +93,15 @@ export default function Limit(props: LimitPropsIF) {
     useEffect(() => {
         if (poolPriceDisplay === undefined) {
             setLimitAllowed(false);
-            setLimitButtonErrorMessage('...');
+            setLimitButtonErrorMessage('…');
         } else if (poolPriceDisplay === 0 || poolPriceDisplay === Infinity) {
             setLimitAllowed(false);
             setLimitButtonErrorMessage('Invalid Token Pair');
         }
     }, [poolPriceDisplay]);
 
-    const clickLogin = () => authenticateUser(
-        isAuthenticated,
-        isWeb3Enabled,
-        authenticate,
-        enableWeb3,
-    );
+    const clickLogin = () =>
+        authenticateUser(isAuthenticated, isWeb3Enabled, authenticate, enableWeb3);
 
     const [newLimitOrderTransactionHash, setNewLimitOrderTransactionHash] = useState('');
     const [txErrorCode, setTxErrorCode] = useState(0);

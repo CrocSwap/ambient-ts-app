@@ -6,9 +6,9 @@ import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import { setTokenA, setTokenB } from '../../../../utils/state/tradeDataSlice';
 import { useLocation } from 'react-router-dom';
-import { toDisplayQty } from '@crocswap-libs/sdk';
+// import { toDisplayQty } from '@crocswap-libs/sdk';
 import { formatAmount } from '../../../../utils/numbers';
-import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
+// import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 
 interface TransactionProps {
     tx: ISwap;
@@ -60,35 +60,41 @@ export default function SidebarRecentTransactionsCard(props: TransactionProps) {
     const baseToken = coinGeckoTokenMap ? coinGeckoTokenMap.get(baseId.toLowerCase()) : null;
     const quoteToken = coinGeckoTokenMap ? coinGeckoTokenMap.get(quoteId.toLowerCase()) : null;
 
-    const [baseFlowDisplay, setBaseFlowDisplay] = useState<string | undefined>(undefined);
+    // const [baseFlowDisplay, setBaseFlowDisplay] = useState<string | undefined>(undefined);
+    const [valueUSD, setValueUSD] = useState<string | undefined>(undefined);
     //  const [quoteFlowDisplay, setQuoteFlowDisplay] = useState<string | undefined>(undefined);
 
     useEffect(() => {
-        if (tx.baseFlow && tx.baseDecimals) {
-            const baseFlowDisplayNum = parseFloat(toDisplayQty(tx.baseFlow, tx.baseDecimals));
-            const baseFlowAbsNum = Math.abs(baseFlowDisplayNum);
-            const isBaseFlowNegative = baseFlowDisplayNum > 0;
-            const baseFlowDisplayTruncated =
-                baseFlowAbsNum === 0
-                    ? '0'
-                    : baseFlowAbsNum < 0.0001
-                    ? baseFlowDisplayNum.toExponential(2)
-                    : baseFlowAbsNum < 2
-                    ? baseFlowAbsNum.toPrecision(3)
-                    : baseFlowAbsNum >= 100000
-                    ? formatAmount(baseFlowAbsNum)
-                    : // ? baseLiqDisplayNum.toExponential(2)
-                      baseFlowAbsNum.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                      });
-            const baseFlowDisplayString = isBaseFlowNegative
-                ? `(${baseFlowDisplayTruncated})`
-                : baseFlowDisplayTruncated;
-            setBaseFlowDisplay(baseFlowDisplayString);
+        if (tx.valueUSD) {
+            setValueUSD(formatAmount(tx.valueUSD));
         } else {
-            setBaseFlowDisplay(undefined);
+            setValueUSD(undefined);
         }
+        // if (tx.baseFlow && tx.baseDecimals) {
+        //     const baseFlowDisplayNum = parseFloat(toDisplayQty(tx.baseFlow, tx.baseDecimals));
+        //     const baseFlowAbsNum = Math.abs(baseFlowDisplayNum);
+        //     const isBaseFlowNegative = baseFlowDisplayNum > 0;
+        //     const baseFlowDisplayTruncated =
+        //         baseFlowAbsNum === 0
+        //             ? '0'
+        //             : baseFlowAbsNum < 0.0001
+        //             ? baseFlowDisplayNum.toExponential(2)
+        //             : baseFlowAbsNum < 2
+        //             ? baseFlowAbsNum.toPrecision(3)
+        //             : baseFlowAbsNum >= 100000
+        //             ? formatAmount(baseFlowAbsNum)
+        //             : // ? baseLiqDisplayNum.toExponential(2)
+        //               baseFlowAbsNum.toLocaleString(undefined, {
+        //                   minimumFractionDigits: 2,
+        //                   maximumFractionDigits: 2,
+        //               });
+        //     const baseFlowDisplayString = isBaseFlowNegative
+        //         ? `(${baseFlowDisplayTruncated})`
+        //         : baseFlowDisplayTruncated;
+        //     setBaseFlowDisplay(baseFlowDisplayString);
+        // } else {
+        //     setBaseFlowDisplay(undefined);
+        // }
     }, [JSON.stringify(tx)]);
 
     function handleRecentTransactionClick(tx: ISwap) {
@@ -100,7 +106,7 @@ export default function SidebarRecentTransactionsCard(props: TransactionProps) {
         if (baseToken) dispatch(setTokenA(baseToken));
         if (quoteToken) dispatch(setTokenB(quoteToken));
     }
-    const baseTokenCharacter = baseToken ? getUnicodeCharacter(baseToken?.symbol) : null;
+    // const baseTokenCharacter = baseToken ? getUnicodeCharacter(baseToken?.symbol) : null;
 
     return (
         <div className={styles.container} onClick={() => handleRecentTransactionClick(tx)}>
@@ -109,7 +115,7 @@ export default function SidebarRecentTransactionsCard(props: TransactionProps) {
             </div>
             <div>Market</div>
             <div className={styles.status_display}>
-                {baseFlowDisplay ? `${baseTokenCharacter}${baseFlowDisplay}` : '…'}
+                {valueUSD ? `$${valueUSD}` : '…'}
                 {/* {baseTokenDisplay} / {quoteTokenDisplay} */}
             </div>
         </div>

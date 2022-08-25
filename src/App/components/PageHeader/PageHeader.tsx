@@ -17,7 +17,6 @@ import Modal from '../../../components/Global/Modal/Modal';
 import styles from './PageHeader.module.css';
 import trimString from '../../../utils/functions/trimString';
 import ambientLogo from '../../../assets/images/logos/ambient_logo.svg';
-import authenticateUser from '../../../utils/functions/authenticateUser';
 import { useModal } from '../../../components/Global/Modal/useModal';
 
 interface HeaderPropsIF {
@@ -30,6 +29,7 @@ interface HeaderPropsIF {
     isChainSupported: boolean;
     switchChain: Dispatch<SetStateAction<string>>;
     switchNetworkInMoralis: (providedChainId: string) => Promise<void>;
+    openModalWallet: () => void;
 }
 
 export default function PageHeader(props: HeaderPropsIF) {
@@ -43,9 +43,10 @@ export default function PageHeader(props: HeaderPropsIF) {
         isChainSupported,
         switchChain,
         switchNetworkInMoralis,
+        openModalWallet
     } = props;
 
-    const { user, account, enableWeb3, isWeb3Enabled, authenticate, isAuthenticated } =
+    const { user, account, enableWeb3, isWeb3Enabled, isAuthenticated } =
         useMoralis();
 
     const { t } = useTranslation();
@@ -60,13 +61,6 @@ export default function PageHeader(props: HeaderPropsIF) {
     );
 
     const modalOrNull = isModalOpen ? mainModal : null;
-
-    const clickLogin = () => authenticateUser(
-        isAuthenticated,
-        isWeb3Enabled,
-        authenticate,
-        enableWeb3,
-    );
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -127,8 +121,8 @@ export default function PageHeader(props: HeaderPropsIF) {
     // End of Page Header Functions
 
     const metamaskButton = (
-        <button className={styles.authenticate_button} onClick={clickLogin}>
-            Connect Metamask
+        <button className={styles.authenticate_button} onClick={() => openModalWallet()}>
+            Connect Wallet
         </button>
     );
 
@@ -202,9 +196,7 @@ export default function PageHeader(props: HeaderPropsIF) {
                 <RiveComponent onClick={handleMobileNavToggle} />
                 <span className='sr-only'>Menu</span>
             </div>
-
             {routeDisplay}
-
             <div className={styles.account}>
                 <NetworkSelector chainId={chainId} switchChain={switchChain} />
                 {(!isAuthenticated || !isWeb3Enabled) && metamaskButton}

@@ -135,7 +135,7 @@ export default function Range(props: RangePropsIF) {
 
     const displayPriceString =
         displayPriceWithDenom === Infinity || displayPriceWithDenom === 0
-            ? '...'
+            ? '…'
             : displayPriceWithDenom < 2
             ? displayPriceWithDenom.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
@@ -242,7 +242,7 @@ export default function Range(props: RangePropsIF) {
 
     useEffect(() => {
         if (poolPriceNonDisplay === undefined) {
-            setRangeButtonErrorMessage('...');
+            setRangeButtonErrorMessage('…');
         } else if (poolPriceNonDisplay === 0) {
             setRangeButtonErrorMessage('Token Pair Invalid');
         } else if (isInvalidRange) {

@@ -27,7 +27,7 @@ export default function makePriceDisplay(
             : 1 / poolPrice;
 
     if (priceRelationship === Infinity) {
-        return '1 ' + firstSymbol + ' ≈ ' + '...' + ' ' + secondSymbol;
+        return '1 ' + firstSymbol + ' ≈ ' + '…' + ' ' + secondSymbol;
     } else {
         const truncPrice =
             priceRelationship < 0.01

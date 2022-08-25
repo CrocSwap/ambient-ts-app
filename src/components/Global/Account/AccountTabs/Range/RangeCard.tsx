@@ -3,7 +3,7 @@ import styles from './RangeCard.module.css';
 
 import RangeStatus from '../../../RangeStatus/RangeStatus';
 import { PositionIF } from '../../../../../utils/interfaces/PositionIF';
-import WalletAndId from '../../../Tabs/WalletAndID/WalletAndId';
+// import WalletAndId from '../../../Tabs/WalletAndID/WalletAndId';
 import RangeMinMax from '../../../Tabs/RangeMinMax/RangeMinMax';
 import TokenQty from '../../../Tabs/TokenQty/TokenQty';
 import Apy from '../../../Tabs/Apy/Apy';
@@ -17,6 +17,7 @@ interface RangeCardPropsIF {
 
 export default function RangeCard(props: RangeCardPropsIF) {
     const { position } = props;
+    console.log({ position });
 
     return (
         <div className={styles.main_container}>
@@ -26,7 +27,7 @@ export default function RangeCard(props: RangeCardPropsIF) {
 
             <div className={styles.row_container}>
                 <AccountPoolDisplay />
-                <WalletAndId posHash='0xcD3eee3fddg134' ownerId={position.user} />
+                {/* <WalletAndId posHash='0xcD3eee3fddg134' ownerId={position.user} /> */}
                 <RangeMinMax min={234} max={342} />
                 <TokenQty />
                 <Apy amount={10} />

@@ -17,7 +17,7 @@ export default function TokenQty(props: TokenQtyProps) {
 
     const baseDisplay = (
         <section className={styles.qty_sing}>
-            {baseQty ? `${baseTokenCharacter}${baseQty}` : '...'}
+            {baseQty ? `${baseTokenCharacter}${baseQty}` : '…'}
             {/* {baseTokenCharacter} <p>{baseQty}</p> */}
             {/* <img src={baseToken ? baseToken.logoURI : undefined} alt='' /> */}
         </section>
@@ -25,7 +25,7 @@ export default function TokenQty(props: TokenQtyProps) {
 
     const quoteDisplay = (
         <section className={styles.qty_sing}>
-            {quoteQty ? `${quoteTokenCharacter}${quoteQty}` : '...'}
+            {quoteQty ? `${quoteTokenCharacter}${quoteQty}` : '…'}
 
             {/* {quoteTokenCharacter}<p>{quoteQty}</p> */}
             {/* <img src={quoteToken ? quoteToken.logoURI : undefined} alt='' /> */}

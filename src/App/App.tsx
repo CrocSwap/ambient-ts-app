@@ -34,6 +34,7 @@ import SnackbarComponent from '../components/Global/SnackbarComponent/SnackbarCo
 import PageHeader from './components/PageHeader/PageHeader';
 import Sidebar from './components/Sidebar/Sidebar';
 import PageFooter from './components/PageFooter/PageFooter';
+import Modal from '../components/Global/Modal/Modal';
 import Home from '../pages/Home/Home';
 import Analytics from '../pages/Analytics/Analytics';
 import Portfolio from '../pages/Portfolio/Portfolio';
@@ -41,6 +42,7 @@ import Limit from '../pages/Trade/Limit/Limit';
 import Range from '../pages/Trade/Range/Range';
 import Swap from '../pages/Swap/Swap';
 import Edit from '../pages/Trade/Edit/Edit';
+import TermsOfService from '../pages/TermsOfService/TermsOfService';
 import TestPage from '../pages/TestPage/TestPage';
 import NotFound from '../pages/NotFound/NotFound';
 import Trade from '../pages/Trade/Trade';
@@ -79,6 +81,8 @@ import { useTokenMap } from '../utils/hooks/useTokenMap';
 import { validateChain } from './validateChain';
 import { testTokenMap } from '../utils/data/testTokenMap';
 import { ZERO_ADDRESS } from '../constants';
+import { useModal } from '../components/Global/Modal/useModal';
+import authenticateUser from '../utils/functions/authenticateUser';
 
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 const cachedFetchAddress = memoizeFetchAddress();
@@ -93,8 +97,16 @@ const shouldNonCandleSubscriptionsReconnect = true;
 
 /** ***** React Function *******/
 export default function App() {
-    const { Moralis, isWeb3Enabled, account, logout, isAuthenticated, isInitialized } =
-        useMoralis();
+    const {
+        // Moralis,
+        isWeb3Enabled,
+        account,
+        logout,
+        isAuthenticated,
+        // isInitialized,
+        authenticate,
+        enableWeb3,
+    } = useMoralis();
 
     const tokenMap = useTokenMap();
 
@@ -204,27 +216,59 @@ export default function App() {
     }, [tokenListsReceived]);
 
     useEffect(() => {
-        if (isInitialized) {
-            (async () => {
-                const currentDateTime = new Date().toISOString();
-                const defaultChain = 'goerli';
-                const options = {
-                    chain: defaultChain as 'goerli', // Cheat and narrow type. We know chain string matches Moralis' chain union type
-                    date: currentDateTime,
-                };
-                const currentBlock = (await Moralis.Web3API.native.getDateToBlock(options)).block;
-                setLastBlockNumber(currentBlock);
-            })();
+        fetch('https://goerli.infura.io/v3/cf3bc905d88d4f248c6be347adc8a1d8', {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                jsonrpc: '2.0',
+                method: 'eth_blockNumber',
+                params: [],
+                id: 5,
+            }),
+        })
+            .then((response) => response?.json())
+            .then((json) => {
+                if (lastBlockNumber !== parseInt(json?.result)) {
+                    setLastBlockNumber(parseInt(json?.result));
+                }
+            });
+    }, []);
+
+    const goerliWssInfuraEndpoint = 'wss://goerli.infura.io/ws/v3/cbb2856ea8804fc5ba59be0a2e8a9f88';
+
+    const { sendMessage: send, lastMessage: lastNewHeadMessage } = useWebSocket(
+        goerliWssInfuraEndpoint,
+        {
+            onOpen: () =>
+                send('{"jsonrpc":"2.0","method":"eth_subscribe","params":["newHeads"],"id":5}'),
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            onClose: (event: any) => console.log({ event }),
+            shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
+        },
+    );
+
+    useEffect(() => {
+        if (lastNewHeadMessage !== null) {
+            if (lastNewHeadMessage?.data) {
+                const lastMessageData = JSON.parse(lastNewHeadMessage?.data);
+                if (lastMessageData) {
+                    const lastBlockNumberHex = lastMessageData.params?.result?.number;
+                    if (lastBlockNumberHex && lastBlockNumber !== parseInt(lastBlockNumberHex)) {
+                        setLastBlockNumber(parseInt(lastBlockNumberHex));
+                    }
+                }
+            }
         }
-    }, [isInitialized]);
+    }, [lastNewHeadMessage]);
 
     // hook holding values and setter functions for slippage
     // holds stable and volatile values for swap and mint transactions
     const [swapSlippage, mintSlippage] = useSlippage();
 
     const [favePools, addPoolToFaves, removePoolFromFaves] = useFavePools();
-
-    false && useTermsOfService();
 
     const isPairStable = useMemo(
         () => checkIsStable(tradeData.tokenA.address, tradeData.tokenA.address, chainData.chainId),
@@ -431,90 +475,7 @@ export default function App() {
                 setQuoteTokenDecimals(tokenPair.dataTokenA.decimals);
             }
 
-            try {
-                if (httpGraphCacheServerDomain) {
-                    const allPositionsCacheEndpoint =
-                        httpGraphCacheServerDomain + '/pool_positions?';
-                    fetch(
-                        allPositionsCacheEndpoint +
-                            new URLSearchParams({
-                                base: sortedTokens[0].toLowerCase(),
-                                quote: sortedTokens[1].toLowerCase(),
-                                poolIdx: chainData.poolIndex.toString(),
-                                chainId: chainData.chainId,
-                                tokenQuantities: 'true',
-                            }),
-                    )
-                        .then((response) => response.json())
-                        .then((json) => {
-                            const poolPositions = json.data;
-
-                            if (poolPositions) {
-                                // console.log({ poolPositions });
-                                Promise.all(poolPositions.map(getPositionData)).then(
-                                    (updatedPositions) => {
-                                        // console.log({ updatedPositions });
-                                        if (
-                                            JSON.stringify(graphData.positionsByUser.positions) !==
-                                            JSON.stringify(updatedPositions)
-                                        ) {
-                                            dispatch(
-                                                setPositionsByPool({
-                                                    dataReceived: true,
-                                                    positions: updatedPositions,
-                                                }),
-                                            );
-                                        }
-                                    },
-                                );
-                            }
-                        })
-                        .catch(console.log);
-                }
-            } catch (error) {
-                console.log;
-            }
-
-            try {
-                if (httpGraphCacheServerDomain) {
-                    const poolSwapsCacheEndpoint = httpGraphCacheServerDomain + '/pool_swaps?';
-
-                    fetch(
-                        poolSwapsCacheEndpoint +
-                            new URLSearchParams({
-                                base: sortedTokens[0].toLowerCase(),
-                                quote: sortedTokens[1].toLowerCase(),
-                                poolIdx: chainData.poolIndex.toString(),
-                                chainId: chainData.chainId,
-                                // n: 10 // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
-                                // page: 0 // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
-                            }),
-                    )
-                        .then((response) => response?.json())
-                        .then((json) => {
-                            const poolSwaps = json?.data;
-
-                            if (poolSwaps) {
-                                Promise.all(poolSwaps.map(getSwapData)).then((updatedSwaps) => {
-                                    if (
-                                        JSON.stringify(graphData.swapsByUser.swaps) !==
-                                        JSON.stringify(updatedSwaps)
-                                    ) {
-                                        dispatch(
-                                            setSwapsByPool({
-                                                dataReceived: true,
-                                                swaps: updatedSwaps,
-                                            }),
-                                        );
-                                    }
-                                });
-                            }
-                        })
-                        .catch(console.log);
-                }
-            } catch (error) {
-                console.log;
-            }
+            // retrieve pool liquidity
             try {
                 if (httpGraphCacheServerDomain) {
                     const poolLiquidityCacheEndpoint =
@@ -555,8 +516,99 @@ export default function App() {
             } catch (error) {
                 console.log;
             }
+
+            if (provider) {
+                // retrieve pool_positions
+                try {
+                    if (httpGraphCacheServerDomain) {
+                        const allPositionsCacheEndpoint =
+                            httpGraphCacheServerDomain + '/pool_positions?';
+                        fetch(
+                            allPositionsCacheEndpoint +
+                                new URLSearchParams({
+                                    base: sortedTokens[0].toLowerCase(),
+                                    quote: sortedTokens[1].toLowerCase(),
+                                    poolIdx: chainData.poolIndex.toString(),
+                                    chainId: chainData.chainId,
+                                    tokenQuantities: 'true',
+                                }),
+                        )
+                            .then((response) => response.json())
+                            .then((json) => {
+                                const poolPositions = json.data;
+
+                                if (poolPositions) {
+                                    // console.log({ poolPositions });
+                                    Promise.all(poolPositions.map(getPositionData)).then(
+                                        (updatedPositions) => {
+                                            // console.log({ updatedPositions });
+                                            if (
+                                                JSON.stringify(
+                                                    graphData.positionsByUser.positions,
+                                                ) !== JSON.stringify(updatedPositions)
+                                            ) {
+                                                dispatch(
+                                                    setPositionsByPool({
+                                                        dataReceived: true,
+                                                        positions: updatedPositions,
+                                                    }),
+                                                );
+                                            }
+                                        },
+                                    );
+                                }
+                            })
+                            .catch(console.log);
+                    }
+                } catch (error) {
+                    console.log;
+                }
+
+                // retrieve pool_swaps
+                try {
+                    if (httpGraphCacheServerDomain) {
+                        const poolSwapsCacheEndpoint = httpGraphCacheServerDomain + '/pool_swaps?';
+
+                        fetch(
+                            poolSwapsCacheEndpoint +
+                                new URLSearchParams({
+                                    base: sortedTokens[0].toLowerCase(),
+                                    quote: sortedTokens[1].toLowerCase(),
+                                    poolIdx: chainData.poolIndex.toString(),
+                                    chainId: chainData.chainId,
+                                    addValue: 'true',
+                                    // n: 10 // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
+                                    // page: 0 // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
+                                }),
+                        )
+                            .then((response) => response?.json())
+                            .then((json) => {
+                                const poolSwaps = json?.data;
+
+                                if (poolSwaps) {
+                                    Promise.all(poolSwaps.map(getSwapData)).then((updatedSwaps) => {
+                                        if (
+                                            JSON.stringify(graphData.swapsByUser.swaps) !==
+                                            JSON.stringify(updatedSwaps)
+                                        ) {
+                                            dispatch(
+                                                setSwapsByPool({
+                                                    dataReceived: true,
+                                                    swaps: updatedSwaps,
+                                                }),
+                                            );
+                                        }
+                                    });
+                                }
+                            })
+                            .catch(console.log);
+                    }
+                } catch (error) {
+                    console.log;
+                }
+            }
         }
-    }, [tokenPairStringified, chainData.chainId]);
+    }, [tokenPairStringified, chainData.chainId, provider]);
 
     const activePeriod = tradeData.activeChartPeriod;
 
@@ -756,6 +808,7 @@ export default function App() {
                 quote: quoteTokenAddress.toLowerCase(),
                 poolIdx: chainData.poolIndex.toString(),
                 chainId: chainData.chainId,
+                addValue: 'true',
             }),
         [baseTokenAddress, quoteTokenAddress, chainData.chainId],
     );
@@ -843,6 +896,7 @@ export default function App() {
             new URLSearchParams({
                 user: account || '',
                 chainId: chainData.chainId,
+                addValue: 'true',
             }),
         [account, chainData.chainId],
     );
@@ -1251,6 +1305,7 @@ export default function App() {
                         new URLSearchParams({
                             user: account,
                             chainId: chainData.chainId,
+                            addValue: 'true',
                         }),
                 )
                     .then((response) => response?.json())
@@ -1369,27 +1424,26 @@ export default function App() {
             .catch(console.log);
     }, [lastBlockNumber]);
 
-    // useEffect to get current block number
-    // on a 10 second interval
-    // currently displayed in footer
-    useEffect(() => {
-        const interval = setInterval(async () => {
-            const currentDateTime = new Date().toISOString();
-            const chain = chainData.chainId;
-            const options = {
-                chain: chain as 'goerli', // Cheat and narrow type. We know chain string matches Moralis' chain union type
-                date: currentDateTime,
-            };
-            const currentBlock = (await Moralis.Web3API.native.getDateToBlock(options)).block;
-            if (currentBlock !== lastBlockNumber) {
-                setLastBlockNumber(currentBlock);
-            }
-        }, 10000);
-
-        return () => clearInterval(interval);
-    }, [chainData.chainId, lastBlockNumber]);
-
     const shouldDisplayAccountTab = isAuthenticated && isWeb3Enabled && account != '';
+
+    const [isModalOpenWallet, openModalWallet, closeModalWallet] = useModal();
+
+    const { tosText, acceptToS } = useTermsOfService();
+
+    // todo: style mouse as a pointer finger
+    const walletModal = (
+        <Modal onClose={closeModalWallet} title='Choose a Wallet' footer={tosText}>
+            <button
+                onClick={() => {
+                    authenticateUser(isAuthenticated, isWeb3Enabled, authenticate, enableWeb3);
+                    acceptToS();
+                    closeModalWallet();
+                }}
+            >
+                Metamask
+            </button>
+        </Modal>
+    );
 
     // props for <PageHeader/> React element
     const headerProps = {
@@ -1402,6 +1456,7 @@ export default function App() {
         isChainSupported: isChainSupported,
         switchChain: switchChain,
         switchNetworkInMoralis: switchNetworkInMoralis,
+        openModalWallet: openModalWallet,
     };
 
     // props for <Swap/> React element
@@ -1716,6 +1771,7 @@ export default function App() {
                         />
 
                         <Route path='swap' element={<Swap {...swapProps} />} />
+                        <Route path='tos' element={<TermsOfService />} />
                         <Route path='testpage' element={<TestPage />} />
                         <Route path='*' element={<Navigate to='/404' replace />} />
                         <Route path='/404' element={<NotFound />} />
@@ -1729,6 +1785,7 @@ export default function App() {
                 )}
             </div>
             <SidebarFooter />
+            {isModalOpenWallet && walletModal}
         </>
     );
 }

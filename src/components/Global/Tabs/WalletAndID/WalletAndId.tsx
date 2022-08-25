@@ -7,9 +7,10 @@ interface WalletAndIDProps {
     posHash: string;
     ownerId: string;
     ensName?: string | null;
+    isOwnerActiveAccount: boolean;
 }
 export default function WalletAndId(props: WalletAndIDProps) {
-    const { ownerId, posHash, ensName } = props;
+    const { ownerId, posHash, ensName, isOwnerActiveAccount } = props;
 
     const ensNameTruncated = ensName ? trimString(ensName, 5, 3, '…') : null;
     const ownerIdTruncated = trimString(ownerId, 6, 0, '…');
@@ -44,6 +45,43 @@ export default function WalletAndId(props: WalletAndIDProps) {
             <p>{posHashTruncated}</p>
         </DefaultTooltip>
     );
+
+    const ownedTransactionWithENS = (
+        <DefaultTooltip
+            interactive
+            title={
+                <div>
+                    <p>{ensName}</p>
+                    <NavLink to={`/account/${ensName}`}>View Account</NavLink>
+                </div>
+            }
+            placement={'right'}
+            arrow
+            enterDelay={400}
+            leaveDelay={200}
+        >
+            <p className={styles.ens}>You</p>
+        </DefaultTooltip>
+    );
+
+    const ownedTransactionNoENS = (
+        <DefaultTooltip
+            interactive
+            title={
+                <div>
+                    <p>{ownerId}</p>
+                    <NavLink to={`/account/${ownerId}`}>View Account</NavLink>
+                </div>
+            }
+            placement={'right'}
+            arrow
+            enterDelay={400}
+            leaveDelay={200}
+        >
+            <p className={styles.ens}>You</p>
+        </DefaultTooltip>
+    );
+
     const ENSWithTooltip = (
         <DefaultTooltip
             interactive
@@ -64,8 +102,14 @@ export default function WalletAndId(props: WalletAndIDProps) {
         </DefaultTooltip>
     );
 
-    const displayENSorWallet = ensName ? ENSWithTooltip : walletWithTooltip;
-
+    // const displayENSorWallet = ensName ? ENSWithTooltip : walletWithTooltip;
+    const displayENSorWallet = isOwnerActiveAccount
+        ? ensName
+            ? ownedTransactionWithENS
+            : ownedTransactionNoENS
+        : ensName
+        ? ENSWithTooltip
+        : walletWithTooltip;
     return (
         <>
             <section className={styles.column_account}>
