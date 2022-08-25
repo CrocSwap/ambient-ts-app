@@ -78,7 +78,7 @@ export default function Transactions(props: TransactionsProps) {
         isCandleSelected
             ? setTransactionData(
                   swapsByPool.filter((data) => {
-                      filter?.allSwaps.includes(data.id);
+                      filter?.allSwaps?.includes(data.id);
                   }),
               )
             : !isShowAllEnabled
