@@ -96,6 +96,17 @@ export default function Chart(props: ChartData) {
     const [scaleData, setScaleData] = useState<any>();
     const [tooltip, setTooltip] = useState<any>();
 
+    useEffect(() => {
+        d3.select(d3Container.current)
+            .select('.targets')
+            .select('.annotation-line')
+            .on('mouseover', (event: any) => {
+                if (!location.pathname.includes('market')) {
+                    d3.select(event.currentTarget).select('.detector').style('cursor', 'ns-resize');
+                }
+            });
+    }, [location]);
+
     // Parse price data
     const parsedChartData = useMemo(() => {
         const chartData: CandleChartData[] = [];
@@ -546,7 +557,9 @@ export default function Chart(props: ChartData) {
                     .attr('stroke-width', 5)
                     .style('pointer-events', 'all')
                     .on('mouseover', (event: any) => {
-                        d3.select(event.currentTarget).style('cursor', 'ns-resize');
+                        // if (path.includes('limit')){
+                        // d3.select(event.currentTarget).style('cursor', 'ns-resize');
+                        // }
                     })
                     .on('mouseout', (event: any) => {
                         d3.select(event.currentTarget).style('cursor', 'default');
