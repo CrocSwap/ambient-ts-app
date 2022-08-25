@@ -17,6 +17,7 @@ import axios from 'axios';
 
 interface MessageInputProps {
     message: Message;
+    room: string;
 }
 
 export default function MessageInput(props: MessageInputProps) {
@@ -47,6 +48,7 @@ export default function MessageInput(props: MessageInputProps) {
         await axios.post(sendMessageRoute, {
             from: '62f24f3ff40188d467c532e8',
             to: '62fa389c897f9778e2eb863f',
+            roomInfo: props.room,
             message: msg,
         });
     };
