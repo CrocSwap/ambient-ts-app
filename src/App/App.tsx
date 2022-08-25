@@ -1429,6 +1429,9 @@ export default function App() {
             >
                 Metamask
             </button>
+            <button>
+                Connect with Email
+            </button>
         </Modal>
     );
 
