@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Moralis } from 'moralis';
 import { AuthenticateOptions } from 'react-moralis/lib/hooks/core/useMoralis/_useMoralisAuth';
 import { Web3EnableOptions } from 'react-moralis/lib/hooks/core/useMoralis/_useMoralisWeb3';
@@ -31,9 +31,7 @@ export default function WalletModal(props: WalletModalPropsIF) {
 
     const [ page, setPage ] = useState('wallets');
 
-    false && setPage('wallets');
-
-    const walletsPage = (
+    const walletsPage = useMemo(() => (
         <>
             <button
                 onClick={() => {
@@ -48,22 +46,28 @@ export default function WalletModal(props: WalletModalPropsIF) {
             >
                 Metamask
             </button>
-            <button>
+            <button onClick={() => setPage('magicLogin')}>
                 Connect with Email
             </button>
         </>
+    ), []);
+
+    const magicLoginPage = (
+        <h2>This is the Magic Login page!</h2>
     );
 
     const activeContent = useMemo(() => {
         switch(page) {
             case 'wallets': return walletsPage;
-            default: walletsPage;
+            case 'magicLogin': return magicLoginPage;
+            default: magicLoginPage;
         }
     }, [page]);
 
     const activeTitle = useMemo(() => {
         switch(page) {
             case 'wallets': return 'Choose a Wallet';
+            case 'magicLogin': return 'Log In With Email';
             default: 'Choose a Wallet';
         }
     }, [page]);
@@ -71,6 +75,7 @@ export default function WalletModal(props: WalletModalPropsIF) {
     const clickBackArrow = useMemo(() => {
         switch(page) {
             case 'wallets': return closeModalWallet;
+            case 'magicLogin': return () => setPage('wallets');
             default: closeModalWallet;
         }
     }, [page]);
