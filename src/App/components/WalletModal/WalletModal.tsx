@@ -66,17 +66,16 @@ export default function WalletModal(props: WalletModalPropsIF) {
 
     const metamaskPendingPage = (
         <>
-            <h2>Waiting for Metamask...</h2>
-            <p>If a window does not pop up automatically, check the Metamask extension in your browser for notifications.</p>
+            <p>Check the Metamask extension in your browser for notifications. Make sure your browser is not blocking pop-up windows.</p>
         </>
     );
 
     const metamaskErrorPage = (
         <>
-            <h2>Error in Metamask</h2>
-            <p>Check the Metamask extension in your browser for notifications, or click &quotTry Again&quot. You can also click the left arrow above to choose a different wallet.</p>
-            <button
-                onClick={() => {
+            <p>Check the Metamask extension in your browser for notifications, or click &quot;Try Again&quot;. You can also click the left arrow above to choose a different wallet.</p>
+            <Button
+                title='Try Again'
+                action={() => {
                     setPage('metamaskPending');
                     authenticateMetamask(
                         isAuthenticated,
@@ -87,9 +86,7 @@ export default function WalletModal(props: WalletModalPropsIF) {
                     );  
                     acceptToS();
                 }}
-            >
-                Try Again
-            </button>
+            />
         </>
     );
 
@@ -125,6 +122,8 @@ export default function WalletModal(props: WalletModalPropsIF) {
         switch(page) {
             case 'wallets': return 'Choose a Wallet';
             case 'magicLogin': return 'Log In With Email';
+            case 'metamaskPending': return 'Waiting for Metamask';
+            case 'metamaskError': return 'Metamask Error';
             default: 'Choose a Wallet';
         }
     }, [page]);
