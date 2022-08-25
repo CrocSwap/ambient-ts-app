@@ -82,7 +82,7 @@ export default function ChatPanel(props: ChatProps) {
                 >
                     <div className={styles.chat_body}>
                         {header}
-                        <Room />
+                        <Room favePools={favePools} />
                         <div style={{ width: '90%' }}>
                             <DividerDark changeColor addMarginTop addMarginBottom />
                         </div>
