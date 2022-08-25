@@ -103,6 +103,7 @@ export default function App() {
         account,
         logout,
         isAuthenticated,
+        isAuthenticating,
         isInitialized,
         authenticate,
         enableWeb3
@@ -1426,13 +1427,17 @@ export default function App() {
                         enableWeb3,
                     );
                     acceptToS();
-                    closeModalWallet();
                 }}
             >
                 Metamask
             </button>
         </Modal>
     );
+
+    // close the Connect Wallet modal only when authentication completes
+    useEffect(() => {
+        isAuthenticated && closeModalWallet();
+    }, [isAuthenticating]);
 
     // props for <PageHeader/> React element
     const headerProps = {
