@@ -1,47 +1,112 @@
 import styles from './RemoveRangeInfo.module.css';
 import Row from '../../Global/Row/Row';
 import Divider from '../../Global/Divider/Divider';
+// import { formatAmount } from '../../../utils/numbers';
 
-export default function RemoveRangeInfo() {
+interface IRemoveRangeInfoProps {
+    baseTokenSymbol: string;
+    quoteTokenSymbol: string;
+    baseTokenLogoURI: string;
+    quoteTokenLogoURI: string;
+    posLiqBaseDecimalCorrected: number | undefined;
+    posLiqQuoteDecimalCorrected: number | undefined;
+    feeLiqBaseDecimalCorrected: number | undefined;
+    feeLiqQuoteDecimalCorrected: number | undefined;
+}
+
+export default function RemoveRangeInfo(props: IRemoveRangeInfoProps) {
+    const {
+        baseTokenSymbol,
+        quoteTokenSymbol,
+        baseTokenLogoURI,
+        quoteTokenLogoURI,
+        posLiqBaseDecimalCorrected,
+        posLiqQuoteDecimalCorrected,
+        feeLiqBaseDecimalCorrected,
+        feeLiqQuoteDecimalCorrected,
+    } = props;
+
+    const liqBaseDisplay = posLiqBaseDecimalCorrected
+        ? posLiqBaseDecimalCorrected < 2
+            ? posLiqBaseDecimalCorrected.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 6,
+              })
+            : posLiqBaseDecimalCorrected.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              })
+        : // ? formatAmount(posLiqBaseDecimalCorrected)
+          '0.00';
+    const liqQuoteDisplay = posLiqQuoteDecimalCorrected
+        ? posLiqQuoteDecimalCorrected < 2
+            ? posLiqQuoteDecimalCorrected.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 6,
+              })
+            : posLiqQuoteDecimalCorrected.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              })
+        : // ? formatAmount(posLiqQuoteDecimalCorrected)
+          '0.00';
+    const feeLiqBaseDisplay = feeLiqBaseDecimalCorrected
+        ? feeLiqBaseDecimalCorrected < 2
+            ? feeLiqBaseDecimalCorrected.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 6,
+              })
+            : feeLiqBaseDecimalCorrected.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              })
+        : // ? formatAmount(feeLiqBaseDecimalCorrected)
+          '0.00';
+    const feeLiqQuoteDisplay = feeLiqQuoteDecimalCorrected
+        ? feeLiqQuoteDecimalCorrected < 2
+            ? feeLiqQuoteDecimalCorrected.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 6,
+              })
+            : feeLiqQuoteDecimalCorrected.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              })
+        : '0.00';
+
     return (
         <div className={styles.row}>
             <div className={styles.remove_position_info}>
                 <Row>
-                    <span>Pooled ETH</span>
+                    <span>Pooled {baseTokenSymbol}</span>
                     <div className={styles.token_price}>
-                        1.69
-                        <img
-                            src='https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png'
-                            alt=''
-                        />
+                        {liqBaseDisplay}
+                        <img src={baseTokenLogoURI} alt='' />
                     </div>
                 </Row>
                 {/*  */}
                 <Row>
-                    <span>Pooled USDC</span>
+                    <span>Pooled {quoteTokenSymbol}</span>
                     <div className={styles.token_price}>
-                        1690.0
-                        <img src='https://cryptologos.cc/logos/usd-coin-usdc-logo.png' alt='' />
+                        {liqQuoteDisplay}
+                        <img src={quoteTokenLogoURI} alt='' />
                     </div>
                 </Row>
                 {/*  */}
                 <Divider />
                 <Row>
-                    <span>ETH Fees Earned</span>
+                    <span>{baseTokenSymbol} Fees Earned</span>
                     <div className={styles.token_price}>
-                        0.06
-                        <img
-                            src='https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png'
-                            alt=''
-                        />
+                        {feeLiqBaseDisplay}
+                        <img src={baseTokenLogoURI} alt='' />
                     </div>
                 </Row>
                 {/*  */}
                 <Row>
-                    <span>USDC Fees Earned</span>
+                    <span>{quoteTokenSymbol} Fees Earned</span>
                     <div className={styles.token_price}>
-                        60.9
-                        <img src='https://cryptologos.cc/logos/usd-coin-usdc-logo.png' alt='' />
+                        {feeLiqQuoteDisplay}
+                        <img src={quoteTokenLogoURI} alt='' />
                     </div>
                 </Row>
             </div>

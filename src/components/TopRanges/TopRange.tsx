@@ -55,7 +55,7 @@ export default function TopRange() {
 
             <div className={styles.menu_container}>
                 <RangesMenu
-                    userPosition={true}
+                    userMatchesConnectedAccount={true}
                     rangeDetailsProps={true}
                     posHash={tempPosHash as string}
                     positionData={undefined}
