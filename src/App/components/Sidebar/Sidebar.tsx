@@ -53,7 +53,6 @@ interface SidebarPropsIF {
 }
 
 export default function Sidebar(props: SidebarPropsIF) {
-
     const {
         isDenomBase,
         toggleSidebar,
@@ -222,7 +221,7 @@ export default function Sidebar(props: SidebarPropsIF) {
         </div>
     );
 
-    console.log(searchInput);
+    // console.log(searchInput);
 
     const searchContainerDisplay = (
         <div className={`${styles.sidebar_link} ${styles.sidebar_link_search}`}>

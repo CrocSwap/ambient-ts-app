@@ -1075,6 +1075,17 @@ export default function App() {
         // swap.user = swap.user.startsWith('0x') ? swap.user : '0x' + swap.user;
         // swap.id = '0x' + swap.id.slice(6);
 
+        const viewProvider = provider
+            ? provider
+            : (await new CrocEnv(chainData.chainId).context).provider;
+
+        try {
+            const ensName = await cachedFetchAddress(viewProvider, swap.user, chainData.chainId);
+            if (ensName) swap.userEnsName = ensName;
+        } catch (error) {
+            console.warn(error);
+        }
+
         return swap;
     };
 

@@ -310,7 +310,6 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
         setLiquidityType(label.toLowerCase());
     }
 
-
     const liquidityTypeDisplay = liquidityTypeData.map((type, idx) => (
         <motion.div
             initial={{ y: 10, opacity: 0 }}
@@ -363,7 +362,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
         poolId: 36000,
     };
 
-    const isButtonFavorited = favePools.some(
+    const isButtonFavorited = favePools?.some(
         (pool: PoolIF) =>
             pool.base.address === currentPoolData.base.address &&
             pool.quote.address === currentPoolData.quote.address &&
