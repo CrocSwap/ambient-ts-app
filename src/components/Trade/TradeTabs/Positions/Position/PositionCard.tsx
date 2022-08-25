@@ -36,22 +36,13 @@ interface PositionCardPropsIF {
     chainId: string;
 }
 export default function PositionCard(props: PositionCardPropsIF) {
-    const {
-        position,
-        tokenAAddress,
-        tokenBAddress,
-        account,
-        chainId,
-        userPosition,
-    } = props;
+    const { position, tokenAAddress, tokenBAddress, account, chainId, userPosition } = props;
 
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const location = useLocation();
 
     const currentLocation = location.pathname;
-    const handleClick = (
-        event: MouseEvent<HTMLButtonElement> | MouseEvent<HTMLDivElement>,
-    ) => {
+    const handleClick = (event: MouseEvent<HTMLButtonElement> | MouseEvent<HTMLDivElement>) => {
         console.log('handleClick', event.currentTarget);
         setAnchorEl(event.currentTarget);
     };
@@ -98,43 +89,26 @@ export default function PositionCard(props: PositionCardPropsIF) {
         position: position,
     };
 
-    let posHash;
-    if (position.ambient) {
-        posHash = ambientPosSlot(
-            position.user,
-            position.base,
-            position.quote,
-            lookupChain(chainId).poolIndex,
-        );
-    } else {
-        posHash = concPosSlot(
-            position.user,
-            position.base,
-            position.quote,
-            position.bidTick,
-            position.askTick,
-            lookupChain(chainId).poolIndex,
-        );
-    }
+    const posHash = position.positionStorageSlot;
 
     const truncatedPosHash = trimString(posHash as string, 6, 0, '…');
 
     const mobilePosHash = trimString(posHash as string, 4, 0, '…');
 
-    let isPositionInRange = true;
+    const isPositionInRange = position.isPositionInRange;
 
-    if (position.poolPriceInTicks) {
-        if (position.ambient) {
-            isPositionInRange = true;
-        } else if (
-            position.bidTick <= position.poolPriceInTicks &&
-            position.poolPriceInTicks <= position.askTick
-        ) {
-            isPositionInRange = true;
-        } else {
-            isPositionInRange = false;
-        }
-    }
+    // if (position.poolPriceInTicks) {
+    //     if (position.ambient) {
+    //         isPositionInRange = true;
+    //     } else if (
+    //         position.bidTick <= position.poolPriceInTicks &&
+    //         position.poolPriceInTicks <= position.askTick
+    //     ) {
+    //         isPositionInRange = true;
+    //     } else {
+    //         isPositionInRange = false;
+    //     }
+    // }
 
     const positionBaseAddressLowerCase = position.base.toLowerCase();
     const positionQuoteAddressLowerCase = position.quote.toLowerCase();
@@ -186,7 +160,7 @@ export default function PositionCard(props: PositionCardPropsIF) {
                 onClose={handleClose}
                 className={classes.menu}
             >
-                {!position.ambient && (
+                {position.positionType !== 'ambient' && (
                     <MenuItem onClick={openHarvestModal} className={classes.menuItem}>
                         Harvest
                     </MenuItem>
@@ -213,11 +187,12 @@ export default function PositionCard(props: PositionCardPropsIF) {
         </>
     );
 
-    const ambientRangeOrNull = position.ambient ? (
-        <p className={styles.ambient_text}>ambient</p>
-    ) : (
-        `${minRange}- ${maxRange}`
-    );
+    const ambientRangeOrNull =
+        position.positionType === 'ambient' ? (
+            <p className={styles.ambient_text}>ambient</p>
+        ) : (
+            `${minRange}- ${maxRange}`
+        );
 
     const detailsButton = (
         <button className={styles.details_button} onClick={openDetailsModal}>
@@ -291,12 +266,15 @@ export default function PositionCard(props: PositionCardPropsIF) {
                 </div>
                 <p className={`${''} ${styles.apy}`}>APY</p>
                 <div className={styles.full_range}>
-                    <RangeStatus isInRange={isPositionInRange} isAmbient={position.ambient} />{' '}
+                    <RangeStatus
+                        isInRange={isPositionInRange}
+                        isAmbient={position.positionType === 'ambient'}
+                    />{' '}
                 </div>
                 <div className={styles.range_icon}>
                     <RangeStatus
                         isInRange={isPositionInRange}
-                        isAmbient={position.ambient}
+                        isAmbient={position.positionType === 'ambient'}
                         justSymbol
                     />{' '}
                 </div>

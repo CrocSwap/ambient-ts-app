@@ -2,7 +2,6 @@
 export interface PositionIF {
     chainId: string;
     positionStorageSlot: string;
-    ambient: boolean;
     askTick: number;
     bidTick: number;
     id: string;
@@ -18,6 +17,7 @@ export interface PositionIF {
     baseSymbol: string;
     quoteSymbol: string;
     poolPriceInTicks: number;
+    isPositionInRange: boolean;
     lowRangeDisplayInBase: string;
     lowRangeShortDisplayInBase: string;
     highRangeDisplayInBase: string;
