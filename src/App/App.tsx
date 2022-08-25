@@ -98,16 +98,15 @@ const shouldNonCandleSubscriptionsReconnect = true;
 /** ***** React Function *******/
 export default function App() {
     const {
-        Moralis,
+        // Moralis,
         isWeb3Enabled,
         account,
         logout,
         isAuthenticated,
-        isInitialized,
+        // isInitialized,
         authenticate,
-        enableWeb3
-    } =
-        useMoralis();
+        enableWeb3,
+    } = useMoralis();
 
     const tokenMap = useTokenMap();
 
@@ -217,19 +216,53 @@ export default function App() {
     }, [tokenListsReceived]);
 
     useEffect(() => {
-        if (isInitialized) {
-            (async () => {
-                const currentDateTime = new Date().toISOString();
-                const defaultChain = 'goerli';
-                const options = {
-                    chain: defaultChain as 'goerli', // Cheat and narrow type. We know chain string matches Moralis' chain union type
-                    date: currentDateTime,
-                };
-                const currentBlock = (await Moralis.Web3API.native.getDateToBlock(options)).block;
-                setLastBlockNumber(currentBlock);
-            })();
+        fetch('https://goerli.infura.io/v3/cf3bc905d88d4f248c6be347adc8a1d8', {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                jsonrpc: '2.0',
+                method: 'eth_blockNumber',
+                params: [],
+                id: 5,
+            }),
+        })
+            .then((response) => response?.json())
+            .then((json) => {
+                if (lastBlockNumber !== parseInt(json?.result)) {
+                    setLastBlockNumber(parseInt(json?.result));
+                }
+            });
+    }, []);
+
+    const goerliWssInfuraEndpoint = 'wss://goerli.infura.io/ws/v3/cbb2856ea8804fc5ba59be0a2e8a9f88';
+
+    const { sendMessage: send, lastMessage: lastNewHeadMessage } = useWebSocket(
+        goerliWssInfuraEndpoint,
+        {
+            onOpen: () =>
+                send('{"jsonrpc":"2.0","method":"eth_subscribe","params":["newHeads"],"id":5}'),
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            onClose: (event: any) => console.log({ event }),
+            shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
+        },
+    );
+
+    useEffect(() => {
+        if (lastNewHeadMessage !== null) {
+            if (lastNewHeadMessage?.data) {
+                const lastMessageData = JSON.parse(lastNewHeadMessage?.data);
+                if (lastMessageData) {
+                    const lastBlockNumberHex = lastMessageData.params?.result?.number;
+                    if (lastBlockNumberHex && lastBlockNumber !== parseInt(lastBlockNumberHex)) {
+                        setLastBlockNumber(parseInt(lastBlockNumberHex));
+                    }
+                }
+            }
         }
-    }, [isInitialized]);
+    }, [lastNewHeadMessage]);
 
     // hook holding values and setter functions for slippage
     // holds stable and volatile values for swap and mint transactions
@@ -1384,26 +1417,6 @@ export default function App() {
             .catch(console.log);
     }, [lastBlockNumber]);
 
-    // useEffect to get current block number
-    // on a 10 second interval
-    // currently displayed in footer
-    useEffect(() => {
-        const interval = setInterval(async () => {
-            const currentDateTime = new Date().toISOString();
-            const chain = chainData.chainId;
-            const options = {
-                chain: chain as 'goerli', // Cheat and narrow type. We know chain string matches Moralis' chain union type
-                date: currentDateTime,
-            };
-            const currentBlock = (await Moralis.Web3API.native.getDateToBlock(options)).block;
-            if (currentBlock !== lastBlockNumber) {
-                setLastBlockNumber(currentBlock);
-            }
-        }, 10000);
-
-        return () => clearInterval(interval);
-    }, [chainData.chainId, lastBlockNumber]);
-
     const shouldDisplayAccountTab = isAuthenticated && isWeb3Enabled && account != '';
 
     const [isModalOpenWallet, openModalWallet, closeModalWallet] = useModal();
@@ -1412,19 +1425,10 @@ export default function App() {
 
     // todo: style mouse as a pointer finger
     const walletModal = (
-        <Modal 
-            onClose={closeModalWallet}
-            title='Choose a Wallet'
-            footer={tosText}
-        >
+        <Modal onClose={closeModalWallet} title='Choose a Wallet' footer={tosText}>
             <button
                 onClick={() => {
-                    authenticateUser(
-                        isAuthenticated,
-                        isWeb3Enabled,
-                        authenticate,
-                        enableWeb3,
-                    );
+                    authenticateUser(isAuthenticated, isWeb3Enabled, authenticate, enableWeb3);
                     acceptToS();
                     closeModalWallet();
                 }}
