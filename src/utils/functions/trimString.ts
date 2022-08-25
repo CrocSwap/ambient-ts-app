@@ -8,7 +8,7 @@ export default function trimString(
     input: string,
     startLength: number,
     endLength: number,
-    separator = '...',
+    separator = '…',
 ) {
     // return input unchanged if shorter than the number of characters to use
     if (input.length <= startLength + endLength) return input;

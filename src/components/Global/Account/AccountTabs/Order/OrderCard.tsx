@@ -8,9 +8,18 @@ import AccountTokensDisplay from '../../../Tabs/AccountTokensDisplay/AccountToke
 import OrdersMenu from '../../../Tabs/TableMenu/TableMenuComponents/OrdersMenu';
 
 import styles from './OrderCard.module.css';
-export default function OrderCard() {
+
+interface OrderCardProps {
+    account: string;
+}
+
+export default function OrderCard(props: OrderCardProps) {
+    const { account } = props;
+
     const tempOwnerId = '0xa2b398145b7fc8fd9a01142698f15d329ebb5ff5090cfcc8caae440867ab9919';
     const tempPosHash = '0x01e650abfc761c6a0fc60f62a4e4b3832bb1178b';
+
+    const isOwnerActiveAccount = tempOwnerId.toLowerCase() === account.toLowerCase();
 
     return (
         <div className={styles.main_container}>
@@ -20,7 +29,11 @@ export default function OrderCard() {
 
             <div className={styles.row_container}>
                 <AccountPoolDisplay />
-                <WalletAndId ownerId={tempOwnerId} posHash={tempPosHash} />
+                <WalletAndId
+                    ownerId={tempOwnerId}
+                    posHash={tempPosHash}
+                    isOwnerActiveAccount={isOwnerActiveAccount}
+                />
                 <Price priceType='priceBuy' />
                 <OrderTypeSide type='order' side='sell' />
                 <TokenQty />

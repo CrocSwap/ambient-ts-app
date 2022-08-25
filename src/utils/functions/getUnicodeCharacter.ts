@@ -5,5 +5,5 @@ export default (symbol: string) => {
         return token.symbol.toLowerCase() === symbol.toLowerCase();
     })[0]?.character;
 
-    return character;
+    return character || '';
 };

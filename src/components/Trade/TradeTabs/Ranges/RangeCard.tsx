@@ -45,10 +45,6 @@ export default function RangeCard(props: RangeCardProps) {
         setCurrentPositionActive,
     } = props;
 
-    const positionData = {
-        position: position,
-    };
-
     // -------------------------------POSITION HASH------------------------
 
     let posHash;
@@ -124,6 +120,7 @@ export default function RangeCard(props: RangeCardProps) {
     const rangeDetailsProps = {
         provider: provider,
         chainId: chainId,
+        poolIdx: position.poolIdx,
         isPositionInRange: isPositionInRange,
         isAmbient: position.positionType === 'ambient',
         user: position.user,
@@ -198,14 +195,16 @@ export default function RangeCard(props: RangeCardProps) {
     // ------------------------------END OF REMOVE RANGE PROPS-----------------
 
     const activePositionStyle =
-        position.id === currentPositionActive ? styles.active_position_style : '';
+        position.positionStorageSlot === currentPositionActive ? styles.active_position_style : '';
 
     if (!positionMatchesSelectedTokens) return null;
     return (
         <div
             className={`${styles.main_container} ${activePositionStyle}`}
             onClick={() =>
-                position.id === currentPositionActive ? null : setCurrentPositionActive('')
+                position.positionStorageSlot === currentPositionActive
+                    ? null
+                    : setCurrentPositionActive('')
             }
         >
             <div className={styles.row_container}>
@@ -215,6 +214,7 @@ export default function RangeCard(props: RangeCardProps) {
                     ownerId={position.user}
                     posHash={posHash as string}
                     ensName={position.userEnsName ? position.userEnsName : null}
+                    isOwnerActiveAccount={userMatchesConnectedAccount}
                 />
 
                 {/* ------------------------------------------------------ */}
@@ -238,10 +238,10 @@ export default function RangeCard(props: RangeCardProps) {
 
             <div className={styles.menu_container}>
                 <RangesMenu
-                    userPosition={userMatchesConnectedAccount}
+                    userMatchesConnectedAccount={userMatchesConnectedAccount}
                     rangeDetailsProps={rangeDetailsProps}
                     posHash={posHash as string}
-                    positionData={positionData}
+                    positionData={position}
                 />
             </div>
         </div>

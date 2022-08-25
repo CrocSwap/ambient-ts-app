@@ -1,6 +1,12 @@
 import { useEffect, useState } from 'react';
 
-export const useTermsOfService = (): [string, boolean, string, () => void, () => void] => {
+export const useTermsOfService = (): {
+    tosText: string;
+    agreement: boolean;
+    agreementDate: string;
+    acceptToS: () => void;
+    rejectToS: () => void;
+} => {
     // user data object from local storage
     const [userData, setUserData] = useState(JSON.parse(localStorage.getItem('user') as string));
     // boolean agreement status whether user has accepted ToS
@@ -24,7 +30,7 @@ export const useTermsOfService = (): [string, boolean, string, () => void, () =>
 
     // text of the ToS
     // we may want to put this in its own data file and import it
-    const tosText = 'Doug will have to put something here.';
+    const tosText = 'By connecting a wallet you agree to the Terms of Service.';
 
     // meta functions to reflect user accepting or rejecting ToS
     const acceptToS = () => updateUserAgreement(true);
@@ -49,5 +55,11 @@ export const useTermsOfService = (): [string, boolean, string, () => void, () =>
         localStorage.setItem('user', JSON.stringify(newUserData));
     }
 
-    return [tosText, agreement, agreementDate, acceptToS, rejectToS];
+    return {
+        tosText,
+        agreement,
+        agreementDate,
+        acceptToS,
+        rejectToS,
+    };
 };

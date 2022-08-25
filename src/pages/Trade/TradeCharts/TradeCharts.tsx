@@ -92,7 +92,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
 
     const truncatedPoolPrice =
         poolPriceDisplay === Infinity || poolPriceDisplay === 0
-            ? '...'
+            ? '…'
             : poolPriceDisplay < 2
             ? poolPriceDisplay.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
@@ -229,10 +229,16 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
     const handleTvlToggle = () => setShowTvl(!showTvl);
     const handleFeeRateToggle = () => setShowFeeRate(!showFeeRate);
 
+    const exampleAction = () => console.log('example');
+
     const chartOverlayButtonData = [
         { name: 'Volume', selected: showVolume, action: handleVolumeToggle },
         { name: 'TVL', selected: showTvl, action: handleTvlToggle },
         { name: 'Fee Rate', selected: showFeeRate, action: handleFeeRateToggle },
+        { name: 'Heatmap', selected: false, action: exampleAction },
+        { name: 'Liquidity Profile', selected: false, action: exampleAction },
+        { name: 'Curve', selected: false, action: exampleAction },
+        { name: 'Depth', selected: false, action: exampleAction },
     ];
 
     const chartOverlayButtons = chartOverlayButtonData.map((button, idx) => (
@@ -301,6 +307,57 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
 
     // --------------------------- END OF TIME FRAME BUTTON FUNCTIONALITY-------------------------------
 
+    // --------------------------- LIQUIDITY TYPE BUTTON FUNCTIONALITY-------------------------------
+    const liquidityTypeData = [{ label: 'Depth' }, { label: 'Curve' }];
+    const [liquidityType, setLiquidityType] = useState('depth');
+
+    function handleLiquidityTypeButtonClick(label: string) {
+        setLiquidityType(label.toLowerCase());
+    }
+    // console.log(liquidityType);
+
+    const liquidityTypeDisplay = liquidityTypeData.map((type, idx) => (
+        <motion.div
+            initial={{ y: 10, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -10, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className={`${styles.settings_container} `}
+            key={idx}
+        >
+            <button
+                onClick={() => handleLiquidityTypeButtonClick(type.label)}
+                className={
+                    type.label.toLowerCase() === liquidityType
+                        ? styles.active_button2
+                        : styles.non_active_button2
+                }
+            >
+                {type.label}
+
+                {type.label.toLowerCase() === liquidityType && (
+                    <motion.div
+                        layoutId='outline'
+                        className={styles.outline}
+                        initial={false}
+                        transition={spring}
+                    />
+                )}
+            </button>
+        </motion.div>
+    ));
+    // eslint-disable-next-line
+    const liquidityTypeContent = (
+        <div className={styles.liquidity_type_container}>
+            <div />
+            <div className={styles.liquidity_type_content}>
+                <span>Liquidity Type</span>
+
+                {liquidityTypeDisplay}
+            </div>
+        </div>
+    );
+    // --------------------------- END OF LIQUIDITY TYPE BUTTON FUNCTIONALITY-------------------------------
     // TOKEN INFO----------------------------------------------------------------
 
     // console.log({ favePools });
@@ -329,6 +386,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
             whileTap={{ scale: 3 }}
             transition={{ duration: 0.5 }}
             onClick={handleFavButton}
+            className={styles.fav_button}
             style={{
                 cursor: 'pointer',
             }}
@@ -400,7 +458,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
             <div className={styles.left_side}>
                 <span className={styles.amount}>
                     {poolPriceDisplay === Infinity
-                        ? '...'
+                        ? '…'
                         : `${currencyCharacter}${truncatedPoolPrice}`}
                 </span>
                 <span
@@ -408,9 +466,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                         isPoolPriceChangePositive ? styles.change_positive : styles.change_negative
                     }
                 >
-                    {poolPriceChangePercent === undefined
-                        ? '...'
-                        : poolPriceChangePercent + ' | 24h'}
+                    {poolPriceChangePercent === undefined ? '…' : poolPriceChangePercent + ' | 24h'}
                 </span>
             </div>
             <div className={styles.right_side}>
@@ -474,6 +530,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                 {graphSettingsContent}
                 {tokenInfo}
                 {timeFrameContent}
+                {/* {liquidityTypeContent} */}
             </div>
             <div style={{ width: '100%', height: '100%' }} ref={canvasRef}>
                 <TradeCandleStickChart

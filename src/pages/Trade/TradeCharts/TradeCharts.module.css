@@ -29,6 +29,14 @@
     cursor: pointer;
 }
 
+.tokens_images:hover, .tokens_name:hover, .fav_button:hover, .settings_container button:hover{
+
+        transition: all 0.3s ease-out;
+    
+        filter: brightness(75%);
+    
+}
+
 .settings_container,
 .time_frame_container .right_side , .time_frame_container .left_side{
     display: flex;
@@ -244,6 +252,28 @@
     background: var(--title-gradient);
     border-color: #7371fc;
     color: #fff;
+}
+.liquidity_type_container{
+    background: darkblue;
+
+
+display: grid;
+grid-template-columns: 1fr 1fr;
+}
+
+.liquidity_type_content{
+    display: flex;
+    flex-direction: row;
+    
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.liquidity_type_content span{
+    width: 50%;
+   
+    text-align: flex-start;
 }
 
 /* .chart_item_container input[type=checkbox]:disabled + label:before {

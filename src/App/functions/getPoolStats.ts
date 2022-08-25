@@ -1,6 +1,27 @@
-const getPoolVolume = async (tokenA: string, tokenB: string, poolIdx: number): Promise<number> => {
+const poolVolumeCacheEndpoint = 'https://809821320828123.de:5000/pool_volume?';
+
+const getPoolVolume = async (
+    tokenA: string,
+    tokenB: string,
+    poolIdx: number,
+    chainId: string,
+): Promise<number> => {
     if (tokenA && tokenB && poolIdx) {
-        return 1000000000 * Math.random();
+        const totalVolumeUSD = fetch(
+            poolVolumeCacheEndpoint +
+                new URLSearchParams({
+                    chainId: chainId,
+                    base: tokenA,
+                    quote: tokenB,
+                    poolIdx: poolIdx.toString(),
+                    concise: 'true',
+                }),
+        )
+            .then((response) => response.json())
+            .then((json) => {
+                return json?.data?.totalVolumeUSD;
+            });
+        return totalVolumeUSD;
     } else {
         return 0;
     }
@@ -8,15 +29,21 @@ const getPoolVolume = async (tokenA: string, tokenB: string, poolIdx: number): P
 
 const poolTvlCacheEndpoint = 'https://809821320828123.de:5000/pool_tvl?';
 
-const getPoolTVL = async (tokenA: string, tokenB: string, poolIdx: number): Promise<number> => {
+const getPoolTVL = async (
+    tokenA: string,
+    tokenB: string,
+    poolIdx: number,
+    chainId: string,
+): Promise<number> => {
     if (tokenA && tokenB && poolIdx) {
         const tvl = fetch(
             poolTvlCacheEndpoint +
                 new URLSearchParams({
-                    chainId: '0x5',
+                    chainId: chainId,
                     base: tokenA,
                     quote: tokenB,
-                    poolIdx: '36000',
+                    poolIdx: poolIdx.toString(),
+                    concise: 'true',
                 }),
         )
             .then((response) => response.json())
@@ -46,6 +73,7 @@ const get24hChange = async (
                     base: baseToken,
                     quote: quoteToken,
                     poolIdx: poolIdx.toString(),
+                    concise: 'true',
                 }),
         )
             .then((response) => response.json())
