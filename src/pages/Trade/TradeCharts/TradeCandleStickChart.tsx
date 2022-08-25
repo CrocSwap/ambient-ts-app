@@ -34,6 +34,8 @@ interface ChartData {
     liquidityData: any;
     isAdvancedModeActive: boolean | undefined;
     simpleRangeWidth: number | undefined;
+    pinnedMinPriceDisplayTruncated: number | undefined;
+    pinnedMaxPriceDisplayTruncated: number | undefined;
 }
 
 type chartItemStates = {
@@ -269,6 +271,8 @@ export default function TradeCandleStickChart(props: ChartData) {
                     denomInBase={props.denomInBase}
                     isAdvancedModeActive={props.isAdvancedModeActive}
                     simpleRangeWidth={props.simpleRangeWidth}
+                    pinnedMinPriceDisplayTruncated={props.pinnedMinPriceDisplayTruncated}
+                    pinnedMaxPriceDisplayTruncated={props.pinnedMaxPriceDisplayTruncated}
                 />
             </div>
 

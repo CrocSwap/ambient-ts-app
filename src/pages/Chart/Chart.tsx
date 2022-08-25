@@ -39,6 +39,8 @@ interface ChartData {
     limitRate: string;
     isAdvancedModeActive: boolean | undefined;
     simpleRangeWidth: number | undefined;
+    pinnedMinPriceDisplayTruncated: number | undefined;
+    pinnedMaxPriceDisplayTruncated: number | undefined;
 }
 
 interface CandleChartData {
@@ -57,7 +59,13 @@ interface ChartUtils {
 }
 
 export default function Chart(props: ChartData) {
-    const { denomInBase, isAdvancedModeActive } = props;
+    const {
+        denomInBase,
+        isAdvancedModeActive,
+        pinnedMinPriceDisplayTruncated,
+        pinnedMaxPriceDisplayTruncated,
+        simpleRangeWidth,
+    } = props;
 
     const d3Container = useRef(null);
     const d3PlotArea = useRef(null);
@@ -97,6 +105,7 @@ export default function Chart(props: ChartData) {
     const [transactionFilter, setTransactionFilter] = useState<CandleData>();
     const [scaleData, setScaleData] = useState<any>();
     const [tooltip, setTooltip] = useState<any>();
+    const [dragType, setDragType] = useState<any>();
 
     const setDefaultRangeData = () => {
         setRanges((prevState) => {
@@ -125,6 +134,11 @@ export default function Chart(props: ChartData) {
             return newTargets;
         });
     };
+
+    const render = useCallback(() => {
+        const nd = d3.select('#group').node() as any;
+        nd.requestRedraw();
+    }, []);
 
     // Parse price data
     const parsedChartData = useMemo(() => {
@@ -259,10 +273,30 @@ export default function Chart(props: ChartData) {
             }
         } else if (location.pathname.includes('range')) {
             if (!isAdvancedModeActive) {
-                if (props.simpleRangeWidth === 100) {
+                if (simpleRangeWidth === 100) {
                     setDefaultRangeData();
                 } else {
-                    console.log(props.simpleRangeWidth);
+                    setRanges(() => {
+                        return [
+                            {
+                                name: 'low',
+                                value:
+                                    pinnedMinPriceDisplayTruncated !== undefined
+                                        ? pinnedMinPriceDisplayTruncated
+                                        : 0,
+                            },
+                            {
+                                name: 'high',
+                                value:
+                                    pinnedMaxPriceDisplayTruncated !== undefined
+                                        ? pinnedMaxPriceDisplayTruncated
+                                        : 0,
+                            },
+                        ];
+                    });
+                    console.log(simpleRangeWidth);
+                    console.log(props.pinnedMinPriceDisplayTruncated);
+                    console.log(props.pinnedMaxPriceDisplayTruncated);
                 }
             } else {
                 ranges.map((mapData) => {
@@ -336,7 +370,16 @@ export default function Chart(props: ChartData) {
                 }
             }
         }
-    }, [location, props.limitPrice, props.targetData, denomInBase, isAdvancedModeActive]);
+    }, [
+        location,
+        props.limitPrice,
+        props.targetData,
+        denomInBase,
+        isAdvancedModeActive,
+        simpleRangeWidth,
+        pinnedMinPriceDisplayTruncated,
+        pinnedMaxPriceDisplayTruncated,
+    ]);
 
     // Set Tooltip
     useEffect(() => {
@@ -349,6 +392,84 @@ export default function Chart(props: ChartData) {
 
         setTooltip(tooltip);
     }, []);
+
+    // Set dragType
+    useEffect(() => {
+        if (scaleData !== undefined) {
+            const dragRange = d3.drag().on('drag', function (event, d: any) {
+                const newValue = scaleData.yScale.invert(d3.pointer(event)[1] - 182);
+                setRanges((prevState) => {
+                    const newTargets = [...prevState];
+                    if (
+                        d.name === 'high' &&
+                        newValue >
+                            newTargets.filter((target: any) => target.name === 'low')[0].value
+                    ) {
+                        newTargets.filter((target: any) => target.name === d.name)[0].value =
+                            newValue;
+                    } else if (
+                        d.name === 'low' &&
+                        newValue <
+                            newTargets.filter((target: any) => target.name === 'high')[0].value
+                    ) {
+                        newTargets.filter((target: any) => target.name === d.name)[0].value =
+                            newValue;
+                    }
+                    render();
+                    return newTargets;
+                });
+            });
+
+            const dragLimit = d3.drag().on('drag', function (event) {
+                const newValue = scaleData.yScale.invert(d3.pointer(event)[1] - 182);
+                setLimit(() => {
+                    return [{ name: 'Limit', value: newValue }];
+                });
+                render();
+            });
+
+            setDragType(() => {
+                return location.pathname.includes('limit') ? dragLimit : dragRange;
+            });
+        }
+    }, [location, scaleData]);
+
+    // set HorizontalLines
+    useEffect(() => {
+        if (dragType !== undefined) {
+            if (location.pathname.includes('limit')) {
+                d3.select(d3Container.current)
+                    .select('.targets')
+                    .select('.annotation-line')
+                    .on('mouseover', (event: any) => {
+                        d3.select(event.currentTarget)
+                            .select('.detector')
+                            .style('cursor', 'ns-resize');
+                    })
+                    .call(dragType);
+            }
+
+            if (location.pathname.includes('range')) {
+                d3.select(d3Container.current)
+                    .select('.targets')
+                    .select('.annotation-line')
+                    .on('mouseover', (event: any) => {
+                        d3.select(event.currentTarget)
+                            .select('.detector')
+                            .style('cursor', 'ns-resize');
+                    })
+                    .call(dragType);
+
+                d3.select(d3Container.current)
+                    .select('.targets')
+                    .select('#low')
+                    .on('mouseover', (event: any) => {
+                        d3.select(event.currentTarget).style('cursor', 'ns-resize');
+                    })
+                    .call(dragType);
+            }
+        }
+    }, [dragType]);
 
     // Call drawChart()
     useEffect(() => {
@@ -364,6 +485,7 @@ export default function Chart(props: ChartData) {
                 : location.pathname.includes('market')
                 ? market
                 : undefined;
+
             drawChart(
                 parsedChartData.chartData,
                 targetData,
@@ -372,7 +494,7 @@ export default function Chart(props: ChartData) {
                 props.liquidityData,
             );
         }
-    }, [parsedChartData, scaleData, location, ranges, limit, market]);
+    }, [parsedChartData, scaleData, location, market, ranges, limit]);
 
     // Draw Chart
     const drawChart = useCallback(
@@ -381,10 +503,6 @@ export default function Chart(props: ChartData) {
                 let selectedCandle: any;
                 let nearestCandleData: any;
                 const crosshairData = [{ x: 0, y: -1 }];
-
-                const render = () => {
-                    nd.requestRedraw();
-                };
 
                 const minimum = (data: any, accessor: any) => {
                     return data
@@ -541,41 +659,10 @@ export default function Chart(props: ChartData) {
                     .xScale(scaleData.xScale)
                     .yScale(scaleData.yScale);
 
-                const dragRange = d3.drag().on('drag', function (event, d: any) {
-                    const newValue = scaleData.yScale.invert(d3.pointer(event)[1] - 182);
-                    console.log('why');
-                    setRanges((prevState) => {
-                        const newTargets = [...prevState];
-                        if (
-                            d.name === 'high' &&
-                            newValue >
-                                newTargets.filter((target: any) => target.name === 'low')[0].value
-                        ) {
-                            newTargets.filter((target: any) => target.name === d.name)[0].value =
-                                newValue;
-                        } else if (
-                            d.name === 'low' &&
-                            newValue <
-                                newTargets.filter((target: any) => target.name === 'high')[0].value
-                        ) {
-                            newTargets.filter((target: any) => target.name === d.name)[0].value =
-                                newValue;
-                        }
-                        render();
-                        return newTargets;
-                    });
-                });
-
-                // const dragLimit = d3.drag().on('drag', function (event) {
-                //     const newValue = scaleData.yScale.invert(d3.pointer(event)[1] - 182);
-                //     setLimit(() => {
-                //         return [{ name: 'Limit', value: newValue }];
-                //     });
-                // });
-
                 horizontalLine.decorate((selection: any) => {
                     selection
                         .enter()
+                        .attr('id', (d: any) => d.name)
                         .select('g.left-handle')
                         .append('text')
                         .attr('x', 5)
@@ -588,18 +675,15 @@ export default function Chart(props: ChartData) {
                     selection
                         .enter()
                         .append('line')
+
                         .attr('class', 'detector')
                         .attr('stroke', 'transparent')
                         .attr('x2', '100%')
                         .attr('stroke-width', 5)
                         .style('pointer-events', 'all')
-                        .on('mouseover', (event: any) => {
-                            d3.select(event.currentTarget).style('cursor', 'ns-resize');
-                        })
                         .on('mouseout', (event: any) => {
                             d3.select(event.currentTarget).style('cursor', 'default');
-                        })
-                        .call(dragRange);
+                        });
                 });
 
                 let lastY = 0;
@@ -659,8 +743,8 @@ export default function Chart(props: ChartData) {
                     const svg = d3.select(event.target).select('svg');
 
                     crosshairJoin(svg, [crosshairData]).call(crosshair);
-                    candleJoin(svg, [chartData]).call(candlestick);
                     barJoin(svg, [liquidityData]).call(barSeries);
+                    candleJoin(svg, [chartData]).call(candlestick);
                     targetsJoin(svg, [targets]).call(horizontalLine);
                 });
 
@@ -727,7 +811,6 @@ export default function Chart(props: ChartData) {
                     })
                     .call(yAxisDrag);
 
-                const nd = d3.select('#group').node() as any;
                 render();
             }
         },

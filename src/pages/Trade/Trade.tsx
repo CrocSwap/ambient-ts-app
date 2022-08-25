@@ -115,6 +115,8 @@ export default function Trade(props: TradePropsIF) {
 
     const isAdvancedModeActive = tradeData.advancedMode;
     const simpleRangeWidth = tradeData.simpleRangeWidth;
+    const pinnedMaxPriceDisplayTruncated = tradeData.pinnedMaxPriceDisplayTruncated;
+    const pinnedMinPriceDisplayTruncated = tradeData.pinnedMinPriceDisplayTruncated;
 
     const poolPriceDisplayWithDenom = poolPriceDisplay
         ? denomInBase
@@ -182,6 +184,8 @@ export default function Trade(props: TradePropsIF) {
                                 removePoolFromFaves={removePoolFromFaves}
                                 isAdvancedModeActive={isAdvancedModeActive}
                                 simpleRangeWidth={simpleRangeWidth}
+                                pinnedMinPriceDisplayTruncated={pinnedMinPriceDisplayTruncated}
+                                pinnedMaxPriceDisplayTruncated={pinnedMaxPriceDisplayTruncated}
                             />
                         </motion.div>
                     </div>

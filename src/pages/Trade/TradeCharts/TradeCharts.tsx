@@ -60,6 +60,8 @@ interface TradeChartsPropsIF {
     liquidityData: any;
     isAdvancedModeActive: boolean | undefined;
     simpleRangeWidth: number | undefined;
+    pinnedMinPriceDisplayTruncated: number | undefined;
+    pinnedMaxPriceDisplayTruncated: number | undefined;
 }
 
 // React functional component
@@ -494,6 +496,8 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                     liquidityData={props.liquidityData}
                     isAdvancedModeActive={props.isAdvancedModeActive}
                     simpleRangeWidth={props.simpleRangeWidth}
+                    pinnedMinPriceDisplayTruncated={props.pinnedMinPriceDisplayTruncated}
+                    pinnedMaxPriceDisplayTruncated={props.pinnedMaxPriceDisplayTruncated}
                 />
             </div>
         </>
