@@ -97,7 +97,7 @@ export default function Limit(props: LimitPropsIF) {
     useEffect(() => {
         if (poolPriceDisplay === undefined) {
             setLimitAllowed(false);
-            setLimitButtonErrorMessage('...');
+            setLimitButtonErrorMessage('…');
         } else if (poolPriceDisplay === 0 || poolPriceDisplay === Infinity) {
             setLimitAllowed(false);
             setLimitButtonErrorMessage('Invalid Token Pair');

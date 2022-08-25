@@ -1,5 +1,6 @@
 // START: Import React and Dongles
 import { ReactNode, useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { CSSTransition } from 'react-transition-group';
@@ -37,13 +38,9 @@ interface NavbarDropdownMenuPropsIF {
 }
 
 export default function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
-    const {
-        isAuthenticated,
-        isWeb3Enabled,
-        clickLogout,
-        openModal,
-        closeMenu
-    } = props;
+    const { isAuthenticated, isWeb3Enabled, clickLogout, openModal, closeMenu } = props;
+
+    const navigate = useNavigate();
 
     const { i18n } = useTranslation();
 
@@ -71,18 +68,18 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
         const itemIcon = <div className={styles.icon_button}>{props.leftIcon}</div>;
 
         return (
-                <div
-                    className={`${styles.menu_item} ${topLevelItemStyle} ${goBackItemStyle}`}
-                    onClick={() => {
-                        props.goToMenu && setActiveMenu(props.goToMenu);
-                        if (props.onClick) props.onClick();
-                    }}
-                >
-                    {props.imageIcon && imageIcon}
-                    {props.leftIcon && itemIcon}
-                    {props.children}
-                    <span className={styles.icon_right}>{props.rightIcon}</span>
-                </div>
+            <div
+                className={`${styles.menu_item} ${topLevelItemStyle} ${goBackItemStyle}`}
+                onClick={() => {
+                    props.goToMenu && setActiveMenu(props.goToMenu);
+                    if (props.onClick) props.onClick();
+                }}
+            >
+                {props.imageIcon && imageIcon}
+                {props.leftIcon && itemIcon}
+                {props.children}
+                <span className={styles.icon_right}>{props.rightIcon}</span>
+            </div>
         );
     }
 
@@ -127,8 +124,14 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
             >
                 Language
             </NavbarDropdownItem>
-            <NavbarDropdownItem leftIcon={<HiOutlineDocumentText size={20} />}>
-                Legal & Privacy
+            <NavbarDropdownItem
+                onClick={() => {
+                    navigate('/tos');
+                    closeMenu && closeMenu();
+                }}
+                leftIcon={<HiOutlineDocumentText size={20} />}
+            >
+                Terms of Service
             </NavbarDropdownItem>
             {isAuthenticated && isWeb3Enabled && logoutButton}
             {(!isAuthenticated || !isWeb3Enabled) && magicButton}

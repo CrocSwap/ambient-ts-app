@@ -33,7 +33,7 @@ export default function SidebarRangePositions(props: SidebarRangeProps) {
         <div className={styles.header}>
             <div>Pool</div>
             <div>Range</div>
-            <div>Amount</div>
+            <div>Value</div>
         </div>
     );
 
