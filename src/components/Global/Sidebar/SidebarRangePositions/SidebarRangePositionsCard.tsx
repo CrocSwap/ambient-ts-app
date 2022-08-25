@@ -114,9 +114,16 @@ export default function SidebarRangePositionsCard(props: SidebarRangePositionsPr
         })();
     }, [JSON.stringify(position)]);
 
+    const rangeStatusStyle =
+        position.positionType === 'ambient'
+            ? styles.inner_circle_ambient
+            : position.isPositionInRange
+            ? styles.inner_circle_positive
+            : styles.inner_circle_negative;
+
     const rangeStatusDisplay = (
         <div className={styles.range_status_container}>
-            <div className={styles.inner_circle_1}>
+            <div className={rangeStatusStyle}>
                 <div className={styles.inner_circle_2}></div>
             </div>
         </div>
@@ -143,11 +150,11 @@ export default function SidebarRangePositionsCard(props: SidebarRangePositionsPr
                     ? `${position?.baseSymbol}/${position?.quoteSymbol}`
                     : `${position?.quoteSymbol}/${position?.baseSymbol}`}
             </div>
-            <div>{rangeDisplay}</div>
-            <div className={styles.status_display}>
-                {liqTotalUSD ? '$' + liqTotalUSD : '…'}
+            <div>
+                {rangeDisplay}
                 {rangeStatusDisplay}
             </div>
+            <div className={styles.status_display}>{liqTotalUSD ? '$' + liqTotalUSD : '…'}</div>
         </div>
     );
 }

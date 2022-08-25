@@ -48,7 +48,7 @@ export default function RangeCard(props: RangeCardProps) {
     // -------------------------------POSITION HASH------------------------
 
     let posHash;
-    if (position.ambient) {
+    if (position.positionType == 'ambient') {
         posHash = ambientPosSlot(position.user, position.base, position.quote, 36000);
     } else {
         posHash = concPosSlot(
@@ -64,19 +64,19 @@ export default function RangeCard(props: RangeCardProps) {
     // -------------------------------END OF POSITION HASH------------------------
 
     // -----------------------------POSITIONS RANGE--------------------
-    let isPositionInRange = true;
+    const isPositionInRange = position.isPositionInRange;
 
-    if (position.poolPriceInTicks) {
-        if (
-            position.positionType === 'ambient' ||
-            (position.bidTick <= position.poolPriceInTicks &&
-                position.poolPriceInTicks <= position.askTick)
-        ) {
-            isPositionInRange = true;
-        } else {
-            isPositionInRange = false;
-        }
-    }
+    // if (position.poolPriceInTicks) {
+    //     if (
+    //         position.positionType === 'ambient' ||
+    //         (position.bidTick <= position.poolPriceInTicks &&
+    //             position.poolPriceInTicks <= position.askTick)
+    //     ) {
+    //         isPositionInRange = true;
+    //     } else {
+    //         isPositionInRange = false;
+    //     }
+    // }
 
     // ----------------------------------END OF POSITIONS RANGE-------------------
 

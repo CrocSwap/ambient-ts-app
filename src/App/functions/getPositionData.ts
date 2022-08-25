@@ -74,7 +74,7 @@ export const getPositionData = async (position: PositionIF): Promise<PositionIF>
     position.baseTokenLogoURI = baseTokenLogoURI ?? '';
     position.quoteTokenLogoURI = quoteTokenLogoURI ?? '';
 
-    if (!position.ambient) {
+    if (position.positionType !== 'ambient') {
         position.lowRangeDisplayInBase =
             lowerPriceDisplayInBase < 2
                 ? truncateDecimals(lowerPriceDisplayInBase, 4).toString()
@@ -85,7 +85,7 @@ export const getPositionData = async (position: PositionIF): Promise<PositionIF>
                 : truncateDecimals(upperPriceDisplayInBase, 2).toString();
     }
 
-    if (!position.ambient) {
+    if (position.positionType !== 'ambient') {
         position.lowRangeDisplayInQuote =
             lowerPriceDisplayInQuote < 2
                 ? truncateDecimals(lowerPriceDisplayInQuote, 4).toString()

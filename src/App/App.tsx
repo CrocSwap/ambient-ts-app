@@ -1124,6 +1124,18 @@ export default function App() {
         }
 
         const poolPriceInTicks = Math.log(poolPriceNonDisplay) / Math.log(1.0001);
+        position.poolPriceInTicks = poolPriceInTicks;
+
+        const isPositionInRange =
+            position.positionType === 'ambient' ||
+            (position.bidTick <= poolPriceInTicks && poolPriceInTicks <= position.askTick);
+
+        // console.log(position.positionType);
+        // console.log(position.bidTick);
+        // console.log(position.askTick);
+        // console.log(position.poolPriceInTicks);
+        // console.log({ isPositionInRange });
+        position.isPositionInRange = isPositionInRange;
 
         const baseTokenDecimals = await cachedGetTokenDecimals(
             viewProvider,
@@ -1214,7 +1226,7 @@ export default function App() {
         position.baseTokenLogoURI = baseTokenLogoURI ?? '';
         position.quoteTokenLogoURI = quoteTokenLogoURI ?? '';
 
-        if (!position.ambient) {
+        if (position.positionType !== 'ambient') {
             position.lowRangeDisplayInBase =
                 lowerPriceDisplayInBase < 0.0001
                     ? lowerPriceDisplayInBase.toExponential(2)
@@ -1239,7 +1251,7 @@ export default function App() {
                       });
         }
 
-        if (!position.ambient) {
+        if (position.positionType !== 'ambient') {
             position.lowRangeDisplayInQuote =
                 lowerPriceDisplayInQuote < 0.0001
                     ? lowerPriceDisplayInQuote.toExponential(2)
@@ -1264,7 +1276,6 @@ export default function App() {
                       });
         }
 
-        position.poolPriceInTicks = poolPriceInTicks;
         return position;
     };
 

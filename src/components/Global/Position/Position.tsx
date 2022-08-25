@@ -39,9 +39,9 @@ export default function Position(props: PositionPropsIF) {
         isAuthenticated,
         isDenomBase,
         chainId,
-        portfolio
+        portfolio,
     } = props;
-    
+
     const location = useLocation();
     const currentLocation = location.pathname;
 
@@ -94,7 +94,7 @@ export default function Position(props: PositionPropsIF) {
     };
 
     let posHash;
-    if (position.ambient) {
+    if (position.positionType === 'ambient') {
         posHash = ambientPosSlot(
             position.user,
             position.base,
@@ -117,7 +117,7 @@ export default function Position(props: PositionPropsIF) {
     let isPositionInRange = true;
 
     if (position.poolPriceInTicks) {
-        if (position.ambient) {
+        if (position.positionType === 'ambient') {
             isPositionInRange = true;
         } else if (
             position.bidTick <= position.poolPriceInTicks &&
@@ -175,12 +175,12 @@ export default function Position(props: PositionPropsIF) {
                 <td data-column='Position ID' className={styles.position_id}>
                     {truncatedPosHash}
                 </td>
-                {position.ambient == false && (
+                {(position.positionType === 'ambient') == false && (
                     <td data-column='Range' className={styles.position_range}>
                         {rangeDisplay}
                     </td>
                 )}
-                {position.ambient == true && (
+                {(position.positionType === 'ambient') == true && (
                     <td
                         data-column='Range'
                         className={`${styles.position_range} ${styles.ambient_text}`}
@@ -192,7 +192,10 @@ export default function Position(props: PositionPropsIF) {
                     35.65%
                 </td>
                 <td data-column='Range Status'>
-                    <RangeStatus isInRange={isPositionInRange} isAmbient={position.ambient} />
+                    <RangeStatus
+                        isInRange={isPositionInRange}
+                        isAmbient={position.positionType === 'ambient'}
+                    />
                     {/* In Range */}
                 </td>
                 <td data-column='' className={styles.option_buttons}>
@@ -214,7 +217,7 @@ export default function Position(props: PositionPropsIF) {
                         </button>
                     )}
 
-                    {notDisplayAllOrOwned && !position.ambient && (
+                    {notDisplayAllOrOwned && position.positionType !== 'ambient' && (
                         <button className={styles.option_button} onClick={openHarvestModal}>
                             Harvest
                         </button>
