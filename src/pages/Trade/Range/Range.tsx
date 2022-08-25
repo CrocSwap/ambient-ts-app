@@ -25,7 +25,6 @@ import ConfirmRangeModal from '../../../components/Trade/Range/ConfirmRangeModal
 
 // START: Import Local Files
 import styles from './Range.module.css';
-import authenticateUser from '../../../utils/functions/authenticateUser';
 import {
     getPinnedPriceValuesFromDisplayPrices,
     getPinnedPriceValuesFromTicks,
@@ -66,6 +65,7 @@ interface RangePropsIF {
     chainId: string;
     activeTokenListsChanged: boolean;
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
+    openModalWallet: () => void;
 }
 
 export default function Range(props: RangePropsIF) {
@@ -90,6 +90,7 @@ export default function Range(props: RangePropsIF) {
         chainId,
         activeTokenListsChanged,
         indicateActiveTokenListsChanged,
+        openModalWallet
     } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -102,10 +103,9 @@ export default function Range(props: RangePropsIF) {
     const [txErrorCode, setTxErrorCode] = useState(0);
     const [txErrorMessage, setTxErrorMessage] = useState('');
 
-    const { account, isAuthenticated, isWeb3Enabled, authenticate, enableWeb3 } = useMoralis();
+    const { account, isAuthenticated, isWeb3Enabled } = useMoralis();
 
-    const { tradeData } = useTradeData();
-    const { navigationMenu } = useTradeData();
+    const { tradeData, navigationMenu } = useTradeData();
 
     const tokenPair = {
         dataTokenA: tradeData.tokenA,
@@ -878,20 +878,15 @@ export default function Range(props: RangePropsIF) {
         </Modal>
     ) : null;
 
-    const clickLogin = () =>
-        authenticateUser(isAuthenticated, isWeb3Enabled, authenticate, enableWeb3);
-
     const isTokenAAllowanceSufficient = parseFloat(tokenAAllowance) >= parseFloat(tokenAInputQty);
     const isTokenBAllowanceSufficient = parseFloat(tokenBAllowance) >= parseFloat(tokenBInputQty);
 
-    const loginButton = <Button title='Login' action={clickLogin} />;
+    const loginButton = <Button title='Login' action={openModalWallet} />;
 
     const [isApprovalPending, setIsApprovalPending] = useState(false);
 
     const approve = async (tokenAddress: string) => {
-        if (!provider) {
-            return;
-        }
+        if (!provider) return;
         setIsApprovalPending(true);
         try {
             const tx = await new CrocEnv(provider).token(tokenAddress).approve();

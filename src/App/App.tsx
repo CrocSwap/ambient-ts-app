@@ -363,8 +363,6 @@ export default function App() {
                         (tokensInRTK.length === 1 ||
                             JSON.stringify(tokensInRTKminusNative) !== JSON.stringify(newTokens))
                     ) {
-                        // console.log({ newTokens });
-                        // console.log({ tokensInRTKminusNative });
                         dispatch(setTokens(newTokens));
                     }
                 } catch (error) {
@@ -1474,6 +1472,7 @@ export default function App() {
         chainId: chainData.chainId,
         activeTokenListsChanged: activeTokenListsChanged,
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
+        openModalWallet: openModalWallet,
     };
 
     // props for <Swap/> React element on trade route
@@ -1498,6 +1497,7 @@ export default function App() {
         chainId: chainData.chainId,
         activeTokenListsChanged: activeTokenListsChanged,
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
+        openModalWallet: openModalWallet,
     };
 
     // props for <Limit/> React element on trade route
@@ -1524,6 +1524,7 @@ export default function App() {
         chainId: chainData.chainId,
         activeTokenListsChanged: activeTokenListsChanged,
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
+        openModalWallet: openModalWallet,
     };
 
     // props for <Range/> React element
@@ -1549,6 +1550,7 @@ export default function App() {
         chainId: chainData.chainId,
         activeTokenListsChanged: activeTokenListsChanged,
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
+        openModalWallet: openModalWallet,
     };
 
     function toggleSidebar() {
