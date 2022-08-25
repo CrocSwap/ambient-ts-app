@@ -7,7 +7,7 @@ import IncomingMessage from './MessagePanel/Inbox/IncomingMessage';
 import Room from './MessagePanel/Room/Room';
 import { RiCloseFill } from 'react-icons/ri';
 import { useEffect, useRef, useState } from 'react';
-import { recieveMessageRoute, socket } from './Service/chatApi';
+import { recieveMessageByRoomRoute, socket } from './Service/chatApi';
 import axios from 'axios';
 import { Message } from './Model/MessageModel';
 import { PoolIF } from '../../utils/interfaces/PoolIF';
@@ -24,29 +24,24 @@ export default function ChatPanel(props: ChatProps) {
     const messageEnd = useRef<HTMLInputElement | null>(null);
     const _socket = socket;
     const [messages, setMessages] = useState<Message[]>([]);
+    const [room, setRoom] = useState('Global');
 
     useEffect(() => {
         console.log({ favePools });
     }, [favePools]);
 
-    // const messages = [
-    //   {  message: 'dasd' ,
-    //     users: ['',''],
-    //     sender:'5'},
-    //     {  message: 'dasd' ,
-    //     users: ['',''],
-    //     sender:'6'}
-    // ]
-
     const currentUser = '62f24f3ff40188d467c532e8';
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     useEffect(() => {
-        _socket.on('msg-recieve', (data) => {
-            console.error('dataaa', data);
+        _socket.on('msg-recieve', () => {
+            /*
+            
+             */
         });
         getMsg();
-    }, [props.chatStatus, messages]);
+    }, [props.chatStatus, messages, room]);
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleEmojiClick = (event: any, emoji: any) => {
         let msg = messages;
         msg += emoji.emoji;
@@ -58,7 +53,7 @@ export default function ChatPanel(props: ChatProps) {
     };
 
     const getMsg = async () => {
-        const response = await axios.get(recieveMessageRoute);
+        const response = await axios.get(recieveMessageByRoomRoute + '/' + room);
         setMessages(response.data);
     };
 
@@ -99,17 +94,19 @@ export default function ChatPanel(props: ChatProps) {
                         <div className={styles.chat_body}>
                             {header}
 
-                            <Room />
+                            <Room favePools={favePools} selectedRoom={room} setRoom={setRoom} />
 
                             <div style={{ width: '90%' }}>
                                 <DividerDark changeColor addMarginTop addMarginBottom />
                             </div>
-                            <div className={styles.scrollable_div} ref={messageEnd}>
-                                <MessageInput
-                                    message={messages[0]}
-                                    handleEmojiPickerHideShow={handleEmojiPickerHideShow}
-                                />
 
+                            <MessageInput
+                                message={messages[0]}
+                                room={room}
+                                handleEmojiPickerHideShow={handleEmojiPickerHideShow}
+                            />
+
+                            <div className={styles.scrollable_div} ref={messageEnd}>
                                 {/* 
                             {messages.map((item:Message) => {
                               <div style={{ width: '90%' }}>
