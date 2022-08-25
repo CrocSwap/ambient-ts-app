@@ -475,91 +475,7 @@ export default function App() {
                 setQuoteTokenDecimals(tokenPair.dataTokenA.decimals);
             }
 
-            try {
-                if (httpGraphCacheServerDomain) {
-                    const allPositionsCacheEndpoint =
-                        httpGraphCacheServerDomain + '/pool_positions?';
-                    fetch(
-                        allPositionsCacheEndpoint +
-                            new URLSearchParams({
-                                base: sortedTokens[0].toLowerCase(),
-                                quote: sortedTokens[1].toLowerCase(),
-                                poolIdx: chainData.poolIndex.toString(),
-                                chainId: chainData.chainId,
-                                tokenQuantities: 'true',
-                            }),
-                    )
-                        .then((response) => response.json())
-                        .then((json) => {
-                            const poolPositions = json.data;
-
-                            if (poolPositions) {
-                                // console.log({ poolPositions });
-                                Promise.all(poolPositions.map(getPositionData)).then(
-                                    (updatedPositions) => {
-                                        // console.log({ updatedPositions });
-                                        if (
-                                            JSON.stringify(graphData.positionsByUser.positions) !==
-                                            JSON.stringify(updatedPositions)
-                                        ) {
-                                            dispatch(
-                                                setPositionsByPool({
-                                                    dataReceived: true,
-                                                    positions: updatedPositions,
-                                                }),
-                                            );
-                                        }
-                                    },
-                                );
-                            }
-                        })
-                        .catch(console.log);
-                }
-            } catch (error) {
-                console.log;
-            }
-
-            try {
-                if (httpGraphCacheServerDomain) {
-                    const poolSwapsCacheEndpoint = httpGraphCacheServerDomain + '/pool_swaps?';
-
-                    fetch(
-                        poolSwapsCacheEndpoint +
-                            new URLSearchParams({
-                                base: sortedTokens[0].toLowerCase(),
-                                quote: sortedTokens[1].toLowerCase(),
-                                poolIdx: chainData.poolIndex.toString(),
-                                chainId: chainData.chainId,
-                                addValue: 'true',
-                                // n: 10 // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
-                                // page: 0 // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
-                            }),
-                    )
-                        .then((response) => response?.json())
-                        .then((json) => {
-                            const poolSwaps = json?.data;
-
-                            if (poolSwaps) {
-                                Promise.all(poolSwaps.map(getSwapData)).then((updatedSwaps) => {
-                                    if (
-                                        JSON.stringify(graphData.swapsByUser.swaps) !==
-                                        JSON.stringify(updatedSwaps)
-                                    ) {
-                                        dispatch(
-                                            setSwapsByPool({
-                                                dataReceived: true,
-                                                swaps: updatedSwaps,
-                                            }),
-                                        );
-                                    }
-                                });
-                            }
-                        })
-                        .catch(console.log);
-                }
-            } catch (error) {
-                console.log;
-            }
+            // retrieve pool liquidity
             try {
                 if (httpGraphCacheServerDomain) {
                     const poolLiquidityCacheEndpoint =
@@ -600,8 +516,99 @@ export default function App() {
             } catch (error) {
                 console.log;
             }
+
+            if (provider) {
+                // retrieve pool_positions
+                try {
+                    if (httpGraphCacheServerDomain) {
+                        const allPositionsCacheEndpoint =
+                            httpGraphCacheServerDomain + '/pool_positions?';
+                        fetch(
+                            allPositionsCacheEndpoint +
+                                new URLSearchParams({
+                                    base: sortedTokens[0].toLowerCase(),
+                                    quote: sortedTokens[1].toLowerCase(),
+                                    poolIdx: chainData.poolIndex.toString(),
+                                    chainId: chainData.chainId,
+                                    tokenQuantities: 'true',
+                                }),
+                        )
+                            .then((response) => response.json())
+                            .then((json) => {
+                                const poolPositions = json.data;
+
+                                if (poolPositions) {
+                                    // console.log({ poolPositions });
+                                    Promise.all(poolPositions.map(getPositionData)).then(
+                                        (updatedPositions) => {
+                                            // console.log({ updatedPositions });
+                                            if (
+                                                JSON.stringify(
+                                                    graphData.positionsByUser.positions,
+                                                ) !== JSON.stringify(updatedPositions)
+                                            ) {
+                                                dispatch(
+                                                    setPositionsByPool({
+                                                        dataReceived: true,
+                                                        positions: updatedPositions,
+                                                    }),
+                                                );
+                                            }
+                                        },
+                                    );
+                                }
+                            })
+                            .catch(console.log);
+                    }
+                } catch (error) {
+                    console.log;
+                }
+
+                // retrieve pool_swaps
+                try {
+                    if (httpGraphCacheServerDomain) {
+                        const poolSwapsCacheEndpoint = httpGraphCacheServerDomain + '/pool_swaps?';
+
+                        fetch(
+                            poolSwapsCacheEndpoint +
+                                new URLSearchParams({
+                                    base: sortedTokens[0].toLowerCase(),
+                                    quote: sortedTokens[1].toLowerCase(),
+                                    poolIdx: chainData.poolIndex.toString(),
+                                    chainId: chainData.chainId,
+                                    addValue: 'true',
+                                    // n: 10 // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
+                                    // page: 0 // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
+                                }),
+                        )
+                            .then((response) => response?.json())
+                            .then((json) => {
+                                const poolSwaps = json?.data;
+
+                                if (poolSwaps) {
+                                    Promise.all(poolSwaps.map(getSwapData)).then((updatedSwaps) => {
+                                        if (
+                                            JSON.stringify(graphData.swapsByUser.swaps) !==
+                                            JSON.stringify(updatedSwaps)
+                                        ) {
+                                            dispatch(
+                                                setSwapsByPool({
+                                                    dataReceived: true,
+                                                    swaps: updatedSwaps,
+                                                }),
+                                            );
+                                        }
+                                    });
+                                }
+                            })
+                            .catch(console.log);
+                    }
+                } catch (error) {
+                    console.log;
+                }
+            }
         }
-    }, [tokenPairStringified, chainData.chainId]);
+    }, [tokenPairStringified, chainData.chainId, provider]);
 
     const activePeriod = tradeData.activeChartPeriod;
 
