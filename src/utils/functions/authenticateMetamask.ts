@@ -3,7 +3,7 @@ import { Web3EnableOptions } from 'react-moralis/lib/hooks/core/useMoralis/_useM
 import { Moralis } from 'moralis';
 
 // function to authenticate wallet with Moralis server
-export default function authenticateUser (
+export default function authenticateMetamask (
     isAuthenticated: boolean,
     isWeb3Enabled: boolean,
     authenticate: (options?: AuthenticateOptions | undefined) => Promise<Moralis.User<Moralis.Attributes> | undefined>,

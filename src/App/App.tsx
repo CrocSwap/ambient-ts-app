@@ -82,7 +82,7 @@ import { validateChain } from './validateChain';
 import { testTokenMap } from '../utils/data/testTokenMap';
 import { ZERO_ADDRESS } from '../constants';
 import { useModal } from '../components/Global/Modal/useModal';
-import authenticateUser from '../utils/functions/authenticateUser';
+import authenticateMetamask from '../utils/functions/authenticateMetamask';
 
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 const cachedFetchAddress = memoizeFetchAddress();
@@ -1418,7 +1418,7 @@ export default function App() {
         >
             <button
                 onClick={() => {
-                    authenticateUser(
+                    authenticateMetamask(
                         isAuthenticated,
                         isWeb3Enabled,
                         authenticate,
