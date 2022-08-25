@@ -231,6 +231,13 @@ export default function Range(props: RangePropsIF) {
 
             setRangeLowTick(pinnedDisplayPrices.pinnedLowTick);
             setRangeHighTick(pinnedDisplayPrices.pinnedHighTick);
+
+            dispatch(
+                setPinnedMinPrice(parseFloat(pinnedDisplayPrices.pinnedMinPriceDisplayTruncated)),
+            );
+            dispatch(
+                setPinnedMaxPrice(parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated)),
+            );
         }
     }, [rangeWidthPercentage, isAdvancedModeActive, denominationsInBase]);
 
@@ -425,10 +432,6 @@ export default function Range(props: RangePropsIF) {
                 !denominationsInBase
                     ? setRangeLowTick(pinnedDisplayPrices.pinnedLowTick)
                     : setRangeHighTick(pinnedDisplayPrices.pinnedHighTick);
-
-                !denominationsInBase
-                    ? dispatch(setPinnedMinPrice(pinnedDisplayPrices.pinnedLowTick))
-                    : dispatch(setPinnedMaxPrice(pinnedDisplayPrices.pinnedHighTick));
 
                 const highGeometricDifferencePercentage = parseFloat(
                     truncateDecimals(

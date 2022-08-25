@@ -498,6 +498,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                     simpleRangeWidth={props.simpleRangeWidth}
                     pinnedMinPriceDisplayTruncated={props.pinnedMinPriceDisplayTruncated}
                     pinnedMaxPriceDisplayTruncated={props.pinnedMaxPriceDisplayTruncated}
+                    truncatedPoolPrice={parseFloat(truncatedPoolPrice)}
                 />
             </div>
         </>

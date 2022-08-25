@@ -36,6 +36,7 @@ interface ChartData {
     simpleRangeWidth: number | undefined;
     pinnedMinPriceDisplayTruncated: number | undefined;
     pinnedMaxPriceDisplayTruncated: number | undefined;
+    truncatedPoolPrice: number | undefined;
 }
 
 type chartItemStates = {
@@ -273,6 +274,7 @@ export default function TradeCandleStickChart(props: ChartData) {
                     simpleRangeWidth={props.simpleRangeWidth}
                     pinnedMinPriceDisplayTruncated={props.pinnedMinPriceDisplayTruncated}
                     pinnedMaxPriceDisplayTruncated={props.pinnedMaxPriceDisplayTruncated}
+                    truncatedPoolPrice={props.truncatedPoolPrice}
                 />
             </div>
 

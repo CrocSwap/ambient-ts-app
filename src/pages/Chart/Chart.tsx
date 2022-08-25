@@ -41,6 +41,7 @@ interface ChartData {
     simpleRangeWidth: number | undefined;
     pinnedMinPriceDisplayTruncated: number | undefined;
     pinnedMaxPriceDisplayTruncated: number | undefined;
+    truncatedPoolPrice: number | undefined;
 }
 
 interface CandleChartData {
@@ -274,7 +275,15 @@ export default function Chart(props: ChartData) {
         } else if (location.pathname.includes('range')) {
             if (!isAdvancedModeActive) {
                 if (simpleRangeWidth === 100) {
-                    setDefaultRangeData();
+                    ranges.map((mapData) => {
+                        if (mapData.value === 0) {
+                            reustls.push(true);
+                        }
+                    });
+
+                    if (reustls.length === 2) {
+                        setDefaultRangeData();
+                    }
                 } else {
                     setRanges(() => {
                         return [
@@ -294,9 +303,6 @@ export default function Chart(props: ChartData) {
                             },
                         ];
                     });
-                    console.log(simpleRangeWidth);
-                    console.log(props.pinnedMinPriceDisplayTruncated);
-                    console.log(props.pinnedMaxPriceDisplayTruncated);
                 }
             } else {
                 ranges.map((mapData) => {
@@ -398,26 +404,71 @@ export default function Chart(props: ChartData) {
         if (scaleData !== undefined) {
             const dragRange = d3.drag().on('drag', function (event, d: any) {
                 const newValue = scaleData.yScale.invert(d3.pointer(event)[1] - 182);
-                setRanges((prevState) => {
-                    const newTargets = [...prevState];
-                    if (
-                        d.name === 'high' &&
-                        newValue >
-                            newTargets.filter((target: any) => target.name === 'low')[0].value
-                    ) {
-                        newTargets.filter((target: any) => target.name === d.name)[0].value =
+                if (!isAdvancedModeActive && simpleRangeWidth !== 100) {
+                    let valueWithRange: number;
+
+                    if (d.name === 'high') {
+                        valueWithRange =
+                            ranges.filter((target: any) => target.name === 'high')[0].value -
                             newValue;
-                    } else if (
-                        d.name === 'low' &&
-                        newValue <
-                            newTargets.filter((target: any) => target.name === 'high')[0].value
-                    ) {
-                        newTargets.filter((target: any) => target.name === d.name)[0].value =
+
+                        console.log(
+                            ranges.filter((target: any) => target.name === 'high')[0].value,
+                        );
+                        setRanges((prevState) => {
+                            const newTargets = [...prevState];
+
+                            newTargets.filter((target: any) => target.name === 'high')[0].value =
+                                newValue;
+
+                            newTargets.filter((target: any) => target.name === 'low')[0].value =
+                                newValue + valueWithRange;
+
+                            render();
+                            return newTargets;
+                        });
+                    } else {
+                        valueWithRange =
+                            ranges.filter((target: any) => target.name === 'low')[0].value -
                             newValue;
+
+                        console.log({ valueWithRange });
+
+                        setRanges((prevState) => {
+                            const newTargets = [...prevState];
+
+                            newTargets.filter((target: any) => target.name === 'low')[0].value =
+                                newValue;
+
+                            newTargets.filter((target: any) => target.name === 'high')[0].value =
+                                newValue + valueWithRange;
+
+                            render();
+                            return newTargets;
+                        });
                     }
-                    render();
-                    return newTargets;
-                });
+                } else {
+                    setRanges((prevState) => {
+                        const newTargets = [...prevState];
+                        if (
+                            d.name === 'high' &&
+                            newValue >
+                                newTargets.filter((target: any) => target.name === 'low')[0].value
+                        ) {
+                            newTargets.filter((target: any) => target.name === d.name)[0].value =
+                                newValue;
+                        } else if (
+                            d.name === 'low' &&
+                            newValue <
+                                newTargets.filter((target: any) => target.name === 'high')[0].value
+                        ) {
+                            newTargets.filter((target: any) => target.name === d.name)[0].value =
+                                newValue;
+                        }
+                        render();
+                        return newTargets;
+                    });
+                }
             });
 
             const dragLimit = d3.drag().on('drag', function (event) {
@@ -826,18 +877,30 @@ export default function Chart(props: ChartData) {
 
     useEffect(() => {
         const timer = setTimeout(() => {
-            const newTargetData: targetData[] = [
-                {
-                    name: 'high',
-                    value: ranges.filter((target: any) => target.name === 'high')[0].value,
-                },
-                {
-                    name: 'low',
-                    value: ranges.filter((target: any) => target.name === 'low')[0].value,
-                },
-            ];
+            const reustls: boolean[] = [];
 
-            dispatch(setTargetData(newTargetData));
+            ranges.map((mapData) => {
+                props.targetData?.map((data) => {
+                    if (mapData.name === data.name && mapData.value == data.value) {
+                        reustls.push(true);
+                    }
+                });
+            });
+
+            if (reustls.length < 2) {
+                const newTargetData: targetData[] = [
+                    {
+                        name: 'high',
+                        value: ranges.filter((target: any) => target.name === 'high')[0].value,
+                    },
+                    {
+                        name: 'low',
+                        value: ranges.filter((target: any) => target.name === 'low')[0].value,
+                    },
+                ];
+
+                dispatch(setTargetData(newTargetData));
+            }
         }, 1000);
         return () => clearTimeout(timer);
     }, [ranges]);
