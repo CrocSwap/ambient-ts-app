@@ -8,6 +8,7 @@ import { Web3EnableOptions } from 'react-moralis/lib/hooks/core/useMoralis/_useM
 import styles from './WalletModal.module.css';
 import Modal from '../../../components/Global/Modal/Modal';
 import { useTermsOfService } from '../../hooks/useTermsOfService';
+import validateEmail from './validateEmail';
 import authenticateMetamask from '../../../utils/functions/authenticateMetamask';
 
 interface WalletModalPropsIF {
@@ -37,6 +38,7 @@ export default function WalletModal(props: WalletModalPropsIF) {
     const { tosText, acceptToS } = useTermsOfService();
 
     const [ page, setPage ] = useState('wallets');
+    const [ email, setEmail ] = useState('');
 
     const walletsPage = useMemo(() => (
         <>
@@ -67,8 +69,25 @@ export default function WalletModal(props: WalletModalPropsIF) {
         </>
     );
 
+    const magicMessage = useMemo(() => {
+        if (email === '') return '';
+        const { isValid } = validateEmail(email);
+        return isValid ? '' : 'Address is not Valid';
+    }, [email]);
+
     const magicLoginPage = (
-        <h2>This is the Magic Login page!</h2>
+        <>
+            <h2>This is the Magic Login page!</h2>
+            <input
+                type='email'
+                className='input'
+                defaultValue={email}
+                // placeholder='Email'
+                required
+                onChange={(e) => setEmail(e.target.value.trim())}
+            />
+            <p>{magicMessage}</p>
+        </>
     );
 
     const activeContent = useMemo(() => {
@@ -78,7 +97,7 @@ export default function WalletModal(props: WalletModalPropsIF) {
             case 'metamaskPending': return metamaskPendingPage;
             default: magicLoginPage;
         }
-    }, [page]);
+    }, [page, email, magicMessage]);
 
     const activeTitle = useMemo(() => {
         switch(page) {
