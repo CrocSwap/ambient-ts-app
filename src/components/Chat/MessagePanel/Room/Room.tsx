@@ -1,6 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import styles from './Room.module.css';
 import { PoolIF } from '../../../../utils/interfaces/PoolIF';
-import { Dispatch, SetStateAction } from 'react';
 
 interface RoomProps {
     favePools: PoolIF[];

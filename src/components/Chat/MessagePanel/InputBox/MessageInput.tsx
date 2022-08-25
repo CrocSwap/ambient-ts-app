@@ -4,10 +4,8 @@ import {
     useState,
 } from 'react';
 import { BsSlashSquare, BsEmojiSmileFill } from 'react-icons/bs';
-import { FiSmile } from 'react-icons/fi';
 import { Message } from '../../Model/MessageModel';
-import Picker from 'emoji-picker-react';
-import { IoMdSend } from 'react-icons/io';
+
 import {
     // host,
     sendMessageRoute,
@@ -15,11 +13,11 @@ import {
 } from '../../Service/chatApi';
 import styles from './MessageInput.module.css';
 import axios from 'axios';
-import { setFlagsFromString } from 'v8';
 // import { io } from 'socket.io-client';
 
 interface MessageInputProps {
     message: Message;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     handleEmojiPickerHideShow: any;
     room: string;
 }
@@ -37,12 +35,6 @@ export default function MessageInput(props: MessageInputProps) {
     }, [_socket]);
 
     const [message, setMessage] = useState('');
-
-    const handleEmojiClick = (event: any, emoji: any) => {
-        let msg = message;
-        msg += emoji.emoji;
-        setMessage(message);
-    };
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const _handleKeyDown = (e: any) => {
