@@ -7,6 +7,7 @@ import { Web3EnableOptions } from 'react-moralis/lib/hooks/core/useMoralis/_useM
 // START: Import Local Files
 import styles from './WalletModal.module.css';
 import Modal from '../../../components/Global/Modal/Modal';
+import Button from '../../../components/Global/Button/Button';
 import { useTermsOfService } from '../../hooks/useTermsOfService';
 import validateEmail from './validateEmail';
 import authenticateMetamask from '../../../utils/functions/authenticateMetamask';
@@ -50,7 +51,7 @@ export default function WalletModal(props: WalletModalPropsIF) {
                         isWeb3Enabled,
                         authenticate,
                         enableWeb3,
-                    );
+                    );  
                     acceptToS();
                 }}
             >
@@ -69,26 +70,23 @@ export default function WalletModal(props: WalletModalPropsIF) {
         </>
     );
 
-    const magicMessage = useMemo(() => {
-        if (email === '') return '';
-        const { isValid } = validateEmail(email);
-        return isValid ? '' : 'Address is not Valid';
+    const magicLoginPage = useMemo(() => {
+        const [ isValid, message ] = validateEmail(email);
+        return (
+            <>
+                <h2>This is the Magic Login page!</h2>
+                <input
+                    type='email'
+                    className='input'
+                    defaultValue={email}
+                    placeholder='email'
+                    required
+                    onChange={(e) => setEmail(e.target.value.trim())}
+                />
+                <Button title={message} action={() => null} disabled={!isValid} />
+            </>
+        );
     }, [email]);
-
-    const magicLoginPage = (
-        <>
-            <h2>This is the Magic Login page!</h2>
-            <input
-                type='email'
-                className='input'
-                defaultValue={email}
-                // placeholder='Email'
-                required
-                onChange={(e) => setEmail(e.target.value.trim())}
-            />
-            <p>{magicMessage}</p>
-        </>
-    );
 
     const activeContent = useMemo(() => {
         switch(page) {
@@ -97,7 +95,7 @@ export default function WalletModal(props: WalletModalPropsIF) {
             case 'metamaskPending': return metamaskPendingPage;
             default: magicLoginPage;
         }
-    }, [page, email, magicMessage]);
+    }, [page, email]);
 
     const activeTitle = useMemo(() => {
         switch(page) {
