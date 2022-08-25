@@ -12,6 +12,7 @@ import authenticateMetamask from '../../../utils/functions/authenticateMetamask'
 
 interface WalletModalPropsIF {
     closeModalWallet: () => void;
+    isAuthenticating: boolean;
     isAuthenticated: boolean;
     isWeb3Enabled: boolean;
     authenticate: (options?: AuthenticateOptions | undefined) => Promise<Moralis.User<Moralis.Attributes> | undefined>;
@@ -21,11 +22,17 @@ interface WalletModalPropsIF {
 export default function WalletModal(props: WalletModalPropsIF) {
     const {
         closeModalWallet,
+        isAuthenticating,
         isAuthenticated,
         isWeb3Enabled,
         authenticate,
         enableWeb3
     } = props;
+
+    // close the Connect Wallet modal only when authentication completes
+    useEffect(() => {
+        isAuthenticated && closeModalWallet();
+    }, [isAuthenticating]);
 
     const { tosText, acceptToS } = useTermsOfService();
 

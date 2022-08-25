@@ -1404,11 +1404,6 @@ export default function App() {
 
     const [isModalOpenWallet, openModalWallet, closeModalWallet] = useModal();
 
-    // close the Connect Wallet modal only when authentication completes
-    useEffect(() => {
-        isAuthenticated && closeModalWallet();
-    }, [isAuthenticating]);
-
     // props for <PageHeader/> React element
     const headerProps = {
         nativeBalance: nativeBalance,
@@ -1757,6 +1752,7 @@ export default function App() {
                 isModalOpenWallet &&
                 <WalletModal
                     closeModalWallet={closeModalWallet}
+                    isAuthenticating={isAuthenticating}
                     isAuthenticated={isAuthenticated}
                     isWeb3Enabled={isWeb3Enabled}
                     authenticate={authenticate}
