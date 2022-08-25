@@ -44,9 +44,21 @@
     border-radius: 50%;
 }
 
-.inner_circle_1 {
+.inner_circle_positive {
     width: 7.5px;
     height: 7.5px;
-    background: #41d18e;
+    background: var(--positive);
+    border-radius: 50%;
+}
+.inner_circle_negative {
+    width: 7.5px;
+    height: 7.5px;
+    background: var(--negative);
+    border-radius: 50%;
+}
+.inner_circle_ambient {
+    width: 7.5px;
+    height: 7.5px;
+    background: var(--title-gradient);
     border-radius: 50%;
 }

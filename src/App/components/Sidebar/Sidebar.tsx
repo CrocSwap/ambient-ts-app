@@ -1,5 +1,6 @@
 // START: Import React and Dongles
-import { MouseEvent, SetStateAction, Dispatch, useState, useEffect } from 'react';
+import { MouseEvent, SetStateAction, Dispatch, useState, useEffect, useRef } from 'react';
+import { BiSearch } from 'react-icons/bi';
 
 // START: Import JSX Elements
 import SidebarAccordion from './SidebarAccordion/SidebarAccordion';
@@ -21,7 +22,11 @@ import topPoolsImage from '../../../assets/images/sidebarImages/topPools.svg';
 import topTokensImage from '../../../assets/images/sidebarImages/topTokens.svg';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { PoolIF, TokenIF } from '../../../utils/interfaces/exports';
-import SearchAccordion from './SearchAccordion/SearchAccordion';
+import SidebarSearchResults from './SidebarSearchResults/SidebarSearchResults';
+import formatSearchText from './formatSeachText';
+import { MdClose } from 'react-icons/md';
+
+import closeSidebarImage from '../../../assets/images/sidebarImages/closeSidebar.svg';
 
 // interface for component props
 interface SidebarPropsIF {
@@ -48,7 +53,6 @@ interface SidebarPropsIF {
 }
 
 export default function Sidebar(props: SidebarPropsIF) {
-    // console.log(location);
     const {
         isDenomBase,
         toggleSidebar,
@@ -74,7 +78,7 @@ export default function Sidebar(props: SidebarPropsIF) {
     const positionsByUser = graphData.positionsByUser.positions;
 
     const mostRecentTransactions = swapsByUser.slice(0, 4);
-    const mostRecentPositions = positionsByUser.slice(0, 4);
+    // const mostRecentPositions = positionsByUser.slice(0, 4);
 
     // TODO:  @Ben this is the map with all the coin gecko token data objects
     // console.assert(coinGeckoTokenMap, 'no map present');
@@ -107,13 +111,13 @@ export default function Sidebar(props: SidebarPropsIF) {
         setIsShowAllEnabled: props.setIsShowAllEnabled,
     };
 
-    const recentRangePositions = [
+    const rangePositions = [
         {
             name: 'Range Positions',
             icon: rangePositionsImage,
             data: (
                 <SidebarRangePositions
-                    mostRecentPositions={mostRecentPositions}
+                    userPositions={positionsByUser}
                     isDenomBase={isDenomBase}
                     {...sidebarRangePositionProps}
                 />
@@ -161,7 +165,73 @@ export default function Sidebar(props: SidebarPropsIF) {
         },
     ];
 
+    const [searchInput, setSearchInput] = useState<string[][]>();
     const [searchMode, setSearchMode] = useState(false);
+    const [exampleLoading, setExampleLoading] = useState(true);
+
+    const searchInputChangeHandler = (event: string) => {
+        setSearchMode(true);
+        const formatText = formatSearchText(event);
+
+        setSearchInput(formatText);
+
+        setExampleLoading(true);
+    };
+    const searchInputRef = useRef(null);
+
+    const handleInputClear = () => {
+        setSearchInput([]);
+        setSearchMode(false);
+        const currentInput = document.getElementById('search_input') as HTMLInputElement;
+
+        currentInput.value = '';
+    };
+
+    // we are not going to use this following loading functionality. It is just for demonstration purposes
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setExampleLoading(false);
+        }, 1000);
+
+        return () => clearTimeout(timer);
+    }, [searchInput]);
+    // ------------------------------------------
+    const searchContainer = (
+        <div className={styles.main_search_container}>
+            <div className={styles.search_container}>
+                <div className={styles.search__icon} onClick={toggleSidebar}>
+                    <BiSearch size={18} color='#CDC1FF' />
+                </div>
+                <input
+                    type='text'
+                    id='search_input'
+                    ref={searchInputRef}
+                    placeholder='Search anything...'
+                    className={styles.search__box}
+                    onFocus={() => setSearchMode(true)}
+                    onBlur={() => setSearchMode(false)}
+                    onChange={(e) => searchInputChangeHandler(e.target.value)}
+                />
+                {searchInput && searchInput.length > 0 && (
+                    <div onClick={handleInputClear}>
+                        <MdClose size={18} color='#ebebeb66' />{' '}
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+
+    // console.log(searchInput);
+
+    const searchContainerDisplay = (
+        <div className={`${styles.sidebar_link} ${styles.sidebar_link_search}`}>
+            {searchContainer}
+
+            <div>
+                <img src={closeSidebarImage} alt='close sidebar' onClick={toggleSidebar} />
+            </div>
+        </div>
+    );
 
     const sidebarStyle = showSidebar ? styles.sidebar_active : styles.sidebar;
 
@@ -170,12 +240,6 @@ export default function Sidebar(props: SidebarPropsIF) {
             setSearchMode(false);
         }
     }, [showSidebar]);
-
-    function handleSearchModeToggle() {
-        toggleSidebar;
-
-        setSearchMode(!searchMode);
-    }
 
     const topElementsDisplay = (
         <div style={{ width: '100%' }}>
@@ -203,63 +267,75 @@ export default function Sidebar(props: SidebarPropsIF) {
         </div>
     );
 
+    const bottomElementsDisplay = (
+        <div className={styles.bottom_elements}>
+            {rangePositions.map((item, idx) => (
+                <SidebarAccordion
+                    toggleSidebar={toggleSidebar}
+                    showSidebar={showSidebar}
+                    idx={idx}
+                    item={item}
+                    key={idx}
+                    mostRecent={positionsByUser}
+                />
+            ))}
+            {recentLimitOrders.map((item, idx) => (
+                <SidebarAccordion
+                    toggleSidebar={toggleSidebar}
+                    showSidebar={showSidebar}
+                    idx={idx}
+                    item={item}
+                    key={idx}
+                />
+            ))}
+            {favoritePools.map((item, idx) => (
+                <SidebarAccordion
+                    toggleSidebar={toggleSidebar}
+                    showSidebar={showSidebar}
+                    idx={idx}
+                    item={item}
+                    key={idx}
+                />
+            ))}
+            {recentTransactions.map((item, idx) => (
+                <SidebarAccordion
+                    toggleSidebar={toggleSidebar}
+                    showSidebar={showSidebar}
+                    idx={idx}
+                    item={item}
+                    key={idx}
+                    mostRecent={mostRecentTransactions}
+                />
+            ))}
+        </div>
+    );
+
+    const regularSidebarDisplay = (
+        <>
+            {topElementsDisplay}
+            {bottomElementsDisplay}
+        </>
+    );
     return (
         <div>
             <nav className={`${styles.sidebar} ${sidebarStyle}`}>
                 <ul className={styles.sidebar_nav}>
-                    <SearchAccordion
+                    {/* <SearchAccordion
                         showSidebar={showSidebar}
                         toggleSidebar={toggleSidebar}
                         searchMode={searchMode}
                         handleSearchModeToggle={handleSearchModeToggle}
                         setSearchMode={setSearchMode}
-                    />
-
-                    {!searchMode && topElementsDisplay}
-                    <div className={styles.bottom_elements}>
-                        {searchMode && topElementsDisplay}
-
-                        {recentRangePositions.map((item, idx) => (
-                            <SidebarAccordion
-                                toggleSidebar={toggleSidebar}
-                                showSidebar={showSidebar}
-                                idx={idx}
-                                item={item}
-                                key={idx}
-                                mostRecent={mostRecentPositions}
-                            />
-                        ))}
-                        {recentLimitOrders.map((item, idx) => (
-                            <SidebarAccordion
-                                toggleSidebar={toggleSidebar}
-                                showSidebar={showSidebar}
-                                idx={idx}
-                                item={item}
-                                key={idx}
-                                // mostRecent={mostRecentTransactions}
-                            />
-                        ))}
-                        {favoritePools.map((item, idx) => (
-                            <SidebarAccordion
-                                toggleSidebar={toggleSidebar}
-                                showSidebar={showSidebar}
-                                idx={idx}
-                                item={item}
-                                key={idx}
-                                // mostRecent={mostRecentTransactions}
-                            />
-                        ))}
-                        {recentTransactions.map((item, idx) => (
-                            <SidebarAccordion
-                                toggleSidebar={toggleSidebar}
-                                showSidebar={showSidebar}
-                                idx={idx}
-                                item={item}
-                                key={idx}
-                                mostRecent={mostRecentTransactions}
-                            />
-                        ))}
-                    </div>
+                    /> */}
+                    {searchContainerDisplay}
+                    {searchMode ? (
+                        <SidebarSearchResults
+                            searchInput={searchInput}
+                            exampleLoading={exampleLoading}
+                        />
+                    ) : (
+                        regularSidebarDisplay
+                    )}
                 </ul>
             </nav>
         </div>

@@ -96,17 +96,16 @@ const shouldNonCandleSubscriptionsReconnect = true;
 /** ***** React Function *******/
 export default function App() {
     const {
-        Moralis,
+        // Moralis,
         isWeb3Enabled,
         account,
         logout,
         isAuthenticated,
         isAuthenticating,
-        isInitialized,
+        // isInitialized,
         authenticate,
-        enableWeb3
-    } =
-        useMoralis();
+        enableWeb3,
+    } = useMoralis();
 
     const tokenMap = useTokenMap();
 
@@ -215,19 +214,53 @@ export default function App() {
     }, [tokenListsReceived]);
 
     useEffect(() => {
-        if (isInitialized) {
-            (async () => {
-                const currentDateTime = new Date().toISOString();
-                const defaultChain = 'goerli';
-                const options = {
-                    chain: defaultChain as 'goerli', // Cheat and narrow type. We know chain string matches Moralis' chain union type
-                    date: currentDateTime,
-                };
-                const currentBlock = (await Moralis.Web3API.native.getDateToBlock(options)).block;
-                setLastBlockNumber(currentBlock);
-            })();
+        fetch('https://goerli.infura.io/v3/cf3bc905d88d4f248c6be347adc8a1d8', {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                jsonrpc: '2.0',
+                method: 'eth_blockNumber',
+                params: [],
+                id: 5,
+            }),
+        })
+            .then((response) => response?.json())
+            .then((json) => {
+                if (lastBlockNumber !== parseInt(json?.result)) {
+                    setLastBlockNumber(parseInt(json?.result));
+                }
+            });
+    }, []);
+
+    const goerliWssInfuraEndpoint = 'wss://goerli.infura.io/ws/v3/cbb2856ea8804fc5ba59be0a2e8a9f88';
+
+    const { sendMessage: send, lastMessage: lastNewHeadMessage } = useWebSocket(
+        goerliWssInfuraEndpoint,
+        {
+            onOpen: () =>
+                send('{"jsonrpc":"2.0","method":"eth_subscribe","params":["newHeads"],"id":5}'),
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            onClose: (event: any) => console.log({ event }),
+            shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
+        },
+    );
+
+    useEffect(() => {
+        if (lastNewHeadMessage !== null) {
+            if (lastNewHeadMessage?.data) {
+                const lastMessageData = JSON.parse(lastNewHeadMessage?.data);
+                if (lastMessageData) {
+                    const lastBlockNumberHex = lastMessageData.params?.result?.number;
+                    if (lastBlockNumberHex && lastBlockNumber !== parseInt(lastBlockNumberHex)) {
+                        setLastBlockNumber(parseInt(lastBlockNumberHex));
+                    }
+                }
+            }
         }
-    }, [isInitialized]);
+    }, [lastNewHeadMessage]);
 
     // hook holding values and setter functions for slippage
     // holds stable and volatile values for swap and mint transactions
@@ -438,91 +471,7 @@ export default function App() {
                 setQuoteTokenDecimals(tokenPair.dataTokenA.decimals);
             }
 
-            try {
-                if (httpGraphCacheServerDomain) {
-                    const allPositionsCacheEndpoint =
-                        httpGraphCacheServerDomain + '/pool_positions?';
-                    fetch(
-                        allPositionsCacheEndpoint +
-                            new URLSearchParams({
-                                base: sortedTokens[0].toLowerCase(),
-                                quote: sortedTokens[1].toLowerCase(),
-                                poolIdx: chainData.poolIndex.toString(),
-                                chainId: chainData.chainId,
-                                tokenQuantities: 'true',
-                            }),
-                    )
-                        .then((response) => response.json())
-                        .then((json) => {
-                            const poolPositions = json.data;
-
-                            if (poolPositions) {
-                                // console.log({ poolPositions });
-                                Promise.all(poolPositions.map(getPositionData)).then(
-                                    (updatedPositions) => {
-                                        // console.log({ updatedPositions });
-                                        if (
-                                            JSON.stringify(graphData.positionsByUser.positions) !==
-                                            JSON.stringify(updatedPositions)
-                                        ) {
-                                            dispatch(
-                                                setPositionsByPool({
-                                                    dataReceived: true,
-                                                    positions: updatedPositions,
-                                                }),
-                                            );
-                                        }
-                                    },
-                                );
-                            }
-                        })
-                        .catch(console.log);
-                }
-            } catch (error) {
-                console.log;
-            }
-
-            try {
-                if (httpGraphCacheServerDomain) {
-                    const poolSwapsCacheEndpoint = httpGraphCacheServerDomain + '/pool_swaps?';
-
-                    fetch(
-                        poolSwapsCacheEndpoint +
-                            new URLSearchParams({
-                                base: sortedTokens[0].toLowerCase(),
-                                quote: sortedTokens[1].toLowerCase(),
-                                poolIdx: chainData.poolIndex.toString(),
-                                chainId: chainData.chainId,
-                                addValue: 'true',
-                                // n: 10 // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
-                                // page: 0 // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
-                            }),
-                    )
-                        .then((response) => response?.json())
-                        .then((json) => {
-                            const poolSwaps = json?.data;
-
-                            if (poolSwaps) {
-                                Promise.all(poolSwaps.map(getSwapData)).then((updatedSwaps) => {
-                                    if (
-                                        JSON.stringify(graphData.swapsByUser.swaps) !==
-                                        JSON.stringify(updatedSwaps)
-                                    ) {
-                                        dispatch(
-                                            setSwapsByPool({
-                                                dataReceived: true,
-                                                swaps: updatedSwaps,
-                                            }),
-                                        );
-                                    }
-                                });
-                            }
-                        })
-                        .catch(console.log);
-                }
-            } catch (error) {
-                console.log;
-            }
+            // retrieve pool liquidity
             try {
                 if (httpGraphCacheServerDomain) {
                     const poolLiquidityCacheEndpoint =
@@ -563,8 +512,99 @@ export default function App() {
             } catch (error) {
                 console.log;
             }
+
+            if (provider) {
+                // retrieve pool_positions
+                try {
+                    if (httpGraphCacheServerDomain) {
+                        const allPositionsCacheEndpoint =
+                            httpGraphCacheServerDomain + '/pool_positions?';
+                        fetch(
+                            allPositionsCacheEndpoint +
+                                new URLSearchParams({
+                                    base: sortedTokens[0].toLowerCase(),
+                                    quote: sortedTokens[1].toLowerCase(),
+                                    poolIdx: chainData.poolIndex.toString(),
+                                    chainId: chainData.chainId,
+                                    tokenQuantities: 'true',
+                                }),
+                        )
+                            .then((response) => response.json())
+                            .then((json) => {
+                                const poolPositions = json.data;
+
+                                if (poolPositions) {
+                                    // console.log({ poolPositions });
+                                    Promise.all(poolPositions.map(getPositionData)).then(
+                                        (updatedPositions) => {
+                                            // console.log({ updatedPositions });
+                                            if (
+                                                JSON.stringify(
+                                                    graphData.positionsByUser.positions,
+                                                ) !== JSON.stringify(updatedPositions)
+                                            ) {
+                                                dispatch(
+                                                    setPositionsByPool({
+                                                        dataReceived: true,
+                                                        positions: updatedPositions,
+                                                    }),
+                                                );
+                                            }
+                                        },
+                                    );
+                                }
+                            })
+                            .catch(console.log);
+                    }
+                } catch (error) {
+                    console.log;
+                }
+
+                // retrieve pool_swaps
+                try {
+                    if (httpGraphCacheServerDomain) {
+                        const poolSwapsCacheEndpoint = httpGraphCacheServerDomain + '/pool_swaps?';
+
+                        fetch(
+                            poolSwapsCacheEndpoint +
+                                new URLSearchParams({
+                                    base: sortedTokens[0].toLowerCase(),
+                                    quote: sortedTokens[1].toLowerCase(),
+                                    poolIdx: chainData.poolIndex.toString(),
+                                    chainId: chainData.chainId,
+                                    addValue: 'true',
+                                    // n: 10 // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
+                                    // page: 0 // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
+                                }),
+                        )
+                            .then((response) => response?.json())
+                            .then((json) => {
+                                const poolSwaps = json?.data;
+
+                                if (poolSwaps) {
+                                    Promise.all(poolSwaps.map(getSwapData)).then((updatedSwaps) => {
+                                        if (
+                                            JSON.stringify(graphData.swapsByUser.swaps) !==
+                                            JSON.stringify(updatedSwaps)
+                                        ) {
+                                            dispatch(
+                                                setSwapsByPool({
+                                                    dataReceived: true,
+                                                    swaps: updatedSwaps,
+                                                }),
+                                            );
+                                        }
+                                    });
+                                }
+                            })
+                            .catch(console.log);
+                    }
+                } catch (error) {
+                    console.log;
+                }
+            }
         }
-    }, [tokenPairStringified, chainData.chainId]);
+    }, [tokenPairStringified, chainData.chainId, provider]);
 
     const activePeriod = tradeData.activeChartPeriod;
 
@@ -1031,6 +1071,17 @@ export default function App() {
         // swap.user = swap.user.startsWith('0x') ? swap.user : '0x' + swap.user;
         // swap.id = '0x' + swap.id.slice(6);
 
+        const viewProvider = provider
+            ? provider
+            : (await new CrocEnv(chainData.chainId).context).provider;
+
+        try {
+            const ensName = await cachedFetchAddress(viewProvider, swap.user, chainData.chainId);
+            if (ensName) swap.userEnsName = ensName;
+        } catch (error) {
+            console.warn(error);
+        }
+
         return swap;
     };
 
@@ -1069,6 +1120,18 @@ export default function App() {
         }
 
         const poolPriceInTicks = Math.log(poolPriceNonDisplay) / Math.log(1.0001);
+        position.poolPriceInTicks = poolPriceInTicks;
+
+        const isPositionInRange =
+            position.positionType === 'ambient' ||
+            (position.bidTick <= poolPriceInTicks && poolPriceInTicks <= position.askTick);
+
+        // console.log(position.positionType);
+        // console.log(position.bidTick);
+        // console.log(position.askTick);
+        // console.log(position.poolPriceInTicks);
+        // console.log({ isPositionInRange });
+        position.isPositionInRange = isPositionInRange;
 
         const baseTokenDecimals = await cachedGetTokenDecimals(
             viewProvider,
@@ -1159,7 +1222,7 @@ export default function App() {
         position.baseTokenLogoURI = baseTokenLogoURI ?? '';
         position.quoteTokenLogoURI = quoteTokenLogoURI ?? '';
 
-        if (!position.ambient) {
+        if (position.positionType !== 'ambient') {
             position.lowRangeDisplayInBase =
                 lowerPriceDisplayInBase < 0.0001
                     ? lowerPriceDisplayInBase.toExponential(2)
@@ -1184,7 +1247,7 @@ export default function App() {
                       });
         }
 
-        if (!position.ambient) {
+        if (position.positionType !== 'ambient') {
             position.lowRangeDisplayInQuote =
                 lowerPriceDisplayInQuote < 0.0001
                     ? lowerPriceDisplayInQuote.toExponential(2)
@@ -1209,7 +1272,6 @@ export default function App() {
                       });
         }
 
-        position.poolPriceInTicks = poolPriceInTicks;
         return position;
     };
 
@@ -1379,26 +1441,6 @@ export default function App() {
             })
             .catch(console.log);
     }, [lastBlockNumber]);
-
-    // useEffect to get current block number
-    // on a 10 second interval
-    // currently displayed in footer
-    useEffect(() => {
-        const interval = setInterval(async () => {
-            const currentDateTime = new Date().toISOString();
-            const chain = chainData.chainId;
-            const options = {
-                chain: chain as 'goerli', // Cheat and narrow type. We know chain string matches Moralis' chain union type
-                date: currentDateTime,
-            };
-            const currentBlock = (await Moralis.Web3API.native.getDateToBlock(options)).block;
-            if (currentBlock !== lastBlockNumber) {
-                setLastBlockNumber(currentBlock);
-            }
-        }, 10000);
-
-        return () => clearInterval(interval);
-    }, [chainData.chainId, lastBlockNumber]);
 
     const shouldDisplayAccountTab = isAuthenticated && isWeb3Enabled && account != '';
 

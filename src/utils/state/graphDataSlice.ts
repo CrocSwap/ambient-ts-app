@@ -146,6 +146,7 @@ export interface ISwap {
     time: number;
     tx: string;
     user: string;
+    userEnsName: string;
     limitPrice: number;
     price: number;
     invPrice: number;

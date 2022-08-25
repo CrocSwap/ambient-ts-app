@@ -4,7 +4,8 @@ import RemoveRangeHeader from './RemoveRangeHeader/RemoveRangeHeader';
 import RemoveRangeInfo from './RemoveRangeInfo/RemoveRangInfo';
 import RemoveRangeButton from './RemoveRangeButton/RemoveRangeButton';
 import { useEffect, useState } from 'react';
-
+import RemoveRangeSettings from './RemoveRangeSettings/RemoveRangeSettings';
+import { RiListSettingsLine } from 'react-icons/ri';
 interface IRemoveRangeProps {
     chainId: string;
     poolIdx: number;
@@ -98,18 +99,29 @@ export default function RemoveRange(props: IRemoveRangeProps) {
             })();
         }
     }, [lastBlockNumber]);
+    const [showSettings, setShowSettings] = useState(false);
+
+    const removeRangeSetttingIcon = (
+        <div onClick={() => setShowSettings(!showSettings)} className={styles.settings_icon}>
+            {showSettings ? null : <RiListSettingsLine size={20} />}
+        </div>
+    );
 
     return (
         <div className={styles.remove_Range_container}>
-            <RemoveRangeHeader
-                isPositionInRange={props.isPositionInRange}
-                isAmbient={props.isAmbient}
-                baseTokenSymbol={props.baseTokenSymbol}
-                quoteTokenSymbol={props.quoteTokenSymbol}
-                baseTokenLogoURI={props.baseTokenLogoURI}
-                quoteTokenLogoURI={props.quoteTokenLogoURI}
-                isDenomBase={props.isDenomBase}
-            />
+            <RemoveRangeSettings showSettings={showSettings} setShowSettings={setShowSettings} />
+            <div className={styles.header_container}>
+                <RemoveRangeHeader
+                    isPositionInRange={props.isPositionInRange}
+                    isAmbient={props.isAmbient}
+                    baseTokenSymbol={props.baseTokenSymbol}
+                    quoteTokenSymbol={props.quoteTokenSymbol}
+                    baseTokenLogoURI={props.baseTokenLogoURI}
+                    quoteTokenLogoURI={props.quoteTokenLogoURI}
+                    isDenomBase={props.isDenomBase}
+                />
+                {removeRangeSetttingIcon}
+            </div>
             <div className={styles.main_content}>
                 <RemoveRangeWidth
                     removalPercentage={removalPercentage}

@@ -4,3 +4,20 @@
     gap: 1rem;
     padding: 0 2rem;
 }
+
+.settings_button{
+    position: relative
+}
+.header_container{
+    display: grid;
+    grid-template-columns: auto 50px;
+    gap: 10px;
+    align-items: center;
+}
+
+.settings_icon{
+    padding: 1rem;
+    animation: all 500ms ease-in-out;
+    display: flex;
+    justify-content: flex-end;
+}

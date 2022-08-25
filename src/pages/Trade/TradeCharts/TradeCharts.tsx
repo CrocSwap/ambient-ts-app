@@ -309,7 +309,6 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
     function handleLiquidityTypeButtonClick(label: string) {
         setLiquidityType(label.toLowerCase());
     }
-    // console.log(liquidityType);
 
     const liquidityTypeDisplay = liquidityTypeData.map((type, idx) => (
         <motion.div
@@ -363,7 +362,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
         poolId: 36000,
     };
 
-    const isButtonFavorited = favePools.some(
+    const isButtonFavorited = favePools?.some(
         (pool: PoolIF) =>
             pool.base.address === currentPoolData.base.address &&
             pool.quote.address === currentPoolData.quote.address &&
