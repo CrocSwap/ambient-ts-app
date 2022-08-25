@@ -31,6 +31,8 @@ export default function WalletModal(props: WalletModalPropsIF) {
 
     const [ page, setPage ] = useState('wallets');
 
+    false && setPage('wallets');
+
     const walletsPage = (
         <>
             <button
@@ -57,13 +59,20 @@ export default function WalletModal(props: WalletModalPropsIF) {
             case 'wallets': return walletsPage;
             default: walletsPage;
         }
-    }, [setPage]);
+    }, [page]);
+
+    const activeTitle = useMemo(() => {
+        switch(page) {
+            case 'wallets': return 'Choose a Wallet';
+            default: 'Choose a Wallet';
+        }
+    }, [page]);
 
     return (
         <div className={styles.wallet_modal}>
             <Modal 
                 onClose={closeModalWallet}
-                title='Choose a Wallet'
+                title={activeTitle}
                 footer={tosText}
             >
                 {activeContent}
