@@ -1,7 +1,10 @@
+// START: Import React and Dongles
+import { useMemo, useState } from 'react';
 import { Moralis } from 'moralis';
 import { AuthenticateOptions } from 'react-moralis/lib/hooks/core/useMoralis/_useMoralisAuth';
 import { Web3EnableOptions } from 'react-moralis/lib/hooks/core/useMoralis/_useMoralisWeb3';
 
+// START: Import Local Files
 import styles from './WalletModal.module.css';
 import Modal from '../../../components/Global/Modal/Modal';
 import { useTermsOfService } from '../../hooks/useTermsOfService';
@@ -26,6 +29,36 @@ export default function WalletModal(props: WalletModalPropsIF) {
 
     const { tosText, acceptToS } = useTermsOfService();
 
+    const [ page, setPage ] = useState('wallets');
+
+    const walletsPage = (
+        <>
+            <button
+                onClick={() => {
+                    authenticateMetamask(
+                        isAuthenticated,
+                        isWeb3Enabled,
+                        authenticate,
+                        enableWeb3,
+                    );
+                    acceptToS();
+                }}
+            >
+                Metamask
+            </button>
+            <button>
+                Connect with Email
+            </button>
+        </>
+    );
+
+    const activeContent = useMemo(() => {
+        switch(page) {
+            case 'wallets': return walletsPage;
+            default: walletsPage;
+        }
+    }, [setPage]);
+
     return (
         <div className={styles.wallet_modal}>
             <Modal 
@@ -33,22 +66,7 @@ export default function WalletModal(props: WalletModalPropsIF) {
                 title='Choose a Wallet'
                 footer={tosText}
             >
-                <button
-                    onClick={() => {
-                        authenticateMetamask(
-                            isAuthenticated,
-                            isWeb3Enabled,
-                            authenticate,
-                            enableWeb3,
-                        );
-                        acceptToS();
-                    }}
-                >
-                    Metamask
-                </button>
-                <button>
-                    Connect with Email
-                </button>
+                {activeContent}
             </Modal>
         </div>
     );

@@ -149,7 +149,6 @@ export default function App() {
     useEffect(() => {
         try {
             const url = exposeProviderUrl(provider);
-            // console.log(chainData.chainId)
             const onChain = exposeProviderChain(provider) === parseInt(chainData.chainId);
 
             if (isAuthenticated) {
