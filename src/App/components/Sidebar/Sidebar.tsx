@@ -78,7 +78,7 @@ export default function Sidebar(props: SidebarPropsIF) {
     const positionsByUser = graphData.positionsByUser.positions;
 
     const mostRecentTransactions = swapsByUser.slice(0, 4);
-    const mostRecentPositions = positionsByUser.slice(0, 4);
+    // const mostRecentPositions = positionsByUser.slice(0, 4);
 
     // TODO:  @Ben this is the map with all the coin gecko token data objects
     // console.assert(coinGeckoTokenMap, 'no map present');
@@ -111,13 +111,13 @@ export default function Sidebar(props: SidebarPropsIF) {
         setIsShowAllEnabled: props.setIsShowAllEnabled,
     };
 
-    const recentRangePositions = [
+    const rangePositions = [
         {
             name: 'Range Positions',
             icon: rangePositionsImage,
             data: (
                 <SidebarRangePositions
-                    mostRecentPositions={mostRecentPositions}
+                    userPositions={positionsByUser}
                     isDenomBase={isDenomBase}
                     {...sidebarRangePositionProps}
                 />
@@ -269,14 +269,14 @@ export default function Sidebar(props: SidebarPropsIF) {
 
     const bottomElementsDisplay = (
         <div className={styles.bottom_elements}>
-            {recentRangePositions.map((item, idx) => (
+            {rangePositions.map((item, idx) => (
                 <SidebarAccordion
                     toggleSidebar={toggleSidebar}
                     showSidebar={showSidebar}
                     idx={idx}
                     item={item}
                     key={idx}
-                    mostRecent={mostRecentPositions}
+                    mostRecent={positionsByUser}
                 />
             ))}
             {recentLimitOrders.map((item, idx) => (
