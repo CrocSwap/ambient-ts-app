@@ -62,8 +62,9 @@ border-radius: 4px;
 .card_title{
 
     display: flex;
-    justify-content: center;
+    justify-content:flex-start;
     align-items: center;
+    padding: 0 2rem;
     font-weight: 500;
 font-size: 12px;
 line-height: 15px;
@@ -71,18 +72,7 @@ color: #CDC1FF;
 
 }
 
-.loading_spinner{
-    background: rgb(41, 3, 3);
- 
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
 
-.loading_spinner img{
-    max-width: 100%;
-   
-}
 
 .search_result_title{
     margin: 10px 2.2rem;

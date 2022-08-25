@@ -3,6 +3,7 @@ import styles from '../SidebarSearchResults.module.css';
 
 interface TransactionsSearchResultPropsIF {
     loading: boolean;
+    searchInput: React.ReactNode;
 }
 export default function TransactionsSearchResults(props: TransactionsSearchResultPropsIF) {
     function TransactionSearchResult() {

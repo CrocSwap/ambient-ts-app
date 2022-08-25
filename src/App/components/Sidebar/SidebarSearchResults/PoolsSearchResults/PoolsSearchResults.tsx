@@ -3,6 +3,7 @@ import styles from '../SidebarSearchResults.module.css';
 
 interface PoolsSearchResultPropsIF {
     loading: boolean;
+    searchInput: React.ReactNode;
 }
 
 export default function PoolsSearchResults(props: PoolsSearchResultPropsIF) {

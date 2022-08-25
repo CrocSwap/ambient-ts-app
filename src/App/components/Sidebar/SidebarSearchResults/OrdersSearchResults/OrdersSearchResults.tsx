@@ -3,6 +3,7 @@ import styles from '../SidebarSearchResults.module.css';
 
 interface OrdersSearchResultPropsIF {
     loading: boolean;
+    searchInput: React.ReactNode;
 }
 export default function OrdersSearchResults(props: OrdersSearchResultPropsIF) {
     function OrderSearchResult() {

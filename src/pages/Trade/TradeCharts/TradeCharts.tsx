@@ -309,7 +309,6 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
     function handleLiquidityTypeButtonClick(label: string) {
         setLiquidityType(label.toLowerCase());
     }
-    console.log(liquidityType);
 
     const liquidityTypeDisplay = liquidityTypeData.map((type, idx) => (
         <motion.div

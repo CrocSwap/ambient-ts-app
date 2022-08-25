@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { MouseEvent, SetStateAction, Dispatch, useState, useEffect } from 'react';
+import { MouseEvent, SetStateAction, Dispatch, useState, useEffect, useRef } from 'react';
 import { BiSearch } from 'react-icons/bi';
 
 // START: Import JSX Elements
@@ -22,9 +22,9 @@ import topPoolsImage from '../../../assets/images/sidebarImages/topPools.svg';
 import topTokensImage from '../../../assets/images/sidebarImages/topTokens.svg';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { PoolIF, TokenIF } from '../../../utils/interfaces/exports';
-import SearchAccordion from './SearchAccordion/SearchAccordion';
 import SidebarSearchResults from './SidebarSearchResults/SidebarSearchResults';
 import formatSearchText from './formatSeachText';
+import { MdClose } from 'react-icons/md';
 
 import closeSidebarImage from '../../../assets/images/sidebarImages/closeSidebar.svg';
 
@@ -175,9 +175,16 @@ export default function Sidebar(props: SidebarPropsIF) {
 
         setSearchInput(formatText);
 
-        console.log(formatText);
-
         setExampleLoading(true);
+    };
+    const searchInputRef = useRef(null);
+
+    const handleInputClear = () => {
+        setSearchInput([]);
+        setSearchMode(false);
+        const currentInput = document.getElementById('search_input') as HTMLInputElement;
+
+        currentInput.value = '';
     };
 
     // we are not going to use this following loading functionality. It is just for demonstration purposes
@@ -189,7 +196,6 @@ export default function Sidebar(props: SidebarPropsIF) {
         return () => clearTimeout(timer);
     }, [searchInput]);
     // ------------------------------------------
-
     const searchContainer = (
         <div className={styles.main_search_container}>
             <div className={styles.search_container}>
@@ -198,16 +204,24 @@ export default function Sidebar(props: SidebarPropsIF) {
                 </div>
                 <input
                     type='text'
-                    id='box'
+                    id='search_input'
+                    ref={searchInputRef}
                     placeholder='Search anything...'
                     className={styles.search__box}
                     onFocus={() => setSearchMode(true)}
-                    // onBlur={() => setSearchMode(false)}
+                    onBlur={() => setSearchMode(false)}
                     onChange={(e) => searchInputChangeHandler(e.target.value)}
                 />
+                {searchInput && searchInput.length > 0 && (
+                    <div onClick={handleInputClear}>
+                        <MdClose size={18} color='#ebebeb66' />{' '}
+                    </div>
+                )}
             </div>
         </div>
     );
+
+    console.log(searchInput);
 
     const searchContainerDisplay = (
         <div className={`${styles.sidebar_link} ${styles.sidebar_link_search}`}>
@@ -226,12 +240,6 @@ export default function Sidebar(props: SidebarPropsIF) {
             setSearchMode(false);
         }
     }, [showSidebar]);
-
-    function handleSearchModeToggle() {
-        toggleSidebar;
-
-        setSearchMode(!searchMode);
-    }
 
     const topElementsDisplay = (
         <div style={{ width: '100%' }}>
@@ -258,8 +266,6 @@ export default function Sidebar(props: SidebarPropsIF) {
             ))}
         </div>
     );
-
-    console.log({ searchInput });
 
     const bottomElementsDisplay = (
         <div className={styles.bottom_elements}>

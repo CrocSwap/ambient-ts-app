@@ -180,6 +180,8 @@
     opacity: 1;
     transition: all var(--animation-speed) ease-in;
     cursor: pointer;
+
+ 
 }
 
 .search__icon {
@@ -313,12 +315,13 @@
         align-items: center;
         /* background: red; */
     }
-    .search_container {
+  
+
+    .sidebar_active .search_container{
         display: flex;
 
         justify-content: center;
         align-items: center;
-        /* width: 100%; */
     }
 
     .sidebar_item_content {

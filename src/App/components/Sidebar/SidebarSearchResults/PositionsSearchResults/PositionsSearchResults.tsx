@@ -1,10 +1,10 @@
 import styles from '../SidebarSearchResults.module.css';
-import loadingSpinner from '../../../../../assets/animations/loading_spinner.svg';
-import { load } from 'redux-localstorage-simple';
+
 import ResultSkeleton from '../ResultSkeleton/ResultSkeleton';
 
 interface PositionsSearchResultPropsIF {
     loading: boolean;
+    searchInput: React.ReactNode;
 }
 export default function PositionsSearchResults(props: PositionsSearchResultPropsIF) {
     function PositionSearchResult() {
@@ -33,13 +33,6 @@ export default function PositionsSearchResults(props: PositionsSearchResultProps
         </div>
     );
 
-    const loadingSpinnerDisplay = (
-        <div className={styles.loading_spinner}>
-            <img src={loadingSpinner} alt='loading...' />
-        </div>
-    );
-
-    console.log(props.loading);
     return (
         <div>
             <div className={styles.card_title}>Range Positions</div>
