@@ -20,6 +20,7 @@ import { setFlagsFromString } from 'v8';
 
 interface MessageInputProps {
     message: Message;
+    handleEmojiPickerHideShow: any;
 }
 
 export default function MessageInput(props: MessageInputProps) {
@@ -35,11 +36,6 @@ export default function MessageInput(props: MessageInputProps) {
     }, [_socket]);
 
     const [message, setMessage] = useState('');
-    const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-
-    const handleEmojiPickerHideShow = () => {
-        setShowEmojiPicker(!showEmojiPicker);
-    };
 
     const handleEmojiClick = (event: any, emoji: any) => {
         let msg = message;
@@ -82,8 +78,7 @@ export default function MessageInput(props: MessageInputProps) {
                 onChange={onChangeMessage}
             />
             <BsSlashSquare />
-            <BsEmojiSmileFill onClick={handleEmojiPickerHideShow} />
-            {showEmojiPicker && <Picker onEmojiClick={handleEmojiClick} />}
+            <BsEmojiSmileFill onClick={props.handleEmojiPickerHideShow} />
         </div>
     );
 }
