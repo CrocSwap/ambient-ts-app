@@ -8,6 +8,7 @@ export default function authenticateMetamask (
     isWeb3Enabled: boolean,
     authenticate: (options?: AuthenticateOptions | undefined) => Promise<Moralis.User<Moralis.Attributes> | undefined>,
     enableWeb3: (options?: Web3EnableOptions | undefined) => Promise<Moralis.Web3Provider | undefined>,
+    errorAction: () => void
 ) {
     const signingMessage = `Welcome to Ambient Finance!
         Click to sign in and accept the Ambient Terms of Service: https://ambient-finance.netlify.app/tos
@@ -21,13 +22,8 @@ export default function authenticateMetamask (
                 await enableWeb3();
             },
             onError: () => {
-                authenticate({
-                    provider: 'metamask',
-                    signingMessage: signingMessage,
-                    onSuccess: async () => {
-                        await enableWeb3();
-                    },
-                });
+                console.warn('Metamask failed to authenticate.');
+                errorAction();
             },
         });
     }

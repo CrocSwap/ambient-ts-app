@@ -51,6 +51,7 @@ export default function WalletModal(props: WalletModalPropsIF) {
                         isWeb3Enabled,
                         authenticate,
                         enableWeb3,
+                        () => setPage('metamaskError')
                     );  
                     acceptToS();
                 }}
@@ -67,6 +68,28 @@ export default function WalletModal(props: WalletModalPropsIF) {
         <>
             <h2>Waiting for Metamask...</h2>
             <p>If a window does not pop up automatically, check the Metamask extension in your browser for notifications.</p>
+        </>
+    );
+
+    const metamaskErrorPage = (
+        <>
+            <h2>Error in Metamask</h2>
+            <p>Check the Metamask extension in your browser for notifications, or click &quotTry Again&quot. You can also click the left arrow above to choose a different wallet.</p>
+            <button
+                onClick={() => {
+                    setPage('metamaskPending');
+                    authenticateMetamask(
+                        isAuthenticated,
+                        isWeb3Enabled,
+                        authenticate,
+                        enableWeb3,
+                        () => setPage('metamaskError')
+                    );  
+                    acceptToS();
+                }}
+            >
+                Try Again
+            </button>
         </>
     );
 
@@ -93,6 +116,7 @@ export default function WalletModal(props: WalletModalPropsIF) {
             case 'wallets': return walletsPage;
             case 'magicLogin': return magicLoginPage;
             case 'metamaskPending': return metamaskPendingPage;
+            case 'metamaskError': return metamaskErrorPage;
             default: magicLoginPage;
         }
     }, [page, email]);
@@ -109,6 +133,7 @@ export default function WalletModal(props: WalletModalPropsIF) {
         switch(page) {
             case 'wallets':
             case 'magicLogin':
+            case 'metamaskError':
                 return true;
             case 'metamaskPending':
             default: false;
@@ -118,6 +143,7 @@ export default function WalletModal(props: WalletModalPropsIF) {
     const clickBackArrow = useMemo(() => {
         switch(page) {
             case 'wallets': return closeModalWallet;
+            case 'metamaskError':
             case 'magicLogin': return () => setPage('wallets');
             default: closeModalWallet;
         }
