@@ -14,6 +14,7 @@ export default function PoolCardHeader(props: PoolCardHeaderProps) {
     return (
         <div className={styles.main_container}>
             <div className={styles.token_logos} />
+            <div className={styles.token_logos} />
             <div className={styles.row_container}>
                 <p className={styles.pool}>Pool</p>
                 <p className={styles.pCursor} onClick={() => sort(SORT_FIELD.tvlUSD)}>
@@ -33,8 +34,6 @@ export default function PoolCardHeader(props: PoolCardHeaderProps) {
                 </p>
                 <p>APY</p>
             </div>
-
-            <div></div>
         </div>
     );
 }
