@@ -42,6 +42,7 @@ export default function WalletModal(props: WalletModalPropsIF) {
         <>
             <button
                 onClick={() => {
+                    setPage('metamaskPending');
                     authenticateMetamask(
                         isAuthenticated,
                         isWeb3Enabled,
@@ -59,6 +60,13 @@ export default function WalletModal(props: WalletModalPropsIF) {
         </>
     ), []);
 
+    const metamaskPendingPage = (
+        <>
+            <h2>Waiting for Metamask...</h2>
+            <p>If a window does not pop up automatically, check the Metamask extension in your browser for notifications.</p>
+        </>
+    );
+
     const magicLoginPage = (
         <h2>This is the Magic Login page!</h2>
     );
@@ -67,6 +75,7 @@ export default function WalletModal(props: WalletModalPropsIF) {
         switch(page) {
             case 'wallets': return walletsPage;
             case 'magicLogin': return magicLoginPage;
+            case 'metamaskPending': return metamaskPendingPage;
             default: magicLoginPage;
         }
     }, [page]);
@@ -76,6 +85,16 @@ export default function WalletModal(props: WalletModalPropsIF) {
             case 'wallets': return 'Choose a Wallet';
             case 'magicLogin': return 'Log In With Email';
             default: 'Choose a Wallet';
+        }
+    }, [page]);
+
+    const showBackArrow = useMemo(() => {
+        switch(page) {
+            case 'wallets':
+            case 'magicLogin':
+                return true;
+            case 'metamaskPending':
+            default: false;
         }
     }, [page]);
 
@@ -92,7 +111,7 @@ export default function WalletModal(props: WalletModalPropsIF) {
             <Modal 
                 onClose={closeModalWallet}
                 handleBack={clickBackArrow}
-                showBackButton={true}
+                showBackButton={showBackArrow}
                 title={activeTitle}
                 footer={tosText}
             >
