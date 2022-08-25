@@ -40,7 +40,7 @@
         "i18next-browser-languagedetector": "^6.1.4",
         "jest-canvas-mock": "^2.4.0",
         "lodash.keyby": "^4.6.0",
-        "magic-sdk": "7.0.0",
+        "magic-sdk": "^9.0.0",
         "mockdate": "^3.0.5",
         "moment": "^2.29.4",
         "moralis": "^1.11.0",

@@ -11,6 +11,7 @@ import Button from '../../../components/Global/Button/Button';
 import { useTermsOfService } from '../../hooks/useTermsOfService';
 import validateEmail from './validateEmail';
 import authenticateMetamask from '../../../utils/functions/authenticateMetamask';
+import authenticateMagic from '../../../utils/functions/authenticateMagic'; 
 
 interface WalletModalPropsIF {
     closeModalWallet: () => void;
@@ -103,17 +104,31 @@ export default function WalletModal(props: WalletModalPropsIF) {
                     required
                     onChange={(e) => setEmail(e.target.value.trim())}
                 />
-                <Button title={message} action={() => null} disabled={!isValid} />
+                <Button
+                    title={message}
+                    disabled={!isValid}
+                    action={() => {
+                        authenticateMagic(email, authenticate, () => setPage('magicLoginPending'));
+                        acceptToS();
+                    }}
+                />
             </>
         );
     }, [email]);
 
+    const magicLoginPendingPage = (
+        <>
+            <p>The Magic Authentication system will launch in one moment!</p>
+        </>
+    );
+
     const activeContent = useMemo(() => {
         switch(page) {
             case 'wallets': return walletsPage;
-            case 'magicLogin': return magicLoginPage;
             case 'metamaskPending': return metamaskPendingPage;
             case 'metamaskError': return metamaskErrorPage;
+            case 'magicLogin': return magicLoginPage;
+            case 'magicLoginPending': return magicLoginPendingPage;
             default: magicLoginPage;
         }
     }, [page, email]);
@@ -121,9 +136,10 @@ export default function WalletModal(props: WalletModalPropsIF) {
     const activeTitle = useMemo(() => {
         switch(page) {
             case 'wallets': return 'Choose a Wallet';
-            case 'magicLogin': return 'Log In With Email';
             case 'metamaskPending': return 'Waiting for Metamask';
             case 'metamaskError': return 'Metamask Error';
+            case 'magicLogin':
+            case 'magicLoginPending': return 'Log In With Email';
             default: 'Choose a Wallet';
         }
     }, [page]);
@@ -135,6 +151,7 @@ export default function WalletModal(props: WalletModalPropsIF) {
             case 'metamaskError':
                 return true;
             case 'metamaskPending':
+            case 'magicLoginPending':
             default: false;
         }
     }, [page]);
