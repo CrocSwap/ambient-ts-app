@@ -1,5 +1,6 @@
 // START: Import React and Dongles
 import { MouseEvent, SetStateAction, Dispatch, useState, useEffect } from 'react';
+import { BiSearch } from 'react-icons/bi';
 
 // START: Import JSX Elements
 import SidebarAccordion from './SidebarAccordion/SidebarAccordion';
@@ -23,6 +24,9 @@ import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { PoolIF, TokenIF } from '../../../utils/interfaces/exports';
 import SearchAccordion from './SearchAccordion/SearchAccordion';
 import SidebarSearchResults from './SidebarSearchResults/SidebarSearchResults';
+import formatSearchText from './formatSeachText';
+
+import closeSidebarImage from '../../../assets/images/sidebarImages/closeSidebar.svg';
 
 // interface for component props
 interface SidebarPropsIF {
@@ -161,7 +165,59 @@ export default function Sidebar(props: SidebarPropsIF) {
         },
     ];
 
+    const [searchInput, setSearchInput] = useState<string[][]>();
     const [searchMode, setSearchMode] = useState(false);
+    const [exampleLoading, setExampleLoading] = useState(true);
+
+    const searchInputChangeHandler = (event: string) => {
+        setSearchMode(true);
+        const formatText = formatSearchText(event);
+
+        setSearchInput(formatText);
+
+        console.log(formatText);
+
+        setExampleLoading(true);
+    };
+
+    // we are not going to use this following loading functionality. It is just for demonstration purposes
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setExampleLoading(false);
+        }, 1000);
+
+        return () => clearTimeout(timer);
+    }, [searchInput]);
+    // ------------------------------------------
+
+    const searchContainer = (
+        <div className={styles.main_search_container}>
+            <div className={styles.search_container}>
+                <div className={styles.search__icon} onClick={toggleSidebar}>
+                    <BiSearch size={18} color='#CDC1FF' />
+                </div>
+                <input
+                    type='text'
+                    id='box'
+                    placeholder='Search anything...'
+                    className={styles.search__box}
+                    onFocus={() => setSearchMode(true)}
+                    // onBlur={() => setSearchMode(false)}
+                    onChange={(e) => searchInputChangeHandler(e.target.value)}
+                />
+            </div>
+        </div>
+    );
+
+    const searchContainerDisplay = (
+        <div className={`${styles.sidebar_link} ${styles.sidebar_link_search}`}>
+            {searchContainer}
+
+            <div>
+                <img src={closeSidebarImage} alt='close sidebar' onClick={toggleSidebar} />
+            </div>
+        </div>
+    );
 
     const sidebarStyle = showSidebar ? styles.sidebar_active : styles.sidebar;
 
@@ -202,6 +258,8 @@ export default function Sidebar(props: SidebarPropsIF) {
             ))}
         </div>
     );
+
+    console.log({ searchInput });
 
     const bottomElementsDisplay = (
         <div className={styles.bottom_elements}>
@@ -256,15 +314,19 @@ export default function Sidebar(props: SidebarPropsIF) {
         <div>
             <nav className={`${styles.sidebar} ${sidebarStyle}`}>
                 <ul className={styles.sidebar_nav}>
-                    <SearchAccordion
+                    {/* <SearchAccordion
                         showSidebar={showSidebar}
                         toggleSidebar={toggleSidebar}
                         searchMode={searchMode}
                         handleSearchModeToggle={handleSearchModeToggle}
                         setSearchMode={setSearchMode}
-                    />
+                    /> */}
+                    {searchContainerDisplay}
                     {searchMode ? (
-                        <SidebarSearchResults searchInput='yes' />
+                        <SidebarSearchResults
+                            searchInput={searchInput}
+                            exampleLoading={exampleLoading}
+                        />
                     ) : (
                         regularSidebarDisplay
                     )}

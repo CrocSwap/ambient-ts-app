@@ -23,11 +23,7 @@ interface SearchAccordionPropsIF {
 // react functional component
 export default function SearchAccordion(props: SearchAccordionPropsIF) {
     const { showSidebar, toggleSidebar, searchMode, setSearchMode } = props;
-    const [isOpen, setIsOpen] = useState(false);
     const [searchInput, setSearchInput] = useState<string[][]>();
-    useEffect(() => {
-        !showSidebar && setIsOpen(false);
-    }, [showSidebar]);
 
     const searchInputChangeHandler = (event: string) => {
         const formatText = formatSearchText(event);
@@ -47,46 +43,14 @@ export default function SearchAccordion(props: SearchAccordionPropsIF) {
                     placeholder='Search anything...'
                     className={styles.search__box}
                     onFocus={() => setSearchMode(true)}
-                    onBlur={() => setSearchMode(false)}
+                    // onBlur={() => setSearchMode(false)}
                     onChange={(e) => searchInputChangeHandler(e.target.value)}
                 />
             </div>
         </div>
     );
 
-    const searchContent = (
-        <div className={styles.search_result}>
-            {searchContainer}
-            {searchInput && <SidebarSearchResults searchInput={searchInput} />}
-        </div>
-    );
-
-    const openStateContent = (
-        <motion.div
-            className={styles.accordion_container}
-            key='content'
-            initial='collapsed'
-            animate='open'
-            exit='collapsed'
-            variants={{
-                open: { opacity: 1, height: 'auto' },
-                collapsed: { opacity: 0, height: 0 },
-            }}
-            transition={{ duration: 0.8, ease: [0.04, 0.62, 0.23, 0.98] }}
-        >
-            <div className={styles.sidebar_item_content}>{searchContent}</div>
-        </motion.div>
-    );
-
     // This is to prevent the sidebar items from rendering their contents when the sidebar is closed
-    const showOpenContentOrNull = showSidebar ? openStateContent : '';
-
-    const sidebarIconStyle = isOpen ? styles.open_link : null;
-
-    function searchModeToggle() {
-        setSearchMode(!searchMode);
-        setIsOpen(!isOpen);
-    }
 
     return (
         <>

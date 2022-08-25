@@ -1,6 +1,10 @@
+import ResultSkeleton from '../ResultSkeleton/ResultSkeleton';
 import styles from '../SidebarSearchResults.module.css';
 
-export default function TransactionsSearchResults() {
+interface TransactionsSearchResultPropsIF {
+    loading: boolean;
+}
+export default function TransactionsSearchResults(props: TransactionsSearchResultPropsIF) {
     function TransactionSearchResult() {
         return (
             <div className={styles.card_container}>
@@ -19,14 +23,18 @@ export default function TransactionsSearchResults() {
         </div>
     );
 
-    const exampleContent = new Array(5)
-        .fill(null)
-        .map((item, idx) => <TransactionSearchResult key={idx} />);
+    const exampleContent = (
+        <div className={styles.main_result_container}>
+            {new Array(5).fill(null).map((item, idx) => (
+                <TransactionSearchResult key={idx} />
+            ))}
+        </div>
+    );
     return (
         <div>
             <div className={styles.card_title}>Recent Transactions</div>
             {header}
-            {exampleContent}
+            {props.loading ? <ResultSkeleton /> : exampleContent}
         </div>
     );
 }

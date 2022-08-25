@@ -1,6 +1,11 @@
+import ResultSkeleton from '../ResultSkeleton/ResultSkeleton';
 import styles from '../SidebarSearchResults.module.css';
 
-export default function PoolsSearchResults() {
+interface PoolsSearchResultPropsIF {
+    loading: boolean;
+}
+
+export default function PoolsSearchResults(props: PoolsSearchResultPropsIF) {
     function PoolSearchResult() {
         return (
             <div className={styles.card_container}>
@@ -19,14 +24,19 @@ export default function PoolsSearchResults() {
         </div>
     );
 
-    const exampleContent = new Array(5)
-        .fill(null)
-        .map((item, idx) => <PoolSearchResult key={idx} />);
+    const exampleContent = (
+        <div className={styles.main_result_container}>
+            {new Array(5).fill(null).map((item, idx) => (
+                <PoolSearchResult key={idx} />
+            ))}
+        </div>
+    );
+
     return (
         <div>
             <div className={styles.card_title}>Pools</div>
             {header}
-            {exampleContent}
+            {props.loading ? <ResultSkeleton /> : exampleContent}
         </div>
     );
 }
