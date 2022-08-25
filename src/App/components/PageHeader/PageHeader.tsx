@@ -61,12 +61,8 @@ export default function PageHeader(props: HeaderPropsIF) {
 
     const modalOrNull = isModalOpen ? mainModal : null;
 
-    const clickLogin = () => authenticateUser(
-        isAuthenticated,
-        isWeb3Enabled,
-        authenticate,
-        enableWeb3,
-    );
+    const clickLogin = () =>
+        authenticateUser(isAuthenticated, isWeb3Enabled, authenticate, enableWeb3);
 
     useEffect(() => {
         const timer = setTimeout(() => {

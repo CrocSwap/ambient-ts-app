@@ -1,11 +1,5 @@
 // START: Import React and Dongles
-import {
-    useEffect,
-    useState,
-    Dispatch,
-    SetStateAction,
-    ReactNode
-} from 'react';
+import { useEffect, useState, Dispatch, SetStateAction, ReactNode } from 'react';
 
 // START: Import JSX Functional Components
 import Wallet from '../../Global/Account/AccountTabs/Wallet/Wallet';
@@ -53,7 +47,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
         setSelectedOutsideTab,
         rightTabOptions,
         outsideControl,
-        setOutsideControl
+        setOutsideControl,
     } = props;
 
     const graphData = useAppSelector((state) => state?.graphData);

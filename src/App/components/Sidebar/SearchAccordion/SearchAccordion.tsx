@@ -14,9 +14,7 @@ import formatSearchText from '../formatSeachText';
 interface SearchAccordionPropsIF {
     children?: ReactNode;
     showSidebar: boolean;
-    toggleSidebar: (
-        event: MouseEvent<HTMLDivElement> | MouseEvent<HTMLLIElement>,
-    ) => void;
+    toggleSidebar: (event: MouseEvent<HTMLDivElement> | MouseEvent<HTMLLIElement>) => void;
     setSearchMode: Dispatch<SetStateAction<boolean>>;
     searchMode?: boolean;
     handleSearchModeToggle: () => void;

@@ -39,9 +39,9 @@ export default function Position(props: PositionPropsIF) {
         isAuthenticated,
         isDenomBase,
         chainId,
-        portfolio
+        portfolio,
     } = props;
-    
+
     const location = useLocation();
     const currentLocation = location.pathname;
 

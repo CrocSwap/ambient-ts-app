@@ -6,7 +6,7 @@ import {
     SetStateAction,
     cloneElement,
     ReactNode,
-    ReactElement
+    ReactElement,
 } from 'react';
 import { motion, AnimateSharedLayout } from 'framer-motion';
 
@@ -32,13 +32,7 @@ interface TabPropsIF {
 }
 
 export default function TabComponent(props: TabPropsIF) {
-    const {
-        data,
-        selectedOutsideTab,
-        rightTabOptions,
-        outsideControl,
-        setOutsideControl,
-    } = props;
+    const { data, selectedOutsideTab, rightTabOptions, outsideControl, setOutsideControl } = props;
 
     const [selectedTab, setSelectedTab] = useState(data[0]);
 

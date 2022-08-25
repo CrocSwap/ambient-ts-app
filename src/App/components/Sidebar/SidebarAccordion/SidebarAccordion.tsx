@@ -12,9 +12,7 @@ import { PositionIF } from '../../../../utils/interfaces/PositionIF';
 interface SidebarAccordionPropsIF {
     children?: ReactNode;
     showSidebar: boolean;
-    toggleSidebar: (
-        event: MouseEvent<HTMLDivElement> | MouseEvent<HTMLLIElement>,
-    ) => void;
+    toggleSidebar: (event: MouseEvent<HTMLDivElement> | MouseEvent<HTMLLIElement>) => void;
     item: {
         name: string;
         icon: string;
@@ -25,12 +23,7 @@ interface SidebarAccordionPropsIF {
 }
 
 export default function SidebarAccordion(props: SidebarAccordionPropsIF) {
-    const {
-        showSidebar,
-        idx,
-        item,
-        toggleSidebar,
-    } = props;
+    const { showSidebar, idx, item, toggleSidebar } = props;
 
     const [isOpen, setIsOpen] = useState(false);
 

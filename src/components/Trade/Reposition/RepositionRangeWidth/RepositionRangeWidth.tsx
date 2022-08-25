@@ -16,18 +16,10 @@ export default function RepositionRangeWidth() {
                 <MdAdd size={22} />
                 <FiMinus size={22} />
             </div>
-            <button className={styles.percentage_option_buttons}>
-                10%
-            </button>
-            <button className={styles.percentage_option_buttons}>
-                25%
-            </button>
-            <button className={styles.percentage_option_buttons}>
-                50%
-            </button>
-            <button className={styles.percentage_option_buttons}>
-                Ambient
-            </button>
+            <button className={styles.percentage_option_buttons}>10%</button>
+            <button className={styles.percentage_option_buttons}>25%</button>
+            <button className={styles.percentage_option_buttons}>50%</button>
+            <button className={styles.percentage_option_buttons}>Ambient</button>
             <AiOutlineInfoCircle color='#ffffff' />
         </div>
     );

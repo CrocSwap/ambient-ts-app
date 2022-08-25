@@ -9,7 +9,9 @@ export default function FavoritePoolsCard(props: FavoritePoolsCardIF) {
     const { pool } = props;
     return (
         <div className={styles.container}>
-            <div>{pool.base.address} / {pool.quote.address}</div>
+            <div>
+                {pool.base.address} / {pool.quote.address}
+            </div>
             <div>Volume</div>
             <div>TVL</div>
         </div>

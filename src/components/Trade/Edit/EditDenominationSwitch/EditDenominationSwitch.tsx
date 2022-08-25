@@ -22,9 +22,7 @@ export default function EditDenominationSwitch(props: EditDenominationSwitchProp
         <div className={styles.denomination_switch}>
             <div>Denomination</div>
             <button
-                className={
-                    denominationsInBase ? styles.active_button : styles.non_active_button
-                }
+                className={denominationsInBase ? styles.active_button : styles.non_active_button}
                 onClick={() => dispatch(toggleDidUserFlipDenom())}
             >
                 {baseTokenSymbol}

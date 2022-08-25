@@ -9,12 +9,7 @@ interface ContentContainerPropsIF {
 }
 
 export default function ContentContainer(props: ContentContainerPropsIF) {
-    const {
-        children,
-        isOnTradeRoute,
-        customWidth,
-        customWidthAuto
-    } = props;
+    const { children, isOnTradeRoute, customWidth, customWidthAuto } = props;
 
     const customWidthStyle = customWidth ? styles.customWidth_container : null;
     const tradeRouteStyle = isOnTradeRoute ? styles.no_background : null;

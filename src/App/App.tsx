@@ -70,13 +70,13 @@ import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { useSlippage } from './useSlippage';
 import { useFavePools } from './hooks/useFavePools';
 import { useTermsOfService } from './hooks/useTermsOfService';
-import { useAppChain } from './hooks/useAppChain';
 import { addNativeBalance, resetTokenData, setTokens } from '../utils/state/tokenDataSlice';
 import { checkIsStable } from '../utils/data/stablePairs';
 import { useTokenMap } from '../utils/hooks/useTokenMap';
 import { validateChain } from './validateChain';
 import { testTokenMap } from '../utils/data/testTokenMap';
 import { ZERO_ADDRESS } from '../constants';
+import { useAppChain } from './hooks/useAppChain';
 
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 const cachedFetchAddress = memoizeFetchAddress();

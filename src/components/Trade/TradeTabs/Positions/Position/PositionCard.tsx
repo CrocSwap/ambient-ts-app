@@ -36,22 +36,13 @@ interface PositionCardPropsIF {
     chainId: string;
 }
 export default function PositionCard(props: PositionCardPropsIF) {
-    const {
-        position,
-        tokenAAddress,
-        tokenBAddress,
-        account,
-        chainId,
-        userPosition,
-    } = props;
+    const { position, tokenAAddress, tokenBAddress, account, chainId, userPosition } = props;
 
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const location = useLocation();
 
     const currentLocation = location.pathname;
-    const handleClick = (
-        event: MouseEvent<HTMLButtonElement> | MouseEvent<HTMLDivElement>,
-    ) => {
+    const handleClick = (event: MouseEvent<HTMLButtonElement> | MouseEvent<HTMLDivElement>) => {
         console.log('handleClick', event.currentTarget);
         setAnchorEl(event.currentTarget);
     };

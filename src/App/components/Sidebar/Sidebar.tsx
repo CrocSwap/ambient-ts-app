@@ -65,7 +65,7 @@ export default function Sidebar(props: SidebarPropsIF) {
         setExpandTradeTable,
         tokenMap,
         lastBlockNumber,
-        favePools
+        favePools,
     } = props;
 
     const graphData = useAppSelector((state) => state.graphData);
@@ -129,7 +129,11 @@ export default function Sidebar(props: SidebarPropsIF) {
     ];
 
     const favoritePools = [
-        { name: 'Favorite Pools', icon: favouritePoolsImage, data: <FavoritePools favePools={favePools} /> },
+        {
+            name: 'Favorite Pools',
+            icon: favouritePoolsImage,
+            data: <FavoritePools favePools={favePools} />,
+        },
     ];
 
     const recentTransactions = [
