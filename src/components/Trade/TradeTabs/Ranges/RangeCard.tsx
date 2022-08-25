@@ -45,10 +45,6 @@ export default function RangeCard(props: RangeCardProps) {
         setCurrentPositionActive,
     } = props;
 
-    const positionData = {
-        position: position,
-    };
-
     // -------------------------------POSITION HASH------------------------
 
     let posHash;
@@ -124,6 +120,7 @@ export default function RangeCard(props: RangeCardProps) {
     const rangeDetailsProps = {
         provider: provider,
         chainId: chainId,
+        poolIdx: position.poolIdx,
         isPositionInRange: isPositionInRange,
         isAmbient: position.positionType === 'ambient',
         user: position.user,
@@ -241,10 +238,10 @@ export default function RangeCard(props: RangeCardProps) {
 
             <div className={styles.menu_container}>
                 <RangesMenu
-                    userPosition={userMatchesConnectedAccount}
+                    userMatchesConnectedAccount={userMatchesConnectedAccount}
                     rangeDetailsProps={rangeDetailsProps}
                     posHash={posHash as string}
-                    positionData={positionData}
+                    positionData={position}
                 />
             </div>
         </div>
