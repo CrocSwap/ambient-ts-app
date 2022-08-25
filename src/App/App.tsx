@@ -52,7 +52,6 @@ import './App.css';
 import { useAppDispatch, useAppSelector } from '../utils/hooks/reduxToolkit';
 import { defaultTokens } from '../utils/data/defaultTokens';
 import initializeUserLocalStorage from './functions/initializeUserLocalStorage';
-import TokenPage from '../pages/TokenPage/TokenPage';
 import { TokenIF, TokenListIF, PositionIF } from '../utils/interfaces/exports';
 import { fetchTokenLists } from './functions/fetchTokenLists';
 import {
@@ -62,7 +61,6 @@ import {
     setAdvancedLowTick,
     setDenomInBase,
 } from '../utils/state/tradeDataSlice';
-import PoolPage from '../pages/PoolPage/PoolPage';
 import { memoizeQuerySpotPrice, querySpotPrice } from './functions/querySpotPrice';
 import { memoizeFetchAddress } from './functions/fetchAddress';
 import { memoizeTokenBalance } from './functions/fetchTokenBalances';
@@ -1546,6 +1544,9 @@ export default function App() {
     const analyticsProps = {
         setSelectedOutsideTab: setSelectedOutsideTab,
         setOutsideControl: setOutsideControl,
+        favePools: favePools,
+        removePoolFromFaves: removePoolFromFaves,
+        addPoolToFaves: addPoolToFaves,
     };
 
     function updateDenomIsInBase() {
@@ -1678,8 +1679,6 @@ export default function App() {
                             <Route path='edit/' element={<Navigate to='/trade/market' replace />} />
                         </Route>
                         <Route path='analytics' element={<Analytics {...analyticsProps} />} />
-                        <Route path='tokens/:address' element={<TokenPage />} />
-                        <Route path='pools/:address' element={<PoolPage />} />
 
                         <Route path='range2' element={<Range {...rangeProps} />} />
 

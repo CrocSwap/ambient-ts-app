@@ -11,11 +11,21 @@ import { useAllPoolData } from '../../../state/pools/hooks';
 import { TokenData } from '../../../state/tokens/models';
 import { PoolData } from '../../../state/pools/models';
 import TabComponent from '../../Global/TabComponent/TabComponent';
+import { PoolIF } from '../../../utils/interfaces/PoolIF';
+import { TokenIF } from '../../../utils/interfaces/TokenIF';
 // import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 
 interface AnalyticsProps {
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
+    favePools: PoolIF[];
+    addPoolToFaves: (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) => void;
+    removePoolFromFaves: (
+        tokenA: TokenIF,
+        tokenB: TokenIF,
+        chainId: string,
+        poolId: number,
+    ) => void;
 }
 export default function AnalyticsTabs(props: AnalyticsProps) {
     const allTokens = useAllTokenData();
@@ -41,15 +51,22 @@ export default function AnalyticsTabs(props: AnalyticsProps) {
         setSearchWord(value);
         if (value.length > 0) {
             setTokens(
-                tokensResult.filter((item) =>
-                    item.name.toLowerCase().includes(value.toLowerCase()),
+                tokensResult.filter(
+                    (item) =>
+                        item.name.toLowerCase().includes(value.toLowerCase()) ||
+                        item.symbol.toLowerCase().includes(value.toLowerCase()) ||
+                        item.address.toLowerCase().includes(value.toLowerCase()),
                 ),
             );
             setPools(
                 poolsResult.filter(
                     (item) =>
                         item.token0.name.toLowerCase().includes(value.toLowerCase()) ||
-                        item.token1.name.toLowerCase().includes(value.toLowerCase()),
+                        item.token1.name.toLowerCase().includes(value.toLowerCase()) ||
+                        item.token0.symbol.toLowerCase().includes(value.toLowerCase()) ||
+                        item.token1.symbol.toLowerCase().includes(value.toLowerCase()) ||
+                        item.token0.address.toLowerCase().includes(value.toLowerCase()) ||
+                        item.token1.address.toLowerCase().includes(value.toLowerCase()),
                 ),
             );
         }
@@ -78,11 +95,27 @@ export default function AnalyticsTabs(props: AnalyticsProps) {
         },
         {
             label: 'Top Pools',
-            content: <Pools poolType='top' pools={searchWord.length > 0 ? pools : poolsResult} />,
+            content: (
+                <Pools
+                    poolType='top'
+                    pools={searchWord.length > 0 ? pools : poolsResult}
+                    favePools={props.favePools}
+                    removePoolFromFaves={props.removePoolFromFaves}
+                    addPoolToFaves={props.addPoolToFaves}
+                />
+            ),
         },
         {
             label: 'Trending Pools',
-            content: <Pools poolType='trend' pools={searchWord.length > 0 ? pools : poolsResult} />,
+            content: (
+                <Pools
+                    poolType='trend'
+                    pools={searchWord.length > 0 ? pools : poolsResult}
+                    favePools={props.favePools}
+                    removePoolFromFaves={props.removePoolFromFaves}
+                    addPoolToFaves={props.addPoolToFaves}
+                />
+            ),
         },
         { label: 'Top Ranges', content: <TopRanges /> },
     ];
