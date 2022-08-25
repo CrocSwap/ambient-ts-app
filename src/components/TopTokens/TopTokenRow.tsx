@@ -67,7 +67,7 @@ export default function TopTokenRow(props: TokenProps) {
                 </>
 
                 <>
-                    <section className={styles.displayName}> {IDWithTooltip}</section>
+                    <section className={styles.display}> {IDWithTooltip}</section>
                 </>
 
                 <>
@@ -80,6 +80,10 @@ export default function TopTokenRow(props: TokenProps) {
                     <section className={styles.display}>
                         {formatDollarAmount(tokenData.tvlUSD)}
                     </section>
+                </>
+
+                <>
+                    <section className={styles.display}>Tvl At Tick</section>
                 </>
 
                 <>

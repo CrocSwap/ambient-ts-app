@@ -1,10 +1,11 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { TOKEN_HIDE } from '../../constants';
 import { PoolData } from '../../state/pools/models';
+import { PoolIF } from '../../utils/interfaces/PoolIF';
+import { TokenIF } from '../../utils/interfaces/TokenIF';
 import PoolCardHeader from './PoolCardHeader';
 import PoolRow from './PoolRow';
 import styles from './Pools.module.css';
-import { Pagination } from '@mui/material';
 
 export const SORT_FIELD = {
     name: 'name',
@@ -18,6 +19,14 @@ interface PoolProps {
     pools: PoolData[];
     maxItems?: number;
     poolType: string;
+    favePools: PoolIF[];
+    addPoolToFaves: (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) => void;
+    removePoolFromFaves: (
+        tokenA: TokenIF,
+        tokenB: TokenIF,
+        chainId: string,
+        poolId: number,
+    ) => void;
 }
 
 export default function Pools(props: PoolProps) {
@@ -57,7 +66,14 @@ export default function Pools(props: PoolProps) {
     );
 
     const poolsDisplay = sortedPools.map((pool) => (
-        <PoolRow poolType={props.poolType} pool={pool} key={pool.address} />
+        <PoolRow
+            poolType={props.poolType}
+            pool={pool}
+            key={pool.address}
+            favePools={props.favePools}
+            removePoolFromFaves={props.removePoolFromFaves}
+            addPoolToFaves={props.addPoolToFaves}
+        />
     ));
 
     return (

@@ -60,6 +60,15 @@
     cursor: pointer;
 }
 
+.star_svg {
+    cursor: pointer;
+}
+
+.star_svg:hover {
+    fill: var(--text-grey-light);
+    cursor: pointer;
+    transition: all var(--animation-speed) ease-in-out;
+}
 
 /* Desktop screen Sizes */
 @media only screen and (min-width: 768px) {
@@ -93,8 +102,11 @@
         display: flex;
     }
     .main_container {
-        grid-template-columns: 50px auto 50px;
+        grid-template-columns: 50px 50px auto ;
         /* background: red; */
+    }
+    svg {
+        width: 15px;
     }
 }
 
@@ -105,8 +117,12 @@
 /* Large devices (laptops/desktops, 992px and up) */
 @media only screen and (min-width: 992px) {
     .main_container {
-        grid-template-columns: 100px auto 50px;
+        grid-template-columns: 50px 100px auto;
         /* background: blue; */
+    }
+
+    svg {
+        width: 15px;
     }
 }
 
@@ -117,12 +133,18 @@
 /* Extra large devices (large laptops and desktops, 1200px and up) */
 @media only screen and (min-width: 1500px) {
     .main_container {
-        grid-template-columns: 100px auto 250px;
+        grid-template-columns: 100px 100px auto;
+    }
+    svg {
+        width: 20px;
     }
 }
 /* Extra large devices (large laptops and desktops, 1200px and up) */
 @media only screen and (min-width: 1600px) {
     .main_container {
-        grid-template-columns: 100px 1fr 0.6fr;
+        grid-template-columns: 100px 100px 0.99fr ;
+    }
+    svg {
+        width: 20px;
     }
 }

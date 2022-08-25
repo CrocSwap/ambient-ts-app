@@ -1544,6 +1544,9 @@ export default function App() {
     const analyticsProps = {
         setSelectedOutsideTab: setSelectedOutsideTab,
         setOutsideControl: setOutsideControl,
+        favePools: favePools,
+        removePoolFromFaves: removePoolFromFaves,
+        addPoolToFaves: addPoolToFaves,
     };
 
     function updateDenomIsInBase() {

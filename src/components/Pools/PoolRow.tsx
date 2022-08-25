@@ -9,15 +9,26 @@ import PoolDisplay from '../Global/Analytics/PoolDisplay';
 import TokenDisplay from '../Global/Analytics/TokenDisplay';
 import Apy from '../Global/Tabs/Apy/Apy';
 import styles from './PoolRow.module.css';
-import favouritePoolsImage from '../../assets/images/sidebarImages/favouritePools.svg';
+import { motion } from 'framer-motion';
+import { PoolIF } from '../../utils/interfaces/PoolIF';
+import { MouseEvent } from 'react';
 
 interface PoolProps {
     pool: PoolData;
     poolType: string;
+    favePools: PoolIF[];
+    addPoolToFaves: (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) => void;
+    removePoolFromFaves: (
+        tokenA: TokenIF,
+        tokenB: TokenIF,
+        chainId: string,
+        poolId: number,
+    ) => void;
 }
 
 export default function PoolRow(props: PoolProps) {
     const poolData = props.pool;
+
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
@@ -44,9 +55,68 @@ export default function PoolRow(props: PoolProps) {
         navigate('/trade/market');
     }
 
+    const isButtonFavorited = props.favePools.some(
+        (pool: PoolIF) =>
+            pool.base.address === poolData.token0.address &&
+            pool.quote.address === poolData.token1.address,
+        // &&
+        // pool.poolId === currentPoolData.poolId &&
+        // pool.chainId.toString() === currentPoolData.chainId.toString(),
+    );
+
+    const handleFavButton = (event: MouseEvent<HTMLDivElement>) => {
+        isButtonFavorited
+            ? props.removePoolFromFaves(
+                  { address: poolData.token0.address } as TokenIF,
+                  { address: poolData.token1.address } as TokenIF,
+                  '',
+                  36000,
+              )
+            : props.addPoolToFaves(
+                  { address: poolData.token0.address } as TokenIF,
+                  { address: poolData.token1.address } as TokenIF,
+                  '',
+                  36000,
+              );
+        event.stopPropagation();
+    };
+    // function handleFavButton(event: MouseEvent<HTMLDivElement>) {
+    //     event.stopPropagation();
+    // }
+
+    const favButton = (
+        <motion.div
+            whileTap={{ scale: 3 }}
+            transition={{ duration: 0.5 }}
+            onClick={handleFavButton}
+            style={{
+                cursor: 'pointer',
+                textAlign: 'center',
+            }}
+        >
+            <svg
+                width='23'
+                height='23'
+                viewBox='0 0 23 23'
+                fill='none'
+                xmlns='http://www.w3.org/2000/svg'
+            >
+                <path
+                    d='M11.5 1.58301L14.7187 8.10384L21.9166 9.15593L16.7083 14.2288L17.9375 21.3955L11.5 18.0101L5.06248 21.3955L6.29165 14.2288L1.08331 9.15593L8.28123 8.10384L11.5 1.58301Z'
+                    stroke='#ebebff'
+                    fill={isButtonFavorited ? '#ebebff' : 'none'}
+                    strokeWidth='2'
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    className={styles.star_svg}
+                />
+            </svg>
+        </motion.div>
+    );
+
     return (
         <div className={styles.main_container} onClick={handleRowClick}>
-            <div>{favouritePoolsImage}</div>
+            <div>{favButton}</div>
 
             <div className={styles.tokens_container}>
                 <TokenDisplay
@@ -84,14 +154,6 @@ export default function PoolRow(props: PoolProps) {
                 </>
 
                 <Apy amount={50} />
-            </div>
-
-            <div className={styles.menu_container}>
-                <section>
-                    <button className={styles.trade_button} onClick={handleRowClick}>
-                        Trade
-                    </button>
-                </section>
             </div>
         </div>
     );
