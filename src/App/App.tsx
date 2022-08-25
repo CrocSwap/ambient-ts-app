@@ -34,7 +34,6 @@ import SnackbarComponent from '../components/Global/SnackbarComponent/SnackbarCo
 import PageHeader from './components/PageHeader/PageHeader';
 import Sidebar from './components/Sidebar/Sidebar';
 import PageFooter from './components/PageFooter/PageFooter';
-import Modal from '../components/Global/Modal/Modal';
 import WalletModal from './components/WalletModal/WalletModal';
 import Home from '../pages/Home/Home';
 import Analytics from '../pages/Analytics/Analytics';
@@ -74,7 +73,6 @@ import { memoizeTokenDecimals } from './functions/queryTokenDecimals';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { useSlippage } from './useSlippage';
 import { useFavePools } from './hooks/useFavePools';
-import { useTermsOfService } from './hooks/useTermsOfService';
 import { useAppChain } from './hooks/useAppChain';
 import { addNativeBalance, resetTokenData, setTokens } from '../utils/state/tokenDataSlice';
 import { checkIsStable } from '../utils/data/stablePairs';
@@ -83,7 +81,6 @@ import { validateChain } from './validateChain';
 import { testTokenMap } from '../utils/data/testTokenMap';
 import { ZERO_ADDRESS } from '../constants';
 import { useModal } from '../components/Global/Modal/useModal';
-import authenticateMetamask from '../utils/functions/authenticateMetamask';
 
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 const cachedFetchAddress = memoizeFetchAddress();
@@ -1408,34 +1405,6 @@ export default function App() {
 
     const [isModalOpenWallet, openModalWallet, closeModalWallet] = useModal();
 
-    const { tosText, acceptToS } = useTermsOfService();
-
-    // todo: style mouse as a pointer finger
-    const walletModal = (
-        <Modal 
-            onClose={closeModalWallet}
-            title='Choose a Wallet'
-            footer={tosText}
-        >
-            <button
-                onClick={() => {
-                    authenticateMetamask(
-                        isAuthenticated,
-                        isWeb3Enabled,
-                        authenticate,
-                        enableWeb3,
-                    );
-                    acceptToS();
-                }}
-            >
-                Metamask
-            </button>
-            <button>
-                Connect with Email
-            </button>
-        </Modal>
-    );
-
     // close the Connect Wallet modal only when authentication completes
     useEffect(() => {
         isAuthenticated && closeModalWallet();
@@ -1785,7 +1754,16 @@ export default function App() {
                 )}
             </div>
             <SidebarFooter />
-            {isModalOpenWallet && <WalletModal />}
+            {
+                isModalOpenWallet &&
+                <WalletModal
+                    closeModalWallet={closeModalWallet}
+                    isAuthenticated={isAuthenticated}
+                    isWeb3Enabled={isWeb3Enabled}
+                    authenticate={authenticate}
+                    enableWeb3={enableWeb3}
+                />
+            }
         </>
     );
 }
