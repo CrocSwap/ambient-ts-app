@@ -12,6 +12,7 @@ import { useTermsOfService } from '../../hooks/useTermsOfService';
 import validateEmail from './validateEmail';
 import authenticateMetamask from '../../../utils/functions/authenticateMetamask';
 import authenticateMagic from '../../../utils/functions/authenticateMagic';
+import { HiOutlineMail } from 'react-icons/hi';
 
 interface WalletModalPropsIF {
     closeModalWallet: () => void;
@@ -65,7 +66,10 @@ export default function WalletModal(props: WalletModalPropsIF) {
                 >
                     Metamask
                 </button>
-                <button onClick={() => setPage('magicLogin')}>Connect with Email</button>
+                <button className={styles.email_button} onClick={() => setPage('magicLogin')}>
+                    <HiOutlineMail size={20} color='#EBEBFF' />
+                    Connect with Email
+                </button>
             </>
         ),
         [],

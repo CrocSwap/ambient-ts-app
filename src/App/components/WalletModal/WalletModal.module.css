@@ -1,0 +1,21 @@
+.email_button{
+    width: 100%;
+    background: var(--dark3);
+    outline: none;
+    border: none;
+    display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+padding: 12px 16px;
+gap: 8px;
+
+    border-radius: 4px;
+
+    color: rgba(235, 235, 255, 0.4);
+    font-weight: 200;
+font-size: 18px;
+line-height: 22px;
+}
+
+
