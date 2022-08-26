@@ -17,7 +17,10 @@ import WalletButton from './WalletButton/WalletButton';
 import metamaskLogo from '../../../assets/images/logos/MetaMask_Fox.svg';
 import magicLoginImage from '../../../assets/images/logos/magicLogin.png';
 import WaveAnimation from '../../../components/Global/LoadingAnimations/WaveAnimation/WaveAnimation';
-import CircleLoader from '../../../components/Global/LoadingAnimations/CircleLoader/CircleLoader';
+import {
+    CircleLoader,
+    CircleLoaderFailed,
+} from '../../../components/Global/LoadingAnimations/CircleLoader/CircleLoader';
 
 interface WalletModalPropsIF {
     closeModalWallet: () => void;
@@ -128,7 +131,8 @@ export default function WalletModal(props: WalletModalPropsIF) {
     );
 
     const metamaskErrorPage = (
-        <>
+        <div className={styles.metamask_pending_container}>
+            <CircleLoaderFailed />
             <p>
                 Check the Metamask extension in your browser for notifications, or click &quot;Try
                 Again&quot;. You can also click the left arrow above to choose a different wallet.
@@ -147,7 +151,7 @@ export default function WalletModal(props: WalletModalPropsIF) {
                     acceptToS();
                 }}
             />
-        </>
+        </div>
     );
 
     const magicLoginPage = useMemo(() => {
@@ -183,7 +187,7 @@ export default function WalletModal(props: WalletModalPropsIF) {
                 <div onClick={() => setPage('wallets')} className={styles.different_wallet}>
                     Use a different wallet
                 </div>
-                <button onClick={() => setPage('metamaskPending')}>Metamask Pending</button>
+                <button onClick={() => setPage('metamaskError')}>Metamask Pending</button>
                 {/* {connectToWalletTOSContent} */}
             </div>
         );
