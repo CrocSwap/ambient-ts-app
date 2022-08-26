@@ -134,3 +134,17 @@ line-height: 15px;
     white-space: nowrap;
 
 }
+
+.metamask_pending_container{
+    display: flex;
+    flex-direction: column;
+    max-width: 400px;
+    min-height: 220px;
+
+    justify-content: space-between;
+    align-items: center;
+    text-align: center;
+    font-weight: 200;
+    gap: 10px;
+
+}

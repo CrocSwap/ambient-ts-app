@@ -16,6 +16,8 @@ import { HiOutlineMail } from 'react-icons/hi';
 import WalletButton from './WalletButton/WalletButton';
 import metamaskLogo from '../../../assets/images/logos/MetaMask_Fox.svg';
 import magicLoginImage from '../../../assets/images/logos/magicLogin.png';
+import WaveAnimation from '../../../components/Global/LoadingAnimations/WaveAnimation/WaveAnimation';
+import CircleLoader from '../../../components/Global/LoadingAnimations/CircleLoader/CircleLoader';
 
 interface WalletModalPropsIF {
     closeModalWallet: () => void;
@@ -116,12 +118,13 @@ export default function WalletModal(props: WalletModalPropsIF) {
     );
 
     const metamaskPendingPage = (
-        <>
+        <div className={styles.metamask_pending_container}>
+            <CircleLoader size='5rem' />
             <p>
                 Check the Metamask extension in your browser for notifications. Make sure your
                 browser is not blocking pop-up windows.
             </p>
-        </>
+        </div>
     );
 
     const metamaskErrorPage = (
@@ -180,6 +183,7 @@ export default function WalletModal(props: WalletModalPropsIF) {
                 <div onClick={() => setPage('wallets')} className={styles.different_wallet}>
                     Use a different wallet
                 </div>
+                <button onClick={() => setPage('metamaskPending')}>Metamask Pending</button>
                 {/* {connectToWalletTOSContent} */}
             </div>
         );
