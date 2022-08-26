@@ -41,10 +41,10 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
         openModal();
     }
 
-    function openDetailsModal() {
-        setCurrentModal('details');
-        openModal();
-    }
+    // function openDetailsModal() {
+    //     setCurrentModal('details');
+    //     openModal();
+    // }
     function openHarvestModal() {
         setCurrentModal('harvest');
         openModal();
@@ -115,11 +115,11 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
             Explorer
         </button>
     );
-    const detailsButton = (
-        <button className={styles.option_button} onClick={openDetailsModal}>
-            Details
-        </button>
-    );
+    // const detailsButton = (
+    //     <button className={styles.option_button} onClick={openDetailsModal}>
+    //         Details
+    //     </button>
+    // );
     const harvestButton = userPosition ? (
         <button className={styles.option_button} onClick={openHarvestModal}>
             Harvest
@@ -136,7 +136,7 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
             {editButton}
             {removeButton}
             {harvestButton}
-            {detailsButton}
+            {/* {detailsButton} */}
             {explorerButton}
             {copyButton}
         </div>
@@ -147,7 +147,7 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
             {editButton}
             {removeButton}
             {harvestButton}
-            {detailsButton}
+            {/* {detailsButton} */}
             {explorerButton}
             {copyButton}
         </div>
