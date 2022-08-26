@@ -15,6 +15,7 @@ import {
     setCandles,
     addCandles,
     setLiquidity,
+    setPoolVolumeSeries,
 } from '../utils/state/graphDataSlice';
 import { ethers } from 'ethers';
 import { useMoralis } from 'react-moralis';
@@ -83,6 +84,7 @@ import { testTokenMap } from '../utils/data/testTokenMap';
 import { ZERO_ADDRESS } from '../constants';
 import { useModal } from '../components/Global/Modal/useModal';
 import authenticateUser from '../utils/functions/authenticateUser';
+import { getVolumeSeries } from './functions/getVolumeSeries';
 
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 const cachedFetchAddress = memoizeFetchAddress();
@@ -474,6 +476,42 @@ export default function App() {
                 setBaseTokenDecimals(tokenPair.dataTokenB.decimals);
                 setQuoteTokenDecimals(tokenPair.dataTokenA.decimals);
             }
+
+            // retrieve pool volume series
+            getVolumeSeries(
+                sortedTokens[0],
+                sortedTokens[1],
+                chainData.poolIndex,
+                chainData.chainId,
+                600,
+            )
+                .then((volumeSeries) => {
+                    if (
+                        volumeSeries &&
+                        volumeSeries.base &&
+                        volumeSeries.quote &&
+                        volumeSeries.poolIdx &&
+                        volumeSeries.seriesData
+                    )
+                        dispatch(
+                            setPoolVolumeSeries({
+                                dataReceived: true,
+                                pools: [
+                                    {
+                                        dataReceived: true,
+                                        pool: {
+                                            base: volumeSeries.base,
+                                            quote: volumeSeries.quote,
+                                            poolIdx: volumeSeries.poolIdx,
+                                            chainId: chainData.chainId,
+                                        },
+                                        volumeData: volumeSeries,
+                                    },
+                                ],
+                            }),
+                        );
+                })
+                .catch(console.log);
 
             // retrieve pool liquidity
             try {

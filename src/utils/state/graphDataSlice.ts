@@ -7,6 +7,40 @@ export interface graphData {
     swapsByPool: SwapsByPool;
     candlesForAllPools: CandlesForAllPools;
     liquidityForAllPools: LiquidityForAllPools;
+    poolVolumeSeries: PoolVolumeSeries;
+}
+
+export interface PoolVolumeSeries {
+    dataReceived: boolean;
+    pools: Array<VolumeSeriesByPool>;
+}
+
+export interface VolumeSeriesByPool {
+    dataReceived: boolean;
+    pool: {
+        base: string;
+        quote: string;
+        poolIdx: number;
+        chainId: string;
+    };
+    volumeData: VolumeSeriesByPoolTimeAndResolution;
+}
+
+export interface VolumeSeriesByPoolTimeAndResolution {
+    network: string;
+    base: string;
+    quote: string;
+    poolIdx: number;
+    timeStart: number;
+    timeEnd: number;
+    resolution: number;
+    seriesData: Array<VolumeByTimeData>;
+}
+
+export interface VolumeByTimeData {
+    time: number;
+    volumeDay: number;
+    method: string;
 }
 
 export interface LiquidityForAllPools {
@@ -172,6 +206,7 @@ const initialState: graphData = {
     swapsByPool: { dataReceived: false, swaps: [] },
     candlesForAllPools: { pools: [] },
     liquidityForAllPools: { pools: [] },
+    poolVolumeSeries: { dataReceived: false, pools: [] },
 };
 
 export const graphDataSlice = createSlice({
@@ -183,6 +218,9 @@ export const graphDataSlice = createSlice({
         },
         setPositionsByPool: (state, action: PayloadAction<PositionsByPool>) => {
             state.positionsByPool = action.payload;
+        },
+        setPoolVolumeSeries: (state, action: PayloadAction<PoolVolumeSeries>) => {
+            state.poolVolumeSeries = action.payload;
         },
         setSwapsByUser: (state, action: PayloadAction<SwapsByUser>) => {
             state.swapsByUser = action.payload;
@@ -370,6 +408,7 @@ export const graphDataSlice = createSlice({
 export const {
     setPositionsByUser,
     setPositionsByPool,
+    setPoolVolumeSeries,
     setLiquidity,
     setCandles,
     addCandles,

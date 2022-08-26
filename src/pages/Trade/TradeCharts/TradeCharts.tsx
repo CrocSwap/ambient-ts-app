@@ -221,6 +221,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
 
     // this could be simplify into 1 reusable function but I figured we might have to do some other calculations for each of these so I am sepearing it for now. -Jr
     const handleVolumeToggle = () => setShowVolume(!showVolume);
+
     const handleTvlToggle = () => setShowTvl(!showTvl);
     const handleFeeRateToggle = () => setShowFeeRate(!showFeeRate);
 
