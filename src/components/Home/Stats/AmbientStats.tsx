@@ -67,7 +67,6 @@ export default function Stats(props: StatsProps) {
 
     useEffect(() => {
         getDexStatsFresh().then((dexStats) => {
-            console.log({ dexStats });
             if (dexStats.tvl) setTotalTvlString(formatAmount(dexStats.tvl));
             if (dexStats.volume) setTotalVolumeString(formatAmount(dexStats.volume));
             if (dexStats.fees) setTotalFeesString(formatAmount(dexStats.fees));
