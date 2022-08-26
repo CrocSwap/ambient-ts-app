@@ -73,6 +73,17 @@ export default function TransactionCard(props: TransactionProps) {
 
     const [baseFlowDisplay, setBaseFlowDisplay] = useState<string | undefined>(undefined);
     const [quoteFlowDisplay, setQuoteFlowDisplay] = useState<string | undefined>(undefined);
+    const swapDomId = swap.id === currentTxActiveInTransactions ? `swap-${swap.id}` : '';
+
+    function scrollToDiv() {
+        const element = document.getElementById(swapDomId);
+
+        element?.scrollIntoView();
+    }
+
+    useEffect(() => {
+        swap.id === currentTxActiveInTransactions ? scrollToDiv() : null;
+    }, [currentTxActiveInTransactions]);
 
     useEffect(() => {
         // console.log({ swap });
@@ -175,6 +186,7 @@ export default function TransactionCard(props: TransactionProps) {
                     ? null
                     : setCurrentTxActiveInTransactions('')
             }
+            id={swapDomId}
         >
             <div className={styles.row_container}>
                 {/* ------------------------------------------------------ */}

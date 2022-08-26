@@ -26,12 +26,12 @@
     background-clip: content-box, border-box;
     box-shadow: 2px 1000px 1px var(--dark1) inset;
     transition: box-shadow var(--animation-speed) ease-in-out;
-    cursor: pointer;
+
 
     min-width: 450px;
     min-height: 350px;
     border-radius: var(--border-radius);
-    position: relative;
+    /* position: relative; */
     color: white;
 
     /* min-height: 80vh; */
