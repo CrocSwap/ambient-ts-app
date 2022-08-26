@@ -20,7 +20,6 @@ import ConfirmLimitModal from '../../../components/Trade/Limit/ConfirmLimitModal
 
 // START: Import Local Files
 import styles from './Limit.module.css';
-import authenticateUser from '../../../utils/functions/authenticateUser';
 import { useTradeData } from '../Trade';
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import { useModal } from '../../../components/Global/Modal/useModal';
@@ -50,6 +49,7 @@ interface LimitPropsIF {
     chainId: string;
     activeTokenListsChanged: boolean;
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
+    openModalWallet: () => void;
 }
 
 export default function Limit(props: LimitPropsIF) {
@@ -73,12 +73,12 @@ export default function Limit(props: LimitPropsIF) {
         chainId,
         activeTokenListsChanged,
         indicateActiveTokenListsChanged,
+        openModalWallet,
     } = props;
 
-    const { tradeData } = useTradeData();
-    const { navigationMenu } = useTradeData();
+    const { tradeData, navigationMenu } = useTradeData();
     const dispatch = useAppDispatch();
-    const { enableWeb3, isWeb3Enabled, authenticate, isAuthenticated } = useMoralis();
+    const { isWeb3Enabled, isAuthenticated } = useMoralis();
     const [isModalOpen, openModal, closeModal] = useModal();
     const [limitAllowed, setLimitAllowed] = useState<boolean>(false);
 
@@ -99,9 +99,6 @@ export default function Limit(props: LimitPropsIF) {
             setLimitButtonErrorMessage('Invalid Token Pair');
         }
     }, [poolPriceDisplay]);
-
-    const clickLogin = () =>
-        authenticateUser(isAuthenticated, isWeb3Enabled, authenticate, enableWeb3);
 
     const [newLimitOrderTransactionHash, setNewLimitOrderTransactionHash] = useState('');
     const [txErrorCode, setTxErrorCode] = useState(0);
@@ -241,7 +238,7 @@ export default function Limit(props: LimitPropsIF) {
     ) : null;
 
     const isTokenAAllowanceSufficient = parseFloat(tokenAAllowance) >= parseFloat(tokenAInputQty);
-    const loginButton = <Button title='Login' action={clickLogin} />;
+    const loginButton = <Button title='Login' action={openModalWallet} />;
     const [isApprovalPending, setIsApprovalPending] = useState(false);
 
     const approve = async (tokenAddress: string) => {
