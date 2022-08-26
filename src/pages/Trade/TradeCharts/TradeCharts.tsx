@@ -31,6 +31,7 @@ import { useAppSelector, useAppDispatch } from '../../../utils/hooks/reduxToolki
 import TradeCandleStickChart from './TradeCandleStickChart';
 import { PoolIF, TokenIF } from '../../../utils/interfaces/exports';
 import { get24hChange } from '../../../App/functions/getPoolStats';
+import TradeChartsLoading from './TradeChartsLoading/TradeChartsLoading';
 
 // interface for React functional component props
 interface TradeChartsPropsIF {
@@ -516,8 +517,17 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
         }
     }, [chartData]);
     // END OF CANDLE STICK DATA---------------------------------------------------
+    // This is a simple loading that last for 1 sec before displaying the graph. The graph is already in the dom by then. We will just positon this in front of it and then remove it after 1 sec.
 
     const expandGraphStyle = props.expandTradeTable ? styles.hide_graph : '';
+    const [graphIsLoading, setGraphIsLoading] = useState(true);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setGraphIsLoading(false);
+        }, 1500);
+        return () => clearTimeout(timer);
+    }, []);
 
     return (
         <>
@@ -527,17 +537,21 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                 {timeFrameContent}
                 {/* {liquidityTypeContent} */}
             </div>
-            <div style={{ width: '100%', height: '100%' }} ref={canvasRef}>
-                <TradeCandleStickChart
-                    tvlData={formattedTvlData}
-                    volumeData={formattedVolumeData}
-                    feeData={formattedFeesUSD}
-                    priceData={props.candleData}
-                    changeState={props.changeState}
-                    chartItemStates={chartItemStates}
-                    denomInBase={denomInBase}
-                />
-            </div>
+            {graphIsLoading ? (
+                <TradeChartsLoading />
+            ) : (
+                <div style={{ width: '100%', height: '100%' }} ref={canvasRef}>
+                    <TradeCandleStickChart
+                        tvlData={formattedTvlData}
+                        volumeData={formattedVolumeData}
+                        feeData={formattedFeesUSD}
+                        priceData={props.candleData}
+                        changeState={props.changeState}
+                        chartItemStates={chartItemStates}
+                        denomInBase={denomInBase}
+                    />
+                </div>
+            )}
         </>
     );
 }
