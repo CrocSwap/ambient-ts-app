@@ -19,7 +19,7 @@ export function CircleLoader(props: CircleLoaderProps) {
     const borderColorStyle = props.borderColor
         ? `0.5rem solid ${props.borderColor}`
         : ' 0.5rem solid white';
-    console.log(borderColorStyle);
+
     const borderTop = '0.5rem solid #3498db';
     return (
         <>
@@ -44,7 +44,7 @@ export function CircleLoaderCompleted(props: CircleLoaderProps) {
     const borderColorStyle = props.borderColor
         ? `0.5rem solid ${props.borderColor}`
         : ' 0.5rem solid white';
-    console.log(borderColorStyle);
+
     const borderTop = '0.5rem solid #3498db';
     return (
         <>
@@ -67,11 +67,6 @@ export function CircleLoaderCompleted(props: CircleLoaderProps) {
 export function CircleLoaderFailed(props: CircleLoaderProps) {
     const widthAndHeight = props.size ? props.size : '3rem';
 
-    const borderColorStyle = props.borderColor
-        ? `0.5rem solid ${props.borderColor}`
-        : ' 0.5rem solid white';
-    console.log(borderColorStyle);
-    const borderTop = '0.5rem solid #3498db';
     return (
         <>
             <motion.span

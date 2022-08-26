@@ -187,16 +187,17 @@ export default function WalletModal(props: WalletModalPropsIF) {
                 <div onClick={() => setPage('wallets')} className={styles.different_wallet}>
                     Use a different wallet
                 </div>
-                <button onClick={() => setPage('metamaskError')}>Metamask Pending</button>
+                <button onClick={() => setPage('magicLoginPending')}>Metamask Pending</button>
                 {/* {connectToWalletTOSContent} */}
             </div>
         );
     }, [email]);
 
     const magicLoginPendingPage = (
-        <>
+        <div className={styles.metamask_pending_container}>
+            <CircleLoader size='5rem' borderColor='#171d27' />
             <p>The Magic Authentication system will launch in one moment!</p>
-        </>
+        </div>
     );
 
     const activeContent = useMemo(() => {
