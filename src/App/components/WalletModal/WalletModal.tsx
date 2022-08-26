@@ -108,10 +108,10 @@ export default function WalletModal(props: WalletModalPropsIF) {
             <div className={styles.main_container}>
                 <section>
                     {walletsDisplay}
-                    <button className={styles.email_button} onClick={() => setPage('magicLogin')}>
+                    {/* <button className={styles.email_button} onClick={() => setPage('magicLogin')}>
                         <HiOutlineMail size={20} color='#EBEBFF' />
                         Connect with Email
-                    </button>
+                    </button> */}
                 </section>
 
                 {learnAboutWalletsContent}
@@ -187,7 +187,6 @@ export default function WalletModal(props: WalletModalPropsIF) {
                 <div onClick={() => setPage('wallets')} className={styles.different_wallet}>
                     Use a different wallet
                 </div>
-                <button onClick={() => setPage('magicLoginPending')}>Metamask Pending</button>
                 {/* {connectToWalletTOSContent} */}
             </div>
         );
