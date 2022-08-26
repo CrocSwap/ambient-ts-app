@@ -18,6 +18,7 @@ interface TransactionProps {
     account: string;
     tokenMap: Map<string, TokenIF>;
     chainId: string;
+    blockExplorer?: string;
     tokenAAddress: string;
     tokenBAddress: string;
     isDenomBase: boolean;
@@ -30,6 +31,7 @@ export default function TransactionCard(props: TransactionProps) {
         account,
         tokenMap,
         chainId,
+        blockExplorer,
         tokenAAddress,
         tokenBAddress,
         isDenomBase,
@@ -215,7 +217,7 @@ export default function TransactionCard(props: TransactionProps) {
             </div>
 
             <div className={styles.menu_container}>
-                <TransactionsMenu userPosition={false} />
+                <TransactionsMenu userPosition={false} tx={swap} blockExplorer={blockExplorer} />
             </div>
         </div>
     );

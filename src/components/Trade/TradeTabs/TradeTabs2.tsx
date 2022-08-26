@@ -18,6 +18,7 @@ import TabComponent from '../../Global/TabComponent/TabComponent';
 import PositionsOnlyToggle from './PositionsOnlyToggle/PositionsOnlyToggle';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
 import { CandleData } from '../../../utils/state/graphDataSlice';
+import { ChainSpec } from '@crocswap-libs/sdk';
 
 interface ITabsProps {
     provider: ethers.providers.Provider | undefined;
@@ -26,6 +27,7 @@ interface ITabsProps {
     isWeb3Enabled: boolean;
     lastBlockNumber: number;
     chainId: string;
+    chainData: ChainSpec;
 
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
@@ -52,6 +54,7 @@ interface ITabsProps {
 export default function TradeTabs2(props: ITabsProps) {
     const {
         chainId,
+        chainData,
         account,
         isShowAllEnabled,
         setIsShowAllEnabled,
@@ -112,6 +115,7 @@ export default function TradeTabs2(props: ITabsProps) {
         tokenMap: tokenMap,
         graphData: graphData,
         chainId: props.chainId,
+        blockExplorer: chainData.blockExplorer || undefined,
         currentTxActiveInTransactions: props.currentTxActiveInTransactions,
         account: account,
         setCurrentTxActiveInTransactions: props.setCurrentTxActiveInTransactions,

@@ -1798,6 +1798,7 @@ export default function App() {
                                     isTokenABase={isTokenABase}
                                     poolPriceDisplay={poolPriceDisplay}
                                     chainId={chainData.chainId}
+                                    chainData={chainData}
                                     currentTxActiveInTransactions={currentTxActiveInTransactions}
                                     setCurrentTxActiveInTransactions={
                                         setCurrentTxActiveInTransactions

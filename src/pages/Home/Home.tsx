@@ -30,7 +30,7 @@ export default function Home(props: HomeProps) {
                     chainId={chainId}
                 />
                 <DividerDark />
-                <Stats />
+                <Stats lastBlockNumber={lastBlockNumber} />
             </div>
             <DividerDark />
 

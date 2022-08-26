@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { formatAmount } from '../../../utils/numbers';
 import styles from './Stats.module.css';
@@ -5,6 +6,10 @@ import styles from './Stats.module.css';
 interface StatCardProps {
     title: string;
     value: string | number;
+}
+
+interface StatsProps {
+    lastBlockNumber: number;
 }
 function StatCard(props: StatCardProps) {
     const { title, value } = props;
@@ -17,32 +22,57 @@ function StatCard(props: StatCardProps) {
     );
 }
 
-const randomTotalTVL = 1000000000000 * Math.random();
-const randomTotalVolume = 10000000000 * Math.random();
-const randomTotalFees = 100000000 * Math.random();
+const getDexStatsFresh = async () => {
+    return fetch('https://809821320828123.de:5000/dex_stats_fresh')
+        .then((response) => response?.json())
+        .then((json) => {
+            const dexStats = json?.data;
+            return dexStats;
+        })
+        .catch(console.log);
+};
 
-const totalTvlString =
-    randomTotalTVL >= 10000000
-        ? formatAmount(randomTotalTVL)
-        : randomTotalTVL.toLocaleString(undefined, {
-              maximumFractionDigits: 0,
-          });
+// const randomTotalTVL = 1000000000000 * Math.random();
+// const randomTotalVolume = 10000000000 * Math.random();
+// const randomTotalFees = 100000000 * Math.random();
 
-const totalVolumeString =
-    randomTotalVolume >= 10000000
-        ? formatAmount(randomTotalVolume)
-        : randomTotalVolume.toLocaleString(undefined, {
-              maximumFractionDigits: 0,
-          });
-const totalFeesString =
-    randomTotalFees >= 10000000
-        ? formatAmount(randomTotalFees)
-        : randomTotalFees.toLocaleString(undefined, {
-              maximumFractionDigits: 0,
-          });
+// const totalTvlString =
+//     randomTotalTVL >= 10000000
+//         ? formatAmount(randomTotalTVL)
+//         : randomTotalTVL.toLocaleString(undefined, {
+//               maximumFractionDigits: 0,
+//           });
 
-export default function Stats() {
+// const totalVolumeString =
+//     randomTotalVolume >= 10000000
+//         ? formatAmount(randomTotalVolume)
+//         : randomTotalVolume.toLocaleString(undefined, {
+//               maximumFractionDigits: 0,
+//           });
+// const totalFeesString =
+//     randomTotalFees >= 10000000
+//         ? formatAmount(randomTotalFees)
+//         : randomTotalFees.toLocaleString(undefined, {
+//               maximumFractionDigits: 0,
+//           });
+
+export default function Stats(props: StatsProps) {
+    const { lastBlockNumber } = props;
+
     const { t } = useTranslation();
+
+    const [totalTvlString, setTotalTvlString] = useState<string | undefined>();
+    const [totalVolumeString, setTotalVolumeString] = useState<string | undefined>();
+    const [totalFeesString, setTotalFeesString] = useState<string | undefined>();
+
+    useEffect(() => {
+        getDexStatsFresh().then((dexStats) => {
+            if (dexStats.tvl) setTotalTvlString(formatAmount(dexStats.tvl));
+            if (dexStats.volume) setTotalVolumeString(formatAmount(dexStats.volume));
+            if (dexStats.fees) setTotalFeesString(formatAmount(dexStats.fees));
+        });
+    }, [lastBlockNumber]);
+
     const statCardData = [
         {
             title: 'Total TVL',
