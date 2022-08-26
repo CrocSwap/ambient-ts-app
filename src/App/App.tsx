@@ -1289,7 +1289,7 @@ export default function App() {
                         new URLSearchParams({
                             user: account,
                             chainId: chainData.chainId,
-                            tokenQuantities: 'true',
+                            // tokenQuantities: 'true',
                         }),
                 )
                     .then((response) => response?.json())

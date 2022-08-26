@@ -78,7 +78,7 @@ export default function TransactionCard(props: TransactionProps) {
     function scrollToDiv() {
         const element = document.getElementById(swapDomId);
 
-        element?.scrollIntoView();
+        element?.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
     }
 
     useEffect(() => {
