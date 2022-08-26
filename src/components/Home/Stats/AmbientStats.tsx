@@ -75,15 +75,15 @@ export default function Stats(props: StatsProps) {
 
     const statCardData = [
         {
-            title: 'Total TVL',
+            title: 'Total Value Locked',
             value: `$${totalTvlString}`,
         },
         {
-            title: 'Total Volume',
+            title: '24h Volume',
             value: `$${totalVolumeString}`,
         },
         {
-            title: 'Total Fees',
+            title: '24h Fees',
             value: `$${totalFeesString}`,
         },
     ];
