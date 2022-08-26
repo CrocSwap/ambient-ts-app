@@ -13,6 +13,8 @@ import validateEmail from './validateEmail';
 import authenticateMetamask from '../../../utils/functions/authenticateMetamask';
 import authenticateMagic from '../../../utils/functions/authenticateMagic';
 import { HiOutlineMail } from 'react-icons/hi';
+import WalletButton from './WalletButton/WalletButton';
+import metamaskLogo from '../../../assets/images/logos/MetaMask_Fox.svg';
 
 interface WalletModalPropsIF {
     closeModalWallet: () => void;
@@ -55,31 +57,43 @@ export default function WalletModal(props: WalletModalPropsIF) {
         </div>
     );
 
+    const handleMetamaskAuthentication = () => {
+        setPage('metamaskPending');
+        authenticateMetamask(isAuthenticated, isWeb3Enabled, authenticate, enableWeb3, () =>
+            setPage('metamaskError'),
+        );
+        acceptToS();
+    };
+
+    // Right now, we only have one wallet but eventually, we will need to add multiple in here.
+    const walletsData = [
+        { name: 'Metamask', action: handleMetamaskAuthentication, logo: metamaskLogo },
+    ];
+
+    const walletsDisplay = (
+        <div>
+            {walletsData.map((wallet, idx) => (
+                <WalletButton
+                    title={wallet.name}
+                    action={wallet.action}
+                    key={idx}
+                    logo={wallet.logo}
+                />
+            ))}
+        </div>
+    );
+
     const walletsPage = useMemo(
         () => (
-            <>
-                <button
-                    onClick={() => {
-                        setPage('metamaskPending');
-                        authenticateMetamask(
-                            isAuthenticated,
-                            isWeb3Enabled,
-                            authenticate,
-                            enableWeb3,
-                            () => setPage('metamaskError'),
-                        );
-                        acceptToS();
-                    }}
-                >
-                    Metamask
-                </button>
+            <div className={styles.main_container}>
+                {walletsDisplay}
                 <button className={styles.email_button} onClick={() => setPage('magicLogin')}>
                     <HiOutlineMail size={20} color='#EBEBFF' />
                     Connect with Email
                 </button>
 
                 {learnAboutWalletsContent}
-            </>
+            </div>
         ),
         [],
     );

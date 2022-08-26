@@ -1,14 +1,17 @@
 import styles from './WalletButton.module.css';
+import ambientLogo from '../../../../assets/images/logos/ambient_logo.svg';
 
-export default function WalletButton() {
+interface WalletButtonPropsIF {
+    disabled?: boolean;
+    title: string;
+    logo: HTMLElement & SVGElement;
+    action: () => void;
+}
+export default function WalletButton(props: WalletButtonPropsIF) {
     return (
         <button className={styles.container}>
-            <img
-                className={styles.icon}
-                src='https://icons.iconarchive.com/icons/cjdowner/cryptocurrency-flat/1024/Ethereum-ETH-icon.png'
-                alt=''
-            />
-            <div className={styles.wallet_name}></div>
+            <img className={styles.icon} src={props.logo ? props.logo : ambientLogo} alt='' />
+            <div className={styles.wallet_name}>{props.title}</div>
         </button>
     );
 }
