@@ -18,4 +18,23 @@ font-size: 18px;
 line-height: 22px;
 }
 
+/* learn content */
+
+.learn_container{
+    font-size: 18px;
+    line-height: 22px;
+    display: flex;
+    gap: 4px;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    letter-spacing: -0.02em; 
+
+    color: #EBEBFF;
+}
+
+.learn_container a{
+    text-decoration: none;
+    color: #7371FC;
+}
 

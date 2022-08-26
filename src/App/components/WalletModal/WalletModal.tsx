@@ -48,6 +48,13 @@ export default function WalletModal(props: WalletModalPropsIF) {
     const [page, setPage] = useState('wallets');
     const [email, setEmail] = useState('');
 
+    const learnAboutWalletsContent = (
+        <div className={styles.learn_container}>
+            <div>New to Ethereum?</div>
+            <a href='#'>Learn more about Wallets</a>
+        </div>
+    );
+
     const walletsPage = useMemo(
         () => (
             <>
@@ -70,6 +77,8 @@ export default function WalletModal(props: WalletModalPropsIF) {
                     <HiOutlineMail size={20} color='#EBEBFF' />
                     Connect with Email
                 </button>
+
+                {learnAboutWalletsContent}
             </>
         ),
         [],
