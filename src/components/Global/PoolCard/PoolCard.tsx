@@ -148,7 +148,7 @@ export default function PoolCard(props: PoolCardProps) {
                         true, // denomInBase
                     );
                     if (priceChangeResult > -0.01 && priceChangeResult < 0.01) {
-                        setPoolPriceChangePercent('No Change');
+                        setPoolPriceChangePercent('None');
                     } else if (priceChangeResult) {
                         priceChangeResult > 0
                             ? setIsPoolPriceChangePositive(true)
@@ -211,7 +211,7 @@ export default function PoolCard(props: PoolCardProps) {
         <>
             <div></div>
             <div>
-                <div className={styles.row_title}>Volume</div>
+                <div className={styles.row_title}>24h Vol.</div>
                 <div className={styles.vol}>
                     {poolVolume === undefined ? '…' : `$${poolVolume}`}
                 </div>
@@ -241,7 +241,7 @@ export default function PoolCard(props: PoolCardProps) {
 
     const poolPriceChangeDisplay = (
         <div>
-            <div className={styles.row_title}>24h</div>
+            <div className={styles.row_title}>24h Δ</div>
             <div
                 className={
                     isPoolPriceChangePositive ? styles.change_positive : styles.change_negative
