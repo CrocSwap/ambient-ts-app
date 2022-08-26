@@ -3,7 +3,7 @@
     justify-content: space-between;
 }
 
-.main_container, .main_container section{
+.main_container, .main_container section, .magic_login_container section{
    
     min-height: 200px;
     display: flex;
@@ -17,6 +17,7 @@
 
 
 .email_button{
+    cursor: pointer;
     width: 100%;
     background: var(--dark3);
     outline: none;
@@ -73,6 +74,7 @@ line-height: 22px;
     display: flex;
     flex-direction: column;
     gap: 8px;
+    
 }
 .magic_login_container input{
 background: transparent;
@@ -93,5 +95,42 @@ color: #EBEBFF;
     width: 114.37px;
 height: 16px;
 
+
+}
+
+.different_wallet{
+    display: flex;
+    justify-content: center;
+    cursor: pointer;
+    font-weight: 200;
+font-size: 18px;
+line-height: 22px;
+letter-spacing: -0.02em;
+color: #7371FC;
+
+bottom: 0;
+}
+
+.tos_content{
+
+    display: flex;
+  flex-direction: column;
+align-items: center;
+text-align: center;
+white-space: nowrap;
+    color: #EBEBFF;
+    font-weight: 300;
+font-size: 12px;
+line-height: 15px;
+
+
+
+
+
+}
+.tos_content a{
+    text-decoration: none;
+    color: #7371FC;
+    white-space: nowrap;
 
 }

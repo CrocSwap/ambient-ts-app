@@ -58,6 +58,20 @@ export default function WalletModal(props: WalletModalPropsIF) {
         </div>
     );
 
+    //     const connectToWalletTOSContent = (
+    //         <div className={styles.tos_content}>
+    //             By connecting a wallet, you agree to Ambient Finance’s
+    // <a href="#">Terms of Service</a>
+
+    //             , Magic&#39s
+    //             <a href="#">Terms of Service & Privacy Policy</a>
+
+    //             , and acknowledge that you have read and understand the Ambient
+    //             <a href="#">Protocol Disclaimer </a>
+
+    //         </div>
+    //     )
+
     const handleMetamaskAuthentication = () => {
         setPage('metamaskPending');
         authenticateMetamask(isAuthenticated, isWeb3Enabled, authenticate, enableWeb3, () =>
@@ -137,28 +151,36 @@ export default function WalletModal(props: WalletModalPropsIF) {
         const [isValid, message] = validateEmail(email);
         return (
             <div className={styles.magic_login_container}>
-                <h2>Create a wallet and authenticate using your email</h2>
-                <div className={styles.magic_logic_input_container}>
-                    <input
-                        type='email'
-                        className='input'
-                        defaultValue={email}
-                        placeholder='Enter your email address'
-                        required
-                        onChange={(e) => setEmail(e.target.value.trim())}
-                    />
-                    <HiOutlineMail size={20} color='#EBEBFF' />
-                </div>
-                <img src={magicLoginImage} alt='magic login icon' />
+                <section>
+                    <h2>Create a wallet and authenticate using your email</h2>
+                    <div className={styles.magic_logic_input_container}>
+                        <input
+                            type='email'
+                            className='input'
+                            defaultValue={email}
+                            placeholder='Enter your email address'
+                            required
+                            onChange={(e) => setEmail(e.target.value.trim())}
+                        />
+                        <HiOutlineMail size={20} color='#EBEBFF' />
+                    </div>
+                    <img src={magicLoginImage} alt='magic login icon' />
 
-                <Button
-                    title={message}
-                    disabled={!isValid}
-                    action={() => {
-                        authenticateMagic(email, authenticate, () => setPage('magicLoginPending'));
-                        acceptToS();
-                    }}
-                />
+                    <Button
+                        title={message}
+                        disabled={!isValid}
+                        action={() => {
+                            authenticateMagic(email, authenticate, () =>
+                                setPage('magicLoginPending'),
+                            );
+                            acceptToS();
+                        }}
+                    />
+                </section>
+                <div onClick={() => setPage('wallets')} className={styles.different_wallet}>
+                    Use a different wallet
+                </div>
+                {/* {connectToWalletTOSContent} */}
             </div>
         );
     }, [email]);

@@ -1,4 +1,5 @@
 .container{
+    cursor: pointer;
     width: 100%;
     background: var(--dark3);
     outline: none;
