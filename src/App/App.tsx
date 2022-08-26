@@ -105,6 +105,7 @@ export default function App() {
         // isInitialized,
         authenticate,
         enableWeb3,
+        // authError
     } = useMoralis();
 
     const tokenMap = useTokenMap();
@@ -117,6 +118,7 @@ export default function App() {
     // `switchChain` is a function to switch to a different chain
     // `'0x5'` is the chain the app should be on by default
     const [chainData, isChainSupported, switchChain, switchNetworkInMoralis] = useAppChain('0x5');
+    useEffect(() => console.warn(chainData.chainId), [chainData.chainId]);
 
     const [isShowAllEnabled, setIsShowAllEnabled] = useState(true);
     const [currentTxActiveInTransactions, setCurrentTxActiveInTransactions] = useState('');
@@ -1799,6 +1801,7 @@ export default function App() {
                     isWeb3Enabled={isWeb3Enabled}
                     authenticate={authenticate}
                     enableWeb3={enableWeb3}
+                    // authError={authError}
                 />
             }
         </>

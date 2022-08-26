@@ -20,6 +20,7 @@ interface WalletModalPropsIF {
     isWeb3Enabled: boolean;
     authenticate: (options?: AuthenticateOptions | undefined) => Promise<Moralis.User<Moralis.Attributes> | undefined>;
     enableWeb3: (options?: Web3EnableOptions | undefined) => Promise<Moralis.Web3Provider | undefined>;
+    // authError: 
 }
 
 export default function WalletModal(props: WalletModalPropsIF) {

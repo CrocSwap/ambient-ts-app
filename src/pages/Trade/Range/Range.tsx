@@ -138,13 +138,13 @@ export default function Range(props: RangePropsIF) {
             ? '…'
             : displayPriceWithDenom < 2
             ? displayPriceWithDenom.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 6,
-              })
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 6,
+            })
             : displayPriceWithDenom.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              });
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+            });
 
     const tokenA = tokenPair.dataTokenA;
     const tokenB = tokenPair.dataTokenB;
