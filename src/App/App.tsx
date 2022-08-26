@@ -16,6 +16,7 @@ import {
     addCandles,
     setLiquidity,
     setPoolVolumeSeries,
+    setPoolTvlSeries,
 } from '../utils/state/graphDataSlice';
 import { ethers } from 'ethers';
 import { useMoralis } from 'react-moralis';
@@ -85,6 +86,7 @@ import { ZERO_ADDRESS } from '../constants';
 import { useModal } from '../components/Global/Modal/useModal';
 import authenticateUser from '../utils/functions/authenticateUser';
 import { getVolumeSeries } from './functions/getVolumeSeries';
+import { getTvlSeries } from './functions/getTvlSeries';
 
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 const cachedFetchAddress = memoizeFetchAddress();
@@ -477,13 +479,49 @@ export default function App() {
                 setQuoteTokenDecimals(tokenPair.dataTokenA.decimals);
             }
 
+            // retrieve pool TVL series
+            getTvlSeries(
+                sortedTokens[0],
+                sortedTokens[1],
+                chainData.poolIndex,
+                chainData.chainId,
+                600, // 10 minute resolution
+            )
+                .then((tvlSeries) => {
+                    if (
+                        tvlSeries &&
+                        tvlSeries.base &&
+                        tvlSeries.quote &&
+                        tvlSeries.poolIdx &&
+                        tvlSeries.seriesData
+                    )
+                        dispatch(
+                            setPoolTvlSeries({
+                                dataReceived: true,
+                                pools: [
+                                    {
+                                        dataReceived: true,
+                                        pool: {
+                                            base: tvlSeries.base,
+                                            quote: tvlSeries.quote,
+                                            poolIdx: tvlSeries.poolIdx,
+                                            chainId: chainData.chainId,
+                                        },
+                                        tvlData: tvlSeries,
+                                    },
+                                ],
+                            }),
+                        );
+                })
+                .catch(console.log);
+
             // retrieve pool volume series
             getVolumeSeries(
                 sortedTokens[0],
                 sortedTokens[1],
                 chainData.poolIndex,
                 chainData.chainId,
-                600,
+                600, // 10 minute resolution
             )
                 .then((volumeSeries) => {
                     if (
