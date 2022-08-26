@@ -228,17 +228,33 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
 
     const exampleAction = () => console.log('example');
 
-    const chartOverlayButtonData = [
+    const chartOverlayButtonData1 = [
         { name: 'Volume', selected: showVolume, action: handleVolumeToggle },
         { name: 'TVL', selected: showTvl, action: handleTvlToggle },
         { name: 'Fee Rate', selected: showFeeRate, action: handleFeeRateToggle },
-        { name: 'Heatmap', selected: false, action: exampleAction },
-        { name: 'Liquidity Profile', selected: false, action: exampleAction },
+    ];
+
+    const chartOverlayButtonData2 = [
         { name: 'Curve', selected: false, action: exampleAction },
         { name: 'Depth', selected: false, action: exampleAction },
     ];
 
-    const chartOverlayButtons = chartOverlayButtonData.map((button, idx) => (
+    const chartOverlayButtons1 = chartOverlayButtonData1.map((button, idx) => (
+        <div className={styles.settings_container} key={idx}>
+            <button
+                onClick={button.action}
+                className={
+                    button.selected
+                        ? styles.active_selected_button
+                        : styles.non_active_selected_button
+                }
+            >
+                {button.name}
+            </button>
+        </div>
+    ));
+
+    const chartOverlayButtons2 = chartOverlayButtonData2.map((button, idx) => (
         <div className={styles.settings_container} key={idx}>
             <button
                 onClick={button.action}
@@ -435,7 +451,8 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                 </span>
             </div>
 
-            <div className={styles.chart_overlay_container}>{chartOverlayButtons}</div>
+            <div className={styles.chart_overlay_container}>{chartOverlayButtons1}</div>
+            <div className={styles.chart_overlay_container}>{chartOverlayButtons2}</div>
         </div>
     );
     // END OF TOKEN INFO----------------------------------------------------------------
