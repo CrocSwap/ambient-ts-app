@@ -15,6 +15,7 @@ import authenticateMagic from '../../../utils/functions/authenticateMagic';
 import { HiOutlineMail } from 'react-icons/hi';
 import WalletButton from './WalletButton/WalletButton';
 import metamaskLogo from '../../../assets/images/logos/MetaMask_Fox.svg';
+import magicLoginImage from '../../../assets/images/logos/magicLogin.png';
 
 interface WalletModalPropsIF {
     closeModalWallet: () => void;
@@ -86,11 +87,13 @@ export default function WalletModal(props: WalletModalPropsIF) {
     const walletsPage = useMemo(
         () => (
             <div className={styles.main_container}>
-                {walletsDisplay}
-                <button className={styles.email_button} onClick={() => setPage('magicLogin')}>
-                    <HiOutlineMail size={20} color='#EBEBFF' />
-                    Connect with Email
-                </button>
+                <section>
+                    {walletsDisplay}
+                    <button className={styles.email_button} onClick={() => setPage('magicLogin')}>
+                        <HiOutlineMail size={20} color='#EBEBFF' />
+                        Connect with Email
+                    </button>
+                </section>
 
                 {learnAboutWalletsContent}
             </div>
@@ -133,16 +136,21 @@ export default function WalletModal(props: WalletModalPropsIF) {
     const magicLoginPage = useMemo(() => {
         const [isValid, message] = validateEmail(email);
         return (
-            <>
-                <h2>This is the Magic Login page!</h2>
-                <input
-                    type='email'
-                    className='input'
-                    defaultValue={email}
-                    placeholder='email'
-                    required
-                    onChange={(e) => setEmail(e.target.value.trim())}
-                />
+            <div className={styles.magic_login_container}>
+                <h2>Create a wallet and authenticate using your email</h2>
+                <div className={styles.magic_logic_input_container}>
+                    <input
+                        type='email'
+                        className='input'
+                        defaultValue={email}
+                        placeholder='Enter your email address'
+                        required
+                        onChange={(e) => setEmail(e.target.value.trim())}
+                    />
+                    <HiOutlineMail size={20} color='#EBEBFF' />
+                </div>
+                <img src={magicLoginImage} alt='magic login icon' />
+
                 <Button
                     title={message}
                     disabled={!isValid}
@@ -151,7 +159,7 @@ export default function WalletModal(props: WalletModalPropsIF) {
                         acceptToS();
                     }}
                 />
-            </>
+            </div>
         );
     }, [email]);
 

@@ -1,8 +1,20 @@
 .main_container{
+
+    justify-content: space-between;
+}
+
+.main_container, .main_container section{
+   
+    min-height: 200px;
     display: flex;
     flex-direction: column;
     gap: 8px;
+
+
+   
 }
+
+
 
 .email_button{
     width: 100%;
@@ -27,6 +39,7 @@ line-height: 22px;
 /* learn content */
 
 .learn_container{
+   
     font-size: 18px;
     line-height: 22px;
     display: flex;
@@ -44,3 +57,41 @@ line-height: 22px;
     color: #7371FC;
 }
 
+/* connect with email */
+
+.magic_logic_input_container{
+    display: grid;
+    grid-template-columns: auto 30px;
+    align-items: center;
+    gap: 8px;
+    background: #171D27;
+    border-radius: 4px;
+    height: 48px;
+}
+
+.magic_login_container{
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.magic_login_container input{
+background: transparent;
+outline: none;
+border: none;
+padding: 0 8px;
+color: #EBEBFF;
+}
+
+.magic_login_container h2{
+    color: rgba(235, 235, 255, 0.4);
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+
+}
+
+.magic_login_container img{
+    width: 114.37px;
+height: 16px;
+
+
+}
