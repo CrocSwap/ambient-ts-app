@@ -23,7 +23,12 @@ function StatCard(props: StatCardProps) {
 }
 
 const getDexStatsFresh = async () => {
-    return fetch('https://809821320828123.de:5000/dex_stats_fresh')
+    return fetch(
+        'https://809821320828123.de:5000/dex_stats_fresh?' +
+            new URLSearchParams({
+                lookback: '9999999999999',
+            }),
+    )
         .then((response) => response?.json())
         .then((json) => {
             const dexStats = json?.data;
@@ -31,30 +36,6 @@ const getDexStatsFresh = async () => {
         })
         .catch(console.log);
 };
-
-// const randomTotalTVL = 1000000000000 * Math.random();
-// const randomTotalVolume = 10000000000 * Math.random();
-// const randomTotalFees = 100000000 * Math.random();
-
-// const totalTvlString =
-//     randomTotalTVL >= 10000000
-//         ? formatAmount(randomTotalTVL)
-//         : randomTotalTVL.toLocaleString(undefined, {
-//               maximumFractionDigits: 0,
-//           });
-
-// const totalVolumeString =
-//     randomTotalVolume >= 10000000
-//         ? formatAmount(randomTotalVolume)
-//         : randomTotalVolume.toLocaleString(undefined, {
-//               maximumFractionDigits: 0,
-//           });
-// const totalFeesString =
-//     randomTotalFees >= 10000000
-//         ? formatAmount(randomTotalFees)
-//         : randomTotalFees.toLocaleString(undefined, {
-//               maximumFractionDigits: 0,
-//           });
 
 export default function Stats(props: StatsProps) {
     const { lastBlockNumber } = props;
@@ -67,24 +48,24 @@ export default function Stats(props: StatsProps) {
 
     useEffect(() => {
         getDexStatsFresh().then((dexStats) => {
-            if (dexStats.tvl) setTotalTvlString(formatAmount(dexStats.tvl));
-            if (dexStats.volume) setTotalVolumeString(formatAmount(dexStats.volume));
-            if (dexStats.fees) setTotalFeesString(formatAmount(dexStats.fees));
+            if (dexStats.tvl) setTotalTvlString('$' + formatAmount(dexStats.tvl));
+            if (dexStats.volume) setTotalVolumeString('$' + formatAmount(dexStats.volume));
+            if (dexStats.fees) setTotalFeesString('$' + formatAmount(dexStats.fees));
         });
     }, [lastBlockNumber]);
 
     const statCardData = [
         {
             title: 'Total Value Locked',
-            value: `$${totalTvlString}`,
+            value: totalTvlString ? totalTvlString : '…',
         },
         {
-            title: '24h Volume',
-            value: `$${totalVolumeString}`,
+            title: 'Total Volume',
+            value: totalVolumeString ? totalVolumeString : '…',
         },
         {
-            title: '24h Fees',
-            value: `$${totalFeesString}`,
+            title: 'Total Fees',
+            value: totalFeesString ? totalFeesString : '…',
         },
     ];
     return (
