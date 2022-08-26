@@ -1,8 +1,8 @@
 .circle {
     display: block;
    
-    border: 0.5rem solid #e9e9e9;
-    border-top: 0.5rem solid #3498db;
+    /* border: 0.5rem solid #e9e9e9;
+    border-top: 0.5rem solid #3498db; */
     border-radius: 50%;
     /* position: absolute; */
     box-sizing: border-box;

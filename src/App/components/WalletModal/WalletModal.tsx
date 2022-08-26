@@ -119,7 +119,7 @@ export default function WalletModal(props: WalletModalPropsIF) {
 
     const metamaskPendingPage = (
         <div className={styles.metamask_pending_container}>
-            <CircleLoader size='5rem' />
+            <CircleLoader size='5rem' borderColor='#171d27' />
             <p>
                 Check the Metamask extension in your browser for notifications. Make sure your
                 browser is not blocking pop-up windows.
