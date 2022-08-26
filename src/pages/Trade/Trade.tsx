@@ -14,6 +14,7 @@ import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { tradeData as TradeDataIF } from '../../utils/state/tradeDataSlice';
 import { CandleData } from '../../utils/state/graphDataSlice';
 import { PoolIF, TokenIF, TokenPairIF } from '../../utils/interfaces/exports';
+import { ChainSpec } from '@crocswap-libs/sdk';
 
 // interface for React functional component props
 interface TradePropsIF {
@@ -29,6 +30,7 @@ interface TradePropsIF {
     tokenMap: Map<string, TokenIF>;
     tokenPair: TokenPairIF;
     chainId: string;
+    chainData: ChainSpec;
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     isShowAllEnabled: boolean;
@@ -37,7 +39,12 @@ interface TradePropsIF {
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
     favePools: PoolIF[];
     addPoolToFaves: (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) => void;
-    removePoolFromFaves: (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) => void;
+    removePoolFromFaves: (
+        tokenA: TokenIF,
+        tokenB: TokenIF,
+        chainId: string,
+        poolId: number,
+    ) => void;
     selectedOutsideTab: number;
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
     outsideControl: boolean;
@@ -50,6 +57,7 @@ interface TradePropsIF {
 export default function Trade(props: TradePropsIF) {
     const {
         chainId,
+        chainData,
         tokenMap,
         poolPriceDisplay,
         provider,
@@ -182,6 +190,7 @@ export default function Trade(props: TradePropsIF) {
                             isWeb3Enabled={props.isWeb3Enabled}
                             lastBlockNumber={props.lastBlockNumber}
                             chainId={chainId}
+                            chainData={chainData}
                             currentTxActiveInTransactions={props.currentTxActiveInTransactions}
                             setCurrentTxActiveInTransactions={
                                 props.setCurrentTxActiveInTransactions

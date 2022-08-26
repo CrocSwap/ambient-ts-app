@@ -5,7 +5,7 @@ import TransactionTypeSide from '../../../../Global/Tabs/TypeAndSide/Transaction
 import styles from './TransactionCard.module.css';
 import AccountPoolDisplay from '../../../Tabs/AccountPoolDisplay/AccountPoolDisplay';
 import AccountTokensDisplay from '../../../Tabs/AccountTokensDisplay/AccountTokensDisplay';
-import TransactionsMenu from '../../../Tabs/TableMenu/TableMenuComponents/TransactionsMenu';
+// import TransactionsMenu from '../../../Tabs/TableMenu/TableMenuComponents/TransactionsMenu';
 
 export default function TransactionCard() {
     // const tempOwnerId = '0xa2b398145b7fc8fd9a01142698f15d329ebb5ff5090cfcc8caae440867ab9919';
@@ -33,7 +33,7 @@ export default function TransactionCard() {
             </div>
 
             <div className={styles.menu_container}>
-                <TransactionsMenu userPosition={false} />
+                {/* <TransactionsMenu userPosition={false} tx={null}/> */}
             </div>
         </div>
     );

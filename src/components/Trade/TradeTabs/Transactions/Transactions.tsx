@@ -13,6 +13,7 @@ interface TransactionsProps {
     tokenMap: Map<string, TokenIF>;
     graphData: graphData;
     chainId: string;
+    blockExplorer?: string;
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     account: string;
@@ -29,6 +30,7 @@ export default function Transactions(props: TransactionsProps) {
         graphData,
         tokenMap,
         chainId,
+        blockExplorer,
         currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions,
         expandTradeTable,
@@ -104,6 +106,7 @@ export default function Transactions(props: TransactionsProps) {
             swap={swap}
             tokenMap={tokenMap}
             chainId={chainId}
+            blockExplorer={blockExplorer}
             tokenAAddress={tokenAAddress}
             tokenBAddress={tokenBAddress}
             isDenomBase={isDenomBase}

@@ -13,15 +13,18 @@ import styles from './TableMenuComponents.module.css';
 import { useModal } from '../../../../Global/Modal/useModal';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import { DefaultTooltip } from '../../../StyledTooltip/StyledTooltip';
+import { ISwap } from '../../../../../utils/state/graphDataSlice';
 
 // interface for React functional component props
 interface TransactionMenuIF {
     userPosition: boolean | undefined;
+    tx: ISwap;
+    blockExplorer?: string;
 }
 
 // React functional component
 export default function TransactionsMenu(props: TransactionMenuIF) {
-    const { userPosition } = props;
+    const { userPosition, tx, blockExplorer } = props;
 
     const [value, copy] = useCopyToClipboard();
     const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -51,6 +54,13 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
     function handleCopyAddress() {
         copy('example data');
         setOpenSnackbar(true);
+    }
+
+    function handleOpenExplorer() {
+        if (tx && blockExplorer) {
+            const explorerUrl = `${blockExplorer}tx/${tx.tx}`;
+            window.open(explorerUrl);
+        }
     }
 
     const snackbarContent = (
@@ -94,9 +104,15 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
             Remove
         </button>
     ) : null;
+
     const copyButton = (
         <button className={styles.option_button} onClick={handleCopyAddress}>
             Clone
+        </button>
+    );
+    const explorerButton = (
+        <button className={styles.option_button} onClick={handleOpenExplorer}>
+            Explorer
         </button>
     );
     const detailsButton = (
@@ -121,6 +137,7 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
             {removeButton}
             {harvestButton}
             {detailsButton}
+            {explorerButton}
             {copyButton}
         </div>
     );
@@ -131,6 +148,7 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
             {removeButton}
             {harvestButton}
             {detailsButton}
+            {explorerButton}
             {copyButton}
         </div>
     );
