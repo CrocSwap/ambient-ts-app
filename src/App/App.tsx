@@ -1064,11 +1064,11 @@ export default function App() {
             ) {
                 const croc = new CrocEnv(provider);
                 croc.token(tokenPair.dataTokenA.address)
-                    .balanceDisplay(account)
+                    .walletDisplay(account)
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     .then((bal: any) => setTokenABalance(bal));
                 croc.token(tokenPair.dataTokenB.address)
-                    .balanceDisplay(account)
+                    .walletDisplay(account)
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     .then((bal: any) => setTokenBBalance(bal));
             }
@@ -1482,7 +1482,7 @@ export default function App() {
             if (provider && account && isAuthenticated && isWeb3Enabled) {
                 new CrocEnv(provider)
                     .tokenEth()
-                    .balance(account)
+                    .wallet(account)
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     .then((eth: any) => {
                         const displayBalance = toDisplayQty(eth.toString(), 18);
