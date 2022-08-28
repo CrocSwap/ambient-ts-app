@@ -214,7 +214,7 @@ export default function PoolCard(props: PoolCardProps) {
             <div></div>
             <div>
                 <div className={styles.row_title}>APY</div>
-                <div className={styles.apy}>{poolApy === undefined ? '…' : `${poolApy}`}</div>
+                <div className={styles.apy}>{poolApy === undefined ? '…' : `${poolApy}%`}</div>
             </div>
         </>
     );
