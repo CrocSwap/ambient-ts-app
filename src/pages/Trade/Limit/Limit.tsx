@@ -140,9 +140,12 @@ export default function Limit(props: LimitPropsIF) {
             const gridSize = lookupChain(chainId).gridSize;
 
             const croc = new CrocEnv(provider);
-            const pool = croc.pool(tradeData.tokenA.address, tradeData.tokenB.address);
-            const limitWei = pool.fromDisplayPrice(parseFloat(limitRate));
+            const pool =
+                isDenomBase == isTokenABase
+                    ? croc.pool(tradeData.tokenA.address, tradeData.tokenB.address)
+                    : croc.pool(tradeData.tokenB.address, tradeData.tokenA.address);
 
+            const limitWei = pool.fromDisplayPrice(parseFloat(limitRate));
             const pinTick = limitWei.then((lw) =>
                 isDenomBase ? pinTickLower(lw, gridSize) : pinTickUpper(lw, gridSize),
             );
@@ -153,10 +156,7 @@ export default function Limit(props: LimitPropsIF) {
 
             tickDispPrice.then((tp) => {
                 setInsideTickDisplayPrice(tp);
-                if (limitRateInputField) {
-                    limitRateInputField.value = tp.toString();
-                }
-                // dispatch(setLimitPrice(tp.toString()))
+                dispatch(setLimitPrice(tp.toString()));
                 setInitialLoad(false);
             });
         }
