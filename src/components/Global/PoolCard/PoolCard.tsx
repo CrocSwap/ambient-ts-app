@@ -213,7 +213,7 @@ export default function PoolCard(props: PoolCardProps) {
         <>
             <div></div>
             <div>
-                <div className={styles.row_title}>APY</div>
+                <div className={styles.row_title}>24h APY</div>
                 <div className={styles.apy}>{poolApy === undefined ? '…' : `${poolApy}%`}</div>
             </div>
         </>
@@ -271,10 +271,9 @@ export default function PoolCard(props: PoolCardProps) {
                 {tokenImagesDisplay}
                 {tokenNamesDisplay}
             </div>
-
+            <div className={styles.row}>{tvlDisplay}</div>
             <div className={styles.row}>{apyDisplay}</div>
             <div className={styles.row}>{volumeDisplay}</div>
-            <div className={styles.row}>{tvlDisplay}</div>
 
             <div className={styles.row}>
                 {poolPriceDisplayDOM}
