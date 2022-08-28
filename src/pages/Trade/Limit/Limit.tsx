@@ -130,9 +130,6 @@ export default function Limit(props: LimitPropsIF) {
     }, [tokenPair]);
 
     useEffect(() => {
-        const limitRateInputField = document.getElementById(
-            'limit-rate-quantity',
-        ) as HTMLInputElement;
         if (initialLoad) {
             if (!provider) return;
             if (poolPriceNonDisplay === 0) return;
@@ -182,11 +179,17 @@ export default function Limit(props: LimitPropsIF) {
         const buyQty = tokenBInputQty;
         const qty = isTokenAPrimary ? sellQty : buyQty;
 
-        const ko = new CrocEnv(provider).sell(sellToken, qty).atLimit(buyToken, limitTick);
+        const seller = new CrocEnv(provider).sell(sellToken, qty);
+        const ko = seller.atLimit(buyToken, limitTick);
 
-        let tx;
+        if (await ko.willFail()) {
+            console.log('Cannot send limit order: Knockout price inside spread');
+            setTxErrorMessage('Limit inside market price');
+            return;
+        }
+
         try {
-            tx = await ko.mint();
+            await ko.mint();
         } catch (error) {
             setTxErrorCode(error?.code);
             setTxErrorMessage(error?.message);
@@ -281,8 +284,6 @@ export default function Limit(props: LimitPropsIF) {
                         setLimitAllowed={setLimitAllowed}
                         tokenABalance={tokenABalance}
                         tokenBBalance={tokenBBalance}
-                        // tokenABalance={truncateDecimals(parseFloat(tokenABalance), 4).toString()}
-                        // tokenBBalance={truncateDecimals(parseFloat(tokenBBalance), 4).toString()}
                         tokenAInputQty={tokenAInputQty}
                         tokenBInputQty={tokenBInputQty}
                         setTokenAInputQty={setTokenAInputQty}
