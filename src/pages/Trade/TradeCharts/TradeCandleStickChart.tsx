@@ -25,6 +25,7 @@ interface ChartData {
     priceData: CandlesByPoolAndDuration | undefined;
     changeState: (isOpen: boolean | undefined, candleData: CandleData | undefined) => void;
     chartItemStates: chartItemStates;
+    denomInBase: boolean;
 }
 
 type chartItemStates = {
@@ -38,7 +39,7 @@ export default function TradeCandleStickChart(props: ChartData) {
 
     const numberOfActiveItems = [showFeeRate, showTvl, showVolume].filter(Boolean);
 
-    const chartHeight = 85 - numberOfActiveItems.length * 15;
+    const chartHeight = 100 - numberOfActiveItems.length * 15;
     // console.log(chartHeight);
     // console.log(numberOfActiveItems.length);
 
@@ -254,6 +255,7 @@ export default function TradeCandleStickChart(props: ChartData) {
                     priceData={data.priceData}
                     liquidityData={liquidityData}
                     changeState={props.changeState}
+                    denomInBase={props.denomInBase}
                 />
             </div>
 

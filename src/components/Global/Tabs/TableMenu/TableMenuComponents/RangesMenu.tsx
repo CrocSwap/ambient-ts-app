@@ -15,21 +15,21 @@ import styles from './TableMenuComponents.module.css';
 import { useModal } from '../../../../Global/Modal/useModal';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import { DefaultTooltip } from '../../../StyledTooltip/StyledTooltip';
+import { PositionIF } from '../../../../../utils/interfaces/PositionIF';
 
 // interface for React functional component props
 interface RangesMenuIF {
-    userPosition: boolean | undefined;
+    userMatchesConnectedAccount: boolean | undefined;
     // todoFromJr: Assign the correct types to these data -Jr
     // eslint-disable-next-line
     rangeDetailsProps: any;
-    // eslint-disable-next-line
-    positionData: any;
+    positionData: PositionIF | undefined;
     posHash: string;
 }
 
 // React functional component
 export default function RangesMenu(props: RangesMenuIF) {
-    const { userPosition, rangeDetailsProps, posHash, positionData } = props;
+    const { userMatchesConnectedAccount, rangeDetailsProps, posHash, positionData } = props;
 
     const currentLocation = location.pathname;
     const { isAmbient, isPositionInRange } = rangeDetailsProps;
@@ -105,20 +105,20 @@ export default function RangesMenu(props: RangesMenuIF) {
     const modalOrNull = isModalOpen ? mainModal : null;
 
     const repositionButton =
-        userPosition && !isPositionInRange ? (
+        userMatchesConnectedAccount && !isPositionInRange ? (
             <Link className={styles.reposition_button} to={'/trade/reposition'}>
                 Reposition
             </Link>
         ) : null;
 
-    const removeButton = userPosition ? (
+    const removeButton = userMatchesConnectedAccount ? (
         <button className={styles.option_button} onClick={openRemoveModal}>
             Remove
         </button>
     ) : null;
     const copyButton = isPositionInRange ? (
         <button className={styles.option_button} onClick={handleCopyAddress}>
-            Copy
+            Clone
         </button>
     ) : null;
 
@@ -128,13 +128,13 @@ export default function RangesMenu(props: RangesMenuIF) {
         </button>
     );
     const harvestButton =
-        !isAmbient && userPosition ? (
+        !isAmbient && userMatchesConnectedAccount ? (
             <button className={styles.option_button} onClick={openHarvestModal}>
                 Harvest
             </button>
         ) : null;
 
-    const editButton = userPosition ? (
+    const editButton = userMatchesConnectedAccount ? (
         <Link
             className={styles.option_button}
             to={`/trade/edit/${posHash}`}
@@ -160,9 +160,9 @@ export default function RangesMenu(props: RangesMenuIF) {
 
     const menuContent = (
         <div className={styles.menu_column}>
-            {userPosition && editButton}
-            {userPosition && harvestButton}
-            {userPosition && removeButton}
+            {userMatchesConnectedAccount && editButton}
+            {userMatchesConnectedAccount && harvestButton}
+            {userMatchesConnectedAccount && removeButton}
             {detailsButton}
             {copyButton}
         </div>

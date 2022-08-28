@@ -13,7 +13,7 @@ interface TopPoolsCardProps {
 }
 
 export default function TopPoolsCard(props: TopPoolsCardProps) {
-    const { pool, chainId } = props;
+    const { pool, chainId, lastBlockNumber } = props;
 
     const dispatch = useAppDispatch();
 
@@ -31,14 +31,19 @@ export default function TopPoolsCard(props: TopPoolsCardProps) {
         poolIndex: number,
     ) => {
         if (tokenAAddress && tokenBAddress) {
-            const volumeResult = await getPoolVolume(tokenAAddress, tokenBAddress, poolIndex);
+            const volumeResult = await getPoolVolume(
+                tokenAAddress,
+                tokenBAddress,
+                poolIndex,
+                chainId,
+            );
 
             if (volumeResult) {
                 const volumeString = formatAmount(volumeResult);
                 setPoolVolume(volumeString);
             }
 
-            const tvlResult = await getPoolTVL(tokenAAddress, tokenBAddress, poolIndex);
+            const tvlResult = await getPoolTVL(tokenAAddress, tokenBAddress, poolIndex, chainId);
             if (tvlResult) {
                 const tvlString = formatAmount(tvlResult);
                 setPoolTVL(tvlString);
@@ -46,13 +51,17 @@ export default function TopPoolsCard(props: TopPoolsCardProps) {
         }
     };
 
+    // useEffect(() => {
+    //     getTopPoolsMetrics(tokenAAddress, tokenBAddress, poolIndex);
+    //     const timer = setTimeout(async () => {
+    //         getTopPoolsMetrics(tokenAAddress, tokenBAddress, poolIndex);
+    //     }, 60000); // run every 10 minutes
+    //     return () => clearTimeout(timer);
+    // }, [tokenAAddress, tokenBAddress]);
+
     useEffect(() => {
         getTopPoolsMetrics(tokenAAddress, tokenBAddress, poolIndex);
-        const timer = setTimeout(async () => {
-            getTopPoolsMetrics(tokenAAddress, tokenBAddress, poolIndex);
-        }, 60000); // run every 10 minutes
-        return () => clearTimeout(timer);
-    }, [tokenAAddress, tokenBAddress]);
+    }, [tokenAAddress, tokenBAddress, lastBlockNumber]);
 
     return (
         <div
@@ -63,8 +72,8 @@ export default function TopPoolsCard(props: TopPoolsCardProps) {
             }}
         >
             <div>{pool.name}</div>
-            <div>${poolVolume}</div>
-            <div>${poolTVL}</div>
+            <div>{poolVolume === undefined ? '…' : `$${poolVolume}`}</div>
+            <div>{poolTVL === undefined ? '…' : `$${poolTVL}`}</div>
         </div>
     );
 }

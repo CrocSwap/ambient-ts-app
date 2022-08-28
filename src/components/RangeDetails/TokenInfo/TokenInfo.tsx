@@ -51,8 +51,9 @@ export default function TokenInfo(props: ITokenInfoProps) {
                         poolIndex,
                         isDenomBase,
                     );
-
-                    if (priceChangeResult) {
+                    if (priceChangeResult > -0.01 && priceChangeResult < 0.01) {
+                        setPoolPriceChangePercent('No Change');
+                    } else if (priceChangeResult) {
                         priceChangeResult > 0
                             ? setIsPoolPriceChangePositive(true)
                             : setIsPoolPriceChangePositive(false);
@@ -101,7 +102,7 @@ export default function TokenInfo(props: ITokenInfoProps) {
 
                 const displayPriceString =
                     displayPriceWithDenom === Infinity || displayPriceWithDenom === 0
-                        ? '...'
+                        ? '…'
                         : displayPriceWithDenom < 2
                         ? displayPriceWithDenom.toPrecision(4)
                         : displayPriceWithDenom.toLocaleString(undefined, {
@@ -125,9 +126,7 @@ export default function TokenInfo(props: ITokenInfoProps) {
                             : styles.price_change_negative
                     }
                 >
-                    {poolPriceChangePercent === undefined
-                        ? '...'
-                        : poolPriceChangePercent + ' | 24h'}
+                    {poolPriceChangePercent === undefined ? '…' : poolPriceChangePercent + ' | 24h'}
                 </span>
             </div>
             <div className={styles.apy}>APY | 35.65%</div>

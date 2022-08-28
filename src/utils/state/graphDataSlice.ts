@@ -6,6 +6,106 @@ export interface graphData {
     swapsByUser: SwapsByUser;
     swapsByPool: SwapsByPool;
     candlesForAllPools: CandlesForAllPools;
+    liquidityForAllPools: LiquidityForAllPools;
+    poolVolumeSeries: PoolVolumeSeries;
+    poolTvlSeries: PoolTvlSeries;
+}
+
+export interface PoolVolumeSeries {
+    dataReceived: boolean;
+    pools: Array<VolumeSeriesByPool>;
+}
+
+export interface PoolTvlSeries {
+    dataReceived: boolean;
+    pools: Array<TvlSeriesByPool>;
+}
+
+export interface TvlSeriesByPool {
+    dataReceived: boolean;
+    pool: {
+        base: string;
+        quote: string;
+        poolIdx: number;
+        chainId: string;
+    };
+    tvlData: TvlSeriesByPoolTimeAndResolution;
+}
+
+export interface VolumeSeriesByPool {
+    dataReceived: boolean;
+    pool: {
+        base: string;
+        quote: string;
+        poolIdx: number;
+        chainId: string;
+    };
+    volumeData: VolumeSeriesByPoolTimeAndResolution;
+}
+
+export interface TvlSeriesByPoolTimeAndResolution {
+    network: string;
+    base: string;
+    quote: string;
+    poolIdx: number;
+    timeStart: number;
+    timeEnd: number;
+    resolution: number;
+    seriesData: Array<TvlByTimeData>;
+}
+
+export interface VolumeSeriesByPoolTimeAndResolution {
+    network: string;
+    base: string;
+    quote: string;
+    poolIdx: number;
+    timeStart: number;
+    timeEnd: number;
+    resolution: number;
+    seriesData: Array<VolumeByTimeData>;
+}
+
+export interface TvlByTimeData {
+    time: number;
+    tvl: number;
+    method: string;
+}
+
+export interface VolumeByTimeData {
+    time: number;
+    volumeDay: number;
+    method: string;
+}
+
+export interface LiquidityForAllPools {
+    pools: Array<LiquidityByPool>;
+}
+
+export interface LiquidityByPool {
+    pool: { baseAddress: string; quoteAddress: string; poolIdx: number; chainId: string };
+    liquidityData: Array<Range>;
+}
+
+export interface Range {
+    lowerBound: number | string;
+    lowerBoundPrice: number;
+    lowerBoundInvPrice: number | string;
+    lowerBoundPriceDecimalCorrected: number;
+    lowerBoundInvPriceDecimalCorrected: number | string;
+    upperBound: number;
+    upperBoundPrice: number;
+    upperBoundInvPrice: number;
+    upperBoundPriceDecimalCorrected: number;
+    upperBoundInvPriceDecimalCorrected: number;
+    activeLiq: string;
+    activeAmbientLiq: string;
+    activeConcLiq: string;
+    cumAskLiq: string;
+    cumAmbientAskLiq: string;
+    cumConcAskLiq: string;
+    cumBidLiq: string;
+    cumAmbientBidLiq: string;
+    cumConcBidLiq: string;
 }
 
 export interface CandlesForAllPools {
@@ -28,10 +128,14 @@ export interface CandleData {
     poolHash: string;
     firstBlock: number;
     lastBlock: number;
-    minPrice: number;
-    maxPrice: number;
-    priceOpen: number;
-    priceClose: number;
+    minPriceDecimalCorrected: number;
+    maxPriceDecimalCorrected: number;
+    priceOpenDecimalCorrected: number;
+    priceCloseDecimalCorrected: number;
+    invMinPriceDecimalCorrected: number;
+    invMaxPriceDecimalCorrected: number;
+    invPriceOpenDecimalCorrected: number;
+    invPriceCloseDecimalCorrected: number;
     numSwaps: number;
     netBaseFlow: string;
     netQuoteFlow: string;
@@ -98,7 +202,6 @@ export interface ISwap {
     id: string;
     inBaseQty: boolean;
     isBuy: boolean;
-    limitPrice: number;
     minOut: string;
     poolHash: string;
     poolIdx: number;
@@ -111,6 +214,13 @@ export interface ISwap {
     time: number;
     tx: string;
     user: string;
+    userEnsName: string;
+    limitPrice: number;
+    price: number;
+    invPrice: number;
+    priceDecimalCorrected: number;
+    invPriceDecimalCorrected: number;
+    valueUSD: number;
 }
 
 export interface SwapsByUser {
@@ -129,6 +239,9 @@ const initialState: graphData = {
     swapsByUser: { dataReceived: false, swaps: [] },
     swapsByPool: { dataReceived: false, swaps: [] },
     candlesForAllPools: { pools: [] },
+    liquidityForAllPools: { pools: [] },
+    poolVolumeSeries: { dataReceived: false, pools: [] },
+    poolTvlSeries: { dataReceived: false, pools: [] },
 };
 
 export const graphDataSlice = createSlice({
@@ -141,11 +254,61 @@ export const graphDataSlice = createSlice({
         setPositionsByPool: (state, action: PayloadAction<PositionsByPool>) => {
             state.positionsByPool = action.payload;
         },
+        setPoolVolumeSeries: (state, action: PayloadAction<PoolVolumeSeries>) => {
+            state.poolVolumeSeries = action.payload;
+        },
+        setPoolTvlSeries: (state, action: PayloadAction<PoolTvlSeries>) => {
+            state.poolTvlSeries = action.payload;
+        },
         setSwapsByUser: (state, action: PayloadAction<SwapsByUser>) => {
             state.swapsByUser = action.payload;
         },
+        addSwapsByUser: (state, action: PayloadAction<Array<ISwap>>) => {
+            const swapTxToFind = action.payload[0].tx.toLowerCase();
+            const indexOfTx = state.swapsByUser.swaps
+                .map((item) => item.tx.toLowerCase())
+                .findIndex((tx) => tx === swapTxToFind);
+            if (indexOfTx === -1) {
+                state.swapsByUser.swaps = action.payload.concat(state.swapsByUser.swaps);
+            } else {
+                state.swapsByUser.swaps[indexOfTx] = action.payload[0];
+            }
+        },
         setSwapsByPool: (state, action: PayloadAction<SwapsByPool>) => {
             state.swapsByPool = action.payload;
+        },
+        addSwapsByPool: (state, action: PayloadAction<Array<ISwap>>) => {
+            const swapTxToFind = action.payload[0].tx.toLowerCase();
+            const indexOfTx = state.swapsByPool.swaps
+                .map((item) => item.tx.toLowerCase())
+                .findIndex((tx) => tx === swapTxToFind);
+            if (indexOfTx === -1) {
+                state.swapsByPool.swaps = action.payload.concat(state.swapsByPool.swaps);
+            } else {
+                state.swapsByPool.swaps[indexOfTx] = action.payload[0];
+            }
+        },
+        setLiquidity: (state, action: PayloadAction<LiquidityByPool>) => {
+            const poolToFind = JSON.stringify(action.payload.pool);
+            const indexOfPool = state.liquidityForAllPools.pools
+                .map((item) => JSON.stringify(item.pool))
+                .findIndex((pool) => pool === poolToFind);
+
+            // if candles for pool not yet saved in RTK, add to RTK
+            if (indexOfPool === -1) {
+                // console.log('pool not found in RTK for new candle data');
+
+                state.liquidityForAllPools.pools = state.liquidityForAllPools.pools.concat({
+                    pool: action.payload.pool,
+                    liquidityData: action.payload.liquidityData,
+                });
+                // else, check if duration exists
+            } else {
+                // console.log('pool found in RTK for new liquidity data');
+
+                state.liquidityForAllPools.pools[indexOfPool].liquidityData =
+                    action.payload.liquidityData;
+            }
         },
         setCandles: (state, action: PayloadAction<CandlesByPoolAndDuration>) => {
             const poolToFind = JSON.stringify(action.payload.pool);
@@ -283,9 +446,14 @@ export const graphDataSlice = createSlice({
 export const {
     setPositionsByUser,
     setPositionsByPool,
+    setPoolVolumeSeries,
+    setPoolTvlSeries,
+    setLiquidity,
     setCandles,
     addCandles,
     setSwapsByUser,
+    addSwapsByUser,
+    addSwapsByPool,
     setSwapsByPool,
     resetGraphData,
 } = graphDataSlice.actions;

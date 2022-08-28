@@ -6,7 +6,7 @@ import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 
 interface SidebarRangeProps {
     isDenomBase: boolean;
-    mostRecentPositions?: PositionIF[];
+    userPositions?: PositionIF[];
     selectedOutsideTab: number;
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
     outsideControl: boolean;
@@ -24,7 +24,7 @@ export default function SidebarRangePositions(props: SidebarRangeProps) {
     const {
         tokenMap,
         isDenomBase,
-        mostRecentPositions,
+        userPositions,
         currentPositionActive,
         setCurrentPositionActive,
     } = props;
@@ -33,7 +33,7 @@ export default function SidebarRangePositions(props: SidebarRangeProps) {
         <div className={styles.header}>
             <div>Pool</div>
             <div>Range</div>
-            <div>Amount</div>
+            <div>Value</div>
         </div>
     );
 
@@ -53,8 +53,8 @@ export default function SidebarRangePositions(props: SidebarRangeProps) {
         <div className={styles.container}>
             {header}
             <div className={styles.content}>
-                {mostRecentPositions &&
-                    mostRecentPositions.map((position, idx) => (
+                {userPositions &&
+                    userPositions.map((position, idx) => (
                         <SidebarRangePositionsCard
                             key={idx}
                             position={position}

@@ -1,5 +1,6 @@
 // START: Import React and Dongles
 import { ReactNode, useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { CSSTransition } from 'react-transition-group';
@@ -44,6 +45,8 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
         openModal,
         closeMenu
     } = props;
+
+    const navigate = useNavigate();
 
     const { i18n } = useTranslation();
 
@@ -127,8 +130,14 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
             >
                 Language
             </NavbarDropdownItem>
-            <NavbarDropdownItem leftIcon={<HiOutlineDocumentText size={20} />}>
-                Legal & Privacy
+            <NavbarDropdownItem
+                onClick={() => {
+                    navigate('/tos');
+                    closeMenu && closeMenu();
+                }}
+                leftIcon={<HiOutlineDocumentText size={20} />}
+            >
+                Terms of Service
             </NavbarDropdownItem>
             {isAuthenticated && isWeb3Enabled && logoutButton}
             {(!isAuthenticated || !isWeb3Enabled) && magicButton}

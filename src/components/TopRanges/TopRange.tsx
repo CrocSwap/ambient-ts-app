@@ -8,7 +8,7 @@ import Apy from '../Global/Tabs/Apy/Apy';
 import RangeMinMax from '../Global/Tabs/RangeMinMax/RangeMinMax';
 import RangesMenu from '../Global/Tabs/TableMenu/TableMenuComponents/RangesMenu';
 import TokenQty from '../Global/Tabs/TokenQty/TokenQty';
-import WalletAndId from '../Global/Tabs/WalletAndID/WalletAndId';
+// import WalletAndId from '../Global/Tabs/WalletAndID/WalletAndId';
 import styles from './TopRange.module.css';
 
 export default function TopRange() {
@@ -39,12 +39,12 @@ export default function TopRange() {
 
             <div className={styles.row_container}>
                 <PoolDisplay token0={'USDC'} token1={'ETH'} />
-                <WalletAndId ownerId={tempOwnerId} posHash={tempPosHash} />
+                {/* <WalletAndId ownerId={tempOwnerId} posHash={tempPosHash} /> */}
                 <RangeMinMax min={100} max={1000} />
 
                 <TokenQty
-                    baseToken={baseToken}
-                    quoteToken={quoteToken}
+                    baseTokenSymbol={baseToken.symbol}
+                    quoteTokenSymbol={quoteToken.symbol}
                     baseQty={undefined}
                     quoteQty={undefined}
                 />
@@ -55,7 +55,7 @@ export default function TopRange() {
 
             <div className={styles.menu_container}>
                 <RangesMenu
-                    userPosition={true}
+                    userMatchesConnectedAccount={true}
                     rangeDetailsProps={true}
                     posHash={tempPosHash as string}
                     positionData={undefined}

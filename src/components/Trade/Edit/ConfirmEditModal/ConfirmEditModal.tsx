@@ -53,7 +53,7 @@ export default function ConfirmEditModal(props: ConfirmEditModalPropsIF) {
                 baseTokenSymbol={position.baseSymbol}
                 tokenAQtyDisplay={position.tokenAQtyDisplay}
                 tokenBQtyDisplay={position.tokenBQtyDisplay}
-                ambient={position.ambient}
+                ambient={position.positionType === 'ambient'}
                 // lowRangeDisplay={position.lowRangeDisplayInBase}
                 // highRangeDisplay={position.highRangeDisplayInBase}
                 pinnedMinPriceDisplayTruncated={pinnedMinPriceDisplayTruncated}

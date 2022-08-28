@@ -76,6 +76,11 @@
     color: #7371fc;
 }
 
+.tab_ul li:hover, .tab_ul_left li:hover, .menu_content li:hover{
+    color: #7371fc;
+    transition: all var(--animation-speed) ease-in-out 
+}
+
 .underline {
     position: absolute;
     bottom: -1px;

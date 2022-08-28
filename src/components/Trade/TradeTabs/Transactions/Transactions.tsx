@@ -13,9 +13,10 @@ interface TransactionsProps {
     tokenMap: Map<string, TokenIF>;
     graphData: graphData;
     chainId: string;
+    blockExplorer?: string;
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
-
+    account: string;
     expandTradeTable: boolean;
 
     isCandleSelected: boolean | undefined;
@@ -25,9 +26,11 @@ interface TransactionsProps {
 export default function Transactions(props: TransactionsProps) {
     const {
         isShowAllEnabled,
+        account,
         graphData,
         tokenMap,
         chainId,
+        blockExplorer,
         currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions,
         expandTradeTable,
@@ -77,17 +80,17 @@ export default function Transactions(props: TransactionsProps) {
         isCandleSelected
             ? setTransactionData(
                   swapsByPool.filter((data) => {
-                      filter?.allSwaps.includes(data.id);
+                      filter?.allSwaps?.includes(data.id);
                   }),
               )
             : !isShowAllEnabled
             ? handleUserPoolSelected()
             : handleAllPoolSelected();
-    }, [isShowAllEnabled, isCandleSelected, filter]);
+    }, [isShowAllEnabled, isCandleSelected, filter, swapsByUser, swapsByPool]);
 
     useEffect(() => {
-        console.log({ dataReceived });
-        console.log({ isDataLoading });
+        // console.log({ dataReceived });
+        // console.log({ isDataLoading });
         dataReceived ? handleDataReceived() : setIsDataLoading(true);
     }, [graphData, transactionData, dataReceived]);
 
@@ -103,9 +106,11 @@ export default function Transactions(props: TransactionsProps) {
             swap={swap}
             tokenMap={tokenMap}
             chainId={chainId}
+            blockExplorer={blockExplorer}
             tokenAAddress={tokenAAddress}
             tokenBAddress={tokenBAddress}
             isDenomBase={isDenomBase}
+            account={account}
             currentTxActiveInTransactions={currentTxActiveInTransactions}
             setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
         />

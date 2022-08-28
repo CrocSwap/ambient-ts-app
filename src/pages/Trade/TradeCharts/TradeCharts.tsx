@@ -31,6 +31,7 @@ import { useAppSelector, useAppDispatch } from '../../../utils/hooks/reduxToolki
 import TradeCandleStickChart from './TradeCandleStickChart';
 import { PoolIF, TokenIF } from '../../../utils/interfaces/exports';
 import { get24hChange } from '../../../App/functions/getPoolStats';
+import TradeChartsLoading from './TradeChartsLoading/TradeChartsLoading';
 
 // interface for React functional component props
 interface TradeChartsPropsIF {
@@ -46,7 +47,12 @@ interface TradeChartsPropsIF {
     candleData: CandlesByPoolAndDuration | undefined;
     favePools: PoolIF[];
     addPoolToFaves: (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) => void;
-    removePoolFromFaves: (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) => void;
+    removePoolFromFaves: (
+        tokenA: TokenIF,
+        tokenB: TokenIF,
+        chainId: string,
+        poolId: number,
+    ) => void;
 }
 
 // React functional component
@@ -60,6 +66,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
         chainId,
         addPoolToFaves,
         removePoolFromFaves,
+        favePools,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -81,7 +88,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
 
     const truncatedPoolPrice =
         poolPriceDisplay === Infinity || poolPriceDisplay === 0
-            ? '...'
+            ? '…'
             : poolPriceDisplay < 2
             ? poolPriceDisplay.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
@@ -181,7 +188,9 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                         denomInBase,
                     );
 
-                    if (priceChangeResult) {
+                    if (priceChangeResult > -0.01 && priceChangeResult < 0.01) {
+                        setPoolPriceChangePercent('No Change');
+                    } else if (priceChangeResult) {
                         priceChangeResult > 0
                             ? setIsPoolPriceChangePositive(true)
                             : setIsPoolPriceChangePositive(false);
@@ -213,16 +222,39 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
 
     // this could be simplify into 1 reusable function but I figured we might have to do some other calculations for each of these so I am sepearing it for now. -Jr
     const handleVolumeToggle = () => setShowVolume(!showVolume);
+
     const handleTvlToggle = () => setShowTvl(!showTvl);
     const handleFeeRateToggle = () => setShowFeeRate(!showFeeRate);
 
-    const chartOverlayButtonData = [
+    const exampleAction = () => console.log('example');
+
+    const chartOverlayButtonData1 = [
         { name: 'Volume', selected: showVolume, action: handleVolumeToggle },
         { name: 'TVL', selected: showTvl, action: handleTvlToggle },
         { name: 'Fee Rate', selected: showFeeRate, action: handleFeeRateToggle },
     ];
 
-    const chartOverlayButtons = chartOverlayButtonData.map((button, idx) => (
+    const chartOverlayButtonData2 = [
+        { name: 'Curve', selected: false, action: exampleAction },
+        { name: 'Depth', selected: false, action: exampleAction },
+    ];
+
+    const chartOverlayButtons1 = chartOverlayButtonData1.map((button, idx) => (
+        <div className={styles.settings_container} key={idx}>
+            <button
+                onClick={button.action}
+                className={
+                    button.selected
+                        ? styles.active_selected_button
+                        : styles.non_active_selected_button
+                }
+            >
+                {button.name}
+            </button>
+        </div>
+    ));
+
+    const chartOverlayButtons2 = chartOverlayButtonData2.map((button, idx) => (
         <div className={styles.settings_container} key={idx}>
             <button
                 onClick={button.action}
@@ -288,11 +320,117 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
 
     // --------------------------- END OF TIME FRAME BUTTON FUNCTIONALITY-------------------------------
 
+    // --------------------------- LIQUIDITY TYPE BUTTON FUNCTIONALITY-------------------------------
+    const liquidityTypeData = [{ label: 'Depth' }, { label: 'Curve' }];
+    const [liquidityType, setLiquidityType] = useState('depth');
+
+    function handleLiquidityTypeButtonClick(label: string) {
+        setLiquidityType(label.toLowerCase());
+    }
+
+    const liquidityTypeDisplay = liquidityTypeData.map((type, idx) => (
+        <motion.div
+            initial={{ y: 10, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -10, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className={`${styles.settings_container} `}
+            key={idx}
+        >
+            <button
+                onClick={() => handleLiquidityTypeButtonClick(type.label)}
+                className={
+                    type.label.toLowerCase() === liquidityType
+                        ? styles.active_button2
+                        : styles.non_active_button2
+                }
+            >
+                {type.label}
+
+                {type.label.toLowerCase() === liquidityType && (
+                    <motion.div
+                        layoutId='outline'
+                        className={styles.outline}
+                        initial={false}
+                        transition={spring}
+                    />
+                )}
+            </button>
+        </motion.div>
+    ));
+    // eslint-disable-next-line
+    const liquidityTypeContent = (
+        <div className={styles.liquidity_type_container}>
+            <div />
+            <div className={styles.liquidity_type_content}>
+                <span>Liquidity Type</span>
+
+                {liquidityTypeDisplay}
+            </div>
+        </div>
+    );
+    // --------------------------- END OF LIQUIDITY TYPE BUTTON FUNCTIONALITY-------------------------------
     // TOKEN INFO----------------------------------------------------------------
+
+    // console.log({ favePools });
+    const currentPoolData = {
+        base: tradeData.tokenA,
+        quote: tradeData.tokenB,
+        chainId: chainId,
+        poolId: 36000,
+    };
+
+    const isButtonFavorited = favePools?.some(
+        (pool: PoolIF) =>
+            pool.base.address === currentPoolData.base.address &&
+            pool.quote.address === currentPoolData.quote.address &&
+            pool.poolId === currentPoolData.poolId &&
+            pool.chainId.toString() === currentPoolData.chainId.toString(),
+    );
+
+    const handleFavButton = () =>
+        isButtonFavorited
+            ? removePoolFromFaves(tradeData.tokenA, tradeData.tokenB, chainId, 36000)
+            : addPoolToFaves(tradeData.tokenA, tradeData.tokenB, chainId, 36000);
+
+    const favButton = (
+        <motion.div
+            whileTap={{ scale: 3 }}
+            transition={{ duration: 0.5 }}
+            onClick={handleFavButton}
+            className={styles.fav_button}
+            style={{
+                cursor: 'pointer',
+            }}
+        >
+            <svg
+                width='23'
+                height='23'
+                viewBox='0 0 23 23'
+                fill='none'
+                xmlns='http://www.w3.org/2000/svg'
+            >
+                <path
+                    d='M11.5 1.58301L14.7187 8.10384L21.9166 9.15593L16.7083 14.2288L17.9375 21.3955L11.5 18.0101L5.06248 21.3955L6.29165 14.2288L1.08331 9.15593L8.28123 8.10384L11.5 1.58301Z'
+                    stroke='#ebebff'
+                    fill={isButtonFavorited ? '#ebebff' : 'none'}
+                    strokeWidth='2'
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    className={styles.star_svg}
+                />
+            </svg>
+        </motion.div>
+    );
+
     const tokenInfo = (
         <div className={styles.token_info_container}>
-            <div className={styles.tokens_info} onClick={() => dispatch(toggleDidUserFlipDenom())}>
-                <div className={styles.tokens_images}>
+            <div className={styles.tokens_info}>
+                {favButton}
+                <div
+                    className={styles.tokens_images}
+                    onClick={() => dispatch(toggleDidUserFlipDenom())}
+                >
                     <img
                         src={denomInTokenA ? tradeData.tokenA.logoURI : tradeData.tokenB.logoURI}
                         alt='token'
@@ -304,18 +442,17 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                         width='30px'
                     />
                 </div>
-                <span className={styles.tokens_name}>
+                <span
+                    className={styles.tokens_name}
+                    onClick={() => dispatch(toggleDidUserFlipDenom())}
+                >
                     {denomInTokenA ? tokenASymbol : tokenBSymbol} /{' '}
                     {denomInTokenA ? tokenBSymbol : tokenASymbol}
                 </span>
-                
-                
             </div>
 
-            <button onClick={() => removePoolFromFaves(tradeData.tokenA, tradeData.tokenB, chainId, 36000)}>Remove Pool</button>
-            <button onClick={() => addPoolToFaves(tradeData.tokenA, tradeData.tokenB, chainId, 36000)}>Add Pool</button>
-
-            <div className={styles.chart_overlay_container}>{chartOverlayButtons}</div>
+            <div className={styles.chart_overlay_container}>{chartOverlayButtons1}</div>
+            <div className={styles.chart_overlay_container}>{chartOverlayButtons2}</div>
         </div>
     );
     // END OF TOKEN INFO----------------------------------------------------------------
@@ -328,12 +465,13 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
         : // denom in b, return token a character
           getUnicodeCharacter(tradeData.tokenA.symbol);
 
+    // console.log({ poolPriceChangePercent });
     const timeFrameContent = (
         <div className={styles.time_frame_container}>
             <div className={styles.left_side}>
                 <span className={styles.amount}>
                     {poolPriceDisplay === Infinity
-                        ? '...'
+                        ? '…'
                         : `${currencyCharacter}${truncatedPoolPrice}`}
                 </span>
                 <span
@@ -341,9 +479,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                         isPoolPriceChangePositive ? styles.change_positive : styles.change_negative
                     }
                 >
-                    {poolPriceChangePercent === undefined
-                        ? '...'
-                        : poolPriceChangePercent + ' | 24h'}
+                    {poolPriceChangePercent === undefined ? '…' : poolPriceChangePercent + ' | 24h'}
                 </span>
             </div>
             <div className={styles.right_side}>
@@ -398,8 +534,17 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
         }
     }, [chartData]);
     // END OF CANDLE STICK DATA---------------------------------------------------
+    // This is a simple loading that last for 1 sec before displaying the graph. The graph is already in the dom by then. We will just positon this in front of it and then remove it after 1 sec.
 
     const expandGraphStyle = props.expandTradeTable ? styles.hide_graph : '';
+    const [graphIsLoading, setGraphIsLoading] = useState(true);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setGraphIsLoading(false);
+        }, 1500);
+        return () => clearTimeout(timer);
+    }, []);
 
     return (
         <>
@@ -407,17 +552,23 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                 {graphSettingsContent}
                 {tokenInfo}
                 {timeFrameContent}
+                {/* {liquidityTypeContent} */}
             </div>
-            <div style={{ width: '100%', height: '100%' }} ref={canvasRef}>
-                <TradeCandleStickChart
-                    tvlData={formattedTvlData}
-                    volumeData={formattedVolumeData}
-                    feeData={formattedFeesUSD}
-                    priceData={props.candleData}
-                    changeState={props.changeState}
-                    chartItemStates={chartItemStates}
-                />
-            </div>
+            {graphIsLoading ? (
+                <TradeChartsLoading />
+            ) : (
+                <div style={{ width: '100%', height: '100%' }} ref={canvasRef}>
+                    <TradeCandleStickChart
+                        tvlData={formattedTvlData}
+                        volumeData={formattedVolumeData}
+                        feeData={formattedFeesUSD}
+                        priceData={props.candleData}
+                        changeState={props.changeState}
+                        chartItemStates={chartItemStates}
+                        denomInBase={denomInBase}
+                    />
+                </div>
+            )}
         </>
     );
 }
