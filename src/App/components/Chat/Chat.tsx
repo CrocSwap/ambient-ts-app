@@ -5,20 +5,28 @@ import { BsEmojiSmile } from 'react-icons/bs';
 // interface ChatPropsIF {
 
 // }
-function MessageItem() {
-    <div className={styles.message_item_container}>
-        <h2 className={styles.name}></h2>
-        <div className={styles.message_content}>
-            <div className={styles.avatar} />
-            <div className={styles.message_text}>More message blah blah blah</div>
+
+type MessageType = {
+    message: string;
+    time: string;
+};
+function MessageItem(props: MessageType) {
+    return (
+        <div className={styles.message_item_container}>
+            <h2 className={styles.name}>Name</h2>
+            <div className={styles.message_content}>
+                <div className={styles.avatar} />
+                <div className={styles.message_text}>{props.message}</div>
+            </div>
+            <div className={styles.time}>{props.time}</div>
         </div>
-    </div>;
+    );
 }
 
 export default function Chat() {
     const [showChatBot, setShowChatBot] = useState(true);
     const [message, setMessage] = useState('');
-    const [messagesArray, setMessagesArray] = useState<string[]>([]);
+    const [messagesArray, setMessagesArray] = useState<MessageType[]>([]);
 
     const chatButton = (
         <div
@@ -72,10 +80,12 @@ export default function Chat() {
         </div>
     );
     const handleMessage = (event: React.KeyboardEvent<HTMLInputElement>) => {
+        const date = new Date();
+        const time = date.toLocaleTimeString();
         if (event.key === 'Enter') {
             event.preventDefault();
 
-            messagesArray?.push(message);
+            messagesArray?.push({ message, time });
             setMessage('');
         }
     };
@@ -87,12 +97,22 @@ export default function Chat() {
             <input
                 type='text'
                 placeholder='Enter message'
+                value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 onKeyPress={(e) => handleMessage(e)}
             />
             <div className={styles.input_right}>
                 <BsEmojiSmile size={16} color='#555555' />
             </div>
+        </div>
+    );
+
+    const messagesDisplay = (
+        <div className={styles.messages_container}>
+            {messagesArray &&
+                messagesArray.map((message, idx) => (
+                    <MessageItem key={idx} message={message.message} time={message.time} />
+                ))}
         </div>
     );
 
@@ -104,6 +124,7 @@ export default function Chat() {
                 {chatButton}
                 <div className={wrapperStyle}>
                     {chatHeader}
+                    {messagesDisplay}
                     {chatInput}
                 </div>
             </div>
