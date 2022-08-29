@@ -64,7 +64,9 @@ import {
     resetTradeData,
     setAdvancedHighTick,
     setAdvancedLowTick,
+    setAdvancedMode,
     setDenomInBase,
+    setPrimaryQuantityRange,
 } from '../utils/state/tradeDataSlice';
 import PoolPage from '../pages/PoolPage/PoolPage';
 import { memoizeQuerySpotPrice, querySpotPrice } from './functions/querySpotPrice';
@@ -430,8 +432,10 @@ export default function App() {
     const tokenPairStringified = useMemo(() => JSON.stringify(tokenPair), [tokenPair]);
 
     useEffect(() => {
+        dispatch(setPrimaryQuantityRange(''));
+        dispatch(setAdvancedMode(false));
         setPoolPriceDisplay(undefined);
-    }, [baseTokenAddress, quoteTokenAddress]);
+    }, [JSON.stringify({ base: baseTokenAddress, quote: quoteTokenAddress })]);
 
     // useEffect that runs when token pair changes
     useEffect(() => {

@@ -323,7 +323,7 @@ export default function Range(props: RangePropsIF) {
                 setInitializationComplete(false);
             }
         }
-    }, [isAdvancedModeActive, rangeLowTick, rangeHighTick]);
+    }, [rangeLowTick, rangeHighTick]);
 
     useEffect(() => {
         if (!initializationComplete && isAdvancedModeActive) {
