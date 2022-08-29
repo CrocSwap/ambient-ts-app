@@ -1870,8 +1870,7 @@ export default function App() {
                 )}
             </div>
             <SidebarFooter />
-            {
-                // isModalOpenWallet &&
+            {isModalOpenWallet && (
                 <WalletModal
                     closeModalWallet={closeModalWallet}
                     isAuthenticating={isAuthenticating}
@@ -1881,7 +1880,7 @@ export default function App() {
                     enableWeb3={enableWeb3}
                     // authError={authError}
                 />
-            }
+            )}
         </>
     );
 }

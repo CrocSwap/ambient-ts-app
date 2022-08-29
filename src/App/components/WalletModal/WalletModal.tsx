@@ -16,7 +16,6 @@ import { HiOutlineMail } from 'react-icons/hi';
 import WalletButton from './WalletButton/WalletButton';
 import metamaskLogo from '../../../assets/images/logos/MetaMask_Fox.svg';
 import magicLoginImage from '../../../assets/images/logos/magicLogin.png';
-import WaveAnimation from '../../../components/Global/LoadingAnimations/WaveAnimation/WaveAnimation';
 import {
     CircleLoader,
     CircleLoaderFailed,
