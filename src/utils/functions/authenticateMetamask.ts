@@ -15,9 +15,13 @@ export default function authenticateMetamask(
     errorAction: () => void,
 ) {
     const signingMessage = `Welcome to Ambient Finance!
-        Click to sign in and accept the Ambient Terms of Service: https://ambient-finance.netlify.app/tos
-        This request will not trigger a blockchain transaction or cost any gas fees.
-        Your authentication status will reset on logout.`;
+
+Click to sign in and accept the Terms of Service: https://ambient-finance.netlify.app/ToS  
+
+This request will not trigger a blockchain transaction or cost any gas fees. 
+
+Your authentication status will reset on logout.`;
+
     if (!isAuthenticated || !isWeb3Enabled) {
         authenticate({
             provider: 'metamask',
