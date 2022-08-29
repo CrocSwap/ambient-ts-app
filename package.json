@@ -66,7 +66,7 @@
         "start": "yarn && react-scripts start",
         "start-only": "react-scripts start",
         "build": "react-scripts --max_old_space_size=3072 build",
-        "test": "react-scripts test",
+        "test": "react-scripts test ",
         "test:nowatch": "react-scripts test --watchAll=false",
         "eject": "react-scripts eject",
         "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
