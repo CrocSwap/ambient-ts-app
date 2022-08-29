@@ -127,7 +127,8 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
                 ) as HTMLInputElement;
                 if (sellQtyField) {
                     sellQtyField.value =
-                        tradeData.primaryQuantityRange === 'NaN'
+                        tradeData.primaryQuantityRange === 'NaN' ||
+                        tradeData.primaryQuantityRange === '0'
                             ? ''
                             : tradeData.primaryQuantityRange;
                 }
@@ -137,7 +138,8 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
                 const buyQtyField = document.getElementById('B-range-quantity') as HTMLInputElement;
                 if (buyQtyField) {
                     buyQtyField.value =
-                        tradeData.primaryQuantityRange === 'NaN'
+                        tradeData.primaryQuantityRange === 'NaN' ||
+                        tradeData.primaryQuantityRange === '0'
                             ? ''
                             : tradeData.primaryQuantityRange;
                 }
