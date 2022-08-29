@@ -251,6 +251,19 @@ export const graphDataSlice = createSlice({
         setPositionsByUser: (state, action: PayloadAction<PositionsByUser>) => {
             state.positionsByUser = action.payload;
         },
+        addPositionsByUser: (state, action: PayloadAction<Array<PositionIF>>) => {
+            const slotToFind = action.payload[0].positionStorageSlot.toLowerCase();
+            const indexOfSlot = state.positionsByUser.positions
+                .map((item) => item.positionStorageSlot.toLowerCase())
+                .findIndex((slot) => slot === slotToFind);
+            if (indexOfSlot === -1) {
+                state.positionsByUser.positions = action.payload.concat(
+                    state.positionsByUser.positions,
+                );
+            } else {
+                state.positionsByUser.positions[indexOfSlot] = action.payload[0];
+            }
+        },
         setPositionsByPool: (state, action: PayloadAction<PositionsByPool>) => {
             state.positionsByPool = action.payload;
         },
@@ -445,6 +458,7 @@ export const graphDataSlice = createSlice({
 // action creators are generated for each case reducer function
 export const {
     setPositionsByUser,
+    addPositionsByUser,
     setPositionsByPool,
     setPoolVolumeSeries,
     setPoolTvlSeries,
