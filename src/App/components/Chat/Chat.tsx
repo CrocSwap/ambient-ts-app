@@ -1,19 +1,26 @@
 import styles from './Chat.module.css';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { MdClose } from 'react-icons/md';
 import { BsEmojiSmile } from 'react-icons/bs';
-// interface ChatPropsIF {
-
-// }
+interface ChatPropsIF {
+    ensName: string;
+    connectedAccount: string;
+}
 
 type MessageType = {
     message: string;
     time: string;
 };
-function MessageItem(props: MessageType) {
+
+interface MessageItemPropsIF {
+    name: string;
+    message: string;
+    time: string;
+}
+function MessageItem(props: MessageItemPropsIF) {
     return (
         <div className={styles.message_item_container}>
-            <h2 className={styles.name}>Name</h2>
+            <h2 className={styles.name}>{props.name}</h2>
             <div className={styles.message_content}>
                 <div className={styles.avatar} />
                 <div className={styles.message_text}>{props.message}</div>
@@ -23,10 +30,11 @@ function MessageItem(props: MessageType) {
     );
 }
 
-export default function Chat() {
+export default function Chat(props: ChatPropsIF) {
+    console.log(props);
     const [showChatBot, setShowChatBot] = useState(true);
     const [message, setMessage] = useState('');
-    const [messagesArray, setMessagesArray] = useState<MessageType[]>([]);
+    const [messagesArray] = useState<MessageType[]>([]);
 
     const chatButton = (
         <div
@@ -111,7 +119,12 @@ export default function Chat() {
         <div className={styles.messages_container}>
             {messagesArray &&
                 messagesArray.map((message, idx) => (
-                    <MessageItem key={idx} message={message.message} time={message.time} />
+                    <MessageItem
+                        key={idx}
+                        message={message.message}
+                        time={message.time}
+                        name={props.ensName ? props.ensName : props.connectedAccount}
+                    />
                 ))}
         </div>
     );

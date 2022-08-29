@@ -1894,7 +1894,7 @@ export default function App() {
                 {currentLocation !== '/' && (
                     <PageFooter lastBlockNumber={lastBlockNumber} userIsOnline={userIsOnline} />
                 )}
-                <Chat />
+                <Chat ensName={ensName} connectedAccount={account ? account : ''} />
             </div>
             <SidebarFooter />
             {isModalOpenWallet && (
