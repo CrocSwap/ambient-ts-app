@@ -135,6 +135,7 @@ export default function Ranges(props: RangesProps) {
                         <RangeCardHeader
                             key={`rangeDataHeaderField${header.name}`}
                             data={header}
+                            clickHandler={() => console.log(header.name.toLowerCase())}
                         />
                     )
                 }
