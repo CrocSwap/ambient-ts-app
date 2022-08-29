@@ -50,9 +50,14 @@ export default function Chat() {
         </div>
     );
 
+    const wrapperStyle = showChatBot ? styles.chat_wrapper_active : styles.chat_wrapper;
+
     return (
         <div className={styles.chat_container}>
-            <div className={styles.chat_container}>{chatButton}</div>
+            <div className={styles.chat_container}>
+                {chatButton}
+                <div className={wrapperStyle}></div>
+            </div>
         </div>
     );
 }
