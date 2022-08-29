@@ -12,6 +12,7 @@ import {
 } from '@crocswap-libs/sdk';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { formatAmount } from '../../../../utils/numbers';
+import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 
 interface TransactionProps {
     swap: ISwap;
@@ -93,9 +94,14 @@ export default function TransactionCard(props: TransactionProps) {
             const priceDecimalCorrected = swap.priceDecimalCorrected;
             const invPriceDecimalCorrected = swap.invPriceDecimalCorrected;
 
+            const baseTokenCharacter = swap.baseSymbol ? getUnicodeCharacter(swap.baseSymbol) : '';
+            const quoteTokenCharacter = swap.quoteSymbol
+                ? getUnicodeCharacter(swap.quoteSymbol)
+                : '';
+
             const truncatedDisplayPrice = isDenomBase
-                ? invPriceDecimalCorrected?.toPrecision(6)
-                : priceDecimalCorrected?.toPrecision(6);
+                ? quoteTokenCharacter + invPriceDecimalCorrected?.toPrecision(6)
+                : baseTokenCharacter + priceDecimalCorrected?.toPrecision(6);
 
             setTruncatedDisplayPrice(truncatedDisplayPrice);
         } else {
