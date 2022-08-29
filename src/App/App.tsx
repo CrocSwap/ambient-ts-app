@@ -1180,6 +1180,7 @@ export default function App() {
         const viewProvider = provider
             ? provider
             : (await new CrocEnv(chainData.chainId).context).provider;
+
         const poolPriceNonDisplay = await cachedQuerySpotPrice(
             viewProvider,
             baseTokenAddress,
@@ -1206,11 +1207,6 @@ export default function App() {
             position.positionType === 'ambient' ||
             (position.bidTick <= poolPriceInTicks && poolPriceInTicks <= position.askTick);
 
-        // console.log(position.positionType);
-        // console.log(position.bidTick);
-        // console.log(position.askTick);
-        // console.log(position.poolPriceInTicks);
-        // console.log({ isPositionInRange });
         position.isPositionInRange = isPositionInRange;
 
         const baseTokenDecimals = await cachedGetTokenDecimals(

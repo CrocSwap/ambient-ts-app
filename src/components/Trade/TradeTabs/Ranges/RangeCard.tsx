@@ -10,6 +10,7 @@ import RangesMenu from '../../../Global/Tabs/TableMenu/TableMenuComponents/Range
 import { ethers } from 'ethers';
 import { useEffect, useState, Dispatch, SetStateAction } from 'react';
 import { formatAmount } from '../../../../utils/numbers';
+import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 
 interface RangeCardProps {
     provider: ethers.providers.Provider | undefined;
@@ -92,12 +93,17 @@ export default function RangeCard(props: RangeCardProps) {
 
     // ---------------------------------POSITIONS MIN AND MAX RANGE--------------------
 
+    const baseTokenCharacter = position.baseSymbol ? getUnicodeCharacter(position.baseSymbol) : '';
+    const quoteTokenCharacter = position.quoteSymbol
+        ? getUnicodeCharacter(position.quoteSymbol)
+        : '';
+
     const minRange = props.isDenomBase
-        ? position.lowRangeDisplayInBase
-        : position.lowRangeDisplayInQuote;
+        ? quoteTokenCharacter + position.lowRangeDisplayInBase
+        : baseTokenCharacter + position.lowRangeDisplayInQuote;
     const maxRange = props.isDenomBase
-        ? position.highRangeDisplayInBase
-        : position.highRangeDisplayInQuote;
+        ? quoteTokenCharacter + position.highRangeDisplayInBase
+        : baseTokenCharacter + position.highRangeDisplayInQuote;
 
     const ambientMinOrNull = position.positionType === 'ambient' ? '0' : minRange;
     const ambientMaxOrNull = position.positionType === 'ambient' ? '∞' : maxRange;
