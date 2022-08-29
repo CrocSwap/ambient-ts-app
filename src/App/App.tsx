@@ -426,6 +426,8 @@ export default function App() {
 
     const [isTokenABase, setIsTokenABase] = useState<boolean>(true);
 
+    const [ambientApy, setAmbientApy] = useState<number | undefined>();
+
     // TODO:  @Emily useMemo() this value
     const tokenPair = {
         dataTokenA: tradeData.tokenA,
@@ -441,6 +443,32 @@ export default function App() {
         setPoolPriceDisplay(undefined);
         const sliderInput = document.getElementById('input-slider-range') as HTMLInputElement;
         if (sliderInput) sliderInput.value = '100';
+    }, [JSON.stringify({ base: baseTokenAddress, quote: quoteTokenAddress })]);
+
+    useEffect(() => {
+        (async () => {
+            const poolAmbienApyCacheEndpoint =
+                'https://809821320828123.de:5000/' + '/pool_ambient_apy_cached?';
+
+            fetch(
+                poolAmbienApyCacheEndpoint +
+                    new URLSearchParams({
+                        base: baseTokenAddress.toLowerCase(),
+                        quote: quoteTokenAddress.toLowerCase(),
+                        poolIdx: chainData.poolIndex.toString(),
+                        chainId: chainData.chainId,
+                        concise: 'true',
+                        lookback: '604800',
+                        // n: 10 // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
+                        // page: 0 // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
+                    }),
+            )
+                .then((response) => response?.json())
+                .then((json) => {
+                    const ambientApy = json?.data?.apy;
+                    setAmbientApy(ambientApy);
+                });
+        })();
     }, [JSON.stringify({ base: baseTokenAddress, quote: quoteTokenAddress })]);
 
     // useEffect that runs when token pair changes
@@ -1636,6 +1664,7 @@ export default function App() {
         activeTokenListsChanged: activeTokenListsChanged,
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
         openModalWallet: openModalWallet,
+        ambientApy: ambientApy,
     };
 
     function toggleSidebar() {
