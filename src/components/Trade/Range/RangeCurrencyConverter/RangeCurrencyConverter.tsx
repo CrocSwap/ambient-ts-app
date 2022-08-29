@@ -267,8 +267,10 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
                 `${tokenPair.dataTokenA.symbol} Amount Exceeds Wallet Balance`,
             );
         } else if (isNaN(tokenAAmount) || tokenAAmount <= 0) {
-            // setRangeAllowed(false);
-            // setRangeButtonErrorMessage('Enter an Amount');
+            if (tokenBQtyLocal <= 0) {
+                setRangeAllowed(false);
+                setRangeButtonErrorMessage('Enter an Amount');
+            }
         } else {
             setRangeAllowed(true);
         }
@@ -284,8 +286,10 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
                 `${tokenPair.dataTokenB.symbol} Amount Exceeds Wallet Balance`,
             );
         } else if (isNaN(tokenBAmount) || tokenBAmount <= 0) {
-            // setRangeAllowed(false);
-            // setRangeButtonErrorMessage('Enter an Amount');
+            if (tokenAQtyLocal <= 0) {
+                setRangeAllowed(false);
+                setRangeButtonErrorMessage('Enter an Amount');
+            }
         } else {
             setRangeAllowed(true);
         }
