@@ -1646,9 +1646,9 @@ export default function App() {
     function handleTabChangedBasedOnRoute() {
         const onTradeRoute = location.pathname.includes('trade');
 
-        const rangeTabBasedOnRoute = onTradeRoute ? 0 : 0;
+        const marketTabBasedOnRoute = onTradeRoute ? 0 : 0;
         const orderTabBasedOnRoute = onTradeRoute ? 1 : 0;
-        const marketTabBasedOnRoute = onTradeRoute ? 2 : 0;
+        const rangeTabBasedOnRoute = onTradeRoute ? 2 : 0;
         setOutsideControl(true);
         if (location.pathname === '/trade/market') {
             setSelectedOutsideTab(marketTabBasedOnRoute);
