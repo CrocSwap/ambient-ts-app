@@ -169,7 +169,7 @@ export default function TransactionCard(props: TransactionProps) {
                 : quoteFlowDisplayTruncated;
             setQuoteFlowDisplay(quoteFlowDisplayString);
         }
-    }, [JSON.stringify(swap)]);
+    }, [JSON.stringify(swap), isDenomBase]);
 
     const priceType =
         (isDenomBase && !swap.isBuy) || (!isDenomBase && swap.isBuy) ? 'priceBuy' : 'priceSell';
