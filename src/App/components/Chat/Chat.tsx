@@ -1,5 +1,7 @@
 import styles from './Chat.module.css';
 import { useState } from 'react';
+import { MdClose } from 'react-icons/md';
+import { BsEmojiSmile } from 'react-icons/bs';
 // interface ChatPropsIF {
 
 // }
@@ -12,7 +14,7 @@ export default function Chat() {
             className={`${styles.chat_button} ${showChatBot && styles.active}`}
             onClick={() => setShowChatBot(!showChatBot)}
         >
-            <svg className={styles.chat_bubble} width='55' height='55' viewBox='0 0 100 100'>
+            <svg className={styles.chat_bubble} width='30' height='30' viewBox='0 0 100 100'>
                 <g className={styles.bubble}>
                     <path
                         className={`${styles.line} ${styles.line1}`}
@@ -50,13 +52,34 @@ export default function Chat() {
         </div>
     );
 
+    const chatHeader = (
+        <div className={styles.chat_header}>
+            <h3>Chat</h3>
+            <div onClick={() => setShowChatBot(false)}>
+                <MdClose size={20} color='#bdbdbd' />
+            </div>
+        </div>
+    );
+
+    const chatInput = (
+        <div className={styles.input_container}>
+            <input type='text' placeholder='Enter message' />
+            <div className={styles.input_right}>
+                <BsEmojiSmile size={16} color='#555555' />
+            </div>
+        </div>
+    );
+
     const wrapperStyle = showChatBot ? styles.chat_wrapper_active : styles.chat_wrapper;
 
     return (
-        <div className={styles.chat_container}>
+        <div className={styles.chat}>
             <div className={styles.chat_container}>
                 {chatButton}
-                <div className={wrapperStyle}></div>
+                <div className={wrapperStyle}>
+                    {chatHeader}
+                    {chatInput}
+                </div>
             </div>
         </div>
     );
