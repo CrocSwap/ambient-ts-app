@@ -92,6 +92,7 @@ import { useModal } from '../components/Global/Modal/useModal';
 // import authenticateUser from '../utils/functions/authenticateUser';
 import { getVolumeSeries } from './functions/getVolumeSeries';
 import { getTvlSeries } from './functions/getTvlSeries';
+import Chat from './components/Chat/Chat';
 
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 const cachedFetchAddress = memoizeFetchAddress();
@@ -1893,6 +1894,7 @@ export default function App() {
                 {currentLocation !== '/' && (
                     <PageFooter lastBlockNumber={lastBlockNumber} userIsOnline={userIsOnline} />
                 )}
+                <Chat />
             </div>
             <SidebarFooter />
             {isModalOpenWallet && (
