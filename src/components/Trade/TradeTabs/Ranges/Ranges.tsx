@@ -4,9 +4,8 @@ import { graphData } from '../../../../utils/state/graphDataSlice';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { useMoralis } from 'react-moralis';
 import RangeCardHeader from './RangeCardHeader';
-// import { Dispatch, SetStateAction } from 'react';
 import { ethers } from 'ethers';
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 
 interface RangesProps {
     chainId: string;
@@ -66,11 +65,11 @@ export default function Ranges(props: RangesProps) {
         },
         {
             name: tradeData.baseToken.symbol,
-            sortable: true
+            sortable: false
         },
         {
             name: tradeData.quoteToken.symbol,
-            sortable: true
+            sortable: false
         },
         {
             name: 'APY',
@@ -82,7 +81,8 @@ export default function Ranges(props: RangesProps) {
         }
     ];
 
-
+    const [ sortBy, setSortBy ] = useState('wallet');
+    useEffect(() => {console.log(sortBy)}, [sortBy]);
 
     const RangesDisplay = isShowAllEnabled
         ? poolPositions.map((position, idx) => (
@@ -135,7 +135,7 @@ export default function Ranges(props: RangesProps) {
                         <RangeCardHeader
                             key={`rangeDataHeaderField${header.name}`}
                             data={header}
-                            clickHandler={() => console.log(header.name.toLowerCase())}
+                            clickHandler={() => setSortBy(header.name.toLowerCase())}
                         />
                     )
                 }
