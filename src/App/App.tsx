@@ -1647,11 +1647,35 @@ export default function App() {
         setSidebarManuallySet(true);
     }
 
+    function handleTabChangedBasedOnRoute() {
+        const onTradeRoute = location.pathname.includes('trade');
+
+        const rangeTabBasedOnRoute = onTradeRoute ? 0 : 0;
+        const orderTabBasedOnRoute = onTradeRoute ? 1 : 0;
+        const marketTabBasedOnRoute = onTradeRoute ? 2 : 0;
+        setOutsideControl(true);
+        if (location.pathname === '/trade/market') {
+            setSelectedOutsideTab(marketTabBasedOnRoute);
+        } else if (location.pathname === '/trade/limit') {
+            setSelectedOutsideTab(orderTabBasedOnRoute);
+        } else if (location.pathname === '/trade/range') {
+            setSelectedOutsideTab(rangeTabBasedOnRoute);
+        } else {
+            setSelectedOutsideTab(0);
+        }
+    }
+
     useEffect(() => {
         if (location.pathname.includes('account') || location.pathname.includes('analytics')) {
             setShowSidebar(false);
         }
+
+        handleTabChangedBasedOnRoute();
     }, [location.pathname]);
+
+    // market - /trade/market
+    // limit - /trade/limit
+    // range - /trade/range
 
     const [selectedOutsideTab, setSelectedOutsideTab] = useState(0);
     const [outsideControl, setOutsideControl] = useState(false);
