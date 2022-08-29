@@ -10,8 +10,10 @@ import printDomToImage from '../../utils/functions/printDomToImage';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { toDisplayQty } from '@crocswap-libs/sdk';
 import { formatAmount } from '../../utils/numbers';
+import { PositionIF } from '../../utils/interfaces/PositionIF';
 interface IRangeDetailsProps {
     provider: ethers.providers.Provider | undefined;
+    position: PositionIF;
     chainId: string;
     user: string;
     bidTick: number;
@@ -45,6 +47,7 @@ export default function RangeDetails(props: IRangeDetailsProps) {
         bidTick,
         askTick,
         lastBlockNumber,
+        position,
     } = props;
 
     const detailsRef = useRef(null);
@@ -63,6 +66,7 @@ export default function RangeDetails(props: IRangeDetailsProps) {
 
     const [baseFeesDisplay, setBaseFeesDisplay] = useState<string | undefined>(undefined);
     const [quoteFeesDisplay, setQuoteFeesDisplay] = useState<string | undefined>(undefined);
+    const [positionApy, setPositionApy] = useState<number | undefined>();
 
     useEffect(() => {
         const positionStatsCacheEndpoint = httpGraphCacheServerDomain + '/position_stats?';
@@ -169,6 +173,49 @@ export default function RangeDetails(props: IRangeDetailsProps) {
                 }
             })
             .catch(console.log);
+
+        (async () => {
+            const positionApyCacheEndpoint = 'https://809821320828123.de:5000/' + '/position_apy?';
+
+            const positionApy =
+                position.positionType === 'ambient'
+                    ? await fetch(
+                          positionApyCacheEndpoint +
+                              new URLSearchParams({
+                                  chainId: position.chainId,
+                                  user: position.user,
+                                  base: position.base,
+                                  quote: position.quote,
+                                  poolIdx: position.poolIdx.toString(),
+                                  concise: 'true',
+                              }),
+                      )
+                          .then((response) => response?.json())
+                          .then((json) => {
+                              const apy = json?.results?.apy;
+                              return apy;
+                          })
+                    : await fetch(
+                          positionApyCacheEndpoint +
+                              new URLSearchParams({
+                                  chainId: position.chainId,
+                                  user: position.user,
+                                  base: position.base,
+                                  quote: position.quote,
+                                  bidTick: position.bidTick.toString(),
+                                  askTick: position.askTick.toString(),
+                                  poolIdx: position.poolIdx.toString(),
+                                  concise: 'true',
+                              }),
+                      )
+                          .then((response) => response?.json())
+                          .then((json) => {
+                              const apy = json?.data?.results?.apy;
+                              return apy;
+                          });
+
+            setPositionApy(positionApy);
+        })();
     }, [lastBlockNumber]);
 
     return (
@@ -193,6 +240,7 @@ export default function RangeDetails(props: IRangeDetailsProps) {
                         quoteTokenDecimals={props.quoteTokenDecimals}
                         lastBlockNumber={props.lastBlockNumber}
                         isDenomBase={props.isDenomBase}
+                        positionApy={positionApy}
                     />
                     <Divider />
                 </div>
