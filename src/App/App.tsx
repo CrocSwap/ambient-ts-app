@@ -1843,6 +1843,16 @@ export default function App() {
                         <Route path='analytics' element={<Analytics {...analyticsProps} />} />
                         <Route path='tokens/:address' element={<TokenPage />} />
                         <Route path='pools/:address' element={<PoolPage />} />
+                        <Route
+                            path='app/chat'
+                            element={
+                                <Chat
+                                    ensName={ensName}
+                                    connectedAccount={account ? account : ''}
+                                    fullScreen={true}
+                                />
+                            }
+                        />
 
                         <Route path='range2' element={<Range {...rangeProps} />} />
 
@@ -1894,7 +1904,13 @@ export default function App() {
                 {currentLocation !== '/' && (
                     <PageFooter lastBlockNumber={lastBlockNumber} userIsOnline={userIsOnline} />
                 )}
-                <Chat ensName={ensName} connectedAccount={account ? account : ''} />
+                {currentLocation !== '/app/chat' && (
+                    <Chat
+                        ensName={ensName}
+                        connectedAccount={account ? account : ''}
+                        fullScreen={false}
+                    />
+                )}
             </div>
             <SidebarFooter />
             {isModalOpenWallet && (

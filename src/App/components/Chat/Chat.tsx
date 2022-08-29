@@ -1,10 +1,12 @@
 import styles from './Chat.module.css';
-import { useState } from 'react';
-import { MdClose } from 'react-icons/md';
+import { useState, useEffect } from 'react';
+import { MdClose, MdOpenInFull } from 'react-icons/md';
 import { BsEmojiSmile } from 'react-icons/bs';
+import { Link } from 'react-router-dom';
 interface ChatPropsIF {
     ensName: string;
     connectedAccount: string;
+    fullScreen?: boolean;
 }
 
 type MessageType = {
@@ -32,9 +34,13 @@ function MessageItem(props: MessageItemPropsIF) {
 
 export default function Chat(props: ChatPropsIF) {
     console.log(props);
-    const [showChatBot, setShowChatBot] = useState(true);
+    const [showChatBot, setShowChatBot] = useState(false);
     const [message, setMessage] = useState('');
     const [messagesArray] = useState<MessageType[]>([]);
+
+    useEffect(() => {
+        props.fullScreen ? setShowChatBot(true) : null;
+    }, [props.fullScreen]);
 
     const chatButton = (
         <div
@@ -82,9 +88,23 @@ export default function Chat(props: ChatPropsIF) {
     const chatHeader = (
         <div className={styles.chat_header}>
             <h3>Chat</h3>
-            <div onClick={() => setShowChatBot(false)}>
-                <MdClose size={20} color='#bdbdbd' />
-            </div>
+            {props.fullScreen ? (
+                <div className={styles.chat_header_right}>
+                    <h2 className={styles.name}>
+                        {props.ensName ? props.ensName : props.connectedAccount}
+                    </h2>
+                    <div className={styles.avatar} />
+                </div>
+            ) : (
+                <div className={styles.chat_header_right}>
+                    <div onClick={() => setShowChatBot(false)}>
+                        <MdClose size={20} color='#bdbdbd' />
+                    </div>
+                    <Link target='_blank' to='/app/chat'>
+                        <MdOpenInFull size={18} />
+                    </Link>
+                </div>
+            )}
         </div>
     );
     const handleMessage = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -129,13 +149,14 @@ export default function Chat(props: ChatPropsIF) {
         </div>
     );
 
+    const wrapperStyleFull = styles.chat_wrapper_full;
     const wrapperStyle = showChatBot ? styles.chat_wrapper_active : styles.chat_wrapper;
 
     return (
         <div className={styles.chat}>
             <div className={styles.chat_container}>
-                {chatButton}
-                <div className={wrapperStyle}>
+                {props.fullScreen ? null : chatButton}
+                <div className={props.fullScreen ? wrapperStyleFull : wrapperStyle}>
                     {chatHeader}
                     {messagesDisplay}
                     {chatInput}
