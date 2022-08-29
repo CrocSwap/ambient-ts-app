@@ -65,11 +65,11 @@ export default function Ranges(props: RangesProps) {
             sortable: true
         },
         {
-            name: tradeData.baseToken,
+            name: tradeData.baseToken.symbol,
             sortable: true
         },
         {
-            name: tradeData.quoteToken,
+            name: tradeData.quoteToken.symbol,
             sortable: true
         },
         {
@@ -129,10 +129,16 @@ export default function Ranges(props: RangesProps) {
     return (
         <div className={styles.container}>
             {/* header fields */}
-            <RangeCardHeader
-                baseToken={tradeData.baseToken}
-                quoteToken={tradeData.quoteToken}
-            />
+            <header className={styles.row_container}>
+                {
+                    columnHeaders.map((header) => 
+                        <RangeCardHeader
+                            key={`rangeDataHeaderField${header.name}`}
+                            data={header}
+                        />
+                    )
+                }
+            </header>
             {/* item_container is the data proper (not headings) */}
             <div
                 className={styles.item_container}

@@ -2,6 +2,11 @@
     /* padding: 0 8px; */
 }
 
+.container > header {
+    display: flex;
+    flex-direction: row;
+}
+
 .item_container {
     max-height: 90%;
     overflow-y: scroll;
