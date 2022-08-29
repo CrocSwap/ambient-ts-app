@@ -166,7 +166,7 @@ export default function Limit(props: LimitPropsIF) {
 
     const sendLimitOrder = async () => {
         console.log('Send limit');
-        if (!provider || !(provider as ethers.providers.JsonRpcProvider).getSigner()) {
+        if (!provider || !(provider as ethers.providers.WebSocketProvider).getSigner()) {
             return;
         }
 

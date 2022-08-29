@@ -143,7 +143,7 @@ export default function App() {
 
     function exposeProviderUrl(provider?: ethers.providers.Provider): string {
         if (provider && 'connection' in provider) {
-            return (provider as ethers.providers.JsonRpcProvider).connection?.url;
+            return (provider as ethers.providers.WebSocketProvider).connection?.url;
         } else {
             return '';
         }
@@ -151,7 +151,7 @@ export default function App() {
 
     function exposeProviderChain(provider?: ethers.providers.Provider): number {
         if (provider && 'network' in provider) {
-            return (provider as ethers.providers.JsonRpcProvider).network?.chainId;
+            return (provider as ethers.providers.WebSocketProvider).network?.chainId;
         } else {
             return -1;
         }
@@ -180,7 +180,7 @@ export default function App() {
                 }
             } else if (!provider || !onChain) {
                 const url = lookupChain(chainData.chainId).nodeUrl;
-                setProvider(new ethers.providers.JsonRpcProvider(url));
+                setProvider(new ethers.providers.WebSocketProvider(url));
             }
         } catch (error) {
             console.log(error);
@@ -227,7 +227,7 @@ export default function App() {
     }, [tokenListsReceived]);
 
     useEffect(() => {
-        fetch('https://goerli.infura.io/v3/cf3bc905d88d4f248c6be347adc8a1d8', {
+        fetch('https://goerli.infura.io/v3/4a162c75bd514925890174ca13cdb6a2', {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
@@ -248,7 +248,7 @@ export default function App() {
             });
     }, []);
 
-    const goerliWssInfuraEndpoint = 'wss://goerli.infura.io/ws/v3/cbb2856ea8804fc5ba59be0a2e8a9f88';
+    const goerliWssInfuraEndpoint = 'wss://goerli.infura.io/ws/v3/4a162c75bd514925890174ca13cdb6a2';
 
     const { sendMessage: send, lastMessage: lastNewHeadMessage } = useWebSocket(
         goerliWssInfuraEndpoint,

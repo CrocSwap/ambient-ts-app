@@ -162,7 +162,7 @@ export default function Swap(props: SwapPropsIF) {
     async function initiateSwap() {
         if (!provider) return;
 
-        if (!(provider as ethers.providers.JsonRpcProvider).getSigner()) {
+        if (!(provider as ethers.providers.WebSocketProvider).getSigner()) {
             return;
         }
 

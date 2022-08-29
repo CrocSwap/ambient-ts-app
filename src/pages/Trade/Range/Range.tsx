@@ -565,7 +565,7 @@ export default function Range(props: RangePropsIF) {
     }
 
     const sendTransaction = async () => {
-        if (!provider || !(provider as ethers.providers.JsonRpcProvider).getSigner()) {
+        if (!provider || !(provider as ethers.providers.WebSocketProvider).getSigner()) {
             return;
         }
 
