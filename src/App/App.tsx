@@ -67,6 +67,7 @@ import {
     setAdvancedMode,
     setDenomInBase,
     setPrimaryQuantityRange,
+    setSimpleRangeWidth,
 } from '../utils/state/tradeDataSlice';
 import PoolPage from '../pages/PoolPage/PoolPage';
 import { memoizeQuerySpotPrice, querySpotPrice } from './functions/querySpotPrice';
@@ -433,8 +434,11 @@ export default function App() {
 
     useEffect(() => {
         dispatch(setPrimaryQuantityRange(''));
+        dispatch(setSimpleRangeWidth(100));
         dispatch(setAdvancedMode(false));
         setPoolPriceDisplay(undefined);
+        const sliderInput = document.getElementById('input-slider-range') as HTMLInputElement;
+        if (sliderInput) sliderInput.value = '100';
     }, [JSON.stringify({ base: baseTokenAddress, quote: quoteTokenAddress })]);
 
     // useEffect that runs when token pair changes

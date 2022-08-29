@@ -268,9 +268,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
             );
         } else if (isNaN(tokenAAmount) || tokenAAmount <= 0) {
             // setRangeAllowed(false);
-            // console.log({ tokenBQtyLocal });
-            // console.log({ tokenAQtyLocal });
-            setRangeButtonErrorMessage('Enter an Amount');
+            // setRangeButtonErrorMessage('Enter an Amount');
         } else {
             setRangeAllowed(true);
         }
@@ -287,7 +285,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
             );
         } else if (isNaN(tokenBAmount) || tokenBAmount <= 0) {
             // setRangeAllowed(false);
-            setRangeButtonErrorMessage('Enter an Amount');
+            // setRangeButtonErrorMessage('Enter an Amount');
         } else {
             setRangeAllowed(true);
         }
@@ -309,6 +307,10 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         if (evt) {
             // console.log('new handle token A event');
             const input = evt.target.value;
+            if (input === '' || parseFloat(input) <= 0) {
+                setRangeAllowed(false);
+                setRangeButtonErrorMessage('Enter an Amount');
+            }
             setTokenAQtyValue(parseFloat(input));
             setIsTokenAPrimaryLocal(true);
             dispatch(setIsTokenAPrimaryRange(true));
@@ -358,6 +360,10 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
     const handleTokenBQtyFieldUpdate = (evt?: ChangeEvent<HTMLInputElement>) => {
         if (evt) {
             const input = evt.target.value;
+            if (input === '' || parseFloat(input) <= 0) {
+                setRangeAllowed(false);
+                setRangeButtonErrorMessage('Enter an Amount');
+            }
             setTokenBQtyValue(parseFloat(input));
             setIsTokenAPrimaryLocal(false);
             dispatch(setIsTokenAPrimaryRange(false));

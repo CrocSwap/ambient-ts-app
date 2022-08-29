@@ -171,6 +171,13 @@ export default function Range(props: RangePropsIF) {
 
     useEffect(() => {
         if (tradeData.simpleRangeWidth !== rangeWidthPercentage) {
+            setSimpleRangeWidth(tradeData.simpleRangeWidth);
+            setRangeWidthPercentage(100);
+        }
+    }, [tradeData.simpleRangeWidth]);
+
+    useEffect(() => {
+        if (tradeData.simpleRangeWidth !== rangeWidthPercentage) {
             dispatch(setSimpleRangeWidth(rangeWidthPercentage));
         }
     }, [rangeWidthPercentage]);
