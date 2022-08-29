@@ -28,12 +28,10 @@ interface ITabsProps {
     lastBlockNumber: number;
     chainId: string;
     chainData: ChainSpec;
-
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     isShowAllEnabled: boolean;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
-
     tokenMap: Map<string, TokenIF>;
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
@@ -41,12 +39,10 @@ interface ITabsProps {
     filter: CandleData | undefined;
     setIsCandleSelected: Dispatch<SetStateAction<boolean | undefined>>;
     setTransactionFilter: Dispatch<SetStateAction<CandleData | undefined>>;
-
     selectedOutsideTab: number;
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
     outsideControl: boolean;
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
-
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
 }
@@ -143,6 +139,7 @@ export default function TradeTabs2(props: ITabsProps) {
         setExpandTradeTable: props.setExpandTradeTable,
     };
 
+    // data for headings of each of the three tabs
     const tradeTabData = [
         { label: 'Ranges', content: <Ranges {...rangesProps} />, icon: rangePositionsImage },
         { label: 'Orders', content: <Orders {...ordersProps} />, icon: openOrdersImage },

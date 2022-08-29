@@ -49,49 +49,51 @@ export default function Ranges(props: RangesProps) {
 
     const RangesDisplay = isShowAllEnabled
         ? poolPositions.map((position, idx) => (
-              <RangeCard
-                  provider={provider}
-                  chainId={chainId}
-                  key={idx}
-                  portfolio={portfolio}
-                  notOnTradeRoute={notOnTradeRoute}
-                  position={position}
-                  isAllPositionsEnabled={isShowAllEnabled}
-                  tokenAAddress={tokenAAddress}
-                  tokenBAddress={tokenBAddress}
-                  account={account ?? undefined}
-                  isAuthenticated={isAuthenticated}
-                  isDenomBase={isDenomBase}
-                  lastBlockNumber={props.lastBlockNumber}
-                  currentPositionActive={currentPositionActive}
-                  setCurrentPositionActive={setCurrentPositionActive}
-              />
-          ))
+            <RangeCard
+                provider={provider}
+                chainId={chainId}
+                key={idx}
+                portfolio={portfolio}
+                notOnTradeRoute={notOnTradeRoute}
+                position={position}
+                isAllPositionsEnabled={isShowAllEnabled}
+                tokenAAddress={tokenAAddress}
+                tokenBAddress={tokenBAddress}
+                account={account ?? undefined}
+                isAuthenticated={isAuthenticated}
+                isDenomBase={isDenomBase}
+                lastBlockNumber={props.lastBlockNumber}
+                currentPositionActive={currentPositionActive}
+                setCurrentPositionActive={setCurrentPositionActive}
+            />
+        ))
         : //   .reverse()
-          userPositions.map((position, idx) => (
-              <RangeCard
-                  provider={provider}
-                  chainId={chainId}
-                  key={idx}
-                  portfolio={portfolio}
-                  notOnTradeRoute={notOnTradeRoute}
-                  position={position}
-                  isAllPositionsEnabled={isShowAllEnabled}
-                  tokenAAddress={tokenAAddress}
-                  tokenBAddress={tokenBAddress}
-                  account={account ?? undefined}
-                  isAuthenticated={isAuthenticated}
-                  isDenomBase={isDenomBase}
-                  lastBlockNumber={props.lastBlockNumber}
-                  currentPositionActive={currentPositionActive}
-                  setCurrentPositionActive={setCurrentPositionActive}
-              />
-          ));
+        userPositions.map((position, idx) => (
+            <RangeCard
+                provider={provider}
+                chainId={chainId}
+                key={idx}
+                portfolio={portfolio}
+                notOnTradeRoute={notOnTradeRoute}
+                position={position}
+                isAllPositionsEnabled={isShowAllEnabled}
+                tokenAAddress={tokenAAddress}
+                tokenBAddress={tokenBAddress}
+                account={account ?? undefined}
+                isAuthenticated={isAuthenticated}
+                isDenomBase={isDenomBase}
+                lastBlockNumber={props.lastBlockNumber}
+                currentPositionActive={currentPositionActive}
+                setCurrentPositionActive={setCurrentPositionActive}
+            />
+        ));
     //   .reverse();
 
     return (
         <div className={styles.container}>
+            {/* header fields */}
             <RangeCardHeader baseToken={tradeData.baseToken} quoteToken={tradeData.quoteToken} />
+            {/* item_container is the data proper (not headings) */}
             <div
                 className={styles.item_container}
                 style={{ height: expandTradeTable ? '100%' : '220px' }}

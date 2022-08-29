@@ -7,6 +7,7 @@
     overflow-y: scroll;
     overflow-x: hidden;
     padding: 0 8px;
+    outline: 3px solid green;
 }
 
 .item_container::-webkit-scrollbar {

@@ -4,6 +4,7 @@
     grid-template-columns: auto 50px;
     align-items: center;
     height: 40px;
+    outline: 3px solid aquamarine;
 }
 
 .row_container {
