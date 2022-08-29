@@ -92,7 +92,10 @@ export default function Ranges(props: RangesProps) {
     return (
         <div className={styles.container}>
             {/* header fields */}
-            <RangeCardHeader baseToken={tradeData.baseToken} quoteToken={tradeData.quoteToken} />
+            <RangeCardHeader
+                baseToken={tradeData.baseToken}
+                quoteToken={tradeData.quoteToken}
+            />
             {/* item_container is the data proper (not headings) */}
             <div
                 className={styles.item_container}

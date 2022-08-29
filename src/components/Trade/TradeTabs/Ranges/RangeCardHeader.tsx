@@ -1,5 +1,6 @@
 import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import styles from './RangeCardHeader.module.css';
+import { FaSort } from 'react-icons/fa';
 
 interface RangeCardHeaderProps {
     baseToken: TokenIF;
@@ -7,21 +8,46 @@ interface RangeCardHeaderProps {
 }
 
 export default function RangeCardHeader(props: RangeCardHeaderProps) {
-    const { baseToken, quoteToken } = props;
+    const {
+        baseToken,
+        quoteToken
+    } = props;
 
     return (
         <div className={styles.main_container}>
             <div className={styles.row_container}>
-                <p>ID</p>
-                <p className={styles.wallet}>Wallet</p>
-
-                <p className={styles.range}>Range</p>
-                <p className={styles.range_sing}>Range Min</p>
-                <p className={styles.range_sing}>Range Max</p>
-                <p className={styles.token}>{baseToken.symbol}</p>
-                <p className={styles.token}>{quoteToken.symbol}</p>
-                <p>APY</p>
-                <p>Status</p>
+                <p className={styles.wallet}>
+                    <FaSort />
+                    Wallet
+                </p>
+                <p className={styles.range}>
+                    <FaSort />
+                    Range
+                </p>
+                <p className={styles.range_sing}>
+                    <FaSort />
+                    Range Min
+                </p>
+                <p className={styles.range_sing}>
+                    <FaSort />
+                    Range Max
+                </p>
+                <p className={styles.token}>
+                    <FaSort />
+                    {baseToken.symbol}
+                </p>
+                <p className={styles.token}>
+                    <FaSort />
+                    {quoteToken.symbol}
+                </p>
+                <p>
+                    <FaSort />
+                    APY
+                </p>
+                <p>
+                    <FaSort />
+                    Status
+                </p>
             </div>
 
             <div></div>
