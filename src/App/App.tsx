@@ -36,7 +36,7 @@ import SnackbarComponent from '../components/Global/SnackbarComponent/SnackbarCo
 import PageHeader from './components/PageHeader/PageHeader';
 import Sidebar from './components/Sidebar/Sidebar';
 import PageFooter from './components/PageFooter/PageFooter';
-import Modal from '../components/Global/Modal/Modal';
+import WalletModal from './components/WalletModal/WalletModal';
 import Home from '../pages/Home/Home';
 import Analytics from '../pages/Analytics/Analytics';
 import Portfolio from '../pages/Portfolio/Portfolio';
@@ -78,7 +78,6 @@ import { memoizeTokenDecimals } from './functions/queryTokenDecimals';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { useSlippage } from './useSlippage';
 import { useFavePools } from './hooks/useFavePools';
-import { useTermsOfService } from './hooks/useTermsOfService';
 import { useAppChain } from './hooks/useAppChain';
 import { addNativeBalance, resetTokenData, setTokens } from '../utils/state/tokenDataSlice';
 import { checkIsStable } from '../utils/data/stablePairs';
@@ -87,7 +86,8 @@ import { validateChain } from './validateChain';
 import { testTokenMap } from '../utils/data/testTokenMap';
 import { ZERO_ADDRESS } from '../constants';
 import { useModal } from '../components/Global/Modal/useModal';
-import authenticateUser from '../utils/functions/authenticateUser';
+
+// import authenticateUser from '../utils/functions/authenticateUser';
 import { getVolumeSeries } from './functions/getVolumeSeries';
 import { getTvlSeries } from './functions/getTvlSeries';
 
@@ -110,9 +110,11 @@ export default function App() {
         account,
         logout,
         isAuthenticated,
+        isAuthenticating,
         // isInitialized,
         authenticate,
         enableWeb3,
+        // authError
     } = useMoralis();
 
     const tokenMap = useTokenMap();
@@ -125,6 +127,7 @@ export default function App() {
     // `switchChain` is a function to switch to a different chain
     // `'0x5'` is the chain the app should be on by default
     const [chainData, isChainSupported, switchChain, switchNetworkInMoralis] = useAppChain('0x5');
+    useEffect(() => console.warn(chainData.chainId), [chainData.chainId]);
 
     const [isShowAllEnabled, setIsShowAllEnabled] = useState(true);
     const [currentTxActiveInTransactions, setCurrentTxActiveInTransactions] = useState('');
@@ -156,7 +159,6 @@ export default function App() {
     useEffect(() => {
         try {
             const url = exposeProviderUrl(provider);
-            // console.log(chainData.chainId)
             const onChain = exposeProviderChain(provider) === parseInt(chainData.chainId);
 
             if (isAuthenticated) {
@@ -402,8 +404,6 @@ export default function App() {
                         (tokensInRTK.length === 1 ||
                             JSON.stringify(tokensInRTKminusNative) !== JSON.stringify(newTokens))
                     ) {
-                        // console.log({ newTokens });
-                        // console.log({ tokensInRTKminusNative });
                         dispatch(setTokens(newTokens));
                     }
                 } catch (error) {
@@ -1534,23 +1534,6 @@ export default function App() {
 
     const [isModalOpenWallet, openModalWallet, closeModalWallet] = useModal();
 
-    const { tosText, acceptToS } = useTermsOfService();
-
-    // todo: style mouse as a pointer finger
-    const walletModal = (
-        <Modal onClose={closeModalWallet} title='Choose a Wallet' footer={tosText}>
-            <button
-                onClick={() => {
-                    authenticateUser(isAuthenticated, isWeb3Enabled, authenticate, enableWeb3);
-                    acceptToS();
-                    closeModalWallet();
-                }}
-            >
-                Metamask
-            </button>
-        </Modal>
-    );
-
     // props for <PageHeader/> React element
     const headerProps = {
         nativeBalance: nativeBalance,
@@ -1586,6 +1569,7 @@ export default function App() {
         chainId: chainData.chainId,
         activeTokenListsChanged: activeTokenListsChanged,
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
+        openModalWallet: openModalWallet,
     };
 
     // props for <Swap/> React element on trade route
@@ -1610,6 +1594,7 @@ export default function App() {
         chainId: chainData.chainId,
         activeTokenListsChanged: activeTokenListsChanged,
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
+        openModalWallet: openModalWallet,
     };
 
     // props for <Limit/> React element on trade route
@@ -1636,6 +1621,7 @@ export default function App() {
         chainId: chainData.chainId,
         activeTokenListsChanged: activeTokenListsChanged,
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
+        openModalWallet: openModalWallet,
     };
 
     // props for <Range/> React element
@@ -1661,6 +1647,7 @@ export default function App() {
         chainId: chainData.chainId,
         activeTokenListsChanged: activeTokenListsChanged,
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
+        openModalWallet: openModalWallet,
     };
 
     function toggleSidebar() {
@@ -1892,7 +1879,17 @@ export default function App() {
                 )}
             </div>
             <SidebarFooter />
-            {isModalOpenWallet && walletModal}
+            {isModalOpenWallet && (
+                <WalletModal
+                    closeModalWallet={closeModalWallet}
+                    isAuthenticating={isAuthenticating}
+                    isAuthenticated={isAuthenticated}
+                    isWeb3Enabled={isWeb3Enabled}
+                    authenticate={authenticate}
+                    enableWeb3={enableWeb3}
+                    // authError={authError}
+                />
+            )}
         </>
     );
 }

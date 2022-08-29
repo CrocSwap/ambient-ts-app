@@ -1,12 +1,49 @@
 .circle {
     display: block;
-    width: 3rem;
-    height: 3rem;
-    border: 0.5rem solid #e9e9e9;
-    border-top: 0.5rem solid #3498db;
+   
+    /* border: 0.5rem solid #e9e9e9;
+    border-top: 0.5rem solid #3498db; */
     border-radius: 50%;
     /* position: absolute; */
     box-sizing: border-box;
     top: 0;
     left: 0;
+}
+
+.circle_completed{
+    border-radius: 50%;
+    /* position: absolute; */
+    box-sizing: border-box;
+    top: 0;
+    left: 0;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background: transparent;
+}
+
+.circle_failed{
+
+    min-width: 7rem;
+    min-height: 7rem;
+    background: red;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background: transparent;
+
+    border-radius: 50%;
+
+    border: 1px solid #F6385B;
+}
+
+
+.circle_failed p{
+    font-weight: 200;
+
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
 }
