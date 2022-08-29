@@ -1,13 +1,24 @@
 import styles from './Chat.module.css';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { MdClose } from 'react-icons/md';
 import { BsEmojiSmile } from 'react-icons/bs';
 // interface ChatPropsIF {
 
 // }
+function MessageItem() {
+    <div className={styles.message_item_container}>
+        <h2 className={styles.name}></h2>
+        <div className={styles.message_content}>
+            <div className={styles.avatar} />
+            <div className={styles.message_text}>More message blah blah blah</div>
+        </div>
+    </div>;
+}
 
 export default function Chat() {
     const [showChatBot, setShowChatBot] = useState(true);
+    const [message, setMessage] = useState('');
+    const [messagesArray, setMessagesArray] = useState<string[]>([]);
 
     const chatButton = (
         <div
@@ -60,10 +71,25 @@ export default function Chat() {
             </div>
         </div>
     );
+    const handleMessage = (event: React.KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+
+            messagesArray?.push(message);
+            setMessage('');
+        }
+    };
+    console.log(message);
+    console.log(messagesArray);
 
     const chatInput = (
         <div className={styles.input_container}>
-            <input type='text' placeholder='Enter message' />
+            <input
+                type='text'
+                placeholder='Enter message'
+                onChange={(e) => setMessage(e.target.value)}
+                onKeyPress={(e) => handleMessage(e)}
+            />
             <div className={styles.input_right}>
                 <BsEmojiSmile size={16} color='#555555' />
             </div>

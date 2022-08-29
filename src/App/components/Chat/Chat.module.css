@@ -15,7 +15,7 @@
   
   .chat_wrapper,
   .chat_wrapper_active {
-    width: 300px;
+    width: 360px;
     padding: 1rem;
    
     height: 400px;
@@ -24,7 +24,7 @@
     border-radius: 4px;
     box-shadow: 0px 35px 20px rgba(0, 0, 0, 0.3);
     transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    right: 30px;
+    right: 10px;
 
     flex-direction: column;
 
@@ -153,6 +153,25 @@ border: none
  .input_container .input_right{
     display: flex;
     justify-content: flex-end;
+ }
+
+ /* message item */
+ .message_item_container{
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+ }
+
+ .name{
+    color: var(--accent-secondary)
+ }
+
+ .message_content{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+    
  }
 
   @media only screen and (min-width: 720px) {
