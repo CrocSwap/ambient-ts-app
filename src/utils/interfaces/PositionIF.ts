@@ -1,6 +1,7 @@
 // import { PositionPoolIF } from './PositionPoolIF';
 export interface PositionIF {
     chainId: string;
+    positionId: string;
     positionStorageSlot: string;
     askTick: number;
     bidTick: number;
@@ -35,4 +36,5 @@ export interface PositionIF {
     positionLiqQuote?: string;
     feesLiqBase?: string;
     feesLiqQuote?: string;
+    apyPercentage?: number;
 }

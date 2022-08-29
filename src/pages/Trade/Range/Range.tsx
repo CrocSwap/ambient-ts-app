@@ -66,6 +66,7 @@ interface RangePropsIF {
     activeTokenListsChanged: boolean;
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
     openModalWallet: () => void;
+    ambientApy: number | undefined;
 }
 
 export default function Range(props: RangePropsIF) {
@@ -91,6 +92,7 @@ export default function Range(props: RangePropsIF) {
         activeTokenListsChanged,
         indicateActiveTokenListsChanged,
         openModalWallet,
+        ambientApy,
     } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -541,7 +543,9 @@ export default function Range(props: RangePropsIF) {
         maxPriceDisplay = pinnedMaxPriceDisplayTruncated;
     }
 
-    const apyPercentage: number = 100 - rangeWidthPercentage + 10;
+    const apyPercentage: number | undefined = ambientApy
+        ? 100 - rangeWidthPercentage + ambientApy
+        : undefined;
 
     const advancedDaysInRangeEstimation =
         minimumSpan < 0 ? 0 : parseFloat(truncateDecimals(minimumSpan / 100, 0));

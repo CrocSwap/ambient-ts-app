@@ -10,7 +10,7 @@ interface IRangePriceInfoPropsIF {
     spotPriceDisplay: string;
     maxPriceDisplay: string;
     minPriceDisplay: string;
-    apyPercentage: number;
+    apyPercentage: number | undefined;
     didUserFlipDenom: boolean;
     poolPriceCharacter: string;
 }
@@ -27,8 +27,14 @@ export default function RangePriceInfo(props: IRangePriceInfoPropsIF) {
 
     // console.log({ spotPriceDisplay });
 
+    const apyPercentageString = apyPercentage
+        ? `Est. APY | ${apyPercentage.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          })}%`
+        : '…';
     // JSX frag for estimated APY of position
-    const apy = <span className={styles.apy}> Est. APY | {apyPercentage}%</span>;
+    const apy = <span className={styles.apy}>{apyPercentageString}</span>;
 
     // JSX frag for lowest price in range
     const minimumPrice = (

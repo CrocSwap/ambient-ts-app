@@ -17,6 +17,8 @@ import {
     setLiquidity,
     setPoolVolumeSeries,
     setPoolTvlSeries,
+    addPositionsByUser,
+    addPositionsByPool,
 } from '../utils/state/graphDataSlice';
 import { ethers } from 'ethers';
 import { useMoralis } from 'react-moralis';
@@ -424,6 +426,8 @@ export default function App() {
 
     const [isTokenABase, setIsTokenABase] = useState<boolean>(true);
 
+    const [ambientApy, setAmbientApy] = useState<number | undefined>();
+
     // TODO:  @Emily useMemo() this value
     const tokenPair = {
         dataTokenA: tradeData.tokenA,
@@ -439,6 +443,32 @@ export default function App() {
         setPoolPriceDisplay(undefined);
         const sliderInput = document.getElementById('input-slider-range') as HTMLInputElement;
         if (sliderInput) sliderInput.value = '100';
+    }, [JSON.stringify({ base: baseTokenAddress, quote: quoteTokenAddress })]);
+
+    useEffect(() => {
+        (async () => {
+            const poolAmbienApyCacheEndpoint =
+                'https://809821320828123.de:5000/' + '/pool_ambient_apy_cached?';
+
+            fetch(
+                poolAmbienApyCacheEndpoint +
+                    new URLSearchParams({
+                        base: baseTokenAddress.toLowerCase(),
+                        quote: quoteTokenAddress.toLowerCase(),
+                        poolIdx: chainData.poolIndex.toString(),
+                        chainId: chainData.chainId,
+                        concise: 'true',
+                        lookback: '604800',
+                        // n: 10 // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
+                        // page: 0 // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
+                    }),
+            )
+                .then((response) => response?.json())
+                .then((json) => {
+                    const ambientApy = json?.data?.apy;
+                    setAmbientApy(ambientApy);
+                });
+        })();
     }, [JSON.stringify({ base: baseTokenAddress, quote: quoteTokenAddress })]);
 
     // useEffect that runs when token pair changes
@@ -820,12 +850,7 @@ export default function App() {
 
             if (lastMessageData) {
                 Promise.all(lastMessageData.map(getPositionData)).then((updatedPositions) => {
-                    dispatch(
-                        setPositionsByPool({
-                            dataReceived: true,
-                            positions: updatedPositions.concat(graphData.positionsByPool.positions),
-                        }),
-                    );
+                    dispatch(addPositionsByPool(updatedPositions));
                 });
             }
         }
@@ -962,12 +987,7 @@ export default function App() {
 
             if (lastMessageData) {
                 Promise.all(lastMessageData.map(getPositionData)).then((updatedPositions) => {
-                    dispatch(
-                        setPositionsByUser({
-                            dataReceived: true,
-                            positions: updatedPositions.concat(graphData.positionsByUser.positions),
-                        }),
-                    );
+                    dispatch(addPositionsByUser(updatedPositions));
                 });
             }
         }
@@ -1188,6 +1208,7 @@ export default function App() {
         const viewProvider = provider
             ? provider
             : (await new CrocEnv(chainData.chainId).context).provider;
+
         const poolPriceNonDisplay = await cachedQuerySpotPrice(
             viewProvider,
             baseTokenAddress,
@@ -1214,11 +1235,6 @@ export default function App() {
             position.positionType === 'ambient' ||
             (position.bidTick <= poolPriceInTicks && poolPriceInTicks <= position.askTick);
 
-        // console.log(position.positionType);
-        // console.log(position.bidTick);
-        // console.log(position.askTick);
-        // console.log(position.poolPriceInTicks);
-        // console.log({ isPositionInRange });
         position.isPositionInRange = isPositionInRange;
 
         const baseTokenDecimals = await cachedGetTokenDecimals(
@@ -1648,6 +1664,7 @@ export default function App() {
         activeTokenListsChanged: activeTokenListsChanged,
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
         openModalWallet: openModalWallet,
+        ambientApy: ambientApy,
     };
 
     function toggleSidebar() {
@@ -1655,11 +1672,35 @@ export default function App() {
         setSidebarManuallySet(true);
     }
 
+    function handleTabChangedBasedOnRoute() {
+        const onTradeRoute = location.pathname.includes('trade');
+
+        const marketTabBasedOnRoute = onTradeRoute ? 0 : 0;
+        const orderTabBasedOnRoute = onTradeRoute ? 1 : 0;
+        const rangeTabBasedOnRoute = onTradeRoute ? 2 : 0;
+        setOutsideControl(true);
+        if (location.pathname === '/trade/market') {
+            setSelectedOutsideTab(marketTabBasedOnRoute);
+        } else if (location.pathname === '/trade/limit') {
+            setSelectedOutsideTab(orderTabBasedOnRoute);
+        } else if (location.pathname === '/trade/range') {
+            setSelectedOutsideTab(rangeTabBasedOnRoute);
+        } else {
+            setSelectedOutsideTab(0);
+        }
+    }
+
     useEffect(() => {
         if (location.pathname.includes('account') || location.pathname.includes('analytics')) {
             setShowSidebar(false);
         }
+
+        handleTabChangedBasedOnRoute();
     }, [location.pathname]);
+
+    // market - /trade/market
+    // limit - /trade/limit
+    // range - /trade/range
 
     const [selectedOutsideTab, setSelectedOutsideTab] = useState(0);
     const [outsideControl, setOutsideControl] = useState(false);

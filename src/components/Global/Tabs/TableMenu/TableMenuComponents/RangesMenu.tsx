@@ -23,7 +23,7 @@ interface RangesMenuIF {
     // todoFromJr: Assign the correct types to these data -Jr
     // eslint-disable-next-line
     rangeDetailsProps: any;
-    positionData: PositionIF | undefined;
+    positionData: PositionIF;
     posHash: string;
 }
 
@@ -86,7 +86,7 @@ export default function RangesMenu(props: RangesMenuIF) {
 
         case 'details':
             // modalContent = <RangeDetails {...removeRangeProps} />;
-            modalContent = <RangeDetails {...rangeDetailsProps} />;
+            modalContent = <RangeDetails position={positionData} {...rangeDetailsProps} />;
             modalTitle = <RangeDetailsHeader />;
             break;
         case 'harvest':
