@@ -51,7 +51,7 @@ export default function SidebarRangePositionsCard(props: SidebarRangePositionsPr
     const onTradeRoute = location.pathname.includes('trade');
     const onAccountRoute = location.pathname.includes('account');
 
-    const tabToSwitchToBasedOnRoute = onTradeRoute ? 0 : onAccountRoute ? 2 : 0;
+    const tabToSwitchToBasedOnRoute = onTradeRoute ? 2 : onAccountRoute ? 2 : 0;
 
     function handleRangePositionClick(pos: PositionIF) {
         setOutsideControl(true);

@@ -32,7 +32,7 @@ export default function SidebarRecentTransactionsCard(props: TransactionProps) {
     const onTradeRoute = location.pathname.includes('trade');
     const onAccountRoute = location.pathname.includes('account');
 
-    const tabToSwitchToBasedOnRoute = onTradeRoute ? 2 : onAccountRoute ? 4 : 0;
+    const tabToSwitchToBasedOnRoute = onTradeRoute ? 0 : onAccountRoute ? 4 : 0;
 
     const {
         tx,
@@ -70,31 +70,6 @@ export default function SidebarRecentTransactionsCard(props: TransactionProps) {
         } else {
             setValueUSD(undefined);
         }
-        // if (tx.baseFlow && tx.baseDecimals) {
-        //     const baseFlowDisplayNum = parseFloat(toDisplayQty(tx.baseFlow, tx.baseDecimals));
-        //     const baseFlowAbsNum = Math.abs(baseFlowDisplayNum);
-        //     const isBaseFlowNegative = baseFlowDisplayNum > 0;
-        //     const baseFlowDisplayTruncated =
-        //         baseFlowAbsNum === 0
-        //             ? '0'
-        //             : baseFlowAbsNum < 0.0001
-        //             ? baseFlowDisplayNum.toExponential(2)
-        //             : baseFlowAbsNum < 2
-        //             ? baseFlowAbsNum.toPrecision(3)
-        //             : baseFlowAbsNum >= 100000
-        //             ? formatAmount(baseFlowAbsNum)
-        //             : // ? baseLiqDisplayNum.toExponential(2)
-        //               baseFlowAbsNum.toLocaleString(undefined, {
-        //                   minimumFractionDigits: 2,
-        //                   maximumFractionDigits: 2,
-        //               });
-        //     const baseFlowDisplayString = isBaseFlowNegative
-        //         ? `(${baseFlowDisplayTruncated})`
-        //         : baseFlowDisplayTruncated;
-        //     setBaseFlowDisplay(baseFlowDisplayString);
-        // } else {
-        //     setBaseFlowDisplay(undefined);
-        // }
     }, [JSON.stringify(tx)]);
 
     function handleRecentTransactionClick(tx: ISwap) {
