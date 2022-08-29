@@ -36,4 +36,5 @@ export interface PositionIF {
     positionLiqQuote?: string;
     feesLiqBase?: string;
     feesLiqQuote?: string;
+    apyPercentage?: number;
 }
