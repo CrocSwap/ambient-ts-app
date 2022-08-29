@@ -9,7 +9,7 @@ interface WalletButtonPropsIF {
 }
 export default function WalletButton(props: WalletButtonPropsIF) {
     return (
-        <button className={styles.container}>
+        <button onClick={() => props.action()} className={styles.container}>
             <img className={styles.icon} src={props.logo ? props.logo : ambientLogo} alt='' />
             <div className={styles.wallet_name}>{props.title}</div>
         </button>
