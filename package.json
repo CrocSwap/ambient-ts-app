@@ -4,7 +4,7 @@
     "private": true,
     "dependencies": {
         "@apollo/client": "^3.6.8",
-        "@crocswap-libs/sdk": "^0.2.23",
+        "@crocswap-libs/sdk": "^0.2.23-1",
         "@d3fc/d3fc-extent": "^4.0.2",
         "@emotion/react": "^11.9.0",
         "@emotion/style": "^0.8.0",
@@ -66,7 +66,7 @@
         "start": "yarn && react-scripts start",
         "start-only": "react-scripts start",
         "build": "react-scripts --max_old_space_size=3072 build",
-        "test": "react-scripts test",
+        "test": "react-scripts test ",
         "test:nowatch": "react-scripts test --watchAll=false",
         "eject": "react-scripts eject",
         "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
