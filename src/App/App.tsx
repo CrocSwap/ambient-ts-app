@@ -18,6 +18,7 @@ import {
     setPoolVolumeSeries,
     setPoolTvlSeries,
     addPositionsByUser,
+    addPositionsByPool,
 } from '../utils/state/graphDataSlice';
 import { ethers } from 'ethers';
 import { useMoralis } from 'react-moralis';
@@ -821,12 +822,7 @@ export default function App() {
 
             if (lastMessageData) {
                 Promise.all(lastMessageData.map(getPositionData)).then((updatedPositions) => {
-                    dispatch(
-                        setPositionsByPool({
-                            dataReceived: true,
-                            positions: updatedPositions.concat(graphData.positionsByPool.positions),
-                        }),
-                    );
+                    dispatch(addPositionsByPool(updatedPositions));
                 });
             }
         }

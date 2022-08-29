@@ -267,6 +267,19 @@ export const graphDataSlice = createSlice({
         setPositionsByPool: (state, action: PayloadAction<PositionsByPool>) => {
             state.positionsByPool = action.payload;
         },
+        addPositionsByPool: (state, action: PayloadAction<Array<PositionIF>>) => {
+            const slotToFind = action.payload[0].positionStorageSlot.toLowerCase();
+            const indexOfSlot = state.positionsByPool.positions
+                .map((item) => item.positionStorageSlot.toLowerCase())
+                .findIndex((slot) => slot === slotToFind);
+            if (indexOfSlot === -1) {
+                state.positionsByPool.positions = action.payload.concat(
+                    state.positionsByPool.positions,
+                );
+            } else {
+                state.positionsByPool.positions[indexOfSlot] = action.payload[0];
+            }
+        },
         setPoolVolumeSeries: (state, action: PayloadAction<PoolVolumeSeries>) => {
             state.poolVolumeSeries = action.payload;
         },
@@ -460,6 +473,7 @@ export const {
     setPositionsByUser,
     addPositionsByUser,
     setPositionsByPool,
+    addPositionsByPool,
     setPoolVolumeSeries,
     setPoolTvlSeries,
     setLiquidity,
