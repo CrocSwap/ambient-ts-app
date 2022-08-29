@@ -47,6 +47,43 @@ export default function Ranges(props: RangesProps) {
     const userPositions = graphData?.positionsByUser?.positions;
     const poolPositions = graphData?.positionsByPool?.positions;
 
+    const columnHeaders = [
+        {
+            name: 'Wallet',
+            sortable: true
+        },
+        {
+            name: 'Range',
+            sortable: true
+        },
+        {
+            name: 'Range Min',
+            sortable: true
+        },
+        {
+            name: 'Range Max',
+            sortable: true
+        },
+        {
+            name: tradeData.baseToken,
+            sortable: true
+        },
+        {
+            name: tradeData.quoteToken,
+            sortable: true
+        },
+        {
+            name: 'APY',
+            sortable: true
+        },
+        {
+            name: 'Status',
+            sortable: true
+        }
+    ];
+
+
+
     const RangesDisplay = isShowAllEnabled
         ? poolPositions.map((position, idx) => (
             <RangeCard

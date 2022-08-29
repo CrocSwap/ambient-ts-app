@@ -49,8 +49,6 @@ export default function RangeCardHeader(props: RangeCardHeaderProps) {
                     Status
                 </p>
             </div>
-
-            <div></div>
         </div>
     );
 }
