@@ -172,7 +172,9 @@ export default function Range(props: RangePropsIF) {
     useEffect(() => {
         if (tradeData.simpleRangeWidth !== rangeWidthPercentage) {
             setSimpleRangeWidth(tradeData.simpleRangeWidth);
-            setRangeWidthPercentage(100);
+            setRangeWidthPercentage(tradeData.simpleRangeWidth);
+            const sliderInput = document.getElementById('input-slider-range') as HTMLInputElement;
+            if (sliderInput) sliderInput.value = tradeData.simpleRangeWidth.toString();
         }
     }, [tradeData.simpleRangeWidth]);
 
