@@ -15,6 +15,10 @@ import {
     setCandles,
     addCandles,
     setLiquidity,
+    setPoolVolumeSeries,
+    setPoolTvlSeries,
+    addPositionsByUser,
+    addPositionsByPool,
 } from '../utils/state/graphDataSlice';
 import { ethers } from 'ethers';
 import { useMoralis } from 'react-moralis';
@@ -34,7 +38,7 @@ import SnackbarComponent from '../components/Global/SnackbarComponent/SnackbarCo
 import PageHeader from './components/PageHeader/PageHeader';
 import Sidebar from './components/Sidebar/Sidebar';
 import PageFooter from './components/PageFooter/PageFooter';
-import Modal from '../components/Global/Modal/Modal';
+import WalletModal from './components/WalletModal/WalletModal';
 import Home from '../pages/Home/Home';
 import Analytics from '../pages/Analytics/Analytics';
 import Portfolio from '../pages/Portfolio/Portfolio';
@@ -62,7 +66,11 @@ import {
     resetTradeData,
     setAdvancedHighTick,
     setAdvancedLowTick,
+    setAdvancedMode,
     setDenomInBase,
+    setDidUserFlipDenom,
+    setPrimaryQuantityRange,
+    setSimpleRangeWidth,
 } from '../utils/state/tradeDataSlice';
 import PoolPage from '../pages/PoolPage/PoolPage';
 import { memoizeQuerySpotPrice, querySpotPrice } from './functions/querySpotPrice';
@@ -73,7 +81,6 @@ import { memoizeTokenDecimals } from './functions/queryTokenDecimals';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { useSlippage } from './useSlippage';
 import { useFavePools } from './hooks/useFavePools';
-import { useTermsOfService } from './hooks/useTermsOfService';
 import { useAppChain } from './hooks/useAppChain';
 import { addNativeBalance, resetTokenData, setTokens } from '../utils/state/tokenDataSlice';
 import { checkIsStable } from '../utils/data/stablePairs';
@@ -82,7 +89,10 @@ import { validateChain } from './validateChain';
 import { testTokenMap } from '../utils/data/testTokenMap';
 import { ZERO_ADDRESS } from '../constants';
 import { useModal } from '../components/Global/Modal/useModal';
-import authenticateUser from '../utils/functions/authenticateUser';
+
+// import authenticateUser from '../utils/functions/authenticateUser';
+import { getVolumeSeries } from './functions/getVolumeSeries';
+import { getTvlSeries } from './functions/getTvlSeries';
 
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 const cachedFetchAddress = memoizeFetchAddress();
@@ -98,14 +108,16 @@ const shouldNonCandleSubscriptionsReconnect = true;
 /** ***** React Function *******/
 export default function App() {
     const {
-        Moralis,
+        // Moralis,
         isWeb3Enabled,
         account,
         logout,
         isAuthenticated,
-        isInitialized,
+        isAuthenticating,
+        // isInitialized,
         authenticate,
         enableWeb3,
+        // authError
     } = useMoralis();
 
     const tokenMap = useTokenMap();
@@ -118,6 +130,7 @@ export default function App() {
     // `switchChain` is a function to switch to a different chain
     // `'0x5'` is the chain the app should be on by default
     const [chainData, isChainSupported, switchChain, switchNetworkInMoralis] = useAppChain('0x5');
+    useEffect(() => console.warn(chainData.chainId), [chainData.chainId]);
 
     const [isShowAllEnabled, setIsShowAllEnabled] = useState(true);
     const [currentTxActiveInTransactions, setCurrentTxActiveInTransactions] = useState('');
@@ -131,7 +144,7 @@ export default function App() {
 
     function exposeProviderUrl(provider?: ethers.providers.Provider): string {
         if (provider && 'connection' in provider) {
-            return (provider as ethers.providers.JsonRpcProvider).connection?.url;
+            return (provider as ethers.providers.WebSocketProvider).connection?.url;
         } else {
             return '';
         }
@@ -139,7 +152,7 @@ export default function App() {
 
     function exposeProviderChain(provider?: ethers.providers.Provider): number {
         if (provider && 'network' in provider) {
-            return (provider as ethers.providers.JsonRpcProvider).network?.chainId;
+            return (provider as ethers.providers.WebSocketProvider).network?.chainId;
         } else {
             return -1;
         }
@@ -148,9 +161,11 @@ export default function App() {
     const [metamaskLocked, setMetamaskLocked] = useState<boolean>(true);
     useEffect(() => {
         try {
+            console.log('Init provider' + provider);
             const url = exposeProviderUrl(provider);
-            // console.log(chainData.chainId)
             const onChain = exposeProviderChain(provider) === parseInt(chainData.chainId);
+
+            console.log('Exposed URL ' + url);
 
             if (isAuthenticated) {
                 if (provider && url === 'metamask' && !metamaskLocked && onChain) {
@@ -169,7 +184,8 @@ export default function App() {
                 }
             } else if (!provider || !onChain) {
                 const url = lookupChain(chainData.chainId).nodeUrl;
-                setProvider(new ethers.providers.JsonRpcProvider(url));
+                console.log('Chain URL ' + url);
+                setProvider(new ethers.providers.WebSocketProvider(url));
             }
         } catch (error) {
             console.log(error);
@@ -218,19 +234,53 @@ export default function App() {
     }, [tokenListsReceived]);
 
     useEffect(() => {
-        if (isInitialized) {
-            (async () => {
-                const currentDateTime = new Date().toISOString();
-                const defaultChain = 'goerli';
-                const options = {
-                    chain: defaultChain as 'goerli', // Cheat and narrow type. We know chain string matches Moralis' chain union type
-                    date: currentDateTime,
-                };
-                const currentBlock = (await Moralis.Web3API.native.getDateToBlock(options)).block;
-                setLastBlockNumber(currentBlock);
-            })();
+        fetch('https://goerli.infura.io/v3/4a162c75bd514925890174ca13cdb6a2', {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                jsonrpc: '2.0',
+                method: 'eth_blockNumber',
+                params: [],
+                id: 5,
+            }),
+        })
+            .then((response) => response?.json())
+            .then((json) => {
+                if (lastBlockNumber !== parseInt(json?.result)) {
+                    setLastBlockNumber(parseInt(json?.result));
+                }
+            });
+    }, []);
+
+    const goerliWssInfuraEndpoint = 'wss://goerli.infura.io/ws/v3/4a162c75bd514925890174ca13cdb6a2';
+
+    const { sendMessage: send, lastMessage: lastNewHeadMessage } = useWebSocket(
+        goerliWssInfuraEndpoint,
+        {
+            onOpen: () =>
+                send('{"jsonrpc":"2.0","method":"eth_subscribe","params":["newHeads"],"id":5}'),
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            onClose: (event: any) => console.log({ event }),
+            shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
+        },
+    );
+
+    useEffect(() => {
+        if (lastNewHeadMessage !== null) {
+            if (lastNewHeadMessage?.data) {
+                const lastMessageData = JSON.parse(lastNewHeadMessage?.data);
+                if (lastMessageData) {
+                    const lastBlockNumberHex = lastMessageData.params?.result?.number;
+                    if (lastBlockNumberHex && lastBlockNumber !== parseInt(lastBlockNumberHex)) {
+                        setLastBlockNumber(parseInt(lastBlockNumberHex));
+                    }
+                }
+            }
         }
-    }, [isInitialized]);
+    }, [lastNewHeadMessage]);
 
     // hook holding values and setter functions for slippage
     // holds stable and volatile values for swap and mint transactions
@@ -363,8 +413,6 @@ export default function App() {
                         (tokensInRTK.length === 1 ||
                             JSON.stringify(tokensInRTKminusNative) !== JSON.stringify(newTokens))
                     ) {
-                        // console.log({ newTokens });
-                        // console.log({ tokensInRTKminusNative });
                         dispatch(setTokens(newTokens));
                     }
                 } catch (error) {
@@ -385,6 +433,8 @@ export default function App() {
 
     const [isTokenABase, setIsTokenABase] = useState<boolean>(true);
 
+    const [ambientApy, setAmbientApy] = useState<number | undefined>();
+
     // TODO:  @Emily useMemo() this value
     const tokenPair = {
         dataTokenA: tradeData.tokenA,
@@ -394,8 +444,42 @@ export default function App() {
     const tokenPairStringified = useMemo(() => JSON.stringify(tokenPair), [tokenPair]);
 
     useEffect(() => {
+        dispatch(setPrimaryQuantityRange(''));
+        dispatch(setSimpleRangeWidth(100));
+        dispatch(setAdvancedMode(false));
         setPoolPriceDisplay(undefined);
-    }, [baseTokenAddress, quoteTokenAddress]);
+        dispatch(setDidUserFlipDenom(false)); // reset so a new token pair is re-evaluated for price > 1
+        const sliderInput = document.getElementById('input-slider-range') as HTMLInputElement;
+        if (sliderInput) sliderInput.value = '100';
+    }, [JSON.stringify({ base: baseTokenAddress, quote: quoteTokenAddress })]);
+
+    useEffect(() => {
+        (async () => {
+            if (baseTokenAddress && quoteTokenAddress) {
+                const poolAmbientApyCacheEndpoint =
+                    'https://809821320828123.de:5000' + '/pool_ambient_apy_cached?';
+
+                fetch(
+                    poolAmbientApyCacheEndpoint +
+                        new URLSearchParams({
+                            base: baseTokenAddress.toLowerCase(),
+                            quote: quoteTokenAddress.toLowerCase(),
+                            poolIdx: chainData.poolIndex.toString(),
+                            chainId: chainData.chainId,
+                            concise: 'true',
+                            lookback: '604800',
+                            // n: 10 // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
+                            // page: 0 // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
+                        }),
+                )
+                    .then((response) => response?.json())
+                    .then((json) => {
+                        const ambientApy = json?.data?.apy;
+                        setAmbientApy(ambientApy);
+                    });
+            }
+        })();
+    }, [JSON.stringify({ base: baseTokenAddress, quote: quoteTokenAddress })]);
 
     // useEffect that runs when token pair changes
     useEffect(() => {
@@ -443,91 +527,79 @@ export default function App() {
                 setQuoteTokenDecimals(tokenPair.dataTokenA.decimals);
             }
 
-            try {
-                if (httpGraphCacheServerDomain) {
-                    const allPositionsCacheEndpoint =
-                        httpGraphCacheServerDomain + '/pool_positions?';
-                    fetch(
-                        allPositionsCacheEndpoint +
-                            new URLSearchParams({
-                                base: sortedTokens[0].toLowerCase(),
-                                quote: sortedTokens[1].toLowerCase(),
-                                poolIdx: chainData.poolIndex.toString(),
-                                chainId: chainData.chainId,
-                                tokenQuantities: 'true',
-                            }),
+            // retrieve pool TVL series
+            getTvlSeries(
+                sortedTokens[0],
+                sortedTokens[1],
+                chainData.poolIndex,
+                chainData.chainId,
+                600, // 10 minute resolution
+            )
+                .then((tvlSeries) => {
+                    if (
+                        tvlSeries &&
+                        tvlSeries.base &&
+                        tvlSeries.quote &&
+                        tvlSeries.poolIdx &&
+                        tvlSeries.seriesData
                     )
-                        .then((response) => response.json())
-                        .then((json) => {
-                            const poolPositions = json.data;
-
-                            if (poolPositions) {
-                                // console.log({ poolPositions });
-                                Promise.all(poolPositions.map(getPositionData)).then(
-                                    (updatedPositions) => {
-                                        // console.log({ updatedPositions });
-                                        if (
-                                            JSON.stringify(graphData.positionsByUser.positions) !==
-                                            JSON.stringify(updatedPositions)
-                                        ) {
-                                            dispatch(
-                                                setPositionsByPool({
-                                                    dataReceived: true,
-                                                    positions: updatedPositions,
-                                                }),
-                                            );
-                                        }
+                        dispatch(
+                            setPoolTvlSeries({
+                                dataReceived: true,
+                                pools: [
+                                    {
+                                        dataReceived: true,
+                                        pool: {
+                                            base: tvlSeries.base,
+                                            quote: tvlSeries.quote,
+                                            poolIdx: tvlSeries.poolIdx,
+                                            chainId: chainData.chainId,
+                                        },
+                                        tvlData: tvlSeries,
                                     },
-                                );
-                            }
-                        })
-                        .catch(console.log);
-                }
-            } catch (error) {
-                console.log;
-            }
-
-            try {
-                if (httpGraphCacheServerDomain) {
-                    const poolSwapsCacheEndpoint = httpGraphCacheServerDomain + '/pool_swaps?';
-
-                    fetch(
-                        poolSwapsCacheEndpoint +
-                            new URLSearchParams({
-                                base: sortedTokens[0].toLowerCase(),
-                                quote: sortedTokens[1].toLowerCase(),
-                                poolIdx: chainData.poolIndex.toString(),
-                                chainId: chainData.chainId,
-                                addValue: 'true',
-                                // n: 10 // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
-                                // page: 0 // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
+                                ],
                             }),
-                    )
-                        .then((response) => response?.json())
-                        .then((json) => {
-                            const poolSwaps = json?.data;
+                        );
+                })
+                .catch(console.log);
 
-                            if (poolSwaps) {
-                                Promise.all(poolSwaps.map(getSwapData)).then((updatedSwaps) => {
-                                    if (
-                                        JSON.stringify(graphData.swapsByUser.swaps) !==
-                                        JSON.stringify(updatedSwaps)
-                                    ) {
-                                        dispatch(
-                                            setSwapsByPool({
-                                                dataReceived: true,
-                                                swaps: updatedSwaps,
-                                            }),
-                                        );
-                                    }
-                                });
-                            }
-                        })
-                        .catch(console.log);
-                }
-            } catch (error) {
-                console.log;
-            }
+            // retrieve pool volume series
+            getVolumeSeries(
+                sortedTokens[0],
+                sortedTokens[1],
+                chainData.poolIndex,
+                chainData.chainId,
+                600, // 10 minute resolution
+            )
+                .then((volumeSeries) => {
+                    if (
+                        volumeSeries &&
+                        volumeSeries.base &&
+                        volumeSeries.quote &&
+                        volumeSeries.poolIdx &&
+                        volumeSeries.seriesData
+                    )
+                        dispatch(
+                            setPoolVolumeSeries({
+                                dataReceived: true,
+                                pools: [
+                                    {
+                                        dataReceived: true,
+                                        pool: {
+                                            base: volumeSeries.base,
+                                            quote: volumeSeries.quote,
+                                            poolIdx: volumeSeries.poolIdx,
+                                            chainId: chainData.chainId,
+                                        },
+                                        volumeData: volumeSeries,
+                                    },
+                                ],
+                            }),
+                        );
+                })
+                .catch(console.log);
+
+            // retrieve pool liquidity
             try {
                 if (httpGraphCacheServerDomain) {
                     const poolLiquidityCacheEndpoint =
@@ -568,8 +640,99 @@ export default function App() {
             } catch (error) {
                 console.log;
             }
+
+            if (provider) {
+                // retrieve pool_positions
+                try {
+                    if (httpGraphCacheServerDomain) {
+                        const allPositionsCacheEndpoint =
+                            httpGraphCacheServerDomain + '/pool_positions?';
+                        fetch(
+                            allPositionsCacheEndpoint +
+                                new URLSearchParams({
+                                    base: sortedTokens[0].toLowerCase(),
+                                    quote: sortedTokens[1].toLowerCase(),
+                                    poolIdx: chainData.poolIndex.toString(),
+                                    chainId: chainData.chainId,
+                                    tokenQuantities: 'true',
+                                }),
+                        )
+                            .then((response) => response.json())
+                            .then((json) => {
+                                const poolPositions = json.data;
+
+                                if (poolPositions) {
+                                    // console.log({ poolPositions });
+                                    Promise.all(poolPositions.map(getPositionData)).then(
+                                        (updatedPositions) => {
+                                            // console.log({ updatedPositions });
+                                            if (
+                                                JSON.stringify(
+                                                    graphData.positionsByUser.positions,
+                                                ) !== JSON.stringify(updatedPositions)
+                                            ) {
+                                                dispatch(
+                                                    setPositionsByPool({
+                                                        dataReceived: true,
+                                                        positions: updatedPositions,
+                                                    }),
+                                                );
+                                            }
+                                        },
+                                    );
+                                }
+                            })
+                            .catch(console.log);
+                    }
+                } catch (error) {
+                    console.log;
+                }
+
+                // retrieve pool_swaps
+                try {
+                    if (httpGraphCacheServerDomain) {
+                        const poolSwapsCacheEndpoint = httpGraphCacheServerDomain + '/pool_swaps?';
+
+                        fetch(
+                            poolSwapsCacheEndpoint +
+                                new URLSearchParams({
+                                    base: sortedTokens[0].toLowerCase(),
+                                    quote: sortedTokens[1].toLowerCase(),
+                                    poolIdx: chainData.poolIndex.toString(),
+                                    chainId: chainData.chainId,
+                                    addValue: 'true',
+                                    // n: 10 // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
+                                    // page: 0 // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
+                                }),
+                        )
+                            .then((response) => response?.json())
+                            .then((json) => {
+                                const poolSwaps = json?.data;
+
+                                if (poolSwaps) {
+                                    Promise.all(poolSwaps.map(getSwapData)).then((updatedSwaps) => {
+                                        if (
+                                            JSON.stringify(graphData.swapsByUser.swaps) !==
+                                            JSON.stringify(updatedSwaps)
+                                        ) {
+                                            dispatch(
+                                                setSwapsByPool({
+                                                    dataReceived: true,
+                                                    swaps: updatedSwaps,
+                                                }),
+                                            );
+                                        }
+                                    });
+                                }
+                            })
+                            .catch(console.log);
+                    }
+                } catch (error) {
+                    console.log;
+                }
+            }
         }
-    }, [tokenPairStringified, chainData.chainId]);
+    }, [tokenPairStringified, chainData.chainId, provider]);
 
     const activePeriod = tradeData.activeChartPeriod;
 
@@ -697,12 +860,7 @@ export default function App() {
 
             if (lastMessageData) {
                 Promise.all(lastMessageData.map(getPositionData)).then((updatedPositions) => {
-                    dispatch(
-                        setPositionsByPool({
-                            dataReceived: true,
-                            positions: updatedPositions.concat(graphData.positionsByPool.positions),
-                        }),
-                    );
+                    dispatch(addPositionsByPool(updatedPositions));
                 });
             }
         }
@@ -839,12 +997,7 @@ export default function App() {
 
             if (lastMessageData) {
                 Promise.all(lastMessageData.map(getPositionData)).then((updatedPositions) => {
-                    dispatch(
-                        setPositionsByUser({
-                            dataReceived: true,
-                            positions: updatedPositions.concat(graphData.positionsByUser.positions),
-                        }),
-                    );
+                    dispatch(addPositionsByUser(updatedPositions));
                 });
             }
         }
@@ -949,11 +1102,11 @@ export default function App() {
             ) {
                 const croc = new CrocEnv(provider);
                 croc.token(tokenPair.dataTokenA.address)
-                    .balanceDisplay(account)
+                    .walletDisplay(account)
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     .then((bal: any) => setTokenABalance(bal));
                 croc.token(tokenPair.dataTokenB.address)
-                    .balanceDisplay(account)
+                    .walletDisplay(account)
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     .then((bal: any) => setTokenBBalance(bal));
             }
@@ -1036,6 +1189,17 @@ export default function App() {
         // swap.user = swap.user.startsWith('0x') ? swap.user : '0x' + swap.user;
         // swap.id = '0x' + swap.id.slice(6);
 
+        const viewProvider = provider
+            ? provider
+            : (await new CrocEnv(chainData.chainId).context).provider;
+
+        try {
+            const ensName = await cachedFetchAddress(viewProvider, swap.user, chainData.chainId);
+            if (ensName) swap.userEnsName = ensName;
+        } catch (error) {
+            console.warn(error);
+        }
+
         return swap;
     };
 
@@ -1054,6 +1218,7 @@ export default function App() {
         const viewProvider = provider
             ? provider
             : (await new CrocEnv(chainData.chainId).context).provider;
+
         const poolPriceNonDisplay = await cachedQuerySpotPrice(
             viewProvider,
             baseTokenAddress,
@@ -1074,6 +1239,13 @@ export default function App() {
         }
 
         const poolPriceInTicks = Math.log(poolPriceNonDisplay) / Math.log(1.0001);
+        position.poolPriceInTicks = poolPriceInTicks;
+
+        const isPositionInRange =
+            position.positionType === 'ambient' ||
+            (position.bidTick <= poolPriceInTicks && poolPriceInTicks <= position.askTick);
+
+        position.isPositionInRange = isPositionInRange;
 
         const baseTokenDecimals = await cachedGetTokenDecimals(
             viewProvider,
@@ -1164,7 +1336,7 @@ export default function App() {
         position.baseTokenLogoURI = baseTokenLogoURI ?? '';
         position.quoteTokenLogoURI = quoteTokenLogoURI ?? '';
 
-        if (!position.ambient) {
+        if (position.positionType !== 'ambient') {
             position.lowRangeDisplayInBase =
                 lowerPriceDisplayInBase < 0.0001
                     ? lowerPriceDisplayInBase.toExponential(2)
@@ -1189,7 +1361,7 @@ export default function App() {
                       });
         }
 
-        if (!position.ambient) {
+        if (position.positionType !== 'ambient') {
             position.lowRangeDisplayInQuote =
                 lowerPriceDisplayInQuote < 0.0001
                     ? lowerPriceDisplayInQuote.toExponential(2)
@@ -1214,7 +1386,6 @@ export default function App() {
                       });
         }
 
-        position.poolPriceInTicks = poolPriceInTicks;
         return position;
     };
 
@@ -1345,7 +1516,7 @@ export default function App() {
             if (provider && account && isAuthenticated && isWeb3Enabled) {
                 new CrocEnv(provider)
                     .tokenEth()
-                    .balance(account)
+                    .wallet(account)
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     .then((eth: any) => {
                         const displayBalance = toDisplayQty(eth.toString(), 18);
@@ -1385,46 +1556,9 @@ export default function App() {
             .catch(console.log);
     }, [lastBlockNumber]);
 
-    // useEffect to get current block number
-    // on a 10 second interval
-    // currently displayed in footer
-    useEffect(() => {
-        const interval = setInterval(async () => {
-            const currentDateTime = new Date().toISOString();
-            const chain = chainData.chainId;
-            const options = {
-                chain: chain as 'goerli', // Cheat and narrow type. We know chain string matches Moralis' chain union type
-                date: currentDateTime,
-            };
-            const currentBlock = (await Moralis.Web3API.native.getDateToBlock(options)).block;
-            if (currentBlock !== lastBlockNumber) {
-                setLastBlockNumber(currentBlock);
-            }
-        }, 10000);
-
-        return () => clearInterval(interval);
-    }, [chainData.chainId, lastBlockNumber]);
-
     const shouldDisplayAccountTab = isAuthenticated && isWeb3Enabled && account != '';
 
     const [isModalOpenWallet, openModalWallet, closeModalWallet] = useModal();
-
-    const { tosText, acceptToS } = useTermsOfService();
-
-    // todo: style mouse as a pointer finger
-    const walletModal = (
-        <Modal onClose={closeModalWallet} title='Choose a Wallet' footer={tosText}>
-            <button
-                onClick={() => {
-                    authenticateUser(isAuthenticated, isWeb3Enabled, authenticate, enableWeb3);
-                    acceptToS();
-                    closeModalWallet();
-                }}
-            >
-                Metamask
-            </button>
-        </Modal>
-    );
 
     // props for <PageHeader/> React element
     const headerProps = {
@@ -1461,6 +1595,7 @@ export default function App() {
         chainId: chainData.chainId,
         activeTokenListsChanged: activeTokenListsChanged,
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
+        openModalWallet: openModalWallet,
     };
 
     // props for <Swap/> React element on trade route
@@ -1485,6 +1620,7 @@ export default function App() {
         chainId: chainData.chainId,
         activeTokenListsChanged: activeTokenListsChanged,
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
+        openModalWallet: openModalWallet,
     };
 
     // props for <Limit/> React element on trade route
@@ -1511,6 +1647,7 @@ export default function App() {
         chainId: chainData.chainId,
         activeTokenListsChanged: activeTokenListsChanged,
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
+        openModalWallet: openModalWallet,
         limitRate: limitRate,
         setLimitRate: setLimitRate,
     };
@@ -1538,6 +1675,8 @@ export default function App() {
         chainId: chainData.chainId,
         activeTokenListsChanged: activeTokenListsChanged,
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
+        openModalWallet: openModalWallet,
+        ambientApy: ambientApy,
     };
 
     function toggleSidebar() {
@@ -1545,11 +1684,35 @@ export default function App() {
         setSidebarManuallySet(true);
     }
 
+    function handleTabChangedBasedOnRoute() {
+        const onTradeRoute = location.pathname.includes('trade');
+
+        const marketTabBasedOnRoute = onTradeRoute ? 0 : 0;
+        const orderTabBasedOnRoute = onTradeRoute ? 1 : 0;
+        const rangeTabBasedOnRoute = onTradeRoute ? 2 : 0;
+        setOutsideControl(true);
+        if (location.pathname === '/trade/market') {
+            setSelectedOutsideTab(marketTabBasedOnRoute);
+        } else if (location.pathname === '/trade/limit') {
+            setSelectedOutsideTab(orderTabBasedOnRoute);
+        } else if (location.pathname === '/trade/range') {
+            setSelectedOutsideTab(rangeTabBasedOnRoute);
+        } else {
+            setSelectedOutsideTab(0);
+        }
+    }
+
     useEffect(() => {
         if (location.pathname.includes('account') || location.pathname.includes('analytics')) {
             setShowSidebar(false);
         }
+
+        handleTabChangedBasedOnRoute();
     }, [location.pathname]);
+
+    // market - /trade/market
+    // limit - /trade/limit
+    // range - /trade/range
 
     const [selectedOutsideTab, setSelectedOutsideTab] = useState(0);
     const [outsideControl, setOutsideControl] = useState(false);
@@ -1683,6 +1846,7 @@ export default function App() {
                                     isTokenABase={isTokenABase}
                                     poolPriceDisplay={poolPriceDisplay}
                                     chainId={chainData.chainId}
+                                    chainData={chainData}
                                     currentTxActiveInTransactions={currentTxActiveInTransactions}
                                     setCurrentTxActiveInTransactions={
                                         setCurrentTxActiveInTransactions
@@ -1775,7 +1939,17 @@ export default function App() {
                 )}
             </div>
             <SidebarFooter />
-            {isModalOpenWallet && walletModal}
+            {isModalOpenWallet && (
+                <WalletModal
+                    closeModalWallet={closeModalWallet}
+                    isAuthenticating={isAuthenticating}
+                    isAuthenticated={isAuthenticated}
+                    isWeb3Enabled={isWeb3Enabled}
+                    authenticate={authenticate}
+                    enableWeb3={enableWeb3}
+                    // authError={authError}
+                />
+            )}
         </>
     );
 }

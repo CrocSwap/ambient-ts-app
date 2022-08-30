@@ -26,33 +26,6 @@ export default function TopPools(props: TopPoolsProps) {
     const dispatch = useAppDispatch();
 
     return (
-        // <AnimateSharedLayout>
-        //     <motion.div
-        //         className={styles.container}
-        //         initial={{ width: 0 }}
-        //         animate={{ width: '100%' }}
-        //         exit={{ x: window.innerWidth, transition: { duration: 2 } }}
-        //     >
-        //         <div className={styles.title}>{t('topPools')}</div>
-        //         <div className={styles.content}>
-        //             {topPools.map((pool, idx) => (
-        //                 <NavLink key={idx} to='/trade/market'>
-        //                     <PoolCard
-        //                         speed={pool.speed}
-        //                         name={pool.name}
-        //                         key={idx}
-        //                         isSelected={selected === pool.id}
-        //                         onMouseEnter={() => setSelected(pool.id ? pool.id : -2)}
-        //                         onClick={() => {
-        //                             dispatch(setTokenA(pool.tokenA));
-        //                             dispatch(setTokenB(pool.tokenB));
-        //                         }}
-        //                     />
-        //                 </NavLink>
-        //             ))}
-        //         </div>
-        //     </motion.div>
-        // </AnimateSharedLayout>
         <motion.div
             className={styles.container}
             initial={{ width: 0 }}
@@ -65,12 +38,12 @@ export default function TopPools(props: TopPoolsProps) {
                     <NavLink key={idx} to='/trade/market'>
                         <PoolCard
                             name={pool.name}
-                            tokenA={pool.tokenA}
-                            tokenB={pool.tokenB}
+                            tokenA={pool.base}
+                            tokenB={pool.quote}
                             key={idx}
                             onClick={() => {
-                                dispatch(setTokenA(pool.tokenA));
-                                dispatch(setTokenB(pool.tokenB));
+                                dispatch(setTokenA(pool.base));
+                                dispatch(setTokenB(pool.quote));
                             }}
                             tokenMap={tokenMap}
                             lastBlockNumber={lastBlockNumber}

@@ -10,6 +10,7 @@ import RangesMenu from '../../../Global/Tabs/TableMenu/TableMenuComponents/Range
 import { ethers } from 'ethers';
 import { useEffect, useState, Dispatch, SetStateAction } from 'react';
 import { formatAmount } from '../../../../utils/numbers';
+import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 
 interface RangeCardProps {
     provider: ethers.providers.Provider | undefined;
@@ -48,7 +49,7 @@ export default function RangeCard(props: RangeCardProps) {
     // -------------------------------POSITION HASH------------------------
 
     let posHash;
-    if (position.ambient) {
+    if (position.positionType == 'ambient') {
         posHash = ambientPosSlot(position.user, position.base, position.quote, 36000);
     } else {
         posHash = concPosSlot(
@@ -64,19 +65,7 @@ export default function RangeCard(props: RangeCardProps) {
     // -------------------------------END OF POSITION HASH------------------------
 
     // -----------------------------POSITIONS RANGE--------------------
-    let isPositionInRange = true;
-
-    if (position.poolPriceInTicks) {
-        if (
-            position.positionType === 'ambient' ||
-            (position.bidTick <= position.poolPriceInTicks &&
-                position.poolPriceInTicks <= position.askTick)
-        ) {
-            isPositionInRange = true;
-        } else {
-            isPositionInRange = false;
-        }
-    }
+    const isPositionInRange = position.isPositionInRange;
 
     // ----------------------------------END OF POSITIONS RANGE-------------------
 
@@ -104,12 +93,17 @@ export default function RangeCard(props: RangeCardProps) {
 
     // ---------------------------------POSITIONS MIN AND MAX RANGE--------------------
 
+    const baseTokenCharacter = position.baseSymbol ? getUnicodeCharacter(position.baseSymbol) : '';
+    const quoteTokenCharacter = position.quoteSymbol
+        ? getUnicodeCharacter(position.quoteSymbol)
+        : '';
+
     const minRange = props.isDenomBase
-        ? position.lowRangeDisplayInBase
-        : position.lowRangeDisplayInQuote;
+        ? quoteTokenCharacter + position.lowRangeDisplayInBase
+        : baseTokenCharacter + position.lowRangeDisplayInQuote;
     const maxRange = props.isDenomBase
-        ? position.highRangeDisplayInBase
-        : position.highRangeDisplayInQuote;
+        ? quoteTokenCharacter + position.highRangeDisplayInBase
+        : baseTokenCharacter + position.highRangeDisplayInQuote;
 
     const ambientMinOrNull = position.positionType === 'ambient' ? '0' : minRange;
     const ambientMaxOrNull = position.positionType === 'ambient' ? '∞' : maxRange;
@@ -144,6 +138,25 @@ export default function RangeCard(props: RangeCardProps) {
     const [quoteLiquidityDisplay, setQuoteLiquidityDisplay] = useState<string | undefined>(
         undefined,
     );
+    // console.log(currentPositionActive);
+    // console.log(position.positionStorageSlot);
+
+    const positionDomId =
+        position.positionStorageSlot === currentPositionActive
+            ? `position-${position.positionStorageSlot}`
+            : '';
+
+    function scrollToDiv() {
+        const element = document.getElementById(positionDomId);
+
+        element?.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
+    }
+
+    useEffect(() => {
+        position.positionStorageSlot === currentPositionActive ? scrollToDiv() : null;
+    }, [currentPositionActive]);
+
+    const [positionApy, setPositionApy] = useState<number | undefined>();
 
     useEffect(() => {
         if (position.positionLiqBase && position.baseTokenDecimals) {
@@ -190,6 +203,49 @@ export default function RangeCard(props: RangeCardProps) {
         } else {
             setQuoteLiquidityDisplay(undefined);
         }
+
+        (async () => {
+            const positionApyCacheEndpoint = 'https://809821320828123.de:5000' + '/position_apy?';
+
+            const positionApy =
+                position.positionType === 'ambient'
+                    ? await fetch(
+                          positionApyCacheEndpoint +
+                              new URLSearchParams({
+                                  chainId: position.chainId,
+                                  user: position.user,
+                                  base: position.base,
+                                  quote: position.quote,
+                                  poolIdx: position.poolIdx.toString(),
+                                  concise: 'true',
+                              }),
+                      )
+                          .then((response) => response?.json())
+                          .then((json) => {
+                              const apy = json?.data?.results?.apy;
+                              return apy;
+                          })
+                    : await fetch(
+                          positionApyCacheEndpoint +
+                              new URLSearchParams({
+                                  chainId: position.chainId,
+                                  user: position.user,
+                                  base: position.base,
+                                  quote: position.quote,
+                                  bidTick: position.bidTick.toString(),
+                                  askTick: position.askTick.toString(),
+                                  poolIdx: position.poolIdx.toString(),
+                                  concise: 'true',
+                              }),
+                      )
+                          .then((response) => response?.json())
+                          .then((json) => {
+                              const apy = json?.data?.results?.apy;
+                              return apy;
+                          });
+
+            setPositionApy(positionApy);
+        })();
     }, [JSON.stringify(position)]);
 
     // ------------------------------END OF REMOVE RANGE PROPS-----------------
@@ -206,6 +262,7 @@ export default function RangeCard(props: RangeCardProps) {
                     ? null
                     : setCurrentPositionActive('')
             }
+            id={positionDomId}
         >
             <div className={styles.row_container}>
                 {/* ------------------------------------------------------ */}
@@ -228,7 +285,7 @@ export default function RangeCard(props: RangeCardProps) {
                     quoteTokenSymbol={position.quoteSymbol}
                 />
                 {/* ------------------------------------------------------ */}
-                <Apy amount={10} />
+                <Apy amount={positionApy ?? 0} />
                 {/* ------------------------------------------------------ */}
                 <RangeStatus
                     isInRange={isPositionInRange}

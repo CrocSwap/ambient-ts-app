@@ -12,12 +12,14 @@ import {
 } from '@crocswap-libs/sdk';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { formatAmount } from '../../../../utils/numbers';
+import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 
 interface TransactionProps {
     swap: ISwap;
     account: string;
     tokenMap: Map<string, TokenIF>;
     chainId: string;
+    blockExplorer?: string;
     tokenAAddress: string;
     tokenBAddress: string;
     isDenomBase: boolean;
@@ -30,6 +32,7 @@ export default function TransactionCard(props: TransactionProps) {
         account,
         tokenMap,
         chainId,
+        blockExplorer,
         tokenAAddress,
         tokenBAddress,
         isDenomBase,
@@ -73,6 +76,17 @@ export default function TransactionCard(props: TransactionProps) {
 
     const [baseFlowDisplay, setBaseFlowDisplay] = useState<string | undefined>(undefined);
     const [quoteFlowDisplay, setQuoteFlowDisplay] = useState<string | undefined>(undefined);
+    const swapDomId = swap.id === currentTxActiveInTransactions ? `swap-${swap.id}` : '';
+
+    function scrollToDiv() {
+        const element = document.getElementById(swapDomId);
+
+        element?.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
+    }
+
+    useEffect(() => {
+        swap.id === currentTxActiveInTransactions ? scrollToDiv() : null;
+    }, [currentTxActiveInTransactions]);
 
     useEffect(() => {
         // console.log({ swap });
@@ -80,9 +94,14 @@ export default function TransactionCard(props: TransactionProps) {
             const priceDecimalCorrected = swap.priceDecimalCorrected;
             const invPriceDecimalCorrected = swap.invPriceDecimalCorrected;
 
+            const baseTokenCharacter = swap.baseSymbol ? getUnicodeCharacter(swap.baseSymbol) : '';
+            const quoteTokenCharacter = swap.quoteSymbol
+                ? getUnicodeCharacter(swap.quoteSymbol)
+                : '';
+
             const truncatedDisplayPrice = isDenomBase
-                ? invPriceDecimalCorrected?.toPrecision(6)
-                : priceDecimalCorrected?.toPrecision(6);
+                ? quoteTokenCharacter + invPriceDecimalCorrected?.toPrecision(6)
+                : baseTokenCharacter + priceDecimalCorrected?.toPrecision(6);
 
             setTruncatedDisplayPrice(truncatedDisplayPrice);
         } else {
@@ -156,7 +175,7 @@ export default function TransactionCard(props: TransactionProps) {
                 : quoteFlowDisplayTruncated;
             setQuoteFlowDisplay(quoteFlowDisplayString);
         }
-    }, [JSON.stringify(swap)]);
+    }, [JSON.stringify(swap), isDenomBase]);
 
     const priceType =
         (isDenomBase && !swap.isBuy) || (!isDenomBase && swap.isBuy) ? 'priceBuy' : 'priceSell';
@@ -175,6 +194,7 @@ export default function TransactionCard(props: TransactionProps) {
                     ? null
                     : setCurrentTxActiveInTransactions('')
             }
+            id={swapDomId}
         >
             <div className={styles.row_container}>
                 {/* ------------------------------------------------------ */}
@@ -182,6 +202,7 @@ export default function TransactionCard(props: TransactionProps) {
                 <WalletAndId
                     ownerId={ownerId}
                     posHash={txHash}
+                    ensName={swap.userEnsName ? swap.userEnsName : null}
                     isOwnerActiveAccount={isOwnerActiveAccount}
                 />
 
@@ -202,7 +223,7 @@ export default function TransactionCard(props: TransactionProps) {
             </div>
 
             <div className={styles.menu_container}>
-                <TransactionsMenu userPosition={false} />
+                <TransactionsMenu userPosition={false} tx={swap} blockExplorer={blockExplorer} />
             </div>
         </div>
     );

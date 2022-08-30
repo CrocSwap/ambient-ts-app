@@ -6,7 +6,12 @@ import { CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
 import { querySpotPrice } from '../../../App/functions/querySpotPrice';
 import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { get24hChange, getPoolTVL, getPoolVolume } from '../../../App/functions/getPoolStats';
+import {
+    get24hChange,
+    getPoolStatsFresh,
+    // getPoolTVL,
+    // getPoolVolume,
+} from '../../../App/functions/getPoolStats';
 import { formatAmount } from '../../../utils/numbers';
 import PoolCardSkeleton from './PoolCardSkeleton/PoolCardSkeleton';
 
@@ -106,9 +111,9 @@ export default function PoolCard(props: PoolCardProps) {
 
     const [poolVolume, setPoolVolume] = useState<string | undefined>(undefined);
     const [poolTvl, setPoolTvl] = useState<string | undefined>(undefined);
-    const [poolPriceChangePercent, setPoolPriceChangePercent] = useState<string | undefined>(
-        undefined,
-    );
+    const [poolApy, setPoolApy] = useState<string | undefined>(undefined);
+
+    const [poolPriceChangePercent, setPoolPriceChangePercent] = useState<string | undefined>();
 
     const [isPoolPriceChangePositive, setIsPoolPriceChangePositive] = useState<boolean>(true);
 
@@ -117,18 +122,16 @@ export default function PoolCard(props: PoolCardProps) {
     useEffect(() => {
         (async () => {
             if (tokenAAddress && tokenBAddress && poolIndex && chainId) {
-                const tvlResult = await getPoolTVL(
+                const poolStats = await getPoolStatsFresh(
+                    chainId,
                     tokenAAddress,
                     tokenBAddress,
                     poolIndex,
-                    chainId,
                 );
-                const volumeResult = await getPoolVolume(
-                    tokenAAddress,
-                    tokenBAddress,
-                    poolIndex,
-                    chainId,
-                );
+
+                const tvlResult = poolStats?.tvl;
+                const volumeResult = poolStats?.volume;
+                const apyResult = poolStats?.apy;
 
                 if (tvlResult) {
                     const tvlString = formatAmount(tvlResult);
@@ -137,6 +140,13 @@ export default function PoolCard(props: PoolCardProps) {
                 if (volumeResult) {
                     const volumeString = formatAmount(volumeResult);
                     setPoolVolume(volumeString);
+                }
+                if (apyResult) {
+                    const apyString = apyResult.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                    });
+                    setPoolApy(apyString);
                 }
 
                 try {
@@ -148,7 +158,7 @@ export default function PoolCard(props: PoolCardProps) {
                         true, // denomInBase
                     );
                     if (priceChangeResult > -0.01 && priceChangeResult < 0.01) {
-                        setPoolPriceChangePercent('No Change');
+                        setPoolPriceChangePercent('None');
                     } else if (priceChangeResult) {
                         priceChangeResult > 0
                             ? setIsPoolPriceChangePositive(true)
@@ -201,8 +211,8 @@ export default function PoolCard(props: PoolCardProps) {
         <>
             <div></div>
             <div>
-                <div className={styles.row_title}>APY</div>
-                <div className={styles.apy}>{poolPriceDisplay === undefined ? '…' : '35.34'}</div>
+                <div className={styles.row_title}>24h APY</div>
+                <div className={styles.apy}>{poolApy === undefined ? '…' : `${poolApy}%`}</div>
             </div>
         </>
     );
@@ -211,7 +221,7 @@ export default function PoolCard(props: PoolCardProps) {
         <>
             <div></div>
             <div>
-                <div className={styles.row_title}>Volume</div>
+                <div className={styles.row_title}>24h Vol.</div>
                 <div className={styles.vol}>
                     {poolVolume === undefined ? '…' : `$${poolVolume}`}
                 </div>
@@ -241,13 +251,15 @@ export default function PoolCard(props: PoolCardProps) {
 
     const poolPriceChangeDisplay = (
         <div>
-            <div className={styles.row_title}>24h</div>
+            <div className={styles.row_title}>24h Δ</div>
             <div
                 className={
                     isPoolPriceChangePositive ? styles.change_positive : styles.change_negative
                 }
             >
-                {poolPriceChangePercent === undefined ? '…' : poolPriceChangePercent}
+                {poolPriceDisplay === undefined || poolPriceChangePercent === undefined
+                    ? '…'
+                    : poolPriceChangePercent}
             </div>
         </div>
     );
@@ -259,10 +271,9 @@ export default function PoolCard(props: PoolCardProps) {
                 {tokenImagesDisplay}
                 {tokenNamesDisplay}
             </div>
-
+            <div className={styles.row}>{tvlDisplay}</div>
             <div className={styles.row}>{apyDisplay}</div>
             <div className={styles.row}>{volumeDisplay}</div>
-            <div className={styles.row}>{tvlDisplay}</div>
 
             <div className={styles.row}>
                 {poolPriceDisplayDOM}

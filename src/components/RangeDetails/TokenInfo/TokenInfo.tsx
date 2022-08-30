@@ -18,6 +18,7 @@ interface ITokenInfoProps {
     quoteTokenDecimals: number;
     lastBlockNumber: number;
     isDenomBase: boolean;
+    positionApy: number | undefined;
 }
 
 export default function TokenInfo(props: ITokenInfoProps) {
@@ -30,6 +31,7 @@ export default function TokenInfo(props: ITokenInfoProps) {
         quoteTokenDecimals,
         lastBlockNumber,
         isDenomBase,
+        positionApy,
     } = props;
 
     const [displayPrice, setDisplayPrice] = useState('');
@@ -37,6 +39,14 @@ export default function TokenInfo(props: ITokenInfoProps) {
         undefined,
     );
     const [isPoolPriceChangePositive, setIsPoolPriceChangePositive] = useState<boolean>(true);
+
+    const positionApyString =
+        positionApy !== undefined
+            ? `APY | ${positionApy.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              })}%`
+            : '…';
 
     useEffect(() => {
         (async () => {
@@ -115,6 +125,13 @@ export default function TokenInfo(props: ITokenInfoProps) {
         }
     }, [provider, isDenomBase, lastBlockNumber, baseTokenAddress, quoteTokenAddress]);
 
+    const apyColor =
+        positionApy !== undefined
+            ? positionApy > 0
+                ? styles.apy_green
+                : styles.apy_red
+            : styles.apy_green;
+
     return (
         <div className={styles.token_info_container}>
             <div className={styles.price_info}>
@@ -129,7 +146,7 @@ export default function TokenInfo(props: ITokenInfoProps) {
                     {poolPriceChangePercent === undefined ? '…' : poolPriceChangePercent + ' | 24h'}
                 </span>
             </div>
-            <div className={styles.apy}>APY | 35.65%</div>
+            <div className={apyColor}>{positionApyString}</div>
         </div>
     );
 }

@@ -21,7 +21,6 @@ import Button from '../../components/Global/Button/Button';
 
 // START: Import Local Files
 import styles from './Swap.module.css';
-import authenticateUser from '../../utils/functions/authenticateUser';
 import truncateDecimals from '../../utils/data/truncateDecimals';
 import { isTransactionReplacedError, TransactionError } from '../../utils/TransactionError';
 import { useTradeData } from '../Trade/Trade';
@@ -52,6 +51,7 @@ interface SwapPropsIF {
     chainId: string;
     activeTokenListsChanged: boolean;
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
+    openModalWallet: () => void;
 }
 
 export default function Swap(props: SwapPropsIF) {
@@ -75,14 +75,16 @@ export default function Swap(props: SwapPropsIF) {
         chainId,
         activeTokenListsChanged,
         indicateActiveTokenListsChanged,
+        openModalWallet,
     } = props;
+
     const [isModalOpen, openModal, closeModal] = useModal();
 
     const dispatch = useAppDispatch();
 
     const [isRelativeModalOpen, closeRelativeModal] = useRelativeModal();
 
-    const { enableWeb3, isWeb3Enabled, authenticate, isAuthenticated, account } = useMoralis();
+    const { isWeb3Enabled, isAuthenticated, account } = useMoralis();
     // get URL pathway for user relative to index
     const { pathname } = useLocation();
 
@@ -102,10 +104,7 @@ export default function Swap(props: SwapPropsIF) {
         ? parseFloat(swapSlippage.stable.value)
         : parseFloat(swapSlippage.volatile.value);
 
-    const clickLogin = () =>
-        authenticateUser(isAuthenticated, isWeb3Enabled, authenticate, enableWeb3);
-
-    const loginButton = <Button title='Login' action={clickLogin} />;
+    const loginButton = <Button title='Login' action={openModalWallet} />;
 
     const [isApprovalPending, setIsApprovalPending] = useState(false);
 
@@ -163,7 +162,7 @@ export default function Swap(props: SwapPropsIF) {
     async function initiateSwap() {
         if (!provider) return;
 
-        if (!(provider as ethers.providers.JsonRpcProvider).getSigner()) {
+        if (!(provider as ethers.providers.WebSocketProvider).getSigner()) {
             return;
         }
 

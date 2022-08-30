@@ -47,7 +47,6 @@ export default function MagicLogin(props: IMagicLoginProps) {
 
     return (
         <div className={styles.card_container}>
-            {/* <img alt='logo' className='img' src={Logo} width={80} height={80} /> */}
             {isAuthenticating && <p className='green'>Authenticating</p>}
             {authError && <p className='error'>{JSON.stringify(authError.message)}</p>}
 
