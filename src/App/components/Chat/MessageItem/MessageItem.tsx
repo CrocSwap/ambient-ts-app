@@ -8,13 +8,26 @@ interface MessageItemPropsIF {
     idx: number;
     isUser: boolean;
     aiMessageIsAJoke: boolean;
+    isFullScreen?: boolean;
 }
 export default function MessageItem(props: MessageItemPropsIF) {
-    const messageYes = 'The sky is blue. Grass is green? a. Do you know the color of the Cloud';
+    const [typing, setTyping] = useState(true);
+
+    const typingAnimmation = (
+        <div className={styles.loader}>
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    );
 
     const sentences = props.message.split(/[?]/);
 
     const [answerBlur, setAnswerBlur] = useState(true);
+
+    setTimeout(() => {
+        setTyping(false);
+    }, 2000);
 
     const jokeContent = (
         <div className={styles.joke_container}>
@@ -27,7 +40,7 @@ export default function MessageItem(props: MessageItemPropsIF) {
             </div>
         </div>
     );
-
+    const messageRender = props.aiMessageIsAJoke ? jokeContent : props.message;
     return (
         <div
             className={`${styles.message_item_container} ${
@@ -36,7 +49,11 @@ export default function MessageItem(props: MessageItemPropsIF) {
         >
             <h2 className={styles.name}>{props.isUser ? props.name : 'Ambi'}</h2>
 
-            <div className={styles.message_content}>
+            <div
+                className={`${styles.message_content} ${
+                    props.isFullScreen && styles.full_screen_message_content
+                }`}
+            >
                 {props.isUser ? (
                     <div className={styles.avatar} />
                 ) : (
@@ -44,7 +61,7 @@ export default function MessageItem(props: MessageItemPropsIF) {
                 )}
 
                 <div className={styles.message_text}>
-                    {props.aiMessageIsAJoke ? jokeContent : props.message}
+                    {!props.isUser ? (typing ? typingAnimmation : messageRender) : messageRender}
                 </div>
             </div>
             <div className={styles.time}>{props.time}</div>

@@ -84,6 +84,12 @@ color: var(--text-grey-white);
     cursor: pointer;
  }
 
+ .avatar{
+  width: 24px;
+height: 24px;
+background: var(--accent-secondary);
+border-radius: 50%;
+}
  /* chat input */
  .input_container{
     background: #242F3F;
@@ -114,39 +120,12 @@ border: none
     justify-content: flex-end;
  }
 
+ .name{
+  color: var(--accent-secondary);
 
-
-
- /* typing */
- .loader {
-    text-align: center;
-  }
-  .loader span {
-    display: inline-block;
-    vertical-align: middle;
-    width: 5px;
-    height: 5px;
-    background: var(--text-grey-light);
-    border-radius: 20px;
-    animation: loader 0.8s infinite alternate;
-  }
-  .loader span:nth-of-type(2) {
-    animation-delay: 0.2s;
-  }
-  .loader span:nth-of-type(3) {
-    animation-delay: 0.6s;
-  }
-  @keyframes loader {
-    0% {
-      opacity: 0.9;
-      transform: scale(0.5);
-    }
-    100% {
-      opacity: 0.1;
-      transform: scale(1);
-    }
-  }
-  
+  font-size: var(--body-size);
+  line-height: var(--body-lh);
+}
 
 
 

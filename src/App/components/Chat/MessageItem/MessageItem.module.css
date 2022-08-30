@@ -48,6 +48,15 @@
     
  }
 
+ .full_screen_message_content{
+
+    max-width: 50%;
+ }
+
+ .message_content img{
+    max-width: 25px;
+ }
+
  .example_right_side .message_content{
     flex-direction: row-reverse;
  }
@@ -77,3 +86,36 @@ height: 24px;
 background: var(--accent-secondary);
 border-radius: 50%;
  }
+
+
+ /* typing */
+ .loader {
+    text-align: center;
+  }
+  .loader span {
+    display: inline-block;
+    vertical-align: middle;
+    width: 5px;
+    height: 5px;
+    background: var(--text-grey-light);
+    border-radius: 20px;
+    animation: loader 0.8s infinite alternate;
+  }
+  .loader span:nth-of-type(2) {
+    animation-delay: 0.2s;
+  }
+  .loader span:nth-of-type(3) {
+    animation-delay: 0.6s;
+  }
+  @keyframes loader {
+    0% {
+      opacity: 0.9;
+      transform: scale(0.5);
+    }
+    100% {
+      opacity: 0.1;
+      transform: scale(1);
+    }
+  }
+  
+
