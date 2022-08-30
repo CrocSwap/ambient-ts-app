@@ -5,7 +5,7 @@ import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { useMoralis } from 'react-moralis';
 import RangeCardHeader from './RangeCardHeader';
 import { ethers } from 'ethers';
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 
 interface RangesProps {
     chainId: string;
@@ -46,7 +46,7 @@ export default function Ranges(props: RangesProps) {
     const userPositions = graphData?.positionsByUser?.positions;
     const poolPositions = graphData?.positionsByPool?.positions;
 
-    console.log(poolPositions);
+    console.assert(userPositions);
 
     const columnHeaders = [
         {
@@ -86,47 +86,30 @@ export default function Ranges(props: RangesProps) {
     const [ sortBy, setSortBy ] = useState('wallet');
     useEffect(() => {console.log(sortBy)}, [sortBy]);
 
-    const RangesDisplay = isShowAllEnabled
-        ? poolPositions.map((position, idx) => (
-            <RangeCard
-                provider={provider}
-                chainId={chainId}
-                key={idx}
-                portfolio={portfolio}
-                notOnTradeRoute={notOnTradeRoute}
-                position={position}
-                isAllPositionsEnabled={isShowAllEnabled}
-                tokenAAddress={tokenAAddress}
-                tokenBAddress={tokenBAddress}
-                account={account ?? undefined}
-                isAuthenticated={isAuthenticated}
-                isDenomBase={isDenomBase}
-                lastBlockNumber={props.lastBlockNumber}
-                currentPositionActive={currentPositionActive}
-                setCurrentPositionActive={setCurrentPositionActive}
-            />
-        ))
-        : //   .reverse()
-        userPositions.map((position, idx) => (
-            <RangeCard
-                provider={provider}
-                chainId={chainId}
-                key={idx}
-                portfolio={portfolio}
-                notOnTradeRoute={notOnTradeRoute}
-                position={position}
-                isAllPositionsEnabled={isShowAllEnabled}
-                tokenAAddress={tokenAAddress}
-                tokenBAddress={tokenBAddress}
-                account={account ?? undefined}
-                isAuthenticated={isAuthenticated}
-                isDenomBase={isDenomBase}
-                lastBlockNumber={props.lastBlockNumber}
-                currentPositionActive={currentPositionActive}
-                setCurrentPositionActive={setCurrentPositionActive}
-            />
-        ));
-    //   .reverse();
+    const sortedPositions = useMemo(() => {
+        const positions = isShowAllEnabled ? poolPositions : userPositions;
+        return positions;
+    }, [isShowAllEnabled]);
+
+    const RangesDisplay = sortedPositions.map((position, idx) => (
+        <RangeCard
+            provider={provider}
+            chainId={chainId}
+            key={idx}
+            portfolio={portfolio}
+            notOnTradeRoute={notOnTradeRoute}
+            position={position}
+            isAllPositionsEnabled={isShowAllEnabled}
+            tokenAAddress={tokenAAddress}
+            tokenBAddress={tokenBAddress}
+            account={account ?? undefined}
+            isAuthenticated={isAuthenticated}
+            isDenomBase={isDenomBase}
+            lastBlockNumber={props.lastBlockNumber}
+            currentPositionActive={currentPositionActive}
+            setCurrentPositionActive={setCurrentPositionActive}
+        />
+    ));
 
     return (
         <div className={styles.container}>
