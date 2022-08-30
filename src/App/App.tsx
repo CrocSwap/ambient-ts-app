@@ -161,10 +161,13 @@ export default function App() {
     const [metamaskLocked, setMetamaskLocked] = useState<boolean>(true);
     useEffect(() => {
         try {
+            console.log('Init provider' + provider);
             const url = exposeProviderUrl(provider);
             console.log({ provider });
             console.log({ url });
             const onChain = exposeProviderChain(provider) === parseInt(chainData.chainId);
+
+            console.log('Exposed URL ' + url);
 
             if (isAuthenticated) {
                 if (provider && url === 'metamask' && !metamaskLocked && onChain) {
@@ -183,6 +186,7 @@ export default function App() {
                 }
             } else if (!provider || !onChain) {
                 const url = lookupChain(chainData.chainId).nodeUrl;
+                console.log('Chain URL ' + url);
                 setProvider(new ethers.providers.WebSocketProvider(url));
             }
         } catch (error) {
