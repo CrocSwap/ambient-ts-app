@@ -13,9 +13,12 @@ export default function RangeCardHeader(props: RangeCardHeaderPropsIF) {
     const { data, clickHandler } = props;
 
     return (
-        <div className={styles.range_column_header}>
+        <div
+            className={styles.range_column_header}
+            onClick={clickHandler}
+        >
             <h5>{data.name}</h5>
-            {data.sortable && <FaSort onClick={clickHandler}/>}
+            <FaSort />
         </div>
     );
 }

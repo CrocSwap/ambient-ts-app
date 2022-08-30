@@ -46,6 +46,8 @@ export default function Ranges(props: RangesProps) {
     const userPositions = graphData?.positionsByUser?.positions;
     const poolPositions = graphData?.positionsByPool?.positions;
 
+    console.log(poolPositions);
+
     const columnHeaders = [
         {
             name: 'Wallet',
