@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { getPoolPriceChange } from '../../../../App/functions/getPoolStats';
+import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import { PoolIF } from '../../../../utils/interfaces/PoolIF';
+import { setTokenA, setTokenB } from '../../../../utils/state/tradeDataSlice';
 import styles from './TopTokensCard.module.css';
 
 interface TopTokensCardProps {
@@ -10,6 +12,8 @@ interface TopTokensCardProps {
 
 export default function TopTokensCard(props: TopTokensCardProps) {
     const { pool } = props;
+
+    const dispatch = useAppDispatch();
 
     const topTokenName = pool.name;
 
@@ -72,7 +76,13 @@ export default function TopTokensCard(props: TopTokensCardProps) {
     }, [JSON.stringify(pool)]);
 
     return (
-        <div className={styles.container}>
+        <div
+            className={styles.container}
+            onClick={() => {
+                dispatch(setTokenA(props.pool.base));
+                dispatch(setTokenB(props.pool.quote));
+            }}
+        >
             <div>{topTokenName}</div>
             <div>{tokenPrice ?? '…'}</div>
             <div>{tokenPrice24hChange ?? '…'}</div>
