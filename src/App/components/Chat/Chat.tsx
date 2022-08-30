@@ -8,6 +8,7 @@ import { devpun } from './devpun';
 
 import notificationSound from '../../../assets/audio/message.wav';
 import ambientLogo from '../../../assets/images/logos/ambient_logo.svg';
+import MessageItem from './MessageItem/MessageItem';
 interface ChatPropsIF {
     ensName: string;
     connectedAccount: string;
@@ -39,48 +40,40 @@ export default function Chat(props: ChatPropsIF) {
         props.fullScreen ? setShowChatBot(true) : null;
     }, [props.fullScreen]);
 
-    function MessageItem(props: MessageItemPropsIF) {
-        const messageYes = 'The sky is blue. Grass is green? a. Do you know the color of the Cloud';
+    // function MessageItem(props: MessageItemPropsIF) {
 
-        const sentences = props.message.split(/[?]/);
+    //     const messageYes = 'The sky is blue. Grass is green? a. Do you know the color of the Cloud';
 
-        const [answerBlur, setAnswerBlur] = useState(true);
+    //  const sentences = props.message.split(/[?]/);
 
-        const jokeContent = (
-            <div className={styles.joke_container}>
-                <div className={styles.question}>{sentences[0]}</div>
-                <div
-                    onClick={() => setAnswerBlur(!answerBlur)}
-                    className={answerBlur ? styles.answer_blur : styles.answer}
-                >
-                    {sentences[1]}
-                </div>
-            </div>
-        );
+    //      const [ answerBlur, setAnswerBlur] = useState(true)
 
-        return (
-            <div
-                className={`${styles.message_item_container} ${
-                    !props.isUser && styles.example_right_side
-                }`}
-            >
-                <h2 className={styles.name}>{props.isUser ? props.name : 'Ambi'}</h2>
+    //      const jokeContent = (
+    //          <div className={styles.joke_container}>
+    //              <div className={styles.question}>{ sentences[0]}</div>
+    //              <div onClick={() => setAnswerBlur(!answerBlur) } className={answerBlur ? styles.answer_blur : styles.answer}>
+    //                {  sentences[1]}
+    //              </div>
+    //          </div>
+    //      )
 
-                <div className={styles.message_content}>
-                    {props.isUser ? (
-                        <div className={styles.avatar} />
-                    ) : (
-                        <img src={ambientLogo} alt='ambient' />
-                    )}
+    //      return (
+    //          <div className={`${styles.message_item_container} ${!props.isUser && styles.example_right_side }`}>
 
-                    <div className={styles.message_text}>
-                        {aiMessageIsAJoke ? jokeContent : props.message}
-                    </div>
-                </div>
-                <div className={styles.time}>{props.time}</div>
-            </div>
-        );
-    }
+    //                  <h2 className={styles.name}>{props.isUser ? props.name : 'Ambi'}</h2>
+
+    //              <div className={styles.message_content}>
+
+    //                  {props.isUser ?
+    //                      <div className={styles.avatar} /> :    <img src={ambientLogo} alt="ambient" />
+    //                  }
+
+    //                  <div className={styles.message_text}>{ aiMessageIsAJoke ? jokeContent :  props.message}</div>
+    //              </div>
+    //              <div className={styles.time}>{props.time}</div>
+    //          </div>
+    //      );
+    //  }
 
     const chatButton = (
         <div
@@ -259,6 +252,7 @@ export default function Chat(props: ChatPropsIF) {
                         time={message.time}
                         name={props.ensName ? props.ensName : props.connectedAccount}
                         isUser={message.isUser}
+                        aiMessageIsAJoke={aiMessageIsAJoke}
                     />
                 ))}
             {/* { showNextMessage &&  exampleRightSideMessage} */}
