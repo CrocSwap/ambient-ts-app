@@ -11,7 +11,7 @@ export const querySpotPrice = async (
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _lastBlockNumber: number,
 ) => {
-    // console.log('Query spot price ' + baseTokenAddress + ' ' + quoteTokenAddress);
+    console.log('Query spot price ' + baseTokenAddress + ' ' + quoteTokenAddress);
     // console.log({ provider });
     const env = new CrocEnv(provider);
     // console.log(

@@ -7,6 +7,7 @@ export const fetchAddress = async (
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _chainId: string,
 ) => {
+    console.log(`looking up ${address}`);
     return provider.lookupAddress(address);
 };
 

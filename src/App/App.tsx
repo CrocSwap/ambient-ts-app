@@ -143,6 +143,7 @@ export default function App() {
 
     function exposeProviderUrl(provider?: ethers.providers.Provider): string {
         if (provider && 'connection' in provider) {
+            console.log({ provider });
             return (provider as ethers.providers.WebSocketProvider).connection?.url;
         } else {
             return '';
@@ -161,6 +162,8 @@ export default function App() {
     useEffect(() => {
         try {
             const url = exposeProviderUrl(provider);
+            console.log({ provider });
+            console.log({ url });
             const onChain = exposeProviderChain(provider) === parseInt(chainData.chainId);
 
             if (isAuthenticated) {
@@ -447,27 +450,29 @@ export default function App() {
 
     useEffect(() => {
         (async () => {
-            const poolAmbienApyCacheEndpoint =
-                'https://809821320828123.de:5000/' + '/pool_ambient_apy_cached?';
+            if (baseTokenAddress && quoteTokenAddress) {
+                const poolAmbienApyCacheEndpoint =
+                    'https://809821320828123.de:5000' + '/pool_ambient_apy_cached?';
 
-            fetch(
-                poolAmbienApyCacheEndpoint +
-                    new URLSearchParams({
-                        base: baseTokenAddress.toLowerCase(),
-                        quote: quoteTokenAddress.toLowerCase(),
-                        poolIdx: chainData.poolIndex.toString(),
-                        chainId: chainData.chainId,
-                        concise: 'true',
-                        lookback: '604800',
-                        // n: 10 // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
-                        // page: 0 // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
-                    }),
-            )
-                .then((response) => response?.json())
-                .then((json) => {
-                    const ambientApy = json?.data?.apy;
-                    setAmbientApy(ambientApy);
-                });
+                fetch(
+                    poolAmbienApyCacheEndpoint +
+                        new URLSearchParams({
+                            base: baseTokenAddress.toLowerCase(),
+                            quote: quoteTokenAddress.toLowerCase(),
+                            poolIdx: chainData.poolIndex.toString(),
+                            chainId: chainData.chainId,
+                            concise: 'true',
+                            lookback: '604800',
+                            // n: 10 // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
+                            // page: 0 // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
+                        }),
+                )
+                    .then((response) => response?.json())
+                    .then((json) => {
+                        const ambientApy = json?.data?.apy;
+                        setAmbientApy(ambientApy);
+                    });
+            }
         })();
     }, [JSON.stringify({ base: baseTokenAddress, quote: quoteTokenAddress })]);
 
@@ -1091,6 +1096,7 @@ export default function App() {
                 tokenPair?.dataTokenB?.address
             ) {
                 const croc = new CrocEnv(provider);
+                console.log('getting token balance');
                 croc.token(tokenPair.dataTokenA.address)
                     .walletDisplay(account)
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -1126,6 +1132,7 @@ export default function App() {
                     const tokenAAddress = tokenPair.dataTokenA.address;
                     if (provider && isWeb3Enabled && account !== null) {
                         const crocEnv = new CrocEnv(provider);
+                        console.log('getting token allowance');
                         const allowance = await crocEnv.token(tokenAAddress).allowance(account);
                         setTokenAAllowance(toDisplayQty(allowance, tokenPair.dataTokenA.decimals));
                     }
@@ -1153,6 +1160,7 @@ export default function App() {
                     const tokenBAddress = tokenPair.dataTokenB.address;
                     if (provider && isWeb3Enabled && account !== null) {
                         const crocEnv = new CrocEnv(provider);
+                        console.log('getting token allowance');
                         const allowance = await crocEnv.token(tokenBAddress).allowance(account);
                         setTokenBAllowance(toDisplayQty(allowance, tokenPair.dataTokenB.decimals));
                     }
@@ -1213,7 +1221,7 @@ export default function App() {
             viewProvider,
             baseTokenAddress,
             quoteTokenAddress,
-            chainData.chainId,
+            position.chainId,
             lastBlockNumber,
         );
 
@@ -1240,12 +1248,12 @@ export default function App() {
         const baseTokenDecimals = await cachedGetTokenDecimals(
             viewProvider,
             baseTokenAddress,
-            chainData.chainId,
+            position.chainId,
         );
         const quoteTokenDecimals = await cachedGetTokenDecimals(
             viewProvider,
             quoteTokenAddress,
-            chainData.chainId,
+            position.chainId,
         );
 
         if (baseTokenDecimals) position.baseTokenDecimals = baseTokenDecimals;
@@ -1504,6 +1512,7 @@ export default function App() {
     useEffect(() => {
         (async () => {
             if (provider && account && isAuthenticated && isWeb3Enabled) {
+                console.log('getting native token balance');
                 new CrocEnv(provider)
                     .tokenEth()
                     .wallet(account)
