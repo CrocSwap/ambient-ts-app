@@ -46,7 +46,7 @@ export default function Ranges(props: RangesProps) {
     const userPositions = graphData?.positionsByUser?.positions;
     const poolPositions = graphData?.positionsByPool?.positions;
 
-    console.assert(userPositions);
+    console.log(userPositions);
 
     const columnHeaders = [
         {
@@ -89,7 +89,11 @@ export default function Ranges(props: RangesProps) {
     const sortedPositions = useMemo(() => {
         const positions = isShowAllEnabled ? poolPositions : userPositions;
         return positions;
-    }, [isShowAllEnabled]);
+    }, [
+        isShowAllEnabled,
+        poolPositions,
+        userPositions
+    ]);
 
     const RangesDisplay = sortedPositions.map((position, idx) => (
         <RangeCard
