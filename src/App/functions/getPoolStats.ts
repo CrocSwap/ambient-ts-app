@@ -77,6 +77,28 @@ const getPoolTVL = async (
 
 const poolPriceChangeCacheEndpoint = 'https://809821320828123.de:5000/pool_price_change?';
 
+const getPoolPriceChange = async (
+    chainId: string,
+    baseToken: string,
+    quoteToken: string,
+    poolIdx: number,
+) => {
+    return fetch(
+        poolPriceChangeCacheEndpoint +
+            new URLSearchParams({
+                chainId: chainId,
+                base: baseToken,
+                quote: quoteToken,
+                poolIdx: poolIdx.toString(),
+                concise: 'true',
+            }),
+    )
+        .then((response) => response.json())
+        .then((json) => {
+            return json.data;
+        });
+};
+
 const get24hChange = async (
     chainId: string,
     baseToken: string,
@@ -106,4 +128,4 @@ const get24hChange = async (
     }
 };
 
-export { getPoolStatsFresh, getPoolVolume, getPoolTVL, get24hChange };
+export { getPoolStatsFresh, getPoolVolume, getPoolTVL, get24hChange, getPoolPriceChange };
