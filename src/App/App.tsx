@@ -774,6 +774,7 @@ export default function App() {
                                 page: '0', // nonnegative integer
                                 chainId: '0x1',
                                 dex: 'all',
+                                poolStats: 'true',
                                 concise: 'true',
                             }),
                     )
@@ -875,6 +876,7 @@ export default function App() {
                 period: activePeriod.toString(),
                 chainId: '0x1',
                 dex: 'all',
+                poolStats: 'true',
                 concise: 'true',
             }),
         [mainnetBaseTokenAddress, mainnetQuoteTokenAddress, chainData.poolIndex, activePeriod],
