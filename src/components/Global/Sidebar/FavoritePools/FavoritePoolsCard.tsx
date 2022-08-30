@@ -8,10 +8,11 @@ import { setTokenA, setTokenB } from '../../../../utils/state/tradeDataSlice';
 
 interface FavoritePoolsCardIF {
     pool: PoolIF;
+    lastBlockNumber: number;
 }
 
 export default function FavoritePoolsCard(props: FavoritePoolsCardIF) {
-    const { pool } = props;
+    const { pool, lastBlockNumber } = props;
 
     const dispatch = useAppDispatch();
 
@@ -33,7 +34,7 @@ export default function FavoritePoolsCard(props: FavoritePoolsCardIF) {
             const tvlString = tvl ? '$' + formatAmount(tvl) : undefined;
             setPoolTvl(tvlString);
         })();
-    }, [JSON.stringify(pool)]);
+    }, [JSON.stringify(pool), lastBlockNumber]);
 
     return (
         <div
