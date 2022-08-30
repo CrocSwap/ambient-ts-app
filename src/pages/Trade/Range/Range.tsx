@@ -601,23 +601,43 @@ export default function Range(props: RangePropsIF) {
 
         const newPositionCacheEndpoint = 'https://809821320828123.de:5000/new_liqchange?';
         if (tx?.hash) {
-            fetch(
-                newPositionCacheEndpoint +
-                    new URLSearchParams({
-                        chainId: chainId,
-                        tx: tx.hash,
-                        user: account ?? '',
-                        base: baseTokenAddress,
-                        quote: quoteTokenAddress,
-                        poolIdx: lookupChain(chainId).poolIndex.toString(),
-                        positionType: isAmbient ? 'ambient' : 'concentrated',
-                        changeType: 'mint',
-                        bidTick: rangeLowTick.toString(),
-                        askTick: rangeHighTick.toString(),
-                        isBid: 'false', // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
-                        liq: '0', // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
-                    }),
-            );
+            if (isAmbient) {
+                fetch(
+                    newPositionCacheEndpoint +
+                        new URLSearchParams({
+                            chainId: chainId,
+                            tx: tx.hash,
+                            user: account ?? '',
+                            base: baseTokenAddress,
+                            quote: quoteTokenAddress,
+                            poolIdx: lookupChain(chainId).poolIndex.toString(),
+                            positionType: 'ambient',
+                            bidTick: '0',
+                            askTick: '0',
+                            changeType: 'mint',
+                            isBid: 'false', // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
+                            liq: '0', // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
+                        }),
+                );
+            } else {
+                fetch(
+                    newPositionCacheEndpoint +
+                        new URLSearchParams({
+                            chainId: chainId,
+                            tx: tx.hash,
+                            user: account ?? '',
+                            base: baseTokenAddress,
+                            quote: quoteTokenAddress,
+                            poolIdx: lookupChain(chainId).poolIndex.toString(),
+                            positionType: 'concentrated',
+                            changeType: 'mint',
+                            bidTick: rangeLowTick.toString(),
+                            askTick: rangeHighTick.toString(),
+                            isBid: 'false', // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
+                            liq: '0', // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
+                        }),
+                );
+            }
         }
 
         let receipt;
