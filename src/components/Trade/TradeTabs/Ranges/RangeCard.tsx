@@ -138,8 +138,8 @@ export default function RangeCard(props: RangeCardProps) {
     const [quoteLiquidityDisplay, setQuoteLiquidityDisplay] = useState<string | undefined>(
         undefined,
     );
-    console.log(currentPositionActive);
-    console.log(position.positionStorageSlot);
+    // console.log(currentPositionActive);
+    // console.log(position.positionStorageSlot);
 
     const positionDomId =
         position.positionStorageSlot === currentPositionActive
