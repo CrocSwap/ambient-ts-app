@@ -6,6 +6,7 @@ import { useMoralis } from 'react-moralis';
 import RangeCardHeader from './RangeCardHeader';
 import { ethers } from 'ethers';
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
+import { PositionIF } from '../../../../utils/interfaces/PositionIF';
 
 interface RangesProps {
     chainId: string;
@@ -83,13 +84,34 @@ export default function Ranges(props: RangesProps) {
         }
     ];
 
-    const [ sortBy, setSortBy ] = useState('wallet');
+    const [ sortBy, setSortBy ] = useState('default');
     useEffect(() => {console.log(sortBy)}, [sortBy]);
+
+    const sortByWallet = (unsortedData: PositionIF[]) => (
+        [...unsortedData].sort((
+            a: PositionIF,
+            b: PositionIF
+        ) => a.user.localeCompare(b.user))
+    );
+
+    const sortData = (data: PositionIF[], reversed=false) => {
+        let sortedData: PositionIF[];
+        console.log('sorting data!')
+        switch (sortBy) {
+            case 'wallet':
+                sortedData = sortByWallet(data);
+                break;
+            default:
+                sortedData = data;
+        }
+        return reversed ? sortedData.reverse(): sortedData;
+    }
 
     const sortedPositions = useMemo(() => {
         const positions = isShowAllEnabled ? poolPositions : userPositions;
-        return positions;
+        return sortData(positions);
     }, [
+        sortBy,
         isShowAllEnabled,
         poolPositions,
         userPositions
