@@ -8,10 +8,11 @@ import styles from './TopTokensCard.module.css';
 interface TopTokensCardProps {
     chainId: string;
     pool: PoolIF;
+    lastBlockNumber: number;
 }
 
 export default function TopTokensCard(props: TopTokensCardProps) {
-    const { pool } = props;
+    const { pool, lastBlockNumber } = props;
 
     const dispatch = useAppDispatch();
 
@@ -73,7 +74,7 @@ export default function TopTokensCard(props: TopTokensCardProps) {
 
             setTokenPrice24hChange(tokenPriceChangeString);
         })();
-    }, [JSON.stringify(pool)]);
+    }, [JSON.stringify(pool), lastBlockNumber]);
 
     return (
         <div

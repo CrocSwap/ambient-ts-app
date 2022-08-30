@@ -84,7 +84,11 @@ export default function Sidebar(props: SidebarPropsIF) {
     // console.assert(coinGeckoTokenMap, 'no map present');
 
     const topTokens = [
-        { name: 'Top Tokens', icon: topTokensImage, data: <TopTokens chainId={chainId} /> },
+        {
+            name: 'Top Tokens',
+            icon: topTokensImage,
+            data: <TopTokens chainId={chainId} lastBlockNumber={lastBlockNumber} />,
+        },
     ];
     const topPoolsSection = [
         {

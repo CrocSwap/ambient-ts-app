@@ -4,16 +4,17 @@ import { topTokens } from '../../../../App/mockData';
 
 interface TopTokensProps {
     chainId: string;
+    lastBlockNumber: number;
 }
 
 export default function TopTokens(props: TopTokensProps) {
-    const { chainId } = props;
+    const { chainId, lastBlockNumber } = props;
 
     const header = (
         <div className={styles.header}>
             <div>Token</div>
             <div>Price</div>
-            <div>Change</div>
+            <div>24h Δ</div>
         </div>
     );
 
@@ -23,7 +24,12 @@ export default function TopTokens(props: TopTokensProps) {
             {header}
             <div className={styles.content}>
                 {topTokens.map((item, idx) => (
-                    <TopTokensCard key={idx} chainId={chainId} pool={item} />
+                    <TopTokensCard
+                        key={idx}
+                        chainId={chainId}
+                        pool={item}
+                        lastBlockNumber={lastBlockNumber}
+                    />
                 ))}
             </div>
         </div>
