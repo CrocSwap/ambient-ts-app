@@ -68,6 +68,7 @@ import {
     setAdvancedLowTick,
     setAdvancedMode,
     setDenomInBase,
+    setDidUserFlipDenom,
     setPrimaryQuantityRange,
     setSimpleRangeWidth,
 } from '../utils/state/tradeDataSlice';
@@ -445,6 +446,7 @@ export default function App() {
         dispatch(setSimpleRangeWidth(100));
         dispatch(setAdvancedMode(false));
         setPoolPriceDisplay(undefined);
+        dispatch(setDidUserFlipDenom(false)); // reset so a new token pair is re-evaluated for price > 1
         const sliderInput = document.getElementById('input-slider-range') as HTMLInputElement;
         if (sliderInput) sliderInput.value = '100';
     }, [JSON.stringify({ base: baseTokenAddress, quote: quoteTokenAddress })]);
