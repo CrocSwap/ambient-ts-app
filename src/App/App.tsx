@@ -451,27 +451,29 @@ export default function App() {
 
     useEffect(() => {
         (async () => {
-            const poolAmbienApyCacheEndpoint =
-                'https://809821320828123.de:5000' + '/pool_ambient_apy_cached?';
+            if (baseTokenAddress && quoteTokenAddress) {
+                const poolAmbientApyCacheEndpoint =
+                    'https://809821320828123.de:5000' + '/pool_ambient_apy_cached?';
 
-            fetch(
-                poolAmbienApyCacheEndpoint +
-                    new URLSearchParams({
-                        base: baseTokenAddress.toLowerCase(),
-                        quote: quoteTokenAddress.toLowerCase(),
-                        poolIdx: chainData.poolIndex.toString(),
-                        chainId: chainData.chainId,
-                        concise: 'true',
-                        lookback: '604800',
-                        // n: 10 // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
-                        // page: 0 // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
-                    }),
-            )
-                .then((response) => response?.json())
-                .then((json) => {
-                    const ambientApy = json?.data?.apy;
-                    setAmbientApy(ambientApy);
-                });
+                fetch(
+                    poolAmbientApyCacheEndpoint +
+                        new URLSearchParams({
+                            base: baseTokenAddress.toLowerCase(),
+                            quote: quoteTokenAddress.toLowerCase(),
+                            poolIdx: chainData.poolIndex.toString(),
+                            chainId: chainData.chainId,
+                            concise: 'true',
+                            lookback: '604800',
+                            // n: 10 // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
+                            // page: 0 // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
+                        }),
+                )
+                    .then((response) => response?.json())
+                    .then((json) => {
+                        const ambientApy = json?.data?.apy;
+                        setAmbientApy(ambientApy);
+                    });
+            }
         })();
     }, [JSON.stringify({ base: baseTokenAddress, quote: quoteTokenAddress })]);
 
