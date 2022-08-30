@@ -35,11 +35,11 @@ export default function Chat(props: ChatPropsIF) {
     const AiMessagesArray = [
         ` Hi there ${
             props.ensName ? props.ensName : 'friend'
-        }. My name is Ambi. I am here to help guide you through our chat Interface. Try typing next in the input below and press enter`,
+        }. My name is Ambi. I am here to help guide you through our chat Interface. You can always type and send "next" for the next guide`,
 
-        'Nice! As you can see, there is sound associated with the chat system. For your convenience, you can keep it muted or unmuted by clicking the sound icon on the upper right side. Type next once you are done ',
+        'Nice! As you can see, there is sound associated with the chat system. For your convenience, you can keep it muted or unmuted by clicking the sound icon on the upper right side. Type "Next" for the next tip.',
 
-        'Nice! Try to play around with the UI a little. If you have any suggestions for improvement, let Junior know!',
+        'There we go! Try to play around with the UI a little. If you have any suggestions for improvement, be sure let Junior and the product team know!',
 
         'You are still here...I have nothing else for you at the moment but you can try entering the word "joke" to get a joke.',
     ];
@@ -106,11 +106,13 @@ export default function Chat(props: ChatPropsIF) {
             setTimeout(handleComputerResponse, 2000);
         }
         function handleComputerResponse() {
+            const date = new Date();
+            const time = date.toLocaleTimeString();
             const newMessage = {
                 message: aiMessageIsAJoke
                     ? devpun[randomJoke].text
                     : AiMessagesArray[currentMessage],
-                time: 'time',
+                time: time,
                 isUser: false,
             };
 
@@ -137,7 +139,6 @@ export default function Chat(props: ChatPropsIF) {
 
     const messagesDisplay = (
         <div className={styles.messages_container}>
-            {/* {exampleRightSideMessage} */}
             {messagesArray &&
                 messagesArray.map((message, idx) => (
                     <MessageItem
@@ -151,7 +152,6 @@ export default function Chat(props: ChatPropsIF) {
                         isFullScreen={props.fullScreen}
                     />
                 ))}
-            {/* { showNextMessage &&  exampleRightSideMessage} */}
         </div>
     );
 
