@@ -196,9 +196,12 @@ border: none
     /* border-bottom: 1px solid var(--text-grey-dark) ; */
  }
 
+
+
  .message_item_container:nth-of-type(odd){
     background: var(--dark1);
  }
+
 
  .name{
     color: var(--accent-secondary);

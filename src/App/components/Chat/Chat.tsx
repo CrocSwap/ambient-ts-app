@@ -1,8 +1,11 @@
 import styles from './Chat.module.css';
 import { useState, useEffect } from 'react';
 import { MdClose, MdOpenInFull } from 'react-icons/md';
+import { GoUnmute, GoMute } from 'react-icons/go';
 import { BsEmojiSmile } from 'react-icons/bs';
 import { Link } from 'react-router-dom';
+
+import notificationSound from '../../../assets/audio/message.wav';
 interface ChatPropsIF {
     ensName: string;
     connectedAccount: string;
@@ -33,10 +36,10 @@ function MessageItem(props: MessageItemPropsIF) {
 }
 
 export default function Chat(props: ChatPropsIF) {
-    console.log(props);
     const [showChatBot, setShowChatBot] = useState(false);
     const [message, setMessage] = useState('');
     const [messagesArray] = useState<MessageType[]>([]);
+    const [soundIsMuted, setSoundIsMuted] = useState(false);
 
     useEffect(() => {
         props.fullScreen ? setShowChatBot(true) : null;
@@ -97,6 +100,9 @@ export default function Chat(props: ChatPropsIF) {
                 </div>
             ) : (
                 <div className={styles.chat_header_right}>
+                    <div onClick={() => setSoundIsMuted(!soundIsMuted)}>
+                        {soundIsMuted ? <GoUnmute /> : <GoMute />}
+                    </div>
                     <div onClick={() => setShowChatBot(false)}>
                         <MdClose size={20} color='#bdbdbd' />
                     </div>
@@ -107,6 +113,8 @@ export default function Chat(props: ChatPropsIF) {
             )}
         </div>
     );
+    const audio = new Audio(notificationSound);
+    audio.muted = soundIsMuted;
     const handleMessage = (event: React.KeyboardEvent<HTMLInputElement>) => {
         const date = new Date();
         const time = date.toLocaleTimeString();
@@ -114,11 +122,12 @@ export default function Chat(props: ChatPropsIF) {
             event.preventDefault();
 
             messagesArray?.push({ message, time });
+
             setMessage('');
+            audio.volume = 0.1;
+            audio.play();
         }
     };
-    console.log(message);
-    console.log(messagesArray);
 
     const chatInput = (
         <div className={styles.input_container}>
