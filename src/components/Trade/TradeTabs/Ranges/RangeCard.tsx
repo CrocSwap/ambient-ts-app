@@ -188,7 +188,7 @@ export default function RangeCard(props: RangeCardProps) {
         }
 
         (async () => {
-            const positionApyCacheEndpoint = 'https://809821320828123.de:5000/' + '/position_apy?';
+            const positionApyCacheEndpoint = 'https://809821320828123.de:5000' + '/position_apy?';
 
             const positionApy =
                 position.positionType === 'ambient'

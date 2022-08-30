@@ -612,8 +612,8 @@ export default function Range(props: RangePropsIF) {
                             quote: quoteTokenAddress,
                             poolIdx: lookupChain(chainId).poolIndex.toString(),
                             positionType: 'ambient',
-                            bidTick: '0',
-                            askTick: '0',
+                            // bidTick: '0',
+                            // askTick: '0',
                             changeType: 'mint',
                             isBid: 'false', // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
                             liq: '0', // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
