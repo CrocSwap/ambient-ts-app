@@ -13,7 +13,7 @@ export default function Apy(props: ApyProps) {
             maximumFractionDigits: 2,
         }) + '%';
 
-    const apyColor = amount > 20 ? styles.apy_green : styles.apy_red;
+    const apyColor = amount > 0 ? styles.apy_green : styles.apy_red;
     return (
         <section className={`${styles.apy} ${apyColor}`}>
             <p>{amountString}</p>
