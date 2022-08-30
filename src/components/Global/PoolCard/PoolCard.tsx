@@ -113,9 +113,7 @@ export default function PoolCard(props: PoolCardProps) {
     const [poolTvl, setPoolTvl] = useState<string | undefined>(undefined);
     const [poolApy, setPoolApy] = useState<string | undefined>(undefined);
 
-    const [poolPriceChangePercent, setPoolPriceChangePercent] = useState<string | undefined>(
-        undefined,
-    );
+    const [poolPriceChangePercent, setPoolPriceChangePercent] = useState<string | undefined>();
 
     const [isPoolPriceChangePositive, setIsPoolPriceChangePositive] = useState<boolean>(true);
 
@@ -259,7 +257,9 @@ export default function PoolCard(props: PoolCardProps) {
                     isPoolPriceChangePositive ? styles.change_positive : styles.change_negative
                 }
             >
-                {poolPriceChangePercent === undefined ? '…' : poolPriceChangePercent}
+                {poolPriceDisplay === undefined || poolPriceChangePercent === undefined
+                    ? '…'
+                    : poolPriceChangePercent}
             </div>
         </div>
     );
