@@ -192,7 +192,7 @@ export default function RangeDetails(props: IRangeDetailsProps) {
                       )
                           .then((response) => response?.json())
                           .then((json) => {
-                              const apy = json?.results?.apy;
+                              const apy = json.data?.results?.apy;
                               return apy;
                           })
                     : await fetch(
