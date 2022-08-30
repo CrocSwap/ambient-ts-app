@@ -11,5 +11,5 @@ jobs:
             - run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" >> .npmrc
             - name: Install modules
               run: yarn
-            - name: Run tests
-              run: yarn test
+            # - name: Run tests
+            #   run: yarn test

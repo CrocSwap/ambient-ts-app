@@ -25,8 +25,8 @@ interface PortfolioPropsIF {
     userAccount?: boolean;
 }
 
-const mainnetProvider = new ethers.providers.JsonRpcProvider(
-    'https://mainnet.infura.io/v3/cbb2856ea8804fc5ba59be0a2e8a9f88',
+const mainnetProvider = new ethers.providers.WebSocketProvider(
+    'wss://mainnet.infura.io/ws/v3/4a162c75bd514925890174ca13cdb6a2',
 );
 
 // const cachedFetchAddress = memoizePromiseFn(fetchAddress);

@@ -15,7 +15,7 @@ export const connectWallet = async (provider: Provider) => {
                     address: account,
                 });
                 console.log({ tokens });
-                nativeEthBalance = await new CrocEnv(provider).tokenEth().balanceDisplay(account);
+                nativeEthBalance = await new CrocEnv(provider).tokenEth().walletDisplay(account);
                 console.log({ nativeEthBalance });
                 return nativeEthBalance;
             }

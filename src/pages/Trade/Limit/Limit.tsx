@@ -3,7 +3,7 @@ import { useState, useEffect, Dispatch, SetStateAction } from 'react';
 import { useMoralis } from 'react-moralis';
 import { ethers } from 'ethers';
 import { motion } from 'framer-motion';
-import { MIN_TICK, MAX_TICK, tickToPrice, toDisplayPrice, CrocEnv } from '@crocswap-libs/sdk';
+import { tickToPrice, CrocEnv, pinTickLower, pinTickUpper } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
 // START: Import React Functional Components
@@ -20,7 +20,6 @@ import ConfirmLimitModal from '../../../components/Trade/Limit/ConfirmLimitModal
 
 // START: Import Local Files
 import styles from './Limit.module.css';
-import authenticateUser from '../../../utils/functions/authenticateUser';
 import { useTradeData } from '../Trade';
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import { useModal } from '../../../components/Global/Modal/useModal';
@@ -50,6 +49,7 @@ interface LimitPropsIF {
     chainId: string;
     activeTokenListsChanged: boolean;
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
+    openModalWallet: () => void;
     setLimitRate: React.Dispatch<React.SetStateAction<string>>;
     limitRate: string;
 }
@@ -75,14 +75,14 @@ export default function Limit(props: LimitPropsIF) {
         chainId,
         activeTokenListsChanged,
         indicateActiveTokenListsChanged,
+        openModalWallet,
         setLimitRate,
         limitRate,
     } = props;
 
-    const { tradeData } = useTradeData();
-    const { navigationMenu } = useTradeData();
+    const { tradeData, navigationMenu } = useTradeData();
     const dispatch = useAppDispatch();
-    const { enableWeb3, isWeb3Enabled, authenticate, isAuthenticated } = useMoralis();
+    const { isWeb3Enabled, isAuthenticated } = useMoralis();
     const [isModalOpen, openModal, closeModal] = useModal();
     const [limitAllowed, setLimitAllowed] = useState<boolean>(false);
 
@@ -104,9 +104,6 @@ export default function Limit(props: LimitPropsIF) {
         }
     }, [poolPriceDisplay]);
 
-    const clickLogin = () =>
-        authenticateUser(isAuthenticated, isWeb3Enabled, authenticate, enableWeb3);
-
     const [newLimitOrderTransactionHash, setNewLimitOrderTransactionHash] = useState('');
     const [txErrorCode, setTxErrorCode] = useState(0);
     const [txErrorMessage, setTxErrorMessage] = useState('');
@@ -121,102 +118,82 @@ export default function Limit(props: LimitPropsIF) {
 
     const slippageTolerancePercentage = tradeData.slippageTolerance;
 
+    const [limitTick, setLimitTick] = useState<number>(0);
     const [insideTickDisplayPrice, setInsideTickDisplayPrice] = useState<number>(0);
 
     const [initialLoad, setInitialLoad] = useState<boolean>(true);
 
     const isDenomBase = tradeData.isDenomBase;
 
-    const gridSize = lookupChain(chainId).gridSize;
-
-    const roundDownTick = (tick: number, nTicksGrid: number = gridSize) => {
-        const tickGrid = Math.floor(tick / nTicksGrid) * nTicksGrid;
-        const horizon = Math.floor(MIN_TICK / nTicksGrid) * nTicksGrid;
-        return Math.max(tickGrid, horizon);
-    };
-
-    const roundUpTick = (tick: number, nTicksGrid: number = gridSize) => {
-        const tickGrid = Math.ceil(tick / nTicksGrid) * nTicksGrid;
-        const horizon = Math.ceil(MAX_TICK / nTicksGrid) * nTicksGrid;
-        return Math.min(tickGrid, horizon);
-    };
-
-    const currentPoolPriceTick = poolPriceNonDisplay
-        ? Math.log(poolPriceNonDisplay) / Math.log(1.0001)
-        : 0;
-
     useEffect(() => {
         setInitialLoad(true);
     }, [tokenPair]);
 
     useEffect(() => {
-        const limitRateInputField = document.getElementById(
-            'limit-rate-quantity',
-        ) as HTMLInputElement;
         if (initialLoad) {
+            if (!provider) return;
             if (poolPriceNonDisplay === 0) return;
 
-            // console.log({ currentPoolPriceTick });
-            let roundedTickInsideCurrentPrice: number;
-            let pinnedInitialDisplayPrice: string;
+            const gridSize = lookupChain(chainId).gridSize;
 
-            if (isDenomBase) {
-                const offset = gridSize;
-                isTokenABase
-                    ? (roundedTickInsideCurrentPrice = roundDownTick(currentPoolPriceTick - offset))
-                    : (roundedTickInsideCurrentPrice = roundUpTick(currentPoolPriceTick + offset));
+            const croc = new CrocEnv(provider);
+            const pool =
+                isDenomBase == isTokenABase
+                    ? croc.pool(tradeData.tokenA.address, tradeData.tokenB.address)
+                    : croc.pool(tradeData.tokenB.address, tradeData.tokenA.address);
 
-                // console.log({ roundedTickInsideCurrentPrice });
-                const insideTickNonDisplayPrice = tickToPrice(roundedTickInsideCurrentPrice);
-                const insideTickDisplay = (
-                    1 / toDisplayPrice(insideTickNonDisplayPrice, baseDecimals, quoteDecimals)
-                ).toPrecision(6);
+            const limitWei = pool.fromDisplayPrice(parseFloat(limitRate));
+            const pinTick = limitWei.then((lw) =>
+                isDenomBase ? pinTickLower(lw, gridSize) : pinTickUpper(lw, gridSize),
+            );
+            pinTick.then(setLimitTick);
 
-                setInsideTickDisplayPrice(parseFloat(insideTickDisplay));
+            const tickPrice = pinTick.then(tickToPrice);
+            const tickDispPrice = tickPrice.then((tp) => pool.toDisplayPrice(tp));
 
-                pinnedInitialDisplayPrice = insideTickDisplay;
-
-                if (limitRateInputField) {
-                    limitRateInputField.value = insideTickDisplay;
-                }
-            } else {
-                const offset = gridSize;
-                // roundedTickInsideCurrentPrice = roundDownTick(currentPoolPriceTick - offset);
-                // roundedTickInsideCurrentPrice = roundUpTick(currentPoolPriceTick + offset);
-                isTokenABase
-                    ? (roundedTickInsideCurrentPrice = roundDownTick(currentPoolPriceTick - offset))
-                    : (roundedTickInsideCurrentPrice = roundUpTick(currentPoolPriceTick + offset));
-
-                // console.log({ roundedTickInsideCurrentPrice });
-                const insideTickNonDisplayPrice = tickToPrice(roundedTickInsideCurrentPrice);
-
-                const insideTickDisplay = toDisplayPrice(
-                    insideTickNonDisplayPrice,
-                    baseDecimals,
-                    quoteDecimals,
-                ).toPrecision(6);
-
-                setInsideTickDisplayPrice(parseFloat(insideTickDisplay));
-
-                pinnedInitialDisplayPrice = insideTickDisplay;
-
-                if (limitRateInputField) {
-                    limitRateInputField.value = insideTickDisplay;
-                }
-            }
-            dispatch(setLimitPrice(pinnedInitialDisplayPrice));
-            setLimitRate(pinnedInitialDisplayPrice);
-            setInitialLoad(false);
+            tickDispPrice.then((tp) => {
+                setInsideTickDisplayPrice(tp);
+                dispatch(setLimitPrice(tp.toString()));
+                setInitialLoad(false);
+            });
         }
-    }, [initialLoad, poolPriceNonDisplay, baseDecimals, quoteDecimals, isDenomBase, isTokenABase]);
+    }, [
+        initialLoad,
+        limitRate,
+        poolPriceNonDisplay,
+        baseDecimals,
+        quoteDecimals,
+        isDenomBase,
+        isTokenABase,
+    ]);
 
-    const initiateLimitOrderMethod = async () => {
-        /* const sellTokenAddress = tokenA.address;
-        const buyTokenAddress = tokenB.address;
-        const poolId = lookupChain(chainId).poolIndex;
-        const sellTokenQty = tokenAInputQty;
-        const buyTokenQty = tokenBInputQty;
-        const qty = isTokenAPrimary ? sellTokenQty : buyTokenQty;*/
+    const sendLimitOrder = async () => {
+        console.log('Send limit');
+        if (!provider || !(provider as ethers.providers.WebSocketProvider).getSigner()) {
+            return;
+        }
+
+        const sellToken = tradeData.tokenA.address;
+        const buyToken = tradeData.tokenB.address;
+        const sellQty = tokenAInputQty;
+        const buyQty = tokenBInputQty;
+        const qty = isTokenAPrimary ? sellQty : buyQty;
+
+        const seller = new CrocEnv(provider).sell(sellToken, qty);
+        const ko = seller.atLimit(buyToken, limitTick);
+
+        if (await ko.willFail()) {
+            console.log('Cannot send limit order: Knockout price inside spread');
+            setTxErrorMessage('Limit inside market price');
+            return;
+        }
+
+        try {
+            await ko.mint();
+        } catch (error) {
+            setTxErrorCode(error?.code);
+            setTxErrorMessage(error?.message);
+        }
     };
 
     const handleModalClose = () => {
@@ -231,7 +208,7 @@ export default function Limit(props: LimitPropsIF) {
             <ConfirmLimitModal
                 onClose={handleModalClose}
                 tokenPair={tokenPair}
-                initiateLimitOrderMethod={initiateLimitOrderMethod}
+                initiateLimitOrderMethod={sendLimitOrder}
                 tokenAInputQty={tokenAInputQty}
                 tokenBInputQty={tokenBInputQty}
                 isTokenAPrimary={isTokenAPrimary}
@@ -244,7 +221,7 @@ export default function Limit(props: LimitPropsIF) {
     ) : null;
 
     const isTokenAAllowanceSufficient = parseFloat(tokenAAllowance) >= parseFloat(tokenAInputQty);
-    const loginButton = <Button title='Login' action={clickLogin} />;
+    const loginButton = <Button title='Login' action={openModalWallet} />;
     const [isApprovalPending, setIsApprovalPending] = useState(false);
 
     const approve = async (tokenAddress: string) => {
@@ -307,8 +284,6 @@ export default function Limit(props: LimitPropsIF) {
                         setLimitAllowed={setLimitAllowed}
                         tokenABalance={tokenABalance}
                         tokenBBalance={tokenBBalance}
-                        // tokenABalance={truncateDecimals(parseFloat(tokenABalance), 4).toString()}
-                        // tokenBBalance={truncateDecimals(parseFloat(tokenBBalance), 4).toString()}
                         tokenAInputQty={tokenAInputQty}
                         tokenBInputQty={tokenBInputQty}
                         setTokenAInputQty={setTokenAInputQty}

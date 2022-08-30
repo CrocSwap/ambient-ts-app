@@ -2,7 +2,6 @@ import RangeStatus from '../../Global/RangeStatus/RangeStatus';
 import styles from './RemoveRangeHeader.module.css';
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import { toggleDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
-
 interface IRemoveRangeHeaderProps {
     isPositionInRange: boolean;
     isAmbient: boolean;

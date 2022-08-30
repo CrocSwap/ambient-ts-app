@@ -25,7 +25,6 @@ import ConfirmRangeModal from '../../../components/Trade/Range/ConfirmRangeModal
 
 // START: Import Local Files
 import styles from './Range.module.css';
-import authenticateUser from '../../../utils/functions/authenticateUser';
 import {
     getPinnedPriceValuesFromDisplayPrices,
     getPinnedPriceValuesFromTicks,
@@ -66,6 +65,8 @@ interface RangePropsIF {
     chainId: string;
     activeTokenListsChanged: boolean;
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
+    openModalWallet: () => void;
+    ambientApy: number | undefined;
 }
 
 export default function Range(props: RangePropsIF) {
@@ -90,6 +91,8 @@ export default function Range(props: RangePropsIF) {
         chainId,
         activeTokenListsChanged,
         indicateActiveTokenListsChanged,
+        openModalWallet,
+        ambientApy,
     } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -102,10 +105,9 @@ export default function Range(props: RangePropsIF) {
     const [txErrorCode, setTxErrorCode] = useState(0);
     const [txErrorMessage, setTxErrorMessage] = useState('');
 
-    const { account, isAuthenticated, isWeb3Enabled, authenticate, enableWeb3 } = useMoralis();
+    const { account, isAuthenticated, isWeb3Enabled } = useMoralis();
 
-    const { tradeData } = useTradeData();
-    const { navigationMenu } = useTradeData();
+    const { tradeData, navigationMenu } = useTradeData();
 
     const tokenPair = {
         dataTokenA: tradeData.tokenA,
@@ -169,6 +171,15 @@ export default function Range(props: RangePropsIF) {
     const [rangeWidthPercentage, setRangeWidthPercentage] = useState<number>(
         tradeData.simpleRangeWidth,
     );
+
+    useEffect(() => {
+        if (tradeData.simpleRangeWidth !== rangeWidthPercentage) {
+            setSimpleRangeWidth(tradeData.simpleRangeWidth);
+            setRangeWidthPercentage(tradeData.simpleRangeWidth);
+            const sliderInput = document.getElementById('input-slider-range') as HTMLInputElement;
+            if (sliderInput) sliderInput.value = tradeData.simpleRangeWidth.toString();
+        }
+    }, [tradeData.simpleRangeWidth]);
 
     useEffect(() => {
         if (tradeData.simpleRangeWidth !== rangeWidthPercentage) {
@@ -533,7 +544,9 @@ export default function Range(props: RangePropsIF) {
         maxPriceDisplay = pinnedMaxPriceDisplayTruncated;
     }
 
-    const apyPercentage: number = 100 - rangeWidthPercentage + 10;
+    const apyPercentage: number | undefined = ambientApy
+        ? 100 - rangeWidthPercentage + ambientApy
+        : undefined;
 
     const advancedDaysInRangeEstimation =
         minimumSpan < 0 ? 0 : parseFloat(truncateDecimals(minimumSpan / 100, 0));
@@ -553,7 +566,7 @@ export default function Range(props: RangePropsIF) {
     }
 
     const sendTransaction = async () => {
-        if (!provider || !(provider as ethers.providers.JsonRpcProvider).getSigner()) {
+        if (!provider || !(provider as ethers.providers.WebSocketProvider).getSigner()) {
             return;
         }
 
@@ -589,23 +602,43 @@ export default function Range(props: RangePropsIF) {
 
         const newPositionCacheEndpoint = 'https://809821320828123.de:5000/new_liqchange?';
         if (tx?.hash) {
-            fetch(
-                newPositionCacheEndpoint +
-                    new URLSearchParams({
-                        chainId: chainId,
-                        tx: tx.hash,
-                        user: account ?? '',
-                        base: baseTokenAddress,
-                        quote: quoteTokenAddress,
-                        poolIdx: lookupChain(chainId).poolIndex.toString(),
-                        positionType: isAmbient ? 'ambient' : 'concentrated',
-                        changeType: 'mint',
-                        bidTick: rangeLowTick.toString(),
-                        askTick: rangeHighTick.toString(),
-                        isBid: 'false', // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
-                        liq: '0', // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
-                    }),
-            );
+            if (isAmbient) {
+                fetch(
+                    newPositionCacheEndpoint +
+                        new URLSearchParams({
+                            chainId: chainId,
+                            tx: tx.hash,
+                            user: account ?? '',
+                            base: baseTokenAddress,
+                            quote: quoteTokenAddress,
+                            poolIdx: lookupChain(chainId).poolIndex.toString(),
+                            positionType: 'ambient',
+                            // bidTick: '0',
+                            // askTick: '0',
+                            changeType: 'mint',
+                            isBid: 'false', // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
+                            liq: '0', // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
+                        }),
+                );
+            } else {
+                fetch(
+                    newPositionCacheEndpoint +
+                        new URLSearchParams({
+                            chainId: chainId,
+                            tx: tx.hash,
+                            user: account ?? '',
+                            base: baseTokenAddress,
+                            quote: quoteTokenAddress,
+                            poolIdx: lookupChain(chainId).poolIndex.toString(),
+                            positionType: 'concentrated',
+                            changeType: 'mint',
+                            bidTick: rangeLowTick.toString(),
+                            askTick: rangeHighTick.toString(),
+                            isBid: 'false', // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
+                            liq: '0', // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
+                        }),
+                );
+            }
         }
 
         let receipt;
@@ -880,20 +913,15 @@ export default function Range(props: RangePropsIF) {
         </Modal>
     ) : null;
 
-    const clickLogin = () =>
-        authenticateUser(isAuthenticated, isWeb3Enabled, authenticate, enableWeb3);
-
     const isTokenAAllowanceSufficient = parseFloat(tokenAAllowance) >= parseFloat(tokenAInputQty);
     const isTokenBAllowanceSufficient = parseFloat(tokenBAllowance) >= parseFloat(tokenBInputQty);
 
-    const loginButton = <Button title='Login' action={clickLogin} />;
+    const loginButton = <Button title='Login' action={openModalWallet} />;
 
     const [isApprovalPending, setIsApprovalPending] = useState(false);
 
     const approve = async (tokenAddress: string) => {
-        if (!provider) {
-            return;
-        }
+        if (!provider) return;
         setIsApprovalPending(true);
         try {
             const tx = await new CrocEnv(provider).token(tokenAddress).approve();

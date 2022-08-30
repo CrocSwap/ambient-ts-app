@@ -75,7 +75,7 @@ export default function RangeWidth(props: RangeWidthPropsIF) {
                         size={28}
                         aria-labelledby='input slider'
                         id='input-slider-range'
-                        min='10'
+                        min='1'
                         max='100'
                         step='1'
                         defaultValue={rangeWidthPercentage}

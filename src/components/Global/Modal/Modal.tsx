@@ -50,7 +50,7 @@ export default function Modal(props: ModalPropsIF) {
 
     // jsx for the back element
     const backElement = (
-        <div>
+        <div style={{ cursor: 'pointer' }}>
             <BiArrowBack size={27} onClick={handleBack} />
         </div>
     );

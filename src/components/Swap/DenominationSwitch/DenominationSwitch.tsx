@@ -41,7 +41,7 @@ export default function DenominationSwitch(props: denominationSwitchPropsIF) {
 
     return (
         <div className={styles.denomination_switch}>
-            <div>Denomination</div>
+            {/* <div>Denomination</div> */}
             <button
                 className={
                     tokenToHighlight === 'A' ? styles.active_button : styles.non_active_button

@@ -7,6 +7,74 @@ export interface graphData {
     swapsByPool: SwapsByPool;
     candlesForAllPools: CandlesForAllPools;
     liquidityForAllPools: LiquidityForAllPools;
+    poolVolumeSeries: PoolVolumeSeries;
+    poolTvlSeries: PoolTvlSeries;
+}
+
+export interface PoolVolumeSeries {
+    dataReceived: boolean;
+    pools: Array<VolumeSeriesByPool>;
+}
+
+export interface PoolTvlSeries {
+    dataReceived: boolean;
+    pools: Array<TvlSeriesByPool>;
+}
+
+export interface TvlSeriesByPool {
+    dataReceived: boolean;
+    pool: {
+        base: string;
+        quote: string;
+        poolIdx: number;
+        chainId: string;
+    };
+    tvlData: TvlSeriesByPoolTimeAndResolution;
+}
+
+export interface VolumeSeriesByPool {
+    dataReceived: boolean;
+    pool: {
+        base: string;
+        quote: string;
+        poolIdx: number;
+        chainId: string;
+    };
+    volumeData: VolumeSeriesByPoolTimeAndResolution;
+}
+
+export interface TvlSeriesByPoolTimeAndResolution {
+    network: string;
+    base: string;
+    quote: string;
+    poolIdx: number;
+    timeStart: number;
+    timeEnd: number;
+    resolution: number;
+    seriesData: Array<TvlByTimeData>;
+}
+
+export interface VolumeSeriesByPoolTimeAndResolution {
+    network: string;
+    base: string;
+    quote: string;
+    poolIdx: number;
+    timeStart: number;
+    timeEnd: number;
+    resolution: number;
+    seriesData: Array<VolumeByTimeData>;
+}
+
+export interface TvlByTimeData {
+    time: number;
+    tvl: number;
+    method: string;
+}
+
+export interface VolumeByTimeData {
+    time: number;
+    volumeDay: number;
+    method: string;
 }
 
 export interface LiquidityForAllPools {
@@ -146,6 +214,7 @@ export interface ISwap {
     time: number;
     tx: string;
     user: string;
+    userEnsName: string;
     limitPrice: number;
     price: number;
     invPrice: number;
@@ -171,6 +240,8 @@ const initialState: graphData = {
     swapsByPool: { dataReceived: false, swaps: [] },
     candlesForAllPools: { pools: [] },
     liquidityForAllPools: { pools: [] },
+    poolVolumeSeries: { dataReceived: false, pools: [] },
+    poolTvlSeries: { dataReceived: false, pools: [] },
 };
 
 export const graphDataSlice = createSlice({
@@ -180,8 +251,40 @@ export const graphDataSlice = createSlice({
         setPositionsByUser: (state, action: PayloadAction<PositionsByUser>) => {
             state.positionsByUser = action.payload;
         },
+        addPositionsByUser: (state, action: PayloadAction<Array<PositionIF>>) => {
+            const slotToFind = action.payload[0].positionStorageSlot.toLowerCase();
+            const indexOfSlot = state.positionsByUser.positions
+                .map((item) => item.positionStorageSlot.toLowerCase())
+                .findIndex((slot) => slot === slotToFind);
+            if (indexOfSlot === -1) {
+                state.positionsByUser.positions = action.payload.concat(
+                    state.positionsByUser.positions,
+                );
+            } else {
+                state.positionsByUser.positions[indexOfSlot] = action.payload[0];
+            }
+        },
         setPositionsByPool: (state, action: PayloadAction<PositionsByPool>) => {
             state.positionsByPool = action.payload;
+        },
+        addPositionsByPool: (state, action: PayloadAction<Array<PositionIF>>) => {
+            const slotToFind = action.payload[0].positionStorageSlot.toLowerCase();
+            const indexOfSlot = state.positionsByPool.positions
+                .map((item) => item.positionStorageSlot.toLowerCase())
+                .findIndex((slot) => slot === slotToFind);
+            if (indexOfSlot === -1) {
+                state.positionsByPool.positions = action.payload.concat(
+                    state.positionsByPool.positions,
+                );
+            } else {
+                state.positionsByPool.positions[indexOfSlot] = action.payload[0];
+            }
+        },
+        setPoolVolumeSeries: (state, action: PayloadAction<PoolVolumeSeries>) => {
+            state.poolVolumeSeries = action.payload;
+        },
+        setPoolTvlSeries: (state, action: PayloadAction<PoolTvlSeries>) => {
+            state.poolTvlSeries = action.payload;
         },
         setSwapsByUser: (state, action: PayloadAction<SwapsByUser>) => {
             state.swapsByUser = action.payload;
@@ -368,7 +471,11 @@ export const graphDataSlice = createSlice({
 // action creators are generated for each case reducer function
 export const {
     setPositionsByUser,
+    addPositionsByUser,
     setPositionsByPool,
+    addPositionsByPool,
+    setPoolVolumeSeries,
+    setPoolTvlSeries,
     setLiquidity,
     setCandles,
     addCandles,

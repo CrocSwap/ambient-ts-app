@@ -6,7 +6,7 @@ import RangeStatus from '../Global/RangeStatus/RangeStatus';
 
 import Apy from '../Global/Tabs/Apy/Apy';
 import RangeMinMax from '../Global/Tabs/RangeMinMax/RangeMinMax';
-import RangesMenu from '../Global/Tabs/TableMenu/TableMenuComponents/RangesMenu';
+// import RangesMenu from '../Global/Tabs/TableMenu/TableMenuComponents/RangesMenu';
 import TokenQty from '../Global/Tabs/TokenQty/TokenQty';
 // import WalletAndId from '../Global/Tabs/WalletAndID/WalletAndId';
 import styles from './TopRange.module.css';
@@ -54,12 +54,12 @@ export default function TopRange() {
             </div>
 
             <div className={styles.menu_container}>
-                <RangesMenu
+                {/* <RangesMenu
                     userMatchesConnectedAccount={true}
                     rangeDetailsProps={true}
                     posHash={tempPosHash as string}
                     positionData={undefined}
-                />
+                /> */}
             </div>
         </div>
     );

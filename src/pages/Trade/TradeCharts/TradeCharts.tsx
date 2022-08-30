@@ -32,6 +32,7 @@ import { useAppSelector, useAppDispatch } from '../../../utils/hooks/reduxToolki
 import TradeCandleStickChart from './TradeCandleStickChart';
 import { PoolIF, TokenIF } from '../../../utils/interfaces/exports';
 import { get24hChange } from '../../../App/functions/getPoolStats';
+import TradeChartsLoading from './TradeChartsLoading/TradeChartsLoading';
 
 // interface for React functional component props
 interface TradeChartsPropsIF {
@@ -226,22 +227,39 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
 
     // this could be simplify into 1 reusable function but I figured we might have to do some other calculations for each of these so I am sepearing it for now. -Jr
     const handleVolumeToggle = () => setShowVolume(!showVolume);
+
     const handleTvlToggle = () => setShowTvl(!showTvl);
     const handleFeeRateToggle = () => setShowFeeRate(!showFeeRate);
 
     const exampleAction = () => console.log('example');
 
-    const chartOverlayButtonData = [
+    const chartOverlayButtonData1 = [
         { name: 'Volume', selected: showVolume, action: handleVolumeToggle },
         { name: 'TVL', selected: showTvl, action: handleTvlToggle },
         { name: 'Fee Rate', selected: showFeeRate, action: handleFeeRateToggle },
-        { name: 'Heatmap', selected: false, action: exampleAction },
-        { name: 'Liquidity Profile', selected: false, action: exampleAction },
+    ];
+
+    const chartOverlayButtonData2 = [
         { name: 'Curve', selected: false, action: exampleAction },
         { name: 'Depth', selected: false, action: exampleAction },
     ];
 
-    const chartOverlayButtons = chartOverlayButtonData.map((button, idx) => (
+    const chartOverlayButtons1 = chartOverlayButtonData1.map((button, idx) => (
+        <div className={styles.settings_container} key={idx}>
+            <button
+                onClick={button.action}
+                className={
+                    button.selected
+                        ? styles.active_selected_button
+                        : styles.non_active_selected_button
+                }
+            >
+                {button.name}
+            </button>
+        </div>
+    ));
+
+    const chartOverlayButtons2 = chartOverlayButtonData2.map((button, idx) => (
         <div className={styles.settings_container} key={idx}>
             <button
                 onClick={button.action}
@@ -314,7 +332,6 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
     function handleLiquidityTypeButtonClick(label: string) {
         setLiquidityType(label.toLowerCase());
     }
-    // console.log(liquidityType);
 
     const liquidityTypeDisplay = liquidityTypeData.map((type, idx) => (
         <motion.div
@@ -368,7 +385,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
         poolId: 36000,
     };
 
-    const isButtonFavorited = favePools.some(
+    const isButtonFavorited = favePools?.some(
         (pool: PoolIF) =>
             pool.base.address === currentPoolData.base.address &&
             pool.quote.address === currentPoolData.quote.address &&
@@ -439,7 +456,8 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                 </span>
             </div>
 
-            <div className={styles.chart_overlay_container}>{chartOverlayButtons}</div>
+            <div className={styles.chart_overlay_container}>{chartOverlayButtons1}</div>
+            <div className={styles.chart_overlay_container}>{chartOverlayButtons2}</div>
         </div>
     );
     // END OF TOKEN INFO----------------------------------------------------------------
@@ -521,8 +539,17 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
         }
     }, [chartData]);
     // END OF CANDLE STICK DATA---------------------------------------------------
+    // This is a simple loading that last for 1 sec before displaying the graph. The graph is already in the dom by then. We will just positon this in front of it and then remove it after 1 sec.
 
     const expandGraphStyle = props.expandTradeTable ? styles.hide_graph : '';
+    const [graphIsLoading, setGraphIsLoading] = useState(true);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setGraphIsLoading(false);
+        }, 1500);
+        return () => clearTimeout(timer);
+    }, []);
 
     return (
         <>
@@ -532,21 +559,25 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                 {timeFrameContent}
                 {/* {liquidityTypeContent} */}
             </div>
-            <div style={{ width: '100%', height: '100%' }} ref={canvasRef}>
-                <TradeCandleStickChart
-                    tvlData={formattedTvlData}
-                    volumeData={formattedVolumeData}
-                    feeData={formattedFeesUSD}
-                    priceData={props.candleData}
-                    changeState={props.changeState}
-                    chartItemStates={chartItemStates}
-                    targetData={props.targetData}
-                    limitPrice={props.limitPrice}
-                    setLimitRate={props.setLimitRate}
-                    limitRate={props.limitRate}
-                    denomInBase={denomInBase}
-                />
-            </div>
+            {graphIsLoading ? (
+                <TradeChartsLoading />
+            ) : (
+                <div style={{ width: '100%', height: '100%' }} ref={canvasRef}>
+                    <TradeCandleStickChart
+                        tvlData={formattedTvlData}
+                        volumeData={formattedVolumeData}
+                        feeData={formattedFeesUSD}
+                        priceData={props.candleData}
+                        changeState={props.changeState}
+                        chartItemStates={chartItemStates}
+                        targetData={props.targetData}
+                        limitPrice={props.limitPrice}
+                        setLimitRate={props.setLimitRate}
+                        limitRate={props.limitRate}
+                        denomInBase={denomInBase}
+                    />
+                </div>
+            )}
         </>
     );
 }

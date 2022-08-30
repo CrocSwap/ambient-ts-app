@@ -1,8 +1,8 @@
 // import { PositionPoolIF } from './PositionPoolIF';
 export interface PositionIF {
     chainId: string;
+    positionId: string;
     positionStorageSlot: string;
-    ambient: boolean;
     askTick: number;
     bidTick: number;
     id: string;
@@ -18,6 +18,7 @@ export interface PositionIF {
     baseSymbol: string;
     quoteSymbol: string;
     poolPriceInTicks: number;
+    isPositionInRange: boolean;
     lowRangeDisplayInBase: string;
     lowRangeShortDisplayInBase: string;
     highRangeDisplayInBase: string;
@@ -35,4 +36,5 @@ export interface PositionIF {
     positionLiqQuote?: string;
     feesLiqBase?: string;
     feesLiqQuote?: string;
+    apyPercentage?: number;
 }

@@ -10,7 +10,6 @@ export const calculateSecondaryDepositQty = (
     isAmbientPosition: boolean,
     depositSkew?: number,
 ) => {
-    // console.log(tokenADecimals, tokenBDecimals);
     const baseDecimals = isTokenABase ? tokenADecimals : tokenBDecimals;
     const quoteDecimals = !isTokenABase ? tokenADecimals : tokenBDecimals;
 
@@ -36,19 +35,6 @@ export const calculateSecondaryDepositQty = (
 
     const primInputValueNum = parseFloat(primaryInputValueStr);
 
-    // TODO: activate code with ternaries once function is tested in DOM
-    // if (isAmbientPosition) {
-    //     secondaryQuantity = isPrimaryTokenBase
-    //         ? primInputValueNum / poolDisplayPrice
-    //         : primInputValueNum / (1 / poolDisplayPrice);
-    // } else {
-    //     if (depositSkew) {
-    //         secondaryQuantity = isPrimaryTokenBase
-    //             ? (primInputValueNum / poolDisplayPrice) * depositSkew
-    //             : (primInputValueNum / (1 / poolDisplayPrice)) * depositSkew;
-    //     }
-    // }
-
     if (isAmbientPosition) {
         if (isPrimaryTokenBase) {
             secondaryQuantity = primInputValueNum / poolDisplayPrice;
@@ -64,6 +50,7 @@ export const calculateSecondaryDepositQty = (
             }
         }
     }
+
     if (secondaryQuantity) {
         if (
             secondaryQuantity === Infinity ||
