@@ -9,6 +9,7 @@ import { devpun } from './devpun';
 import notificationSound from '../../../assets/audio/message.wav';
 import ambientLogo from '../../../assets/images/logos/ambient_logo.svg';
 import MessageItem from './MessageItem/MessageItem';
+import ChatButton from './ChatButton/ChatButton';
 interface ChatPropsIF {
     ensName: string;
     connectedAccount: string;
@@ -265,7 +266,9 @@ export default function Chat(props: ChatPropsIF) {
     return (
         <div className={styles.chat}>
             <div className={styles.chat_container}>
-                {props.fullScreen ? null : chatButton}
+                {props.fullScreen ? null : (
+                    <ChatButton showChatBot={showChatBot} setShowChatBot={setShowChatBot} />
+                )}
                 <div className={props.fullScreen ? wrapperStyleFull : wrapperStyle}>
                     {chatHeader}
                     {messagesDisplay}
