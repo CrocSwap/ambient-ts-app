@@ -137,7 +137,7 @@ export default function Sidebar(props: SidebarPropsIF) {
         {
             name: 'Favorite Pools',
             icon: favouritePoolsImage,
-            data: <FavoritePools favePools={favePools} />,
+            data: <FavoritePools favePools={favePools} lastBlockNumber={lastBlockNumber} />,
         },
     ];
 
