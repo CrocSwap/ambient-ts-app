@@ -205,7 +205,7 @@ export default function RangeCard(props: RangeCardProps) {
                       )
                           .then((response) => response?.json())
                           .then((json) => {
-                              const apy = json?.results?.apy;
+                              const apy = json?.data?.results?.apy;
                               return apy;
                           })
                     : await fetch(
