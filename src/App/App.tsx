@@ -452,7 +452,7 @@ export default function App() {
     useEffect(() => {
         (async () => {
             const poolAmbienApyCacheEndpoint =
-                'https://809821320828123.de:5000/' + '/pool_ambient_apy_cached?';
+                'https://809821320828123.de:5000' + '/pool_ambient_apy_cached?';
 
             fetch(
                 poolAmbienApyCacheEndpoint +
