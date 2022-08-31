@@ -5,6 +5,7 @@
     flex-direction: column;
     overflow-y: hidden;
     color: white;
+    padding: 5px;
 }
 
 .modalSwapbox {
