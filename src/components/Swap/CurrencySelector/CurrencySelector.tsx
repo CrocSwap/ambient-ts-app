@@ -39,7 +39,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
         setImportedTokens,
         searchableTokens,
         chainId,
-        direction,
+        // direction,
         fieldId,
         handleChangeEvent,
         handleChangeClick,

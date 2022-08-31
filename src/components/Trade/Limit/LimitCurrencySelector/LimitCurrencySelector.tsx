@@ -44,7 +44,7 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
         searchableTokens,
         chainId,
         fieldId,
-        direction,
+        // direction,
         handleChangeEvent,
         reverseTokens,
         tokenABalance,
