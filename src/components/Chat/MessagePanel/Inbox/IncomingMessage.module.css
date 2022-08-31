@@ -1,4 +1,4 @@
-.income_message{
+.income_message {
     box-sizing: border-box;
 
     /* Auto layout */
@@ -27,7 +27,7 @@
     flex-grow: 0;
 }
 
-.avatar_image{
+.avatar_image {
     max-width: 25px;
     max-height: 25px;
     border-radius: 50%;
@@ -43,7 +43,7 @@
     font-family: 'Lexend Deca';
     font-style: normal;
     font-weight: 300;
-    font-size: 13px;
+    font-size: calc(1vw - 2px);
     line-height: 15px;
     color: #EBEBFF;
     white-space: pre-line;
@@ -53,32 +53,32 @@
 
 .name {
     width: 82px;
-height: 14px;
+    height: 14px;
 
-/* small */
+    /* small */
 
-font-family: 'Lexend Deca';
-font-style: normal;
-font-weight: 300;
-font-size: 12px;
-line-height: 15px;
-display: flex;
-align-items: center;
+    font-family: 'Lexend Deca';
+    font-style: normal;
+    font-weight: 300;
+    font-size: calc(1vw - 3px);
+    line-height: 16px;
+    display: flex;
+    align-items: center;
 
-/* accent/secondary */
+    /* accent/secondary */
 
-color: #E480FF;
+    color: #E480FF;
 
 
-/* Inside auto layout */
+    /* Inside auto layout */
 
-flex: none;
-order: 0;
-flex-grow: 0;
+    flex: none;
+    order: 0;
+    flex-grow: 0;
 }
 
 .message_body {
-    flex-grow: 5!important;
+    flex-grow: 5 !important;
     display: flex;
     flex-direction: column;
 }
@@ -92,7 +92,7 @@ flex-grow: 0;
     font-family: 'Lexend Deca';
     font-style: normal;
     font-weight: 300;
-    font-size: 10px;
+    font-size: calc(1vw - 8px);
     line-height: 12px;
     align-self: flex-end;
 
@@ -102,5 +102,5 @@ flex-grow: 0;
 
     /* Inside auto layout */
     order: 0;
-    
+
 }

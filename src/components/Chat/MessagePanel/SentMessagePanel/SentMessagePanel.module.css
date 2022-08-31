@@ -1,13 +1,13 @@
-
-.avatar_image{
+.avatar_image {
     max-width: 25px;
     max-height: 25px;
-   
     border-radius: 50%;
     background: var(--title-gradient);
     padding: 2px;
     flex-grow: 1;
-    align-self: flex-end;
+    align-self: end;
+    vertical-align: middle;
+    margin: 10px;
 
 }
 
@@ -20,7 +20,7 @@
     font-family: 'Lexend Deca';
     font-style: normal;
     font-weight: 300;
-    font-size: 10px;
+    font-size: calc(1vw - 8px);
     line-height: 12px;
     align-self: flex-end;
 
@@ -30,30 +30,44 @@
 
     /* Inside auto layout */
     order: 0;
-    
+
 }
 
 .message {
 
-    width: 158px;
-    height: 45px;
-    
+    min-width: 158px;
+    min-height: 45px;
+
+    bottom: -100%;
+
     white-space: pre-line;
     font-family: 'Lexend Deca';
     font-style: normal;
     font-weight: 300;
-    font-size: 13px;
+    font-size: calc(1vw - 2px);
     line-height: 15px;
+    flex-grow: 5px !important;
 
-    flex-grow: 5!important;
     color: #EBEBFF;
-    align-self: stretch;
+    margin: 10px;
+    height: 100%;
+    width: 100%;
 
+
+}
+
+.right_image_box {
+    display: flex;
+    right: 0%;
+    float: right;
+    vertical-align: middle;
 }
 
 .sent_message_body {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: row;
     width: 100%;
     padding: 5px;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
 }
