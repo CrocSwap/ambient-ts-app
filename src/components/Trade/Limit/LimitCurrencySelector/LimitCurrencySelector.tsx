@@ -145,7 +145,8 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
 
     return (
         <div className={styles.swapbox}>
-            <span className={styles.direction}>{direction}</span>
+            <span className={styles.direction}> </span>
+            {/* <span className={styles.direction}>{direction}</span> */}
             <div className={styles.swapbox_top}>
                 <div className={styles.swap_input}>
                     <LimitCurrencyQuantity

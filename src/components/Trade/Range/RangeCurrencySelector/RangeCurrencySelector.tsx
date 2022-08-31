@@ -83,7 +83,7 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
 
     const DexBalanceContent = (
         <span className={styles.surplus_toggle}>
-            {'Use exchange Balance'}
+            {'Use Exchange Surplus'}
             {fieldId === 'A' ? (
                 <Toggle2
                     isOn={isWithdrawTokenAFromDexChecked}

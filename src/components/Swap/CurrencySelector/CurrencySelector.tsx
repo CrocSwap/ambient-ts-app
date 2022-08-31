@@ -141,7 +141,8 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
 
     return (
         <div className={styles.swapbox}>
-            <div className={styles.direction}>{direction}</div>
+            <div className={styles.direction}> </div>
+            {/* <div className={styles.direction}>{direction}</div> */}
             <div className={styles.swapbox_top}>
                 <div className={styles.swap_input}>
                     <CurrencyQuantity fieldId={fieldId} handleChangeEvent={handleChangeEvent} />
