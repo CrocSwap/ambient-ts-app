@@ -29,7 +29,7 @@ export default function PriceInfo(props: IPriceInfoProps) {
         baseTokenSymbol,
         quoteTokenSymbol,
     } = props;
-    const removePositionInfo = (
+    const collateralContent = (
         <div className={styles.remove_position_info}>
             <Row>
                 <span>Pooled {baseTokenSymbol}</span>
@@ -49,7 +49,7 @@ export default function PriceInfo(props: IPriceInfoProps) {
             {/*  */}
             <DividerDark />
             <Row>
-                <span>{baseTokenSymbol} Fees Earned</span>
+                <span> Earned {baseTokenSymbol}</span>
                 <div className={styles.token_price}>
                     {baseFeesDisplay}
                     <img src={baseTokenLogoURI} alt='' />
@@ -57,7 +57,7 @@ export default function PriceInfo(props: IPriceInfoProps) {
             </Row>
             {/*  */}
             <Row>
-                <span>{quoteTokenSymbol} Fees Earned</span>
+                <span>Earned {quoteTokenSymbol} </span>
                 <div className={styles.token_price}>
                     {quoteFeesDisplay}
                     <img src={quoteTokenLogoURI} alt='' />
@@ -65,15 +65,31 @@ export default function PriceInfo(props: IPriceInfoProps) {
             </Row>
         </div>
     );
+
+    const timesContent = (
+        <div className={styles.remove_position_info}>
+            <Row>
+                <span>Open Time</span>
+                <div className={styles.token_price}>25/08/22</div>
+            </Row>
+
+            <Row>
+                <span>Close Time</span>
+                <div className={styles.token_price}>30/08/22</div>
+            </Row>
+        </div>
+    );
+
     return (
         <div className={styles.main_container}>
             <div className={styles.price_info_container}>
-                {removePositionInfo}
-                <div className={styles.graph_image_container}>
+                {timesContent}
+                {collateralContent}
+                {/* <div className={styles.graph_image_container}>
                     <img src={graphImage} alt='chart' />
-                </div>
+                </div> */}
             </div>
-            <div className={styles.min_max_price}>
+            {/* <div className={styles.min_max_price}>
                 <div className={styles.min_max_content}>
                     Min Price
                     <span className={styles.min_price}>{lowRangeDisplay ?? 0}</span>
@@ -82,7 +98,7 @@ export default function PriceInfo(props: IPriceInfoProps) {
                     Max Price
                     <span className={styles.max_price}>{highRangeDisplay ?? 'Infinity'}</span>
                 </div>
-            </div>
+            </div> */}
         </div>
     );
 }

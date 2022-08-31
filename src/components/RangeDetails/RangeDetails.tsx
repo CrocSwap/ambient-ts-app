@@ -220,6 +220,7 @@ export default function RangeDetails(props: IRangeDetailsProps) {
 
     return (
         <div className={styles.range_details_container}>
+            <div>Yes is me</div>
             <div ref={detailsRef}>
                 <RemoveRangeHeader
                     isPositionInRange={props.isPositionInRange}
