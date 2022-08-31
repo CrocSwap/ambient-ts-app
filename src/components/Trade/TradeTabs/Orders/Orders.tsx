@@ -57,7 +57,16 @@ export default function Orders(props: OrdersProps) {
 
     return (
         <div className={styles.container}>
-            <OrderCardHeader />
+            <header>
+                {
+                    columnHeaders.map(header => (
+                        <OrderCardHeader
+                            key={`orderDataHeaderField${header.name}`}
+                            data={header}
+                        />
+                    ))
+                }
+            </header>
             <div
                 className={styles.item_container}
                 style={{ height: expandTradeTable ? '100%' : '170px' }}
