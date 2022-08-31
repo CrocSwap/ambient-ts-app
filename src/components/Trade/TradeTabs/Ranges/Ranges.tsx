@@ -15,16 +15,16 @@ import { PositionIF } from '../../../../utils/interfaces/PositionIF';
 
 // interface for props
 interface RangesPropsIF {
+    provider: ethers.providers.Provider | undefined;
     chainId: string;
     isShowAllEnabled: boolean;
-    portfolio?: boolean;
     notOnTradeRoute?: boolean;
     graphData: graphData;
     lastBlockNumber: number;
-    provider: ethers.providers.Provider | undefined;
     expandTradeTable: boolean;
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
+    portfolio?: boolean;
 }
 
 // react functional component
@@ -32,13 +32,14 @@ export default function Ranges(props: RangesPropsIF) {
     const {
         provider,
         chainId,
-        portfolio,
-        notOnTradeRoute,
         isShowAllEnabled,
+        notOnTradeRoute,
         graphData,
+        lastBlockNumber,
         expandTradeTable,
         currentPositionActive,
         setCurrentPositionActive,
+        portfolio,
     } = props;
 
     const { account, isAuthenticated } = useMoralis();
@@ -129,7 +130,7 @@ export default function Ranges(props: RangesPropsIF) {
             account={account ?? undefined}
             isAuthenticated={isAuthenticated}
             isDenomBase={tradeData.isDenomBase}
-            lastBlockNumber={props.lastBlockNumber}
+            lastBlockNumber={lastBlockNumber}
             currentPositionActive={currentPositionActive}
             setCurrentPositionActive={setCurrentPositionActive}
         />

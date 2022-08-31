@@ -99,9 +99,7 @@ export default function TradeTabs2(props: ITabsProps) {
         notOnTradeRoute: false,
         graphData: graphData,
         lastBlockNumber: props.lastBlockNumber,
-
         expandTradeTable: props.expandTradeTable,
-
         currentPositionActive: props.currentPositionActive,
         setCurrentPositionActive: props.setCurrentPositionActive,
     };
