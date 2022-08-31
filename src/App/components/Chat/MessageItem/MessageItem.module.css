@@ -1,0 +1,121 @@
+
+ /* message item */
+ .message_item_container{
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    border: 4px;
+    padding: 4px 8px;
+    margin: 4px 0;
+
+    border-left: 1px solid var(--accent-secondary);
+    /* border-bottom: 1px solid var(--text-grey-dark) ; */
+ }
+
+
+
+ .message_item_container{
+    background: var(--dark1);
+ }
+
+ .example_right_side{
+    justify-content: flex-end;
+    align-items: flex-end;
+    border-left: none;
+    background: transparent;
+ }
+
+
+ .name{
+    color: var(--accent-secondary);
+
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+ }
+.time{
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    color: var(--text-grey-dark);
+
+    display: flex;
+    justify-content: flex-end;
+}
+ .message_content{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+    
+ }
+
+ .full_screen_message_content{
+
+    max-width: 50%;
+ }
+
+ .message_content img{
+    max-width: 25px;
+ }
+
+ .example_right_side .message_content{
+    flex-direction: row-reverse;
+ }
+
+ .message_text{
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    color: var(--text-grey-white)
+ }
+
+ .joke_container{
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    color: var(--text-grey-white)
+ }
+
+ .answer_blur{
+    filter: blur(10px);
+    cursor: pointer;
+ }
+ .avatar{
+    width: 24px;
+height: 24px;
+background: var(--accent-secondary);
+border-radius: 50%;
+ }
+
+
+ /* typing */
+ .loader {
+    text-align: center;
+  }
+  .loader span {
+    display: inline-block;
+    vertical-align: middle;
+    width: 5px;
+    height: 5px;
+    background: var(--text-grey-light);
+    border-radius: 20px;
+    animation: loader 0.8s infinite alternate;
+  }
+  .loader span:nth-of-type(2) {
+    animation-delay: 0.2s;
+  }
+  .loader span:nth-of-type(3) {
+    animation-delay: 0.6s;
+  }
+  @keyframes loader {
+    0% {
+      opacity: 0.9;
+      transform: scale(0.5);
+    }
+    100% {
+      opacity: 0.1;
+      transform: scale(1);
+    }
+  }
+  
+
