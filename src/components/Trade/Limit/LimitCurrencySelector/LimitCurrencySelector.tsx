@@ -105,7 +105,7 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
 
     const DexBalanceContent = (
         <span className={styles.surplus_toggle}>
-            {fieldId === 'sell' ? 'Use Exchange Surplus' : 'Save as Exchange Surplus'}
+            {fieldId === 'sell' ? 'Use Surplus' : 'Add to Surplus'}
             {/* {fieldId === 'sell'
                 ? isWithdrawFromDexChecked
                     ? 'Use Exchange Surplus'
@@ -125,6 +125,7 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
                     isOn={isWithdrawFromDexChecked}
                     handleToggle={() => setIsWithdrawFromDexChecked(!isWithdrawFromDexChecked)}
                     id='sell_token_withdrawal'
+                    disabled={true}
                 />
             ) : (
                 <Toggle2

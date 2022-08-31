@@ -83,7 +83,7 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
 
     const DexBalanceContent = (
         <span className={styles.surplus_toggle}>
-            {'Use Exchange Surplus'}
+            {'Use Surplus'}
             {fieldId === 'A' ? (
                 <Toggle2
                     isOn={isWithdrawTokenAFromDexChecked}
@@ -91,6 +91,7 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                         setIsWithdrawTokenAFromDexChecked(!isWithdrawTokenAFromDexChecked)
                     }
                     id='withdraw_from_dex'
+                    disabled={true}
                 />
             ) : (
                 <Toggle2
@@ -99,6 +100,7 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                         setIsWithdrawTokenBFromDexChecked(!isWithdrawTokenBFromDexChecked)
                     }
                     id='withdraw_to_wallet'
+                    disabled={true}
                 />
             )}
         </span>
@@ -141,9 +143,9 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
             </div>
             <div className={styles.swapbox_bottom}>
                 {fieldId === 'A' ? (
-                    <span>Wallet: {walletBalance} | DEX: 0.00</span>
+                    <span>Wallet: {walletBalance} | Surplus: 0.00</span>
                 ) : (
-                    <span>Wallet: {walletBalance} | DEX: 0.00</span>
+                    <span>Wallet: {walletBalance} | Surplus: 0.00</span>
                 )}
 
                 {DexBalanceContent}
