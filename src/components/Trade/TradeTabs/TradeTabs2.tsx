@@ -51,6 +51,7 @@ export default function TradeTabs2(props: ITabsProps) {
     const {
         chainId,
         chainData,
+        isAuthenticated,
         account,
         isShowAllEnabled,
         setIsShowAllEnabled,
@@ -94,6 +95,8 @@ export default function TradeTabs2(props: ITabsProps) {
     // Props for <Ranges/> React Element
     const rangesProps = {
         provider: provider,
+        account: account,
+        isAuthenticated: isAuthenticated,
         chainId: chainId,
         isShowAllEnabled: isShowAllEnabled,
         notOnTradeRoute: false,

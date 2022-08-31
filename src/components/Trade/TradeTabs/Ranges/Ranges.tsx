@@ -1,6 +1,5 @@
 // START: Import React and Dongles
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
-import { useMoralis } from 'react-moralis';
 import { ethers } from 'ethers';
 
 // START: Import JSX Components
@@ -16,6 +15,8 @@ import { PositionIF } from '../../../../utils/interfaces/PositionIF';
 // interface for props
 interface RangesPropsIF {
     provider: ethers.providers.Provider | undefined;
+    isAuthenticated: boolean;
+    account: string;
     chainId: string;
     isShowAllEnabled: boolean;
     notOnTradeRoute?: boolean;
@@ -31,6 +32,8 @@ interface RangesPropsIF {
 export default function Ranges(props: RangesPropsIF) {
     const {
         provider,
+        account,
+        isAuthenticated,
         chainId,
         isShowAllEnabled,
         notOnTradeRoute,
@@ -41,8 +44,6 @@ export default function Ranges(props: RangesPropsIF) {
         setCurrentPositionActive,
         portfolio,
     } = props;
-
-    const { account, isAuthenticated } = useMoralis();
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
