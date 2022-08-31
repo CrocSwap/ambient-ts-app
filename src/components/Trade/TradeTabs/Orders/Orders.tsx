@@ -45,7 +45,6 @@ export default function Orders(props: OrdersProps) {
             sortable: false
         }
     ];
-    false && columnHeaders;
 
     const ItemContent = (
         <div className={styles.item_container}>
