@@ -300,13 +300,7 @@ export default function Limit(props: LimitPropsIF) {
                 </motion.div>
                 <div className={styles.header_container}>
                     <DividerDark addMarginTop />
-                    <DenominationSwitch
-                        tokenPair={tokenPair}
-                        displayForBase={tradeData.isDenomBase}
-                        poolPriceDisplay={poolPriceDisplay}
-                        isTokenABase={isSellTokenBase}
-                        didUserFlipDenom={tradeData.didUserFlipDenom}
-                    />
+                    <DenominationSwitch />
                 </div>
                 <LimitExtraInfo
                     tokenPair={tokenPair}

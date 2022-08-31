@@ -686,13 +686,7 @@ export default function Range(props: RangePropsIF) {
     const denominationSwitch = (
         <div className={styles.denomination_switch_container}>
             <AdvancedModeToggle advancedMode={tradeData.advancedMode} />
-            <DenominationSwitch
-                tokenPair={tokenPair}
-                displayForBase={tradeData.isDenomBase}
-                poolPriceDisplay={poolPriceDisplayNum}
-                isTokenABase={isTokenABase}
-                didUserFlipDenom={tradeData.didUserFlipDenom}
-            />
+            <DenominationSwitch />
         </div>
     );
 
