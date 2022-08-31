@@ -84,7 +84,10 @@ export default function Ranges(props: RangesPropsIF) {
     ];
 
     const [ sortBy, setSortBy ] = useState('default');
-    useEffect(() => {console.log(sortBy)}, [sortBy]);
+    const [ reverseSort, setReverseSort ] = useState(false);
+    useEffect(() => {
+        console.log({sortBy, reverseSort})
+    }, [sortBy, reverseSort]);
 
     const sortByWallet = (unsortedData: PositionIF[]) => (
         [...unsortedData].sort((a, b) => a.user.localeCompare(b.user))
@@ -143,6 +146,8 @@ export default function Ranges(props: RangesPropsIF) {
                             data={header}
                             sortBy={sortBy}
                             setSortBy={setSortBy}
+                            reverseSort={reverseSort}
+                            setReverseSort={setReverseSort}
                         />
                     )
                 }
