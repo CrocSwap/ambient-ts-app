@@ -85,9 +85,9 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
         dispatch(setActiveChartPeriod(period));
     };
     const denomInBase = tradeData.isDenomBase;
-    const denomInTokenA = (denomInBase && isTokenABase) || (!denomInBase && !isTokenABase);
-    const tokenASymbol = tradeData.tokenA.symbol;
-    const tokenBSymbol = tradeData.tokenB.symbol;
+    // const denomInTokenA = (denomInBase && isTokenABase) || (!denomInBase && !isTokenABase);
+    // const tokenASymbol = tradeData.tokenA.symbol;
+    // const tokenBSymbol = tradeData.tokenB.symbol;
     const tokenAAddress = tradeData.tokenA.address;
     const tokenBAddress = tradeData.tokenB.address;
 
@@ -379,8 +379,8 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
 
     // console.log({ favePools });
     const currentPoolData = {
-        base: tradeData.tokenA,
-        quote: tradeData.tokenB,
+        base: tradeData.baseToken,
+        quote: tradeData.quoteToken,
         chainId: chainId,
         poolId: 36000,
     };
@@ -395,8 +395,8 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
 
     const handleFavButton = () =>
         isButtonFavorited
-            ? removePoolFromFaves(tradeData.tokenA, tradeData.tokenB, chainId, 36000)
-            : addPoolToFaves(tradeData.tokenA, tradeData.tokenB, chainId, 36000);
+            ? removePoolFromFaves(tradeData.baseToken, tradeData.quoteToken, chainId, 36000)
+            : addPoolToFaves(tradeData.quoteToken, tradeData.baseToken, chainId, 36000);
 
     const favButton = (
         <motion.div
@@ -437,12 +437,16 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                     onClick={() => dispatch(toggleDidUserFlipDenom())}
                 >
                     <img
-                        src={denomInTokenA ? tradeData.tokenA.logoURI : tradeData.tokenB.logoURI}
+                        src={
+                            denomInBase ? tradeData.baseToken.logoURI : tradeData.quoteToken.logoURI
+                        }
                         alt='token'
                         width='30px'
                     />
                     <img
-                        src={denomInTokenA ? tradeData.tokenB.logoURI : tradeData.tokenA.logoURI}
+                        src={
+                            denomInBase ? tradeData.quoteToken.logoURI : tradeData.baseToken.logoURI
+                        }
                         alt='token'
                         width='30px'
                     />
@@ -451,8 +455,8 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                     className={styles.tokens_name}
                     onClick={() => dispatch(toggleDidUserFlipDenom())}
                 >
-                    {denomInTokenA ? tokenASymbol : tokenBSymbol} /{' '}
-                    {denomInTokenA ? tokenBSymbol : tokenASymbol}
+                    {denomInBase ? tradeData.baseToken.symbol : tradeData.quoteToken.symbol} /{' '}
+                    {denomInBase ? tradeData.quoteToken.symbol : tradeData.baseToken.symbol}
                 </span>
             </div>
 
@@ -464,18 +468,18 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
 
     // TIME FRAME CONTENT--------------------------------------------------------------
 
-    const currencyCharacter = denomInTokenA
+    const currencyCharacter = denomInBase
         ? // denom in a, return token b character
-          getUnicodeCharacter(tradeData.tokenB.symbol)
+          getUnicodeCharacter(tradeData.quoteToken.symbol)
         : // denom in b, return token a character
-          getUnicodeCharacter(tradeData.tokenA.symbol);
+          getUnicodeCharacter(tradeData.baseToken.symbol);
 
     // console.log({ poolPriceChangePercent });
     const timeFrameContent = (
         <div className={styles.time_frame_container}>
             <div className={styles.left_side}>
                 <span className={styles.amount}>
-                    {poolPriceDisplay === Infinity
+                    {poolPriceDisplay === Infinity || poolPriceDisplay === 0
                         ? '…'
                         : `${currencyCharacter}${truncatedPoolPrice}`}
                 </span>

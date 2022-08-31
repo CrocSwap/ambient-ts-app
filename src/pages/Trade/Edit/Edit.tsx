@@ -10,7 +10,7 @@ import Modal from '../../../components/Global/Modal/Modal';
 import ConfirmEditModal from '../../../components/Trade/Edit/ConfirmEditModal/ConfirmEditModal';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import { useState, useEffect } from 'react';
-import EditDenominationSwitch from '../../../components/Trade/Edit/EditDenominationSwitch/EditDenominationSwitch';
+// import EditDenominationSwitch from '../../../components/Trade/Edit/EditDenominationSwitch/EditDenominationSwitch';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 
 import { PositionIF } from '../../../utils/interfaces/PositionIF';
@@ -24,6 +24,7 @@ import { tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
 import { TokenIF } from '../../../utils/interfaces/exports';
+import DenominationSwitch from '../../../components/Swap/DenominationSwitch/DenominationSwitch';
 
 interface PositionState {
     position: PositionIF;
@@ -390,12 +391,12 @@ export default function Edit() {
         highPriceDisplayTruncated: highPriceDisplayTruncated,
     };
 
-    const editDenominationSwitchProps = {
-        denominationsInBase: denominationsInBase,
-        // setDenominationsInBase: dispatch(toggleDidUserFlipDenom),
-        quoteTokenSymbol: position.quoteSymbol,
-        baseTokenSymbol: position.baseSymbol,
-    };
+    // const editDenominationSwitchProps = {
+    //     denominationsInBase: denominationsInBase,
+    //     // setDenominationsInBase: dispatch(toggleDidUserFlipDenom),
+    //     quoteTokenSymbol: position.quoteSymbol,
+    //     baseTokenSymbol: position.baseSymbol,
+    // };
 
     return (
         <div className={styles.editContainer}>
@@ -403,7 +404,8 @@ export default function Edit() {
             <div className={styles.edit_content}>
                 <CurrencyDisplayContainer {...currencyDisplayContainerProps} />
                 <Divider />
-                <EditDenominationSwitch {...editDenominationSwitchProps} />
+                {/* <EditDenominationSwitch {...editDenominationSwitchProps} /> */}
+                <DenominationSwitch />
                 {position.positionType === 'concentrated' && (
                     <EditMinMaxPrice {...editMinMaxPriceProps} />
                 )}

@@ -99,7 +99,7 @@ export default function OrdersMenu(props: OrdersMenuIF) {
     ) : null;
     const copyButton = userPosition ? (
         <button className={styles.option_button} onClick={handleCopyAddress}>
-            Clone
+            Copy Trade
         </button>
     ) : null;
     const detailsButton = (

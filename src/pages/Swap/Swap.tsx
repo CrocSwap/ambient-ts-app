@@ -312,12 +312,12 @@ export default function Swap(props: SwapPropsIF) {
             <div className={`${swapContainerStyle}`}>
                 <ContentContainer isOnTradeRoute={isOnTradeRoute}>
                     <SwapHeader
-                        tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
+                        // tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
                         swapSlippage={swapSlippage}
                         isPairStable={isPairStable}
                         isOnTradeRoute={isOnTradeRoute}
-                        isDenomBase={tradeData.isDenomBase}
-                        isTokenABase={isSellTokenBase}
+                        // isDenomBase={tradeData.isDenomBase}
+                        // isTokenABase={isSellTokenBase}
                     />
                     <DividerDark addMarginTop />
                     {navigationMenu}
@@ -358,13 +358,7 @@ export default function Swap(props: SwapPropsIF) {
                     </motion.div>
                     <div className={styles.header_container}>
                         <DividerDark addMarginTop />
-                        <DenominationSwitch
-                            tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
-                            isTokenABase={isSellTokenBase}
-                            displayForBase={tradeData.isDenomBase}
-                            poolPriceDisplay={poolPriceDisplay}
-                            didUserFlipDenom={tradeData.didUserFlipDenom}
-                        />
+                        <DenominationSwitch />
                     </div>
                     <ExtraInfo
                         tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
