@@ -1040,11 +1040,13 @@ export default function App() {
         }
     }, [lastUserSwapsMessage]);
 
-    const [tokenABalance, setTokenABalance] = useState<string>('');
-    const [tokenBBalance, setTokenBBalance] = useState<string>('');
+    const [baseTokenBalance, setBaseTokenBalance] = useState<string>('');
+    const [quoteTokenBalance, setQuoteTokenBalance] = useState<string>('');
     const [poolPriceNonDisplay, setPoolPriceNonDisplay] = useState<number | undefined>(undefined);
     const [poolPriceDisplay, setPoolPriceDisplay] = useState<number | undefined>(undefined);
 
+    // console.log({ baseTokenBalance });
+    // console.log({ quoteTokenBalance });
     // useEffect to get spot price when tokens change and block updates
     useEffect(() => {
         if (
@@ -1102,14 +1104,14 @@ export default function App() {
                 tokenPair?.dataTokenB?.address
             ) {
                 const croc = new CrocEnv(provider);
-                croc.token(tokenPair.dataTokenA.address)
+                croc.token(tradeData.baseToken.address)
                     .walletDisplay(account)
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    .then((bal: any) => setTokenABalance(bal));
-                croc.token(tokenPair.dataTokenB.address)
+                    .then((bal: any) => setBaseTokenBalance(bal));
+                croc.token(tradeData.quoteToken.address)
                     .walletDisplay(account)
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    .then((bal: any) => setTokenBBalance(bal));
+                    .then((bal: any) => setQuoteTokenBalance(bal));
             }
         })();
     }, [
@@ -1499,8 +1501,8 @@ export default function App() {
     // function to sever connection between user wallet and Moralis server
     const clickLogout = async () => {
         setNativeBalance('');
-        setTokenABalance('0');
-        setTokenBBalance('0');
+        setBaseTokenBalance('0');
+        setQuoteTokenBalance('0');
         dispatch(resetTradeData());
         dispatch(resetTokenData());
         dispatch(resetGraphData());
@@ -1586,8 +1588,8 @@ export default function App() {
         gasPriceinGwei: gasPriceinGwei,
         nativeBalance: nativeBalance,
         lastBlockNumber: lastBlockNumber,
-        tokenABalance: tokenABalance,
-        tokenBBalance: tokenBBalance,
+        baseTokenBalance: baseTokenBalance,
+        quoteTokenBalance: quoteTokenBalance,
         isSellTokenBase: isTokenABase,
         tokenPair: tokenPair,
         poolPriceDisplay: poolPriceDisplay,
@@ -1611,8 +1613,8 @@ export default function App() {
         gasPriceinGwei: gasPriceinGwei,
         nativeBalance: nativeBalance,
         lastBlockNumber: lastBlockNumber,
-        tokenABalance: tokenABalance,
-        tokenBBalance: tokenBBalance,
+        baseTokenBalance: baseTokenBalance,
+        quoteTokenBalance: quoteTokenBalance,
         isSellTokenBase: isTokenABase,
         tokenPair: tokenPair,
         poolPriceDisplay: poolPriceDisplay,
@@ -1636,8 +1638,8 @@ export default function App() {
         gasPriceinGwei: gasPriceinGwei,
         nativeBalance: nativeBalance,
         lastBlockNumber: lastBlockNumber,
-        tokenABalance: tokenABalance,
-        tokenBBalance: tokenBBalance,
+        baseTokenBalance: baseTokenBalance,
+        quoteTokenBalance: quoteTokenBalance,
         isSellTokenBase: isTokenABase,
         tokenPair: tokenPair,
         isTokenABase: isTokenABase,
@@ -1665,10 +1667,10 @@ export default function App() {
         quoteTokenAddress: quoteTokenAddress,
         poolPriceNonDisplay: poolPriceNonDisplay,
         poolPriceDisplay: poolPriceDisplay ? poolPriceDisplay.toString() : '0',
-        tokenABalance: tokenABalance,
+        baseTokenBalance: baseTokenBalance,
         tokenAAllowance: tokenAAllowance,
         setRecheckTokenAApproval: setRecheckTokenAApproval,
-        tokenBBalance: tokenBBalance,
+        quoteTokenBalance: quoteTokenBalance,
         tokenBAllowance: tokenBAllowance,
         setRecheckTokenBApproval: setRecheckTokenBApproval,
         chainId: chainData.chainId,
