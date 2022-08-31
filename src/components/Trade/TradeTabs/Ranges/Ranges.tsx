@@ -138,6 +138,7 @@ export default function Ranges(props: RangesPropsIF) {
     return (
         <div className={styles.container}>
             {/* header fields */}
+            
             <header className={styles.row_container}>
                 {
                     columnHeaders.map((header) => 

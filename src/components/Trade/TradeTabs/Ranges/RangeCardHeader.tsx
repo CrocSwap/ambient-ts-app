@@ -1,6 +1,6 @@
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useMemo } from 'react';
 import styles from './RangeCardHeader.module.css';
-import { FaSort } from 'react-icons/fa';
+import { FaAngleUp, FaAngleDown } from 'react-icons/fa';
 
 interface RangeCardHeaderPropsIF {
     data: {
@@ -41,13 +41,25 @@ export default function RangeCardHeader(props: RangeCardHeaderPropsIF) {
         }
     }
 
+    const arrow = useMemo(() => {
+        if (sortBy !== data.name.toLowerCase()) {
+            return null;
+        } else if (!reverseSort) {
+            return <FaAngleDown />;
+        } else if (reverseSort) {
+            return <FaAngleUp />;
+        } else {
+            return null;
+        }
+    }, [sortBy, reverseSort]);
+
     return (
         <div
             className={styles.range_column_header}
             onClick={() => handleClick(data.name.toLowerCase())}
         >
             <h5>{data.name}</h5>
-            <FaSort />
+            {arrow}
         </div>
     );
 }
