@@ -2,7 +2,8 @@ import styles from './PriceInfo.module.css';
 import Row from '../../Global/Row/Row';
 import DividerDark from '../../Global/DividerDark/DividerDark';
 import graphImage from '../../../assets/images/Temporary/chart.svg';
-
+import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
+import { toggleDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
 interface IPriceInfoProps {
     lowRangeDisplay: string;
     highRangeDisplay: string;
@@ -14,9 +15,12 @@ interface IPriceInfoProps {
     quoteTokenLogoURI: string;
     baseTokenSymbol: string;
     quoteTokenSymbol: string;
+
+    isDenomBase: boolean;
 }
 
 export default function PriceInfo(props: IPriceInfoProps) {
+    const dispatch = useAppDispatch();
     const {
         lowRangeDisplay,
         highRangeDisplay,
@@ -28,6 +32,8 @@ export default function PriceInfo(props: IPriceInfoProps) {
         quoteTokenLogoURI,
         baseTokenSymbol,
         quoteTokenSymbol,
+
+        isDenomBase,
     } = props;
     const collateralContent = (
         <div className={styles.info_container}>
@@ -89,9 +95,35 @@ export default function PriceInfo(props: IPriceInfoProps) {
         </div>
     );
 
+    const tokenPairDetails = (
+        <div
+            className={styles.token_pair_details_container}
+            onClick={() => {
+                dispatch(toggleDidUserFlipDenom());
+            }}
+        >
+            <div className={styles.token_pair_images}>
+                <img
+                    src={isDenomBase ? baseTokenLogoURI : quoteTokenLogoURI}
+                    alt={baseTokenSymbol}
+                />
+                <img
+                    src={isDenomBase ? quoteTokenLogoURI : baseTokenLogoURI}
+                    alt={quoteTokenSymbol}
+                />
+            </div>
+            <p>
+                {' '}
+                {isDenomBase ? baseTokenSymbol : quoteTokenSymbol} /{' '}
+                {isDenomBase ? quoteTokenSymbol : baseTokenSymbol}
+            </p>
+        </div>
+    );
+
     return (
         <div className={styles.main_container}>
             {/* <div className={styles.price_info_container}> */}
+            {tokenPairDetails}
             {totalValueContent}
             {timesContent}
             {collateralContent}

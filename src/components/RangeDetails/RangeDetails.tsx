@@ -11,6 +11,7 @@ import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { toDisplayQty } from '@crocswap-libs/sdk';
 import { formatAmount } from '../../utils/numbers';
 import { PositionIF } from '../../utils/interfaces/PositionIF';
+import APYGraphDisplay from './APYGraphDisplay/APYGraphDisplay';
 interface IRangeDetailsProps {
     provider: ethers.providers.Provider | undefined;
     position: PositionIF;
@@ -221,7 +222,7 @@ export default function RangeDetails(props: IRangeDetailsProps) {
     return (
         <div className={styles.range_details_container}>
             <div ref={detailsRef}>
-                {/* <RemoveRangeHeader
+                <RemoveRangeHeader
                     isPositionInRange={props.isPositionInRange}
                     isAmbient={props.isAmbient}
                     baseTokenSymbol={props.baseTokenSymbol}
@@ -229,7 +230,7 @@ export default function RangeDetails(props: IRangeDetailsProps) {
                     baseTokenLogoURI={props.baseTokenLogoURI}
                     quoteTokenLogoURI={props.quoteTokenLogoURI}
                     isDenomBase={props.isDenomBase}
-                /> */}
+                />
                 <div className={styles.main_content}>
                     <div className={styles.left_container}>
                         <PriceInfo
@@ -243,9 +244,12 @@ export default function RangeDetails(props: IRangeDetailsProps) {
                             quoteTokenLogoURI={quoteTokenLogoURI}
                             baseTokenSymbol={props.baseTokenSymbol}
                             quoteTokenSymbol={props.quoteTokenSymbol}
+                            isDenomBase={props.isDenomBase}
                         />
                     </div>
-                    <div className={styles.right_container}>I am right container</div>
+                    <div className={styles.right_container}>
+                        <APYGraphDisplay />
+                    </div>
                     {/* <TokenInfo
                         provider={props.provider}
                         chainId={chainId}
@@ -260,6 +264,7 @@ export default function RangeDetails(props: IRangeDetailsProps) {
                     <Divider />
                 </div>
             </div>
+
             <div onClick={downloadAsImage} className={styles.share_container}>
                 <BsDownload size={15} />
             </div>

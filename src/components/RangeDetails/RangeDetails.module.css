@@ -9,6 +9,8 @@
     width: 100%;
     display: grid;
     grid-template-columns: 244px auto;
+    align-items: center;
+   grid-gap: 1rem;
 }
 
 /* .share_container {
