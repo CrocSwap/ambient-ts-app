@@ -50,7 +50,7 @@ export default function SidebarRangePositions(props: SidebarRangeProps) {
     const onTradeRoute = location.pathname.includes('trade');
     const onAccountRoute = location.pathname.includes('account');
 
-    const tabToSwitchToBasedOnRoute = onTradeRoute ? 2 : onAccountRoute ? 2 : 0;
+    const tabToSwitchToBasedOnRoute = onTradeRoute ? 2 : onAccountRoute ? 2 : 2;
 
     function redirectBasedOnRoute() {
         if (onTradeRoute || onAccountRoute) return;
