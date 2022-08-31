@@ -1957,6 +1957,13 @@ export default function App() {
                         fullScreen={false}
                     />
                 )}
+                {currentLocation !== '/app/chat' && (
+                    <Chat
+                        ensName={ensName}
+                        connectedAccount={account ? account : ''}
+                        fullScreen={false}
+                    />
+                )}
             </div>
             <SidebarFooter />
             {isModalOpenWallet && (
