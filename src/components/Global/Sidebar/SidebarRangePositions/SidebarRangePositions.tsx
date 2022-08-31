@@ -3,7 +3,7 @@ import SidebarRangePositionsCard from './SidebarRangePositionsCard';
 import { PositionIF } from '../../../../utils/interfaces/PositionIF';
 import { SetStateAction, Dispatch } from 'react';
 import { TokenIF } from '../../../../utils/interfaces/TokenIF';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 interface SidebarRangeProps {
     isDenomBase: boolean;
@@ -26,6 +26,7 @@ interface SidebarRangeProps {
 
 export default function SidebarRangePositions(props: SidebarRangeProps) {
     const location = useLocation();
+    const navigate = useNavigate();
 
     const {
         tokenMap,
@@ -34,7 +35,6 @@ export default function SidebarRangePositions(props: SidebarRangeProps) {
         currentPositionActive,
         setCurrentPositionActive,
         expandTradeTable,
-        setExpandTradeTable,
     } = props;
 
     const header = (
@@ -52,13 +52,20 @@ export default function SidebarRangePositions(props: SidebarRangeProps) {
 
     const tabToSwitchToBasedOnRoute = onTradeRoute ? 2 : onAccountRoute ? 2 : 0;
 
-    function handleViewMoreClick() {
+    function redirectBasedOnRoute() {
+        if (onTradeRoute || onAccountRoute) return;
+        navigate('/trade');
+    }
+
+    const handleViewMoreClick = () => {
         props.setOutsideControl(true);
-        props.setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
+        props.setSelectedOutsideTab(2);
+        redirectBasedOnRoute();
 
         props.setIsShowAllEnabled(true);
         props.setExpandTradeTable(true);
-    }
+    };
+
     const sidebarRangePositionCardProps = {
         tokenMap: tokenMap,
         selectedOutsideTab: props.selectedOutsideTab,
@@ -88,7 +95,7 @@ export default function SidebarRangePositions(props: SidebarRangeProps) {
                     ))}
             </div>
             {!expandTradeTable && (
-                <div className={styles.view_more} onClick={() => handleViewMoreClick()}>
+                <div className={styles.view_more} onClick={handleViewMoreClick}>
                     View More
                 </div>
             )}

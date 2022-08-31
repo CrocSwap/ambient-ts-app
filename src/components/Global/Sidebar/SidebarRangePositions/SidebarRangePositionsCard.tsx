@@ -1,7 +1,6 @@
 import styles from './SidebarRangePositionsCard.module.css';
 import { PositionIF } from '../../../../utils/interfaces/PositionIF';
 
-import { useLocation } from 'react-router-dom';
 // import { toDisplayQty } from '@crocswap-libs/sdk';
 import { useEffect, useState, SetStateAction, Dispatch } from 'react';
 import { TokenIF } from '../../../../utils/interfaces/TokenIF';
@@ -29,8 +28,6 @@ interface SidebarRangePositionsProps {
 }
 
 export default function SidebarRangePositionsCard(props: SidebarRangePositionsProps) {
-    const location = useLocation();
-
     const {
         tokenMap,
         isDenomBase,
