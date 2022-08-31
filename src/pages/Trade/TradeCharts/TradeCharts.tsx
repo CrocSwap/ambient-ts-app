@@ -388,8 +388,6 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
             pool.chainId.toString() === currentPoolData.chainId.toString(),
     );
 
-    console.log({ isButtonFavorited });
-
     const handleFavButton = () =>
         isButtonFavorited
             ? removePoolFromFaves(tradeData.baseToken, tradeData.quoteToken, chainId, 36000)
