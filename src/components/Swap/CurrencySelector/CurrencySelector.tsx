@@ -26,7 +26,7 @@ interface CurrencySelectorProps {
     isSaveAsDexSurplusChecked: boolean;
     setIsSaveAsDexSurplusChecked: Dispatch<SetStateAction<boolean>>;
     handleChangeEvent: (evt: ChangeEvent<HTMLInputElement>) => void;
-    handleChangeClick: (value: string) => void;
+    handleChangeClick?: (value: string) => void;
     reverseTokens: () => void;
     activeTokenListsChanged: boolean;
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
@@ -173,22 +173,23 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
             <div className={styles.swapbox_bottom}>
                 <div className={styles.surplus_container}>
                     <div
-                        className={props.sellToken ? styles.balance_with_pointer : null}
+                        className={styles.balance_with_pointer}
                         onClick={() => {
-                            props.sellToken
+                            props.sellToken && handleChangeClick
                                 ? handleChangeClick(walletBalanceNonLocaleString)
-                                : null;
+                                : setIsSaveAsDexSurplusChecked(false);
                         }}
                     >
                         Wallet: {walletBalanceLocaleString}{' '}
                     </div>{' '}
                     |{' '}
                     <div
-                        className={props.sellToken ? styles.balance_with_pointer : null}
+                        className={styles.balance_with_pointer}
+                        // className={props.sellToken ? styles.balance_with_pointer : null}
                         onClick={() => {
-                            props.sellToken
+                            props.sellToken && handleChangeClick
                                 ? handleChangeClick(surplusBalanceNonLocaleString)
-                                : null;
+                                : setIsSaveAsDexSurplusChecked(true);
                         }}
                     >
                         Surplus: {surplusBalanceLocaleString}

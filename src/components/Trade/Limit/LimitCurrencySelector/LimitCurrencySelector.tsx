@@ -180,22 +180,22 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
             <div className={styles.swapbox_bottom}>
                 <div className={styles.surplus_container}>
                     <div
-                        className={props.sellToken ? styles.balance_with_pointer : null}
+                        className={styles.balance_with_pointer}
                         onClick={() => {
                             props.sellToken && handleChangeClick
                                 ? handleChangeClick(walletBalanceNonLocaleString)
-                                : null;
+                                : setIsSaveAsDexSurplusChecked(false);
                         }}
                     >
                         Wallet: {walletBalanceLocaleString}{' '}
                     </div>{' '}
                     |{' '}
                     <div
-                        className={props.sellToken ? styles.balance_with_pointer : null}
+                        className={styles.balance_with_pointer}
                         onClick={() => {
                             props.sellToken && handleChangeClick
                                 ? handleChangeClick(surplusBalanceNonLocaleString)
-                                : null;
+                                : setIsSaveAsDexSurplusChecked(true);
                         }}
                     >
                         Surplus: {surplusBalanceLocaleString}
