@@ -66,8 +66,8 @@ export default function Chart(props: ChartData) {
                     ? data.invPriceOpenExclMEVDecimalCorrected
                     : data.priceOpenExclMEVDecimalCorrected,
                 close: denomInBase
-                    ? data.invPriceCloseExclMEVDecimalCorrected
-                    : data.priceCloseExclMEVDecimalCorrected,
+                    ? data.invPriceCloseDecimalCorrected
+                    : data.priceCloseDecimalCorrected,
                 high: denomInBase
                     ? data.invMinPriceExclMEVDecimalCorrected
                     : data.maxPriceExclMEVDecimalCorrected,
@@ -78,8 +78,6 @@ export default function Chart(props: ChartData) {
                 allSwaps: data.allSwaps,
             });
         });
-
-        console.log({ chartData });
 
         drawChart(chartData, period, targets);
     }, [props.priceData, targets, denomInBase]);
@@ -101,8 +99,8 @@ export default function Chart(props: ChartData) {
                 props.priceData !== undefined
                     ? Math.min(
                           ...props.priceData.candles.map((o) => {
-                              return o.invPriceCloseExclMEVDecimalCorrected !== undefined
-                                  ? o.invPriceCloseExclMEVDecimalCorrected
+                              return o.invPriceCloseDecimalCorrected !== undefined
+                                  ? o.invPriceCloseDecimalCorrected
                                   : Infinity;
                           }),
                       )
