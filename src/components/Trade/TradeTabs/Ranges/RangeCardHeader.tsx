@@ -27,6 +27,7 @@ export default function RangeCardHeader(props: RangeCardHeaderPropsIF) {
         if (sortBy !== name) {
             console.log('first click');
             setSortBy(name);
+            setReverseSort(false);
         } else if (!reverseSort) {
             console.log('second click');
             setReverseSort(true);
