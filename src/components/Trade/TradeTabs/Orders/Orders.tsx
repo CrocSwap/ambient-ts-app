@@ -1,6 +1,7 @@
 import styles from './Orders.module.css';
 import OrderCard from './OrderCard';
 import OrderCardHeader from './OrderCardHeader';
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 // import { Dispatch, SetStateAction } from 'react';
 interface OrdersProps {
     expandTradeTable: boolean;
@@ -9,6 +10,9 @@ interface OrdersProps {
 }
 export default function Orders(props: OrdersProps) {
     const { expandTradeTable, account } = props;
+
+    const tradeData = useAppSelector((state) => state.tradeData);
+
     const items = [1, 2, 3, 4, 5, 6];
 
     const columnHeaders = [
@@ -32,14 +36,14 @@ export default function Orders(props: OrdersProps) {
             name: 'Type',
             sortable: true
         },
-        // {
-        //     name: tradeData.baseToken.symbol,
-        //     sortable: false
-        // },
-        // {
-        //     name: tradeData.quoteToken.symbol,
-        //     sortable: false
-        // }
+        {
+            name: tradeData.baseToken.symbol,
+            sortable: false
+        },
+        {
+            name: tradeData.quoteToken.symbol,
+            sortable: false
+        }
     ];
     false && columnHeaders;
 
