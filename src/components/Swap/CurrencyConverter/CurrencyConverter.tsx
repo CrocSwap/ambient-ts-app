@@ -22,8 +22,8 @@ interface CurrencyConverterPropsIF {
     poolPriceDisplay: number | undefined;
     isTokenAPrimary: boolean;
     nativeBalance: string;
-    tokenABalance: string;
-    tokenBBalance: string;
+    baseTokenBalance: string;
+    quoteTokenBalance: string;
     tokenAInputQty: string;
     tokenBInputQty: string;
     setTokenAInputQty: Dispatch<SetStateAction<string>>;
@@ -41,7 +41,7 @@ interface CurrencyConverterPropsIF {
 export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
     const {
         tokenPair,
-        isSellTokenBase,
+        // isSellTokenBase,
         tokensBank,
         setImportedTokens,
         searchableTokens,
@@ -53,8 +53,8 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         isSaveAsDexSurplusChecked,
         setIsSaveAsDexSurplusChecked,
         setSwapAllowed,
-        tokenABalance,
-        tokenBBalance,
+        baseTokenBalance,
+        quoteTokenBalance,
         setSwapButtonErrorMessage,
         setTokenAInputQty,
         setTokenBInputQty,
@@ -70,6 +70,8 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
+    const isSellTokenBase = tradeData.baseToken.address === tradeData.tokenA.address;
+
     const [isTokenAPrimaryLocal, setIsTokenAPrimaryLocal] = useState<boolean>(
         tradeData.isTokenAPrimary,
     );
@@ -79,6 +81,9 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
     const [tokenBQtyLocal, setTokenBQtyLocal] = useState<string>(
         !isTokenAPrimaryLocal ? tradeData?.primaryQuantity : '',
     );
+
+    const tokenABalance = isSellTokenBase ? baseTokenBalance : quoteTokenBalance;
+    const tokenBBalance = isSellTokenBase ? quoteTokenBalance : baseTokenBalance;
 
     // const tokenADecimals = tokenPair.dataTokenA.decimals;
     // const tokenBDecimals = tokenPair.dataTokenB.decimals;
@@ -138,9 +143,13 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
 
     const handleSwapButtonMessage = (tokenAAmount: number) => {
         if (poolPriceDisplay === 0 || poolPriceDisplay === Infinity) {
+            console.log('1');
             setSwapAllowed(false);
             setSwapButtonErrorMessage('Invalid Token Pair');
         } else if (tokenAAmount > parseFloat(tokenABalance)) {
+            console.log('2');
+            console.log({ tokenAAmount });
+            console.log({ tokenABalance });
             setSwapAllowed(false);
             setSwapButtonErrorMessage(
                 `${tokenPair.dataTokenA.symbol} Amount Exceeds Wallet Balance`,
@@ -151,6 +160,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         //     setSwapButtonErrorMessage(`${tokenPair.dataTokenA.symbol} Amount Exceeds Allowance`);
         // }
         else if (isNaN(tokenAAmount) || tokenAAmount <= 0) {
+            console.log('3');
             setSwapAllowed(false);
             setSwapButtonErrorMessage('Enter an Amount');
         } else {
