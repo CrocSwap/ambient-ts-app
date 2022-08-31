@@ -1,15 +1,22 @@
+// START: Import React and Dongles
 import { useEffect, useState } from 'react';
+
+// START: Import JSX Elements
 import styles from './Orders.module.css';
 import OrderCard from './OrderCard';
 import OrderCardHeader from './OrderCardHeader';
+
+// START: Import Local Files
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
-// import { Dispatch, SetStateAction } from 'react';
-interface OrdersProps {
+
+// interface for props for react functional component
+interface propsIF {
     expandTradeTable: boolean;
     account: string;
-    // setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
 }
-export default function Orders(props: OrdersProps) {
+
+// main react functional component
+export default function Orders(props: propsIF) {
     const { expandTradeTable, account } = props;
 
     const tradeData = useAppSelector((state) => state.tradeData);
@@ -45,7 +52,10 @@ export default function Orders(props: OrdersProps) {
         }
     ];
 
-    // 
+    // TODO:   currently the values to determine sort order are not
+    // TODO:   ... being used productively because there is only
+    // TODO:   ... placeholder data, we will revisit this later on
+
     const [ sortBy, setSortBy ] = useState('default');
     const [ reverseSort, setReverseSort ] = useState(false);
     useEffect(() => {
