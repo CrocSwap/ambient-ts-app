@@ -143,13 +143,9 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
 
     const handleSwapButtonMessage = (tokenAAmount: number) => {
         if (poolPriceDisplay === 0 || poolPriceDisplay === Infinity) {
-            console.log('1');
             setSwapAllowed(false);
             setSwapButtonErrorMessage('Invalid Token Pair');
         } else if (tokenAAmount > parseFloat(tokenABalance)) {
-            console.log('2');
-            console.log({ tokenAAmount });
-            console.log({ tokenABalance });
             setSwapAllowed(false);
             setSwapButtonErrorMessage(
                 `${tokenPair.dataTokenA.symbol} Amount Exceeds Wallet Balance`,
@@ -160,7 +156,6 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         //     setSwapButtonErrorMessage(`${tokenPair.dataTokenA.symbol} Amount Exceeds Allowance`);
         // }
         else if (isNaN(tokenAAmount) || tokenAAmount <= 0) {
-            console.log('3');
             setSwapAllowed(false);
             setSwapButtonErrorMessage('Enter an Amount');
         } else {
