@@ -11,6 +11,38 @@ export default function Orders(props: OrdersProps) {
     const { expandTradeTable, account } = props;
     const items = [1, 2, 3, 4, 5, 6];
 
+    const columnHeaders = [
+        {
+            name: 'ID',
+            sortable: true
+        },
+        {
+            name: 'Wallet',
+            sortable: true
+        },
+        {
+            name: 'Price',
+            sortable: true
+        },
+        {
+            name: 'Side',
+            sortable: true
+        },
+        {
+            name: 'Type',
+            sortable: true
+        },
+        // {
+        //     name: tradeData.baseToken.symbol,
+        //     sortable: false
+        // },
+        // {
+        //     name: tradeData.quoteToken.symbol,
+        //     sortable: false
+        // }
+    ];
+    false && columnHeaders;
+
     const ItemContent = (
         <div className={styles.item_container}>
             {items.map((item, idx) => (
