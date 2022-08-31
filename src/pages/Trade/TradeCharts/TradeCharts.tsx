@@ -81,8 +81,8 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
     };
     const denomInBase = tradeData.isDenomBase;
     const denomInTokenA = (denomInBase && isTokenABase) || (!denomInBase && !isTokenABase);
-    const tokenASymbol = tradeData.tokenA.symbol;
-    const tokenBSymbol = tradeData.tokenB.symbol;
+    // const tokenASymbol = tradeData.tokenA.symbol;
+    // const tokenBSymbol = tradeData.tokenB.symbol;
     const tokenAAddress = tradeData.tokenA.address;
     const tokenBAddress = tradeData.tokenB.address;
 
@@ -432,12 +432,16 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                     onClick={() => dispatch(toggleDidUserFlipDenom())}
                 >
                     <img
-                        src={denomInTokenA ? tradeData.tokenA.logoURI : tradeData.tokenB.logoURI}
+                        src={
+                            denomInBase ? tradeData.baseToken.logoURI : tradeData.quoteToken.logoURI
+                        }
                         alt='token'
                         width='30px'
                     />
                     <img
-                        src={denomInTokenA ? tradeData.tokenB.logoURI : tradeData.tokenA.logoURI}
+                        src={
+                            denomInBase ? tradeData.quoteToken.logoURI : tradeData.baseToken.logoURI
+                        }
                         alt='token'
                         width='30px'
                     />
@@ -446,8 +450,8 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                     className={styles.tokens_name}
                     onClick={() => dispatch(toggleDidUserFlipDenom())}
                 >
-                    {denomInTokenA ? tokenASymbol : tokenBSymbol} /{' '}
-                    {denomInTokenA ? tokenBSymbol : tokenASymbol}
+                    {denomInBase ? tradeData.baseToken.symbol : tradeData.quoteToken.symbol} /{' '}
+                    {denomInBase ? tradeData.quoteToken.symbol : tradeData.baseToken.symbol}
                 </span>
             </div>
 
