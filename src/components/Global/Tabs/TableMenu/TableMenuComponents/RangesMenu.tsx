@@ -138,7 +138,7 @@ export default function RangesMenu(props: RangesMenuIF) {
         <Link
             className={styles.option_button}
             to={`/trade/edit/${posHash}`}
-            state={positionData}
+            state={{ position: positionData }}
             replace={currentLocation.startsWith('/trade/edit')}
         >
             Edit
