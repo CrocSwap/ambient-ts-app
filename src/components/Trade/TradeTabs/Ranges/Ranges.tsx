@@ -141,7 +141,7 @@ export default function Ranges(props: RangesPropsIF) {
                         <RangeCardHeader
                             key={`rangeDataHeaderField${header.name}`}
                             data={header}
-                            clickHandler={() => setSortBy(header.name.toLowerCase())}
+                            setSortBy={setSortBy}
                         />
                     )
                 }
