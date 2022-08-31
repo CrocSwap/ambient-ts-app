@@ -133,7 +133,14 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
         </Modal>
     ) : null;
 
-    const walletBalance =
+    const walletBalanceNonLocaleString =
+        props.sellToken && tokenABalance !== ''
+            ? parseFloat(tokenABalance).toString()
+            : !props.sellToken && tokenBBalance !== ''
+            ? parseFloat(tokenBBalance).toString()
+            : '0';
+
+    const walletBalanceLocaleString =
         props.sellToken && tokenABalance !== ''
             ? parseFloat(tokenABalance).toLocaleString()
             : !props.sellToken && tokenBBalance !== ''
@@ -163,15 +170,17 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                 <div className={styles.surplus_container}>
                     <div
                         onClick={() => {
-                            handleChangeClick(walletBalance);
+                            props.sellToken
+                                ? handleChangeClick(walletBalanceNonLocaleString)
+                                : null;
                         }}
                     >
-                        Wallet: {walletBalance}{' '}
+                        Wallet: {walletBalanceLocaleString}{' '}
                     </div>{' '}
                     |{' '}
                     <div
                         onClick={() => {
-                            handleChangeClick('0');
+                            props.sellToken ? handleChangeClick('0') : null;
                         }}
                     >
                         Surplus: 0
