@@ -68,6 +68,7 @@ import {
     setAdvancedLowTick,
     setAdvancedMode,
     setDenomInBase,
+    setDidUserFlipDenom,
     setPrimaryQuantityRange,
     setSimpleRangeWidth,
 } from '../utils/state/tradeDataSlice';
@@ -92,6 +93,7 @@ import { useModal } from '../components/Global/Modal/useModal';
 // import authenticateUser from '../utils/functions/authenticateUser';
 import { getVolumeSeries } from './functions/getVolumeSeries';
 import { getTvlSeries } from './functions/getTvlSeries';
+import Chat from './components/Chat/Chat';
 
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 const cachedFetchAddress = memoizeFetchAddress();
@@ -143,7 +145,7 @@ export default function App() {
 
     function exposeProviderUrl(provider?: ethers.providers.Provider): string {
         if (provider && 'connection' in provider) {
-            return (provider as ethers.providers.JsonRpcProvider).connection?.url;
+            return (provider as ethers.providers.WebSocketProvider).connection?.url;
         } else {
             return '';
         }
@@ -151,7 +153,7 @@ export default function App() {
 
     function exposeProviderChain(provider?: ethers.providers.Provider): number {
         if (provider && 'network' in provider) {
-            return (provider as ethers.providers.JsonRpcProvider).network?.chainId;
+            return (provider as ethers.providers.WebSocketProvider).network?.chainId;
         } else {
             return -1;
         }
@@ -160,8 +162,11 @@ export default function App() {
     const [metamaskLocked, setMetamaskLocked] = useState<boolean>(true);
     useEffect(() => {
         try {
+            console.log('Init provider' + provider);
             const url = exposeProviderUrl(provider);
             const onChain = exposeProviderChain(provider) === parseInt(chainData.chainId);
+
+            console.log('Exposed URL ' + url);
 
             if (isAuthenticated) {
                 if (provider && url === 'metamask' && !metamaskLocked && onChain) {
@@ -180,7 +185,8 @@ export default function App() {
                 }
             } else if (!provider || !onChain) {
                 const url = lookupChain(chainData.chainId).nodeUrl;
-                setProvider(new ethers.providers.JsonRpcProvider(url));
+                console.log('Chain URL ' + url);
+                setProvider(new ethers.providers.WebSocketProvider(url));
             }
         } catch (error) {
             console.log(error);
@@ -227,7 +233,7 @@ export default function App() {
     }, [tokenListsReceived]);
 
     useEffect(() => {
-        fetch('https://goerli.infura.io/v3/cf3bc905d88d4f248c6be347adc8a1d8', {
+        fetch('https://goerli.infura.io/v3/4a162c75bd514925890174ca13cdb6a2', {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
@@ -248,7 +254,7 @@ export default function App() {
             });
     }, []);
 
-    const goerliWssInfuraEndpoint = 'wss://goerli.infura.io/ws/v3/cbb2856ea8804fc5ba59be0a2e8a9f88';
+    const goerliWssInfuraEndpoint = 'wss://goerli.infura.io/ws/v3/4a162c75bd514925890174ca13cdb6a2';
 
     const { sendMessage: send, lastMessage: lastNewHeadMessage } = useWebSocket(
         goerliWssInfuraEndpoint,
@@ -441,33 +447,36 @@ export default function App() {
         dispatch(setSimpleRangeWidth(100));
         dispatch(setAdvancedMode(false));
         setPoolPriceDisplay(undefined);
+        dispatch(setDidUserFlipDenom(false)); // reset so a new token pair is re-evaluated for price > 1
         const sliderInput = document.getElementById('input-slider-range') as HTMLInputElement;
         if (sliderInput) sliderInput.value = '100';
     }, [JSON.stringify({ base: baseTokenAddress, quote: quoteTokenAddress })]);
 
     useEffect(() => {
         (async () => {
-            const poolAmbienApyCacheEndpoint =
-                'https://809821320828123.de:5000/' + '/pool_ambient_apy_cached?';
+            if (baseTokenAddress && quoteTokenAddress) {
+                const poolAmbientApyCacheEndpoint =
+                    'https://809821320828123.de:5000' + '/pool_ambient_apy_cached?';
 
-            fetch(
-                poolAmbienApyCacheEndpoint +
-                    new URLSearchParams({
-                        base: baseTokenAddress.toLowerCase(),
-                        quote: quoteTokenAddress.toLowerCase(),
-                        poolIdx: chainData.poolIndex.toString(),
-                        chainId: chainData.chainId,
-                        concise: 'true',
-                        lookback: '604800',
-                        // n: 10 // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
-                        // page: 0 // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
-                    }),
-            )
-                .then((response) => response?.json())
-                .then((json) => {
-                    const ambientApy = json?.data?.apy;
-                    setAmbientApy(ambientApy);
-                });
+                fetch(
+                    poolAmbientApyCacheEndpoint +
+                        new URLSearchParams({
+                            base: baseTokenAddress.toLowerCase(),
+                            quote: quoteTokenAddress.toLowerCase(),
+                            poolIdx: chainData.poolIndex.toString(),
+                            chainId: chainData.chainId,
+                            concise: 'true',
+                            lookback: '604800',
+                            // n: 10 // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
+                            // page: 0 // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
+                        }),
+                )
+                    .then((response) => response?.json())
+                    .then((json) => {
+                        const ambientApy = json?.data?.apy;
+                        setAmbientApy(ambientApy);
+                    });
+            }
         })();
     }, [JSON.stringify({ base: baseTokenAddress, quote: quoteTokenAddress })]);
 
@@ -766,6 +775,7 @@ export default function App() {
                                 page: '0', // nonnegative integer
                                 chainId: '0x1',
                                 dex: 'all',
+                                poolStats: 'true',
                                 concise: 'true',
                             }),
                     )
@@ -867,6 +877,7 @@ export default function App() {
                 period: activePeriod.toString(),
                 chainId: '0x1',
                 dex: 'all',
+                poolStats: 'true',
                 concise: 'true',
             }),
         [mainnetBaseTokenAddress, mainnetQuoteTokenAddress, chainData.poolIndex, activePeriod],
@@ -1867,6 +1878,16 @@ export default function App() {
                         <Route path='analytics' element={<Analytics {...analyticsProps} />} />
                         <Route path='tokens/:address' element={<TokenPage />} />
                         <Route path='pools/:address' element={<PoolPage />} />
+                        <Route
+                            path='app/chat'
+                            element={
+                                <Chat
+                                    ensName={ensName}
+                                    connectedAccount={account ? account : ''}
+                                    fullScreen={true}
+                                />
+                            }
+                        />
 
                         <Route path='range2' element={<Range {...rangeProps} />} />
 
@@ -1917,6 +1938,13 @@ export default function App() {
             <div className='footer_container'>
                 {currentLocation !== '/' && (
                     <PageFooter lastBlockNumber={lastBlockNumber} userIsOnline={userIsOnline} />
+                )}
+                {currentLocation !== '/app/chat' && (
+                    <Chat
+                        ensName={ensName}
+                        connectedAccount={account ? account : ''}
+                        fullScreen={false}
+                    />
                 )}
             </div>
             <SidebarFooter />

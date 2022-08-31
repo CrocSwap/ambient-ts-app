@@ -309,10 +309,20 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         }
     };
 
-    const handleTokenAQtyFieldUpdate = (evt?: ChangeEvent<HTMLInputElement>) => {
+    const handleTokenAQtyFieldUpdate = (evt?: ChangeEvent<HTMLInputElement>, str?: string) => {
         if (evt) {
             // console.log('new handle token A event');
             const input = evt.target.value;
+            if (input === '' || parseFloat(input) <= 0) {
+                setRangeAllowed(false);
+                setRangeButtonErrorMessage('Enter an Amount');
+            }
+            setTokenAQtyValue(parseFloat(input));
+            setIsTokenAPrimaryLocal(true);
+            dispatch(setIsTokenAPrimaryRange(true));
+            dispatch(setPrimaryQuantityRange(input));
+        } else if (str) {
+            const input = str;
             if (input === '' || parseFloat(input) <= 0) {
                 setRangeAllowed(false);
                 setRangeButtonErrorMessage('Enter an Amount');
@@ -360,6 +370,36 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
                     }
                 }
             }
+        }
+    };
+
+    const handleTokenAChangeClick = (input: string) => {
+        if (input === '' || parseFloat(input) <= 0) {
+            setRangeAllowed(false);
+            setRangeButtonErrorMessage('Enter an Amount');
+        }
+        setTokenAQtyValue(parseFloat(input));
+        setIsTokenAPrimaryLocal(true);
+        dispatch(setIsTokenAPrimaryRange(true));
+        dispatch(setPrimaryQuantityRange(input));
+        const tokenAField = document.getElementById('A-range-quantity') as HTMLInputElement;
+        if (tokenAField) {
+            tokenAField.value = input;
+        }
+    };
+
+    const handleTokenBChangeClick = (input: string) => {
+        if (input === '' || parseFloat(input) <= 0) {
+            setRangeAllowed(false);
+            setRangeButtonErrorMessage('Enter an Amount');
+        }
+        setTokenBQtyValue(parseFloat(input));
+        setIsTokenAPrimaryLocal(false);
+        dispatch(setIsTokenAPrimaryRange(false));
+        dispatch(setPrimaryQuantityRange(input));
+        const tokenBField = document.getElementById('B-range-quantity') as HTMLInputElement;
+        if (tokenBField) {
+            tokenBField.value = input;
         }
     };
 
@@ -452,12 +492,14 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
 
     return (
         <section className={styles.currency_converter}>
-            <div className={styles.title}>Collateral</div>
+            <div className={styles.title}> </div>
+            {/* <div className={styles.title}>Collateral:</div> */}
             <RangeCurrencySelector
                 fieldId='A'
                 updateOtherQuantity={(event) => handleTokenAQtyFieldUpdate(event)}
                 {...rangeCurrencySelectorCommonProps}
                 isAdvancedMode={isAdvancedMode}
+                handleChangeClick={handleTokenAChangeClick}
             />
             <div className={styles.arrow_container}>
                 {isLiq ? null : <span className={styles.arrow} />}
@@ -467,6 +509,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
                 updateOtherQuantity={(event) => handleTokenBQtyFieldUpdate(event)}
                 {...rangeCurrencySelectorCommonProps}
                 isAdvancedMode={isAdvancedMode}
+                handleChangeClick={handleTokenBChangeClick}
             />
         </section>
     );

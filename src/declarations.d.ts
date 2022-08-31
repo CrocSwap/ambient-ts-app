@@ -10,6 +10,16 @@ declare module '*.png' {
     export default content;
 }
 
+declare module '*.mp3' {
+    const value: any;
+    export default value;
+}
+
+declare module '*.wav' {
+    const value: any;
+    export default value;
+}
+
 declare module 'd3fc' {
     export * from '@d3fc/d3fc-chart';
 

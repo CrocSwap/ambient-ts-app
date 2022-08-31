@@ -26,7 +26,7 @@ interface CurrencySelectorProps {
     isSaveAsDexSurplusChecked: boolean;
     setIsSaveAsDexSurplusChecked: Dispatch<SetStateAction<boolean>>;
     handleChangeEvent: (evt: ChangeEvent<HTMLInputElement>) => void;
-    handleChangeClick: (value: string) => void;
+    handleChangeClick?: (value: string) => void;
     reverseTokens: () => void;
     activeTokenListsChanged: boolean;
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
@@ -39,7 +39,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
         setImportedTokens,
         searchableTokens,
         chainId,
-        direction,
+        // direction,
         fieldId,
         handleChangeEvent,
         handleChangeClick,
@@ -61,7 +61,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
 
     const WithdrawTokensContent = (
         <div className={styles.surplus_toggle}>
-            {fieldId === 'sell' ? 'Use Exchange Surplus' : 'Save as Exchange Surplus'}
+            {fieldId === 'sell' ? 'Use Surplus' : 'Add to Surplus'}
             {/* {fieldId === 'sell'
                 ? isWithdrawFromDexChecked
                     ? 'Use Exchange Surplus'
@@ -81,6 +81,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                     isOn={isWithdrawFromDexChecked}
                     handleToggle={() => setIsWithdrawFromDexChecked(!isWithdrawFromDexChecked)}
                     id='sell_token_withdrawal'
+                    disabled={true}
                 />
             ) : (
                 <Toggle2
@@ -132,16 +133,28 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
         </Modal>
     ) : null;
 
-    const walletBalance =
+    const walletBalanceNonLocaleString =
+        props.sellToken && tokenABalance !== ''
+            ? parseFloat(tokenABalance).toString()
+            : !props.sellToken && tokenBBalance !== ''
+            ? parseFloat(tokenBBalance).toString()
+            : '0';
+
+    const walletBalanceLocaleString =
         props.sellToken && tokenABalance !== ''
             ? parseFloat(tokenABalance).toLocaleString()
             : !props.sellToken && tokenBBalance !== ''
             ? parseFloat(tokenBBalance).toLocaleString()
             : '0';
 
+    const surplusBalance = 0;
+    const surplusBalanceNonLocaleString = surplusBalance.toString();
+    const surplusBalanceLocaleString = surplusBalance.toLocaleString();
+
     return (
         <div className={styles.swapbox}>
-            <div className={styles.direction}>{direction}</div>
+            <div className={styles.direction}> </div>
+            {/* <div className={styles.direction}>{direction}</div> */}
             <div className={styles.swapbox_top}>
                 <div className={styles.swap_input}>
                     <CurrencyQuantity fieldId={fieldId} handleChangeEvent={handleChangeEvent} />
@@ -160,19 +173,26 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
             <div className={styles.swapbox_bottom}>
                 <div className={styles.surplus_container}>
                     <div
+                        className={styles.balance_with_pointer}
                         onClick={() => {
-                            handleChangeClick(walletBalance);
+                            props.sellToken && handleChangeClick
+                                ? handleChangeClick(walletBalanceNonLocaleString)
+                                : setIsSaveAsDexSurplusChecked(false);
                         }}
                     >
-                        Wallet: {walletBalance}{' '}
+                        Wallet: {walletBalanceLocaleString}{' '}
                     </div>{' '}
                     |{' '}
                     <div
+                        className={styles.balance_with_pointer}
+                        // className={props.sellToken ? styles.balance_with_pointer : null}
                         onClick={() => {
-                            handleChangeClick('0');
+                            props.sellToken && handleChangeClick
+                                ? handleChangeClick(surplusBalanceNonLocaleString)
+                                : setIsSaveAsDexSurplusChecked(true);
                         }}
                     >
-                        Surplus: 0
+                        Surplus: {surplusBalanceLocaleString}
                     </div>
                 </div>
                 {/* {fieldId === 'limit-sell' ? DexBalanceContent : WithdrawTokensContent} */}

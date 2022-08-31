@@ -4,10 +4,11 @@ import { PoolIF } from '../../../../utils/interfaces/exports';
 
 interface FavoritePoolsIF {
     favePools: PoolIF[];
+    lastBlockNumber: number;
 }
 
 export default function FavoritePools(props: FavoritePoolsIF) {
-    const { favePools } = props;
+    const { favePools, lastBlockNumber } = props;
     const header = (
         <div className={styles.header}>
             <div>Pool</div>
@@ -21,7 +22,7 @@ export default function FavoritePools(props: FavoritePoolsIF) {
             {header}
             <div className={styles.content}>
                 {favePools.map((pool, idx) => (
-                    <FavoritePoolsCard key={idx} pool={pool} />
+                    <FavoritePoolsCard key={idx} pool={pool} lastBlockNumber={lastBlockNumber} />
                 ))}
             </div>
         </div>

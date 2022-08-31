@@ -138,6 +138,23 @@ export default function RangeCard(props: RangeCardProps) {
     const [quoteLiquidityDisplay, setQuoteLiquidityDisplay] = useState<string | undefined>(
         undefined,
     );
+    // console.log(currentPositionActive);
+    // console.log(position.positionStorageSlot);
+
+    const positionDomId =
+        position.positionStorageSlot === currentPositionActive
+            ? `position-${position.positionStorageSlot}`
+            : '';
+
+    function scrollToDiv() {
+        const element = document.getElementById(positionDomId);
+
+        element?.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
+    }
+
+    useEffect(() => {
+        position.positionStorageSlot === currentPositionActive ? scrollToDiv() : null;
+    }, [currentPositionActive]);
 
     const [positionApy, setPositionApy] = useState<number | undefined>();
 
@@ -188,7 +205,7 @@ export default function RangeCard(props: RangeCardProps) {
         }
 
         (async () => {
-            const positionApyCacheEndpoint = 'https://809821320828123.de:5000/' + '/position_apy?';
+            const positionApyCacheEndpoint = 'https://809821320828123.de:5000' + '/position_apy?';
 
             const positionApy =
                 position.positionType === 'ambient'
@@ -205,7 +222,7 @@ export default function RangeCard(props: RangeCardProps) {
                       )
                           .then((response) => response?.json())
                           .then((json) => {
-                              const apy = json?.results?.apy;
+                              const apy = json?.data?.results?.apy;
                               return apy;
                           })
                     : await fetch(
@@ -245,6 +262,7 @@ export default function RangeCard(props: RangeCardProps) {
                     ? null
                     : setCurrentPositionActive('')
             }
+            id={positionDomId}
         >
             <div className={styles.row_container}>
                 {/* ------------------------------------------------------ */}

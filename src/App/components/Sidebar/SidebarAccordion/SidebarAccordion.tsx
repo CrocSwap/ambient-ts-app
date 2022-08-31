@@ -4,17 +4,18 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { MdPlayArrow } from 'react-icons/md';
 
 // START: Import Local Files
+// import notificationStyles from './SidebarAccordion.module.css'
 import styles from '../Sidebar.module.css';
 import { ISwap } from '../../../../utils/state/graphDataSlice';
 import { PositionIF } from '../../../../utils/interfaces/PositionIF';
+// import { CircleLoader } from '../../../../components/Global/LoadingAnimations/CircleLoader/CircleLoader';
+// import { AiFillBell } from 'react-icons/ai'
 
 // interface for React functional component props
 interface SidebarAccordionPropsIF {
     children?: ReactNode;
     showSidebar: boolean;
-    toggleSidebar: (
-        event: MouseEvent<HTMLDivElement> | MouseEvent<HTMLLIElement>,
-    ) => void;
+    toggleSidebar: (event: MouseEvent<HTMLDivElement> | MouseEvent<HTMLLIElement>) => void;
     item: {
         name: string;
         icon: string;
@@ -25,12 +26,7 @@ interface SidebarAccordionPropsIF {
 }
 
 export default function SidebarAccordion(props: SidebarAccordionPropsIF) {
-    const {
-        showSidebar,
-        idx,
-        item,
-        toggleSidebar,
-    } = props;
+    const { showSidebar, idx, item, toggleSidebar } = props;
 
     const [isOpen, setIsOpen] = useState(false);
 
@@ -56,6 +52,13 @@ export default function SidebarAccordion(props: SidebarAccordionPropsIF) {
 
     const sidebarIconStyle = isOpen ? styles.open_link : null;
 
+    // const notificationBell = (
+    //     <div className={notificationStyles.notification_bell}>
+    //         <div className={notificationStyles.bell_icon}><AiFillBell /></div>
+    //         <div className={notificationStyles.number}>3</div>
+    //     </div>
+    // )
+
     return (
         <>
             <motion.li
@@ -63,13 +66,23 @@ export default function SidebarAccordion(props: SidebarAccordionPropsIF) {
                 className={styles.sidebar_item}
                 onClick={showSidebar ? () => setIsOpen(!isOpen) : toggleSidebar}
             >
-                <div className={styles.sidebar_link}>
-                    {showSidebar && (
-                        <MdPlayArrow size={12} color='#ffffff' className={sidebarIconStyle} />
-                    )}
-                    <img src={item.icon} alt={item.name} width='20px' />
+                <div
+                    style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                    }}
+                >
+                    <div className={styles.sidebar_link}>
+                        {showSidebar && (
+                            <MdPlayArrow size={12} color='#ffffff' className={sidebarIconStyle} />
+                        )}
+                        <img src={item.icon} alt={item.name} width='20px' />
 
-                    <span className={styles.link_text}>{item.name}</span>
+                        <span className={styles.link_text}>{item.name}</span>
+                    </div>
+                    {/* <CircleLoader size='10px' /> */}
+                    {/* { notificationBell} */}
                 </div>
             </motion.li>
             <AnimatePresence>{isOpen && showOpenContentOrNull}</AnimatePresence>

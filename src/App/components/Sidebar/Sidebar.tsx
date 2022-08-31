@@ -84,7 +84,11 @@ export default function Sidebar(props: SidebarPropsIF) {
     // console.assert(coinGeckoTokenMap, 'no map present');
 
     const topTokens = [
-        { name: 'Top Tokens', icon: topTokensImage, data: <TopTokens chainId={chainId} /> },
+        {
+            name: 'Top Tokens',
+            icon: topTokensImage,
+            data: <TopTokens chainId={chainId} lastBlockNumber={lastBlockNumber} />,
+        },
     ];
     const topPoolsSection = [
         {
@@ -98,6 +102,10 @@ export default function Sidebar(props: SidebarPropsIF) {
         setSelectedOutsideTab: props.setSelectedOutsideTab,
         outsideControl: props.outsideControl,
         setOutsideControl: props.setOutsideControl,
+        isShowAllEnabled: props.isShowAllEnabled,
+        setIsShowAllEnabled: props.setIsShowAllEnabled,
+        expandTradeTable: expandTradeTable,
+        setExpandTradeTable: setExpandTradeTable,
     };
     const sidebarRangePositionProps = {
         selectedOutsideTab: props.selectedOutsideTab,
@@ -109,6 +117,8 @@ export default function Sidebar(props: SidebarPropsIF) {
         tokenMap: tokenMap,
         isShowAllEnabled: props.isShowAllEnabled,
         setIsShowAllEnabled: props.setIsShowAllEnabled,
+        expandTradeTable: expandTradeTable,
+        setExpandTradeTable: setExpandTradeTable,
     };
 
     const rangePositions = [
@@ -137,7 +147,7 @@ export default function Sidebar(props: SidebarPropsIF) {
         {
             name: 'Favorite Pools',
             icon: favouritePoolsImage,
-            data: <FavoritePools favePools={favePools} />,
+            data: <FavoritePools favePools={favePools} lastBlockNumber={lastBlockNumber} />,
         },
     ];
 

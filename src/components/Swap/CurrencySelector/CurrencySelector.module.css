@@ -5,6 +5,7 @@
     flex-direction: column;
     overflow-y: hidden;
     color: white;
+    padding: 5px;
 }
 
 .modalSwapbox {
@@ -13,7 +14,7 @@
 
 .direction {
     padding: 0.4.5px 0;
-    margin: 4px 0;
+    margin: 10px 0;
 }
 .direction,
 .swapbox_bottom {
@@ -27,6 +28,11 @@
     flex-direction: row;
     gap: 5px;
 }
+
+.balance_with_pointer {
+    cursor: pointer;
+}
+
 .swapbox_top {
     border-radius: var(--border-radius);
     background-color: var(--dark2);

@@ -120,6 +120,7 @@ footer {
 
     position: fixed;
     display: flex;
+    flex-direction: row;
     -webkit-box-align: center;
     align-items: center;
     right: 0px;

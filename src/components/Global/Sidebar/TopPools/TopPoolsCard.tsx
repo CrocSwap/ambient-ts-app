@@ -1,79 +1,54 @@
 import styles from './TopPoolsCard.module.css';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import { setTokenA, setTokenB } from '../../../../utils/state/tradeDataSlice';
-import { TokenIF } from '../../../../utils/interfaces/exports';
-import { getPoolVolume, getPoolTVL } from '../../../../App/functions/getPoolStats';
+import { PoolIF } from '../../../../utils/interfaces/exports';
+import { getPoolStatsFresh } from '../../../../App/functions/getPoolStats';
 import { useEffect, useState } from 'react';
-import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { formatAmount } from '../../../../utils/numbers';
 interface TopPoolsCardProps {
-    pool: { name: string; tokenA: TokenIF; tokenB: TokenIF };
+    pool: PoolIF;
     chainId: string;
     lastBlockNumber: number;
 }
 
 export default function TopPoolsCard(props: TopPoolsCardProps) {
-    const { pool, chainId, lastBlockNumber } = props;
+    const { pool, lastBlockNumber } = props;
 
     const dispatch = useAppDispatch();
 
-    const tokenAAddress = pool.tokenA.address;
-    const tokenBAddress = pool.tokenB.address;
-
-    const [poolVolume, setPoolVolume] = useState<string | undefined>(undefined);
-    const [poolTVL, setPoolTVL] = useState<string | undefined>(undefined);
-
-    const poolIndex = lookupChain(chainId).poolIndex;
-
-    const getTopPoolsMetrics = async (
-        tokenAAddress: string,
-        tokenBAddress: string,
-        poolIndex: number,
-    ) => {
-        if (tokenAAddress && tokenBAddress) {
-            const volumeResult = await getPoolVolume(
-                tokenAAddress,
-                tokenBAddress,
-                poolIndex,
-                chainId,
-            );
-
-            if (volumeResult) {
-                const volumeString = formatAmount(volumeResult);
-                setPoolVolume(volumeString);
-            }
-
-            const tvlResult = await getPoolTVL(tokenAAddress, tokenBAddress, poolIndex, chainId);
-            if (tvlResult) {
-                const tvlString = formatAmount(tvlResult);
-                setPoolTVL(tvlString);
-            }
-        }
-    };
-
-    // useEffect(() => {
-    //     getTopPoolsMetrics(tokenAAddress, tokenBAddress, poolIndex);
-    //     const timer = setTimeout(async () => {
-    //         getTopPoolsMetrics(tokenAAddress, tokenBAddress, poolIndex);
-    //     }, 60000); // run every 10 minutes
-    //     return () => clearTimeout(timer);
-    // }, [tokenAAddress, tokenBAddress]);
+    const [poolVolume, setPoolVolume] = useState<string | undefined>();
+    const [poolTvl, setPoolTvl] = useState<string | undefined>();
 
     useEffect(() => {
-        getTopPoolsMetrics(tokenAAddress, tokenBAddress, poolIndex);
-    }, [tokenAAddress, tokenBAddress, lastBlockNumber]);
+        (async () => {
+            const poolStatsFresh = await getPoolStatsFresh(
+                pool.chainId,
+                pool.base.address,
+                pool.quote.address,
+                pool.poolId,
+            );
+            const volume = poolStatsFresh?.volume;
+            const volumeString = volume ? '$' + formatAmount(volume) : undefined;
+            setPoolVolume(volumeString);
+            const tvl = poolStatsFresh?.tvl;
+            const tvlString = tvl ? '$' + formatAmount(tvl) : undefined;
+            setPoolTvl(tvlString);
+        })();
+    }, [JSON.stringify(pool), lastBlockNumber]);
 
     return (
         <div
             className={styles.container}
             onClick={() => {
-                dispatch(setTokenA(props.pool.tokenA));
-                dispatch(setTokenB(props.pool.tokenB));
+                dispatch(setTokenA(props.pool.base));
+                dispatch(setTokenB(props.pool.quote));
             }}
         >
-            <div>{pool.name}</div>
-            <div>{poolVolume === undefined ? '…' : `$${poolVolume}`}</div>
-            <div>{poolTVL === undefined ? '…' : `$${poolTVL}`}</div>
+            <div>
+                {pool.base.symbol} / {pool.quote.symbol}
+            </div>
+            <div>{poolVolume ?? '…'}</div>
+            <div>{poolTvl ?? '…'}</div>
         </div>
     );
 }

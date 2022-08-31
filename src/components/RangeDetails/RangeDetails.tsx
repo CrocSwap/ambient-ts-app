@@ -175,7 +175,7 @@ export default function RangeDetails(props: IRangeDetailsProps) {
             .catch(console.log);
 
         (async () => {
-            const positionApyCacheEndpoint = 'https://809821320828123.de:5000/' + '/position_apy?';
+            const positionApyCacheEndpoint = 'https://809821320828123.de:5000' + '/position_apy?';
 
             const positionApy =
                 position.positionType === 'ambient'
@@ -192,7 +192,7 @@ export default function RangeDetails(props: IRangeDetailsProps) {
                       )
                           .then((response) => response?.json())
                           .then((json) => {
-                              const apy = json?.results?.apy;
+                              const apy = json.data?.results?.apy;
                               return apy;
                           })
                     : await fetch(
