@@ -257,11 +257,11 @@ export default function Limit(props: LimitPropsIF) {
             <ContentContainer isOnTradeRoute>
                 <LimitHeader
                     chainId={chainId}
-                    tokenPair={tokenPair}
+                    // tokenPair={tokenPair}
                     mintSlippage={mintSlippage}
                     isPairStable={isPairStable}
-                    isDenomBase={tradeData.isDenomBase}
-                    isTokenABase={isTokenABase}
+                    // isDenomBase={tradeData.isDenomBase}
+                    // isTokenABase={isTokenABase}
                 />
                 <DividerDark addMarginTop />
                 {navigationMenu}

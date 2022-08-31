@@ -17,7 +17,7 @@ export default function AdvancedModeToggle(props: advancedModePropsIF) {
         <div className={styles.advanced_toggle}>
             <Toggle2 isOn={advancedMode} handleToggle={handleToggle} id='advanced_reposition' />
             <h4 className={styles.advanced_toggle_title}>
-                {'Advanced Mode'}
+                {'Advanced'}
                 {/* {advancedMode ? 'Advanced Mode' : 'Balanced Mode'} */}
             </h4>
         </div>

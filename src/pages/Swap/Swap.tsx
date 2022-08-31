@@ -312,12 +312,12 @@ export default function Swap(props: SwapPropsIF) {
             <div className={`${swapContainerStyle}`}>
                 <ContentContainer isOnTradeRoute={isOnTradeRoute}>
                     <SwapHeader
-                        tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
+                        // tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
                         swapSlippage={swapSlippage}
                         isPairStable={isPairStable}
                         isOnTradeRoute={isOnTradeRoute}
-                        isDenomBase={tradeData.isDenomBase}
-                        isTokenABase={isSellTokenBase}
+                        // isDenomBase={tradeData.isDenomBase}
+                        // isTokenABase={isSellTokenBase}
                     />
                     <DividerDark addMarginTop />
                     {navigationMenu}
