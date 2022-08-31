@@ -53,13 +53,17 @@ export default function RangeCardHeader(props: RangeCardHeaderPropsIF) {
         }
     }, [sortBy, reverseSort]);
 
+    // TODO:   @Junior we need to make <div> wrapping the arrow icon a fixed
+    // TODO:   ... width so the parent element does not resize based on whether
+    // TODO:   ... or not it is being rendered
+
     return (
         <div
             className={styles.range_column_header}
             onClick={() => handleClick(data.name.toLowerCase())}
         >
             <h5>{data.name}</h5>
-            {arrow}
+            <div className={styles.arrow_wrapper}>{arrow}</div>
         </div>
     );
 }
