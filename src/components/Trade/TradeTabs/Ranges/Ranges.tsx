@@ -1,14 +1,20 @@
-import styles from './Ranges.module.css';
+// START: Import React and Dongles
+import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
+import { useMoralis } from 'react-moralis';
+import { ethers } from 'ethers';
+
+// START: Import JSX Components
 import RangeCard from './RangeCard';
+import RangeCardHeader from './RangeCardHeader';
+
+// START: Import Local Files
+import styles from './Ranges.module.css';
 import { graphData } from '../../../../utils/state/graphDataSlice';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
-import { useMoralis } from 'react-moralis';
-import RangeCardHeader from './RangeCardHeader';
-import { ethers } from 'ethers';
-import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import { PositionIF } from '../../../../utils/interfaces/PositionIF';
 
-interface RangesProps {
+// interface for props
+interface RangesPropsIF {
     chainId: string;
     isShowAllEnabled: boolean;
     portfolio?: boolean;
@@ -16,13 +22,13 @@ interface RangesProps {
     graphData: graphData;
     lastBlockNumber: number;
     provider: ethers.providers.Provider | undefined;
-
     expandTradeTable: boolean;
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
-    // setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
 }
-export default function Ranges(props: RangesProps) {
+
+// react functional component
+export default function Ranges(props: RangesPropsIF) {
     const {
         provider,
         chainId,
@@ -39,15 +45,8 @@ export default function Ranges(props: RangesProps) {
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
-    const isDenomBase = tradeData.isDenomBase;
-
-    const tokenAAddress = tradeData.tokenA.address;
-    const tokenBAddress = tradeData.tokenB.address;
-
     const userPositions = graphData?.positionsByUser?.positions;
     const poolPositions = graphData?.positionsByPool?.positions;
-
-    console.log(userPositions);
 
     const columnHeaders = [
         {
@@ -88,15 +87,11 @@ export default function Ranges(props: RangesProps) {
     useEffect(() => {console.log(sortBy)}, [sortBy]);
 
     const sortByWallet = (unsortedData: PositionIF[]) => (
-        [...unsortedData].sort((
-            a: PositionIF,
-            b: PositionIF
-        ) => a.user.localeCompare(b.user))
+        [...unsortedData].sort((a, b) => a.user.localeCompare(b.user))
     );
 
     const sortData = (data: PositionIF[], reversed=false) => {
         let sortedData: PositionIF[];
-        console.log('sorting data!')
         switch (sortBy) {
             case 'wallet':
                 sortedData = sortByWallet(data);
@@ -126,11 +121,11 @@ export default function Ranges(props: RangesProps) {
             notOnTradeRoute={notOnTradeRoute}
             position={position}
             isAllPositionsEnabled={isShowAllEnabled}
-            tokenAAddress={tokenAAddress}
-            tokenBAddress={tokenBAddress}
+            tokenAAddress={tradeData.tokenA.address}
+            tokenBAddress={tradeData.tokenB.address}
             account={account ?? undefined}
             isAuthenticated={isAuthenticated}
-            isDenomBase={isDenomBase}
+            isDenomBase={tradeData.isDenomBase}
             lastBlockNumber={props.lastBlockNumber}
             currentPositionActive={currentPositionActive}
             setCurrentPositionActive={setCurrentPositionActive}
