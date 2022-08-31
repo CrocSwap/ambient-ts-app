@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import styles from './Orders.module.css';
 import OrderCard from './OrderCard';
 import OrderCardHeader from './OrderCardHeader';
@@ -12,8 +13,6 @@ export default function Orders(props: OrdersProps) {
     const { expandTradeTable, account } = props;
 
     const tradeData = useAppSelector((state) => state.tradeData);
-
-    const items = [1, 2, 3, 4, 5, 6];
 
     const columnHeaders = [
         {
@@ -46,9 +45,15 @@ export default function Orders(props: OrdersProps) {
         }
     ];
 
+    const [ sortBy, setSortBy ] = useState('default');
+    const [ reverseSort, setReverseSort ] = useState(false);
+    useEffect(() => {
+        console.log({sortBy, reverseSort})
+    }, [sortBy, reverseSort]);
+
     const ItemContent = (
         <div className={styles.item_container}>
-            {items.map((item, idx) => (
+            {[1, 2, 3, 4, 5, 6].map((item, idx) => (
                 <OrderCard key={idx} account={account} />
             ))}
         </div>
@@ -62,6 +67,10 @@ export default function Orders(props: OrdersProps) {
                         <OrderCardHeader
                             key={`orderDataHeaderField${header.name}`}
                             data={header}
+                            sortBy={sortBy}
+                            setSortBy={setSortBy}
+                            reverseSort={reverseSort}
+                            setReverseSort={setReverseSort}
                         />
                     ))
                 }
