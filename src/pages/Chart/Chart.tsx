@@ -63,19 +63,23 @@ export default function Chart(props: ChartData) {
             chartData.push({
                 date: new Date(data.time * 1000),
                 open: denomInBase
-                    ? data.invPriceOpenDecimalCorrected
-                    : data.priceOpenDecimalCorrected,
+                    ? data.invPriceOpenExclMEVDecimalCorrected
+                    : data.priceOpenExclMEVDecimalCorrected,
                 close: denomInBase
-                    ? data.invPriceCloseDecimalCorrected
-                    : data.priceCloseDecimalCorrected,
+                    ? data.invPriceCloseExclMEVDecimalCorrected
+                    : data.priceCloseExclMEVDecimalCorrected,
                 high: denomInBase
-                    ? data.invMinPriceDecimalCorrected
-                    : data.maxPriceDecimalCorrected,
-                low: denomInBase ? data.invMaxPriceDecimalCorrected : data.minPriceDecimalCorrected,
+                    ? data.invMinPriceExclMEVDecimalCorrected
+                    : data.maxPriceExclMEVDecimalCorrected,
+                low: denomInBase
+                    ? data.invMaxPriceExclMEVDecimalCorrected
+                    : data.minPriceExclMEVDecimalCorrected,
                 time: data.time,
                 allSwaps: data.allSwaps,
             });
         });
+
+        console.log({ chartData });
 
         drawChart(chartData, period, targets);
     }, [props.priceData, targets, denomInBase]);
@@ -87,8 +91,8 @@ export default function Chart(props: ChartData) {
                 props.priceData !== undefined
                     ? Math.max(
                           ...props.priceData.candles.map((o) => {
-                              return o.invPriceOpenDecimalCorrected !== undefined
-                                  ? o.invPriceOpenDecimalCorrected
+                              return o.invPriceOpenExclMEVDecimalCorrected !== undefined
+                                  ? o.invPriceOpenExclMEVDecimalCorrected
                                   : 0;
                           }),
                       )
@@ -97,8 +101,8 @@ export default function Chart(props: ChartData) {
                 props.priceData !== undefined
                     ? Math.min(
                           ...props.priceData.candles.map((o) => {
-                              return o.invPriceCloseDecimalCorrected !== undefined
-                                  ? o.invPriceCloseDecimalCorrected
+                              return o.invPriceCloseExclMEVDecimalCorrected !== undefined
+                                  ? o.invPriceCloseExclMEVDecimalCorrected
                                   : Infinity;
                           }),
                       )

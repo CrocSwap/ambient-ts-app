@@ -136,6 +136,14 @@ export interface CandleData {
     invMaxPriceDecimalCorrected: number;
     invPriceOpenDecimalCorrected: number;
     invPriceCloseDecimalCorrected: number;
+    minPriceExclMEVDecimalCorrected: number;
+    invMinPriceExclMEVDecimalCorrected: number;
+    maxPriceExclMEVDecimalCorrected: number;
+    invMaxPriceExclMEVDecimalCorrected: number;
+    priceOpenExclMEVDecimalCorrected: number;
+    invPriceOpenExclMEVDecimalCorrected: number;
+    priceCloseExclMEVDecimalCorrected: number;
+    invPriceCloseExclMEVDecimalCorrected: number;
     numSwaps: number;
     netBaseFlow: string;
     netQuoteFlow: string;
