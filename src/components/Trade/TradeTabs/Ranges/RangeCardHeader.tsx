@@ -6,24 +6,28 @@ interface RangeCardHeaderPropsIF {
     data: {
         name: string;
         sortable: boolean;
-    }
-    setSortBy: Dispatch<SetStateAction<string>>
+    };
+    sortBy: string;
+    setSortBy: Dispatch<SetStateAction<string>>;
 }
 
 export default function RangeCardHeader(props: RangeCardHeaderPropsIF) {
     const {
         data,
+        sortBy,
         setSortBy
     } = props;
 
-    function handleClick() {
-        setSortBy(data.name.toLowerCase());
+    function handleClick(name: string) {
+        sortBy === name
+            ? null
+            : setSortBy(name);
     }
 
     return (
         <div
             className={styles.range_column_header}
-            onClick={() => handleClick()}
+            onClick={() => handleClick(data.name.toLowerCase())}
         >
             <h5>{data.name}</h5>
             <FaSort />
