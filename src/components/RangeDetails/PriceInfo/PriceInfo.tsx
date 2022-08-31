@@ -30,10 +30,10 @@ export default function PriceInfo(props: IPriceInfoProps) {
         quoteTokenSymbol,
     } = props;
     const collateralContent = (
-        <div className={styles.remove_position_info}>
+        <div className={styles.info_container}>
             <Row>
                 <span>Pooled {baseTokenSymbol}</span>
-                <div className={styles.token_price}>
+                <div className={styles.info_text}>
                     {baseLiquidityDisplay}
                     <img src={baseTokenLogoURI} alt='' />
                 </div>
@@ -41,7 +41,7 @@ export default function PriceInfo(props: IPriceInfoProps) {
             {/*  */}
             <Row>
                 <span>Pooled {quoteTokenSymbol}</span>
-                <div className={styles.token_price}>
+                <div className={styles.info_text}>
                     {quoteLiquidityDisplay}
                     <img src={quoteTokenLogoURI} alt='' />
                 </div>
@@ -50,7 +50,7 @@ export default function PriceInfo(props: IPriceInfoProps) {
             <DividerDark />
             <Row>
                 <span> Earned {baseTokenSymbol}</span>
-                <div className={styles.token_price}>
+                <div className={styles.info_text}>
                     {baseFeesDisplay}
                     <img src={baseTokenLogoURI} alt='' />
                 </div>
@@ -58,7 +58,7 @@ export default function PriceInfo(props: IPriceInfoProps) {
             {/*  */}
             <Row>
                 <span>Earned {quoteTokenSymbol} </span>
-                <div className={styles.token_price}>
+                <div className={styles.info_text}>
                     {quoteFeesDisplay}
                     <img src={quoteTokenLogoURI} alt='' />
                 </div>
@@ -67,28 +67,38 @@ export default function PriceInfo(props: IPriceInfoProps) {
     );
 
     const timesContent = (
-        <div className={styles.remove_position_info}>
+        <div className={styles.info_container}>
             <Row>
                 <span>Open Time</span>
-                <div className={styles.token_price}>25/08/22</div>
+                <div className={styles.info_text}>25/08/22</div>
             </Row>
 
             <Row>
                 <span>Close Time</span>
-                <div className={styles.token_price}>30/08/22</div>
+                <div className={styles.info_text}>30/08/22</div>
+            </Row>
+        </div>
+    );
+
+    const totalValueContent = (
+        <div className={styles.info_container}>
+            <Row>
+                <span>Total Value</span>
+                <div className={styles.info_text}>$4,200.00</div>
             </Row>
         </div>
     );
 
     return (
         <div className={styles.main_container}>
-            <div className={styles.price_info_container}>
-                {timesContent}
-                {collateralContent}
-                {/* <div className={styles.graph_image_container}>
+            {/* <div className={styles.price_info_container}> */}
+            {totalValueContent}
+            {timesContent}
+            {collateralContent}
+            {/* <div className={styles.graph_image_container}>
                     <img src={graphImage} alt='chart' />
                 </div> */}
-            </div>
+            {/* </div> */}
             {/* <div className={styles.min_max_price}>
                 <div className={styles.min_max_content}>
                     Min Price

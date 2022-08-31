@@ -1,17 +1,19 @@
 .range_details_container {
-    max-width: 800px;
+    width: 800px;
+
+    display: flex;
+    flex-direction: column;
 }
 
 .main_content {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    padding: 0 2rem;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 244px auto;
 }
 
-.share_container {
+/* .share_container {
     width: 100%;
     display: flex;
     justify-content: flex-end;
     align-items: flex-end;
-}
+} */

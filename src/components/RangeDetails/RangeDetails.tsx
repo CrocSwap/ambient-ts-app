@@ -220,9 +220,8 @@ export default function RangeDetails(props: IRangeDetailsProps) {
 
     return (
         <div className={styles.range_details_container}>
-            <div>Yes is me</div>
             <div ref={detailsRef}>
-                <RemoveRangeHeader
+                {/* <RemoveRangeHeader
                     isPositionInRange={props.isPositionInRange}
                     isAmbient={props.isAmbient}
                     baseTokenSymbol={props.baseTokenSymbol}
@@ -230,9 +229,24 @@ export default function RangeDetails(props: IRangeDetailsProps) {
                     baseTokenLogoURI={props.baseTokenLogoURI}
                     quoteTokenLogoURI={props.quoteTokenLogoURI}
                     isDenomBase={props.isDenomBase}
-                />
+                /> */}
                 <div className={styles.main_content}>
-                    <TokenInfo
+                    <div className={styles.left_container}>
+                        <PriceInfo
+                            lowRangeDisplay={lowRangeDisplay}
+                            highRangeDisplay={highRangeDisplay}
+                            baseLiquidityDisplay={baseLiquidityDisplay || '0.00'}
+                            quoteLiquidityDisplay={quoteLiquidityDisplay || '0.00'}
+                            baseFeesDisplay={baseFeesDisplay || '0.00'}
+                            quoteFeesDisplay={quoteFeesDisplay || '0.00'}
+                            baseTokenLogoURI={baseTokenLogoURI}
+                            quoteTokenLogoURI={quoteTokenLogoURI}
+                            baseTokenSymbol={props.baseTokenSymbol}
+                            quoteTokenSymbol={props.quoteTokenSymbol}
+                        />
+                    </div>
+                    <div className={styles.right_container}>I am right container</div>
+                    {/* <TokenInfo
                         provider={props.provider}
                         chainId={chainId}
                         baseTokenAddress={props.baseTokenAddress}
@@ -242,21 +256,9 @@ export default function RangeDetails(props: IRangeDetailsProps) {
                         lastBlockNumber={props.lastBlockNumber}
                         isDenomBase={props.isDenomBase}
                         positionApy={positionApy}
-                    />
+                    /> */}
                     <Divider />
                 </div>
-                <PriceInfo
-                    lowRangeDisplay={lowRangeDisplay}
-                    highRangeDisplay={highRangeDisplay}
-                    baseLiquidityDisplay={baseLiquidityDisplay || '0.00'}
-                    quoteLiquidityDisplay={quoteLiquidityDisplay || '0.00'}
-                    baseFeesDisplay={baseFeesDisplay || '0.00'}
-                    quoteFeesDisplay={quoteFeesDisplay || '0.00'}
-                    baseTokenLogoURI={baseTokenLogoURI}
-                    quoteTokenLogoURI={quoteTokenLogoURI}
-                    baseTokenSymbol={props.baseTokenSymbol}
-                    quoteTokenSymbol={props.quoteTokenSymbol}
-                />
             </div>
             <div onClick={downloadAsImage} className={styles.share_container}>
                 <BsDownload size={15} />
