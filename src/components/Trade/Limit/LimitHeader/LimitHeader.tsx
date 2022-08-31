@@ -6,32 +6,35 @@ import TransactionSettings from '../../../Global/TransactionSettings/Transaction
 
 // START: Import Local Files
 import styles from './LimitHeader.module.css';
-import { SlippagePairIF, TokenPairIF } from '../../../../utils/interfaces/exports';
+import { SlippagePairIF } from '../../../../utils/interfaces/exports';
 import settingsIcon from '../../../../assets/images/icons/settings.svg';
 import Modal from '../../../../components/Global/Modal/Modal';
 import { useModal } from '../../../../components/Global/Modal/useModal';
-import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
+import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
 
 // interface for component props
 interface LimitHeaderPropsIF {
     chainId: string;
-    tokenPair: TokenPairIF;
+    // tokenPair: TokenPairIF;
     mintSlippage: SlippagePairIF;
     isPairStable: boolean;
-    isDenomBase: boolean;
-    isTokenABase: boolean;
+    // isDenomBase: boolean;
+    // isTokenABase: boolean;
 }
 
 // central react functional component
 export default function LimitHeader(props: LimitHeaderPropsIF) {
-    const { tokenPair, mintSlippage, isPairStable, isDenomBase, isTokenABase } = props;
+    const { mintSlippage, isPairStable } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
 
     const dispatch = useAppDispatch();
-
-    const reverseDisplay = (isTokenABase && isDenomBase) || (!isTokenABase && !isDenomBase);
+    const tradeData = useAppSelector((state) => state.tradeData);
+    const isDenomBase = tradeData.isDenomBase;
+    const baseTokenSymbol = tradeData.baseToken.symbol;
+    const quoteTokenSymbol = tradeData.quoteToken.symbol;
+    // const reverseDisplay = (isTokenABase && isDenomBase) || (!isTokenABase && !isDenomBase);
 
     const settingsModalOrNull = isModalOpen ? (
         <Modal noHeader title='modal' onClose={closeModal}>
@@ -48,8 +51,8 @@ export default function LimitHeader(props: LimitHeaderPropsIF) {
         <ContentHeader>
             <span />
             <div className={styles.token_info} onClick={() => dispatch(toggleDidUserFlipDenom())}>
-                {reverseDisplay ? tokenPair.dataTokenA.symbol : tokenPair.dataTokenB.symbol} /{' '}
-                {reverseDisplay ? tokenPair.dataTokenB.symbol : tokenPair.dataTokenA.symbol}
+                {isDenomBase ? baseTokenSymbol : quoteTokenSymbol} /
+                {isDenomBase ? quoteTokenSymbol : baseTokenSymbol}
             </div>
             <div onClick={openModal}>
                 <img src={settingsIcon} alt='settings' />
