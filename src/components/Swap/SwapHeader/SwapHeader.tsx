@@ -7,29 +7,33 @@ import TransactionSettings from '../../Global/TransactionSettings/TransactionSet
 import styles from './SwapHeader.module.css';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import settingsIcon from '../../../assets/images/icons/settings.svg';
-import { SlippagePairIF, TokenPairIF } from '../../../utils/interfaces/exports';
-import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
+import { SlippagePairIF } from '../../../utils/interfaces/exports';
+import { useAppDispatch, useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { toggleDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
 
 // interface for props
 interface SwapHeaderPropsIF {
-    tokenPair: TokenPairIF;
+    // tokenPair: TokenPairIF;
     swapSlippage: SlippagePairIF;
     isPairStable: boolean;
     isOnTradeRoute?: boolean;
-    isDenomBase: boolean;
-    isTokenABase: boolean;
+    // isDenomBase: boolean;
+    // isTokenABase: boolean;
 }
 
 // main react functional component
 export default function SwapHeader(props: SwapHeaderPropsIF) {
-    const { tokenPair, swapSlippage, isPairStable, isOnTradeRoute, isDenomBase, isTokenABase } =
-        props;
+    const { swapSlippage, isPairStable, isOnTradeRoute } = props;
     const [isModalOpen, openModal, closeModal] = useModal();
 
     const dispatch = useAppDispatch();
 
-    const reverseDisplay = (isTokenABase && isDenomBase) || (!isTokenABase && !isDenomBase);
+    const tradeData = useAppSelector((state) => state.tradeData);
+
+    const isDenomBase = tradeData.isDenomBase;
+
+    const baseTokenSymbol = tradeData.baseToken.symbol;
+    const quoteTokenSymbol = tradeData.quoteToken.symbol;
 
     const settingsModalOrNull = isModalOpen ? (
         <Modal noHeader title='modal' onClose={closeModal}>
@@ -46,8 +50,8 @@ export default function SwapHeader(props: SwapHeaderPropsIF) {
         <ContentHeader>
             <span />
             <div className={styles.token_info} onClick={() => dispatch(toggleDidUserFlipDenom())}>
-                {reverseDisplay ? tokenPair.dataTokenA.symbol : tokenPair.dataTokenB.symbol} /{' '}
-                {reverseDisplay ? tokenPair.dataTokenB.symbol : tokenPair.dataTokenA.symbol}
+                {isDenomBase ? baseTokenSymbol : quoteTokenSymbol} /
+                {isDenomBase ? quoteTokenSymbol : baseTokenSymbol}
             </div>
             <div onClick={openModal}>
                 <img src={settingsIcon} alt='settings' />
