@@ -374,8 +374,8 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
 
     // console.log({ favePools });
     const currentPoolData = {
-        base: tradeData.tokenA,
-        quote: tradeData.tokenB,
+        base: tradeData.baseToken,
+        quote: tradeData.quoteToken,
         chainId: chainId,
         poolId: 36000,
     };
@@ -388,10 +388,12 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
             pool.chainId.toString() === currentPoolData.chainId.toString(),
     );
 
+    console.log({ isButtonFavorited });
+
     const handleFavButton = () =>
         isButtonFavorited
-            ? removePoolFromFaves(tradeData.tokenA, tradeData.tokenB, chainId, 36000)
-            : addPoolToFaves(tradeData.tokenA, tradeData.tokenB, chainId, 36000);
+            ? removePoolFromFaves(tradeData.baseToken, tradeData.quoteToken, chainId, 36000)
+            : addPoolToFaves(tradeData.quoteToken, tradeData.baseToken, chainId, 36000);
 
     const favButton = (
         <motion.div
