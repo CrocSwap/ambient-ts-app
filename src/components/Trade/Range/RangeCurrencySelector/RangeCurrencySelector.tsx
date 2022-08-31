@@ -30,6 +30,7 @@ interface RangeCurrencySelectorProps {
     disable?: boolean;
     activeTokenListsChanged: boolean;
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
+    handleChangeClick: (input: string) => void;
 }
 
 export default function RangeCurrencySelector(props: RangeCurrencySelectorProps) {
@@ -54,6 +55,7 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
         isAdvancedMode,
         activeTokenListsChanged,
         indicateActiveTokenListsChanged,
+        handleChangeClick,
     } = props;
 
     const thisToken = fieldId === 'A' ? tokenPair.dataTokenA : tokenPair.dataTokenB;
@@ -106,12 +108,30 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
         </span>
     );
 
-    const walletBalance =
+    // const walletBalanceNum =
+    //     fieldId === 'A' && tokenABalance !== ''
+    //         ? parseFloat(tokenABalance)
+    //         : fieldId === 'B' && tokenBBalance !== ''
+    //         ? parseFloat(tokenBBalance)
+    //         : 0;
+
+    const walletBalanceNonLocaleString =
+        fieldId === 'A' && tokenABalance !== ''
+            ? parseFloat(tokenABalance).toString()
+            : fieldId !== 'A' && tokenBBalance !== ''
+            ? parseFloat(tokenBBalance).toString()
+            : '0';
+
+    const walletBalanceLocaleString =
         fieldId === 'A' && tokenABalance !== ''
             ? parseFloat(tokenABalance).toLocaleString()
-            : fieldId === 'B' && tokenBBalance !== ''
+            : fieldId !== 'A' && tokenBBalance !== ''
             ? parseFloat(tokenBBalance).toLocaleString()
             : '0';
+
+    const surplusBalance = 0;
+    const surplusBalanceNonLocaleString = surplusBalance.toString();
+    const surplusBalanceLocaleString = surplusBalance.toLocaleString();
 
     // console.log({ fieldId });
     // console.log({ isTokenADisabled });
@@ -142,12 +162,32 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                 </div>
             </div>
             <div className={styles.swapbox_bottom}>
-                {fieldId === 'A' ? (
-                    <span>Wallet: {walletBalance} | Surplus: 0.00</span>
-                ) : (
-                    <span>Wallet: {walletBalance} | Surplus: 0.00</span>
-                )}
-
+                <div className={styles.surplus_container}>
+                    <div
+                        className={styles.balance_with_pointer}
+                        onClick={() => {
+                            console.log(walletBalanceNonLocaleString);
+                            handleChangeClick(walletBalanceNonLocaleString);
+                        }}
+                    >
+                        Wallet: {walletBalanceLocaleString}{' '}
+                    </div>{' '}
+                    |{' '}
+                    <div
+                        className={styles.balance_with_pointer}
+                        onClick={() => {
+                            console.log(surplusBalanceNonLocaleString);
+                            handleChangeClick('0');
+                        }}
+                    >
+                        Surplus: {surplusBalanceLocaleString}
+                    </div>
+                </div>
+                {/* {fieldId === 'A' ? (
+                            <span>Wallet: {walletBalance} | Surplus: 0.00</span>
+                        ) : (
+                            <span>Wallet: {walletBalance} | Surplus: 0.00</span>
+                        )} */}
                 {DexBalanceContent}
             </div>
             {tokenSelectModalOrNull}
