@@ -222,7 +222,7 @@ export default function RangeDetails(props: IRangeDetailsProps) {
     return (
         <div className={styles.range_details_container}>
             <div ref={detailsRef}>
-                <RemoveRangeHeader
+                {/* <RemoveRangeHeader
                     isPositionInRange={props.isPositionInRange}
                     isAmbient={props.isAmbient}
                     baseTokenSymbol={props.baseTokenSymbol}
@@ -230,7 +230,7 @@ export default function RangeDetails(props: IRangeDetailsProps) {
                     baseTokenLogoURI={props.baseTokenLogoURI}
                     quoteTokenLogoURI={props.quoteTokenLogoURI}
                     isDenomBase={props.isDenomBase}
-                />
+                /> */}
                 <div className={styles.main_content}>
                     <div className={styles.left_container}>
                         <PriceInfo
