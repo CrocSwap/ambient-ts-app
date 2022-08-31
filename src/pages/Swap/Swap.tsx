@@ -358,13 +358,7 @@ export default function Swap(props: SwapPropsIF) {
                     </motion.div>
                     <div className={styles.header_container}>
                         <DividerDark addMarginTop />
-                        <DenominationSwitch
-                            tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
-                            isTokenABase={isSellTokenBase}
-                            displayForBase={tradeData.isDenomBase}
-                            poolPriceDisplay={poolPriceDisplay}
-                            didUserFlipDenom={tradeData.didUserFlipDenom}
-                        />
+                        <DenominationSwitch />
                     </div>
                     <ExtraInfo
                         tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
