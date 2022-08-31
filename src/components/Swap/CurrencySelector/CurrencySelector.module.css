@@ -28,6 +28,11 @@
     flex-direction: row;
     gap: 5px;
 }
+
+.balance_with_pointer {
+    cursor: pointer;
+}
+
 .swapbox_top {
     border-radius: var(--border-radius);
     background-color: var(--dark2);

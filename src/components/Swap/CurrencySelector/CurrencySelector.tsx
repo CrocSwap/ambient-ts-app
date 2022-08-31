@@ -147,6 +147,10 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
             ? parseFloat(tokenBBalance).toLocaleString()
             : '0';
 
+    const surplusBalance = 0;
+    const surplusBalanceNonLocaleString = surplusBalance.toString();
+    const surplusBalanceLocaleString = surplusBalance.toLocaleString();
+
     return (
         <div className={styles.swapbox}>
             <div className={styles.direction}> </div>
@@ -169,6 +173,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
             <div className={styles.swapbox_bottom}>
                 <div className={styles.surplus_container}>
                     <div
+                        className={props.sellToken ? styles.balance_with_pointer : null}
                         onClick={() => {
                             props.sellToken
                                 ? handleChangeClick(walletBalanceNonLocaleString)
@@ -179,11 +184,14 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                     </div>{' '}
                     |{' '}
                     <div
+                        className={props.sellToken ? styles.balance_with_pointer : null}
                         onClick={() => {
-                            props.sellToken ? handleChangeClick('0') : null;
+                            props.sellToken
+                                ? handleChangeClick(surplusBalanceNonLocaleString)
+                                : null;
                         }}
                     >
-                        Surplus: 0
+                        Surplus: {surplusBalanceLocaleString}
                     </div>
                 </div>
                 {/* {fieldId === 'limit-sell' ? DexBalanceContent : WithdrawTokensContent} */}
