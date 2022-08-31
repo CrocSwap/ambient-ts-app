@@ -80,7 +80,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
         dispatch(setActiveChartPeriod(period));
     };
     const denomInBase = tradeData.isDenomBase;
-    const denomInTokenA = (denomInBase && isTokenABase) || (!denomInBase && !isTokenABase);
+    // const denomInTokenA = (denomInBase && isTokenABase) || (!denomInBase && !isTokenABase);
     // const tokenASymbol = tradeData.tokenA.symbol;
     // const tokenBSymbol = tradeData.tokenB.symbol;
     const tokenAAddress = tradeData.tokenA.address;
@@ -465,18 +465,18 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
 
     // TIME FRAME CONTENT--------------------------------------------------------------
 
-    const currencyCharacter = denomInTokenA
+    const currencyCharacter = denomInBase
         ? // denom in a, return token b character
-          getUnicodeCharacter(tradeData.tokenB.symbol)
+          getUnicodeCharacter(tradeData.quoteToken.symbol)
         : // denom in b, return token a character
-          getUnicodeCharacter(tradeData.tokenA.symbol);
+          getUnicodeCharacter(tradeData.baseToken.symbol);
 
     // console.log({ poolPriceChangePercent });
     const timeFrameContent = (
         <div className={styles.time_frame_container}>
             <div className={styles.left_side}>
                 <span className={styles.amount}>
-                    {poolPriceDisplay === Infinity
+                    {poolPriceDisplay === Infinity || poolPriceDisplay === 0
                         ? '…'
                         : `${currencyCharacter}${truncatedPoolPrice}`}
                 </span>
