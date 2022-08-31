@@ -27,6 +27,7 @@ interface LimitCurrencySelectorProps {
     tokenABalance: string;
     tokenBBalance: string;
     handleChangeEvent: (evt: ChangeEvent<HTMLInputElement>) => void;
+    handleChangeClick?: (value: string) => void;
     isWithdrawFromDexChecked: boolean;
     setIsWithdrawFromDexChecked: Dispatch<SetStateAction<boolean>>;
     isSaveAsDexSurplusChecked: boolean;
@@ -55,6 +56,7 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
         setIsSaveAsDexSurplusChecked,
         activeTokenListsChanged,
         indicateActiveTokenListsChanged,
+        handleChangeClick,
     } = props;
 
     const thisToken = fieldId === 'sell' ? tokenPair.dataTokenA : tokenPair.dataTokenB;
@@ -137,12 +139,30 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
         </span>
     );
 
-    const walletBalance =
+    // const walletBalance =
+    //     props.sellToken && tokenABalance !== ''
+    //         ? parseFloat(tokenABalance).toLocaleString()
+    //         : !props.sellToken && tokenBBalance !== ''
+    //         ? parseFloat(tokenBBalance).toLocaleString()
+    //         : '0';
+
+    const walletBalanceNonLocaleString =
+        props.sellToken && tokenABalance !== ''
+            ? parseFloat(tokenABalance).toString()
+            : !props.sellToken && tokenBBalance !== ''
+            ? parseFloat(tokenBBalance).toString()
+            : '0';
+
+    const walletBalanceLocaleString =
         props.sellToken && tokenABalance !== ''
             ? parseFloat(tokenABalance).toLocaleString()
             : !props.sellToken && tokenBBalance !== ''
             ? parseFloat(tokenBBalance).toLocaleString()
             : '0';
+
+    const surplusBalance = 0;
+    const surplusBalanceNonLocaleString = surplusBalance.toString();
+    const surplusBalanceLocaleString = surplusBalance.toLocaleString();
 
     return (
         <div className={styles.swapbox}>
@@ -158,11 +178,34 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
                 {fieldId === 'buy' || fieldId === 'sell' ? tokenSelect : null}
             </div>
             <div className={styles.swapbox_bottom}>
-                {fieldId === 'sell' ? (
+                <div className={styles.surplus_container}>
+                    <div
+                        className={props.sellToken ? styles.balance_with_pointer : null}
+                        onClick={() => {
+                            props.sellToken && handleChangeClick
+                                ? handleChangeClick(walletBalanceNonLocaleString)
+                                : null;
+                        }}
+                    >
+                        Wallet: {walletBalanceLocaleString}{' '}
+                    </div>{' '}
+                    |{' '}
+                    <div
+                        className={props.sellToken ? styles.balance_with_pointer : null}
+                        onClick={() => {
+                            props.sellToken && handleChangeClick
+                                ? handleChangeClick(surplusBalanceNonLocaleString)
+                                : null;
+                        }}
+                    >
+                        Surplus: {surplusBalanceLocaleString}
+                    </div>
+                </div>
+                {/* {fieldId === 'sell' ? (
                     <span>Wallet: {walletBalance} | Surplus: 0</span>
                 ) : (
                     <span>Wallet: {walletBalance} | Surplus: 0</span>
-                )}
+                )} */}
                 {fieldId === 'buy' || fieldId === 'sell' ? DexBalanceContent : null}
             </div>
             {tokenSelectModalOrNull}
