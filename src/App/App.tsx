@@ -93,6 +93,7 @@ import { useModal } from '../components/Global/Modal/useModal';
 // import authenticateUser from '../utils/functions/authenticateUser';
 import { getVolumeSeries } from './functions/getVolumeSeries';
 import { getTvlSeries } from './functions/getTvlSeries';
+import Chat from './components/Chat/Chat';
 
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 const cachedFetchAddress = memoizeFetchAddress();
@@ -1883,6 +1884,16 @@ export default function App() {
                         <Route path='analytics' element={<Analytics {...analyticsProps} />} />
                         <Route path='tokens/:address' element={<TokenPage />} />
                         <Route path='pools/:address' element={<PoolPage />} />
+                        <Route
+                            path='app/chat'
+                            element={
+                                <Chat
+                                    ensName={ensName}
+                                    connectedAccount={account ? account : ''}
+                                    fullScreen={true}
+                                />
+                            }
+                        />
 
                         <Route path='range2' element={<Range {...rangeProps} />} />
 
@@ -1937,6 +1948,13 @@ export default function App() {
                         lastBlockNumber={lastBlockNumber}
                         userIsOnline={userIsOnline}
                         favePools={favePools}
+                    />
+                )}
+                {currentLocation !== '/app/chat' && (
+                    <Chat
+                        ensName={ensName}
+                        connectedAccount={account ? account : ''}
+                        fullScreen={false}
                     />
                 )}
             </div>

@@ -40,9 +40,11 @@
 
     --text-grey-light: #bdbdbd;
     --text-grey-dark: #555555;
-    --text-grey-white: #ffffff;
+    --text-grey-white: #EBEBFF;
     --text-accent: #cdc1ff;
     --light-blue: #cdc1ff;
+
+    --accent-secondary: #E480ff;
 
     /* border */
     --border-radius: 4px;
