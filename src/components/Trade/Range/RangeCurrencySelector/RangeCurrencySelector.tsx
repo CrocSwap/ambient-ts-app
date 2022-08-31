@@ -166,7 +166,6 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                     <div
                         className={styles.balance_with_pointer}
                         onClick={() => {
-                            console.log(walletBalanceNonLocaleString);
                             handleChangeClick(walletBalanceNonLocaleString);
                         }}
                     >
@@ -176,8 +175,7 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                     <div
                         className={styles.balance_with_pointer}
                         onClick={() => {
-                            console.log(surplusBalanceNonLocaleString);
-                            handleChangeClick('0');
+                            handleChangeClick(surplusBalanceNonLocaleString);
                         }}
                     >
                         Surplus: {surplusBalanceLocaleString}
