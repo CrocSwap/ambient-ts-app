@@ -35,7 +35,6 @@ export default function DenominationSwitch() {
 
     return (
         <div className={styles.denomination_switch}>
-            <div>Denomination</div>
             <button
                 className={!isDenomBase ? styles.active_button : styles.non_active_button}
                 onClick={() => dispatch(toggleDidUserFlipDenom())}
