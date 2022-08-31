@@ -1,6 +1,7 @@
 import styles from './TopTokens.module.css';
 import TopTokensCard from './TopTokensCard';
 import { topTokens } from '../../../../App/mockData';
+import { Link } from 'react-router-dom';
 
 interface TopTokensProps {
     chainId: string;
@@ -32,6 +33,9 @@ export default function TopTokens(props: TopTokensProps) {
                     />
                 ))}
             </div>
+            <Link className={styles.view_more} to='/analytics'>
+                View More
+            </Link>
         </div>
     );
 }
