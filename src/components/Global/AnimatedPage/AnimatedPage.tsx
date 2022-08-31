@@ -1,11 +1,5 @@
 import { motion } from 'framer-motion';
 
-// const animations = {
-//   initial: { opacity: 0, x: 100 },
-//   animate: { opacity: 1, x: 0 },
-//   exit: { opacity: 0, x: -100 },
-// };
-
 // const pageVariants = {
 //     in: {
 //         opacity: 1,
@@ -16,6 +10,11 @@ import { motion } from 'framer-motion';
 //         y: '-100vh'
 //     }
 // }
+// const animations = {
+//   initial: { opacity: 0, x: 100 },
+//   animate: { opacity: 1, x: 0 },
+//   exit: { opacity: 0, x: -100 },
+// };
 
 const pageVariant3D = {
     initial: {
