@@ -51,7 +51,7 @@ export default function LimitHeader(props: LimitHeaderPropsIF) {
         <ContentHeader>
             <span />
             <div className={styles.token_info} onClick={() => dispatch(toggleDidUserFlipDenom())}>
-                {isDenomBase ? baseTokenSymbol : quoteTokenSymbol} /
+                {isDenomBase ? baseTokenSymbol : quoteTokenSymbol} /{' '}
                 {isDenomBase ? quoteTokenSymbol : baseTokenSymbol}
             </div>
             <div onClick={openModal}>
