@@ -225,6 +225,19 @@ export default function RangeDetails(props: IRangeDetailsProps) {
         { slug: 'value', name: 'Show value', checked: false },
     ]);
 
+    const handleChange = (slug: string) => {
+        const copyControlItems = [...controlItems];
+        const modifiedControlItems = copyControlItems.map((item) => {
+            if (slug === item.slug) {
+                item.checked = !item.checked;
+            }
+
+            return item;
+        });
+
+        setControlItems(modifiedControlItems);
+    };
+
     return (
         <div className={styles.range_details_container}>
             <div ref={detailsRef}>
