@@ -700,6 +700,7 @@ export default function App() {
                                     poolIdx: chainData.poolIndex.toString(),
                                     chainId: chainData.chainId,
                                     addValue: 'true',
+                                    ensResolution: 'true',
                                     // n: 10 // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
                                     // page: 0 // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
                                 }),
@@ -1192,16 +1193,16 @@ export default function App() {
         // swap.user = swap.user.startsWith('0x') ? swap.user : '0x' + swap.user;
         // swap.id = '0x' + swap.id.slice(6);
 
-        const viewProvider = provider
-            ? provider
-            : (await new CrocEnv(chainData.chainId).context).provider;
+        // const viewProvider = provider
+        //     ? provider
+        //     : (await new CrocEnv(chainData.chainId).context).provider;
 
-        try {
-            const ensName = await cachedFetchAddress(viewProvider, swap.user, chainData.chainId);
-            if (ensName) swap.userEnsName = ensName;
-        } catch (error) {
-            console.warn(error);
-        }
+        // try {
+        //     const ensName = await cachedFetchAddress(viewProvider, swap.user, chainData.chainId);
+        //     if (ensName) swap.userEnsName = ensName;
+        // } catch (error) {
+        //     console.warn(error);
+        // }
 
         return swap;
     };
@@ -1441,6 +1442,7 @@ export default function App() {
                             user: account,
                             chainId: chainData.chainId,
                             addValue: 'true',
+                            ensResolution: 'true',
                         }),
                 )
                     .then((response) => response?.json())

@@ -229,6 +229,7 @@ export interface ISwap {
     priceDecimalCorrected: number;
     invPriceDecimalCorrected: number;
     valueUSD: number;
+    ensResolution: string;
 }
 
 export interface SwapsByUser {
