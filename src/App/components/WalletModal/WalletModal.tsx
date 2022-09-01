@@ -47,7 +47,7 @@ export default function WalletModal(props: WalletModalPropsIF) {
 
     // close the Connect Wallet modal only when authentication completes
     useEffect(() => {
-        isAuthenticated && closeModalWallet();
+        isAuthenticated && isWeb3Enabled && closeModalWallet();
     }, [isAuthenticating]);
 
     const { tosText, acceptToS } = useTermsOfService();
