@@ -132,6 +132,7 @@ export default function RangeCard(props: RangeCardProps) {
         baseTokenAddress: props.position.base,
         quoteTokenAddress: props.position.quote,
         lastBlockNumber: lastBlockNumber,
+        positionApy: position.apy,
     };
 
     const [baseLiquidityDisplay, setBaseLiquidityDisplay] = useState<string | undefined>(undefined);

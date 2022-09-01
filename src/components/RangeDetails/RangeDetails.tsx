@@ -32,6 +32,7 @@ interface IRangeDetailsProps {
     baseTokenAddress: string;
     quoteTokenAddress: string;
     lastBlockNumber: number;
+    positionApy: number;
 }
 
 export default function RangeDetails(props: IRangeDetailsProps) {
@@ -48,6 +49,7 @@ export default function RangeDetails(props: IRangeDetailsProps) {
         askTick,
         lastBlockNumber,
         position,
+        positionApy,
     } = props;
 
     const detailsRef = useRef(null);
@@ -66,7 +68,7 @@ export default function RangeDetails(props: IRangeDetailsProps) {
 
     const [baseFeesDisplay, setBaseFeesDisplay] = useState<string | undefined>(undefined);
     const [quoteFeesDisplay, setQuoteFeesDisplay] = useState<string | undefined>(undefined);
-    const [positionApy, setPositionApy] = useState<number | undefined>();
+    const [apy, setApy] = useState<number | undefined>(positionApy);
 
     useEffect(() => {
         const positionStatsCacheEndpoint = httpGraphCacheServerDomain + '/position_stats?';
@@ -173,7 +175,7 @@ export default function RangeDetails(props: IRangeDetailsProps) {
                         setQuoteFeesDisplay(quoteFeesDisplayTruncated);
                     }
                     if (positionStats.apy) {
-                        setPositionApy(positionStats.apy);
+                        setApy(positionStats.apy);
                     }
                 })
                 .catch(console.log);
@@ -247,7 +249,7 @@ export default function RangeDetails(props: IRangeDetailsProps) {
                         quoteTokenDecimals={props.quoteTokenDecimals}
                         lastBlockNumber={props.lastBlockNumber}
                         isDenomBase={props.isDenomBase}
-                        positionApy={positionApy}
+                        positionApy={apy}
                     />
                     <Divider />
                 </div>
