@@ -1374,9 +1374,8 @@ export default function App() {
                       });
         }
 
-        if (position.positionLiqBaseDecimalCorrected && position.positionLiqQuoteDecimalCorrected) {
+        if (position.positionLiqBaseDecimalCorrected) {
             const liqBaseNum = position.positionLiqBaseDecimalCorrected;
-            const liqQuoteNum = position.positionLiqQuoteDecimalCorrected;
 
             const baseLiqDisplayTruncated =
                 liqBaseNum === 0
@@ -1394,6 +1393,9 @@ export default function App() {
                       });
 
             position.positionLiqBaseTruncated = baseLiqDisplayTruncated;
+        }
+        if (position.positionLiqQuoteDecimalCorrected) {
+            const liqQuoteNum = position.positionLiqQuoteDecimalCorrected;
 
             const quoteLiqDisplayTruncated =
                 liqQuoteNum === 0

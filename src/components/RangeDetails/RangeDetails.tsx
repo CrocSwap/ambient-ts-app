@@ -94,7 +94,7 @@ export default function RangeDetails(props: IRangeDetailsProps) {
                     const liqBaseNum = position.positionLiqBaseDecimalCorrected;
                     const liqQuoteNum = position.positionLiqQuoteDecimalCorrected;
 
-                    if (liqBaseNum && liqQuoteNum) {
+                    if (liqBaseNum) {
                         const baseLiqDisplayTruncated =
                             liqBaseNum === 0
                                 ? '0'
@@ -111,7 +111,8 @@ export default function RangeDetails(props: IRangeDetailsProps) {
                                   });
 
                         setBaseLiquidityDisplay(baseLiqDisplayTruncated);
-
+                    }
+                    if (liqQuoteNum) {
                         const quoteLiqDisplayTruncated =
                             liqQuoteNum === 0
                                 ? '0'
