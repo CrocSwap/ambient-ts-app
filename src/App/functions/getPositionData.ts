@@ -38,8 +38,8 @@ export const getPositionData = async (position: PositionIF): Promise<PositionIF>
     const baseTokenDecimals = 18;
     const quoteTokenDecimals = 18;
 
-    if (baseTokenDecimals) position.baseTokenDecimals = baseTokenDecimals;
-    if (quoteTokenDecimals) position.quoteTokenDecimals = quoteTokenDecimals;
+    if (baseTokenDecimals) position.baseDecimals = baseTokenDecimals;
+    if (quoteTokenDecimals) position.quoteDecimals = quoteTokenDecimals;
 
     const lowerPriceNonDisplay = tickToPrice(position.bidTick);
     const upperPriceNonDisplay = tickToPrice(position.askTick);

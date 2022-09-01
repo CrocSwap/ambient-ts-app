@@ -80,7 +80,7 @@ export default function PositionCard(props: PositionCardPropsIF) {
 
     const ownerId = position ? position.user : null;
 
-    const ensName = position?.userEnsName !== '' ? position.userEnsName : null;
+    const ensName = position?.ensResolution !== '' ? position.ensResolution : null;
     const ensNameTruncated = ensName ? trimString(ensName, 4, 3, '…') : null;
     const ownerIdTruncated = position ? trimString(position.user, 7, 0, '…') : null;
     const mobileOwnerId = position ? trimString(position.user, 4, 0, '…') : null;

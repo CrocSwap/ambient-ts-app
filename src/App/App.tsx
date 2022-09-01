@@ -77,7 +77,7 @@ import { memoizeQuerySpotPrice, querySpotPrice } from './functions/querySpotPric
 import { memoizeFetchAddress } from './functions/fetchAddress';
 import { memoizeTokenBalance } from './functions/fetchTokenBalances';
 import { getNFTs } from './functions/getNFTs';
-import { memoizeTokenDecimals } from './functions/queryTokenDecimals';
+// import { memoizeTokenDecimals } from './functions/queryTokenDecimals';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { useSlippage } from './useSlippage';
 import { useFavePools } from './hooks/useFavePools';
@@ -98,7 +98,7 @@ import Chat from './components/Chat/Chat';
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 const cachedFetchAddress = memoizeFetchAddress();
 const cachedFetchTokenBalances = memoizeTokenBalance();
-const cachedGetTokenDecimals = memoizeTokenDecimals();
+// const cachedGetTokenDecimals = memoizeTokenDecimals();
 
 const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
 const wssGraphCacheServerDomain = 'wss://809821320828123.de:5000';
@@ -654,6 +654,7 @@ export default function App() {
                                     poolIdx: chainData.poolIndex.toString(),
                                     chainId: chainData.chainId,
                                     tokenQuantities: 'true',
+                                    ensResolution: 'true',
                                 }),
                         )
                             .then((response) => response.json())
@@ -832,6 +833,7 @@ export default function App() {
                 // quoteTokenAddress.toLowerCase() || '0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa',
                 poolIdx: chainData.poolIndex.toString(),
                 chainId: chainData.chainId,
+                ensResolution: 'true',
             }),
         [baseTokenAddress, quoteTokenAddress, chainData.chainId],
     );
@@ -930,6 +932,7 @@ export default function App() {
                 poolIdx: chainData.poolIndex.toString(),
                 chainId: chainData.chainId,
                 addValue: 'true',
+                ensResolution: 'true',
             }),
         [baseTokenAddress, quoteTokenAddress, chainData.chainId],
     );
@@ -1013,6 +1016,7 @@ export default function App() {
                 user: account || '',
                 chainId: chainData.chainId,
                 addValue: 'true',
+                ensResolution: 'true',
             }),
         [account, chainData.chainId],
     );
@@ -1231,16 +1235,16 @@ export default function App() {
             lastBlockNumber,
         );
 
-        try {
-            const ensName = await cachedFetchAddress(
-                viewProvider,
-                position.user,
-                chainData.chainId,
-            );
-            if (ensName) position.userEnsName = ensName;
-        } catch (error) {
-            console.warn(error);
-        }
+        // try {
+        //     const ensName = await cachedFetchAddress(
+        //         viewProvider,
+        //         position.user,
+        //         chainData.chainId,
+        //     );
+        //     if (ensName) position.userEnsName = ensName;
+        // } catch (error) {
+        //     console.warn(error);
+        // }
 
         const poolPriceInTicks = Math.log(poolPriceNonDisplay) / Math.log(1.0001);
         position.poolPriceInTicks = poolPriceInTicks;
@@ -1251,19 +1255,22 @@ export default function App() {
 
         position.isPositionInRange = isPositionInRange;
 
-        const baseTokenDecimals = await cachedGetTokenDecimals(
-            viewProvider,
-            baseTokenAddress,
-            chainData.chainId,
-        );
-        const quoteTokenDecimals = await cachedGetTokenDecimals(
-            viewProvider,
-            quoteTokenAddress,
-            chainData.chainId,
-        );
+        // const baseTokenDecimals = await cachedGetTokenDecimals(
+        //     viewProvider,
+        //     baseTokenAddress,
+        //     chainData.chainId,
+        // );
+        // const quoteTokenDecimals = await cachedGetTokenDecimals(
+        //     viewProvider,
+        //     quoteTokenAddress,
+        //     chainData.chainId,
+        // );
 
-        if (baseTokenDecimals) position.baseTokenDecimals = baseTokenDecimals;
-        if (quoteTokenDecimals) position.quoteTokenDecimals = quoteTokenDecimals;
+        // if (baseTokenDecimals) position.baseTokenDecimals = baseTokenDecimals;
+        // if (quoteTokenDecimals) position.quoteTokenDecimals = quoteTokenDecimals;
+
+        const baseTokenDecimals = position.baseDecimals;
+        const quoteTokenDecimals = position.quoteDecimals;
 
         const lowerPriceNonDisplay = tickToPrice(position.bidTick);
         const upperPriceNonDisplay = tickToPrice(position.askTick);
@@ -1404,6 +1411,7 @@ export default function App() {
                             user: account,
                             chainId: chainData.chainId,
                             tokenQuantities: 'true',
+                            ensResolution: 'true',
                         }),
                 )
                     .then((response) => response?.json())
