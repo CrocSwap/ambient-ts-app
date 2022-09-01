@@ -47,7 +47,7 @@ export default function RangeDetails(props: IRangeDetailsProps) {
         askTick,
         lastBlockNumber,
         position,
-        positionApy,
+        // positionApy,
     } = props;
 
     const detailsRef = useRef(null);
@@ -70,9 +70,8 @@ export default function RangeDetails(props: IRangeDetailsProps) {
 
     // eslint-disable-next-line
     const [positionApy, setPositionApy] = useState<number | undefined>();
-
+    // eslint-disable-next-line
     const [apy, setApy] = useState<number | undefined>(positionApy);
-
 
     useEffect(() => {
         const positionStatsCacheEndpoint = httpGraphCacheServerDomain + '/position_stats?';
@@ -302,7 +301,6 @@ export default function RangeDetails(props: IRangeDetailsProps) {
                         isDenomBase={props.isDenomBase}
                         positionApy={apy}
                     /> */}
-
                 </div>
             </div>
 
