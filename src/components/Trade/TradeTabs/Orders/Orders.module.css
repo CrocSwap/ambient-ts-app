@@ -1,5 +1,7 @@
-.container {
-    /* padding: 0 8px; */
+.container > header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
 }
 
 .item_container {

@@ -204,49 +204,6 @@ export default function RangeCard(props: RangeCardProps) {
         } else {
             setQuoteLiquidityDisplay(undefined);
         }
-
-        // (async () => {
-        //     const positionApyCacheEndpoint = 'https://809821320828123.de:5000' + '/position_apy?';
-
-        //     const positionApy =
-        //         position.positionType === 'ambient'
-        //             ? await fetch(
-        //                   positionApyCacheEndpoint +
-        //                       new URLSearchParams({
-        //                           chainId: position.chainId,
-        //                           user: position.user,
-        //                           base: position.base,
-        //                           quote: position.quote,
-        //                           poolIdx: position.poolIdx.toString(),
-        //                           concise: 'true',
-        //                       }),
-        //               )
-        //                   .then((response) => response?.json())
-        //                   .then((json) => {
-        //                       const apy = json?.data?.results?.apy;
-        //                       return apy;
-        //                   })
-        //             : await fetch(
-        //                   positionApyCacheEndpoint +
-        //                       new URLSearchParams({
-        //                           chainId: position.chainId,
-        //                           user: position.user,
-        //                           base: position.base,
-        //                           quote: position.quote,
-        //                           bidTick: position.bidTick.toString(),
-        //                           askTick: position.askTick.toString(),
-        //                           poolIdx: position.poolIdx.toString(),
-        //                           concise: 'true',
-        //                       }),
-        //               )
-        //                   .then((response) => response?.json())
-        //                   .then((json) => {
-        //                       const apy = json?.data?.results?.apy;
-        //                       return apy;
-        //                   });
-
-        //     setPositionApy(positionApy);
-        // })();
     }, [JSON.stringify(position)]);
 
     // ------------------------------END OF REMOVE RANGE PROPS-----------------
@@ -256,7 +213,7 @@ export default function RangeCard(props: RangeCardProps) {
 
     if (!positionMatchesSelectedTokens) return null;
     return (
-        <div
+        <li
             className={`${styles.main_container} ${activePositionStyle}`}
             onClick={() =>
                 position.positionStorageSlot === currentPositionActive
@@ -302,6 +259,6 @@ export default function RangeCard(props: RangeCardProps) {
                     positionData={position}
                 />
             </div>
-        </div>
+        </li>
     );
 }

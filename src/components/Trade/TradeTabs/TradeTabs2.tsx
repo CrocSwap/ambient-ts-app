@@ -28,12 +28,10 @@ interface ITabsProps {
     lastBlockNumber: number;
     chainId: string;
     chainData: ChainSpec;
-
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     isShowAllEnabled: boolean;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
-
     tokenMap: Map<string, TokenIF>;
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
@@ -41,12 +39,10 @@ interface ITabsProps {
     filter: CandleData | undefined;
     setIsCandleSelected: Dispatch<SetStateAction<boolean | undefined>>;
     setTransactionFilter: Dispatch<SetStateAction<CandleData | undefined>>;
-
     selectedOutsideTab: number;
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
     outsideControl: boolean;
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
-
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
 }
@@ -55,6 +51,8 @@ export default function TradeTabs2(props: ITabsProps) {
     const {
         chainId,
         chainData,
+        isAuthenticated,
+        isWeb3Enabled,
         account,
         isShowAllEnabled,
         setIsShowAllEnabled,
@@ -64,6 +62,17 @@ export default function TradeTabs2(props: ITabsProps) {
         setIsCandleSelected,
         filter,
         setTransactionFilter,
+        lastBlockNumber,
+        expandTradeTable,
+        setExpandTradeTable,
+        currentPositionActive,
+        setCurrentPositionActive,
+        currentTxActiveInTransactions,
+        setCurrentTxActiveInTransactions,
+        selectedOutsideTab,
+        setSelectedOutsideTab,
+        outsideControl,
+        setOutsideControl
     } = props;
 
     const graphData = useAppSelector((state) => state?.graphData);
@@ -75,7 +84,7 @@ export default function TradeTabs2(props: ITabsProps) {
 
     useEffect(() => {
         setHasInitialized(false);
-    }, [props.account, props.isAuthenticated]);
+    }, [account, isAuthenticated]);
 
     useEffect(() => {
         // console.log({ hasInitialized });
@@ -98,51 +107,52 @@ export default function TradeTabs2(props: ITabsProps) {
     // Props for <Ranges/> React Element
     const rangesProps = {
         provider: provider,
+        account: account,
+        isAuthenticated: isAuthenticated,
         chainId: chainId,
         isShowAllEnabled: isShowAllEnabled,
         notOnTradeRoute: false,
         graphData: graphData,
-        lastBlockNumber: props.lastBlockNumber,
-
-        expandTradeTable: props.expandTradeTable,
-
-        currentPositionActive: props.currentPositionActive,
-        setCurrentPositionActive: props.setCurrentPositionActive,
+        lastBlockNumber: lastBlockNumber,
+        expandTradeTable: expandTradeTable,
+        currentPositionActive: currentPositionActive,
+        setCurrentPositionActive: setCurrentPositionActive,
     };
     // Props for <Transactions/> React Element
     const transactionsProps = {
         isShowAllEnabled: isShowAllEnabled,
         tokenMap: tokenMap,
         graphData: graphData,
-        chainId: props.chainId,
+        chainId: chainId,
         blockExplorer: chainData.blockExplorer || undefined,
-        currentTxActiveInTransactions: props.currentTxActiveInTransactions,
+        currentTxActiveInTransactions: currentTxActiveInTransactions,
         account: account,
-        setCurrentTxActiveInTransactions: props.setCurrentTxActiveInTransactions,
-        expandTradeTable: props.expandTradeTable,
+        setCurrentTxActiveInTransactions: setCurrentTxActiveInTransactions,
+        expandTradeTable: expandTradeTable,
 
         isCandleSelected: isCandleSelected,
         filter: filter,
     };
     // Props for <Orders/> React Element
     const ordersProps = {
-        expandTradeTable: props.expandTradeTable,
+        expandTradeTable: expandTradeTable,
         account: account,
     };
     // props for <PositionsOnlyToggle/> React Element
 
     const positionsOnlyToggleProps = {
         isShowAllEnabled: isShowAllEnabled,
-        isAuthenticated: props.isAuthenticated,
-        isWeb3Enabled: props.isWeb3Enabled,
+        isAuthenticated: isAuthenticated,
+        isWeb3Enabled: isWeb3Enabled,
         setHasInitialized: setHasInitialized,
         setIsShowAllEnabled: setIsShowAllEnabled,
         setIsCandleSelected: setIsCandleSelected,
         setTransactionFilter: setTransactionFilter,
-        expandTradeTable: props.expandTradeTable,
-        setExpandTradeTable: props.setExpandTradeTable,
+        expandTradeTable: expandTradeTable,
+        setExpandTradeTable: setExpandTradeTable,
     };
 
+    // data for headings of each of the three tabs
     const tradeTabData = [
         {
             label: 'Transactions',
@@ -157,8 +167,8 @@ export default function TradeTabs2(props: ITabsProps) {
     const tabComponentRef = useRef<HTMLDivElement>(null);
 
     const clickOutsideHandler = () => {
-        props.setCurrentTxActiveInTransactions('');
-        props.setCurrentPositionActive('');
+        setCurrentTxActiveInTransactions('');
+        setCurrentPositionActive('');
     };
 
     useOnClickOutside(tabComponentRef, clickOutsideHandler);
@@ -169,10 +179,10 @@ export default function TradeTabs2(props: ITabsProps) {
                 <TabComponent
                     data={tradeTabData}
                     rightTabOptions={<PositionsOnlyToggle {...positionsOnlyToggleProps} />}
-                    selectedOutsideTab={props.selectedOutsideTab}
-                    setSelectedOutsideTab={props.setSelectedOutsideTab}
-                    outsideControl={props.outsideControl}
-                    setOutsideControl={props.setOutsideControl}
+                    selectedOutsideTab={selectedOutsideTab}
+                    setSelectedOutsideTab={setSelectedOutsideTab}
+                    outsideControl={outsideControl}
+                    setOutsideControl={setOutsideControl}
                 />
             }
         </div>

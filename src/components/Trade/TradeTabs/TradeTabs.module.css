@@ -5,7 +5,6 @@
     min-height: 260px;
     border-radius: 4px;
     background: var(--dark1);
-    /* padding: 0 4px; */
     padding: 4px 8px;
 }
 
@@ -17,6 +16,7 @@
     justify-content: space-between;
     align-items: center;
 }
+
 .tab_navs {
     width: 100%;
     display: flex;
