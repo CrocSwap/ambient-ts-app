@@ -64,6 +64,11 @@
     color: white;
 }
 
+.header_right{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
 .close_button {
     color: var(--text-grey-light);
     cursor: pointer;

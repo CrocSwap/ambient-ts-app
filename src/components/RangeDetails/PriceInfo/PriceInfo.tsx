@@ -4,6 +4,7 @@ import DividerDark from '../../Global/DividerDark/DividerDark';
 import graphImage from '../../../assets/images/Temporary/chart.svg';
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import { toggleDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
+import Divider from '../../Global/Divider/Divider';
 
 type ItemIF = {
     slug: string;
@@ -63,7 +64,8 @@ export default function PriceInfo(props: IPriceInfoProps) {
                 </div>
             </Row>
             {/*  */}
-            <DividerDark />
+            <Divider />
+            {/* <div className={styles.divider}></div> */}
             <Row>
                 <span> Earned {baseTokenSymbol}</span>
                 <div className={styles.info_text}>
@@ -148,9 +150,9 @@ export default function PriceInfo(props: IPriceInfoProps) {
         <div className={styles.main_container}>
             {/* <div className={styles.price_info_container}> */}
             {tokenPairDetails}
-            {totalValueContent}
-            {timesContent}
-            {collateralContent}
+            {controlItems[2].checked && totalValueContent}
+            {controlItems[0].checked && timesContent}
+            {controlItems[1].checked && collateralContent}
             {minMaxPriceDipslay}
             {/* <div className={styles.graph_image_container}>
                     <img src={graphImage} alt='chart' />

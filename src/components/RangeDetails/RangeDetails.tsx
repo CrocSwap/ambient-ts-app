@@ -221,8 +221,8 @@ export default function RangeDetails(props: IRangeDetailsProps) {
     }, [lastBlockNumber]);
 
     const [controlItems, setControlItems] = useState([
-        { slug: 'times', name: 'Show times', checked: false },
-        { slug: 'collateral', name: 'Show collateral', checked: false },
+        { slug: 'times', name: 'Show times', checked: true },
+        { slug: 'collateral', name: 'Show collateral', checked: true },
         { slug: 'value', name: 'Show value', checked: false },
     ]);
 
@@ -291,13 +291,12 @@ export default function RangeDetails(props: IRangeDetailsProps) {
                         isDenomBase={props.isDenomBase}
                         positionApy={positionApy}
                     /> */}
-                    <Divider />
                 </div>
             </div>
 
-            <div onClick={downloadAsImage} className={styles.share_container}>
+            {/* <div onClick={downloadAsImage} className={styles.share_container}>
                 <BsDownload size={15} />
-            </div>
+            </div> */}
         </div>
     );
 }

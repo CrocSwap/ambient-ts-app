@@ -12,9 +12,21 @@ interface RangeDetailControlPropsIF {
 export default function RangeDetailsControl(props: RangeDetailControlPropsIF) {
     const { item, handleChange } = props;
 
-    return (
-        <div className={`${styles.custom_control} ${styles.custom_checkbox}`}>
+    const newCheckBox = (
+        <div className={styles.checkboxes}>
             <input
+                id='ckb0'
+                className={`${styles.ckb} ${styles.ckb_primary}`}
+                type='checkbox'
+                checked
+            />
+            <label htmlFor='ckb0'>Checkbox</label>
+        </div>
+    );
+
+    return (
+        <div className={styles.custom_control}>
+            {/* <input
                 type='checkbox'
                 className={styles.custom_control_input}
                 id={`customCheck1-${item.slug}`}
@@ -23,7 +35,16 @@ export default function RangeDetailsControl(props: RangeDetailControlPropsIF) {
             />
             <label className={styles.custom_control_label} htmlFor={`customCheck1-${item.slug}`}>
                 {item.name}
-            </label>
+            </label> */}
+
+            <input
+                id={`customCheck1-${item.slug}`}
+                className={`${styles.ckb} ${styles.ckb_primary}`}
+                type='checkbox'
+                checked={item.checked}
+                onChange={() => handleChange(item.slug)}
+            />
+            <label htmlFor={`customCheck1-${item.slug}`}>{item.name}</label>
         </div>
     );
 }

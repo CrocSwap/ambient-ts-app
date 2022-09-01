@@ -1,6 +1,7 @@
 .main_container {
     display: flex;
     flex-direction: column;
+    gap: 1rem;
 }
 
 /* .price_info_container {
@@ -10,8 +11,13 @@
 } */
 
 .info_container {
+
     width: 100%;
-    
+    background: rgba(23, 29, 39, 0.3);
+backdrop-filter: blur(20px);
+/* Note: backdrop-filter has minimal browser support */
+/* background: red; */
+border-radius: 4px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -24,6 +30,15 @@
     color: var(--text-grey-white);
     font-size: var(--body-size);
     line-height: var(--body-lh);
+}
+
+.divider{
+    height: 1px;
+
+/* dark/secondary */
+
+background: #171D27;
+
 }
 .info_text {
     display: flex;
