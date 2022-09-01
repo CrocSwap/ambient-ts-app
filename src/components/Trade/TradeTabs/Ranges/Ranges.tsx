@@ -98,26 +98,6 @@ export default function Ranges(props: RangesPropsIF) {
         graphData?.positionsByPool?.positions
     );
 
-    const RangesDisplay = sortedPositions.map((position, idx) => (
-        <RangeCard
-            provider={provider}
-            chainId={chainId}
-            key={idx}
-            portfolio={portfolio}
-            notOnTradeRoute={notOnTradeRoute}
-            position={position}
-            isAllPositionsEnabled={isShowAllEnabled}
-            tokenAAddress={tradeData.tokenA.address}
-            tokenBAddress={tradeData.tokenB.address}
-            account={account ?? undefined}
-            isAuthenticated={isAuthenticated}
-            isDenomBase={tradeData.isDenomBase}
-            lastBlockNumber={lastBlockNumber}
-            currentPositionActive={currentPositionActive}
-            setCurrentPositionActive={setCurrentPositionActive}
-        />
-    ));
-
     return (
         <div className={styles.container}>
             {/* header fields */}
@@ -141,7 +121,27 @@ export default function Ranges(props: RangesPropsIF) {
                 className={styles.item_container}
                 style={{ height: expandTradeTable ? '100%' : '220px' }}
             >
-                {RangesDisplay}
+                {
+                    sortedPositions.map((position, idx) => (
+                        <RangeCard
+                            provider={provider}
+                            chainId={chainId}
+                            key={idx}
+                            portfolio={portfolio}
+                            notOnTradeRoute={notOnTradeRoute}
+                            position={position}
+                            isAllPositionsEnabled={isShowAllEnabled}
+                            tokenAAddress={tradeData.tokenA.address}
+                            tokenBAddress={tradeData.tokenB.address}
+                            account={account ?? undefined}
+                            isAuthenticated={isAuthenticated}
+                            isDenomBase={tradeData.isDenomBase}
+                            lastBlockNumber={lastBlockNumber}
+                            currentPositionActive={currentPositionActive}
+                            setCurrentPositionActive={setCurrentPositionActive}
+                        />
+                    ))
+                }
             </div>
         </div>
     );
