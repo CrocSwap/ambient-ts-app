@@ -50,14 +50,14 @@ interface RangePropsIF {
     mintSlippage: SlippagePairIF;
     isPairStable: boolean;
     provider?: ethers.providers.Provider;
-    gasPriceinGwei: string;
+    gasPriceinGwei: number | undefined;
     lastBlockNumber: number;
     baseTokenAddress: string;
     quoteTokenAddress: string;
     poolPriceDisplay: string;
     poolPriceNonDisplay: number | undefined;
-    tokenABalance: string;
-    tokenBBalance: string;
+    baseTokenBalance: string;
+    quoteTokenBalance: string;
     tokenAAllowance: string;
     setRecheckTokenAApproval: Dispatch<SetStateAction<boolean>>;
     tokenBAllowance: string;
@@ -81,8 +81,8 @@ export default function Range(props: RangePropsIF) {
         quoteTokenAddress,
         poolPriceDisplay,
         poolPriceNonDisplay,
-        tokenABalance,
-        tokenBBalance,
+        baseTokenBalance,
+        quoteTokenBalance,
         tokenAAllowance,
         setRecheckTokenAApproval,
         tokenBAllowance,
@@ -764,6 +764,9 @@ export default function Range(props: RangePropsIF) {
         setTxErrorCode(0);
         setTxErrorMessage('');
     };
+
+    const tokenABalance = isTokenABase ? baseTokenBalance : quoteTokenBalance;
+    const tokenBBalance = isTokenABase ? quoteTokenBalance : baseTokenBalance;
 
     // props for <ConfirmRangeModal/> React element
     const rangeModalProps = {

@@ -132,6 +132,8 @@ export interface CandleData {
     maxPriceDecimalCorrected: number;
     priceOpenDecimalCorrected: number;
     priceCloseDecimalCorrected: number;
+    priceCloseExclMEVDecimalCorrected: number;
+    invPriceCloseExclMEVDecimalCorrected: number;
     invMinPriceDecimalCorrected: number;
     invMaxPriceDecimalCorrected: number;
     invPriceOpenDecimalCorrected: number;
@@ -170,24 +172,24 @@ export interface PositionsByPool {
     positions: Array<PositionIF>;
 }
 
-export interface position {
-    ambient: boolean;
-    askTick: number;
-    bidTick: number;
-    id: string;
-    accountId: string;
-    ensName: string;
-    pool: pool;
-    baseTokenSymbol: string;
-    baseTokenDecimals: number;
-    quoteTokenSymbol: string;
-    quoteTokenDecimals: number;
-    lowRangeDisplay: string;
-    highRangeDisplay: string;
-    tokenAQtyDisplay: string;
-    tokenBQtyDisplay: string;
-    poolPriceInTicks: number;
-}
+// export interface position {
+//     ambient: boolean;
+//     askTick: number;
+//     bidTick: number;
+//     id: string;
+//     accountId: string;
+//     ensName: string;
+//     pool: pool;
+//     baseTokenSymbol: string;
+//     baseTokenDecimals: number;
+//     quoteTokenSymbol: string;
+//     quoteTokenDecimals: number;
+//     lowRangeDisplay: string;
+//     highRangeDisplay: string;
+//     tokenAQtyDisplay: string;
+//     tokenBQtyDisplay: string;
+//     poolPriceInTicks: number;
+// }
 
 export interface pool {
     base: string;
@@ -227,6 +229,7 @@ export interface ISwap {
     priceDecimalCorrected: number;
     invPriceDecimalCorrected: number;
     valueUSD: number;
+    ensResolution: string;
 }
 
 export interface SwapsByUser {

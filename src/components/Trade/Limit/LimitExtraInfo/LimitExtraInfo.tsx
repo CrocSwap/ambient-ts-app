@@ -18,7 +18,7 @@ interface LimitExtraInfoPropsIF {
     slippageTolerance: number;
     liquidityProviderFee: number;
     quoteTokenIsBuy?: boolean;
-    gasPriceinGwei: string;
+    gasPriceinGwei: number | undefined;
     didUserFlipDenom: boolean;
     isTokenABase: boolean;
     isDenomBase: boolean;
@@ -116,7 +116,7 @@ export default function LimitExtraInfo(props: LimitExtraInfoPropsIF) {
     //           4,
     //       );
 
-    const truncatedGasInGwei = truncateDecimals(parseFloat(gasPriceinGwei), 2);
+    const truncatedGasInGwei = gasPriceinGwei ? truncateDecimals(gasPriceinGwei, 2) : undefined;
 
     const extraInfoData = [
         {
@@ -183,7 +183,8 @@ export default function LimitExtraInfo(props: LimitExtraInfoPropsIF) {
                 onClick={() => setShowExtraDetails(!showExtraDetails)}
             >
                 <div className={styles.gas_pump}>
-                    <FaGasPump size={15} /> {truncatedGasInGwei} gwei
+                    <FaGasPump size={15} />{' '}
+                    {truncatedGasInGwei ? `${truncatedGasInGwei} gwei` : '…'}
                 </div>
                 <div className={styles.token_amount}>
                     {isDenomBase

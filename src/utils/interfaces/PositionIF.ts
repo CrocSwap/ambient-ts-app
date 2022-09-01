@@ -10,11 +10,14 @@ export interface PositionIF {
     knockout: boolean;
     poolIdx: number;
     base: string;
+    baseDecimals: number;
+    quoteDecimals: number;
     baseTokenLogoURI: string;
     quoteTokenLogoURI: string;
     quote: string;
     user: string;
-    userEnsName: string;
+    ensResolution: string;
+    // userEnsName: string;
     baseSymbol: string;
     quoteSymbol: string;
     poolPriceInTicks: number;
@@ -36,5 +39,6 @@ export interface PositionIF {
     positionLiqQuote?: string;
     feesLiqBase?: string;
     feesLiqQuote?: string;
-    apyPercentage?: number;
+    apy: number;
+    // apyPercentage?: number;
 }

@@ -85,6 +85,8 @@ export default function Ranges(props: RangesPropsIF) {
         }
     ];
 
+    console.log(poolPositions);
+
     const [ sortBy, setSortBy ] = useState('default');
     const [ reverseSort, setReverseSort ] = useState(false);
     useEffect(() => {
@@ -95,16 +97,23 @@ export default function Ranges(props: RangesPropsIF) {
         [...unsortedData].sort((a, b) => a.user.localeCompare(b.user))
     );
 
+    const sortByApy = (unsortedData: PositionIF[]) => (
+        [...unsortedData].sort((a, b) => b.apy - a.apy)
+    );
+
     const sortData = (data: PositionIF[]) => {
         let sortedData: PositionIF[];
         switch (sortBy) {
             case 'wallet':
                 sortedData = sortByWallet(data);
                 break;
+            case 'apy':
+                sortedData = sortByApy(data);
+                break;
             default:
                 sortedData = data;
         }
-        return reverseSort ? sortedData.reverse(): sortedData;
+        return reverseSort ? sortedData.reverse() : sortedData;
     }
 
     // TODO: new user positions reset table sort, new pool positions retains sort
