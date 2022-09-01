@@ -62,11 +62,11 @@ export default function Ranges(props: RangesPropsIF) {
         },
         {
             name: 'Range Min',
-            sortable: true
+            sortable: false
         },
         {
             name: 'Range Max',
-            sortable: true
+            sortable: false
         },
         {
             name: tradeData.baseToken.symbol,
