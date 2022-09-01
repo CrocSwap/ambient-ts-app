@@ -1,16 +1,14 @@
-import Divider from '../Global/Divider/Divider';
-import RemoveRangeHeader from '../RemoveRange/RemoveRangeHeader/RemoveRangeHeader';
 import PriceInfo from './PriceInfo/PriceInfo';
 import styles from './RangeDetails.module.css';
-import TokenInfo from './TokenInfo/TokenInfo';
 import { ethers } from 'ethers';
 import { useEffect, useRef, useState } from 'react';
-import { BsDownload } from 'react-icons/bs';
 import printDomToImage from '../../utils/functions/printDomToImage';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { toDisplayQty } from '@crocswap-libs/sdk';
 import { formatAmount } from '../../utils/numbers';
 import { PositionIF } from '../../utils/interfaces/PositionIF';
+import APYGraphDisplay from './APYGraphDisplay/APYGraphDisplay';
+import RangeDetailsControl from './RangeDetailsControl/RangeDetailsControl';
 interface IRangeDetailsProps {
     provider: ethers.providers.Provider | undefined;
     position: PositionIF;
@@ -49,10 +47,11 @@ export default function RangeDetails(props: IRangeDetailsProps) {
         askTick,
         lastBlockNumber,
         position,
-        positionApy,
+        // positionApy,
     } = props;
 
     const detailsRef = useRef(null);
+    // eslint-disable-next-line
     const downloadAsImage = () => {
         if (detailsRef.current) {
             printDomToImage(detailsRef.current);
@@ -68,6 +67,10 @@ export default function RangeDetails(props: IRangeDetailsProps) {
 
     const [baseFeesDisplay, setBaseFeesDisplay] = useState<string | undefined>(undefined);
     const [quoteFeesDisplay, setQuoteFeesDisplay] = useState<string | undefined>(undefined);
+
+    // eslint-disable-next-line
+    const [positionApy, setPositionApy] = useState<number | undefined>();
+    // eslint-disable-next-line
     const [apy, setApy] = useState<number | undefined>(positionApy);
 
     useEffect(() => {
@@ -227,10 +230,38 @@ export default function RangeDetails(props: IRangeDetailsProps) {
         // })();
     }, [lastBlockNumber]);
 
+    const [controlItems, setControlItems] = useState([
+        { slug: 'times', name: 'Show times', checked: true },
+        { slug: 'collateral', name: 'Show collateral', checked: true },
+        { slug: 'value', name: 'Show value', checked: false },
+    ]);
+
+    const handleChange = (slug: string) => {
+        const copyControlItems = [...controlItems];
+        const modifiedControlItems = copyControlItems.map((item) => {
+            if (slug === item.slug) {
+                item.checked = !item.checked;
+            }
+
+            return item;
+        });
+
+        setControlItems(modifiedControlItems);
+    };
+
+    const controlDisplay = (
+        <div className={styles.control_display_container}>
+            {controlItems.map((item, idx) => (
+                <RangeDetailsControl key={idx} item={item} handleChange={handleChange} />
+            ))}
+        </div>
+    );
+
     return (
         <div className={styles.range_details_container}>
+            {controlDisplay}
             <div ref={detailsRef}>
-                <RemoveRangeHeader
+                {/* <RemoveRangeHeader
                     isPositionInRange={props.isPositionInRange}
                     isAmbient={props.isAmbient}
                     baseTokenSymbol={props.baseTokenSymbol}
@@ -238,9 +269,28 @@ export default function RangeDetails(props: IRangeDetailsProps) {
                     baseTokenLogoURI={props.baseTokenLogoURI}
                     quoteTokenLogoURI={props.quoteTokenLogoURI}
                     isDenomBase={props.isDenomBase}
-                />
+                /> */}
                 <div className={styles.main_content}>
-                    <TokenInfo
+                    <div className={styles.left_container}>
+                        <PriceInfo
+                            lowRangeDisplay={lowRangeDisplay}
+                            highRangeDisplay={highRangeDisplay}
+                            baseLiquidityDisplay={baseLiquidityDisplay || '0.00'}
+                            quoteLiquidityDisplay={quoteLiquidityDisplay || '0.00'}
+                            baseFeesDisplay={baseFeesDisplay || '0.00'}
+                            quoteFeesDisplay={quoteFeesDisplay || '0.00'}
+                            baseTokenLogoURI={baseTokenLogoURI}
+                            quoteTokenLogoURI={quoteTokenLogoURI}
+                            baseTokenSymbol={props.baseTokenSymbol}
+                            quoteTokenSymbol={props.quoteTokenSymbol}
+                            isDenomBase={props.isDenomBase}
+                            controlItems={controlItems}
+                        />
+                    </div>
+                    <div className={styles.right_container}>
+                        <APYGraphDisplay />
+                    </div>
+                    {/* <TokenInfo
                         provider={props.provider}
                         chainId={chainId}
                         baseTokenAddress={props.baseTokenAddress}
@@ -250,25 +300,13 @@ export default function RangeDetails(props: IRangeDetailsProps) {
                         lastBlockNumber={props.lastBlockNumber}
                         isDenomBase={props.isDenomBase}
                         positionApy={apy}
-                    />
-                    <Divider />
+                    /> */}
                 </div>
-                <PriceInfo
-                    lowRangeDisplay={lowRangeDisplay}
-                    highRangeDisplay={highRangeDisplay}
-                    baseLiquidityDisplay={baseLiquidityDisplay || '0.00'}
-                    quoteLiquidityDisplay={quoteLiquidityDisplay || '0.00'}
-                    baseFeesDisplay={baseFeesDisplay || '0.00'}
-                    quoteFeesDisplay={quoteFeesDisplay || '0.00'}
-                    baseTokenLogoURI={baseTokenLogoURI}
-                    quoteTokenLogoURI={quoteTokenLogoURI}
-                    baseTokenSymbol={props.baseTokenSymbol}
-                    quoteTokenSymbol={props.quoteTokenSymbol}
-                />
             </div>
-            <div onClick={downloadAsImage} className={styles.share_container}>
+
+            {/* <div onClick={downloadAsImage} className={styles.share_container}>
                 <BsDownload size={15} />
-            </div>
+            </div> */}
         </div>
     );
 }
