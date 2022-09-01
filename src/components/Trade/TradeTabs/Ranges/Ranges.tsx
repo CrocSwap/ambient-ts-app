@@ -10,7 +10,7 @@ import RangeCardHeader from './RangeCardHeader';
 import styles from './Ranges.module.css';
 import { graphData } from '../../../../utils/state/graphDataSlice';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
-import { PositionIF } from '../../../../utils/interfaces/PositionIF';
+import { useSortedPositions } from './useSortedPositions';
 
 // interface for props
 interface RangesPropsIF {
@@ -46,9 +46,6 @@ export default function Ranges(props: RangesPropsIF) {
     } = props;
 
     const tradeData = useAppSelector((state) => state.tradeData);
-
-    const userPositions = graphData?.positionsByUser?.positions;
-    const poolPositions = graphData?.positionsByPool?.positions;
 
     const columnHeaders = [
         {
@@ -89,50 +86,17 @@ export default function Ranges(props: RangesPropsIF) {
         }
     ];
 
-    function reverseArray(inputArray: PositionIF[]) {
-        const outputArray: PositionIF[] = [];
-        inputArray.forEach((elem) => outputArray.unshift(elem));
-        return outputArray;
-    }
-
-    const [ sortBy, setSortBy ] = useState('default');
-    const [ reverseSort, setReverseSort ] = useState(false);
-
-    const sortByWallet = (unsortedData: PositionIF[]) => (
-        [...unsortedData].sort((a, b) => a.user.localeCompare(b.user))
-    );
-
-    const sortByApy = (unsortedData: PositionIF[]) => (
-        [...unsortedData].sort((a, b) => b.apy - a.apy)
-    );
-
-    const sortData = (data: PositionIF[]) => {
-        let sortedData: PositionIF[];
-        switch (sortBy) {
-            case 'wallet':
-                sortedData = sortByWallet(data);
-                break;
-            case 'apy':
-                sortedData = sortByApy(data);
-                break;
-            default:
-                sortedData = data;
-        }
-        return reverseSort ? reverseArray(sortedData) : sortedData;
-    }
-
-    // TODO: new user positions reset table sort, new pool positions retains sort
-
-    const sortedPositions = useMemo(() => {
-        const positions = isShowAllEnabled ? poolPositions : userPositions;
-        return sortData(positions);
-    }, [
+    const [
         sortBy,
+        setSortBy,
         reverseSort,
+        setReverseSort,
+        sortedPositions
+    ] = useSortedPositions(
         isShowAllEnabled,
-        poolPositions,
-        userPositions
-    ]);
+        graphData?.positionsByUser?.positions,
+        graphData?.positionsByPool?.positions
+    );
 
     const RangesDisplay = sortedPositions.map((position, idx) => (
         <RangeCard
