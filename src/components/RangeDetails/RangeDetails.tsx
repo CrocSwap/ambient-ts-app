@@ -219,6 +219,12 @@ export default function RangeDetails(props: IRangeDetailsProps) {
         })();
     }, [lastBlockNumber]);
 
+    const [controlItems, setControlItems] = useState([
+        { slug: 'times', name: 'Show times', checked: false },
+        { slug: 'collateral', name: 'Show collateral', checked: false },
+        { slug: 'value', name: 'Show value', checked: false },
+    ]);
+
     return (
         <div className={styles.range_details_container}>
             <div ref={detailsRef}>
