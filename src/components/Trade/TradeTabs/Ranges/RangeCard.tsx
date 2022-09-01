@@ -154,7 +154,7 @@ export default function RangeCard(props: RangeCardProps) {
 
     if (!positionMatchesSelectedTokens) return null;
     return (
-        <div
+        <li
             className={`${styles.main_container} ${activePositionStyle}`}
             onClick={() =>
                 position.positionStorageSlot === currentPositionActive
@@ -200,6 +200,6 @@ export default function RangeCard(props: RangeCardProps) {
                     positionData={position}
                 />
             </div>
-        </div>
+        </li>
     );
 }
