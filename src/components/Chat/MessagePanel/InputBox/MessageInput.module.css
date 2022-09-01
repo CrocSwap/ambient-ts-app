@@ -5,38 +5,40 @@
     align-items: center;
     padding: 0px 8px;
     gap: 4px;
-    width: 100%;
+    width: 97%;
     height: 25px;
-    
+
     /* dark/tertiary */
-    
+
     background: #242F3F;
     border-radius: 4px;
-    
+
     /* Inside auto layout */
-    
+
     flex: none;
     order: 3;
     align-self: stretch;
     flex-grow: 0;
+    position: absolute;
+    bottom: 0;
 
 }
 
 .input_text:focus {
     outline: none;
-  }
+}
 
 .input_text {
 
     width: 212px;
     height: 22px;
 
-/* small */
+    /* small */
 
     font-family: 'Lexend Deca';
     font-style: normal;
     font-weight: 300;
-    font-size: 12px;
+    font-size: calc(1vw - 1px);
     line-height: 15px;
     display: flex;
     align-items: center;
