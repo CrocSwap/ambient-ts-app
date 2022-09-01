@@ -121,9 +121,9 @@ export default function RangeCard(props: RangeCardProps) {
         bidTick: position.bidTick,
         askTick: position.askTick,
         baseTokenSymbol: position.baseSymbol,
-        baseTokenDecimals: position.baseTokenDecimals,
+        baseTokenDecimals: position.baseDecimals,
         quoteTokenSymbol: position.quoteSymbol,
-        quoteTokenDecimals: position.quoteTokenDecimals,
+        quoteTokenDecimals: position.quoteDecimals,
         lowRangeDisplay: ambientMinOrNull,
         highRangeDisplay: ambientMaxOrNull,
         baseTokenLogoURI: position.baseTokenLogoURI,
@@ -159,9 +159,9 @@ export default function RangeCard(props: RangeCardProps) {
     const [positionApy, setPositionApy] = useState<number | undefined>();
 
     useEffect(() => {
-        if (position.positionLiqBase && position.baseTokenDecimals) {
+        if (position.positionLiqBase && position.baseDecimals) {
             const baseLiqDisplayNum = parseFloat(
-                toDisplayQty(position.positionLiqBase, position.baseTokenDecimals),
+                toDisplayQty(position.positionLiqBase, position.baseDecimals),
             );
             const baseLiqDisplayTruncated =
                 baseLiqDisplayNum === 0
@@ -270,7 +270,7 @@ export default function RangeCard(props: RangeCardProps) {
                 <WalletAndId
                     ownerId={position.user}
                     posHash={posHash as string}
-                    ensName={position.userEnsName ? position.userEnsName : null}
+                    ensName={position.ensResolution ? position.ensResolution : null}
                     isOwnerActiveAccount={userMatchesConnectedAccount}
                 />
 

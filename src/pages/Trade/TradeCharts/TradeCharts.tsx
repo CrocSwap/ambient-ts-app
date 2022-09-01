@@ -497,7 +497,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                 </span>
             </div>
             <div className={styles.right_side}>
-                <span>Timeframe</span>
+                {/* <span>Timeframe</span> */}
                 {activeTimeFrameDisplay}
             </div>
         </div>

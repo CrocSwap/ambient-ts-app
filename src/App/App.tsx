@@ -75,7 +75,7 @@ import { memoizeQuerySpotPrice, querySpotPrice } from './functions/querySpotPric
 import { memoizeFetchAddress } from './functions/fetchAddress';
 import { memoizeTokenBalance } from './functions/fetchTokenBalances';
 import { getNFTs } from './functions/getNFTs';
-import { memoizeTokenDecimals } from './functions/queryTokenDecimals';
+// import { memoizeTokenDecimals } from './functions/queryTokenDecimals';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { useSlippage } from './useSlippage';
 import { useFavePools } from './hooks/useFavePools';
@@ -96,7 +96,7 @@ import Chat from './components/Chat/Chat';
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 const cachedFetchAddress = memoizeFetchAddress();
 const cachedFetchTokenBalances = memoizeTokenBalance();
-const cachedGetTokenDecimals = memoizeTokenDecimals();
+// const cachedGetTokenDecimals = memoizeTokenDecimals();
 
 const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
 const wssGraphCacheServerDomain = 'wss://809821320828123.de:5000';
@@ -654,6 +654,7 @@ export default function App() {
                                     poolIdx: chainData.poolIndex.toString(),
                                     chainId: chainData.chainId,
                                     tokenQuantities: 'true',
+                                    ensResolution: 'true',
                                 }),
                         )
                             .then((response) => response.json())
@@ -700,6 +701,7 @@ export default function App() {
                                     poolIdx: chainData.poolIndex.toString(),
                                     chainId: chainData.chainId,
                                     addValue: 'true',
+                                    ensResolution: 'true',
                                     // n: 10 // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
                                     // page: 0 // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
                                 }),
@@ -831,6 +833,7 @@ export default function App() {
                 // quoteTokenAddress.toLowerCase() || '0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa',
                 poolIdx: chainData.poolIndex.toString(),
                 chainId: chainData.chainId,
+                ensResolution: 'true',
             }),
         [baseTokenAddress, quoteTokenAddress, chainData.chainId],
     );
@@ -929,6 +932,7 @@ export default function App() {
                 poolIdx: chainData.poolIndex.toString(),
                 chainId: chainData.chainId,
                 addValue: 'true',
+                ensResolution: 'true',
             }),
         [baseTokenAddress, quoteTokenAddress, chainData.chainId],
     );
@@ -1012,6 +1016,7 @@ export default function App() {
                 user: account || '',
                 chainId: chainData.chainId,
                 addValue: 'true',
+                ensResolution: 'true',
             }),
         [account, chainData.chainId],
     );
@@ -1040,11 +1045,13 @@ export default function App() {
         }
     }, [lastUserSwapsMessage]);
 
-    const [tokenABalance, setTokenABalance] = useState<string>('');
-    const [tokenBBalance, setTokenBBalance] = useState<string>('');
+    const [baseTokenBalance, setBaseTokenBalance] = useState<string>('');
+    const [quoteTokenBalance, setQuoteTokenBalance] = useState<string>('');
     const [poolPriceNonDisplay, setPoolPriceNonDisplay] = useState<number | undefined>(undefined);
     const [poolPriceDisplay, setPoolPriceDisplay] = useState<number | undefined>(undefined);
 
+    // console.log({ baseTokenBalance });
+    // console.log({ quoteTokenBalance });
     // useEffect to get spot price when tokens change and block updates
     useEffect(() => {
         if (
@@ -1102,14 +1109,14 @@ export default function App() {
                 tokenPair?.dataTokenB?.address
             ) {
                 const croc = new CrocEnv(provider);
-                croc.token(tokenPair.dataTokenA.address)
+                croc.token(tradeData.baseToken.address)
                     .walletDisplay(account)
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    .then((bal: any) => setTokenABalance(bal));
-                croc.token(tokenPair.dataTokenB.address)
+                    .then((bal: any) => setBaseTokenBalance(bal));
+                croc.token(tradeData.quoteToken.address)
                     .walletDisplay(account)
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    .then((bal: any) => setTokenBBalance(bal));
+                    .then((bal: any) => setQuoteTokenBalance(bal));
             }
         })();
     }, [
@@ -1190,16 +1197,16 @@ export default function App() {
         // swap.user = swap.user.startsWith('0x') ? swap.user : '0x' + swap.user;
         // swap.id = '0x' + swap.id.slice(6);
 
-        const viewProvider = provider
-            ? provider
-            : (await new CrocEnv(chainData.chainId).context).provider;
+        // const viewProvider = provider
+        //     ? provider
+        //     : (await new CrocEnv(chainData.chainId).context).provider;
 
-        try {
-            const ensName = await cachedFetchAddress(viewProvider, swap.user, chainData.chainId);
-            if (ensName) swap.userEnsName = ensName;
-        } catch (error) {
-            console.warn(error);
-        }
+        // try {
+        //     const ensName = await cachedFetchAddress(viewProvider, swap.user, chainData.chainId);
+        //     if (ensName) swap.userEnsName = ensName;
+        // } catch (error) {
+        //     console.warn(error);
+        // }
 
         return swap;
     };
@@ -1228,16 +1235,16 @@ export default function App() {
             lastBlockNumber,
         );
 
-        try {
-            const ensName = await cachedFetchAddress(
-                viewProvider,
-                position.user,
-                chainData.chainId,
-            );
-            if (ensName) position.userEnsName = ensName;
-        } catch (error) {
-            console.warn(error);
-        }
+        // try {
+        //     const ensName = await cachedFetchAddress(
+        //         viewProvider,
+        //         position.user,
+        //         chainData.chainId,
+        //     );
+        //     if (ensName) position.userEnsName = ensName;
+        // } catch (error) {
+        //     console.warn(error);
+        // }
 
         const poolPriceInTicks = Math.log(poolPriceNonDisplay) / Math.log(1.0001);
         position.poolPriceInTicks = poolPriceInTicks;
@@ -1248,19 +1255,22 @@ export default function App() {
 
         position.isPositionInRange = isPositionInRange;
 
-        const baseTokenDecimals = await cachedGetTokenDecimals(
-            viewProvider,
-            baseTokenAddress,
-            chainData.chainId,
-        );
-        const quoteTokenDecimals = await cachedGetTokenDecimals(
-            viewProvider,
-            quoteTokenAddress,
-            chainData.chainId,
-        );
+        // const baseTokenDecimals = await cachedGetTokenDecimals(
+        //     viewProvider,
+        //     baseTokenAddress,
+        //     chainData.chainId,
+        // );
+        // const quoteTokenDecimals = await cachedGetTokenDecimals(
+        //     viewProvider,
+        //     quoteTokenAddress,
+        //     chainData.chainId,
+        // );
 
-        if (baseTokenDecimals) position.baseTokenDecimals = baseTokenDecimals;
-        if (quoteTokenDecimals) position.quoteTokenDecimals = quoteTokenDecimals;
+        // if (baseTokenDecimals) position.baseTokenDecimals = baseTokenDecimals;
+        // if (quoteTokenDecimals) position.quoteTokenDecimals = quoteTokenDecimals;
+
+        const baseTokenDecimals = position.baseDecimals;
+        const quoteTokenDecimals = position.quoteDecimals;
 
         const lowerPriceNonDisplay = tickToPrice(position.bidTick);
         const upperPriceNonDisplay = tickToPrice(position.askTick);
@@ -1401,6 +1411,7 @@ export default function App() {
                             user: account,
                             chainId: chainData.chainId,
                             tokenQuantities: 'true',
+                            ensResolution: 'true',
                         }),
                 )
                     .then((response) => response?.json())
@@ -1439,6 +1450,7 @@ export default function App() {
                             user: account,
                             chainId: chainData.chainId,
                             addValue: 'true',
+                            ensResolution: 'true',
                         }),
                 )
                     .then((response) => response?.json())
@@ -1499,8 +1511,8 @@ export default function App() {
     // function to sever connection between user wallet and Moralis server
     const clickLogout = async () => {
         setNativeBalance('');
-        setTokenABalance('0');
-        setTokenBBalance('0');
+        setBaseTokenBalance('0');
+        setQuoteTokenBalance('0');
         dispatch(resetTradeData());
         dispatch(resetTokenData());
         dispatch(resetGraphData());
@@ -1542,7 +1554,7 @@ export default function App() {
         })();
     }, [provider, account, isWeb3Enabled, isAuthenticated, lastBlockNumber]);
 
-    const [gasPriceinGwei, setGasPriceinGwei] = useState<string>('');
+    const [gasPriceinGwei, setGasPriceinGwei] = useState<number | undefined>();
 
     useEffect(() => {
         fetch(
@@ -1551,7 +1563,7 @@ export default function App() {
             .then((response) => response.json())
             .then((response) => {
                 if (response.result.ProposeGasPrice) {
-                    setGasPriceinGwei(response.result.ProposeGasPrice);
+                    setGasPriceinGwei(parseInt(response.result.ProposeGasPrice));
                 }
             })
             .catch(console.log);
@@ -1586,8 +1598,8 @@ export default function App() {
         gasPriceinGwei: gasPriceinGwei,
         nativeBalance: nativeBalance,
         lastBlockNumber: lastBlockNumber,
-        tokenABalance: tokenABalance,
-        tokenBBalance: tokenBBalance,
+        baseTokenBalance: baseTokenBalance,
+        quoteTokenBalance: quoteTokenBalance,
         isSellTokenBase: isTokenABase,
         tokenPair: tokenPair,
         poolPriceDisplay: poolPriceDisplay,
@@ -1611,8 +1623,8 @@ export default function App() {
         gasPriceinGwei: gasPriceinGwei,
         nativeBalance: nativeBalance,
         lastBlockNumber: lastBlockNumber,
-        tokenABalance: tokenABalance,
-        tokenBBalance: tokenBBalance,
+        baseTokenBalance: baseTokenBalance,
+        quoteTokenBalance: quoteTokenBalance,
         isSellTokenBase: isTokenABase,
         tokenPair: tokenPair,
         poolPriceDisplay: poolPriceDisplay,
@@ -1636,8 +1648,8 @@ export default function App() {
         gasPriceinGwei: gasPriceinGwei,
         nativeBalance: nativeBalance,
         lastBlockNumber: lastBlockNumber,
-        tokenABalance: tokenABalance,
-        tokenBBalance: tokenBBalance,
+        baseTokenBalance: baseTokenBalance,
+        quoteTokenBalance: quoteTokenBalance,
         isSellTokenBase: isTokenABase,
         tokenPair: tokenPair,
         isTokenABase: isTokenABase,
@@ -1667,10 +1679,10 @@ export default function App() {
         quoteTokenAddress: quoteTokenAddress,
         poolPriceNonDisplay: poolPriceNonDisplay,
         poolPriceDisplay: poolPriceDisplay ? poolPriceDisplay.toString() : '0',
-        tokenABalance: tokenABalance,
+        baseTokenBalance: baseTokenBalance,
         tokenAAllowance: tokenAAllowance,
         setRecheckTokenAApproval: setRecheckTokenAApproval,
-        tokenBBalance: tokenBBalance,
+        quoteTokenBalance: quoteTokenBalance,
         tokenBAllowance: tokenBAllowance,
         setRecheckTokenBApproval: setRecheckTokenBApproval,
         chainId: chainData.chainId,

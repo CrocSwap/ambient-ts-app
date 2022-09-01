@@ -202,7 +202,7 @@ export default function TransactionCard(props: TransactionProps) {
                 <WalletAndId
                     ownerId={ownerId}
                     posHash={txHash}
-                    ensName={swap.userEnsName ? swap.userEnsName : null}
+                    ensName={swap.ensResolution ? swap.ensResolution : null}
                     isOwnerActiveAccount={isOwnerActiveAccount}
                 />
 
