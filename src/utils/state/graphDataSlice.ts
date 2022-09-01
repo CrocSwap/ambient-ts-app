@@ -172,25 +172,6 @@ export interface PositionsByPool {
     positions: Array<PositionIF>;
 }
 
-// export interface position {
-//     ambient: boolean;
-//     askTick: number;
-//     bidTick: number;
-//     id: string;
-//     accountId: string;
-//     ensName: string;
-//     pool: pool;
-//     baseTokenSymbol: string;
-//     baseTokenDecimals: number;
-//     quoteTokenSymbol: string;
-//     quoteTokenDecimals: number;
-//     lowRangeDisplay: string;
-//     highRangeDisplay: string;
-//     tokenAQtyDisplay: string;
-//     tokenBQtyDisplay: string;
-//     poolPriceInTicks: number;
-// }
-
 export interface pool {
     base: string;
     id: string;

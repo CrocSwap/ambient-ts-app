@@ -143,7 +143,7 @@ export default function PriceInfo(props: IPriceInfoProps) {
             </div>
         </div>
     );
-    console.log(controlItems);
+    // console.log(controlItems);
 
     return (
         <div className={styles.main_container}>
