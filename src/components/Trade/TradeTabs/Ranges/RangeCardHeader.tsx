@@ -23,12 +23,13 @@ export default function RangeCardHeader(props: RangeCardHeaderPropsIF) {
     } = props;
 
     function handleClick(name: string) {
-        console.clear();
-        if (!data.sortable) {
+        const resetSearch = () => {
             setSortBy('default');
-            setReverseSort(false);
-        } else
-        if (sortBy !== name) {
+            setReverseSort(true);
+        }
+        if (!data.sortable) {
+            resetSearch();
+        } else if (sortBy !== name) {
             console.log('first click');
             setSortBy(name);
             setReverseSort(false);
@@ -36,13 +37,10 @@ export default function RangeCardHeader(props: RangeCardHeaderPropsIF) {
             console.log('second click');
             setReverseSort(true);
         } else if ((sortBy === name) && reverseSort) {
-            console.log('third click');
-            setSortBy('default');
-            setReverseSort(false);
+            resetSearch();
         } else {
             console.warn('Problem in click handler control flow. Refer to RangeCardHeader.tsx for troubleshooting. Resetting sort parameters to default as fallback action.');
-            setSortBy('default');
-            setReverseSort(false);
+            resetSearch();
         }
     }
 
