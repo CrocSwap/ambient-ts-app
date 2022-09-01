@@ -42,6 +42,8 @@ export interface PositionIF {
     positionLiqQuoteDecimalCorrected?: number;
     positionLiqQuote?: string;
     feesLiqBase?: string;
+    feesLiqBaseDecimalCorrected?: number;
+    feesLiqQuoteDecimalCorrected?: number;
     feesLiqQuote?: string;
     apy: number;
     // apyPercentage?: number;

@@ -50,7 +50,7 @@ export default function PriceInfo(props: IPriceInfoProps) {
             <Row>
                 <span>Pooled {baseTokenSymbol}</span>
                 <div className={styles.info_text}>
-                    {baseLiquidityDisplay}
+                    {baseLiquidityDisplay || '…'}
                     <img src={baseTokenLogoURI} alt='' />
                 </div>
             </Row>
@@ -58,7 +58,7 @@ export default function PriceInfo(props: IPriceInfoProps) {
             <Row>
                 <span>Pooled {quoteTokenSymbol}</span>
                 <div className={styles.info_text}>
-                    {quoteLiquidityDisplay}
+                    {quoteLiquidityDisplay || '…'}
                     <img src={quoteTokenLogoURI} alt='' />
                 </div>
             </Row>
@@ -68,7 +68,7 @@ export default function PriceInfo(props: IPriceInfoProps) {
             <Row>
                 <span> Earned {baseTokenSymbol}</span>
                 <div className={styles.info_text}>
-                    {baseFeesDisplay}
+                    {baseFeesDisplay || '…'}
                     <img src={baseTokenLogoURI} alt='' />
                 </div>
             </Row>
@@ -76,7 +76,7 @@ export default function PriceInfo(props: IPriceInfoProps) {
             <Row>
                 <span>Earned {quoteTokenSymbol} </span>
                 <div className={styles.info_text}>
-                    {quoteFeesDisplay}
+                    {quoteFeesDisplay || '…'}
                     <img src={quoteTokenLogoURI} alt='' />
                 </div>
             </Row>
