@@ -156,7 +156,7 @@ export default function RangeCard(props: RangeCardProps) {
         position.positionStorageSlot === currentPositionActive ? scrollToDiv() : null;
     }, [currentPositionActive]);
 
-    const [positionApy, setPositionApy] = useState<number | undefined>();
+    // const [positionApy, setPositionApy] = useState<number | undefined>();
 
     useEffect(() => {
         if (position.positionLiqBase && position.baseDecimals) {
@@ -204,48 +204,48 @@ export default function RangeCard(props: RangeCardProps) {
             setQuoteLiquidityDisplay(undefined);
         }
 
-        (async () => {
-            const positionApyCacheEndpoint = 'https://809821320828123.de:5000' + '/position_apy?';
+        // (async () => {
+        //     const positionApyCacheEndpoint = 'https://809821320828123.de:5000' + '/position_apy?';
 
-            const positionApy =
-                position.positionType === 'ambient'
-                    ? await fetch(
-                          positionApyCacheEndpoint +
-                              new URLSearchParams({
-                                  chainId: position.chainId,
-                                  user: position.user,
-                                  base: position.base,
-                                  quote: position.quote,
-                                  poolIdx: position.poolIdx.toString(),
-                                  concise: 'true',
-                              }),
-                      )
-                          .then((response) => response?.json())
-                          .then((json) => {
-                              const apy = json?.data?.results?.apy;
-                              return apy;
-                          })
-                    : await fetch(
-                          positionApyCacheEndpoint +
-                              new URLSearchParams({
-                                  chainId: position.chainId,
-                                  user: position.user,
-                                  base: position.base,
-                                  quote: position.quote,
-                                  bidTick: position.bidTick.toString(),
-                                  askTick: position.askTick.toString(),
-                                  poolIdx: position.poolIdx.toString(),
-                                  concise: 'true',
-                              }),
-                      )
-                          .then((response) => response?.json())
-                          .then((json) => {
-                              const apy = json?.data?.results?.apy;
-                              return apy;
-                          });
+        //     const positionApy =
+        //         position.positionType === 'ambient'
+        //             ? await fetch(
+        //                   positionApyCacheEndpoint +
+        //                       new URLSearchParams({
+        //                           chainId: position.chainId,
+        //                           user: position.user,
+        //                           base: position.base,
+        //                           quote: position.quote,
+        //                           poolIdx: position.poolIdx.toString(),
+        //                           concise: 'true',
+        //                       }),
+        //               )
+        //                   .then((response) => response?.json())
+        //                   .then((json) => {
+        //                       const apy = json?.data?.results?.apy;
+        //                       return apy;
+        //                   })
+        //             : await fetch(
+        //                   positionApyCacheEndpoint +
+        //                       new URLSearchParams({
+        //                           chainId: position.chainId,
+        //                           user: position.user,
+        //                           base: position.base,
+        //                           quote: position.quote,
+        //                           bidTick: position.bidTick.toString(),
+        //                           askTick: position.askTick.toString(),
+        //                           poolIdx: position.poolIdx.toString(),
+        //                           concise: 'true',
+        //                       }),
+        //               )
+        //                   .then((response) => response?.json())
+        //                   .then((json) => {
+        //                       const apy = json?.data?.results?.apy;
+        //                       return apy;
+        //                   });
 
-            setPositionApy(positionApy);
-        })();
+        //     setPositionApy(positionApy);
+        // })();
     }, [JSON.stringify(position)]);
 
     // ------------------------------END OF REMOVE RANGE PROPS-----------------
@@ -285,7 +285,7 @@ export default function RangeCard(props: RangeCardProps) {
                     quoteTokenSymbol={position.quoteSymbol}
                 />
                 {/* ------------------------------------------------------ */}
-                <Apy amount={positionApy ?? 0} />
+                <Apy amount={position.apy ?? 0} />
                 {/* ------------------------------------------------------ */}
                 <RangeStatus
                     isInRange={isPositionInRange}
