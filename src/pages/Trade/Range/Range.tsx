@@ -772,6 +772,7 @@ export default function Range(props: RangePropsIF) {
     const rangeModalProps = {
         tokenPair: tokenPair,
         spotPriceDisplay: displayPriceString,
+        poolPriceDisplayNum: poolPriceDisplayNum,
         denominationsInBase: denominationsInBase,
         isTokenABase: isTokenABase,
         isAmbient: isAmbient,

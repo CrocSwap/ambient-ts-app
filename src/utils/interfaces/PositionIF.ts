@@ -36,9 +36,16 @@ export interface PositionIF {
     quoteTokenDecimals: number;
     positionType?: string;
     positionLiqBase?: string;
+    positionLiqBaseDecimalCorrected?: number;
+    positionLiqBaseTruncated?: string;
+    positionLiqQuoteTruncated?: string;
+    positionLiqQuoteDecimalCorrected?: number;
     positionLiqQuote?: string;
     feesLiqBase?: string;
+    feesLiqBaseDecimalCorrected?: number;
+    feesLiqQuoteDecimalCorrected?: number;
     feesLiqQuote?: string;
     apy: number;
-    // apyPercentage?: number;
+    time: number;
+    latestUpdateTime: number;
 }

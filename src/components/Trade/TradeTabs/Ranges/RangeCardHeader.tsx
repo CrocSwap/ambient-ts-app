@@ -14,19 +14,13 @@ interface RangeCardHeaderPropsIF {
 }
 
 export default function RangeCardHeader(props: RangeCardHeaderPropsIF) {
-    const {
-        data,
-        sortBy,
-        setSortBy,
-        reverseSort,
-        setReverseSort
-    } = props;
+    const { data, sortBy, setSortBy, reverseSort, setReverseSort } = props;
 
     function handleClick(name: string) {
         const resetSearch = () => {
             setSortBy('default');
             setReverseSort(true);
-        }
+        };
         if (!data.sortable) {
             resetSearch();
         } else if (sortBy !== name) {
@@ -36,10 +30,12 @@ export default function RangeCardHeader(props: RangeCardHeaderPropsIF) {
         } else if (!reverseSort) {
             console.log('second click');
             setReverseSort(true);
-        } else if ((sortBy === name) && reverseSort) {
+        } else if (sortBy === name && reverseSort) {
             resetSearch();
         } else {
-            console.warn('Problem in click handler control flow. Refer to RangeCardHeader.tsx for troubleshooting. Resetting sort parameters to default as fallback action.');
+            console.warn(
+                'Problem in click handler control flow. Refer to RangeCardHeader.tsx for troubleshooting. Resetting sort parameters to default as fallback action.',
+            );
             resetSearch();
         }
     }

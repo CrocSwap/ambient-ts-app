@@ -5,11 +5,11 @@ import RangeStatus from '../../../Global/RangeStatus/RangeStatus';
 import RangeMinMax from '../../../Global/Tabs/RangeMinMax/RangeMinMax';
 import Apy from '../../../Global/Tabs/Apy/Apy';
 import { PositionIF } from '../../../../utils/interfaces/PositionIF';
-import { ambientPosSlot, concPosSlot, toDisplayQty } from '@crocswap-libs/sdk';
+import { ambientPosSlot, concPosSlot } from '@crocswap-libs/sdk';
 import RangesMenu from '../../../Global/Tabs/TableMenu/TableMenuComponents/RangesMenu';
 import { ethers } from 'ethers';
-import { useEffect, useState, Dispatch, SetStateAction } from 'react';
-import { formatAmount } from '../../../../utils/numbers';
+import { useEffect, Dispatch, SetStateAction } from 'react';
+// import { formatAmount } from '../../../../utils/numbers';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 
 interface RangeCardProps {
@@ -135,13 +135,6 @@ export default function RangeCard(props: RangeCardProps) {
         positionApy: position.apy,
     };
 
-    const [baseLiquidityDisplay, setBaseLiquidityDisplay] = useState<string | undefined>(undefined);
-    const [quoteLiquidityDisplay, setQuoteLiquidityDisplay] = useState<string | undefined>(
-        undefined,
-    );
-    // console.log(currentPositionActive);
-    // console.log(position.positionStorageSlot);
-
     const positionDomId =
         position.positionStorageSlot === currentPositionActive
             ? `position-${position.positionStorageSlot}`
@@ -149,64 +142,12 @@ export default function RangeCard(props: RangeCardProps) {
 
     function scrollToDiv() {
         const element = document.getElementById(positionDomId);
-
         element?.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
     }
 
     useEffect(() => {
         position.positionStorageSlot === currentPositionActive ? scrollToDiv() : null;
     }, [currentPositionActive]);
-
-    // const [positionApy, setPositionApy] = useState<number | undefined>();
-
-    useEffect(() => {
-        if (position.positionLiqBase && position.baseDecimals) {
-            const baseLiqDisplayNum = parseFloat(
-                toDisplayQty(position.positionLiqBase, position.baseDecimals),
-            );
-            const baseLiqDisplayTruncated =
-                baseLiqDisplayNum === 0
-                    ? '0'
-                    : baseLiqDisplayNum < 0.0001
-                    ? baseLiqDisplayNum.toExponential(2)
-                    : baseLiqDisplayNum < 2
-                    ? baseLiqDisplayNum.toPrecision(3)
-                    : baseLiqDisplayNum >= 100000
-                    ? formatAmount(baseLiqDisplayNum)
-                    : // ? baseLiqDisplayNum.toExponential(2)
-                      baseLiqDisplayNum.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                      });
-            setBaseLiquidityDisplay(baseLiqDisplayTruncated);
-        } else {
-            setBaseLiquidityDisplay(undefined);
-        }
-        if (position.positionLiqQuote && position.quoteTokenDecimals) {
-            const quoteLiqDisplayNum = parseFloat(
-                toDisplayQty(position.positionLiqQuote, position.quoteTokenDecimals),
-            );
-            const quoteLiqDisplayTruncated =
-                quoteLiqDisplayNum === 0
-                    ? '0'
-                    : quoteLiqDisplayNum < 0.0001
-                    ? quoteLiqDisplayNum.toExponential(2)
-                    : quoteLiqDisplayNum < 2
-                    ? quoteLiqDisplayNum.toPrecision(3)
-                    : quoteLiqDisplayNum >= 100000
-                    ? formatAmount(quoteLiqDisplayNum)
-                    : // ? quoteLiqDisplayNum.toExponential(2)
-                      quoteLiqDisplayNum.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                      });
-            setQuoteLiquidityDisplay(quoteLiqDisplayTruncated);
-        } else {
-            setQuoteLiquidityDisplay(undefined);
-        }
-    }, [JSON.stringify(position)]);
-
-    // ------------------------------END OF REMOVE RANGE PROPS-----------------
 
     const activePositionStyle =
         position.positionStorageSlot === currentPositionActive ? styles.active_position_style : '';
@@ -237,8 +178,8 @@ export default function RangeCard(props: RangeCardProps) {
                 {/* ------------------------------------------------------ */}
 
                 <TokenQty
-                    baseQty={baseLiquidityDisplay}
-                    quoteQty={quoteLiquidityDisplay}
+                    baseQty={position.positionLiqBaseTruncated}
+                    quoteQty={position.positionLiqQuoteTruncated}
                     baseTokenSymbol={position.baseSymbol}
                     quoteTokenSymbol={position.quoteSymbol}
                 />

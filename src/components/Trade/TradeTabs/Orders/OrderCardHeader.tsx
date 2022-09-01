@@ -14,13 +14,7 @@ interface OrderCardHeaderPropsIF {
 }
 
 export default function OrderCardHeader(props: OrderCardHeaderPropsIF) {
-    const {
-        data,
-        sortBy,
-        setSortBy,
-        reverseSort,
-        setReverseSort
-    } = props;
+    const { data, sortBy, setSortBy, reverseSort, setReverseSort } = props;
 
     function handleClick(name: string) {
         console.clear();
@@ -30,12 +24,14 @@ export default function OrderCardHeader(props: OrderCardHeaderPropsIF) {
         } else if (!reverseSort) {
             console.log('second click');
             setReverseSort(true);
-        } else if ((sortBy === name) && reverseSort) {
+        } else if (sortBy === name && reverseSort) {
             console.log('third click');
             setSortBy('default');
             setReverseSort(false);
         } else {
-            console.warn('Problem in click handler control flow. Refer to RangeCardHeader.tsx for troubleshooting. Resetting sort parameters to default as fallback action.');
+            console.warn(
+                'Problem in click handler control flow. Refer to RangeCardHeader.tsx for troubleshooting. Resetting sort parameters to default as fallback action.',
+            );
             setSortBy('default');
             setReverseSort(false);
         }

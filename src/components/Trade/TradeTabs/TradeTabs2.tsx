@@ -72,7 +72,7 @@ export default function TradeTabs2(props: ITabsProps) {
         selectedOutsideTab,
         setSelectedOutsideTab,
         outsideControl,
-        setOutsideControl
+        setOutsideControl,
     } = props;
 
     const graphData = useAppSelector((state) => state?.graphData);

@@ -4,7 +4,7 @@ import { ethers } from 'ethers';
 import { useEffect, useRef, useState } from 'react';
 import printDomToImage from '../../utils/functions/printDomToImage';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { toDisplayQty } from '@crocswap-libs/sdk';
+// import { toDisplayQty } from '@crocswap-libs/sdk';
 import { formatAmount } from '../../utils/numbers';
 import { PositionIF } from '../../utils/interfaces/PositionIF';
 import APYGraphDisplay from './APYGraphDisplay/APYGraphDisplay';
@@ -47,7 +47,7 @@ export default function RangeDetails(props: IRangeDetailsProps) {
         askTick,
         lastBlockNumber,
         position,
-        // positionApy,
+        positionApy,
     } = props;
 
     const detailsRef = useRef(null);
@@ -60,18 +60,14 @@ export default function RangeDetails(props: IRangeDetailsProps) {
 
     const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
 
-    const [baseLiquidityDisplay, setBaseLiquidityDisplay] = useState<string | undefined>(undefined);
-    const [quoteLiquidityDisplay, setQuoteLiquidityDisplay] = useState<string | undefined>(
-        undefined,
-    );
+    const [baseLiquidityDisplay, setBaseLiquidityDisplay] = useState<string | undefined>();
+    const [quoteLiquidityDisplay, setQuoteLiquidityDisplay] = useState<string | undefined>();
 
-    const [baseFeesDisplay, setBaseFeesDisplay] = useState<string | undefined>(undefined);
-    const [quoteFeesDisplay, setQuoteFeesDisplay] = useState<string | undefined>(undefined);
+    const [baseFeesDisplay, setBaseFeesDisplay] = useState<string | undefined>();
+    const [quoteFeesDisplay, setQuoteFeesDisplay] = useState<string | undefined>();
 
     // eslint-disable-next-line
-    const [positionApy, setPositionApy] = useState<number | undefined>();
-    // eslint-disable-next-line
-    const [apy, setApy] = useState<number | undefined>(positionApy);
+    const [updatedPositionApy, setUpdatedPositionApy] = useState<number | undefined>(positionApy);
 
     useEffect(() => {
         const positionStatsCacheEndpoint = httpGraphCacheServerDomain + '/position_stats?';
@@ -89,57 +85,58 @@ export default function RangeDetails(props: IRangeDetailsProps) {
                         poolIdx: poolIndex.toString(),
                         chainId: chainId,
                         positionType: position.positionType,
+                        annotate: 'true',
                     }),
             )
                 .then((response) => response?.json())
                 .then((json) => {
                     const positionStats = json?.data;
-                    // console.log({ positionStats });
-                    if (positionStats.posLiqBase && positionStats.baseDecimals) {
-                        const baseLiqDisplayNum = parseFloat(
-                            toDisplayQty(positionStats.posLiqBase, positionStats.baseDecimals),
-                        );
+                    const liqBaseNum = position.positionLiqBaseDecimalCorrected;
+                    const liqQuoteNum = position.positionLiqQuoteDecimalCorrected;
+
+                    if (liqBaseNum) {
                         const baseLiqDisplayTruncated =
-                            baseLiqDisplayNum === 0
+                            liqBaseNum === 0
                                 ? '0'
-                                : baseLiqDisplayNum < 0.0001
-                                ? baseLiqDisplayNum.toExponential(2)
-                                : baseLiqDisplayNum < 2
-                                ? baseLiqDisplayNum.toPrecision(3)
-                                : baseLiqDisplayNum >= 100000
-                                ? formatAmount(baseLiqDisplayNum)
+                                : liqBaseNum < 0.0001
+                                ? liqBaseNum.toExponential(2)
+                                : liqBaseNum < 2
+                                ? liqBaseNum.toPrecision(3)
+                                : liqBaseNum >= 100000
+                                ? formatAmount(liqBaseNum)
                                 : // ? baseLiqDisplayNum.toExponential(2)
-                                  baseLiqDisplayNum.toLocaleString(undefined, {
+                                  liqBaseNum.toLocaleString(undefined, {
                                       minimumFractionDigits: 2,
                                       maximumFractionDigits: 2,
                                   });
+
                         setBaseLiquidityDisplay(baseLiqDisplayTruncated);
                     }
-
-                    if (positionStats.posLiqQuote && positionStats.quoteDecimals) {
-                        const quoteLiqDisplayNum = parseFloat(
-                            toDisplayQty(positionStats.posLiqQuote, positionStats.quoteDecimals),
-                        );
+                    if (liqQuoteNum) {
                         const quoteLiqDisplayTruncated =
-                            quoteLiqDisplayNum === 0
+                            liqQuoteNum === 0
                                 ? '0'
-                                : quoteLiqDisplayNum < 0.0001
-                                ? quoteLiqDisplayNum.toExponential(2)
-                                : quoteLiqDisplayNum < 2
-                                ? quoteLiqDisplayNum.toPrecision(3)
-                                : quoteLiqDisplayNum >= 100000
-                                ? formatAmount(quoteLiqDisplayNum)
+                                : liqQuoteNum < 0.0001
+                                ? liqQuoteNum.toExponential(2)
+                                : liqQuoteNum < 2
+                                ? liqQuoteNum.toPrecision(3)
+                                : liqQuoteNum >= 100000
+                                ? formatAmount(liqQuoteNum)
                                 : // ? quoteLiqDisplayNum.toExponential(2)
-                                  quoteLiqDisplayNum.toLocaleString(undefined, {
+                                  liqQuoteNum.toLocaleString(undefined, {
                                       minimumFractionDigits: 2,
                                       maximumFractionDigits: 2,
                                   });
                         setQuoteLiquidityDisplay(quoteLiqDisplayTruncated);
                     }
-                    if (positionStats.feeLiqBase && positionStats.baseDecimals) {
-                        const baseFeeDisplayNum = parseFloat(
-                            toDisplayQty(positionStats.feeLiqBase, positionStats.baseDecimals),
-                        );
+
+                    const baseFeeDisplayNum = position.feesLiqBaseDecimalCorrected;
+                    const quoteFeeDisplayNum = position.feesLiqQuoteDecimalCorrected;
+
+                    if (baseFeeDisplayNum && quoteFeeDisplayNum) {
+                        // const baseFeeDisplayNum = parseFloat(
+                        //     toDisplayQty(positionStats.feeLiqBase, positionStats.baseDecimals),
+                        // );
                         const baseFeeDisplayTruncated =
                             baseFeeDisplayNum === 0
                                 ? '0'
@@ -155,79 +152,29 @@ export default function RangeDetails(props: IRangeDetailsProps) {
                                       maximumFractionDigits: 2,
                                   });
                         setBaseFeesDisplay(baseFeeDisplayTruncated);
-                    }
 
-                    if (positionStats.feeLiqQuote && positionStats.quoteDecimals) {
-                        const quoteFeesDisplayNum = parseFloat(
-                            toDisplayQty(positionStats.feeLiqQuote, positionStats.quoteDecimals),
-                        );
                         const quoteFeesDisplayTruncated =
-                            quoteFeesDisplayNum === 0
+                            quoteFeeDisplayNum === 0
                                 ? '0'
-                                : quoteFeesDisplayNum < 0.0001
-                                ? quoteFeesDisplayNum.toExponential(2)
-                                : quoteFeesDisplayNum < 2
-                                ? quoteFeesDisplayNum.toPrecision(3)
-                                : quoteFeesDisplayNum >= 100000
-                                ? formatAmount(quoteFeesDisplayNum)
-                                : // ? quoteFeesDisplayNum.toExponential(2)
-                                  quoteFeesDisplayNum.toLocaleString(undefined, {
+                                : quoteFeeDisplayNum < 0.0001
+                                ? quoteFeeDisplayNum.toExponential(2)
+                                : quoteFeeDisplayNum < 2
+                                ? quoteFeeDisplayNum.toPrecision(3)
+                                : quoteFeeDisplayNum >= 100000
+                                ? formatAmount(quoteFeeDisplayNum)
+                                : quoteFeeDisplayNum.toLocaleString(undefined, {
                                       minimumFractionDigits: 2,
                                       maximumFractionDigits: 2,
                                   });
                         setQuoteFeesDisplay(quoteFeesDisplayTruncated);
                     }
+
                     if (positionStats.apy) {
-                        setApy(positionStats.apy);
+                        setUpdatedPositionApy(positionStats.apy);
                     }
                 })
                 .catch(console.log);
         }
-
-        // (async () => {
-        //     const positionApyCacheEndpoint = 'https://809821320828123.de:5000' + '/position_apy?';
-
-        //     const positionApy =
-        //         position.positionType === 'ambient'
-        //             ? await fetch(
-        //                   positionApyCacheEndpoint +
-        //                       new URLSearchParams({
-        //                           chainId: position.chainId,
-        //                           user: position.user,
-        //                           base: position.base,
-        //                           quote: position.quote,
-        //                           poolIdx: position.poolIdx.toString(),
-        //                           concise: 'true',
-        //                           positionType: 'ambient',
-        //                       }),
-        //               )
-        //                   .then((response) => response?.json())
-        //                   .then((json) => {
-        //                       const apy = json.data?.results?.apy;
-        //                       return apy;
-        //                   })
-        //             : await fetch(
-        //                   positionApyCacheEndpoint +
-        //                       new URLSearchParams({
-        //                           chainId: position.chainId,
-        //                           user: position.user,
-        //                           base: position.base,
-        //                           quote: position.quote,
-        //                           bidTick: position.bidTick.toString(),
-        //                           askTick: position.askTick.toString(),
-        //                           poolIdx: position.poolIdx.toString(),
-        //                           concise: 'true',
-        //                           positionType: 'concentrated',
-        //                       }),
-        //               )
-        //                   .then((response) => response?.json())
-        //                   .then((json) => {
-        //                       const apy = json?.data?.results?.apy;
-        //                       return apy;
-        //                   });
-
-        //     setPositionApy(positionApy);
-        // })();
     }, [lastBlockNumber]);
 
     const [controlItems, setControlItems] = useState([
@@ -275,10 +222,10 @@ export default function RangeDetails(props: IRangeDetailsProps) {
                         <PriceInfo
                             lowRangeDisplay={lowRangeDisplay}
                             highRangeDisplay={highRangeDisplay}
-                            baseLiquidityDisplay={baseLiquidityDisplay || '0.00'}
-                            quoteLiquidityDisplay={quoteLiquidityDisplay || '0.00'}
-                            baseFeesDisplay={baseFeesDisplay || '0.00'}
-                            quoteFeesDisplay={quoteFeesDisplay || '0.00'}
+                            baseLiquidityDisplay={baseLiquidityDisplay}
+                            quoteLiquidityDisplay={quoteLiquidityDisplay}
+                            baseFeesDisplay={baseFeesDisplay}
+                            quoteFeesDisplay={quoteFeesDisplay}
                             baseTokenLogoURI={baseTokenLogoURI}
                             quoteTokenLogoURI={quoteTokenLogoURI}
                             baseTokenSymbol={props.baseTokenSymbol}
@@ -288,7 +235,7 @@ export default function RangeDetails(props: IRangeDetailsProps) {
                         />
                     </div>
                     <div className={styles.right_container}>
-                        <APYGraphDisplay />
+                        <APYGraphDisplay updatedPositionApy={updatedPositionApy} />
                     </div>
                     {/* <TokenInfo
                         provider={props.provider}

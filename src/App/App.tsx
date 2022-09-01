@@ -94,6 +94,7 @@ import { useModal } from '../components/Global/Modal/useModal';
 import { getVolumeSeries } from './functions/getVolumeSeries';
 import { getTvlSeries } from './functions/getTvlSeries';
 import Chat from './components/Chat/Chat';
+import { formatAmount } from '../utils/numbers';
 
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 const cachedFetchAddress = memoizeFetchAddress();
@@ -653,7 +654,7 @@ export default function App() {
                                     quote: sortedTokens[1].toLowerCase(),
                                     poolIdx: chainData.poolIndex.toString(),
                                     chainId: chainData.chainId,
-                                    tokenQuantities: 'true',
+                                    annotate: 'true', // token quantities
                                     ensResolution: 'true',
                                 }),
                         )
@@ -822,10 +823,10 @@ export default function App() {
         chainData.chainId,
     ]);
 
-    const allPositionsCacheSubscriptionEndpoint = useMemo(
+    const poolLiqChangesCacheSubscriptionEndpoint = useMemo(
         () =>
             wssGraphCacheServerDomain +
-            '/subscribe_pool_positions?' +
+            '/subscribe_pool_liqchanges?' +
             new URLSearchParams({
                 base: baseTokenAddress.toLowerCase(),
                 // baseTokenAddress.toLowerCase() || '0x0000000000000000000000000000000000000000',
@@ -834,16 +835,17 @@ export default function App() {
                 poolIdx: chainData.poolIndex.toString(),
                 chainId: chainData.chainId,
                 ensResolution: 'true',
+                annotate: 'true',
             }),
         [baseTokenAddress, quoteTokenAddress, chainData.chainId],
     );
 
     const {
         //  sendMessage,
-        lastMessage: lastAllPositionsMessage,
+        lastMessage: lastPoolLiqChangeMessage,
         //  readyState
     } = useWebSocket(
-        allPositionsCacheSubscriptionEndpoint,
+        poolLiqChangesCacheSubscriptionEndpoint,
         {
             // share:  true,
             // onOpen: () => console.log('opened'),
@@ -858,8 +860,8 @@ export default function App() {
     );
 
     useEffect(() => {
-        if (lastAllPositionsMessage !== null) {
-            const lastMessageData = JSON.parse(lastAllPositionsMessage.data).data;
+        if (lastPoolLiqChangeMessage !== null) {
+            const lastMessageData = JSON.parse(lastPoolLiqChangeMessage.data).data;
 
             if (lastMessageData) {
                 Promise.all(lastMessageData.map(getPositionData)).then((updatedPositions) => {
@@ -867,7 +869,7 @@ export default function App() {
                 });
             }
         }
-    }, [lastAllPositionsMessage]);
+    }, [lastPoolLiqChangeMessage]);
 
     const candleSubscriptionEndpoint = useMemo(
         () =>
@@ -965,14 +967,14 @@ export default function App() {
         }
     }, [lastPoolSwapsMessage]);
 
-    const userPositionsCacheSubscriptionEndpoint = useMemo(
+    const userLiqChangesCacheSubscriptionEndpoint = useMemo(
         () =>
             wssGraphCacheServerDomain +
-            '/subscribe_user_positions?' +
+            '/subscribe_user_liqchanges?' +
             new URLSearchParams({
                 user: account || '',
                 chainId: chainData.chainId,
-                tokenQuantities: 'true',
+                annotate: 'true',
                 // user: account || '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc',
             }),
         [account, chainData.chainId],
@@ -983,7 +985,7 @@ export default function App() {
         lastMessage: lastUserPositionsMessage,
         //  readyState
     } = useWebSocket(
-        userPositionsCacheSubscriptionEndpoint,
+        userLiqChangesCacheSubscriptionEndpoint,
         {
             // share: true,
             // onOpen: () => console.log('opened'),
@@ -1235,17 +1237,6 @@ export default function App() {
             lastBlockNumber,
         );
 
-        // try {
-        //     const ensName = await cachedFetchAddress(
-        //         viewProvider,
-        //         position.user,
-        //         chainData.chainId,
-        //     );
-        //     if (ensName) position.userEnsName = ensName;
-        // } catch (error) {
-        //     console.warn(error);
-        // }
-
         const poolPriceInTicks = Math.log(poolPriceNonDisplay) / Math.log(1.0001);
         position.poolPriceInTicks = poolPriceInTicks;
 
@@ -1254,20 +1245,6 @@ export default function App() {
             (position.bidTick <= poolPriceInTicks && poolPriceInTicks <= position.askTick);
 
         position.isPositionInRange = isPositionInRange;
-
-        // const baseTokenDecimals = await cachedGetTokenDecimals(
-        //     viewProvider,
-        //     baseTokenAddress,
-        //     chainData.chainId,
-        // );
-        // const quoteTokenDecimals = await cachedGetTokenDecimals(
-        //     viewProvider,
-        //     quoteTokenAddress,
-        //     chainData.chainId,
-        // );
-
-        // if (baseTokenDecimals) position.baseTokenDecimals = baseTokenDecimals;
-        // if (quoteTokenDecimals) position.quoteTokenDecimals = quoteTokenDecimals;
 
         const baseTokenDecimals = position.baseDecimals;
         const quoteTokenDecimals = position.quoteDecimals;
@@ -1397,6 +1374,46 @@ export default function App() {
                       });
         }
 
+        if (position.positionLiqBaseDecimalCorrected) {
+            const liqBaseNum = position.positionLiqBaseDecimalCorrected;
+
+            const baseLiqDisplayTruncated =
+                liqBaseNum === 0
+                    ? '0'
+                    : liqBaseNum < 0.0001
+                    ? liqBaseNum.toExponential(2)
+                    : liqBaseNum < 2
+                    ? liqBaseNum.toPrecision(3)
+                    : liqBaseNum >= 100000
+                    ? formatAmount(liqBaseNum)
+                    : // ? baseLiqDisplayNum.toExponential(2)
+                      liqBaseNum.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                      });
+
+            position.positionLiqBaseTruncated = baseLiqDisplayTruncated;
+        }
+        if (position.positionLiqQuoteDecimalCorrected) {
+            const liqQuoteNum = position.positionLiqQuoteDecimalCorrected;
+
+            const quoteLiqDisplayTruncated =
+                liqQuoteNum === 0
+                    ? '0'
+                    : liqQuoteNum < 0.0001
+                    ? liqQuoteNum.toExponential(2)
+                    : liqQuoteNum < 2
+                    ? liqQuoteNum.toPrecision(3)
+                    : liqQuoteNum >= 100000
+                    ? formatAmount(liqQuoteNum)
+                    : // ? quoteLiqDisplayNum.toExponential(2)
+                      liqQuoteNum.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                      });
+            position.positionLiqQuoteTruncated = quoteLiqDisplayTruncated;
+        }
+
         return position;
     };
 
@@ -1410,8 +1427,8 @@ export default function App() {
                         new URLSearchParams({
                             user: account,
                             chainId: chainData.chainId,
-                            tokenQuantities: 'true',
                             ensResolution: 'true',
+                            annotate: 'true',
                         }),
                 )
                     .then((response) => response?.json())

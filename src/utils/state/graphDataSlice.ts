@@ -172,25 +172,6 @@ export interface PositionsByPool {
     positions: Array<PositionIF>;
 }
 
-// export interface position {
-//     ambient: boolean;
-//     askTick: number;
-//     bidTick: number;
-//     id: string;
-//     accountId: string;
-//     ensName: string;
-//     pool: pool;
-//     baseTokenSymbol: string;
-//     baseTokenDecimals: number;
-//     quoteTokenSymbol: string;
-//     quoteTokenDecimals: number;
-//     lowRangeDisplay: string;
-//     highRangeDisplay: string;
-//     tokenAQtyDisplay: string;
-//     tokenBQtyDisplay: string;
-//     poolPriceInTicks: number;
-// }
-
 export interface pool {
     base: string;
     id: string;
@@ -263,7 +244,7 @@ export const graphDataSlice = createSlice({
         addPositionsByUser: (state, action: PayloadAction<Array<PositionIF>>) => {
             const slotToFind = action.payload[0].positionStorageSlot.toLowerCase();
             const indexOfSlot = state.positionsByUser.positions
-                .map((item) => item.positionStorageSlot.toLowerCase())
+                .map((position) => position.positionStorageSlot?.toLowerCase())
                 .findIndex((slot) => slot === slotToFind);
             if (indexOfSlot === -1) {
                 state.positionsByUser.positions = action.payload.concat(
@@ -279,7 +260,7 @@ export const graphDataSlice = createSlice({
         addPositionsByPool: (state, action: PayloadAction<Array<PositionIF>>) => {
             const slotToFind = action.payload[0].positionStorageSlot.toLowerCase();
             const indexOfSlot = state.positionsByPool.positions
-                .map((item) => item.positionStorageSlot.toLowerCase())
+                .map((position) => position.positionStorageSlot?.toLowerCase())
                 .findIndex((slot) => slot === slotToFind);
             if (indexOfSlot === -1) {
                 state.positionsByPool.positions = action.payload.concat(

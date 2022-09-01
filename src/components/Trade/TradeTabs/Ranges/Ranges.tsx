@@ -48,7 +48,7 @@ export default function Ranges(props: RangesPropsIF) {
     const tradeData = useAppSelector((state) => state.tradeData);
 
     const columnHeaders = [
-        { name: 'ID', sortable: false},
+        { name: 'ID', sortable: false },
         { name: 'Wallet', sortable: true },
         { name: 'Range', sortable: false },
         { name: 'Range Min', sortable: false },
@@ -56,62 +56,52 @@ export default function Ranges(props: RangesPropsIF) {
         { name: tradeData.baseToken.symbol, sortable: false },
         { name: tradeData.quoteToken.symbol, sortable: false },
         { name: 'APY', sortable: true },
-        { name: 'Status', sortable: false }
+        { name: 'Status', sortable: false },
     ];
 
-    const [
-        sortBy,
-        setSortBy,
-        reverseSort,
-        setReverseSort,
-        sortedPositions
-    ] = useSortedPositions(
+    const [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions] = useSortedPositions(
         isShowAllEnabled,
         graphData?.positionsByUser?.positions,
-        graphData?.positionsByPool?.positions
+        graphData?.positionsByPool?.positions,
     );
 
     return (
         <div className={styles.container}>
             <header className={styles.row_container}>
-                {
-                    columnHeaders.map((header) => 
-                        <RangeCardHeader
-                            key={`rangeDataHeaderField${header.name}`}
-                            data={header}
-                            sortBy={sortBy}
-                            setSortBy={setSortBy}
-                            reverseSort={reverseSort}
-                            setReverseSort={setReverseSort}
-                        />
-                    )
-                }
+                {columnHeaders.map((header) => (
+                    <RangeCardHeader
+                        key={`rangeDataHeaderField${header.name}`}
+                        data={header}
+                        sortBy={sortBy}
+                        setSortBy={setSortBy}
+                        reverseSort={reverseSort}
+                        setReverseSort={setReverseSort}
+                    />
+                ))}
             </header>
             <ol
                 className={styles.positions_list}
                 style={{ height: expandTradeTable ? '100%' : '220px' }}
             >
-                {
-                    sortedPositions.map((position, idx) => (
-                        <RangeCard
-                            provider={provider}
-                            chainId={chainId}
-                            key={idx}
-                            portfolio={portfolio}
-                            notOnTradeRoute={notOnTradeRoute}
-                            position={position}
-                            isAllPositionsEnabled={isShowAllEnabled}
-                            tokenAAddress={tradeData.tokenA.address}
-                            tokenBAddress={tradeData.tokenB.address}
-                            account={account ?? undefined}
-                            isAuthenticated={isAuthenticated}
-                            isDenomBase={tradeData.isDenomBase}
-                            lastBlockNumber={lastBlockNumber}
-                            currentPositionActive={currentPositionActive}
-                            setCurrentPositionActive={setCurrentPositionActive}
-                        />
-                    ))
-                }
+                {sortedPositions.map((position, idx) => (
+                    <RangeCard
+                        provider={provider}
+                        chainId={chainId}
+                        key={idx}
+                        portfolio={portfolio}
+                        notOnTradeRoute={notOnTradeRoute}
+                        position={position}
+                        isAllPositionsEnabled={isShowAllEnabled}
+                        tokenAAddress={tradeData.tokenA.address}
+                        tokenBAddress={tradeData.tokenB.address}
+                        account={account ?? undefined}
+                        isAuthenticated={isAuthenticated}
+                        isDenomBase={tradeData.isDenomBase}
+                        lastBlockNumber={lastBlockNumber}
+                        currentPositionActive={currentPositionActive}
+                        setCurrentPositionActive={setCurrentPositionActive}
+                    />
+                ))}
             </ol>
         </div>
     );

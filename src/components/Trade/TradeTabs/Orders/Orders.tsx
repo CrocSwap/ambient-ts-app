@@ -24,42 +24,42 @@ export default function Orders(props: propsIF) {
     const columnHeaders = [
         {
             name: 'ID',
-            sortable: true
+            sortable: true,
         },
         {
             name: 'Wallet',
-            sortable: true
+            sortable: true,
         },
         {
             name: 'Price',
-            sortable: true
+            sortable: true,
         },
         {
             name: 'Side',
-            sortable: true
+            sortable: true,
         },
         {
             name: 'Type',
-            sortable: true
+            sortable: true,
         },
         {
             name: tradeData.baseToken.symbol,
-            sortable: false
+            sortable: false,
         },
         {
             name: tradeData.quoteToken.symbol,
-            sortable: false
-        }
+            sortable: false,
+        },
     ];
 
     // TODO:   currently the values to determine sort order are not
     // TODO:   ... being used productively because there is only
     // TODO:   ... placeholder data, we will revisit this later on
 
-    const [ sortBy, setSortBy ] = useState('default');
-    const [ reverseSort, setReverseSort ] = useState(false);
+    const [sortBy, setSortBy] = useState('default');
+    const [reverseSort, setReverseSort] = useState(false);
     useEffect(() => {
-        console.log({sortBy, reverseSort})
+        console.log({ sortBy, reverseSort });
     }, [sortBy, reverseSort]);
 
     const ItemContent = (
@@ -73,18 +73,16 @@ export default function Orders(props: propsIF) {
     return (
         <div className={styles.container}>
             <header>
-                {
-                    columnHeaders.map(header => (
-                        <OrderCardHeader
-                            key={`orderDataHeaderField${header.name}`}
-                            data={header}
-                            sortBy={sortBy}
-                            setSortBy={setSortBy}
-                            reverseSort={reverseSort}
-                            setReverseSort={setReverseSort}
-                        />
-                    ))
-                }
+                {columnHeaders.map((header) => (
+                    <OrderCardHeader
+                        key={`orderDataHeaderField${header.name}`}
+                        data={header}
+                        sortBy={sortBy}
+                        setSortBy={setSortBy}
+                        reverseSort={reverseSort}
+                        setReverseSort={setReverseSort}
+                    />
+                ))}
             </header>
             <div
                 className={styles.item_container}

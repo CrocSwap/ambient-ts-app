@@ -1,22 +1,25 @@
 import styles from './Apy.module.css';
 
 interface ApyProps {
-    amount: number;
+    amount: number | undefined;
 }
 
 export default function Apy(props: ApyProps) {
     const { amount } = props;
 
     const amountString =
-        amount.toLocaleString(undefined, {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-        }) + '%';
+        amount !== undefined
+            ? amount.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              }) + '%'
+            : undefined;
 
-    const apyColor = amount > 0 ? styles.apy_green : styles.apy_red;
+    const apyColor =
+        amount !== undefined ? (amount > 0 ? styles.apy_green : styles.apy_red) : styles.apy_green;
     return (
         <section className={`${styles.apy} ${apyColor}`}>
-            <p>{amountString}</p>
+            <p>{amountString ? amountString : '…'}</p>
         </section>
     );
 }
