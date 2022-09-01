@@ -1,7 +1,6 @@
-import { ReactNode } from 'react';
 import Apy from '../../Global/Tabs/Apy/Apy';
 import styles from './APYGraphDisplay.module.css';
-import chartImage from '../../../assets/images/Temporary/chart.svg';
+import chartImage from '../../../assets/images/Temporary/chart2.svg';
 
 export default function APYGraphDisplay() {
     return (
