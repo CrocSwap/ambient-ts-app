@@ -1,7 +1,6 @@
 import styles from './PriceInfo.module.css';
 import Row from '../../Global/Row/Row';
-import DividerDark from '../../Global/DividerDark/DividerDark';
-import graphImage from '../../../assets/images/Temporary/chart.svg';
+
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import { toggleDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
 import Divider from '../../Global/Divider/Divider';

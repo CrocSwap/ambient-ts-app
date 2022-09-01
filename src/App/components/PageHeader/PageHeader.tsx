@@ -203,7 +203,6 @@ export default function PageHeader(props: HeaderPropsIF) {
             </div>
             {isChainSupported || <SwitchNetwork switchNetworkInMoralis={switchNetworkInMoralis} />}
             {modalOrNull}
-            <SwitchNetwork switchNetworkInMoralis={switchNetworkInMoralis} />
         </header>
     );
 }

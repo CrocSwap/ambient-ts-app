@@ -1,11 +1,7 @@
-import Divider from '../Global/Divider/Divider';
-import RemoveRangeHeader from '../RemoveRange/RemoveRangeHeader/RemoveRangeHeader';
 import PriceInfo from './PriceInfo/PriceInfo';
 import styles from './RangeDetails.module.css';
-import TokenInfo from './TokenInfo/TokenInfo';
 import { ethers } from 'ethers';
 import { useEffect, useRef, useState } from 'react';
-import { BsDownload } from 'react-icons/bs';
 import printDomToImage from '../../utils/functions/printDomToImage';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { toDisplayQty } from '@crocswap-libs/sdk';
@@ -53,6 +49,7 @@ export default function RangeDetails(props: IRangeDetailsProps) {
     } = props;
 
     const detailsRef = useRef(null);
+    // eslint-disable-next-line
     const downloadAsImage = () => {
         if (detailsRef.current) {
             printDomToImage(detailsRef.current);
@@ -68,6 +65,7 @@ export default function RangeDetails(props: IRangeDetailsProps) {
 
     const [baseFeesDisplay, setBaseFeesDisplay] = useState<string | undefined>(undefined);
     const [quoteFeesDisplay, setQuoteFeesDisplay] = useState<string | undefined>(undefined);
+    // eslint-disable-next-line
     const [positionApy, setPositionApy] = useState<number | undefined>();
 
     useEffect(() => {
