@@ -52,12 +52,16 @@ export default function Ranges(props: RangesPropsIF) {
 
     const columnHeaders = [
         {
+            name: 'ID',
+            sortable: false
+        },
+        {
             name: 'Wallet',
             sortable: true
         },
         {
             name: 'Range',
-            sortable: true
+            sortable: false
         },
         {
             name: 'Range Min',
@@ -81,17 +85,21 @@ export default function Ranges(props: RangesPropsIF) {
         },
         {
             name: 'Status',
-            sortable: true
+            sortable: false
         }
     ];
 
-    console.log(poolPositions);
+    function reverseArray(inputArray: PositionIF[]) {
+        const outputArray: PositionIF[] = [];
+        inputArray.forEach((elem) => outputArray.unshift(elem));
+        return outputArray;
+    }
 
     const [ sortBy, setSortBy ] = useState('default');
     const [ reverseSort, setReverseSort ] = useState(false);
-    useEffect(() => {
-        console.log({sortBy, reverseSort})
-    }, [sortBy, reverseSort]);
+    // useEffect(() => {
+    //     console.log({sortBy, reverseSort})
+    // }, [sortBy, reverseSort]);
 
     const sortByWallet = (unsortedData: PositionIF[]) => (
         [...unsortedData].sort((a, b) => a.user.localeCompare(b.user))
@@ -113,7 +121,7 @@ export default function Ranges(props: RangesPropsIF) {
             default:
                 sortedData = data;
         }
-        return reverseSort ? sortedData.reverse() : sortedData;
+        return reverseSort ? reverseArray(sortedData) : sortedData;
     }
 
     // TODO: new user positions reset table sort, new pool positions retains sort
@@ -123,6 +131,7 @@ export default function Ranges(props: RangesPropsIF) {
         return sortData(positions);
     }, [
         sortBy,
+        reverseSort,
         isShowAllEnabled,
         poolPositions,
         userPositions
