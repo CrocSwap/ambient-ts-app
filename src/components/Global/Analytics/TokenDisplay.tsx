@@ -1,4 +1,4 @@
-import styles from '../Tabs/AccountTokensDisplay/AccountTokensDisplay.module.css';
+import styles from './TokenDisplay.module.css';
 
 interface TokenProps {
     token0: string | false;

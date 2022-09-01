@@ -27,6 +27,8 @@ export interface tradeData {
     slippageTolerance: number;
     activeChartPeriod: number;
     targetData: targetData[];
+    pinnedMaxPriceDisplayTruncated: number;
+    pinnedMinPriceDisplayTruncated: number;
 }
 
 const initialState: tradeData = {
@@ -51,6 +53,8 @@ const initialState: tradeData = {
         { name: 'high', value: 0 },
         { name: 'low', value: 0 },
     ],
+    pinnedMaxPriceDisplayTruncated: 0,
+    pinnedMinPriceDisplayTruncated: 0,
 };
 
 export const tradeDataSlice = createSlice({
@@ -145,6 +149,12 @@ export const tradeDataSlice = createSlice({
                 state.tokenB = initialState.tokenB;
             }
         },
+        setPinnedMaxPrice: (state, action: PayloadAction<number>) => {
+            state.pinnedMaxPriceDisplayTruncated = action.payload;
+        },
+        setPinnedMinPrice: (state, action: PayloadAction<number>) => {
+            state.pinnedMinPriceDisplayTruncated = action.payload;
+        },
 
         resetTradeData: () => initialState,
     },
@@ -174,6 +184,8 @@ export const {
     setTargetData,
     resetTradeData,
     resetTokens,
+    setPinnedMaxPrice,
+    setPinnedMinPrice,
 } = tradeDataSlice.actions;
 
 export default tradeDataSlice.reducer;

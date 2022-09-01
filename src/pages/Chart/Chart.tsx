@@ -30,13 +30,18 @@ declare global {
 
 interface ChartData {
     priceData: CandlesByPoolAndDuration | undefined;
-    liquidityData: any[];
+    liquidityData: any;
     changeState: (isOpen: boolean | undefined, candleData: CandleData | undefined) => void;
     denomInBase: boolean;
     targetData: targetData[] | undefined;
     limitPrice: string | undefined;
     setLimitRate: React.Dispatch<React.SetStateAction<string>>;
     limitRate: string;
+    isAdvancedModeActive: boolean | undefined;
+    simpleRangeWidth: number | undefined;
+    pinnedMinPriceDisplayTruncated: number | undefined;
+    pinnedMaxPriceDisplayTruncated: number | undefined;
+    truncatedPoolPrice: number | undefined;
 }
 
 interface CandleChartData {
@@ -55,7 +60,13 @@ interface ChartUtils {
 }
 
 export default function Chart(props: ChartData) {
-    const { denomInBase } = props;
+    const {
+        denomInBase,
+        isAdvancedModeActive,
+        pinnedMinPriceDisplayTruncated,
+        pinnedMaxPriceDisplayTruncated,
+        simpleRangeWidth,
+    } = props;
 
     const d3Container = useRef(null);
     const d3PlotArea = useRef(null);
@@ -95,6 +106,51 @@ export default function Chart(props: ChartData) {
     const [transactionFilter, setTransactionFilter] = useState<CandleData>();
     const [scaleData, setScaleData] = useState<any>();
     const [tooltip, setTooltip] = useState<any>();
+    const [dragType, setDragType] = useState<any>();
+
+    const setDefaultRangeData = () => {
+        setRanges((prevState) => {
+            const newTargets = [...prevState];
+            newTargets.filter((target: any) => target.name === 'high')[0].value =
+                props.priceData !== undefined
+                    ? Math.max(
+                          ...props.priceData.candles.map((o) => {
+                              return o.invPriceOpenDecimalCorrected !== undefined
+                                  ? o.invPriceOpenDecimalCorrected
+                                  : 0;
+                          }),
+                      )
+                    : 0;
+            newTargets.filter((target: any) => target.name === 'low')[0].value =
+                props.priceData !== undefined
+                    ? Math.min(
+                          ...props.priceData.candles.map((o) => {
+                              return o.invPriceCloseDecimalCorrected !== undefined
+                                  ? o.invPriceCloseDecimalCorrected
+                                  : Infinity;
+                          }),
+                      )
+                    : 0;
+
+            return newTargets;
+        });
+    };
+
+    const render = useCallback(() => {
+        const nd = d3.select('#group').node() as any;
+        nd.requestRedraw();
+    }, []);
+
+    useEffect(() => {
+        d3.select(d3Container.current)
+            .select('.targets')
+            .select('.annotation-line')
+            .on('mouseover', (event: any) => {
+                if (!location.pathname.includes('market')) {
+                    d3.select(event.currentTarget).select('.detector').style('cursor', 'ns-resize');
+                }
+            });
+    }, [location]);
 
     // Parse price data
     const parsedChartData = useMemo(() => {
@@ -119,7 +175,7 @@ export default function Chart(props: ChartData) {
                     ? data.invMaxPriceExclMEVDecimalCorrected
                     : data.minPriceExclMEVDecimalCorrected,
                 time: data.time,
-                allSwaps: data.allSwaps,
+                allSwaps: [],
             });
         });
 
@@ -156,21 +212,21 @@ export default function Chart(props: ChartData) {
 
             const liquidityTickScale = d3.scaleBand();
             const liquidityScale = d3.scaleLinear();
-            const barThreshold = 1650;
+            const barThreshold = 1600;
 
             // bar chart
             const liquidityExtent = d3fc
                 .extentLinear(props.liquidityData)
                 .include([0])
-                .accessors([(d: any) => d.value]);
+                .accessors([(d: any) => parseFloat(d.activeLiq)]);
 
             liquidityScale.domain(liquidityExtent(props.liquidityData));
 
             const liqScale = liquidityScale
                 .copy()
                 .range([
-                    Math.min(...props.liquidityData.map((o) => o.value)) / 2.5,
-                    Math.max(...props.liquidityData.map((o) => o.value)) * 2.5,
+                    Math.min(...props.liquidityData.map((o: any) => parseFloat(o.activeLiq))) / 2.5,
+                    Math.max(...props.liquidityData.map((o: any) => parseFloat(o.activeLiq))) * 2.5,
                 ]);
 
             setScaleData(() => {
@@ -193,7 +249,15 @@ export default function Chart(props: ChartData) {
         const reustls: boolean[] = [];
 
         if (location.pathname.includes('market')) {
-            const lastCandlePrice = props.priceData?.candles[0].invPriceCloseDecimalCorrected;
+            let lastCandlePrice: number | undefined;
+            props.priceData?.candles.map((data) => {
+                if (
+                    lastCandlePrice === undefined &&
+                    data.invPriceCloseDecimalCorrected !== undefined
+                ) {
+                    lastCandlePrice = data.invPriceCloseDecimalCorrected;
+                }
+            });
             setMarket(() => {
                 return [
                     {
@@ -211,104 +275,130 @@ export default function Chart(props: ChartData) {
                 });
             } else {
                 setLimit(() => {
-                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                    return [{ name: 'Limit', value: parseFloat(props.limitPrice!) }];
-                });
-            }
-        } else if (location.pathname.includes('range')) {
-            ranges.map((mapData) => {
-                props.targetData?.map((data) => {
-                    if (mapData.name === data.name && mapData.value == data.value) {
-                        reustls.push(true);
-                    }
-                });
-            });
-
-            if (
-                props.targetData === undefined ||
-                (props.targetData[0].value === 0 && props.targetData[1].value === 0)
-            ) {
-                setRanges((prevState) => {
-                    const newTargets = [...prevState];
-                    newTargets.filter((target: any) => target.name === 'high')[0].value =
-                        props.priceData !== undefined
-                            ? Math.max(
-                                  ...props.priceData.candles.map((o) => {
-                                      return o.invPriceOpenDecimalCorrected !== undefined
-                                          ? o.invPriceOpenDecimalCorrected
-                                          : 0;
-                                  }),
-                              )
-                            : 0;
-                    newTargets.filter((target: any) => target.name === 'low')[0].value =
-                        props.priceData !== undefined
-                            ? Math.min(
-                                  ...props.priceData.candles.map((o) => {
-                                      return o.invPriceCloseDecimalCorrected !== undefined
-                                          ? o.invPriceCloseDecimalCorrected
-                                          : Infinity;
-                                  }),
-                              )
-                            : 0;
-
-                    return newTargets;
-                });
-            } else if (reustls.length < 2) {
-                setRanges(() => {
-                    let high = props.targetData?.filter((target: any) => target.name === 'high')[0]
-                        .value;
-                    const low = props.targetData?.filter((target: any) => target.name === 'low')[0]
-                        .value;
-
-                    if (high !== undefined && low !== undefined) {
-                        if (high !== 0 && high < low) {
-                            high = low + low / 100;
-                        }
-
-                        const chartTargets = [
-                            {
-                                name: 'high',
-                                value:
-                                    high !== undefined && high !== 0
-                                        ? high
-                                        : props.priceData !== undefined
-                                        ? Math.max(
-                                              ...props.priceData.candles.map((o) => {
-                                                  return o.invPriceOpenDecimalCorrected !==
-                                                      undefined
-                                                      ? o.invPriceOpenDecimalCorrected
-                                                      : 0;
-                                              }),
-                                          )
-                                        : 0,
-                            },
-                            {
-                                name: 'low',
-                                value:
-                                    low !== undefined && low !== 0
-                                        ? low
-                                        : props.priceData !== undefined
-                                        ? Math.min(
-                                              ...props.priceData.candles.map((o) => {
-                                                  return o.invPriceCloseDecimalCorrected !==
-                                                      undefined
-                                                      ? o.invPriceCloseDecimalCorrected
-                                                      : Infinity;
-                                              }),
-                                          )
-                                        : 0,
-                            },
-                        ];
-                        return chartTargets;
-                    }
                     return [
-                        { name: 'low', value: 0 },
-                        { name: 'high', value: 0 },
+                        {
+                            name: 'Limit',
+                            value: parseFloat(
+                                props.limitPrice !== undefined ? props.limitPrice : '0',
+                            ),
+                        },
                     ];
                 });
             }
+        } else if (location.pathname.includes('range')) {
+            if (!isAdvancedModeActive) {
+                if (simpleRangeWidth === 100) {
+                    ranges.map((mapData) => {
+                        if (mapData.value === 0) {
+                            reustls.push(true);
+                        }
+                    });
+
+                    if (reustls.length === 2) {
+                        setDefaultRangeData();
+                    }
+                } else {
+                    setRanges(() => {
+                        return [
+                            {
+                                name: 'low',
+                                value:
+                                    pinnedMinPriceDisplayTruncated !== undefined
+                                        ? pinnedMinPriceDisplayTruncated
+                                        : 0,
+                            },
+                            {
+                                name: 'high',
+                                value:
+                                    pinnedMaxPriceDisplayTruncated !== undefined
+                                        ? pinnedMaxPriceDisplayTruncated
+                                        : 0,
+                            },
+                        ];
+                    });
+                }
+            } else {
+                ranges.map((mapData) => {
+                    props.targetData?.map((data) => {
+                        if (mapData.name === data.name && mapData.value == data.value) {
+                            reustls.push(true);
+                        }
+                    });
+                });
+
+                if (
+                    props.targetData === undefined ||
+                    (props.targetData[0].value === 0 && props.targetData[1].value === 0)
+                ) {
+                    setDefaultRangeData();
+                } else if (reustls.length < 2) {
+                    setRanges(() => {
+                        let high = props.targetData?.filter(
+                            (target: any) => target.name === 'high',
+                        )[0].value;
+                        const low = props.targetData?.filter(
+                            (target: any) => target.name === 'low',
+                        )[0].value;
+
+                        if (high !== undefined && low !== undefined) {
+                            if (high !== 0 && high < low) {
+                                high = low + low / 100;
+                            }
+
+                            const chartTargets = [
+                                {
+                                    name: 'high',
+                                    value:
+                                        high !== undefined && high !== 0
+                                            ? high
+                                            : props.priceData !== undefined
+                                            ? Math.max(
+                                                  ...props.priceData.candles.map((o) => {
+                                                      return o.invPriceOpenDecimalCorrected !==
+                                                          undefined
+                                                          ? o.invPriceOpenDecimalCorrected
+                                                          : 0;
+                                                  }),
+                                              )
+                                            : 0,
+                                },
+                                {
+                                    name: 'low',
+                                    value:
+                                        low !== undefined && low !== 0
+                                            ? low
+                                            : props.priceData !== undefined
+                                            ? Math.min(
+                                                  ...props.priceData.candles.map((o) => {
+                                                      return o.invPriceCloseDecimalCorrected !==
+                                                          undefined
+                                                          ? o.invPriceCloseDecimalCorrected
+                                                          : Infinity;
+                                                  }),
+                                              )
+                                            : 0,
+                                },
+                            ];
+                            return chartTargets;
+                        }
+                        return [
+                            { name: 'low', value: 0 },
+                            { name: 'high', value: 0 },
+                        ];
+                    });
+                }
+            }
         }
-    }, [location, props.limitPrice, props.targetData, denomInBase]);
+    }, [
+        location,
+        props.limitPrice,
+        props.targetData,
+        denomInBase,
+        isAdvancedModeActive,
+        simpleRangeWidth,
+        pinnedMinPriceDisplayTruncated,
+        pinnedMaxPriceDisplayTruncated,
+    ]);
 
     // Set Tooltip
     useEffect(() => {
@@ -322,9 +412,136 @@ export default function Chart(props: ChartData) {
         setTooltip(tooltip);
     }, []);
 
+    // Set dragType
+    useEffect(() => {
+        if (scaleData !== undefined) {
+            const dragRange = d3.drag().on('drag', function (event, d: any) {
+                const newValue = scaleData.yScale.invert(d3.pointer(event)[1] - 182);
+                if (!isAdvancedModeActive && simpleRangeWidth !== 100) {
+                    let valueWithRange: number;
+
+                    if (d.name === 'high') {
+                        valueWithRange =
+                            ranges.filter((target: any) => target.name === 'high')[0].value -
+                            newValue;
+
+                        console.log(
+                            ranges.filter((target: any) => target.name === 'high')[0].value,
+                        );
+                        setRanges((prevState) => {
+                            const newTargets = [...prevState];
+
+                            newTargets.filter((target: any) => target.name === 'high')[0].value =
+                                newValue;
+
+                            newTargets.filter((target: any) => target.name === 'low')[0].value =
+                                newValue + valueWithRange;
+
+                            render();
+                            return newTargets;
+                        });
+                    } else {
+                        valueWithRange =
+                            ranges.filter((target: any) => target.name === 'low')[0].value -
+                            newValue;
+
+                        console.log({ valueWithRange });
+
+                        setRanges((prevState) => {
+                            const newTargets = [...prevState];
+
+                            newTargets.filter((target: any) => target.name === 'low')[0].value =
+                                newValue;
+
+                            newTargets.filter((target: any) => target.name === 'high')[0].value =
+                                newValue + valueWithRange;
+
+                            render();
+                            return newTargets;
+                        });
+                    }
+                } else {
+                    setRanges((prevState) => {
+                        const newTargets = [...prevState];
+                        if (
+                            d.name === 'high' &&
+                            newValue >
+                                newTargets.filter((target: any) => target.name === 'low')[0].value
+                        ) {
+                            newTargets.filter((target: any) => target.name === d.name)[0].value =
+                                newValue;
+                        } else if (
+                            d.name === 'low' &&
+                            newValue <
+                                newTargets.filter((target: any) => target.name === 'high')[0].value
+                        ) {
+                            newTargets.filter((target: any) => target.name === d.name)[0].value =
+                                newValue;
+                        }
+                        render();
+                        return newTargets;
+                    });
+                }
+            });
+
+            const dragLimit = d3.drag().on('drag', function (event) {
+                const newValue = scaleData.yScale.invert(d3.pointer(event)[1] - 182);
+                setLimit(() => {
+                    return [{ name: 'Limit', value: newValue }];
+                });
+                render();
+            });
+
+            setDragType(() => {
+                return location.pathname.includes('limit') ? dragLimit : dragRange;
+            });
+        }
+    }, [location, scaleData]);
+
+    // set HorizontalLines
+    useEffect(() => {
+        if (dragType !== undefined) {
+            if (location.pathname.includes('limit')) {
+                d3.select(d3Container.current)
+                    .select('.targets')
+                    .select('.annotation-line')
+                    .on('mouseover', (event: any) => {
+                        d3.select(event.currentTarget)
+                            .select('.detector')
+                            .style('cursor', 'ns-resize');
+                    })
+                    .call(dragType);
+            }
+
+            if (location.pathname.includes('range')) {
+                d3.select(d3Container.current)
+                    .select('.targets')
+                    .select('.annotation-line')
+                    .on('mouseover', (event: any) => {
+                        d3.select(event.currentTarget)
+                            .select('.detector')
+                            .style('cursor', 'ns-resize');
+                    })
+                    .call(dragType);
+
+                d3.select(d3Container.current)
+                    .select('.targets')
+                    .select('#low')
+                    .on('mouseover', (event: any) => {
+                        d3.select(event.currentTarget).style('cursor', 'ns-resize');
+                    })
+                    .call(dragType);
+            }
+        }
+    }, [dragType]);
+
     // Call drawChart()
     useEffect(() => {
-        if (parsedChartData !== undefined && scaleData !== undefined) {
+        if (
+            props.liquidityData !== undefined &&
+            parsedChartData !== undefined &&
+            scaleData !== undefined
+        ) {
             const targetData = location.pathname.includes('limit')
                 ? limit
                 : location.pathname.includes('range')
@@ -332,350 +549,339 @@ export default function Chart(props: ChartData) {
                 : location.pathname.includes('market')
                 ? market
                 : undefined;
-            drawChart(parsedChartData.chartData, targetData, scaleData, tooltip);
+
+            drawChart(
+                parsedChartData.chartData,
+                targetData,
+                scaleData,
+                tooltip,
+                props.liquidityData,
+            );
         }
-    }, [parsedChartData, scaleData, location, ranges, limit, market]);
+    }, [parsedChartData, scaleData, location, market, ranges, limit]);
 
     // Draw Chart
-    const drawChart = useCallback((chartData: any, targets: any, scaleData: any, tooltip: any) => {
-        if (chartData.length > 0) {
-            let selectedCandle: any;
-            let nearestCandleData: any;
-            const crosshairData = [{ x: 0, y: -1 }];
+    const drawChart = useCallback(
+        (chartData: any, targets: any, scaleData: any, tooltip: any, liquidityData: any) => {
+            if (chartData.length > 0) {
+                let selectedCandle: any;
+                let nearestCandleData: any;
+                const crosshairData = [{ x: 0, y: -1 }];
 
-            const render = () => {
-                nd.requestRedraw();
-            };
+                const minimum = (data: any, accessor: any) => {
+                    return data
+                        .map(function (dataPoint: any, index: any) {
+                            return [accessor(dataPoint, index), dataPoint, index];
+                        })
+                        .reduce(
+                            function (accumulator: any, dataPoint: any) {
+                                return accumulator[0] > dataPoint[0] ? dataPoint : accumulator;
+                            },
+                            [Number.MAX_VALUE, null, -1],
+                        );
+                };
 
-            const minimum = (data: any, accessor: any) => {
-                return data
-                    .map(function (dataPoint: any, index: any) {
-                        return [accessor(dataPoint, index), dataPoint, index];
-                    })
-                    .reduce(
-                        function (accumulator: any, dataPoint: any) {
-                            return accumulator[0] > dataPoint[0] ? dataPoint : accumulator;
+                const snap = (series: any, data: any, point: any) => {
+                    if (point == undefined) return [];
+                    const xScale = series.xScale(),
+                        xValue = series.crossValue();
+
+                    const filtered =
+                        data.lenght > 1 ? data.filter((d: any) => xValue(d) != null) : data;
+                    const nearest = minimum(filtered, (d: any) =>
+                        Math.abs(point.offsetX - xScale(xValue(d))),
+                    )[1];
+
+                    nearestCandleData = nearest;
+                    return [
+                        {
+                            x: nearest?.date,
+                            y: -1,
                         },
-                        [Number.MAX_VALUE, null, -1],
-                    );
-            };
+                    ];
+                };
 
-            const snap = (series: any, data: any, point: any) => {
-                if (point == undefined) return [];
-                const xScale = series.xScale(),
-                    xValue = series.crossValue();
+                const valueFormatter = d3.format('.5f');
+                const priceFormatter = d3.format('5.5f');
 
-                const filtered =
-                    data.lenght > 1 ? data.filter((d: any) => xValue(d) != null) : data;
-                const nearest = minimum(filtered, (d: any) =>
-                    Math.abs(point.offsetX - xScale(xValue(d))),
-                )[1];
+                // axes
+                const xAxis = d3fc.axisBottom().scale(scaleData.xScale);
+                const yAxis = d3fc.axisRight().scale(scaleData.yScale);
 
-                nearestCandleData = nearest;
-                return [
-                    {
-                        x: nearest?.date,
-                        y: -1,
-                    },
-                ];
-            };
-
-            const valueFormatter = d3.format('.5f');
-            const priceFormatter = d3.format('5.5f');
-
-            // axes
-            const xAxis = d3fc.axisBottom().scale(scaleData.xScale);
-            const yAxis = d3fc.axisRight().scale(scaleData.yScale);
-
-            const barSeries = d3fc
-                .autoBandwidth(d3fc.seriesSvgBar())
-                .widthFraction(1)
-                .orient('horizontal')
-                .mainValue((d: any) => scaleData.liqScale.invert(d.value))
-                .crossValue((d: any) => d.tick)
-                .xScale(scaleData.liquidityScale)
-                .yScale(scaleData.yScale)
-                .decorate((selection: any) => {
-                    selection.select('.bar > path').style('fill', (d: any) => {
-                        return d.tick < scaleData.barThreshold
-                            ? 'rgba(205, 193, 255, 0.25)'
-                            : 'rgba(115, 113, 252, 0.25)';
+                const barSeries = d3fc
+                    .autoBandwidth(d3fc.seriesSvgBar())
+                    .widthFraction(1)
+                    .orient('horizontal')
+                    .align('center')
+                    .mainValue((d: any) => scaleData.liqScale.invert(parseFloat(d.activeLiq)))
+                    .crossValue((d: any) => d.upperBoundInvPriceDecimalCorrected)
+                    .xScale(scaleData.liquidityScale)
+                    .yScale(scaleData.yScale)
+                    .decorate((selection: any) => {
+                        selection.select('.bar > path').style('fill', (d: any) => {
+                            return d.upperBoundInvPriceDecimalCorrected < scaleData.barThreshold
+                                ? 'rgba(205, 193, 255, 0.25)'
+                                : 'rgba(115, 113, 252, 0.25)';
+                        });
                     });
+
+                const popup = d3
+                    .select(d3Container.current)
+                    .append('div')
+                    .attr('class', 'popup')
+                    .style('visibility', 'hidden');
+
+                const crosshair = d3fc
+                    .annotationSvgLine()
+                    .orient('vertical')
+                    .value((d: any) => d.x)
+                    .xScale(scaleData.xScale)
+                    .yScale(scaleData.yScale)
+                    .label('');
+
+                crosshair.decorate((selection: any) => {
+                    selection.enter().select('line').attr('class', 'crosshair');
+                    selection
+                        .enter()
+                        .append('line')
+                        .attr('stroke-width', 1)
+                        .style('pointer-events', 'all');
                 });
 
-            const popup = d3
-                .select(d3Container.current)
-                .append('div')
-                .attr('class', 'popup')
-                .style('visibility', 'hidden');
+                const candlestick = d3fc
+                    .autoBandwidth(d3fc.seriesSvgCandlestick())
+                    .decorate((selection: any) => {
+                        selection
+                            .enter()
+                            .style('fill', (d: any) => (d.close > d.open ? '#7371FC' : '#CDC1FF'))
+                            .style('stroke', (d: any) =>
+                                d.close > d.open ? '#7371FC' : '#CDC1FF',
+                            );
+                        selection
+                            .enter()
+                            .on('mouseover', (event: any) => {
+                                d3.select(event.currentTarget).style('cursor', 'pointer');
+                            })
+                            .on('mouseout', (event: any) => {
+                                d3.select(event.currentTarget).style('cursor', 'default');
+                            })
+                            .on('click', (event: any) => {
+                                if (
+                                    selectedCandle !== undefined &&
+                                    event.currentTarget !== selectedCandle
+                                ) {
+                                    d3.select(selectedCandle)
+                                        .style('fill', (d: any) =>
+                                            d.close > d.open ? '#7371FC' : '#CDC1FF',
+                                        )
+                                        .style('stroke', (d: any) =>
+                                            d.close > d.open ? '#7371FC' : '#CDC1FF',
+                                        );
+                                }
+                                if (event.currentTarget === selectedCandle) {
+                                    popup.style('visibility', 'hidden');
+                                    d3.select(event.currentTarget)
+                                        .style('fill', (d: any) =>
+                                            d.close > d.open ? '#7371FC' : '#CDC1FF',
+                                        )
+                                        .style('stroke', (d: any) =>
+                                            d.close > d.open ? '#7371FC' : '#CDC1FF',
+                                        );
+                                    setIsChartSelected(false);
+                                    selectedCandle = undefined;
+                                } else {
+                                    selectedCandle = event.currentTarget;
+                                    setIsChartSelected(true);
+                                    setTransactionFilter(() => {
+                                        return event.target.__data__;
+                                    });
 
-            const crosshair = d3fc
-                .annotationSvgLine()
-                .orient('vertical')
-                .value((d: any) => d.x)
-                .xScale(scaleData.xScale)
-                .yScale(scaleData.yScale)
-                .label('');
+                                    d3.select(event.currentTarget)
+                                        .style('fill', '#F7385B')
+                                        .style('stroke', '#F7385B');
 
-            crosshair.decorate((selection: any) => {
-                selection.enter().select('line').attr('class', 'crosshair');
-                selection
-                    .enter()
-                    .append('line')
-                    .attr('stroke-width', 1)
-                    .style('pointer-events', 'all');
-            });
+                                    popup
+                                        .style('visibility', 'visible')
+                                        .html(
+                                            '<p>Showing Transactions for <span style="color: #E6274A">' +
+                                                moment(event.target.__data__.date).format(
+                                                    'DD MMM  HH:mm',
+                                                ) +
+                                                '</span> Candle</p>',
+                                        )
+                                        .style('left', '34%')
+                                        .style('top', 500 + 'px');
+                                }
+                            });
+                    })
+                    .xScale(scaleData.xScale)
+                    .yScale(scaleData.yScale);
 
-            const candlestick = d3fc
-                .autoBandwidth(d3fc.seriesSvgCandlestick())
-                .decorate((selection: any) => {
+                const horizontalLine = d3fc
+                    .annotationSvgLine()
+                    .value((d: any) => d.value)
+                    .xScale(scaleData.xScale)
+                    .yScale(scaleData.yScale);
+
+                horizontalLine.decorate((selection: any) => {
                     selection
                         .enter()
-                        .style('fill', (d: any) => (d.close > d.open ? '#7371FC' : '#CDC1FF'))
-                        .style('stroke', (d: any) => (d.close > d.open ? '#7371FC' : '#CDC1FF'));
+                        .attr('id', (d: any) => d.name)
+                        .select('g.left-handle')
+                        .append('text')
+                        .attr('x', 5)
+                        .attr('y', -5);
+                    selection.enter().select('g.right-handle').remove();
+                    selection.enter().select('line').attr('class', 'redline').attr('stroke', 'red');
+                    selection
+                        .select('g.left-handle text')
+                        .text((d: any) => d.name + ' - ' + valueFormatter(d.value));
                     selection
                         .enter()
-                        .on('mouseover', (event: any) => {
-                            d3.select(event.currentTarget).style('cursor', 'pointer');
-                        })
+                        .append('line')
+
+                        .attr('class', 'detector')
+                        .attr('stroke', 'transparent')
+                        .attr('x2', '100%')
+                        .attr('stroke-width', 5)
+                        .style('pointer-events', 'all')
                         .on('mouseout', (event: any) => {
                             d3.select(event.currentTarget).style('cursor', 'default');
-                        })
-                        .on('click', (event: any) => {
-                            if (
-                                selectedCandle !== undefined &&
-                                event.currentTarget !== selectedCandle
-                            ) {
-                                d3.select(selectedCandle)
-                                    .style('fill', (d: any) =>
-                                        d.close > d.open ? '#7371FC' : '#CDC1FF',
-                                    )
-                                    .style('stroke', (d: any) =>
-                                        d.close > d.open ? '#7371FC' : '#CDC1FF',
-                                    );
-                            }
-                            if (event.currentTarget === selectedCandle) {
-                                popup.style('visibility', 'hidden');
-                                d3.select(event.currentTarget)
-                                    .style('fill', (d: any) =>
-                                        d.close > d.open ? '#7371FC' : '#CDC1FF',
-                                    )
-                                    .style('stroke', (d: any) =>
-                                        d.close > d.open ? '#7371FC' : '#CDC1FF',
-                                    );
-                                setIsChartSelected(false);
-                                selectedCandle = undefined;
-                            } else {
-                                selectedCandle = event.currentTarget;
-                                setIsChartSelected(true);
-                                setTransactionFilter(() => {
-                                    return event.target.__data__;
-                                });
-
-                                d3.select(event.currentTarget)
-                                    .style('fill', '#F7385B')
-                                    .style('stroke', '#F7385B');
-
-                                popup
-                                    .style('visibility', 'visible')
-                                    .html(
-                                        '<p>Showing Transactions for <span style="color: #E6274A">' +
-                                            moment(event.target.__data__.date).format(
-                                                'DD MMM  HH:mm',
-                                            ) +
-                                            '</span> Candle</p>',
-                                    )
-                                    .style('left', '34%')
-                                    .style('top', 500 + 'px');
-                            }
                         });
-                })
-                .xScale(scaleData.xScale)
-                .yScale(scaleData.yScale);
-
-            const horizontalLine = d3fc
-                .annotationSvgLine()
-                .value((d: any) => d.value)
-                .xScale(scaleData.xScale)
-                .yScale(scaleData.yScale);
-
-            // const dragRange = d3.drag().on('drag', function (event, d: any) {
-            //     const newValue = scaleData.yScale.invert(d3.pointer(event)[1] - 182);
-            //     setRanges((prevState) => {
-            //         const newTargets = [...prevState];
-            //         if (
-            //             d.name === 'high' &&
-            //             newValue >
-            //                 newTargets.filter((target: any) => target.name === 'low')[0].value
-            //         ) {
-            //             newTargets.filter((target: any) => target.name === d.name)[0].value =
-            //                 newValue;
-            //         } else if (
-            //             d.name === 'low' &&
-            //             newValue <
-            //                 newTargets.filter((target: any) => target.name === 'high')[0].value
-            //         ) {
-            //             newTargets.filter((target: any) => target.name === d.name)[0].value =
-            //                 newValue;
-            //         }
-            //         render();
-            //         return newTargets;
-            //     });
-            // });
-
-            const dragLimit = d3.drag().on('drag', function (event) {
-                const newValue = scaleData.yScale.invert(d3.pointer(event)[1] - 182);
-                setLimit(() => {
-                    return [{ name: 'Limit', value: newValue }];
                 });
-            });
 
-            const drag = dragLimit;
+                let lastY = 0;
+                let yOffset = 0;
 
-            horizontalLine.decorate((selection: any) => {
-                selection.enter().select('g.left-handle').append('text').attr('x', 5).attr('y', -5);
-                selection.enter().select('g.right-handle').remove();
-                selection.enter().select('line').attr('class', 'redline').attr('stroke', 'red');
-                selection
-                    .select('g.left-handle text')
-                    .text((d: any) => d.name + ' - ' + valueFormatter(d.value));
-                selection
-                    .enter()
-                    .append('line')
-                    .attr('class', 'detector')
-                    .attr('stroke', 'transparent')
-                    .attr('x2', '100%')
-                    .attr('stroke-width', 5)
-                    .style('pointer-events', 'all')
+                const zoom = d3
+                    .zoom()
+                    .scaleExtent([1, 10])
+                    .on('zoom', (event: any) => {
+                        scaleData.xScale.domain(
+                            event.transform.rescaleX(scaleData.xScaleCopy).domain(),
+                        );
+
+                        if (event.sourceEvent && event.sourceEvent.type != 'wheel') {
+                            lastY = event.transform.y - yOffset;
+                            const translate = d3.zoomIdentity.translate(0, lastY);
+                            scaleData.yScale.domain(
+                                translate.rescaleY(scaleData.yScaleCopy).domain(),
+                            );
+                        } else {
+                            yOffset = event.transform.y - lastY;
+                        }
+
+                        render();
+                    }) as any;
+
+                const yAxisZoom = d3
+                    .zoom()
+                    .scaleExtent([1, 10])
+                    .on('zoom', (event: any) => {
+                        scaleData.yScale.domain(
+                            event.transform.rescaleY(scaleData.yScaleCopy).domain(),
+                        );
+                        render();
+                    }) as any;
+
+                const yAxisDrag = d3.drag().on('drag', (event: any) => {
+                    const factor = Math.pow(2, -event.dy * 0.01);
+                    d3.select(d3PlotArea.current).call(yAxisZoom.scaleBy, factor);
+                }) as any;
+
+                const candleJoin = d3fc.dataJoin('g', 'candle');
+                const targetsJoin = d3fc.dataJoin('g', 'targets');
+                const barJoin = d3fc.dataJoin('g', 'bar');
+                const crosshairJoin = d3fc.dataJoin('g', 'crosshair');
+
+                // handle the plot area measure event in order to compute the scale ranges
+                d3.select(d3PlotArea.current).on('measure', function (event: any) {
+                    scaleData.xScale.range([0, event.detail.width]);
+                    scaleData.yScale.range([event.detail.height, 0]);
+
+                    scaleData.liquidityTickScale.range([event.detail.height, 0]);
+                    scaleData.liquidityScale.range([event.detail.width, event.detail.width / 2]);
+                });
+
+                d3.select(d3PlotArea.current).on('draw', function (event: any) {
+                    const svg = d3.select(event.target).select('svg');
+
+                    crosshairJoin(svg, [crosshairData]).call(crosshair);
+                    barJoin(svg, [liquidityData]).call(barSeries);
+                    candleJoin(svg, [chartData]).call(candlestick);
+                    targetsJoin(svg, [targets]).call(horizontalLine);
+                });
+
+                d3.select(d3Xaxis.current).on('draw', function (event: any) {
+                    d3.select(event.target).select('svg').call(xAxis);
+                });
+
+                d3.select(d3Yaxis.current).on('draw', function (event: any) {
+                    d3.select(event.target).select('svg').call(yAxis);
+                });
+
+                d3.select(d3PlotArea.current).on('measure.range', function (event: any) {
+                    const svg = d3.select(event.target).select('svg');
+                    scaleData.xScaleCopy.range([0, event.detail.width]);
+                    scaleData.yScaleCopy.range([event.detail.height, 0]);
+                    svg.call(zoom);
+                });
+
+                d3.select(d3PlotArea.current).on('mousemove', function (event: any) {
+                    crosshairData[0] = snap(candlestick, chartData, event)[0];
+
+                    tooltip
+                        .style('visibility', 'visible')
+                        .html(
+                            '<div>' +
+                                '<div class="block"><div class="value_title" >Open:</div>' +
+                                '<div class="value">' +
+                                priceFormatter(nearestCandleData.open) +
+                                '</div></div>' +
+                                '<div class="block"><div class="value_title" >Close:</div>' +
+                                '<div class="value">' +
+                                priceFormatter(nearestCandleData.close) +
+                                '</div></div>' +
+                                '<div class="block"><div class="value_title" >Max Price:</div>' +
+                                '<div class="value">' +
+                                priceFormatter(nearestCandleData.high) +
+                                '</div></div>' +
+                                '<div class="block"><div class="value_title" >Min Price:</div>' +
+                                '<div class="value">' +
+                                priceFormatter(nearestCandleData.low) +
+                                '</div></div>' +
+                                '<div class="block"><div class="value_title" >Date:</div>' +
+                                '<div class="value">' +
+                                moment(nearestCandleData.date).format('DD MMM  HH:mm') +
+                                '</div></div>' +
+                                '</div>',
+                        )
+                        .style(
+                            'left',
+                            (event.x < 1000
+                                ? event.x - 250
+                                : event.x < 1250
+                                ? event.x - 550
+                                : 700) + 'px',
+                        )
+                        .style('top', event.y - 50 + 'px');
+
+                    render();
+                });
+
+                d3.select(d3Yaxis.current)
                     .on('mouseover', (event: any) => {
-                        d3.select(event.currentTarget).style('cursor', 'ns-resize');
+                        // if (path.includes('limit')){
+                        // d3.select(event.currentTarget).style('cursor', 'ns-resize');
+                        // }
                     })
-                    .on('mouseout', (event: any) => {
-                        d3.select(event.currentTarget).style('cursor', 'default');
-                    })
-                    .call(drag);
-            });
-
-            let lastY = 0;
-            let yOffset = 0;
-
-            const zoom = d3
-                .zoom()
-                .scaleExtent([1, 10])
-                .on('zoom', (event: any) => {
-                    scaleData.xScale.domain(
-                        event.transform.rescaleX(scaleData.xScaleCopy).domain(),
-                    );
-
-                    if (event.sourceEvent && event.sourceEvent.type != 'wheel') {
-                        lastY = event.transform.y - yOffset;
-                        const translate = d3.zoomIdentity.translate(0, lastY);
-                        scaleData.yScale.domain(translate.rescaleY(scaleData.yScaleCopy).domain());
-                    } else {
-                        yOffset = event.transform.y - lastY;
-                    }
-
-                    render();
-                }) as any;
-
-            const yAxisZoom = d3
-                .zoom()
-                .scaleExtent([1, 10])
-                .on('zoom', (event: any) => {
-                    scaleData.yScale.domain(
-                        event.transform.rescaleY(scaleData.yScaleCopy).domain(),
-                    );
-                    render();
-                }) as any;
-
-            const yAxisDrag = d3.drag().on('drag', (event: any) => {
-                const factor = Math.pow(2, -event.dy * 0.01);
-                d3.select(d3PlotArea.current).call(yAxisZoom.scaleBy, factor);
-            }) as any;
-
-            const candleJoin = d3fc.dataJoin('g', 'candle');
-            const targetsJoin = d3fc.dataJoin('g', 'targets');
-            const barJoin = d3fc.dataJoin('g', 'bar');
-            const crosshairJoin = d3fc.dataJoin('g', 'crosshair');
-
-            // handle the plot area measure event in order to compute the scale ranges
-            d3.select(d3PlotArea.current).on('measure', function (event: any) {
-                scaleData.xScale.range([0, event.detail.width]);
-                scaleData.yScale.range([event.detail.height, 0]);
-
-                scaleData.liquidityTickScale.range([event.detail.height, 0]);
-                scaleData.liquidityScale.range([event.detail.width, event.detail.width / 2]);
-            });
-
-            d3.select(d3PlotArea.current).on('draw', function (event: any) {
-                const svg = d3.select(event.target).select('svg');
-
-                crosshairJoin(svg, [crosshairData]).call(crosshair);
-                candleJoin(svg, [chartData]).call(candlestick);
-                barJoin(svg, [props.liquidityData]).call(barSeries);
-                targetsJoin(svg, [targets]).call(horizontalLine);
-            });
-
-            d3.select(d3Xaxis.current).on('draw', function (event: any) {
-                d3.select(event.target).select('svg').call(xAxis);
-            });
-
-            d3.select(d3Yaxis.current).on('draw', function (event: any) {
-                d3.select(event.target).select('svg').call(yAxis);
-            });
-
-            d3.select(d3PlotArea.current).on('measure.range', function (event: any) {
-                const svg = d3.select(event.target).select('svg');
-                scaleData.xScaleCopy.range([0, event.detail.width]);
-                scaleData.yScaleCopy.range([event.detail.height, 0]);
-                svg.call(zoom);
-            });
-
-            d3.select(d3PlotArea.current).on('mousemove', function (event: any) {
-                crosshairData[0] = snap(candlestick, chartData, event)[0];
-
-                tooltip
-                    .style('visibility', 'visible')
-                    .html(
-                        '<div>' +
-                            '<div class="block"><div class="value_title" >Open:</div>' +
-                            '<div class="value">' +
-                            priceFormatter(nearestCandleData.open) +
-                            '</div></div>' +
-                            '<div class="block"><div class="value_title" >Close:</div>' +
-                            '<div class="value">' +
-                            priceFormatter(nearestCandleData.close) +
-                            '</div></div>' +
-                            '<div class="block"><div class="value_title" >Max Price:</div>' +
-                            '<div class="value">' +
-                            priceFormatter(nearestCandleData.high) +
-                            '</div></div>' +
-                            '<div class="block"><div class="value_title" >Min Price:</div>' +
-                            '<div class="value">' +
-                            priceFormatter(nearestCandleData.low) +
-                            '</div></div>' +
-                            '<div class="block"><div class="value_title" >Date:</div>' +
-                            '<div class="value">' +
-                            moment(nearestCandleData.date).format('DD MMM  HH:mm') +
-                            '</div></div>' +
-                            '</div>',
-                    )
-                    .style('left', (event.x < 1250 ? event.x - 250 : 1000) + 'px')
-                    .style('top', event.y - 50 + 'px');
+                    .call(yAxisDrag);
 
                 render();
-            });
-
-            d3.select(d3Yaxis.current)
-                .on('mouseover', (event: any) => {
-                    d3.select(event.currentTarget).style('cursor', 'ns-resize');
-                })
-                .call(yAxisDrag);
-
-            const nd = d3.select('#group').node() as any;
-            render();
-        }
-    }, []);
+            }
+        },
+        [],
+    );
 
     // Set selected candle transactions
     useEffect(() => {
@@ -686,18 +892,30 @@ export default function Chart(props: ChartData) {
 
     useEffect(() => {
         const timer = setTimeout(() => {
-            const newTargetData: targetData[] = [
-                {
-                    name: 'high',
-                    value: ranges.filter((target: any) => target.name === 'high')[0].value,
-                },
-                {
-                    name: 'low',
-                    value: ranges.filter((target: any) => target.name === 'low')[0].value,
-                },
-            ];
+            const reustls: boolean[] = [];
 
-            dispatch(setTargetData(newTargetData));
+            ranges.map((mapData) => {
+                props.targetData?.map((data) => {
+                    if (mapData.name === data.name && mapData.value == data.value) {
+                        reustls.push(true);
+                    }
+                });
+            });
+
+            if (reustls.length < 2) {
+                const newTargetData: targetData[] = [
+                    {
+                        name: 'high',
+                        value: ranges.filter((target: any) => target.name === 'high')[0].value,
+                    },
+                    {
+                        name: 'low',
+                        value: ranges.filter((target: any) => target.name === 'low')[0].value,
+                    },
+                ];
+
+                dispatch(setTargetData(newTargetData));
+            }
         }, 1000);
         return () => clearTimeout(timer);
     }, [ranges]);

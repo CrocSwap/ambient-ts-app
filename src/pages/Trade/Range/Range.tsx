@@ -39,6 +39,8 @@ import {
     setAdvancedHighTick,
     setAdvancedLowTick,
     setSimpleRangeWidth,
+    setPinnedMaxPrice,
+    setPinnedMinPrice,
 } from '../../../utils/state/tradeDataSlice';
 import { addReceipt } from '../../../utils/state/receiptDataSlice';
 import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
@@ -240,6 +242,13 @@ export default function Range(props: RangePropsIF) {
 
             setRangeLowTick(pinnedDisplayPrices.pinnedLowTick);
             setRangeHighTick(pinnedDisplayPrices.pinnedHighTick);
+
+            dispatch(
+                setPinnedMinPrice(parseFloat(pinnedDisplayPrices.pinnedMinPriceDisplayTruncated)),
+            );
+            dispatch(
+                setPinnedMaxPrice(parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated)),
+            );
         }
     }, [rangeWidthPercentage, isAdvancedModeActive, denominationsInBase]);
 
@@ -487,6 +496,10 @@ export default function Range(props: RangePropsIF) {
                 denominationsInBase
                     ? dispatch(setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick))
                     : dispatch(setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick));
+
+                denominationsInBase
+                    ? dispatch(setPinnedMinPrice(pinnedDisplayPrices.pinnedLowTick))
+                    : dispatch(setPinnedMaxPrice(pinnedDisplayPrices.pinnedHighTick));
 
                 denominationsInBase
                     ? setRangeLowTick(pinnedDisplayPrices.pinnedLowTick)

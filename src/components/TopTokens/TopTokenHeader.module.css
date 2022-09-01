@@ -41,7 +41,7 @@
 /* Mobile Landscape Screen Sizes */
 @media only screen and (min-width: 480px) {
     .main_container {
-        grid-template-columns: 50px auto 50px;
+        grid-template-columns: 50px auto ;
     }
     .token_logos {
         display: flex;
@@ -54,7 +54,7 @@
         display: none;
     }
     .header_container {
-        grid-template-columns: 100px auto 200px;
+        grid-template-columns: 100px auto ;
     }
 
     .row {
@@ -65,7 +65,7 @@
 /* Large devices (laptops/desktops, 992px and up) */
 @media only screen and (min-width: 992px) {
     .main_container {
-        grid-template-columns: 100px auto 50px;
+        grid-template-columns: 100px auto;
     }
 }
 
@@ -83,13 +83,13 @@
 /* Extra large devices (large laptops and desktops, 1200px and up) */
 @media only screen and (min-width: 1500px) {
     .main_container {
-        grid-template-columns: 100px auto 250px;
+        grid-template-columns: 100px auto;
     }
 }
 
 /* Extra large devices (large laptops and desktops, 1200px and up) */
 @media only screen and (min-width: 1600px) {
     .main_container {
-        grid-template-columns: 100px 1fr 0.6fr;
+        grid-template-columns: 100px 1fr;
     }
 }

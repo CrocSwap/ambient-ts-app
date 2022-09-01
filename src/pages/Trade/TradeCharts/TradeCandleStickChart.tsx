@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
-import { DetailedHTMLProps, HTMLAttributes, useEffect, useState } from 'react';
+import { DetailedHTMLProps, HTMLAttributes, useEffect } from 'react';
 import { formatDollarAmountAxis } from '../../../utils/numbers';
 import { CandleData, CandlesByPoolAndDuration } from '../../../utils/state/graphDataSlice';
 import { targetData } from '../../../utils/state/tradeDataSlice';
@@ -31,6 +31,12 @@ interface ChartData {
     limitPrice: string | undefined;
     setLimitRate: React.Dispatch<React.SetStateAction<string>>;
     limitRate: string;
+    liquidityData: any;
+    isAdvancedModeActive: boolean | undefined;
+    simpleRangeWidth: number | undefined;
+    pinnedMinPriceDisplayTruncated: number | undefined;
+    pinnedMaxPriceDisplayTruncated: number | undefined;
+    truncatedPoolPrice: number | undefined;
 }
 
 type chartItemStates = {
@@ -53,9 +59,8 @@ export default function TradeCandleStickChart(props: ChartData) {
         volumeData: props.volumeData,
         feeData: props.feeData,
         priceData: props.priceData,
+        liquidityData: props.liquidityData,
     };
-
-    const [liquidityData] = useState([]);
 
     // Volume Chart
     useEffect(() => {
@@ -258,13 +263,18 @@ export default function TradeCandleStickChart(props: ChartData) {
             <div style={{ height: `${chartHeight}%`, width: '100%' }}>
                 <Chart
                     priceData={data.priceData}
-                    liquidityData={liquidityData}
+                    liquidityData={props.liquidityData.ranges}
                     changeState={props.changeState}
                     targetData={props.targetData}
                     limitPrice={props.limitPrice}
                     setLimitRate={props.setLimitRate}
                     limitRate={props.limitRate}
                     denomInBase={props.denomInBase}
+                    isAdvancedModeActive={props.isAdvancedModeActive}
+                    simpleRangeWidth={props.simpleRangeWidth}
+                    pinnedMinPriceDisplayTruncated={props.pinnedMinPriceDisplayTruncated}
+                    pinnedMaxPriceDisplayTruncated={props.pinnedMaxPriceDisplayTruncated}
+                    truncatedPoolPrice={props.truncatedPoolPrice}
                 />
             </div>
 
