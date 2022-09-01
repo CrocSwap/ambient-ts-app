@@ -83,8 +83,8 @@ export default function Edit() {
         }
     }, [denominationsInBase, isAdvancedModeActive, rangeLowTick, rangeHighTick, location.pathname]);
 
-    const baseTokenDecimals = position.baseTokenDecimals;
-    const quoteTokenDecimals = position.quoteTokenDecimals;
+    const baseTokenDecimals = position.baseDecimals;
+    const quoteTokenDecimals = position.quoteDecimals;
 
     const [pinnedMinPriceDisplayTruncated, setPinnedMinPriceDisplayTruncated] = useState('');
     const [pinnedMaxPriceDisplayTruncated, setPinnedMaxPriceDisplayTruncated] = useState('');

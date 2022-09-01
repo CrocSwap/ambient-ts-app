@@ -151,11 +151,9 @@ export default function Swap(props: SwapPropsIF) {
 
     useEffect(() => {
         if (poolPriceDisplay === undefined) {
-            console.log('4');
             setSwapAllowed(false);
             setSwapButtonErrorMessage('…');
         } else if (poolPriceDisplay === 0 || poolPriceDisplay === Infinity) {
-            console.log('5');
             setSwapAllowed(false);
             setSwapButtonErrorMessage('Invalid Token Pair');
         }
