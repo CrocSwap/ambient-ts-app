@@ -46,5 +46,6 @@ export interface PositionIF {
     feesLiqQuoteDecimalCorrected?: number;
     feesLiqQuote?: string;
     apy: number;
-    // apyPercentage?: number;
+    time: number;
+    latestUpdateTime: number;
 }
