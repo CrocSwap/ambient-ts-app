@@ -95,7 +95,7 @@ export default function Ranges(props: RangesPropsIF) {
         [...unsortedData].sort((a, b) => a.user.localeCompare(b.user))
     );
 
-    const sortData = (data: PositionIF[], reversed=false) => {
+    const sortData = (data: PositionIF[]) => {
         let sortedData: PositionIF[];
         switch (sortBy) {
             case 'wallet':
@@ -104,8 +104,10 @@ export default function Ranges(props: RangesPropsIF) {
             default:
                 sortedData = data;
         }
-        return reversed ? sortedData.reverse(): sortedData;
+        return reverseSort ? sortedData.reverse(): sortedData;
     }
+
+    // TODO: new user positions reset table sort, new pool positions retains sort
 
     const sortedPositions = useMemo(() => {
         const positions = isShowAllEnabled ? poolPositions : userPositions;

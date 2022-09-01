@@ -205,46 +205,47 @@ export default function RangeCard(props: RangeCardProps) {
         }
 
         (async () => {
-            const positionApyCacheEndpoint = 'https://809821320828123.de:5000' + '/position_apy?';
+            // const positionApyCacheEndpoint = 'https://809821320828123.de:5000' + '/position_apy?';
 
-            const positionApy =
-                position.positionType === 'ambient'
-                    ? await fetch(
-                          positionApyCacheEndpoint +
-                              new URLSearchParams({
-                                  chainId: position.chainId,
-                                  user: position.user,
-                                  base: position.base,
-                                  quote: position.quote,
-                                  poolIdx: position.poolIdx.toString(),
-                                  concise: 'true',
-                              }),
-                      )
-                          .then((response) => response?.json())
-                          .then((json) => {
-                              const apy = json?.data?.results?.apy;
-                              return apy;
-                          })
-                    : await fetch(
-                          positionApyCacheEndpoint +
-                              new URLSearchParams({
-                                  chainId: position.chainId,
-                                  user: position.user,
-                                  base: position.base,
-                                  quote: position.quote,
-                                  bidTick: position.bidTick.toString(),
-                                  askTick: position.askTick.toString(),
-                                  poolIdx: position.poolIdx.toString(),
-                                  concise: 'true',
-                              }),
-                      )
-                          .then((response) => response?.json())
-                          .then((json) => {
-                              const apy = json?.data?.results?.apy;
-                              return apy;
-                          });
+            // const positionApy =
+            //     position.positionType === 'ambient'
+            //         ? await fetch(
+            //               positionApyCacheEndpoint +
+            //                   new URLSearchParams({
+            //                       chainId: position.chainId,
+            //                       user: position.user,
+            //                       base: position.base,
+            //                       quote: position.quote,
+            //                       poolIdx: position.poolIdx.toString(),
+            //                       concise: 'true',
+            //                   }),
+            //           )
+            //               .then((response) => response?.json())
+            //               .then((json) => {
+            //                   const apy = json?.data?.results?.apy;
+            //                   return apy;
+            //               })
+            //         : await fetch(
+            //               positionApyCacheEndpoint +
+            //                   new URLSearchParams({
+            //                       chainId: position.chainId,
+            //                       user: position.user,
+            //                       base: position.base,
+            //                       quote: position.quote,
+            //                       bidTick: position.bidTick.toString(),
+            //                       askTick: position.askTick.toString(),
+            //                       poolIdx: position.poolIdx.toString(),
+            //                       concise: 'true',
+            //                   }),
+            //           )
+            //               .then((response) => response?.json())
+            //               .then((json) => {
+            //                   const apy = json?.data?.results?.apy;
+            //                   return apy;
+            //               });
 
-            setPositionApy(positionApy);
+            // setPositionApy(positionApy);
+            setPositionApy(10);
         })();
     }, [JSON.stringify(position)]);
 
