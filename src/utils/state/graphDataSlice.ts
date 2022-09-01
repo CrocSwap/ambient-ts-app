@@ -132,6 +132,8 @@ export interface CandleData {
     maxPriceDecimalCorrected: number;
     priceOpenDecimalCorrected: number;
     priceCloseDecimalCorrected: number;
+    priceCloseExclMEVDecimalCorrected: number;
+    invPriceCloseExclMEVDecimalCorrected: number;
     invMinPriceDecimalCorrected: number;
     invMaxPriceDecimalCorrected: number;
     invPriceOpenDecimalCorrected: number;
@@ -227,6 +229,7 @@ export interface ISwap {
     priceDecimalCorrected: number;
     invPriceDecimalCorrected: number;
     valueUSD: number;
+    ensResolution: string;
 }
 
 export interface SwapsByUser {

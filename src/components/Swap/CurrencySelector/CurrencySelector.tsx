@@ -26,7 +26,7 @@ interface CurrencySelectorProps {
     isSaveAsDexSurplusChecked: boolean;
     setIsSaveAsDexSurplusChecked: Dispatch<SetStateAction<boolean>>;
     handleChangeEvent: (evt: ChangeEvent<HTMLInputElement>) => void;
-    handleChangeClick: (value: string) => void;
+    handleChangeClick?: (value: string) => void;
     reverseTokens: () => void;
     activeTokenListsChanged: boolean;
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
@@ -133,12 +133,23 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
         </Modal>
     ) : null;
 
-    const walletBalance =
+    const walletBalanceNonLocaleString =
+        props.sellToken && tokenABalance !== ''
+            ? parseFloat(tokenABalance).toString()
+            : !props.sellToken && tokenBBalance !== ''
+            ? parseFloat(tokenBBalance).toString()
+            : '0';
+
+    const walletBalanceLocaleString =
         props.sellToken && tokenABalance !== ''
             ? parseFloat(tokenABalance).toLocaleString()
             : !props.sellToken && tokenBBalance !== ''
             ? parseFloat(tokenBBalance).toLocaleString()
             : '0';
+
+    const surplusBalance = 0;
+    const surplusBalanceNonLocaleString = surplusBalance.toString();
+    const surplusBalanceLocaleString = surplusBalance.toLocaleString();
 
     return (
         <div className={styles.swapbox}>
@@ -162,19 +173,26 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
             <div className={styles.swapbox_bottom}>
                 <div className={styles.surplus_container}>
                     <div
+                        className={styles.balance_with_pointer}
                         onClick={() => {
-                            handleChangeClick(walletBalance);
+                            props.sellToken && handleChangeClick
+                                ? handleChangeClick(walletBalanceNonLocaleString)
+                                : setIsSaveAsDexSurplusChecked(false);
                         }}
                     >
-                        Wallet: {walletBalance}{' '}
+                        Wallet: {walletBalanceLocaleString}{' '}
                     </div>{' '}
                     |{' '}
                     <div
+                        className={styles.balance_with_pointer}
+                        // className={props.sellToken ? styles.balance_with_pointer : null}
                         onClick={() => {
-                            handleChangeClick('0');
+                            props.sellToken && handleChangeClick
+                                ? handleChangeClick(surplusBalanceNonLocaleString)
+                                : setIsSaveAsDexSurplusChecked(true);
                         }}
                     >
-                        Surplus: 0
+                        Surplus: {surplusBalanceLocaleString}
                     </div>
                 </div>
                 {/* {fieldId === 'limit-sell' ? DexBalanceContent : WithdrawTokensContent} */}

@@ -1,6 +1,7 @@
 import { topPools } from '../../../../App/mockData';
 import styles from './TopPools.module.css';
 import TopPoolsCard from './TopPoolsCard';
+import { Link } from 'react-router-dom';
 
 interface TopPoolsProps {
     chainId: string;
@@ -31,6 +32,9 @@ export default function TopPools(props: TopPoolsProps) {
                     />
                 ))}
             </div>
+            <Link className={styles.view_more} to='/analytics'>
+                View More
+            </Link>
         </div>
     );
 }
