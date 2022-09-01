@@ -38,11 +38,11 @@ interface SwapPropsIF {
     isPairStable: boolean;
     provider?: ethers.providers.Provider;
     isOnTradeRoute?: boolean;
-    gasPriceinGwei: string;
+    gasPriceinGwei: number | undefined;
     nativeBalance: string;
     lastBlockNumber: number;
-    tokenABalance: string;
-    tokenBBalance: string;
+    baseTokenBalance: string;
+    quoteTokenBalance: string;
     isSellTokenBase: boolean;
     tokenPair: TokenPairIF;
     poolPriceDisplay: number | undefined;
@@ -65,8 +65,8 @@ export default function Swap(props: SwapPropsIF) {
         isOnTradeRoute,
         nativeBalance,
         gasPriceinGwei,
-        tokenABalance,
-        tokenBBalance,
+        baseTokenBalance,
+        quoteTokenBalance,
         isSellTokenBase,
         tokenPair,
         poolPriceDisplay,
@@ -340,8 +340,8 @@ export default function Swap(props: SwapPropsIF) {
                                 parseFloat(nativeBalance),
                                 4,
                             ).toString()}
-                            tokenABalance={tokenABalance}
-                            tokenBBalance={tokenBBalance}
+                            baseTokenBalance={baseTokenBalance}
+                            quoteTokenBalance={quoteTokenBalance}
                             tokenAInputQty={tokenAInputQty}
                             tokenBInputQty={tokenBInputQty}
                             setTokenAInputQty={setTokenAInputQty}
