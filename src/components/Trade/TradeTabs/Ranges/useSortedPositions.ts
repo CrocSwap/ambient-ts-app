@@ -41,7 +41,7 @@ export const useSortedPositions = (
                 sortedData = sortByApy(data);
                 break;
             default:
-                sortedData = data;
+                return data;
         }
         return reverseSort ? reverseArray(sortedData) : sortedData;
     }
