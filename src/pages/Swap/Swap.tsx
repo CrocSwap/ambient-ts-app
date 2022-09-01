@@ -38,7 +38,7 @@ interface SwapPropsIF {
     isPairStable: boolean;
     provider?: ethers.providers.Provider;
     isOnTradeRoute?: boolean;
-    gasPriceinGwei: string;
+    gasPriceinGwei: number | undefined;
     nativeBalance: string;
     lastBlockNumber: number;
     baseTokenBalance: string;

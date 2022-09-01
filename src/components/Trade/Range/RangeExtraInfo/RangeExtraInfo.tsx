@@ -16,7 +16,7 @@ interface RangeExtraInfoPropsIF {
     slippageTolerance: string;
     liquidityProviderFee: number;
     quoteTokenIsBuy?: boolean;
-    gasPriceinGwei: string;
+    gasPriceinGwei: number | undefined;
     isDenomBase: boolean;
     isTokenABase: boolean;
     daysInRangeEstimation: number;
@@ -64,7 +64,7 @@ export default function RangeExtraInfo(props: RangeExtraInfoPropsIF) {
     //           (1 / poolPriceDisplay) * (1 + slippageTolerance) * (1 + liquidityProviderFee / 100),
     //           4,
     //       );
-    const truncatedGasInGwei = truncateDecimals(parseFloat(gasPriceinGwei), 2);
+    const truncatedGasInGwei = gasPriceinGwei ? truncateDecimals(gasPriceinGwei, 2) : undefined;
 
     const extraInfoData = [
         {
@@ -122,7 +122,8 @@ export default function RangeExtraInfo(props: RangeExtraInfoPropsIF) {
                 onClick={() => setShowExtraDetails(!showExtraDetails)}
             >
                 <div className={styles.gas_pump}>
-                    <FaGasPump size={15} /> {truncatedGasInGwei} gwei
+                    <FaGasPump size={15} />{' '}
+                    {truncatedGasInGwei ? `${truncatedGasInGwei} gwei` : '…'}
                 </div>
                 <div className={styles.token_amount}>
                     {reverseDisplay
