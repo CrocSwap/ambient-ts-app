@@ -48,42 +48,15 @@ export default function Ranges(props: RangesPropsIF) {
     const tradeData = useAppSelector((state) => state.tradeData);
 
     const columnHeaders = [
-        {
-            name: 'ID',
-            sortable: false
-        },
-        {
-            name: 'Wallet',
-            sortable: true
-        },
-        {
-            name: 'Range',
-            sortable: false
-        },
-        {
-            name: 'Range Min',
-            sortable: false
-        },
-        {
-            name: 'Range Max',
-            sortable: false
-        },
-        {
-            name: tradeData.baseToken.symbol,
-            sortable: false
-        },
-        {
-            name: tradeData.quoteToken.symbol,
-            sortable: false
-        },
-        {
-            name: 'APY',
-            sortable: true
-        },
-        {
-            name: 'Status',
-            sortable: false
-        }
+        { name: 'ID', sortable: false},
+        { name: 'Wallet', sortable: true },
+        { name: 'Range', sortable: false },
+        { name: 'Range Min', sortable: false },
+        { name: 'Range Max', sortable: false },
+        { name: tradeData.baseToken.symbol, sortable: false },
+        { name: tradeData.quoteToken.symbol, sortable: false },
+        { name: 'APY', sortable: true },
+        { name: 'Status', sortable: false }
     ];
 
     const [
@@ -100,8 +73,6 @@ export default function Ranges(props: RangesPropsIF) {
 
     return (
         <div className={styles.container}>
-            {/* header fields */}
-            
             <header className={styles.row_container}>
                 {
                     columnHeaders.map((header) => 
@@ -116,9 +87,8 @@ export default function Ranges(props: RangesPropsIF) {
                     )
                 }
             </header>
-            {/* item_container is the data proper (not headings) */}
-            <div
-                className={styles.item_container}
+            <ol
+                className={styles.positions_list}
                 style={{ height: expandTradeTable ? '100%' : '220px' }}
             >
                 {
@@ -142,7 +112,7 @@ export default function Ranges(props: RangesPropsIF) {
                         />
                     ))
                 }
-            </div>
+            </ol>
         </div>
     );
 }

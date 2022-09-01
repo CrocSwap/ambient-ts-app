@@ -7,6 +7,10 @@
     flex-direction: row;
 }
 
+.positions_list > li {
+    list-style-type: none;
+}
+
 .item_container {
     max-height: 90%;
     overflow-y: scroll;
