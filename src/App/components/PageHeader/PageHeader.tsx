@@ -43,11 +43,10 @@ export default function PageHeader(props: HeaderPropsIF) {
         isChainSupported,
         switchChain,
         switchNetworkInMoralis,
-        openModalWallet
+        openModalWallet,
     } = props;
 
-    const { user, account, enableWeb3, isWeb3Enabled, isAuthenticated } =
-        useMoralis();
+    const { user, account, enableWeb3, isWeb3Enabled, isAuthenticated } = useMoralis();
 
     const { t } = useTranslation();
 
@@ -204,6 +203,7 @@ export default function PageHeader(props: HeaderPropsIF) {
             </div>
             {isChainSupported || <SwitchNetwork switchNetworkInMoralis={switchNetworkInMoralis} />}
             {modalOrNull}
+            <SwitchNetwork switchNetworkInMoralis={switchNetworkInMoralis} />
         </header>
     );
 }
