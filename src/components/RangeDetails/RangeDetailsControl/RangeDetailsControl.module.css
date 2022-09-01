@@ -1,0 +1,14 @@
+.custom_control{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.custom_control_label{
+    font-family: var(--font-logo);
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    color: var(--text-grey-light);
+    font-weight: 100;
+}
+

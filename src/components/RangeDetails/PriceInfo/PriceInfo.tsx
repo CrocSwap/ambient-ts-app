@@ -4,6 +4,12 @@ import DividerDark from '../../Global/DividerDark/DividerDark';
 import graphImage from '../../../assets/images/Temporary/chart.svg';
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import { toggleDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
+
+type ItemIF = {
+    slug: string;
+    name: string;
+    checked: boolean;
+};
 interface IPriceInfoProps {
     lowRangeDisplay: string;
     highRangeDisplay: string;
@@ -17,6 +23,8 @@ interface IPriceInfoProps {
     quoteTokenSymbol: string;
 
     isDenomBase: boolean;
+
+    controlItems: ItemIF[];
 }
 
 export default function PriceInfo(props: IPriceInfoProps) {
@@ -34,6 +42,8 @@ export default function PriceInfo(props: IPriceInfoProps) {
         quoteTokenSymbol,
 
         isDenomBase,
+
+        controlItems,
     } = props;
     const collateralContent = (
         <div className={styles.info_container}>
@@ -120,6 +130,20 @@ export default function PriceInfo(props: IPriceInfoProps) {
         </div>
     );
 
+    const minMaxPriceDipslay = (
+        <div className={styles.min_max_price}>
+            <div className={styles.min_max_content}>
+                Min Price
+                <span className={styles.min_price}>{lowRangeDisplay ?? 0}</span>
+            </div>
+            <div className={styles.min_max_content}>
+                Max Price
+                <span className={styles.max_price}>{highRangeDisplay ?? 'Infinity'}</span>
+            </div>
+        </div>
+    );
+    console.log(controlItems);
+
     return (
         <div className={styles.main_container}>
             {/* <div className={styles.price_info_container}> */}
@@ -127,20 +151,11 @@ export default function PriceInfo(props: IPriceInfoProps) {
             {totalValueContent}
             {timesContent}
             {collateralContent}
+            {minMaxPriceDipslay}
             {/* <div className={styles.graph_image_container}>
                     <img src={graphImage} alt='chart' />
                 </div> */}
             {/* </div> */}
-            {/* <div className={styles.min_max_price}>
-                <div className={styles.min_max_content}>
-                    Min Price
-                    <span className={styles.min_price}>{lowRangeDisplay ?? 0}</span>
-                </div>
-                <div className={styles.min_max_content}>
-                    Max Price
-                    <span className={styles.max_price}>{highRangeDisplay ?? 'Infinity'}</span>
-                </div>
-            </div> */}
         </div>
     );
 }

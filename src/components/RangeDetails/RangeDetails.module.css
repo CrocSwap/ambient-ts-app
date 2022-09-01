@@ -19,3 +19,12 @@
     justify-content: flex-end;
     align-items: flex-end;
 } */
+
+
+.control_display_container{
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem
+}

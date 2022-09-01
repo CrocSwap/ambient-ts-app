@@ -21,7 +21,7 @@
     padding: 1rem;
 
     font-weight: 300;
-    color: var(--text-grey-light);
+    color: var(--text-grey-white);
     font-size: var(--body-size);
     line-height: var(--body-lh);
 }
@@ -56,7 +56,7 @@
 
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-light);
+    color: var(--text-grey-white);
 }
 .min_price,
 .max_price {

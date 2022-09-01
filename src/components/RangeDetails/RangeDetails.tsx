@@ -12,6 +12,7 @@ import { toDisplayQty } from '@crocswap-libs/sdk';
 import { formatAmount } from '../../utils/numbers';
 import { PositionIF } from '../../utils/interfaces/PositionIF';
 import APYGraphDisplay from './APYGraphDisplay/APYGraphDisplay';
+import RangeDetailsControl from './RangeDetailsControl/RangeDetailsControl';
 interface IRangeDetailsProps {
     provider: ethers.providers.Provider | undefined;
     position: PositionIF;
@@ -238,8 +239,17 @@ export default function RangeDetails(props: IRangeDetailsProps) {
         setControlItems(modifiedControlItems);
     };
 
+    const controlDisplay = (
+        <div className={styles.control_display_container}>
+            {controlItems.map((item, idx) => (
+                <RangeDetailsControl key={idx} item={item} handleChange={handleChange} />
+            ))}
+        </div>
+    );
+
     return (
         <div className={styles.range_details_container}>
+            {controlDisplay}
             <div ref={detailsRef}>
                 {/* <RemoveRangeHeader
                     isPositionInRange={props.isPositionInRange}
@@ -264,6 +274,7 @@ export default function RangeDetails(props: IRangeDetailsProps) {
                             baseTokenSymbol={props.baseTokenSymbol}
                             quoteTokenSymbol={props.quoteTokenSymbol}
                             isDenomBase={props.isDenomBase}
+                            controlItems={controlItems}
                         />
                     </div>
                     <div className={styles.right_container}>
