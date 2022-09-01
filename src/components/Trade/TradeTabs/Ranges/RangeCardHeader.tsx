@@ -24,6 +24,10 @@ export default function RangeCardHeader(props: RangeCardHeaderPropsIF) {
 
     function handleClick(name: string) {
         console.clear();
+        if (!data.sortable) {
+            setSortBy('default');
+            setReverseSort(false);
+        } else
         if (sortBy !== name) {
             console.log('first click');
             setSortBy(name);
@@ -43,7 +47,9 @@ export default function RangeCardHeader(props: RangeCardHeaderPropsIF) {
     }
 
     const arrow = useMemo(() => {
-        if (sortBy !== data.name.toLowerCase()) {
+        if (!data.sortable) {
+            return null;
+        } else if (sortBy !== data.name.toLowerCase()) {
             return null;
         } else if (!reverseSort) {
             return <FaAngleDown />;
