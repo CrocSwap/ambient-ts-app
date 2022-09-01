@@ -244,7 +244,7 @@ export const graphDataSlice = createSlice({
         addPositionsByUser: (state, action: PayloadAction<Array<PositionIF>>) => {
             const slotToFind = action.payload[0].positionStorageSlot.toLowerCase();
             const indexOfSlot = state.positionsByUser.positions
-                .map((item) => item.positionStorageSlot.toLowerCase())
+                .map((position) => position.positionStorageSlot?.toLowerCase())
                 .findIndex((slot) => slot === slotToFind);
             if (indexOfSlot === -1) {
                 state.positionsByUser.positions = action.payload.concat(
@@ -260,7 +260,7 @@ export const graphDataSlice = createSlice({
         addPositionsByPool: (state, action: PayloadAction<Array<PositionIF>>) => {
             const slotToFind = action.payload[0].positionStorageSlot.toLowerCase();
             const indexOfSlot = state.positionsByPool.positions
-                .map((item) => item.positionStorageSlot.toLowerCase())
+                .map((position) => position.positionStorageSlot?.toLowerCase())
                 .findIndex((slot) => slot === slotToFind);
             if (indexOfSlot === -1) {
                 state.positionsByPool.positions = action.payload.concat(
