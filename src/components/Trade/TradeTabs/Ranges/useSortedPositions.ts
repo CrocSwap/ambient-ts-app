@@ -1,7 +1,6 @@
 import { Dispatch, SetStateAction, useMemo, useState } from 'react';
 import { PositionIF } from '../../../../utils/interfaces/PositionIF';
 
-
 export const useSortedPositions = (
     isShowAllEnabled: boolean,
     userPositions: PositionIF[],
