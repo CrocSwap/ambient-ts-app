@@ -110,8 +110,8 @@ export default function Chart(props: ChartData) {
                     ? data.invPriceOpenExclMEVDecimalCorrected
                     : data.priceOpenExclMEVDecimalCorrected,
                 close: denomInBase
-                    ? data.invPriceCloseDecimalCorrected
-                    : data.priceCloseDecimalCorrected,
+                    ? data.invPriceCloseExclMEVDecimalCorrected
+                    : data.priceCloseExclMEVDecimalCorrected,
                 high: denomInBase
                     ? data.invMinPriceExclMEVDecimalCorrected
                     : data.maxPriceExclMEVDecimalCorrected,

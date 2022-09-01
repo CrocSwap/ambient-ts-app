@@ -107,9 +107,16 @@ export default function RemoveRange(props: IRemoveRangeProps) {
         </div>
     );
 
-    return (
-        <div className={styles.remove_Range_container}>
+    const removeRangeSettingsPage = (
+        <div className={styles.remove_range_settings_container}>
             <RemoveRangeSettings showSettings={showSettings} setShowSettings={setShowSettings} />
+        </div>
+    );
+
+    return (
+        <div className={styles.remove_range_container}>
+            {removeRangeSettingsPage}
+            {/* <RemoveRangeSettings showSettings={showSettings} setShowSettings={setShowSettings} /> */}
             <div className={styles.header_container}>
                 <RemoveRangeHeader
                     isPositionInRange={props.isPositionInRange}

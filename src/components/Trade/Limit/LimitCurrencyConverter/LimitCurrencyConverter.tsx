@@ -227,6 +227,44 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
             buyQtyField.value = truncatedTokenBQty === 'NaN' ? '' : truncatedTokenBQty;
         }
     };
+
+    const handleTokenAChangeClick = (value: string) => {
+        let rawTokenBQty;
+        const tokenAInputField = document.getElementById('sell-limit-quantity');
+        if (tokenAInputField) {
+            (tokenAInputField as HTMLInputElement).value = value;
+        }
+        const input = value;
+        setTokenAQtyLocal(input);
+        setTokenAInputQty(input);
+        setIsTokenAPrimaryLocal(true);
+        dispatch(setIsTokenAPrimary(true));
+        dispatch(setPrimaryQuantity(input));
+
+        if (!isDenominationInBase) {
+            rawTokenBQty = isSellTokenBase
+                ? (1 / limitRateNumber) * parseFloat(input)
+                : limitRateNumber * parseFloat(input);
+        } else {
+            rawTokenBQty = !isSellTokenBase
+                ? (1 / limitRateNumber) * parseFloat(input)
+                : limitRateNumber * parseFloat(input);
+        }
+
+        handleLimitButtonMessage(parseFloat(input));
+        const truncatedTokenBQty = truncateDecimals(rawTokenBQty, tokenBDecimals).toString();
+
+        // const truncatedTokenBQty = truncateDecimals(rawTokenBQty, tokenBDecimals).toString();
+
+        setTokenBQtyLocal(truncatedTokenBQty);
+        setTokenBInputQty(truncatedTokenBQty);
+        const buyQtyField = document.getElementById('buy-quantity') as HTMLInputElement;
+
+        if (buyQtyField) {
+            buyQtyField.value = truncatedTokenBQty === 'NaN' ? '' : truncatedTokenBQty;
+        }
+    };
+
     const handleTokenBChangeEvent = (evt?: ChangeEvent<HTMLInputElement>) => {
         let rawTokenAQty;
 
@@ -287,6 +325,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 sellToken
                 direction='From: '
                 handleChangeEvent={handleTokenAChangeEvent}
+                handleChangeClick={handleTokenAChangeClick}
                 reverseTokens={reverseTokens}
                 tokenABalance={tokenABalance}
                 tokenBBalance={tokenBBalance}

@@ -102,6 +102,10 @@ export default function Sidebar(props: SidebarPropsIF) {
         setSelectedOutsideTab: props.setSelectedOutsideTab,
         outsideControl: props.outsideControl,
         setOutsideControl: props.setOutsideControl,
+        isShowAllEnabled: props.isShowAllEnabled,
+        setIsShowAllEnabled: props.setIsShowAllEnabled,
+        expandTradeTable: expandTradeTable,
+        setExpandTradeTable: setExpandTradeTable,
     };
     const sidebarRangePositionProps = {
         selectedOutsideTab: props.selectedOutsideTab,
@@ -113,6 +117,8 @@ export default function Sidebar(props: SidebarPropsIF) {
         tokenMap: tokenMap,
         isShowAllEnabled: props.isShowAllEnabled,
         setIsShowAllEnabled: props.setIsShowAllEnabled,
+        expandTradeTable: expandTradeTable,
+        setExpandTradeTable: setExpandTradeTable,
     };
 
     const rangePositions = [

@@ -34,11 +34,11 @@ interface LimitPropsIF {
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     provider?: ethers.providers.Provider;
     isOnTradeRoute?: boolean;
-    gasPriceinGwei: string;
+    gasPriceinGwei: number | undefined;
     nativeBalance: string;
     lastBlockNumber: number;
-    tokenABalance: string;
-    tokenBBalance: string;
+    baseTokenBalance: string;
+    quoteTokenBalance: string;
     isSellTokenBase: boolean;
     tokenPair: TokenPairIF;
     isTokenABase: boolean;
@@ -63,8 +63,8 @@ export default function Limit(props: LimitPropsIF) {
         setImportedTokens,
         provider,
         isSellTokenBase,
-        tokenABalance,
-        tokenBBalance,
+        baseTokenBalance,
+        quoteTokenBalance,
         tokenPair,
         isTokenABase,
         gasPriceinGwei,
@@ -241,6 +241,9 @@ export default function Limit(props: LimitPropsIF) {
             setRecheckTokenAApproval(true);
         }
     };
+
+    const tokenABalance = isTokenABase ? baseTokenBalance : quoteTokenBalance;
+    const tokenBBalance = isTokenABase ? quoteTokenBalance : baseTokenBalance;
 
     const approvalButton = (
         <Button
