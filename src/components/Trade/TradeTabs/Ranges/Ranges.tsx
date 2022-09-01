@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
+import { Dispatch, SetStateAction, useMemo, useState } from 'react';
 import { ethers } from 'ethers';
 
 // START: Import JSX Components
@@ -97,9 +97,6 @@ export default function Ranges(props: RangesPropsIF) {
 
     const [ sortBy, setSortBy ] = useState('default');
     const [ reverseSort, setReverseSort ] = useState(false);
-    // useEffect(() => {
-    //     console.log({sortBy, reverseSort})
-    // }, [sortBy, reverseSort]);
 
     const sortByWallet = (unsortedData: PositionIF[]) => (
         [...unsortedData].sort((a, b) => a.user.localeCompare(b.user))
