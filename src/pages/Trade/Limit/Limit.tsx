@@ -34,7 +34,7 @@ interface LimitPropsIF {
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     provider?: ethers.providers.Provider;
     isOnTradeRoute?: boolean;
-    gasPriceinGwei: string;
+    gasPriceinGwei: number | undefined;
     nativeBalance: string;
     lastBlockNumber: number;
     baseTokenBalance: string;

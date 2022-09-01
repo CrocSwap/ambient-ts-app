@@ -50,7 +50,7 @@ interface RangePropsIF {
     mintSlippage: SlippagePairIF;
     isPairStable: boolean;
     provider?: ethers.providers.Provider;
-    gasPriceinGwei: string;
+    gasPriceinGwei: number | undefined;
     lastBlockNumber: number;
     baseTokenAddress: string;
     quoteTokenAddress: string;

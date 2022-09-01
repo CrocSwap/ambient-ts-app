@@ -1554,7 +1554,7 @@ export default function App() {
         })();
     }, [provider, account, isWeb3Enabled, isAuthenticated, lastBlockNumber]);
 
-    const [gasPriceinGwei, setGasPriceinGwei] = useState<string>('');
+    const [gasPriceinGwei, setGasPriceinGwei] = useState<number | undefined>();
 
     useEffect(() => {
         fetch(
@@ -1563,7 +1563,7 @@ export default function App() {
             .then((response) => response.json())
             .then((response) => {
                 if (response.result.ProposeGasPrice) {
-                    setGasPriceinGwei(response.result.ProposeGasPrice);
+                    setGasPriceinGwei(parseInt(response.result.ProposeGasPrice));
                 }
             })
             .catch(console.log);
