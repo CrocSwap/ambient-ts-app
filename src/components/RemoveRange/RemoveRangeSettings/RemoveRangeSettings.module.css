@@ -1,9 +1,10 @@
-.settings_wrapper,
-.settings_wrapper_active {
-  max-width: 400px;
+.settings_container
+ {
+  max-width: 340px;
   padding: 1rem;
+
+  height: 345px;
   width: 100%;
-  min-height: 300px;
   /* height:58%; */
   /* position: absolute; */
   background: var(--dark2);
@@ -12,33 +13,9 @@
   transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
   /* right: 30px; */
 }
-.settings_wrapper {
-    /* bottom: 0; */
-  
-    /* opacity: 0; */
-    display: none;
-    pointer-events: none;
-    z-index: -1;
 
-    /* top: 0; */
-
-
-  }
-  
-  .settings_wrapper_active {
-    opacity: 1;
-  
-   /* top: 125px; */
-    pointer-events: auto;
-    display: flex;
-    flex-direction: column;
-    z-index: 1
-    ;
-  }
-
-  .close_icon{
-    width: 100%;
-    display: flex;
-    justify-content: flex-end;
-    cursor: pointer;
-  }
+.close_button{
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+}
