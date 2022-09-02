@@ -9,6 +9,7 @@ import { RiListSettingsLine } from 'react-icons/ri';
 import { PositionIF } from '../../utils/interfaces/PositionIF';
 import { ethers } from 'ethers';
 import { CrocEnv } from '@crocswap-libs/sdk';
+import RemoveRangeSettings from './RemoveRangeSettings/RemoveRangeSettings';
 interface IRemoveRangeProps {
     provider: ethers.providers.Provider;
     chainId: string;
@@ -209,6 +210,28 @@ export default function RemoveRange(props: IRemoveRangeProps) {
     //         <RemoveRangeSettings showSettings={showSettings} setShowSettings={setShowSettings} />
     //     </div>
     // );
+
+    const mainModalContent = showSettings ? (
+        <RemoveRangeSettings showSettings={showSettings} setShowSettings={setShowSettings} />
+    ) : (
+        <>
+            <RemoveRangeWidth
+                removalPercentage={removalPercentage}
+                setRemovalPercentage={setRemovalPercentage}
+            />
+            <RemoveRangeInfo
+                baseTokenSymbol={props.baseTokenSymbol}
+                quoteTokenSymbol={props.quoteTokenSymbol}
+                baseTokenLogoURI={props.baseTokenLogoURI}
+                quoteTokenLogoURI={props.quoteTokenLogoURI}
+                posLiqBaseDecimalCorrected={posLiqBaseDecimalCorrected}
+                posLiqQuoteDecimalCorrected={posLiqQuoteDecimalCorrected}
+                feeLiqBaseDecimalCorrected={feeLiqBaseDecimalCorrected}
+                feeLiqQuoteDecimalCorrected={feeLiqQuoteDecimalCorrected}
+                removalPercentage={removalPercentage}
+            />
+        </>
+    );
     return (
         <div className={styles.remove_range_container}>
             {/* {removeRangeSettingsPage} */}
@@ -226,23 +249,13 @@ export default function RemoveRange(props: IRemoveRangeProps) {
                 {removeRangeSetttingIcon}
             </div>
             <div className={styles.main_content}>
-                <RemoveRangeWidth
-                    removalPercentage={removalPercentage}
-                    setRemovalPercentage={setRemovalPercentage}
-                />
-                <RemoveRangeInfo
-                    baseTokenSymbol={props.baseTokenSymbol}
-                    quoteTokenSymbol={props.quoteTokenSymbol}
-                    baseTokenLogoURI={props.baseTokenLogoURI}
-                    quoteTokenLogoURI={props.quoteTokenLogoURI}
-                    posLiqBaseDecimalCorrected={posLiqBaseDecimalCorrected}
-                    posLiqQuoteDecimalCorrected={posLiqQuoteDecimalCorrected}
-                    feeLiqBaseDecimalCorrected={feeLiqBaseDecimalCorrected}
-                    feeLiqQuoteDecimalCorrected={feeLiqQuoteDecimalCorrected}
-                    removalPercentage={removalPercentage}
-                />
-                <RemoveRangeButton removeFn={removeFn} title={'Remove Liquidity'} />
+                {mainModalContent}
                 {harvestButtonOrNull}
+                <RemoveRangeButton
+                    removeFn={removeFn}
+                    disabled={showSettings}
+                    title='Remove Range'
+                />
             </div>
         </div>
     );
