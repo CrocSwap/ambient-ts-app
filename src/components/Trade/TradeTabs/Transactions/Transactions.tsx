@@ -6,6 +6,7 @@ import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { Dispatch, SetStateAction, useState, useEffect } from 'react';
 import TransactionsSkeletons from './TransactionsSkeletons/TransactionsSkeletons';
+import Pagination from '../../../Global/Pagination/Pagination';
 
 interface TransactionsProps {
     isShowAllEnabled: boolean;
@@ -99,7 +100,25 @@ export default function Transactions(props: TransactionsProps) {
     const tokenAAddress = tradeData.tokenA.address;
     const tokenBAddress = tradeData.tokenB.address;
 
-    const TransactionsDisplay = transactionData?.map((swap, idx) => (
+    console.log(swapsByPool);
+
+    const [transactions] = useState(transactionData);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [transactionsPerPage] = useState(15);
+
+    // Get current transactions
+    const indexOfLastTransaction = currentPage * transactionsPerPage;
+    const indexOfFirstTransaction = indexOfLastTransaction - transactionsPerPage;
+    const currentTransactions = transactions.slice(indexOfFirstTransaction, indexOfLastTransaction);
+
+    // Change page
+    const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
+
+    const usePaginateDataOrNull = expandTradeTable ? currentTransactions : transactionData;
+
+    console.log({ transactionData });
+
+    const TransactionsDisplay = usePaginateDataOrNull?.map((swap, idx) => (
         //   />
         <TransactionCard
             key={idx}
@@ -123,11 +142,19 @@ export default function Transactions(props: TransactionsProps) {
         <div className={styles.container}>
             <TransactionCardHeader tradeData={tradeData} />
             <div
-                className={styles.item_container}
-                style={{ height: expandTradeTable ? '100%' : '170px' }}
+                className={`${styles.item_container} ${expandTradeTable && styles.expand_height}`}
+                // style={{ height: expandTradeTable ? '100%' : '170px' }}
             >
                 {isDataLoading ? <TransactionsSkeletons /> : transactionDataOrNull}
             </div>
+            {expandTradeTable && transactionData.length > 30 && (
+                <Pagination
+                    itemsPerPage={transactionsPerPage}
+                    totalItems={transactions.length}
+                    paginate={paginate}
+                    currentPage={currentPage}
+                />
+            )}
         </div>
     );
 }
