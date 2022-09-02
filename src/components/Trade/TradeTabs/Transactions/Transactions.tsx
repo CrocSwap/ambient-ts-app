@@ -102,7 +102,7 @@ export default function Transactions(props: TransactionsProps) {
 
     console.log(swapsByPool);
 
-    const [transactions, setTransactions] = useState(swapsByPool);
+    const [transactions] = useState(transactionData);
     const [currentPage, setCurrentPage] = useState(1);
     const [transactionsPerPage] = useState(15);
 
@@ -115,6 +115,8 @@ export default function Transactions(props: TransactionsProps) {
     const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
     const usePaginateDataOrNull = expandTradeTable ? currentTransactions : transactionData;
+
+    console.log({ transactionData });
 
     const TransactionsDisplay = usePaginateDataOrNull?.map((swap, idx) => (
         //   />
@@ -140,12 +142,12 @@ export default function Transactions(props: TransactionsProps) {
         <div className={styles.container}>
             <TransactionCardHeader tradeData={tradeData} />
             <div
-                className={styles.item_container}
-                style={{ height: expandTradeTable ? '100%' : '170px' }}
+                className={`${styles.item_container} ${expandTradeTable && styles.expand_height}`}
+                // style={{ height: expandTradeTable ? '100%' : '170px' }}
             >
                 {isDataLoading ? <TransactionsSkeletons /> : transactionDataOrNull}
             </div>
-            {expandTradeTable && (
+            {expandTradeTable && transactionData.length > 30 && (
                 <Pagination
                     postsPerPage={transactionsPerPage}
                     totalPosts={transactions.length}

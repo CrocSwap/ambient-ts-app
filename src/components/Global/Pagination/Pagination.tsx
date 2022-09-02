@@ -61,6 +61,28 @@ export default function Pagination(props: PaginationPropsIF) {
     const [expandPaginationContainer, setExpandPaginationContainer] = useState(false);
     const expandStyle = expandPaginationContainer ? styles.expand : styles.not_expanded;
 
+    const rightButton = (
+        <div
+            className={styles.scroll_button}
+            onClick={() => {
+                sideScroll(containerRef.current, 25, 100, 60);
+            }}
+        >
+            <BsFillArrowRightSquareFill />
+        </div>
+    );
+
+    const leftButton = (
+        <div
+            className={styles.scroll_button}
+            onClick={() => {
+                sideScroll(containerRef.current, 25, 100, -60);
+            }}
+        >
+            <BsFillArrowLeftSquareFill />
+        </div>
+    );
+
     return (
         <>
             <nav className={styles.pagination_container}>
@@ -72,16 +94,7 @@ export default function Pagination(props: PaginationPropsIF) {
                     className={`${styles.pagination_inside_container} ${expandStyle}`}
                     onMouseLeave={() => setExpandPaginationContainer(false)}
                 >
-                    {expandPaginationContainer && (
-                        <div
-                            className={styles.scroll_button}
-                            onClick={() => {
-                                sideScroll(containerRef.current, 25, 100, -60);
-                            }}
-                        >
-                            <BsFillArrowLeftSquareFill />
-                        </div>
-                    )}
+                    {expandPaginationContainer && leftButton}
                     <ul
                         className={styles.pagination_content}
                         onMouseEnter={() => setExpandPaginationContainer(true)}
@@ -105,16 +118,7 @@ export default function Pagination(props: PaginationPropsIF) {
                     >
                         {totalPages > 10 && totalPages}
                     </div>
-                    {expandPaginationContainer && (
-                        <div
-                            className={styles.scroll_button}
-                            onClick={() => {
-                                sideScroll(containerRef.current, 25, 100, 60);
-                            }}
-                        >
-                            <BsFillArrowRightSquareFill />
-                        </div>
-                    )}
+                    {expandPaginationContainer && rightButton}
                 </motion.div>
             </nav>
             <div className={styles.text_info}>{detailPageRendered}</div>
