@@ -7,7 +7,10 @@ import { useEffect, useState } from 'react';
 // import RemoveRangeSettings from './RemoveRangeSettings/RemoveRangeSettings';
 import { RiListSettingsLine } from 'react-icons/ri';
 import { PositionIF } from '../../utils/interfaces/PositionIF';
+import { ethers } from 'ethers';
+import { CrocEnv } from '@crocswap-libs/sdk';
 interface IRemoveRangeProps {
+    provider: ethers.providers.Provider;
     chainId: string;
     poolIdx: number;
     user: string;
@@ -35,6 +38,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
         // askTick,
         // baseTokenAddress,
         // quoteTokenAddress,
+        provider,
         lastBlockNumber,
         position,
     } = props;
@@ -100,12 +104,64 @@ export default function RemoveRange(props: IRemoveRangeProps) {
         </div>
     );
 
+    // const [newRemovalTransactionHash, setNewRemovalTransactionHash] = useState('');
+    // const [txErrorCode, setTxErrorCode] = useState(0);
+    // const [txErrorMessage, setTxErrorMessage] = useState('');
+
+    const liquiditySlippageTolerance = 1;
+
+    const removeFn = async () => {
+        console.log(`${removalPercentage}% to be removed.`);
+
+        if (removalPercentage === 100) {
+            try {
+                const env = new CrocEnv(provider);
+                const pool = env.pool(position.base, position.quote);
+                const spotPrice = await pool.spotPrice();
+
+                console.log({ pool });
+                console.log({ spotPrice });
+
+                const poolWeiPriceLowLimit = spotPrice * (1 - liquiditySlippageTolerance / 100);
+                const poolWeiPriceHighLimit = spotPrice * (1 + liquiditySlippageTolerance / 100);
+
+                console.log({ poolWeiPriceLowLimit });
+                console.log({ poolWeiPriceHighLimit });
+                const tx = await pool.burnAmbientAll([poolWeiPriceLowLimit, poolWeiPriceHighLimit]);
+
+                console.log(tx?.hash);
+                // setNewRemovalTransactionHash(tx?.hash);
+            } catch (error) {
+                // setTxErrorCode(error?.code);
+                // setTxErrorMessage(error?.message);
+            }
+        } else {
+            console.log('Partial Burn');
+        }
+    };
+
+    //   const approve = async (tokenAddress: string) => {
+    //       if (!provider) return;
+    //       setIsApprovalPending(true);
+    //       try {
+    //           const tx = await new CrocEnv(provider).token(tokenAddress).approve();
+    //           if (tx) {
+    //               await tx.wait();
+    //           }
+    //       } catch (error) {
+    //           console.log({ error });
+    //       } finally {
+    //           setIsApprovalPending(false);
+    //           setRecheckTokenAApproval(true);
+    //           setRecheckTokenBApproval(true);
+    //       }
+    //   };
+
     // const removeRangeSettingsPage = (
     //     <div className={styles.remove_range_settings_container}>
     //         <RemoveRangeSettings showSettings={showSettings} setShowSettings={setShowSettings} />
     //     </div>
     // );
-
     return (
         <div className={styles.remove_range_container}>
             {/* {removeRangeSettingsPage} */}
@@ -138,7 +194,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
                     feeLiqQuoteDecimalCorrected={feeLiqQuoteDecimalCorrected}
                     removalPercentage={removalPercentage}
                 />
-                <RemoveRangeButton removalPercentage={removalPercentage} />
+                <RemoveRangeButton removeFn={removeFn} />
             </div>
         </div>
     );
