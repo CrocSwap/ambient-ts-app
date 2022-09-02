@@ -12,6 +12,7 @@ interface IRemoveRangeInfoProps {
     posLiqQuoteDecimalCorrected: number | undefined;
     feeLiqBaseDecimalCorrected: number | undefined;
     feeLiqQuoteDecimalCorrected: number | undefined;
+    removalPercentage: number;
 }
 
 export default function RemoveRangeInfo(props: IRemoveRangeInfoProps) {
@@ -24,6 +25,7 @@ export default function RemoveRangeInfo(props: IRemoveRangeInfoProps) {
         posLiqQuoteDecimalCorrected,
         feeLiqBaseDecimalCorrected,
         feeLiqQuoteDecimalCorrected,
+        removalPercentage,
     } = props;
 
     const liqBaseDisplay = posLiqBaseDecimalCorrected
@@ -71,6 +73,40 @@ export default function RemoveRangeInfo(props: IRemoveRangeInfoProps) {
               })
         : undefined;
 
+    const baseRemovalNum =
+        (((posLiqBaseDecimalCorrected || 0) + (feeLiqBaseDecimalCorrected || 0)) *
+            removalPercentage) /
+        100;
+
+    const quoteRemovalNum =
+        (((posLiqQuoteDecimalCorrected || 0) + (feeLiqQuoteDecimalCorrected || 0)) *
+            removalPercentage) /
+        100;
+
+    const baseRemovalString = baseRemovalNum
+        ? baseRemovalNum < 2
+            ? baseRemovalNum.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 6,
+              })
+            : baseRemovalNum.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              })
+        : undefined;
+
+    const quoteRemovalString = quoteRemovalNum
+        ? quoteRemovalNum < 2
+            ? quoteRemovalNum.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 6,
+              })
+            : quoteRemovalNum.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              })
+        : undefined;
+
     return (
         <div className={styles.row}>
             <div className={styles.remove_position_info}>
@@ -104,6 +140,21 @@ export default function RemoveRangeInfo(props: IRemoveRangeInfoProps) {
                     <div className={styles.token_price}>
                         {feeLiqQuoteDisplay !== undefined ? feeLiqQuoteDisplay : '…'}
                         <img src={quoteTokenLogoURI} alt='' />
+                    </div>
+                </Row>
+                <Divider />
+                <Row>
+                    <span>{baseTokenSymbol} Removal Summary</span>
+                    <div className={styles.token_price}>
+                        {baseRemovalString !== undefined ? baseRemovalString : '…'}
+                        <img src={baseTokenLogoURI} alt='' />
+                    </div>
+                </Row>
+                <Row>
+                    <span>{quoteTokenSymbol} Removal Summary</span>
+                    <div className={styles.token_price}>
+                        {quoteRemovalString !== undefined ? quoteRemovalString : '…'}
+                        <img src={baseTokenLogoURI} alt='' />
                     </div>
                 </Row>
             </div>

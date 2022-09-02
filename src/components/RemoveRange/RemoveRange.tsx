@@ -136,6 +136,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
                     posLiqQuoteDecimalCorrected={posLiqQuoteDecimalCorrected}
                     feeLiqBaseDecimalCorrected={feeLiqBaseDecimalCorrected}
                     feeLiqQuoteDecimalCorrected={feeLiqQuoteDecimalCorrected}
+                    removalPercentage={removalPercentage}
                 />
                 <RemoveRangeButton removalPercentage={removalPercentage} />
             </div>
