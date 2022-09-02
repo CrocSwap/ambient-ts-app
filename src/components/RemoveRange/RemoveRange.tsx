@@ -113,22 +113,16 @@ export default function RemoveRange(props: IRemoveRangeProps) {
     const removeFn = async () => {
         console.log(`${removalPercentage}% to be removed.`);
 
+        const env = new CrocEnv(provider);
+        const pool = env.pool(position.base, position.quote);
+        const spotPrice = await pool.displayPrice();
+
+        const lowLimit = spotPrice * (1 - liquiditySlippageTolerance / 100);
+        const highLimit = spotPrice * (1 + liquiditySlippageTolerance / 100);
+
         if (removalPercentage === 100) {
             try {
-                const env = new CrocEnv(provider);
-                const pool = env.pool(position.base, position.quote);
-                const spotPrice = await pool.displayPrice();
-
-                console.log({ pool });
-                console.log({ spotPrice });
-
-                const lowLimit = spotPrice * (1 - liquiditySlippageTolerance / 100);
-                const highLimit = spotPrice * (1 + liquiditySlippageTolerance / 100);
-
-                console.log({ lowLimit });
-                console.log({ highLimit });
                 const tx = await pool.burnAmbientAll([lowLimit, highLimit]);
-
                 console.log(tx?.hash);
                 // setNewRemovalTransactionHash(tx?.hash);
             } catch (error) {
@@ -136,26 +130,21 @@ export default function RemoveRange(props: IRemoveRangeProps) {
                 // setTxErrorMessage(error?.message);
             }
         } else {
-            console.log('Partial Burn');
+            const positionLiq = position.positionLiq;
+            const liquidityToBurn = ethers.BigNumber.from(positionLiq)
+                .mul(removalPercentage)
+                .div(100);
+
+            try {
+                const tx = await pool.burnAmbientLiq(liquidityToBurn, [lowLimit, highLimit]);
+                console.log(tx?.hash);
+                // setNewRemovalTransactionHash(tx?.hash);
+            } catch (error) {
+                // setTxErrorCode(error?.code);
+                // setTxErrorMessage(error?.message);
+            }
         }
     };
-
-    //   const approve = async (tokenAddress: string) => {
-    //       if (!provider) return;
-    //       setIsApprovalPending(true);
-    //       try {
-    //           const tx = await new CrocEnv(provider).token(tokenAddress).approve();
-    //           if (tx) {
-    //               await tx.wait();
-    //           }
-    //       } catch (error) {
-    //           console.log({ error });
-    //       } finally {
-    //           setIsApprovalPending(false);
-    //           setRecheckTokenAApproval(true);
-    //           setRecheckTokenBApproval(true);
-    //       }
-    //   };
 
     // const removeRangeSettingsPage = (
     //     <div className={styles.remove_range_settings_container}>

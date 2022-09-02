@@ -49,4 +49,5 @@ export interface PositionIF {
     apy: number;
     time: number;
     latestUpdateTime: number;
+    positionLiq: string;
 }
