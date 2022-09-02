@@ -2,7 +2,10 @@ import Button from '../../Global/Button/Button';
 
 interface IRemoveRangeButtonProps {
     removeFn: () => void;
+
     title: string;
+
+    disabled?: boolean;
 }
 
 export default function RemoveRangeButton(props: IRemoveRangeButtonProps) {
@@ -10,7 +13,7 @@ export default function RemoveRangeButton(props: IRemoveRangeButtonProps) {
 
     return (
         <div>
-            <Button title={title} disabled={false} action={removeFn} />
+            <Button title={title} disabled={props.disabled} action={removeFn} />
         </div>
     );
 }
