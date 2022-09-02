@@ -120,9 +120,45 @@ export default function RemoveRange(props: IRemoveRangeProps) {
         const lowLimit = spotPrice * (1 - liquiditySlippageTolerance / 100);
         const highLimit = spotPrice * (1 + liquiditySlippageTolerance / 100);
 
-        if (removalPercentage === 100) {
+        if (position.positionType === 'ambient') {
+            if (removalPercentage === 100) {
+                try {
+                    const tx = await pool.burnAmbientAll([lowLimit, highLimit]);
+                    console.log(tx?.hash);
+                    // setNewRemovalTransactionHash(tx?.hash);
+                } catch (error) {
+                    // setTxErrorCode(error?.code);
+                    // setTxErrorMessage(error?.message);
+                }
+            } else {
+                const positionLiq = position.positionLiq;
+
+                const liquidityToBurn = ethers.BigNumber.from(positionLiq)
+                    .mul(removalPercentage)
+                    .div(100);
+
+                try {
+                    const tx = await pool.burnAmbientLiq(liquidityToBurn, [lowLimit, highLimit]);
+                    console.log(tx?.hash);
+                    // setNewRemovalTransactionHash(tx?.hash);
+                } catch (error) {
+                    // setTxErrorCode(error?.code);
+                    // setTxErrorMessage(error?.message);
+                }
+            }
+        } else if (position.positionType === 'concentrated') {
+            const positionLiq = position.positionLiq;
+
+            const liquidityToBurn = ethers.BigNumber.from(positionLiq)
+                .mul(removalPercentage)
+                .div(100);
+
             try {
-                const tx = await pool.burnAmbientAll([lowLimit, highLimit]);
+                const tx = await pool.burnRangeLiq(
+                    liquidityToBurn,
+                    [position.bidTick, position.askTick],
+                    [lowLimit, highLimit],
+                );
                 console.log(tx?.hash);
                 // setNewRemovalTransactionHash(tx?.hash);
             } catch (error) {
@@ -130,19 +166,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
                 // setTxErrorMessage(error?.message);
             }
         } else {
-            const positionLiq = position.positionLiq;
-            const liquidityToBurn = ethers.BigNumber.from(positionLiq)
-                .mul(removalPercentage)
-                .div(100);
-
-            try {
-                const tx = await pool.burnAmbientLiq(liquidityToBurn, [lowLimit, highLimit]);
-                console.log(tx?.hash);
-                // setNewRemovalTransactionHash(tx?.hash);
-            } catch (error) {
-                // setTxErrorCode(error?.code);
-                // setTxErrorMessage(error?.message);
-            }
+            console.log('unsupported position type for removal');
         }
     };
 
