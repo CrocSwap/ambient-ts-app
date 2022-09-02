@@ -18,6 +18,7 @@
     /* opacity: 0; */
     display: none;
     pointer-events: none;
+    z-index: -1;
 
     /* top: 0; */
 
@@ -31,6 +32,8 @@
     pointer-events: auto;
     display: flex;
     flex-direction: column;
+    z-index: 1
+    ;
   }
 
   .close_icon{
