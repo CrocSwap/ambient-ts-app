@@ -100,7 +100,7 @@ export default function Transactions(props: TransactionsProps) {
     const tokenAAddress = tradeData.tokenA.address;
     const tokenBAddress = tradeData.tokenB.address;
 
-    console.log(swapsByPool);
+    // console.log(swapsByPool);
 
     const [transactions] = useState(transactionData);
     const [currentPage, setCurrentPage] = useState(1);
@@ -116,7 +116,7 @@ export default function Transactions(props: TransactionsProps) {
 
     const usePaginateDataOrNull = expandTradeTable ? currentTransactions : transactionData;
 
-    console.log({ transactionData });
+    // console.log({ transactionData });
 
     const TransactionsDisplay = usePaginateDataOrNull?.map((swap, idx) => (
         //   />
