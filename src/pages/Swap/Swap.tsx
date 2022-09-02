@@ -1,6 +1,6 @@
 // START: Import React and Dongles
 import { useState, Dispatch, SetStateAction, useEffect } from 'react';
-import { useLocation, useParams } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { ethers } from 'ethers';
 import { useMoralis } from 'react-moralis';
 import { motion } from 'framer-motion';
@@ -29,6 +29,7 @@ import { SlippagePairIF, TokenIF, TokenPairIF } from '../../utils/interfaces/exp
 import { useModal } from '../../components/Global/Modal/useModal';
 import { useRelativeModal } from '../../components/Global/RelativeModal/useRelativeModal';
 import { addReceipt } from '../../utils/state/receiptDataSlice';
+import { useUrlParams } from './useUrlParams';
 
 interface SwapPropsIF {
     importedTokens: Array<TokenIF>;
@@ -80,8 +81,7 @@ export default function Swap(props: SwapPropsIF) {
 
     const [isModalOpen, openModal, closeModal] = useModal();
 
-    const { stuff } = useParams();
-    console.log({stuff});
+    useUrlParams();
 
     const dispatch = useAppDispatch();
 
