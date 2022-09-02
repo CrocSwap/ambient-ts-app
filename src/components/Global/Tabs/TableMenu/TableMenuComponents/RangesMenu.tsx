@@ -80,7 +80,7 @@ export default function RangesMenu(props: RangesMenuIF) {
 
     switch (currentModal) {
         case 'remove':
-            modalContent = <RemoveRange {...rangeDetailsProps} />;
+            modalContent = <RemoveRange position={positionData} {...rangeDetailsProps} />;
             modalTitle = 'Remove Position';
             break;
 

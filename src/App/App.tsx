@@ -1723,7 +1723,10 @@ export default function App() {
             setSelectedOutsideTab(marketTabBasedOnRoute);
         } else if (location.pathname === '/trade/limit') {
             setSelectedOutsideTab(orderTabBasedOnRoute);
-        } else if (location.pathname === '/trade/range') {
+        } else if (
+            location.pathname === '/trade/range' ||
+            location.pathname.includes('/trade/edit/')
+        ) {
             setSelectedOutsideTab(rangeTabBasedOnRoute);
         } else {
             setSelectedOutsideTab(0);
