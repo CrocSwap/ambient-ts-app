@@ -242,32 +242,64 @@ export const graphDataSlice = createSlice({
             state.positionsByUser = action.payload;
         },
         addPositionsByUser: (state, action: PayloadAction<Array<PositionIF>>) => {
-            const slotToFind = action.payload[0].positionStorageSlot.toLowerCase();
-            const indexOfSlot = state.positionsByUser.positions
-                .map((position) => position.positionStorageSlot?.toLowerCase())
-                .findIndex((slot) => slot === slotToFind);
-            if (indexOfSlot === -1) {
-                state.positionsByUser.positions = action.payload.concat(
-                    state.positionsByUser.positions,
-                );
+            if (action.payload[0].positionType === 'knockout') {
+                const slotToFind = action.payload[0].merkleStorageSlot?.toLowerCase();
+                const indexOfSlot = state.positionsByUser.positions
+                    .map((position) =>
+                        position.positionType === 'knockout'
+                            ? position.merkleStorageSlot?.toLowerCase()
+                            : false,
+                    )
+                    .findIndex((slot) => slot === slotToFind);
+                if (indexOfSlot === -1) {
+                    state.positionsByUser.positions = action.payload.concat(
+                        state.positionsByUser.positions,
+                    );
+                } else {
+                    state.positionsByUser.positions[indexOfSlot] = action.payload[0];
+                }
             } else {
-                state.positionsByUser.positions[indexOfSlot] = action.payload[0];
+                const slotToFind = action.payload[0].positionStorageSlot?.toLowerCase();
+                const indexOfSlot = state.positionsByUser.positions
+                    .map((position) => position.positionStorageSlot?.toLowerCase())
+                    .findIndex((slot) => slot === slotToFind);
+                if (indexOfSlot === -1) {
+                    state.positionsByUser.positions = action.payload.concat(
+                        state.positionsByUser.positions,
+                    );
+                } else {
+                    state.positionsByUser.positions[indexOfSlot] = action.payload[0];
+                }
             }
         },
         setPositionsByPool: (state, action: PayloadAction<PositionsByPool>) => {
             state.positionsByPool = action.payload;
         },
         addPositionsByPool: (state, action: PayloadAction<Array<PositionIF>>) => {
-            const slotToFind = action.payload[0].positionStorageSlot.toLowerCase();
-            const indexOfSlot = state.positionsByPool.positions
-                .map((position) => position.positionStorageSlot?.toLowerCase())
-                .findIndex((slot) => slot === slotToFind);
-            if (indexOfSlot === -1) {
-                state.positionsByPool.positions = action.payload.concat(
-                    state.positionsByPool.positions,
-                );
+            if (action.payload[0].positionType === 'knockout') {
+                const slotToFind = action.payload[0].merkleStorageSlot?.toLowerCase();
+                const indexOfSlot = state.positionsByPool.positions
+                    .map((position) => position.merkleStorageSlot?.toLowerCase())
+                    .findIndex((slot) => slot === slotToFind);
+                if (indexOfSlot === -1) {
+                    state.positionsByPool.positions = action.payload.concat(
+                        state.positionsByPool.positions,
+                    );
+                } else {
+                    state.positionsByPool.positions[indexOfSlot] = action.payload[0];
+                }
             } else {
-                state.positionsByPool.positions[indexOfSlot] = action.payload[0];
+                const slotToFind = action.payload[0].positionStorageSlot?.toLowerCase();
+                const indexOfSlot = state.positionsByPool.positions
+                    .map((position) => position.positionStorageSlot?.toLowerCase())
+                    .findIndex((slot) => slot === slotToFind);
+                if (indexOfSlot === -1) {
+                    state.positionsByPool.positions = action.payload.concat(
+                        state.positionsByPool.positions,
+                    );
+                } else {
+                    state.positionsByPool.positions[indexOfSlot] = action.payload[0];
+                }
             }
         },
         setPoolVolumeSeries: (state, action: PayloadAction<PoolVolumeSeries>) => {
