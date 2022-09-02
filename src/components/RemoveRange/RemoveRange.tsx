@@ -4,6 +4,10 @@ import RemoveRangeHeader from './RemoveRangeHeader/RemoveRangeHeader';
 import RemoveRangeInfo from './RemoveRangeInfo/RemoveRangInfo';
 import RemoveRangeButton from './RemoveRangeButton/RemoveRangeButton';
 import { useEffect, useState } from 'react';
+import Animation from '../Global/Animation/Animation';
+import completed from '../../assets/animations/completed.json';
+import { FiExternalLink } from 'react-icons/fi';
+
 // import RemoveRangeSettings from './RemoveRangeSettings/RemoveRangeSettings';
 import { RiListSettingsLine } from 'react-icons/ri';
 import { BsArrowLeft } from 'react-icons/bs';
@@ -233,7 +237,23 @@ export default function RemoveRange(props: IRemoveRangeProps) {
         </div>
     );
 
-    const removalSuccess = <div>Remove finished</div>;
+    const removalSuccess = (
+        <div className={styles.removal_pending}>
+            <div className={styles.completed_animation}>
+                <Animation animData={completed} loop={false} />
+            </div>
+            <p>message to be display here</p>
+            <a
+                href={newRemovalTransactionHash}
+                target='_blank'
+                rel='noreferrer'
+                className={styles.view_etherscan}
+            >
+                View on Etherscan
+                <FiExternalLink size={20} color='black' />
+            </a>
+        </div>
+    );
 
     const removalPending = (
         <div className={styles.removal_pending}>
@@ -244,6 +264,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
             </p>
         </div>
     );
+
     const [currentConfirmationData, setCurrentConfirmationData] = useState(removalPending);
 
     const transactionApproved = newRemovalTransactionHash !== '';
@@ -275,7 +296,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
             )}
             <div className={styles.confirmation_content}>
                 {/* {currentConfirmationData} */}
-                {removalDenied}
+                {removalSuccess}
             </div>
         </div>
     );
