@@ -1,19 +1,20 @@
 import styles from './Pagination.module.css';
 import { useRef, useEffect, useState } from 'react';
-import { BsFillArrowLeftSquareFill, BsFillArrowRightSquareFill } from 'react-icons/bs';
+import { BiDotsHorizontal } from 'react-icons/bi';
+import { IoMdArrowDropleft, IoMdArrowDropright } from 'react-icons/io';
 import { motion } from 'framer-motion';
 interface PaginationPropsIF {
-    postsPerPage: number;
-    totalPosts: any;
+    itemsPerPage: number;
+    totalItems: any;
     paginate: (pageNumber: number) => void;
     currentPage: number;
 }
 export default function Pagination(props: PaginationPropsIF) {
     console.log(props.currentPage);
-    const { postsPerPage, totalPosts, paginate, currentPage } = props;
+    const { itemsPerPage, totalItems, paginate, currentPage } = props;
     const pageNumbers = [];
 
-    for (let i = 1; i <= Math.ceil(totalPosts / postsPerPage); i++) {
+    for (let i = 1; i <= Math.ceil(totalItems / itemsPerPage); i++) {
         pageNumbers.push(i);
     }
 
@@ -36,15 +37,15 @@ export default function Pagination(props: PaginationPropsIF) {
         }, speed);
     };
 
-    const start = (currentPage - 1) * postsPerPage + 1;
-    const [end, setEnd] = useState(totalPosts);
+    const start = (currentPage - 1) * itemsPerPage + 1;
+    const [end, setEnd] = useState(totalItems);
 
     function handleUpdatePageShow() {
-        if (postsPerPage < totalPosts) {
-            setEnd(postsPerPage * currentPage);
+        if (itemsPerPage < totalItems) {
+            setEnd(itemsPerPage * currentPage);
 
-            if (end > totalPosts) {
-                setEnd(totalPosts);
+            if (end > totalItems) {
+                setEnd(totalItems);
             }
         }
     }
@@ -53,9 +54,9 @@ export default function Pagination(props: PaginationPropsIF) {
         handleUpdatePageShow();
     }, [currentPage, paginate]);
 
-    const detailPageRendered = ` showing ${start} - ${end} of ${totalPosts} `;
+    const detailPageRendered = ` showing ${start} - ${end} of ${totalItems} `;
 
-    const totalPages = Math.ceil(totalPosts / postsPerPage);
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
     console.log(totalPages);
 
     const [expandPaginationContainer, setExpandPaginationContainer] = useState(false);
@@ -68,9 +69,22 @@ export default function Pagination(props: PaginationPropsIF) {
                 sideScroll(containerRef.current, 25, 100, 60);
             }}
         >
-            <BsFillArrowRightSquareFill />
+            <IoMdArrowDropright size={30} />
         </div>
     );
+
+    const handleLeftButtonClick = () => {
+        sideScroll(containerRef.current, 25, 100, -60);
+        if (currentPage > 1) {
+            paginate(currentPage - 1);
+        } else return;
+    };
+    const handlerightButtonClick = () => {
+        sideScroll(containerRef.current, 25, 100, 60);
+        if (currentPage < totalPages) {
+            paginate(currentPage + 1);
+        } else return;
+    };
 
     const leftButton = (
         <div
@@ -79,7 +93,17 @@ export default function Pagination(props: PaginationPropsIF) {
                 sideScroll(containerRef.current, 25, 100, -60);
             }}
         >
-            <BsFillArrowLeftSquareFill />
+            <IoMdArrowDropleft size={30} />
+        </div>
+    );
+
+    const lastPageClick = (
+        <div
+            onClick={() => paginate(totalPages)}
+            className={totalPages === currentPage ? styles.page_active : styles.page}
+            style={{ cursor: 'pointer' }}
+        >
+            {totalPages > 10 && totalPages}
         </div>
     );
 
@@ -94,7 +118,7 @@ export default function Pagination(props: PaginationPropsIF) {
                     className={`${styles.pagination_inside_container} ${expandStyle}`}
                     onMouseLeave={() => setExpandPaginationContainer(false)}
                 >
-                    {expandPaginationContainer && leftButton}
+                    {leftButton}
                     <ul
                         className={styles.pagination_content}
                         onMouseEnter={() => setExpandPaginationContainer(true)}
@@ -111,14 +135,14 @@ export default function Pagination(props: PaginationPropsIF) {
                             </li>
                         ))}
                     </ul>
-                    <div className={styles.dot}>...</div>
-                    <div
-                        onClick={() => paginate(totalPages)}
-                        className={totalPages === currentPage ? styles.page_active : styles.page}
-                    >
-                        {totalPages > 10 && totalPages}
-                    </div>
-                    {expandPaginationContainer && rightButton}
+                    {expandPaginationContainer && (
+                        <div className={styles.dot}>
+                            <BiDotsHorizontal />
+                        </div>
+                    )}
+
+                    {expandPaginationContainer && lastPageClick}
+                    {rightButton}
                 </motion.div>
             </nav>
             <div className={styles.text_info}>{detailPageRendered}</div>

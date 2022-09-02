@@ -149,8 +149,8 @@ export default function Transactions(props: TransactionsProps) {
             </div>
             {expandTradeTable && transactionData.length > 30 && (
                 <Pagination
-                    postsPerPage={transactionsPerPage}
-                    totalPosts={transactions.length}
+                    itemsPerPage={transactionsPerPage}
+                    totalItems={transactions.length}
                     paginate={paginate}
                     currentPage={currentPage}
                 />
