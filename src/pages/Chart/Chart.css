@@ -18,10 +18,11 @@ text {
 }
 
 .annotation-line > .redline {
-    stroke: red;
+    stroke: rgba(235, 235, 255, 0.4);
     stroke-width: 3;
-    stroke-dasharray: 6 6;
-    stroke-opacity: 0.6;
+    stroke-dasharray: 16 16;
+    stroke-opacity: 0.4;
+    border: 1px dashed rgba(235, 235, 255, 0.4);
 }
 
 .candlestick .down {
@@ -67,10 +68,10 @@ div.tooltip {
   }
 
 .crosshair {
-    stroke: rgb(238, 238, 238);
-    stroke-width: 1px;
-    stroke-dasharray: 3 3;
-    stroke-opacity: 0.8;
+    stroke: rgb(255, 255, 255);
+    stroke-width: 0.5px;
+    stroke-dasharray: 0.3 0.3;
+    stroke-opacity: 1;
 }
 
 .kHKQUR {

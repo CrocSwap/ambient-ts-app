@@ -20,13 +20,6 @@
     stroke-opacity: 0.1;
 }
 
-.annotation-line > .redline {
-    stroke: rgba(204, 204, 204, 0.452);
-    stroke-width: 3;
-    stroke-dasharray: 6 6;
-    stroke-opacity: 0.6;
-}
-
 .candlestick .down {
     background-color: #7371fc;
 }
@@ -35,9 +28,7 @@ hr {
     display: block;
     height: 0.5px;
     border: 0;
-    border-top: 0.5px solid rgba(204, 204, 204, 0.452);
-    margin: 1 0;
-    padding: 0;
+    border-top: 0.5px solid #242F3F;
 }
 
 label {
@@ -46,3 +37,11 @@ label {
     padding-left: 7px;
     font-size: 14px;
 }
+
+.crosshair {
+    stroke: rgb(255, 255, 255);
+    stroke-width: 0.5px;
+    stroke-dasharray: 0.3 0.3;
+    stroke-opacity: 1;
+}
+

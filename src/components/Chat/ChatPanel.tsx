@@ -12,7 +12,6 @@ import axios from 'axios';
 import { Message } from './Model/MessageModel';
 import { PoolIF } from '../../utils/interfaces/PoolIF';
 import Picker from 'emoji-picker-react';
-
 interface ChatProps {
     chatStatus: boolean;
     onClose: () => void;
@@ -84,7 +83,7 @@ export default function ChatPanel(props: ChatProps) {
                     className={`
                     ${styles.main_body}
                     `}
-                    onClick={(e) => e.stopPropagation()}
+                    onClick={(e: any) => e.stopPropagation()}
                 >
                     <div
                         className={`
@@ -104,6 +103,8 @@ export default function ChatPanel(props: ChatProps) {
                                 message={messages[0]}
                                 room={room}
                                 handleEmojiPickerHideShow={handleEmojiPickerHideShow}
+                                handleEmojiClick={handleEmojiClick}
+                                showEmojiPicker={showEmojiPicker}
                             />
 
                             <div className={styles.scrollable_div} ref={messageEnd}>

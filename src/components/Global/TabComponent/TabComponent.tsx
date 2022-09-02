@@ -14,6 +14,7 @@ import { motion, AnimateSharedLayout } from 'framer-motion';
 import styles from './TabComponent.module.css';
 import '../../../App/App.css';
 import { DefaultTooltip } from '../StyledTooltip/StyledTooltip';
+import { BiSearch } from 'react-icons/bi';
 
 type tabData = {
     label: string;
@@ -28,6 +29,7 @@ interface TabPropsIF {
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
     outsideControl: boolean;
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
+    // search: (value: string) => void;
     // this props is for components that do not need outside control such as exchange balance
 }
 
@@ -79,6 +81,24 @@ export default function TabComponent(props: TabPropsIF) {
             </div>
         );
     }
+
+    const searchContainer = (
+        <div className={styles.search_container}>
+            <div className={styles.search_icon}>
+                <BiSearch size={20} color='#bdbdbd' />
+            </div>
+            <input
+                type='text'
+                id='box'
+                style={{ height: 40 }}
+                size={20}
+                // onChange={(e) => props.search(e.target.value)}
+                placeholder='Search...'
+                className={styles.search__box}
+            />
+        </div>
+    );
+
     const rightOptionWithProps =
         // eslint-disable-next-line
         cloneElement(rightTabOptions as ReactElement<any>, {
@@ -88,7 +108,7 @@ export default function TabComponent(props: TabPropsIF) {
     const tabsWithRightOption = (
         <div className={styles.tab_with_option_container}>
             <ul className={`${styles.tab_ul_left} ${styles.desktop_tabs} `}>
-                {data.map((item) => (
+                {data.map((item, index) => (
                     <li
                         key={item.label}
                         className={item.label === selectedTab.label ? styles.selected : ''}
@@ -139,6 +159,7 @@ export default function TabComponent(props: TabPropsIF) {
                 <AnimateSharedLayout>
                     {rightTabOptions ? tabsWithRightOption : fullTabs}
                 </AnimateSharedLayout>
+                <div className={styles.option_toggles}>{searchContainer}</div>
             </nav>
             <main className={styles.main_tab_content}>
                 <AnimateSharedLayout>

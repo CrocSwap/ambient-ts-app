@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
-import { DetailedHTMLProps, HTMLAttributes, useEffect } from 'react';
+import { DetailedHTMLProps, HTMLAttributes, useEffect, useMemo } from 'react';
 import { formatDollarAmountAxis } from '../../../utils/numbers';
 import { CandleData, CandlesByPoolAndDuration } from '../../../utils/state/graphDataSlice';
 import { targetData } from '../../../utils/state/tradeDataSlice';
@@ -39,6 +39,21 @@ interface ChartData {
     truncatedPoolPrice: number | undefined;
 }
 
+interface CandleChartData {
+    date: any;
+    open: any;
+    high: any;
+    low: any;
+    close: any;
+    time: any;
+    allSwaps: any;
+}
+
+interface ChartUtils {
+    period: any;
+    chartData: CandleChartData[];
+}
+
 type chartItemStates = {
     showTvl: boolean;
     showVolume: boolean;
@@ -50,7 +65,7 @@ export default function TradeCandleStickChart(props: ChartData) {
 
     const numberOfActiveItems = [showFeeRate, showTvl, showVolume].filter(Boolean);
 
-    const chartHeight = 100 - numberOfActiveItems.length * 15;
+    const chartHeight = 85 - numberOfActiveItems.length * 10;
     // console.log(chartHeight);
     // console.log(numberOfActiveItems.length);
 
@@ -61,6 +76,39 @@ export default function TradeCandleStickChart(props: ChartData) {
         priceData: props.priceData,
         liquidityData: props.liquidityData,
     };
+
+    const parsedChartData = useMemo(() => {
+        const chartData: CandleChartData[] = [];
+        let period = 1;
+        props.priceData?.candles.map((data) => {
+            if (data.period !== undefined) {
+                period = data.period;
+            }
+            chartData.push({
+                date: new Date(data.time * 1000),
+                open: props.denomInBase
+                    ? data.invPriceOpenDecimalCorrected
+                    : data.priceOpenDecimalCorrected,
+                close: props.denomInBase
+                    ? data.invPriceCloseDecimalCorrected
+                    : data.priceCloseDecimalCorrected,
+                high: props.denomInBase
+                    ? data.invMinPriceDecimalCorrected
+                    : data.maxPriceDecimalCorrected,
+                low: props.denomInBase
+                    ? data.invMaxPriceDecimalCorrected
+                    : data.minPriceDecimalCorrected,
+                time: data.time,
+                allSwaps: [],
+            });
+        });
+
+        const chartUtils: ChartUtils = {
+            period: period,
+            chartData: chartData,
+        };
+        return chartUtils;
+    }, [props.priceData, props.denomInBase]);
 
     // Volume Chart
     useEffect(() => {
@@ -112,8 +160,10 @@ export default function TradeCandleStickChart(props: ChartData) {
             .yTicks([2])
             // .yTickValues([Math.min(...chartData.lineseries.map((o) => o.value)), Math.max(...chartData.lineseries.map((o) => o.value))])
             .yTickFormat(formatDollarAmountAxis)
+            .xLabel('')
+            .yLabel('')
             .decorate((selection: any) => {
-                selection.select('.x-axis').style('height', '3px');
+                selection.select('.x-axis').style('height', '1px');
             })
             .svgPlotArea(multi);
 
@@ -133,6 +183,7 @@ export default function TradeCandleStickChart(props: ChartData) {
 
         const chartData = {
             series: data.tvlData,
+            crosshair: [{ x: 0, y: -1 }],
         };
 
         const xScale = d3.scaleTime();
@@ -160,11 +211,32 @@ export default function TradeCandleStickChart(props: ChartData) {
                 selection.attr('stroke-width', '2');
             });
 
+        const crosshair = d3fc
+            .annotationSvgCrosshair()
+            .xLabel('')
+            .yLabel('')
+            .decorate((selection: any) => {
+                selection.enter().attr('stroke-dasharray', '3 3').style('pointer-events', 'all');
+                selection
+                    .selectAll('.point>path')
+                    .attr('transform', 'scale(0.2)')
+                    .style('fill', 'white');
+                selection
+                    .enter()
+                    .select('g.annotation-line.horizontal')
+                    .attr('visibility', 'hidden');
+            });
+
         const multi = d3fc
             .seriesSvgMulti()
-            .series([lineSeries, areaSeries])
-            .mapping((data: any) => {
-                return data.series;
+            .series([lineSeries, areaSeries, crosshair])
+            .mapping((data: any, index: any, series: any) => {
+                switch (series[index]) {
+                    case crosshair:
+                        return data.crosshair;
+                    default:
+                        return data.series;
+                }
             });
 
         const svgmain = d3.select('.chart-tvl').select('svg');
@@ -193,12 +265,21 @@ export default function TradeCandleStickChart(props: ChartData) {
             .yTicks([2])
             .yTickFormat(formatDollarAmountAxis)
             .decorate((selection: any) => {
-                selection.select('.x-axis').style('height', '3px');
+                selection.select('.x-axis').style('height', '1px');
             })
             .svgPlotArea(multi);
 
         function render() {
             d3.select('.chart-tvl').datum(chartData).call(chart);
+
+            const pointer = d3fc.pointer().on('point', (event: any) => {
+                if (event[0] !== undefined) {
+                    chartData.crosshair[0].x = event[0].x;
+                    render();
+                }
+            });
+
+            d3.select('.chart-tvl .plot-area').call(pointer);
         }
 
         render();
@@ -262,7 +343,7 @@ export default function TradeCandleStickChart(props: ChartData) {
         <>
             <div style={{ height: `${chartHeight}%`, width: '100%' }}>
                 <Chart
-                    priceData={data.priceData}
+                    priceData={parsedChartData}
                     liquidityData={props.liquidityData.ranges}
                     changeState={props.changeState}
                     targetData={props.targetData}
@@ -281,21 +362,18 @@ export default function TradeCandleStickChart(props: ChartData) {
             {showFeeRate && (
                 <>
                     <hr />
-                    <label>Fee Rate</label>
                     <div style={{ height: '15%', width: '100%' }} className='chart-fee'></div>
                 </>
             )}
             {showTvl && (
                 <>
                     <hr />
-                    <label>TVL</label>
-                    <div style={{ height: '15%', width: '80%' }} className='chart-tvl'></div>
+                    <div style={{ height: '15%', width: '100%' }} className='chart-tvl'></div>
                 </>
             )}
             {showVolume === true && (
                 <>
                     <hr />
-                    <label>Volume</label>
                     <div style={{ height: '15%', width: '100%' }} id='chart-volume'></div>
                 </>
             )}
