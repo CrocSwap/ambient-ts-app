@@ -48,7 +48,7 @@ export const useSortedPositions = (
                 break;
             // return data unsorted if user did not choose a sortable column
             default:
-                return sortByUpdateTime(data);
+                return isShowAllEnabled ? sortByUpdateTime(data) : data;
         }
         // return reversed data if user wants data reversed
         return reverseSort ? reverseArray(sortedData) : sortedData;
