@@ -40,15 +40,17 @@ export const useSortedPositions = (
         let sortedData: PositionIF[];
         // router to apply a specific sort function
         switch (sortBy) {
+            // sort by wallet
             case 'wallet':
                 sortedData = sortByWallet(data);
                 break;
+            // sort by APY
             case 'apy':
                 sortedData = sortByApy(data);
                 break;
             // return data unsorted if user did not choose a sortable column
             default:
-                return isShowAllEnabled ? sortByUpdateTime(data) : data;
+                return sortByUpdateTime(data);
         }
         // return reversed data if user wants data reversed
         return reverseSort ? reverseArray(sortedData) : sortedData;
