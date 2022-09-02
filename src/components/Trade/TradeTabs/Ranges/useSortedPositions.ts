@@ -20,6 +20,10 @@ export const useSortedPositions = (
         return outputArray;
     }
 
+    // default sort function
+    const sortByUpdateTime = (unsortedData: PositionIF[]) => 
+        [...unsortedData].sort((a, b) => b.latestUpdateTime - a.latestUpdateTime);
+
     // column the user wants the table sorted by
     const [sortBy, setSortBy] = useState('default');
     // whether the sort should be ascending or descening
@@ -45,7 +49,7 @@ export const useSortedPositions = (
                 break;
             // return data unsorted if user did not choose a sortable column
             default:
-                return data;
+                return sortByUpdateTime(data);
         }
         // return reversed data if user wants data reversed
         return reverseSort ? reverseArray(sortedData) : sortedData;
