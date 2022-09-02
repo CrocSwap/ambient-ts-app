@@ -170,6 +170,40 @@ export default function RemoveRange(props: IRemoveRangeProps) {
         }
     };
 
+    const harvestFn = async () => {
+        console.log('all fees to be removed.');
+
+        const env = new CrocEnv(provider);
+        const pool = env.pool(position.base, position.quote);
+        const spotPrice = await pool.displayPrice();
+
+        const lowLimit = spotPrice * (1 - liquiditySlippageTolerance / 100);
+        const highLimit = spotPrice * (1 + liquiditySlippageTolerance / 100);
+
+        if (position.positionType === 'concentrated') {
+            try {
+                const tx = await pool.harvestRange(
+                    [position.bidTick, position.askTick],
+                    [lowLimit, highLimit],
+                );
+                console.log(tx?.hash);
+                // setNewRemovalTransactionHash(tx?.hash);
+            } catch (error) {
+                // setTxErrorCode(error?.code);
+                // setTxErrorMessage(error?.message);
+            }
+        } else {
+            console.log('unsupported position type for harvest');
+        }
+    };
+
+    const harvestButtonOrNull =
+        position.positionType === 'concentrated' &&
+        (position.feesLiqBaseDecimalCorrected || 0) + (position.feesLiqQuoteDecimalCorrected || 0) >
+            0 ? (
+            <RemoveRangeButton removeFn={harvestFn} title={'Harvest Fees'} />
+        ) : null;
+
     // const removeRangeSettingsPage = (
     //     <div className={styles.remove_range_settings_container}>
     //         <RemoveRangeSettings showSettings={showSettings} setShowSettings={setShowSettings} />
@@ -207,7 +241,8 @@ export default function RemoveRange(props: IRemoveRangeProps) {
                     feeLiqQuoteDecimalCorrected={feeLiqQuoteDecimalCorrected}
                     removalPercentage={removalPercentage}
                 />
-                <RemoveRangeButton removeFn={removeFn} />
+                <RemoveRangeButton removeFn={removeFn} title={'Remove Liquidity'} />
+                {harvestButtonOrNull}
             </div>
         </div>
     );
