@@ -4,7 +4,7 @@ import RemoveRangeHeader from './RemoveRangeHeader/RemoveRangeHeader';
 import RemoveRangeInfo from './RemoveRangeInfo/RemoveRangInfo';
 import RemoveRangeButton from './RemoveRangeButton/RemoveRangeButton';
 import { useEffect, useState } from 'react';
-import RemoveRangeSettings from './RemoveRangeSettings/RemoveRangeSettings';
+// import RemoveRangeSettings from './RemoveRangeSettings/RemoveRangeSettings';
 import { RiListSettingsLine } from 'react-icons/ri';
 import { PositionIF } from '../../utils/interfaces/PositionIF';
 interface IRemoveRangeProps {
@@ -100,15 +100,15 @@ export default function RemoveRange(props: IRemoveRangeProps) {
         </div>
     );
 
-    const removeRangeSettingsPage = (
-        <div className={styles.remove_range_settings_container}>
-            <RemoveRangeSettings showSettings={showSettings} setShowSettings={setShowSettings} />
-        </div>
-    );
+    // const removeRangeSettingsPage = (
+    //     <div className={styles.remove_range_settings_container}>
+    //         <RemoveRangeSettings showSettings={showSettings} setShowSettings={setShowSettings} />
+    //     </div>
+    // );
 
     return (
         <div className={styles.remove_range_container}>
-            {removeRangeSettingsPage}
+            {/* {removeRangeSettingsPage} */}
             {/* <RemoveRangeSettings showSettings={showSettings} setShowSettings={setShowSettings} /> */}
             <div className={styles.header_container}>
                 <RemoveRangeHeader
