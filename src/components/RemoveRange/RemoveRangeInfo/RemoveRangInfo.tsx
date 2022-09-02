@@ -154,7 +154,7 @@ export default function RemoveRangeInfo(props: IRemoveRangeInfoProps) {
                     <span>{quoteTokenSymbol} Removal Summary</span>
                     <div className={styles.token_price}>
                         {quoteRemovalString !== undefined ? quoteRemovalString : '…'}
-                        <img src={baseTokenLogoURI} alt='' />
+                        <img src={quoteTokenLogoURI} alt='' />
                     </div>
                 </Row>
             </div>
