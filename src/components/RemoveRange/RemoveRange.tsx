@@ -117,17 +117,17 @@ export default function RemoveRange(props: IRemoveRangeProps) {
             try {
                 const env = new CrocEnv(provider);
                 const pool = env.pool(position.base, position.quote);
-                const spotPrice = await pool.spotPrice();
+                const spotPrice = await pool.displayPrice();
 
                 console.log({ pool });
                 console.log({ spotPrice });
 
-                const poolWeiPriceLowLimit = spotPrice * (1 - liquiditySlippageTolerance / 100);
-                const poolWeiPriceHighLimit = spotPrice * (1 + liquiditySlippageTolerance / 100);
+                const lowLimit = spotPrice * (1 - liquiditySlippageTolerance / 100);
+                const highLimit = spotPrice * (1 + liquiditySlippageTolerance / 100);
 
-                console.log({ poolWeiPriceLowLimit });
-                console.log({ poolWeiPriceHighLimit });
-                const tx = await pool.burnAmbientAll([poolWeiPriceLowLimit, poolWeiPriceHighLimit]);
+                console.log({ lowLimit });
+                console.log({ highLimit });
+                const tx = await pool.burnAmbientAll([lowLimit, highLimit]);
 
                 console.log(tx?.hash);
                 // setNewRemovalTransactionHash(tx?.hash);
