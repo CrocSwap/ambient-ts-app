@@ -23,17 +23,16 @@ export const useSortedPositions = (
     // default sort function
     const sortByUpdateTime = (unsortedData: PositionIF[]) => 
         [...unsortedData].sort((a, b) => b.latestUpdateTime - a.latestUpdateTime);
-
-    // column the user wants the table sorted by
-    const [sortBy, setSortBy] = useState('default');
-    // whether the sort should be ascending or descening
-    const [reverseSort, setReverseSort] = useState(false);
-
     // sort functions for sortable columns
     const sortByWallet = (unsortedData: PositionIF[]) =>
         [...unsortedData].sort((a, b) => a.user.localeCompare(b.user));
     const sortByApy = (unsortedData: PositionIF[]) =>
         [...unsortedData].sort((a, b) => b.apy - a.apy);
+
+    // column the user wants the table sorted by
+    const [sortBy, setSortBy] = useState('default');
+    // whether the sort should be ascending or descening
+    const [reverseSort, setReverseSort] = useState(false);
 
     // router to pass data through the appropriate sort function
     const sortData = (data: PositionIF[]) => {
