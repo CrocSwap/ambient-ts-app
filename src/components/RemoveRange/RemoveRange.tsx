@@ -6,6 +6,7 @@ import RemoveRangeButton from './RemoveRangeButton/RemoveRangeButton';
 import { useEffect, useState } from 'react';
 // import RemoveRangeSettings from './RemoveRangeSettings/RemoveRangeSettings';
 import { RiListSettingsLine } from 'react-icons/ri';
+import { PositionIF } from '../../utils/interfaces/PositionIF';
 interface IRemoveRangeProps {
     chainId: string;
     poolIdx: number;
@@ -22,18 +23,20 @@ interface IRemoveRangeProps {
     quoteTokenLogoURI: string;
     isDenomBase: boolean;
     lastBlockNumber: number;
+    position: PositionIF;
 }
 
 export default function RemoveRange(props: IRemoveRangeProps) {
     const {
-        chainId,
-        poolIdx,
-        user,
-        bidTick,
-        askTick,
-        baseTokenAddress,
-        quoteTokenAddress,
+        // chainId,
+        // poolIdx,
+        // user,
+        // bidTick,
+        // askTick,
+        // baseTokenAddress,
+        // quoteTokenAddress,
         lastBlockNumber,
+        position,
     } = props;
 
     const [removalPercentage, setRemovalPercentage] = useState(100);
@@ -53,52 +56,42 @@ export default function RemoveRange(props: IRemoveRangeProps) {
     const positionStatsCacheEndpoint = 'https://809821320828123.de:5000/position_stats?';
 
     useEffect(() => {
-        if (chainId && poolIdx && user && baseTokenAddress && quoteTokenAddress) {
+        if (
+            position.chainId &&
+            position.poolIdx &&
+            position.user &&
+            position.base &&
+            position.quote &&
+            position.positionType
+        ) {
             (async () => {
-                if (bidTick && askTick) {
-                    fetch(
-                        positionStatsCacheEndpoint +
-                            new URLSearchParams({
-                                chainId: chainId,
-                                user: user,
-                                base: baseTokenAddress,
-                                quote: quoteTokenAddress,
-                                poolIdx: poolIdx.toString(),
-                                bidTick: bidTick.toString(),
-                                askTick: askTick.toString(),
-                                calcValues: 'true',
-                            }),
-                    )
-                        .then((response) => response.json())
-                        .then((json) => {
-                            setPosLiqBaseDecimalCorrected(json?.data?.posLiqBaseDecimalCorrected);
-                            setPosLiqQuoteDecimalCorrected(json?.data?.posLiqQuoteDecimalCorrected);
-                            setFeeLiqBaseDecimalCorrected(json?.data?.feeLiqBaseDecimalCorrected);
-                            setFeeLiqQuoteDecimalCorrected(json?.data?.feeLiqQuoteDecimalCorrected);
-                        });
-                } else {
-                    fetch(
-                        positionStatsCacheEndpoint +
-                            new URLSearchParams({
-                                chainId: chainId,
-                                user: user,
-                                base: baseTokenAddress,
-                                quote: quoteTokenAddress,
-                                poolIdx: poolIdx.toString(),
-                                calcValues: 'true',
-                            }),
-                    )
-                        .then((response) => response.json())
-                        .then((json) => {
-                            setPosLiqBaseDecimalCorrected(json?.data?.posLiqBaseDecimalCorrected);
-                            setPosLiqQuoteDecimalCorrected(json?.data?.posLiqQuoteDecimalCorrected);
-                            setFeeLiqBaseDecimalCorrected(json?.data?.feeLiqBaseDecimalCorrected);
-                            setFeeLiqQuoteDecimalCorrected(json?.data?.feeLiqQuoteDecimalCorrected);
-                        });
-                }
+                fetch(
+                    positionStatsCacheEndpoint +
+                        new URLSearchParams({
+                            chainId: position.chainId,
+                            user: position.user,
+                            base: position.base,
+                            quote: position.quote,
+                            poolIdx: position.poolIdx.toString(),
+                            bidTick: position.bidTick ? position.bidTick.toString() : '0',
+                            askTick: position.askTick ? position.askTick.toString() : '0',
+                            calcValues: 'true',
+                            positionType: position.positionType,
+                        }),
+                )
+                    .then((response) => response.json())
+                    .then((json) => {
+                        setPosLiqBaseDecimalCorrected(json?.data?.positionLiqBaseDecimalCorrected);
+                        setPosLiqQuoteDecimalCorrected(
+                            json?.data?.positionLiqQuoteDecimalCorrected,
+                        );
+                        setFeeLiqBaseDecimalCorrected(json?.data?.feesLiqBaseDecimalCorrected);
+                        setFeeLiqQuoteDecimalCorrected(json?.data?.feesLiqQuoteDecimalCorrected);
+                    });
             })();
         }
     }, [lastBlockNumber]);
+
     const [showSettings, setShowSettings] = useState(false);
 
     const removeRangeSetttingIcon = (
@@ -143,6 +136,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
                     posLiqQuoteDecimalCorrected={posLiqQuoteDecimalCorrected}
                     feeLiqBaseDecimalCorrected={feeLiqBaseDecimalCorrected}
                     feeLiqQuoteDecimalCorrected={feeLiqQuoteDecimalCorrected}
+                    removalPercentage={removalPercentage}
                 />
                 <RemoveRangeButton removalPercentage={removalPercentage} />
             </div>

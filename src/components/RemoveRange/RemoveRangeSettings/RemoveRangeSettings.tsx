@@ -10,7 +10,7 @@ interface RemoveRangeSettingsPropsIF {
 export default function RemoveRangeSettings(props: RemoveRangeSettingsPropsIF) {
     const { showSettings, setShowSettings } = props;
 
-    console.log(showSettings);
+    // console.log(showSettings);
 
     const wrapperStyle = showSettings ? styles.settings_wrapper_active : styles.settings_wrapper;
     return (

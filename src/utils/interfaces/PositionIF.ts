@@ -34,7 +34,7 @@ export interface PositionIF {
     tokenBQtyDisplay: string;
     baseTokenDecimals: number;
     quoteTokenDecimals: number;
-    positionType?: string;
+    positionType: string;
     positionLiqBase?: string;
     positionLiqBaseDecimalCorrected?: number;
     positionLiqBaseTruncated?: string;

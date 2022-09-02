@@ -11,6 +11,7 @@ export default function RemoveRangeButton(props: IRemoveRangeButtonProps) {
         <div>
             <Button
                 title='Remove Liquidity'
+                disabled={false}
                 action={() => console.log(`${removalPercentage}% to be removed.`)}
             />
         </div>
