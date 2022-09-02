@@ -1,6 +1,6 @@
 // START: Import React and Dongles
 import { useState, Dispatch, SetStateAction, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import { ethers } from 'ethers';
 import { useMoralis } from 'react-moralis';
 import { motion } from 'framer-motion';
@@ -79,6 +79,9 @@ export default function Swap(props: SwapPropsIF) {
     } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
+
+    const { stuff } = useParams();
+    console.log({stuff});
 
     const dispatch = useAppDispatch();
 
