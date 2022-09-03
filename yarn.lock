@@ -1529,10 +1529,10 @@
     exec-sh "^0.3.2"
     minimist "^1.2.0"
 
-"@crocswap-libs/sdk@^0.2.31":
-  version "0.2.31"
-  resolved "https://registry.yarnpkg.com/@crocswap-libs/sdk/-/sdk-0.2.31.tgz#7906470f9f2802ee41cfa178190f2675eb210b16"
-  integrity sha512-A+0uUotWmvlpHexJWVWh9YTX6w+B+D/49AMYw8uIFuG0HSnWadsH+3aIg3UCWVSjRxI9SdR9ePoQr9gw3CZ+dA==
+"@crocswap-libs/sdk@^0.2.32":
+  version "0.2.32"
+  resolved "https://registry.yarnpkg.com/@crocswap-libs/sdk/-/sdk-0.2.32.tgz#9ac803b12d5b03185a24690f53c8fb23e72595a1"
+  integrity sha512-ALN0nQ4ddBg8SCip4x5vrGPgrn1RsTC592hFjAucEFBKtNOHsUrKKXK7/CHpElT+Tjw0N5QDDHqV6mH47j0N5w==
   dependencies:
     ethers "^5.5.3"
 
