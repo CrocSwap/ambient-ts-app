@@ -185,7 +185,8 @@ export default function App() {
                     setProvider(metamaskProvider);
                 }
             } else if (!provider || !onChain) {
-                const url = lookupChain(chainData.chainId).nodeUrl;
+                const chainSpec = lookupChain(chainData.chainId);
+                const url = chainSpec.wsUrl ? chainSpec.wsUrl : chainSpec.nodeUrl;
                 console.log('Chain URL ' + url);
                 setProvider(new ethers.providers.WebSocketProvider(url));
             }
