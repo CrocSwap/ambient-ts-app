@@ -20,16 +20,19 @@ export const useSortedPositions = (
         return outputArray;
     }
 
-    // column the user wants the table sorted by
-    const [sortBy, setSortBy] = useState('default');
-    // whether the sort should be ascending or descening
-    const [reverseSort, setReverseSort] = useState(false);
-
+    // default sort function
+    const sortByUpdateTime = (unsortedData: PositionIF[]) =>
+        [...unsortedData].sort((a, b) => b.latestUpdateTime - a.latestUpdateTime);
     // sort functions for sortable columns
     const sortByWallet = (unsortedData: PositionIF[]) =>
         [...unsortedData].sort((a, b) => a.user.localeCompare(b.user));
     const sortByApy = (unsortedData: PositionIF[]) =>
         [...unsortedData].sort((a, b) => b.apy - a.apy);
+
+    // column the user wants the table sorted by
+    const [sortBy, setSortBy] = useState('default');
+    // whether the sort should be ascending or descening
+    const [reverseSort, setReverseSort] = useState(false);
 
     // router to pass data through the appropriate sort function
     const sortData = (data: PositionIF[]) => {
@@ -37,15 +40,17 @@ export const useSortedPositions = (
         let sortedData: PositionIF[];
         // router to apply a specific sort function
         switch (sortBy) {
+            // sort by wallet
             case 'wallet':
                 sortedData = sortByWallet(data);
                 break;
+            // sort by APY
             case 'apy':
                 sortedData = sortByApy(data);
                 break;
             // return data unsorted if user did not choose a sortable column
             default:
-                return data;
+                return sortByUpdateTime(data);
         }
         // return reversed data if user wants data reversed
         return reverseSort ? reverseArray(sortedData) : sortedData;

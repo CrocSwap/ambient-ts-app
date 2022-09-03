@@ -863,7 +863,7 @@ export default function App() {
     useEffect(() => {
         if (lastPoolLiqChangeMessage !== null) {
             const lastMessageData = JSON.parse(lastPoolLiqChangeMessage.data).data;
-
+            console.log({ lastMessageData });
             if (lastMessageData) {
                 Promise.all(lastMessageData.map(getPositionData)).then((updatedPositions) => {
                     dispatch(addPositionsByPool(updatedPositions));

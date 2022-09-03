@@ -1,16 +1,10 @@
 import { useTermsOfService } from '../../App/hooks/useTermsOfService';
-
+import styles from './TestPage.module.css';
 export default function TestPage() {
-    const {
-        tosText,
-        agreement,
-        agreementDate,
-        acceptToS,
-        rejectToS
-    } = useTermsOfService();
+    const { tosText, agreement, agreementDate, acceptToS, rejectToS } = useTermsOfService();
 
     return (
-        <main>
+        <main className={styles.main}>
             <h1>Hi there!</h1>
             <p>{tosText}</p>
             <p>

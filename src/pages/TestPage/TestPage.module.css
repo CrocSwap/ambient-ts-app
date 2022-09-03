@@ -23,6 +23,11 @@
     outline: 2px solid yellow;
 } */
 
+.main{
+    background: var(--dark1);
+    height: 100vh;
+}
+
 .menu_container {
     width: 800px;
     display: flex;

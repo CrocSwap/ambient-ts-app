@@ -3,6 +3,7 @@ export interface PositionIF {
     chainId: string;
     positionId: string;
     positionStorageSlot: string;
+    merkleStorageSlot: string;
     askTick: number;
     bidTick: number;
     id: string;
@@ -48,4 +49,5 @@ export interface PositionIF {
     apy: number;
     time: number;
     latestUpdateTime: number;
+    positionLiq: string;
 }
