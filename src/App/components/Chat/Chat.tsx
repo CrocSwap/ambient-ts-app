@@ -45,6 +45,7 @@ export default function Chat(props: ChatPropsIF) {
     ];
     const [currentMessage, setCurrentMessage] = useState(0);
 
+    // chatheader
     const chatHeader = (
         <div className={styles.chat_header}>
             <h3>Chat</h3>
@@ -155,14 +156,37 @@ export default function Chat(props: ChatPropsIF) {
         </div>
     );
 
+    const [showWelcomeBack, setShowWelcomeBack] = useState(false);
+
+    const welcomeBack = (
+        <div className={styles.welcome_back} onClick={() => setShowChatBot(true)}>
+            Welcome back. Just let me know what are you looking for 🙂
+        </div>
+    );
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setShowWelcomeBack(true);
+        }, 10000);
+
+        return () => clearTimeout(timer);
+    }, []);
+
     const wrapperStyleFull = styles.chat_wrapper_full;
     const wrapperStyle = showChatBot ? styles.chat_wrapper_active : styles.chat_wrapper;
 
     return (
         <div className={styles.chat}>
             <div className={styles.chat_container}>
+                {showWelcomeBack && !showChatBot && welcomeBack}
                 {props.fullScreen ? null : (
-                    <ChatButton showChatBot={showChatBot} setShowChatBot={setShowChatBot} />
+                    <>
+                        <ChatButton
+                            showChatBot={showChatBot}
+                            setShowChatBot={setShowChatBot}
+                            setShowWelcomeBack={setShowWelcomeBack}
+                        />
+                    </>
                 )}
                 <div className={props.fullScreen ? wrapperStyleFull : wrapperStyle}>
                     {chatHeader}
