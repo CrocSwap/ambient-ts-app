@@ -1972,7 +1972,7 @@ export default function App() {
                 {currentLocation !== '/' && (
                     <PageFooter lastBlockNumber={lastBlockNumber} userIsOnline={userIsOnline} />
                 )}
-                {currentLocation !== '/app/chat' && (
+                {currentLocation !== '/app/chat' && currentLocation !== '/' && (
                     <Chat
                         ensName={ensName}
                         connectedAccount={account ? account : ''}
