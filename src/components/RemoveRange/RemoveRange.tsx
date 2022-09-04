@@ -285,7 +285,14 @@ export default function RemoveRange(props: IRemoveRangeProps) {
 
     useEffect(() => {
         handleConfirmationChange();
-    }, [transactionApproved, removalDenied, newRemovalTransactionHash, txErrorCode]);
+    }, [
+        transactionApproved,
+        removalDenied,
+        newRemovalTransactionHash,
+        txErrorCode,
+        showConfirmation,
+        isRemovalDenied,
+    ]);
 
     const confirmationContent = (
         <div className={styles.confirmation_container}>
@@ -294,10 +301,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
                     <BsArrowLeft size={30} />
                 </div>
             )}
-            <div className={styles.confirmation_content}>
-                {/* {currentConfirmationData} */}
-                {removalSuccess}
-            </div>
+            <div className={styles.confirmation_content}>{currentConfirmationData}</div>
         </div>
     );
 
@@ -348,7 +352,6 @@ export default function RemoveRange(props: IRemoveRangeProps) {
                     disabled={showSettings}
                     title='Remove Range'
                 />
-                <button onClick={() => setShowConfirmation(!showConfirmation)}>Button</button>
             </div>
         </div>
     );
