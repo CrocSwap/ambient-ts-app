@@ -45,6 +45,7 @@ export default function Chat(props: ChatPropsIF) {
     ];
     const [currentMessage, setCurrentMessage] = useState(0);
 
+    // chatheader
     const chatHeader = (
         <div className={styles.chat_header}>
             <h3>Chat</h3>
