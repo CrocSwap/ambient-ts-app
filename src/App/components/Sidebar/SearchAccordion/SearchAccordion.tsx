@@ -55,7 +55,9 @@ export default function SearchAccordion(props: SearchAccordionPropsIF) {
     const searchContent = (
         <div className={styles.search_result}>
             {searchContainer}
-            {searchInput && <SidebarSearchResults searchInput={searchInput} />}
+            {searchInput && (
+                <SidebarSearchResults searchInput={searchInput} exampleLoading={false} />
+            )}
         </div>
     );
 

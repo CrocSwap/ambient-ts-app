@@ -22,12 +22,12 @@ interface MessageInputProps {
     message: Message;
     handleEmojiPickerHideShow: any;
     handleEmojiClick: any;
-    showEmojiPicker;
+    showEmojiPicker: boolean;
 }
 
 export default function MessageInput(props: MessageInputProps) {
-    console.log({ props });
     const _socket = socket;
+    const { showEmojiPicker, handleEmojiClick, handleEmojiPickerHideShow } = props;
 
     useEffect(() => {
         _socket.connect();
@@ -74,7 +74,7 @@ export default function MessageInput(props: MessageInputProps) {
                 onChange={onChangeMessage}
             />
             <BsSlashSquare />
-            <BsEmojiSmileFill onClick={props.handleEmojiPickerHideShow} />
+            <BsEmojiSmileFill onClick={handleEmojiPickerHideShow} />
             {showEmojiPicker && <Picker onEmojiClick={handleEmojiClick} />}
         </div>
     );
