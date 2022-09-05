@@ -37,11 +37,3 @@ label {
     padding-left: 7px;
     font-size: 14px;
 }
-
-.crosshair {
-    stroke: rgb(255, 255, 255);
-    stroke-width: 0.5px;
-    stroke-dasharray: 0.3 0.3;
-    stroke-opacity: 1;
-}
-

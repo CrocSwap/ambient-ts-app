@@ -6,6 +6,9 @@ import { useLocation } from 'react-router-dom';
 import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
 import { CandleData } from '../../utils/state/graphDataSlice';
 import { setLimitPrice, setTargetData, targetData } from '../../utils/state/tradeDataSlice';
+import FeeRateSubChart from '../Trade/TradeCharts/TradeChartsLoading/FeeRateSubChart';
+import TvlSubChart from '../Trade/TradeCharts/TradeChartsLoading/TvlSubChart';
+import VolumeSubChart from '../Trade/TradeCharts/TradeChartsLoading/VolumeSubChart';
 import './Chart.css';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -20,6 +23,11 @@ declare global {
     }
 }
 
+type chartItemStates = {
+    showTvl: boolean;
+    showVolume: boolean;
+    showFeeRate: boolean;
+};
 interface ChartData {
     priceData: ChartUtils | undefined;
     liquidityData: any;
@@ -34,6 +42,10 @@ interface ChartData {
     pinnedMinPriceDisplayTruncated: number | undefined;
     pinnedMaxPriceDisplayTruncated: number | undefined;
     truncatedPoolPrice: number | undefined;
+    feeData: any[];
+    volumeData: any[];
+    tvlData: any[];
+    chartItemStates: chartItemStates;
 }
 
 interface CandleChartData {
@@ -59,6 +71,8 @@ export default function Chart(props: ChartData) {
         pinnedMaxPriceDisplayTruncated,
         simpleRangeWidth,
     } = props;
+
+    const { showFeeRate, showTvl, showVolume } = props.chartItemStates;
 
     const parsedChartData = props.priceData;
 
@@ -99,8 +113,8 @@ export default function Chart(props: ChartData) {
     const [isChartSelected, setIsChartSelected] = useState<boolean>(false);
     const [transactionFilter, setTransactionFilter] = useState<CandleData>();
     const [scaleData, setScaleData] = useState<any>();
-    const [tooltip, setTooltip] = useState<any>();
     const [dragType, setDragType] = useState<any>();
+    const [crosshairData, setCrosshairData] = useState([{ x: 0, y: -1 }]);
 
     const setDefaultRangeData = () => {
         setRanges((prevState) => {
@@ -175,8 +189,6 @@ export default function Chart(props: ChartData) {
                 .extentLinear(props.liquidityData)
                 .include([0])
                 .accessors([(d: any) => parseFloat(d.activeLiq)]);
-
-            console.log(props.liquidityData);
 
             liquidityScale.domain(liquidityExtent(props.liquidityData));
 
@@ -351,18 +363,6 @@ export default function Chart(props: ChartData) {
         pinnedMaxPriceDisplayTruncated,
     ]);
 
-    // Set Tooltip
-    useEffect(() => {
-        const tooltip = d3
-            .select(d3Container.current)
-            .append('div')
-            .attr('class', 'tooltip')
-            .style('width', '18%')
-            .style('visibility', 'hidden');
-
-        setTooltip(tooltip);
-    }, []);
-
     // Set dragType
     useEffect(() => {
         if (scaleData !== undefined) {
@@ -450,10 +450,9 @@ export default function Chart(props: ChartData) {
             if (location.pathname.includes('limit')) {
                 d3.select(d3Container.current)
                     .select('.targets')
-                    .select('.annotation-line')
                     .on('mouseover', (event: any) => {
                         d3.select(event.currentTarget)
-                            .select('.detector')
+                            // .select('.detector')
                             .style('cursor', 'ns-resize');
                     })
                     .call(dragType);
@@ -462,10 +461,10 @@ export default function Chart(props: ChartData) {
             if (location.pathname.includes('range')) {
                 d3.select(d3Container.current)
                     .select('.targets')
-                    .select('.annotation-line')
+                    .select('.horizontal')
                     .on('mouseover', (event: any) => {
                         d3.select(event.currentTarget)
-                            .select('.detector')
+                            // .select('.detector')
                             .style('cursor', 'ns-resize');
                     })
                     .call(dragType);
@@ -496,19 +495,13 @@ export default function Chart(props: ChartData) {
                 ? market
                 : undefined;
 
-            drawChart(
-                parsedChartData.chartData,
-                targetData,
-                scaleData,
-                tooltip,
-                props.liquidityData,
-            );
+            drawChart(parsedChartData.chartData, targetData, scaleData, props.liquidityData);
         }
     }, [parsedChartData, scaleData, location, market, ranges, limit]);
 
     // Draw Chart
     const drawChart = useCallback(
-        (chartData: any, targets: any, scaleData: any, tooltip: any, liquidityData: any) => {
+        (chartData: any, targets: any, scaleData: any, liquidityData: any) => {
             if (chartData.length > 0) {
                 let selectedCandle: any;
                 const crosshairData = [{ x: 0, y: -1 }];
@@ -537,6 +530,7 @@ export default function Chart(props: ChartData) {
                         Math.abs(point.offsetX - xScale(xValue(d))),
                     )[1];
 
+                    setCrosshairData([{ x: point.offsetX, y: -1 }]);
                     return [
                         {
                             x: nearest?.date,
@@ -775,8 +769,8 @@ export default function Chart(props: ChartData) {
                     crosshairHorizontalJoin(svg, [crosshairData]).call(crosshairHorizontal);
                     crosshairVerticalJoin(svg, [crosshairData]).call(crosshairVertical);
                     barJoin(svg, [liquidityData]).call(barSeries);
-                    targetsJoin(svg, [targets]).call(horizontalLine);
                     candleJoin(svg, [chartData]).call(candlestick);
+                    targetsJoin(svg, [targets]).call(horizontalLine);
                 });
 
                 d3.select(d3Xaxis.current).on('draw', function (event: any) {
@@ -787,6 +781,12 @@ export default function Chart(props: ChartData) {
                     d3.select(event.target).select('svg').call(yAxis);
                 });
 
+                // const dateIndicator = d3
+                //     .select(d3Xaxis.current)
+                //     .append('div')
+                //     .attr('class', 'popup')
+                //     .style('visibility', 'hidden');
+
                 d3.select(d3PlotArea.current).on('measure.range', function (event: any) {
                     const svg = d3.select(event.target).select('svg');
                     scaleData.xScaleCopy.range([0, event.detail.width]);
@@ -796,14 +796,20 @@ export default function Chart(props: ChartData) {
 
                 d3.select(d3PlotArea.current).on('mousemove', function (event: any) {
                     crosshairData[0] = snap(candlestick, chartData, event)[0];
+
+                    const dateIndcLocation = event.offsetX;
+
+                    // dateIndicator
+                    //     .style('visibility', 'visible')
+                    //     .html('<p>' + moment(crosshairData[0].x).format('DD MMM  HH:mm') + '</p>')
+                    //     .style('left', dateIndcLocation - 50 + 'px');
+
                     render();
                 });
 
                 d3.select(d3Yaxis.current)
-                    .on('mouseover', () => {
-                        // if (path.includes('limit')){
-                        // d3.select(event.currentTarget).style('cursor', 'ns-resize');
-                        // }
+                    .on('mouseover', (event: any) => {
+                        d3.select(event.currentTarget).style('cursor', 'ns-resize');
                     })
                     .call(yAxisDrag);
 
@@ -891,6 +897,34 @@ export default function Chart(props: ChartData) {
                             style={{ width: '3em' }}
                         ></d3fc-svg>
                     </div>
+
+                    {showFeeRate && (
+                        <>
+                            <hr />
+                            <FeeRateSubChart
+                                feeData={props.feeData}
+                                crosshairData={crosshairData}
+                            />
+                        </>
+                    )}
+
+                    {showTvl && (
+                        <>
+                            <hr />
+                            <TvlSubChart tvlData={props.tvlData} crosshairData={crosshairData} />
+                        </>
+                    )}
+
+                    {showVolume === true && (
+                        <>
+                            <hr />
+                            <VolumeSubChart
+                                volumeData={props.volumeData}
+                                crosshairData={crosshairData}
+                            />
+                        </>
+                    )}
+
                     <d3fc-svg
                         ref={d3Xaxis}
                         className='x-axis'

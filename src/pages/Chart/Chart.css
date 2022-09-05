@@ -67,13 +67,6 @@ div.tooltip {
     }
   }
 
-.crosshair {
-    stroke: rgb(255, 255, 255);
-    stroke-width: 0.5px;
-    stroke-dasharray: 0.3 0.3;
-    stroke-opacity: 1;
-}
-
 .kHKQUR {
     display: grid;
     grid-auto-rows: auto;
@@ -107,4 +100,11 @@ div.tooltip {
 .value {
     font-weight: 500;
     font-size: 12px
+}
+
+.crosshair {
+    stroke: rgb(255, 255, 255);
+    stroke-width: 0.8px;
+    stroke-dasharray: 0.6 0.6;
+    stroke-opacity: 1;
 }
