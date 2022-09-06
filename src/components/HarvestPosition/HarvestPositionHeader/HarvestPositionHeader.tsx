@@ -1,19 +1,19 @@
 import RangeStatus from '../../Global/RangeStatus/RangeStatus';
 import styles from './HarvestPositionHeader.module.css';
-import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
-import { toggleDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
-interface IHarvestPositionHeaderProps {
-    isPositionInRange: boolean;
-    isAmbient: boolean;
-    baseTokenSymbol: string;
-    quoteTokenSymbol: string;
-    baseTokenLogoURI: string;
-    quoteTokenLogoURI: string;
-    isDenomBase: boolean;
-}
+// import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
+// import { toggleDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
+// interface IHarvestPositionHeaderProps {
+//     isPositionInRange: boolean;
+//     isAmbient: boolean;
+//     baseTokenSymbol: string;
+//     quoteTokenSymbol: string;
+//     baseTokenLogoURI: string;
+//     quoteTokenLogoURI: string;
+//     isDenomBase: boolean;
+// }
 
 export default function HarvestPositionHeader() {
-    const dispatch = useAppDispatch();
+    // const dispatch = useAppDispatch();
 
     // temp values
     const baseTokenSymbol = 'ETH';

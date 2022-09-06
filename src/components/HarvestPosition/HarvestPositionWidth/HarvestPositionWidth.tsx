@@ -1,10 +1,10 @@
-import { Dispatch, SetStateAction } from 'react';
+// import { Dispatch, SetStateAction } from 'react';
 import styles from './HarvestPositionWidth.module.css';
 
-interface HarvestPositionWidthPropsIF {
-    removalPercentage: number;
-    setRemovalPercentage: Dispatch<SetStateAction<number>>;
-}
+// interface HarvestPositionWidthPropsIF {
+//     removalPercentage: number;
+//     setRemovalPercentage: Dispatch<SetStateAction<number>>;
+// }
 
 export default function HarvestPositionWidth() {
     // const { removalPercentage, setRemovalPercentage } = props;

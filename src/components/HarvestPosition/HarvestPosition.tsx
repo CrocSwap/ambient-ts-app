@@ -11,9 +11,9 @@ import { FiExternalLink } from 'react-icons/fi';
 // import HarvestPositionSettings from './HarvestPositionSettings/HarvestPositionSettings';
 import { RiListSettingsLine } from 'react-icons/ri';
 import { BsArrowLeft } from 'react-icons/bs';
-import { PositionIF } from '../../utils/interfaces/PositionIF';
-import { ethers } from 'ethers';
-import { CrocEnv } from '@crocswap-libs/sdk';
+// import { PositionIF } from '../../utils/interfaces/PositionIF';
+// import { ethers } from 'ethers';
+// import { CrocEnv } from '@crocswap-libs/sdk';
 import Button from '../Global/Button/Button';
 
 import HarvestPositionSettings from './HarvestPositionSettings/HarvestPositionSettings';
@@ -22,7 +22,39 @@ import {
     CircleLoaderFailed,
 } from '../Global/LoadingAnimations/CircleLoader/CircleLoader';
 
+// interface IHarvestPositionProps {
+//     provider: ethers.providers.Provider;
+//     chainId: string;
+//     poolIdx: number;
+//     user: string;
+//     bidTick: number;
+//     askTick: number;
+//     baseTokenAddress: string;
+//     quoteTokenAddress: string;
+//     isPositionInRange: boolean;
+//     isAmbient: boolean;
+//     baseTokenSymbol: string;
+//     quoteTokenSymbol: string;
+//     baseTokenLogoURI: string;
+//     quoteTokenLogoURI: string;
+//     isDenomBase: boolean;
+//     lastBlockNumber: number;
+//     position: PositionIF;
+// }
 export default function HarvestPosition() {
+    // const {
+    //     chainId,
+    //     poolIdx,
+    //     user,
+    //     bidTick,
+    //     askTick,
+    //     baseTokenAddress,
+    //     quoteTokenAddress,
+    //     provider,
+    //     lastBlockNumber,
+    //     position,
+    // } = props;
+
     // settings
     const [showSettings, setShowSettings] = useState(false);
 
@@ -33,8 +65,11 @@ export default function HarvestPosition() {
     );
 
     const [showConfirmation, setShowConfirmation] = useState(false);
+    // eslint-disable-next-line
     const [newHarvestTransactionHash, setNewHarvestTransactionHash] = useState('');
+    // eslint-disable-next-line
     const [txErrorCode, setTxErrorCode] = useState(0);
+    // eslint-disable-next-line
     const [txErrorMessage, setTxErrorMessage] = useState('');
 
     const harvestFn = () => console.log('harvested');

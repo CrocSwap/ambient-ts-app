@@ -3,17 +3,17 @@ import Row from '../../Global/Row/Row';
 import Divider from '../../Global/Divider/Divider';
 // import { formatAmount } from '../../../utils/numbers';
 
-interface IHarvestPositionInfoProps {
-    baseTokenSymbol: string;
-    quoteTokenSymbol: string;
-    baseTokenLogoURI: string;
-    quoteTokenLogoURI: string;
-    posLiqBaseDecimalCorrected: number | undefined;
-    posLiqQuoteDecimalCorrected: number | undefined;
-    feeLiqBaseDecimalCorrected: number | undefined;
-    feeLiqQuoteDecimalCorrected: number | undefined;
-    removalPercentage: number;
-}
+// interface IHarvestPositionInfoProps {
+//     baseTokenSymbol: string;
+//     quoteTokenSymbol: string;
+//     baseTokenLogoURI: string;
+//     quoteTokenLogoURI: string;
+//     posLiqBaseDecimalCorrected: number | undefined;
+//     posLiqQuoteDecimalCorrected: number | undefined;
+//     feeLiqBaseDecimalCorrected: number | undefined;
+//     feeLiqQuoteDecimalCorrected: number | undefined;
+//     removalPercentage: number;
+// }
 
 export default function HarvestPositionInfo() {
     // const {
