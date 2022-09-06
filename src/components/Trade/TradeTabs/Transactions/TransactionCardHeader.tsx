@@ -21,6 +21,7 @@ export default function TransactionCardHeader(props: TransactionCardHeaderProps)
                 <p className={styles.side}>Side</p>
                 <p className={styles.type}>Type</p>
                 {/* <p className={styles.tokens}>Base/Quote</p> */}
+                <p className={styles.token}>Value</p>
                 <p className={styles.token}>{baseTokenSymbol}</p>
                 <p className={styles.token}>{quoteTokenSymbol}</p>
             </div>
