@@ -1,6 +1,6 @@
 import styles from './HarvestPositionInfo.module.css';
 import Row from '../../Global/Row/Row';
-import Divider from '../../Global/Divider/Divider';
+import DividerDark from '../../Global/DividerDark/DividerDark';
 // import { formatAmount } from '../../../utils/numbers';
 
 // interface IHarvestPositionInfoProps {
@@ -144,7 +144,7 @@ export default function HarvestPositionInfo() {
                     </div>
                 </Row>
                 {/*  */}
-                <Divider />
+                <DividerDark />
                 <Row>
                     <span>{baseTokenSymbol} Fees Earned</span>
                     <div className={styles.token_price}>
@@ -160,7 +160,7 @@ export default function HarvestPositionInfo() {
                         <img src={quoteTokenLogoURI} alt='' />
                     </div>
                 </Row>
-                <Divider />
+                <DividerDark />
                 <Row>
                     <span>{baseTokenSymbol} Removal Summary</span>
                     <div className={styles.token_price}>

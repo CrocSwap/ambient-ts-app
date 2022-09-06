@@ -304,10 +304,28 @@ export default function RemoveRange(props: IRemoveRangeProps) {
         </div>
     );
 
+    const buttonToDisplay = showSettings ? (
+        <Button title='Confirm' action={() => setShowSettings(false)} />
+    ) : (
+        <RemoveRangeButton removeFn={removeFn} disabled={showSettings} title='Remove Range' />
+    );
+
     const mainModalContent = showSettings ? (
         <RemoveRangeSettings showSettings={showSettings} setShowSettings={setShowSettings} />
     ) : (
         <>
+            <div className={styles.header_container}>
+                <RemoveRangeHeader
+                    isPositionInRange={props.isPositionInRange}
+                    isAmbient={props.isAmbient}
+                    baseTokenSymbol={props.baseTokenSymbol}
+                    quoteTokenSymbol={props.quoteTokenSymbol}
+                    baseTokenLogoURI={props.baseTokenLogoURI}
+                    quoteTokenLogoURI={props.quoteTokenLogoURI}
+                    isDenomBase={props.isDenomBase}
+                />
+                {removeRangeSetttingIcon}
+            </div>
             <RemoveRangeWidth
                 removalPercentage={removalPercentage}
                 setRemovalPercentage={setRemovalPercentage}
@@ -329,28 +347,10 @@ export default function RemoveRange(props: IRemoveRangeProps) {
     if (showConfirmation) return confirmationContent;
     return (
         <div className={styles.remove_range_container}>
-            {/* {removeRangeSettingsPage} */}
-            {/* <RemoveRangeSettings showSettings={showSettings} setShowSettings={setShowSettings} /> */}
-            <div className={styles.header_container}>
-                <RemoveRangeHeader
-                    isPositionInRange={props.isPositionInRange}
-                    isAmbient={props.isAmbient}
-                    baseTokenSymbol={props.baseTokenSymbol}
-                    quoteTokenSymbol={props.quoteTokenSymbol}
-                    baseTokenLogoURI={props.baseTokenLogoURI}
-                    quoteTokenLogoURI={props.quoteTokenLogoURI}
-                    isDenomBase={props.isDenomBase}
-                />
-                {removeRangeSetttingIcon}
-            </div>
             <div className={styles.main_content}>
                 {mainModalContent}
                 {harvestButtonOrNull}
-                <RemoveRangeButton
-                    removeFn={removeFn}
-                    disabled={showSettings}
-                    title='Remove Range'
-                />
+                {buttonToDisplay}
             </div>
         </div>
     );
