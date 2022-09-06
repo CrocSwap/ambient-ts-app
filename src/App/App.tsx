@@ -657,6 +657,7 @@ export default function App() {
                                     chainId: chainData.chainId,
                                     annotate: 'true', // token quantities
                                     ensResolution: 'true',
+                                    omitEmpty: 'true',
                                 }),
                         )
                             .then((response) => response.json())
@@ -1430,6 +1431,7 @@ export default function App() {
                             chainId: chainData.chainId,
                             ensResolution: 'true',
                             annotate: 'true',
+                            omitEmpty: 'true',
                         }),
                 )
                     .then((response) => response?.json())
