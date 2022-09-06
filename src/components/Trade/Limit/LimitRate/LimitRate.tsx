@@ -13,12 +13,13 @@ interface LimitRatePropsIF {
     disable?: boolean;
     reverseTokens: () => void;
     setLimitRate: Dispatch<SetStateAction<string>>;
+    onBlur: () => void;
     poolPriceNonDisplay: number | undefined;
     insideTickDisplayPrice: number;
 }
 
 export default function LimitRate(props: LimitRatePropsIF) {
-    const { fieldId, disable, setLimitRate } = props;
+    const { fieldId, disable, setLimitRate, onBlur } = props;
 
     const dispatch = useAppDispatch();
 
@@ -34,6 +35,7 @@ export default function LimitRate(props: LimitRatePropsIF) {
                 className={styles.currency_quantity}
                 placeholder='0.0'
                 onChange={(event) => handleLimitChange(event.target.value)}
+                onBlur={() => onBlur()}
                 type='string'
                 inputMode='decimal'
                 autoComplete='off'

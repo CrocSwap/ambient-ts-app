@@ -46,6 +46,7 @@ interface LimitCurrencyConverterProps {
     isSaveAsDexSurplusChecked: boolean;
     setIsSaveAsDexSurplusChecked: Dispatch<SetStateAction<boolean>>;
     setLimitRate: Dispatch<SetStateAction<string>>;
+    priceInputOnBlur: () => void;
     limitRate: string;
     isDenominationInBase: boolean;
     activeTokenListsChanged: boolean;
@@ -74,6 +75,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
         isSaveAsDexSurplusChecked,
         setIsSaveAsDexSurplusChecked,
         setLimitRate,
+        priceInputOnBlur,
         limitRate,
         isDenominationInBase,
         activeTokenListsChanged,
@@ -366,6 +368,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 fieldId='limit-rate'
                 reverseTokens={reverseTokens}
                 setLimitRate={setLimitRate}
+                onBlur={priceInputOnBlur}
                 poolPriceNonDisplay={poolPriceNonDisplay}
                 insideTickDisplayPrice={insideTickDisplayPrice}
             />
