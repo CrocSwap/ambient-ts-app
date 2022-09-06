@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
+import { formatAmount } from '../../../../utils/numbers';
 import { ILimitOrderState } from '../../../../utils/state/graphDataSlice';
 import OpenOrderStatus from '../../../Global/OpenOrderStatus/OpenOrderStatus';
 import Price from '../../../Global/Tabs/Price/Price';
 import OrdersMenu from '../../../Global/Tabs/TableMenu/TableMenuComponents/OrdersMenu';
 import TokenQty from '../../../Global/Tabs/TokenQty/TokenQty';
 import OrderTypeSide from '../../../Global/Tabs/TypeAndSide/OrderTypeAndSide/OrderTypeSide';
+import Value from '../../../Global/Tabs/Value/Value';
 import WalletAndId from '../../../Global/Tabs/WalletAndID/WalletAndId';
 import styles from './OrderCard.module.css';
 
@@ -70,6 +72,54 @@ export default function OrderCard(props: OrderCardProps) {
     if (!transactionMatchesSelectedTokens) return null;
     if (!limitOrder.positionLiq) return null;
 
+    const liqBaseNum = limitOrder.positionLiqBaseDecimalCorrected;
+    const liqQuoteNum = limitOrder.positionLiqQuoteDecimalCorrected;
+
+    const baseQtyTruncated =
+        liqBaseNum === 0
+            ? '0'
+            : liqBaseNum < 0.0001
+            ? liqBaseNum.toExponential(2)
+            : liqBaseNum < 2
+            ? liqBaseNum.toPrecision(3)
+            : liqBaseNum >= 100000
+            ? formatAmount(liqBaseNum)
+            : // ? baseLiqDisplayNum.toExponential(2)
+              liqBaseNum.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              });
+    const quoteQtyTruncated =
+        liqQuoteNum === 0
+            ? '0'
+            : liqQuoteNum < 0.0001
+            ? liqQuoteNum.toExponential(2)
+            : liqQuoteNum < 2
+            ? liqQuoteNum.toPrecision(3)
+            : liqQuoteNum >= 100000
+            ? formatAmount(liqQuoteNum)
+            : // ? baseLiqDisplayNum.toExponential(2)
+              liqQuoteNum.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              });
+
+    const usdValueNum = limitOrder.positionLiqTotalUSD;
+    const usdValueTruncated =
+        usdValueNum === 0
+            ? '0'
+            : usdValueNum < 0.0001
+            ? usdValueNum.toExponential(2)
+            : usdValueNum < 2
+            ? usdValueNum.toPrecision(3)
+            : usdValueNum >= 100000
+            ? formatAmount(usdValueNum)
+            : // ? baseLiqDisplayNum.toExponential(2)
+              usdValueNum.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              });
+
     return (
         <div className={styles.main_container}>
             <div className={styles.row_container}>
@@ -86,7 +136,13 @@ export default function OrderCard(props: OrderCardProps) {
                 {/* ------------------------------------------------------ */}
                 <OrderTypeSide type='order' side={sideType} />
                 {/* ------------------------------------------------------ */}
-                <TokenQty />
+                <Value usdValue={'$' + usdValueTruncated} />
+                <TokenQty
+                    baseQty={baseQtyTruncated}
+                    quoteQty={quoteQtyTruncated}
+                    baseTokenSymbol={limitOrder.baseSymbol}
+                    quoteTokenSymbol={limitOrder.quoteSymbol}
+                />
                 {/* ------------------------------------------------------ */}
                 <div className={styles.status}>
                     <OpenOrderStatus isFilled />

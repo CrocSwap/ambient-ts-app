@@ -52,6 +52,10 @@ export default function Orders(props: propsIF) {
             sortable: true,
         },
         {
+            name: 'Value',
+            sortable: true,
+        },
+        {
             name: tradeData.baseToken.symbol,
             sortable: false,
         },

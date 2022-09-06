@@ -36,6 +36,8 @@ export interface ILimitOrderState {
     concGrowth: number;
     positionLiq: number;
     positionLiqBase: number;
+    positionLiqBaseDecimalCorrected: number;
+    positionLiqQuoteDecimalCorrected: number;
     positionLiqQuote: number;
     updateType: string;
     latestUpdateBlock: number;
