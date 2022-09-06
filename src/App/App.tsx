@@ -90,12 +90,14 @@ import { validateChain } from './validateChain';
 import { testTokenMap } from '../utils/data/testTokenMap';
 import { ZERO_ADDRESS } from '../constants';
 import { useModal } from '../components/Global/Modal/useModal';
+import { useGlobalModal } from './components/GlobalModal/useGlobalModal';
 
 // import authenticateUser from '../utils/functions/authenticateUser';
 import { getVolumeSeries } from './functions/getVolumeSeries';
 import { getTvlSeries } from './functions/getTvlSeries';
 import Chat from './components/Chat/Chat';
 import { formatAmount } from '../utils/numbers';
+import GlobalModal from './components/GlobalModal/GlobalModal';
 
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 const cachedFetchAddress = memoizeFetchAddress();
@@ -1886,6 +1888,8 @@ export default function App() {
         ? 'content-container-trade'
         : 'content-container';
 
+    const [isGlobalModalOpen, openGlobalModal, closeGlobalModal, currentContent] = useGlobalModal();
+
     return (
         <>
             <div className={containerStyle}>
@@ -1938,6 +1942,7 @@ export default function App() {
                                     setOutsideControl={setOutsideControl}
                                     currentPositionActive={currentPositionActive}
                                     setCurrentPositionActive={setCurrentPositionActive}
+                                    openGlobalModal={openGlobalModal}
                                 />
                             }
                         >
@@ -2002,7 +2007,10 @@ export default function App() {
 
                         <Route path='swap' element={<Swap {...swapProps} />} />
                         <Route path='tos' element={<TermsOfService />} />
-                        <Route path='testpage' element={<TestPage />} />
+                        <Route
+                            path='testpage'
+                            element={<TestPage openGlobalModal={openGlobalModal} />}
+                        />
                         <Route path='*' element={<Navigate to='/404' replace />} />
                         <Route path='/404' element={<NotFound />} />
                     </Routes>
@@ -2022,6 +2030,12 @@ export default function App() {
                 )}
             </div>
             <SidebarFooter />
+            <GlobalModal
+                isGlobalModalOpen={isGlobalModalOpen}
+                closeGlobalModal={closeGlobalModal}
+                openGlobalModal={openGlobalModal}
+                currentContent={currentContent}
+            />
             {isModalOpenWallet && (
                 <WalletModal
                     closeModalWallet={closeModalWallet}

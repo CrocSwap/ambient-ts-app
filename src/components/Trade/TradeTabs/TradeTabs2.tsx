@@ -45,6 +45,8 @@ interface ITabsProps {
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
+
+    openGlobalModal: (content: React.ReactNode) => void;
 }
 
 export default function TradeTabs2(props: ITabsProps) {
@@ -144,6 +146,8 @@ export default function TradeTabs2(props: ITabsProps) {
 
         isCandleSelected: isCandleSelected,
         filter: filter,
+
+        openGlobalModal: props.openGlobalModal,
     };
     // Props for <Orders/> React Element
     const ordersProps = {

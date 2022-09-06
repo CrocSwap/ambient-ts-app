@@ -22,6 +22,8 @@ interface TransactionsProps {
 
     isCandleSelected: boolean | undefined;
     filter: CandleData | undefined;
+
+    openGlobalModal: (content: React.ReactNode) => void;
     // setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
 }
 export default function Transactions(props: TransactionsProps) {
@@ -132,6 +134,7 @@ export default function Transactions(props: TransactionsProps) {
             account={account}
             currentTxActiveInTransactions={currentTxActiveInTransactions}
             setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
+            openGlobalModal={props.openGlobalModal}
         />
     ));
 
