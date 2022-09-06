@@ -8,7 +8,7 @@ export const useUrlParams = (module: string) => {
 
     // parse parameter string into [key, value] tuples
     // useMemo() with empty dependency array runs once on initial render
-    const parsedParams = useMemo(() => {
+    const urlParams = useMemo(() => {
         // get URL parameters or empty string if undefined
         const fixedParams = params ?? '';
         // split params string at every ampersand
@@ -21,21 +21,19 @@ export const useUrlParams = (module: string) => {
             .map(par => par.filter(e => e !== ''))
             // remove tuples with trisomy issues
             .filter(par => par.length === 2);
-        // return array of parameters
-        return paramsArray;
+        // router to feed parameters into the correct object constructor
+        const makeParams = (input: string[][]) => {
+            switch (module) {
+                // swap module
+                case 'swap':
+                    return new swapParams(input);
+                // default pathway (considered an error pathway)
+                default: return;
+            }
+        }
+        // return the correct parameters object for URL pathway
+        return makeParams(paramsArray);
     }, []);
 
-    // router to feed parameters into the correct object constructor
-    const makeParams = (input: string[][]) => {
-        switch (module) {
-            // swap module
-            case 'swap':
-                return new swapParams(input);
-            // default pathway (considered an error pathway)
-            default: return;
-        }
-    }
-
-    // return parameters object
-    return makeParams(parsedParams);
+    return urlParams;
 }
