@@ -658,6 +658,7 @@ export default function App() {
                                     annotate: 'true', // token quantities
                                     ensResolution: 'true',
                                     omitEmpty: 'true',
+                                    omitKnockout: 'true',
                                 }),
                         )
                             .then((response) => response.json())
@@ -839,6 +840,7 @@ export default function App() {
                 ensResolution: 'true',
                 annotate: 'true',
                 addCachedAPY: 'true',
+                omitKnockout: 'true',
             }),
         [baseTokenAddress, quoteTokenAddress, chainData.chainId],
     );
@@ -979,6 +981,8 @@ export default function App() {
                 chainId: chainData.chainId,
                 annotate: 'true',
                 addCachedAPY: 'true',
+                omitKnockout: 'true',
+                ensResolution: 'true',
                 // user: account || '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc',
             }),
         [account, chainData.chainId],
@@ -1434,6 +1438,7 @@ export default function App() {
                             ensResolution: 'true',
                             annotate: 'true',
                             omitEmpty: 'true',
+                            omitKnockout: 'true',
                         }),
                 )
                     .then((response) => response?.json())
