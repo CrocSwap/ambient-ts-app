@@ -6,8 +6,13 @@ interface HarvestPositionWidthPropsIF {
     setRemovalPercentage: Dispatch<SetStateAction<number>>;
 }
 
-export default function HarvestPositionWidth(props: HarvestPositionWidthPropsIF) {
-    const { removalPercentage, setRemovalPercentage } = props;
+export default function HarvestPositionWidth() {
+    // const { removalPercentage, setRemovalPercentage } = props;
+
+    // temp data
+    const removalPercentage = 23;
+    const setRemovalPercentage = (percentage: number) => console.log(percentage);
+
     const handlePercentageUpdate = (percentage: number) => {
         setRemovalPercentage(percentage);
         const sliderInputField = document.getElementById('harvest-range-slider');
