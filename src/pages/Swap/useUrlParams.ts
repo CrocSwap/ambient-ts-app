@@ -3,9 +3,11 @@ import { useParams } from 'react-router-dom';
 
 export const useUrlParams = () => {
     const { params } = useParams() ?? '';
-    const paramsArray = useMemo(() => {
+    const parsedParams = useMemo(() => {
         const fixedParams = params ?? '';
-        return fixedParams.split('&');
+        const paramsArray = fixedParams.split('&')
+            .filter((par => par.includes('=')));
+        return paramsArray;
     }, []);
-    console.log(paramsArray);
+    console.log(parsedParams);
 }
