@@ -18,4 +18,23 @@ export const useUrlParams = () => {
     }, []);
 
     console.log(parsedParams);
+
+    class urlParams {
+        chain: string;
+        tokenA: string;
+        tokenB: string;
+
+        constructor(inputArray: string[][]) {
+            const findValue = (key: string) => {
+                const queriedPair = inputArray.find((pair: string[]) => pair[0] === key);
+                return queriedPair ? queriedPair[1] : '';
+            }
+            this.chain = findValue('chain');
+            this.tokenA = findValue('tokenA');
+            this.tokenB = findValue('tokenB');
+        };
+    }
+
+    const output = new urlParams(parsedParams);
+    console.log(output);
 }
