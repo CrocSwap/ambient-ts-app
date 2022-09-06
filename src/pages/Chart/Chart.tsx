@@ -597,9 +597,7 @@ export default function Chart(props: ChartData) {
                         .append('line')
                         .attr('stroke-width', 1)
                         .style('pointer-events', 'all');
-                    selection.enter().select('g.bottom-handle').append('text');
                     selection.enter().select('g.top-handle').remove();
-                    // selection.select('g.bottom-handle text').text((d: any) => moment(d.x).format('DD/MM HH:mm'));
                 });
 
                 const crosshairVertical = d3fc
@@ -795,11 +793,13 @@ export default function Chart(props: ChartData) {
                     d3.select(event.target).select('svg').call(yAxis);
                 });
 
-                // const dateIndicator = d3
-                //     .select(d3Xaxis.current)
-                //     .append('div')
-                //     .attr('class', 'popup')
-                //     .style('visibility', 'hidden');
+                const dateIndicator = d3
+                    .select(d3Xaxis.current)
+                    .select('svg')
+                    .append('text')
+                    .attr('class', 'popup')
+                    .attr('dy', '30px')
+                    .style('visibility', 'visible');
 
                 d3.select(d3PlotArea.current).on('measure.range', function (event: any) {
                     const svg = d3.select(event.target).select('svg');
@@ -811,21 +811,14 @@ export default function Chart(props: ChartData) {
                 d3.select(d3PlotArea.current).on('mousemove', function (event: any) {
                     crosshairData[0] = snap(candlestick, chartData, event)[0];
 
-                    // const dateIndcLocation = event.offsetX;
-
-                    // dateIndicator
-                    //     .style('visibility', 'visible')
-                    //     .html('<p>' + moment(crosshairData[0].x).format('DD MMM  HH:mm') + '</p>')
-                    //     .style('left', dateIndcLocation - 50 + 'px');
+                    const dateIndcLocation = event.offsetX;
+                    dateIndicator
+                        .style('visibility', 'visible')
+                        .text(moment(crosshairData[0].x).format('DD MMM  HH:mm'))
+                        .style('transform', 'translateX(' + dateIndcLocation + 'px)');
 
                     render();
                 });
-
-                d3.select(d3Yaxis.current)
-                    .on('mouseover', (event: any) => {
-                        d3.select(event.currentTarget).style('cursor', 'ns-resize');
-                    })
-                    .call(yAxisDrag);
 
                 render();
             }
