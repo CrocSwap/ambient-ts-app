@@ -660,6 +660,7 @@ export default function App() {
                                     ensResolution: 'true',
                                     omitEmpty: 'true',
                                     omitKnockout: 'true',
+                                    addValue: 'true',
                                 }),
                         )
                             .then((response) => response.json())
@@ -1440,6 +1441,7 @@ export default function App() {
                             annotate: 'true',
                             omitEmpty: 'true',
                             omitKnockout: 'true',
+                            addValue: 'true',
                         }),
                 )
                     .then((response) => response?.json())
