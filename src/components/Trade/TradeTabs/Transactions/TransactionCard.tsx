@@ -13,6 +13,7 @@ import {
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { formatAmount } from '../../../../utils/numbers';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
+import Value from '../../../Global/Tabs/Value/Value';
 
 interface TransactionProps {
     swap: ISwap;
@@ -186,6 +187,23 @@ export default function TransactionCard(props: TransactionProps) {
     const activeTransactionStyle =
         swap.id === currentTxActiveInTransactions ? styles.active_tx_style : '';
 
+    const usdValueNum = swap.valueUSD;
+
+    const usdValueTruncated =
+        usdValueNum === 0
+            ? '0'
+            : usdValueNum < 0.0001
+            ? usdValueNum.toExponential(2)
+            : usdValueNum < 2
+            ? usdValueNum.toPrecision(3)
+            : usdValueNum >= 100000
+            ? formatAmount(usdValueNum)
+            : // ? baseLiqDisplayNum.toExponential(2)
+              usdValueNum.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              });
+
     return (
         <div
             className={`${styles.main_container} ${activeTransactionStyle}`}
@@ -214,6 +232,7 @@ export default function TransactionCard(props: TransactionProps) {
                 <TransactionTypeSide type={sideType} side='market' />
                 {/* ------------------------------------------------------ */}
 
+                <Value usdValue={'$' + usdValueTruncated} />
                 <TokenQty
                     baseTokenSymbol={baseToken?.symbol}
                     quoteTokenSymbol={quoteToken?.symbol}

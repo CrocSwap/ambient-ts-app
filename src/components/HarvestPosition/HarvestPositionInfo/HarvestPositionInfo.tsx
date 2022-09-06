@@ -1,32 +1,50 @@
-import styles from './RemoveRangeInfo.module.css';
+import styles from './HarvestPositionInfo.module.css';
 import Row from '../../Global/Row/Row';
 import DividerDark from '../../Global/DividerDark/DividerDark';
 // import { formatAmount } from '../../../utils/numbers';
 
-interface IRemoveRangeInfoProps {
-    baseTokenSymbol: string;
-    quoteTokenSymbol: string;
-    baseTokenLogoURI: string;
-    quoteTokenLogoURI: string;
-    posLiqBaseDecimalCorrected: number | undefined;
-    posLiqQuoteDecimalCorrected: number | undefined;
-    feeLiqBaseDecimalCorrected: number | undefined;
-    feeLiqQuoteDecimalCorrected: number | undefined;
-    removalPercentage: number;
-}
+// interface IHarvestPositionInfoProps {
+//     baseTokenSymbol: string;
+//     quoteTokenSymbol: string;
+//     baseTokenLogoURI: string;
+//     quoteTokenLogoURI: string;
+//     posLiqBaseDecimalCorrected: number | undefined;
+//     posLiqQuoteDecimalCorrected: number | undefined;
+//     feeLiqBaseDecimalCorrected: number | undefined;
+//     feeLiqQuoteDecimalCorrected: number | undefined;
+//     removalPercentage: number;
+// }
 
-export default function RemoveRangeInfo(props: IRemoveRangeInfoProps) {
-    const {
-        baseTokenSymbol,
-        quoteTokenSymbol,
-        baseTokenLogoURI,
-        quoteTokenLogoURI,
-        posLiqBaseDecimalCorrected,
-        posLiqQuoteDecimalCorrected,
-        feeLiqBaseDecimalCorrected,
-        feeLiqQuoteDecimalCorrected,
-        removalPercentage,
-    } = props;
+export default function HarvestPositionInfo() {
+    // const {
+    //     baseTokenSymbol,
+    //     quoteTokenSymbol,
+    //     baseTokenLogoURI,
+    //     quoteTokenLogoURI,
+    //     posLiqBaseDecimalCorrected,
+    //     posLiqQuoteDecimalCorrected,
+    //     feeLiqBaseDecimalCorrected,
+    //     feeLiqQuoteDecimalCorrected,
+    //     removalPercentage,
+    // } = props;
+
+    // Temp Values
+    const baseTokenSymbol = 'ETH';
+    const quoteTokenSymbol = 'USDC';
+
+    const baseTokenLogoURI =
+        'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png';
+
+    const quoteTokenLogoURI = 'https://cryptologos.cc/logos/usd-coin-usdc-logo.png';
+
+    const posLiqBaseDecimalCorrected = 0.2343;
+    const posLiqQuoteDecimalCorrected = 213.34;
+
+    const feeLiqBaseDecimalCorrected = 1;
+
+    const feeLiqQuoteDecimalCorrected = 21;
+
+    const removalPercentage = 23;
 
     const liqBaseDisplay = posLiqBaseDecimalCorrected
         ? posLiqBaseDecimalCorrected < 2

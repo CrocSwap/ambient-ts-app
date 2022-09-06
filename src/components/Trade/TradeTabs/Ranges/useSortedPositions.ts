@@ -28,6 +28,8 @@ export const useSortedPositions = (
         [...unsortedData].sort((a, b) => a.user.localeCompare(b.user));
     const sortByApy = (unsortedData: PositionIF[]) =>
         [...unsortedData].sort((a, b) => b.apy - a.apy);
+    const sortByValue = (unsortedData: PositionIF[]) =>
+        [...unsortedData].sort((a, b) => b.positionLiqTotalUSD - a.positionLiqTotalUSD);
 
     // column the user wants the table sorted by
     const [sortBy, setSortBy] = useState('default');
@@ -47,6 +49,9 @@ export const useSortedPositions = (
             // sort by APY
             case 'apy':
                 sortedData = sortByApy(data);
+                break;
+            case 'value':
+                sortedData = sortByValue(data);
                 break;
             // return data unsorted if user did not choose a sortable column
             default:

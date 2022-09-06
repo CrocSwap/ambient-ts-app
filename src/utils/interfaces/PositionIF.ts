@@ -50,4 +50,5 @@ export interface PositionIF {
     time: number;
     latestUpdateTime: number;
     positionLiq: string;
+    positionLiqTotalUSD: number;
 }

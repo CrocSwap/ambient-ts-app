@@ -19,6 +19,7 @@ import {
     setPoolTvlSeries,
     addPositionsByUser,
     addPositionsByPool,
+    setLimitOrdersByUser,
 } from '../utils/state/graphDataSlice';
 import { ethers } from 'ethers';
 import { useMoralis } from 'react-moralis';
@@ -657,6 +658,9 @@ export default function App() {
                                     chainId: chainData.chainId,
                                     annotate: 'true', // token quantities
                                     ensResolution: 'true',
+                                    omitEmpty: 'true',
+                                    omitKnockout: 'true',
+                                    addValue: 'true',
                                 }),
                         )
                             .then((response) => response.json())
@@ -837,6 +841,8 @@ export default function App() {
                 chainId: chainData.chainId,
                 ensResolution: 'true',
                 annotate: 'true',
+                addCachedAPY: 'true',
+                omitKnockout: 'true',
             }),
         [baseTokenAddress, quoteTokenAddress, chainData.chainId],
     );
@@ -976,6 +982,9 @@ export default function App() {
                 user: account || '',
                 chainId: chainData.chainId,
                 annotate: 'true',
+                addCachedAPY: 'true',
+                omitKnockout: 'true',
+                ensResolution: 'true',
                 // user: account || '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc',
             }),
         [account, chainData.chainId],
@@ -1430,6 +1439,9 @@ export default function App() {
                             chainId: chainData.chainId,
                             ensResolution: 'true',
                             annotate: 'true',
+                            omitEmpty: 'true',
+                            omitKnockout: 'true',
+                            addValue: 'true',
                         }),
                 )
                     .then((response) => response?.json())
@@ -1451,6 +1463,35 @@ export default function App() {
                                         );
                                     }
                                 },
+                            );
+                        }
+                    })
+                    .catch(console.log);
+            } catch (error) {
+                console.log;
+            }
+
+            const userLimitOrderStatesCacheEndpoint =
+                httpGraphCacheServerDomain + '/user_limit_order_states?';
+            try {
+                fetch(
+                    userLimitOrderStatesCacheEndpoint +
+                        new URLSearchParams({
+                            user: account,
+                            chainId: chainData.chainId,
+                            ensResolution: 'true',
+                        }),
+                )
+                    .then((response) => response?.json())
+                    .then((json) => {
+                        const userLimitOrders = json?.data;
+
+                        if (userLimitOrders) {
+                            dispatch(
+                                setLimitOrdersByUser({
+                                    dataReceived: true,
+                                    limitOrders: userLimitOrders,
+                                }),
                             );
                         }
                     })

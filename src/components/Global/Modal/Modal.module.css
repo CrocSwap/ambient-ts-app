@@ -28,7 +28,7 @@
     transition: box-shadow var(--animation-speed) ease-in-out;
 
 
-    min-width: 450px;
+    min-width: 407px;
     min-height: 350px;
     border-radius: var(--border-radius);
     /* position: relative; */
