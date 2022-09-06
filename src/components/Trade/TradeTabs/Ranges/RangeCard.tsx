@@ -11,6 +11,8 @@ import { ethers } from 'ethers';
 import { useEffect, Dispatch, SetStateAction } from 'react';
 // import { formatAmount } from '../../../../utils/numbers';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
+import Value from '../../../Global/Tabs/Value/Value';
+import { formatAmount } from '../../../../utils/numbers';
 
 interface RangeCardProps {
     provider: ethers.providers.Provider | undefined;
@@ -153,6 +155,24 @@ export default function RangeCard(props: RangeCardProps) {
         position.positionStorageSlot === currentPositionActive ? styles.active_position_style : '';
 
     if (!positionMatchesSelectedTokens) return null;
+
+    const usdValueNum = position.positionLiqTotalUSD;
+
+    const usdValueTruncated =
+        usdValueNum === 0
+            ? '0'
+            : usdValueNum < 0.0001
+            ? usdValueNum.toExponential(2)
+            : usdValueNum < 2
+            ? usdValueNum.toPrecision(3)
+            : usdValueNum >= 100000
+            ? formatAmount(usdValueNum)
+            : // ? baseLiqDisplayNum.toExponential(2)
+              usdValueNum.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              });
+
     return (
         <li
             className={`${styles.main_container} ${activePositionStyle}`}
@@ -175,6 +195,9 @@ export default function RangeCard(props: RangeCardProps) {
 
                 {/* ------------------------------------------------------ */}
                 <RangeMinMax min={ambientMinOrNull} max={ambientMaxOrNull} />
+                {/* ------------------------------------------------------ */}
+                {/* ------------------------------------------------------ */}
+                <Value usdValue={'$' + usdValueTruncated} />
                 {/* ------------------------------------------------------ */}
 
                 <TokenQty
