@@ -1,7 +1,8 @@
 import { useMemo } from 'react';
 import { useParams } from 'react-router-dom';
+import swapParams from '../../utils/classes/swapParams';
 
-export const useUrlParams = () => {
+export const useUrlParams = (module: string) => {
     const { params } = useParams() ?? '';
 
     const recognizedParams = ['chain', 'tokenA', 'tokenB'];
@@ -19,22 +20,16 @@ export const useUrlParams = () => {
 
     console.log(parsedParams);
 
-    class urlParams {
-        chain: string;
-        tokenA: string;
-        tokenB: string;
-
-        constructor(inputArray: string[][]) {
-            const findValue = (key: string) => {
-                const queriedPair = inputArray.find((pair: string[]) => pair[0] === key);
-                return queriedPair ? queriedPair[1] : '';
-            }
-            this.chain = findValue('chain');
-            this.tokenA = findValue('tokenA');
-            this.tokenB = findValue('tokenB');
-        };
+    const makeParams = (input: string[][]) => {
+        switch (module) {
+            case 'swap':
+                console.log('making swapParams object');
+                return new swapParams(input);
+            default: return;
+        }
     }
 
-    const output = new urlParams(parsedParams);
-    console.log(output);
+    const urlParams = makeParams(parsedParams);
+    console.log({urlParams});
+    return urlParams;
 }
