@@ -134,10 +134,12 @@ export default function Limit(props: LimitPropsIF) {
             const gridSize = lookupChain(chainId).gridSize;
 
             const croc = new CrocEnv(provider);
-            const pool =
-                isDenomBase == isTokenABase
-                    ? croc.pool(tradeData.tokenA.address, tradeData.tokenB.address)
-                    : croc.pool(tradeData.tokenB.address, tradeData.tokenA.address);
+            const pool = croc.pool(tradeData.baseToken.address, tradeData.quoteToken.address);
+
+            // const pool =
+            //     isDenomBase == isTokenABase
+            //         ? croc.pool(tradeData.tokenA.address, tradeData.tokenB.address)
+            //         : croc.pool(tradeData.tokenB.address, tradeData.tokenA.address);
 
             const limitWei = pool.fromDisplayPrice(parseFloat(limitRate));
             const pinTick = limitWei.then((lw) =>
@@ -186,7 +188,11 @@ export default function Limit(props: LimitPropsIF) {
         }
 
         try {
-            await ko.mint();
+            const mint = await ko.mint();
+            console.log(mint.hash);
+            setNewLimitOrderTransactionHash(mint.hash);
+            const limitOrderReceipt = await mint.wait();
+            console.log({ limitOrderReceipt });
         } catch (error) {
             setTxErrorCode(error?.code);
             setTxErrorMessage(error?.message);

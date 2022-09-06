@@ -18,9 +18,11 @@ interface LimitRatePropsIF {
 }
 
 export default function LimitRate(props: LimitRatePropsIF) {
-    const { fieldId, disable, setLimitRate } = props;
+    const { fieldId, disable, setLimitRate, insideTickDisplayPrice } = props;
 
     const dispatch = useAppDispatch();
+
+    console.log({ insideTickDisplayPrice });
 
     const handleLimitChange = (value: string) => {
         dispatch(setLimitPrice(value));
