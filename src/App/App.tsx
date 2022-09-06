@@ -1960,7 +1960,7 @@ export default function App() {
                         />
 
                         <Route path='swap' element={<Swap {...swapProps} />} />
-                        <Route path='swap/:stuff' element={<Swap {...swapProps} />} />
+                        <Route path='swap/:params' element={<Swap {...swapProps} />} />
                         <Route path='tos' element={<TermsOfService />} />
                         <Route path='testpage' element={<TestPage />} />
                         <Route path='*' element={<Navigate to='/404' replace />} />
