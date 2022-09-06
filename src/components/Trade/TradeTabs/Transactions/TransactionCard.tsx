@@ -25,6 +25,8 @@ interface TransactionProps {
     isDenomBase: boolean;
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
+
+    openGlobalModal: (content: React.ReactNode) => void;
 }
 export default function TransactionCard(props: TransactionProps) {
     const {
@@ -220,6 +222,7 @@ export default function TransactionCard(props: TransactionProps) {
                     baseQty={baseFlowDisplay}
                     quoteQty={quoteFlowDisplay}
                 />
+                {/* <button onClick={() => props.openGlobalModal('New modal works')}>Here</button> */}
             </div>
 
             <div className={styles.menu_container}>

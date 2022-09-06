@@ -156,21 +156,21 @@ export default function Chat(props: ChatPropsIF) {
         </div>
     );
 
-    const [showWelcomeBack, setShowWelcomeBack] = useState(false);
+    // const [showWelcomeBack, setShowWelcomeBack] = useState(false);
 
-    const welcomeBack = (
-        <div className={styles.welcome_back} onClick={() => setShowChatBot(true)}>
-            Welcome back. Just let me know what are you looking for 🙂
-        </div>
-    );
+    // const welcomeBack = (
+    //     <div className={styles.welcome_back} onClick={() => setShowChatBot(true)}>
+    //         Welcome back. Just let me know what are you looking for 🙂
+    //     </div>
+    // );
 
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setShowWelcomeBack(true);
-        }, 10000);
+    // useEffect(() => {
+    //     const timer = setTimeout(() => {
+    //         setShowWelcomeBack(true);
+    //     }, 10000);
 
-        return () => clearTimeout(timer);
-    }, []);
+    //     return () => clearTimeout(timer);
+    // }, []);
 
     const wrapperStyleFull = styles.chat_wrapper_full;
     const wrapperStyle = showChatBot ? styles.chat_wrapper_active : styles.chat_wrapper;
@@ -178,14 +178,10 @@ export default function Chat(props: ChatPropsIF) {
     return (
         <div className={styles.chat}>
             <div className={styles.chat_container}>
-                {showWelcomeBack && !showChatBot && welcomeBack}
+                {/* {showWelcomeBack && !showChatBot && welcomeBack} */}
                 {props.fullScreen ? null : (
                     <>
-                        <ChatButton
-                            showChatBot={showChatBot}
-                            setShowChatBot={setShowChatBot}
-                            setShowWelcomeBack={setShowWelcomeBack}
-                        />
+                        <ChatButton showChatBot={showChatBot} setShowChatBot={setShowChatBot} />
                     </>
                 )}
                 <div className={props.fullScreen ? wrapperStyleFull : wrapperStyle}>
