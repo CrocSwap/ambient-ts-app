@@ -2,6 +2,15 @@ import { useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import swapParams from '../../utils/classes/swapParams';
 
+/**     Instructions to Use This Hook
+ * 
+ *      1. Create a new parameters class and import to this file.
+ *      2. Call the hook in the page rendered with URL parameters.
+ *      3. Name the URL pathway (sans parameters) as an argument.
+ *      4. Add a 'case' to func makeParams() for the URL pathway.
+ *      5. For the URL pathway, return an instance of the imported class.
+ */
+
 export const useUrlParams = (module: string) => {
     // get URL parameters, empty string if undefined
     const { params } = useParams() ?? '';
