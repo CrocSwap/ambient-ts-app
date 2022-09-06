@@ -77,7 +77,6 @@ export default function RangesMenu(props: RangesMenuIF) {
         </SnackbarComponent>
     );
     // -----------------END OF SNACKBAR----------------
-    const [showRangeConfirmation, setShowRangeConfirmation] = useState(false);
 
     switch (currentModal) {
         case 'remove':

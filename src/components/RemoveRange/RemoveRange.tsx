@@ -17,7 +17,6 @@ import { CrocEnv } from '@crocswap-libs/sdk';
 import Button from '../Global/Button/Button';
 
 import RemoveRangeSettings from './RemoveRangeSettings/RemoveRangeSettings';
-import TransactionDenied from '../Global/TransactionDenied/TransactionDenied';
 import {
     CircleLoader,
     CircleLoaderFailed,
