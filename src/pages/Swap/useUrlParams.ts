@@ -37,7 +37,9 @@ export const useUrlParams = (module: string) => {
                 case 'swap':
                     return new swapParams(input);
                 // default pathway (considered an error pathway)
-                default: return;
+                default:
+                    console.warn(`Unrecognized URL pathway in useUrlParams() hook. Received value <<${module}>>. Refer to useUrlParams.ts for troubleshooting. Ensure that the hook was called with a value for parameter module recognized in func makeParams(). Triggering empty return.`);
+                    return;
             }
         }
         // return the correct parameters object for URL pathway
