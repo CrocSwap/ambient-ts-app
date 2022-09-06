@@ -21,7 +21,7 @@ export const useSortedPositions = (
     }
 
     // default sort function
-    const sortByUpdateTime = (unsortedData: PositionIF[]) => 
+    const sortByUpdateTime = (unsortedData: PositionIF[]) =>
         [...unsortedData].sort((a, b) => b.latestUpdateTime - a.latestUpdateTime);
     // sort functions for sortable columns
     const sortByWallet = (unsortedData: PositionIF[]) =>

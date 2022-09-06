@@ -4,15 +4,21 @@ import { Dispatch, SetStateAction } from 'react';
 interface ChatButtonPropsIF {
     showChatBot: boolean;
     setShowChatBot: Dispatch<SetStateAction<boolean>>;
+    setShowWelcomeBack: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function ChatButton(props: ChatButtonPropsIF) {
-    const { showChatBot, setShowChatBot } = props;
+    const { showChatBot, setShowChatBot, setShowWelcomeBack } = props;
+
+    const handleButtonClick = () => {
+        setShowChatBot(!showChatBot);
+        setShowWelcomeBack(false);
+    };
 
     return (
         <div
             className={`${styles.chat_button} ${showChatBot && styles.active}`}
-            onClick={() => setShowChatBot(!showChatBot)}
+            onClick={() => handleButtonClick()}
         >
             <svg className={styles.chat_bubble} width='30' height='30' viewBox='0 0 100 100'>
                 <g className={styles.bubble}>
