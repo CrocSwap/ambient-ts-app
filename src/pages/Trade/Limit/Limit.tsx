@@ -127,9 +127,7 @@ export default function Limit(props: LimitPropsIF) {
 
     useEffect(() => {
         setInitialLoad(true);
-    }, [
-        JSON.stringify({ base: tradeData.baseToken.address, quote: tradeData.quoteToken.address }),
-    ]);
+    }, [JSON.stringify({ tokenA: tradeData.tokenA.address, tokenB: tradeData.tokenB.address })]);
 
     useEffect(() => {
         if (initialLoad) {
@@ -147,7 +145,7 @@ export default function Limit(props: LimitPropsIF) {
 
             setLimitRate(initialLimitRate.toString());
 
-            console.log({ initialLimitRate });
+            // console.log({ initialLimitRate });
 
             const limitWei = pool.fromDisplayPrice(initialLimitRate);
 
@@ -160,13 +158,23 @@ export default function Limit(props: LimitPropsIF) {
             const tickDispPrice = tickPrice.then((tp) => pool.toDisplayPrice(tp));
 
             tickDispPrice.then((tp) => {
-                console.log({ tp });
+                // console.log({ tp });
                 setInsideTickDisplayPrice(tp);
                 dispatch(setLimitPrice(tp.toString()));
                 setInitialLoad(false);
+                const limitRateTruncated =
+                    tp < 2
+                        ? tp.toLocaleString(undefined, {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 6,
+                          })
+                        : tp.toLocaleString(undefined, {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                          });
                 const limitRateInputField = document.getElementById('limit-rate-quantity');
                 if (limitRateInputField)
-                    (limitRateInputField as HTMLInputElement).value = tp.toString();
+                    (limitRateInputField as HTMLInputElement).value = limitRateTruncated;
             });
         } else {
             if (!provider) return;
@@ -191,9 +199,19 @@ export default function Limit(props: LimitPropsIF) {
                 setInsideTickDisplayPrice(tp);
                 dispatch(setLimitPrice(tp.toString()));
                 setInitialLoad(false);
+                const limitRateTruncated =
+                    tp < 2
+                        ? tp.toLocaleString(undefined, {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 6,
+                          })
+                        : tp.toLocaleString(undefined, {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                          });
                 const limitRateInputField = document.getElementById('limit-rate-quantity');
                 if (limitRateInputField)
-                    (limitRateInputField as HTMLInputElement).value = tp.toString();
+                    (limitRateInputField as HTMLInputElement).value = limitRateTruncated;
             });
             setPriceInputFieldBlurred(false);
         }
