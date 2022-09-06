@@ -149,6 +149,7 @@ export default function TradeTabs2(props: ITabsProps) {
     const ordersProps = {
         expandTradeTable: expandTradeTable,
         account: account,
+        graphData: graphData,
     };
     // props for <PositionsOnlyToggle/> React Element
 

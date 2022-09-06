@@ -1,3 +1,6 @@
+import { useEffect, useState } from 'react';
+import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
+import { ILimitOrderState } from '../../../../utils/state/graphDataSlice';
 import OpenOrderStatus from '../../../Global/OpenOrderStatus/OpenOrderStatus';
 import Price from '../../../Global/Tabs/Price/Price';
 import OrdersMenu from '../../../Global/Tabs/TableMenu/TableMenuComponents/OrdersMenu';
@@ -8,15 +11,64 @@ import styles from './OrderCard.module.css';
 
 interface OrderCardProps {
     account: string;
+    limitOrder: ILimitOrderState;
+    isDenomBase: boolean;
+    selectedBaseToken: string;
+    selectedQuoteToken: string;
 }
 
 export default function OrderCard(props: OrderCardProps) {
-    const { account } = props;
+    const { account, limitOrder, isDenomBase, selectedBaseToken, selectedQuoteToken } = props;
+    // console.log({ limitOrder });
 
-    const tempOwnerId = '0xa2b398145b7fc8fd9a01142698f15d329ebb5ff5090cfcc8caae440867ab9919';
-    const tempPosHash = '0x01e650abfc761c6a0fc60f62a4e4b3832bb1178b';
+    // const tempOwnerId = '0xa2b398145b7fc8fd9a01142698f15d329ebb5ff5090cfcc8caae440867ab9919';
+    // const tempPosHash = '0x01e650abfc761c6a0fc60f62a4e4b3832bb1178b';
 
-    const isOwnerActiveAccount = tempOwnerId.toLowerCase() === account.toLowerCase();
+    const isOwnerActiveAccount = limitOrder.user.toLowerCase() === account.toLowerCase();
+
+    const ownerIdDisplay = limitOrder.ensResolution ? limitOrder.ensResolution : limitOrder.user;
+    const [truncatedDisplayPrice, setTruncatedDisplayPrice] = useState<string | undefined>();
+
+    useEffect(() => {
+        // console.log({ limitOrder });
+        if (limitOrder.limitPriceDecimalCorrected && limitOrder.invLimitPriceDecimalCorrected) {
+            const priceDecimalCorrected = limitOrder.limitPriceDecimalCorrected;
+            const invPriceDecimalCorrected = limitOrder.invLimitPriceDecimalCorrected;
+
+            const baseTokenCharacter = limitOrder.baseSymbol
+                ? getUnicodeCharacter(limitOrder.baseSymbol)
+                : '';
+            const quoteTokenCharacter = limitOrder.quoteSymbol
+                ? getUnicodeCharacter(limitOrder.quoteSymbol)
+                : '';
+
+            const truncatedDisplayPrice = isDenomBase
+                ? quoteTokenCharacter + invPriceDecimalCorrected?.toPrecision(6)
+                : baseTokenCharacter + priceDecimalCorrected?.toPrecision(6);
+
+            setTruncatedDisplayPrice(truncatedDisplayPrice);
+        } else {
+            setTruncatedDisplayPrice(undefined);
+        }
+    }, [JSON.stringify(limitOrder), isDenomBase]);
+
+    const priceType =
+        (isDenomBase && !limitOrder.isBid) || (!isDenomBase && limitOrder.isBid)
+            ? 'priceBuy'
+            : 'priceSell';
+
+    const sideType =
+        (isDenomBase && !limitOrder.isBid) || (!isDenomBase && limitOrder.isBid) ? 'buy' : 'sell';
+
+    const baseTokenAddressLowerCase = limitOrder.base.toLowerCase();
+    const quoteTokenAddressLowerCase = limitOrder.quote.toLowerCase();
+
+    const transactionMatchesSelectedTokens =
+        selectedBaseToken === baseTokenAddressLowerCase &&
+        selectedQuoteToken === quoteTokenAddressLowerCase;
+
+    if (!transactionMatchesSelectedTokens) return null;
+    if (!limitOrder.positionLiq) return null;
 
     return (
         <div className={styles.main_container}>
@@ -24,15 +76,15 @@ export default function OrderCard(props: OrderCardProps) {
                 {/* ------------------------------------------------------ */}
 
                 <WalletAndId
-                    ownerId={tempOwnerId}
-                    posHash={tempPosHash}
+                    ownerId={ownerIdDisplay}
+                    posHash={limitOrder.positionId}
                     isOwnerActiveAccount={isOwnerActiveAccount}
                 />
 
                 {/* ------------------------------------------------------ */}
-                <Price priceType='priceBuy' />
+                <Price priceType={priceType} displayPrice={truncatedDisplayPrice} />
                 {/* ------------------------------------------------------ */}
-                <OrderTypeSide type='order' side='sell' />
+                <OrderTypeSide type='order' side={sideType} />
                 {/* ------------------------------------------------------ */}
                 <TokenQty />
                 {/* ------------------------------------------------------ */}
