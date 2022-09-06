@@ -18,18 +18,14 @@ export const useUrlParams = (module: string) => {
         return paramsArray;
     }, []);
 
-    console.log(parsedParams);
-
     const makeParams = (input: string[][]) => {
         switch (module) {
             case 'swap':
-                console.log('making swapParams object');
                 return new swapParams(input);
             default: return;
         }
     }
 
     const urlParams = makeParams(parsedParams);
-    console.log({urlParams});
     return urlParams;
 }
