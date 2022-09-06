@@ -33,6 +33,7 @@
         "d3": "^7.4.4",
         "d3fc": "^15.2.4",
         "dom-to-image": "^2.6.0",
+        "emoji-picker-react": "^3.6.1",
         "ethers": "^5.6.5",
         "framer-motion": "4.1.17",
         "graphql": "^16.5.0",

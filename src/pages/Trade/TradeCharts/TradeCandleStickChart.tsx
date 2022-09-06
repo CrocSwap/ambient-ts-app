@@ -3,6 +3,7 @@ import { CandleData, CandlesByPoolAndDuration } from '../../../utils/state/graph
 import { targetData } from '../../../utils/state/tradeDataSlice';
 import Chart from '../../Chart/Chart';
 import './TradeCandleStickChart.css';
+import logo from '../../../assets/images/logos/ambient_logo.svg';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -100,29 +101,39 @@ export default function TradeCandleStickChart(props: ChartData) {
         return chartUtils;
     }, [props.priceData, props.denomInBase]);
 
+    const loading = (
+        <div className='animatedImg'>
+            <img src={logo} width={110} alt='logo' />
+        </div>
+    );
+
     return (
         <>
             <div style={{ height: '100%', width: '100%' }}>
-                <Chart
-                    priceData={parsedChartData}
-                    liquidityData={props.liquidityData.ranges}
-                    changeState={props.changeState}
-                    targetData={props.targetData}
-                    limitPrice={props.limitPrice}
-                    setLimitRate={props.setLimitRate}
-                    limitRate={props.limitRate}
-                    denomInBase={props.denomInBase}
-                    isAdvancedModeActive={props.isAdvancedModeActive}
-                    simpleRangeWidth={props.simpleRangeWidth}
-                    pinnedMinPriceDisplayTruncated={props.pinnedMinPriceDisplayTruncated}
-                    pinnedMaxPriceDisplayTruncated={props.pinnedMaxPriceDisplayTruncated}
-                    spotPriceDisplay={props.spotPriceDisplay}
-                    truncatedPoolPrice={props.truncatedPoolPrice}
-                    feeData={data.feeData}
-                    volumeData={data.volumeData}
-                    tvlData={data.tvlData}
-                    chartItemStates={props.chartItemStates}
-                />
+                {parsedChartData.chartData && parsedChartData.chartData.length > 0 ? (
+                    <Chart
+                        priceData={parsedChartData}
+                        liquidityData={props.liquidityData.ranges}
+                        changeState={props.changeState}
+                        targetData={props.targetData}
+                        limitPrice={props.limitPrice}
+                        setLimitRate={props.setLimitRate}
+                        limitRate={props.limitRate}
+                        denomInBase={props.denomInBase}
+                        isAdvancedModeActive={props.isAdvancedModeActive}
+                        simpleRangeWidth={props.simpleRangeWidth}
+                        pinnedMinPriceDisplayTruncated={props.pinnedMinPriceDisplayTruncated}
+                        pinnedMaxPriceDisplayTruncated={props.pinnedMaxPriceDisplayTruncated}
+                        spotPriceDisplay={props.spotPriceDisplay}
+                        truncatedPoolPrice={props.truncatedPoolPrice}
+                        feeData={data.feeData}
+                        volumeData={data.volumeData}
+                        tvlData={data.tvlData}
+                        chartItemStates={props.chartItemStates}
+                    />
+                ) : (
+                    <>{loading}</>
+                )}
             </div>
         </>
     );
