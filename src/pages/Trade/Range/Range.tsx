@@ -41,6 +41,7 @@ import {
     setSimpleRangeWidth,
     setPinnedMaxPrice,
     setPinnedMinPrice,
+    setSpotPriceDisplay,
 } from '../../../utils/state/tradeDataSlice';
 import { addReceipt } from '../../../utils/state/receiptDataSlice';
 import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
@@ -157,6 +158,10 @@ export default function Range(props: RangePropsIF) {
     const tokenBDecimals = tokenB.decimals;
     const baseTokenDecimals = isTokenABase ? tokenADecimals : tokenBDecimals;
     const quoteTokenDecimals = !isTokenABase ? tokenADecimals : tokenBDecimals;
+
+    useEffect(() => {
+        dispatch(setSpotPriceDisplay(parseFloat(displayPriceString)));
+    }, [displayPriceString]);
 
     const poolPriceCharacter = denominationsInBase
         ? isTokenABase

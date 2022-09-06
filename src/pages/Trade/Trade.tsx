@@ -120,6 +120,7 @@ export default function Trade(props: TradePropsIF) {
     const simpleRangeWidth = tradeData.simpleRangeWidth;
     const pinnedMaxPriceDisplayTruncated = tradeData.pinnedMaxPriceDisplayTruncated;
     const pinnedMinPriceDisplayTruncated = tradeData.pinnedMinPriceDisplayTruncated;
+    const spotPriceDisplay = tradeData.spotPriceDisplay;
 
     const poolPriceDisplayWithDenom = poolPriceDisplay
         ? denomInBase
@@ -189,6 +190,7 @@ export default function Trade(props: TradePropsIF) {
                                 simpleRangeWidth={simpleRangeWidth}
                                 pinnedMinPriceDisplayTruncated={pinnedMinPriceDisplayTruncated}
                                 pinnedMaxPriceDisplayTruncated={pinnedMaxPriceDisplayTruncated}
+                                spotPriceDisplay={spotPriceDisplay}
                             />
                         </motion.div>
                     </div>

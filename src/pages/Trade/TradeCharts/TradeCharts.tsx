@@ -63,6 +63,7 @@ interface TradeChartsPropsIF {
     simpleRangeWidth: number | undefined;
     pinnedMinPriceDisplayTruncated: number | undefined;
     pinnedMaxPriceDisplayTruncated: number | undefined;
+    spotPriceDisplay: number | undefined;
 }
 
 // React functional component
@@ -589,6 +590,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                         simpleRangeWidth={props.simpleRangeWidth}
                         pinnedMinPriceDisplayTruncated={props.pinnedMinPriceDisplayTruncated}
                         pinnedMaxPriceDisplayTruncated={props.pinnedMaxPriceDisplayTruncated}
+                        spotPriceDisplay={props.spotPriceDisplay}
                         truncatedPoolPrice={parseFloat(truncatedPoolPrice)}
                     />
                 </div>

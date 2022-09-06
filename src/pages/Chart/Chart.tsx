@@ -5,7 +5,13 @@ import { DetailedHTMLProps, HTMLAttributes, useCallback, useEffect, useRef, useS
 import { useLocation } from 'react-router-dom';
 import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
 import { CandleData } from '../../utils/state/graphDataSlice';
-import { setLimitPrice, setTargetData, targetData } from '../../utils/state/tradeDataSlice';
+import {
+    setLimitPrice,
+    setPinnedMaxPrice,
+    setPinnedMinPrice,
+    setSimpleRangeWidth,
+    targetData,
+} from '../../utils/state/tradeDataSlice';
 import FeeRateSubChart from '../Trade/TradeCharts/TradeChartsLoading/FeeRateSubChart';
 import TvlSubChart from '../Trade/TradeCharts/TradeChartsLoading/TvlSubChart';
 import VolumeSubChart from '../Trade/TradeCharts/TradeChartsLoading/VolumeSubChart';
@@ -42,6 +48,7 @@ interface ChartData {
     pinnedMinPriceDisplayTruncated: number | undefined;
     pinnedMaxPriceDisplayTruncated: number | undefined;
     truncatedPoolPrice: number | undefined;
+    spotPriceDisplay: number | undefined;
     feeData: any[];
     volumeData: any[];
     tvlData: any[];
@@ -70,6 +77,7 @@ export default function Chart(props: ChartData) {
         pinnedMinPriceDisplayTruncated,
         pinnedMaxPriceDisplayTruncated,
         simpleRangeWidth,
+        spotPriceDisplay,
     } = props;
 
     const { showFeeRate, showTvl, showVolume } = props.chartItemStates;
@@ -111,6 +119,7 @@ export default function Chart(props: ChartData) {
     ]);
 
     const [isChartSelected, setIsChartSelected] = useState<boolean>(false);
+    const [isTargetMoved, setIsTargetMoved] = useState<boolean>(false);
     const [transactionFilter, setTransactionFilter] = useState<CandleData>();
     const [scaleData, setScaleData] = useState<any>();
     const [dragType, setDragType] = useState<any>();
@@ -252,7 +261,7 @@ export default function Chart(props: ChartData) {
                     ];
                 });
             }
-        } else if (location.pathname.includes('range')) {
+        } else if (location.pathname.includes('range') && !isTargetMoved) {
             if (!isAdvancedModeActive) {
                 if (simpleRangeWidth === 100) {
                     ranges.map((mapData) => {
@@ -265,6 +274,7 @@ export default function Chart(props: ChartData) {
                         setDefaultRangeData();
                     }
                 } else {
+                    console.log('set to pinned');
                     setRanges(() => {
                         return [
                             {
@@ -367,40 +377,48 @@ export default function Chart(props: ChartData) {
     useEffect(() => {
         if (scaleData !== undefined) {
             const dragRange = d3.drag().on('drag', function (event, d: any) {
-                const newValue = scaleData.yScale.invert(d3.pointer(event)[1] - 182);
+                const newValue = scaleData.yScale.invert(d3.pointer(event)[1] - 169);
                 if (!isAdvancedModeActive && simpleRangeWidth !== 100) {
                     let valueWithRange: number;
 
                     if (d.name === 'high') {
-                        valueWithRange =
-                            ranges.filter((target: any) => target.name === 'high')[0].value -
-                            newValue;
-
+                        setIsTargetMoved(true);
                         setRanges((prevState) => {
                             const newTargets = [...prevState];
+
+                            valueWithRange =
+                                newTargets.filter((target: any) => target.name === 'high')[0]
+                                    .value - newValue;
+
+                            const low = newTargets.filter((target: any) => target.name === 'low')[0]
+                                .value;
 
                             newTargets.filter((target: any) => target.name === 'high')[0].value =
                                 newValue;
 
                             newTargets.filter((target: any) => target.name === 'low')[0].value =
-                                newValue + valueWithRange;
+                                low + valueWithRange;
 
                             render();
                             return newTargets;
                         });
                     } else {
-                        valueWithRange =
-                            ranges.filter((target: any) => target.name === 'low')[0].value -
-                            newValue;
-
                         setRanges((prevState) => {
                             const newTargets = [...prevState];
+
+                            valueWithRange =
+                                newTargets.filter((target: any) => target.name === 'low')[0].value -
+                                newValue;
+
+                            const high = newTargets.filter(
+                                (target: any) => target.name === 'high',
+                            )[0].value;
 
                             newTargets.filter((target: any) => target.name === 'low')[0].value =
                                 newValue;
 
                             newTargets.filter((target: any) => target.name === 'high')[0].value =
-                                newValue + valueWithRange;
+                                high + valueWithRange;
 
                             render();
                             return newTargets;
@@ -547,7 +565,7 @@ export default function Chart(props: ChartData) {
 
                 const barSeries = d3fc
                     .autoBandwidth(d3fc.seriesSvgBar())
-                    .widthFraction(1)
+                    .widthFraction(3)
                     .orient('horizontal')
                     .align('center')
                     .mainValue((d: any) => scaleData.liqScale.invert(parseFloat(d.activeLiq)))
@@ -555,11 +573,7 @@ export default function Chart(props: ChartData) {
                     .xScale(scaleData.liquidityScale)
                     .yScale(scaleData.yScale)
                     .decorate((selection: any) => {
-                        selection.select('.bar > path').style('fill', (d: any) => {
-                            return d.upperBoundInvPriceDecimalCorrected < scaleData.barThreshold
-                                ? 'rgba(205, 193, 255, 0.25)'
-                                : 'rgba(115, 113, 252, 0.25)';
-                        });
+                        selection.select('.bar > path').style('fill', 'rgba(205, 193, 255, 0.25)');
                     });
 
                 const popup = d3
@@ -797,7 +811,7 @@ export default function Chart(props: ChartData) {
                 d3.select(d3PlotArea.current).on('mousemove', function (event: any) {
                     crosshairData[0] = snap(candlestick, chartData, event)[0];
 
-                    const dateIndcLocation = event.offsetX;
+                    // const dateIndcLocation = event.offsetX;
 
                     // dateIndicator
                     //     .style('visibility', 'visible')
@@ -839,18 +853,29 @@ export default function Chart(props: ChartData) {
             });
 
             if (reustls.length < 2) {
-                const newTargetData: targetData[] = [
-                    {
-                        name: 'high',
-                        value: ranges.filter((target: any) => target.name === 'high')[0].value,
-                    },
-                    {
-                        name: 'low',
-                        value: ranges.filter((target: any) => target.name === 'low')[0].value,
-                    },
-                ];
+                const low = ranges.filter((target: any) => target.name === 'low')[0].value;
+                const high = ranges.filter((target: any) => target.name === 'high')[0].value;
 
-                dispatch(setTargetData(newTargetData));
+                if (!isAdvancedModeActive) {
+                    dispatch(setPinnedMinPrice(low));
+                    dispatch(setPinnedMaxPrice(high));
+
+                    if (spotPriceDisplay !== undefined) {
+                        const difference = high - spotPriceDisplay;
+                        const percentage = 100 / (difference * spotPriceDisplay);
+
+                        dispatch(setSimpleRangeWidth(2));
+                    } else {
+                        dispatch(setSimpleRangeWidth(simpleRangeWidth!));
+                    }
+                }
+
+                // isAdvancedModeActive: boolean | undefined;
+                // simpleRangeWidth: number | undefined;
+                // pinnedMinPriceDisplayTruncated: number | undefined;
+                // pinnedMaxPriceDisplayTruncated: number | undefined;
+                // setRangeWidthPercentage
+                // updateRangeWithButton
             }
         }, 1000);
         return () => clearTimeout(timer);
