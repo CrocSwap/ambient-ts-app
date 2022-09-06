@@ -11,7 +11,8 @@ export const useUrlParams = () => {
         const paramsArray = fixedParams.split('&')
             .filter(par => par.includes('='))
             .map(par => par.split('='))
-            .filter(par => recognizedParams.includes(par[0]));
+            .filter(par => recognizedParams.includes(par[0]))
+            .map(par => par.filter(e => e !== ''));
         return paramsArray;
     }, []);
 
