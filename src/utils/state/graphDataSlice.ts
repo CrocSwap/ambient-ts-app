@@ -9,8 +9,58 @@ export interface graphData {
     liquidityForAllPools: LiquidityForAllPools;
     poolVolumeSeries: PoolVolumeSeries;
     poolTvlSeries: PoolTvlSeries;
+    limitOrdersByUser: LimitOrdersByUser;
 }
 
+export interface LimitOrdersByUser {
+    dataReceived: boolean;
+    limitOrders: Array<ILimitOrderState>;
+}
+
+export interface ILimitOrderState {
+    id: string;
+    positionId: string;
+    network: string;
+    block: number;
+    time: number;
+    user: string;
+    base: string;
+    quote: string;
+    poolIdx: number;
+    poolHash: string;
+    bidTick: number;
+    askTick: number;
+    isBid: boolean;
+    price: number;
+    deflator: number;
+    concGrowth: number;
+    positionLiq: number;
+    positionLiqBase: number;
+    positionLiqQuote: number;
+    updateType: string;
+    latestUpdateBlock: number;
+    latestUpdateTime: number;
+    latestCrossBlock: number;
+    latestCrossTime: number;
+    latestCrossTransaction: string;
+    knockoutChanges: number;
+    baseSymbol: string;
+    baseDecimals: number;
+    quoteSymbol: string;
+    quoteDecimals: number;
+    limitPrice: number;
+    invLimitPrice: number;
+    limitPriceDecimalCorrected: number;
+    invLimitPriceDecimalCorrected: number;
+    ensResolution: string;
+    ensResolutionAge: number;
+    basePrice: number;
+    quotePrice: number;
+    positionLiqBaseUSD: number;
+    positionLiqQuoteUSD: number;
+    positionLiqTotalUSD: number;
+    chainId: string;
+}
 export interface PoolVolumeSeries {
     dataReceived: boolean;
     pools: Array<VolumeSeriesByPool>;
@@ -227,6 +277,7 @@ const initialState: graphData = {
     positionsByUser: { dataReceived: false, positions: [] },
     positionsByPool: { dataReceived: false, positions: [] },
     swapsByUser: { dataReceived: false, swaps: [] },
+    limitOrdersByUser: { dataReceived: false, limitOrders: [] },
     swapsByPool: { dataReceived: false, swaps: [] },
     candlesForAllPools: { pools: [] },
     liquidityForAllPools: { pools: [] },
@@ -274,6 +325,9 @@ export const graphDataSlice = createSlice({
         },
         setPositionsByPool: (state, action: PayloadAction<PositionsByPool>) => {
             state.positionsByPool = action.payload;
+        },
+        setLimitOrdersByUser: (state, action: PayloadAction<LimitOrdersByUser>) => {
+            state.limitOrdersByUser = action.payload;
         },
         addPositionsByPool: (state, action: PayloadAction<Array<PositionIF>>) => {
             if (action.payload[0].positionType === 'knockout') {
@@ -501,6 +555,7 @@ export const {
     setLiquidity,
     setCandles,
     addCandles,
+    setLimitOrdersByUser,
     setSwapsByUser,
     addSwapsByUser,
     addSwapsByPool,
