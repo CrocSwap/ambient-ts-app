@@ -127,7 +127,13 @@ export default function Limit(props: LimitPropsIF) {
 
     useEffect(() => {
         setInitialLoad(true);
-    }, [JSON.stringify({ tokenA: tradeData.tokenA.address, tokenB: tradeData.tokenB.address })]);
+    }, [
+        JSON.stringify({
+            isDenomBase: isDenomBase,
+            tokenA: tradeData.tokenA.address,
+            tokenB: tradeData.tokenB.address,
+        }),
+    ]);
 
     useEffect(() => {
         if (initialLoad) {
@@ -137,15 +143,13 @@ export default function Limit(props: LimitPropsIF) {
             const gridSize = lookupChain(chainId).gridSize;
 
             const croc = new CrocEnv(provider);
-            const pool = croc.pool(tradeData.baseToken.address, tradeData.quoteToken.address);
+            const pool = croc.pool(tradeData.tokenA.address, tradeData.tokenB.address);
 
             const initialLimitRate = isDenomBase
                 ? (1 / poolPriceDisplay) * (isSellTokenBase ? 1.02 : 0.98)
                 : poolPriceDisplay * (isSellTokenBase ? 0.98 : 1.02);
 
             setLimitRate(initialLimitRate.toString());
-
-            // console.log({ initialLimitRate });
 
             const limitWei = pool.fromDisplayPrice(initialLimitRate);
 
@@ -184,7 +188,7 @@ export default function Limit(props: LimitPropsIF) {
             const gridSize = lookupChain(chainId).gridSize;
 
             const croc = new CrocEnv(provider);
-            const pool = croc.pool(tradeData.baseToken.address, tradeData.quoteToken.address);
+            const pool = croc.pool(tradeData.tokenA.address, tradeData.tokenB.address);
 
             const limitWei = pool.fromDisplayPrice(parseFloat(limitRate));
             const pinTick = limitWei.then((lw) =>
