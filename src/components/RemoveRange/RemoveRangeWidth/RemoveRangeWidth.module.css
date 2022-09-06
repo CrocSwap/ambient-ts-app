@@ -74,20 +74,27 @@
 
 .percentage_option_buttons {
     background: var(--dark1);
-    font-size: var(--header2-size);
-    line-height: var(--header2-lh);
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
 
     overflow: hidden;
 
     margin: 4px !important;
     background: var(--dark3);
     border-radius: var(--border-radius);
-    padding: 0.5rem 1%;
+ 
+    padding: 5px 8px;
 
     cursor: pointer;
+    border-radius: 50px;
 
     color: var(--text-grey-light);
     border: none;
+}
+
+.percentage_option_buttons:hover{
+    color: var(--text-grey-white);
+    transition: all var(--animation-speed) ease-in-out
 }
 .percentage_input {
     /* padding: 15px 0px;  */

@@ -77,9 +77,15 @@ export default function HarvestPosition() {
     const positionType = 'concentrated';
 
     const harvestButtonOrNull =
-        positionType === 'concentrated' ? (
+        positionType === 'concentrated' && !showSettings ? (
             <HarvestPositionButton harvestFn={harvestFn} title={'Harvest Fees'} />
-        ) : null;
+        ) : (
+            <HarvestPositionButton
+                disabled={true}
+                harvestFn={harvestFn}
+                title={'No Fees to Harvest'}
+            />
+        );
 
     // confirmation modal
     const removalDenied = (
@@ -150,6 +156,12 @@ export default function HarvestPosition() {
         isRemovalDenied,
     ]);
 
+    const buttonToDisplay = showSettings ? (
+        <Button title='Confirm' action={() => setShowSettings(false)} />
+    ) : (
+        harvestButtonOrNull
+    );
+
     const confirmationContent = (
         <div className={styles.confirmation_container}>
             {showConfirmation && (
@@ -165,6 +177,18 @@ export default function HarvestPosition() {
         <HarvestPositionSettings showSettings={showSettings} setShowSettings={setShowSettings} />
     ) : (
         <>
+            <div className={styles.header_container}>
+                <HarvestPositionHeader
+                // isPositionInRange={props.isPositionInRange}
+                // isAmbient={props.isAmbient}
+                // baseTokenSymbol={props.baseTokenSymbol}
+                // quoteTokenSymbol={props.quoteTokenSymbol}
+                // baseTokenLogoURI={props.baseTokenLogoURI}
+                // quoteTokenLogoURI={props.quoteTokenLogoURI}
+                // isDenomBase={props.isDenomBase}
+                />
+                {harvestPositionSetttingIcon}
+            </div>
             <HarvestPositionWidth
             // removalPercentage={removalPercentage}
             // setRemovalPercentage={setRemovalPercentage}
@@ -189,26 +213,11 @@ export default function HarvestPosition() {
         <div className={styles.remove_range_container}>
             {/* {removeRangeSettingsPage} */}
             {/* <RemoveRangeSettings showSettings={showSettings} setShowSettings={setShowSettings} /> */}
-            <div className={styles.header_container}>
-                <HarvestPositionHeader
-                // isPositionInRange={props.isPositionInRange}
-                // isAmbient={props.isAmbient}
-                // baseTokenSymbol={props.baseTokenSymbol}
-                // quoteTokenSymbol={props.quoteTokenSymbol}
-                // baseTokenLogoURI={props.baseTokenLogoURI}
-                // quoteTokenLogoURI={props.quoteTokenLogoURI}
-                // isDenomBase={props.isDenomBase}
-                />
-                {harvestPositionSetttingIcon}
-            </div>
+
             <div className={styles.main_content}>
                 {mainModalContent}
-                {harvestButtonOrNull}
-                <HarvestPositionButton
-                    harvestFn={harvestFn}
-                    disabled={showSettings}
-                    title='Harvest Position'
-                />
+                {/* {harvestButtonOrNull} */}
+                {buttonToDisplay}
             </div>
         </div>
     );
