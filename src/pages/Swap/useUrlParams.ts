@@ -23,6 +23,5 @@ export const useUrlParams = (module: string) => {
         }
     }
 
-    const urlParams = makeParams(parsedParams);
-    return urlParams;
+    return makeParams(parsedParams);
 }
