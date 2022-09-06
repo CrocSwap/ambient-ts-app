@@ -4,6 +4,7 @@ import moment from 'moment';
 import { DetailedHTMLProps, HTMLAttributes, useCallback, useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
+import { formatDollarAmountAxis } from '../../utils/numbers';
 import { CandleData } from '../../utils/state/graphDataSlice';
 import {
     setLimitPrice,
@@ -48,7 +49,7 @@ interface ChartData {
     pinnedMinPriceDisplayTruncated: number | undefined;
     pinnedMaxPriceDisplayTruncated: number | undefined;
     truncatedPoolPrice: number | undefined;
-    spotPriceDisplay: number | undefined;
+    spotPriceDisplay: string | undefined;
     feeData: any[];
     volumeData: any[];
     tvlData: any[];
@@ -95,11 +96,11 @@ export default function Chart(props: ChartData) {
 
     const [ranges, setRanges] = useState([
         {
-            name: 'high',
+            name: 'Max',
             value: 0,
         },
         {
-            name: 'low',
+            name: 'Min',
             value: 0,
         },
     ]);
@@ -118,6 +119,21 @@ export default function Chart(props: ChartData) {
         },
     ]);
 
+    const [subChartValues, setsubChartValues] = useState([
+        {
+            name: 'feeRate',
+            value: 0,
+        },
+        {
+            name: 'tvl',
+            value: 0,
+        },
+        {
+            name: 'volume',
+            value: 0,
+        },
+    ]);
+
     const [isChartSelected, setIsChartSelected] = useState<boolean>(false);
     const [isTargetMoved, setIsTargetMoved] = useState<boolean>(false);
     const [transactionFilter, setTransactionFilter] = useState<CandleData>();
@@ -128,7 +144,7 @@ export default function Chart(props: ChartData) {
     const setDefaultRangeData = () => {
         setRanges((prevState) => {
             const newTargets = [...prevState];
-            newTargets.filter((target: any) => target.name === 'high')[0].value =
+            newTargets.filter((target: any) => target.name === 'Max')[0].value =
                 props.priceData !== undefined
                     ? Math.max(
                           ...props.priceData.chartData.map((o) => {
@@ -136,7 +152,7 @@ export default function Chart(props: ChartData) {
                           }),
                       )
                     : 0;
-            newTargets.filter((target: any) => target.name === 'low')[0].value =
+            newTargets.filter((target: any) => target.name === 'Min')[0].value =
                 props.priceData !== undefined
                     ? Math.min(
                           ...props.priceData.chartData.map((o) => {
@@ -274,18 +290,17 @@ export default function Chart(props: ChartData) {
                         setDefaultRangeData();
                     }
                 } else {
-                    console.log('set to pinned');
                     setRanges(() => {
                         return [
                             {
-                                name: 'low',
+                                name: 'Min',
                                 value:
                                     pinnedMinPriceDisplayTruncated !== undefined
                                         ? pinnedMinPriceDisplayTruncated
                                         : 0,
                             },
                             {
-                                name: 'high',
+                                name: 'Max',
                                 value:
                                     pinnedMaxPriceDisplayTruncated !== undefined
                                         ? pinnedMaxPriceDisplayTruncated
@@ -311,10 +326,10 @@ export default function Chart(props: ChartData) {
                 } else if (reustls.length < 2) {
                     setRanges(() => {
                         let high = props.targetData?.filter(
-                            (target: any) => target.name === 'high',
+                            (target: any) => target.name === 'Max',
                         )[0].value;
                         const low = props.targetData?.filter(
-                            (target: any) => target.name === 'low',
+                            (target: any) => target.name === 'Min',
                         )[0].value;
 
                         if (high !== undefined && low !== undefined) {
@@ -324,7 +339,7 @@ export default function Chart(props: ChartData) {
 
                             const chartTargets = [
                                 {
-                                    name: 'high',
+                                    name: 'Max',
                                     value:
                                         high !== undefined && high !== 0
                                             ? high
@@ -337,7 +352,7 @@ export default function Chart(props: ChartData) {
                                             : 0,
                                 },
                                 {
-                                    name: 'low',
+                                    name: 'Min',
                                     value:
                                         low !== undefined && low !== 0
                                             ? low
@@ -355,8 +370,8 @@ export default function Chart(props: ChartData) {
                             return chartTargets;
                         }
                         return [
-                            { name: 'low', value: 0 },
-                            { name: 'high', value: 0 },
+                            { name: 'Min', value: 0 },
+                            { name: 'Max', value: 0 },
                         ];
                     });
                 }
@@ -381,22 +396,22 @@ export default function Chart(props: ChartData) {
                 if (!isAdvancedModeActive && simpleRangeWidth !== 100) {
                     let valueWithRange: number;
 
-                    if (d.name === 'high') {
+                    if (d.name === 'Max') {
                         setIsTargetMoved(true);
                         setRanges((prevState) => {
                             const newTargets = [...prevState];
 
                             valueWithRange =
-                                newTargets.filter((target: any) => target.name === 'high')[0]
-                                    .value - newValue;
-
-                            const low = newTargets.filter((target: any) => target.name === 'low')[0]
-                                .value;
-
-                            newTargets.filter((target: any) => target.name === 'high')[0].value =
+                                newTargets.filter((target: any) => target.name === 'Max')[0].value -
                                 newValue;
 
-                            newTargets.filter((target: any) => target.name === 'low')[0].value =
+                            const low = newTargets.filter((target: any) => target.name === 'Min')[0]
+                                .value;
+
+                            newTargets.filter((target: any) => target.name === 'Max')[0].value =
+                                newValue;
+
+                            newTargets.filter((target: any) => target.name === 'Min')[0].value =
                                 low + valueWithRange;
 
                             render();
@@ -407,17 +422,17 @@ export default function Chart(props: ChartData) {
                             const newTargets = [...prevState];
 
                             valueWithRange =
-                                newTargets.filter((target: any) => target.name === 'low')[0].value -
+                                newTargets.filter((target: any) => target.name === 'Min')[0].value -
                                 newValue;
 
                             const high = newTargets.filter(
-                                (target: any) => target.name === 'high',
+                                (target: any) => target.name === 'Max',
                             )[0].value;
 
-                            newTargets.filter((target: any) => target.name === 'low')[0].value =
+                            newTargets.filter((target: any) => target.name === 'Min')[0].value =
                                 newValue;
 
-                            newTargets.filter((target: any) => target.name === 'high')[0].value =
+                            newTargets.filter((target: any) => target.name === 'Max')[0].value =
                                 high + valueWithRange;
 
                             render();
@@ -428,16 +443,16 @@ export default function Chart(props: ChartData) {
                     setRanges((prevState) => {
                         const newTargets = [...prevState];
                         if (
-                            d.name === 'high' &&
+                            d.name === 'Max' &&
                             newValue >
-                                newTargets.filter((target: any) => target.name === 'low')[0].value
+                                newTargets.filter((target: any) => target.name === 'Min')[0].value
                         ) {
                             newTargets.filter((target: any) => target.name === d.name)[0].value =
                                 newValue;
                         } else if (
-                            d.name === 'low' &&
+                            d.name === 'Min' &&
                             newValue <
-                                newTargets.filter((target: any) => target.name === 'high')[0].value
+                                newTargets.filter((target: any) => target.name === 'Max')[0].value
                         ) {
                             newTargets.filter((target: any) => target.name === d.name)[0].value =
                                 newValue;
@@ -853,29 +868,24 @@ export default function Chart(props: ChartData) {
             });
 
             if (reustls.length < 2) {
-                const low = ranges.filter((target: any) => target.name === 'low')[0].value;
-                const high = ranges.filter((target: any) => target.name === 'high')[0].value;
+                const low = ranges.filter((target: any) => target.name === 'Min')[0].value;
+                const high = ranges.filter((target: any) => target.name === 'Max')[0].value;
 
                 if (!isAdvancedModeActive) {
                     dispatch(setPinnedMinPrice(low));
                     dispatch(setPinnedMaxPrice(high));
 
                     if (spotPriceDisplay !== undefined) {
-                        const difference = high - spotPriceDisplay;
-                        const percentage = 100 / (difference * spotPriceDisplay);
+                        const val = spotPriceDisplay.replace(',', '');
 
-                        dispatch(setSimpleRangeWidth(2));
+                        const difference = high - parseFloat(val);
+                        const percentage = (difference * 100) / parseFloat(val);
+
+                        dispatch(setSimpleRangeWidth(parseInt(percentage.toString())));
                     } else {
                         dispatch(setSimpleRangeWidth(simpleRangeWidth!));
                     }
                 }
-
-                // isAdvancedModeActive: boolean | undefined;
-                // simpleRangeWidth: number | undefined;
-                // pinnedMinPriceDisplayTruncated: number | undefined;
-                // pinnedMaxPriceDisplayTruncated: number | undefined;
-                // setRangeWidthPercentage
-                // updateRangeWithButton
             }
         }, 1000);
         return () => clearTimeout(timer);
@@ -926,9 +936,18 @@ export default function Chart(props: ChartData) {
                     {showFeeRate && (
                         <>
                             <hr />
+                            <label>
+                                Fee Rate{' '}
+                                {formatDollarAmountAxis(
+                                    subChartValues.filter(
+                                        (value: any) => value.name === 'feeRate',
+                                    )[0].value,
+                                )}
+                            </label>
                             <FeeRateSubChart
                                 feeData={props.feeData}
                                 crosshairData={crosshairData}
+                                setsubChartValues={setsubChartValues}
                             />
                         </>
                     )}
@@ -936,16 +955,36 @@ export default function Chart(props: ChartData) {
                     {showTvl && (
                         <>
                             <hr />
-                            <TvlSubChart tvlData={props.tvlData} crosshairData={crosshairData} />
+                            <label>
+                                TVL{' '}
+                                {formatDollarAmountAxis(
+                                    subChartValues.filter((value: any) => value.name === 'tvl')[0]
+                                        .value,
+                                )}
+                            </label>
+                            <TvlSubChart
+                                tvlData={props.tvlData}
+                                crosshairData={crosshairData}
+                                setsubChartValues={setsubChartValues}
+                            />
                         </>
                     )}
 
                     {showVolume === true && (
                         <>
                             <hr />
+                            <label>
+                                Volume{' '}
+                                {formatDollarAmountAxis(
+                                    subChartValues.filter(
+                                        (value: any) => value.name === 'volume',
+                                    )[0].value,
+                                )}
+                            </label>
                             <VolumeSubChart
                                 volumeData={props.volumeData}
                                 crosshairData={crosshairData}
+                                setsubChartValues={setsubChartValues}
                             />
                         </>
                     )}

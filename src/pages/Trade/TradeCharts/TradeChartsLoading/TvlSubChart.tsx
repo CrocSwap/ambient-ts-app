@@ -6,11 +6,13 @@ import { formatDollarAmountAxis } from '../../../../utils/numbers';
 interface TvlData {
     tvlData: any[];
     crosshairData: any[];
+    setsubChartValues: React.Dispatch<React.SetStateAction<any>>;
 }
 
 export default function TvlSubChart(props: TvlData) {
     const data = props.tvlData;
     const crosshairData = props.crosshairData;
+    const setsubChartValues = props.setsubChartValues;
 
     // Tvl Chart
     useEffect(() => {
@@ -127,10 +129,51 @@ export default function TvlSubChart(props: TvlData) {
 
         function render() {
             d3.select('.chart-tvl').datum(chartData).call(chart);
+
+            d3.select('.chart-tvl').select('.cartesian-chart').select('.top-label').remove();
+
+            d3.select('.chart-tvl').select('.cartesian-chart').select('.bottom-label').remove();
+
+            d3.select('.chart-tvl').select('.cartesian-chart').select('.right-label').remove();
+
+            setsubChartValues((prevState: any) => {
+                const newTargets = [...prevState];
+                newTargets.filter((target: any) => target.name === 'tvl')[0].value = snap(
+                    lineSeries,
+                    chartData.series,
+                    crosshairData[0],
+                );
+
+                return newTargets;
+            });
         }
+
+        const minimum = (data: any, accessor: any) => {
+            return data
+                .map(function (dataPoint: any, index: any) {
+                    return [accessor(dataPoint, index), dataPoint, index];
+                })
+                .reduce(
+                    function (accumulator: any, dataPoint: any) {
+                        return accumulator[0] > dataPoint[0] ? dataPoint : accumulator;
+                    },
+                    [Number.MAX_VALUE, null, -1],
+                );
+        };
+
+        const snap = (series: any, data: any, point: any) => {
+            if (point == undefined) return [];
+            const xScale = series.xScale(),
+                xValue = series.crossValue();
+
+            const filtered = data.lenght > 1 ? data.filter((d: any) => xValue(d) != null) : data;
+            const nearest = minimum(filtered, (d: any) => Math.abs(point.x - xScale(xValue(d))))[1];
+
+            return nearest !== undefined ? nearest.value : 0;
+        };
 
         render();
     }, [data, crosshairData]);
 
-    return <div style={{ height: '15%', width: '100%' }} className='chart-tvl'></div>;
+    return <div style={{ height: '10%', width: '100%' }} className='chart-tvl'></div>;
 }

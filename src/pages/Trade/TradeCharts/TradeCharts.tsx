@@ -63,7 +63,7 @@ interface TradeChartsPropsIF {
     simpleRangeWidth: number | undefined;
     pinnedMinPriceDisplayTruncated: number | undefined;
     pinnedMaxPriceDisplayTruncated: number | undefined;
-    spotPriceDisplay: number | undefined;
+    spotPriceDisplay: string | undefined;
 }
 
 // React functional component

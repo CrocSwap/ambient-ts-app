@@ -160,7 +160,7 @@ export default function Range(props: RangePropsIF) {
     const quoteTokenDecimals = !isTokenABase ? tokenADecimals : tokenBDecimals;
 
     useEffect(() => {
-        dispatch(setSpotPriceDisplay(parseFloat(displayPriceString)));
+        dispatch(setSpotPriceDisplay(displayPriceString));
     }, [displayPriceString]);
 
     const poolPriceCharacter = denominationsInBase

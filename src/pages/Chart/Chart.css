@@ -108,3 +108,10 @@ div.tooltip {
     stroke-dasharray: 0.6 0.6;
     stroke-opacity: 1;
 }
+
+label {
+    color: rgba(204, 204, 204, 0.63);
+    padding-left: 7px;
+    padding-top: 2px;
+    font-size: 12px;
+}

@@ -35,7 +35,7 @@ interface ChartData {
     pinnedMinPriceDisplayTruncated: number | undefined;
     pinnedMaxPriceDisplayTruncated: number | undefined;
     truncatedPoolPrice: number | undefined;
-    spotPriceDisplay: number | undefined;
+    spotPriceDisplay: string | undefined;
 }
 
 interface CandleChartData {
