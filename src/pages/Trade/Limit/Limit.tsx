@@ -197,7 +197,14 @@ export default function Limit(props: LimitPropsIF) {
             });
             setPriceInputFieldBlurred(false);
         }
-    }, [initialLoad, limitRate, poolPriceNonDisplay, isDenomBase, priceInputFieldBlurred]);
+    }, [
+        initialLoad,
+        limitRate,
+        poolPriceDisplay,
+        isSellTokenBase,
+        isDenomBase,
+        priceInputFieldBlurred,
+    ]);
 
     const sendLimitOrder = async () => {
         console.log('Send limit');
