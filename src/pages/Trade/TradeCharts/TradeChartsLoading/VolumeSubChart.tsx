@@ -90,6 +90,17 @@ export default function VolumeSubChart(props: VolumeData) {
             })
             .svgPlotArea(multi);
 
+        d3.select('.chart-volume')
+            .select('.cartesian-chart')
+            .style(
+                'grid-template-columns',
+                'minmax(1px,max-content) auto 1fr auto minmax(1px,max-content)',
+            )
+            .style(
+                'grid-template-rows',
+                'minmax(1px,max-content) auto 1fr auto minmax(1px,max-content)',
+            );
+
         render();
     }, [data, crosshairData]);
 

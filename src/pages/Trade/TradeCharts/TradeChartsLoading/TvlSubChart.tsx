@@ -114,6 +114,17 @@ export default function TvlSubChart(props: TvlData) {
             })
             .svgPlotArea(multi);
 
+        d3.select('.chart-tvl')
+            .select('.cartesian-chart')
+            .style(
+                'grid-template-columns',
+                'minmax(1px,max-content) auto 1fr auto minmax(1px,max-content)',
+            )
+            .style(
+                'grid-template-rows',
+                'minmax(1px,max-content) auto 1fr auto minmax(1px,max-content)',
+            );
+
         function render() {
             d3.select('.chart-tvl').datum(chartData).call(chart);
         }

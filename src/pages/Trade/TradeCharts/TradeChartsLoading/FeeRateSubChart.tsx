@@ -83,6 +83,17 @@ export default function FeeRateSubChart(props: FreeRateData) {
             })
             .svgPlotArea(multi);
 
+        d3.select('.chart-fee')
+            .select('.cartesian-chart')
+            .style(
+                'grid-template-columns',
+                'minmax(1px,max-content) auto 1fr auto minmax(1px,max-content)',
+            )
+            .style(
+                'grid-template-rows',
+                'minmax(1px,max-content) auto 1fr auto minmax(1px,max-content)',
+            );
+
         function render() {
             d3.select('.chart-fee').datum(chartData).call(chart);
         }
