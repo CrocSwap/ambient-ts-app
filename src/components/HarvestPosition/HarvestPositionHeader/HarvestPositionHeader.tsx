@@ -12,33 +12,40 @@ interface IHarvestPositionHeaderProps {
     isDenomBase: boolean;
 }
 
-export default function HarvestPositionHeader(props: IHarvestPositionHeaderProps) {
+export default function HarvestPositionHeader() {
     const dispatch = useAppDispatch();
+
+    // temp values
+    const baseTokenSymbol = 'ETH';
+    const quoteTokenSymbol = 'USDC';
+
+    const baseTokenLogoURI =
+        'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png';
+
+    const quoteTokenLogoURI = 'https://cryptologos.cc/logos/usd-coin-usdc-logo.png';
+
+    const isDenomBase = false;
+
+    const isAmbient = false;
+
+    const isPositionInRange = true;
 
     return (
         <div className={styles.container}>
             <div
                 className={styles.token_info}
-                onClick={() => {
-                    dispatch(toggleDidUserFlipDenom());
-                }}
+                // onClick={() => {
+                //     dispatch(toggleDidUserFlipDenom());
+                // }}
             >
-                <img
-                    src={props.isDenomBase ? props.baseTokenLogoURI : props.quoteTokenLogoURI}
-                    // src='https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png'
-                    alt=''
-                />
-                <img
-                    src={props.isDenomBase ? props.quoteTokenLogoURI : props.baseTokenLogoURI}
-                    alt=''
-                />
-                {/* <img src='https://cryptologos.cc/logos/usd-coin-usdc-logo.png' alt='' /> */}
+                <img src={isDenomBase ? baseTokenLogoURI : quoteTokenLogoURI} alt='' />
+                <img src={isDenomBase ? quoteTokenLogoURI : baseTokenLogoURI} alt='' />
                 <span>
-                    {props.isDenomBase ? props.baseTokenSymbol : props.quoteTokenSymbol} /
-                    {props.isDenomBase ? props.quoteTokenSymbol : props.baseTokenSymbol}
+                    {isDenomBase ? baseTokenSymbol : quoteTokenSymbol} /
+                    {isDenomBase ? quoteTokenSymbol : baseTokenSymbol}
                 </span>
             </div>
-            <RangeStatus isInRange={props.isPositionInRange} isAmbient={props.isAmbient} />
+            <RangeStatus isInRange={isPositionInRange} isAmbient={isAmbient} />
         </div>
     );
 }
