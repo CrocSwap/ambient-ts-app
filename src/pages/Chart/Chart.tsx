@@ -518,6 +518,7 @@ export default function Chart(props: ChartData) {
                         d3.select(event.currentTarget)
                             // .select('.detector')
                             .style('cursor', 'ns-resize');
+                        d3.select(event.currentTarget).select('line').style('cursor', 'ns-resize');
                     })
                     .call(dragType);
             }
@@ -530,6 +531,7 @@ export default function Chart(props: ChartData) {
                         d3.select(event.currentTarget)
                             // .select('.detector')
                             .style('cursor', 'ns-resize');
+                        d3.select(event.currentTarget).select('line').style('cursor', 'ns-resize');
                     })
                     .call(dragType);
 
@@ -538,6 +540,7 @@ export default function Chart(props: ChartData) {
                     .select('#Min')
                     .on('mouseover', (event: any) => {
                         d3.select(event.currentTarget).style('cursor', 'ns-resize');
+                        d3.select(event.currentTarget).select('line').style('cursor', 'ns-resize');
                     })
                     .call(dragType);
 
@@ -546,11 +549,12 @@ export default function Chart(props: ChartData) {
                     .select('#Max')
                     .on('mouseover', (event: any) => {
                         d3.select(event.currentTarget).style('cursor', 'ns-resize');
+                        d3.select(event.currentTarget).select('line').style('cursor', 'ns-resize');
                     })
                     .call(dragType);
             }
         }
-    }, [dragType, parsedChartData?.period]);
+    }, [dragType, parsedChartData?.period, location]);
 
     // Call drawChart()
     useEffect(() => {
@@ -758,6 +762,16 @@ export default function Chart(props: ChartData) {
                         .append('text')
                         .attr('x', 5)
                         .attr('y', -5);
+
+                    selection
+                        .enter()
+                        .append('rect')
+                        .attr('width', '100%')
+                        .attr('y', -20)
+                        .attr('height', '15%')
+                        .attr('fill', 'transparent')
+                        .attr('stroke', 'none');
+
                     selection.enter().select('g.right-handle').remove();
                     selection.enter().select('line').attr('class', 'redline');
                     selection
@@ -769,6 +783,12 @@ export default function Chart(props: ChartData) {
                         .on('mouseout', (event: any) => {
                             d3.select(event.currentTarget).style('cursor', 'default');
                         });
+                    selection
+                        .enter()
+                        .append('rect')
+                        .attr('width', 15)
+                        .attr('height', 15)
+                        .attr('fill', 'gainsboro');
                 });
 
                 let lastY = 0;
