@@ -559,7 +559,7 @@ export default function Chart(props: ChartData) {
                     .call(dragType);
             }
         }
-    }, [dragType]);
+    }, [dragType, parsedChartData?.period]);
 
     // Call drawChart()
     useEffect(() => {
