@@ -145,7 +145,7 @@ export default function OrderCard(props: OrderCardProps) {
                 />
                 {/* ------------------------------------------------------ */}
                 <div className={styles.status}>
-                    <OpenOrderStatus isFilled />
+                    <OpenOrderStatus isFilled={true} />
                 </div>
             </div>
 
