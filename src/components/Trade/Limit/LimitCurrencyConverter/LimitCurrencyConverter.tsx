@@ -84,7 +84,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
 
     const dispatch = useAppDispatch();
 
-    const limitRateNumber = parseFloat(limitRate);
+    const limitRateNumber = insideTickDisplayPrice;
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
