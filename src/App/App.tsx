@@ -888,7 +888,7 @@ export default function App() {
         candleSubscriptionEndpoint,
         {
             onOpen: () => console.log({ candleSubscriptionEndpoint }),
-            onClose: (event) => console.log({ event }),
+            onClose: (event: any) => console.log({ event }),
             shouldReconnect: () => shouldCandleSubscriptionsReconnect,
         },
         // only connect if base/quote token addresses are available

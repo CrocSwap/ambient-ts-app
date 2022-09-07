@@ -112,7 +112,7 @@ export default function ChatPanel(props: ChatProps) {
                     className={`
                     ${styles.main_body}
                     `}
-                    onClick={(e) => e.stopPropagation()}
+                    onClick={(e: any) => e.stopPropagation()}
                 >
                     <div
                         className={`
