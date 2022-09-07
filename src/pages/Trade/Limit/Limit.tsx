@@ -135,6 +135,10 @@ export default function Limit(props: LimitPropsIF) {
         }),
     ]);
 
+    // useEffect(() => {
+    //     console.log({ limitTick });
+    // }, [limitTick]);
+
     useEffect(() => {
         if (initialLoad) {
             if (!provider) return;
@@ -143,13 +147,25 @@ export default function Limit(props: LimitPropsIF) {
             const gridSize = lookupChain(chainId).gridSize;
 
             const croc = new CrocEnv(provider);
-            const pool = croc.pool(tradeData.tokenA.address, tradeData.tokenB.address);
+            const pool =
+                isDenomBase === isTokenABase
+                    ? croc.pool(tradeData.tokenA.address, tradeData.tokenB.address)
+                    : croc.pool(tradeData.tokenB.address, tradeData.tokenA.address);
 
+            // console.log(
+            //     `current tick pinned lower: ${pinTickLower(poolPriceNonDisplay || 0, gridSize)}`,
+            // );
+            // console.log(
+            //     `current tick pinned higher: ${pinTickUpper(poolPriceNonDisplay || 0, gridSize)}`,
+            // );
+            // const initialLimitRate = isDenomBase ? 1 / poolPriceDisplay : poolPriceDisplay;
             const initialLimitRate = isDenomBase
-                ? (1 / poolPriceDisplay) * (isSellTokenBase ? 1.02 : 0.98)
-                : poolPriceDisplay * (isSellTokenBase ? 0.98 : 1.02);
+                ? (1 / poolPriceDisplay) * (isSellTokenBase ? 1.015 : 0.985)
+                : poolPriceDisplay * (isSellTokenBase ? 0.985 : 1.015);
 
             setLimitRate(initialLimitRate.toString());
+            // console.log({ initialLimitRate });
+            // setLimitRate(initialLimitRate.toString());
 
             const limitWei = pool.fromDisplayPrice(initialLimitRate);
 
@@ -190,14 +206,20 @@ export default function Limit(props: LimitPropsIF) {
             const croc = new CrocEnv(provider);
             const pool = croc.pool(tradeData.tokenA.address, tradeData.tokenB.address);
 
-            const limitWei = pool.fromDisplayPrice(parseFloat(limitRate));
+            const limitWei = pool.fromDisplayPrice(
+                isDenomBase ? parseFloat(limitRate) : 1 / parseFloat(limitRate),
+            );
             const pinTick = limitWei.then((lw) =>
                 isDenomBase ? pinTickLower(lw, gridSize) : pinTickUpper(lw, gridSize),
             );
             pinTick.then(setLimitTick);
 
             const tickPrice = pinTick.then(tickToPrice);
-            const tickDispPrice = tickPrice.then((tp) => pool.toDisplayPrice(tp));
+            // pinTick.then(console.log);
+            // const tickDispPrice = tickPrice.then((tp) => pool.toDisplayPrice(tp));
+            const tickDispPrice = isDenomBase
+                ? tickPrice.then((tp) => pool.toDisplayPrice(tp))
+                : tickPrice.then((tp) => pool.toDisplayPrice(tp)).then((tp) => 1 / tp);
 
             tickDispPrice.then((tp) => {
                 setInsideTickDisplayPrice(tp);
