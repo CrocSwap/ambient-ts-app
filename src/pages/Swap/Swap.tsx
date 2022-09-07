@@ -29,6 +29,7 @@ import { SlippagePairIF, TokenIF, TokenPairIF } from '../../utils/interfaces/exp
 import { useModal } from '../../components/Global/Modal/useModal';
 import { useRelativeModal } from '../../components/Global/RelativeModal/useRelativeModal';
 import { addReceipt } from '../../utils/state/receiptDataSlice';
+import { calcImpact } from '../../App/functions/calcImpact';
 
 interface SwapPropsIF {
     importedTokens: Array<TokenIF>;
@@ -173,28 +174,35 @@ export default function Swap(props: SwapPropsIF) {
         const qty = isTokenAPrimary ? sellTokenQty : buyTokenQty;
         const isQtySell = isTokenAPrimary;
 
+        console.log({ slippageTolerancePercentage });
+
         const env = new CrocEnv(provider);
+
+        const impact = await calcImpact(
+            isQtySell,
+            env,
+            sellTokenAddress,
+            buyTokenAddress,
+            slippageTolerancePercentage,
+            qty,
+        );
+
+        console.log({ impact });
 
         let tx;
         try {
             (tx = await (isQtySell
                 ? env
                       .sell(sellTokenAddress, qty)
-                      .for(
-                          buyTokenAddress,
-                          //     {
-                          //       slippage: slippageTolerancePercentage,
-                          //   }
-                      )
+                      .for(buyTokenAddress, {
+                          slippage: slippageTolerancePercentage,
+                      })
                       .swap()
                 : env
                       .buy(buyTokenAddress, qty)
-                      .with(
-                          sellTokenAddress,
-                          //     {
-                          //       slippage: slippageTolerancePercentage,
-                          //   }
-                      )
+                      .with(sellTokenAddress, {
+                          slippage: slippageTolerancePercentage,
+                      })
                       .swap())),
                 setNewSwapTransactionHash(tx?.hash);
         } catch (error) {
@@ -327,6 +335,8 @@ export default function Swap(props: SwapPropsIF) {
                         transition={{ duration: 0.5 }}
                     >
                         <CurrencyConverter
+                            provider={provider}
+                            slippageTolerancePercentage={slippageTolerancePercentage}
                             tokenPair={tokenPair}
                             tokensBank={importedTokens}
                             setImportedTokens={setImportedTokens}
