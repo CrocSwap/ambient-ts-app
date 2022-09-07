@@ -1,5 +1,6 @@
 import { useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
+import { useMoralisWeb3Api } from 'react-moralis';
 // import swapParams from '../../utils/classes/swapParams';
 
 /**     Instructions to Use This Hook
@@ -12,10 +13,14 @@ import { useParams } from 'react-router-dom';
  */
 
 export const useUrlParams = (
-    // module: string
+    // module: string,
+    chainId: string
 ) => {
     // get URL parameters, empty string if undefined
     const { params } = useParams() ?? '';
+
+    // needed to pull token metadata from on-chain
+    const Web3Api = useMoralisWeb3Api();
 
     // parse parameter string into [key, value] tuples
     // useMemo() with empty dependency array runs once on initial render
@@ -59,8 +64,22 @@ export const useUrlParams = (
                 : '0x0000000000000000000000000000000000000000';
             return tokenAddress;
         }
+
         const addrTokenA = getAddress('tokenA');
         const addrTokenB = getAddress('tokenB');
-        console.log({addrTokenA, addrTokenB});
+
+        // const getTokenData = async (chain: string, tokenAddress: string) => {
+        //     const tokenArrayMetadata = await Web3Api.token.getTokenMetadata();
+        // }
+    
+        const dataTknA = Web3Api.token.getTokenMetadata({
+            chain: chainId as '0x5' | 'goerli', addresses: [addrTokenA]
+        });
+
+        const dataTknB = Web3Api.token.getTokenMetadata({
+            chain: chainId as '0x5' | 'goerli', addresses: [addrTokenB]
+        });
+
+        console.log({dataTknA, dataTknB});
     }, []);
 }

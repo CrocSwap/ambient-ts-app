@@ -83,7 +83,7 @@ export default function Swap(props: SwapPropsIF) {
 
     const dispatch = useAppDispatch();
 
-    useUrlParams();
+    useUrlParams(chainId);
 
     const [isRelativeModalOpen, closeRelativeModal] = useRelativeModal();
 
