@@ -52,16 +52,15 @@ export const useUrlParams = (
 
     // useEffect() to update token pair
     useEffect(() => {
-        console.log(urlParams);
-        urlParams.forEach(param => console.log(param));
-        const tokenA = urlParams.find(param => param[0] === 'tokenA');
-        const addrTokenA = tokenA
-            ? tokenA[1]
-            : '0x0000000000000000000000000000000000000000';
-        const tokenB = urlParams.find(param => param[0] === 'tokenB');
-        const addrTokenB = tokenB
-            ? tokenB[1]
-            : '0x0000000000000000000000000000000000000000';
+        const getAddress = (tkn: string) => {
+            const tokenParam = urlParams.find(param => param[0] === tkn);
+            const tokenAddress = tokenParam
+                ? tokenParam[1]
+                : '0x0000000000000000000000000000000000000000';
+            return tokenAddress;
+        }
+        const addrTokenA = getAddress('tokenA');
+        const addrTokenB = getAddress('tokenB');
         console.log({addrTokenA, addrTokenB});
     }, []);
 }
