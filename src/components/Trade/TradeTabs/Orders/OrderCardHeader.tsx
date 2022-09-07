@@ -37,15 +37,21 @@ export default function OrderCardHeader(props: OrderCardHeaderPropsIF) {
         }
     }
 
+    const arrowPlaceholder = (
+        <div className={styles.arrow_placeholder}>
+            <FaAngleDown />
+        </div>
+    );
+
     const arrow = useMemo(() => {
         if (sortBy !== data.name.toLowerCase()) {
-            return null;
+            return arrowPlaceholder;
         } else if (!reverseSort) {
             return <FaAngleDown />;
         } else if (reverseSort) {
             return <FaAngleUp />;
         } else {
-            return null;
+            return arrowPlaceholder;
         }
     }, [sortBy, reverseSort]);
 
@@ -58,7 +64,7 @@ export default function OrderCardHeader(props: OrderCardHeaderPropsIF) {
             className={styles.order_card_header}
             onClick={() => handleClick(data.name.toLowerCase())}
         >
-            <h5>{data.name}</h5>
+            <p>{data.name}</p>
             <div className={styles.arrow_wrapper}>{arrow}</div>
         </div>
     );

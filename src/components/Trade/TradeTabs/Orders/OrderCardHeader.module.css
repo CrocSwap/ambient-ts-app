@@ -37,6 +37,10 @@
     display: none;
 }
 
+.arrow_placeholder{
+    opacity: 0;
+}
+
 /* .type{
     text-align: end;
 } */
