@@ -200,6 +200,7 @@ export default function App() {
 
     // current configurations of trade as specified by the user
     const tradeData = useAppSelector((state) => state.tradeData);
+    const currentPoolInfo = tradeData;
 
     // tokens specifically imported by the end user
     const [importedTokens, setImportedTokens] = useState<TokenIF[]>(defaultTokens);
@@ -1947,6 +1948,7 @@ export default function App() {
                         lastBlockNumber={lastBlockNumber}
                         userIsOnline={userIsOnline}
                         favePools={favePools}
+                        currentPool={currentPoolInfo}
                     />
                 )}
                 {currentLocation !== '/app/chat' && (
