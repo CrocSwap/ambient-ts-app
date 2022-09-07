@@ -16,18 +16,15 @@ import {
 import styles from './MessageInput.module.css';
 import axios from 'axios';
 import { setFlagsFromString } from 'v8';
+
 // import { io } from 'socket.io-client';
 
 interface MessageInputProps {
     message: Message;
-    handleEmojiPickerHideShow: any;
-    handleEmojiClick: any;
-    showEmojiPicker: boolean;
 }
 
 export default function MessageInput(props: MessageInputProps) {
     const _socket = socket;
-    const { showEmojiPicker, handleEmojiClick, handleEmojiPickerHideShow } = props;
 
     useEffect(() => {
         _socket.connect();
@@ -38,7 +35,17 @@ export default function MessageInput(props: MessageInputProps) {
     }, [_socket]);
 
     const [message, setMessage] = useState('');
+    const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
+    const handleEmojiClick = (event: any, emoji: any) => {
+        let msg = message;
+        msg += emoji.emoji;
+        setMessage(msg);
+    };
+
+    const handleEmojiPickerHideShow = () => {
+        setShowEmojiPicker(!showEmojiPicker);
+    };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const _handleKeyDown = (e: any) => {
         if (e.key === 'Enter') {
@@ -53,6 +60,7 @@ export default function MessageInput(props: MessageInputProps) {
         await axios.post(sendMessageRoute, {
             from: '62f24f3ff40188d467c532e8',
             to: '62fa389c897f9778e2eb863f',
+            roomInfo: 'Global',
             message: msg,
         });
     };
@@ -64,18 +72,22 @@ export default function MessageInput(props: MessageInputProps) {
 
     return (
         <div className={styles.input_box}>
-            <input
-                type='text'
-                id='box'
-                placeholder='Please log in to chat.'
-                className={styles.input_text}
-                onKeyDown={_handleKeyDown}
-                value={message}
-                onChange={onChangeMessage}
-            />
-            <BsSlashSquare />
-            <BsEmojiSmileFill onClick={handleEmojiPickerHideShow} />
-            {showEmojiPicker && <Picker onEmojiClick={handleEmojiClick} />}
+            <div className={styles.input}>
+                <input
+                    type='text'
+                    id='box'
+                    placeholder='Please log in to chat.'
+                    className={styles.input_text}
+                    onKeyDown={_handleKeyDown}
+                    value={message}
+                    onChange={onChangeMessage}
+                />
+                <BsSlashSquare />
+                <BsEmojiSmileFill onClick={handleEmojiPickerHideShow} />
+            </div>
+            <div className={styles.emojiPicker}>
+                {showEmojiPicker && <Picker onEmojiClick={handleEmojiClick} />}
+            </div>
         </div>
     );
 }

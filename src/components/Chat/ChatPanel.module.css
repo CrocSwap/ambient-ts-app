@@ -34,15 +34,15 @@
   color: white;
   position: absolute;
   aspect-ratio: 5/6;
-  margin-left: -55%;
-  margin-bottom: 18% !important;
-  resize: vertical;
+  margin-left: -182%;
+  margin-bottom: 30% !important;
+  resize: horizontal;
   overflow: auto;
   transform: rotate(-180deg);
-  max-width: 570px;
+  max-width: 460px;
   max-height: 570px;
-  min-width: 300px;
-  min-height: 300px;
+  min-width: 304px;
+  min-height: 508px;
 
 
 
@@ -51,6 +51,7 @@
 
 
 }
+
 
 
 .main_body {
@@ -62,6 +63,7 @@
 
 
 .chat_body {
+  
   transform: rotate(180deg);
   display: flex;
   flex-direction: column;
