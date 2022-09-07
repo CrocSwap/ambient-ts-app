@@ -845,6 +845,7 @@ export default function App() {
                 annotate: 'true',
                 addCachedAPY: 'true',
                 omitKnockout: 'true',
+                addValue: 'true',
             }),
         [baseTokenAddress, quoteTokenAddress, chainData.chainId],
     );
@@ -987,6 +988,7 @@ export default function App() {
                 addCachedAPY: 'true',
                 omitKnockout: 'true',
                 ensResolution: 'true',
+                addValue: 'true',
                 // user: account || '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc',
             }),
         [account, chainData.chainId],
