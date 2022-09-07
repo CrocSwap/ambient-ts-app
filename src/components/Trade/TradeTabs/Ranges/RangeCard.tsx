@@ -206,7 +206,7 @@ export default function RangeCard(props: RangeCardProps) {
                     quoteTokenSymbol={position.quoteSymbol}
                 />
                 {/* ------------------------------------------------------ */}
-                <Apy amount={position.apy ?? 0} />
+                <Apy amount={position.apy ?? undefined} />
                 {/* ------------------------------------------------------ */}
                 <RangeStatus
                     isInRange={isPositionInRange}
