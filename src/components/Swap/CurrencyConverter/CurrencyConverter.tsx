@@ -11,7 +11,12 @@ import {
 import { useAppDispatch, useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import truncateDecimals from '../../../utils/data/truncateDecimals';
 import TokensArrow from '../../Global/TokensArrow/TokensArrow';
+import { CrocEnv } from '@crocswap-libs/sdk';
+import { ethers } from 'ethers';
+import { calcImpact } from '../../../App/functions/calcImpact';
 interface CurrencyConverterPropsIF {
+    provider: ethers.providers.Provider | undefined;
+    slippageTolerancePercentage: number;
     isSellTokenBase: boolean;
     tokenPair: TokenPairIF;
     tokensBank: Array<TokenIF>;
@@ -40,6 +45,8 @@ interface CurrencyConverterPropsIF {
 
 export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
     const {
+        provider,
+        slippageTolerancePercentage,
         tokenPair,
         // isSellTokenBase,
         tokensBank,
@@ -163,8 +170,21 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         }
     };
 
-    const handleTokenAChangeEvent = (evt?: ChangeEvent<HTMLInputElement>) => {
+    const [crocEnv, setCrocEnv] = useState<CrocEnv | undefined>();
+
+    useEffect(() => {
+        (async () => {
+            if (!provider) {
+                return;
+            } else {
+                setCrocEnv(new CrocEnv(provider));
+            }
+        })();
+    }, [provider]);
+
+    const handleTokenAChangeEvent = async (evt?: ChangeEvent<HTMLInputElement>) => {
         if (!poolPriceDisplay) return;
+        if (!crocEnv) return;
         let rawTokenBQty;
 
         if (evt) {
@@ -174,20 +194,38 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
             setIsTokenAPrimaryLocal(true);
             dispatch(setIsTokenAPrimary(true));
             dispatch(setPrimaryQuantity(input));
-
-            rawTokenBQty = isSellTokenBase
-                ? (1 / poolPriceDisplay) * parseFloat(input)
-                : poolPriceDisplay * parseFloat(input);
-
             handleSwapButtonMessage(parseFloat(input));
+
+            const impact =
+                input !== ''
+                    ? await calcImpact(
+                          true,
+                          crocEnv,
+                          tokenPair.dataTokenA.address,
+                          tokenPair.dataTokenB.address,
+                          slippageTolerancePercentage,
+                          input,
+                      )
+                    : undefined;
+
+            console.log({ impact });
+
+            rawTokenBQty = impact ? parseFloat(impact.buyQty) : undefined;
+
+            // rawTokenBQty = isSellTokenBase
+            //     ? (1 / poolPriceDisplay) * parseFloat(input)
+            //     : poolPriceDisplay * parseFloat(input);
         } else {
             rawTokenBQty = isSellTokenBase
                 ? (1 / poolPriceDisplay) * parseFloat(tokenAQtyLocal)
                 : poolPriceDisplay * parseFloat(tokenAQtyLocal);
             handleSwapButtonMessage(parseFloat(tokenAQtyLocal));
         }
-        const truncatedTokenBQty =
-            rawTokenBQty < 100000 ? rawTokenBQty.toPrecision(6) : truncateDecimals(rawTokenBQty, 0);
+        const truncatedTokenBQty = rawTokenBQty
+            ? rawTokenBQty < 100000
+                ? rawTokenBQty.toPrecision(6)
+                : truncateDecimals(rawTokenBQty, 0)
+            : '';
         // const truncatedTokenBQty = truncateDecimals(rawTokenBQty, tokenBDecimals).toString();
 
         setTokenBQtyLocal(truncatedTokenBQty);
@@ -199,7 +237,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         }
     };
 
-    const handleTokenAChangeClick = (value: string) => {
+    const handleTokenAChangeClick = async (value: string) => {
         if (!poolPriceDisplay) return;
         let rawTokenBQty;
         const tokenAInputField = document.getElementById('sell-quantity');
@@ -238,7 +276,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         }
     };
 
-    const handleTokenBChangeEvent = (evt?: ChangeEvent<HTMLInputElement>) => {
+    const handleTokenBChangeEvent = async (evt?: ChangeEvent<HTMLInputElement>) => {
         if (!poolPriceDisplay) return;
 
         let rawTokenAQty;
@@ -273,7 +311,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         }
     };
 
-    // const handleTokenBChangeClick = (value: string) => {
+    // const handleTokenBChangeClick =async (value: string) => {
     //     if (!poolPriceDisplay) return;
 
     //     let rawTokenAQty;
