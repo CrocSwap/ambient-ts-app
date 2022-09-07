@@ -135,7 +135,8 @@ export default function Chart(props: ChartData) {
     ]);
 
     const [isChartSelected, setIsChartSelected] = useState<boolean>(false);
-    const [isTargetMoved, setIsTargetMoved] = useState<boolean>(false);
+    const [isHighMoved, setIsHighMoved] = useState<boolean>(false);
+    const [isLowMoved, setIsLowMoved] = useState<boolean>(false);
     const [transactionFilter, setTransactionFilter] = useState<CandleData>();
     const [scaleData, setScaleData] = useState<any>();
     const [dragType, setDragType] = useState<any>();
@@ -277,7 +278,7 @@ export default function Chart(props: ChartData) {
                     ];
                 });
             }
-        } else if (location.pathname.includes('range') && !isTargetMoved) {
+        } else if (location.pathname.includes('range') && !isHighMoved && !isLowMoved) {
             if (!isAdvancedModeActive) {
                 if (simpleRangeWidth === 100) {
                     ranges.map((mapData) => {
@@ -393,13 +394,19 @@ export default function Chart(props: ChartData) {
         if (scaleData !== undefined) {
             const dragRange = d3.drag().on('drag', function (event, d: any) {
                 const newValue = scaleData.yScale.invert(d3.pointer(event)[1] - 169);
-                if (!isAdvancedModeActive && simpleRangeWidth !== 100) {
+                if (!isAdvancedModeActive) {
                     let valueWithRange: number;
 
                     if (d.name === 'Max') {
-                        setIsTargetMoved(true);
                         setRanges((prevState) => {
                             const newTargets = [...prevState];
+
+                            const val =
+                                spotPriceDisplay !== undefined
+                                    ? spotPriceDisplay.replace(',', '')
+                                    : '';
+
+                            const dragLimit = parseFloat(val) / 100;
 
                             valueWithRange =
                                 newTargets.filter((target: any) => target.name === 'Max')[0].value -
@@ -408,18 +415,39 @@ export default function Chart(props: ChartData) {
                             const low = newTargets.filter((target: any) => target.name === 'Min')[0]
                                 .value;
 
-                            newTargets.filter((target: any) => target.name === 'Max')[0].value =
-                                newValue;
+                            console.log(parseFloat(val) - low);
+                            console.log({ dragLimit });
 
-                            newTargets.filter((target: any) => target.name === 'Min')[0].value =
-                                low + valueWithRange;
+                            if (!(dragLimit > parseFloat(val) - low)) {
+                                newTargets.filter((target: any) => target.name === 'Max')[0].value =
+                                    newValue;
 
-                            render();
+                                newTargets.filter((target: any) => target.name === 'Min')[0].value =
+                                    low + valueWithRange;
+
+                                render();
+                            } else {
+                                newTargets.filter((target: any) => target.name === 'Max')[0].value =
+                                    parseFloat(val) + dragLimit * 1.01;
+
+                                newTargets.filter((target: any) => target.name === 'Min')[0].value =
+                                    parseFloat(val) - dragLimit * 1.01;
+
+                                render();
+                            }
                             return newTargets;
                         });
+                        setIsHighMoved(true);
                     } else {
                         setRanges((prevState) => {
                             const newTargets = [...prevState];
+
+                            const val =
+                                spotPriceDisplay !== undefined
+                                    ? spotPriceDisplay.replace(',', '')
+                                    : '';
+
+                            const dragLimit = parseFloat(val) / 100;
 
                             valueWithRange =
                                 newTargets.filter((target: any) => target.name === 'Min')[0].value -
@@ -429,15 +457,27 @@ export default function Chart(props: ChartData) {
                                 (target: any) => target.name === 'Max',
                             )[0].value;
 
-                            newTargets.filter((target: any) => target.name === 'Min')[0].value =
-                                newValue;
+                            if (!(dragLimit > high - parseFloat(val))) {
+                                newTargets.filter((target: any) => target.name === 'Min')[0].value =
+                                    newValue;
 
-                            newTargets.filter((target: any) => target.name === 'Max')[0].value =
-                                high + valueWithRange;
+                                newTargets.filter((target: any) => target.name === 'Max')[0].value =
+                                    high + valueWithRange;
 
-                            render();
+                                render();
+                            } else {
+                                newTargets.filter((target: any) => target.name === 'Max')[0].value =
+                                    parseFloat(val) + dragLimit * 1.01;
+
+                                newTargets.filter((target: any) => target.name === 'Min')[0].value =
+                                    parseFloat(val) - dragLimit * 1.01;
+
+                                render();
+                            }
+
                             return newTargets;
                         });
+                        setIsLowMoved(true);
                     }
                 } else {
                     setRanges((prevState) => {
@@ -504,7 +544,15 @@ export default function Chart(props: ChartData) {
 
                 d3.select(d3Container.current)
                     .select('.targets')
-                    .select('#low')
+                    .select('#Min')
+                    .on('mouseover', (event: any) => {
+                        d3.select(event.currentTarget).style('cursor', 'ns-resize');
+                    })
+                    .call(dragType);
+
+                d3.select(d3Container.current)
+                    .select('.targets')
+                    .select('#Max')
                     .on('mouseover', (event: any) => {
                         d3.select(event.currentTarget).style('cursor', 'ns-resize');
                     })
@@ -810,12 +858,6 @@ export default function Chart(props: ChartData) {
                     d3.select(event.target).select('svg').call(yAxis);
                 });
 
-                // const dateIndicator = d3
-                //     .select(d3Xaxis.current)
-                //     .append('div')
-                //     .attr('class', 'popup')
-                //     .style('visibility', 'hidden');
-
                 d3.select(d3PlotArea.current).on('measure.range', function (event: any) {
                     const svg = d3.select(event.target).select('svg');
                     scaleData.xScaleCopy.range([0, event.detail.width]);
@@ -825,14 +867,6 @@ export default function Chart(props: ChartData) {
 
                 d3.select(d3PlotArea.current).on('mousemove', function (event: any) {
                     crosshairData[0] = snap(candlestick, chartData, event)[0];
-
-                    // const dateIndcLocation = event.offsetX;
-
-                    // dateIndicator
-                    //     .style('visibility', 'visible')
-                    //     .html('<p>' + moment(crosshairData[0].x).format('DD MMM  HH:mm') + '</p>')
-                    //     .style('left', dateIndcLocation - 50 + 'px');
-
                     render();
                 });
 
@@ -875,13 +909,28 @@ export default function Chart(props: ChartData) {
                     dispatch(setPinnedMinPrice(low));
                     dispatch(setPinnedMaxPrice(high));
 
-                    if (spotPriceDisplay !== undefined) {
+                    if (spotPriceDisplay !== undefined && (isHighMoved || isLowMoved)) {
                         const val = spotPriceDisplay.replace(',', '');
 
-                        const difference = high - parseFloat(val);
-                        const percentage = (difference * 100) / parseFloat(val);
+                        const dragLimit = parseFloat(val) / 100;
 
-                        dispatch(setSimpleRangeWidth(parseInt(percentage.toString())));
+                        const difference = isHighMoved
+                            ? high - parseFloat(val)
+                            : isLowMoved
+                            ? parseFloat(val) - low
+                            : 1;
+
+                        console.log({ difference });
+                        console.log({ dragLimit });
+
+                        if (!(dragLimit > difference)) {
+                            console.log('run');
+                            const percentage = (difference * 100) / parseFloat(val);
+
+                            setIsHighMoved(false);
+                            setIsLowMoved(false);
+                            dispatch(setSimpleRangeWidth(Math.round(percentage)));
+                        }
                     } else {
                         dispatch(setSimpleRangeWidth(simpleRangeWidth!));
                     }
