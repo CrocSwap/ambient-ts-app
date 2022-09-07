@@ -22,12 +22,14 @@ interface MessageInputProps {
     message: Message;
     handleEmojiPickerHideShow: any;
     handleEmojiClick: any;
-    showEmojiPicker;
+    room: string;
+    showEmojiPicker: boolean;
 }
 
 export default function MessageInput(props: MessageInputProps) {
     console.log({ props });
     const _socket = socket;
+    const { showEmojiPicker, handleEmojiClick, handleEmojiPickerHideShow } = props;
 
     useEffect(() => {
         _socket.connect();
@@ -54,6 +56,7 @@ export default function MessageInput(props: MessageInputProps) {
             from: '62f24f3ff40188d467c532e8',
             to: '62fa389c897f9778e2eb863f',
             message: msg,
+            roomInfo: props.room,
         });
     };
 
