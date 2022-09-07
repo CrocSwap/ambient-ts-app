@@ -407,9 +407,6 @@ export default function Chart(props: ChartData) {
                             const low = newTargets.filter((target: any) => target.name === 'Min')[0]
                                 .value;
 
-                            console.log(parseFloat(val) - low);
-                            console.log({ dragLimit });
-
                             if (!(dragLimit > parseFloat(val) - low)) {
                                 newTargets.filter((target: any) => target.name === 'Max')[0].value =
                                     newValue;
@@ -448,9 +445,6 @@ export default function Chart(props: ChartData) {
                             const high = newTargets.filter(
                                 (target: any) => target.name === 'Max',
                             )[0].value;
-
-                            console.log(high - parseFloat(val));
-                            console.log({ dragLimit });
 
                             if (!(dragLimit > high - parseFloat(val))) {
                                 newTargets.filter((target: any) => target.name === 'Min')[0].value =
@@ -510,7 +504,7 @@ export default function Chart(props: ChartData) {
                 return location.pathname.includes('limit') ? dragLimit : dragRange;
             });
         }
-    }, [location, scaleData, isAdvancedModeActive]);
+    }, [spotPriceDisplay, location, scaleData, isAdvancedModeActive]);
 
     // set HorizontalLines
     useEffect(() => {
