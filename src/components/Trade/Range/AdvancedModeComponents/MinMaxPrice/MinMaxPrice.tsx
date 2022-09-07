@@ -57,11 +57,11 @@ export default function MinMaxPrice(props: MinMaxPriceIF) {
 
             console.log({ minPriceInput });
             const newTargetData: targetData[] = [
-                { name: !isDenomBase ? 'high' : 'low', value: parseFloat(minPriceInput) },
+                { name: !isDenomBase ? 'Max' : 'Min', value: parseFloat(minPriceInput) },
                 {
-                    name: !isDenomBase ? 'low' : 'high',
+                    name: !isDenomBase ? 'Min' : 'Max',
                     value: targetData.filter(
-                        (target) => target.name === (!isDenomBase ? 'low' : 'high'),
+                        (target) => target.name === (!isDenomBase ? 'Min' : 'Max'),
                     )[0].value,
                 },
             ];
@@ -79,11 +79,11 @@ export default function MinMaxPrice(props: MinMaxPriceIF) {
 
             console.log({ maxPriceInput });
             const newTargetData: targetData[] = [
-                { name: !isDenomBase ? 'low' : 'high', value: parseFloat(maxPriceInput) },
+                { name: !isDenomBase ? 'Min' : 'Max', value: parseFloat(maxPriceInput) },
                 {
-                    name: !isDenomBase ? 'high' : 'low',
+                    name: !isDenomBase ? 'Max' : 'Min',
                     value: targetData.filter(
-                        (target) => target.name === (!isDenomBase ? 'high' : 'low'),
+                        (target) => target.name === (!isDenomBase ? 'Max' : 'Min'),
                     )[0].value,
                 },
             ];
@@ -105,10 +105,10 @@ export default function MinMaxPrice(props: MinMaxPriceIF) {
 
         if (targetData !== undefined) {
             const high = targetData.filter((data) => {
-                return data.name === 'high';
+                return data.name === 'Max';
             })[0].value;
             const low = targetData.filter((data) => {
-                return data.name === 'low';
+                return data.name === 'Min';
             })[0].value;
 
             setMaxPriceInputString(high !== undefined ? high.toString() : '0.0');

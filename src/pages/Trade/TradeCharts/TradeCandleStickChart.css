@@ -31,13 +31,6 @@ hr {
     border-top: 0.5px solid #242F3F;
 }
 
-label {
-    color: rgba(204, 204, 204, 0.63);
-    padding-top: 3px;
-    padding-left: 7px;
-    font-size: 14px;
-}
-
 .animatedImg {
     display: flex;
     align-items: center;
