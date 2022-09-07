@@ -4,6 +4,7 @@ import { targetData } from '../../../utils/state/tradeDataSlice';
 import Chart from '../../Chart/Chart';
 import './TradeCandleStickChart.css';
 import logo from '../../../assets/images/logos/ambient_logo.svg';
+import { CandleChartData } from './TradeCharts';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -35,17 +36,8 @@ interface ChartData {
     pinnedMinPriceDisplayTruncated: number | undefined;
     pinnedMaxPriceDisplayTruncated: number | undefined;
     truncatedPoolPrice: number | undefined;
-    spotPriceDisplay: string | undefined;
-}
-
-interface CandleChartData {
-    date: any;
-    open: any;
-    high: any;
-    low: any;
-    close: any;
-    time: any;
-    allSwaps: any;
+    spotPriceDisplay: number | undefined;
+    setCurrentData: React.Dispatch<React.SetStateAction<CandleChartData | undefined>>;
 }
 
 interface ChartUtils {
@@ -130,6 +122,7 @@ export default function TradeCandleStickChart(props: ChartData) {
                         volumeData={data.volumeData}
                         tvlData={data.tvlData}
                         chartItemStates={props.chartItemStates}
+                        setCurrentData={props.setCurrentData}
                     />
                 ) : (
                     <>{loading}</>

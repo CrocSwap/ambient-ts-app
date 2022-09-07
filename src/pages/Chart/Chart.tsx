@@ -13,6 +13,7 @@ import {
     setSimpleRangeWidth,
     targetData,
 } from '../../utils/state/tradeDataSlice';
+import { CandleChartData } from '../Trade/TradeCharts/TradeCharts';
 import FeeRateSubChart from '../Trade/TradeCharts/TradeChartsLoading/FeeRateSubChart';
 import TvlSubChart from '../Trade/TradeCharts/TradeChartsLoading/TvlSubChart';
 import VolumeSubChart from '../Trade/TradeCharts/TradeChartsLoading/VolumeSubChart';
@@ -54,16 +55,7 @@ interface ChartData {
     volumeData: any[];
     tvlData: any[];
     chartItemStates: chartItemStates;
-}
-
-interface CandleChartData {
-    date: any;
-    open: any;
-    high: any;
-    low: any;
-    close: any;
-    time: any;
-    allSwaps: any;
+    setCurrentData: React.Dispatch<React.SetStateAction<CandleChartData | undefined>>;
 }
 
 interface ChartUtils {
@@ -170,6 +162,15 @@ export default function Chart(props: ChartData) {
         const nd = d3.select('#group').node() as any;
         nd.requestRedraw();
     }, []);
+
+    useEffect(() => {
+        d3.select(d3Xaxis.current)
+            .select('svg')
+            .append('text')
+            .attr('class', 'popup')
+            .attr('dy', '30px')
+            .style('visibility', 'visible');
+    }, [location]);
 
     useEffect(() => {
         d3.select(d3Container.current)
@@ -575,6 +576,7 @@ export default function Chart(props: ChartData) {
         (chartData: any, targets: any, scaleData: any, liquidityData: any) => {
             if (chartData.length > 0) {
                 let selectedCandle: any;
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 const crosshairData = [{ x: 0, y: -1 }];
 
                 const minimum = (data: any, accessor: any) => {
@@ -602,6 +604,8 @@ export default function Chart(props: ChartData) {
                     )[1];
 
                     setCrosshairData([{ x: point.offsetX, y: -1 }]);
+
+                    props.setCurrentData(nearest);
                     return [
                         {
                             x: nearest?.date,
@@ -650,9 +654,7 @@ export default function Chart(props: ChartData) {
                         .append('line')
                         .attr('stroke-width', 1)
                         .style('pointer-events', 'all');
-                    selection.enter().select('g.bottom-handle').append('text');
                     selection.enter().select('g.top-handle').remove();
-                    // selection.select('g.bottom-handle text').text((d: any) => moment(d.x).format('DD/MM HH:mm'));
                 });
 
                 const crosshairVertical = d3fc
@@ -857,6 +859,15 @@ export default function Chart(props: ChartData) {
 
                 d3.select(d3PlotArea.current).on('mousemove', function (event: any) {
                     crosshairData[0] = snap(candlestick, chartData, event)[0];
+
+                    const dateIndcLocation = event.offsetX;
+                    d3.select(d3Xaxis.current)
+                        .select('svg')
+                        .select('text')
+                        .style('visibility', 'visible')
+                        .text(moment(crosshairData[0].x).format('DD MMM  HH:mm'))
+                        .style('transform', 'translateX(' + dateIndcLocation + 'px)');
+
                     render();
                 });
 
