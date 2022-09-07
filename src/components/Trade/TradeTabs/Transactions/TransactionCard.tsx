@@ -191,20 +191,19 @@ export default function TransactionCard(props: TransactionProps) {
 
     const usdValueNum = swap.valueUSD;
 
-    const usdValueTruncated =
-        usdValueNum === 0
-            ? '0'
-            : usdValueNum < 0.0001
-            ? usdValueNum.toExponential(2)
-            : usdValueNum < 2
-            ? usdValueNum.toPrecision(3)
-            : usdValueNum >= 100000
-            ? formatAmount(usdValueNum)
-            : // ? baseLiqDisplayNum.toExponential(2)
-              usdValueNum.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              });
+    const usdValueTruncated = !usdValueNum
+        ? undefined
+        : usdValueNum < 0.0001
+        ? usdValueNum.toExponential(2)
+        : usdValueNum < 2
+        ? usdValueNum.toPrecision(3)
+        : usdValueNum >= 100000
+        ? formatAmount(usdValueNum)
+        : // ? baseLiqDisplayNum.toExponential(2)
+          usdValueNum.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          });
 
     return (
         <div
@@ -234,7 +233,7 @@ export default function TransactionCard(props: TransactionProps) {
                 <TransactionTypeSide type={sideType} side='market' />
                 {/* ------------------------------------------------------ */}
 
-                <Value usdValue={'$' + usdValueTruncated} />
+                <Value usdValue={usdValueTruncated ? '$' + usdValueTruncated : '…'} />
                 <TokenQty
                     baseTokenSymbol={baseToken?.symbol}
                     quoteTokenSymbol={quoteToken?.symbol}

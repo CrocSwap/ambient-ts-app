@@ -158,20 +158,19 @@ export default function RangeCard(props: RangeCardProps) {
 
     const usdValueNum = position.positionLiqTotalUSD;
 
-    const usdValueTruncated =
-        usdValueNum === 0
-            ? '0'
-            : usdValueNum < 0.0001
-            ? usdValueNum.toExponential(2)
-            : usdValueNum < 2
-            ? usdValueNum.toPrecision(3)
-            : usdValueNum >= 100000
-            ? formatAmount(usdValueNum)
-            : // ? baseLiqDisplayNum.toExponential(2)
-              usdValueNum.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              });
+    const usdValueTruncated = !usdValueNum
+        ? undefined
+        : usdValueNum < 0.0001
+        ? usdValueNum.toExponential(2)
+        : usdValueNum < 2
+        ? usdValueNum.toPrecision(3)
+        : usdValueNum >= 100000
+        ? formatAmount(usdValueNum)
+        : // ? baseLiqDisplayNum.toExponential(2)
+          usdValueNum.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          });
 
     return (
         <li
@@ -197,7 +196,7 @@ export default function RangeCard(props: RangeCardProps) {
                 <RangeMinMax min={ambientMinOrNull} max={ambientMaxOrNull} />
                 {/* ------------------------------------------------------ */}
                 {/* ------------------------------------------------------ */}
-                <Value usdValue={'$' + usdValueTruncated} />
+                <Value usdValue={usdValueTruncated ? '$' + usdValueTruncated : '…'} />
                 {/* ------------------------------------------------------ */}
 
                 <TokenQty
