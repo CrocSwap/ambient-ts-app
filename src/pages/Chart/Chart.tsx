@@ -260,24 +260,14 @@ export default function Chart(props: ChartData) {
                 ];
             });
         } else if (location.pathname.includes('limit')) {
-            if (props.limitPrice === undefined || parseFloat(props.limitPrice) === 0) {
-                setLimit((prevState) => {
-                    const newTargets = [...prevState];
-                    newTargets[0].value === 3000;
-                    return newTargets;
-                });
-            } else {
-                setLimit(() => {
-                    return [
-                        {
-                            name: 'Limit',
-                            value: parseFloat(
-                                props.limitPrice !== undefined ? props.limitPrice : '0',
-                            ),
-                        },
-                    ];
-                });
-            }
+            setLimit(() => {
+                return [
+                    {
+                        name: 'Limit',
+                        value: parseFloat(props.limitPrice !== undefined ? props.limitPrice : '0'),
+                    },
+                ];
+            });
         } else if (location.pathname.includes('range') && !isHighMoved && !isLowMoved) {
             if (!isAdvancedModeActive) {
                 if (simpleRangeWidth === 100) {
@@ -515,7 +505,7 @@ export default function Chart(props: ChartData) {
                 return location.pathname.includes('limit') ? dragLimit : dragRange;
             });
         }
-    }, [location, scaleData]);
+    }, [location, scaleData, isAdvancedModeActive]);
 
     // set HorizontalLines
     useEffect(() => {
