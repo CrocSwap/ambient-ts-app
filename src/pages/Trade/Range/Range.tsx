@@ -427,6 +427,8 @@ export default function Range(props: RangePropsIF) {
                 'min-price-input-quantity',
             ) as HTMLInputElement;
 
+            console.log(rangeLowBoundDisplayField.value, pinnedMinPriceDisplayTruncated);
+
             if (rangeLowBoundDisplayField.value !== pinnedMinPriceDisplayTruncated) {
                 const pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
                     denominationsInBase,

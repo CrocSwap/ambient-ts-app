@@ -11,6 +11,7 @@ import {
     setPinnedMaxPrice,
     setPinnedMinPrice,
     setSimpleRangeWidth,
+    setTargetData,
     targetData,
 } from '../../utils/state/tradeDataSlice';
 import FeeRateSubChart from '../Trade/TradeCharts/TradeChartsLoading/FeeRateSubChart';
@@ -446,6 +447,9 @@ export default function Chart(props: ChartData) {
                             const high = newTargets.filter(
                                 (target: any) => target.name === 'Max',
                             )[0].value;
+
+                            console.log(high - parseFloat(val));
+                            console.log({ dragLimit });
 
                             if (!(dragLimit > high - parseFloat(val))) {
                                 newTargets.filter((target: any) => target.name === 'Min')[0].value =
@@ -910,11 +914,7 @@ export default function Chart(props: ChartData) {
                             ? parseFloat(val) - low
                             : 1;
 
-                        console.log({ difference });
-                        console.log({ dragLimit });
-
                         if (!(dragLimit > difference)) {
-                            console.log('run');
                             const percentage = (difference * 100) / parseFloat(val);
 
                             setIsHighMoved(false);
@@ -924,6 +924,19 @@ export default function Chart(props: ChartData) {
                     } else {
                         dispatch(setSimpleRangeWidth(simpleRangeWidth!));
                     }
+                } else {
+                    const newTargetData: targetData[] = [
+                        {
+                            name: 'Max',
+                            value: ranges.filter((target: any) => target.name === 'Max')[0].value,
+                        },
+                        {
+                            name: 'Min',
+                            value: ranges.filter((target: any) => target.name === 'Min')[0].value,
+                        },
+                    ];
+
+                    dispatch(setTargetData(newTargetData));
                 }
             }
         }, 1000);
