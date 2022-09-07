@@ -766,7 +766,7 @@ export default function Chart(props: ChartData) {
                         .append('rect')
                         .attr('width', '100%')
                         .attr('y', -20)
-                        .attr('height', '15%')
+                        .attr('height', '8%')
                         .attr('fill', 'transparent')
                         .attr('stroke', 'none');
 
@@ -785,7 +785,7 @@ export default function Chart(props: ChartData) {
                         .enter()
                         .append('rect')
                         .attr('width', 15)
-                        .attr('height', 15)
+                        .attr('height', 10)
                         .attr('fill', 'gainsboro');
                 });
 
