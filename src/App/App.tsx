@@ -888,6 +888,7 @@ export default function App() {
         candleSubscriptionEndpoint,
         {
             onOpen: () => console.log({ candleSubscriptionEndpoint }),
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             onClose: (event: any) => console.log({ event }),
             shouldReconnect: () => shouldCandleSubscriptionsReconnect,
         },

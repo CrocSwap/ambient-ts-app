@@ -14,6 +14,7 @@ import {
     setTargetData,
     targetData,
 } from '../../utils/state/tradeDataSlice';
+import { CandleChartData } from '../Trade/TradeCharts/TradeCharts';
 import FeeRateSubChart from '../Trade/TradeCharts/TradeChartsLoading/FeeRateSubChart';
 import TvlSubChart from '../Trade/TradeCharts/TradeChartsLoading/TvlSubChart';
 import VolumeSubChart from '../Trade/TradeCharts/TradeChartsLoading/VolumeSubChart';
@@ -55,16 +56,7 @@ interface ChartData {
     volumeData: any[];
     tvlData: any[];
     chartItemStates: chartItemStates;
-}
-
-interface CandleChartData {
-    date: any;
-    open: any;
-    high: any;
-    low: any;
-    close: any;
-    time: any;
-    allSwaps: any;
+    setCurrentData: React.Dispatch<React.SetStateAction<CandleChartData | undefined>>;
 }
 
 interface ChartUtils {
@@ -171,6 +163,15 @@ export default function Chart(props: ChartData) {
         const nd = d3.select('#group').node() as any;
         nd.requestRedraw();
     }, []);
+
+    useEffect(() => {
+        d3.select(d3Xaxis.current)
+            .select('svg')
+            .append('text')
+            .attr('class', 'popup')
+            .attr('dy', '30px')
+            .style('visibility', 'visible');
+    }, [location]);
 
     useEffect(() => {
         d3.select(d3Container.current)
@@ -521,6 +522,7 @@ export default function Chart(props: ChartData) {
                         d3.select(event.currentTarget)
                             // .select('.detector')
                             .style('cursor', 'ns-resize');
+                        d3.select(event.currentTarget).select('line').style('cursor', 'ns-resize');
                     })
                     .call(dragType);
             }
@@ -533,6 +535,7 @@ export default function Chart(props: ChartData) {
                         d3.select(event.currentTarget)
                             // .select('.detector')
                             .style('cursor', 'ns-resize');
+                        d3.select(event.currentTarget).select('line').style('cursor', 'ns-resize');
                     })
                     .call(dragType);
 
@@ -541,6 +544,7 @@ export default function Chart(props: ChartData) {
                     .select('#Min')
                     .on('mouseover', (event: any) => {
                         d3.select(event.currentTarget).style('cursor', 'ns-resize');
+                        d3.select(event.currentTarget).select('line').style('cursor', 'ns-resize');
                     })
                     .call(dragType);
 
@@ -549,11 +553,12 @@ export default function Chart(props: ChartData) {
                     .select('#Max')
                     .on('mouseover', (event: any) => {
                         d3.select(event.currentTarget).style('cursor', 'ns-resize');
+                        d3.select(event.currentTarget).select('line').style('cursor', 'ns-resize');
                     })
                     .call(dragType);
             }
         }
-    }, [dragType, parsedChartData?.period]);
+    }, [dragType, parsedChartData?.period, location]);
 
     // Call drawChart()
     useEffect(() => {
@@ -579,6 +584,7 @@ export default function Chart(props: ChartData) {
         (chartData: any, targets: any, scaleData: any, liquidityData: any) => {
             if (chartData.length > 0) {
                 let selectedCandle: any;
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 const crosshairData = [{ x: 0, y: -1 }];
 
                 const minimum = (data: any, accessor: any) => {
@@ -606,6 +612,8 @@ export default function Chart(props: ChartData) {
                     )[1];
 
                     setCrosshairData([{ x: point.offsetX, y: -1 }]);
+
+                    props.setCurrentData(nearest);
                     return [
                         {
                             x: nearest?.date,
@@ -654,9 +662,7 @@ export default function Chart(props: ChartData) {
                         .append('line')
                         .attr('stroke-width', 1)
                         .style('pointer-events', 'all');
-                    selection.enter().select('g.bottom-handle').append('text');
                     selection.enter().select('g.top-handle').remove();
-                    // selection.select('g.bottom-handle text').text((d: any) => moment(d.x).format('DD/MM HH:mm'));
                 });
 
                 const crosshairVertical = d3fc
@@ -760,6 +766,16 @@ export default function Chart(props: ChartData) {
                         .append('text')
                         .attr('x', 5)
                         .attr('y', -5);
+
+                    selection
+                        .enter()
+                        .append('rect')
+                        .attr('width', '100%')
+                        .attr('y', -20)
+                        .attr('height', '15%')
+                        .attr('fill', 'transparent')
+                        .attr('stroke', 'none');
+
                     selection.enter().select('g.right-handle').remove();
                     selection.enter().select('line').attr('class', 'redline');
                     selection
@@ -771,6 +787,12 @@ export default function Chart(props: ChartData) {
                         .on('mouseout', (event: any) => {
                             d3.select(event.currentTarget).style('cursor', 'default');
                         });
+                    selection
+                        .enter()
+                        .append('rect')
+                        .attr('width', 15)
+                        .attr('height', 15)
+                        .attr('fill', 'gainsboro');
                 });
 
                 let lastY = 0;
@@ -861,6 +883,15 @@ export default function Chart(props: ChartData) {
 
                 d3.select(d3PlotArea.current).on('mousemove', function (event: any) {
                     crosshairData[0] = snap(candlestick, chartData, event)[0];
+
+                    const dateIndcLocation = event.offsetX;
+                    d3.select(d3Xaxis.current)
+                        .select('svg')
+                        .select('text')
+                        .style('visibility', 'visible')
+                        .text(moment(crosshairData[0].x).format('DD MMM  HH:mm'))
+                        .style('transform', 'translateX(' + dateIndcLocation + 'px)');
+
                     render();
                 });
 
@@ -922,7 +953,7 @@ export default function Chart(props: ChartData) {
                             dispatch(setSimpleRangeWidth(Math.round(percentage)));
                         }
                     } else {
-                        dispatch(setSimpleRangeWidth(simpleRangeWidth!));
+                        dispatch(setSimpleRangeWidth(simpleRangeWidth ? simpleRangeWidth : 1));
                     }
                 } else {
                     const newTargetData: targetData[] = [
