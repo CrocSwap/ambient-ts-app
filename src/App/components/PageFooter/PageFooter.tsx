@@ -5,19 +5,46 @@ import { AiFillTwitterCircle } from 'react-icons/ai';
 import ChatPanel from '../../../components/Chat/ChatPanel';
 import { useState } from 'react';
 import { PoolIF } from '../../../utils/interfaces/PoolIF';
+import { TokenIF } from '../../../utils/interfaces/TokenIF';
+import { targetData } from '../../../utils/state/tradeDataSlice';
 // import { useLocation} from 'react-router-dom'
+
+interface currentPoolInfo {
+    tokenA: TokenIF;
+    tokenB: TokenIF;
+    baseToken: TokenIF;
+    quoteToken: TokenIF;
+    didUserFlipDenom: boolean;
+    isDenomBase: boolean;
+    advancedMode: boolean;
+    isTokenAPrimary: boolean;
+    primaryQuantity: string;
+    isTokenAPrimaryRange: boolean;
+    primaryQuantityRange: string;
+    limitPrice: string;
+    advancedLowTick: number;
+    advancedHighTick: number;
+    simpleRangeWidth: number;
+    slippageTolerance: number;
+    activeChartPeriod: number;
+    targetData: targetData[];
+    pinnedMaxPriceDisplayTruncated: number;
+    pinnedMinPriceDisplayTruncated: number;
+}
 
 interface IFooterProps {
     lastBlockNumber: number;
     userIsOnline: boolean;
     favePools: PoolIF[];
+    currentPool: currentPoolInfo;
 }
 
 const pageBlockSign = <div className={styles.page_block_sign}></div>;
 
 export default function PageFooter(props: IFooterProps) {
     const [chatStatus, setChatStatus] = useState(false);
-    const { userIsOnline, lastBlockNumber, favePools } = props;
+    const { userIsOnline, lastBlockNumber, favePools, currentPool } = props;
+
     return (
         <footer data-testid={'page-footer'} className={styles.footer}>
             {userIsOnline ? '' : 'Offline'}
@@ -25,6 +52,7 @@ export default function PageFooter(props: IFooterProps) {
                 onClose={() => setChatStatus(false)}
                 chatStatus={chatStatus}
                 favePools={favePools}
+                currentPool={currentPool}
             />
             <a onClick={() => setChatStatus(!chatStatus)}>Chat</a>
             <a href='#'>
