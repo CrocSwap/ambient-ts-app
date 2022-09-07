@@ -58,6 +58,7 @@ interface TradeChartsPropsIF {
         chainId: string,
         poolId: number,
     ) => void;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     liquidityData: any;
     isAdvancedModeActive: boolean | undefined;
     simpleRangeWidth: number | undefined;

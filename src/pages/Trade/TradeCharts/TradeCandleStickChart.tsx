@@ -1,4 +1,4 @@
-import { DetailedHTMLProps, HTMLAttributes, useEffect, useMemo, useState } from 'react';
+import { DetailedHTMLProps, HTMLAttributes, useMemo } from 'react';
 import { CandleData, CandlesByPoolAndDuration } from '../../../utils/state/graphDataSlice';
 import { targetData } from '../../../utils/state/tradeDataSlice';
 import Chart from '../../Chart/Chart';
@@ -36,7 +36,7 @@ interface ChartData {
     pinnedMinPriceDisplayTruncated: number | undefined;
     pinnedMaxPriceDisplayTruncated: number | undefined;
     truncatedPoolPrice: number | undefined;
-    spotPriceDisplay: number | undefined;
+    spotPriceDisplay: string | undefined;
     setCurrentData: React.Dispatch<React.SetStateAction<CandleChartData | undefined>>;
 }
 

@@ -933,7 +933,7 @@ export default function Chart(props: ChartData) {
                             dispatch(setSimpleRangeWidth(Math.round(percentage)));
                         }
                     } else {
-                        dispatch(setSimpleRangeWidth(simpleRangeWidth!));
+                        dispatch(setSimpleRangeWidth(simpleRangeWidth ? simpleRangeWidth : 1));
                     }
                 }
             }
