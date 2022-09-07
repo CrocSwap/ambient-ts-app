@@ -1,6 +1,6 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
-import swapParams from '../../utils/classes/swapParams';
+// import swapParams from '../../utils/classes/swapParams';
 
 /**     Instructions to Use This Hook
  * 
@@ -11,7 +11,9 @@ import swapParams from '../../utils/classes/swapParams';
  *      5. For the URL pathway, return an instance of the imported class.
  */
 
-export const useUrlParams = (module: string) => {
+export const useUrlParams = (
+    // module: string
+) => {
     // get URL parameters, empty string if undefined
     const { params } = useParams() ?? '';
 
@@ -31,20 +33,35 @@ export const useUrlParams = (module: string) => {
             // remove tuples with trisomy issues
             .filter(par => par.length === 2);
         // router to feed parameters into the correct object constructor
-        const makeParams = (input: string[][]) => {
-            switch (module) {
-                // swap module
-                case 'swap':
-                    return new swapParams(input);
-                // default pathway (considered an error pathway)
-                default:
-                    console.warn(`Unrecognized URL pathway in useUrlParams() hook. Received value <<${module}>>. Refer to useUrlParams.ts for troubleshooting. Ensure that the hook was called with a value for parameter module recognized in func makeParams(). Triggering empty return.`);
-                    return;
-            }
-        }
+        // const makeParams = (input: string[][]) => {
+        //     switch (module) {
+        //         // swap module
+        //         case 'swap':
+        //             return new swapParams(input);
+        //         // default pathway (considered an error pathway)
+        //         default:
+        //             console.warn(`Unrecognized URL pathway in useUrlParams() hook. Received value <<${module}>>. Refer to useUrlParams.ts for troubleshooting. Ensure that the hook was called with a value for parameter module recognized in func makeParams(). Triggering empty return.`);
+        //             return;
+        //     }
+        // }
         // return the correct parameters object for URL pathway
-        return makeParams(paramsArray);
+        return paramsArray;
     }, []);
 
-    return urlParams;
+    // useEffect to switch chains if necessary
+
+    // useEffect() to update token pair
+    useEffect(() => {
+        console.log(urlParams);
+        urlParams.forEach(param => console.log(param));
+        const tokenA = urlParams.find(param => param[0] === 'tokenA');
+        const addrTokenA = tokenA
+            ? tokenA[1]
+            : '0x0000000000000000000000000000000000000000';
+        const tokenB = urlParams.find(param => param[0] === 'tokenB');
+        const addrTokenB = tokenB
+            ? tokenB[1]
+            : '0x0000000000000000000000000000000000000000';
+        console.log({addrTokenA, addrTokenB});
+    }, []);
 }

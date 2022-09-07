@@ -81,10 +81,9 @@ export default function Swap(props: SwapPropsIF) {
 
     const [isModalOpen, openModal, closeModal] = useModal();
 
-    const urlParams = useUrlParams('swap');
-    console.log({urlParams});
-
     const dispatch = useAppDispatch();
+
+    useUrlParams();
 
     const [isRelativeModalOpen, closeRelativeModal] = useRelativeModal();
 
