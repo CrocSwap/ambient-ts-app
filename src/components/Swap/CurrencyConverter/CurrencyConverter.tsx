@@ -208,7 +208,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                       )
                     : undefined;
 
-            console.log({ impact });
+            // console.log({ impact });
 
             rawTokenBQty = impact ? parseFloat(impact.buyQty) : undefined;
 
@@ -216,10 +216,27 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
             //     ? (1 / poolPriceDisplay) * parseFloat(input)
             //     : poolPriceDisplay * parseFloat(input);
         } else {
-            rawTokenBQty = isSellTokenBase
-                ? (1 / poolPriceDisplay) * parseFloat(tokenAQtyLocal)
-                : poolPriceDisplay * parseFloat(tokenAQtyLocal);
             handleSwapButtonMessage(parseFloat(tokenAQtyLocal));
+
+            const impact =
+                tokenAQtyLocal !== ''
+                    ? await calcImpact(
+                          true,
+                          crocEnv,
+                          tokenPair.dataTokenA.address,
+                          tokenPair.dataTokenB.address,
+                          slippageTolerancePercentage,
+                          tokenAQtyLocal,
+                      )
+                    : undefined;
+
+            // console.log({ impact });
+
+            rawTokenBQty = impact ? parseFloat(impact.buyQty) : undefined;
+
+            // rawTokenBQty = isSellTokenBase
+            //     ? (1 / poolPriceDisplay) * parseFloat(tokenAQtyLocal)
+            //     : poolPriceDisplay * parseFloat(tokenAQtyLocal);
         }
         const truncatedTokenBQty = rawTokenBQty
             ? rawTokenBQty < 100000
@@ -239,6 +256,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
 
     const handleTokenAChangeClick = async (value: string) => {
         if (!poolPriceDisplay) return;
+        if (!crocEnv) return;
         let rawTokenBQty;
         const tokenAInputField = document.getElementById('sell-quantity');
         if (tokenAInputField) {
@@ -251,20 +269,55 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
             setIsTokenAPrimaryLocal(true);
             dispatch(setIsTokenAPrimary(true));
             dispatch(setPrimaryQuantity(input));
-
-            rawTokenBQty = isSellTokenBase
-                ? (1 / poolPriceDisplay) * parseFloat(input)
-                : poolPriceDisplay * parseFloat(input);
-
             handleSwapButtonMessage(parseFloat(input));
+
+            const impact =
+                input !== ''
+                    ? await calcImpact(
+                          true,
+                          crocEnv,
+                          tokenPair.dataTokenA.address,
+                          tokenPair.dataTokenB.address,
+                          slippageTolerancePercentage,
+                          input,
+                      )
+                    : undefined;
+
+            // console.log({ impact });
+
+            rawTokenBQty = impact ? parseFloat(impact.buyQty) : undefined;
+
+            // rawTokenBQty = isSellTokenBase
+            //     ? (1 / poolPriceDisplay) * parseFloat(input)
+            //     : poolPriceDisplay * parseFloat(input);
         } else {
-            rawTokenBQty = isSellTokenBase
-                ? (1 / poolPriceDisplay) * parseFloat(tokenAQtyLocal)
-                : poolPriceDisplay * parseFloat(tokenAQtyLocal);
             handleSwapButtonMessage(parseFloat(tokenAQtyLocal));
+
+            const impact =
+                tokenAQtyLocal !== ''
+                    ? await calcImpact(
+                          true,
+                          crocEnv,
+                          tokenPair.dataTokenA.address,
+                          tokenPair.dataTokenB.address,
+                          slippageTolerancePercentage,
+                          tokenAQtyLocal,
+                      )
+                    : undefined;
+
+            // console.log({ impact });
+
+            rawTokenBQty = impact ? parseFloat(impact.buyQty) : undefined;
+
+            // rawTokenBQty = isSellTokenBase
+            //     ? (1 / poolPriceDisplay) * parseFloat(tokenAQtyLocal)
+            //     : poolPriceDisplay * parseFloat(tokenAQtyLocal);
         }
-        const truncatedTokenBQty =
-            rawTokenBQty < 100000 ? rawTokenBQty.toPrecision(6) : truncateDecimals(rawTokenBQty, 0);
+        const truncatedTokenBQty = rawTokenBQty
+            ? rawTokenBQty < 100000
+                ? rawTokenBQty.toPrecision(6)
+                : truncateDecimals(rawTokenBQty, 0)
+            : '';
         // const truncatedTokenBQty = truncateDecimals(rawTokenBQty, tokenBDecimals).toString();
 
         setTokenBQtyLocal(truncatedTokenBQty);
@@ -278,6 +331,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
 
     const handleTokenBChangeEvent = async (evt?: ChangeEvent<HTMLInputElement>) => {
         if (!poolPriceDisplay) return;
+        if (!crocEnv) return;
 
         let rawTokenAQty;
 
@@ -289,18 +343,54 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
             dispatch(setIsTokenAPrimary(false));
             dispatch(setPrimaryQuantity(input));
 
-            rawTokenAQty = isSellTokenBase
-                ? poolPriceDisplay * parseFloat(input)
-                : (1 / poolPriceDisplay) * parseFloat(input);
-        } else {
-            rawTokenAQty = isSellTokenBase
-                ? poolPriceDisplay * parseFloat(tokenBQtyLocal)
-                : (1 / poolPriceDisplay) * parseFloat(tokenBQtyLocal);
-        }
-        handleSwapButtonMessage(rawTokenAQty);
+            const impact =
+                input !== ''
+                    ? await calcImpact(
+                          false,
+                          crocEnv,
+                          tokenPair.dataTokenA.address,
+                          tokenPair.dataTokenB.address,
+                          slippageTolerancePercentage,
+                          input,
+                      )
+                    : undefined;
 
-        const truncatedTokenAQty =
-            rawTokenAQty < 100000 ? rawTokenAQty.toPrecision(6) : truncateDecimals(rawTokenAQty, 0);
+            // console.log({ impact });
+
+            rawTokenAQty = impact ? parseFloat(impact.sellQty) : undefined;
+
+            rawTokenAQty ? handleSwapButtonMessage(rawTokenAQty) : null;
+            // rawTokenAQty = isSellTokenBase
+            //     ? poolPriceDisplay * parseFloat(input)
+            //     : (1 / poolPriceDisplay) * parseFloat(input);
+        } else {
+            const impact =
+                tokenBQtyLocal !== ''
+                    ? await calcImpact(
+                          false,
+                          crocEnv,
+                          tokenPair.dataTokenA.address,
+                          tokenPair.dataTokenB.address,
+                          slippageTolerancePercentage,
+                          tokenBQtyLocal,
+                      )
+                    : undefined;
+
+            // console.log({ impact });
+
+            rawTokenAQty = impact ? parseFloat(impact.sellQty) : undefined;
+            rawTokenAQty ? handleSwapButtonMessage(rawTokenAQty) : null;
+
+            // rawTokenAQty = isSellTokenBase
+            //     ? poolPriceDisplay * parseFloat(tokenBQtyLocal)
+            //     : (1 / poolPriceDisplay) * parseFloat(tokenBQtyLocal);
+        }
+
+        const truncatedTokenAQty = rawTokenAQty
+            ? rawTokenAQty < 100000
+                ? rawTokenAQty.toPrecision(6)
+                : truncateDecimals(rawTokenAQty, 0)
+            : '';
         // const truncatedTokenAQty = truncateDecimals(rawTokenAQty, tokenADecimals).toString();
 
         setTokenAQtyLocal(truncatedTokenAQty);
