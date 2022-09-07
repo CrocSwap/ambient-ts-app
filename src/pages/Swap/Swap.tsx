@@ -44,6 +44,8 @@ interface SwapPropsIF {
     lastBlockNumber: number;
     baseTokenBalance: string;
     quoteTokenBalance: string;
+    baseTokenDexBalance: string;
+    quoteTokenDexBalance: string;
     isSellTokenBase: boolean;
     tokenPair: TokenPairIF;
     poolPriceDisplay: number | undefined;
@@ -68,6 +70,8 @@ export default function Swap(props: SwapPropsIF) {
         gasPriceinGwei,
         baseTokenBalance,
         quoteTokenBalance,
+        baseTokenDexBalance,
+        quoteTokenDexBalance,
         isSellTokenBase,
         tokenPair,
         poolPriceDisplay,
@@ -193,6 +197,8 @@ export default function Swap(props: SwapPropsIF) {
         // );
 
         console.log({ priceImpact });
+        console.log({ isWithdrawFromDexChecked });
+        console.log({ isSaveAsDexSurplusChecked });
 
         let tx;
         try {
@@ -202,13 +208,13 @@ export default function Swap(props: SwapPropsIF) {
                       .for(buyTokenAddress, {
                           slippage: slippageTolerancePercentage,
                       })
-                      .swap()
+                      .swap({ surplus: [isWithdrawFromDexChecked, isSaveAsDexSurplusChecked] })
                 : env
                       .buy(buyTokenAddress, qty)
                       .with(sellTokenAddress, {
                           slippage: slippageTolerancePercentage,
                       })
-                      .swap())),
+                      .swap({ surplus: [isWithdrawFromDexChecked, isSaveAsDexSurplusChecked] }))),
                 setNewSwapTransactionHash(tx?.hash);
         } catch (error) {
             setTxErrorCode(error?.code);
@@ -363,6 +369,8 @@ export default function Swap(props: SwapPropsIF) {
                             ).toString()}
                             baseTokenBalance={baseTokenBalance}
                             quoteTokenBalance={quoteTokenBalance}
+                            baseTokenDexBalance={baseTokenDexBalance}
+                            quoteTokenDexBalance={quoteTokenDexBalance}
                             tokenAInputQty={tokenAInputQty}
                             tokenBInputQty={tokenBInputQty}
                             setTokenAInputQty={setTokenAInputQty}
