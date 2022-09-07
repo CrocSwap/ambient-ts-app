@@ -2,7 +2,7 @@ import styles from './CurrencySelector.module.css';
 import CurrencyQuantity from '../CurrencyQuantity/CurrencyQuantity';
 import { RiArrowDownSLine, RiListCheck } from 'react-icons/ri';
 // import Toggle from '../../Global/Toggle/Toggle';
-import { useState, ChangeEvent, Dispatch, SetStateAction } from 'react';
+import { useState, ChangeEvent, Dispatch, SetStateAction, useEffect } from 'react';
 import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import Modal from '../../../components/Global/Modal/Modal';
@@ -63,6 +63,12 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
 
     const thisToken = fieldId === 'sell' ? tokenPair.dataTokenA : tokenPair.dataTokenB;
 
+    useEffect(() => {
+        if (parseFloat(tokenADexBalance) <= 0) {
+            setIsWithdrawFromDexChecked(false);
+        }
+    }, [tokenADexBalance]);
+
     const WithdrawTokensContent = (
         <div className={styles.surplus_toggle}>
             {fieldId === 'sell' ? 'Use Surplus' : 'Add to Surplus'}
@@ -85,7 +91,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                     isOn={isWithdrawFromDexChecked}
                     handleToggle={() => setIsWithdrawFromDexChecked(!isWithdrawFromDexChecked)}
                     id='sell_token_withdrawal'
-                    disabled={true}
+                    disabled={parseFloat(tokenADexBalance) <= 0}
                 />
             ) : (
                 <Toggle2
