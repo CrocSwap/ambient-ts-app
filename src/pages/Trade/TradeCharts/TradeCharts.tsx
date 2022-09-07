@@ -66,6 +66,17 @@ interface TradeChartsPropsIF {
     spotPriceDisplay: number | undefined;
 }
 
+export interface CandleChartData {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    date: any;
+    open: number;
+    high: number;
+    low: number;
+    close: number;
+    time: number;
+    allSwaps: unknown;
+}
+
 // React functional component
 export default function TradeCharts(props: TradeChartsPropsIF) {
     const {
@@ -506,6 +517,38 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
 
     // END OF TIME FRAME CONTENT--------------------------------------------------------------
 
+    // CURRENT DATA INFO----------------------------------------------------------------
+    const [currentData, setCurrentData] = useState<CandleChartData>();
+
+    function formattedCurrentData(data: number): string {
+        return data
+            ? data.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              })
+            : '';
+    }
+
+    const currentDataInfo = (
+        <div className={styles.current_data_info}>
+            {denomInBase ? tradeData.baseToken.symbol : tradeData.quoteToken.symbol} /{' '}
+            {denomInBase ? tradeData.quoteToken.symbol : tradeData.baseToken.symbol}·{' '}
+            {activeTimeFrame} ·{' '}
+            {currentData
+                ? 'O: ' +
+                  formattedCurrentData(currentData.open) +
+                  ' H: ' +
+                  formattedCurrentData(currentData.high) +
+                  ' L: ' +
+                  formattedCurrentData(currentData.low) +
+                  ' C: ' +
+                  formattedCurrentData(currentData.close)
+                : ''}
+        </div>
+    );
+
+    // END OF CURRENT DATA INFO--------------------------------------------------------------
+
     // CANDLE STICK DATA---------------------------------------------------
     const chartData = usePoolChartData('0x8ad599c3a0ff1de082011efddc58f1908eb6e6d8'); // ETH/USDC pool address
 
@@ -568,6 +611,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                 {tokenInfo}
                 {timeFrameContent}
                 {/* {liquidityTypeContent} */}
+                {currentDataInfo}
             </div>
             {graphIsLoading ? (
                 <TradeChartsLoading />
@@ -592,6 +636,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                         pinnedMaxPriceDisplayTruncated={props.pinnedMaxPriceDisplayTruncated}
                         spotPriceDisplay={props.spotPriceDisplay}
                         truncatedPoolPrice={parseFloat(truncatedPoolPrice)}
+                        setCurrentData={setCurrentData}
                     />
                 </div>
             )}
