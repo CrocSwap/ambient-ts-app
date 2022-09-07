@@ -21,6 +21,8 @@ interface CurrencySelectorProps {
     nativeBalance: string;
     tokenABalance: string;
     tokenBBalance: string;
+    tokenADexBalance: string;
+    tokenBDexBalance: string;
     isWithdrawFromDexChecked: boolean;
     setIsWithdrawFromDexChecked: Dispatch<SetStateAction<boolean>>;
     isSaveAsDexSurplusChecked: boolean;
@@ -49,6 +51,8 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
         setIsSaveAsDexSurplusChecked,
         tokenABalance,
         tokenBBalance,
+        tokenADexBalance,
+        tokenBDexBalance,
         reverseTokens,
         activeTokenListsChanged,
         indicateActiveTokenListsChanged,
@@ -147,9 +151,23 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
             ? parseFloat(tokenBBalance).toLocaleString()
             : '0';
 
-    const surplusBalance = 0;
-    const surplusBalanceNonLocaleString = surplusBalance.toString();
-    const surplusBalanceLocaleString = surplusBalance.toLocaleString();
+    const surplusBalanceNonLocaleString =
+        props.sellToken && tokenADexBalance !== ''
+            ? parseFloat(tokenADexBalance).toString()
+            : !props.sellToken && tokenBDexBalance !== ''
+            ? parseFloat(tokenBDexBalance).toString()
+            : '0';
+
+    const surplusBalanceLocaleString =
+        props.sellToken && tokenADexBalance !== ''
+            ? parseFloat(tokenADexBalance).toLocaleString()
+            : !props.sellToken && tokenBDexBalance !== ''
+            ? parseFloat(tokenBDexBalance).toLocaleString()
+            : '0';
+
+    // const surplusBalance = 0;
+    // const surplusBalanceNonLocaleString = surplusBalance.toString();
+    // const surplusBalanceLocaleString = surplusBalance.toLocaleString();
 
     return (
         <div className={styles.swapbox}>

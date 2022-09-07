@@ -30,6 +30,8 @@ interface CurrencyConverterPropsIF {
     nativeBalance: string;
     baseTokenBalance: string;
     quoteTokenBalance: string;
+    baseTokenDexBalance: string;
+    quoteTokenDexBalance: string;
     tokenAInputQty: string;
     tokenBInputQty: string;
     setTokenAInputQty: Dispatch<SetStateAction<string>>;
@@ -64,6 +66,8 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         setSwapAllowed,
         baseTokenBalance,
         quoteTokenBalance,
+        baseTokenDexBalance,
+        quoteTokenDexBalance,
         setSwapButtonErrorMessage,
         setTokenAInputQty,
         setTokenBInputQty,
@@ -93,6 +97,8 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
 
     const tokenABalance = isSellTokenBase ? baseTokenBalance : quoteTokenBalance;
     const tokenBBalance = isSellTokenBase ? quoteTokenBalance : baseTokenBalance;
+    const tokenADexBalance = isSellTokenBase ? baseTokenDexBalance : quoteTokenDexBalance;
+    const tokenBDexBalance = isSellTokenBase ? quoteTokenDexBalance : baseTokenDexBalance;
 
     // const tokenADecimals = tokenPair.dataTokenA.decimals;
     // const tokenBDecimals = tokenPair.dataTokenB.decimals;
@@ -466,6 +472,8 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                 nativeBalance={props.nativeBalance}
                 tokenABalance={tokenABalance}
                 tokenBBalance={tokenBBalance}
+                tokenADexBalance={tokenADexBalance}
+                tokenBDexBalance={tokenBDexBalance}
                 isWithdrawFromDexChecked={isWithdrawFromDexChecked}
                 setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
                 isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
@@ -492,6 +500,8 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                 nativeBalance={props.nativeBalance}
                 tokenABalance={tokenABalance}
                 tokenBBalance={tokenBBalance}
+                tokenADexBalance={tokenADexBalance}
+                tokenBDexBalance={tokenBDexBalance}
                 isWithdrawFromDexChecked={isWithdrawFromDexChecked}
                 setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
                 isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}

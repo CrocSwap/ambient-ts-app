@@ -1063,6 +1063,9 @@ export default function App() {
 
     const [baseTokenBalance, setBaseTokenBalance] = useState<string>('');
     const [quoteTokenBalance, setQuoteTokenBalance] = useState<string>('');
+    const [baseTokenDexBalance, setBaseTokenDexBalance] = useState<string>('');
+    const [quoteTokenDexBalance, setQuoteTokenDexBalance] = useState<string>('');
+
     const [poolPriceNonDisplay, setPoolPriceNonDisplay] = useState<number | undefined>(undefined);
     const [poolPriceDisplay, setPoolPriceDisplay] = useState<number | undefined>(undefined);
 
@@ -1129,10 +1132,18 @@ export default function App() {
                     .walletDisplay(account)
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     .then((bal: any) => setBaseTokenBalance(bal));
+                croc.token(tradeData.baseToken.address)
+                    .balanceDisplay(account)
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    .then((bal: any) => setBaseTokenDexBalance(bal));
                 croc.token(tradeData.quoteToken.address)
                     .walletDisplay(account)
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     .then((bal: any) => setQuoteTokenBalance(bal));
+                croc.token(tradeData.quoteToken.address)
+                    .balanceDisplay(account)
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    .then((bal: any) => setQuoteTokenDexBalance(bal));
             }
         })();
     }, [
@@ -1663,6 +1674,8 @@ export default function App() {
         lastBlockNumber: lastBlockNumber,
         baseTokenBalance: baseTokenBalance,
         quoteTokenBalance: quoteTokenBalance,
+        baseTokenDexBalance: baseTokenDexBalance,
+        quoteTokenDexBalance: quoteTokenDexBalance,
         isSellTokenBase: isTokenABase,
         tokenPair: tokenPair,
         poolPriceDisplay: poolPriceDisplay,
@@ -1688,6 +1701,8 @@ export default function App() {
         lastBlockNumber: lastBlockNumber,
         baseTokenBalance: baseTokenBalance,
         quoteTokenBalance: quoteTokenBalance,
+        baseTokenDexBalance: baseTokenDexBalance,
+        quoteTokenDexBalance: quoteTokenDexBalance,
         isSellTokenBase: isTokenABase,
         tokenPair: tokenPair,
         poolPriceDisplay: poolPriceDisplay,

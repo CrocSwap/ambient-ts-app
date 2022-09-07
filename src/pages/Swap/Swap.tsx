@@ -44,6 +44,8 @@ interface SwapPropsIF {
     lastBlockNumber: number;
     baseTokenBalance: string;
     quoteTokenBalance: string;
+    baseTokenDexBalance: string;
+    quoteTokenDexBalance: string;
     isSellTokenBase: boolean;
     tokenPair: TokenPairIF;
     poolPriceDisplay: number | undefined;
@@ -68,6 +70,8 @@ export default function Swap(props: SwapPropsIF) {
         gasPriceinGwei,
         baseTokenBalance,
         quoteTokenBalance,
+        baseTokenDexBalance,
+        quoteTokenDexBalance,
         isSellTokenBase,
         tokenPair,
         poolPriceDisplay,
@@ -365,6 +369,8 @@ export default function Swap(props: SwapPropsIF) {
                             ).toString()}
                             baseTokenBalance={baseTokenBalance}
                             quoteTokenBalance={quoteTokenBalance}
+                            baseTokenDexBalance={baseTokenDexBalance}
+                            quoteTokenDexBalance={quoteTokenDexBalance}
                             tokenAInputQty={tokenAInputQty}
                             tokenBInputQty={tokenBInputQty}
                             setTokenAInputQty={setTokenAInputQty}
