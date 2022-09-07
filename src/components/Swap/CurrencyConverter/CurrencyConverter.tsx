@@ -11,12 +11,13 @@ import {
 import { useAppDispatch, useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import truncateDecimals from '../../../utils/data/truncateDecimals';
 import TokensArrow from '../../Global/TokensArrow/TokensArrow';
-import { CrocEnv } from '@crocswap-libs/sdk';
+import { CrocEnv, CrocImpact } from '@crocswap-libs/sdk';
 import { ethers } from 'ethers';
 import { calcImpact } from '../../../App/functions/calcImpact';
 interface CurrencyConverterPropsIF {
     provider: ethers.providers.Provider | undefined;
     slippageTolerancePercentage: number;
+    setPriceImpact: Dispatch<SetStateAction<CrocImpact | undefined>>;
     isSellTokenBase: boolean;
     tokenPair: TokenPairIF;
     tokensBank: Array<TokenIF>;
@@ -47,6 +48,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
     const {
         provider,
         slippageTolerancePercentage,
+        setPriceImpact,
         tokenPair,
         // isSellTokenBase,
         tokensBank,
@@ -210,6 +212,8 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
 
             // console.log({ impact });
 
+            impact ? setPriceImpact(impact) : null;
+
             rawTokenBQty = impact ? parseFloat(impact.buyQty) : undefined;
 
             // rawTokenBQty = isSellTokenBase
@@ -229,6 +233,8 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                           tokenAQtyLocal,
                       )
                     : undefined;
+
+            impact ? setPriceImpact(impact) : null;
 
             // console.log({ impact });
 
@@ -282,6 +288,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                           input,
                       )
                     : undefined;
+            impact ? setPriceImpact(impact) : null;
 
             // console.log({ impact });
 
@@ -304,6 +311,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                           tokenAQtyLocal,
                       )
                     : undefined;
+            impact ? setPriceImpact(impact) : null;
 
             // console.log({ impact });
 
@@ -354,6 +362,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                           input,
                       )
                     : undefined;
+            impact ? setPriceImpact(impact) : null;
 
             // console.log({ impact });
 
@@ -375,6 +384,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                           tokenBQtyLocal,
                       )
                     : undefined;
+            impact ? setPriceImpact(impact) : null;
 
             // console.log({ impact });
 
