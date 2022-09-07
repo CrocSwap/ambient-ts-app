@@ -193,6 +193,8 @@ export default function Swap(props: SwapPropsIF) {
         // );
 
         console.log({ priceImpact });
+        console.log({ isWithdrawFromDexChecked });
+        console.log({ isSaveAsDexSurplusChecked });
 
         let tx;
         try {
@@ -202,13 +204,13 @@ export default function Swap(props: SwapPropsIF) {
                       .for(buyTokenAddress, {
                           slippage: slippageTolerancePercentage,
                       })
-                      .swap()
+                      .swap({ surplus: [isWithdrawFromDexChecked, isSaveAsDexSurplusChecked] })
                 : env
                       .buy(buyTokenAddress, qty)
                       .with(sellTokenAddress, {
                           slippage: slippageTolerancePercentage,
                       })
-                      .swap())),
+                      .swap({ surplus: [isWithdrawFromDexChecked, isSaveAsDexSurplusChecked] }))),
                 setNewSwapTransactionHash(tx?.hash);
         } catch (error) {
             setTxErrorCode(error?.code);
