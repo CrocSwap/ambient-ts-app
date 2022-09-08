@@ -32,6 +32,7 @@ import { addReceipt } from '../../utils/state/receiptDataSlice';
 // import { calcImpact } from '../../App/functions/calcImpact';
 
 interface SwapPropsIF {
+    crocEnv: CrocEnv | undefined;
     importedTokens: Array<TokenIF>;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     searchableTokens: Array<TokenIF>;
@@ -59,6 +60,7 @@ interface SwapPropsIF {
 
 export default function Swap(props: SwapPropsIF) {
     const {
+        crocEnv,
         importedTokens,
         setImportedTokens,
         searchableTokens,
@@ -351,6 +353,7 @@ export default function Swap(props: SwapPropsIF) {
                         transition={{ duration: 0.5 }}
                     >
                         <CurrencyConverter
+                            crocEnv={crocEnv}
                             provider={provider}
                             slippageTolerancePercentage={slippageTolerancePercentage}
                             setPriceImpact={setPriceImpact}

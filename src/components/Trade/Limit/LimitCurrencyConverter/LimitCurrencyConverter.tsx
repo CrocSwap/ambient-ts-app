@@ -301,9 +301,6 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                     ? limitRateNumber * parseFloat(tokenBQtyLocal)
                     : (1 / limitRateNumber) * parseFloat(tokenBQtyLocal);
             }
-            // rawTokenAQty = isDenominationInBase
-            //     ? (1 / limitRateNumber) * parseFloat(tokenBQtyLocal)
-            //     : limitRateNumber * parseFloat(tokenBQtyLocal);
         }
         handleLimitButtonMessage(rawTokenAQty);
         const truncatedTokenAQty = truncateDecimals(rawTokenAQty, tokenADecimals).toString();
