@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { useMoralisWeb3Api } from 'react-moralis';
 import { defaultTokens } from '../../utils/data/defaultTokens';
 import { ethers } from 'ethers';
+import { logDOM } from '@testing-library/react';
 // import swapParams from '../../utils/classes/swapParams';
 
 /**     Instructions to Use This Hook
@@ -56,7 +57,7 @@ export const useUrlParams = (
         return paramsArray;
     }, []);
 
-    console.log(urlParams);
+    // console.log(urlParams);
 
     const chainToUse = useMemo(() => {
         const chainParam = urlParams.find(param => param[0] === 'chain');
@@ -69,7 +70,26 @@ export const useUrlParams = (
             tkn.chainId === parseInt(chainToUse)
         )
     ), [chainToUse]);
-    console.log(nativeToken);
+    // console.log(nativeToken);
+
+    // assume this will NOT get the zero address
+    const fetchAndFormatTokenData = (addr: string) => {
+        if (addr === ethers.constants.AddressZero) return nativeToken;
+        const promise = Web3Api.token.getTokenMetadata({
+            chain: chainToUse as '0x1', addresses: [addr]
+        });
+        const rawData = Promise.resolve(promise)
+            .then(res => res[0])
+            .then(res => ({
+                name: res.name,
+                address: res.address,
+                symbol: res.symbol,
+                decimals: res.decimals,
+                logoURI: res.logo,
+                fromList: 'urlParam'
+            }));
+        return rawData;
+    }
 
     // useEffect to switch chains if necessary
 
@@ -82,28 +102,12 @@ export const useUrlParams = (
                 : ethers.constants.AddressZero;
             return tokenAddress;
         }
-
-        const addrTokenA = getAddress('tokenA');
-        const addrTokenB = getAddress('tokenB');
-
         // TODO: this needs to be gatekept so it runs only once
         if (isInitialized) {
-
-            // zero address => fetch data and format it
-            //     this is a promise though...
-            // not zero address => use native token data
-
-            const dataTknA = Web3Api.token.getTokenMetadata({
-                chain: chainId as '0x1', addresses: [addrTokenA]
-            });
-
-            const dataTknB = Web3Api.token.getTokenMetadata({
-                chain: chainId as '0x1', addresses: [addrTokenB]
-            });
-            Promise.resolve(dataTknB)
-                .then(res => console.log(res));
-
-            console.log({dataTknA, dataTknB});
+            Promise.all([
+                fetchAndFormatTokenData(getAddress('tokenA')),
+                fetchAndFormatTokenData(getAddress('tokenB'))
+            ]).then(res => console.log(res));
         }
-    }, []);
+    }, [isInitialized]);
 }
