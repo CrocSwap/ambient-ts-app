@@ -1927,6 +1927,7 @@ export default function App() {
                             path='trade'
                             element={
                                 <Trade
+                                    crocEnv={crocEnv}
                                     provider={provider}
                                     baseTokenAddress={baseTokenAddress}
                                     quoteTokenAddress={quoteTokenAddress}

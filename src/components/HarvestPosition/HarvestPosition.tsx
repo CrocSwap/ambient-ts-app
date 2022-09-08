@@ -1,5 +1,5 @@
 import styles from './HarvestPosition.module.css';
-import HarvestPositionWidth from './HarvestPositionWidth/HarvestPositionWidth';
+// import HarvestPositionWidth from './HarvestPositionWidth/HarvestPositionWidth';
 import HarvestPositionHeader from './HarvestPositionHeader/HarvestPositionHeader';
 import HarvestPositionInfo from './HarvestPositionInfo/HarvestPositionInfo';
 import HarvestPositionButton from './HarvestPositionButton/HarvestPositionButton';
@@ -11,8 +11,8 @@ import { FiExternalLink } from 'react-icons/fi';
 // import HarvestPositionSettings from './HarvestPositionSettings/HarvestPositionSettings';
 import { RiListSettingsLine } from 'react-icons/ri';
 import { BsArrowLeft } from 'react-icons/bs';
-// import { PositionIF } from '../../utils/interfaces/PositionIF';
-// import { ethers } from 'ethers';
+import { PositionIF } from '../../utils/interfaces/PositionIF';
+import { ethers } from 'ethers';
 // import { CrocEnv } from '@crocswap-libs/sdk';
 import Button from '../Global/Button/Button';
 
@@ -21,39 +21,46 @@ import {
     CircleLoader,
     CircleLoaderFailed,
 } from '../Global/LoadingAnimations/CircleLoader/CircleLoader';
+import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 
-// interface IHarvestPositionProps {
-//     provider: ethers.providers.Provider;
-//     chainId: string;
-//     poolIdx: number;
-//     user: string;
-//     bidTick: number;
-//     askTick: number;
-//     baseTokenAddress: string;
-//     quoteTokenAddress: string;
-//     isPositionInRange: boolean;
-//     isAmbient: boolean;
-//     baseTokenSymbol: string;
-//     quoteTokenSymbol: string;
-//     baseTokenLogoURI: string;
-//     quoteTokenLogoURI: string;
-//     isDenomBase: boolean;
-//     lastBlockNumber: number;
-//     position: PositionIF;
-// }
-export default function HarvestPosition() {
-    // const {
-    //     chainId,
-    //     poolIdx,
-    //     user,
-    //     bidTick,
-    //     askTick,
-    //     baseTokenAddress,
-    //     quoteTokenAddress,
-    //     provider,
-    //     lastBlockNumber,
-    //     position,
-    // } = props;
+interface IHarvestPositionProps {
+    crocEnv: CrocEnv | undefined;
+    chainData: ChainSpec;
+    provider: ethers.providers.Provider;
+    chainId: string;
+    poolIdx: number;
+    user: string;
+    bidTick: number;
+    askTick: number;
+    baseTokenAddress: string;
+    quoteTokenAddress: string;
+    isPositionInRange: boolean;
+    isAmbient: boolean;
+    baseTokenSymbol: string;
+    quoteTokenSymbol: string;
+    baseTokenLogoURI: string;
+    quoteTokenLogoURI: string;
+    isDenomBase: boolean;
+    lastBlockNumber: number;
+    position: PositionIF;
+}
+export default function HarvestPosition(props: IHarvestPositionProps) {
+    const {
+        crocEnv,
+        chainData,
+        baseTokenLogoURI,
+        quoteTokenLogoURI,
+        // chainId,
+        // poolIdx,
+        // user,
+        // bidTick,
+        // askTick,
+        // baseTokenAddress,
+        // quoteTokenAddress,
+        // provider,
+        lastBlockNumber,
+        position,
+    } = props;
 
     // settings
     const [showSettings, setShowSettings] = useState(false);
@@ -64,6 +71,8 @@ export default function HarvestPosition() {
         </div>
     );
 
+    // const [removalPercentage, setRemovalPercentage] = useState(100);
+
     const [showConfirmation, setShowConfirmation] = useState(false);
     // eslint-disable-next-line
     const [newHarvestTransactionHash, setNewHarvestTransactionHash] = useState('');
@@ -72,19 +81,90 @@ export default function HarvestPosition() {
     // eslint-disable-next-line
     const [txErrorMessage, setTxErrorMessage] = useState('');
 
-    const harvestFn = () => console.log('harvested');
+    const [feeLiqBaseDecimalCorrected, setFeeLiqBaseDecimalCorrected] = useState<
+        number | undefined
+    >();
+    const [feeLiqQuoteDecimalCorrected, setFeeLiqQuoteDecimalCorrected] = useState<
+        number | undefined
+    >();
+
+    const positionStatsCacheEndpoint = 'https://809821320828123.de:5000/position_stats?';
+
+    useEffect(() => {
+        if (
+            position.chainId &&
+            position.poolIdx &&
+            position.user &&
+            position.base &&
+            position.quote &&
+            position.positionType
+        ) {
+            (async () => {
+                fetch(
+                    positionStatsCacheEndpoint +
+                        new URLSearchParams({
+                            chainId: position.chainId,
+                            user: position.user,
+                            base: position.base,
+                            quote: position.quote,
+                            poolIdx: position.poolIdx.toString(),
+                            bidTick: position.bidTick ? position.bidTick.toString() : '0',
+                            askTick: position.askTick ? position.askTick.toString() : '0',
+                            calcValues: 'true',
+                            positionType: position.positionType,
+                        }),
+                )
+                    .then((response) => response.json())
+                    .then((json) => {
+                        setFeeLiqBaseDecimalCorrected(json?.data?.feesLiqBaseDecimalCorrected);
+                        setFeeLiqQuoteDecimalCorrected(json?.data?.feesLiqQuoteDecimalCorrected);
+                    });
+            })();
+        }
+    }, [lastBlockNumber]);
+
+    const liquiditySlippageTolerance = 1;
+
+    const harvestFn = async () => {
+        console.log('100% of fees to be removed.');
+        setShowConfirmation(true);
+        if (!crocEnv) return;
+        const env = crocEnv;
+        const pool = env.pool(position.base, position.quote);
+        const spotPrice = await pool.displayPrice();
+
+        const lowLimit = spotPrice * (1 - liquiditySlippageTolerance / 100);
+        const highLimit = spotPrice * (1 + liquiditySlippageTolerance / 100);
+
+        if (position.positionType === 'concentrated') {
+            try {
+                const tx = await pool.harvestRange(
+                    [position.bidTick, position.askTick],
+                    [lowLimit, highLimit],
+                );
+                console.log(tx?.hash);
+                setNewHarvestTransactionHash(tx?.hash);
+            } catch (error) {
+                setTxErrorCode(error?.code);
+                setTxErrorMessage(error?.message);
+            }
+        } else {
+            console.log('unsupported position type for harvest');
+        }
+    };
 
     const positionType = 'concentrated';
 
+    const feesGreaterThanZero =
+        feeLiqBaseDecimalCorrected && feeLiqQuoteDecimalCorrected
+            ? feeLiqBaseDecimalCorrected + feeLiqQuoteDecimalCorrected > 0
+            : false;
+
     const harvestButtonOrNull =
-        positionType === 'concentrated' && !showSettings ? (
+        positionType === 'concentrated' && feesGreaterThanZero && !showSettings ? (
             <HarvestPositionButton harvestFn={harvestFn} title={'Harvest Fees'} />
         ) : (
-            <HarvestPositionButton
-                disabled={true}
-                harvestFn={harvestFn}
-                title={'No Fees to Harvest'}
-            />
+            <HarvestPositionButton disabled={true} harvestFn={harvestFn} title={'…'} />
         );
 
     // confirmation modal
@@ -99,6 +179,8 @@ export default function HarvestPosition() {
         </div>
     );
 
+    const etherscanLink = chainData.blockExplorer + 'tx/' + newHarvestTransactionHash;
+
     const removalSuccess = (
         <div className={styles.removal_pending}>
             <div className={styles.completed_animation}>
@@ -106,7 +188,7 @@ export default function HarvestPosition() {
             </div>
             <p>message to be display here</p>
             <a
-                href={newHarvestTransactionHash}
+                href={etherscanLink}
                 target='_blank'
                 rel='noreferrer'
                 className={styles.view_etherscan}
@@ -149,7 +231,7 @@ export default function HarvestPosition() {
         handleConfirmationChange();
     }, [
         transactionApproved,
-        removalDenied,
+        // removalDenied,
         newHarvestTransactionHash,
         txErrorCode,
         showConfirmation,
@@ -179,30 +261,31 @@ export default function HarvestPosition() {
         <>
             <div className={styles.header_container}>
                 <HarvestPositionHeader
-                // isPositionInRange={props.isPositionInRange}
-                // isAmbient={props.isAmbient}
-                // baseTokenSymbol={props.baseTokenSymbol}
-                // quoteTokenSymbol={props.quoteTokenSymbol}
-                // baseTokenLogoURI={props.baseTokenLogoURI}
-                // quoteTokenLogoURI={props.quoteTokenLogoURI}
-                // isDenomBase={props.isDenomBase}
+                    isPositionInRange={props.isPositionInRange}
+                    isAmbient={props.isAmbient}
+                    baseTokenSymbol={props.baseTokenSymbol}
+                    quoteTokenSymbol={props.quoteTokenSymbol}
+                    baseTokenLogoURI={baseTokenLogoURI}
+                    quoteTokenLogoURI={quoteTokenLogoURI}
+                    isDenomBase={props.isDenomBase}
                 />
                 {harvestPositionSetttingIcon}
             </div>
-            <HarvestPositionWidth
-            // removalPercentage={removalPercentage}
-            // setRemovalPercentage={setRemovalPercentage}
-            />
+            {/* <HarvestPositionWidth
+                removalPercentage={removalPercentage}
+                setRemovalPercentage={setRemovalPercentage}
+            /> */}
             <HarvestPositionInfo
-            // baseTokenSymbol={props.baseTokenSymbol}
-            // quoteTokenSymbol={props.quoteTokenSymbol}
-            // baseTokenLogoURI={props.baseTokenLogoURI}
-            // quoteTokenLogoURI={props.quoteTokenLogoURI}
-            // posLiqBaseDecimalCorrected={posLiqBaseDecimalCorrected}
-            // posLiqQuoteDecimalCorrected={posLiqQuoteDecimalCorrected}
-            // feeLiqBaseDecimalCorrected={feeLiqBaseDecimalCorrected}
-            // feeLiqQuoteDecimalCorrected={feeLiqQuoteDecimalCorrected}
-            // removalPercentage={removalPercentage}
+                baseTokenSymbol={props.baseTokenSymbol}
+                quoteTokenSymbol={props.quoteTokenSymbol}
+                baseTokenLogoURI={baseTokenLogoURI}
+                quoteTokenLogoURI={quoteTokenLogoURI}
+                posLiqBaseDecimalCorrected={position.positionLiqBaseDecimalCorrected}
+                posLiqQuoteDecimalCorrected={position.positionLiqQuoteDecimalCorrected}
+                feeLiqBaseDecimalCorrected={feeLiqBaseDecimalCorrected}
+                feeLiqQuoteDecimalCorrected={feeLiqQuoteDecimalCorrected}
+                // removalPercentage={removalPercentage}
+                removalPercentage={100}
             />
         </>
     );
