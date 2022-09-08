@@ -80,7 +80,7 @@ export const useUrlParams = (
             const tokenAddress = tokenParam
                 ? tokenParam[1]
                 : ethers.constants.AddressZero;
-            return tokenAddress;
+            return tokenAddress.toLowerCase();
         }
         const addrTokenA = getAddress('tokenA');
         const addrTokenB = getAddress('tokenB');
