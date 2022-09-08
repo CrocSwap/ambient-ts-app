@@ -112,12 +112,17 @@ export const useUrlParams = (
         }
         const addrTokenA = getAddress('tokenA');
         const addrTokenB = getAddress('tokenB');
+        const tokensAreDifferent = (
+            paramsUsed.includes('tokenA') &&
+            paramsUsed.includes('tokenB') &&
+            (addrTokenA !== addrTokenB)
+        );
         const paramsIncludesToken = (
             paramsUsed.includes('tokenA') ||
             paramsUsed.includes('tokenB')
         );
         // TODO: this needs to be gatekept so it runs only once
-        if (isInitialized && paramsIncludesToken) {
+        if (isInitialized && tokensAreDifferent && paramsIncludesToken) {
             Promise.all([
                 fetchAndFormatTokenData(addrTokenA),
                 fetchAndFormatTokenData(addrTokenB)
