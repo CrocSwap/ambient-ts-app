@@ -59,7 +59,7 @@ export const useUrlParams = (
         const promise = Web3Api.token.getTokenMetadata({
             chain: chainToUse as '0x1', addresses: [addr]
         });
-        const rawData = Promise.resolve(promise)
+        return Promise.resolve(promise)
             .then(res => res[0])
             .then(res => ({
                 name: res.name,
@@ -69,7 +69,6 @@ export const useUrlParams = (
                 logoURI: res.logo,
                 fromList: 'urlParam'
             }));
-        return rawData;
     }
 
     // useEffect to switch chains if necessary
