@@ -63,6 +63,10 @@ export const useUrlParams = (
 
     // console.log(urlParams);
 
+    const paramsUsed = useMemo(() => (
+        urlParams.map(param => param[0])
+    ), []);
+
     const chainToUse = useMemo(() => {
         const chainParam = urlParams.find(param => param[0] === 'chain');
         return chainParam ? chainParam[1] : chainId;
@@ -113,8 +117,10 @@ export const useUrlParams = (
                 fetchAndFormatTokenData(getAddress('tokenB'))
             ]).then(res => {
                 console.log(res);
-                dispatch(setTokenA(res[0] as TokenIF));
-                dispatch(setTokenB(res[1] as TokenIF));
+                paramsUsed.includes('tokenA') &&
+                    dispatch(setTokenA(res[0] as TokenIF));
+                paramsUsed.includes('tokenB') &&
+                    dispatch(setTokenB(res[1] as TokenIF));
             });
         }
     }, [isInitialized]);
