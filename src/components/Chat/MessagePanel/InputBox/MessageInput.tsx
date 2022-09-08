@@ -20,7 +20,6 @@ interface MessageInputProps {
 
 export default function MessageInput(props: MessageInputProps) {
     const _socket = socket;
-    const { showEmojiPicker, handleEmojiClick, handleEmojiPickerHideShow } = props;
 
     useEffect(() => {
         _socket.connect();

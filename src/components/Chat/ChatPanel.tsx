@@ -131,7 +131,13 @@ export default function ChatPanel(props: ChatProps) {
                                 <DividerDark changeColor addMarginTop addMarginBottom />
                             </div>
 
-                            <MessageInput message={messages[0]} room={room} />
+                            <MessageInput
+                                message={messages[0]}
+                                room={room}
+                                showEmojiPicker={showEmojiPicker}
+                                handleEmojiPickerHideShow={handleEmojiPickerHideShow}
+                                handleEmojiClick={handleEmojiClick}
+                            />
 
                             <div className={styles.scrollable_div} ref={messageEnd}>
                                 {/* 
