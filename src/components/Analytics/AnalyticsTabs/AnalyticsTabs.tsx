@@ -1,5 +1,5 @@
 import styles from './AnalyticsTabs.module.css';
-import { useMemo, useState, SetStateAction, Dispatch } from 'react';
+import { useMemo, SetStateAction, Dispatch, useState } from 'react';
 // import Positions from '../../Trade/TradeTabs/Positions/Positions';
 import TopTokens from '../../TopTokens/TopTokens';
 import Pools from '../../Pools/Pools';
@@ -12,7 +12,6 @@ import { PoolData } from '../../../state/pools/models';
 import TabComponent from '../../Global/TabComponent/TabComponent';
 import { PoolIF } from '../../../utils/interfaces/PoolIF';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
-import { BiSearch } from 'react-icons/bi';
 // import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 
 interface AnalyticsProps {
@@ -31,9 +30,9 @@ export default function AnalyticsTabs(props: AnalyticsProps) {
     const allTokens = useAllTokenData();
     const allPoolData = useAllPoolData();
 
-    const [tokens, setTokens] = useState<TokenData[]>([]);
-    const [pools, setPools] = useState<PoolData[]>([]);
-    const [searchWord, setSearchWord] = useState('');
+    const [tokens] = useState<TokenData[]>([]);
+    const [pools] = useState<PoolData[]>([]);
+    const [searchWord] = useState('');
 
     const tokensResult = useMemo(() => {
         return Object.values(allTokens)
@@ -47,30 +46,30 @@ export default function AnalyticsTabs(props: AnalyticsProps) {
             .filter(notEmpty);
     }, [allPoolData]);
 
-    const search = (value: string) => {
-        setSearchWord(value);
-        if (value.length > 0) {
-            setTokens(
-                tokensResult.filter(
-                    (item) =>
-                        item.name.toLowerCase().includes(value.toLowerCase()) ||
-                        item.symbol.toLowerCase().includes(value.toLowerCase()) ||
-                        item.address.toLowerCase().includes(value.toLowerCase()),
-                ),
-            );
-            setPools(
-                poolsResult.filter(
-                    (item) =>
-                        item.token0.name.toLowerCase().includes(value.toLowerCase()) ||
-                        item.token1.name.toLowerCase().includes(value.toLowerCase()) ||
-                        item.token0.symbol.toLowerCase().includes(value.toLowerCase()) ||
-                        item.token1.symbol.toLowerCase().includes(value.toLowerCase()) ||
-                        item.token0.address.toLowerCase().includes(value.toLowerCase()) ||
-                        item.token1.address.toLowerCase().includes(value.toLowerCase()),
-                ),
-            );
-        }
-    };
+    // const search = (value: string) => {
+    //     setSearchWord(value);
+    //     if (value.length > 0) {
+    //         setTokens(
+    //             tokensResult.filter(
+    //                 (item) =>
+    //                     item.name.toLowerCase().includes(value.toLowerCase()) ||
+    //                     item.symbol.toLowerCase().includes(value.toLowerCase()) ||
+    //                     item.address.toLowerCase().includes(value.toLowerCase()),
+    //             ),
+    //         );
+    //         setPools(
+    //             poolsResult.filter(
+    //                 (item) =>
+    //                     item.token0.name.toLowerCase().includes(value.toLowerCase()) ||
+    //                     item.token1.name.toLowerCase().includes(value.toLowerCase()) ||
+    //                     item.token0.symbol.toLowerCase().includes(value.toLowerCase()) ||
+    //                     item.token1.symbol.toLowerCase().includes(value.toLowerCase()) ||
+    //                     item.token0.address.toLowerCase().includes(value.toLowerCase()) ||
+    //                     item.token1.address.toLowerCase().includes(value.toLowerCase()),
+    //             ),
+    //         );
+    //     }
+    // };
 
     const analyticTabData = [
         {
