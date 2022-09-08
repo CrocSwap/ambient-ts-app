@@ -12,8 +12,6 @@ import axios from 'axios';
 import { Message } from './Model/MessageModel';
 import { PoolIF } from '../../utils/interfaces/PoolIF';
 import Picker from 'emoji-picker-react';
-import { BsEmojiSmileFill } from 'react-icons/bs';
-import { pool } from '../../utils/state/graphDataSlice';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
 import { targetData } from '../../utils/state/tradeDataSlice';
 
@@ -45,6 +43,7 @@ interface ChatProps {
     onClose: () => void;
     favePools: PoolIF[];
     currentPool: currentPoolInfo;
+    isFullScreen?: boolean;
 }
 
 export default function ChatPanel(props: ChatProps) {
@@ -59,7 +58,7 @@ export default function ChatPanel(props: ChatProps) {
     }, [favePools]);
 
     const currentUser = '62f24f3ff40188d467c532e8';
-    const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+
     useEffect(() => {
         _socket.on('msg-recieve', () => {
             /*
@@ -70,15 +69,6 @@ export default function ChatPanel(props: ChatProps) {
     }, [props.chatStatus, messages, room]);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const handleEmojiClick = (event: any, emoji: any) => {
-        let msg = messages;
-        msg += emoji.emoji;
-        setMessages(msg);
-    };
-
-    const handleEmojiPickerHideShow = () => {
-        setShowEmojiPicker(!showEmojiPicker);
-    };
 
     const getMsg = async () => {
         const response = await axios.get(recieveMessageByRoomRoute + '/' + room);
@@ -133,13 +123,7 @@ export default function ChatPanel(props: ChatProps) {
                                 <DividerDark changeColor addMarginTop addMarginBottom />
                             </div>
 
-                            <MessageInput
-                                message={messages[0]}
-                                room={room}
-                                showEmojiPicker={showEmojiPicker}
-                                handleEmojiPickerHideShow={handleEmojiPickerHideShow}
-                                handleEmojiClick={handleEmojiClick}
-                            />
+                            <MessageInput message={messages[0]} room={room} />
 
                             <div className={styles.scrollable_div} ref={messageEnd}>
                                 {/* 
@@ -194,9 +178,6 @@ export default function ChatPanel(props: ChatProps) {
                             </div> */}
                             </div>
                         </div>
-                    </div>
-                    <div style={{ marginLeft: 0 }}>
-                        {showEmojiPicker && <Picker onEmojiClick={handleEmojiClick} />}
                     </div>
                 </motion.div>
             ) : (

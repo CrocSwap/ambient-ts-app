@@ -17,35 +17,40 @@
 }
 
 .modal_body {
-    display: flex;
-    flex-direction: column-reverse;
-    border: solid 1px transparent;
-    background-image: linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, 0)),
-        linear-gradient(101deg, #7371fc, #cdc1ff, #7371fc);
-    background-origin: border-box;
-    background-clip: content-box, border-box;
-    box-shadow: 2px 1000px 1px #171d27 inset;
-    transition: box-shadow var(--animation-speed) ease-in-out;
-    cursor: pointer;
-    height: 100%;
-    width: 50rlh;
-    bottom: -100%;
-    border-radius: var(--border-radius);
-    color: white;
-    position: absolute;
-    aspect-ratio: 5/6;
-    margin-left: -55%;
-    margin-bottom: 18% !important;
-    resize: vertical;
-    overflow: auto;
-    transform: rotate(-180deg);
-    max-width: 570px;
-    max-height: 570px;
-    min-width: 300px;
-    min-height: 300px;
+  display: flex;
+  flex-direction: column-reverse;
+  border: solid 1px transparent;
+  background-image: linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, 0)), linear-gradient(101deg, #7371FC, #CDC1FF, #7371FC);
+  background-origin: border-box;
+  background-clip: content-box, border-box;
+  box-shadow: 2px 1000px 1px #171D27 inset;
+  transition: box-shadow var(--animation-speed) ease-in-out;
+  cursor: pointer;
+  height: 100%;
+  width: 50rlh;
+  bottom: -100%;
+  border-radius: var(--border-radius);
+  color: white;
+  position: absolute;
+  aspect-ratio: 5/6;
+  margin-left: -182%;
+  margin-bottom: 30% !important;
+  resize: horizontal;
+  overflow: auto;
+  transform: rotate(-180deg);
+  max-width: 460px;
+  max-height: 570px;
+  min-width: 304px;
+  min-height: 508px;
 
-    /* min-height: 80vh; */
+
+
+  /* min-height: 80vh; */
+
+
+
 }
+
 
 .main_body {
     width: 50%;
@@ -55,20 +60,22 @@
 }
 
 .chat_body {
-    transform: rotate(180deg);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 5px;
-    height: 100%;
-    width: 100%;
-    position: sticky;
-    margin-bottom: 0px;
+  
+  transform: rotate(180deg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 5px;
+  height: 100%;
+  width: 100%;
+  position: sticky;
+  margin-bottom: 0px;
 
-    /* Inside auto layout */
 
-    order: 0;
-    align-self: stretch;
+  /* Inside auto layout */
+
+  order: 0;
+  align-self: stretch;
 }
 
 .no_background_modal {

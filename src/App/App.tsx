@@ -1810,6 +1810,7 @@ export default function App() {
 
     const [selectedOutsideTab, setSelectedOutsideTab] = useState(0);
     const [outsideControl, setOutsideControl] = useState(false);
+    const [chatStatus, setChatStatus] = useState(false);
 
     // props for <Sidebar/> React element
     const sidebarProps = {
@@ -2047,6 +2048,8 @@ export default function App() {
                         userIsOnline={userIsOnline}
                         favePools={favePools}
                         currentPool={currentPoolInfo}
+                        setChatStatus={setChatStatus}
+                        chatStatus={chatStatus}
                     />
                 )}
                 {currentLocation !== '/app/chat' && (
