@@ -112,15 +112,19 @@ export const useUrlParams = (
         }
         // TODO: this needs to be gatekept so it runs only once
         if (isInitialized) {
+            const addrTokenA = getAddress('tokenA');
+            const addrTokenB = getAddress('tokenB');
             Promise.all([
-                fetchAndFormatTokenData(getAddress('tokenA')),
-                fetchAndFormatTokenData(getAddress('tokenB'))
+                fetchAndFormatTokenData(addrTokenA),
+                fetchAndFormatTokenData(addrTokenB)
             ]).then(res => {
                 console.log(res);
-                paramsUsed.includes('tokenA') &&
+                if (paramsUsed.includes('tokenA') ||
+                    paramsUsed.includes('tokenB')
+                ) {
                     dispatch(setTokenA(res[0] as TokenIF));
-                paramsUsed.includes('tokenB') &&
                     dispatch(setTokenB(res[1] as TokenIF));
+                };
             });
         }
     }, [isInitialized]);
