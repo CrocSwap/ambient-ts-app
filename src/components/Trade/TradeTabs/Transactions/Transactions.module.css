@@ -7,6 +7,12 @@
     overflow-y: scroll;
     overflow-x: hidden;
     padding: 0 8px;
+    height: 170px;
+}
+
+.expand_height{
+    /* background: red; */
+    height: calc(100vh - 15rem);
 }
 
 .item_container::-webkit-scrollbar {

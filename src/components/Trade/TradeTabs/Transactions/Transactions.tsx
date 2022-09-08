@@ -4,8 +4,10 @@ import TransactionCardHeader from './TransactionCardHeader';
 import { CandleData, graphData } from '../../../../utils/state/graphDataSlice';
 import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
-import { Dispatch, SetStateAction, useState, useEffect } from 'react';
+import { Dispatch, SetStateAction, useState, useEffect, ReactNode } from 'react';
 import TransactionsSkeletons from './TransactionsSkeletons/TransactionsSkeletons';
+import SelectedCandleData from '../../../Global/Tabs/SelectedCanleData/SelectedCandleData';
+import Pagination from '../../../Global/Pagination/Pagination';
 
 interface TransactionsProps {
     isShowAllEnabled: boolean;
@@ -21,6 +23,8 @@ interface TransactionsProps {
 
     isCandleSelected: boolean | undefined;
     filter: CandleData | undefined;
+
+    openGlobalModal: (content: React.ReactNode) => void;
     // setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
 }
 export default function Transactions(props: TransactionsProps) {
@@ -36,6 +40,7 @@ export default function Transactions(props: TransactionsProps) {
         expandTradeTable,
         isCandleSelected,
         filter,
+        openGlobalModal,
         // setExpandTradeTable,
     } = props;
 
@@ -99,35 +104,57 @@ export default function Transactions(props: TransactionsProps) {
     const tokenAAddress = tradeData.tokenA.address;
     const tokenBAddress = tradeData.tokenB.address;
 
-    const TransactionsDisplay = transactionData?.map((swap, idx) => (
-        //   />
-        <TransactionCard
-            key={idx}
-            swap={swap}
-            tokenMap={tokenMap}
-            chainId={chainId}
-            blockExplorer={blockExplorer}
-            tokenAAddress={tokenAAddress}
-            tokenBAddress={tokenBAddress}
-            isDenomBase={isDenomBase}
-            account={account}
-            currentTxActiveInTransactions={currentTxActiveInTransactions}
-            setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
-        />
-    ));
+    const TransactionsDisplay = (
+        <>
+            {isCandleSelected && <SelectedCandleData filter={filter} />}
 
-    const noData = <div className={styles.no_data}>No Data to Display</div>;
+            {transactionData?.map((swap, idx) => (
+                //   />
+                <TransactionCard
+                    key={idx}
+                    swap={swap}
+                    tokenMap={tokenMap}
+                    chainId={chainId}
+                    blockExplorer={blockExplorer}
+                    tokenAAddress={tokenAAddress}
+                    tokenBAddress={tokenBAddress}
+                    isDenomBase={isDenomBase}
+                    account={account}
+                    currentTxActiveInTransactions={currentTxActiveInTransactions}
+                    setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
+                    openGlobalModal={openGlobalModal}
+                />
+            ))}
+        </>
+    );
+
+    const noData = (
+        <>
+            {' '}
+            {isCandleSelected && <SelectedCandleData filter={filter} />}{' '}
+            <div className={styles.no_data}>No Data to Display</div>{' '}
+        </>
+    );
+
     const transactionDataOrNull = dataToDisplay ? TransactionsDisplay : noData;
 
     return (
         <div className={styles.container}>
             <TransactionCardHeader tradeData={tradeData} />
             <div
-                className={styles.item_container}
-                style={{ height: expandTradeTable ? '100%' : '170px' }}
+                className={`${styles.item_container} ${expandTradeTable && styles.expand_height}`}
+                // style={{ height: expandTradeTable ? '100%' : '170px' }}
             >
                 {isDataLoading ? <TransactionsSkeletons /> : transactionDataOrNull}
             </div>
+            {/* {expandTradeTable && transactionData.length > 30 && (
+                <Pagination
+                    itemsPerPage={transactionsPerPage}
+                    totalItems={transactions.length}
+                    paginate={paginate}
+                    currentPage={currentPage}
+                />
+            )} */}
         </div>
     );
 }

@@ -16,7 +16,6 @@
     box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
     backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(15px);
-    border-radius: var(--border-radius);
     transition: all var(--animation-speed) ease-in-out;
 
     
@@ -32,6 +31,7 @@
     background: var(--title-gradient);
     min-height: 223px;
     min-width: 347px;
+    
 }
 .modal {
     position: relative;
@@ -44,7 +44,7 @@
     padding: 0 0 3rem;
 
     color: white;
-    border-radius: 4px;
+    /* border-radius: 4px; */
     background-color: var(--dark2);
 
     align-items: center;
@@ -65,8 +65,8 @@
     letter-spacing: 1px;
     text-transform: capitalize;
 
-    border-top-left-radius: 4px;
-    border-top-right-radius: 4px;
+    /* border-top-left-radius: 4px;
+    border-top-right-radius: 4px; */
 
     color: #171D27;
     background: var(--title-gradient);

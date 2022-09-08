@@ -9,8 +9,60 @@ export interface graphData {
     liquidityForAllPools: LiquidityForAllPools;
     poolVolumeSeries: PoolVolumeSeries;
     poolTvlSeries: PoolTvlSeries;
+    limitOrdersByUser: LimitOrdersByUser;
 }
 
+export interface LimitOrdersByUser {
+    dataReceived: boolean;
+    limitOrders: Array<ILimitOrderState>;
+}
+
+export interface ILimitOrderState {
+    id: string;
+    positionId: string;
+    network: string;
+    block: number;
+    time: number;
+    user: string;
+    base: string;
+    quote: string;
+    poolIdx: number;
+    poolHash: string;
+    bidTick: number;
+    askTick: number;
+    isBid: boolean;
+    price: number;
+    deflator: number;
+    concGrowth: number;
+    positionLiq: number;
+    positionLiqBase: number;
+    positionLiqBaseDecimalCorrected: number;
+    positionLiqQuoteDecimalCorrected: number;
+    positionLiqQuote: number;
+    updateType: string;
+    latestUpdateBlock: number;
+    latestUpdateTime: number;
+    latestCrossBlock: number;
+    latestCrossTime: number;
+    latestCrossTransaction: string;
+    knockoutChanges: number;
+    baseSymbol: string;
+    baseDecimals: number;
+    quoteSymbol: string;
+    quoteDecimals: number;
+    limitPrice: number;
+    invLimitPrice: number;
+    limitPriceDecimalCorrected: number;
+    invLimitPriceDecimalCorrected: number;
+    ensResolution: string;
+    ensResolutionAge: number;
+    basePrice: number;
+    quotePrice: number;
+    positionLiqBaseUSD: number;
+    positionLiqQuoteUSD: number;
+    positionLiqTotalUSD: number;
+    chainId: string;
+}
 export interface PoolVolumeSeries {
     dataReceived: boolean;
     pools: Array<VolumeSeriesByPool>;
@@ -132,6 +184,8 @@ export interface CandleData {
     maxPriceDecimalCorrected: number;
     priceOpenDecimalCorrected: number;
     priceCloseDecimalCorrected: number;
+    priceCloseExclMEVDecimalCorrected: number;
+    invPriceCloseExclMEVDecimalCorrected: number;
     invMinPriceDecimalCorrected: number;
     invMaxPriceDecimalCorrected: number;
     invPriceOpenDecimalCorrected: number;
@@ -168,25 +222,6 @@ export interface PositionsByUser {
 export interface PositionsByPool {
     dataReceived: boolean;
     positions: Array<PositionIF>;
-}
-
-export interface position {
-    ambient: boolean;
-    askTick: number;
-    bidTick: number;
-    id: string;
-    accountId: string;
-    ensName: string;
-    pool: pool;
-    baseTokenSymbol: string;
-    baseTokenDecimals: number;
-    quoteTokenSymbol: string;
-    quoteTokenDecimals: number;
-    lowRangeDisplay: string;
-    highRangeDisplay: string;
-    tokenAQtyDisplay: string;
-    tokenBQtyDisplay: string;
-    poolPriceInTicks: number;
 }
 
 export interface pool {
@@ -227,6 +262,7 @@ export interface ISwap {
     priceDecimalCorrected: number;
     invPriceDecimalCorrected: number;
     valueUSD: number;
+    ensResolution: string;
 }
 
 export interface SwapsByUser {
@@ -243,6 +279,7 @@ const initialState: graphData = {
     positionsByUser: { dataReceived: false, positions: [] },
     positionsByPool: { dataReceived: false, positions: [] },
     swapsByUser: { dataReceived: false, swaps: [] },
+    limitOrdersByUser: { dataReceived: false, limitOrders: [] },
     swapsByPool: { dataReceived: false, swaps: [] },
     candlesForAllPools: { pools: [] },
     liquidityForAllPools: { pools: [] },
@@ -258,32 +295,67 @@ export const graphDataSlice = createSlice({
             state.positionsByUser = action.payload;
         },
         addPositionsByUser: (state, action: PayloadAction<Array<PositionIF>>) => {
-            const slotToFind = action.payload[0].positionStorageSlot.toLowerCase();
-            const indexOfSlot = state.positionsByUser.positions
-                .map((item) => item.positionStorageSlot.toLowerCase())
-                .findIndex((slot) => slot === slotToFind);
-            if (indexOfSlot === -1) {
-                state.positionsByUser.positions = action.payload.concat(
-                    state.positionsByUser.positions,
-                );
+            if (action.payload[0].positionType === 'knockout') {
+                const slotToFind = action.payload[0].merkleStorageSlot?.toLowerCase();
+                const indexOfSlot = state.positionsByUser.positions
+                    .map((position) =>
+                        position.positionType === 'knockout'
+                            ? position.merkleStorageSlot?.toLowerCase()
+                            : false,
+                    )
+                    .findIndex((slot) => slot === slotToFind);
+                if (indexOfSlot === -1) {
+                    state.positionsByUser.positions = action.payload.concat(
+                        state.positionsByUser.positions,
+                    );
+                } else {
+                    state.positionsByUser.positions[indexOfSlot] = action.payload[0];
+                }
             } else {
-                state.positionsByUser.positions[indexOfSlot] = action.payload[0];
+                const slotToFind = action.payload[0].positionStorageSlot?.toLowerCase();
+                const indexOfSlot = state.positionsByUser.positions
+                    .map((position) => position.positionStorageSlot?.toLowerCase())
+                    .findIndex((slot) => slot === slotToFind);
+                if (indexOfSlot === -1) {
+                    state.positionsByUser.positions = action.payload.concat(
+                        state.positionsByUser.positions,
+                    );
+                } else {
+                    state.positionsByUser.positions[indexOfSlot] = action.payload[0];
+                }
             }
         },
         setPositionsByPool: (state, action: PayloadAction<PositionsByPool>) => {
             state.positionsByPool = action.payload;
         },
+        setLimitOrdersByUser: (state, action: PayloadAction<LimitOrdersByUser>) => {
+            state.limitOrdersByUser = action.payload;
+        },
         addPositionsByPool: (state, action: PayloadAction<Array<PositionIF>>) => {
-            const slotToFind = action.payload[0].positionStorageSlot.toLowerCase();
-            const indexOfSlot = state.positionsByPool.positions
-                .map((item) => item.positionStorageSlot.toLowerCase())
-                .findIndex((slot) => slot === slotToFind);
-            if (indexOfSlot === -1) {
-                state.positionsByPool.positions = action.payload.concat(
-                    state.positionsByPool.positions,
-                );
+            if (action.payload[0].positionType === 'knockout') {
+                const slotToFind = action.payload[0].merkleStorageSlot?.toLowerCase();
+                const indexOfSlot = state.positionsByPool.positions
+                    .map((position) => position.merkleStorageSlot?.toLowerCase())
+                    .findIndex((slot) => slot === slotToFind);
+                if (indexOfSlot === -1) {
+                    state.positionsByPool.positions = action.payload.concat(
+                        state.positionsByPool.positions,
+                    );
+                } else {
+                    state.positionsByPool.positions[indexOfSlot] = action.payload[0];
+                }
             } else {
-                state.positionsByPool.positions[indexOfSlot] = action.payload[0];
+                const slotToFind = action.payload[0].positionStorageSlot?.toLowerCase();
+                const indexOfSlot = state.positionsByPool.positions
+                    .map((position) => position.positionStorageSlot?.toLowerCase())
+                    .findIndex((slot) => slot === slotToFind);
+                if (indexOfSlot === -1) {
+                    state.positionsByPool.positions = action.payload.concat(
+                        state.positionsByPool.positions,
+                    );
+                } else {
+                    state.positionsByPool.positions[indexOfSlot] = action.payload[0];
+                }
             }
         },
         setPoolVolumeSeries: (state, action: PayloadAction<PoolVolumeSeries>) => {
@@ -485,6 +557,7 @@ export const {
     setLiquidity,
     setCandles,
     addCandles,
+    setLimitOrdersByUser,
     setSwapsByUser,
     addSwapsByUser,
     addSwapsByPool,

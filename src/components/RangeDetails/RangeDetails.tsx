@@ -1,16 +1,14 @@
-import Divider from '../Global/Divider/Divider';
-import RemoveRangeHeader from '../RemoveRange/RemoveRangeHeader/RemoveRangeHeader';
 import PriceInfo from './PriceInfo/PriceInfo';
 import styles from './RangeDetails.module.css';
-import TokenInfo from './TokenInfo/TokenInfo';
 import { ethers } from 'ethers';
 import { useEffect, useRef, useState } from 'react';
-import { BsDownload } from 'react-icons/bs';
 import printDomToImage from '../../utils/functions/printDomToImage';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { toDisplayQty } from '@crocswap-libs/sdk';
+// import { toDisplayQty } from '@crocswap-libs/sdk';
 import { formatAmount } from '../../utils/numbers';
 import { PositionIF } from '../../utils/interfaces/PositionIF';
+import APYGraphDisplay from './APYGraphDisplay/APYGraphDisplay';
+import RangeDetailsControl from './RangeDetailsControl/RangeDetailsControl';
 interface IRangeDetailsProps {
     provider: ethers.providers.Provider | undefined;
     position: PositionIF;
@@ -32,6 +30,7 @@ interface IRangeDetailsProps {
     baseTokenAddress: string;
     quoteTokenAddress: string;
     lastBlockNumber: number;
+    positionApy: number;
 }
 
 export default function RangeDetails(props: IRangeDetailsProps) {
@@ -48,9 +47,11 @@ export default function RangeDetails(props: IRangeDetailsProps) {
         askTick,
         lastBlockNumber,
         position,
+        positionApy,
     } = props;
 
     const detailsRef = useRef(null);
+    // eslint-disable-next-line
     const downloadAsImage = () => {
         if (detailsRef.current) {
             printDomToImage(detailsRef.current);
@@ -59,169 +60,155 @@ export default function RangeDetails(props: IRangeDetailsProps) {
 
     const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
 
-    const [baseLiquidityDisplay, setBaseLiquidityDisplay] = useState<string | undefined>(undefined);
-    const [quoteLiquidityDisplay, setQuoteLiquidityDisplay] = useState<string | undefined>(
-        undefined,
-    );
+    const [baseLiquidityDisplay, setBaseLiquidityDisplay] = useState<string | undefined>();
+    const [quoteLiquidityDisplay, setQuoteLiquidityDisplay] = useState<string | undefined>();
 
-    const [baseFeesDisplay, setBaseFeesDisplay] = useState<string | undefined>(undefined);
-    const [quoteFeesDisplay, setQuoteFeesDisplay] = useState<string | undefined>(undefined);
-    const [positionApy, setPositionApy] = useState<number | undefined>();
+    const [baseFeesDisplay, setBaseFeesDisplay] = useState<string | undefined>();
+    const [quoteFeesDisplay, setQuoteFeesDisplay] = useState<string | undefined>();
+
+    // eslint-disable-next-line
+    const [updatedPositionApy, setUpdatedPositionApy] = useState<number | undefined>(positionApy);
 
     useEffect(() => {
         const positionStatsCacheEndpoint = httpGraphCacheServerDomain + '/position_stats?';
 
         const poolIndex = lookupChain(chainId).poolIndex;
+        if (position.positionType) {
+            fetch(
+                positionStatsCacheEndpoint +
+                    new URLSearchParams({
+                        user: user,
+                        bidTick: bidTick.toString(),
+                        askTick: askTick.toString(),
+                        base: baseTokenAddress,
+                        quote: quoteTokenAddress,
+                        poolIdx: poolIndex.toString(),
+                        chainId: chainId,
+                        positionType: position.positionType,
+                        annotate: 'true',
+                    }),
+            )
+                .then((response) => response?.json())
+                .then((json) => {
+                    const positionStats = json?.data;
+                    const liqBaseNum = position.positionLiqBaseDecimalCorrected;
+                    const liqQuoteNum = position.positionLiqQuoteDecimalCorrected;
 
-        fetch(
-            positionStatsCacheEndpoint +
-                new URLSearchParams({
-                    user: user,
-                    bidTick: bidTick.toString(),
-                    askTick: askTick.toString(),
-                    base: baseTokenAddress,
-                    quote: quoteTokenAddress,
-                    poolIdx: poolIndex.toString(),
-                    chainId: chainId,
-                }),
-        )
-            .then((response) => response?.json())
-            .then((json) => {
-                const positionStats = json?.data;
-                // console.log({ positionStats });
-                if (positionStats.posLiqBase && positionStats.baseDecimals) {
-                    const baseLiqDisplayNum = parseFloat(
-                        toDisplayQty(positionStats.posLiqBase, positionStats.baseDecimals),
-                    );
-                    const baseLiqDisplayTruncated =
-                        baseLiqDisplayNum === 0
-                            ? '0'
-                            : baseLiqDisplayNum < 0.0001
-                            ? baseLiqDisplayNum.toExponential(2)
-                            : baseLiqDisplayNum < 2
-                            ? baseLiqDisplayNum.toPrecision(3)
-                            : baseLiqDisplayNum >= 100000
-                            ? formatAmount(baseLiqDisplayNum)
-                            : // ? baseLiqDisplayNum.toExponential(2)
-                              baseLiqDisplayNum.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                              });
-                    setBaseLiquidityDisplay(baseLiqDisplayTruncated);
-                }
+                    if (liqBaseNum) {
+                        const baseLiqDisplayTruncated =
+                            liqBaseNum === 0
+                                ? '0'
+                                : liqBaseNum < 0.0001
+                                ? liqBaseNum.toExponential(2)
+                                : liqBaseNum < 2
+                                ? liqBaseNum.toPrecision(3)
+                                : liqBaseNum >= 100000
+                                ? formatAmount(liqBaseNum)
+                                : // ? baseLiqDisplayNum.toExponential(2)
+                                  liqBaseNum.toLocaleString(undefined, {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 2,
+                                  });
 
-                if (positionStats.posLiqQuote && positionStats.quoteDecimals) {
-                    const quoteLiqDisplayNum = parseFloat(
-                        toDisplayQty(positionStats.posLiqQuote, positionStats.quoteDecimals),
-                    );
-                    const quoteLiqDisplayTruncated =
-                        quoteLiqDisplayNum === 0
-                            ? '0'
-                            : quoteLiqDisplayNum < 0.0001
-                            ? quoteLiqDisplayNum.toExponential(2)
-                            : quoteLiqDisplayNum < 2
-                            ? quoteLiqDisplayNum.toPrecision(3)
-                            : quoteLiqDisplayNum >= 100000
-                            ? formatAmount(quoteLiqDisplayNum)
-                            : // ? quoteLiqDisplayNum.toExponential(2)
-                              quoteLiqDisplayNum.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                              });
-                    setQuoteLiquidityDisplay(quoteLiqDisplayTruncated);
-                }
-                if (positionStats.feeLiqBase && positionStats.baseDecimals) {
-                    const baseFeeDisplayNum = parseFloat(
-                        toDisplayQty(positionStats.feeLiqBase, positionStats.baseDecimals),
-                    );
-                    const baseFeeDisplayTruncated =
-                        baseFeeDisplayNum === 0
-                            ? '0'
-                            : baseFeeDisplayNum < 0.0001
-                            ? baseFeeDisplayNum.toExponential(2)
-                            : baseFeeDisplayNum < 2
-                            ? baseFeeDisplayNum.toPrecision(3)
-                            : baseFeeDisplayNum >= 100000
-                            ? formatAmount(baseFeeDisplayNum)
-                            : // ? baseLiqDisplayNum.toExponential(2)
-                              baseFeeDisplayNum.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                              });
-                    setBaseFeesDisplay(baseFeeDisplayTruncated);
-                }
+                        setBaseLiquidityDisplay(baseLiqDisplayTruncated);
+                    }
+                    if (liqQuoteNum) {
+                        const quoteLiqDisplayTruncated =
+                            liqQuoteNum === 0
+                                ? '0'
+                                : liqQuoteNum < 0.0001
+                                ? liqQuoteNum.toExponential(2)
+                                : liqQuoteNum < 2
+                                ? liqQuoteNum.toPrecision(3)
+                                : liqQuoteNum >= 100000
+                                ? formatAmount(liqQuoteNum)
+                                : // ? quoteLiqDisplayNum.toExponential(2)
+                                  liqQuoteNum.toLocaleString(undefined, {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 2,
+                                  });
+                        setQuoteLiquidityDisplay(quoteLiqDisplayTruncated);
+                    }
 
-                if (positionStats.feeLiqQuote && positionStats.quoteDecimals) {
-                    const quoteFeesDisplayNum = parseFloat(
-                        toDisplayQty(positionStats.feeLiqQuote, positionStats.quoteDecimals),
-                    );
-                    const quoteFeesDisplayTruncated =
-                        quoteFeesDisplayNum === 0
-                            ? '0'
-                            : quoteFeesDisplayNum < 0.0001
-                            ? quoteFeesDisplayNum.toExponential(2)
-                            : quoteFeesDisplayNum < 2
-                            ? quoteFeesDisplayNum.toPrecision(3)
-                            : quoteFeesDisplayNum >= 100000
-                            ? formatAmount(quoteFeesDisplayNum)
-                            : // ? quoteFeesDisplayNum.toExponential(2)
-                              quoteFeesDisplayNum.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                              });
-                    setQuoteFeesDisplay(quoteFeesDisplayTruncated);
-                }
-            })
-            .catch(console.log);
+                    const baseFeeDisplayNum = position.feesLiqBaseDecimalCorrected;
+                    const quoteFeeDisplayNum = position.feesLiqQuoteDecimalCorrected;
 
-        (async () => {
-            const positionApyCacheEndpoint = 'https://809821320828123.de:5000' + '/position_apy?';
+                    if (baseFeeDisplayNum && quoteFeeDisplayNum) {
+                        // const baseFeeDisplayNum = parseFloat(
+                        //     toDisplayQty(positionStats.feeLiqBase, positionStats.baseDecimals),
+                        // );
+                        const baseFeeDisplayTruncated =
+                            baseFeeDisplayNum === 0
+                                ? '0'
+                                : baseFeeDisplayNum < 0.0001
+                                ? baseFeeDisplayNum.toExponential(2)
+                                : baseFeeDisplayNum < 2
+                                ? baseFeeDisplayNum.toPrecision(3)
+                                : baseFeeDisplayNum >= 100000
+                                ? formatAmount(baseFeeDisplayNum)
+                                : // ? baseLiqDisplayNum.toExponential(2)
+                                  baseFeeDisplayNum.toLocaleString(undefined, {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 2,
+                                  });
+                        setBaseFeesDisplay(baseFeeDisplayTruncated);
 
-            const positionApy =
-                position.positionType === 'ambient'
-                    ? await fetch(
-                          positionApyCacheEndpoint +
-                              new URLSearchParams({
-                                  chainId: position.chainId,
-                                  user: position.user,
-                                  base: position.base,
-                                  quote: position.quote,
-                                  poolIdx: position.poolIdx.toString(),
-                                  concise: 'true',
-                              }),
-                      )
-                          .then((response) => response?.json())
-                          .then((json) => {
-                              const apy = json.data?.results?.apy;
-                              return apy;
-                          })
-                    : await fetch(
-                          positionApyCacheEndpoint +
-                              new URLSearchParams({
-                                  chainId: position.chainId,
-                                  user: position.user,
-                                  base: position.base,
-                                  quote: position.quote,
-                                  bidTick: position.bidTick.toString(),
-                                  askTick: position.askTick.toString(),
-                                  poolIdx: position.poolIdx.toString(),
-                                  concise: 'true',
-                              }),
-                      )
-                          .then((response) => response?.json())
-                          .then((json) => {
-                              const apy = json?.data?.results?.apy;
-                              return apy;
-                          });
+                        const quoteFeesDisplayTruncated =
+                            quoteFeeDisplayNum === 0
+                                ? '0'
+                                : quoteFeeDisplayNum < 0.0001
+                                ? quoteFeeDisplayNum.toExponential(2)
+                                : quoteFeeDisplayNum < 2
+                                ? quoteFeeDisplayNum.toPrecision(3)
+                                : quoteFeeDisplayNum >= 100000
+                                ? formatAmount(quoteFeeDisplayNum)
+                                : quoteFeeDisplayNum.toLocaleString(undefined, {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 2,
+                                  });
+                        setQuoteFeesDisplay(quoteFeesDisplayTruncated);
+                    }
 
-            setPositionApy(positionApy);
-        })();
+                    if (positionStats.apy) {
+                        setUpdatedPositionApy(positionStats.apy);
+                    }
+                })
+                .catch(console.log);
+        }
     }, [lastBlockNumber]);
+
+    const [controlItems, setControlItems] = useState([
+        { slug: 'times', name: 'Show times', checked: true },
+        { slug: 'collateral', name: 'Show collateral', checked: true },
+        { slug: 'value', name: 'Show value', checked: false },
+    ]);
+
+    const handleChange = (slug: string) => {
+        const copyControlItems = [...controlItems];
+        const modifiedControlItems = copyControlItems.map((item) => {
+            if (slug === item.slug) {
+                item.checked = !item.checked;
+            }
+
+            return item;
+        });
+
+        setControlItems(modifiedControlItems);
+    };
+
+    const controlDisplay = (
+        <div className={styles.control_display_container}>
+            {controlItems.map((item, idx) => (
+                <RangeDetailsControl key={idx} item={item} handleChange={handleChange} />
+            ))}
+        </div>
+    );
 
     return (
         <div className={styles.range_details_container}>
+            {controlDisplay}
             <div ref={detailsRef}>
-                <RemoveRangeHeader
+                {/* <RemoveRangeHeader
                     isPositionInRange={props.isPositionInRange}
                     isAmbient={props.isAmbient}
                     baseTokenSymbol={props.baseTokenSymbol}
@@ -229,9 +216,28 @@ export default function RangeDetails(props: IRangeDetailsProps) {
                     baseTokenLogoURI={props.baseTokenLogoURI}
                     quoteTokenLogoURI={props.quoteTokenLogoURI}
                     isDenomBase={props.isDenomBase}
-                />
+                /> */}
                 <div className={styles.main_content}>
-                    <TokenInfo
+                    <div className={styles.left_container}>
+                        <PriceInfo
+                            lowRangeDisplay={lowRangeDisplay}
+                            highRangeDisplay={highRangeDisplay}
+                            baseLiquidityDisplay={baseLiquidityDisplay}
+                            quoteLiquidityDisplay={quoteLiquidityDisplay}
+                            baseFeesDisplay={baseFeesDisplay}
+                            quoteFeesDisplay={quoteFeesDisplay}
+                            baseTokenLogoURI={baseTokenLogoURI}
+                            quoteTokenLogoURI={quoteTokenLogoURI}
+                            baseTokenSymbol={props.baseTokenSymbol}
+                            quoteTokenSymbol={props.quoteTokenSymbol}
+                            isDenomBase={props.isDenomBase}
+                            controlItems={controlItems}
+                        />
+                    </div>
+                    <div className={styles.right_container}>
+                        <APYGraphDisplay updatedPositionApy={updatedPositionApy} />
+                    </div>
+                    {/* <TokenInfo
                         provider={props.provider}
                         chainId={chainId}
                         baseTokenAddress={props.baseTokenAddress}
@@ -240,26 +246,14 @@ export default function RangeDetails(props: IRangeDetailsProps) {
                         quoteTokenDecimals={props.quoteTokenDecimals}
                         lastBlockNumber={props.lastBlockNumber}
                         isDenomBase={props.isDenomBase}
-                        positionApy={positionApy}
-                    />
-                    <Divider />
+                        positionApy={apy}
+                    /> */}
                 </div>
-                <PriceInfo
-                    lowRangeDisplay={lowRangeDisplay}
-                    highRangeDisplay={highRangeDisplay}
-                    baseLiquidityDisplay={baseLiquidityDisplay || '0.00'}
-                    quoteLiquidityDisplay={quoteLiquidityDisplay || '0.00'}
-                    baseFeesDisplay={baseFeesDisplay || '0.00'}
-                    quoteFeesDisplay={quoteFeesDisplay || '0.00'}
-                    baseTokenLogoURI={baseTokenLogoURI}
-                    quoteTokenLogoURI={quoteTokenLogoURI}
-                    baseTokenSymbol={props.baseTokenSymbol}
-                    quoteTokenSymbol={props.quoteTokenSymbol}
-                />
             </div>
-            <div onClick={downloadAsImage} className={styles.share_container}>
+
+            {/* <div onClick={downloadAsImage} className={styles.share_container}>
                 <BsDownload size={15} />
-            </div>
+            </div> */}
         </div>
     );
 }

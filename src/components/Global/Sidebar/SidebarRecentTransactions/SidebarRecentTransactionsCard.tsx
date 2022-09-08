@@ -5,7 +5,6 @@ import styles from './SidebarRecentTransactionsCard.module.css';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import { setTokenA, setTokenB } from '../../../../utils/state/tradeDataSlice';
-import { useLocation } from 'react-router-dom';
 // import { toDisplayQty } from '@crocswap-libs/sdk';
 import { formatAmount } from '../../../../utils/numbers';
 // import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
@@ -24,16 +23,11 @@ interface TransactionProps {
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
     outsideControl: boolean;
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
+
+    tabToSwitchToBasedOnRoute: number;
 }
 
 export default function SidebarRecentTransactionsCard(props: TransactionProps) {
-    const location = useLocation();
-
-    const onTradeRoute = location.pathname.includes('trade');
-    const onAccountRoute = location.pathname.includes('account');
-
-    const tabToSwitchToBasedOnRoute = onTradeRoute ? 0 : onAccountRoute ? 4 : 0;
-
     const {
         tx,
         coinGeckoTokenMap,
@@ -47,6 +41,8 @@ export default function SidebarRecentTransactionsCard(props: TransactionProps) {
         setSelectedOutsideTab,
         // outsideControl,
         setOutsideControl,
+
+        tabToSwitchToBasedOnRoute,
     } = props;
 
     const dispatch = useAppDispatch();

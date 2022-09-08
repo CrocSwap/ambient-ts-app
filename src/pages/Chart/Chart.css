@@ -18,10 +18,11 @@ text {
 }
 
 .annotation-line > .redline {
-    stroke: red;
+    stroke: rgba(235, 235, 255, 0.4);
     stroke-width: 3;
-    stroke-dasharray: 6 6;
-    stroke-opacity: 0.6;
+    stroke-dasharray: 16 16;
+    stroke-opacity: 0.4;
+    border: 1px dashed rgba(235, 235, 255, 0.4);
 }
 
 .candlestick .down {
@@ -42,6 +43,23 @@ div.popup {
     border-radius: var(--border-radius);
 
 }
+
+
+.popup {
+    position: absolute;
+    text-align: center;
+    pointer-events: none;
+
+    background: rgba(10, 10, 19, 0.47);
+    padding: 6px;
+    font-size: large;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.47);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border-radius: var(--border-radius);
+
+}
+
 
 div.tooltip {
     position: absolute;
@@ -65,13 +83,6 @@ div.tooltip {
       visibility: hidden;
     }
   }
-
-.crosshair {
-    stroke: rgb(238, 238, 238);
-    stroke-width: 1px;
-    stroke-dasharray: 3 3;
-    stroke-opacity: 0.8;
-}
 
 .kHKQUR {
     display: grid;
@@ -106,4 +117,18 @@ div.tooltip {
 .value {
     font-weight: 500;
     font-size: 12px
+}
+
+.crosshair {
+    stroke: rgb(255, 255, 255);
+    stroke-width: 0.8px;
+    stroke-dasharray: 0.6 0.6;
+    stroke-opacity: 1;
+}
+
+label {
+    color: rgba(204, 204, 204, 0.63);
+    padding-left: 7px;
+    padding-top: 2px;
+    font-size: 12px;
 }

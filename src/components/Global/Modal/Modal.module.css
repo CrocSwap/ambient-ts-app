@@ -28,10 +28,10 @@
     transition: box-shadow var(--animation-speed) ease-in-out;
 
 
-    min-width: 450px;
+    min-width: 407px;
     min-height: 350px;
     border-radius: var(--border-radius);
-    /* position: relative; */
+    position: relative;
     color: white;
 
     /* min-height: 80vh; */
@@ -64,6 +64,11 @@
     color: white;
 }
 
+.header_right{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
 .close_button {
     color: var(--text-grey-light);
     cursor: pointer;
