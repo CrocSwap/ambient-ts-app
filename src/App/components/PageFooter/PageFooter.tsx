@@ -2,8 +2,7 @@ import styles from './PageFooter.module.css';
 import { FaDiscord, FaGithub } from 'react-icons/fa';
 import { BsMedium } from 'react-icons/bs';
 import { AiFillTwitterCircle } from 'react-icons/ai';
-import ChatPanel from '../../../components/Chat/ChatPanel';
-import { useState } from 'react';
+import { Dispatch, SetStateAction } from 'react';
 import { PoolIF } from '../../../utils/interfaces/PoolIF';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
 import { targetData } from '../../../utils/state/tradeDataSlice';
@@ -37,24 +36,20 @@ interface IFooterProps {
     userIsOnline: boolean;
     favePools: PoolIF[];
     currentPool: currentPoolInfo;
+    chatStatus: boolean;
+    setChatStatus: Dispatch<SetStateAction<boolean>>;
 }
 
 const pageBlockSign = <div className={styles.page_block_sign}></div>;
 
 export default function PageFooter(props: IFooterProps) {
-    const [chatStatus, setChatStatus] = useState(false);
-    const { userIsOnline, lastBlockNumber, favePools, currentPool } = props;
+    const { userIsOnline, lastBlockNumber } = props;
 
     return (
         <footer data-testid={'page-footer'} className={styles.footer}>
             {userIsOnline ? '' : 'Offline'}
-            <ChatPanel
-                onClose={() => setChatStatus(false)}
-                chatStatus={chatStatus}
-                favePools={favePools}
-                currentPool={currentPool}
-            />
-            <a onClick={() => setChatStatus(!chatStatus)}>Chat</a>
+
+            <a onClick={() => props.setChatStatus(!props.chatStatus)}>Chat</a>
             <a href='#'>
                 <AiFillTwitterCircle size={15} />
                 {/* <span>Twitter</span> */}

@@ -47,13 +47,18 @@
     font-size: calc(1vw - 2px);
     line-height: 15px;
     flex-grow: 5px !important;
-
-    color: #EBEBFF;
     margin: 10px;
     height: 100%;
     width: 100%;
 
-
+    font-family: 'Lexend Deca';
+    font-style: normal;
+    font-weight: 300;
+    font-size: calc(1vw - 2px);
+    line-height: 15px;
+    color: #EBEBFF;
+    white-space: pre-line;
+    align-self: stretch;
 }
 
 .right_image_box {

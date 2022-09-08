@@ -40,6 +40,7 @@ export default function Transactions(props: TransactionsProps) {
         expandTradeTable,
         isCandleSelected,
         filter,
+        openGlobalModal,
         // setExpandTradeTable,
         openGlobalModal,
     } = props;
