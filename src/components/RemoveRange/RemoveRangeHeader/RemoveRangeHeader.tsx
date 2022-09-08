@@ -34,7 +34,7 @@ export default function RemoveRangeHeader(props: IRemoveRangeHeaderProps) {
                 />
                 {/* <img src='https://cryptologos.cc/logos/usd-coin-usdc-logo.png' alt='' /> */}
                 <span>
-                    {props.isDenomBase ? props.baseTokenSymbol : props.quoteTokenSymbol} /{' '}
+                    {props.isDenomBase ? props.baseTokenSymbol : props.quoteTokenSymbol} /
                     {props.isDenomBase ? props.quoteTokenSymbol : props.baseTokenSymbol}
                 </span>
             </div>

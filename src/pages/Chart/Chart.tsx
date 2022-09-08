@@ -870,7 +870,7 @@ export default function Chart(props: ChartData) {
                 });
 
                 d3.select(d3Yaxis.current)
-                    .on('mouseover', (event: any) => {
+                    .on('mouseover', () => {
                         // if (path.includes('limit')){
                         // d3.select(event.currentTarget).style('cursor', 'ns-resize');
                         // }

@@ -19,6 +19,7 @@ interface ModalPropsIF {
     noBackground?: boolean;
     children: ReactNode;
     centeredTitle?: boolean;
+    headerRightItems?: ReactNode;
 }
 
 // React functional component
@@ -33,6 +34,7 @@ export default function Modal(props: ModalPropsIF) {
         children,
         showBackButton,
         centeredTitle,
+        headerRightItems,
     } = props;
 
     const escFunction = useCallback((event: KeyboardEvent) => {
@@ -60,7 +62,10 @@ export default function Modal(props: ModalPropsIF) {
             {showBackButton && backElement}
             {centeredTitle && <div></div>}
             <h2 className={styles.modal_title}>{title}</h2>
-            <RiCloseFill size={27} className={styles.close_button} onClick={onClose} />
+            <div className={styles.header_right}>
+                {headerRightItems && headerRightItems}
+                <RiCloseFill size={27} className={styles.close_button} onClick={onClose} />
+            </div>
         </header>
     );
 

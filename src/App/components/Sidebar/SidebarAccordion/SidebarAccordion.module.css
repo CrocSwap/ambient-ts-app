@@ -1,11 +1,11 @@
-.notification_bell{
+/* .notification_bell{
     display: flex;
     position: relative;
 }
 .bell_icon{
-}
+} */
 
- .number{
+ /* .number{
 font-size: 10px;
 background: red;
 position: absolute;
@@ -18,4 +18,4 @@ justify-content: center;
 align-items: center;
 border-radius: 50%;
 left: 10px;
-}
+} */

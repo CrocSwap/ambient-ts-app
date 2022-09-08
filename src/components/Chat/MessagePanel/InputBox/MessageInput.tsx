@@ -4,10 +4,10 @@ import {
     useState,
 } from 'react';
 import { BsSlashSquare, BsEmojiSmileFill } from 'react-icons/bs';
-import { FiSmile } from 'react-icons/fi';
+// import { FiSmile } from 'react-icons/fi';
 import { Message } from '../../Model/MessageModel';
 import Picker from 'emoji-picker-react';
-import { IoMdSend } from 'react-icons/io';
+// import { IoMdSend } from 'react-icons/io';
 import {
     // host,
     sendMessageRoute,
@@ -15,14 +15,13 @@ import {
 } from '../../Service/chatApi';
 import styles from './MessageInput.module.css';
 import axios from 'axios';
-import { setFlagsFromString } from 'v8';
+// import { setFlagsFromString } from 'v8';
 // import { io } from 'socket.io-client';
 
 interface MessageInputProps {
     message: Message;
-    handleEmojiPickerHideShow: any;
-    handleEmojiClick: any;
-    showEmojiPicker;
+    handleEmojiPickerHideShow: () => void;
+    room: string;
 }
 
 export default function MessageInput(props: MessageInputProps) {
@@ -75,7 +74,7 @@ export default function MessageInput(props: MessageInputProps) {
             />
             <BsSlashSquare />
             <BsEmojiSmileFill onClick={props.handleEmojiPickerHideShow} />
-            {showEmojiPicker && <Picker onEmojiClick={handleEmojiClick} />}
+            {<Picker onEmojiClick={props.handleEmojiPickerHideShow} />}
         </div>
     );
 }

@@ -1,18 +1,19 @@
 import Button from '../../Global/Button/Button';
 
 interface IRemoveRangeButtonProps {
-    removalPercentage: number;
+    removeFn: () => void;
+
+    title: string;
+
+    disabled?: boolean;
 }
 
 export default function RemoveRangeButton(props: IRemoveRangeButtonProps) {
-    const { removalPercentage } = props;
+    const { removeFn, title } = props;
 
     return (
         <div>
-            <Button
-                title='Remove Liquidity'
-                action={() => console.log(`${removalPercentage}% to be removed.`)}
-            />
+            <Button title={title} disabled={props.disabled} action={removeFn} />
         </div>
     );
 }

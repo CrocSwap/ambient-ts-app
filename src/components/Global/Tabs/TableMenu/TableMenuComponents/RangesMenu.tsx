@@ -16,6 +16,7 @@ import { useModal } from '../../../../Global/Modal/useModal';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import { DefaultTooltip } from '../../../StyledTooltip/StyledTooltip';
 import { PositionIF } from '../../../../../utils/interfaces/PositionIF';
+import HarvestPosition from '../../../../HarvestPosition/HarvestPosition';
 
 // interface for React functional component props
 interface RangesMenuIF {
@@ -80,7 +81,7 @@ export default function RangesMenu(props: RangesMenuIF) {
 
     switch (currentModal) {
         case 'remove':
-            modalContent = <RemoveRange {...rangeDetailsProps} />;
+            modalContent = <RemoveRange position={positionData} {...rangeDetailsProps} />;
             modalTitle = 'Remove Position';
             break;
 
@@ -91,7 +92,8 @@ export default function RangesMenu(props: RangesMenuIF) {
             break;
         case 'harvest':
             // modalContent = <RangeDetails {...removeRangeProps} />;
-            modalContent = 'harvest';
+            modalContent = <HarvestPosition position={positionData} {...rangeDetailsProps} />;
+
             modalTitle = 'Harvest';
             break;
     }

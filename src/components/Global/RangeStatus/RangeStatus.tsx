@@ -31,7 +31,7 @@ export default function RangeStatus(props: RangeStatusProps) {
             <div className={styles.range_container}>
                 {isAmbient ? ambientRange : nonAmbientRange}
             </div>
-            {isInRange ? 'In Range' : 'Out of Range'}
+            {isAmbient ? 'Ambient' : isInRange ? 'In Range' : 'Out of Rng.'}
         </div>
     );
 
