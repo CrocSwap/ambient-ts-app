@@ -46,6 +46,7 @@ interface LimitCurrencyConverterProps {
     isSaveAsDexSurplusChecked: boolean;
     setIsSaveAsDexSurplusChecked: Dispatch<SetStateAction<boolean>>;
     setLimitRate: Dispatch<SetStateAction<string>>;
+    priceInputOnBlur: () => void;
     limitRate: string;
     isDenominationInBase: boolean;
     activeTokenListsChanged: boolean;
@@ -74,6 +75,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
         isSaveAsDexSurplusChecked,
         setIsSaveAsDexSurplusChecked,
         setLimitRate,
+        priceInputOnBlur,
         limitRate,
         isDenominationInBase,
         activeTokenListsChanged,
@@ -82,7 +84,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
 
     const dispatch = useAppDispatch();
 
-    const limitRateNumber = parseFloat(limitRate);
+    const limitRateNumber = insideTickDisplayPrice;
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
@@ -220,13 +222,51 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
         const truncatedTokenBQty = truncateDecimals(rawTokenBQty, tokenBDecimals).toString();
 
         setTokenBQtyLocal(truncatedTokenBQty);
-        setTokenBInputQty(truncatedTokenBQty);
+        // setTokenBInputQty(truncatedTokenBQty);
         const buyQtyField = document.getElementById('buy-limit-quantity') as HTMLInputElement;
 
         if (buyQtyField) {
             buyQtyField.value = truncatedTokenBQty === 'NaN' ? '' : truncatedTokenBQty;
         }
     };
+
+    const handleTokenAChangeClick = (value: string) => {
+        let rawTokenBQty;
+        const tokenAInputField = document.getElementById('sell-limit-quantity');
+        if (tokenAInputField) {
+            (tokenAInputField as HTMLInputElement).value = value;
+        }
+        const input = value;
+        setTokenAQtyLocal(input);
+        setTokenAInputQty(input);
+        setIsTokenAPrimaryLocal(true);
+        dispatch(setIsTokenAPrimary(true));
+        dispatch(setPrimaryQuantity(input));
+
+        if (!isDenominationInBase) {
+            rawTokenBQty = isSellTokenBase
+                ? (1 / limitRateNumber) * parseFloat(input)
+                : limitRateNumber * parseFloat(input);
+        } else {
+            rawTokenBQty = !isSellTokenBase
+                ? (1 / limitRateNumber) * parseFloat(input)
+                : limitRateNumber * parseFloat(input);
+        }
+
+        handleLimitButtonMessage(parseFloat(input));
+        const truncatedTokenBQty = truncateDecimals(rawTokenBQty, tokenBDecimals).toString();
+
+        // const truncatedTokenBQty = truncateDecimals(rawTokenBQty, tokenBDecimals).toString();
+
+        setTokenBQtyLocal(truncatedTokenBQty);
+        // setTokenBInputQty(truncatedTokenBQty);
+        const buyQtyField = document.getElementById('buy-limit-quantity') as HTMLInputElement;
+
+        if (buyQtyField) {
+            buyQtyField.value = truncatedTokenBQty === 'NaN' ? '' : truncatedTokenBQty;
+        }
+    };
+
     const handleTokenBChangeEvent = (evt?: ChangeEvent<HTMLInputElement>) => {
         let rawTokenAQty;
 
@@ -261,14 +301,11 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                     ? limitRateNumber * parseFloat(tokenBQtyLocal)
                     : (1 / limitRateNumber) * parseFloat(tokenBQtyLocal);
             }
-            // rawTokenAQty = isDenominationInBase
-            //     ? (1 / limitRateNumber) * parseFloat(tokenBQtyLocal)
-            //     : limitRateNumber * parseFloat(tokenBQtyLocal);
         }
         handleLimitButtonMessage(rawTokenAQty);
         const truncatedTokenAQty = truncateDecimals(rawTokenAQty, tokenADecimals).toString();
         setTokenAQtyLocal(truncatedTokenAQty);
-        setTokenAInputQty(truncatedTokenAQty);
+        // setTokenAInputQty(truncatedTokenAQty);
         const sellQtyField = document.getElementById('sell-limit-quantity') as HTMLInputElement;
         if (sellQtyField) {
             sellQtyField.value = truncatedTokenAQty === 'NaN' ? '' : truncatedTokenAQty;
@@ -287,6 +324,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 sellToken
                 direction='From: '
                 handleChangeEvent={handleTokenAChangeEvent}
+                handleChangeClick={handleTokenAChangeClick}
                 reverseTokens={reverseTokens}
                 tokenABalance={tokenABalance}
                 tokenBBalance={tokenBBalance}
@@ -327,6 +365,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 fieldId='limit-rate'
                 reverseTokens={reverseTokens}
                 setLimitRate={setLimitRate}
+                onBlur={priceInputOnBlur}
                 poolPriceNonDisplay={poolPriceNonDisplay}
                 insideTickDisplayPrice={insideTickDisplayPrice}
                 limitRate={limitRate}

@@ -1,5 +1,6 @@
 .settings_container {
-    height: 300px;
+    height: 405px;
+    /* max-width: 407px; */
     /* width: 300px; */
 
     row-gap: 12px;

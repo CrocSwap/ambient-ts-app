@@ -3,6 +3,7 @@ export interface PositionIF {
     chainId: string;
     positionId: string;
     positionStorageSlot: string;
+    merkleStorageSlot: string;
     askTick: number;
     bidTick: number;
     id: string;
@@ -10,11 +11,14 @@ export interface PositionIF {
     knockout: boolean;
     poolIdx: number;
     base: string;
+    baseDecimals: number;
+    quoteDecimals: number;
     baseTokenLogoURI: string;
     quoteTokenLogoURI: string;
     quote: string;
     user: string;
-    userEnsName: string;
+    ensResolution: string;
+    // userEnsName: string;
     baseSymbol: string;
     quoteSymbol: string;
     poolPriceInTicks: number;
@@ -31,10 +35,20 @@ export interface PositionIF {
     tokenBQtyDisplay: string;
     baseTokenDecimals: number;
     quoteTokenDecimals: number;
-    positionType?: string;
+    positionType: string;
     positionLiqBase?: string;
+    positionLiqBaseDecimalCorrected?: number;
+    positionLiqBaseTruncated?: string;
+    positionLiqQuoteTruncated?: string;
+    positionLiqQuoteDecimalCorrected?: number;
     positionLiqQuote?: string;
     feesLiqBase?: string;
+    feesLiqBaseDecimalCorrected?: number;
+    feesLiqQuoteDecimalCorrected?: number;
     feesLiqQuote?: string;
-    apyPercentage?: number;
+    apy: number;
+    time: number;
+    latestUpdateTime: number;
+    positionLiq: string;
+    positionLiqTotalUSD: number;
 }

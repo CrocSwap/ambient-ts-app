@@ -4,7 +4,7 @@ import { useLocation } from 'react-router-dom';
 import { ethers } from 'ethers';
 import { useMoralis } from 'react-moralis';
 import { motion } from 'framer-motion';
-import { CrocEnv } from '@crocswap-libs/sdk';
+import { CrocEnv, CrocImpact } from '@crocswap-libs/sdk';
 
 // START: Import React Components
 import CurrencyConverter from '../../components/Swap/CurrencyConverter/CurrencyConverter';
@@ -29,8 +29,10 @@ import { SlippagePairIF, TokenIF, TokenPairIF } from '../../utils/interfaces/exp
 import { useModal } from '../../components/Global/Modal/useModal';
 import { useRelativeModal } from '../../components/Global/RelativeModal/useRelativeModal';
 import { addReceipt } from '../../utils/state/receiptDataSlice';
+// import { calcImpact } from '../../App/functions/calcImpact';
 
 interface SwapPropsIF {
+    crocEnv: CrocEnv | undefined;
     importedTokens: Array<TokenIF>;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     searchableTokens: Array<TokenIF>;
@@ -38,11 +40,13 @@ interface SwapPropsIF {
     isPairStable: boolean;
     provider?: ethers.providers.Provider;
     isOnTradeRoute?: boolean;
-    gasPriceinGwei: string;
+    gasPriceinGwei: number | undefined;
     nativeBalance: string;
     lastBlockNumber: number;
-    tokenABalance: string;
-    tokenBBalance: string;
+    baseTokenBalance: string;
+    quoteTokenBalance: string;
+    baseTokenDexBalance: string;
+    quoteTokenDexBalance: string;
     isSellTokenBase: boolean;
     tokenPair: TokenPairIF;
     poolPriceDisplay: number | undefined;
@@ -56,6 +60,7 @@ interface SwapPropsIF {
 
 export default function Swap(props: SwapPropsIF) {
     const {
+        crocEnv,
         importedTokens,
         setImportedTokens,
         searchableTokens,
@@ -65,8 +70,10 @@ export default function Swap(props: SwapPropsIF) {
         isOnTradeRoute,
         nativeBalance,
         gasPriceinGwei,
-        tokenABalance,
-        tokenBBalance,
+        baseTokenBalance,
+        quoteTokenBalance,
+        baseTokenDexBalance,
+        quoteTokenDexBalance,
         isSellTokenBase,
         tokenPair,
         poolPriceDisplay,
@@ -148,6 +155,7 @@ export default function Swap(props: SwapPropsIF) {
     const [newSwapTransactionHash, setNewSwapTransactionHash] = useState('');
     const [txErrorCode, setTxErrorCode] = useState(0);
     const [txErrorMessage, setTxErrorMessage] = useState('');
+    const [priceImpact, setPriceImpact] = useState<CrocImpact | undefined>();
 
     useEffect(() => {
         if (poolPriceDisplay === undefined) {
@@ -158,6 +166,10 @@ export default function Swap(props: SwapPropsIF) {
             setSwapButtonErrorMessage('Invalid Token Pair');
         }
     }, [poolPriceDisplay]);
+
+    useEffect(() => {
+        console.log({ priceImpact });
+    }, [priceImpact]);
 
     async function initiateSwap() {
         if (!provider) return;
@@ -173,29 +185,38 @@ export default function Swap(props: SwapPropsIF) {
         const qty = isTokenAPrimary ? sellTokenQty : buyTokenQty;
         const isQtySell = isTokenAPrimary;
 
+        console.log({ slippageTolerancePercentage });
+
         const env = new CrocEnv(provider);
+
+        // const impact = await calcImpact(
+        //     isQtySell,
+        //     env,
+        //     sellTokenAddress,
+        //     buyTokenAddress,
+        //     slippageTolerancePercentage,
+        //     qty,
+        // );
+
+        console.log({ priceImpact });
+        console.log({ isWithdrawFromDexChecked });
+        console.log({ isSaveAsDexSurplusChecked });
 
         let tx;
         try {
             (tx = await (isQtySell
                 ? env
                       .sell(sellTokenAddress, qty)
-                      .for(
-                          buyTokenAddress,
-                          //     {
-                          //       slippage: slippageTolerancePercentage,
-                          //   }
-                      )
-                      .swap()
+                      .for(buyTokenAddress, {
+                          slippage: slippageTolerancePercentage,
+                      })
+                      .swap({ surplus: [isWithdrawFromDexChecked, isSaveAsDexSurplusChecked] })
                 : env
                       .buy(buyTokenAddress, qty)
-                      .with(
-                          sellTokenAddress,
-                          //     {
-                          //       slippage: slippageTolerancePercentage,
-                          //   }
-                      )
-                      .swap())),
+                      .with(sellTokenAddress, {
+                          slippage: slippageTolerancePercentage,
+                      })
+                      .swap({ surplus: [isWithdrawFromDexChecked, isSaveAsDexSurplusChecked] }))),
                 setNewSwapTransactionHash(tx?.hash);
         } catch (error) {
             setTxErrorCode(error?.code);
@@ -285,7 +306,12 @@ export default function Swap(props: SwapPropsIF) {
     const confirmSwapModalOrNull = isModalOpen ? (
         <Modal onClose={handleModalClose} title='Swap Confirmation'>
             <ConfirmSwapModal
+                poolPriceDisplay={poolPriceDisplay}
                 tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
+                isDenomBase={tradeData.isDenomBase}
+                baseTokenSymbol={tradeData.baseToken.symbol}
+                quoteTokenSymbol={tradeData.quoteToken.symbol}
+                priceImpact={priceImpact}
                 initiateSwapMethod={initiateSwap}
                 onClose={handleModalClose}
                 newSwapTransactionHash={newSwapTransactionHash}
@@ -327,6 +353,10 @@ export default function Swap(props: SwapPropsIF) {
                         transition={{ duration: 0.5 }}
                     >
                         <CurrencyConverter
+                            crocEnv={crocEnv}
+                            provider={provider}
+                            slippageTolerancePercentage={slippageTolerancePercentage}
+                            setPriceImpact={setPriceImpact}
                             tokenPair={tokenPair}
                             tokensBank={importedTokens}
                             setImportedTokens={setImportedTokens}
@@ -340,8 +370,10 @@ export default function Swap(props: SwapPropsIF) {
                                 parseFloat(nativeBalance),
                                 4,
                             ).toString()}
-                            tokenABalance={tokenABalance}
-                            tokenBBalance={tokenBBalance}
+                            baseTokenBalance={baseTokenBalance}
+                            quoteTokenBalance={quoteTokenBalance}
+                            baseTokenDexBalance={baseTokenDexBalance}
+                            quoteTokenDexBalance={quoteTokenDexBalance}
                             tokenAInputQty={tokenAInputQty}
                             tokenBInputQty={tokenBInputQty}
                             setTokenAInputQty={setTokenAInputQty}
@@ -362,6 +394,7 @@ export default function Swap(props: SwapPropsIF) {
                     </div>
                     <ExtraInfo
                         tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
+                        priceImpact={priceImpact}
                         isTokenABase={isSellTokenBase}
                         poolPriceDisplay={poolPriceDisplay || 0}
                         slippageTolerance={slippageTolerancePercentage}

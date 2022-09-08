@@ -13,6 +13,7 @@ import {
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { formatAmount } from '../../../../utils/numbers';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
+import Value from '../../../Global/Tabs/Value/Value';
 
 interface TransactionProps {
     swap: ISwap;
@@ -25,6 +26,8 @@ interface TransactionProps {
     isDenomBase: boolean;
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
+
+    openGlobalModal: (content: React.ReactNode) => void;
 }
 export default function TransactionCard(props: TransactionProps) {
     const {
@@ -186,6 +189,22 @@ export default function TransactionCard(props: TransactionProps) {
     const activeTransactionStyle =
         swap.id === currentTxActiveInTransactions ? styles.active_tx_style : '';
 
+    const usdValueNum = swap.valueUSD;
+
+    const usdValueTruncated = !usdValueNum
+        ? undefined
+        : usdValueNum < 0.0001
+        ? usdValueNum.toExponential(2)
+        : usdValueNum < 2
+        ? usdValueNum.toPrecision(3)
+        : usdValueNum >= 100000
+        ? formatAmount(usdValueNum)
+        : // ? baseLiqDisplayNum.toExponential(2)
+          usdValueNum.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          });
+
     return (
         <div
             className={`${styles.main_container} ${activeTransactionStyle}`}
@@ -202,7 +221,7 @@ export default function TransactionCard(props: TransactionProps) {
                 <WalletAndId
                     ownerId={ownerId}
                     posHash={txHash}
-                    ensName={swap.userEnsName ? swap.userEnsName : null}
+                    ensName={swap.ensResolution ? swap.ensResolution : null}
                     isOwnerActiveAccount={isOwnerActiveAccount}
                 />
 
@@ -214,12 +233,14 @@ export default function TransactionCard(props: TransactionProps) {
                 <TransactionTypeSide type={sideType} side='market' />
                 {/* ------------------------------------------------------ */}
 
+                <Value usdValue={usdValueTruncated ? '$' + usdValueTruncated : '…'} />
                 <TokenQty
                     baseTokenSymbol={baseToken?.symbol}
                     quoteTokenSymbol={quoteToken?.symbol}
                     baseQty={baseFlowDisplay}
                     quoteQty={quoteFlowDisplay}
                 />
+                {/* <button onClick={() => props.openGlobalModal('New modal works')}>Here</button> */}
             </div>
 
             <div className={styles.menu_container}>

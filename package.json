@@ -4,7 +4,7 @@
     "private": true,
     "dependencies": {
         "@apollo/client": "^3.6.8",
-        "@crocswap-libs/sdk": "^0.2.26",
+        "@crocswap-libs/sdk": "^0.2.34",
         "@d3fc/d3fc-extent": "^4.0.2",
         "@emotion/react": "^11.9.0",
         "@emotion/style": "^0.8.0",
@@ -33,7 +33,7 @@
         "d3": "^7.4.4",
         "d3fc": "^15.2.4",
         "dom-to-image": "^2.6.0",
-        "emoji-picker-react": "^3.6.1",
+        "emoji-picker-react": "^3.6.2",
         "ethers": "^5.6.5",
         "framer-motion": "4.1.17",
         "graphql": "^16.5.0",

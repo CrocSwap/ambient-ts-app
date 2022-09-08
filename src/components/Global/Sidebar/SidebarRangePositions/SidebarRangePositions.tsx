@@ -3,6 +3,7 @@ import SidebarRangePositionsCard from './SidebarRangePositionsCard';
 import { PositionIF } from '../../../../utils/interfaces/PositionIF';
 import { SetStateAction, Dispatch } from 'react';
 import { TokenIF } from '../../../../utils/interfaces/TokenIF';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 interface SidebarRangeProps {
     isDenomBase: boolean;
@@ -18,15 +19,22 @@ interface SidebarRangeProps {
 
     isShowAllEnabled: boolean;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
+
+    expandTradeTable: boolean;
+    setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function SidebarRangePositions(props: SidebarRangeProps) {
+    const location = useLocation();
+    const navigate = useNavigate();
+
     const {
         tokenMap,
         isDenomBase,
         userPositions,
         currentPositionActive,
         setCurrentPositionActive,
+        expandTradeTable,
     } = props;
 
     const header = (
@@ -36,6 +44,27 @@ export default function SidebarRangePositions(props: SidebarRangeProps) {
             <div>Value</div>
         </div>
     );
+
+    // const mapItems = [1, 2, 3, 4, 5, 6, 7];
+
+    const onTradeRoute = location.pathname.includes('trade');
+    const onAccountRoute = location.pathname.includes('account');
+
+    const tabToSwitchToBasedOnRoute = onTradeRoute ? 2 : onAccountRoute ? 2 : 2;
+
+    function redirectBasedOnRoute() {
+        if (onTradeRoute || onAccountRoute) return;
+        navigate('/trade');
+    }
+
+    const handleViewMoreClick = () => {
+        props.setOutsideControl(true);
+        props.setSelectedOutsideTab(2);
+        redirectBasedOnRoute();
+
+        props.setIsShowAllEnabled(true);
+        props.setExpandTradeTable(true);
+    };
 
     const sidebarRangePositionCardProps = {
         tokenMap: tokenMap,
@@ -47,8 +76,10 @@ export default function SidebarRangePositions(props: SidebarRangeProps) {
         setCurrentPositionActive: setCurrentPositionActive,
         isShowAllEnabled: props.isShowAllEnabled,
         setIsShowAllEnabled: props.setIsShowAllEnabled,
+
+        tabToSwitchToBasedOnRoute: tabToSwitchToBasedOnRoute,
     };
-    // const mapItems = [1, 2, 3, 4, 5, 6, 7];
+
     return (
         <div className={styles.container}>
             {header}
@@ -63,6 +94,11 @@ export default function SidebarRangePositions(props: SidebarRangeProps) {
                         />
                     ))}
             </div>
+            {!expandTradeTable && (
+                <div className={styles.view_more} onClick={handleViewMoreClick}>
+                    View More
+                </div>
+            )}
         </div>
     );
 }

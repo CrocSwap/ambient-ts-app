@@ -9,15 +9,18 @@ import truncateDecimals from '../../../utils/data/truncateDecimals';
 // import makePriceDisplay from './makePriceDisplay';
 import { TokenPairIF } from '../../../utils/interfaces/exports';
 import TooltipComponent from '../../Global/TooltipComponent/TooltipComponent';
+import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import { CrocImpact } from '@crocswap-libs/sdk';
 
 // interface for props in this file
 interface ExtraInfoPropsIF {
     tokenPair: TokenPairIF;
+    priceImpact: CrocImpact | undefined;
     poolPriceDisplay: number;
     slippageTolerance: number;
     liquidityProviderFee: number;
     quoteTokenIsBuy: boolean;
-    gasPriceinGwei: string;
+    gasPriceinGwei: number | undefined;
     didUserFlipDenom: boolean;
     isTokenABase: boolean;
     isDenomBase: boolean;
@@ -26,7 +29,8 @@ interface ExtraInfoPropsIF {
 // central react functional component
 export default function ExtraInfo(props: ExtraInfoPropsIF) {
     const {
-        tokenPair,
+        // tokenPair,
+        priceImpact,
         poolPriceDisplay,
         slippageTolerance,
         liquidityProviderFee,
@@ -34,14 +38,19 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
         gasPriceinGwei,
         // didUserFlipDenom,
         isTokenABase,
-        isDenomBase,
+        // isDenomBase,
     } = props;
 
     const [showExtraDetails, setShowExtraDetails] = useState<boolean>(false);
 
-    const truncatedGasInGwei = truncateDecimals(parseFloat(gasPriceinGwei), 2);
+    const truncatedGasInGwei = gasPriceinGwei ? truncateDecimals(gasPriceinGwei, 2) : undefined;
 
-    const reverseDisplay = (isTokenABase && !isDenomBase) || (!isTokenABase && isDenomBase);
+    // const reverseDisplay = (isTokenABase && !isDenomBase) || (!isTokenABase && isDenomBase);
+    const tradeData = useAppSelector((state) => state.tradeData);
+
+    const isDenomBase = tradeData.isDenomBase;
+    const baseTokenSymbol = tradeData.baseToken.symbol;
+    const quoteTokenSymbol = tradeData.quoteToken.symbol;
 
     let reverseSlippage: boolean;
 
@@ -74,19 +83,47 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
                   maximumFractionDigits: 2,
               });
 
-    const priceLimitAfterSlippageAndFee = reverseSlippage
-        ? displayPriceWithDenom * (1 + slippageTolerance / 100) * (1 + liquidityProviderFee / 100)
-        : displayPriceWithDenom * (1 - slippageTolerance / 100) * (1 - liquidityProviderFee / 100);
+    // const priceLimitAfterSlippageAndFee = reverseSlippage
+    //     ? displayPriceWithDenom * (1 + slippageTolerance / 100) * (1 + liquidityProviderFee / 100)
+    //     : displayPriceWithDenom * (1 - slippageTolerance / 100) * (1 - liquidityProviderFee / 100);
 
-    const displayLimitPriceString =
-        displayPriceWithDenom === Infinity || displayPriceWithDenom === 0
+    const priceAfterImpact = priceImpact?.finalPrice;
+    const priceAfterImpactWithDenom = priceAfterImpact
+        ? isDenomBase
+            ? priceAfterImpact
+            : 1 / priceAfterImpact
+        : undefined;
+
+    const priceLimitAfterImpactAndFee = priceAfterImpactWithDenom
+        ? reverseSlippage
+            ? priceAfterImpactWithDenom * (1 + liquidityProviderFee / 100)
+            : priceAfterImpactWithDenom * (1 - liquidityProviderFee / 100)
+        : undefined;
+
+    // const displayLimitPriceString =
+    //     displayPriceWithDenom === Infinity || displayPriceWithDenom === 0
+    //         ? '…'
+    //         : priceLimitAfterSlippageAndFee < 2
+    //         ? priceLimitAfterSlippageAndFee.toLocaleString(undefined, {
+    //               minimumFractionDigits: 2,
+    //               maximumFractionDigits: 6,
+    //           })
+    //         : priceLimitAfterSlippageAndFee.toLocaleString(undefined, {
+    //               minimumFractionDigits: 2,
+    //               maximumFractionDigits: 2,
+    //           });
+
+    const displayPriceAfterImpactString =
+        !priceLimitAfterImpactAndFee ||
+        priceLimitAfterImpactAndFee === Infinity ||
+        priceLimitAfterImpactAndFee === 0
             ? '…'
-            : priceLimitAfterSlippageAndFee < 2
-            ? priceLimitAfterSlippageAndFee.toLocaleString(undefined, {
+            : priceLimitAfterImpactAndFee < 2
+            ? priceLimitAfterImpactAndFee.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 6,
               })
-            : priceLimitAfterSlippageAndFee.toLocaleString(undefined, {
+            : priceLimitAfterImpactAndFee.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
               });
@@ -103,16 +140,19 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
         {
             title: 'Spot Price',
             tooltipTitle: 'Current Price of the Selected Token Pool',
-            data: reverseDisplay
-                ? `${displayPriceString} ${tokenPair.dataTokenA.symbol} per ${tokenPair.dataTokenB.symbol}`
-                : `${displayPriceString} ${tokenPair.dataTokenB.symbol} per ${tokenPair.dataTokenA.symbol}`,
+            data: isDenomBase
+                ? `${displayPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
+                : `${displayPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
         },
         {
-            title: 'Price Limit',
-            tooltipTitle: 'Price Limit After Slippage and Fees',
-            data: reverseDisplay
-                ? `${displayLimitPriceString} ${tokenPair.dataTokenA.symbol} per ${tokenPair.dataTokenB.symbol}`
-                : `${displayLimitPriceString} ${tokenPair.dataTokenB.symbol} per ${tokenPair.dataTokenA.symbol}`,
+            title: 'Effective Conversion Rate',
+            tooltipTitle: 'Conversion Rate After Swap Impact and Fees',
+            data: isDenomBase
+                ? `${displayPriceAfterImpactString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
+                : `${displayPriceAfterImpactString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
+            // data: isDenomBase
+            //     ? `${displayLimitPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
+            //     : `${displayLimitPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
         },
         {
             title: 'Slippage Tolerance',
@@ -148,12 +188,13 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
                 onClick={() => setShowExtraDetails(!showExtraDetails)}
             >
                 <div className={styles.gas_pump}>
-                    <FaGasPump size={15} /> {truncatedGasInGwei} gwei
+                    <FaGasPump size={15} />{' '}
+                    {truncatedGasInGwei ? `${truncatedGasInGwei} gwei` : '…'}
                 </div>
                 <div className={styles.token_amount}>
-                    {reverseDisplay
-                        ? `1 ${tokenPair.dataTokenB.symbol} ≈ ${displayPriceString} ${tokenPair.dataTokenA.symbol}`
-                        : `1 ${tokenPair.dataTokenA.symbol} ≈ ${displayPriceString} ${tokenPair.dataTokenB.symbol}`}
+                    {isDenomBase
+                        ? `1 ${baseTokenSymbol} ≈ ${displayPriceString} ${quoteTokenSymbol}`
+                        : `1 ${quoteTokenSymbol} ≈ ${displayPriceString} ${baseTokenSymbol}`}
                     <RiArrowDownSLine size={27} />{' '}
                 </div>
             </div>

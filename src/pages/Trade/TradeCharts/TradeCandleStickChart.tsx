@@ -60,6 +60,7 @@ export default function TradeCandleStickChart(props: ChartData) {
         liquidityData: props.liquidityData,
     };
 
+    // Parse price data
     const parsedChartData = useMemo(() => {
         const chartData: CandleChartData[] = [];
         let period = 1;
@@ -69,18 +70,18 @@ export default function TradeCandleStickChart(props: ChartData) {
             }
             chartData.push({
                 date: new Date(data.time * 1000),
-                open: props.denomInBase
-                    ? data.invPriceOpenDecimalCorrected
-                    : data.priceOpenDecimalCorrected,
-                close: props.denomInBase
-                    ? data.invPriceCloseDecimalCorrected
-                    : data.priceCloseDecimalCorrected,
-                high: props.denomInBase
-                    ? data.invMinPriceDecimalCorrected
-                    : data.maxPriceDecimalCorrected,
-                low: props.denomInBase
-                    ? data.invMaxPriceDecimalCorrected
-                    : data.minPriceDecimalCorrected,
+                open: denomInBase
+                    ? data.invPriceOpenExclMEVDecimalCorrected
+                    : data.priceOpenExclMEVDecimalCorrected,
+                close: denomInBase
+                    ? data.invPriceCloseExclMEVDecimalCorrected
+                    : data.priceCloseExclMEVDecimalCorrected,
+                high: denomInBase
+                    ? data.invMinPriceExclMEVDecimalCorrected
+                    : data.maxPriceExclMEVDecimalCorrected,
+                low: denomInBase
+                    ? data.invMaxPriceExclMEVDecimalCorrected
+                    : data.minPriceExclMEVDecimalCorrected,
                 time: data.time,
                 allSwaps: [],
             });

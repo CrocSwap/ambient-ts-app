@@ -86,7 +86,7 @@ export default function Position(props: PositionPropsIF) {
     );
     const ownerId = position ? position.user : null;
 
-    const ensName = position?.userEnsName !== '' ? position.userEnsName : null;
+    const ensName = position?.ensResolution !== '' ? position.ensResolution : null;
     const ownerIdTruncated = position ? trimString(position.user, 6, 6, '…') : null;
 
     const positionData = {
