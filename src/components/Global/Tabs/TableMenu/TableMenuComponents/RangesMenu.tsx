@@ -29,6 +29,8 @@ interface RangesMenuIF {
     rangeDetailsProps: any;
     positionData: PositionIF;
     posHash: string;
+
+    openGlobalModal: (content: React.ReactNode) => void;
 }
 
 // React functional component
@@ -40,6 +42,8 @@ export default function RangesMenu(props: RangesMenuIF) {
         rangeDetailsProps,
         posHash,
         positionData,
+
+        openGlobalModal,
     } = props;
 
     const currentLocation = location.pathname;
@@ -173,6 +177,13 @@ export default function RangesMenu(props: RangesMenuIF) {
             {removeButton}
             {detailsButton}
             {copyButton}
+            <button
+                onClick={() =>
+                    openGlobalModal(<RemoveRange position={positionData} {...rangeDetailsProps} />)
+                }
+            >
+                Click me
+            </button>
         </div>
     );
 

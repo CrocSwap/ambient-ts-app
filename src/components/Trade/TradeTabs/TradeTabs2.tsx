@@ -135,6 +135,8 @@ export default function TradeTabs2(props: ITabsProps) {
         expandTradeTable: expandTradeTable,
         currentPositionActive: currentPositionActive,
         setCurrentPositionActive: setCurrentPositionActive,
+
+        openGlobalModal: props.openGlobalModal,
     };
     // Props for <Transactions/> React Element
     const transactionsProps = {
