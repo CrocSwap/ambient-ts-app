@@ -72,7 +72,7 @@ export const useUrlParams = (
             const tokenParam = urlParams.find(param => param[0] === tkn);
             const tokenAddress = tokenParam
                 ? tokenParam[1]
-                : '0x0000000000000000000000000000000000000000';
+                : ethers.constants.AddressZero;
             return tokenAddress;
         }
 
