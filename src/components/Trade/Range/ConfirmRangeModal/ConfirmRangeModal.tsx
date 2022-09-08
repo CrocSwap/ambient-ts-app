@@ -149,7 +149,7 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalPropsIF) {
             } ${tokenB.symbol}`}
         />
     );
-    const transactionDenied = <TransactionDenied />;
+    const transactionDenied = <TransactionDenied setConfirmDetails={setConfirmDetails} />;
     const transactionSubmitted = (
         <TransactionSubmitted
             hash={newRangeTransactionHash}

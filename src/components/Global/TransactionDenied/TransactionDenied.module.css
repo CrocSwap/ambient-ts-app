@@ -26,6 +26,18 @@
     align-items: center;
 }
 
+.removal_pending {
+    width: 100%;
+    min-height: 300px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-left: 10px;
+    text-align: center;
+    gap: 1rem;
+}
+
 .arrow {
     position: relative;
     z-index: 1;

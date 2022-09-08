@@ -113,6 +113,9 @@ export default function RemoveRange(props: IRemoveRangeProps) {
 
     const [showSettings, setShowSettings] = useState(false);
 
+    const positionHasLiquidity =
+        (posLiqBaseDecimalCorrected || 0) + (posLiqQuoteDecimalCorrected || 0) > 0;
+
     const removeRangeSetttingIcon = (
         <div onClick={() => setShowSettings(!showSettings)} className={styles.settings_icon}>
             {showSettings ? null : <RiListSettingsLine size={20} />}
@@ -205,7 +208,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
             <div className={styles.completed_animation}>
                 <Animation animData={completed} loop={false} />
             </div>
-            <p>message to be display here</p>
+            <p>Removal Transaction Successfully Submitted</p>
             <a
                 href={etherscanLink}
                 target='_blank'
@@ -270,8 +273,10 @@ export default function RemoveRange(props: IRemoveRangeProps) {
 
     const buttonToDisplay = showSettings ? (
         <Button title='Confirm' action={() => setShowSettings(false)} />
-    ) : (
+    ) : positionHasLiquidity ? (
         <RemoveRangeButton removeFn={removeFn} disabled={showSettings} title='Remove Range' />
+    ) : (
+        <RemoveRangeButton removeFn={removeFn} disabled={true} title='…' />
     );
 
     const mainModalContent = showSettings ? (

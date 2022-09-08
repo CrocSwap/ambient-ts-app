@@ -101,7 +101,7 @@ export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
         />
     );
 
-    const transactionDenied = <TransactionDenied />;
+    const transactionDenied = <TransactionDenied setConfirmDetails={setConfirmDetails} />;
 
     const transactionSubmitted = (
         <TransactionSubmitted

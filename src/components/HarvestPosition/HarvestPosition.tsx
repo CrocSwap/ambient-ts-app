@@ -156,9 +156,7 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
     const positionType = 'concentrated';
 
     const feesGreaterThanZero =
-        feeLiqBaseDecimalCorrected && feeLiqQuoteDecimalCorrected
-            ? feeLiqBaseDecimalCorrected + feeLiqQuoteDecimalCorrected > 0
-            : false;
+        (feeLiqBaseDecimalCorrected || 0) + (feeLiqQuoteDecimalCorrected || 0) > 0;
 
     const harvestButtonOrNull =
         positionType === 'concentrated' && feesGreaterThanZero && !showSettings ? (
@@ -186,7 +184,7 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
             <div className={styles.completed_animation}>
                 <Animation animData={completed} loop={false} />
             </div>
-            <p>message to be display here</p>
+            <p>Harvest Transaction Successfully Submitted</p>
             <a
                 href={etherscanLink}
                 target='_blank'

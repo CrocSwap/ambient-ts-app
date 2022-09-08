@@ -161,7 +161,7 @@ export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
         />
     );
 
-    const transactionDenied = <TransactionDenied />;
+    const transactionDenied = <TransactionDenied setConfirmDetails={setConfirmDetails} />;
 
     const transactionSubmitted = (
         <TransactionSubmitted
