@@ -141,11 +141,23 @@ export default function App() {
     const [currentTxActiveInTransactions, setCurrentTxActiveInTransactions] = useState('');
     const [currentPositionActive, setCurrentPositionActive] = useState('');
     const [expandTradeTable, setExpandTradeTable] = useState(false);
-    const [provider, setProvider] = useState<ethers.providers.Provider>();
     const [userIsOnline, setUserIsOnline] = useState(navigator.onLine);
 
     window.ononline = () => setUserIsOnline(true);
     window.onoffline = () => setUserIsOnline(false);
+
+    const [provider, setProvider] = useState<ethers.providers.Provider>();
+    const [crocEnv, setCrocEnv] = useState<CrocEnv | undefined>();
+
+    useEffect(() => {
+        (async () => {
+            if (!provider) {
+                return;
+            } else {
+                setCrocEnv(new CrocEnv(provider));
+            }
+        })();
+    }, [provider]);
 
     function exposeProviderUrl(provider?: ethers.providers.Provider): string {
         if (provider && 'connection' in provider) {
@@ -1219,22 +1231,6 @@ export default function App() {
     const graphData = useAppSelector((state) => state.graphData);
 
     const getSwapData = async (swap: ISwap): Promise<ISwap> => {
-        // swap.base = swap.base.startsWith('0x') ? swap.base : '0x' + swap.base;
-        // swap.quote = swap.quote.startsWith('0x') ? swap.quote : '0x' + swap.quote;
-        // swap.user = swap.user.startsWith('0x') ? swap.user : '0x' + swap.user;
-        // swap.id = '0x' + swap.id.slice(6);
-
-        // const viewProvider = provider
-        //     ? provider
-        //     : (await new CrocEnv(chainData.chainId).context).provider;
-
-        // try {
-        //     const ensName = await cachedFetchAddress(viewProvider, swap.user, chainData.chainId);
-        //     if (ensName) swap.userEnsName = ensName;
-        // } catch (error) {
-        //     console.warn(error);
-        // }
-
         return swap;
     };
 
@@ -1663,6 +1659,7 @@ export default function App() {
 
     // props for <Swap/> React element
     const swapProps = {
+        crocEnv: crocEnv,
         importedTokens: importedTokens,
         setImportedTokens: setImportedTokens,
         searchableTokens: searchableTokens,
@@ -1689,6 +1686,7 @@ export default function App() {
 
     // props for <Swap/> React element on trade route
     const swapPropsTrade = {
+        crocEnv: crocEnv,
         importedTokens: importedTokens,
         setImportedTokens: setImportedTokens,
         searchableTokens: searchableTokens,
