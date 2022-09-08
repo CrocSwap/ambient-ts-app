@@ -263,7 +263,7 @@ export default function TradeCandleStickChart(props: ChartData) {
             <div style={{ height: `${chartHeight}%`, width: '100%' }}>
                 <Chart
                     priceData={data.priceData}
-                    liquidityData={props.liquidityData.ranges}
+                    liquidityData={props.liquidityData?.ranges}
                     changeState={props.changeState}
                     targetData={props.targetData}
                     limitPrice={props.limitPrice}
