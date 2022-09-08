@@ -1,9 +1,11 @@
 import { useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
+import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
 import { useMoralisWeb3Api } from 'react-moralis';
 import { defaultTokens } from '../../utils/data/defaultTokens';
 import { ethers } from 'ethers';
-import { logDOM } from '@testing-library/react';
+import { setTokenA, setTokenB } from '../../utils/state/tradeDataSlice';
+import { TokenIF } from '../../utils/interfaces/TokenIF';
 // import swapParams from '../../utils/classes/swapParams';
 
 /**     Instructions to Use This Hook
@@ -22,6 +24,8 @@ export const useUrlParams = (
 ) => {
     // get URL parameters, empty string if undefined
     const { params } = useParams() ?? '';
+
+    const dispatch = useAppDispatch();
 
     // needed to pull token metadata from on-chain
     const Web3Api = useMoralisWeb3Api();
@@ -107,7 +111,11 @@ export const useUrlParams = (
             Promise.all([
                 fetchAndFormatTokenData(getAddress('tokenA')),
                 fetchAndFormatTokenData(getAddress('tokenB'))
-            ]).then(res => console.log(res));
+            ]).then(res => {
+                console.log(res);
+                dispatch(setTokenA(res[0] as TokenIF));
+                dispatch(setTokenB(res[1] as TokenIF));
+            });
         }
     }, [isInitialized]);
 }
