@@ -80,7 +80,7 @@ export const useUrlParams = (
     ), [chainToUse]);
     // console.log(nativeToken);
 
-    // assume this will NOT get the zero address
+    // this can probably go inside the useEffect() hook for token data
     const fetchAndFormatTokenData = (addr: string) => {
         if (addr === ethers.constants.AddressZero) return nativeToken;
         const promise = Web3Api.token.getTokenMetadata({
