@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import styles from './Room.module.css';
 import { PoolIF } from '../../../../utils/interfaces/PoolIF';
-import { pool } from '../../../../utils/state/graphDataSlice';
 import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import { targetData } from '../../../../utils/state/tradeDataSlice';
 import { useEffect } from 'react';
@@ -37,7 +36,7 @@ interface RoomProps {
 }
 
 export default function Room(props: RoomProps) {
-    const { favePools, selectedRoom, setRoom, currentPool } = props;
+    const { currentPool } = props;
 
     const defaultRooms = [
         {
@@ -60,8 +59,6 @@ export default function Room(props: RoomProps) {
             value: 'Current Pool',
         });
     }, [currentPool.baseToken.symbol, currentPool.quoteToken.symbol]);
-
-    //  console.log(defaultRooms)
 
     const rooms = props.favePools;
     return (
