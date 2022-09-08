@@ -46,6 +46,7 @@
         "mockdate": "^3.0.5",
         "moment": "^2.29.4",
         "moralis": "^1.11.0",
+        "moralis-v1": "^1.11.0",
         "numbro": "^2.3.6",
         "react": "^18.1.0",
         "react-dom": "^18.1.0",
@@ -66,7 +67,7 @@
         "web-vitals": "^2.1.0"
     },
     "scripts": {
-        "start": "yarn && react-scripts start",
+        "start": "yarn && react-scripts --openssl-legacy-provider start",
         "start-only": "react-scripts start",
         "build": "react-scripts --max_old_space_size=3072 build",
         "test": "react-scripts test ",
