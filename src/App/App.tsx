@@ -2074,7 +2074,7 @@ export default function App() {
                         onClose={function (): void {
                             throw new Error('Function not implemented.');
                         }}
-                        favePools={[]}
+                        favePools={favePools}
                         currentPool={currentPoolInfo}
                     />
                 )}

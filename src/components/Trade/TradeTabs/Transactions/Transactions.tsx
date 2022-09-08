@@ -7,7 +7,6 @@ import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { Dispatch, SetStateAction, useState, useEffect, ReactNode } from 'react';
 import TransactionsSkeletons from './TransactionsSkeletons/TransactionsSkeletons';
 import SelectedCandleData from '../../../Global/Tabs/SelectedCanleData/SelectedCandleData';
-import Pagination from '../../../Global/Pagination/Pagination';
 
 interface TransactionsProps {
     isShowAllEnabled: boolean;

@@ -29,6 +29,7 @@ export default function MessageInput(props: MessageInputProps) {
     const [message, setMessage] = useState('');
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleEmojiClick = (event: any, emoji: any) => {
         let msg = message;
         msg += emoji.emoji;
