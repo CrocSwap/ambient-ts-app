@@ -48,7 +48,7 @@ export default function Room(props: RoomProps) {
         {
             id: 101,
             name: 'Current Pool',
-            value: currentPool.baseToken.symbol + currentPool.quoteToken.symbol,
+            value: 'Current Pool',
         },
     ];
 
@@ -57,7 +57,7 @@ export default function Room(props: RoomProps) {
         defaultRooms.push({
             id: 101,
             name: 'Current Pool',
-            value: currentPool.baseToken.symbol + currentPool.quoteToken.symbol,
+            value: 'Current Pool',
         });
     }, [currentPool.baseToken.symbol, currentPool.quoteToken.symbol]);
 
