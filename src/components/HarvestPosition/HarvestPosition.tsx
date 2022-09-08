@@ -153,7 +153,7 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
         handleConfirmationChange();
     }, [
         transactionApproved,
-        removalDenied,
+        // removalDenied,
         newHarvestTransactionHash,
         txErrorCode,
         showConfirmation,
