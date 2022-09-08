@@ -96,7 +96,6 @@ import { getTvlSeries } from './functions/getTvlSeries';
 import Chat from './components/Chat/Chat';
 import { formatAmount } from '../utils/numbers';
 import GlobalModal from './components/GlobalModal/GlobalModal';
-import ChatPanel from '../components/Chat/ChatPanel';
 
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 const cachedFetchAddress = memoizeFetchAddress();
@@ -127,7 +126,7 @@ export default function App() {
     const tokenMap = useTokenMap();
 
     const location = useLocation();
-    const [chatStatus, setChatStatus] = useState(false);
+
     // custom hook to manage chain the app is using
     // `chainData` is data on the current chain retrieved from our SDK
     // `isChainSupported` is a boolean indicating whether the chain is supported by Ambient
@@ -1811,6 +1810,7 @@ export default function App() {
 
     const [selectedOutsideTab, setSelectedOutsideTab] = useState(0);
     const [outsideControl, setOutsideControl] = useState(false);
+    const [chatStatus, setChatStatus] = useState(false);
 
     // props for <Sidebar/> React element
     const sidebarProps = {
@@ -1990,6 +1990,7 @@ export default function App() {
                                 />
                             }
                         />
+
                         <Route path='range2' element={<Range {...rangeProps} />} />
 
                         <Route
@@ -2063,17 +2064,6 @@ export default function App() {
                         ensName={ensName}
                         connectedAccount={account ? account : ''}
                         fullScreen={false}
-                    />
-                )}
-
-                {currentLocation !== '/app/chat' && (
-                    <ChatPanel
-                        chatStatus={chatStatus}
-                        onClose={function (): void {
-                            throw new Error('Function not implemented.');
-                        }}
-                        favePools={[]}
-                        currentPool={currentPoolInfo}
                     />
                 )}
             </div>
