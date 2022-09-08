@@ -111,6 +111,7 @@ export default function ChatPanel(props: ChatProps) {
                     className={`
                     ${styles.main_body}
                     `}
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     onClick={(e: any) => e.stopPropagation()}
                 >
                     <div
