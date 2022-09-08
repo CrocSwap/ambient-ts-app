@@ -1,11 +1,12 @@
 import { AuthenticateOptions } from 'react-moralis/lib/hooks/core/useMoralis/_useMoralisAuth';
-import { Moralis } from 'moralis';
+// import { Moralis } from 'moralis';
 
 export default async function authenticateMagic(
     email: string,
     authenticate: (
         options?: AuthenticateOptions | undefined,
-    ) => Promise<Moralis.User<Moralis.Attributes> | undefined>,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ) => Promise<any>,
     redirectModal: () => void,
 ) {
     redirectModal();

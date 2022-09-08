@@ -23,7 +23,8 @@ export interface ParsedPositionIF {
 }
 
 export async function parsePositionArray(
-    data: Moralis.Object<Moralis.Attributes>[],
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    data: any,
     provider: ethers.providers.Provider,
     setParsedPositionArray: Dispatch<SetStateAction<ParsedPositionIF[]>>,
 ) {

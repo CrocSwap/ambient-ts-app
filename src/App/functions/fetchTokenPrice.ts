@@ -5,7 +5,7 @@ export const fetchTokenPrice = async (address: string, chain: string) => {
 
     try {
         if (address && chain) {
-            const tokenPrice = await Moralis.Web3API.token.getTokenPrice(options);
+            const tokenPrice = await Moralis.EvmApi.token.getTokenPrice(options);
 
             return tokenPrice;
         }

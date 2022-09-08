@@ -1,6 +1,6 @@
 import { AuthenticateOptions } from 'react-moralis/lib/hooks/core/useMoralis/_useMoralisAuth';
 import { Web3EnableOptions } from 'react-moralis/lib/hooks/core/useMoralis/_useMoralisWeb3';
-import { Moralis } from 'moralis';
+// import { Moralis } from 'moralis';
 
 // function to authenticate wallet with Moralis server
 export default function authenticateMetamask(
@@ -8,10 +8,12 @@ export default function authenticateMetamask(
     isWeb3Enabled: boolean,
     authenticate: (
         options?: AuthenticateOptions | undefined,
-    ) => Promise<Moralis.User<Moralis.Attributes> | undefined>,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ) => Promise<any>,
     enableWeb3: (
         options?: Web3EnableOptions | undefined,
-    ) => Promise<Moralis.Web3Provider | undefined>,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ) => Promise<any>,
     errorAction: () => void,
 ) {
     const signingMessage = `Welcome to Ambient Finance!

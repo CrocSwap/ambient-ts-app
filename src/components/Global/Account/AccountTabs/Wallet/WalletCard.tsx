@@ -25,17 +25,11 @@ export default function WalletCard(props: WalletPropsIF) {
     const tokenFromMap = tokenMap && token?.token_address ? tokenMap.get(tokenAddress) : null;
 
     const [tokenPrice, setTokenPrice] = useState<{
-        nativePrice?:
-            | {
-                  value: string;
-                  decimals: number;
-                  name: string;
-                  symbol: string;
-              }
-            | undefined;
+        exchangeAddress: string | null;
+        nativePrice: string | null;
         usdPrice: number;
-        exchangeAddress?: string | undefined;
         exchangeName?: string | undefined;
+        symbol: unknown;
     }>();
 
     useEffect(() => {
@@ -44,7 +38,7 @@ export default function WalletCard(props: WalletPropsIF) {
                 const mainnetAddress = testTokenMap.get(tokenAddress)?.split('_')[0];
                 if (mainnetAddress) {
                     const price = await fetchTokenPrice(mainnetAddress, '0x1');
-                    if (price) setTokenPrice(price);
+                    if (price) setTokenPrice(price.toJSON());
                 }
             } catch (err) {
                 console.log(err);

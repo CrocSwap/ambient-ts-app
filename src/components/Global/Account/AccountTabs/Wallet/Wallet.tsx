@@ -29,10 +29,10 @@ export default function Wallet(props: WalletPropsIF) {
                     const newTokens = await fetchTokenBalances(
                         resolvedAddress,
                         chainId,
-                        connectedAccountActive,
+                        // connectedAccountActive,
                         1, // arbitrary number
                     );
-                    if (newTokens) setResolvedAddressTokens(newTokens);
+                    if (newTokens) setResolvedAddressTokens(newTokens.result);
                 } catch (error) {
                     console.log({ error });
                 }
