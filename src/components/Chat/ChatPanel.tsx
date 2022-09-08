@@ -13,16 +13,43 @@ import { Message } from './Model/MessageModel';
 import { PoolIF } from '../../utils/interfaces/PoolIF';
 import Picker from 'emoji-picker-react';
 import { BsEmojiSmileFill } from 'react-icons/bs';
+import { pool } from '../../utils/state/graphDataSlice';
+import { TokenIF } from '../../utils/interfaces/TokenIF';
+import { targetData } from '../../utils/state/tradeDataSlice';
+
+interface currentPoolInfo {
+    tokenA: TokenIF;
+    tokenB: TokenIF;
+    baseToken: TokenIF;
+    quoteToken: TokenIF;
+    didUserFlipDenom: boolean;
+    isDenomBase: boolean;
+    advancedMode: boolean;
+    isTokenAPrimary: boolean;
+    primaryQuantity: string;
+    isTokenAPrimaryRange: boolean;
+    primaryQuantityRange: string;
+    limitPrice: string;
+    advancedLowTick: number;
+    advancedHighTick: number;
+    simpleRangeWidth: number;
+    slippageTolerance: number;
+    activeChartPeriod: number;
+    targetData: targetData[];
+    pinnedMaxPriceDisplayTruncated: number;
+    pinnedMinPriceDisplayTruncated: number;
+}
 
 interface ChatProps {
     chatStatus: boolean;
     onClose: () => void;
     favePools: PoolIF[];
+    currentPool: currentPoolInfo;
     isFullScreen?: boolean;
 }
 
 export default function ChatPanel(props: ChatProps) {
-    const { favePools } = props;
+    const { favePools, currentPool } = props;
     const messageEnd = useRef<HTMLInputElement | null>(null);
     const _socket = socket;
     const [messages, setMessages] = useState<Message[]>([]);
@@ -56,7 +83,7 @@ export default function ChatPanel(props: ChatProps) {
 
     useEffect(() => {
         scrollToBottom();
-    }, [props.chatStatus]);
+    }, [props.chatStatus, room]);
 
     const header = (
         <header className={styles.modal_header}>
@@ -77,7 +104,7 @@ export default function ChatPanel(props: ChatProps) {
                     className={`
                     ${styles.main_body}
                     `}
-                    onClick={(e) => e.stopPropagation()}
+                    onClick={(e: any) => e.stopPropagation()}
                 >
                     <div
                         className={`
@@ -87,7 +114,12 @@ export default function ChatPanel(props: ChatProps) {
                         <div className={styles.chat_body}>
                             {header}
 
-                            <Room favePools={favePools} selectedRoom={room} setRoom={setRoom} />
+                            <Room
+                                favePools={favePools}
+                                selectedRoom={room}
+                                setRoom={setRoom}
+                                currentPool={currentPool}
+                            />
 
                             <div style={{ width: '90%' }}>
                                 <DividerDark changeColor addMarginTop addMarginBottom />

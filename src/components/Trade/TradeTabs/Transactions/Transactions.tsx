@@ -6,6 +6,7 @@ import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { Dispatch, SetStateAction, useState, useEffect } from 'react';
 import TransactionsSkeletons from './TransactionsSkeletons/TransactionsSkeletons';
+import SelectedCandleData from '../../../Global/Tabs/SelectedCanleData/SelectedCandleData';
 
 interface TransactionsProps {
     isShowAllEnabled: boolean;
@@ -99,24 +100,37 @@ export default function Transactions(props: TransactionsProps) {
     const tokenAAddress = tradeData.tokenA.address;
     const tokenBAddress = tradeData.tokenB.address;
 
-    const TransactionsDisplay = transactionData?.map((swap, idx) => (
-        //   />
-        <TransactionCard
-            key={idx}
-            swap={swap}
-            tokenMap={tokenMap}
-            chainId={chainId}
-            blockExplorer={blockExplorer}
-            tokenAAddress={tokenAAddress}
-            tokenBAddress={tokenBAddress}
-            isDenomBase={isDenomBase}
-            account={account}
-            currentTxActiveInTransactions={currentTxActiveInTransactions}
-            setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
-        />
-    ));
+    const TransactionsDisplay = (
+        <>
+            {isCandleSelected && <SelectedCandleData filter={filter} />}
 
-    const noData = <div className={styles.no_data}>No Data to Display</div>;
+            {transactionData?.map((swap, idx) => (
+                //   />
+                <TransactionCard
+                    key={idx}
+                    swap={swap}
+                    tokenMap={tokenMap}
+                    chainId={chainId}
+                    blockExplorer={blockExplorer}
+                    tokenAAddress={tokenAAddress}
+                    tokenBAddress={tokenBAddress}
+                    isDenomBase={isDenomBase}
+                    account={account}
+                    currentTxActiveInTransactions={currentTxActiveInTransactions}
+                    setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
+                />
+            ))}
+        </>
+    );
+
+    const noData = (
+        <>
+            {' '}
+            {isCandleSelected && <SelectedCandleData filter={filter} />}{' '}
+            <div className={styles.no_data}>No Data to Display</div>{' '}
+        </>
+    );
+
     const transactionDataOrNull = dataToDisplay ? TransactionsDisplay : noData;
 
     return (

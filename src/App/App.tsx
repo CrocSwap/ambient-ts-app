@@ -201,6 +201,7 @@ export default function App() {
 
     // current configurations of trade as specified by the user
     const tradeData = useAppSelector((state) => state.tradeData);
+    const currentPoolInfo = tradeData;
 
     // tokens specifically imported by the end user
     const [importedTokens, setImportedTokens] = useState<TokenIF[]>(defaultTokens);
@@ -888,7 +889,8 @@ export default function App() {
         candleSubscriptionEndpoint,
         {
             onOpen: () => console.log({ candleSubscriptionEndpoint }),
-            onClose: (event) => console.log({ event }),
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            onClose: (event: any) => console.log({ event }),
             shouldReconnect: () => shouldCandleSubscriptionsReconnect,
         },
         // only connect if base/quote token addresses are available
@@ -1947,6 +1949,7 @@ export default function App() {
                         lastBlockNumber={lastBlockNumber}
                         userIsOnline={userIsOnline}
                         favePools={favePools}
+                        currentPool={currentPoolInfo}
                         setChatStatus={setChatStatus}
                         chatStatus={chatStatus}
                     />
@@ -1973,6 +1976,7 @@ export default function App() {
                             throw new Error('Function not implemented.');
                         }}
                         favePools={[]}
+                        currentPool={currentPoolInfo}
                     />
                 )}
             </div>
