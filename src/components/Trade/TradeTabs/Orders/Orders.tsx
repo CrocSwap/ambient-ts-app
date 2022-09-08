@@ -8,47 +8,68 @@ import OrderCardHeader from './OrderCardHeader';
 
 // START: Import Local Files
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import { graphData } from '../../../../utils/state/graphDataSlice';
 
 // interface for props for react functional component
 interface propsIF {
     expandTradeTable: boolean;
     account: string;
+    graphData: graphData;
 }
 
 // main react functional component
 export default function Orders(props: propsIF) {
-    const { expandTradeTable, account } = props;
+    const { expandTradeTable, account, graphData } = props;
+
+    const limitOrders = graphData.limitOrdersByUser.limitOrders;
 
     const tradeData = useAppSelector((state) => state.tradeData);
+
+    const selectedBaseToken = tradeData.baseToken.address.toLowerCase();
+    const selectedQuoteToken = tradeData.quoteToken.address.toLowerCase();
+
+    const isDenomBase = tradeData.isDenomBase;
 
     const columnHeaders = [
         {
             name: 'ID',
             sortable: true,
+            className: '',
         },
         {
             name: 'Wallet',
             sortable: true,
+            className: 'wallet',
         },
         {
             name: 'Price',
             sortable: true,
+            className: 'price',
         },
         {
             name: 'Side',
             sortable: true,
+            className: 'side',
         },
         {
             name: 'Type',
             sortable: true,
+            className: 'type',
+        },
+        {
+            name: 'Value',
+            sortable: true,
+            className: '',
         },
         {
             name: tradeData.baseToken.symbol,
             sortable: false,
+            className: 'token',
         },
         {
             name: tradeData.quoteToken.symbol,
             sortable: false,
+            className: 'token',
         },
     ];
 
@@ -64,15 +85,22 @@ export default function Orders(props: propsIF) {
 
     const ItemContent = (
         <div className={styles.item_container}>
-            {[1, 2, 3, 4, 5, 6].map((item, idx) => (
-                <OrderCard key={idx} account={account} />
+            {limitOrders.map((order, idx) => (
+                <OrderCard
+                    key={idx}
+                    account={account}
+                    limitOrder={order}
+                    isDenomBase={isDenomBase}
+                    selectedBaseToken={selectedBaseToken}
+                    selectedQuoteToken={selectedQuoteToken}
+                />
             ))}
         </div>
     );
 
     return (
         <div className={styles.container}>
-            <header>
+            {/* <header >
                 {columnHeaders.map((header) => (
                     <OrderCardHeader
                         key={`orderDataHeaderField${header.name}`}
@@ -81,9 +109,17 @@ export default function Orders(props: propsIF) {
                         setSortBy={setSortBy}
                         reverseSort={reverseSort}
                         setReverseSort={setReverseSort}
+                        columnHeaders={columnHeaders}
                     />
                 ))}
-            </header>
+            </header> */}
+            <OrderCardHeader
+                sortBy={sortBy}
+                setSortBy={setSortBy}
+                reverseSort={reverseSort}
+                setReverseSort={setReverseSort}
+                columnHeaders={columnHeaders}
+            />
             <div
                 className={styles.item_container}
                 style={{ height: expandTradeTable ? '100%' : '170px' }}

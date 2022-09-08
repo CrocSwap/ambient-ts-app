@@ -4,15 +4,15 @@ import { Dispatch, SetStateAction } from 'react';
 interface ChatButtonPropsIF {
     showChatBot: boolean;
     setShowChatBot: Dispatch<SetStateAction<boolean>>;
-    setShowWelcomeBack: Dispatch<SetStateAction<boolean>>;
+    //     setShowWelcomeBack: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function ChatButton(props: ChatButtonPropsIF) {
-    const { showChatBot, setShowChatBot, setShowWelcomeBack } = props;
+    const { showChatBot, setShowChatBot } = props;
 
     const handleButtonClick = () => {
         setShowChatBot(!showChatBot);
-        setShowWelcomeBack(false);
+        // setShowWelcomeBack(false);
     };
 
     return (

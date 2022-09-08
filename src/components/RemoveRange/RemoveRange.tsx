@@ -13,7 +13,7 @@ import { RiListSettingsLine } from 'react-icons/ri';
 import { BsArrowLeft } from 'react-icons/bs';
 import { PositionIF } from '../../utils/interfaces/PositionIF';
 import { ethers } from 'ethers';
-import { CrocEnv } from '@crocswap-libs/sdk';
+import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import Button from '../Global/Button/Button';
 
 import RemoveRangeSettings from './RemoveRangeSettings/RemoveRangeSettings';
@@ -23,6 +23,7 @@ import {
 } from '../Global/LoadingAnimations/CircleLoader/CircleLoader';
 interface IRemoveRangeProps {
     provider: ethers.providers.Provider;
+    chainData: ChainSpec;
     chainId: string;
     poolIdx: number;
     user: string;
@@ -50,6 +51,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
         // askTick,
         // baseTokenAddress,
         // quoteTokenAddress,
+        chainData,
         provider,
         lastBlockNumber,
         position,
@@ -175,55 +177,15 @@ export default function RemoveRange(props: IRemoveRangeProps) {
                     [lowLimit, highLimit],
                 );
                 console.log(tx?.hash);
-                // setNewRemovalTransactionHash(tx?.hash);
+                setNewRemovalTransactionHash(tx?.hash);
             } catch (error) {
-                // setTxErrorCode(error?.code);
-                // setTxErrorMessage(error?.message);
+                setTxErrorCode(error?.code);
+                setTxErrorMessage(error?.message);
             }
         } else {
             console.log('unsupported position type for removal');
         }
     };
-
-    const harvestFn = async () => {
-        console.log('all fees to be removed.');
-
-        const env = new CrocEnv(provider);
-        const pool = env.pool(position.base, position.quote);
-        const spotPrice = await pool.displayPrice();
-
-        const lowLimit = spotPrice * (1 - liquiditySlippageTolerance / 100);
-        const highLimit = spotPrice * (1 + liquiditySlippageTolerance / 100);
-
-        if (position.positionType === 'concentrated') {
-            try {
-                const tx = await pool.harvestRange(
-                    [position.bidTick, position.askTick],
-                    [lowLimit, highLimit],
-                );
-                console.log(tx?.hash);
-                // setNewRemovalTransactionHash(tx?.hash);
-            } catch (error) {
-                // setTxErrorCode(error?.code);
-                // setTxErrorMessage(error?.message);
-            }
-        } else {
-            console.log('unsupported position type for harvest');
-        }
-    };
-
-    const harvestButtonOrNull =
-        position.positionType === 'concentrated' &&
-        (position.feesLiqBaseDecimalCorrected || 0) + (position.feesLiqQuoteDecimalCorrected || 0) >
-            0 ? (
-            <RemoveRangeButton removeFn={harvestFn} title={'Harvest Fees'} />
-        ) : null;
-
-    // const removeRangeSettingsPage = (
-    //     <div className={styles.remove_range_settings_container}>
-    //         <RemoveRangeSettings showSettings={showSettings} setShowSettings={setShowSettings} />
-    //     </div>
-    // );
 
     const removalDenied = (
         <div className={styles.removal_pending}>
@@ -236,6 +198,8 @@ export default function RemoveRange(props: IRemoveRangeProps) {
         </div>
     );
 
+    const etherscanLink = chainData.blockExplorer + 'tx/' + newRemovalTransactionHash;
+
     const removalSuccess = (
         <div className={styles.removal_pending}>
             <div className={styles.completed_animation}>
@@ -243,7 +207,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
             </div>
             <p>message to be display here</p>
             <a
-                href={newRemovalTransactionHash}
+                href={etherscanLink}
                 target='_blank'
                 rel='noreferrer'
                 className={styles.view_etherscan}
@@ -286,7 +250,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
         handleConfirmationChange();
     }, [
         transactionApproved,
-        removalDenied,
+        // removalDenied,
         newRemovalTransactionHash,
         txErrorCode,
         showConfirmation,
@@ -349,7 +313,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
         <div className={styles.remove_range_container}>
             <div className={styles.main_content}>
                 {mainModalContent}
-                {harvestButtonOrNull}
+                {/* {harvestButtonOrNull} */}
                 {buttonToDisplay}
             </div>
         </div>
