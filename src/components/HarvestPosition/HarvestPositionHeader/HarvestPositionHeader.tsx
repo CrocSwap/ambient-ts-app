@@ -2,27 +2,27 @@ import RangeStatus from '../../Global/RangeStatus/RangeStatus';
 import styles from './HarvestPositionHeader.module.css';
 // import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 // import { toggleDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
-// interface IHarvestPositionHeaderProps {
-//     isPositionInRange: boolean;
-//     isAmbient: boolean;
-//     baseTokenSymbol: string;
-//     quoteTokenSymbol: string;
-//     baseTokenLogoURI: string;
-//     quoteTokenLogoURI: string;
-//     isDenomBase: boolean;
-// }
+interface IHarvestPositionHeaderProps {
+    isPositionInRange: boolean;
+    isAmbient: boolean;
+    baseTokenSymbol: string;
+    quoteTokenSymbol: string;
+    baseTokenLogoURI: string;
+    quoteTokenLogoURI: string;
+    isDenomBase: boolean;
+}
 
-export default function HarvestPositionHeader() {
+export default function HarvestPositionHeader(props: IHarvestPositionHeaderProps) {
     // const dispatch = useAppDispatch();
 
     // temp values
     const baseTokenSymbol = 'ETH';
     const quoteTokenSymbol = 'USDC';
 
-    const baseTokenLogoURI =
-        'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png';
+    // const baseTokenLogoURI =
+    // 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png';
 
-    const quoteTokenLogoURI = 'https://cryptologos.cc/logos/usd-coin-usdc-logo.png';
+    // const quoteTokenLogoURI = 'https://cryptologos.cc/logos/usd-coin-usdc-logo.png';
 
     const isDenomBase = false;
 
@@ -38,8 +38,14 @@ export default function HarvestPositionHeader() {
                 //     dispatch(toggleDidUserFlipDenom());
                 // }}
             >
-                <img src={isDenomBase ? baseTokenLogoURI : quoteTokenLogoURI} alt='' />
-                <img src={isDenomBase ? quoteTokenLogoURI : baseTokenLogoURI} alt='' />
+                <img
+                    src={props.isDenomBase ? props.baseTokenLogoURI : props.quoteTokenLogoURI}
+                    alt=''
+                />
+                <img
+                    src={props.isDenomBase ? props.quoteTokenLogoURI : props.baseTokenLogoURI}
+                    alt=''
+                />
                 <span>
                     {isDenomBase ? baseTokenSymbol : quoteTokenSymbol} /
                     {isDenomBase ? quoteTokenSymbol : baseTokenSymbol}

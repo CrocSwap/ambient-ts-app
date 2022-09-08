@@ -11,8 +11,8 @@ import { FiExternalLink } from 'react-icons/fi';
 // import HarvestPositionSettings from './HarvestPositionSettings/HarvestPositionSettings';
 import { RiListSettingsLine } from 'react-icons/ri';
 import { BsArrowLeft } from 'react-icons/bs';
-// import { PositionIF } from '../../utils/interfaces/PositionIF';
-// import { ethers } from 'ethers';
+import { PositionIF } from '../../utils/interfaces/PositionIF';
+import { ethers } from 'ethers';
 // import { CrocEnv } from '@crocswap-libs/sdk';
 import Button from '../Global/Button/Button';
 
@@ -22,38 +22,40 @@ import {
     CircleLoaderFailed,
 } from '../Global/LoadingAnimations/CircleLoader/CircleLoader';
 
-// interface IHarvestPositionProps {
-//     provider: ethers.providers.Provider;
-//     chainId: string;
-//     poolIdx: number;
-//     user: string;
-//     bidTick: number;
-//     askTick: number;
-//     baseTokenAddress: string;
-//     quoteTokenAddress: string;
-//     isPositionInRange: boolean;
-//     isAmbient: boolean;
-//     baseTokenSymbol: string;
-//     quoteTokenSymbol: string;
-//     baseTokenLogoURI: string;
-//     quoteTokenLogoURI: string;
-//     isDenomBase: boolean;
-//     lastBlockNumber: number;
-//     position: PositionIF;
-// }
-export default function HarvestPosition() {
-    // const {
-    //     chainId,
-    //     poolIdx,
-    //     user,
-    //     bidTick,
-    //     askTick,
-    //     baseTokenAddress,
-    //     quoteTokenAddress,
-    //     provider,
-    //     lastBlockNumber,
-    //     position,
-    // } = props;
+interface IHarvestPositionProps {
+    provider: ethers.providers.Provider;
+    chainId: string;
+    poolIdx: number;
+    user: string;
+    bidTick: number;
+    askTick: number;
+    baseTokenAddress: string;
+    quoteTokenAddress: string;
+    isPositionInRange: boolean;
+    isAmbient: boolean;
+    baseTokenSymbol: string;
+    quoteTokenSymbol: string;
+    baseTokenLogoURI: string;
+    quoteTokenLogoURI: string;
+    isDenomBase: boolean;
+    lastBlockNumber: number;
+    position: PositionIF;
+}
+export default function HarvestPosition(props: IHarvestPositionProps) {
+    const {
+        baseTokenLogoURI,
+        quoteTokenLogoURI,
+        chainId,
+        poolIdx,
+        user,
+        bidTick,
+        askTick,
+        baseTokenAddress,
+        quoteTokenAddress,
+        provider,
+        lastBlockNumber,
+        position,
+    } = props;
 
     // settings
     const [showSettings, setShowSettings] = useState(false);
@@ -63,6 +65,8 @@ export default function HarvestPosition() {
             {showSettings ? null : <RiListSettingsLine size={20} />}
         </div>
     );
+
+    const [removalPercentage, setRemovalPercentage] = useState(100);
 
     const [showConfirmation, setShowConfirmation] = useState(false);
     // eslint-disable-next-line
@@ -179,30 +183,30 @@ export default function HarvestPosition() {
         <>
             <div className={styles.header_container}>
                 <HarvestPositionHeader
-                // isPositionInRange={props.isPositionInRange}
-                // isAmbient={props.isAmbient}
-                // baseTokenSymbol={props.baseTokenSymbol}
-                // quoteTokenSymbol={props.quoteTokenSymbol}
-                // baseTokenLogoURI={props.baseTokenLogoURI}
-                // quoteTokenLogoURI={props.quoteTokenLogoURI}
-                // isDenomBase={props.isDenomBase}
+                    isPositionInRange={props.isPositionInRange}
+                    isAmbient={props.isAmbient}
+                    baseTokenSymbol={props.baseTokenSymbol}
+                    quoteTokenSymbol={props.quoteTokenSymbol}
+                    baseTokenLogoURI={baseTokenLogoURI}
+                    quoteTokenLogoURI={quoteTokenLogoURI}
+                    isDenomBase={props.isDenomBase}
                 />
                 {harvestPositionSetttingIcon}
             </div>
             <HarvestPositionWidth
-            // removalPercentage={removalPercentage}
-            // setRemovalPercentage={setRemovalPercentage}
+                removalPercentage={removalPercentage}
+                setRemovalPercentage={setRemovalPercentage}
             />
             <HarvestPositionInfo
-            // baseTokenSymbol={props.baseTokenSymbol}
-            // quoteTokenSymbol={props.quoteTokenSymbol}
-            // baseTokenLogoURI={props.baseTokenLogoURI}
-            // quoteTokenLogoURI={props.quoteTokenLogoURI}
-            // posLiqBaseDecimalCorrected={posLiqBaseDecimalCorrected}
-            // posLiqQuoteDecimalCorrected={posLiqQuoteDecimalCorrected}
-            // feeLiqBaseDecimalCorrected={feeLiqBaseDecimalCorrected}
-            // feeLiqQuoteDecimalCorrected={feeLiqQuoteDecimalCorrected}
-            // removalPercentage={removalPercentage}
+                baseTokenSymbol={props.baseTokenSymbol}
+                quoteTokenSymbol={props.quoteTokenSymbol}
+                baseTokenLogoURI={baseTokenLogoURI}
+                quoteTokenLogoURI={quoteTokenLogoURI}
+                posLiqBaseDecimalCorrected={position.positionLiqBaseDecimalCorrected}
+                posLiqQuoteDecimalCorrected={position.positionLiqQuoteDecimalCorrected}
+                feeLiqBaseDecimalCorrected={position.feesLiqBaseDecimalCorrected}
+                feeLiqQuoteDecimalCorrected={position.feesLiqQuoteDecimalCorrected}
+                removalPercentage={removalPercentage}
             />
         </>
     );
