@@ -11,11 +11,12 @@ import styles from './Ranges.module.css';
 import { graphData } from '../../../../utils/state/graphDataSlice';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { useSortedPositions } from './useSortedPositions';
-import { CrocEnv } from '@crocswap-libs/sdk';
+import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 
 // interface for props
 interface RangesPropsIF {
     crocEnv: CrocEnv | undefined;
+    chainData: ChainSpec;
     provider: ethers.providers.Provider | undefined;
     isAuthenticated: boolean;
     account: string;
@@ -34,6 +35,7 @@ interface RangesPropsIF {
 export default function Ranges(props: RangesPropsIF) {
     const {
         crocEnv,
+        chainData,
         provider,
         account,
         isAuthenticated,
@@ -90,6 +92,7 @@ export default function Ranges(props: RangesPropsIF) {
                 {sortedPositions.map((position, idx) => (
                     <RangeCard
                         crocEnv={crocEnv}
+                        chainData={chainData}
                         provider={provider}
                         chainId={chainId}
                         key={idx}

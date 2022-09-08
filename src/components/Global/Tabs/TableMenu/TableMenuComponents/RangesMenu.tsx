@@ -17,11 +17,12 @@ import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import { DefaultTooltip } from '../../../StyledTooltip/StyledTooltip';
 import { PositionIF } from '../../../../../utils/interfaces/PositionIF';
 import HarvestPosition from '../../../../HarvestPosition/HarvestPosition';
-import { CrocEnv } from '@crocswap-libs/sdk';
+import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 
 // interface for React functional component props
 interface RangesMenuIF {
     crocEnv: CrocEnv | undefined;
+    chainData: ChainSpec;
     userMatchesConnectedAccount: boolean | undefined;
     // todoFromJr: Assign the correct types to these data -Jr
     // eslint-disable-next-line
@@ -32,8 +33,14 @@ interface RangesMenuIF {
 
 // React functional component
 export default function RangesMenu(props: RangesMenuIF) {
-    const { crocEnv, userMatchesConnectedAccount, rangeDetailsProps, posHash, positionData } =
-        props;
+    const {
+        crocEnv,
+        // chainData,
+        userMatchesConnectedAccount,
+        rangeDetailsProps,
+        posHash,
+        positionData,
+    } = props;
 
     const currentLocation = location.pathname;
     const { isAmbient, isPositionInRange } = rangeDetailsProps;
@@ -45,6 +52,12 @@ export default function RangesMenu(props: RangesMenuIF) {
     const [currentModal, setCurrentModal] = useState<string>('edit');
 
     const [openMenuTooltip, setOpenMenuTooltip] = useState(false);
+
+    const feesGreaterThanZero =
+        positionData.feesLiqBaseDecimalCorrected && positionData.feesLiqQuoteDecimalCorrected
+            ? positionData.feesLiqBaseDecimalCorrected + positionData.feesLiqQuoteDecimalCorrected >
+              0
+            : false;
 
     // ---------------------MODAL FUNCTIONALITY----------------
     let modalContent: ReactNode;
@@ -135,7 +148,7 @@ export default function RangesMenu(props: RangesMenuIF) {
         </button>
     );
     const harvestButton =
-        !isAmbient && userMatchesConnectedAccount ? (
+        !isAmbient && feesGreaterThanZero && userMatchesConnectedAccount ? (
             <button className={styles.option_button} onClick={openHarvestModal}>
                 Harvest
             </button>

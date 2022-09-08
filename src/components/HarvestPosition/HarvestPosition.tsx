@@ -21,10 +21,11 @@ import {
     CircleLoader,
     CircleLoaderFailed,
 } from '../Global/LoadingAnimations/CircleLoader/CircleLoader';
-import { CrocEnv } from '@crocswap-libs/sdk';
+import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 
 interface IHarvestPositionProps {
     crocEnv: CrocEnv | undefined;
+    chainData: ChainSpec;
     provider: ethers.providers.Provider;
     chainId: string;
     poolIdx: number;
@@ -46,6 +47,7 @@ interface IHarvestPositionProps {
 export default function HarvestPosition(props: IHarvestPositionProps) {
     const {
         crocEnv,
+        chainData,
         baseTokenLogoURI,
         quoteTokenLogoURI,
         // chainId,
@@ -125,6 +127,7 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
 
     const harvestFn = async () => {
         console.log('100% of fees to be removed.');
+        setShowConfirmation(true);
         if (!crocEnv) return;
         const env = crocEnv;
         const pool = env.pool(position.base, position.quote);
@@ -140,10 +143,10 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
                     [lowLimit, highLimit],
                 );
                 console.log(tx?.hash);
-                // setNewRemovalTransactionHash(tx?.hash);
+                setNewHarvestTransactionHash(tx?.hash);
             } catch (error) {
-                // setTxErrorCode(error?.code);
-                // setTxErrorMessage(error?.message);
+                setTxErrorCode(error?.code);
+                setTxErrorMessage(error?.message);
             }
         } else {
             console.log('unsupported position type for harvest');
@@ -161,11 +164,7 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
         positionType === 'concentrated' && feesGreaterThanZero && !showSettings ? (
             <HarvestPositionButton harvestFn={harvestFn} title={'Harvest Fees'} />
         ) : (
-            <HarvestPositionButton
-                disabled={true}
-                harvestFn={harvestFn}
-                title={'No Fees to Harvest'}
-            />
+            <HarvestPositionButton disabled={true} harvestFn={harvestFn} title={'…'} />
         );
 
     // confirmation modal
@@ -180,6 +179,8 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
         </div>
     );
 
+    const etherscanLink = chainData.blockExplorer + 'tx/' + newHarvestTransactionHash;
+
     const removalSuccess = (
         <div className={styles.removal_pending}>
             <div className={styles.completed_animation}>
@@ -187,7 +188,7 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
             </div>
             <p>message to be display here</p>
             <a
-                href={newHarvestTransactionHash}
+                href={etherscanLink}
                 target='_blank'
                 rel='noreferrer'
                 className={styles.view_etherscan}

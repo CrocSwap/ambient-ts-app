@@ -123,6 +123,7 @@ export default function TradeTabs2(props: ITabsProps) {
     // Props for <Ranges/> React Element
     const rangesProps = {
         crocEnv: crocEnv,
+        chainData: chainData,
         provider: provider,
         account: account,
         isAuthenticated: isAuthenticated,
