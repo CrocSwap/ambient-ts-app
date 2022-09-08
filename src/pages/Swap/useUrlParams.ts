@@ -58,14 +58,17 @@ export const useUrlParams = (
 
     console.log(urlParams);
 
-    const nativeToken = useMemo(() => {
+    const chainToUse = useMemo(() => {
         const chainParam = urlParams.find(param => param[0] === 'chain');
-        const chainToUse = chainParam ? chainParam[1] : chainId;
-        return defaultTokens.find(tkn =>
-                tkn.address === ethers.constants.AddressZero &&
-                tkn.chainId === parseInt(chainToUse)
-        );
+        return chainParam ? chainParam[1] : chainId;
     }, [chainId]);
+
+    const nativeToken = useMemo(() => (
+        defaultTokens.find(tkn =>
+            tkn.address === ethers.constants.AddressZero &&
+            tkn.chainId === parseInt(chainToUse)
+        )
+    ), [chainToUse]);
     console.log(nativeToken);
 
     // useEffect to switch chains if necessary
@@ -85,6 +88,11 @@ export const useUrlParams = (
 
         // TODO: this needs to be gatekept so it runs only once
         if (isInitialized) {
+
+            // zero address => fetch data and format it
+            //     this is a promise though...
+            // not zero address => use native token data
+
             const dataTknA = Web3Api.token.getTokenMetadata({
                 chain: chainId as '0x1', addresses: [addrTokenA]
             });
