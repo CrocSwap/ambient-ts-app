@@ -44,6 +44,7 @@
         "mockdate": "^3.0.5",
         "moment": "^2.29.4",
         "moralis": "^2.3.1",
+        "moralis-v1": "^1.11.0",
         "numbro": "^2.3.6",
         "react": "^18.1.0",
         "react-dom": "^18.1.0",
