@@ -26,7 +26,7 @@ export const useUrlParams = (
         // get URL parameters or empty string if undefined
         const fixedParams = params ?? '';
         // split params string at every ampersand
-        const paramsArray = fixedParams.split('&')
+        return fixedParams.split('&')
             // remove any values missing an = symbol
             .filter(par => par.includes('='))
             // split substrings at = symbols to make [key, value] tuples
@@ -35,8 +35,6 @@ export const useUrlParams = (
             .map(par => par.filter(e => e !== ''))
             // remove tuples with trisomy issues
             .filter(par => par.length === 2);
-        // return the correct parameters object for URL pathway
-        return paramsArray;
     }, []);
 
     const paramsUsed = useMemo(() => (
