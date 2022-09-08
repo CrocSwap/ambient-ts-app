@@ -1,4 +1,4 @@
-import Moralis from 'moralis';
+import Moralis from 'moralis-v1';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
 import { memoizePromiseFn } from './memoizePromiseFn';
 
