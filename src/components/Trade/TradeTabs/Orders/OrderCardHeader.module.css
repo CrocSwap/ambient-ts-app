@@ -1,3 +1,8 @@
+.order_card_header {
+    display: flex;
+    flex-direction: row;
+}
+
 .main_container {
     display: grid;
     grid-template-columns: auto 50px;

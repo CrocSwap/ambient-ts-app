@@ -5,12 +5,14 @@ import RangeStatus from '../../../Global/RangeStatus/RangeStatus';
 import RangeMinMax from '../../../Global/Tabs/RangeMinMax/RangeMinMax';
 import Apy from '../../../Global/Tabs/Apy/Apy';
 import { PositionIF } from '../../../../utils/interfaces/PositionIF';
-import { ambientPosSlot, concPosSlot, toDisplayQty } from '@crocswap-libs/sdk';
+import { ambientPosSlot, concPosSlot } from '@crocswap-libs/sdk';
 import RangesMenu from '../../../Global/Tabs/TableMenu/TableMenuComponents/RangesMenu';
 import { ethers } from 'ethers';
-import { useEffect, useState, Dispatch, SetStateAction } from 'react';
-import { formatAmount } from '../../../../utils/numbers';
+import { useEffect, Dispatch, SetStateAction } from 'react';
+// import { formatAmount } from '../../../../utils/numbers';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
+import Value from '../../../Global/Tabs/Value/Value';
+import { formatAmount } from '../../../../utils/numbers';
 
 interface RangeCardProps {
     provider: ethers.providers.Provider | undefined;
@@ -132,14 +134,8 @@ export default function RangeCard(props: RangeCardProps) {
         baseTokenAddress: props.position.base,
         quoteTokenAddress: props.position.quote,
         lastBlockNumber: lastBlockNumber,
+        positionApy: position.apy,
     };
-
-    const [baseLiquidityDisplay, setBaseLiquidityDisplay] = useState<string | undefined>(undefined);
-    const [quoteLiquidityDisplay, setQuoteLiquidityDisplay] = useState<string | undefined>(
-        undefined,
-    );
-    // console.log(currentPositionActive);
-    // console.log(position.positionStorageSlot);
 
     const positionDomId =
         position.positionStorageSlot === currentPositionActive
@@ -148,7 +144,6 @@ export default function RangeCard(props: RangeCardProps) {
 
     function scrollToDiv() {
         const element = document.getElementById(positionDomId);
-
         element?.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
     }
 
@@ -156,106 +151,29 @@ export default function RangeCard(props: RangeCardProps) {
         position.positionStorageSlot === currentPositionActive ? scrollToDiv() : null;
     }, [currentPositionActive]);
 
-    const [positionApy, setPositionApy] = useState<number | undefined>();
-
-    useEffect(() => {
-        if (position.positionLiqBase && position.baseDecimals) {
-            const baseLiqDisplayNum = parseFloat(
-                toDisplayQty(position.positionLiqBase, position.baseDecimals),
-            );
-            const baseLiqDisplayTruncated =
-                baseLiqDisplayNum === 0
-                    ? '0'
-                    : baseLiqDisplayNum < 0.0001
-                    ? baseLiqDisplayNum.toExponential(2)
-                    : baseLiqDisplayNum < 2
-                    ? baseLiqDisplayNum.toPrecision(3)
-                    : baseLiqDisplayNum >= 100000
-                    ? formatAmount(baseLiqDisplayNum)
-                    : // ? baseLiqDisplayNum.toExponential(2)
-                      baseLiqDisplayNum.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                      });
-            setBaseLiquidityDisplay(baseLiqDisplayTruncated);
-        } else {
-            setBaseLiquidityDisplay(undefined);
-        }
-        if (position.positionLiqQuote && position.quoteTokenDecimals) {
-            const quoteLiqDisplayNum = parseFloat(
-                toDisplayQty(position.positionLiqQuote, position.quoteTokenDecimals),
-            );
-            const quoteLiqDisplayTruncated =
-                quoteLiqDisplayNum === 0
-                    ? '0'
-                    : quoteLiqDisplayNum < 0.0001
-                    ? quoteLiqDisplayNum.toExponential(2)
-                    : quoteLiqDisplayNum < 2
-                    ? quoteLiqDisplayNum.toPrecision(3)
-                    : quoteLiqDisplayNum >= 100000
-                    ? formatAmount(quoteLiqDisplayNum)
-                    : // ? quoteLiqDisplayNum.toExponential(2)
-                      quoteLiqDisplayNum.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                      });
-            setQuoteLiquidityDisplay(quoteLiqDisplayTruncated);
-        } else {
-            setQuoteLiquidityDisplay(undefined);
-        }
-
-        (async () => {
-            const positionApyCacheEndpoint = 'https://809821320828123.de:5000' + '/position_apy?';
-
-            const positionApy =
-                position.positionType === 'ambient'
-                    ? await fetch(
-                          positionApyCacheEndpoint +
-                              new URLSearchParams({
-                                  chainId: position.chainId,
-                                  user: position.user,
-                                  base: position.base,
-                                  quote: position.quote,
-                                  poolIdx: position.poolIdx.toString(),
-                                  concise: 'true',
-                              }),
-                      )
-                          .then((response) => response?.json())
-                          .then((json) => {
-                              const apy = json?.data?.results?.apy;
-                              return apy;
-                          })
-                    : await fetch(
-                          positionApyCacheEndpoint +
-                              new URLSearchParams({
-                                  chainId: position.chainId,
-                                  user: position.user,
-                                  base: position.base,
-                                  quote: position.quote,
-                                  bidTick: position.bidTick.toString(),
-                                  askTick: position.askTick.toString(),
-                                  poolIdx: position.poolIdx.toString(),
-                                  concise: 'true',
-                              }),
-                      )
-                          .then((response) => response?.json())
-                          .then((json) => {
-                              const apy = json?.data?.results?.apy;
-                              return apy;
-                          });
-
-            setPositionApy(positionApy);
-        })();
-    }, [JSON.stringify(position)]);
-
-    // ------------------------------END OF REMOVE RANGE PROPS-----------------
-
     const activePositionStyle =
         position.positionStorageSlot === currentPositionActive ? styles.active_position_style : '';
 
     if (!positionMatchesSelectedTokens) return null;
+
+    const usdValueNum = position.positionLiqTotalUSD;
+
+    const usdValueTruncated = !usdValueNum
+        ? undefined
+        : usdValueNum < 0.0001
+        ? usdValueNum.toExponential(2)
+        : usdValueNum < 2
+        ? usdValueNum.toPrecision(3)
+        : usdValueNum >= 100000
+        ? formatAmount(usdValueNum)
+        : // ? baseLiqDisplayNum.toExponential(2)
+          usdValueNum.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          });
+
     return (
-        <div
+        <li
             className={`${styles.main_container} ${activePositionStyle}`}
             onClick={() =>
                 position.positionStorageSlot === currentPositionActive
@@ -277,15 +195,18 @@ export default function RangeCard(props: RangeCardProps) {
                 {/* ------------------------------------------------------ */}
                 <RangeMinMax min={ambientMinOrNull} max={ambientMaxOrNull} />
                 {/* ------------------------------------------------------ */}
+                {/* ------------------------------------------------------ */}
+                <Value usdValue={usdValueTruncated ? '$' + usdValueTruncated : '…'} />
+                {/* ------------------------------------------------------ */}
 
                 <TokenQty
-                    baseQty={baseLiquidityDisplay}
-                    quoteQty={quoteLiquidityDisplay}
+                    baseQty={position.positionLiqBaseTruncated}
+                    quoteQty={position.positionLiqQuoteTruncated}
                     baseTokenSymbol={position.baseSymbol}
                     quoteTokenSymbol={position.quoteSymbol}
                 />
                 {/* ------------------------------------------------------ */}
-                <Apy amount={positionApy ?? 0} />
+                <Apy amount={position.apy ?? undefined} />
                 {/* ------------------------------------------------------ */}
                 <RangeStatus
                     isInRange={isPositionInRange}
@@ -301,6 +222,6 @@ export default function RangeCard(props: RangeCardProps) {
                     positionData={position}
                 />
             </div>
-        </div>
+        </li>
     );
 }

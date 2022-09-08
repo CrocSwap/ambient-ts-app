@@ -3,6 +3,7 @@ export interface PositionIF {
     chainId: string;
     positionId: string;
     positionStorageSlot: string;
+    merkleStorageSlot: string;
     askTick: number;
     bidTick: number;
     id: string;
@@ -34,10 +35,20 @@ export interface PositionIF {
     tokenBQtyDisplay: string;
     baseTokenDecimals: number;
     quoteTokenDecimals: number;
-    positionType?: string;
+    positionType: string;
     positionLiqBase?: string;
+    positionLiqBaseDecimalCorrected?: number;
+    positionLiqBaseTruncated?: string;
+    positionLiqQuoteTruncated?: string;
+    positionLiqQuoteDecimalCorrected?: number;
     positionLiqQuote?: string;
     feesLiqBase?: string;
+    feesLiqBaseDecimalCorrected?: number;
+    feesLiqQuoteDecimalCorrected?: number;
     feesLiqQuote?: string;
-    apyPercentage?: number;
+    apy: number;
+    time: number;
+    latestUpdateTime: number;
+    positionLiq: string;
+    positionLiqTotalUSD: number;
 }
