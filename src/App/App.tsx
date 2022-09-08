@@ -96,6 +96,7 @@ import { getTvlSeries } from './functions/getTvlSeries';
 import Chat from './components/Chat/Chat';
 import { formatAmount } from '../utils/numbers';
 import GlobalModal from './components/GlobalModal/GlobalModal';
+import ChatPanel from '../components/Chat/ChatPanel';
 
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 const cachedFetchAddress = memoizeFetchAddress();
@@ -2064,6 +2065,17 @@ export default function App() {
                         ensName={ensName}
                         connectedAccount={account ? account : ''}
                         fullScreen={false}
+                    />
+                )}
+
+                {currentLocation !== '/app/chat' && (
+                    <ChatPanel
+                        chatStatus={chatStatus}
+                        onClose={function (): void {
+                            throw new Error('Function not implemented.');
+                        }}
+                        favePools={[]}
+                        currentPool={currentPoolInfo}
                     />
                 )}
             </div>
