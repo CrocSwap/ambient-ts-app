@@ -127,6 +127,12 @@ export default function RemoveRange(props: IRemoveRangeProps) {
     const [txErrorCode, setTxErrorCode] = useState(0);
     const [txErrorMessage, setTxErrorMessage] = useState('');
 
+    const resetConfirmation = () => {
+        setShowConfirmation(false);
+        setTxErrorCode(0);
+        setTxErrorMessage('');
+    };
+
     const liquiditySlippageTolerance = 1;
 
     const removeFn = async () => {
@@ -197,7 +203,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
                 Check the Metamask extension in your browser for notifications, or click &quot;Try
                 Again&quot;. You can also click the left arrow above to try again.
             </p>
-            <Button title='Try Again' action={() => setShowConfirmation(false)} />
+            <Button title='Try Again' action={resetConfirmation} />
         </div>
     );
 
@@ -263,7 +269,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
     const confirmationContent = (
         <div className={styles.confirmation_container}>
             {showConfirmation && (
-                <div className={styles.button} onClick={() => setShowConfirmation(false)}>
+                <div className={styles.button} onClick={resetConfirmation}>
                     <BsArrowLeft size={30} />
                 </div>
             )}

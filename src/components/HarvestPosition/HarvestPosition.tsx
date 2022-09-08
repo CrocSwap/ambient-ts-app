@@ -88,6 +88,12 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
         number | undefined
     >();
 
+    const resetConfirmation = () => {
+        setShowConfirmation(false);
+        setTxErrorCode(0);
+        setTxErrorMessage('');
+    };
+
     const positionStatsCacheEndpoint = 'https://809821320828123.de:5000/position_stats?';
 
     useEffect(() => {
@@ -173,7 +179,7 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
                 Check the Metamask extension in your browser for notifications, or click &quot;Try
                 Again&quot;. You can also click the left arrow above to try again.
             </p>
-            <Button title='Try Again' action={() => setShowConfirmation(false)} />
+            <Button title='Try Again' action={resetConfirmation} />
         </div>
     );
 
@@ -215,6 +221,9 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
         txErrorCode === 4001 &&
         txErrorMessage === 'MetaMask Tx Signature: User denied transaction signature.';
 
+    console.log({ isRemovalDenied });
+    console.log({ isRemovalDenied });
+    console.log({ isRemovalDenied });
     function handleConfirmationChange() {
         setCurrentConfirmationData(removalPending);
 
@@ -245,7 +254,7 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
     const confirmationContent = (
         <div className={styles.confirmation_container}>
             {showConfirmation && (
-                <div className={styles.button} onClick={() => setShowConfirmation(false)}>
+                <div className={styles.button} onClick={resetConfirmation}>
                     <BsArrowLeft size={30} />
                 </div>
             )}
