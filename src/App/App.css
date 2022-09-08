@@ -16,10 +16,14 @@
 * {
     scrollbar-width: auto;
     scrollbar-color: #8f54a0 #ffffff;
+
+
 }
+
 
 body::-webkit-scrollbar {
     width: 5px;
+    
 }
 
 body::-webkit-scrollbar-track {

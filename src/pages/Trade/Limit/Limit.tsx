@@ -89,6 +89,9 @@ export default function Limit(props: LimitPropsIF) {
     const [isSaveAsDexSurplusChecked, setIsSaveAsDexSurplusChecked] = useState(false);
 
     const [limitButtonErrorMessage, setLimitButtonErrorMessage] = useState<string>('');
+    const [priceInputFieldBlurred, setPriceInputFieldBlurred] = useState(false);
+
+    const priceInputOnBlur = () => setPriceInputFieldBlurred(true);
 
     useEffect(() => {
         if (poolPriceDisplay === undefined) {
@@ -104,11 +107,11 @@ export default function Limit(props: LimitPropsIF) {
     const [txErrorCode, setTxErrorCode] = useState(0);
     const [txErrorMessage, setTxErrorMessage] = useState('');
 
-    const tokenADecimals = tokenPair.dataTokenA.decimals;
-    const tokenBDecimals = tokenPair.dataTokenB.decimals;
+    // const tokenADecimals = tokenPair.dataTokenA.decimals;
+    // const tokenBDecimals = tokenPair.dataTokenB.decimals;
 
-    const baseDecimals = isTokenABase ? tokenADecimals : tokenBDecimals;
-    const quoteDecimals = !isTokenABase ? tokenADecimals : tokenBDecimals;
+    // const baseDecimals = isTokenABase ? tokenADecimals : tokenBDecimals;
+    // const quoteDecimals = !isTokenABase ? tokenADecimals : tokenBDecimals;
 
     const isTokenAPrimary = tradeData.isTokenAPrimary;
 
@@ -124,22 +127,48 @@ export default function Limit(props: LimitPropsIF) {
 
     useEffect(() => {
         setInitialLoad(true);
-    }, [tokenPair]);
+    }, [
+        JSON.stringify({
+            isDenomBase: isDenomBase,
+            tokenA: tradeData.tokenA.address,
+            tokenB: tradeData.tokenB.address,
+        }),
+    ]);
+
+    // useEffect(() => {
+    //     console.log({ limitTick });
+    // }, [limitTick]);
 
     useEffect(() => {
         if (initialLoad) {
             if (!provider) return;
-            if (poolPriceNonDisplay === 0) return;
+            if (!poolPriceDisplay) return;
 
             const gridSize = lookupChain(chainId).gridSize;
 
             const croc = new CrocEnv(provider);
             const pool =
-                isDenomBase == isTokenABase
+                isDenomBase === isTokenABase
                     ? croc.pool(tradeData.tokenA.address, tradeData.tokenB.address)
                     : croc.pool(tradeData.tokenB.address, tradeData.tokenA.address);
 
-            const limitWei = pool.fromDisplayPrice(parseFloat(limitRate));
+            // console.log(
+            //     `current tick pinned lower: ${pinTickLower(poolPriceNonDisplay || 0, gridSize)}`,
+            // );
+            // console.log(
+            //     `current tick pinned higher: ${pinTickUpper(poolPriceNonDisplay || 0, gridSize)}`,
+            // );
+            // const initialLimitRate = isDenomBase ? 1 / poolPriceDisplay : poolPriceDisplay;
+            const initialLimitRate = isDenomBase
+                ? (1 / poolPriceDisplay) * (isSellTokenBase ? 1.015 : 0.985)
+                : poolPriceDisplay * (isSellTokenBase ? 0.985 : 1.015);
+
+            setLimitRate(initialLimitRate.toString());
+            // console.log({ initialLimitRate });
+            // setLimitRate(initialLimitRate.toString());
+
+            const limitWei = pool.fromDisplayPrice(initialLimitRate);
+
             const pinTick = limitWei.then((lw) =>
                 isDenomBase ? pinTickLower(lw, gridSize) : pinTickUpper(lw, gridSize),
             );
@@ -149,19 +178,76 @@ export default function Limit(props: LimitPropsIF) {
             const tickDispPrice = tickPrice.then((tp) => pool.toDisplayPrice(tp));
 
             tickDispPrice.then((tp) => {
+                // console.log({ tp });
                 setInsideTickDisplayPrice(tp);
                 dispatch(setLimitPrice(tp.toString()));
                 setInitialLoad(false);
+                const limitRateTruncated =
+                    tp < 2
+                        ? tp.toLocaleString(undefined, {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 6,
+                          })
+                        : tp.toLocaleString(undefined, {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                          });
+                const limitRateInputField = document.getElementById('limit-rate-quantity');
+                if (limitRateInputField)
+                    (limitRateInputField as HTMLInputElement).value = limitRateTruncated;
             });
+        } else {
+            if (!provider) return;
+            if (poolPriceNonDisplay === 0) return;
+            if (!priceInputFieldBlurred) return;
+
+            const gridSize = lookupChain(chainId).gridSize;
+
+            const croc = new CrocEnv(provider);
+            const pool = croc.pool(tradeData.tokenA.address, tradeData.tokenB.address);
+
+            const limitWei = pool.fromDisplayPrice(
+                isDenomBase ? parseFloat(limitRate) : 1 / parseFloat(limitRate),
+            );
+            const pinTick = limitWei.then((lw) =>
+                isDenomBase ? pinTickLower(lw, gridSize) : pinTickUpper(lw, gridSize),
+            );
+            pinTick.then(setLimitTick);
+
+            const tickPrice = pinTick.then(tickToPrice);
+            // pinTick.then(console.log);
+            // const tickDispPrice = tickPrice.then((tp) => pool.toDisplayPrice(tp));
+            const tickDispPrice = isDenomBase
+                ? tickPrice.then((tp) => pool.toDisplayPrice(tp))
+                : tickPrice.then((tp) => pool.toDisplayPrice(tp)).then((tp) => 1 / tp);
+
+            tickDispPrice.then((tp) => {
+                setInsideTickDisplayPrice(tp);
+                dispatch(setLimitPrice(tp.toString()));
+                setInitialLoad(false);
+                const limitRateTruncated =
+                    tp < 2
+                        ? tp.toLocaleString(undefined, {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 6,
+                          })
+                        : tp.toLocaleString(undefined, {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                          });
+                const limitRateInputField = document.getElementById('limit-rate-quantity');
+                if (limitRateInputField)
+                    (limitRateInputField as HTMLInputElement).value = limitRateTruncated;
+            });
+            setPriceInputFieldBlurred(false);
         }
     }, [
         initialLoad,
         limitRate,
-        poolPriceNonDisplay,
-        baseDecimals,
-        quoteDecimals,
+        poolPriceDisplay,
+        isSellTokenBase,
         isDenomBase,
-        isTokenABase,
+        priceInputFieldBlurred,
     ]);
 
     const sendLimitOrder = async () => {
@@ -186,7 +272,11 @@ export default function Limit(props: LimitPropsIF) {
         }
 
         try {
-            await ko.mint();
+            const mint = await ko.mint();
+            console.log(mint.hash);
+            setNewLimitOrderTransactionHash(mint.hash);
+            const limitOrderReceipt = await mint.wait();
+            console.log({ limitOrderReceipt });
         } catch (error) {
             setTxErrorCode(error?.code);
             setTxErrorMessage(error?.message);
@@ -295,6 +385,7 @@ export default function Limit(props: LimitPropsIF) {
                         setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
                         limitRate={limitRate}
                         setLimitRate={setLimitRate}
+                        priceInputOnBlur={priceInputOnBlur}
                         insideTickDisplayPrice={insideTickDisplayPrice}
                         isDenominationInBase={tradeData.isDenomBase}
                         activeTokenListsChanged={activeTokenListsChanged}

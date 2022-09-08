@@ -2,7 +2,7 @@ import styles from './CurrencySelector.module.css';
 import CurrencyQuantity from '../CurrencyQuantity/CurrencyQuantity';
 import { RiArrowDownSLine, RiListCheck } from 'react-icons/ri';
 // import Toggle from '../../Global/Toggle/Toggle';
-import { useState, ChangeEvent, Dispatch, SetStateAction } from 'react';
+import { useState, ChangeEvent, Dispatch, SetStateAction, useEffect } from 'react';
 import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import Modal from '../../../components/Global/Modal/Modal';
@@ -21,6 +21,8 @@ interface CurrencySelectorProps {
     nativeBalance: string;
     tokenABalance: string;
     tokenBBalance: string;
+    tokenADexBalance: string;
+    tokenBDexBalance: string;
     isWithdrawFromDexChecked: boolean;
     setIsWithdrawFromDexChecked: Dispatch<SetStateAction<boolean>>;
     isSaveAsDexSurplusChecked: boolean;
@@ -49,6 +51,8 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
         setIsSaveAsDexSurplusChecked,
         tokenABalance,
         tokenBBalance,
+        tokenADexBalance,
+        tokenBDexBalance,
         reverseTokens,
         activeTokenListsChanged,
         indicateActiveTokenListsChanged,
@@ -58,6 +62,12 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
     const [showManageTokenListContent, setShowManageTokenListContent] = useState(false);
 
     const thisToken = fieldId === 'sell' ? tokenPair.dataTokenA : tokenPair.dataTokenB;
+
+    useEffect(() => {
+        if (parseFloat(tokenADexBalance) <= 0) {
+            setIsWithdrawFromDexChecked(false);
+        }
+    }, [tokenADexBalance]);
 
     const WithdrawTokensContent = (
         <div className={styles.surplus_toggle}>
@@ -81,7 +91,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                     isOn={isWithdrawFromDexChecked}
                     handleToggle={() => setIsWithdrawFromDexChecked(!isWithdrawFromDexChecked)}
                     id='sell_token_withdrawal'
-                    disabled={true}
+                    disabled={parseFloat(tokenADexBalance) <= 0}
                 />
             ) : (
                 <Toggle2
@@ -147,9 +157,23 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
             ? parseFloat(tokenBBalance).toLocaleString()
             : '0';
 
-    const surplusBalance = 0;
-    const surplusBalanceNonLocaleString = surplusBalance.toString();
-    const surplusBalanceLocaleString = surplusBalance.toLocaleString();
+    const surplusBalanceNonLocaleString =
+        props.sellToken && tokenADexBalance !== ''
+            ? parseFloat(tokenADexBalance).toString()
+            : !props.sellToken && tokenBDexBalance !== ''
+            ? parseFloat(tokenBDexBalance).toString()
+            : '0';
+
+    const surplusBalanceLocaleString =
+        props.sellToken && tokenADexBalance !== ''
+            ? parseFloat(tokenADexBalance).toLocaleString()
+            : !props.sellToken && tokenBDexBalance !== ''
+            ? parseFloat(tokenBDexBalance).toLocaleString()
+            : '0';
+
+    // const surplusBalance = 0;
+    // const surplusBalanceNonLocaleString = surplusBalance.toString();
+    // const surplusBalanceLocaleString = surplusBalance.toLocaleString();
 
     return (
         <div className={styles.swapbox}>

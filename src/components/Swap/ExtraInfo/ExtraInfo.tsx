@@ -10,10 +10,12 @@ import truncateDecimals from '../../../utils/data/truncateDecimals';
 import { TokenPairIF } from '../../../utils/interfaces/exports';
 import TooltipComponent from '../../Global/TooltipComponent/TooltipComponent';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import { CrocImpact } from '@crocswap-libs/sdk';
 
 // interface for props in this file
 interface ExtraInfoPropsIF {
     tokenPair: TokenPairIF;
+    priceImpact: CrocImpact | undefined;
     poolPriceDisplay: number;
     slippageTolerance: number;
     liquidityProviderFee: number;
@@ -28,6 +30,7 @@ interface ExtraInfoPropsIF {
 export default function ExtraInfo(props: ExtraInfoPropsIF) {
     const {
         // tokenPair,
+        priceImpact,
         poolPriceDisplay,
         slippageTolerance,
         liquidityProviderFee,
@@ -80,19 +83,47 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
                   maximumFractionDigits: 2,
               });
 
-    const priceLimitAfterSlippageAndFee = reverseSlippage
-        ? displayPriceWithDenom * (1 + slippageTolerance / 100) * (1 + liquidityProviderFee / 100)
-        : displayPriceWithDenom * (1 - slippageTolerance / 100) * (1 - liquidityProviderFee / 100);
+    // const priceLimitAfterSlippageAndFee = reverseSlippage
+    //     ? displayPriceWithDenom * (1 + slippageTolerance / 100) * (1 + liquidityProviderFee / 100)
+    //     : displayPriceWithDenom * (1 - slippageTolerance / 100) * (1 - liquidityProviderFee / 100);
 
-    const displayLimitPriceString =
-        displayPriceWithDenom === Infinity || displayPriceWithDenom === 0
+    const priceAfterImpact = priceImpact?.finalPrice;
+    const priceAfterImpactWithDenom = priceAfterImpact
+        ? isDenomBase
+            ? priceAfterImpact
+            : 1 / priceAfterImpact
+        : undefined;
+
+    const priceLimitAfterImpactAndFee = priceAfterImpactWithDenom
+        ? reverseSlippage
+            ? priceAfterImpactWithDenom * (1 + liquidityProviderFee / 100)
+            : priceAfterImpactWithDenom * (1 - liquidityProviderFee / 100)
+        : undefined;
+
+    // const displayLimitPriceString =
+    //     displayPriceWithDenom === Infinity || displayPriceWithDenom === 0
+    //         ? '…'
+    //         : priceLimitAfterSlippageAndFee < 2
+    //         ? priceLimitAfterSlippageAndFee.toLocaleString(undefined, {
+    //               minimumFractionDigits: 2,
+    //               maximumFractionDigits: 6,
+    //           })
+    //         : priceLimitAfterSlippageAndFee.toLocaleString(undefined, {
+    //               minimumFractionDigits: 2,
+    //               maximumFractionDigits: 2,
+    //           });
+
+    const displayPriceAfterImpactString =
+        !priceLimitAfterImpactAndFee ||
+        priceLimitAfterImpactAndFee === Infinity ||
+        priceLimitAfterImpactAndFee === 0
             ? '…'
-            : priceLimitAfterSlippageAndFee < 2
-            ? priceLimitAfterSlippageAndFee.toLocaleString(undefined, {
+            : priceLimitAfterImpactAndFee < 2
+            ? priceLimitAfterImpactAndFee.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 6,
               })
-            : priceLimitAfterSlippageAndFee.toLocaleString(undefined, {
+            : priceLimitAfterImpactAndFee.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
               });
@@ -114,11 +145,14 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
                 : `${displayPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
         },
         {
-            title: 'Price Limit',
-            tooltipTitle: 'Price Limit After Slippage and Fees',
+            title: 'Effective Conversion Rate',
+            tooltipTitle: 'Conversion Rate After Swap Impact and Fees',
             data: isDenomBase
-                ? `${displayLimitPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
-                : `${displayLimitPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
+                ? `${displayPriceAfterImpactString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
+                : `${displayPriceAfterImpactString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
+            // data: isDenomBase
+            //     ? `${displayLimitPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
+            //     : `${displayLimitPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
         },
         {
             title: 'Slippage Tolerance',

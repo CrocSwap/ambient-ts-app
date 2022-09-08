@@ -1,6 +1,6 @@
 import styles from './RemoveRangeInfo.module.css';
 import Row from '../../Global/Row/Row';
-import Divider from '../../Global/Divider/Divider';
+import DividerDark from '../../Global/DividerDark/DividerDark';
 // import { formatAmount } from '../../../utils/numbers';
 
 interface IRemoveRangeInfoProps {
@@ -126,7 +126,7 @@ export default function RemoveRangeInfo(props: IRemoveRangeInfoProps) {
                     </div>
                 </Row>
                 {/*  */}
-                <Divider />
+                <DividerDark />
                 <Row>
                     <span>{baseTokenSymbol} Fees Earned</span>
                     <div className={styles.token_price}>
@@ -142,7 +142,7 @@ export default function RemoveRangeInfo(props: IRemoveRangeInfoProps) {
                         <img src={quoteTokenLogoURI} alt='' />
                     </div>
                 </Row>
-                <Divider />
+                <DividerDark />
                 <Row>
                     <span>{baseTokenSymbol} Removal Summary</span>
                     <div className={styles.token_price}>

@@ -11,9 +11,12 @@ import styles from './Ranges.module.css';
 import { graphData } from '../../../../utils/state/graphDataSlice';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { useSortedPositions } from './useSortedPositions';
+import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 
 // interface for props
 interface RangesPropsIF {
+    crocEnv: CrocEnv | undefined;
+    chainData: ChainSpec;
     provider: ethers.providers.Provider | undefined;
     isAuthenticated: boolean;
     account: string;
@@ -31,6 +34,8 @@ interface RangesPropsIF {
 // react functional component
 export default function Ranges(props: RangesPropsIF) {
     const {
+        crocEnv,
+        chainData,
         provider,
         account,
         isAuthenticated,
@@ -50,9 +55,10 @@ export default function Ranges(props: RangesPropsIF) {
     const columnHeaders = [
         { name: 'ID', sortable: false },
         { name: 'Wallet', sortable: true },
-        { name: 'Range', sortable: false },
+        // { name: 'Range', sortable: false },
         { name: 'Range Min', sortable: false },
         { name: 'Range Max', sortable: false },
+        { name: 'Value', sortable: true },
         { name: tradeData.baseToken.symbol, sortable: false },
         { name: tradeData.quoteToken.symbol, sortable: false },
         { name: 'APY', sortable: true },
@@ -85,6 +91,8 @@ export default function Ranges(props: RangesPropsIF) {
             >
                 {sortedPositions.map((position, idx) => (
                     <RangeCard
+                        crocEnv={crocEnv}
+                        chainData={chainData}
                         provider={provider}
                         chainId={chainId}
                         key={idx}

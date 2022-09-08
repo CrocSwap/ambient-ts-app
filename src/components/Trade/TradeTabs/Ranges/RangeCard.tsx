@@ -5,14 +5,18 @@ import RangeStatus from '../../../Global/RangeStatus/RangeStatus';
 import RangeMinMax from '../../../Global/Tabs/RangeMinMax/RangeMinMax';
 import Apy from '../../../Global/Tabs/Apy/Apy';
 import { PositionIF } from '../../../../utils/interfaces/PositionIF';
-import { ambientPosSlot, concPosSlot } from '@crocswap-libs/sdk';
+import { ambientPosSlot, ChainSpec, concPosSlot, CrocEnv } from '@crocswap-libs/sdk';
 import RangesMenu from '../../../Global/Tabs/TableMenu/TableMenuComponents/RangesMenu';
 import { ethers } from 'ethers';
 import { useEffect, Dispatch, SetStateAction } from 'react';
 // import { formatAmount } from '../../../../utils/numbers';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
+import Value from '../../../Global/Tabs/Value/Value';
+import { formatAmount } from '../../../../utils/numbers';
 
 interface RangeCardProps {
+    crocEnv: CrocEnv | undefined;
+    chainData: ChainSpec;
     provider: ethers.providers.Provider | undefined;
     chainId: string;
     portfolio?: boolean;
@@ -31,6 +35,8 @@ interface RangeCardProps {
 
 export default function RangeCard(props: RangeCardProps) {
     const {
+        crocEnv,
+        chainData,
         provider,
         chainId,
         position,
@@ -112,7 +118,9 @@ export default function RangeCard(props: RangeCardProps) {
 
     // --------------------------REMOVE RANGE PROPS-------------------------------
     const rangeDetailsProps = {
+        crocEnv: crocEnv,
         provider: provider,
+        chainData: chainData,
         chainId: chainId,
         poolIdx: position.poolIdx,
         isPositionInRange: isPositionInRange,
@@ -153,6 +161,23 @@ export default function RangeCard(props: RangeCardProps) {
         position.positionStorageSlot === currentPositionActive ? styles.active_position_style : '';
 
     if (!positionMatchesSelectedTokens) return null;
+
+    const usdValueNum = position.positionLiqTotalUSD;
+
+    const usdValueTruncated = !usdValueNum
+        ? undefined
+        : usdValueNum < 0.0001
+        ? usdValueNum.toExponential(2)
+        : usdValueNum < 2
+        ? usdValueNum.toPrecision(3)
+        : usdValueNum >= 100000
+        ? formatAmount(usdValueNum)
+        : // ? baseLiqDisplayNum.toExponential(2)
+          usdValueNum.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          });
+
     return (
         <li
             className={`${styles.main_container} ${activePositionStyle}`}
@@ -176,6 +201,9 @@ export default function RangeCard(props: RangeCardProps) {
                 {/* ------------------------------------------------------ */}
                 <RangeMinMax min={ambientMinOrNull} max={ambientMaxOrNull} />
                 {/* ------------------------------------------------------ */}
+                {/* ------------------------------------------------------ */}
+                <Value usdValue={usdValueTruncated ? '$' + usdValueTruncated : '…'} />
+                {/* ------------------------------------------------------ */}
 
                 <TokenQty
                     baseQty={position.positionLiqBaseTruncated}
@@ -184,7 +212,7 @@ export default function RangeCard(props: RangeCardProps) {
                     quoteTokenSymbol={position.quoteSymbol}
                 />
                 {/* ------------------------------------------------------ */}
-                <Apy amount={position.apy ?? 0} />
+                <Apy amount={position.apy ?? undefined} />
                 {/* ------------------------------------------------------ */}
                 <RangeStatus
                     isInRange={isPositionInRange}
@@ -194,6 +222,8 @@ export default function RangeCard(props: RangeCardProps) {
 
             <div className={styles.menu_container}>
                 <RangesMenu
+                    crocEnv={crocEnv}
+                    chainData={chainData}
                     userMatchesConnectedAccount={userMatchesConnectedAccount}
                     rangeDetailsProps={rangeDetailsProps}
                     posHash={posHash as string}
