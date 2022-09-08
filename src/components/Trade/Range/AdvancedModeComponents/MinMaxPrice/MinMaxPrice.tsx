@@ -99,8 +99,6 @@ export default function MinMaxPrice(props: MinMaxPriceIF) {
     );
 
     useEffect(() => {
-        console.log('ManMixEditPage', { targetData });
-
         if (targetData !== undefined) {
             const high = targetData.filter((data) => {
                 return data.name === 'Max';

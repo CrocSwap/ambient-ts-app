@@ -244,7 +244,7 @@ export default function Chart(props: ChartData) {
 
     // Set Targets
     useEffect(() => {
-        const reustls: boolean[] = [];
+        const results: boolean[] = [];
 
         if (location.pathname.includes('market')) {
             let lastCandlePrice: number | undefined;
@@ -270,16 +270,16 @@ export default function Chart(props: ChartData) {
                     },
                 ];
             });
-        } else if (location.pathname.includes('range') && !isHighMoved && !isLowMoved) {
-            if (!isAdvancedModeActive) {
+        } else if (location.pathname.includes('range')) {
+            if (!isAdvancedModeActive && !isHighMoved && !isLowMoved) {
                 if (simpleRangeWidth === 100) {
                     ranges.map((mapData) => {
                         if (mapData.value === 0) {
-                            reustls.push(true);
+                            results.push(true);
                         }
                     });
 
-                    if (reustls.length === 2) {
+                    if (results.length === 2) {
                         setDefaultRangeData();
                     }
                 } else {
@@ -302,21 +302,23 @@ export default function Chart(props: ChartData) {
                         ];
                     });
                 }
-            } else {
+            } else if (isAdvancedModeActive) {
                 ranges.map((mapData) => {
                     props.targetData?.map((data) => {
                         if (mapData.name === data.name && mapData.value == data.value) {
-                            reustls.push(true);
+                            results.push(true);
                         }
                     });
                 });
 
+                console.log(results);
+                console.log('results');
                 if (
                     props.targetData === undefined ||
                     (props.targetData[0].value === 0 && props.targetData[1].value === 0)
                 ) {
                     setDefaultRangeData();
-                } else if (reustls.length < 2) {
+                } else if (results.length < 2) {
                     setRanges(() => {
                         let high = props.targetData?.filter(
                             (target: any) => target.name === 'Max',
@@ -360,8 +362,12 @@ export default function Chart(props: ChartData) {
                                             : 0,
                                 },
                             ];
+                            setIsHighMoved(false);
+                            setIsLowMoved(false);
                             return chartTargets;
                         }
+                        setIsHighMoved(false);
+                        setIsLowMoved(false);
                         return [
                             { name: 'Min', value: 0 },
                             { name: 'Max', value: 0 },
@@ -489,6 +495,8 @@ export default function Chart(props: ChartData) {
                         render();
                         return newTargets;
                     });
+                    setIsHighMoved(true);
+                    setIsLowMoved(true);
                 }
             });
 
@@ -910,17 +918,17 @@ export default function Chart(props: ChartData) {
 
     useEffect(() => {
         const timer = setTimeout(() => {
-            const reustls: boolean[] = [];
+            const results: boolean[] = [];
 
             ranges.map((mapData) => {
                 props.targetData?.map((data) => {
                     if (mapData.name === data.name && mapData.value == data.value) {
-                        reustls.push(true);
+                        results.push(true);
                     }
                 });
             });
 
-            if (reustls.length < 2) {
+            if (results.length < 2) {
                 const low = ranges.filter((target: any) => target.name === 'Min')[0].value;
                 const high = ranges.filter((target: any) => target.name === 'Max')[0].value;
 
