@@ -42,6 +42,7 @@ export default function Transactions(props: TransactionsProps) {
         filter,
         openGlobalModal,
         // setExpandTradeTable,
+        openGlobalModal,
     } = props;
 
     const swapsByUser = graphData?.swapsByUser?.swaps;

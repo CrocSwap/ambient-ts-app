@@ -11,6 +11,7 @@ import {
     setPinnedMaxPrice,
     setPinnedMinPrice,
     setSimpleRangeWidth,
+    setTargetData,
     targetData,
 } from '../../utils/state/tradeDataSlice';
 import { CandleChartData } from '../Trade/TradeCharts/TradeCharts';
@@ -243,7 +244,7 @@ export default function Chart(props: ChartData) {
 
     // Set Targets
     useEffect(() => {
-        const reustls: boolean[] = [];
+        const results: boolean[] = [];
 
         if (location.pathname.includes('market')) {
             let lastCandlePrice: number | undefined;
@@ -269,16 +270,16 @@ export default function Chart(props: ChartData) {
                     },
                 ];
             });
-        } else if (location.pathname.includes('range') && !isHighMoved && !isLowMoved) {
-            if (!isAdvancedModeActive) {
+        } else if (location.pathname.includes('range')) {
+            if (!isAdvancedModeActive && !isHighMoved && !isLowMoved) {
                 if (simpleRangeWidth === 100) {
                     ranges.map((mapData) => {
                         if (mapData.value === 0) {
-                            reustls.push(true);
+                            results.push(true);
                         }
                     });
 
-                    if (reustls.length === 2) {
+                    if (results.length === 2) {
                         setDefaultRangeData();
                     }
                 } else {
@@ -301,21 +302,23 @@ export default function Chart(props: ChartData) {
                         ];
                     });
                 }
-            } else {
+            } else if (isAdvancedModeActive) {
                 ranges.map((mapData) => {
                     props.targetData?.map((data) => {
                         if (mapData.name === data.name && mapData.value == data.value) {
-                            reustls.push(true);
+                            results.push(true);
                         }
                     });
                 });
 
+                console.log(results);
+                console.log('results');
                 if (
                     props.targetData === undefined ||
                     (props.targetData[0].value === 0 && props.targetData[1].value === 0)
                 ) {
                     setDefaultRangeData();
-                } else if (reustls.length < 2) {
+                } else if (results.length < 2) {
                     setRanges(() => {
                         let high = props.targetData?.filter(
                             (target: any) => target.name === 'Max',
@@ -359,8 +362,12 @@ export default function Chart(props: ChartData) {
                                             : 0,
                                 },
                             ];
+                            setIsHighMoved(false);
+                            setIsLowMoved(false);
                             return chartTargets;
                         }
+                        setIsHighMoved(false);
+                        setIsLowMoved(false);
                         return [
                             { name: 'Min', value: 0 },
                             { name: 'Max', value: 0 },
@@ -405,9 +412,6 @@ export default function Chart(props: ChartData) {
 
                             const low = newTargets.filter((target: any) => target.name === 'Min')[0]
                                 .value;
-
-                            console.log(parseFloat(val) - low);
-                            console.log({ dragLimit });
 
                             if (!(dragLimit > parseFloat(val) - low)) {
                                 newTargets.filter((target: any) => target.name === 'Max')[0].value =
@@ -491,6 +495,8 @@ export default function Chart(props: ChartData) {
                         render();
                         return newTargets;
                     });
+                    setIsHighMoved(true);
+                    setIsLowMoved(true);
                 }
             });
 
@@ -506,7 +512,7 @@ export default function Chart(props: ChartData) {
                 return location.pathname.includes('limit') ? dragLimit : dragRange;
             });
         }
-    }, [location, scaleData, isAdvancedModeActive]);
+    }, [spotPriceDisplay, location, scaleData, isAdvancedModeActive]);
 
     // set HorizontalLines
     useEffect(() => {
@@ -518,6 +524,7 @@ export default function Chart(props: ChartData) {
                         d3.select(event.currentTarget)
                             // .select('.detector')
                             .style('cursor', 'ns-resize');
+                        d3.select(event.currentTarget).select('line').style('cursor', 'ns-resize');
                     })
                     .call(dragType);
             }
@@ -530,6 +537,7 @@ export default function Chart(props: ChartData) {
                         d3.select(event.currentTarget)
                             // .select('.detector')
                             .style('cursor', 'ns-resize');
+                        d3.select(event.currentTarget).select('line').style('cursor', 'ns-resize');
                     })
                     .call(dragType);
 
@@ -538,6 +546,7 @@ export default function Chart(props: ChartData) {
                     .select('#Min')
                     .on('mouseover', (event: any) => {
                         d3.select(event.currentTarget).style('cursor', 'ns-resize');
+                        d3.select(event.currentTarget).select('line').style('cursor', 'ns-resize');
                     })
                     .call(dragType);
 
@@ -546,11 +555,12 @@ export default function Chart(props: ChartData) {
                     .select('#Max')
                     .on('mouseover', (event: any) => {
                         d3.select(event.currentTarget).style('cursor', 'ns-resize');
+                        d3.select(event.currentTarget).select('line').style('cursor', 'ns-resize');
                     })
                     .call(dragType);
             }
         }
-    }, [dragType, parsedChartData?.period]);
+    }, [dragType, parsedChartData?.period, location]);
 
     // Call drawChart()
     useEffect(() => {
@@ -758,6 +768,16 @@ export default function Chart(props: ChartData) {
                         .append('text')
                         .attr('x', 5)
                         .attr('y', -5);
+
+                    selection
+                        .enter()
+                        .append('rect')
+                        .attr('width', '100%')
+                        .attr('y', -20)
+                        .attr('height', '8%')
+                        .attr('fill', 'transparent')
+                        .attr('stroke', 'none');
+
                     selection.enter().select('g.right-handle').remove();
                     selection.enter().select('line').attr('class', 'redline');
                     selection
@@ -769,6 +789,12 @@ export default function Chart(props: ChartData) {
                         .on('mouseout', (event: any) => {
                             d3.select(event.currentTarget).style('cursor', 'default');
                         });
+                    selection
+                        .enter()
+                        .append('rect')
+                        .attr('width', 15)
+                        .attr('height', 10)
+                        .attr('fill', 'gainsboro');
                 });
 
                 let lastY = 0;
@@ -892,17 +918,17 @@ export default function Chart(props: ChartData) {
 
     useEffect(() => {
         const timer = setTimeout(() => {
-            const reustls: boolean[] = [];
+            const results: boolean[] = [];
 
             ranges.map((mapData) => {
                 props.targetData?.map((data) => {
                     if (mapData.name === data.name && mapData.value == data.value) {
-                        reustls.push(true);
+                        results.push(true);
                     }
                 });
             });
 
-            if (reustls.length < 2) {
+            if (results.length < 2) {
                 const low = ranges.filter((target: any) => target.name === 'Min')[0].value;
                 const high = ranges.filter((target: any) => target.name === 'Max')[0].value;
 
@@ -921,11 +947,7 @@ export default function Chart(props: ChartData) {
                             ? parseFloat(val) - low
                             : 1;
 
-                        console.log({ difference });
-                        console.log({ dragLimit });
-
                         if (!(dragLimit > difference)) {
-                            console.log('run');
                             const percentage = (difference * 100) / parseFloat(val);
 
                             setIsHighMoved(false);
@@ -935,6 +957,19 @@ export default function Chart(props: ChartData) {
                     } else {
                         dispatch(setSimpleRangeWidth(simpleRangeWidth ? simpleRangeWidth : 1));
                     }
+                } else {
+                    const newTargetData: targetData[] = [
+                        {
+                            name: 'Max',
+                            value: ranges.filter((target: any) => target.name === 'Max')[0].value,
+                        },
+                        {
+                            name: 'Min',
+                            value: ranges.filter((target: any) => target.name === 'Min')[0].value,
+                        },
+                    ];
+
+                    dispatch(setTargetData(newTargetData));
                 }
             }
         }, 1000);
