@@ -60,6 +60,7 @@ export default function TradeCandleStickChart(props: ChartData) {
         liquidityData: props.liquidityData,
     };
 
+    const { denomInBase } = props;
     // Parse price data
     const parsedChartData = useMemo(() => {
         const chartData: CandleChartData[] = [];

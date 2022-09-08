@@ -4,7 +4,7 @@ import TransactionCardHeader from './TransactionCardHeader';
 import { CandleData, graphData } from '../../../../utils/state/graphDataSlice';
 import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
-import { Dispatch, SetStateAction, useState, useEffect } from 'react';
+import { Dispatch, SetStateAction, useState, useEffect, ReactNode } from 'react';
 import TransactionsSkeletons from './TransactionsSkeletons/TransactionsSkeletons';
 import SelectedCandleData from '../../../Global/Tabs/SelectedCanleData/SelectedCandleData';
 import Pagination from '../../../Global/Pagination/Pagination';
@@ -40,6 +40,7 @@ export default function Transactions(props: TransactionsProps) {
         expandTradeTable,
         isCandleSelected,
         filter,
+        openGlobalModal,
         // setExpandTradeTable,
     } = props;
 
@@ -121,6 +122,7 @@ export default function Transactions(props: TransactionsProps) {
                     account={account}
                     currentTxActiveInTransactions={currentTxActiveInTransactions}
                     setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
+                    openGlobalModal={openGlobalModal}
                 />
             ))}
         </>
@@ -145,14 +147,14 @@ export default function Transactions(props: TransactionsProps) {
             >
                 {isDataLoading ? <TransactionsSkeletons /> : transactionDataOrNull}
             </div>
-            {expandTradeTable && transactionData.length > 30 && (
+            {/* {expandTradeTable && transactionData.length > 30 && (
                 <Pagination
                     itemsPerPage={transactionsPerPage}
                     totalItems={transactions.length}
                     paginate={paginate}
                     currentPage={currentPage}
                 />
-            )}
+            )} */}
         </div>
     );
 }
