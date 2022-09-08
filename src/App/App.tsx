@@ -117,7 +117,7 @@ export default function App() {
         logout,
         isAuthenticated,
         isAuthenticating,
-        // isInitialized,
+        isInitialized,
         authenticate,
         enableWeb3,
         // authError
@@ -1668,6 +1668,7 @@ export default function App() {
         activeTokenListsChanged: activeTokenListsChanged,
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
         openModalWallet: openModalWallet,
+        isInitialized: isInitialized
     };
 
     // props for <Swap/> React element on trade route
@@ -1693,6 +1694,7 @@ export default function App() {
         activeTokenListsChanged: activeTokenListsChanged,
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
         openModalWallet: openModalWallet,
+        isInitialized: isInitialized
     };
 
     // props for <Limit/> React element on trade route

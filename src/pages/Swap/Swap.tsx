@@ -53,6 +53,7 @@ interface SwapPropsIF {
     activeTokenListsChanged: boolean;
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
     openModalWallet: () => void;
+    isInitialized: boolean;
 }
 
 export default function Swap(props: SwapPropsIF) {
@@ -77,13 +78,14 @@ export default function Swap(props: SwapPropsIF) {
         activeTokenListsChanged,
         indicateActiveTokenListsChanged,
         openModalWallet,
+        isInitialized
     } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
 
     const dispatch = useAppDispatch();
 
-    useUrlParams(chainId);
+    useUrlParams(chainId, isInitialized);
 
     const [isRelativeModalOpen, closeRelativeModal] = useRelativeModal();
 

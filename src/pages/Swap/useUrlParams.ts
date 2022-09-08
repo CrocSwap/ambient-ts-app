@@ -1,6 +1,8 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useMoralisWeb3Api } from 'react-moralis';
+import { defaultTokens } from '../../utils/data/defaultTokens';
+import { ethers } from 'ethers';
 // import swapParams from '../../utils/classes/swapParams';
 
 /**     Instructions to Use This Hook
@@ -14,10 +16,19 @@ import { useMoralisWeb3Api } from 'react-moralis';
 
 export const useUrlParams = (
     // module: string,
-    chainId: string
+    chainId: string,
+    isInitialized: boolean,
 ) => {
     // get URL parameters, empty string if undefined
     const { params } = useParams() ?? '';
+    const [ nativeToken, setNativeToken ] = useState(
+        defaultTokens.find(tkn =>
+            tkn.address === ethers.constants.AddressZero &&
+            tkn.chainId === parseInt(chainId)
+        )
+    );
+    console.log(nativeToken);
+    false && setNativeToken(nativeToken);
 
     // needed to pull token metadata from on-chain
     const Web3Api = useMoralisWeb3Api();
@@ -68,18 +79,19 @@ export const useUrlParams = (
         const addrTokenA = getAddress('tokenA');
         const addrTokenB = getAddress('tokenB');
 
-        // const getTokenData = async (chain: string, tokenAddress: string) => {
-        //     const tokenArrayMetadata = await Web3Api.token.getTokenMetadata();
-        // }
-    
-        const dataTknA = Web3Api.token.getTokenMetadata({
-            chain: chainId as '0x5' | 'goerli', addresses: [addrTokenA]
-        });
+        // TODO: this needs to be gatekept so it runs only once
+        if (isInitialized) {
+            const dataTknA = Web3Api.token.getTokenMetadata({
+                chain: chainId as '0x1', addresses: [addrTokenA]
+            });
 
-        const dataTknB = Web3Api.token.getTokenMetadata({
-            chain: chainId as '0x5' | 'goerli', addresses: [addrTokenB]
-        });
+            const dataTknB = Web3Api.token.getTokenMetadata({
+                chain: chainId as '0x1', addresses: [addrTokenB]
+            });
+            Promise.resolve(dataTknB)
+                .then(res => console.log(res));
 
-        console.log({dataTknA, dataTknB});
+            console.log({dataTknA, dataTknB});
+        }
     }, []);
 }
