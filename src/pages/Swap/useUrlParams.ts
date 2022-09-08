@@ -110,15 +110,14 @@ export const useUrlParams = (
                 : ethers.constants.AddressZero;
             return tokenAddress;
         }
+        const addrTokenA = getAddress('tokenA');
+        const addrTokenB = getAddress('tokenB');
+        const paramsIncludesToken = (
+            paramsUsed.includes('tokenA') ||
+            paramsUsed.includes('tokenB')
+        );
         // TODO: this needs to be gatekept so it runs only once
-        if (
-            isInitialized && (
-                paramsUsed.includes('tokenA') ||
-                paramsUsed.includes('tokenB')
-            )
-        ) {
-            const addrTokenA = getAddress('tokenA');
-            const addrTokenB = getAddress('tokenB');
+        if (isInitialized && paramsIncludesToken) {
             Promise.all([
                 fetchAndFormatTokenData(addrTokenA),
                 fetchAndFormatTokenData(addrTokenB)
