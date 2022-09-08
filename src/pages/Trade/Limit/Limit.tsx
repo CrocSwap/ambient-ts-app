@@ -107,6 +107,14 @@ export default function Limit(props: LimitPropsIF) {
     const [txErrorCode, setTxErrorCode] = useState(0);
     const [txErrorMessage, setTxErrorMessage] = useState('');
 
+    const [showConfirmation, setShowConfirmation] = useState<boolean>(true);
+
+    const resetConfirmation = () => {
+        setShowConfirmation(true);
+        setTxErrorCode(0);
+        setTxErrorMessage('');
+    };
+
     // const tokenADecimals = tokenPair.dataTokenA.decimals;
     // const tokenBDecimals = tokenPair.dataTokenB.decimals;
 
@@ -286,8 +294,9 @@ export default function Limit(props: LimitPropsIF) {
     const handleModalClose = () => {
         closeModal();
         setNewLimitOrderTransactionHash('');
-        setTxErrorCode(0);
-        setTxErrorMessage('');
+        // setTxErrorCode(0);
+        // setTxErrorMessage('');
+        resetConfirmation();
     };
 
     const confirmLimitModalOrNull = isModalOpen ? (
@@ -303,6 +312,9 @@ export default function Limit(props: LimitPropsIF) {
                 newLimitOrderTransactionHash={newLimitOrderTransactionHash}
                 txErrorCode={txErrorCode}
                 txErrorMessage={txErrorMessage}
+                showConfirmation={showConfirmation}
+                setShowConfirmation={setShowConfirmation}
+                resetConfirmation={resetConfirmation}
             />
         </Modal>
     ) : null;

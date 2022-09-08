@@ -2,7 +2,7 @@ import styles from './TransactionDenied.module.css';
 // import Animation from '../Animation/Animation';
 // import NotFound from '../../../assets/animations/NotFound.json';
 import { CircleLoaderFailed } from '../LoadingAnimations/CircleLoader/CircleLoader';
-import { Dispatch, SetStateAction } from 'react';
+// import { Dispatch, SetStateAction } from 'react';
 import Button from '../Button/Button';
 
 // interface TransactionSubmittedProps {
@@ -14,11 +14,11 @@ import Button from '../Button/Button';
 // }
 
 interface TransactionSubmittedProps {
-    setConfirmDetails: Dispatch<SetStateAction<boolean>>;
+    resetConfirmation: () => void;
 }
 
 export default function TransactionDenied(props: TransactionSubmittedProps) {
-    const { setConfirmDetails } = props;
+    const { resetConfirmation } = props;
 
     return (
         <div className={styles.removal_pending}>
@@ -27,7 +27,7 @@ export default function TransactionDenied(props: TransactionSubmittedProps) {
                 Check the Metamask extension in your browser for notifications, or click &quot;Try
                 Again&quot;. You can also click the left arrow above to try again.
             </p>
-            <Button title='Try Again' action={() => setConfirmDetails(true)} />
+            <Button title='Try Again' action={resetConfirmation} />
         </div>
         // <div className={styles.transaction_submitted}>
         //     <div className={styles.completed_animation}>

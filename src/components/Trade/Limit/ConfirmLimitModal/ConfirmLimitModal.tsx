@@ -1,5 +1,5 @@
 import styles from './ConfirmLimitModal.module.css';
-import { useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import CurrencyDisplay from '../../../Global/CurrencyDisplay/CurrencyDisplay';
 import WaitingConfirmation from '../../../Global/WaitingConfirmation/WaitingConfirmation';
 import TransactionSubmitted from '../../../Global/TransactionSubmitted/TransactionSubmitted';
@@ -19,6 +19,9 @@ interface ConfirmLimitModalProps {
     newLimitOrderTransactionHash: string;
     txErrorCode: number;
     txErrorMessage: string;
+    showConfirmation: boolean;
+    setShowConfirmation: Dispatch<SetStateAction<boolean>>;
+    resetConfirmation: () => void;
 }
 
 export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
@@ -30,6 +33,7 @@ export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
         newLimitOrderTransactionHash,
         txErrorCode,
         txErrorMessage,
+        resetConfirmation,
     } = props;
     const [confirmDetails, setConfirmDetails] = useState<boolean>(true);
     const [transactionApproved, setTransactionApproved] = useState<boolean>(false);
@@ -101,7 +105,7 @@ export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
         />
     );
 
-    const transactionDenied = <TransactionDenied setConfirmDetails={setConfirmDetails} />;
+    const transactionDenied = <TransactionDenied resetConfirmation={resetConfirmation} />;
 
     const transactionSubmitted = (
         <TransactionSubmitted
