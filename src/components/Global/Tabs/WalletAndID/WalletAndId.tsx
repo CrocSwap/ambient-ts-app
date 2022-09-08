@@ -97,7 +97,7 @@ export default function WalletAndId(props: WalletAndIDProps) {
             leaveDelay={200}
         >
             <p className={styles.ens}>
-                {ensName && ensName.length > 9 ? ensNameTruncated : ensName}
+                {ensName && ensName.length > 10 ? ensNameTruncated : ensName}
             </p>
         </DefaultTooltip>
     );

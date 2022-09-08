@@ -8,6 +8,7 @@ import styles from './LimitExtraInfo.module.css';
 import { TokenPairIF } from '../../../../utils/interfaces/exports';
 import TooltipComponent from '../../../Global/TooltipComponent/TooltipComponent';
 import truncateDecimals from '../../../../utils/data/truncateDecimals';
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 // import makePriceDisplay from './makePriceDisplay';
 
 // interface for component props
@@ -17,7 +18,7 @@ interface LimitExtraInfoPropsIF {
     slippageTolerance: number;
     liquidityProviderFee: number;
     quoteTokenIsBuy?: boolean;
-    gasPriceinGwei: string;
+    gasPriceinGwei: number | undefined;
     didUserFlipDenom: boolean;
     isTokenABase: boolean;
     isDenomBase: boolean;
@@ -27,7 +28,7 @@ interface LimitExtraInfoPropsIF {
 // central react functional component
 export default function LimitExtraInfo(props: LimitExtraInfoPropsIF) {
     const {
-        tokenPair,
+        // tokenPair,
         gasPriceinGwei,
         // quoteTokenIsBuy,
         poolPriceDisplay,
@@ -35,12 +36,18 @@ export default function LimitExtraInfo(props: LimitExtraInfoPropsIF) {
         liquidityProviderFee,
         // didUserFlipDenom,
         isTokenABase,
-        isDenomBase,
+        // isDenomBase,
         // limitRate,
     } = props;
     const [showExtraDetails, setShowExtraDetails] = useState<boolean>(false);
 
-    const reverseDisplay = (isTokenABase && !isDenomBase) || (!isTokenABase && isDenomBase);
+    // const reverseDisplay = (isTokenABase && !isDenomBase) || (!isTokenABase && isDenomBase);
+
+    const tradeData = useAppSelector((state) => state.tradeData);
+
+    const isDenomBase = tradeData.isDenomBase;
+    const baseTokenSymbol = tradeData.baseToken.symbol;
+    const quoteTokenSymbol = tradeData.quoteToken.symbol;
 
     let reverseSlippage: boolean;
 
@@ -109,15 +116,15 @@ export default function LimitExtraInfo(props: LimitExtraInfoPropsIF) {
     //           4,
     //       );
 
-    const truncatedGasInGwei = truncateDecimals(parseFloat(gasPriceinGwei), 2);
+    const truncatedGasInGwei = gasPriceinGwei ? truncateDecimals(gasPriceinGwei, 2) : undefined;
 
     const extraInfoData = [
         {
             title: 'Spot Price',
             tooltipTitle: 'Current Price of the Selected Token Pool',
-            data: reverseDisplay
-                ? `${displayPriceString} ${tokenPair.dataTokenA.symbol} per ${tokenPair.dataTokenB.symbol}`
-                : `${displayPriceString} ${tokenPair.dataTokenB.symbol} per ${tokenPair.dataTokenA.symbol}`,
+            data: isDenomBase
+                ? `${displayPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
+                : `${displayPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
         },
         // {
         //     title: 'Limit Price',
@@ -129,9 +136,9 @@ export default function LimitExtraInfo(props: LimitExtraInfoPropsIF) {
         {
             title: 'Limit Price',
             tooltipTitle: 'Price Limit After Maximum Slippage',
-            data: reverseDisplay
-                ? `${displayLimitPriceString} ${tokenPair.dataTokenA.symbol} per ${tokenPair.dataTokenB.symbol}`
-                : `${displayLimitPriceString} ${tokenPair.dataTokenB.symbol} per ${tokenPair.dataTokenA.symbol}`,
+            data: isDenomBase
+                ? `${displayLimitPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
+                : `${displayLimitPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
         },
         {
             title: 'Slippage Tolerance',
@@ -176,12 +183,13 @@ export default function LimitExtraInfo(props: LimitExtraInfoPropsIF) {
                 onClick={() => setShowExtraDetails(!showExtraDetails)}
             >
                 <div className={styles.gas_pump}>
-                    <FaGasPump size={15} /> {truncatedGasInGwei} gwei
+                    <FaGasPump size={15} />{' '}
+                    {truncatedGasInGwei ? `${truncatedGasInGwei} gwei` : '…'}
                 </div>
                 <div className={styles.token_amount}>
-                    {reverseDisplay
-                        ? `1 ${tokenPair.dataTokenB.symbol} ≈ ${displayPriceString} ${tokenPair.dataTokenA.symbol}`
-                        : `1 ${tokenPair.dataTokenA.symbol} ≈ ${displayPriceString} ${tokenPair.dataTokenB.symbol}`}
+                    {isDenomBase
+                        ? `1 ${baseTokenSymbol} ≈ ${displayPriceString} ${quoteTokenSymbol}`
+                        : `1 ${quoteTokenSymbol} ≈ ${displayPriceString} ${baseTokenSymbol}`}
                     <RiArrowDownSLine size={27} />{' '}
                 </div>
             </div>

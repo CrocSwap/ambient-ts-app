@@ -1,7 +1,7 @@
 /* swapbox */
 .swapbox {
     display: flex;
-    overflow: auto;
+    overflow: hidden;
     flex-direction: column;
     overflow-y: hidden;
     color: white;
@@ -28,6 +28,11 @@
     flex-direction: row;
     gap: 5px;
 }
+
+.balance_with_pointer {
+    cursor: pointer;
+}
+
 .swapbox_top {
     border-radius: var(--border-radius);
     background-color: var(--dark2);

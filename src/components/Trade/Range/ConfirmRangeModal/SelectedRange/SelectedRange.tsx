@@ -6,6 +6,7 @@ interface SelectedRangeProps {
     minPriceDisplay: number | string;
     maxPriceDisplay: number | string;
     spotPriceDisplay: string;
+    poolPriceDisplayNum: number;
     denominationsInBase: boolean;
     isTokenABase: boolean;
     tokenPair: TokenPairIF;
@@ -21,7 +22,8 @@ export default function SelectedRange(props: SelectedRangeProps) {
     const {
         // minPriceDisplay,
         // maxPriceDisplay,
-        spotPriceDisplay,
+        // spotPriceDisplay,
+        poolPriceDisplayNum,
         denominationsInBase,
         isTokenABase,
         tokenPair,
@@ -49,6 +51,21 @@ export default function SelectedRange(props: SelectedRangeProps) {
     const tokenAShortName = tokenPair.dataTokenA.symbol;
     const tokenBShortName = tokenPair.dataTokenB.symbol;
 
+    const displayPriceWithDenom = denomInBase ? 1 / poolPriceDisplayNum : poolPriceDisplayNum;
+
+    const displayPriceString =
+        displayPriceWithDenom === Infinity || displayPriceWithDenom === 0
+            ? '…'
+            : displayPriceWithDenom < 2
+            ? displayPriceWithDenom.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 6,
+              })
+            : displayPriceWithDenom.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              });
+
     const switchButtons = (
         <div className={styles.button_container}>
             <button
@@ -57,7 +74,7 @@ export default function SelectedRange(props: SelectedRangeProps) {
                     setReverseDisplay(!reverseDisplay);
                     setDenomInBase(!denomInBase);
                 }}
-                className={reverseDisplay ? styles.active_button : styles.non_active_button}
+                className={!reverseDisplay ? styles.active_button : styles.non_active_button}
             >
                 {tokenAShortName}
             </button>
@@ -67,7 +84,7 @@ export default function SelectedRange(props: SelectedRangeProps) {
                     setReverseDisplay(!reverseDisplay);
                     setDenomInBase(!denomInBase);
                 }}
-                className={reverseDisplay ? styles.non_active_button : styles.active_button}
+                className={!reverseDisplay ? styles.non_active_button : styles.active_button}
             >
                 {tokenBShortName}
             </button>
@@ -131,7 +148,7 @@ export default function SelectedRange(props: SelectedRangeProps) {
             <div className={styles.currentPrice_container}>
                 <span className={styles.currentPrice_title}>Current price</span>
                 <span className={styles.currentPrice_amount}>
-                    {spotPriceDisplay}
+                    {displayPriceString}
                     {/* {denomInBase ? 1 / parseFloat(spotPriceDisplay) : spotPriceDisplay} */}
                 </span>
                 <span className={styles.currentPrice_info}>

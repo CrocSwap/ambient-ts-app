@@ -1,4 +1,5 @@
-import { ChangeEvent } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
+import useDebounce from '../../../App/hooks/useDebounce';
 import styles from './CurrencyQuantity.module.css';
 
 interface CurrencyQuantityProps {
@@ -10,13 +11,23 @@ interface CurrencyQuantityProps {
 export default function CurrencyQuantity(props: CurrencyQuantityProps) {
     const { disable, fieldId, handleChangeEvent } = props;
 
+    const [newChangeEvent, setNewChangeEvent] = useState<
+        ChangeEvent<HTMLInputElement> | undefined
+    >();
+
+    const debouncedEvent = useDebounce(newChangeEvent, 250); // debounce 1/4 second
+
+    useEffect(() => {
+        handleChangeEvent(debouncedEvent);
+    }, [debouncedEvent]);
+
     return (
         <div className={styles.token_amount}>
             <input
                 id={`${fieldId}-quantity`}
                 className={styles.currency_quantity}
                 placeholder='0.0'
-                onChange={(event) => handleChangeEvent(event)}
+                onChange={(event) => setNewChangeEvent(event)}
                 type='string'
                 inputMode='decimal'
                 autoComplete='off'

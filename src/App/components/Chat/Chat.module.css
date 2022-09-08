@@ -20,6 +20,21 @@
     grid-template-rows: 24px auto 24px;
   } 
   
+  .welcome_back{
+   background: red;
+   width: 255px;
+   padding: 1rem;
+   font-size: var(--body-size);
+   line-height: var(--body-lh);
+   position: absolute;
+   right: 50px;
+    bottom: 60px;
+    border-radius: var(--border-radius);
+    background: var(--dark3);
+color: var(--text-grey-white);
+cursor: pointer;
+transition: all 500ms ease-in-out;
+  }
 
 
   .chat_wrapper_full{

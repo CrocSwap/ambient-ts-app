@@ -1,7 +1,8 @@
 .apy p {
-    font-size: 10px;
-    line-height: 13px;
-    font-weight: 200;
+    
+    /* font-weight: 200; */
+   
+    font-weight: 100;
     letter-spacing: -0.02em;
 }
 
@@ -31,15 +32,15 @@
 /* Desktop screen Sizes */
 @media only screen and (min-width: 768px) {
     .apy p {
-        font-size: 12px;
-        line-height: 16px;
+        /* font-size: 12px;
+        line-height: 16px; */
     }
 }
 
 /* Extra large devices (large laptops and desktops, 1200px and up) */
 @media only screen and (min-width: 1200px) {
     .apy p {
-        font-size: 18px;
-        line-height: 22px;
+        /* font-size: 18px;
+        line-height: 22px; */
     }
 }

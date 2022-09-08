@@ -1,5 +1,5 @@
 import styles from './ConfirmLimitModal.module.css';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import CurrencyDisplay from '../../../Global/CurrencyDisplay/CurrencyDisplay';
 import WaitingConfirmation from '../../../Global/WaitingConfirmation/WaitingConfirmation';
 import TransactionSubmitted from '../../../Global/TransactionSubmitted/TransactionSubmitted';
@@ -32,7 +32,14 @@ export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
         txErrorMessage,
     } = props;
     const [confirmDetails, setConfirmDetails] = useState<boolean>(true);
-    const [transactionApproved] = useState<boolean>(false);
+    const [transactionApproved, setTransactionApproved] = useState<boolean>(false);
+
+    useEffect(() => {
+        if (newLimitOrderTransactionHash) {
+            setTransactionApproved(true);
+        }
+    }, [newLimitOrderTransactionHash]);
+
     const isTransactionDenied =
         txErrorCode === 4001 &&
         txErrorMessage === 'MetaMask Tx Signature: User denied transaction signature.';

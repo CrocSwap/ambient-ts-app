@@ -66,13 +66,7 @@ export default function SidebarAccordion(props: SidebarAccordionPropsIF) {
                 className={styles.sidebar_item}
                 onClick={showSidebar ? () => setIsOpen(!isOpen) : toggleSidebar}
             >
-                <div
-                    style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                    }}
-                >
+                <div>
                     <div className={styles.sidebar_link}>
                         {showSidebar && (
                             <MdPlayArrow size={12} color='#ffffff' className={sidebarIconStyle} />
