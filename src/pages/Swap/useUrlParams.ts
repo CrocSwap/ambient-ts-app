@@ -6,16 +6,6 @@ import { defaultTokens } from '../../utils/data/defaultTokens';
 import { ethers } from 'ethers';
 import { setTokenA, setTokenB } from '../../utils/state/tradeDataSlice';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
-// import swapParams from '../../utils/classes/swapParams';
-
-/**     Instructions to Use This Hook
- * 
- *      1. Create a new parameters class and import to this file.
- *      2. Call the hook in the page rendered with URL parameters.
- *      3. Name the URL pathway (sans parameters) as an argument.
- *      4. Add a 'case' to func makeParams() for the URL pathway.
- *      5. For the URL pathway, return an instance of the imported class.
- */
 
 export const useUrlParams = (
     // module: string,
@@ -45,23 +35,9 @@ export const useUrlParams = (
             .map(par => par.filter(e => e !== ''))
             // remove tuples with trisomy issues
             .filter(par => par.length === 2);
-        // router to feed parameters into the correct object constructor
-        // const makeParams = (input: string[][]) => {
-        //     switch (module) {
-        //         // swap module
-        //         case 'swap':
-        //             return new swapParams(input);
-        //         // default pathway (considered an error pathway)
-        //         default:
-        //             console.warn(`Unrecognized URL pathway in useUrlParams() hook. Received value <<${module}>>. Refer to useUrlParams.ts for troubleshooting. Ensure that the hook was called with a value for parameter module recognized in func makeParams(). Triggering empty return.`);
-        //             return;
-        //     }
-        // }
         // return the correct parameters object for URL pathway
         return paramsArray;
     }, []);
-
-    // console.log(urlParams);
 
     const paramsUsed = useMemo(() => (
         urlParams.map(param => param[0])
@@ -78,7 +54,6 @@ export const useUrlParams = (
             tkn.chainId === parseInt(chainToUse)
         )
     ), [chainToUse]);
-    // console.log(nativeToken);
 
     // this can probably go inside the useEffect() hook for token data
     const fetchAndFormatTokenData = (addr: string) => {
