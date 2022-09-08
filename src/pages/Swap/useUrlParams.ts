@@ -21,13 +21,6 @@ export const useUrlParams = (
 ) => {
     // get URL parameters, empty string if undefined
     const { params } = useParams() ?? '';
-    const nativeToken = useMemo(() => (
-        defaultTokens.find(tkn =>
-            tkn.address === ethers.constants.AddressZero &&
-            tkn.chainId === parseInt(chainId)
-        )
-    ), [chainId]);
-    console.log(nativeToken);
 
     // needed to pull token metadata from on-chain
     const Web3Api = useMoralisWeb3Api();
@@ -62,6 +55,18 @@ export const useUrlParams = (
         // return the correct parameters object for URL pathway
         return paramsArray;
     }, []);
+
+    console.log(urlParams);
+
+    const nativeToken = useMemo(() => {
+        const chainParam = urlParams.find(param => param[0] === 'chain');
+        const chainToUse = chainParam ? chainParam[1] : chainId;
+        return defaultTokens.find(tkn =>
+                tkn.address === ethers.constants.AddressZero &&
+                tkn.chainId === parseInt(chainToUse)
+        );
+    }, [chainId]);
+    console.log(nativeToken);
 
     // useEffect to switch chains if necessary
 
