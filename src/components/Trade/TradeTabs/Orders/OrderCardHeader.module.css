@@ -20,7 +20,7 @@
     padding: 0 8px;
 }
 
-.row_container p {
+.row_container section {
     flex: 0.4 0;
     /* flex-flow: column; */
     align-items: center;
@@ -32,6 +32,14 @@
 }
 
 .wallet,
+.sortable_container{
+    cursor: pointer;
+    display: flex;
+ 
+    flex-direction: row;
+    align-items: center;
+    gap: 2px;
+}
 .side,
 .token {
     display: none;
@@ -40,6 +48,8 @@
 .arrow_placeholder{
     opacity: 0;
 }
+
+
 
 /* .type{
     text-align: end;
@@ -84,6 +94,7 @@
     .token,
     .side {
         display: flex;
+    
     }
 }
 
