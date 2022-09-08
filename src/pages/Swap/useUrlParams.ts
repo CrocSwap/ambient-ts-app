@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { useMoralisWeb3Api } from 'react-moralis';
 import { defaultTokens } from '../../utils/data/defaultTokens';
@@ -21,14 +21,13 @@ export const useUrlParams = (
 ) => {
     // get URL parameters, empty string if undefined
     const { params } = useParams() ?? '';
-    const [ nativeToken, setNativeToken ] = useState(
+    const nativeToken = useMemo(() => (
         defaultTokens.find(tkn =>
             tkn.address === ethers.constants.AddressZero &&
             tkn.chainId === parseInt(chainId)
         )
-    );
+    ), [chainId]);
     console.log(nativeToken);
-    false && setNativeToken(nativeToken);
 
     // needed to pull token metadata from on-chain
     const Web3Api = useMoralisWeb3Api();
