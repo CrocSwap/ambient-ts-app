@@ -5,7 +5,7 @@ import RangeStatus from '../../../Global/RangeStatus/RangeStatus';
 import RangeMinMax from '../../../Global/Tabs/RangeMinMax/RangeMinMax';
 import Apy from '../../../Global/Tabs/Apy/Apy';
 import { PositionIF } from '../../../../utils/interfaces/PositionIF';
-import { ambientPosSlot, concPosSlot } from '@crocswap-libs/sdk';
+import { ambientPosSlot, concPosSlot, CrocEnv } from '@crocswap-libs/sdk';
 import RangesMenu from '../../../Global/Tabs/TableMenu/TableMenuComponents/RangesMenu';
 import { ethers } from 'ethers';
 import { useEffect, Dispatch, SetStateAction } from 'react';
@@ -15,6 +15,7 @@ import Value from '../../../Global/Tabs/Value/Value';
 import { formatAmount } from '../../../../utils/numbers';
 
 interface RangeCardProps {
+    crocEnv: CrocEnv | undefined;
     provider: ethers.providers.Provider | undefined;
     chainId: string;
     portfolio?: boolean;
@@ -33,6 +34,7 @@ interface RangeCardProps {
 
 export default function RangeCard(props: RangeCardProps) {
     const {
+        crocEnv,
         provider,
         chainId,
         position,
@@ -114,6 +116,7 @@ export default function RangeCard(props: RangeCardProps) {
 
     // --------------------------REMOVE RANGE PROPS-------------------------------
     const rangeDetailsProps = {
+        crocEnv: crocEnv,
         provider: provider,
         chainId: chainId,
         poolIdx: position.poolIdx,
@@ -216,6 +219,7 @@ export default function RangeCard(props: RangeCardProps) {
 
             <div className={styles.menu_container}>
                 <RangesMenu
+                    crocEnv={crocEnv}
                     userMatchesConnectedAccount={userMatchesConnectedAccount}
                     rangeDetailsProps={rangeDetailsProps}
                     posHash={posHash as string}

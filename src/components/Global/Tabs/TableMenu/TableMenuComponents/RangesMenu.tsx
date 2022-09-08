@@ -17,9 +17,11 @@ import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import { DefaultTooltip } from '../../../StyledTooltip/StyledTooltip';
 import { PositionIF } from '../../../../../utils/interfaces/PositionIF';
 import HarvestPosition from '../../../../HarvestPosition/HarvestPosition';
+import { CrocEnv } from '@crocswap-libs/sdk';
 
 // interface for React functional component props
 interface RangesMenuIF {
+    crocEnv: CrocEnv | undefined;
     userMatchesConnectedAccount: boolean | undefined;
     // todoFromJr: Assign the correct types to these data -Jr
     // eslint-disable-next-line
@@ -30,7 +32,8 @@ interface RangesMenuIF {
 
 // React functional component
 export default function RangesMenu(props: RangesMenuIF) {
-    const { userMatchesConnectedAccount, rangeDetailsProps, posHash, positionData } = props;
+    const { crocEnv, userMatchesConnectedAccount, rangeDetailsProps, posHash, positionData } =
+        props;
 
     const currentLocation = location.pathname;
     const { isAmbient, isPositionInRange } = rangeDetailsProps;
@@ -92,7 +95,9 @@ export default function RangesMenu(props: RangesMenuIF) {
             break;
         case 'harvest':
             // modalContent = <RangeDetails {...removeRangeProps} />;
-            modalContent = <HarvestPosition position={positionData} {...rangeDetailsProps} />;
+            modalContent = (
+                <HarvestPosition crocEnv={crocEnv} position={positionData} {...rangeDetailsProps} />
+            );
 
             modalTitle = 'Harvest';
             break;

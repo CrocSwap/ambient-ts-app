@@ -14,10 +14,11 @@ import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { tradeData as TradeDataIF } from '../../utils/state/tradeDataSlice';
 import { CandleData } from '../../utils/state/graphDataSlice';
 import { PoolIF, TokenIF, TokenPairIF } from '../../utils/interfaces/exports';
-import { ChainSpec } from '@crocswap-libs/sdk';
+import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 
 // interface for React functional component props
 interface TradePropsIF {
+    crocEnv: CrocEnv | undefined;
     provider: ethers.providers.Provider | undefined;
     baseTokenAddress: string;
     quoteTokenAddress: string;
@@ -58,6 +59,7 @@ interface TradePropsIF {
 // React functional component
 export default function Trade(props: TradePropsIF) {
     const {
+        crocEnv,
         chainId,
         chainData,
         tokenMap,
@@ -186,6 +188,7 @@ export default function Trade(props: TradePropsIF) {
                         }}
                     >
                         <TradeTabs2
+                            crocEnv={crocEnv}
                             provider={provider}
                             account={props.account}
                             isAuthenticated={props.isAuthenticated}

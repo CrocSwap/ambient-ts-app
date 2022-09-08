@@ -1,5 +1,5 @@
 import styles from './HarvestPosition.module.css';
-import HarvestPositionWidth from './HarvestPositionWidth/HarvestPositionWidth';
+// import HarvestPositionWidth from './HarvestPositionWidth/HarvestPositionWidth';
 import HarvestPositionHeader from './HarvestPositionHeader/HarvestPositionHeader';
 import HarvestPositionInfo from './HarvestPositionInfo/HarvestPositionInfo';
 import HarvestPositionButton from './HarvestPositionButton/HarvestPositionButton';
@@ -21,8 +21,10 @@ import {
     CircleLoader,
     CircleLoaderFailed,
 } from '../Global/LoadingAnimations/CircleLoader/CircleLoader';
+import { CrocEnv } from '@crocswap-libs/sdk';
 
 interface IHarvestPositionProps {
+    crocEnv: CrocEnv | undefined;
     provider: ethers.providers.Provider;
     chainId: string;
     poolIdx: number;
@@ -43,16 +45,17 @@ interface IHarvestPositionProps {
 }
 export default function HarvestPosition(props: IHarvestPositionProps) {
     const {
+        crocEnv,
         baseTokenLogoURI,
         quoteTokenLogoURI,
-        chainId,
-        poolIdx,
-        user,
-        bidTick,
-        askTick,
-        baseTokenAddress,
-        quoteTokenAddress,
-        provider,
+        // chainId,
+        // poolIdx,
+        // user,
+        // bidTick,
+        // askTick,
+        // baseTokenAddress,
+        // quoteTokenAddress,
+        // provider,
         lastBlockNumber,
         position,
     } = props;
@@ -66,7 +69,7 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
         </div>
     );
 
-    const [removalPercentage, setRemovalPercentage] = useState(100);
+    // const [removalPercentage, setRemovalPercentage] = useState(100);
 
     const [showConfirmation, setShowConfirmation] = useState(false);
     // eslint-disable-next-line
@@ -76,12 +79,86 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
     // eslint-disable-next-line
     const [txErrorMessage, setTxErrorMessage] = useState('');
 
-    const harvestFn = () => console.log('harvested');
+    const [feeLiqBaseDecimalCorrected, setFeeLiqBaseDecimalCorrected] = useState<
+        number | undefined
+    >();
+    const [feeLiqQuoteDecimalCorrected, setFeeLiqQuoteDecimalCorrected] = useState<
+        number | undefined
+    >();
+
+    const positionStatsCacheEndpoint = 'https://809821320828123.de:5000/position_stats?';
+
+    useEffect(() => {
+        if (
+            position.chainId &&
+            position.poolIdx &&
+            position.user &&
+            position.base &&
+            position.quote &&
+            position.positionType
+        ) {
+            (async () => {
+                fetch(
+                    positionStatsCacheEndpoint +
+                        new URLSearchParams({
+                            chainId: position.chainId,
+                            user: position.user,
+                            base: position.base,
+                            quote: position.quote,
+                            poolIdx: position.poolIdx.toString(),
+                            bidTick: position.bidTick ? position.bidTick.toString() : '0',
+                            askTick: position.askTick ? position.askTick.toString() : '0',
+                            calcValues: 'true',
+                            positionType: position.positionType,
+                        }),
+                )
+                    .then((response) => response.json())
+                    .then((json) => {
+                        setFeeLiqBaseDecimalCorrected(json?.data?.feesLiqBaseDecimalCorrected);
+                        setFeeLiqQuoteDecimalCorrected(json?.data?.feesLiqQuoteDecimalCorrected);
+                    });
+            })();
+        }
+    }, [lastBlockNumber]);
+
+    const liquiditySlippageTolerance = 1;
+
+    const harvestFn = async () => {
+        console.log('100% of fees to be removed.');
+        if (!crocEnv) return;
+        const env = crocEnv;
+        const pool = env.pool(position.base, position.quote);
+        const spotPrice = await pool.displayPrice();
+
+        const lowLimit = spotPrice * (1 - liquiditySlippageTolerance / 100);
+        const highLimit = spotPrice * (1 + liquiditySlippageTolerance / 100);
+
+        if (position.positionType === 'concentrated') {
+            try {
+                const tx = await pool.harvestRange(
+                    [position.bidTick, position.askTick],
+                    [lowLimit, highLimit],
+                );
+                console.log(tx?.hash);
+                // setNewRemovalTransactionHash(tx?.hash);
+            } catch (error) {
+                // setTxErrorCode(error?.code);
+                // setTxErrorMessage(error?.message);
+            }
+        } else {
+            console.log('unsupported position type for harvest');
+        }
+    };
 
     const positionType = 'concentrated';
 
+    const feesGreaterThanZero =
+        feeLiqBaseDecimalCorrected && feeLiqQuoteDecimalCorrected
+            ? feeLiqBaseDecimalCorrected + feeLiqQuoteDecimalCorrected > 0
+            : false;
+
     const harvestButtonOrNull =
-        positionType === 'concentrated' && !showSettings ? (
+        positionType === 'concentrated' && feesGreaterThanZero && !showSettings ? (
             <HarvestPositionButton harvestFn={harvestFn} title={'Harvest Fees'} />
         ) : (
             <HarvestPositionButton
@@ -193,10 +270,10 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
                 />
                 {harvestPositionSetttingIcon}
             </div>
-            <HarvestPositionWidth
+            {/* <HarvestPositionWidth
                 removalPercentage={removalPercentage}
                 setRemovalPercentage={setRemovalPercentage}
-            />
+            /> */}
             <HarvestPositionInfo
                 baseTokenSymbol={props.baseTokenSymbol}
                 quoteTokenSymbol={props.quoteTokenSymbol}
@@ -204,9 +281,10 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
                 quoteTokenLogoURI={quoteTokenLogoURI}
                 posLiqBaseDecimalCorrected={position.positionLiqBaseDecimalCorrected}
                 posLiqQuoteDecimalCorrected={position.positionLiqQuoteDecimalCorrected}
-                feeLiqBaseDecimalCorrected={position.feesLiqBaseDecimalCorrected}
-                feeLiqQuoteDecimalCorrected={position.feesLiqQuoteDecimalCorrected}
-                removalPercentage={removalPercentage}
+                feeLiqBaseDecimalCorrected={feeLiqBaseDecimalCorrected}
+                feeLiqQuoteDecimalCorrected={feeLiqQuoteDecimalCorrected}
+                // removalPercentage={removalPercentage}
+                removalPercentage={100}
             />
         </>
     );

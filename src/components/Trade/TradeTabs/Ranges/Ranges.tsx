@@ -11,9 +11,11 @@ import styles from './Ranges.module.css';
 import { graphData } from '../../../../utils/state/graphDataSlice';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { useSortedPositions } from './useSortedPositions';
+import { CrocEnv } from '@crocswap-libs/sdk';
 
 // interface for props
 interface RangesPropsIF {
+    crocEnv: CrocEnv | undefined;
     provider: ethers.providers.Provider | undefined;
     isAuthenticated: boolean;
     account: string;
@@ -31,6 +33,7 @@ interface RangesPropsIF {
 // react functional component
 export default function Ranges(props: RangesPropsIF) {
     const {
+        crocEnv,
         provider,
         account,
         isAuthenticated,
@@ -86,6 +89,7 @@ export default function Ranges(props: RangesPropsIF) {
             >
                 {sortedPositions.map((position, idx) => (
                     <RangeCard
+                        crocEnv={crocEnv}
                         provider={provider}
                         chainId={chainId}
                         key={idx}

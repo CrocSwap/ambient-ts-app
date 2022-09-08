@@ -28,7 +28,7 @@ export default function HarvestPositionHeader(props: IHarvestPositionHeaderProps
 
     const isAmbient = false;
 
-    const isPositionInRange = true;
+    // const isPositionInRange = true;
 
     return (
         <div className={styles.container}>
@@ -51,7 +51,7 @@ export default function HarvestPositionHeader(props: IHarvestPositionHeaderProps
                     {isDenomBase ? quoteTokenSymbol : baseTokenSymbol}
                 </span>
             </div>
-            <RangeStatus isInRange={isPositionInRange} isAmbient={isAmbient} />
+            <RangeStatus isInRange={props.isPositionInRange} isAmbient={isAmbient} />
         </div>
     );
 }
