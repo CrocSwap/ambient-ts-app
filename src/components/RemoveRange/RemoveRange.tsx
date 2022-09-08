@@ -286,7 +286,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
         handleConfirmationChange();
     }, [
         transactionApproved,
-        removalDenied,
+        // removalDenied,
         newRemovalTransactionHash,
         txErrorCode,
         showConfirmation,
