@@ -45,7 +45,7 @@ export default function Account(props: AccountPropsIF) {
         <div className={styles.account_container}>
             <span className={styles.white}>
                 {props.nativeBalance && isAuthenticated && isWeb3Enabled
-                    ? 'Ξ ' + parseFloat(props.nativeBalance).toPrecision(4)
+                    ? 'Ξ ' + parseFloat(props.nativeBalance).toPrecision(4)
                     : ''}
             </span>
             <div className={`${styles.title_gradient}`} onClick={handleCopyAddress}>
