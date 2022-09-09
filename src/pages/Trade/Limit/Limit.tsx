@@ -39,6 +39,8 @@ interface LimitPropsIF {
     lastBlockNumber: number;
     baseTokenBalance: string;
     quoteTokenBalance: string;
+    baseTokenDexBalance: string;
+    quoteTokenDexBalance: string;
     isSellTokenBase: boolean;
     tokenPair: TokenPairIF;
     isTokenABase: boolean;
@@ -63,6 +65,8 @@ export default function Limit(props: LimitPropsIF) {
         isSellTokenBase,
         baseTokenBalance,
         quoteTokenBalance,
+        baseTokenDexBalance,
+        quoteTokenDexBalance,
         tokenPair,
         isTokenABase,
         gasPriceinGwei,
@@ -280,7 +284,7 @@ export default function Limit(props: LimitPropsIF) {
         }
 
         try {
-            const mint = await ko.mint();
+            const mint = await ko.mint({ surplus: isWithdrawFromDexChecked });
             console.log(mint.hash);
             setNewLimitOrderTransactionHash(mint.hash);
             const limitOrderReceipt = await mint.wait();
@@ -341,8 +345,8 @@ export default function Limit(props: LimitPropsIF) {
         }
     };
 
-    const tokenABalance = isTokenABase ? baseTokenBalance : quoteTokenBalance;
-    const tokenBBalance = isTokenABase ? quoteTokenBalance : baseTokenBalance;
+    // const tokenABalance = isTokenABase ? baseTokenBalance : quoteTokenBalance;
+    // const tokenBBalance = isTokenABase ? quoteTokenBalance : baseTokenBalance;
 
     const approvalButton = (
         <Button
@@ -384,8 +388,10 @@ export default function Limit(props: LimitPropsIF) {
                         setImportedTokens={setImportedTokens}
                         chainId={chainId}
                         setLimitAllowed={setLimitAllowed}
-                        tokenABalance={tokenABalance}
-                        tokenBBalance={tokenBBalance}
+                        baseTokenBalance={baseTokenBalance}
+                        quoteTokenBalance={quoteTokenBalance}
+                        baseTokenDexBalance={baseTokenDexBalance}
+                        quoteTokenDexBalance={quoteTokenDexBalance}
                         tokenAInputQty={tokenAInputQty}
                         tokenBInputQty={tokenBInputQty}
                         setTokenAInputQty={setTokenAInputQty}
