@@ -248,10 +248,14 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
         isRemovalDenied,
     ]);
 
-    const buttonToDisplay = showSettings ? (
-        <Button title='Confirm' action={() => setShowSettings(false)} />
-    ) : (
-        harvestButtonOrNull
+    const buttonToDisplay = (
+        <div style={{ padding: '0 1rem' }}>
+            {showSettings ? (
+                <Button title='Confirm' action={() => setShowSettings(false)} />
+            ) : (
+                harvestButtonOrNull
+            )}
+        </div>
     );
 
     const confirmationContent = (
@@ -286,22 +290,24 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
                 removalPercentage={removalPercentage}
                 setRemovalPercentage={setRemovalPercentage}
             /> */}
-            <HarvestPositionInfo
-                baseTokenSymbol={props.baseTokenSymbol}
-                quoteTokenSymbol={props.quoteTokenSymbol}
-                baseTokenLogoURI={baseTokenLogoURI}
-                quoteTokenLogoURI={quoteTokenLogoURI}
-                posLiqBaseDecimalCorrected={position.positionLiqBaseDecimalCorrected}
-                posLiqQuoteDecimalCorrected={position.positionLiqQuoteDecimalCorrected}
-                feeLiqBaseDecimalCorrected={feeLiqBaseDecimalCorrected}
-                feeLiqQuoteDecimalCorrected={feeLiqQuoteDecimalCorrected}
-                // removalPercentage={removalPercentage}
-                removalPercentage={100}
-            />
-            <HavrestExtraControls
-                isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
-                setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
-            />
+            <div style={{ padding: '0 1rem' }}>
+                <HarvestPositionInfo
+                    baseTokenSymbol={props.baseTokenSymbol}
+                    quoteTokenSymbol={props.quoteTokenSymbol}
+                    baseTokenLogoURI={baseTokenLogoURI}
+                    quoteTokenLogoURI={quoteTokenLogoURI}
+                    posLiqBaseDecimalCorrected={position.positionLiqBaseDecimalCorrected}
+                    posLiqQuoteDecimalCorrected={position.positionLiqQuoteDecimalCorrected}
+                    feeLiqBaseDecimalCorrected={feeLiqBaseDecimalCorrected}
+                    feeLiqQuoteDecimalCorrected={feeLiqQuoteDecimalCorrected}
+                    // removalPercentage={removalPercentage}
+                    removalPercentage={100}
+                />
+                <HavrestExtraControls
+                    isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
+                    setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
+                />
+            </div>
         </>
     );
 
