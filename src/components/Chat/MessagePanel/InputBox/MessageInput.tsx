@@ -1,3 +1,4 @@
+import { useMoralis } from 'react-moralis';
 import { useEffect, useState } from 'react';
 import { BsSlashSquare, BsEmojiSmileFill } from 'react-icons/bs';
 import { Message } from '../../Model/MessageModel';
@@ -28,6 +29,7 @@ export default function MessageInput(props: MessageInputProps) {
 
     const [message, setMessage] = useState('');
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+    const { user, account, enableWeb3, isWeb3Enabled, isAuthenticated } = useMoralis();
 
     const handleEmojiClick = (event: any, emoji: any) => {
         let msg = message;
@@ -62,13 +64,22 @@ export default function MessageInput(props: MessageInputProps) {
         setMessage(e.target.value);
     };
 
+    const accountProps = {
+        isAuthenticated: isAuthenticated,
+        isWeb3Enabled: isWeb3Enabled,
+    };
     return (
         <div className={styles.input_box}>
             <div className={styles.input}>
                 <input
                     type='text'
                     id='box'
-                    placeholder='Please log in to chat.'
+                    placeholder={
+                        !isAuthenticated || !isWeb3Enabled
+                            ? 'Please log in to chat.'
+                            : 'Enter Message...'
+                    }
+                    disabled={!isAuthenticated || !isWeb3Enabled}
                     className={styles.input_text}
                     onKeyDown={_handleKeyDown}
                     value={message}
