@@ -58,6 +58,8 @@ interface RangePropsIF {
     poolPriceNonDisplay: number | undefined;
     baseTokenBalance: string;
     quoteTokenBalance: string;
+    baseTokenDexBalance: string;
+    quoteTokenDexBalance: string;
     tokenAAllowance: string;
     setRecheckTokenAApproval: Dispatch<SetStateAction<boolean>>;
     tokenBAllowance: string;
@@ -83,6 +85,8 @@ export default function Range(props: RangePropsIF) {
         poolPriceNonDisplay,
         baseTokenBalance,
         quoteTokenBalance,
+        baseTokenDexBalance,
+        quoteTokenDexBalance,
         tokenAAllowance,
         setRecheckTokenAApproval,
         tokenBAllowance,
@@ -587,18 +591,28 @@ export default function Range(props: RangePropsIF) {
         try {
             tx = await (isAmbient
                 ? isTokenAPrimary
-                    ? pool.mintAmbientQuote(tokenAInputQty, [minPrice, maxPrice])
-                    : pool.mintAmbientBase(tokenBInputQty, [minPrice, maxPrice])
+                    ? pool.mintAmbientQuote(tokenAInputQty, [minPrice, maxPrice], {
+                          surplus: [isWithdrawTokenAFromDexChecked, isWithdrawTokenBFromDexChecked],
+                      })
+                    : pool.mintAmbientBase(tokenBInputQty, [minPrice, maxPrice], {
+                          surplus: [isWithdrawTokenAFromDexChecked, isWithdrawTokenBFromDexChecked],
+                      })
                 : isTokenAPrimary
                 ? pool.mintRangeQuote(
                       tokenAInputQty,
                       [rangeLowTick, rangeHighTick],
                       [minPrice, maxPrice],
+                      {
+                          surplus: [isWithdrawTokenAFromDexChecked, isWithdrawTokenBFromDexChecked],
+                      },
                   )
                 : pool.mintRangeBase(
                       tokenBInputQty,
                       [rangeLowTick, rangeHighTick],
                       [minPrice, maxPrice],
+                      {
+                          surplus: [isWithdrawTokenAFromDexChecked, isWithdrawTokenBFromDexChecked],
+                      },
                   ));
             setNewRangeTransactionHash(tx?.hash);
         } catch (error) {
@@ -773,8 +787,8 @@ export default function Range(props: RangePropsIF) {
         resetConfirmation();
     };
 
-    const tokenABalance = isTokenABase ? baseTokenBalance : quoteTokenBalance;
-    const tokenBBalance = isTokenABase ? quoteTokenBalance : baseTokenBalance;
+    // const tokenABalance = isTokenABase ? baseTokenBalance : quoteTokenBalance;
+    // const tokenBBalance = isTokenABase ? quoteTokenBalance : baseTokenBalance;
 
     // props for <ConfirmRangeModal/> React element
     const rangeModalProps = {
@@ -813,14 +827,16 @@ export default function Range(props: RangePropsIF) {
         isAmbient: isAmbient,
         isTokenABase: isTokenABase,
         depositSkew: depositSkew,
+        baseTokenBalance,
+        quoteTokenBalance,
+        baseTokenDexBalance,
+        quoteTokenDexBalance,
         isTokenAPrimaryLocal: isTokenAPrimaryLocal,
         setIsTokenAPrimaryLocal: setIsTokenAPrimaryLocal,
         isWithdrawTokenAFromDexChecked: isWithdrawTokenAFromDexChecked,
         setIsWithdrawTokenAFromDexChecked: setIsWithdrawTokenAFromDexChecked,
         isWithdrawTokenBFromDexChecked: isWithdrawTokenBFromDexChecked,
         setIsWithdrawTokenBFromDexChecked: setIsWithdrawTokenBFromDexChecked,
-        tokenABalance: tokenABalance,
-        tokenBBalance: tokenBBalance,
         setTokenAInputQty: setTokenAInputQty,
         setTokenBInputQty: setTokenBInputQty,
         setRangeButtonErrorMessage: setRangeButtonErrorMessage,

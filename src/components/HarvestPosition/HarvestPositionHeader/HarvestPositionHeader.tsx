@@ -13,22 +13,12 @@ interface IHarvestPositionHeaderProps {
 }
 
 export default function HarvestPositionHeader(props: IHarvestPositionHeaderProps) {
+    const { baseTokenSymbol, quoteTokenSymbol } = props;
     // const dispatch = useAppDispatch();
-
-    // temp values
-    const baseTokenSymbol = 'ETH';
-    const quoteTokenSymbol = 'USDC';
-
-    // const baseTokenLogoURI =
-    // 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png';
-
-    // const quoteTokenLogoURI = 'https://cryptologos.cc/logos/usd-coin-usdc-logo.png';
 
     const isDenomBase = false;
 
     const isAmbient = false;
-
-    // const isPositionInRange = true;
 
     return (
         <div className={styles.container}>
@@ -47,8 +37,8 @@ export default function HarvestPositionHeader(props: IHarvestPositionHeaderProps
                     alt=''
                 />
                 <span>
-                    {isDenomBase ? baseTokenSymbol : quoteTokenSymbol} /
-                    {isDenomBase ? quoteTokenSymbol : baseTokenSymbol}
+                    {isDenomBase ? quoteTokenSymbol : baseTokenSymbol} /{' '}
+                    {isDenomBase ? baseTokenSymbol : quoteTokenSymbol}
                 </span>
             </div>
             <RangeStatus isInRange={props.isPositionInRange} isAmbient={isAmbient} />

@@ -21,7 +21,7 @@ export default function RemoveRangeHeader(props: RemoveRangeHeaderPropsIF) {
             <h2>{props.title}</h2>
             <div onClick={props.onClose}>
                 <VscClose size={22} />
-            </div>
+
         </header>
     );
 }

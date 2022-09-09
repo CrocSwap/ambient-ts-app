@@ -45,7 +45,7 @@ export default function Transactions(props: TransactionsProps) {
     const swapsByUser = graphData?.swapsByUser?.swaps;
     const swapsByPool = graphData?.swapsByPool?.swaps;
 
-    console.log(swapsByPool);
+    // console.log(swapsByPool);
 
     const dataReceivedByUser = graphData?.swapsByUser?.dataReceived;
     const dataReceivedByPool = graphData?.swapsByPool?.dataReceived;
