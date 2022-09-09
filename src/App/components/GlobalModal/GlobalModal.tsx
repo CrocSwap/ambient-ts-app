@@ -5,11 +5,13 @@ interface GlobalModalProps {
     openGlobalModal: (page: string) => void;
     closeGlobalModal: () => void;
     currentContent: React.ReactNode;
+
+    title?: string;
 }
 
 export default function GlobalModal(props: GlobalModalProps) {
     const modalOrNull = props.isGlobalModalOpen ? (
-        <SimpleModal onClose={props.closeGlobalModal}>
+        <SimpleModal onClose={props.closeGlobalModal} title={props.title}>
             {props.currentContent}
 
             <div onClick={props.closeGlobalModal}>CLOSE</div>

@@ -29,6 +29,8 @@ interface RangesPropsIF {
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     portfolio?: boolean;
+
+    openGlobalModal: (content: React.ReactNode) => void;
 }
 
 // react functional component
@@ -108,6 +110,7 @@ export default function Ranges(props: RangesPropsIF) {
                         lastBlockNumber={lastBlockNumber}
                         currentPositionActive={currentPositionActive}
                         setCurrentPositionActive={setCurrentPositionActive}
+                        openGlobalModal={props.openGlobalModal}
                     />
                 ))}
             </ol>
