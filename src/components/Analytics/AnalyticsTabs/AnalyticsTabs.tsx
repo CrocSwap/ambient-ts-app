@@ -12,6 +12,7 @@ import { PoolData } from '../../../state/pools/models';
 import TabComponent from '../../Global/TabComponent/TabComponent';
 import { PoolIF } from '../../../utils/interfaces/PoolIF';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
+import { BiSearch } from 'react-icons/bi';
 // import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 
 interface AnalyticsProps {
@@ -30,9 +31,26 @@ export default function AnalyticsTabs(props: AnalyticsProps) {
     const allTokens = useAllTokenData();
     const allPoolData = useAllPoolData();
 
-    const [tokens] = useState<TokenData[]>([]);
-    const [pools] = useState<PoolData[]>([]);
-    const [searchWord] = useState('');
+    const [tokens, setTokens] = useState<TokenData[]>([]);
+    const [pools, setPools] = useState<PoolData[]>([]);
+    const [searchWord, setSearchWord] = useState('');
+
+    const searchContainer = (
+        <div className={styles.search_container}>
+            <div className={styles.search_icon}>
+                <BiSearch size={20} color='#bdbdbd' />
+            </div>
+            <input
+                type='text'
+                id='box'
+                style={{ height: 40 }}
+                size={20}
+                onChange={(e) => search(e.target.value)}
+                placeholder='Search...'
+                className={styles.search__box}
+            />
+        </div>
+    );
 
     const tokensResult = useMemo(() => {
         return Object.values(allTokens)
@@ -46,30 +64,30 @@ export default function AnalyticsTabs(props: AnalyticsProps) {
             .filter(notEmpty);
     }, [allPoolData]);
 
-    // const search = (value: string) => {
-    //     setSearchWord(value);
-    //     if (value.length > 0) {
-    //         setTokens(
-    //             tokensResult.filter(
-    //                 (item) =>
-    //                     item.name.toLowerCase().includes(value.toLowerCase()) ||
-    //                     item.symbol.toLowerCase().includes(value.toLowerCase()) ||
-    //                     item.address.toLowerCase().includes(value.toLowerCase()),
-    //             ),
-    //         );
-    //         setPools(
-    //             poolsResult.filter(
-    //                 (item) =>
-    //                     item.token0.name.toLowerCase().includes(value.toLowerCase()) ||
-    //                     item.token1.name.toLowerCase().includes(value.toLowerCase()) ||
-    //                     item.token0.symbol.toLowerCase().includes(value.toLowerCase()) ||
-    //                     item.token1.symbol.toLowerCase().includes(value.toLowerCase()) ||
-    //                     item.token0.address.toLowerCase().includes(value.toLowerCase()) ||
-    //                     item.token1.address.toLowerCase().includes(value.toLowerCase()),
-    //             ),
-    //         );
-    //     }
-    // };
+    const search = (value: string) => {
+        setSearchWord(value);
+        if (value.length > 0) {
+            setTokens(
+                tokensResult.filter(
+                    (item) =>
+                        item.name.toLowerCase().includes(value.toLowerCase()) ||
+                        item.symbol.toLowerCase().includes(value.toLowerCase()) ||
+                        item.address.toLowerCase().includes(value.toLowerCase()),
+                ),
+            );
+            setPools(
+                poolsResult.filter(
+                    (item) =>
+                        item.token0.name.toLowerCase().includes(value.toLowerCase()) ||
+                        item.token1.name.toLowerCase().includes(value.toLowerCase()) ||
+                        item.token0.symbol.toLowerCase().includes(value.toLowerCase()) ||
+                        item.token1.symbol.toLowerCase().includes(value.toLowerCase()) ||
+                        item.token0.address.toLowerCase().includes(value.toLowerCase()) ||
+                        item.token1.address.toLowerCase().includes(value.toLowerCase()),
+                ),
+            );
+        }
+    };
 
     const analyticTabData = [
         {
@@ -107,12 +125,11 @@ export default function AnalyticsTabs(props: AnalyticsProps) {
         <div className={styles.tabs_container}>
             <TabComponent
                 data={analyticTabData}
-                rightTabOptions={false}
+                rightTabOptions={searchContainer}
                 selectedOutsideTab={0}
                 outsideControl={false}
                 setOutsideControl={props.setOutsideControl}
                 setSelectedOutsideTab={props.setSelectedOutsideTab}
-                // search={search}
             />
         </div>
     );
