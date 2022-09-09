@@ -22,6 +22,8 @@ import {
     CircleLoaderFailed,
 } from '../Global/LoadingAnimations/CircleLoader/CircleLoader';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
+import HarvestPositionHeader from './HarvestPositionHeader/HarvestPositionHeader';
+import HavrestExtraControls from './HarvestExtraControls/HarvestExtraControls';
 
 interface IHarvestPositionProps {
     crocEnv: CrocEnv | undefined;
@@ -262,6 +264,7 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
             <div className={styles.confirmation_content}>{currentConfirmationData}</div>
         </div>
     );
+    const [isSaveAsDexSurplusChecked, setIsSaveAsDexSurplusChecked] = useState(false);
 
     const mainModalContent = showSettings ? (
         <HarvestPositionSettings showSettings={showSettings} setShowSettings={setShowSettings} />
@@ -295,6 +298,10 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
                 // removalPercentage={removalPercentage}
                 removalPercentage={100}
             />
+            <HavrestExtraControls
+                isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
+                setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
+            />
         </>
     );
 
@@ -306,6 +313,12 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
             {/* <RemoveRangeSettings showSettings={showSettings} setShowSettings={setShowSettings} /> */}
 
             <div className={styles.main_content}>
+                <HarvestPositionHeader
+                    onClose={closeGlobalModal}
+                    title={showSettings ? 'Harvest Position Settings' : 'Harvest Position'}
+                    onBackButton={() => setShowSettings(false)}
+                    showBackButton={showSettings}
+                />
                 {mainModalContent}
                 {/* {harvestButtonOrNull} */}
                 {buttonToDisplay}

@@ -75,15 +75,19 @@ export default function RangesMenu(props: RangesMenuIF) {
 
     const openDetailsModal = () =>
         openGlobalModal(<RangeDetails position={positionData} {...rangeDetailsProps} />);
+    const openHarvestModal = () =>
+        openGlobalModal(
+            <HarvestPosition crocEnv={crocEnv} position={positionData} {...rangeDetailsProps} />,
+        );
 
     // function openDetailsModal() {
     //     setCurrentModal('details');
     //     openModal();
     // }
-    function openHarvestModal() {
-        setCurrentModal('harvest');
-        openModal();
-    }
+    // function openHarvestModal() {
+    //     setCurrentModal('harvest');
+    //     openModal();
+    // }
 
     // -----------------SNACKBAR----------------
     function handleCopyAddress() {
