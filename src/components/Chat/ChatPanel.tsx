@@ -11,7 +11,6 @@ import { recieveMessageByRoomRoute, socket } from './Service/chatApi';
 import axios from 'axios';
 import { Message } from './Model/MessageModel';
 import { PoolIF } from '../../utils/interfaces/PoolIF';
-import Picker from 'emoji-picker-react';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
 import { targetData } from '../../utils/state/tradeDataSlice';
 
@@ -66,12 +65,22 @@ export default function ChatPanel(props: ChatProps) {
              */
         });
         getMsg();
-    }, [props.chatStatus, messages, room]);
+    }, [props.chatStatus, messages, room, props.currentPool]);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
 
     const getMsg = async () => {
-        const response = await axios.get(recieveMessageByRoomRoute + '/' + room);
+        let response;
+        if (room === 'Current Pool') {
+            response = await axios.get(
+                recieveMessageByRoomRoute +
+                    '/' +
+                    currentPool.baseToken.symbol +
+                    currentPool.quoteToken.symbol,
+            );
+        } else {
+            response = await axios.get(recieveMessageByRoomRoute + '/' + room);
+        }
         setMessages(response.data);
     };
 
@@ -102,6 +111,7 @@ export default function ChatPanel(props: ChatProps) {
                     className={`
                     ${styles.main_body}
                     `}
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     onClick={(e: any) => e.stopPropagation()}
                 >
                     <div

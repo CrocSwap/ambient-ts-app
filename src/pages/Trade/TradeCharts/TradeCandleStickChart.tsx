@@ -61,6 +61,7 @@ export default function TradeCandleStickChart(props: ChartData) {
     };
 
     const { denomInBase } = props;
+
     // Parse price data
     const parsedChartData = useMemo(() => {
         const chartData: CandleChartData[] = [];
@@ -93,7 +94,7 @@ export default function TradeCandleStickChart(props: ChartData) {
             chartData: chartData,
         };
         return chartUtils;
-    }, [props.priceData, props.denomInBase]);
+    }, [props.priceData, denomInBase]);
 
     const loading = (
         <div className='animatedImg'>

@@ -55,7 +55,6 @@ export default function MinMaxPrice(props: MinMaxPriceIF) {
             const minPriceInput = evt.target.value;
             setMinPriceInputString(minPriceInput);
 
-            console.log({ minPriceInput });
             const newTargetData: targetData[] = [
                 { name: !isDenomBase ? 'Max' : 'Min', value: parseFloat(minPriceInput) },
                 {
@@ -77,7 +76,6 @@ export default function MinMaxPrice(props: MinMaxPriceIF) {
             const maxPriceInput = evt.target.value;
             setMaxPriceInputString(maxPriceInput);
 
-            console.log({ maxPriceInput });
             const newTargetData: targetData[] = [
                 { name: !isDenomBase ? 'Min' : 'Max', value: parseFloat(maxPriceInput) },
                 {
@@ -101,8 +99,6 @@ export default function MinMaxPrice(props: MinMaxPriceIF) {
     );
 
     useEffect(() => {
-        console.log({ targetData });
-
         if (targetData !== undefined) {
             const high = targetData.filter((data) => {
                 return data.name === 'Max';
@@ -113,6 +109,9 @@ export default function MinMaxPrice(props: MinMaxPriceIF) {
 
             setMaxPriceInputString(high !== undefined ? high.toString() : '0.0');
             setMinPriceInputString(low !== undefined ? low.toString() : '0.0');
+
+            lowBoundOnBlur();
+            highBoundOnBlur();
         }
     }, [targetData]);
 

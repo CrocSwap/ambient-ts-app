@@ -31,6 +31,7 @@ export default function MessageInput(props: MessageInputProps) {
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const { user, account, enableWeb3, isWeb3Enabled, isAuthenticated } = useMoralis();
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleEmojiClick = (event: any, emoji: any) => {
         let msg = message;
         msg += emoji.emoji;
