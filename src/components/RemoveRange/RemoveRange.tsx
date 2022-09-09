@@ -49,7 +49,7 @@ interface IRemoveRangeProps {
 }
 
 export default function RemoveRange(props: IRemoveRangeProps) {
-    console.log(props);
+    // console.log(props);
     const {
         // chainId,
         // poolIdx,
@@ -129,6 +129,8 @@ export default function RemoveRange(props: IRemoveRangeProps) {
             {showSettings ? null : <RiListSettingsLine size={20} />}
         </div>
     );
+
+    const [isSaveAsDexSurplusChecked, setIsSaveAsDexSurplusChecked] = useState(false);
 
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [newRemovalTransactionHash, setNewRemovalTransactionHash] = useState('');
@@ -333,7 +335,10 @@ export default function RemoveRange(props: IRemoveRangeProps) {
                     feeLiqQuoteDecimalCorrected={feeLiqQuoteDecimalCorrected}
                     removalPercentage={removalPercentage}
                 />
-                <ExtraControls />
+                <ExtraControls
+                    isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
+                    setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
+                />
             </div>
         </>
     );

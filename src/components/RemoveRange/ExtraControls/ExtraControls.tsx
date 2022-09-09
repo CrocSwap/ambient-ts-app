@@ -2,8 +2,16 @@ import styles from './ExtraControls.module.css';
 import Toggle2 from '../../Global/Toggle/Toggle2';
 import { MdAccountBalanceWallet } from 'react-icons/md';
 import ambientLogo from '../../../assets/images/logos/ambient_logo.svg';
+import { Dispatch, SetStateAction } from 'react';
 
-export default function ExtraControls() {
+interface CurrencyConverterPropsIF {
+    isSaveAsDexSurplusChecked: boolean;
+    setIsSaveAsDexSurplusChecked: Dispatch<SetStateAction<boolean>>;
+}
+
+export default function ExtraControls(props: CurrencyConverterPropsIF) {
+    const { isSaveAsDexSurplusChecked, setIsSaveAsDexSurplusChecked } = props;
+
     const exchangeBalanceControl = (
         <section className={styles.wallet_container}>
             <div className={styles.wallet_container_left}>
@@ -18,10 +26,10 @@ export default function ExtraControls() {
             </div>
 
             <Toggle2
-                isOn={false}
-                handleToggle={() => console.log('toggled')}
+                isOn={isSaveAsDexSurplusChecked}
+                handleToggle={() => setIsSaveAsDexSurplusChecked(!isSaveAsDexSurplusChecked)}
                 id='remove_range_exchange_balance'
-                disabled={true}
+                disabled={false}
             />
         </section>
     );
