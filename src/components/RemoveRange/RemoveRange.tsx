@@ -21,6 +21,7 @@ import {
     CircleLoader,
     CircleLoaderFailed,
 } from '../Global/LoadingAnimations/CircleLoader/CircleLoader';
+import RemoveRangeHeader from './RemoveRangeHeader/RemoveRangeHeader';
 interface IRemoveRangeProps {
     provider: ethers.providers.Provider;
     chainData: ChainSpec;
@@ -40,9 +41,14 @@ interface IRemoveRangeProps {
     isDenomBase: boolean;
     lastBlockNumber: number;
     position: PositionIF;
+
+    openGlobalModal: (content: React.ReactNode) => void;
+
+    closeGlobalModal: () => void;
 }
 
 export default function RemoveRange(props: IRemoveRangeProps) {
+    console.log(props);
     const {
         // chainId,
         // poolIdx,
@@ -51,6 +57,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
         // askTick,
         // baseTokenAddress,
         // quoteTokenAddress,
+        closeGlobalModal,
         chainData,
         provider,
         lastBlockNumber,
@@ -323,6 +330,13 @@ export default function RemoveRange(props: IRemoveRangeProps) {
     return (
         <div className={styles.remove_range_container}>
             <div className={styles.main_content}>
+                <RemoveRangeHeader
+                    onClose={closeGlobalModal}
+                    title={showSettings ? 'Remove Position Settings' : 'Remove Position'}
+                    onBackButton={
+                        showSettings ? () => setShowSettings(false) : () => console.log('yes')
+                    }
+                />
                 {mainModalContent}
                 {/* {harvestButtonOrNull} */}
                 {buttonToDisplay}

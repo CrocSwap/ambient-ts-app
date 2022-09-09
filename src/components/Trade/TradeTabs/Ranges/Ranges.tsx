@@ -31,6 +31,7 @@ interface RangesPropsIF {
     portfolio?: boolean;
 
     openGlobalModal: (content: React.ReactNode) => void;
+    closeGlobalModal: () => void;
 }
 
 // react functional component
@@ -111,6 +112,7 @@ export default function Ranges(props: RangesPropsIF) {
                         currentPositionActive={currentPositionActive}
                         setCurrentPositionActive={setCurrentPositionActive}
                         openGlobalModal={props.openGlobalModal}
+                        closeGlobalModal={props.closeGlobalModal}
                     />
                 ))}
             </ol>

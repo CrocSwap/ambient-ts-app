@@ -1951,6 +1951,7 @@ export default function App() {
                                     currentPositionActive={currentPositionActive}
                                     setCurrentPositionActive={setCurrentPositionActive}
                                     openGlobalModal={openGlobalModal}
+                                    closeGlobalModal={closeGlobalModal}
                                 />
                             }
                         >

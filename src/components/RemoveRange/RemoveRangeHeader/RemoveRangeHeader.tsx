@@ -5,11 +5,14 @@ import { VscClose } from 'react-icons/vsc';
 interface RemoveRangeHeaderPropsIF {
     title: string;
     onClose: () => void;
+    onBackButton: () => void;
 }
 export default function RemoveRangeHeader(props: RemoveRangeHeaderPropsIF) {
     return (
         <header className={styles.header_container}>
-            <div></div>
+            <div onClick={() => props.onBackButton()}>
+                <BiArrowBack size={22} />
+            </div>
             <h2>{props.title}</h2>
             <div onClick={props.onClose}>
                 <VscClose size={22} />
