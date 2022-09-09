@@ -71,10 +71,8 @@ export default function RangesMenu(props: RangesMenuIF) {
 
     let modalTitle;
 
-    function openRemoveModal() {
-        setCurrentModal('remove');
-        openModal();
-    }
+    const openRemoveModal = () =>
+        openGlobalModal(<RemoveRange position={positionData} {...rangeDetailsProps} />);
 
     function openDetailsModal() {
         setCurrentModal('details');
@@ -182,13 +180,6 @@ export default function RangesMenu(props: RangesMenuIF) {
             {removeButton}
             {detailsButton}
             {copyButton}
-            <button
-                onClick={() =>
-                    openGlobalModal(<RemoveRange position={positionData} {...rangeDetailsProps} />)
-                }
-            >
-                Click me
-            </button>
         </div>
     );
 
