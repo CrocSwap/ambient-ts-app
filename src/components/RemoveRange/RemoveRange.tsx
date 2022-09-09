@@ -1,6 +1,6 @@
 import styles from './RemoveRange.module.css';
 import RemoveRangeWidth from './RemoveRangeWidth/RemoveRangeWidth';
-import RemoveRangeHeader from './RemoveRangeHeader/RemoveRangeHeader';
+import RemoveRangeTokenHeader from './RemoveRangeTokenHeader/RemoveRangeTokenHeader';
 import RemoveRangeInfo from './RemoveRangeInfo/RemoveRangInfo';
 import RemoveRangeButton from './RemoveRangeButton/RemoveRangeButton';
 import { useEffect, useState } from 'react';
@@ -290,7 +290,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
     ) : (
         <>
             <div className={styles.header_container}>
-                <RemoveRangeHeader
+                <RemoveRangeTokenHeader
                     isPositionInRange={props.isPositionInRange}
                     isAmbient={props.isAmbient}
                     baseTokenSymbol={props.baseTokenSymbol}
