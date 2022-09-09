@@ -33,6 +33,7 @@ interface RangeCardProps {
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
 
     openGlobalModal: (content: React.ReactNode) => void;
+    closeGlobalModal: () => void;
 }
 
 export default function RangeCard(props: RangeCardProps) {
@@ -143,6 +144,9 @@ export default function RangeCard(props: RangeCardProps) {
         quoteTokenAddress: props.position.quote,
         lastBlockNumber: lastBlockNumber,
         positionApy: position.apy,
+
+        closeGlobalModal: props.closeGlobalModal,
+        openGlobalModal: props.openGlobalModal,
     };
 
     const positionDomId =
@@ -230,7 +234,8 @@ export default function RangeCard(props: RangeCardProps) {
                     rangeDetailsProps={rangeDetailsProps}
                     posHash={posHash as string}
                     positionData={position}
-                    openGlobalModal={props.openGlobalModal}
+                    // openGlobalModal={props.openGlobalModal}
+                    // closeGlobalModal={props.closeGlobalModal}
                 />
             </div>
         </li>

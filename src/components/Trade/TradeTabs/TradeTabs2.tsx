@@ -48,6 +48,8 @@ interface ITabsProps {
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
 
     openGlobalModal: (content: React.ReactNode) => void;
+
+    closeGlobalModal: () => void;
 }
 
 export default function TradeTabs2(props: ITabsProps) {
@@ -137,6 +139,8 @@ export default function TradeTabs2(props: ITabsProps) {
         setCurrentPositionActive: setCurrentPositionActive,
 
         openGlobalModal: props.openGlobalModal,
+
+        closeGlobalModal: props.closeGlobalModal,
     };
     // Props for <Transactions/> React Element
     const transactionsProps = {

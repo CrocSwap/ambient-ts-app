@@ -54,6 +54,8 @@ interface TradePropsIF {
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
 
     openGlobalModal: (content: React.ReactNode) => void;
+
+    closeGlobalModal: () => void;
 }
 
 // React functional component
@@ -216,6 +218,7 @@ export default function Trade(props: TradePropsIF) {
                             currentPositionActive={props.currentPositionActive}
                             setCurrentPositionActive={props.setCurrentPositionActive}
                             openGlobalModal={props.openGlobalModal}
+                            closeGlobalModal={props.closeGlobalModal}
                         />
                     </motion.div>
                 </div>
