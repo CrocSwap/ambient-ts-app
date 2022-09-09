@@ -58,6 +58,8 @@ interface RangePropsIF {
     poolPriceNonDisplay: number | undefined;
     baseTokenBalance: string;
     quoteTokenBalance: string;
+    baseTokenDexBalance: string;
+    quoteTokenDexBalance: string;
     tokenAAllowance: string;
     setRecheckTokenAApproval: Dispatch<SetStateAction<boolean>>;
     tokenBAllowance: string;
@@ -83,6 +85,8 @@ export default function Range(props: RangePropsIF) {
         poolPriceNonDisplay,
         baseTokenBalance,
         quoteTokenBalance,
+        baseTokenDexBalance,
+        quoteTokenDexBalance,
         tokenAAllowance,
         setRecheckTokenAApproval,
         tokenBAllowance,
@@ -773,8 +777,8 @@ export default function Range(props: RangePropsIF) {
         resetConfirmation();
     };
 
-    const tokenABalance = isTokenABase ? baseTokenBalance : quoteTokenBalance;
-    const tokenBBalance = isTokenABase ? quoteTokenBalance : baseTokenBalance;
+    // const tokenABalance = isTokenABase ? baseTokenBalance : quoteTokenBalance;
+    // const tokenBBalance = isTokenABase ? quoteTokenBalance : baseTokenBalance;
 
     // props for <ConfirmRangeModal/> React element
     const rangeModalProps = {
@@ -813,14 +817,16 @@ export default function Range(props: RangePropsIF) {
         isAmbient: isAmbient,
         isTokenABase: isTokenABase,
         depositSkew: depositSkew,
+        baseTokenBalance,
+        quoteTokenBalance,
+        baseTokenDexBalance,
+        quoteTokenDexBalance,
         isTokenAPrimaryLocal: isTokenAPrimaryLocal,
         setIsTokenAPrimaryLocal: setIsTokenAPrimaryLocal,
         isWithdrawTokenAFromDexChecked: isWithdrawTokenAFromDexChecked,
         setIsWithdrawTokenAFromDexChecked: setIsWithdrawTokenAFromDexChecked,
         isWithdrawTokenBFromDexChecked: isWithdrawTokenBFromDexChecked,
         setIsWithdrawTokenBFromDexChecked: setIsWithdrawTokenBFromDexChecked,
-        tokenABalance: tokenABalance,
-        tokenBBalance: tokenBBalance,
         setTokenAInputQty: setTokenAInputQty,
         setTokenBInputQty: setTokenBInputQty,
         setRangeButtonErrorMessage: setRangeButtonErrorMessage,
