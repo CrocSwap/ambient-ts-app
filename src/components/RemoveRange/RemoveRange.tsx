@@ -113,6 +113,9 @@ export default function RemoveRange(props: IRemoveRangeProps) {
 
     const [showSettings, setShowSettings] = useState(false);
 
+    const positionHasLiquidity =
+        (posLiqBaseDecimalCorrected || 0) + (posLiqQuoteDecimalCorrected || 0) > 0;
+
     const removeRangeSetttingIcon = (
         <div onClick={() => setShowSettings(!showSettings)} className={styles.settings_icon}>
             {showSettings ? null : <RiListSettingsLine size={20} />}
@@ -123,6 +126,12 @@ export default function RemoveRange(props: IRemoveRangeProps) {
     const [newRemovalTransactionHash, setNewRemovalTransactionHash] = useState('');
     const [txErrorCode, setTxErrorCode] = useState(0);
     const [txErrorMessage, setTxErrorMessage] = useState('');
+
+    const resetConfirmation = () => {
+        setShowConfirmation(false);
+        setTxErrorCode(0);
+        setTxErrorMessage('');
+    };
 
     const liquiditySlippageTolerance = 1;
 
@@ -194,7 +203,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
                 Check the Metamask extension in your browser for notifications, or click &quot;Try
                 Again&quot;. You can also click the left arrow above to try again.
             </p>
-            <Button title='Try Again' action={() => setShowConfirmation(false)} />
+            <Button title='Try Again' action={resetConfirmation} />
         </div>
     );
 
@@ -205,7 +214,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
             <div className={styles.completed_animation}>
                 <Animation animData={completed} loop={false} />
             </div>
-            <p>message to be display here</p>
+            <p>Removal Transaction Successfully Submitted</p>
             <a
                 href={etherscanLink}
                 target='_blank'
@@ -260,7 +269,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
     const confirmationContent = (
         <div className={styles.confirmation_container}>
             {showConfirmation && (
-                <div className={styles.button} onClick={() => setShowConfirmation(false)}>
+                <div className={styles.button} onClick={resetConfirmation}>
                     <BsArrowLeft size={30} />
                 </div>
             )}
@@ -270,8 +279,10 @@ export default function RemoveRange(props: IRemoveRangeProps) {
 
     const buttonToDisplay = showSettings ? (
         <Button title='Confirm' action={() => setShowSettings(false)} />
-    ) : (
+    ) : positionHasLiquidity ? (
         <RemoveRangeButton removeFn={removeFn} disabled={showSettings} title='Remove Range' />
+    ) : (
+        <RemoveRangeButton removeFn={removeFn} disabled={true} title='…' />
     );
 
     const mainModalContent = showSettings ? (

@@ -102,8 +102,15 @@ export default function Range(props: RangePropsIF) {
     const [isWithdrawTokenAFromDexChecked, setIsWithdrawTokenAFromDexChecked] = useState(false);
     const [isWithdrawTokenBFromDexChecked, setIsWithdrawTokenBFromDexChecked] = useState(false);
     const [newRangeTransactionHash, setNewRangeTransactionHash] = useState('');
+    const [showConfirmation, setShowConfirmation] = useState(true);
     const [txErrorCode, setTxErrorCode] = useState(0);
     const [txErrorMessage, setTxErrorMessage] = useState('');
+
+    const resetConfirmation = () => {
+        setShowConfirmation(true);
+        setTxErrorCode(0);
+        setTxErrorMessage('');
+    };
 
     const { account, isAuthenticated, isWeb3Enabled } = useMoralis();
 
@@ -761,8 +768,9 @@ export default function Range(props: RangePropsIF) {
     const handleModalClose = () => {
         closeModal();
         setNewRangeTransactionHash('');
-        setTxErrorCode(0);
-        setTxErrorMessage('');
+        // setTxErrorCode(0);
+        // setTxErrorMessage('');
+        resetConfirmation();
     };
 
     const tokenABalance = isTokenABase ? baseTokenBalance : quoteTokenBalance;
@@ -782,6 +790,9 @@ export default function Range(props: RangePropsIF) {
         closeModal: handleModalClose,
         newRangeTransactionHash: newRangeTransactionHash,
         setNewRangeTransactionHash: setNewRangeTransactionHash,
+        resetConfirmation: resetConfirmation,
+        showConfirmation: showConfirmation,
+        setShowConfirmation: setShowConfirmation,
         txErrorCode: txErrorCode,
         txErrorMessage: txErrorMessage,
         isInRange: !isOutOfRange,

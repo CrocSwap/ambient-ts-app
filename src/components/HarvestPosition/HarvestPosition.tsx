@@ -88,6 +88,12 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
         number | undefined
     >();
 
+    const resetConfirmation = () => {
+        setShowConfirmation(false);
+        setTxErrorCode(0);
+        setTxErrorMessage('');
+    };
+
     const positionStatsCacheEndpoint = 'https://809821320828123.de:5000/position_stats?';
 
     useEffect(() => {
@@ -156,9 +162,7 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
     const positionType = 'concentrated';
 
     const feesGreaterThanZero =
-        feeLiqBaseDecimalCorrected && feeLiqQuoteDecimalCorrected
-            ? feeLiqBaseDecimalCorrected + feeLiqQuoteDecimalCorrected > 0
-            : false;
+        (feeLiqBaseDecimalCorrected || 0) + (feeLiqQuoteDecimalCorrected || 0) > 0;
 
     const harvestButtonOrNull =
         positionType === 'concentrated' && feesGreaterThanZero && !showSettings ? (
@@ -175,7 +179,7 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
                 Check the Metamask extension in your browser for notifications, or click &quot;Try
                 Again&quot;. You can also click the left arrow above to try again.
             </p>
-            <Button title='Try Again' action={() => setShowConfirmation(false)} />
+            <Button title='Try Again' action={resetConfirmation} />
         </div>
     );
 
@@ -186,7 +190,7 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
             <div className={styles.completed_animation}>
                 <Animation animData={completed} loop={false} />
             </div>
-            <p>message to be display here</p>
+            <p>Harvest Transaction Successfully Submitted</p>
             <a
                 href={etherscanLink}
                 target='_blank'
@@ -247,7 +251,7 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
     const confirmationContent = (
         <div className={styles.confirmation_container}>
             {showConfirmation && (
-                <div className={styles.button} onClick={() => setShowConfirmation(false)}>
+                <div className={styles.button} onClick={resetConfirmation}>
                     <BsArrowLeft size={30} />
                 </div>
             )}
