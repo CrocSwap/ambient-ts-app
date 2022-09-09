@@ -1,8 +1,8 @@
 import RangeStatus from '../../Global/RangeStatus/RangeStatus';
-import styles from './HarvestPositionHeader.module.css';
+import styles from './HarvestPositionTokenHeader.module.css';
 // import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 // import { toggleDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
-interface IHarvestPositionHeaderProps {
+interface IHarvestPositionTokenHeaderProps {
     isPositionInRange: boolean;
     isAmbient: boolean;
     baseTokenSymbol: string;
@@ -12,7 +12,7 @@ interface IHarvestPositionHeaderProps {
     isDenomBase: boolean;
 }
 
-export default function HarvestPositionHeader(props: IHarvestPositionHeaderProps) {
+export default function HarvestPositionTokenHeader(props: IHarvestPositionTokenHeaderProps) {
     const { baseTokenSymbol, quoteTokenSymbol } = props;
     // const dispatch = useAppDispatch();
 

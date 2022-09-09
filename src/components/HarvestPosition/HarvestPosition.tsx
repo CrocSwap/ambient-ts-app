@@ -1,6 +1,6 @@
 import styles from './HarvestPosition.module.css';
 // import HarvestPositionWidth from './HarvestPositionWidth/HarvestPositionWidth';
-import HarvestPositionHeader from './HarvestPositionHeader/HarvestPositionHeader';
+import HarvestPositionTokenHeader from './HarvestPositionTokenHeader/HarvestPositionTokenHeader';
 import HarvestPositionInfo from './HarvestPositionInfo/HarvestPositionInfo';
 import HarvestPositionButton from './HarvestPositionButton/HarvestPositionButton';
 import { useEffect, useState } from 'react';
@@ -43,6 +43,8 @@ interface IHarvestPositionProps {
     isDenomBase: boolean;
     lastBlockNumber: number;
     position: PositionIF;
+
+    closeGlobalModal: () => void;
 }
 export default function HarvestPosition(props: IHarvestPositionProps) {
     const {
@@ -59,6 +61,8 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
         // quoteTokenAddress,
         // provider,
         lastBlockNumber,
+        closeGlobalModal,
+
         position,
     } = props;
 
@@ -264,7 +268,7 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
     ) : (
         <>
             <div className={styles.header_container}>
-                <HarvestPositionHeader
+                <HarvestPositionTokenHeader
                     isPositionInRange={props.isPositionInRange}
                     isAmbient={props.isAmbient}
                     baseTokenSymbol={props.baseTokenSymbol}

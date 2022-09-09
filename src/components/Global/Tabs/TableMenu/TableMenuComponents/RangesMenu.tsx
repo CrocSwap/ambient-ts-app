@@ -155,13 +155,17 @@ export default function RangesMenu(props: RangesMenuIF) {
             Details
         </button>
     );
-    const harvestButton =
-        !isAmbient && feesGreaterThanZero && userMatchesConnectedAccount ? (
-            <button className={styles.option_button} onClick={openHarvestModal}>
-                Harvest
-            </button>
-        ) : null;
-
+    // const harvestButton =
+    //     !isAmbient && feesGreaterThanZero && userMatchesConnectedAccount ? (
+    //         <button className={styles.option_button} onClick={openHarvestModal}>
+    //             Harvest
+    //         </button>
+    //     ) : null;
+    const harvestButton = (
+        <button className={styles.option_button} onClick={openHarvestModal}>
+            Harvest
+        </button>
+    );
     const editButton =
         userMatchesConnectedAccount && positionHasLiquidity ? (
             <Link
