@@ -54,10 +54,14 @@ export default function RangesMenu(props: RangesMenuIF) {
     const [openMenuTooltip, setOpenMenuTooltip] = useState(false);
 
     const feesGreaterThanZero =
-        positionData.feesLiqBaseDecimalCorrected && positionData.feesLiqQuoteDecimalCorrected
-            ? positionData.feesLiqBaseDecimalCorrected + positionData.feesLiqQuoteDecimalCorrected >
-              0
-            : false;
+        (positionData.feesLiqBaseDecimalCorrected || 0) +
+            (positionData.feesLiqQuoteDecimalCorrected || 0) >
+        0;
+
+    const positionHasLiquidity =
+        (positionData.positionLiqBaseDecimalCorrected || 0) +
+            (positionData.positionLiqQuoteDecimalCorrected || 0) >
+        0;
 
     // ---------------------MODAL FUNCTIONALITY----------------
     let modalContent: ReactNode;
@@ -125,17 +129,18 @@ export default function RangesMenu(props: RangesMenuIF) {
     const modalOrNull = isModalOpen ? mainModal : null;
 
     const repositionButton =
-        userMatchesConnectedAccount && !isPositionInRange ? (
+        !isAmbient && userMatchesConnectedAccount && !isPositionInRange ? (
             <Link className={styles.reposition_button} to={'/trade/reposition'}>
                 Reposition
             </Link>
         ) : null;
 
-    const removeButton = userMatchesConnectedAccount ? (
-        <button className={styles.option_button} onClick={openRemoveModal}>
-            Remove
-        </button>
-    ) : null;
+    const removeButton =
+        userMatchesConnectedAccount && positionHasLiquidity ? (
+            <button className={styles.option_button} onClick={openRemoveModal}>
+                Remove
+            </button>
+        ) : null;
     const copyButton = isPositionInRange ? (
         <button className={styles.option_button} onClick={handleCopyAddress}>
             Copy Trade
@@ -154,16 +159,17 @@ export default function RangesMenu(props: RangesMenuIF) {
             </button>
         ) : null;
 
-    const editButton = userMatchesConnectedAccount ? (
-        <Link
-            className={styles.option_button}
-            to={`/trade/edit/${posHash}`}
-            state={{ position: positionData }}
-            replace={currentLocation.startsWith('/trade/edit')}
-        >
-            Edit
-        </Link>
-    ) : null;
+    const editButton =
+        userMatchesConnectedAccount && positionHasLiquidity ? (
+            <Link
+                className={styles.option_button}
+                to={`/trade/edit/${posHash}`}
+                state={{ position: positionData }}
+                replace={currentLocation.startsWith('/trade/edit')}
+            >
+                Edit
+            </Link>
+        ) : null;
 
     const rangesMenu = (
         <div className={styles.actions_menu}>
