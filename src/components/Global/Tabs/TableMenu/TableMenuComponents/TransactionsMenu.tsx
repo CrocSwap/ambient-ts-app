@@ -5,7 +5,6 @@ import { FiMoreHorizontal } from 'react-icons/fi';
 
 // START: Import JSX Functional Components
 import Modal from '../../../../Global/Modal/Modal';
-import RangeDetailsHeader from '../../../../RangeDetails/RangeDetailsHeader/RangeDetailsHeader';
 import SnackbarComponent from '../../../../../components/Global/SnackbarComponent/SnackbarComponent';
 
 // START: Import Local Files

@@ -10,6 +10,7 @@ import { PositionIF } from '../../utils/interfaces/PositionIF';
 import APYGraphDisplay from './APYGraphDisplay/APYGraphDisplay';
 import RangeDetailsControl from './RangeDetailsControl/RangeDetailsControl';
 import RangeDetailsHeader from './RangeDetailsHeader/RangeDetailsHeader';
+
 interface IRangeDetailsProps {
     provider: ethers.providers.Provider | undefined;
     position: PositionIF;
@@ -56,7 +57,6 @@ export default function RangeDetails(props: IRangeDetailsProps) {
     } = props;
 
     const detailsRef = useRef(null);
-    // eslint-disable-next-line
     const downloadAsImage = () => {
         if (detailsRef.current) {
             printDomToImage(detailsRef.current);
@@ -217,6 +217,7 @@ export default function RangeDetails(props: IRangeDetailsProps) {
                 onClose={closeGlobalModal}
                 showSettings={showSettings}
                 setShowSettings={setShowSettings}
+                downloadAsImage={downloadAsImage}
             />
             {controlDisplay}
             <div ref={detailsRef}>
@@ -262,10 +263,6 @@ export default function RangeDetails(props: IRangeDetailsProps) {
                     /> */}
                 </div>
             </div>
-
-            {/* <div onClick={downloadAsImage} className={styles.share_container}>
-                <BsDownload size={15} />
-            </div> */}
         </div>
     );
 }
