@@ -221,9 +221,6 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
         txErrorCode === 4001 &&
         txErrorMessage === 'MetaMask Tx Signature: User denied transaction signature.';
 
-    console.log({ isRemovalDenied });
-    console.log({ isRemovalDenied });
-    console.log({ isRemovalDenied });
     function handleConfirmationChange() {
         setCurrentConfirmationData(removalPending);
 
