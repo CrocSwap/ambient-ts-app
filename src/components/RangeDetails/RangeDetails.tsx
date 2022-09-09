@@ -9,6 +9,7 @@ import { formatAmount } from '../../utils/numbers';
 import { PositionIF } from '../../utils/interfaces/PositionIF';
 import APYGraphDisplay from './APYGraphDisplay/APYGraphDisplay';
 import RangeDetailsControl from './RangeDetailsControl/RangeDetailsControl';
+import RangeDetailsHeader from './RangeDetailsHeader/RangeDetailsHeader';
 interface IRangeDetailsProps {
     provider: ethers.providers.Provider | undefined;
     position: PositionIF;
@@ -31,6 +32,8 @@ interface IRangeDetailsProps {
     quoteTokenAddress: string;
     lastBlockNumber: number;
     positionApy: number;
+
+    closeGlobalModal: () => void;
 }
 
 export default function RangeDetails(props: IRangeDetailsProps) {
@@ -48,6 +51,8 @@ export default function RangeDetails(props: IRangeDetailsProps) {
         lastBlockNumber,
         position,
         positionApy,
+
+        closeGlobalModal,
     } = props;
 
     const detailsRef = useRef(null);
@@ -196,16 +201,23 @@ export default function RangeDetails(props: IRangeDetailsProps) {
         setControlItems(modifiedControlItems);
     };
 
-    const controlDisplay = (
+    const [showSettings, setShowSettings] = useState(false);
+
+    const controlDisplay = showSettings ? (
         <div className={styles.control_display_container}>
             {controlItems.map((item, idx) => (
                 <RangeDetailsControl key={idx} item={item} handleChange={handleChange} />
             ))}
         </div>
-    );
+    ) : null;
 
     return (
         <div className={styles.range_details_container}>
+            <RangeDetailsHeader
+                onClose={closeGlobalModal}
+                showSettings={showSettings}
+                setShowSettings={setShowSettings}
+            />
             {controlDisplay}
             <div ref={detailsRef}>
                 {/* <RemoveRangeHeader

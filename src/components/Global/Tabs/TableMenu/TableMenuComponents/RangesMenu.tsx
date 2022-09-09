@@ -74,10 +74,13 @@ export default function RangesMenu(props: RangesMenuIF) {
     const openRemoveModal = () =>
         openGlobalModal(<RemoveRange position={positionData} {...rangeDetailsProps} />);
 
-    function openDetailsModal() {
-        setCurrentModal('details');
-        openModal();
-    }
+    const openDetailsModal = () =>
+        openGlobalModal(<RangeDetails position={positionData} {...rangeDetailsProps} />);
+
+    // function openDetailsModal() {
+    //     setCurrentModal('details');
+    //     openModal();
+    // }
     function openHarvestModal() {
         setCurrentModal('harvest');
         openModal();
@@ -109,7 +112,7 @@ export default function RangesMenu(props: RangesMenuIF) {
         case 'details':
             // modalContent = <RangeDetails {...removeRangeProps} />;
             modalContent = <RangeDetails position={positionData} {...rangeDetailsProps} />;
-            modalTitle = <RangeDetailsHeader />;
+            modalTitle = '';
             break;
         case 'harvest':
             // modalContent = <RangeDetails {...removeRangeProps} />;

@@ -83,7 +83,7 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
 
         case 'details':
             modalContent = 'details';
-            modalTitle = <RangeDetailsHeader />;
+            modalTitle = '';
             break;
         case 'harvest':
             modalContent = 'harvest';

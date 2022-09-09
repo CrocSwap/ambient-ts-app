@@ -72,7 +72,7 @@ export default function OrdersMenu(props: OrdersMenuIF) {
         case 'details':
             // modalContent = <RangeDetails {...removeRangeProps} />;
             modalContent = 'details';
-            modalTitle = <RangeDetailsHeader />;
+            modalTitle = '';
             break;
     }
 
