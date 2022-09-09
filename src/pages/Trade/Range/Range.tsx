@@ -587,15 +587,15 @@ export default function Range(props: RangePropsIF) {
         try {
             tx = await (isAmbient
                 ? isTokenAPrimary
-                    ? pool.mintAmbientLeft(tokenAInputQty, [minPrice, maxPrice])
-                    : pool.mintAmbientRight(tokenBInputQty, [minPrice, maxPrice])
+                    ? pool.mintAmbientQuote(tokenAInputQty, [minPrice, maxPrice])
+                    : pool.mintAmbientBase(tokenBInputQty, [minPrice, maxPrice])
                 : isTokenAPrimary
-                ? pool.mintRangeLeft(
+                ? pool.mintRangeQuote(
                       tokenAInputQty,
                       [rangeLowTick, rangeHighTick],
                       [minPrice, maxPrice],
                   )
-                : pool.mintRangeRight(
+                : pool.mintRangeBase(
                       tokenBInputQty,
                       [rangeLowTick, rangeHighTick],
                       [minPrice, maxPrice],
