@@ -22,6 +22,7 @@ import {
     CircleLoaderFailed,
 } from '../Global/LoadingAnimations/CircleLoader/CircleLoader';
 import RemoveRangeHeader from './RemoveRangeHeader/RemoveRangeHeader';
+import ExtraControls from './ExtraControls/ExtraControls';
 interface IRemoveRangeProps {
     provider: ethers.providers.Provider;
     chainData: ChainSpec;
@@ -332,6 +333,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
                     feeLiqQuoteDecimalCorrected={feeLiqQuoteDecimalCorrected}
                     removalPercentage={removalPercentage}
                 />
+                <ExtraControls />
             </div>
         </>
     );
