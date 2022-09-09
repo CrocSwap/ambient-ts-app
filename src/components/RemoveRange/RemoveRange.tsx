@@ -1,6 +1,6 @@
 import styles from './RemoveRange.module.css';
 import RemoveRangeWidth from './RemoveRangeWidth/RemoveRangeWidth';
-import RemoveRangeHeader from './RemoveRangeHeader/RemoveRangeHeader';
+import RemoveRangeTokenHeader from './RemoveRangeTokenHeader/RemoveRangeTokenHeader';
 import RemoveRangeInfo from './RemoveRangeInfo/RemoveRangInfo';
 import RemoveRangeButton from './RemoveRangeButton/RemoveRangeButton';
 import { useEffect, useState } from 'react';
@@ -21,6 +21,8 @@ import {
     CircleLoader,
     CircleLoaderFailed,
 } from '../Global/LoadingAnimations/CircleLoader/CircleLoader';
+import RemoveRangeHeader from './RemoveRangeHeader/RemoveRangeHeader';
+import ExtraControls from './ExtraControls/ExtraControls';
 interface IRemoveRangeProps {
     provider: ethers.providers.Provider;
     chainData: ChainSpec;
@@ -40,9 +42,14 @@ interface IRemoveRangeProps {
     isDenomBase: boolean;
     lastBlockNumber: number;
     position: PositionIF;
+
+    openGlobalModal: (content: React.ReactNode) => void;
+
+    closeGlobalModal: () => void;
 }
 
 export default function RemoveRange(props: IRemoveRangeProps) {
+    console.log(props);
     const {
         // chainId,
         // poolIdx,
@@ -51,6 +58,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
         // askTick,
         // baseTokenAddress,
         // quoteTokenAddress,
+        closeGlobalModal,
         chainData,
         provider,
         lastBlockNumber,
@@ -268,7 +276,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
 
     const confirmationContent = (
         <div className={styles.confirmation_container}>
-            {showConfirmation && (
+            {showConfirmation && !removalDenied && (
                 <div className={styles.button} onClick={resetConfirmation}>
                     <BsArrowLeft size={30} />
                 </div>
@@ -277,12 +285,20 @@ export default function RemoveRange(props: IRemoveRangeProps) {
         </div>
     );
 
-    const buttonToDisplay = showSettings ? (
-        <Button title='Confirm' action={() => setShowSettings(false)} />
-    ) : positionHasLiquidity ? (
-        <RemoveRangeButton removeFn={removeFn} disabled={showSettings} title='Remove Range' />
-    ) : (
-        <RemoveRangeButton removeFn={removeFn} disabled={true} title='…' />
+    const buttonToDisplay = (
+        <div style={{ padding: '0 1rem' }}>
+            {showSettings ? (
+                <Button title='Confirm' action={() => setShowSettings(false)} />
+            ) : positionHasLiquidity ? (
+                <RemoveRangeButton
+                    removeFn={removeFn}
+                    disabled={showSettings}
+                    title='Remove Range'
+                />
+            ) : (
+                <RemoveRangeButton removeFn={removeFn} disabled={true} title='…' />
+            )}
+        </div>
     );
 
     const mainModalContent = showSettings ? (
@@ -290,7 +306,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
     ) : (
         <>
             <div className={styles.header_container}>
-                <RemoveRangeHeader
+                <RemoveRangeTokenHeader
                     isPositionInRange={props.isPositionInRange}
                     isAmbient={props.isAmbient}
                     baseTokenSymbol={props.baseTokenSymbol}
@@ -301,21 +317,24 @@ export default function RemoveRange(props: IRemoveRangeProps) {
                 />
                 {removeRangeSetttingIcon}
             </div>
-            <RemoveRangeWidth
-                removalPercentage={removalPercentage}
-                setRemovalPercentage={setRemovalPercentage}
-            />
-            <RemoveRangeInfo
-                baseTokenSymbol={props.baseTokenSymbol}
-                quoteTokenSymbol={props.quoteTokenSymbol}
-                baseTokenLogoURI={props.baseTokenLogoURI}
-                quoteTokenLogoURI={props.quoteTokenLogoURI}
-                posLiqBaseDecimalCorrected={posLiqBaseDecimalCorrected}
-                posLiqQuoteDecimalCorrected={posLiqQuoteDecimalCorrected}
-                feeLiqBaseDecimalCorrected={feeLiqBaseDecimalCorrected}
-                feeLiqQuoteDecimalCorrected={feeLiqQuoteDecimalCorrected}
-                removalPercentage={removalPercentage}
-            />
+            <div style={{ padding: '0 1rem' }}>
+                <RemoveRangeWidth
+                    removalPercentage={removalPercentage}
+                    setRemovalPercentage={setRemovalPercentage}
+                />
+                <RemoveRangeInfo
+                    baseTokenSymbol={props.baseTokenSymbol}
+                    quoteTokenSymbol={props.quoteTokenSymbol}
+                    baseTokenLogoURI={props.baseTokenLogoURI}
+                    quoteTokenLogoURI={props.quoteTokenLogoURI}
+                    posLiqBaseDecimalCorrected={posLiqBaseDecimalCorrected}
+                    posLiqQuoteDecimalCorrected={posLiqQuoteDecimalCorrected}
+                    feeLiqBaseDecimalCorrected={feeLiqBaseDecimalCorrected}
+                    feeLiqQuoteDecimalCorrected={feeLiqQuoteDecimalCorrected}
+                    removalPercentage={removalPercentage}
+                />
+                <ExtraControls />
+            </div>
         </>
     );
 
@@ -323,6 +342,12 @@ export default function RemoveRange(props: IRemoveRangeProps) {
     return (
         <div className={styles.remove_range_container}>
             <div className={styles.main_content}>
+                <RemoveRangeHeader
+                    onClose={closeGlobalModal}
+                    title={showSettings ? 'Remove Position Settings' : 'Remove Position'}
+                    onBackButton={() => setShowSettings(false)}
+                    showBackButton={showSettings}
+                />
                 {mainModalContent}
                 {/* {harvestButtonOrNull} */}
                 {buttonToDisplay}
