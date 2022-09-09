@@ -15,11 +15,22 @@ export default function ExtraControls(props: CurrencyConverterPropsIF) {
     const exchangeBalanceControl = (
         <section className={styles.wallet_container}>
             <div className={styles.wallet_container_left}>
-                <div className={styles.wallet_amount}>
-                    <MdAccountBalanceWallet size={15} color='#EBEBFF' />
+                <div
+                    className={styles.wallet_amount}
+                    style={{ color: !isSaveAsDexSurplusChecked ? '#ebebff' : '#555555' }}
+                >
+                    <MdAccountBalanceWallet
+                        size={15}
+                        color={isSaveAsDexSurplusChecked ? '#555555' : '#EBEBFF'}
+                    />
                     Wallet
                 </div>
-                <div className={styles.exchange_text}>
+                <div
+                    className={`${styles.exchange_text} ${
+                        !isSaveAsDexSurplusChecked && styles.grey_logo
+                    }`}
+                    style={{ color: isSaveAsDexSurplusChecked ? '#ebebff' : '#555555' }}
+                >
                     <img src={ambientLogo} width='15' alt='' />
                     0.00
                 </div>
