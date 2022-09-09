@@ -107,7 +107,7 @@ const cachedFetchTokenBalances = memoizeTokenBalance();
 const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
 const wssGraphCacheServerDomain = 'wss://809821320828123.de:5000';
 
-const shouldCandleSubscriptionsReconnect = false;
+const shouldCandleSubscriptionsReconnect = true;
 const shouldNonCandleSubscriptionsReconnect = true;
 
 /** ***** React Function *******/
