@@ -591,18 +591,28 @@ export default function Range(props: RangePropsIF) {
         try {
             tx = await (isAmbient
                 ? isTokenAPrimary
-                    ? pool.mintAmbientQuote(tokenAInputQty, [minPrice, maxPrice])
-                    : pool.mintAmbientBase(tokenBInputQty, [minPrice, maxPrice])
+                    ? pool.mintAmbientQuote(tokenAInputQty, [minPrice, maxPrice], {
+                          surplus: [isWithdrawTokenAFromDexChecked, isWithdrawTokenBFromDexChecked],
+                      })
+                    : pool.mintAmbientBase(tokenBInputQty, [minPrice, maxPrice], {
+                          surplus: [isWithdrawTokenAFromDexChecked, isWithdrawTokenBFromDexChecked],
+                      })
                 : isTokenAPrimary
                 ? pool.mintRangeQuote(
                       tokenAInputQty,
                       [rangeLowTick, rangeHighTick],
                       [minPrice, maxPrice],
+                      {
+                          surplus: [isWithdrawTokenAFromDexChecked, isWithdrawTokenBFromDexChecked],
+                      },
                   )
                 : pool.mintRangeBase(
                       tokenBInputQty,
                       [rangeLowTick, rangeHighTick],
                       [minPrice, maxPrice],
+                      {
+                          surplus: [isWithdrawTokenAFromDexChecked, isWithdrawTokenBFromDexChecked],
+                      },
                   ));
             setNewRangeTransactionHash(tx?.hash);
         } catch (error) {
