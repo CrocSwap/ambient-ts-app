@@ -36,8 +36,10 @@ interface RangeCurrencyConverterPropsIF {
     isAmbient: boolean;
     depositSkew: number;
     setIsSellTokenPrimary?: Dispatch<SetStateAction<boolean>>;
-    tokenABalance: string;
-    tokenBBalance: string;
+    baseTokenBalance: string;
+    quoteTokenBalance: string;
+    baseTokenDexBalance: string;
+    quoteTokenDexBalance: string;
     setTokenAInputQty: Dispatch<SetStateAction<string>>;
     setTokenBInputQty: Dispatch<SetStateAction<string>>;
     setRangeButtonErrorMessage: Dispatch<SetStateAction<string>>;
@@ -70,8 +72,10 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         setIsWithdrawTokenAFromDexChecked,
         isWithdrawTokenBFromDexChecked,
         setIsWithdrawTokenBFromDexChecked,
-        tokenABalance,
-        tokenBBalance,
+        baseTokenBalance,
+        quoteTokenBalance,
+        baseTokenDexBalance,
+        quoteTokenDexBalance,
         setTokenAInputQty,
         setTokenBInputQty,
         setRangeButtonErrorMessage,
@@ -89,6 +93,11 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
 
     const [tokenAQtyLocal, setTokenAQtyLocal] = useState<number>(0);
     const [tokenBQtyLocal, setTokenBQtyLocal] = useState<number>(0);
+
+    const tokenABalance = isTokenABase ? baseTokenBalance : quoteTokenBalance;
+    const tokenBBalance = isTokenABase ? quoteTokenBalance : baseTokenBalance;
+    const tokenADexBalance = isTokenABase ? baseTokenDexBalance : quoteTokenDexBalance;
+    const tokenBDexBalance = isTokenABase ? quoteTokenDexBalance : baseTokenDexBalance;
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
@@ -476,6 +485,8 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         reverseTokens: reverseTokens,
         tokenABalance: tokenABalance,
         tokenBBalance: tokenBBalance,
+        tokenADexBalance: tokenADexBalance,
+        tokenBDexBalance: tokenBDexBalance,
         isTokenADisabled: isTokenADisabled,
         isTokenBDisabled: isTokenBDisabled,
         activeTokenListsChanged: activeTokenListsChanged,
