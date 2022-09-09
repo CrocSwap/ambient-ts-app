@@ -8,7 +8,6 @@ import RemoveRange from '../../../../RemoveRange/RemoveRange';
 import RangeDetails from '../../../../RangeDetails/RangeDetails';
 import SnackbarComponent from '../../../../../components/Global/SnackbarComponent/SnackbarComponent';
 import Modal from '../../../../Global/Modal/Modal';
-import RangeDetailsHeader from '../../../../RangeDetails/RangeDetailsHeader/RangeDetailsHeader';
 
 // START: Import Local Files
 import styles from './TableMenuComponents.module.css';
@@ -74,10 +73,13 @@ export default function RangesMenu(props: RangesMenuIF) {
     const openRemoveModal = () =>
         openGlobalModal(<RemoveRange position={positionData} {...rangeDetailsProps} />);
 
-    function openDetailsModal() {
-        setCurrentModal('details');
-        openModal();
-    }
+    const openDetailsModal = () =>
+        openGlobalModal(<RangeDetails position={positionData} {...rangeDetailsProps} />);
+
+    // function openDetailsModal() {
+    //     setCurrentModal('details');
+    //     openModal();
+    // }
     function openHarvestModal() {
         setCurrentModal('harvest');
         openModal();
@@ -109,7 +111,7 @@ export default function RangesMenu(props: RangesMenuIF) {
         case 'details':
             // modalContent = <RangeDetails {...removeRangeProps} />;
             modalContent = <RangeDetails position={positionData} {...rangeDetailsProps} />;
-            modalTitle = <RangeDetailsHeader />;
+            modalTitle = '';
             break;
         case 'harvest':
             // modalContent = <RangeDetails {...removeRangeProps} />;
