@@ -31,6 +31,8 @@ interface RangeCardProps {
     lastBlockNumber: number;
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
+
+    openGlobalModal: (content: React.ReactNode) => void;
 }
 
 export default function RangeCard(props: RangeCardProps) {
@@ -228,6 +230,7 @@ export default function RangeCard(props: RangeCardProps) {
                     rangeDetailsProps={rangeDetailsProps}
                     posHash={posHash as string}
                     positionData={position}
+                    openGlobalModal={props.openGlobalModal}
                 />
             </div>
         </li>

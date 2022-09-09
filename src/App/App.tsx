@@ -1896,7 +1896,8 @@ export default function App() {
         ? 'content-container-trade'
         : 'content-container';
 
-    const [isGlobalModalOpen, openGlobalModal, closeGlobalModal, currentContent] = useGlobalModal();
+    const [isGlobalModalOpen, openGlobalModal, closeGlobalModal, currentContent, title] =
+        useGlobalModal();
 
     return (
         <>
@@ -2044,6 +2045,7 @@ export default function App() {
                 closeGlobalModal={closeGlobalModal}
                 openGlobalModal={openGlobalModal}
                 currentContent={currentContent}
+                title={title}
             />
             {isModalOpenWallet && (
                 <WalletModal
