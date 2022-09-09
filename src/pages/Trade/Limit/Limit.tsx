@@ -273,7 +273,7 @@ export default function Limit(props: LimitPropsIF) {
         const seller = new CrocEnv(provider).sell(sellToken, qty);
         const ko = seller.atLimit(buyToken, limitTick);
 
-        if (await ko.willFail()) {
+        if (await ko.willMintFail()) {
             console.log('Cannot send limit order: Knockout price inside spread');
             setTxErrorMessage('Limit inside market price');
             return;
