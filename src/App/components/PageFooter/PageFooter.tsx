@@ -9,7 +9,7 @@ interface IFooterProps {
     userIsOnline: boolean;
 }
 
-const pageBlockSign = <div className={styles.page_block_sign}></div>;
+const pageBlockSign = <div className={styles.page_block_sign} />;
 
 export default function PageFooter(props: IFooterProps) {
     const { userIsOnline, lastBlockNumber } = props;
@@ -37,10 +37,10 @@ export default function PageFooter(props: IFooterProps) {
             </a>
             {/* {location.pathname !== '/' && ( */}
 
-            <a href='#'>
+            <div className={styles.block_number_div}>
                 {pageBlockSign}
                 <span>{lastBlockNumber}</span>
-            </a>
+            </div>
             {/* // )} */}
         </footer>
     );
