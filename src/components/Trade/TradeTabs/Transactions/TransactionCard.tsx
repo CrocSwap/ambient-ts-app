@@ -240,7 +240,7 @@ export default function TransactionCard(props: TransactionProps) {
                     baseQty={baseFlowDisplay}
                     quoteQty={quoteFlowDisplay}
                 />
-                <button onClick={() => props.openGlobalModal('New modal works')}>Here</button>
+                {/* <button onClick={() => props.openGlobalModal('New modal works')}>Here</button> */}
             </div>
 
             <div className={styles.menu_container}>

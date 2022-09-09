@@ -42,7 +42,7 @@ export default function RangesMenu(props: RangesMenuIF) {
         rangeDetailsProps,
         posHash,
         positionData,
-
+        // eslint-disable-next-line
         openGlobalModal,
     } = props;
 
@@ -177,13 +177,13 @@ export default function RangesMenu(props: RangesMenuIF) {
             {removeButton}
             {detailsButton}
             {copyButton}
-            <button
+            {/* <button
                 onClick={() =>
                     openGlobalModal(<RemoveRange position={positionData} {...rangeDetailsProps} />)
                 }
             >
                 Click me
-            </button>
+            </button> */}
         </div>
     );
 

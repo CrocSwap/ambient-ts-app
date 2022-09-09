@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 
 // START: Import Local Files
 import styles from './SimpleModal.module.css';
+import SimpleModalHeader from './SimpleModalHeader/SimpleModalHeader';
 
 // interface for React functional component
 interface SimpleModalPropsIF {
@@ -12,16 +13,13 @@ interface SimpleModalPropsIF {
     handleBack?: () => void;
 
     children: ReactNode;
+
+    title?: string;
 }
 
 // React functional component
 export default function SimpleModal(props: SimpleModalPropsIF) {
-    const {
-        onClose,
-
-        children,
-        noBackground,
-    } = props;
+    const { onClose, title, children, noBackground } = props;
 
     const escFunction = useCallback((event: KeyboardEvent) => {
         if (event.key === 'Escape') {
@@ -48,7 +46,10 @@ export default function SimpleModal(props: SimpleModalPropsIF) {
                 `}
                 onClick={(e) => e.stopPropagation()}
             >
-                <section className={styles.modal_content}>{children}</section>
+                <section className={styles.modal_content}>
+                    {title && <SimpleModalHeader title={title} onClose={onClose} />}
+                    {children}
+                </section>
             </motion.div>
         </div>
     );
