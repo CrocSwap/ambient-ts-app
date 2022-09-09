@@ -23,13 +23,12 @@
     gap: 4px;
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-white)
-}
-.exchange_text{
-    color: var(--text-grey-light)
+    transition: all var(--animation-speed) ease-in-out;
+   
 }
 
-.exchange_text img{
+
+ .grey_logo img{
     filter: grayscale(100%);
 }
 
