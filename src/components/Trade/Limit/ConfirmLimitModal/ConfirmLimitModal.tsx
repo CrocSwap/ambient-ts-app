@@ -86,6 +86,12 @@ export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
         </div>
     );
 
+    const limitRateRow = (
+        <div className={styles.limit_row_container}>
+            <h2>@ {limitRate}</h2>
+        </div>
+    );
+
     const fullTxDetails = (
         <>
             <div className={styles.modal_currency_converter}>

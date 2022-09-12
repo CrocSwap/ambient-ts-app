@@ -219,3 +219,17 @@
     width: 40px;
     
 }
+
+.limit_row_container{
+    width: 100%;
+    background: var(--dark3);
+   display: flex;
+   justify-content: center;
+    align-items: center;
+    font-weight: 200;
+    font-size: var(--header2-size);
+    line-height: var(--header2-lh);
+    color: var(--text-grey-white);
+    letter-spacing: -0.02em;
+    border-radius: var(--border-radius);
+}
