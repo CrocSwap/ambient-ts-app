@@ -18,28 +18,61 @@
 
 } */
 
-.loading_animation {
-    background: linear-gradient(rgba(69, 170, 204, 0.45), rgba(4, 0, 11, 0.45)),
-        url('../../../assets//images/logos/ambient_logo.svg') no-repeat center center fixed;
-    -webkit-background-size: cover;
-    -moz-background-size: cover;
-    -o-background-size: cover;
-    background-size: cover;
-    width: 160px;
-    height: 160px;
-    border: 3px solid var(--dark3);
-    border-radius: 50%;
-    border-top-color: rgb(255, 255, 255);
-    animation: spin 1s ease-in-out infinite;
-    -webkit-animation: spin 1s ease-in-out infinite;
+
+
+.loader{
+	position: relative;
+	width: 150px;
+	height: 150px;
+	border-radius: 50%;
+    background: linear-gradient(45deg, transparent, transparent 40%, #7371fc);
+
+	animation: animate 2s linear infinite;
+
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
-@keyframes spin {
-    to {
-        -webkit-transform: rotate(360deg);
-    }
+
+.loader img{
+	max-width: 100%;
+	z-index: 3;
+    opacity: 0;
 }
-@-webkit-keyframes spin {
-    to {
-        -webkit-transform: rotate(360deg);
-    }
+
+.loader:before{
+	content: '';
+	position: absolute;
+	top: 6px;
+	left: 6px;
+	right: 6px;
+	bottom: 6px;
+	background: var(--body-bg);
+	border-radius: 50%;
+	z-index: 2;
+}
+.loader:after{
+	background: linear-gradient(45deg, transparent, transparent 40%, #7371fc);
+
+	content: '';
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	right: 0px;
+	bottom: 0px;
+	
+	border-radius: 50%;
+	z-index: 1;
+	filter: blur(60px);
+}
+
+@keyframes animate {
+	0% {
+		transform: rotate(0deg);
+		filter: hue-rotate(0deg)
+	}
+	100% {
+		transform: rotate(360deg);
+		filter: hue-rotate(10deg)
+	}
 }

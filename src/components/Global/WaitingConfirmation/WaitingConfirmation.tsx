@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import styles from './WaitingConfirmation.module.css';
-
+import logo from '../../../assets/images/logos/ambient_logo.png';
 interface WaitingConfirmationPropsIF {
     content: ReactNode;
 }
@@ -11,8 +11,8 @@ export default function WaitingConfirmation(props: WaitingConfirmationPropsIF) {
     // TODO:  @Junior seriously you're killing me with these wrappers  -Emily
     return (
         <div className={styles.wallet_confirm}>
-            <div className={styles.loading_animation}>
-                {/* <Animation animData={loading4} /> */}
+            <div className={styles.loader}>
+                <img src={logo} alt='ambient' />
             </div>
             <span className={styles.waiting_detail}>
                 <h2>Waiting For Confirmation</h2>
