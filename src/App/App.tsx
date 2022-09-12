@@ -7,10 +7,10 @@ import {
     setPositionsByPool,
     setPositionsByUser,
     setSwapsByUser,
-    ISwap,
+    // ISwap,
     setSwapsByPool,
-    addSwapsByUser,
-    addSwapsByPool,
+    // addSwapsByUser,
+    // addSwapsByPool,
     CandleData,
     setCandles,
     addCandles,
@@ -1251,9 +1251,9 @@ export default function App() {
 
     const graphData = useAppSelector((state) => state.graphData);
 
-    const getSwapData = async (swap: ISwap): Promise<ISwap> => {
-        return swap;
-    };
+    // const getSwapData = async (swap: ISwap): Promise<ISwap> => {
+    //     return swap;
+    // };
 
     const getCandleData = async (candle: CandleData): Promise<CandleData> => {
         return candle;
