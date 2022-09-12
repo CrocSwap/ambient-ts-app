@@ -1529,7 +1529,7 @@
     exec-sh "^0.3.2"
     minimist "^1.2.0"
 
-"@crocswap-libs/sdk@^0.2.38":
+"@crocswap-libs/sdk@^0.2.39":
   version "0.2.39"
   resolved "https://registry.yarnpkg.com/@crocswap-libs/sdk/-/sdk-0.2.39.tgz#0bffafa0916b2dd082c821ccd9370b64b8a725bc"
   integrity sha512-hBvXYO4Hn612tWQdDmCw7224ab21FxtDMuJ06zJZ037HOE/ZOae+EzgL5qaFMjHuSDeb078YGHEUvAukk9T0Pg==

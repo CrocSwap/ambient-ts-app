@@ -1,6 +1,6 @@
 .modal_container {
-    width: 400px;
-    min-height: 300px;
+    max-width: 400px;
+    /* min-height: 300px; */
 }
 
 .modal_footer {
@@ -9,9 +9,7 @@
     margin-top: 10px;
 }
 
-.modal_content {
-    padding: 0 20px;
-}
+
 
 /* test css */
 
@@ -177,20 +175,11 @@
     width: 100%;
   
     display: flex;
+    justify-content: center;
     align-items: center;
     background: transparent;
 }
-.arrow {
-    height: 1.3rem;
-    width: 1.3rem;
-    border-style: solid;
-    border-width: 0px 4px 4px 0px;
-    border-image-slice: 1;
 
-    border-image-source: linear-gradient(90deg, #7371fc 0%, #cdc1ff 49.48%, #7371fc 100%);
-    transform: rotate(45deg);
-    transition: border-width var(--animation-speed) ease-in-out;
-}
 
 .main_container{
     display: flex;
