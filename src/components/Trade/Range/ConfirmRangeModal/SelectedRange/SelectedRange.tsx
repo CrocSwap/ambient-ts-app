@@ -163,10 +163,7 @@ export default function SelectedRange(props: SelectedRangeProps) {
     return (
         <>
             <div className={styles.selected_range}>
-                <div className={styles.selected_range_button_container}>
-                    <div>Selected Range</div>
-                    {switchButtons}
-                </div>
+                {switchButtons}
                 {!isAmbient ? selectedRangeDisplay : null}
                 {currentPriceDisplay}
             </div>
