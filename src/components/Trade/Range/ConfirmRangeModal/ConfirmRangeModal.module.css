@@ -1,5 +1,11 @@
 .confirm_range_modal_container {
     max-width: 400px;
+    display: flex;
+    flex-direction: column;
+
+   
+    gap: 8px;
+   
 }
 
 /* range header */
@@ -20,7 +26,9 @@
 .token_symbol {
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
-    font-weight: 300;
+
+    font-weight: 200;
+    color: var(--text-grey-white)
 }
 .fee_tier {
     font-size: 14px;
@@ -32,30 +40,26 @@
 }
 
 .tokens {
-    position: relative;
+
 
     display: flex;
+    flex-direction: row;
 
-    margin-left: 1rem;
 
     align-items: center;
+    gap: 8px;
 }
 
 .tokens img {
-    width: 20px;
-    height: 20px;
+    width: 30px;
+    height: 30px;
+
 
     border-radius: 50%;
     background: white;
 }
 
-.tokens img:nth-child(1) {
-    z-index: 2;
-}
-.tokens img:nth-child(2) {
-    position: absolute;
-    left: -9px !important;
-}
+
 
 .range_display {
     font-size: 14px;
@@ -118,6 +122,6 @@
 }
 
 /* modal */
-.modal_footer {
-    padding: 1rem;
-}
+
+
+
