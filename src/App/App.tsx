@@ -716,15 +716,16 @@ export default function App() {
                     console.log;
                 }
 
-                // retrieve pool_swaps
+                // retrieve pool recent changes
                 try {
                     if (httpGraphCacheServerDomain) {
-                        console.log('fetching pool swaps');
+                        console.log('fetching pool recent changes');
 
-                        const poolSwapsCacheEndpoint = httpGraphCacheServerDomain + '/pool_swaps?';
+                        const poolRecentChangesCacheEndpoint =
+                            httpGraphCacheServerDomain + '/pool_recent_changes?';
 
                         fetch(
-                            poolSwapsCacheEndpoint +
+                            poolRecentChangesCacheEndpoint +
                                 new URLSearchParams({
                                     base: sortedTokens[0].toLowerCase(),
                                     quote: sortedTokens[1].toLowerCase(),
@@ -732,28 +733,21 @@ export default function App() {
                                     chainId: chainData.chainId,
                                     addValue: 'true',
                                     ensResolution: 'true',
-                                    // n: 10 // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
+                                    n: '100', // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
                                     // page: 0 // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
                                 }),
                         )
                             .then((response) => response?.json())
                             .then((json) => {
-                                const poolSwaps = json?.data;
+                                const poolChanges = json?.data;
 
-                                if (poolSwaps) {
-                                    Promise.all(poolSwaps.map(getSwapData)).then((updatedSwaps) => {
-                                        if (
-                                            JSON.stringify(graphData.swapsByUser.swaps) !==
-                                            JSON.stringify(updatedSwaps)
-                                        ) {
-                                            dispatch(
-                                                setSwapsByPool({
-                                                    dataReceived: true,
-                                                    swaps: updatedSwaps,
-                                                }),
-                                            );
-                                        }
-                                    });
+                                if (poolChanges) {
+                                    dispatch(
+                                        setSwapsByPool({
+                                            dataReceived: true,
+                                            swaps: poolChanges,
+                                        }),
+                                    );
                                 }
                             })
                             .catch(console.log);
@@ -988,48 +982,48 @@ export default function App() {
         }
     }, [candlesMessage]);
 
-    const poolSwapsCacheSubscriptionEndpoint = useMemo(
-        () =>
-            wssGraphCacheServerDomain +
-            '/subscribe_pool_swaps?' +
-            new URLSearchParams({
-                base: baseTokenAddress.toLowerCase(),
-                quote: quoteTokenAddress.toLowerCase(),
-                poolIdx: chainData.poolIndex.toString(),
-                chainId: chainData.chainId,
-                addValue: 'true',
-                ensResolution: 'true',
-            }),
-        [baseTokenAddress, quoteTokenAddress, chainData.chainId],
-    );
+    // const poolSwapsCacheSubscriptionEndpoint = useMemo(
+    //     () =>
+    //         wssGraphCacheServerDomain +
+    //         '/subscribe_pool_swaps?' +
+    //         new URLSearchParams({
+    //             base: baseTokenAddress.toLowerCase(),
+    //             quote: quoteTokenAddress.toLowerCase(),
+    //             poolIdx: chainData.poolIndex.toString(),
+    //             chainId: chainData.chainId,
+    //             addValue: 'true',
+    //             ensResolution: 'true',
+    //         }),
+    //     [baseTokenAddress, quoteTokenAddress, chainData.chainId],
+    // );
 
-    const {
-        //  sendMessage,
-        lastMessage: lastPoolSwapsMessage,
-        //  readyState
-    } = useWebSocket(
-        poolSwapsCacheSubscriptionEndpoint,
-        {
-            // share:  true,
-            onOpen: () => console.log('poolSwaps subscription opened'),
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            onClose: (event: any) => console.log({ event }),
-            // Will attempt to reconnect on all close events, such as server shutting down
-            shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
-        },
-        // only connect if base/quote token addresses are available
-        baseTokenAddress !== '' && quoteTokenAddress !== '',
-    );
+    // const {
+    //     //  sendMessage,
+    //     lastMessage: lastPoolSwapsMessage,
+    //     //  readyState
+    // } = useWebSocket(
+    //     poolSwapsCacheSubscriptionEndpoint,
+    //     {
+    //         // share:  true,
+    //         onOpen: () => console.log('poolSwaps subscription opened'),
+    //         // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    //         onClose: (event: any) => console.log({ event }),
+    //         // Will attempt to reconnect on all close events, such as server shutting down
+    //         shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
+    //     },
+    //     // only connect if base/quote token addresses are available
+    //     baseTokenAddress !== '' && quoteTokenAddress !== '',
+    // );
 
-    useEffect(() => {
-        if (lastPoolSwapsMessage !== null) {
-            const lastMessageData = JSON.parse(lastPoolSwapsMessage.data).data;
+    // useEffect(() => {
+    //     if (lastPoolSwapsMessage !== null) {
+    //         const lastMessageData = JSON.parse(lastPoolSwapsMessage.data).data;
 
-            if (lastMessageData) {
-                dispatch(addSwapsByPool(lastMessageData));
-            }
-        }
-    }, [lastPoolSwapsMessage]);
+    //         if (lastMessageData) {
+    //             dispatch(addSwapsByPool(lastMessageData));
+    //         }
+    //     }
+    // }, [lastPoolSwapsMessage]);
 
     const userLiqChangesCacheSubscriptionEndpoint = useMemo(
         () =>
@@ -1078,42 +1072,42 @@ export default function App() {
         }
     }, [lastUserPositionsMessage]);
 
-    const userSwapsCacheSubscriptionEndpoint = useMemo(
-        () =>
-            wssGraphCacheServerDomain +
-            '/subscribe_user_swaps?' +
-            new URLSearchParams({
-                user: account || '',
-                chainId: chainData.chainId,
-                addValue: 'true',
-                ensResolution: 'true',
-            }),
-        [account, chainData.chainId],
-    );
+    // const userSwapsCacheSubscriptionEndpoint = useMemo(
+    //     () =>
+    //         wssGraphCacheServerDomain +
+    //         '/subscribe_user_swaps?' +
+    //         new URLSearchParams({
+    //             user: account || '',
+    //             chainId: chainData.chainId,
+    //             addValue: 'true',
+    //             ensResolution: 'true',
+    //         }),
+    //     [account, chainData.chainId],
+    // );
 
-    const { lastMessage: lastUserSwapsMessage } = useWebSocket(
-        userSwapsCacheSubscriptionEndpoint,
-        {
-            // share: true,
-            onOpen: () => console.log('user swaps subscription opened'),
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            onClose: (event: any) => console.log({ event }),
-            // onClose: () => console.log('userSwaps websocket connection closed'),
-            // Will attempt to reconnect on all close events, such as server shutting down
-            shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
-        },
-        // only connect if account is available
-        account !== null && account !== '',
-    );
+    // const { lastMessage: lastUserSwapsMessage } = useWebSocket(
+    //     userSwapsCacheSubscriptionEndpoint,
+    //     {
+    //         // share: true,
+    //         onOpen: () => console.log('user swaps subscription opened'),
+    //         // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    //         onClose: (event: any) => console.log({ event }),
+    //         // onClose: () => console.log('userSwaps websocket connection closed'),
+    //         // Will attempt to reconnect on all close events, such as server shutting down
+    //         shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
+    //     },
+    //     // only connect if account is available
+    //     account !== null && account !== '',
+    // );
 
-    useEffect(() => {
-        if (lastUserSwapsMessage !== null) {
-            const lastMessageData = JSON.parse(lastUserSwapsMessage.data).data;
-            if (lastMessageData) {
-                dispatch(addSwapsByUser(lastMessageData));
-            }
-        }
-    }, [lastUserSwapsMessage]);
+    // useEffect(() => {
+    //     if (lastUserSwapsMessage !== null) {
+    //         const lastMessageData = JSON.parse(lastUserSwapsMessage.data).data;
+    //         if (lastMessageData) {
+    //             dispatch(addSwapsByUser(lastMessageData));
+    //         }
+    //     }
+    // }, [lastUserSwapsMessage]);
 
     const [baseTokenBalance, setBaseTokenBalance] = useState<string>('');
     const [quoteTokenBalance, setQuoteTokenBalance] = useState<string>('');
@@ -1543,35 +1537,30 @@ export default function App() {
             }
 
             try {
-                const allUserSwapsCacheEndpoint = httpGraphCacheServerDomain + '/user_swaps?';
-                console.log('fetching user swaps');
+                const userRecentChangesCacheEndpoint =
+                    httpGraphCacheServerDomain + '/user_recent_changes?';
+                console.log('fetching user recent changes');
                 fetch(
-                    allUserSwapsCacheEndpoint +
+                    userRecentChangesCacheEndpoint +
                         new URLSearchParams({
                             user: account,
                             chainId: chainData.chainId,
                             addValue: 'true',
                             ensResolution: 'true',
+                            n: '200',
                         }),
                 )
                     .then((response) => response?.json())
                     .then((json) => {
-                        const userSwaps = json?.data;
+                        const userChanges = json?.data;
 
-                        if (userSwaps) {
-                            Promise.all(userSwaps.map(getSwapData)).then((updatedSwaps) => {
-                                if (
-                                    JSON.stringify(graphData.swapsByUser.swaps) !==
-                                    JSON.stringify(updatedSwaps)
-                                ) {
-                                    dispatch(
-                                        setSwapsByUser({
-                                            dataReceived: true,
-                                            swaps: updatedSwaps,
-                                        }),
-                                    );
-                                }
-                            });
+                        if (userChanges) {
+                            dispatch(
+                                setSwapsByUser({
+                                    dataReceived: true,
+                                    swaps: userChanges,
+                                }),
+                            );
                         }
                     })
                     .catch(console.log);

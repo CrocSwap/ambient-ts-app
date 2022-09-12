@@ -257,6 +257,7 @@ export interface ISwap {
     quoteFlow: string;
     quoteSymbol: string;
     source: string;
+    entityType: string;
     time: number;
     tx: string;
     user: string;
