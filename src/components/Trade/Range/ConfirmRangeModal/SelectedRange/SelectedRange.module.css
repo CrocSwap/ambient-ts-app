@@ -1,59 +1,74 @@
-/* switch buttons */
-.selected_range_button_container {
-    width: 100%;
+
+
+.selected_range{
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-direction: row;
-    padding: 1rem 0.6rem;
+    flex-direction: column;
+    gap: 8px;
 }
 /* Switch buttons */
 /* JR: TODO: TURN ON BORDER AND FIX SPACE ISSUE */
 .button_container {
-    /* border: solid 1px transparent; */
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 33px;
+    font-weight: 300;
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    text-align: right;
+    color: var(--text-grey-light);
+    margin: 8px 0;
+}
+
+.button_container button {
+    cursor: pointer;
+    background: var(--dark3);
+    min-width: 2rem;
+    /* padding: 0.1rem; */
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    text-align: center;
+    color: var(--text-grey-light);
+    outline: none;
+    border: solid 0.2px transparent;
+    border-radius: 50px;
+    padding: 5px 8px;
+}
+
+/* .button_container button:hover{
+    background: var(--title-gradient);
+    transition: all var(--animation-speed) ease-in-out;
+   
+} */
+.button_container .non_active_button:hover {
+    transition: all var(--animation-speed) ease-in-out;
+    box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2), 0px 0px 21px rgba(205, 193, 255, 0.2),
+        0px 0px 12px rgba(205, 193, 255, 0.2), 0px 0px 7px rgba(205, 193, 255, 0.2),
+        0px 0px 4px #cdc1ff, 0px 0px 2px rgba(205, 193, 255, 0.2);
+}
+
+.button_container .active_button {
+    border: solid 0.2px transparent;
     background-image: linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, 0)),
         linear-gradient(101deg, #7371fc, #cdc1ff, #7371fc);
     background-origin: border-box;
     background-clip: content-box, border-box;
     box-shadow: 2px 1000px 1px var(--dark3) inset;
-}
-
-.button_container button {
-    font-size: var(--body-size);
-    /* width: 50%; */
-
-    padding: 0.1rem 0.6rem;
-
-    cursor: pointer;
-    transition: all var(--animation-speed) ease-in-out;
-
-    border: none;
-    /* border: 1px solid var(--border-color); */
-    outline: none;
-}
-.button_container button:hover {
-    color: var(--text-grey-light);
-}
-.active_button {
-    background: var(--title-gradient);
-    color: var(--text-grey-white);
-}
-.non_active_button {
-    color: var(--text-grey-white);
-    background-color: transparent;
+    transition: box-shadow var(--animation-speed) ease-in-out;
 }
 
 /* price range container */
 .price_range_container {
-    width: 48%;
-    padding: 8px;
+    width: 100%;
+    
 
-    border-radius: 16px;
-}
-.price_range_content {
     background: var(--dark3);
 
-    border-radius: 16px;
+    border-radius: var(--border-radius);
+}
+.price_range_content {
+   
     padding: 12px;
     display: grid;
 
@@ -74,7 +89,7 @@
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
     color: var(--text-grey-white);
-    font-weight: 400;
+    font-weight: 200;
 
     text-align: center;
 }
@@ -92,27 +107,45 @@
 
 /* SELECTED RANGE */
 .selected_range_display {
+display: grid;
+grid-gap: 8px;
+}
+
+
+
+
+.extra_info_container{
     display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding:  8px;
+    border: 1px solid #242F3F;
+border-radius: 4px;
 
-    padding-bottom: 0.5rem;
 
+}
+.extra_info_container .row{
+    display: flex;
+    flex-direction: row;
     justify-content: space-between;
+    align-items: center;
 }
 
-/* CURRENT PRICE DISPLAY */
-.currentPrice_display {
-    width: 100%;
-    padding: 12px;
-
-    border-radius: 16px;
-    background-color: var(--dark3);
-
-    /* padding: 1rem 0; */
+.extra_info_container .row p{
+    font-weight: 300;
+    color: var(--text-grey-light);
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
 }
-.currentPrice_container {
-    display: grid;
 
-    grid-auto-rows: auto;
-    row-gap: 4px;
-    justify-items: center;
+
+/* Desktop screen Sizes */
+@media only screen and (min-width: 768px) {
+
+
+.selected_range_display{
+    grid-template-columns: 1fr 1fr;
+}	
+
+
 }
