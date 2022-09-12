@@ -1,11 +1,9 @@
 import styles from './ConfirmLimitModal.module.css';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
-import CurrencyDisplay from '../../../Global/CurrencyDisplay/CurrencyDisplay';
 import WaitingConfirmation from '../../../Global/WaitingConfirmation/WaitingConfirmation';
 import TransactionSubmitted from '../../../Global/TransactionSubmitted/TransactionSubmitted';
 import Button from '../../../Global/Button/Button';
 import { TokenPairIF } from '../../../../utils/interfaces/exports';
-import Divider from '../../../Global/Divider/Divider';
 import TransactionDenied from '../../../Global/TransactionDenied/TransactionDenied';
 import DenominationSwitch from '../../../Swap/DenominationSwitch/DenominationSwitch';
 import TokensArrow from '../../../Global/TokensArrow/TokensArrow';
