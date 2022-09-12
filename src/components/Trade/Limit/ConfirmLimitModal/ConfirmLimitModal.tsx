@@ -65,9 +65,19 @@ export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
     );
 
     console.log(sellTokenData);
-    const SellCurrencyRow = (
+    const buyCurrencyRow = (
         <div className={styles.currency_row_container}>
             <h2>{buyTokenQty}</h2>
+
+            <div className={styles.logo_display}>
+                <img src={buyTokenData.logoURI} alt={buyTokenData.symbol} />
+                <h2>{buyTokenData.symbol}</h2>
+            </div>
+        </div>
+    );
+    const sellCurrencyRow = (
+        <div className={styles.currency_row_container}>
+            <h2>{sellTokenQty}</h2>
 
             <div className={styles.logo_display}>
                 <img src={sellTokenData.logoURI} alt={sellTokenData.symbol} />
