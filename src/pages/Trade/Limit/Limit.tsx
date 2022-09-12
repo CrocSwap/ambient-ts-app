@@ -326,7 +326,8 @@ export default function Limit(props: LimitPropsIF) {
                 tokenAInputQty={tokenAInputQty}
                 tokenBInputQty={tokenBInputQty}
                 isTokenAPrimary={isTokenAPrimary}
-                limitRate={limitRate}
+                // limitRate={limitRate}
+                insideTickDisplayPrice={insideTickDisplayPrice}
                 newLimitOrderTransactionHash={newLimitOrderTransactionHash}
                 txErrorCode={txErrorCode}
                 txErrorMessage={txErrorMessage}
