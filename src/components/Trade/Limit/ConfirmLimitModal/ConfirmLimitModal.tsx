@@ -39,8 +39,10 @@ export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
         txErrorCode,
         txErrorMessage,
         resetConfirmation,
+        showConfirmation,
+        setShowConfirmation,
     } = props;
-    const [confirmDetails, setConfirmDetails] = useState<boolean>(true);
+    // const [confirmDetails, setConfirmDetails] = useState<boolean>(true);
     const [transactionApproved, setTransactionApproved] = useState<boolean>(false);
 
     useEffect(() => {
@@ -225,7 +227,7 @@ export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
                 // );
                 initiateLimitOrderMethod();
 
-                setConfirmDetails(false);
+                setShowConfirmation(false);
             }}
         />
     );
@@ -233,10 +235,10 @@ export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
     const modal = (
         <div className={styles.modal_container}>
             <section className={styles.modal_content}>
-                {confirmDetails ? fullTxDetails : confirmationDisplay}
+                {showConfirmation ? fullTxDetails : confirmationDisplay}
             </section>
             <footer className={styles.modal_footer}>
-                {confirmDetails ? confirmLimitButton : null}
+                {showConfirmation ? confirmLimitButton : null}
             </footer>
         </div>
     );
