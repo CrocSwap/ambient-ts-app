@@ -191,3 +191,31 @@
     transform: rotate(45deg);
     transition: border-width var(--animation-speed) ease-in-out;
 }
+
+
+.currency_row_container{
+    width: 100%;
+    background: var(--dark3);
+    display: grid;
+    grid-template-columns: auto 140px;
+    align-items: center;
+    font-weight: 200;
+    font-size: var(--header2-size);
+    line-height: var(--header2-lh);
+    color: var(--text-grey-white);
+    letter-spacing: -0.02em;
+    border-radius: var(--border-radius);
+
+}
+
+.logo_display{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logo_display img{
+    width: 40px;
+    
+}

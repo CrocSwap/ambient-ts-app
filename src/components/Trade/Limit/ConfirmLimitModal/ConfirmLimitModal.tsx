@@ -64,6 +64,18 @@ export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
         <div className={styles.confSwap_detail_note}>any other explanation text will go here.</div>
     );
 
+    console.log(sellTokenData);
+    const SellCurrencyRow = (
+        <div className={styles.currency_row_container}>
+            <h2>{buyTokenQty}</h2>
+
+            <div className={styles.logo_display}>
+                <img src={sellTokenData.logoURI} alt={sellTokenData.symbol} />
+                <h2>{sellTokenData.symbol}</h2>
+            </div>
+        </div>
+    );
+
     const fullTxDetails = (
         <>
             <div className={styles.modal_currency_converter}>
