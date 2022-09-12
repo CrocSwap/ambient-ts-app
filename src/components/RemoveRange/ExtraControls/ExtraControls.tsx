@@ -7,10 +7,92 @@ import { Dispatch, SetStateAction } from 'react';
 interface CurrencyConverterPropsIF {
     isSaveAsDexSurplusChecked: boolean;
     setIsSaveAsDexSurplusChecked: Dispatch<SetStateAction<boolean>>;
+    baseTokenBalance: string;
+    quoteTokenBalance: string;
+    baseTokenDexBalance: string;
+    quoteTokenDexBalance: string;
+    baseRemovalNum: number;
+    quoteRemovalNum: number;
+    baseTokenSymbol: string;
+    quoteTokenSymbol: string;
 }
 
 export default function ExtraControls(props: CurrencyConverterPropsIF) {
-    const { isSaveAsDexSurplusChecked, setIsSaveAsDexSurplusChecked } = props;
+    const {
+        isSaveAsDexSurplusChecked,
+        setIsSaveAsDexSurplusChecked,
+        baseTokenBalance,
+        quoteTokenBalance,
+        baseTokenDexBalance,
+        quoteTokenDexBalance,
+        baseRemovalNum,
+        quoteRemovalNum,
+        baseTokenSymbol,
+        quoteTokenSymbol,
+    } = props;
+
+    const baseTokenWalletBalanceNum = parseFloat(baseTokenBalance);
+    const quoteTokenWalletBalanceNum = parseFloat(quoteTokenBalance);
+
+    const baseTokenDexBalanceNum = parseFloat(baseTokenDexBalance);
+    const quoteTokenDexBalanceNum = parseFloat(quoteTokenDexBalance);
+
+    const combinedBaseWalletBalanceAndRemovalNum = baseTokenWalletBalanceNum + baseRemovalNum;
+    const combinedQuoteWalletBalanceAndRemovalNum = quoteTokenWalletBalanceNum + quoteRemovalNum;
+
+    const combinedBaseDexBalanceAndRemovalNum = baseTokenDexBalanceNum + baseRemovalNum;
+    const combinedQuoteDexBalanceAndRemovalNum = quoteTokenDexBalanceNum + quoteRemovalNum;
+
+    const truncatedWalletBaseQty = baseTokenWalletBalanceNum.toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    });
+
+    const truncatedWalletQuoteQty = quoteTokenWalletBalanceNum.toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    });
+
+    const truncatedDexBaseQty = baseTokenDexBalanceNum.toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    });
+
+    const truncatedDexQuoteQty = quoteTokenDexBalanceNum.toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    });
+    const truncatedCombinedWalletBaseQty = combinedBaseWalletBalanceAndRemovalNum.toLocaleString(
+        undefined,
+        {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        },
+    );
+
+    const truncatedCombinedWalletQuoteQty = combinedQuoteWalletBalanceAndRemovalNum.toLocaleString(
+        undefined,
+        {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        },
+    );
+
+    const truncatedCombinedDexBaseQty = combinedBaseDexBalanceAndRemovalNum.toLocaleString(
+        undefined,
+        {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        },
+    );
+
+    const truncatedCombinedDexQuoteQty = combinedQuoteDexBalanceAndRemovalNum.toLocaleString(
+        undefined,
+        {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        },
+    );
 
     const exchangeBalanceControl = (
         <section className={styles.wallet_container}>
@@ -23,7 +105,9 @@ export default function ExtraControls(props: CurrencyConverterPropsIF) {
                         size={15}
                         color={isSaveAsDexSurplusChecked ? '#555555' : '#EBEBFF'}
                     />
-                    Wallet
+                    {isSaveAsDexSurplusChecked
+                        ? `${truncatedWalletBaseQty} ${baseTokenSymbol} / ${truncatedWalletQuoteQty} ${quoteTokenSymbol}`
+                        : `${truncatedCombinedWalletBaseQty} ${baseTokenSymbol} / ${truncatedCombinedWalletQuoteQty} ${quoteTokenSymbol}`}
                 </div>
                 <div
                     className={`${styles.exchange_text} ${
@@ -32,7 +116,9 @@ export default function ExtraControls(props: CurrencyConverterPropsIF) {
                     style={{ color: isSaveAsDexSurplusChecked ? '#ebebff' : '#555555' }}
                 >
                     <img src={ambientLogo} width='15' alt='' />
-                    0.00
+                    {isSaveAsDexSurplusChecked
+                        ? `${truncatedCombinedDexBaseQty} ${baseTokenSymbol} / ${truncatedCombinedDexQuoteQty} ${quoteTokenSymbol}`
+                        : `${truncatedDexBaseQty} ${baseTokenSymbol} / ${truncatedDexQuoteQty} ${quoteTokenSymbol}`}
                 </div>
             </div>
 
