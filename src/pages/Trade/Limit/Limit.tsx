@@ -272,11 +272,21 @@ export default function Limit(props: LimitPropsIF) {
         const buyToken = tradeData.tokenB.address;
         const sellQty = tokenAInputQty;
         const buyQty = tokenBInputQty;
+
         const qty = isTokenAPrimary ? sellQty : buyQty;
 
-        const seller = new CrocEnv(provider).sell(sellToken, qty);
-        const ko = seller.atLimit(buyToken, limitTick);
+        // console.log({ qty });
+        // console.log({ isTokenAPrimary });
+        // console.log({ buyToken });
+        // console.log({ sellToken });
 
+        const order = isTokenAPrimary
+            ? new CrocEnv(provider).sell(sellToken, qty)
+            : new CrocEnv(provider).buy(buyToken, qty);
+        // const seller = new CrocEnv(provider).sell(sellToken, qty);
+
+        const ko = order.atLimit(isTokenAPrimary ? buyToken : sellToken, limitTick);
+        // console.log({ ko });
         if (await ko.willMintFail()) {
             console.log('Cannot send limit order: Knockout price inside spread');
             setTxErrorMessage('Limit inside market price');
