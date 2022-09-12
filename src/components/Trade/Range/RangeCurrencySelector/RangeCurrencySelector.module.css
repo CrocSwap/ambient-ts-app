@@ -45,22 +45,24 @@
     /* height: 40px; */
 }
 .swap_input {
-    width: 70%;
+    width: 65%;
 }
 
 .token_select {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 30%;
+    width: 35%;
     cursor: pointer;
 }
 
 .token_select img {
+    padding: 1px;
     max-width: 100%;
 }
 
 .token_list_text {
+    padding: 1px;
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
     color: var(--text-grey-white);

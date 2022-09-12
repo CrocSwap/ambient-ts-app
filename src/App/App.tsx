@@ -106,7 +106,7 @@ const cachedFetchTokenBalances = memoizeTokenBalance();
 const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
 const wssGraphCacheServerDomain = 'wss://809821320828123.de:5000';
 
-const shouldCandleSubscriptionsReconnect = false;
+const shouldCandleSubscriptionsReconnect = true;
 const shouldNonCandleSubscriptionsReconnect = true;
 
 /** ***** React Function *******/
@@ -278,10 +278,14 @@ export default function App() {
     const { sendMessage: send, lastMessage: lastNewHeadMessage } = useWebSocket(
         goerliWssInfuraEndpoint,
         {
-            onOpen: () =>
-                send('{"jsonrpc":"2.0","method":"eth_subscribe","params":["newHeads"],"id":5}'),
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            onClose: (event: any) => console.log({ event }),
+            onOpen: () => {
+                console.log('infura newHeads subscription opened');
+                send('{"jsonrpc":"2.0","method":"eth_subscribe","params":["newHeads"],"id":5}');
+            },
+            onClose: (event: CloseEvent) => {
+                console.log('infura newHeads subscription closed');
+                console.log({ event });
+            },
             shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
         },
     );
@@ -620,6 +624,8 @@ export default function App() {
             // retrieve pool liquidity
             try {
                 if (httpGraphCacheServerDomain) {
+                    console.log('fetching pool liquidity distribution');
+
                     const poolLiquidityCacheEndpoint =
                         httpGraphCacheServerDomain + '/pool_liquidity_distribution?';
 
@@ -663,6 +669,7 @@ export default function App() {
                 // retrieve pool_positions
                 try {
                     if (httpGraphCacheServerDomain) {
+                        console.log('fetching pool positions');
                         const allPositionsCacheEndpoint =
                             httpGraphCacheServerDomain + '/pool_positions?';
                         fetch(
@@ -713,6 +720,8 @@ export default function App() {
                 // retrieve pool_swaps
                 try {
                     if (httpGraphCacheServerDomain) {
+                        console.log('fetching pool swaps');
+
                         const poolSwapsCacheEndpoint = httpGraphCacheServerDomain + '/pool_swaps?';
 
                         fetch(
@@ -759,7 +768,7 @@ export default function App() {
 
     const activePeriod = tradeData.activeChartPeriod;
 
-    useEffect(() => {
+    const fetchCandles = () => {
         if (
             baseTokenAddress &&
             quoteTokenAddress &&
@@ -769,21 +778,9 @@ export default function App() {
         ) {
             try {
                 if (httpGraphCacheServerDomain) {
+                    console.log('fetching candles');
                     const candleSeriesCacheEndpoint =
                         httpGraphCacheServerDomain + '/candle_series?';
-
-                    // const mainnetBaseAddress =
-                    //     baseTokenAddress === ZERO_ADDRESS
-                    //         ? baseTokenAddress
-                    //         : testTokenMap
-                    //               .get(baseTokenAddress.toLowerCase() + '_' + chainData.chainId)
-                    //               ?.split('_')[0];
-                    // const mainnetQuoteAddress =
-                    //     quoteTokenAddress === ZERO_ADDRESS
-                    //         ? quoteTokenAddress
-                    //         : testTokenMap
-                    //               .get(quoteTokenAddress.toLowerCase() + '_' + chainData.chainId)
-                    //               ?.split('_')[0];
 
                     fetch(
                         candleSeriesCacheEndpoint +
@@ -835,14 +832,16 @@ export default function App() {
                 console.log({ error });
             }
         }
-    }, [
-        baseTokenAddress,
-        quoteTokenAddress,
-        mainnetBaseTokenAddress,
-        mainnetQuoteTokenAddress,
-        activePeriod,
-        chainData.chainId,
-    ]);
+    };
+
+    // useEffect(() => {}, [
+    //     baseTokenAddress,
+    //     quoteTokenAddress,
+    //     mainnetBaseTokenAddress,
+    //     mainnetQuoteTokenAddress,
+    //     activePeriod,
+    //     chainData.chainId,
+    // ]);
 
     const poolLiqChangesCacheSubscriptionEndpoint = useMemo(
         () =>
@@ -872,7 +871,7 @@ export default function App() {
         poolLiqChangesCacheSubscriptionEndpoint,
         {
             // share:  true,
-            // onOpen: () => console.log('opened'),
+            onOpen: () => console.log('pool liqChange subscription opened'),
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             onClose: (event: any) => console.log({ event }),
             // onClose: () => console.log('allPositions websocket connection closed'),
@@ -915,9 +914,11 @@ export default function App() {
     const { lastMessage: candlesMessage } = useWebSocket(
         candleSubscriptionEndpoint,
         {
-            onOpen: () => console.log({ candleSubscriptionEndpoint }),
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            onClose: (event: any) => console.log({ event }),
+            onOpen: () => {
+                console.log({ candleSubscriptionEndpoint });
+                fetchCandles();
+            },
+            onClose: (event) => console.log({ event }),
             shouldReconnect: () => shouldCandleSubscriptionsReconnect,
         },
         // only connect if base/quote token addresses are available
@@ -972,7 +973,7 @@ export default function App() {
         poolSwapsCacheSubscriptionEndpoint,
         {
             // share:  true,
-            // onOpen: () => console.log('opened'),
+            onOpen: () => console.log('poolSwaps subscription opened'),
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             onClose: (event: any) => console.log({ event }),
             // Will attempt to reconnect on all close events, such as server shutting down
@@ -1017,7 +1018,7 @@ export default function App() {
         userLiqChangesCacheSubscriptionEndpoint,
         {
             // share: true,
-            // onOpen: () => console.log('opened'),
+            onOpen: () => console.log('user liqChange subscription opened'),
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             onClose: (event: any) => console.log({ event }),
             // Will attempt to reconnect on all close events, such as server shutting down
@@ -1056,7 +1057,7 @@ export default function App() {
         userSwapsCacheSubscriptionEndpoint,
         {
             // share: true,
-            // onOpen: () => console.log('opened'),
+            onOpen: () => console.log('user swaps subscription opened'),
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             onClose: (event: any) => console.log({ event }),
             // onClose: () => console.log('userSwaps websocket connection closed'),
@@ -1135,41 +1136,45 @@ export default function App() {
     useEffect(() => {
         (async () => {
             if (
-                provider &&
+                crocEnv &&
                 account &&
-                isAuthenticated &&
-                isWeb3Enabled &&
-                tokenPair?.dataTokenA?.address &&
-                tokenPair?.dataTokenB?.address
+                // isAuthenticated &&
+                // isWeb3Enabled &&
+                tradeData.baseToken.address &&
+                tradeData.quoteToken.address
             ) {
-                const croc = new CrocEnv(provider);
-                croc.token(tradeData.baseToken.address)
+                crocEnv
+                    .token(tradeData.baseToken.address)
                     .walletDisplay(account)
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     .then((bal: any) => setBaseTokenBalance(bal));
-                croc.token(tradeData.baseToken.address)
+                crocEnv
+                    .token(tradeData.baseToken.address)
                     .balanceDisplay(account)
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     .then((bal: any) => setBaseTokenDexBalance(bal));
-                croc.token(tradeData.quoteToken.address)
+                crocEnv
+                    .token(tradeData.quoteToken.address)
                     .walletDisplay(account)
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     .then((bal: any) => setQuoteTokenBalance(bal));
-                croc.token(tradeData.quoteToken.address)
+                crocEnv
+                    .token(tradeData.quoteToken.address)
                     .balanceDisplay(account)
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     .then((bal: any) => setQuoteTokenDexBalance(bal));
             }
         })();
     }, [
-        chainData.chainId,
+        crocEnv,
+        // chainData.chainId,
         account,
-        isWeb3Enabled,
-        isAuthenticated,
+        // isWeb3Enabled,
+        // isAuthenticated,
         tokenPair?.dataTokenA?.address,
         tokenPair?.dataTokenB?.address,
         lastBlockNumber,
-        provider,
+        // provider,
     ]);
 
     const [tokenAAllowance, setTokenAAllowance] = useState<string>('');
@@ -1178,58 +1183,39 @@ export default function App() {
     const [recheckTokenAApproval, setRecheckTokenAApproval] = useState<boolean>(false);
     const [recheckTokenBApproval, setRecheckTokenBApproval] = useState<boolean>(false);
 
+    const tokenAAddress = tokenPair?.dataTokenA?.address;
+    const tokenADecimals = tokenPair?.dataTokenA?.decimals;
+    const tokenBAddress = tokenPair?.dataTokenB?.address;
+    const tokenBDecimals = tokenPair?.dataTokenB?.decimals;
     // useEffect to check if user has approved CrocSwap to sell the token A
     useEffect(() => {
         (async () => {
-            if (tokenPair?.dataTokenA?.address) {
+            if (crocEnv && account && tokenAAddress) {
                 try {
-                    const tokenAAddress = tokenPair.dataTokenA.address;
-                    if (provider && isWeb3Enabled && account !== null) {
-                        const crocEnv = new CrocEnv(provider);
-                        const allowance = await crocEnv.token(tokenAAddress).allowance(account);
-                        setTokenAAllowance(toDisplayQty(allowance, tokenPair.dataTokenA.decimals));
-                    }
+                    const allowance = await crocEnv.token(tokenAAddress).allowance(account);
+                    setTokenAAllowance(toDisplayQty(allowance, tokenADecimals));
                 } catch (err) {
                     console.log(err);
                 }
                 setRecheckTokenAApproval(false);
             }
         })();
-    }, [
-        tokenPair?.dataTokenA?.address,
-        lastBlockNumber,
-        account,
-        provider,
-        isWeb3Enabled,
-        recheckTokenAApproval,
-        account,
-    ]);
+    }, [crocEnv, tokenAAddress, lastBlockNumber, account, recheckTokenAApproval, account]);
 
     // useEffect to check if user has approved CrocSwap to sell the token B
     useEffect(() => {
         (async () => {
-            if (tokenPair?.dataTokenB?.address) {
+            if (crocEnv && tokenBAddress && tokenBDecimals && account) {
                 try {
-                    const tokenBAddress = tokenPair.dataTokenB.address;
-                    if (provider && isWeb3Enabled && account !== null) {
-                        const crocEnv = new CrocEnv(provider);
-                        const allowance = await crocEnv.token(tokenBAddress).allowance(account);
-                        setTokenBAllowance(toDisplayQty(allowance, tokenPair.dataTokenB.decimals));
-                    }
+                    const allowance = await crocEnv.token(tokenBAddress).allowance(account);
+                    setTokenBAllowance(toDisplayQty(allowance, tokenBDecimals));
                 } catch (err) {
                     console.log(err);
                 }
                 setRecheckTokenBApproval(false);
             }
         })();
-    }, [
-        tokenPair?.dataTokenB?.address,
-        lastBlockNumber,
-        account,
-        provider,
-        isWeb3Enabled,
-        recheckTokenBApproval,
-    ]);
+    }, [crocEnv, tokenBAddress, lastBlockNumber, account, recheckTokenBApproval]);
 
     const graphData = useAppSelector((state) => state.graphData);
 
@@ -1443,6 +1429,8 @@ export default function App() {
 
     useEffect(() => {
         if (isAuthenticated && account) {
+            console.log('fetching user positions');
+
             const userPositionsCacheEndpoint = httpGraphCacheServerDomain + '/user_positions?';
 
             try {
@@ -1484,6 +1472,8 @@ export default function App() {
             } catch (error) {
                 console.log;
             }
+
+            console.log('fetching user limit orders ');
 
             const userLimitOrderStatesCacheEndpoint =
                 httpGraphCacheServerDomain + '/user_limit_order_states?';
@@ -1599,8 +1589,8 @@ export default function App() {
     // this is how we run the function to pull back balances asynchronously
     useEffect(() => {
         (async () => {
-            if (provider && account && isAuthenticated && isWeb3Enabled) {
-                new CrocEnv(provider)
+            if (crocEnv && account) {
+                crocEnv
                     .tokenEth()
                     .wallet(account)
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -1625,7 +1615,7 @@ export default function App() {
                     });
             }
         })();
-    }, [provider, account, isWeb3Enabled, isAuthenticated, lastBlockNumber]);
+    }, [crocEnv, account, lastBlockNumber]);
 
     const [gasPriceinGwei, setGasPriceinGwei] = useState<number | undefined>();
 
@@ -1729,6 +1719,8 @@ export default function App() {
         lastBlockNumber: lastBlockNumber,
         baseTokenBalance: baseTokenBalance,
         quoteTokenBalance: quoteTokenBalance,
+        baseTokenDexBalance: baseTokenDexBalance,
+        quoteTokenDexBalance: quoteTokenDexBalance,
         isSellTokenBase: isTokenABase,
         tokenPair: tokenPair,
         isTokenABase: isTokenABase,
@@ -1758,10 +1750,12 @@ export default function App() {
         quoteTokenAddress: quoteTokenAddress,
         poolPriceNonDisplay: poolPriceNonDisplay,
         poolPriceDisplay: poolPriceDisplay ? poolPriceDisplay.toString() : '0',
-        baseTokenBalance: baseTokenBalance,
         tokenAAllowance: tokenAAllowance,
         setRecheckTokenAApproval: setRecheckTokenAApproval,
+        baseTokenBalance: baseTokenBalance,
         quoteTokenBalance: quoteTokenBalance,
+        baseTokenDexBalance: baseTokenDexBalance,
+        quoteTokenDexBalance: quoteTokenDexBalance,
         tokenBAllowance: tokenBAllowance,
         setRecheckTokenBApproval: setRecheckTokenBApproval,
         chainId: chainData.chainId,
@@ -1912,7 +1906,8 @@ export default function App() {
         ? 'content-container-trade'
         : 'content-container';
 
-    const [isGlobalModalOpen, openGlobalModal, closeGlobalModal, currentContent] = useGlobalModal();
+    const [isGlobalModalOpen, openGlobalModal, closeGlobalModal, currentContent, title] =
+        useGlobalModal();
 
     return (
         <>
@@ -1936,6 +1931,7 @@ export default function App() {
                             path='trade'
                             element={
                                 <Trade
+                                    crocEnv={crocEnv}
                                     provider={provider}
                                     baseTokenAddress={baseTokenAddress}
                                     quoteTokenAddress={quoteTokenAddress}
@@ -1969,6 +1965,7 @@ export default function App() {
                                     currentPositionActive={currentPositionActive}
                                     setCurrentPositionActive={setCurrentPositionActive}
                                     openGlobalModal={openGlobalModal}
+                                    closeGlobalModal={closeGlobalModal}
                                 />
                             }
                         >
@@ -2085,6 +2082,7 @@ export default function App() {
                 closeGlobalModal={closeGlobalModal}
                 openGlobalModal={openGlobalModal}
                 currentContent={currentContent}
+                title={title}
             />
             {isModalOpenWallet && (
                 <WalletModal

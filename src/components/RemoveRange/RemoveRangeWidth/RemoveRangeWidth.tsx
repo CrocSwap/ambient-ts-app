@@ -8,6 +8,7 @@ interface RemoveRangeWidthPropsIF {
 
 export default function RemoveRangeWidth(props: RemoveRangeWidthPropsIF) {
     const { removalPercentage, setRemovalPercentage } = props;
+
     const handlePercentageUpdate = (percentage: number) => {
         setRemovalPercentage(percentage);
         const sliderInputField = document.getElementById('remove-range-slider');

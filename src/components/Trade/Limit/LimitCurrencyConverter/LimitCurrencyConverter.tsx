@@ -34,8 +34,10 @@ interface LimitCurrencyConverterProps {
     setIsSellTokenPrimary?: Dispatch<SetStateAction<boolean>>;
     setLimitAllowed: Dispatch<SetStateAction<boolean>>;
     isSellTokenBase: boolean;
-    tokenABalance: string;
-    tokenBBalance: string;
+    baseTokenBalance: string;
+    quoteTokenBalance: string;
+    baseTokenDexBalance: string;
+    quoteTokenDexBalance: string;
     tokenAInputQty: string;
     tokenBInputQty: string;
     setTokenAInputQty: Dispatch<SetStateAction<string>>;
@@ -65,8 +67,10 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
         insideTickDisplayPrice,
         setLimitAllowed,
         isSellTokenBase,
-        tokenABalance,
-        tokenBBalance,
+        baseTokenBalance,
+        quoteTokenBalance,
+        baseTokenDexBalance,
+        quoteTokenDexBalance,
         setTokenAInputQty,
         setTokenBInputQty,
         setLimitButtonErrorMessage,
@@ -97,6 +101,11 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
     const [tokenBQtyLocal, setTokenBQtyLocal] = useState<string>(
         !isTokenAPrimaryLocal ? tradeData?.primaryQuantity : '',
     );
+
+    const tokenABalance = isSellTokenBase ? baseTokenBalance : quoteTokenBalance;
+    const tokenBBalance = isSellTokenBase ? quoteTokenBalance : baseTokenBalance;
+    const tokenADexBalance = isSellTokenBase ? baseTokenDexBalance : quoteTokenDexBalance;
+    const tokenBDexBalance = isSellTokenBase ? quoteTokenDexBalance : baseTokenDexBalance;
 
     const tokenADecimals = tokenPair.dataTokenA.decimals;
     const tokenBDecimals = tokenPair.dataTokenB.decimals;
@@ -328,6 +337,8 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 reverseTokens={reverseTokens}
                 tokenABalance={tokenABalance}
                 tokenBBalance={tokenBBalance}
+                tokenADexBalance={tokenADexBalance}
+                tokenBDexBalance={tokenBDexBalance}
                 isWithdrawFromDexChecked={isWithdrawFromDexChecked}
                 setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
                 isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
@@ -350,6 +361,8 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 reverseTokens={reverseTokens}
                 tokenABalance={tokenABalance}
                 tokenBBalance={tokenBBalance}
+                tokenADexBalance={tokenADexBalance}
+                tokenBDexBalance={tokenBDexBalance}
                 isWithdrawFromDexChecked={isWithdrawFromDexChecked}
                 setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
                 isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}

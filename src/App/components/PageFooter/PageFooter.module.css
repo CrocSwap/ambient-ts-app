@@ -24,6 +24,14 @@
     gap: 0.25rem;
 }
 
+.block_number_div {
+    margin-right: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.25rem;
+}
+
 /* page block sign */
 .page_block_sign {
     width: 10px;

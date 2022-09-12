@@ -1,4 +1,4 @@
-import { ChangeEvent, Dispatch, SetStateAction, useState } from 'react';
+import { ChangeEvent, Dispatch, SetStateAction, useEffect, useState } from 'react';
 import styles from './RangeCurrencySelector.module.css';
 import RangeCurrencyQuantity from '../RangeCurrencyQuantity/RangeCurrencyQuantity';
 import { RiArrowDownSLine } from 'react-icons/ri';
@@ -24,6 +24,8 @@ interface RangeCurrencySelectorProps {
     reverseTokens: () => void;
     tokenABalance: string;
     tokenBBalance: string;
+    tokenADexBalance: string;
+    tokenBDexBalance: string;
     isTokenADisabled: boolean;
     isTokenBDisabled: boolean;
     isAdvancedMode: boolean;
@@ -50,6 +52,8 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
         reverseTokens,
         tokenABalance,
         tokenBBalance,
+        tokenADexBalance,
+        tokenBDexBalance,
         isTokenADisabled,
         isTokenBDisabled,
         isAdvancedMode,
@@ -62,6 +66,18 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
     const [showManageTokenListContent, setShowManageTokenListContent] = useState(false);
 
     const [isModalOpen, openModal, closeModal] = useModal();
+
+    useEffect(() => {
+        if (parseFloat(tokenADexBalance) <= 0) {
+            setIsWithdrawTokenAFromDexChecked(false);
+        }
+    }, [tokenADexBalance]);
+
+    useEffect(() => {
+        if (parseFloat(tokenBDexBalance) <= 0) {
+            setIsWithdrawTokenBFromDexChecked(false);
+        }
+    }, [tokenBDexBalance]);
 
     const tokenSelectModalOrNull = isModalOpen ? (
         <Modal onClose={closeModal} title='Select Token' centeredTitle>
@@ -93,7 +109,7 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                         setIsWithdrawTokenAFromDexChecked(!isWithdrawTokenAFromDexChecked)
                     }
                     id='withdraw_from_dex'
-                    disabled={true}
+                    disabled={parseFloat(tokenADexBalance) <= 0}
                 />
             ) : (
                 <Toggle2
@@ -102,7 +118,7 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                         setIsWithdrawTokenBFromDexChecked(!isWithdrawTokenBFromDexChecked)
                     }
                     id='withdraw_to_wallet'
-                    disabled={true}
+                    disabled={parseFloat(tokenBDexBalance) <= 0}
                 />
             )}
         </span>
@@ -129,9 +145,19 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
             ? parseFloat(tokenBBalance).toLocaleString()
             : '0';
 
-    const surplusBalance = 0;
-    const surplusBalanceNonLocaleString = surplusBalance.toString();
-    const surplusBalanceLocaleString = surplusBalance.toLocaleString();
+    const surplusBalanceNonLocaleString =
+        fieldId === 'A' && tokenADexBalance !== ''
+            ? parseFloat(tokenADexBalance).toString()
+            : fieldId === 'B' && tokenBDexBalance !== ''
+            ? parseFloat(tokenBDexBalance).toString()
+            : '0';
+
+    const surplusBalanceLocaleString =
+        fieldId === 'A' && tokenADexBalance !== ''
+            ? parseFloat(tokenADexBalance).toLocaleString()
+            : fieldId === 'B' && tokenBDexBalance !== ''
+            ? parseFloat(tokenBDexBalance).toLocaleString()
+            : '0';
 
     // console.log({ fieldId });
     // console.log({ isTokenADisabled });

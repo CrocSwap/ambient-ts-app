@@ -4,6 +4,7 @@ import Row from '../../Global/Row/Row';
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import { toggleDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
 import Divider from '../../Global/Divider/Divider';
+import { motion } from 'framer-motion';
 
 type ItemIF = {
     slug: string;
@@ -46,7 +47,13 @@ export default function PriceInfo(props: IPriceInfoProps) {
         controlItems,
     } = props;
     const collateralContent = (
-        <div className={styles.info_container}>
+        <motion.div
+            layout
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className={styles.info_container}
+        >
             <Row>
                 <span>Pooled {baseTokenSymbol}</span>
                 <div className={styles.info_text}>
@@ -80,11 +87,17 @@ export default function PriceInfo(props: IPriceInfoProps) {
                     <img src={quoteTokenLogoURI} alt='' />
                 </div>
             </Row>
-        </div>
+        </motion.div>
     );
 
     const timesContent = (
-        <div className={styles.info_container}>
+        <motion.div
+            layout
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className={styles.info_container}
+        >
             <Row>
                 <span>Open Time</span>
                 <div className={styles.info_text}>25/08/22</div>
@@ -94,16 +107,22 @@ export default function PriceInfo(props: IPriceInfoProps) {
                 <span>Close Time</span>
                 <div className={styles.info_text}>30/08/22</div>
             </Row>
-        </div>
+        </motion.div>
     );
 
     const totalValueContent = (
-        <div className={styles.info_container}>
+        <motion.div
+            layout
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className={styles.info_container}
+        >
             <Row>
                 <span>Total Value</span>
                 <div className={styles.info_text}>$4,200.00</div>
             </Row>
-        </div>
+        </motion.div>
     );
 
     const tokenPairDetails = (
