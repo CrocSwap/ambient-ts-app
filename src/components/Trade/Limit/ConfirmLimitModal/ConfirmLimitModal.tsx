@@ -13,6 +13,7 @@ interface ConfirmLimitModalProps {
     onClose: () => void;
     initiateLimitOrderMethod: () => void;
     tokenPair: TokenPairIF;
+    poolPriceDisplay: number;
     tokenAInputQty: string;
     tokenBInputQty: string;
     isTokenAPrimary: boolean;
@@ -30,6 +31,7 @@ export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
     const {
         // onClose,
         tokenPair,
+        poolPriceDisplay,
         initiateLimitOrderMethod,
         // limitRate,
         insideTickDisplayPrice,
@@ -46,6 +48,27 @@ export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
             setTransactionApproved(true);
         }
     }, [newLimitOrderTransactionHash]);
+
+    const tradeData = useAppSelector((state) => state.tradeData);
+
+    const isDenomBase = tradeData.isDenomBase;
+    const baseTokenSymbol = tradeData.baseToken.symbol;
+    const quoteTokenSymbol = tradeData.quoteToken.symbol;
+
+    const displayPoolPriceWithDenom = isDenomBase ? 1 / poolPriceDisplay : poolPriceDisplay;
+
+    const displayPoolPriceString =
+        displayPoolPriceWithDenom === Infinity || displayPoolPriceWithDenom === 0
+            ? '…'
+            : displayPoolPriceWithDenom < 2
+            ? displayPoolPriceWithDenom.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 6,
+              })
+            : displayPoolPriceWithDenom.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              });
 
     const trunctatedInsideTickDisplayPrice =
         insideTickDisplayPrice < 2
@@ -69,32 +92,26 @@ export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
 
     const buyTokenData = tokenPair.dataTokenB;
 
-    const tradeData = useAppSelector((state) => state.tradeData);
-
-    const isDenomBase = tradeData.isDenomBase;
-    const baseTokenSymbol = tradeData.baseToken.symbol;
-    const quoteTokenSymbol = tradeData.quoteToken.symbol;
-
     const moreExpensiveToken = 'ETH';
     // const lessExpensiveToken = 'DAI';
 
-    const displayConversionRate = parseFloat(buyTokenQty) / parseFloat(sellTokenQty);
-    // const priceLimit = 0.12;
+    // const displayConversionRate = parseFloat(buyTokenQty) / parseFloat(sellTokenQty);
+    // // const priceLimit = 0.12;
 
-    const displayPriceWithDenom = isDenomBase ? displayConversionRate : 1 / displayConversionRate;
+    // const displayPriceWithDenom = isDenomBase ? displayConversionRate : 1 / displayConversionRate;
 
-    const displayPriceString =
-        displayPriceWithDenom === Infinity || displayPriceWithDenom === 0
-            ? '…'
-            : displayPriceWithDenom < 2
-            ? displayPriceWithDenom.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 6,
-              })
-            : displayPriceWithDenom.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              });
+    // const displayPriceString =
+    //     displayPriceWithDenom === Infinity || displayPriceWithDenom === 0
+    //         ? '…'
+    //         : displayPriceWithDenom < 2
+    //         ? displayPriceWithDenom.toLocaleString(undefined, {
+    //               minimumFractionDigits: 2,
+    //               maximumFractionDigits: 6,
+    //           })
+    //         : displayPriceWithDenom.toLocaleString(undefined, {
+    //               minimumFractionDigits: 2,
+    //               maximumFractionDigits: 2,
+    //           });
 
     const explanationText = (
         <div className={styles.confSwap_detail_note}>any other explanation text will go here.</div>
@@ -132,12 +149,16 @@ export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
         <div className={styles.extra_info_container}>
             <div className={styles.convRate}>
                 {isDenomBase
-                    ? `1 ${baseTokenSymbol} ≈ ${displayPriceString} ${quoteTokenSymbol}`
-                    : `1 ${quoteTokenSymbol} ≈ ${displayPriceString} ${baseTokenSymbol}`}
+                    ? `${trunctatedInsideTickDisplayPrice} ${quoteTokenSymbol} per ${baseTokenSymbol}`
+                    : `${trunctatedInsideTickDisplayPrice} ${baseTokenSymbol} per ${quoteTokenSymbol}`}
             </div>
             <div className={styles.row}>
                 <p>Current Price</p>
-                <p>0.000043 {moreExpensiveToken} </p>
+                <p>
+                    {isDenomBase
+                        ? `${displayPoolPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
+                        : `${displayPoolPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`}
+                </p>
             </div>
             <div className={styles.row}>
                 <p>Fill Start</p>
