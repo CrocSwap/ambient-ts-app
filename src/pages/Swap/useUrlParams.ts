@@ -22,8 +22,10 @@ export const useUrlParams = (
         const getCoinGeckoList = () => {
             const allTokenLists = JSON.parse(localStorage.getItem('allTokenLists') as string);
                 if (
-                    allTokenLists && allTokenLists.some(
-                    (list: TokenListIF) => list.name === 'CoinGecko' && list.default)
+                    allTokenLists &&
+                    allTokenLists.some(
+                        (list: TokenListIF) => list.name === 'CoinGecko' && list.default
+                    )
                 ) {
                     setCgl(
                         allTokenLists.find((list: TokenListIF) => (
