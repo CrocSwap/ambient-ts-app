@@ -133,13 +133,17 @@ export default function ChatPanel(props: ChatProps) {
                                 <DividerDark changeColor addMarginTop addMarginBottom />
                             </div>
 
-                            <MessageInput message={messages[0]} room={room} />
+                            <MessageInput
+                                message={messages[0]}
+                                room={
+                                    room === 'Current Pool'
+                                        ? currentPool.baseToken.symbol +
+                                          currentPool.quoteToken.symbol
+                                        : room
+                                }
+                            />
 
                             <div className={styles.scrollable_div} ref={messageEnd}>
-                                {/* 
-                            {messages.map((item:Message) => {
-                              <div style={{ width: '90%' }}>
-                                </div>                            })} */}
                                 {messages.map((item) => (
                                     <div
                                         key={item.sender}
@@ -159,33 +163,6 @@ export default function ChatPanel(props: ChatProps) {
                                         )}
                                     </div>
                                 ))}
-
-                                {/* <div style={{ width: '90%' }}>
-                                <DividerDark changeColor addMarginTop addMarginBottom />
-                                <SentMessagePanel message='message blah blah blah blah blah blah blah blah blah blah' />
-                            </div>
-                            <div style={{ width: '90%' }}>
-                                <IncomingMessage message='message blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah' />
-                            </div>
-
-                            <div style={{ width: '90%' }}>
-                                <DividerDark changeColor addMarginTop addMarginBottom />
-                                <SentMessagePanel message='message blah blah blah blah blah blah blah blah blah blah' />
-                            </div>
-
-                            <div style={{ width: '90%' }}>
-                                <DividerDark changeColor addMarginTop addMarginBottom />
-                                <SentMessagePanel message='message blah blah blah blah blah blah blah blah blah blah' />
-                            </div>
-
-                            <div style={{ width: '90%' }}>
-                                <IncomingMessage message='message' />
-                            </div>
-
-                            <div style={{ width: '90%' }}>
-                                <DividerDark changeColor addMarginTop addMarginBottom />
-                                <SentMessagePanel message='message blah blah blah blah blah blah blah blah blah blah' />
-                            </div> */}
                             </div>
                         </div>
                     </div>
