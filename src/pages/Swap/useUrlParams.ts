@@ -1,11 +1,11 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
 import { useMoralisWeb3Api } from 'react-moralis';
 import { defaultTokens } from '../../utils/data/defaultTokens';
 import { ethers } from 'ethers';
 import { setTokenA, setTokenB } from '../../utils/state/tradeDataSlice';
-import { TokenIF } from '../../utils/interfaces/TokenIF';
+import { TokenIF, TokenListIF } from '../../utils/interfaces/exports';
 
 export const useUrlParams = (
     // module: string,
@@ -14,6 +14,24 @@ export const useUrlParams = (
 ) => {
     // get URL parameters, empty string if undefined
     const { params } = useParams() ?? '';
+
+    const [cgl, setCgl] = useState<TokenListIF | null>(null);
+
+    useEffect(() => {
+        const getCoinGeckoList = () => {
+            const allTokenLists = JSON.parse(localStorage.getItem('allTokenLists') as string);
+                if (
+                    allTokenLists && allTokenLists.some(
+                    (list: TokenListIF) => list.name === 'CoinGecko' && list.default)
+                ) {
+                    setCgl(allTokenLists.find((list: TokenListIF) => list.name === 'CoinGecko' && list.default));
+                } else {
+                    setTimeout(() => getCoinGeckoList(), 100);
+                }
+            }
+        getCoinGeckoList();
+    }, []);
+    useEffect(() => console.log({cgl}), [cgl]);
 
     const dispatch = useAppDispatch();
 
@@ -56,6 +74,13 @@ export const useUrlParams = (
     // this can probably go inside the useEffect() hook for token data
     const fetchAndFormatTokenData = (addr: string) => {
         if (addr === ethers.constants.AddressZero) return nativeToken;
+        console.log({chainToUse});
+        const allTokenLists = JSON.parse(localStorage.getItem('allTokenLists') as string)
+        if (allTokenLists) {
+        const isCGLoaded = allTokenLists.some((list:TokenListIF) => list.name === 'CoinGecko');
+        console.log({isCGLoaded})
+
+    }
         const promise = Web3Api.token.getTokenMetadata({
             chain: chainToUse as '0x1', addresses: [addr]
         });

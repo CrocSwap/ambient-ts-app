@@ -1885,7 +1885,7 @@ export default function App() {
     // const mainLayoutStyle = showSidebar ? 'main-layout-2' : 'main-layout';
     // take away margin from left if we are on homepage or swap
 
-    const swapBodyStyle = currentLocation == '/swap' ? 'swap-body' : null;
+    const swapBodyStyle = currentLocation.startsWith('/swap') ? 'swap-body' : null;
 
     // Show sidebar on all pages except for home and swap
     const sidebarRender = currentLocation !== '/' &&
