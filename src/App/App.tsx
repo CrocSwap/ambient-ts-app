@@ -20,6 +20,7 @@ import {
     addPositionsByUser,
     addPositionsByPool,
     setLimitOrdersByUser,
+    setLimitOrdersByPool,
 } from '../utils/state/graphDataSlice';
 import { ethers } from 'ethers';
 import { useMoralis } from 'react-moralis';
@@ -753,6 +754,45 @@ export default function App() {
                                             );
                                         }
                                     });
+                                }
+                            })
+                            .catch(console.log);
+                    }
+                } catch (error) {
+                    console.log;
+                }
+
+                // retrieve pool limit order states
+                try {
+                    if (httpGraphCacheServerDomain) {
+                        console.log('fetching pool limit order states');
+
+                        const poolLimitOrderStatesCacheEndpoint =
+                            httpGraphCacheServerDomain + '/pool_limit_order_states?';
+
+                        fetch(
+                            poolLimitOrderStatesCacheEndpoint +
+                                new URLSearchParams({
+                                    base: sortedTokens[0].toLowerCase(),
+                                    quote: sortedTokens[1].toLowerCase(),
+                                    poolIdx: chainData.poolIndex.toString(),
+                                    chainId: chainData.chainId,
+                                    ensResolution: 'true',
+                                    // n: 10 // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
+                                    // page: 0 // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
+                                }),
+                        )
+                            .then((response) => response?.json())
+                            .then((json) => {
+                                const poolLimitOrderStates = json?.data;
+
+                                if (poolLimitOrderStates) {
+                                    dispatch(
+                                        setLimitOrdersByPool({
+                                            dataReceived: true,
+                                            limitOrders: poolLimitOrderStates,
+                                        }),
+                                    );
                                 }
                             })
                             .catch(console.log);
