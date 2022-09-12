@@ -34,6 +34,10 @@ interface ITabsProps {
     isShowAllEnabled: boolean;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
     tokenMap: Map<string, TokenIF>;
+    baseTokenBalance: string;
+    quoteTokenBalance: string;
+    baseTokenDexBalance: string;
+    quoteTokenDexBalance: string;
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
     isCandleSelected: boolean | undefined;
@@ -63,6 +67,10 @@ export default function TradeTabs2(props: ITabsProps) {
         isShowAllEnabled,
         setIsShowAllEnabled,
         tokenMap,
+        baseTokenBalance,
+        quoteTokenBalance,
+        baseTokenDexBalance,
+        quoteTokenDexBalance,
         provider,
         isCandleSelected,
         setIsCandleSelected,
@@ -126,6 +134,11 @@ export default function TradeTabs2(props: ITabsProps) {
     const rangesProps = {
         crocEnv: crocEnv,
         chainData: chainData,
+        baseTokenBalance: baseTokenBalance,
+        quoteTokenBalance: quoteTokenBalance,
+        baseTokenDexBalance: baseTokenDexBalance,
+        quoteTokenDexBalance: quoteTokenDexBalance,
+
         provider: provider,
         account: account,
         isAuthenticated: isAuthenticated,

@@ -22,6 +22,10 @@ interface TradePropsIF {
     provider: ethers.providers.Provider | undefined;
     baseTokenAddress: string;
     quoteTokenAddress: string;
+    baseTokenBalance: string;
+    quoteTokenBalance: string;
+    baseTokenDexBalance: string;
+    quoteTokenDexBalance: string;
     account: string;
     isAuthenticated: boolean;
     isWeb3Enabled: boolean;
@@ -70,6 +74,10 @@ export default function Trade(props: TradePropsIF) {
         lastBlockNumber,
         baseTokenAddress,
         quoteTokenAddress,
+        baseTokenBalance,
+        quoteTokenBalance,
+        baseTokenDexBalance,
+        quoteTokenDexBalance,
         favePools,
         addPoolToFaves,
         removePoolFromFaves,
@@ -202,6 +210,10 @@ export default function Trade(props: TradePropsIF) {
                             setCurrentTxActiveInTransactions={
                                 props.setCurrentTxActiveInTransactions
                             }
+                            baseTokenBalance={baseTokenBalance}
+                            quoteTokenBalance={quoteTokenBalance}
+                            baseTokenDexBalance={baseTokenDexBalance}
+                            quoteTokenDexBalance={quoteTokenDexBalance}
                             isShowAllEnabled={props.isShowAllEnabled}
                             setIsShowAllEnabled={props.setIsShowAllEnabled}
                             expandTradeTable={props.expandTradeTable}

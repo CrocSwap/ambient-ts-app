@@ -1970,6 +1970,10 @@ export default function App() {
                                     provider={provider}
                                     baseTokenAddress={baseTokenAddress}
                                     quoteTokenAddress={quoteTokenAddress}
+                                    baseTokenBalance={baseTokenBalance}
+                                    quoteTokenBalance={quoteTokenBalance}
+                                    baseTokenDexBalance={baseTokenDexBalance}
+                                    quoteTokenDexBalance={quoteTokenDexBalance}
                                     tokenPair={tokenPair}
                                     account={account ?? ''}
                                     isAuthenticated={isAuthenticated}
