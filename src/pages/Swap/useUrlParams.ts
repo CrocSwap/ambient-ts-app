@@ -82,19 +82,42 @@ export const useUrlParams = (
     // this can probably go inside the useEffect() hook for token data
     const fetchAndFormatTokenData = (addr: string) => {
         if (addr === ethers.constants.AddressZero) return nativeToken;
-        const promise = Web3Api.token.getTokenMetadata({
-            chain: chainToUse as '0x1', addresses: [addr]
-        });
-        return Promise.resolve(promise)
-            .then(res => res[0])
-            .then(res => ({
-                name: res.name,
-                address: res.address,
-                symbol: res.symbol,
-                decimals: res.decimals,
-                logoURI: res.logo,
-                fromList: 'urlParam'
-            }));
+
+        const getTokenFromChain = () => {
+            const promise = Web3Api.token.getTokenMetadata({
+                chain: chainToUse as '0x1', addresses: [addr]
+            });
+            return (Promise.resolve(promise)
+                .then(res => res[0])
+                .then(res => ({
+                    name: res.name,
+                    address: res.address,
+                    symbol: res.symbol,
+                    decimals: res.decimals,
+                    logoURI: res.logo,
+                    fromList: 'urlParam'
+                }))
+            );
+        }
+
+        if (cgl) {
+            const token = cgl.tokens.find((token: TokenIF) => (
+                token.address === addr
+                // TODO: the next line makes sure the token is from
+                // TODO: ... the current chain, it is disabled now
+                // TODO: ... for dev testing, will turn on and test
+                // TODO: ... error handling later
+                // && token.chainId === parseInt(chainId)
+            ));
+            console.log('token from CG: ', token);
+            return token || getTokenFromChain();
+        } else if (cglTryCounter < 10) {
+            console.log('no CG token list yet... re-calling function');
+            setTimeout(() => fetchAndFormatTokenData(addr), 250);
+        } else {
+            console.log('hit max attempts to get token from CG, fetching from chain');
+            getTokenFromChain();
+        }
     }
 
     // useEffect to switch chains if necessary
