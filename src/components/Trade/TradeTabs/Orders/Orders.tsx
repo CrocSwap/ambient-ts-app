@@ -15,13 +15,15 @@ interface propsIF {
     expandTradeTable: boolean;
     account: string;
     graphData: graphData;
+    isShowAllEnabled: boolean;
 }
 
 // main react functional component
 export default function Orders(props: propsIF) {
-    const { expandTradeTable, account, graphData } = props;
+    const { expandTradeTable, account, graphData, isShowAllEnabled } = props;
 
-    const limitOrders = graphData.limitOrdersByUser.limitOrders;
+    const limitOrdersByUser = graphData.limitOrdersByUser.limitOrders;
+    const limitOrdersByPool = graphData.limitOrdersByPool.limitOrders;
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
@@ -79,22 +81,34 @@ export default function Orders(props: propsIF) {
 
     const [sortBy, setSortBy] = useState('default');
     const [reverseSort, setReverseSort] = useState(false);
+
     useEffect(() => {
         console.log({ sortBy, reverseSort });
     }, [sortBy, reverseSort]);
 
     const ItemContent = (
         <div className={styles.item_container}>
-            {limitOrders.map((order, idx) => (
-                <OrderCard
-                    key={idx}
-                    account={account}
-                    limitOrder={order}
-                    isDenomBase={isDenomBase}
-                    selectedBaseToken={selectedBaseToken}
-                    selectedQuoteToken={selectedQuoteToken}
-                />
-            ))}
+            {isShowAllEnabled
+                ? limitOrdersByPool.map((order, idx) => (
+                      <OrderCard
+                          key={idx}
+                          account={account}
+                          limitOrder={order}
+                          isDenomBase={isDenomBase}
+                          selectedBaseToken={selectedBaseToken}
+                          selectedQuoteToken={selectedQuoteToken}
+                      />
+                  ))
+                : limitOrdersByUser.map((order, idx) => (
+                      <OrderCard
+                          key={idx}
+                          account={account}
+                          limitOrder={order}
+                          isDenomBase={isDenomBase}
+                          selectedBaseToken={selectedBaseToken}
+                          selectedQuoteToken={selectedQuoteToken}
+                      />
+                  ))}
         </div>
     );
 
