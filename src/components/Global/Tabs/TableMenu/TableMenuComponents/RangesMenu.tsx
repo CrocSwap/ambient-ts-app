@@ -20,6 +20,10 @@ import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 interface RangesMenuIF {
     crocEnv: CrocEnv | undefined;
     chainData: ChainSpec;
+    baseTokenBalance: string;
+    quoteTokenBalance: string;
+    baseTokenDexBalance: string;
+    quoteTokenDexBalance: string;
     userMatchesConnectedAccount: boolean | undefined;
     // todoFromJr: Assign the correct types to these data -Jr
     // eslint-disable-next-line
@@ -35,6 +39,7 @@ export default function RangesMenu(props: RangesMenuIF) {
         // chainData,
         userMatchesConnectedAccount,
         rangeDetailsProps,
+
         posHash,
         positionData,
         // eslint-disable-next-line

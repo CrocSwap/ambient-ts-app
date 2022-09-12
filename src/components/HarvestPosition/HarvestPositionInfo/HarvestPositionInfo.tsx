@@ -8,6 +8,8 @@ interface IHarvestPositionInfoProps {
     quoteTokenSymbol: string;
     baseTokenLogoURI: string;
     quoteTokenLogoURI: string;
+    baseRemovalNum: number;
+    quoteRemovalNum: number;
     posLiqBaseDecimalCorrected: number | undefined;
     posLiqQuoteDecimalCorrected: number | undefined;
     feeLiqBaseDecimalCorrected: number | undefined;
@@ -25,7 +27,9 @@ export default function HarvestPositionInfo(props: IHarvestPositionInfoProps) {
         // posLiqQuoteDecimalCorrected,
         feeLiqBaseDecimalCorrected,
         feeLiqQuoteDecimalCorrected,
-        removalPercentage,
+        // removalPercentage,
+        baseRemovalNum,
+        quoteRemovalNum,
     } = props;
 
     // Temp Values
@@ -90,10 +94,6 @@ export default function HarvestPositionInfo(props: IHarvestPositionInfoProps) {
                   maximumFractionDigits: 2,
               })
         : undefined;
-
-    const baseRemovalNum = ((feeLiqBaseDecimalCorrected || 0) * removalPercentage) / 100;
-
-    const quoteRemovalNum = ((feeLiqQuoteDecimalCorrected || 0) * removalPercentage) / 100;
 
     const baseRemovalString = baseRemovalNum
         ? baseRemovalNum < 2

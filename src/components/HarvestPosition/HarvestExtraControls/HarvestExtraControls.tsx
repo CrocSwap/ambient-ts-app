@@ -7,10 +7,73 @@ import { Dispatch, SetStateAction } from 'react';
 interface HarvestExtraControlsPropsIF {
     isSaveAsDexSurplusChecked: boolean;
     setIsSaveAsDexSurplusChecked: Dispatch<SetStateAction<boolean>>;
+    baseTokenSymbol: string;
+    quoteTokenSymbol: string;
+    baseRemovalNum: number;
+    quoteRemovalNum: number;
+    baseTokenBalance: string;
+    quoteTokenBalance: string;
+    baseTokenDexBalance: string;
+    quoteTokenDexBalance: string;
 }
 
-export default function HavrestExtraControls(props: HarvestExtraControlsPropsIF) {
-    const { isSaveAsDexSurplusChecked, setIsSaveAsDexSurplusChecked } = props;
+export default function HarvestExtraControls(props: HarvestExtraControlsPropsIF) {
+    const {
+        isSaveAsDexSurplusChecked,
+        setIsSaveAsDexSurplusChecked,
+        baseTokenSymbol,
+        quoteTokenSymbol,
+        baseTokenBalance,
+        quoteTokenBalance,
+        baseTokenDexBalance,
+        quoteTokenDexBalance,
+        baseRemovalNum,
+        quoteRemovalNum,
+    } = props;
+
+    const baseTokenWalletBalanceNum = parseFloat(baseTokenBalance);
+    const quoteTokenWalletBalanceNum = parseFloat(quoteTokenBalance);
+
+    const baseTokenDexBalanceNum = parseFloat(baseTokenDexBalance);
+    const quoteTokenDexBalanceNum = parseFloat(quoteTokenDexBalance);
+
+    const combinedBaseWalletBalanceAndRemovalNum = baseTokenWalletBalanceNum + baseRemovalNum;
+    const combinedQuoteWalletBalanceAndRemovalNum = quoteTokenWalletBalanceNum + quoteRemovalNum;
+
+    const combinedBaseDexBalanceAndRemovalNum = baseTokenDexBalanceNum + baseRemovalNum;
+    const combinedQuoteDexBalanceAndRemovalNum = quoteTokenDexBalanceNum + quoteRemovalNum;
+
+    const truncatedCombinedWalletBaseQty = combinedBaseWalletBalanceAndRemovalNum.toLocaleString(
+        undefined,
+        {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        },
+    );
+
+    const truncatedCombinedWalletQuoteQty = combinedQuoteWalletBalanceAndRemovalNum.toLocaleString(
+        undefined,
+        {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        },
+    );
+
+    const truncatedCombinedDexBaseQty = combinedBaseDexBalanceAndRemovalNum.toLocaleString(
+        undefined,
+        {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        },
+    );
+
+    const truncatedCombinedDexQuoteQty = combinedQuoteDexBalanceAndRemovalNum.toLocaleString(
+        undefined,
+        {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        },
+    );
 
     const exchangeBalanceControl = (
         <section className={styles.wallet_container}>
@@ -23,7 +86,7 @@ export default function HavrestExtraControls(props: HarvestExtraControlsPropsIF)
                         size={15}
                         color={isSaveAsDexSurplusChecked ? '#555555' : '#EBEBFF'}
                     />
-                    Wallet
+                    {`${truncatedCombinedWalletBaseQty} ${baseTokenSymbol} / ${truncatedCombinedWalletQuoteQty} ${quoteTokenSymbol}`}
                 </div>
                 <div
                     className={`${styles.exchange_text} ${
@@ -32,7 +95,7 @@ export default function HavrestExtraControls(props: HarvestExtraControlsPropsIF)
                     style={{ color: isSaveAsDexSurplusChecked ? '#ebebff' : '#555555' }}
                 >
                     <img src={ambientLogo} width='15' alt='' />
-                    0.00
+                    {`${truncatedCombinedDexBaseQty} ${baseTokenSymbol} / ${truncatedCombinedDexQuoteQty} ${quoteTokenSymbol}`}
                 </div>
             </div>
 
