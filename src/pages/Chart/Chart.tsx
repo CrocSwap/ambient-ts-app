@@ -134,6 +134,7 @@ export default function Chart(props: ChartData) {
     const [scaleData, setScaleData] = useState<any>();
     const [dragType, setDragType] = useState<any>();
     const [crosshairData, setCrosshairData] = useState([{ x: 0, y: -1 }]);
+    const [intercourse, setIntercourse] = useState<string | undefined>(undefined);
 
     const setDefaultRangeData = () => {
         setRanges((prevState) => {
@@ -311,8 +312,6 @@ export default function Chart(props: ChartData) {
                     });
                 });
 
-                console.log(results);
-                console.log('results');
                 if (
                     props.targetData === undefined ||
                     (props.targetData[0].value === 0 && props.targetData[1].value === 0)
@@ -399,6 +398,9 @@ export default function Chart(props: ChartData) {
                         setRanges((prevState) => {
                             const newTargets = [...prevState];
 
+                            const low = newTargets.filter((target: any) => target.name === 'Min')[0]
+                                .value;
+
                             const val =
                                 spotPriceDisplay !== undefined
                                     ? spotPriceDisplay.replace(',', '')
@@ -410,10 +412,7 @@ export default function Chart(props: ChartData) {
                                 newTargets.filter((target: any) => target.name === 'Max')[0].value -
                                 newValue;
 
-                            const low = newTargets.filter((target: any) => target.name === 'Min')[0]
-                                .value;
-
-                            if (!(dragLimit > parseFloat(val) - low)) {
+                            if (newValue > parseFloat(val) + dragLimit) {
                                 newTargets.filter((target: any) => target.name === 'Max')[0].value =
                                     newValue;
 
@@ -452,7 +451,7 @@ export default function Chart(props: ChartData) {
                                 (target: any) => target.name === 'Max',
                             )[0].value;
 
-                            if (!(dragLimit > high - parseFloat(val))) {
+                            if (newValue < parseFloat(val) - dragLimit) {
                                 newTargets.filter((target: any) => target.name === 'Min')[0].value =
                                     newValue;
 
@@ -477,6 +476,13 @@ export default function Chart(props: ChartData) {
                 } else {
                     setRanges((prevState) => {
                         const newTargets = [...prevState];
+
+                        const low = newTargets.filter((target: any) => target.name === 'Min')[0]
+                            .value;
+
+                        const high = newTargets.filter((target: any) => target.name === 'Min')[0]
+                            .value;
+
                         if (
                             d.name === 'Max' &&
                             newValue >
@@ -533,6 +539,9 @@ export default function Chart(props: ChartData) {
                 d3.select(d3Container.current)
                     .select('.targets')
                     .select('.horizontal')
+                    .on('blur', () => {
+                        console.log('On blur');
+                    })
                     .on('mouseover', (event: any) => {
                         d3.select(event.currentTarget)
                             // .select('.detector')
@@ -544,6 +553,9 @@ export default function Chart(props: ChartData) {
                 d3.select(d3Container.current)
                     .select('.targets')
                     .select('#Min')
+                    .on('blur', () => {
+                        console.log('On blur');
+                    })
                     .on('mouseover', (event: any) => {
                         d3.select(event.currentTarget).style('cursor', 'ns-resize');
                         d3.select(event.currentTarget).select('line').style('cursor', 'ns-resize');
@@ -553,6 +565,9 @@ export default function Chart(props: ChartData) {
                 d3.select(d3Container.current)
                     .select('.targets')
                     .select('#Max')
+                    .on('blur', () => {
+                        console.log('On blur');
+                    })
                     .on('mouseover', (event: any) => {
                         d3.select(event.currentTarget).style('cursor', 'ns-resize');
                         d3.select(event.currentTarget).select('line').style('cursor', 'ns-resize');
