@@ -16,6 +16,7 @@ export const useUrlParams = (
     const { params } = useParams() ?? '';
 
     const [cgl, setCgl] = useState<TokenListIF | null>(null);
+    const [cglTryCounter, setCglTryCounter] = useState(0);
 
     useEffect(() => {
         const getCoinGeckoList = () => {
@@ -24,12 +25,17 @@ export const useUrlParams = (
                     allTokenLists && allTokenLists.some(
                     (list: TokenListIF) => list.name === 'CoinGecko' && list.default)
                 ) {
-                    setCgl(allTokenLists.find((list: TokenListIF) => list.name === 'CoinGecko' && list.default));
+                    setCgl(
+                        allTokenLists.find((list: TokenListIF) => (
+                            list.name === 'CoinGecko' && list.default
+                        ))
+                    );
                 } else {
-                    setTimeout(() => getCoinGeckoList(), 100);
+                    setCglTryCounter(cglTryCounter + 1);
+                    cglTryCounter < 10 && setTimeout(() => getCoinGeckoList(), 250);
                 }
             }
-        getCoinGeckoList();
+        cgl ?? getCoinGeckoList();
     }, []);
     useEffect(() => console.log({cgl}), [cgl]);
 
@@ -74,13 +80,6 @@ export const useUrlParams = (
     // this can probably go inside the useEffect() hook for token data
     const fetchAndFormatTokenData = (addr: string) => {
         if (addr === ethers.constants.AddressZero) return nativeToken;
-        console.log({chainToUse});
-        const allTokenLists = JSON.parse(localStorage.getItem('allTokenLists') as string)
-        if (allTokenLists) {
-        const isCGLoaded = allTokenLists.some((list:TokenListIF) => list.name === 'CoinGecko');
-        console.log({isCGLoaded})
-
-    }
         const promise = Web3Api.token.getTokenMetadata({
             chain: chainToUse as '0x1', addresses: [addr]
         });
