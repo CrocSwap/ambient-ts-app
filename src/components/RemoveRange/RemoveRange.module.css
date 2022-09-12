@@ -68,9 +68,9 @@
   min-height: 300px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
-   margin-left: 10px;
+   /* margin-left: 10px; */
    text-align: center;
    gap: 1rem;
 

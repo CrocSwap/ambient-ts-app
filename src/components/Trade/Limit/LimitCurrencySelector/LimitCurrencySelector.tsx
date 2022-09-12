@@ -26,6 +26,8 @@ interface LimitCurrencySelectorProps {
     reverseTokens: () => void;
     tokenABalance: string;
     tokenBBalance: string;
+    tokenADexBalance: string;
+    tokenBDexBalance: string;
     handleChangeEvent: (evt: ChangeEvent<HTMLInputElement>) => void;
     handleChangeClick?: (value: string) => void;
     isWithdrawFromDexChecked: boolean;
@@ -50,9 +52,11 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
         reverseTokens,
         tokenABalance,
         tokenBBalance,
+        tokenADexBalance,
+        tokenBDexBalance,
         isWithdrawFromDexChecked,
         setIsWithdrawFromDexChecked,
-        isSaveAsDexSurplusChecked,
+        // isSaveAsDexSurplusChecked,
         setIsSaveAsDexSurplusChecked,
         activeTokenListsChanged,
         indicateActiveTokenListsChanged,
@@ -107,27 +111,23 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
 
     const DexBalanceContent = (
         <span className={styles.surplus_toggle}>
-            {fieldId === 'sell' ? 'Use Surplus' : 'Add to Surplus'}
-            {/* {fieldId === 'sell'
-                ? isWithdrawFromDexChecked
-                    ? 'Use Exchange Surplus'
-                    : 'Use Wallet Balance'
-                : isSaveAsDexSurplusChecked
-                ? 'Save as Exchange Surplus'
-                : 'Withdraw to Wallet'} */}
+            {fieldId === 'sell' ? 'Use Surplus' : null}
+            {/* {fieldId === 'sell' ? 'Use Surplus' : 'Add to Surplus'} */}
 
             {fieldId === 'sell' ? (
-                // <Toggle
-                //     isOn={isWithdrawFromDexChecked}
-                //     handleToggle={() => setIsWithdrawFromDexChecked(!isWithdrawFromDexChecked)}
-                //     Width={36}
-                //     id='sell_token_withdrawal'
-                // />
                 <Toggle2
                     isOn={isWithdrawFromDexChecked}
                     handleToggle={() => setIsWithdrawFromDexChecked(!isWithdrawFromDexChecked)}
                     id='sell_token_withdrawal'
-                    disabled={true}
+                    disabled={parseFloat(tokenADexBalance) <= 0}
+                />
+            ) : null}
+            {/* {fieldId === 'sell' ? (
+                <Toggle2
+                    isOn={isWithdrawFromDexChecked}
+                    handleToggle={() => setIsWithdrawFromDexChecked(!isWithdrawFromDexChecked)}
+                    id='sell_token_withdrawal'
+                    disabled={parseFloat(tokenADexBalance) <= 0}
                 />
             ) : (
                 <Toggle2
@@ -135,16 +135,9 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
                     handleToggle={() => setIsSaveAsDexSurplusChecked(!isSaveAsDexSurplusChecked)}
                     id='buy_token_withdrawal'
                 />
-            )}
+            )} */}
         </span>
     );
-
-    // const walletBalance =
-    //     props.sellToken && tokenABalance !== ''
-    //         ? parseFloat(tokenABalance).toLocaleString()
-    //         : !props.sellToken && tokenBBalance !== ''
-    //         ? parseFloat(tokenBBalance).toLocaleString()
-    //         : '0';
 
     const walletBalanceNonLocaleString =
         props.sellToken && tokenABalance !== ''
@@ -160,9 +153,19 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
             ? parseFloat(tokenBBalance).toLocaleString()
             : '0';
 
-    const surplusBalance = 0;
-    const surplusBalanceNonLocaleString = surplusBalance.toString();
-    const surplusBalanceLocaleString = surplusBalance.toLocaleString();
+    const surplusBalanceNonLocaleString =
+        props.sellToken && tokenADexBalance !== ''
+            ? parseFloat(tokenADexBalance).toString()
+            : !props.sellToken && tokenBDexBalance !== ''
+            ? parseFloat(tokenBDexBalance).toString()
+            : '0';
+
+    const surplusBalanceLocaleString =
+        props.sellToken && tokenADexBalance !== ''
+            ? parseFloat(tokenADexBalance).toLocaleString()
+            : !props.sellToken && tokenBDexBalance !== ''
+            ? parseFloat(tokenBDexBalance).toLocaleString()
+            : '0';
 
     return (
         <div className={styles.swapbox}>

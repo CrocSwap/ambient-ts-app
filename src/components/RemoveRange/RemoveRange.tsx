@@ -1,6 +1,6 @@
 import styles from './RemoveRange.module.css';
 import RemoveRangeWidth from './RemoveRangeWidth/RemoveRangeWidth';
-import RemoveRangeHeader from './RemoveRangeHeader/RemoveRangeHeader';
+import RemoveRangeTokenHeader from './RemoveRangeTokenHeader/RemoveRangeTokenHeader';
 import RemoveRangeInfo from './RemoveRangeInfo/RemoveRangInfo';
 import RemoveRangeButton from './RemoveRangeButton/RemoveRangeButton';
 import { useEffect, useState } from 'react';
@@ -13,7 +13,7 @@ import { RiListSettingsLine } from 'react-icons/ri';
 import { BsArrowLeft } from 'react-icons/bs';
 import { PositionIF } from '../../utils/interfaces/PositionIF';
 import { ethers } from 'ethers';
-import { CrocEnv } from '@crocswap-libs/sdk';
+import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import Button from '../Global/Button/Button';
 
 import RemoveRangeSettings from './RemoveRangeSettings/RemoveRangeSettings';
@@ -21,8 +21,11 @@ import {
     CircleLoader,
     CircleLoaderFailed,
 } from '../Global/LoadingAnimations/CircleLoader/CircleLoader';
+import RemoveRangeHeader from './RemoveRangeHeader/RemoveRangeHeader';
+import ExtraControls from './ExtraControls/ExtraControls';
 interface IRemoveRangeProps {
     provider: ethers.providers.Provider;
+    chainData: ChainSpec;
     chainId: string;
     poolIdx: number;
     user: string;
@@ -39,9 +42,14 @@ interface IRemoveRangeProps {
     isDenomBase: boolean;
     lastBlockNumber: number;
     position: PositionIF;
+
+    openGlobalModal: (content: React.ReactNode) => void;
+
+    closeGlobalModal: () => void;
 }
 
 export default function RemoveRange(props: IRemoveRangeProps) {
+    // console.log(props);
     const {
         // chainId,
         // poolIdx,
@@ -50,6 +58,8 @@ export default function RemoveRange(props: IRemoveRangeProps) {
         // askTick,
         // baseTokenAddress,
         // quoteTokenAddress,
+        closeGlobalModal,
+        chainData,
         provider,
         lastBlockNumber,
         position,
@@ -111,16 +121,27 @@ export default function RemoveRange(props: IRemoveRangeProps) {
 
     const [showSettings, setShowSettings] = useState(false);
 
+    const positionHasLiquidity =
+        (posLiqBaseDecimalCorrected || 0) + (posLiqQuoteDecimalCorrected || 0) > 0;
+
     const removeRangeSetttingIcon = (
         <div onClick={() => setShowSettings(!showSettings)} className={styles.settings_icon}>
             {showSettings ? null : <RiListSettingsLine size={20} />}
         </div>
     );
 
+    const [isSaveAsDexSurplusChecked, setIsSaveAsDexSurplusChecked] = useState(false);
+
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [newRemovalTransactionHash, setNewRemovalTransactionHash] = useState('');
     const [txErrorCode, setTxErrorCode] = useState(0);
     const [txErrorMessage, setTxErrorMessage] = useState('');
+
+    const resetConfirmation = () => {
+        setShowConfirmation(false);
+        setTxErrorCode(0);
+        setTxErrorMessage('');
+    };
 
     const liquiditySlippageTolerance = 1;
 
@@ -175,55 +196,15 @@ export default function RemoveRange(props: IRemoveRangeProps) {
                     [lowLimit, highLimit],
                 );
                 console.log(tx?.hash);
-                // setNewRemovalTransactionHash(tx?.hash);
+                setNewRemovalTransactionHash(tx?.hash);
             } catch (error) {
-                // setTxErrorCode(error?.code);
-                // setTxErrorMessage(error?.message);
+                setTxErrorCode(error?.code);
+                setTxErrorMessage(error?.message);
             }
         } else {
             console.log('unsupported position type for removal');
         }
     };
-
-    const harvestFn = async () => {
-        console.log('all fees to be removed.');
-
-        const env = new CrocEnv(provider);
-        const pool = env.pool(position.base, position.quote);
-        const spotPrice = await pool.displayPrice();
-
-        const lowLimit = spotPrice * (1 - liquiditySlippageTolerance / 100);
-        const highLimit = spotPrice * (1 + liquiditySlippageTolerance / 100);
-
-        if (position.positionType === 'concentrated') {
-            try {
-                const tx = await pool.harvestRange(
-                    [position.bidTick, position.askTick],
-                    [lowLimit, highLimit],
-                );
-                console.log(tx?.hash);
-                // setNewRemovalTransactionHash(tx?.hash);
-            } catch (error) {
-                // setTxErrorCode(error?.code);
-                // setTxErrorMessage(error?.message);
-            }
-        } else {
-            console.log('unsupported position type for harvest');
-        }
-    };
-
-    const harvestButtonOrNull =
-        position.positionType === 'concentrated' &&
-        (position.feesLiqBaseDecimalCorrected || 0) + (position.feesLiqQuoteDecimalCorrected || 0) >
-            0 ? (
-            <RemoveRangeButton removeFn={harvestFn} title={'Harvest Fees'} />
-        ) : null;
-
-    // const removeRangeSettingsPage = (
-    //     <div className={styles.remove_range_settings_container}>
-    //         <RemoveRangeSettings showSettings={showSettings} setShowSettings={setShowSettings} />
-    //     </div>
-    // );
 
     const removalDenied = (
         <div className={styles.removal_pending}>
@@ -232,18 +213,20 @@ export default function RemoveRange(props: IRemoveRangeProps) {
                 Check the Metamask extension in your browser for notifications, or click &quot;Try
                 Again&quot;. You can also click the left arrow above to try again.
             </p>
-            <Button title='Try Again' action={() => setShowConfirmation(false)} />
+            <Button title='Try Again' action={resetConfirmation} />
         </div>
     );
+
+    const etherscanLink = chainData.blockExplorer + 'tx/' + newRemovalTransactionHash;
 
     const removalSuccess = (
         <div className={styles.removal_pending}>
             <div className={styles.completed_animation}>
                 <Animation animData={completed} loop={false} />
             </div>
-            <p>message to be display here</p>
+            <p>Removal Transaction Successfully Submitted</p>
             <a
-                href={newRemovalTransactionHash}
+                href={etherscanLink}
                 target='_blank'
                 rel='noreferrer'
                 className={styles.view_etherscan}
@@ -286,7 +269,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
         handleConfirmationChange();
     }, [
         transactionApproved,
-        removalDenied,
+        // removalDenied,
         newRemovalTransactionHash,
         txErrorCode,
         showConfirmation,
@@ -295,8 +278,8 @@ export default function RemoveRange(props: IRemoveRangeProps) {
 
     const confirmationContent = (
         <div className={styles.confirmation_container}>
-            {showConfirmation && (
-                <div className={styles.button} onClick={() => setShowConfirmation(false)}>
+            {showConfirmation && !removalDenied && (
+                <div className={styles.button} onClick={resetConfirmation}>
                     <BsArrowLeft size={30} />
                 </div>
             )}
@@ -304,10 +287,20 @@ export default function RemoveRange(props: IRemoveRangeProps) {
         </div>
     );
 
-    const buttonToDisplay = showSettings ? (
-        <Button title='Confirm' action={() => setShowSettings(false)} />
-    ) : (
-        <RemoveRangeButton removeFn={removeFn} disabled={showSettings} title='Remove Range' />
+    const buttonToDisplay = (
+        <div style={{ padding: '0 1rem' }}>
+            {showSettings ? (
+                <Button title='Confirm' action={() => setShowSettings(false)} />
+            ) : positionHasLiquidity ? (
+                <RemoveRangeButton
+                    removeFn={removeFn}
+                    disabled={showSettings}
+                    title='Remove Range'
+                />
+            ) : (
+                <RemoveRangeButton removeFn={removeFn} disabled={true} title='…' />
+            )}
+        </div>
     );
 
     const mainModalContent = showSettings ? (
@@ -315,7 +308,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
     ) : (
         <>
             <div className={styles.header_container}>
-                <RemoveRangeHeader
+                <RemoveRangeTokenHeader
                     isPositionInRange={props.isPositionInRange}
                     isAmbient={props.isAmbient}
                     baseTokenSymbol={props.baseTokenSymbol}
@@ -326,21 +319,27 @@ export default function RemoveRange(props: IRemoveRangeProps) {
                 />
                 {removeRangeSetttingIcon}
             </div>
-            <RemoveRangeWidth
-                removalPercentage={removalPercentage}
-                setRemovalPercentage={setRemovalPercentage}
-            />
-            <RemoveRangeInfo
-                baseTokenSymbol={props.baseTokenSymbol}
-                quoteTokenSymbol={props.quoteTokenSymbol}
-                baseTokenLogoURI={props.baseTokenLogoURI}
-                quoteTokenLogoURI={props.quoteTokenLogoURI}
-                posLiqBaseDecimalCorrected={posLiqBaseDecimalCorrected}
-                posLiqQuoteDecimalCorrected={posLiqQuoteDecimalCorrected}
-                feeLiqBaseDecimalCorrected={feeLiqBaseDecimalCorrected}
-                feeLiqQuoteDecimalCorrected={feeLiqQuoteDecimalCorrected}
-                removalPercentage={removalPercentage}
-            />
+            <div style={{ padding: '0 1rem' }}>
+                <RemoveRangeWidth
+                    removalPercentage={removalPercentage}
+                    setRemovalPercentage={setRemovalPercentage}
+                />
+                <RemoveRangeInfo
+                    baseTokenSymbol={props.baseTokenSymbol}
+                    quoteTokenSymbol={props.quoteTokenSymbol}
+                    baseTokenLogoURI={props.baseTokenLogoURI}
+                    quoteTokenLogoURI={props.quoteTokenLogoURI}
+                    posLiqBaseDecimalCorrected={posLiqBaseDecimalCorrected}
+                    posLiqQuoteDecimalCorrected={posLiqQuoteDecimalCorrected}
+                    feeLiqBaseDecimalCorrected={feeLiqBaseDecimalCorrected}
+                    feeLiqQuoteDecimalCorrected={feeLiqQuoteDecimalCorrected}
+                    removalPercentage={removalPercentage}
+                />
+                <ExtraControls
+                    isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
+                    setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
+                />
+            </div>
         </>
     );
 
@@ -348,8 +347,14 @@ export default function RemoveRange(props: IRemoveRangeProps) {
     return (
         <div className={styles.remove_range_container}>
             <div className={styles.main_content}>
+                <RemoveRangeHeader
+                    onClose={closeGlobalModal}
+                    title={showSettings ? 'Remove Position Settings' : 'Remove Position'}
+                    onBackButton={() => setShowSettings(false)}
+                    showBackButton={showSettings}
+                />
                 {mainModalContent}
-                {harvestButtonOrNull}
+                {/* {harvestButtonOrNull} */}
                 {buttonToDisplay}
             </div>
         </div>

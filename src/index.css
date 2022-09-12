@@ -25,6 +25,7 @@
     --header2-size: 18px;
     --header2-lh: 22px;
 
+    --header-size: 16px;
     --body-size: 12px;
     --body-lh: 15px;
 
@@ -40,11 +41,11 @@
 
     --text-grey-light: #bdbdbd;
     --text-grey-dark: #555555;
-    --text-grey-white: #EBEBFF;
+    --text-grey-white: #ebebff;
     --text-accent: #cdc1ff;
     --light-blue: #cdc1ff;
 
-    --accent-secondary: #E480ff;
+    --accent-secondary: #e480ff;
 
     /* border */
     --border-radius: 4px;

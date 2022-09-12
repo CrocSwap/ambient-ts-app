@@ -45,7 +45,7 @@ export default function NetworkSelector(props: NetworkSelectorPropsIF) {
             <div className={styles.dropdown_menu_container}>
                 <DropdownMenu2
                     marginTop={'50px'}
-                    titleWidth={'130px'}
+                    titleWidth={'80px'}
                     title={lookupChain(chainId).displayName}
                 >
                     {networkMenuContent}

@@ -5,7 +5,6 @@ import { FiMoreHorizontal } from 'react-icons/fi';
 
 // START: Import JSX Functional Components
 import SnackbarComponent from '../../../../../components/Global/SnackbarComponent/SnackbarComponent';
-import RangeDetailsHeader from '../../../../RangeDetails/RangeDetailsHeader/RangeDetailsHeader';
 import Modal from '../../../../Global/Modal/Modal';
 
 // START: Import Local Files
@@ -72,7 +71,7 @@ export default function OrdersMenu(props: OrdersMenuIF) {
         case 'details':
             // modalContent = <RangeDetails {...removeRangeProps} />;
             modalContent = 'details';
-            modalTitle = <RangeDetailsHeader />;
+            modalTitle = '';
             break;
     }
 

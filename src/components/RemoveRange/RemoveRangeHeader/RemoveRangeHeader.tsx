@@ -1,44 +1,27 @@
-import RangeStatus from '../../Global/RangeStatus/RangeStatus';
 import styles from './RemoveRangeHeader.module.css';
-import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
-import { toggleDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
-interface IRemoveRangeHeaderProps {
-    isPositionInRange: boolean;
-    isAmbient: boolean;
-    baseTokenSymbol: string;
-    quoteTokenSymbol: string;
-    baseTokenLogoURI: string;
-    quoteTokenLogoURI: string;
-    isDenomBase: boolean;
+import { BiArrowBack } from 'react-icons/bi';
+
+import { VscClose } from 'react-icons/vsc';
+interface RemoveRangeHeaderPropsIF {
+    title: string;
+    onClose: () => void;
+    onBackButton: () => void;
+    showBackButton: boolean;
 }
-
-export default function RemoveRangeHeader(props: IRemoveRangeHeaderProps) {
-    const dispatch = useAppDispatch();
-
+export default function RemoveRangeHeader(props: RemoveRangeHeaderPropsIF) {
     return (
-        <div className={styles.container}>
-            <div
-                className={styles.token_info}
-                onClick={() => {
-                    dispatch(toggleDidUserFlipDenom());
-                }}
-            >
-                <img
-                    src={props.isDenomBase ? props.baseTokenLogoURI : props.quoteTokenLogoURI}
-                    // src='https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png'
-                    alt=''
-                />
-                <img
-                    src={props.isDenomBase ? props.quoteTokenLogoURI : props.baseTokenLogoURI}
-                    alt=''
-                />
-                {/* <img src='https://cryptologos.cc/logos/usd-coin-usdc-logo.png' alt='' /> */}
-                <span>
-                    {props.isDenomBase ? props.baseTokenSymbol : props.quoteTokenSymbol} /
-                    {props.isDenomBase ? props.quoteTokenSymbol : props.baseTokenSymbol}
-                </span>
+        <header className={styles.header_container}>
+            {props.showBackButton ? (
+                <div onClick={() => props.onBackButton()}>
+                    <BiArrowBack size={22} />
+                </div>
+            ) : (
+                <div />
+            )}
+            <h2>{props.title}</h2>
+            <div onClick={props.onClose}>
+                <VscClose size={22} />
             </div>
-            <RangeStatus isInRange={props.isPositionInRange} isAmbient={props.isAmbient} />
-        </div>
+        </header>
     );
 }
