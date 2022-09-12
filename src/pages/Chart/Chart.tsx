@@ -1,5 +1,6 @@
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
+import { constants } from 'ethers';
 import moment from 'moment';
 import { DetailedHTMLProps, HTMLAttributes, useCallback, useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
@@ -80,6 +81,7 @@ export default function Chart(props: ChartData) {
 
     const d3Container = useRef(null);
     const d3PlotArea = useRef(null);
+
     const d3Xaxis = useRef(null);
     const d3Yaxis = useRef(null);
 
@@ -754,6 +756,40 @@ export default function Chart(props: ChartData) {
                     .xScale(scaleData.xScale)
                     .yScale(scaleData.yScale);
 
+                const yCopy = scaleData.yScale.copy().domain([1700, 1715]); // [ranges[0].value,ranges[1].value]);
+                // const area = d3fc
+                // .seriesSvgArea()
+                // .mainValue(
+
+                //     chartData.map((item:any)=>{ return ranges[1].value}
+
+                // ))
+                // .crossValue(chartData.map((item:any)=>{
+                //         return item.date;
+                // }))
+                // .xScale(scaleData.xScale)
+                // .yScale(yCopy)// [ranges[1].value,ranges[0].value])
+                // .decorate((selection: any) => {
+                //     selection.style('fill', () => {
+                //         return 'red';
+                //     });
+                // });
+
+                const area = d3
+                    .area()
+                    .curve(d3.curveMonotoneX)
+                    .x(
+                        chartData.map((item: any) => {
+                            return item.date;
+                        }),
+                    )
+                    .y0(500)
+                    .y1(
+                        chartData.map((item: any) => {
+                            return 100;
+                        }),
+                    );
+
                 const horizontalLine = d3fc
                     .annotationSvgLine()
                     .value((d: any) => d.value)
@@ -845,6 +881,7 @@ export default function Chart(props: ChartData) {
 
                 const candleJoin = d3fc.dataJoin('g', 'candle');
                 const targetsJoin = d3fc.dataJoin('g', 'targets');
+                const areaJoin = d3fc.dataJoin('g', 'area');
                 const barJoin = d3fc.dataJoin('g', 'bar');
                 const crosshairHorizontalJoin = d3fc.dataJoin('g', 'crosshairHorizontal');
                 const crosshairVerticalJoin = d3fc.dataJoin('g', 'crosshairVertical');
@@ -866,6 +903,7 @@ export default function Chart(props: ChartData) {
                     barJoin(svg, [liquidityData]).call(barSeries);
                     candleJoin(svg, [chartData]).call(candlestick);
                     targetsJoin(svg, [targets]).call(horizontalLine);
+                    areaJoin(svg, [targets]).call(area);
                 });
 
                 d3.select(d3Xaxis.current).on('draw', function (event: any) {
