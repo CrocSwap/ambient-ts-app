@@ -43,6 +43,25 @@ export default function HarvestExtraControls(props: HarvestExtraControlsPropsIF)
     const combinedBaseDexBalanceAndRemovalNum = baseTokenDexBalanceNum + baseRemovalNum;
     const combinedQuoteDexBalanceAndRemovalNum = quoteTokenDexBalanceNum + quoteRemovalNum;
 
+    const truncatedWalletBaseQty = baseTokenWalletBalanceNum.toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    });
+
+    const truncatedWalletQuoteQty = quoteTokenWalletBalanceNum.toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    });
+
+    const truncatedDexBaseQty = baseTokenDexBalanceNum.toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    });
+
+    const truncatedDexQuoteQty = quoteTokenDexBalanceNum.toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    });
     const truncatedCombinedWalletBaseQty = combinedBaseWalletBalanceAndRemovalNum.toLocaleString(
         undefined,
         {
@@ -86,7 +105,9 @@ export default function HarvestExtraControls(props: HarvestExtraControlsPropsIF)
                         size={15}
                         color={isSaveAsDexSurplusChecked ? '#555555' : '#EBEBFF'}
                     />
-                    {`${truncatedCombinedWalletBaseQty} ${baseTokenSymbol} / ${truncatedCombinedWalletQuoteQty} ${quoteTokenSymbol}`}
+                    {isSaveAsDexSurplusChecked
+                        ? `${truncatedWalletBaseQty} ${baseTokenSymbol} / ${truncatedWalletQuoteQty} ${quoteTokenSymbol}`
+                        : `${truncatedCombinedWalletBaseQty} ${baseTokenSymbol} / ${truncatedCombinedWalletQuoteQty} ${quoteTokenSymbol}`}
                 </div>
                 <div
                     className={`${styles.exchange_text} ${
@@ -95,7 +116,9 @@ export default function HarvestExtraControls(props: HarvestExtraControlsPropsIF)
                     style={{ color: isSaveAsDexSurplusChecked ? '#ebebff' : '#555555' }}
                 >
                     <img src={ambientLogo} width='15' alt='' />
-                    {`${truncatedCombinedDexBaseQty} ${baseTokenSymbol} / ${truncatedCombinedDexQuoteQty} ${quoteTokenSymbol}`}
+                    {isSaveAsDexSurplusChecked
+                        ? `${truncatedCombinedDexBaseQty} ${baseTokenSymbol} / ${truncatedCombinedDexQuoteQty} ${quoteTokenSymbol}`
+                        : `${truncatedDexBaseQty} ${baseTokenSymbol} / ${truncatedDexQuoteQty} ${quoteTokenSymbol}`}
                 </div>
             </div>
 
