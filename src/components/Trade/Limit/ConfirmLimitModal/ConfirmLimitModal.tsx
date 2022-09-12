@@ -7,6 +7,7 @@ import Button from '../../../Global/Button/Button';
 import { TokenPairIF } from '../../../../utils/interfaces/exports';
 import Divider from '../../../Global/Divider/Divider';
 import TransactionDenied from '../../../Global/TransactionDenied/TransactionDenied';
+import DenominationSwitch from '../../../Swap/DenominationSwitch/DenominationSwitch';
 
 interface ConfirmLimitModalProps {
     onClose: () => void;
@@ -92,9 +93,43 @@ export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
         </div>
     );
 
+    const extraInfoData = (
+        <div className={styles.extra_info_container}>
+            <div className={styles.convRate}>
+                1 {moreExpensiveToken} = {displayConversionRate} {lessExpensiveToken}
+            </div>
+            <div className={styles.row}>
+                <p>Current Price</p>
+                <p>0.000043 {moreExpensiveToken} </p>
+            </div>
+            <div className={styles.row}>
+                <p>Fill Start</p>
+                <p>0.000043 {moreExpensiveToken} </p>
+            </div>
+            <div className={styles.row}>
+                <p>Fill End</p>
+                <p>0.000043 {moreExpensiveToken} </p>
+            </div>
+        </div>
+    );
+
+    const fullTxDetails2 = (
+        <div className={styles.main_container}>
+            <section>
+                {limitRateRow}
+                {sellCurrencyRow}
+
+                {buyCurrencyRow}
+            </section>
+            <DenominationSwitch />
+            {extraInfoData}
+            {explanationText}
+        </div>
+    );
+
     const fullTxDetails = (
         <>
-            <div className={styles.modal_currency_converter}>
+            {/* <div className={styles.modal_currency_converter}>
                 <CurrencyDisplay amount={sellTokenQty} tokenData={sellTokenData} />
                 <div className={styles.limit_price_container}>
                     <CurrencyDisplay amount={limitRate} tokenData={buyTokenData} isLimitBox />
@@ -103,12 +138,13 @@ export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
                     <span className={styles.arrow} />
                 </div>
                 <CurrencyDisplay amount={buyTokenQty} tokenData={buyTokenData} />
-            </div>
-            <div className={styles.convRate}>
+                {fullTxDetails2}
+            </div> */}
+            {/* <div className={styles.convRate}>
                 1 {moreExpensiveToken} = {displayConversionRate} {lessExpensiveToken}
             </div>
-            <Divider />
-            <div className={styles.confSwap_detail}>
+            <Divider /> */}
+            {/* <div className={styles.confSwap_detail}>
                 <div className={styles.detail_line}>
                     Current Price
                     <span>
@@ -120,8 +156,9 @@ export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
                     <span>2%</span>
                 </div>
                 <div className={`${styles.detail_line} ${styles.min_received}`}></div>
-            </div>
-            {explanationText}
+            </div> */}
+            {fullTxDetails2}
+            {/* {explanationText} */}
         </>
     );
 

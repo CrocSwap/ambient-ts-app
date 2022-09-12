@@ -47,7 +47,7 @@
     pointer-events: none;
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 8px;
 }
 .convRate {
     background: var(--title-gradient);
@@ -58,11 +58,11 @@
 
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    font-weight: 500;
+    font-weight: 200;
 
     display: flex;
 
-    padding: 20px;
+    
 
     justify-content: center;
     letter-spacing: 0.04em;
@@ -174,8 +174,8 @@
 /* arrow */
 
 .arrow_container {
-    /* width: 100%; */
-    z-index: 2;
+    width: 100%;
+  
     display: flex;
     align-items: center;
     background: transparent;
@@ -192,6 +192,17 @@
     transition: border-width var(--animation-speed) ease-in-out;
 }
 
+.main_container{
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.main_container section{
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
 
 .currency_row_container{
     width: 100%;
@@ -199,13 +210,24 @@
     display: grid;
     grid-template-columns: auto 140px;
     align-items: center;
+   
+    /* font-weight: 200;
+    font-size: var(--header2-size);
+    line-height: var(--header2-lh);
+    color: var(--text-grey-white);
+    letter-spacing: -0.02em; */
+    border-radius: var(--border-radius);
+   padding: 0 2rem;
+   height: 40px;
+
+}
+
+.currency_row_container h2, .limit_row_container h2{
     font-weight: 200;
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
     color: var(--text-grey-white);
     letter-spacing: -0.02em;
-    border-radius: var(--border-radius);
-
 }
 
 .logo_display{
@@ -213,10 +235,11 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
+    margin-left: 1rem;
 }
 
 .logo_display img{
-    width: 40px;
+    width: 32px;
     
 }
 
@@ -232,4 +255,30 @@
     color: var(--text-grey-white);
     letter-spacing: -0.02em;
     border-radius: var(--border-radius);
+    padding: 0 2rem;
+    height: 35px;
 }
+.extra_info_container{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding:  8px;
+    border: 1px solid #242F3F;
+border-radius: 4px;
+
+
+}
+.extra_info_container .row{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.extra_info_container .row p{
+    font-weight: 300;
+    color: var(--text-grey-light);
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+}
+
