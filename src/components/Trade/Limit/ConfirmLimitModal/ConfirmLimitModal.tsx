@@ -1,12 +1,12 @@
 import styles from './ConfirmLimitModal.module.css';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
-import CurrencyDisplay from '../../../Global/CurrencyDisplay/CurrencyDisplay';
 import WaitingConfirmation from '../../../Global/WaitingConfirmation/WaitingConfirmation';
 import TransactionSubmitted from '../../../Global/TransactionSubmitted/TransactionSubmitted';
 import Button from '../../../Global/Button/Button';
 import { TokenPairIF } from '../../../../utils/interfaces/exports';
-import Divider from '../../../Global/Divider/Divider';
 import TransactionDenied from '../../../Global/TransactionDenied/TransactionDenied';
+import DenominationSwitch from '../../../Swap/DenominationSwitch/DenominationSwitch';
+import TokensArrow from '../../../Global/TokensArrow/TokensArrow';
 
 interface ConfirmLimitModalProps {
     onClose: () => void;
@@ -64,37 +64,68 @@ export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
         <div className={styles.confSwap_detail_note}>any other explanation text will go here.</div>
     );
 
-    const fullTxDetails = (
-        <>
-            <div className={styles.modal_currency_converter}>
-                <CurrencyDisplay amount={sellTokenQty} tokenData={sellTokenData} />
-                <div className={styles.limit_price_container}>
-                    <CurrencyDisplay amount={limitRate} tokenData={buyTokenData} isLimitBox />
-                </div>
-                <div className={styles.arrow_container}>
-                    <span className={styles.arrow} />
-                </div>
-                <CurrencyDisplay amount={buyTokenQty} tokenData={buyTokenData} />
+    console.log(sellTokenData);
+    const buyCurrencyRow = (
+        <div className={styles.currency_row_container}>
+            <h2>{buyTokenQty}</h2>
+
+            <div className={styles.logo_display}>
+                <img src={buyTokenData.logoURI} alt={buyTokenData.symbol} />
+                <h2>{buyTokenData.symbol}</h2>
             </div>
+        </div>
+    );
+    const sellCurrencyRow = (
+        <div className={styles.currency_row_container}>
+            <h2>{sellTokenQty}</h2>
+
+            <div className={styles.logo_display}>
+                <img src={sellTokenData.logoURI} alt={sellTokenData.symbol} />
+                <h2>{sellTokenData.symbol}</h2>
+            </div>
+        </div>
+    );
+
+    const limitRateRow = (
+        <div className={styles.limit_row_container}>
+            <h2>@ {limitRate}</h2>
+        </div>
+    );
+
+    const extraInfoData = (
+        <div className={styles.extra_info_container}>
             <div className={styles.convRate}>
                 1 {moreExpensiveToken} = {displayConversionRate} {lessExpensiveToken}
             </div>
-            <Divider />
-            <div className={styles.confSwap_detail}>
-                <div className={styles.detail_line}>
-                    Current Price
-                    <span>
-                        0.000043 {moreExpensiveToken} per {lessExpensiveToken}
-                    </span>
-                </div>
-                <div className={styles.detail_line}>
-                    ETH Appreciation Before Swap
-                    <span>2%</span>
-                </div>
-                <div className={`${styles.detail_line} ${styles.min_received}`}></div>
+            <div className={styles.row}>
+                <p>Current Price</p>
+                <p>0.000043 {moreExpensiveToken} </p>
             </div>
+            <div className={styles.row}>
+                <p>Fill Start</p>
+                <p>0.000043 {moreExpensiveToken} </p>
+            </div>
+            <div className={styles.row}>
+                <p>Fill End</p>
+                <p>0.000043 {moreExpensiveToken} </p>
+            </div>
+        </div>
+    );
+
+    const fullTxDetails = (
+        <div className={styles.main_container}>
+            <section>
+                {limitRateRow}
+                {sellCurrencyRow}
+                <div className={styles.arrow_container}>
+                    <TokensArrow />
+                </div>
+                {buyCurrencyRow}
+            </section>
+            <DenominationSwitch />
+            {extraInfoData}
             {explanationText}
-        </>
+        </div>
     );
 
     // REGULAR CONFIRMATION MESSAGE STARTS HERE
@@ -139,14 +170,6 @@ export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
             }}
         />
     );
-
-    // function onConfirmLimitClose() {
-    //     setConfirmDetails(true);
-
-    //     onClose();
-    // }
-
-    // const closeButton = <Button title='Close' action={onConfirmLimitClose} />;
 
     const modal = (
         <div className={styles.modal_container}>

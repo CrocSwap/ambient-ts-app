@@ -1674,6 +1674,9 @@ export default function App() {
 
     const [isModalOpenWallet, openModalWallet, closeModalWallet] = useModal();
 
+    const [isGlobalModalOpen, openGlobalModal, closeGlobalModal, currentContent, title] =
+        useGlobalModal();
+
     // props for <PageHeader/> React element
     const headerProps = {
         nativeBalance: nativeBalance,
@@ -1770,6 +1773,9 @@ export default function App() {
         activeTokenListsChanged: activeTokenListsChanged,
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
         openModalWallet: openModalWallet,
+
+        openGlobalModal: openGlobalModal,
+        closeGlobalModal: closeGlobalModal,
     };
 
     // props for <Range/> React element
@@ -1937,9 +1943,6 @@ export default function App() {
     const containerStyle = currentLocation.includes('trade')
         ? 'content-container-trade'
         : 'content-container';
-
-    const [isGlobalModalOpen, openGlobalModal, closeGlobalModal, currentContent, title] =
-        useGlobalModal();
 
     return (
         <>
