@@ -80,9 +80,6 @@ export const useUrlParams = (
         )
     ), [chainToUse]);
 
-    // this can probably go inside the useEffect() hook for token data
-
-
     // useEffect to switch chains if necessary
 
     // useEffect() to update token pair
