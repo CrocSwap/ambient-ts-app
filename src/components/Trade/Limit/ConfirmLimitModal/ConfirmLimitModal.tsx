@@ -5,17 +5,20 @@ import TransactionSubmitted from '../../../Global/TransactionSubmitted/Transacti
 import Button from '../../../Global/Button/Button';
 import { TokenPairIF } from '../../../../utils/interfaces/exports';
 import TransactionDenied from '../../../Global/TransactionDenied/TransactionDenied';
-import DenominationSwitch from '../../../Swap/DenominationSwitch/DenominationSwitch';
+// import DenominationSwitch from '../../../Swap/DenominationSwitch/DenominationSwitch';
 import TokensArrow from '../../../Global/TokensArrow/TokensArrow';
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 
 interface ConfirmLimitModalProps {
     onClose: () => void;
     initiateLimitOrderMethod: () => void;
     tokenPair: TokenPairIF;
+    poolPriceDisplay: number;
     tokenAInputQty: string;
     tokenBInputQty: string;
     isTokenAPrimary: boolean;
-    limitRate: string;
+    // limitRate: string;
+    insideTickDisplayPrice: number;
     newLimitOrderTransactionHash: string;
     txErrorCode: number;
     txErrorMessage: string;
@@ -28,8 +31,10 @@ export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
     const {
         // onClose,
         tokenPair,
+        poolPriceDisplay,
         initiateLimitOrderMethod,
-        limitRate,
+        // limitRate,
+        insideTickDisplayPrice,
         newLimitOrderTransactionHash,
         txErrorCode,
         txErrorMessage,
@@ -44,6 +49,38 @@ export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
         }
     }, [newLimitOrderTransactionHash]);
 
+    const tradeData = useAppSelector((state) => state.tradeData);
+
+    const isDenomBase = tradeData.isDenomBase;
+    const baseTokenSymbol = tradeData.baseToken.symbol;
+    const quoteTokenSymbol = tradeData.quoteToken.symbol;
+
+    const displayPoolPriceWithDenom = isDenomBase ? 1 / poolPriceDisplay : poolPriceDisplay;
+
+    const displayPoolPriceString =
+        displayPoolPriceWithDenom === Infinity || displayPoolPriceWithDenom === 0
+            ? '…'
+            : displayPoolPriceWithDenom < 2
+            ? displayPoolPriceWithDenom.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 6,
+              })
+            : displayPoolPriceWithDenom.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              });
+
+    const trunctatedInsideTickDisplayPrice =
+        insideTickDisplayPrice < 2
+            ? insideTickDisplayPrice.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 6,
+              })
+            : insideTickDisplayPrice.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              });
+
     const isTransactionDenied =
         txErrorCode === 4001 &&
         txErrorMessage === 'MetaMask Tx Signature: User denied transaction signature.';
@@ -56,15 +93,31 @@ export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
     const buyTokenData = tokenPair.dataTokenB;
 
     const moreExpensiveToken = 'ETH';
-    const lessExpensiveToken = 'DAI';
-    const displayConversionRate = parseFloat(buyTokenQty) / parseFloat(sellTokenQty);
-    // const priceLimit = 0.12;
+    // const lessExpensiveToken = 'DAI';
+
+    // const displayConversionRate = parseFloat(buyTokenQty) / parseFloat(sellTokenQty);
+    // // const priceLimit = 0.12;
+
+    // const displayPriceWithDenom = isDenomBase ? displayConversionRate : 1 / displayConversionRate;
+
+    // const displayPriceString =
+    //     displayPriceWithDenom === Infinity || displayPriceWithDenom === 0
+    //         ? '…'
+    //         : displayPriceWithDenom < 2
+    //         ? displayPriceWithDenom.toLocaleString(undefined, {
+    //               minimumFractionDigits: 2,
+    //               maximumFractionDigits: 6,
+    //           })
+    //         : displayPriceWithDenom.toLocaleString(undefined, {
+    //               minimumFractionDigits: 2,
+    //               maximumFractionDigits: 2,
+    //           });
 
     const explanationText = (
         <div className={styles.confSwap_detail_note}>any other explanation text will go here.</div>
     );
 
-    console.log(sellTokenData);
+    // console.log(sellTokenData);
     const buyCurrencyRow = (
         <div className={styles.currency_row_container}>
             <h2>{buyTokenQty}</h2>
@@ -88,18 +141,24 @@ export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
 
     const limitRateRow = (
         <div className={styles.limit_row_container}>
-            <h2>@ {limitRate}</h2>
+            <h2>@ {trunctatedInsideTickDisplayPrice}</h2>
         </div>
     );
 
     const extraInfoData = (
         <div className={styles.extra_info_container}>
             <div className={styles.convRate}>
-                1 {moreExpensiveToken} = {displayConversionRate} {lessExpensiveToken}
+                {isDenomBase
+                    ? `${trunctatedInsideTickDisplayPrice} ${quoteTokenSymbol} per ${baseTokenSymbol}`
+                    : `${trunctatedInsideTickDisplayPrice} ${baseTokenSymbol} per ${quoteTokenSymbol}`}
             </div>
             <div className={styles.row}>
                 <p>Current Price</p>
-                <p>0.000043 {moreExpensiveToken} </p>
+                <p>
+                    {isDenomBase
+                        ? `${displayPoolPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
+                        : `${displayPoolPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`}
+                </p>
             </div>
             <div className={styles.row}>
                 <p>Fill Start</p>
@@ -122,7 +181,7 @@ export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
                 </div>
                 {buyCurrencyRow}
             </section>
-            <DenominationSwitch />
+            {/* <DenominationSwitch /> */}
             {extraInfoData}
             {explanationText}
         </div>

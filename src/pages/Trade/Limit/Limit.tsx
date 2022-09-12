@@ -322,11 +322,13 @@ export default function Limit(props: LimitPropsIF) {
             <ConfirmLimitModal
                 onClose={handleModalClose}
                 tokenPair={tokenPair}
+                poolPriceDisplay={poolPriceDisplay || 0}
                 initiateLimitOrderMethod={sendLimitOrder}
                 tokenAInputQty={tokenAInputQty}
                 tokenBInputQty={tokenBInputQty}
                 isTokenAPrimary={isTokenAPrimary}
-                limitRate={limitRate}
+                // limitRate={limitRate}
+                insideTickDisplayPrice={insideTickDisplayPrice}
                 newLimitOrderTransactionHash={newLimitOrderTransactionHash}
                 txErrorCode={txErrorCode}
                 txErrorMessage={txErrorMessage}
