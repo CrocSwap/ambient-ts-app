@@ -6,6 +6,8 @@ export const useGlobalModal = (initialMode = false) => {
 
     const [currentContent, setCurrentContent] = useState<React.ReactNode>('I am example content');
 
+    const [title, setTitle] = useState<string>('');
+
     // click handlers to to open and close the modal
 
     // const openGlobalModal = (page: string) => {
@@ -14,12 +16,16 @@ export const useGlobalModal = (initialMode = false) => {
 
     // }
 
-    const openGlobalModal = (content: React.ReactNode) => {
+    const openGlobalModal = (content: React.ReactNode, title?: string) => {
         setIsGlobalModalOpen(true);
         setCurrentContent(content);
+
+        if (title) {
+            setTitle(title);
+        }
     };
     const closeGlobalModal = () => setIsGlobalModalOpen(false);
 
     // return all data and functions needed for local use
-    return [isGlobalModalOpen, openGlobalModal, closeGlobalModal, currentContent] as const;
+    return [isGlobalModalOpen, openGlobalModal, closeGlobalModal, currentContent, title] as const;
 };

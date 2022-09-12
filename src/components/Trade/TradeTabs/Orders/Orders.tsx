@@ -34,34 +34,42 @@ export default function Orders(props: propsIF) {
         {
             name: 'ID',
             sortable: true,
+            className: '',
         },
         {
             name: 'Wallet',
             sortable: true,
+            className: 'wallet',
         },
         {
             name: 'Price',
             sortable: true,
+            className: 'price',
         },
         {
             name: 'Side',
             sortable: true,
+            className: 'side',
         },
         {
             name: 'Type',
             sortable: true,
+            className: 'type',
         },
         {
             name: 'Value',
             sortable: true,
+            className: '',
         },
         {
             name: tradeData.baseToken.symbol,
             sortable: false,
+            className: 'token',
         },
         {
             name: tradeData.quoteToken.symbol,
             sortable: false,
+            className: 'token',
         },
     ];
 
@@ -92,7 +100,7 @@ export default function Orders(props: propsIF) {
 
     return (
         <div className={styles.container}>
-            <header>
+            {/* <header >
                 {columnHeaders.map((header) => (
                     <OrderCardHeader
                         key={`orderDataHeaderField${header.name}`}
@@ -101,9 +109,17 @@ export default function Orders(props: propsIF) {
                         setSortBy={setSortBy}
                         reverseSort={reverseSort}
                         setReverseSort={setReverseSort}
+                        columnHeaders={columnHeaders}
                     />
                 ))}
-            </header>
+            </header> */}
+            <OrderCardHeader
+                sortBy={sortBy}
+                setSortBy={setSortBy}
+                reverseSort={reverseSort}
+                setReverseSort={setReverseSort}
+                columnHeaders={columnHeaders}
+            />
             <div
                 className={styles.item_container}
                 style={{ height: expandTradeTable ? '100%' : '170px' }}

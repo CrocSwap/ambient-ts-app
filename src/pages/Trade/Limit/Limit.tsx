@@ -39,6 +39,8 @@ interface LimitPropsIF {
     lastBlockNumber: number;
     baseTokenBalance: string;
     quoteTokenBalance: string;
+    baseTokenDexBalance: string;
+    quoteTokenDexBalance: string;
     isSellTokenBase: boolean;
     tokenPair: TokenPairIF;
     isTokenABase: boolean;
@@ -65,6 +67,8 @@ export default function Limit(props: LimitPropsIF) {
         isSellTokenBase,
         baseTokenBalance,
         quoteTokenBalance,
+        baseTokenDexBalance,
+        quoteTokenDexBalance,
         tokenPair,
         isTokenABase,
         gasPriceinGwei,
@@ -110,6 +114,14 @@ export default function Limit(props: LimitPropsIF) {
     const [newLimitOrderTransactionHash, setNewLimitOrderTransactionHash] = useState('');
     const [txErrorCode, setTxErrorCode] = useState(0);
     const [txErrorMessage, setTxErrorMessage] = useState('');
+
+    const [showConfirmation, setShowConfirmation] = useState<boolean>(true);
+
+    const resetConfirmation = () => {
+        setShowConfirmation(true);
+        setTxErrorCode(0);
+        setTxErrorMessage('');
+    };
 
     // const tokenADecimals = tokenPair.dataTokenA.decimals;
     // const tokenBDecimals = tokenPair.dataTokenB.decimals;
@@ -268,14 +280,14 @@ export default function Limit(props: LimitPropsIF) {
         const seller = new CrocEnv(provider).sell(sellToken, qty);
         const ko = seller.atLimit(buyToken, limitTick);
 
-        if (await ko.willFail()) {
+        if (await ko.willMintFail()) {
             console.log('Cannot send limit order: Knockout price inside spread');
             setTxErrorMessage('Limit inside market price');
             return;
         }
 
         try {
-            const mint = await ko.mint();
+            const mint = await ko.mint({ surplus: isWithdrawFromDexChecked });
             console.log(mint.hash);
             setNewLimitOrderTransactionHash(mint.hash);
             const limitOrderReceipt = await mint.wait();
@@ -289,8 +301,9 @@ export default function Limit(props: LimitPropsIF) {
     const handleModalClose = () => {
         closeModal();
         setNewLimitOrderTransactionHash('');
-        setTxErrorCode(0);
-        setTxErrorMessage('');
+        // setTxErrorCode(0);
+        // setTxErrorMessage('');
+        resetConfirmation();
     };
 
     const confirmLimitModalOrNull = isModalOpen ? (
@@ -306,6 +319,9 @@ export default function Limit(props: LimitPropsIF) {
                 newLimitOrderTransactionHash={newLimitOrderTransactionHash}
                 txErrorCode={txErrorCode}
                 txErrorMessage={txErrorMessage}
+                showConfirmation={showConfirmation}
+                setShowConfirmation={setShowConfirmation}
+                resetConfirmation={resetConfirmation}
             />
         </Modal>
     ) : null;
@@ -332,8 +348,8 @@ export default function Limit(props: LimitPropsIF) {
         }
     };
 
-    const tokenABalance = isTokenABase ? baseTokenBalance : quoteTokenBalance;
-    const tokenBBalance = isTokenABase ? quoteTokenBalance : baseTokenBalance;
+    // const tokenABalance = isTokenABase ? baseTokenBalance : quoteTokenBalance;
+    // const tokenBBalance = isTokenABase ? quoteTokenBalance : baseTokenBalance;
 
     const approvalButton = (
         <Button
@@ -375,8 +391,10 @@ export default function Limit(props: LimitPropsIF) {
                         setImportedTokens={setImportedTokens}
                         chainId={chainId}
                         setLimitAllowed={setLimitAllowed}
-                        tokenABalance={tokenABalance}
-                        tokenBBalance={tokenBBalance}
+                        baseTokenBalance={baseTokenBalance}
+                        quoteTokenBalance={quoteTokenBalance}
+                        baseTokenDexBalance={baseTokenDexBalance}
+                        quoteTokenDexBalance={quoteTokenDexBalance}
                         tokenAInputQty={tokenAInputQty}
                         tokenBInputQty={tokenBInputQty}
                         setTokenAInputQty={setTokenAInputQty}

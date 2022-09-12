@@ -5,7 +5,7 @@ import RangeStatus from '../../../Global/RangeStatus/RangeStatus';
 import RangeMinMax from '../../../Global/Tabs/RangeMinMax/RangeMinMax';
 import Apy from '../../../Global/Tabs/Apy/Apy';
 import { PositionIF } from '../../../../utils/interfaces/PositionIF';
-import { ambientPosSlot, concPosSlot } from '@crocswap-libs/sdk';
+import { ambientPosSlot, ChainSpec, concPosSlot, CrocEnv } from '@crocswap-libs/sdk';
 import RangesMenu from '../../../Global/Tabs/TableMenu/TableMenuComponents/RangesMenu';
 import { ethers } from 'ethers';
 import { useEffect, Dispatch, SetStateAction } from 'react';
@@ -15,6 +15,8 @@ import Value from '../../../Global/Tabs/Value/Value';
 import { formatAmount } from '../../../../utils/numbers';
 
 interface RangeCardProps {
+    crocEnv: CrocEnv | undefined;
+    chainData: ChainSpec;
     provider: ethers.providers.Provider | undefined;
     chainId: string;
     portfolio?: boolean;
@@ -29,10 +31,15 @@ interface RangeCardProps {
     lastBlockNumber: number;
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
+
+    openGlobalModal: (content: React.ReactNode) => void;
+    closeGlobalModal: () => void;
 }
 
 export default function RangeCard(props: RangeCardProps) {
     const {
+        crocEnv,
+        chainData,
         provider,
         chainId,
         position,
@@ -114,7 +121,9 @@ export default function RangeCard(props: RangeCardProps) {
 
     // --------------------------REMOVE RANGE PROPS-------------------------------
     const rangeDetailsProps = {
+        crocEnv: crocEnv,
         provider: provider,
+        chainData: chainData,
         chainId: chainId,
         poolIdx: position.poolIdx,
         isPositionInRange: isPositionInRange,
@@ -135,6 +144,9 @@ export default function RangeCard(props: RangeCardProps) {
         quoteTokenAddress: props.position.quote,
         lastBlockNumber: lastBlockNumber,
         positionApy: position.apy,
+
+        closeGlobalModal: props.closeGlobalModal,
+        openGlobalModal: props.openGlobalModal,
     };
 
     const positionDomId =
@@ -216,10 +228,14 @@ export default function RangeCard(props: RangeCardProps) {
 
             <div className={styles.menu_container}>
                 <RangesMenu
+                    crocEnv={crocEnv}
+                    chainData={chainData}
                     userMatchesConnectedAccount={userMatchesConnectedAccount}
                     rangeDetailsProps={rangeDetailsProps}
                     posHash={posHash as string}
                     positionData={position}
+                    // openGlobalModal={props.openGlobalModal}
+                    // closeGlobalModal={props.closeGlobalModal}
                 />
             </div>
         </li>
