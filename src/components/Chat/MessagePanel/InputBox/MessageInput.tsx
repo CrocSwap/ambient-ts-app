@@ -29,7 +29,13 @@ export default function MessageInput(props: MessageInputProps) {
 
     const [message, setMessage] = useState('');
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-    const { user, account, enableWeb3, isWeb3Enabled, isAuthenticated } = useMoralis();
+    const {
+        // user,
+        //  account,
+        //   enableWeb3,
+        isWeb3Enabled,
+        isAuthenticated,
+    } = useMoralis();
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleEmojiClick = (event: any, emoji: any) => {
@@ -65,10 +71,10 @@ export default function MessageInput(props: MessageInputProps) {
         setMessage(e.target.value);
     };
 
-    const accountProps = {
-        isAuthenticated: isAuthenticated,
-        isWeb3Enabled: isWeb3Enabled,
-    };
+    // const accountProps = {
+    //     isAuthenticated: isAuthenticated,
+    //     isWeb3Enabled: isWeb3Enabled,
+    // };
     return (
         <div className={styles.input_box}>
             <div className={styles.input}>
