@@ -732,6 +732,9 @@ export default function App() {
                                     poolIdx: chainData.poolIndex.toString(),
                                     chainId: chainData.chainId,
                                     addValue: 'true',
+                                    simpleCalc: 'true',
+                                    annotateMEV: 'true',
+                                    annotate: 'true',
                                     ensResolution: 'true',
                                     n: '100', // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
                                     // page: 0 // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
@@ -1546,6 +1549,9 @@ export default function App() {
                             user: account,
                             chainId: chainData.chainId,
                             addValue: 'true',
+                            simpleCalc: 'true',
+                            annotateMEV: 'true',
+                            annotate: 'true',
                             ensResolution: 'true',
                             n: '200',
                         }),
