@@ -6,7 +6,6 @@ import {
 } from 'react';
 
 // START: Import JSX Functional Components
-import Divider from '../../../Global/Divider/Divider';
 import RangeStatus from '../../../Global/RangeStatus/RangeStatus';
 import Button from '../../../Global/Button/Button';
 import WaitingConfirmation from '../../../Global/WaitingConfirmation/WaitingConfirmation';

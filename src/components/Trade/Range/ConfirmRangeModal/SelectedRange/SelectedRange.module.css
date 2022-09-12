@@ -1,4 +1,10 @@
 
+
+.selected_range{
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
 /* Switch buttons */
 /* JR: TODO: TURN ON BORDER AND FIX SPACE ISSUE */
 .button_container {
@@ -12,6 +18,7 @@
     line-height: var(--body-lh);
     text-align: right;
     color: var(--text-grey-light);
+    margin: 8px 0;
 }
 
 .button_container button {
@@ -53,15 +60,15 @@
 
 /* price range container */
 .price_range_container {
-    width: 48%;
-    padding: 8px;
+    width: 100%;
+    
 
-    border-radius: 16px;
-}
-.price_range_content {
     background: var(--dark3);
 
-    border-radius: 16px;
+    border-radius: var(--border-radius);
+}
+.price_range_content {
+   
     padding: 12px;
     display: grid;
 
@@ -82,7 +89,7 @@
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
     color: var(--text-grey-white);
-    font-weight: 400;
+    font-weight: 200;
 
     text-align: center;
 }
@@ -100,27 +107,45 @@
 
 /* SELECTED RANGE */
 .selected_range_display {
+display: grid;
+grid-gap: 8px;
+}
+
+
+
+
+.extra_info_container{
     display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding:  8px;
+    border: 1px solid #242F3F;
+border-radius: 4px;
 
-    padding-bottom: 0.5rem;
 
+}
+.extra_info_container .row{
+    display: flex;
+    flex-direction: row;
     justify-content: space-between;
+    align-items: center;
 }
 
-/* CURRENT PRICE DISPLAY */
-.currentPrice_display {
-    width: 100%;
-    padding: 12px;
-
-    border-radius: 16px;
-    background-color: var(--dark3);
-
-    /* padding: 1rem 0; */
+.extra_info_container .row p{
+    font-weight: 300;
+    color: var(--text-grey-light);
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
 }
-.currentPrice_container {
-    display: grid;
 
-    grid-auto-rows: auto;
-    row-gap: 4px;
-    justify-items: center;
+
+/* Desktop screen Sizes */
+@media only screen and (min-width: 768px) {
+
+
+.selected_range_display{
+    grid-template-columns: 1fr 1fr;
+}	
+
+
 }

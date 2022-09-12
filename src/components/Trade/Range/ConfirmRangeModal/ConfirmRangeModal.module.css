@@ -1,5 +1,11 @@
 .confirm_range_modal_container {
     max-width: 400px;
+    display: flex;
+    flex-direction: column;
+
+   
+    gap: 8px;
+   
 }
 
 /* range header */
@@ -116,6 +122,6 @@
 }
 
 /* modal */
-.modal_footer {
-    padding: 1rem;
-}
+
+
+
