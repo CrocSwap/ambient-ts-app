@@ -94,29 +94,10 @@ export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
 
     const buyTokenData = tokenPair.dataTokenB;
 
-    const moreExpensiveToken = 'ETH';
-    // const lessExpensiveToken = 'DAI';
-
-    // const displayConversionRate = parseFloat(buyTokenQty) / parseFloat(sellTokenQty);
-    // // const priceLimit = 0.12;
-
-    // const displayPriceWithDenom = isDenomBase ? displayConversionRate : 1 / displayConversionRate;
-
-    // const displayPriceString =
-    //     displayPriceWithDenom === Infinity || displayPriceWithDenom === 0
-    //         ? '…'
-    //         : displayPriceWithDenom < 2
-    //         ? displayPriceWithDenom.toLocaleString(undefined, {
-    //               minimumFractionDigits: 2,
-    //               maximumFractionDigits: 6,
-    //           })
-    //         : displayPriceWithDenom.toLocaleString(undefined, {
-    //               minimumFractionDigits: 2,
-    //               maximumFractionDigits: 2,
-    //           });
-
     const explanationText = (
-        <div className={styles.confSwap_detail_note}>any other explanation text will go here.</div>
+        <div
+            className={styles.confSwap_detail_note}
+        >{`${tokenPair.dataTokenB.symbol} will be available for withdrawl after the order is filled. ${tokenPair.dataTokenA.symbol} collateral can be withdrawn at any time before the limit order is filled.`}</div>
     );
 
     // console.log(sellTokenData);
@@ -164,11 +145,19 @@ export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
             </div>
             <div className={styles.row}>
                 <p>Fill Start</p>
-                <p>0.000043 {moreExpensiveToken} </p>
+                <p>
+                    {isDenomBase
+                        ? `... ${quoteTokenSymbol} per ${baseTokenSymbol}`
+                        : `... ${baseTokenSymbol} per ${quoteTokenSymbol}`}
+                </p>
             </div>
             <div className={styles.row}>
                 <p>Fill End</p>
-                <p>0.000043 {moreExpensiveToken} </p>
+                <p>
+                    {isDenomBase
+                        ? `... ${quoteTokenSymbol} per ${baseTokenSymbol}`
+                        : `... ${baseTokenSymbol} per ${quoteTokenSymbol}`}
+                </p>
             </div>
         </div>
     );
@@ -193,7 +182,7 @@ export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
     // const currentTxHash = 'i am hash number';
     const confirmSendMessage = (
         <WaitingConfirmation
-            content={` Swapping ${sellTokenQty} ${sellTokenData.symbol} for ${buyTokenQty} ${buyTokenData.symbol}`}
+            content={` Submitting Limit Order to Swap ${sellTokenQty} ${sellTokenData.symbol} for ${buyTokenQty} ${buyTokenData.symbol}`}
         />
     );
 
@@ -217,7 +206,7 @@ export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
 
     const confirmLimitButton = (
         <Button
-            title='Send Limit to Metamask'
+            title='Send Limit Order to Metamask'
             action={() => {
                 // console.log(
                 //     `Sell Token Full name: ${sellTokenData.symbol} and quantity: ${sellTokenQty}`,
