@@ -188,7 +188,7 @@ export default function Chart(props: ChartData) {
 
     useEffect(() => {
         d3.select(d3Container.current).select('.targets').append('rect').attr('id', 'rect');
-    }, [location]);
+    }, [location, parsedChartData]);
 
     useEffect(() => {
         if (scaleData) {
@@ -204,7 +204,7 @@ export default function Chart(props: ChartData) {
                 )
                 .attr('y', scaleData.yScale(ranges[1].value));
         }
-    }, [ranges]);
+    }, [ranges, parsedChartData]);
 
     // Set Scale
     useEffect(() => {
