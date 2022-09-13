@@ -4,7 +4,7 @@ import styles from './IconWithTooltip.module.css';
 
 interface IconWithTooltipPropsIF {
     children: ReactNode;
-    symbolTitle: string;
+    title: string;
     placement?:
         | 'right'
         | 'bottom-end'
@@ -22,10 +22,11 @@ interface IconWithTooltipPropsIF {
 }
 
 export default function IconWithTooltip(props: IconWithTooltipPropsIF) {
-    const { children, symbolTitle, placement } = props;
+    const { children, title, placement } = props;
     return (
         <DefaultTooltip
-            title={symbolTitle}
+            arrow
+            title={title}
             enterDelay={400}
             leaveDelay={200}
             placement={placement ? placement : 'bottom'}

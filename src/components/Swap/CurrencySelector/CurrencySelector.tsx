@@ -10,6 +10,7 @@ import TokenSelectContainer from '../../Global/TokenSelectContainer/TokenSelectC
 import Toggle2 from '../../Global/Toggle/Toggle2';
 import ambientLogo from '../../../assets/images/logos/ambient_logo.svg';
 import { MdAccountBalanceWallet } from 'react-icons/md';
+import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
 
 interface CurrencySelectorProps {
     tokenPair: TokenPairIF;
@@ -292,49 +293,53 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                         }}
                     >
                         <div className={styles.wallet_logo}>
-                            <MdAccountBalanceWallet
-                                size={20}
-                                color={
-                                    (isSellTokenSelector && !isWithdrawFromDexChecked) ||
-                                    (!isSellTokenSelector && !isSaveAsDexSurplusChecked)
-                                        ? '#ebebff'
-                                        : '#555555'
-                                }
-                            />
+                            <IconWithTooltip title='wallet' placement='left'>
+                                <MdAccountBalanceWallet
+                                    size={20}
+                                    color={
+                                        (isSellTokenSelector && !isWithdrawFromDexChecked) ||
+                                        (!isSellTokenSelector && !isSaveAsDexSurplusChecked)
+                                            ? '#ebebff'
+                                            : '#555555'
+                                    }
+                                />
+                            </IconWithTooltip>
                         </div>
                         <div>{walletBalanceLocaleString}</div>
                     </div>
-                    <div
-                        className={`${styles.balance_with_pointer} ${
-                            (isSellTokenSelector && !isWithdrawFromDexChecked) ||
-                            (!isSellTokenSelector && !isSaveAsDexSurplusChecked)
-                                ? styles.grey_logo
-                                : null
-                        }`}
-                        style={{
-                            color:
+                    <IconWithTooltip title='surplus' placement='bottom'>
+                        <div
+                            className={`${styles.balance_with_pointer} ${
                                 (isSellTokenSelector && !isWithdrawFromDexChecked) ||
                                 (!isSellTokenSelector && !isSaveAsDexSurplusChecked)
-                                    ? '#555555'
-                                    : '#ebebff',
-                        }}
-                        // className={props.sellToken ? styles.balance_with_pointer : null}
-                        onClick={() => {
-                            if (props.sellToken) {
-                                setIsWithdrawFromDexChecked(true);
-                                if (handleChangeClick && !isWithdrawFromDexDisabled) {
-                                    handleChangeClick(surplusBalanceNonLocaleString);
+                                    ? styles.grey_logo
+                                    : null
+                            }`}
+                            style={{
+                                color:
+                                    (isSellTokenSelector && !isWithdrawFromDexChecked) ||
+                                    (!isSellTokenSelector && !isSaveAsDexSurplusChecked)
+                                        ? '#555555'
+                                        : '#ebebff',
+                            }}
+                            // className={props.sellToken ? styles.balance_with_pointer : null}
+                            onClick={() => {
+                                if (props.sellToken) {
+                                    setIsWithdrawFromDexChecked(true);
+                                    if (handleChangeClick && !isWithdrawFromDexDisabled) {
+                                        handleChangeClick(surplusBalanceNonLocaleString);
+                                    }
+                                } else {
+                                    setIsSaveAsDexSurplusChecked(true);
                                 }
-                            } else {
-                                setIsSaveAsDexSurplusChecked(true);
-                            }
-                        }}
-                    >
-                        <div className={styles.wallet_logo}>
-                            <img src={ambientLogo} width='20' alt='' />
+                            }}
+                        >
+                            <div className={styles.wallet_logo}>
+                                <img src={ambientLogo} width='20' alt='' />
+                            </div>
+                            {surplusBalanceLocaleString}
                         </div>
-                        {surplusBalanceLocaleString}
-                    </div>
+                    </IconWithTooltip>
                 </div>
                 {/* {fieldId === 'limit-sell' ? DexBalanceContent : WithdrawTokensContent} */}
                 {WithdrawTokensContent}
