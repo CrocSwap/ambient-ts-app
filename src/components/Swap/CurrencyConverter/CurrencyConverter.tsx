@@ -109,14 +109,24 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
     const tokenASurplusMinusTokenAQtyNum =
         tokenASurplusMinusTokenARemainderNum >= 0 ? tokenASurplusMinusTokenARemainderNum : 0;
 
-    const tokenAWalletMinusTokenAQtyNum =
-        isSellTokenEth && !isWithdrawFromDexChecked
-            ? parseFloat(tokenABalance || '0') - parseFloat(tokenAQtyLocal || '0')
-            : isWithdrawFromDexChecked && tokenASurplusMinusTokenARemainderNum < 0
-            ? parseFloat(tokenABalance || '0') + tokenASurplusMinusTokenARemainderNum
-            : isWithdrawFromDexChecked
+    const tokenAWalletMinusTokenAQtyNum = isSellTokenEth
+        ? isWithdrawFromDexChecked
             ? parseFloat(tokenABalance || '0')
-            : parseFloat(tokenABalance || '0') - parseFloat(tokenAQtyLocal || '0');
+            : parseFloat(tokenABalance || '0') - parseFloat(tokenAQtyLocal || '0')
+        : isWithdrawFromDexChecked && tokenASurplusMinusTokenARemainderNum < 0
+        ? parseFloat(tokenABalance || '0') + tokenASurplusMinusTokenARemainderNum
+        : isWithdrawFromDexChecked
+        ? parseFloat(tokenABalance || '0')
+        : parseFloat(tokenABalance || '0') - parseFloat(tokenAQtyLocal || '0');
+
+    // const tokenAWalletMinusTokenAQtyNum =
+    //     isSellTokenEth && !isWithdrawFromDexChecked
+    //         ? parseFloat(tokenABalance || '0') - parseFloat(tokenAQtyLocal || '0')
+    //         : isWithdrawFromDexChecked && tokenASurplusMinusTokenARemainderNum < 0
+    //         ? parseFloat(tokenABalance || '0') + tokenASurplusMinusTokenARemainderNum
+    //         : isWithdrawFromDexChecked
+    //         ? parseFloat(tokenABalance || '0')
+    //         : parseFloat(tokenABalance || '0') - parseFloat(tokenAQtyLocal || '0');
 
     const tokenBWalletPlusTokenBQtyNum =
         parseFloat(tokenBBalance || '0') + parseFloat(tokenBQtyLocal || '0');

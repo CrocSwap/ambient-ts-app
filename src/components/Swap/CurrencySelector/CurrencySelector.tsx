@@ -169,13 +169,6 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
             ? parseFloat(tokenBBalance).toString()
             : '0';
 
-    // const walletBalanceNonLocaleString =
-    //     props.sellToken && tokenABalance !== ''
-    //         ? parseFloat(tokenABalance).toString()
-    //         : !props.sellToken && tokenBBalance !== ''
-    //         ? parseFloat(tokenBBalance).toString()
-    //         : '0';
-
     const walletBalanceLocaleString = props.sellToken
         ? tokenAWalletMinusTokenAQtyNum.toLocaleString(undefined, {
               minimumFractionDigits: 2,
@@ -190,25 +183,6 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
           });
-    // const walletBalanceLocaleString = props.sellToken
-    //     ? !isWithdrawFromDexChecked
-    //         ? tokenAWalletMinusTokenAQtyNum.toLocaleString(undefined, {
-    //               minimumFractionDigits: 2,
-    //               maximumFractionDigits: 2,
-    //           })
-    //         : parseFloat(tokenABalance || '0').toLocaleString(undefined, {
-    //               minimumFractionDigits: 2,
-    //               maximumFractionDigits: 2,
-    //           })
-    //     : !isSaveAsDexSurplusChecked
-    //     ? tokenBWalletPlusTokenBQtyNum.toLocaleString(undefined, {
-    //           minimumFractionDigits: 2,
-    //           maximumFractionDigits: 2,
-    //       })
-    //     : parseFloat(tokenBBalance || '0').toLocaleString(undefined, {
-    //           minimumFractionDigits: 2,
-    //           maximumFractionDigits: 2,
-    //       });
 
     const surplusBalanceNonLocaleString =
         props.sellToken && tokenADexBalance !== ''
@@ -219,10 +193,15 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
 
     const surplusBalanceLocaleString = props.sellToken
         ? isWithdrawFromDexChecked
-            ? tokenASurplusMinusTokenAQtyNum.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              })
+            ? isSellTokenEth && tokenASurplusMinusTokenARemainderNum
+                ? tokenASurplusMinusTokenARemainderNum.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                  })
+                : tokenASurplusMinusTokenAQtyNum.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                  })
             : parseFloat(tokenADexBalance || '0').toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
@@ -236,23 +215,6 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
           });
-
-    // const surplusBalanceLocaleString =
-    //     props.sellToken && tokenADexBalance !== ''
-    //         ? parseFloat(tokenADexBalance).toLocaleString(undefined, {
-    //               minimumFractionDigits: 2,
-    //               maximumFractionDigits: 2,
-    //           })
-    //         : !props.sellToken && tokenBDexBalance !== ''
-    //         ? parseFloat(tokenBDexBalance).toLocaleString(undefined, {
-    //               minimumFractionDigits: 2,
-    //               maximumFractionDigits: 2,
-    //           })
-    //         : '0';
-
-    // const surplusBalance = 0;
-    // const surplusBalanceNonLocaleString = surplusBalance.toString();
-    // const surplusBalanceLocaleString = surplusBalance.toLocaleString();
 
     return (
         <div className={styles.swapbox}>
