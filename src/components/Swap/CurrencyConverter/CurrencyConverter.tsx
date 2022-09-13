@@ -209,7 +209,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
             if (isSellTokenEth) {
                 if (isWithdrawFromDexChecked) {
                     const roundedTokenADexBalance =
-                        Math.floor(parseFloat(tokenADexBalance) * 10000) / 10000;
+                        Math.floor(parseFloat(tokenADexBalance) * 1000) / 1000;
                     if (tokenAAmount >= roundedTokenADexBalance) {
                         setSwapAllowed(false);
                         setSwapButtonErrorMessage(
@@ -220,7 +220,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                     }
                 } else {
                     const roundedTokenAWalletBalance =
-                        Math.floor(parseFloat(tokenABalance) * 10000) / 10000;
+                        Math.floor(parseFloat(tokenABalance) * 1000) / 1000;
                     if (tokenAAmount >= roundedTokenAWalletBalance) {
                         setSwapAllowed(false);
                         setSwapButtonErrorMessage(
