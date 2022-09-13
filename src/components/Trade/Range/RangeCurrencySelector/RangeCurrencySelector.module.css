@@ -12,9 +12,11 @@
     background-color: var(--dark2);
 }
 
+
+
 .direction {
     padding: 0.4.5px 0;
-    margin: 4px 0;
+    margin: 10px 0;
 }
 .direction,
 .swapbox_bottom {
@@ -24,13 +26,35 @@
 }
 
 .surplus_container {
+    /* width: 200px; */
+    
     display: flex;
     flex-direction: row;
-    gap: 5px;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+
+    
+   
 }
 
 .balance_with_pointer {
-    cursor: pointer;
+    display: flex;
+    flex-direction: row;
+   
+    align-items: center;
+  
+gap: 5px;    cursor: pointer;
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+   
+}
+
+.wallet_logo {
+   
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    
 }
 
 .swapbox_top {
@@ -44,16 +68,20 @@
     min-height: 40px;
     /* height: 40px; */
 }
+
 .swap_input {
     width: 65%;
 }
-
 .token_select {
     display: flex;
     justify-content: space-between;
     align-items: center;
     width: 35%;
     cursor: pointer;
+    transition: all var(--animation-speed) ease-in-out;
+}
+.token_select:hover > .token_select svg {
+    color: white;
 }
 
 .token_select img {
@@ -76,7 +104,8 @@
     justify-content: space-between;
     align-items: center;
     min-height: 33px;
-    margin: 4px 0;
+   
+    margin: 6px 0;
 }
 
 .token_select_button {
@@ -98,11 +127,18 @@
     color: hotpink;
 }
 
+.grey_logo img {
+    filter: grayscale(100%);
+}
+
 .surplus_toggle {
     display: flex;
     flex-direction: row;
     align-items: center;
     gap: 8px;
+    padding-top: 3px;
+    /* padding-left: 10px;
+    padding-right: 10px; */
 }
 
 /* modal */
@@ -130,4 +166,22 @@
     border-radius: var(--border-radius);
     border: none;
     outline: none;
+}
+
+.manage_token_list_container {
+    width: 100%;
+    padding: 20px;
+    background-color: var(--dark3);
+    border-top: 1px solid rgb(44, 47, 54);
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-size: var(--header2-size);
+    line-height: var(--header2-lh);
+    color: var(--text-highlight);
+    gap: 10px;
 }
