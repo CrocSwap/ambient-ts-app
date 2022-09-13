@@ -1,6 +1,5 @@
 import { ReactNode } from 'react';
 import { DefaultTooltip } from '../StyledTooltip/StyledTooltip';
-import styles from './IconWithTooltip.module.css';
 
 interface IconWithTooltipPropsIF {
     children: ReactNode;

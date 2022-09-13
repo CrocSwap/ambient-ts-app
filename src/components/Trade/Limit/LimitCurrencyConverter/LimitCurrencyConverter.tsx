@@ -21,6 +21,7 @@ import styles from './LimitCurrencyConverter.module.css';
 import { TokenIF, TokenPairIF } from '../../../../utils/interfaces/exports';
 import TokensArrow from '../../../Global/TokensArrow/TokensArrow';
 import DividerDark from '../../../Global/DividerDark/DividerDark';
+import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 
 // interface for component props
 interface LimitCurrencyConverterProps {
@@ -346,8 +347,15 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 activeTokenListsChanged={activeTokenListsChanged}
                 indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
             />
-            <div className={styles.arrow_container} onClick={handleArrowClick}>
-                <TokensArrow />
+
+            <div
+                className={styles.arrow_container}
+                onClick={handleArrowClick}
+                style={{ cursor: 'pointer' }}
+            >
+                <IconWithTooltip title='Reverse tokens' placement='left'>
+                    <TokensArrow />
+                </IconWithTooltip>
             </div>
             <LimitCurrencySelector
                 tokenPair={tokenPair}

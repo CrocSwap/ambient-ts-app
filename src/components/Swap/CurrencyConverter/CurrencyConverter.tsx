@@ -14,6 +14,7 @@ import TokensArrow from '../../Global/TokensArrow/TokensArrow';
 import { CrocEnv, CrocImpact } from '@crocswap-libs/sdk';
 import { ethers } from 'ethers';
 import { calcImpact } from '../../../App/functions/calcImpact';
+import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
 interface CurrencyConverterPropsIF {
     crocEnv: CrocEnv | undefined;
     provider: ethers.providers.Provider | undefined;
@@ -406,7 +407,11 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
             <div className={styles.arrow_container} onClick={handleArrowClick}>
                 {/* <img src={tokensArrowImage} alt="arrow pointing down" /> */}
                 {/* {isLiq ? null : <span className={styles.arrow} />} */}
-                {isLiq ? null : <TokensArrow />}
+                {isLiq ? null : (
+                    <IconWithTooltip title='Reverse tokens' placement='left'>
+                        <TokensArrow />
+                    </IconWithTooltip>
+                )}
             </div>
             <CurrencySelector
                 tokenPair={tokenPair}

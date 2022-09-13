@@ -7,6 +7,9 @@ import { useModal } from '../../../../components/Global/Modal/useModal';
 import Modal from '../../../../components/Global/Modal/Modal';
 import TokenSelectContainer from '../../../Global/TokenSelectContainer/TokenSelectContainer';
 import Toggle2 from '../../../Global/Toggle/Toggle2';
+import ambientLogo from '../../../../assets/images/logos/ambient_logo.svg';
+import { MdAccountBalanceWallet } from 'react-icons/md';
+import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 
 interface RangeCurrencySelectorProps {
     fieldId: string;
@@ -101,26 +104,27 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
 
     const DexBalanceContent = (
         <span className={styles.surplus_toggle}>
-            {'Use Surplus'}
-            {fieldId === 'A' ? (
-                <Toggle2
-                    isOn={isWithdrawTokenAFromDexChecked}
-                    handleToggle={() =>
-                        setIsWithdrawTokenAFromDexChecked(!isWithdrawTokenAFromDexChecked)
-                    }
-                    id='withdraw_from_dex'
-                    disabled={parseFloat(tokenADexBalance) <= 0}
-                />
-            ) : (
-                <Toggle2
-                    isOn={isWithdrawTokenBFromDexChecked}
-                    handleToggle={() =>
-                        setIsWithdrawTokenBFromDexChecked(!isWithdrawTokenBFromDexChecked)
-                    }
-                    id='withdraw_to_wallet'
-                    disabled={parseFloat(tokenBDexBalance) <= 0}
-                />
-            )}
+            <IconWithTooltip title='Use Surplus' placement='left'>
+                {fieldId === 'A' ? (
+                    <Toggle2
+                        isOn={isWithdrawTokenAFromDexChecked}
+                        handleToggle={() =>
+                            setIsWithdrawTokenAFromDexChecked(!isWithdrawTokenAFromDexChecked)
+                        }
+                        id='withdraw_from_dex'
+                        disabled={parseFloat(tokenADexBalance) <= 0}
+                    />
+                ) : (
+                    <Toggle2
+                        isOn={isWithdrawTokenBFromDexChecked}
+                        handleToggle={() =>
+                            setIsWithdrawTokenBFromDexChecked(!isWithdrawTokenBFromDexChecked)
+                        }
+                        id='withdraw_to_wallet'
+                        disabled={parseFloat(tokenBDexBalance) <= 0}
+                    />
+                )}
+            </IconWithTooltip>
         </span>
     );
 
@@ -188,24 +192,46 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                 </div>
             </div>
             <div className={styles.swapbox_bottom}>
-                <div className={styles.surplus_container}>
+                <div
+                    className={styles.surplus_container}
+                    style={{
+                        color: isWithdrawTokenAFromDexChecked ? '#ebebff' : '#555555',
+                    }}
+                >
                     <div
                         className={styles.balance_with_pointer}
                         onClick={() => {
                             handleChangeClick(walletBalanceNonLocaleString);
                         }}
                     >
-                        Wallet: {walletBalanceLocaleString}{' '}
-                    </div>{' '}
-                    |{' '}
-                    <div
-                        className={styles.balance_with_pointer}
-                        onClick={() => {
-                            handleChangeClick(surplusBalanceNonLocaleString);
-                        }}
-                    >
-                        Surplus: {surplusBalanceLocaleString}
+                        <div className={styles.wallet_logo}>
+                            <IconWithTooltip title='wallet' placement='bottom'>
+                                <MdAccountBalanceWallet
+                                    size={15}
+                                    color={isWithdrawTokenAFromDexChecked ? '#ebebff' : '#555555'}
+                                />
+                            </IconWithTooltip>
+                        </div>
+                        <div>{walletBalanceLocaleString}</div>
                     </div>
+                    <IconWithTooltip title='surplus' placement='bottom'>
+                        <div
+                            className={`${styles.balance_with_pointer} ${
+                                isWithdrawTokenAFromDexChecked ? styles.grey_logo : null
+                            }`}
+                            onClick={() => {
+                                handleChangeClick(surplusBalanceNonLocaleString);
+                            }}
+                            style={{
+                                color: isWithdrawTokenAFromDexChecked ? '#555555' : '#ebebff',
+                            }}
+                        >
+                            <div className={styles.wallet_logo}>
+                                <img src={ambientLogo} width='15' alt='surplus' />
+                            </div>
+                            {surplusBalanceLocaleString}
+                        </div>
+                    </IconWithTooltip>
                 </div>
                 {/* {fieldId === 'A' ? (
                             <span>Wallet: {walletBalance} | Surplus: 0.00</span>

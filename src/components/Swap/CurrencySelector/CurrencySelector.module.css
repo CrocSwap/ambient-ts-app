@@ -12,6 +12,8 @@
     background-color: var(--dark2);
 }
 
+
+
 .direction {
     padding: 0.4.5px 0;
     margin: 10px 0;
@@ -24,12 +26,13 @@
 }
 
 .surplus_container {
-    width: 200px;
+    /* width: 200px; */
     
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+    gap: 2rem;
 
     
    
@@ -98,9 +101,10 @@ gap: 5px;    cursor: pointer;
 .swapbox_bottom {
     display: flex;
     flex-direction: row;
-    justify-content: flex-end;
+    justify-content: space-between;
     align-items: center;
     min-height: 33px;
+   
     margin: 6px 0;
 }
 
@@ -133,8 +137,8 @@ gap: 5px;    cursor: pointer;
     align-items: center;
     gap: 8px;
     padding-top: 3px;
-    padding-left: 10px;
-    padding-right: 10px;
+    /* padding-left: 10px;
+    padding-right: 10px; */
 }
 
 /* modal */

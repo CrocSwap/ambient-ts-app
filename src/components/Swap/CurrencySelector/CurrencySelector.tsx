@@ -96,25 +96,25 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                 : 'Withdraw to Wallet'} */}
 
             {isSellTokenSelector ? (
-                // <Toggle
-                //     isOn={isWithdrawFromDexChecked}
-                //     handleToggle={() => setIsWithdrawFromDexChecked(!isWithdrawFromDexChecked)}
-                //     Width={36}
-                //     id='sell_token_withdrawal'
-                // />
-                <Toggle2
-                    isOn={isWithdrawFromDexChecked}
-                    handleToggle={() => setIsWithdrawFromDexChecked(!isWithdrawFromDexChecked)}
-                    id='sell_token_withdrawal'
-                    disabled={false}
-                    // disabled={isWithdrawFromDexDisabled}
-                />
+                <IconWithTooltip title='Use Exchange Surplus' placement='bottom'>
+                    <Toggle2
+                        isOn={isWithdrawFromDexChecked}
+                        handleToggle={() => setIsWithdrawFromDexChecked(!isWithdrawFromDexChecked)}
+                        id='sell_token_withdrawal'
+                        disabled={false}
+                        // disabled={isWithdrawFromDexDisabled}
+                    />
+                </IconWithTooltip>
             ) : (
-                <Toggle2
-                    isOn={isSaveAsDexSurplusChecked}
-                    handleToggle={() => setIsSaveAsDexSurplusChecked(!isSaveAsDexSurplusChecked)}
-                    id='buy_token_withdrawal'
-                />
+                <IconWithTooltip title='Use Wallet Balance' placement='bottom'>
+                    <Toggle2
+                        isOn={isSaveAsDexSurplusChecked}
+                        handleToggle={() =>
+                            setIsSaveAsDexSurplusChecked(!isSaveAsDexSurplusChecked)
+                        }
+                        id='buy_token_withdrawal'
+                    />
+                </IconWithTooltip>
             )}
         </div>
     );
@@ -293,7 +293,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                         }}
                     >
                         <div className={styles.wallet_logo}>
-                            <IconWithTooltip title='wallet' placement='left'>
+                            <IconWithTooltip title='wallet' placement='bottom'>
                                 <MdAccountBalanceWallet
                                     size={15}
                                     color={
