@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useMoralis } from 'react-moralis';
 import { useEffect, useState } from 'react';
 import { BsSlashSquare, BsEmojiSmileFill } from 'react-icons/bs';
@@ -27,7 +28,6 @@ export default function MessageInput(props: MessageInputProps) {
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const { isWeb3Enabled, isAuthenticated } = useMoralis();
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleEmojiClick = (event: any, emoji: any) => {
         let msg = message;
         msg += emoji.emoji;
@@ -37,7 +37,6 @@ export default function MessageInput(props: MessageInputProps) {
     const handleEmojiPickerHideShow = () => {
         setShowEmojiPicker(!showEmojiPicker);
     };
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const _handleKeyDown = (e: any) => {
         if (e.key === 'Enter') {
             handleSendMsg(e.target.value);
@@ -56,7 +55,6 @@ export default function MessageInput(props: MessageInputProps) {
         });
     };
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const onChangeMessage = (e: any) => {
         setMessage(e.target.value);
     };
