@@ -15,6 +15,8 @@ import { tradeData as TradeDataIF } from '../../utils/state/tradeDataSlice';
 import { CandleData } from '../../utils/state/graphDataSlice';
 import { PoolIF, TokenIF, TokenPairIF } from '../../utils/interfaces/exports';
 import { ChainSpec } from '@crocswap-libs/sdk';
+import { SketchPicker } from 'react-color';
+import { border } from '@mui/system';
 
 // interface for React functional component props
 interface TradePropsIF {
@@ -154,11 +156,195 @@ export default function Trade(props: TradePropsIF) {
         setTransactionFilter(candleData);
     };
 
+    const [upBodyColorPicker, setUpBodyColorPicker] = useState<boolean>(false);
+    const [upBorderColorPicker, setUpBorderColorPicker] = useState<boolean>(false);
+    const [downBodyColorPicker, setDownBodyColorPicker] = useState<boolean>(false);
+    const [downBorderColorPicker, setDownBorderColorPicker] = useState<boolean>(false);
+
+    const [upBodyColor, setUpBodyColor] = useState<string>('#7371FC');
+    const [upBorderColor, setUpBorderColor] = useState<string>('#7371FC');
+    const [downBodyColor, setDownBodyColor] = useState<string>('#CDC1FF');
+    const [downBorderColor, setDownBorderColor] = useState<string>('#CDC1FF');
+
+    const handleBodyColorPickerChange = (color: any) => {
+        setUpBodyColor(color.hex);
+    };
+    const handleBorderColorPickerChange = (color: any) => {
+        setUpBorderColor(color.hex);
+    };
+    const handleDownBodyColorPickerChange = (color: any) => {
+        setDownBodyColor(color.hex);
+    };
+    const handleDownBorderColorPickerChange = (color: any) => {
+        setDownBorderColor(color.hex);
+    };
+
     return (
         <AnimateSharedLayout>
             <main className={styles.main_layout}>
                 <div className={styles.middle_col}>
                     <div className={` ${expandGraphStyle} ${fullScreenStyle}`}>
+                        <div style={{ textAlign: 'center', display: 'flex' }}>
+                            <label style={{ padding: '0px' }}>Up</label>
+                            <div style={{ marginLeft: '4px' }}>
+                                <div
+                                    style={{
+                                        padding: '2px',
+                                        borderRadius: '1px',
+                                        boxShadow: '0 0 0 1px rgba(0,0,0,.1)',
+                                        display: 'inline-block',
+                                        cursor: 'pointer',
+                                    }}
+                                    onClick={() => setUpBodyColorPicker(true)}
+                                >
+                                    <div
+                                        style={{
+                                            width: '36px',
+                                            height: '14px',
+                                            borderRadius: '2px',
+                                            background: upBodyColor,
+                                        }}
+                                    />
+                                    <label style={{ padding: '0px' }}>Body</label>
+                                </div>
+                                {upBodyColorPicker ? (
+                                    <div style={{ position: 'absolute', zIndex: '2' }}>
+                                        <div
+                                            style={{
+                                                position: 'fixed',
+                                                top: '0px',
+                                                right: '0px',
+                                                bottom: '0px',
+                                                left: '0px',
+                                            }}
+                                            onClick={() => setUpBodyColorPicker(false)}
+                                        />
+                                        <SketchPicker
+                                            color={upBodyColor}
+                                            onChangeComplete={handleBodyColorPickerChange}
+                                        />
+                                    </div>
+                                ) : null}
+                                <div
+                                    style={{
+                                        padding: '2px',
+                                        borderRadius: '1px',
+                                        boxShadow: '0 0 0 1px rgba(0,0,0,.1)',
+                                        display: 'inline-block',
+                                        cursor: 'pointer',
+                                    }}
+                                    onClick={() => setUpBorderColorPicker(true)}
+                                >
+                                    <div
+                                        style={{
+                                            width: '36px',
+                                            height: '14px',
+                                            borderRadius: '2px',
+                                            background: upBorderColor,
+                                        }}
+                                    />
+                                    <label style={{ padding: '0px' }}>Border</label>
+                                </div>
+                                {upBorderColorPicker ? (
+                                    <div style={{ position: 'absolute', zIndex: '2' }}>
+                                        <div
+                                            style={{
+                                                position: 'fixed',
+                                                top: '0px',
+                                                right: '0px',
+                                                bottom: '0px',
+                                                left: '0px',
+                                            }}
+                                            onClick={() => setUpBorderColorPicker(false)}
+                                        />
+                                        <SketchPicker
+                                            color={upBorderColor}
+                                            onChangeComplete={handleBorderColorPickerChange}
+                                        />
+                                    </div>
+                                ) : null}
+                            </div>
+                            <label style={{ padding: '0px' }}>Down</label>
+                            <div style={{ marginLeft: '4px' }}>
+                                <div
+                                    style={{
+                                        padding: '2px',
+                                        borderRadius: '1px',
+                                        boxShadow: '0 0 0 1px rgba(0,0,0,.1)',
+                                        display: 'inline-block',
+                                        cursor: 'pointer',
+                                    }}
+                                    onClick={() => setDownBodyColorPicker(true)}
+                                >
+                                    <div
+                                        style={{
+                                            width: '36px',
+                                            height: '14px',
+                                            borderRadius: '2px',
+                                            background: downBodyColor,
+                                        }}
+                                    />
+                                    <label style={{ padding: '0px' }}>Body</label>
+                                </div>
+                                {downBodyColorPicker ? (
+                                    <div style={{ position: 'absolute', zIndex: '2' }}>
+                                        <div
+                                            style={{
+                                                position: 'fixed',
+                                                top: '0px',
+                                                right: '0px',
+                                                bottom: '0px',
+                                                left: '0px',
+                                            }}
+                                            onClick={() => setDownBodyColorPicker(false)}
+                                        />
+                                        <SketchPicker
+                                            color={downBodyColor}
+                                            onChangeComplete={handleDownBodyColorPickerChange}
+                                        />
+                                    </div>
+                                ) : null}
+                                <div
+                                    style={{
+                                        padding: '2px',
+                                        borderRadius: '1px',
+                                        boxShadow: '0 0 0 1px rgba(0,0,0,.1)',
+                                        display: 'inline-block',
+                                        cursor: 'pointer',
+                                    }}
+                                    onClick={() => setDownBorderColorPicker(true)}
+                                >
+                                    <div
+                                        style={{
+                                            width: '36px',
+                                            height: '14px',
+                                            borderRadius: '2px',
+                                            background: downBorderColor,
+                                        }}
+                                    />
+                                    <label style={{ padding: '0px' }}>Border</label>
+                                </div>
+                                {downBorderColorPicker ? (
+                                    <div style={{ position: 'absolute', zIndex: '2' }}>
+                                        <div
+                                            style={{
+                                                position: 'fixed',
+                                                top: '0px',
+                                                right: '0px',
+                                                bottom: '0px',
+                                                left: '0px',
+                                            }}
+                                            onClick={() => setDownBorderColorPicker(false)}
+                                        />
+                                        <SketchPicker
+                                            color={downBorderColor}
+                                            onChangeComplete={handleDownBorderColorPickerChange}
+                                        />
+                                    </div>
+                                ) : null}
+                            </div>
+                        </div>
+
                         <motion.div
                             initial={{ opacity: 0, scale: 0.5 }}
                             animate={{ opacity: 1, scale: 1 }}
@@ -193,6 +379,10 @@ export default function Trade(props: TradePropsIF) {
                                 pinnedMinPriceDisplayTruncated={pinnedMinPriceDisplayTruncated}
                                 pinnedMaxPriceDisplayTruncated={pinnedMaxPriceDisplayTruncated}
                                 spotPriceDisplay={spotPriceDisplay}
+                                upBodyColor={upBodyColor}
+                                upBorderColor={upBorderColor}
+                                downBodyColor={downBodyColor}
+                                downBorderColor={downBorderColor}
                             />
                         </motion.div>
                     </div>

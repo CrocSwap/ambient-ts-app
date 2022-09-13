@@ -57,6 +57,10 @@ interface ChartData {
     tvlData: any[];
     chartItemStates: chartItemStates;
     setCurrentData: React.Dispatch<React.SetStateAction<CandleChartData | undefined>>;
+    upBodyColor: string;
+    upBorderColor: string;
+    downBodyColor: string;
+    downBorderColor: string;
 }
 
 interface ChartUtils {
@@ -75,6 +79,7 @@ export default function Chart(props: ChartData) {
     } = props;
 
     const { showFeeRate, showTvl, showVolume } = props.chartItemStates;
+    const { upBodyColor, upBorderColor, downBodyColor, downBorderColor } = props;
 
     const parsedChartData = props.priceData;
 
@@ -164,6 +169,10 @@ export default function Chart(props: ChartData) {
         const nd = d3.select('#group').node() as any;
         nd.requestRedraw();
     }, []);
+
+    useEffect(() => {
+        render();
+    }, [props.chartItemStates]);
 
     useEffect(() => {
         d3.select(d3Xaxis.current)
@@ -480,24 +489,33 @@ export default function Chart(props: ChartData) {
                         const low = newTargets.filter((target: any) => target.name === 'Min')[0]
                             .value;
 
-                        const high = newTargets.filter((target: any) => target.name === 'Min')[0]
+                        const high = newTargets.filter((target: any) => target.name === 'Max')[0]
                             .value;
 
-                        if (
-                            d.name === 'Max' &&
-                            newValue >
-                                newTargets.filter((target: any) => target.name === 'Min')[0].value
-                        ) {
-                            newTargets.filter((target: any) => target.name === d.name)[0].value =
-                                newValue;
-                        } else if (
-                            d.name === 'Min' &&
-                            newValue <
-                                newTargets.filter((target: any) => target.name === 'Max')[0].value
-                        ) {
-                            newTargets.filter((target: any) => target.name === d.name)[0].value =
-                                newValue;
+                        if (intercourse !== undefined) {
+                            newTargets.filter(
+                                (target: any) => target.name === intercourse,
+                            )[0].value = newValue;
+                        } else {
+                            if (d.name === 'Max' && newValue > low) {
+                                newTargets.filter(
+                                    (target: any) => target.name === d.name,
+                                )[0].value = newValue;
+                            } else if (d.name === 'Min' && newValue < high) {
+                                newTargets.filter(
+                                    (target: any) => target.name === d.name,
+                                )[0].value = newValue;
+                            } else if (d.name === 'Max' && newValue < low) {
+                                newTargets.filter((target: any) => target.name === 'Min')[0].value =
+                                    newValue;
+                                setIntercourse('Min');
+                            } else if (d.name === 'Min' && newValue > high) {
+                                newTargets.filter((target: any) => target.name === 'Max')[0].value =
+                                    newValue;
+                                setIntercourse('Max');
+                            }
                         }
+
                         render();
                         return newTargets;
                     });
@@ -518,7 +536,7 @@ export default function Chart(props: ChartData) {
                 return location.pathname.includes('limit') ? dragLimit : dragRange;
             });
         }
-    }, [spotPriceDisplay, location, scaleData, isAdvancedModeActive]);
+    }, [spotPriceDisplay, location, scaleData, isAdvancedModeActive, intercourse]);
 
     // set HorizontalLines
     useEffect(() => {
@@ -540,7 +558,8 @@ export default function Chart(props: ChartData) {
                     .select('.targets')
                     .select('.horizontal')
                     .on('blur', () => {
-                        console.log('On blur');
+                        setIntercourse(undefined);
+                        console.log('blur');
                     })
                     .on('mouseover', (event: any) => {
                         d3.select(event.currentTarget)
@@ -554,7 +573,8 @@ export default function Chart(props: ChartData) {
                     .select('.targets')
                     .select('#Min')
                     .on('blur', () => {
-                        console.log('On blur');
+                        setIntercourse(undefined);
+                        console.log('blur');
                     })
                     .on('mouseover', (event: any) => {
                         d3.select(event.currentTarget).style('cursor', 'ns-resize');
@@ -566,7 +586,8 @@ export default function Chart(props: ChartData) {
                     .select('.targets')
                     .select('#Max')
                     .on('blur', () => {
-                        console.log('On blur');
+                        setIntercourse(undefined);
+                        console.log('blur');
                     })
                     .on('mouseover', (event: any) => {
                         d3.select(event.currentTarget).style('cursor', 'ns-resize');
@@ -592,13 +613,42 @@ export default function Chart(props: ChartData) {
                 ? market
                 : undefined;
 
-            drawChart(parsedChartData.chartData, targetData, scaleData, props.liquidityData);
+            drawChart(
+                parsedChartData.chartData,
+                targetData,
+                scaleData,
+                props.liquidityData,
+                upBodyColor,
+                downBodyColor,
+                upBorderColor,
+                downBorderColor,
+            );
         }
-    }, [parsedChartData, scaleData, location, market, ranges, limit]);
+    }, [
+        parsedChartData,
+        scaleData,
+        location,
+        market,
+        ranges,
+        limit,
+        upBodyColor,
+        downBodyColor,
+        upBorderColor,
+        downBorderColor,
+    ]);
 
     // Draw Chart
     const drawChart = useCallback(
-        (chartData: any, targets: any, scaleData: any, liquidityData: any) => {
+        (
+            chartData: any,
+            targets: any,
+            scaleData: any,
+            liquidityData: any,
+            upBodyColor: any,
+            downBodyColor: any,
+            upBorderColor: any,
+            downBorderColor: any,
+        ) => {
             if (chartData.length > 0) {
                 let selectedCandle: any;
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -705,9 +755,11 @@ export default function Chart(props: ChartData) {
                     .decorate((selection: any) => {
                         selection
                             .enter()
-                            .style('fill', (d: any) => (d.close > d.open ? '#7371FC' : '#CDC1FF'))
+                            .style('fill', (d: any) =>
+                                d.close > d.open ? upBodyColor : downBodyColor,
+                            )
                             .style('stroke', (d: any) =>
-                                d.close > d.open ? '#7371FC' : '#CDC1FF',
+                                d.close > d.open ? upBorderColor : downBorderColor,
                             );
                         selection
                             .enter()
@@ -923,6 +975,23 @@ export default function Chart(props: ChartData) {
         },
         [],
     );
+
+    useEffect(() => {
+        d3.select(d3PlotArea.current).select('.candle').selectAll('.up').style('fill', upBodyColor);
+        d3.select(d3PlotArea.current)
+            .select('.candle')
+            .selectAll('.down')
+            .style('fill', downBodyColor);
+        d3.select(d3PlotArea.current)
+            .select('.candle')
+            .selectAll('.up')
+            .style('stroke', upBorderColor);
+        d3.select(d3PlotArea.current)
+            .select('.candle')
+            .selectAll('.down')
+            .style('stroke', downBorderColor);
+        render();
+    }, [upBodyColor, downBodyColor, upBorderColor, downBorderColor]);
 
     // Set selected candle transactions
     useEffect(() => {

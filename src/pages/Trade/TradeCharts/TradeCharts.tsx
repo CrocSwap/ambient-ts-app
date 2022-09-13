@@ -65,6 +65,10 @@ interface TradeChartsPropsIF {
     pinnedMinPriceDisplayTruncated: number | undefined;
     pinnedMaxPriceDisplayTruncated: number | undefined;
     spotPriceDisplay: string | undefined;
+    upBodyColor: string;
+    upBorderColor: string;
+    downBodyColor: string;
+    downBorderColor: string;
 }
 
 export interface CandleChartData {
@@ -638,6 +642,10 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                         spotPriceDisplay={props.spotPriceDisplay}
                         truncatedPoolPrice={parseFloat(truncatedPoolPrice)}
                         setCurrentData={setCurrentData}
+                        upBodyColor={props.upBodyColor}
+                        upBorderColor={props.upBorderColor}
+                        downBodyColor={props.downBodyColor}
+                        downBorderColor={props.downBorderColor}
                     />
                 </div>
             )}
