@@ -21,10 +21,6 @@ export default function MessageInput(props: MessageInputProps) {
 
     useEffect(() => {
         _socket.connect();
-        // _socket.on('msg-recieve', (data) => {
-        // //   setMessageReceived(data.message)
-        // })
-        // _socket.disconnect();
     }, [_socket]);
 
     const [message, setMessage] = useState('');
