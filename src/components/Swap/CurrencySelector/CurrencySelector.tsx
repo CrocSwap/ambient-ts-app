@@ -295,7 +295,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                         <div className={styles.wallet_logo}>
                             <IconWithTooltip title='wallet' placement='left'>
                                 <MdAccountBalanceWallet
-                                    size={20}
+                                    size={15}
                                     color={
                                         (isSellTokenSelector && !isWithdrawFromDexChecked) ||
                                         (!isSellTokenSelector && !isSaveAsDexSurplusChecked)
@@ -335,7 +335,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                             }}
                         >
                             <div className={styles.wallet_logo}>
-                                <img src={ambientLogo} width='20' alt='' />
+                                <img src={ambientLogo} width='15' alt='surplus' />
                             </div>
                             {surplusBalanceLocaleString}
                         </div>

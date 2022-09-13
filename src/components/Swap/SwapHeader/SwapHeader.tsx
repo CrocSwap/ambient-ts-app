@@ -10,6 +10,7 @@ import settingsIcon from '../../../assets/images/icons/settings.svg';
 import { SlippagePairIF } from '../../../utils/interfaces/exports';
 import { useAppDispatch, useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { toggleDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
+import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
 
 // interface for props
 interface SwapHeaderPropsIF {
@@ -53,9 +54,12 @@ export default function SwapHeader(props: SwapHeaderPropsIF) {
                 {isDenomBase ? baseTokenSymbol : quoteTokenSymbol} /{' '}
                 {isDenomBase ? quoteTokenSymbol : baseTokenSymbol}
             </div>
-            <div onClick={openModal}>
-                <img src={settingsIcon} alt='settings' />
-            </div>
+
+            <IconWithTooltip title='Settings' placement='left'>
+                <div onClick={openModal} style={{ cursor: 'pointer' }}>
+                    <img src={settingsIcon} alt='settings' />
+                </div>
+            </IconWithTooltip>
         </ContentHeader>
     );
 
@@ -63,9 +67,15 @@ export default function SwapHeader(props: SwapHeaderPropsIF) {
         <ContentHeader>
             <div />
             <span className={styles.title}>Swap</span>
-            <div className={styles.settings_container} onClick={openModal}>
-                <img src={settingsIcon} alt='settings' />
-            </div>
+            <IconWithTooltip title='Settings' placement='left'>
+                <div
+                    className={styles.settings_container}
+                    onClick={openModal}
+                    style={{ cursor: 'pointer' }}
+                >
+                    <img src={settingsIcon} alt='settings' />
+                </div>
+            </IconWithTooltip>
         </ContentHeader>
     );
 
