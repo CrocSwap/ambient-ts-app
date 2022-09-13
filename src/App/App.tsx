@@ -1958,6 +1958,7 @@ export default function App() {
         <>
             <div className={containerStyle}>
                 {currentLocation !== '/404' && <PageHeader {...headerProps} />}
+                {/* <MobileSidebar/> */}
                 <main className={`${showSidebarOrNullStyle} ${swapBodyStyle}`}>
                     {sidebarRender}
                     <Routes>
