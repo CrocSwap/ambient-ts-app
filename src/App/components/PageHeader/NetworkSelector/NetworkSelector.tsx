@@ -9,6 +9,7 @@ import styles from './NetworkSelector.module.css';
 import DropdownMenu2 from '../../../../components/Global/DropdownMenu2/DropdownMenu2';
 import { ItemEnterAnimation } from '../../../../utils/others/FramerMotionAnimations';
 import { ambientChains } from '../../../../utils/data/chains';
+import IconWithTooltip from '../../../../components/Global/IconWithTooltip/IconWithTooltip';
 
 interface NetworkSelectorPropsIF {
     chainId: string;
@@ -42,15 +43,17 @@ export default function NetworkSelector(props: NetworkSelectorPropsIF) {
     // TODO:  @Junior is the wrapper in the return necessary?
     return (
         <div className={styles.selector_select_container}>
-            <div className={styles.dropdown_menu_container}>
-                <DropdownMenu2
-                    marginTop={'50px'}
-                    titleWidth={'80px'}
-                    title={lookupChain(chainId).displayName}
-                >
-                    {networkMenuContent}
-                </DropdownMenu2>
-            </div>
+            <IconWithTooltip title='Network' placement='left'>
+                <div className={styles.dropdown_menu_container}>
+                    <DropdownMenu2
+                        marginTop={'50px'}
+                        titleWidth={'80px'}
+                        title={lookupChain(chainId).displayName}
+                    >
+                        {networkMenuContent}
+                    </DropdownMenu2>
+                </div>
+            </IconWithTooltip>
         </div>
     );
 }

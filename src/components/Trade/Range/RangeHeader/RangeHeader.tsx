@@ -12,6 +12,7 @@ import Modal from '../../../../components/Global/Modal/Modal';
 import { useModal } from '../../../../components/Global/Modal/useModal';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
+import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 
 // interface for component props
 interface RangeHeaderPropsIF {
@@ -51,12 +52,15 @@ export default function RangeHeader(props: RangeHeaderPropsIF) {
                 {reverseDisplay ? tokenPair.dataTokenA.symbol : tokenPair.dataTokenB.symbol} /{' '}
                 {reverseDisplay ? tokenPair.dataTokenB.symbol : tokenPair.dataTokenA.symbol}
             </div>
-            <div
-                onClick={openModal}
-                className={`${styles.settings_container} ${styles.settings_icon}`}
-            >
-                <img src={settingsIcon} alt='settings' />
-            </div>
+            <IconWithTooltip title='Settings' placement='left'>
+                <div
+                    onClick={openModal}
+                    style={{ cursor: 'pointer' }}
+                    className={`${styles.settings_container} ${styles.settings_icon}`}
+                >
+                    <img src={settingsIcon} alt='settings' />
+                </div>
+            </IconWithTooltip>
             {settingsModalOrNull}
         </ContentHeader>
     );

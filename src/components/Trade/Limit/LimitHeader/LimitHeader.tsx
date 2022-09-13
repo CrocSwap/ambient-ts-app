@@ -12,6 +12,7 @@ import Modal from '../../../../components/Global/Modal/Modal';
 import { useModal } from '../../../../components/Global/Modal/useModal';
 import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
+import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 
 // interface for component props
 interface LimitHeaderPropsIF {
@@ -54,9 +55,15 @@ export default function LimitHeader(props: LimitHeaderPropsIF) {
                 {isDenomBase ? baseTokenSymbol : quoteTokenSymbol} /{' '}
                 {isDenomBase ? quoteTokenSymbol : baseTokenSymbol}
             </div>
-            <div onClick={openModal} className={styles.settings_icon}>
-                <img src={settingsIcon} alt='settings' />
-            </div>
+            <IconWithTooltip title='Settings' placement='left'>
+                <div
+                    onClick={openModal}
+                    style={{ cursor: 'pointer' }}
+                    className={styles.settings_icon}
+                >
+                    <img src={settingsIcon} alt='settings' />
+                </div>
+            </IconWithTooltip>
             {settingsModalOrNull}
         </ContentHeader>
     );
