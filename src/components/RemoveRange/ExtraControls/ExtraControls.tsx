@@ -98,16 +98,25 @@ export default function ExtraControls(props: CurrencyConverterPropsIF) {
         <section className={styles.wallet_container}>
             <div className={styles.wallet_container_left}>
                 <div
-                    className={styles.wallet_amount}
+                    className={styles.wallet_section}
                     style={{ color: !isSaveAsDexSurplusChecked ? '#ebebff' : '#555555' }}
                 >
                     <MdAccountBalanceWallet
-                        size={15}
+                        size={25}
                         color={isSaveAsDexSurplusChecked ? '#555555' : '#EBEBFF'}
                     />
-                    {isSaveAsDexSurplusChecked
-                        ? `${truncatedWalletBaseQty} ${baseTokenSymbol} / ${truncatedWalletQuoteQty} ${quoteTokenSymbol}`
-                        : `${truncatedCombinedWalletBaseQty} ${baseTokenSymbol} / ${truncatedCombinedWalletQuoteQty} ${quoteTokenSymbol}`}
+                    <div className={styles.wallet_amounts}>
+                        <div>
+                            {isSaveAsDexSurplusChecked
+                                ? `${truncatedWalletBaseQty} ${baseTokenSymbol}`
+                                : `${truncatedCombinedWalletBaseQty} ${baseTokenSymbol}`}
+                        </div>
+                        <div>
+                            {isSaveAsDexSurplusChecked
+                                ? `${truncatedWalletQuoteQty} ${quoteTokenSymbol}`
+                                : `${truncatedCombinedWalletQuoteQty} ${quoteTokenSymbol}`}
+                        </div>
+                    </div>
                 </div>
                 <div
                     className={`${styles.exchange_text} ${
@@ -115,10 +124,19 @@ export default function ExtraControls(props: CurrencyConverterPropsIF) {
                     }`}
                     style={{ color: isSaveAsDexSurplusChecked ? '#ebebff' : '#555555' }}
                 >
-                    <img src={ambientLogo} width='15' alt='' />
-                    {isSaveAsDexSurplusChecked
-                        ? `${truncatedCombinedDexBaseQty} ${baseTokenSymbol} / ${truncatedCombinedDexQuoteQty} ${quoteTokenSymbol}`
-                        : `${truncatedDexBaseQty} ${baseTokenSymbol} / ${truncatedDexQuoteQty} ${quoteTokenSymbol}`}
+                    <img src={ambientLogo} width='25' alt='' />
+                    <div className={styles.wallet_amounts}>
+                        <div>
+                            {isSaveAsDexSurplusChecked
+                                ? `${truncatedCombinedDexBaseQty} ${baseTokenSymbol}`
+                                : `${truncatedDexBaseQty} ${baseTokenSymbol}`}
+                        </div>
+                        <div>
+                            {isSaveAsDexSurplusChecked
+                                ? `${truncatedCombinedDexQuoteQty} ${quoteTokenSymbol}`
+                                : `${truncatedDexQuoteQty} ${quoteTokenSymbol}`}
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -130,23 +148,23 @@ export default function ExtraControls(props: CurrencyConverterPropsIF) {
             />
         </section>
     );
-    const gaslesssTransactionControl = (
-        <section className={styles.gasless_container}>
-            <div className={styles.gasless_text}>Enable Gasless Transaction</div>
+    // const gaslesssTransactionControl = (
+    //     <section className={styles.gasless_container}>
+    //         <div className={styles.gasless_text}>Enable Gasless Transaction</div>
 
-            <Toggle2
-                isOn={false}
-                handleToggle={() => console.log('toggled')}
-                id='gasless_transaction_toggle'
-                disabled={true}
-            />
-        </section>
-    );
+    //         <Toggle2
+    //             isOn={false}
+    //             handleToggle={() => console.log('toggled')}
+    //             id='gasless_transaction_toggle'
+    //             disabled={true}
+    //         />
+    //     </section>
+    // );
 
     return (
         <div className={styles.main_container}>
             {exchangeBalanceControl}
-            {gaslesssTransactionControl}
+            {/* {gaslesssTransactionControl} */}
         </div>
     );
 }
