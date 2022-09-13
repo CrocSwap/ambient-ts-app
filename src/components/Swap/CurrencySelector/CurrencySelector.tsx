@@ -63,7 +63,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
         tokenBBalance,
         tokenADexBalance,
         tokenBDexBalance,
-        userHasEnteredAmount,
+        // userHasEnteredAmount,
         isSellTokenEth,
         tokenASurplusMinusTokenARemainderNum,
         tokenAWalletMinusTokenAQtyNum,
@@ -256,9 +256,10 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                 >
                     <IconWithTooltip
                         title={
-                            userHasEnteredAmount
-                                ? 'Wallet Balance After Swap'
-                                : 'Current Wallet Balance'
+                            'Wallet Balance After Swap'
+                            // userHasEnteredAmount
+                            //     ? 'Wallet Balance After Swap'
+                            //     : 'Current Wallet Balance'
                         }
                         placement='bottom'
                     >
@@ -296,9 +297,10 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                     </IconWithTooltip>
                     <IconWithTooltip
                         title={
-                            userHasEnteredAmount
-                                ? 'Exchange Surplus Balance After Swap'
-                                : 'Current Exchange Surplus Balance'
+                            'Exchange Surplus After Swap'
+                            // userHasEnteredAmount
+                            //     ? 'Exchange Surplus Balance After Swap'
+                            //     : 'Current Exchange Surplus Balance'
                         }
                         placement='bottom'
                     >
