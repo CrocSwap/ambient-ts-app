@@ -15,6 +15,7 @@ import {
     setIsTokenAPrimaryRange,
     setPrimaryQuantityRange,
 } from '../../../../utils/state/tradeDataSlice';
+import { ZERO_ADDRESS } from '../../../../constants';
 
 // interface for component props
 interface RangeCurrencyConverterPropsIF {
@@ -105,6 +106,41 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         baseToken: tradeData.baseToken.address,
         quoteToken: tradeData.quoteToken.address,
     };
+
+    const isTokenAEth = tradeData.tokenA.address === ZERO_ADDRESS;
+
+    const tokenASurplusMinusTokenARemainderNum =
+        parseFloat(tokenADexBalance || '0') - (tokenAQtyLocal || 0);
+
+    const tokenBSurplusMinusTokenBRemainderNum =
+        parseFloat(tokenBDexBalance || '0') - (tokenBQtyLocal || 0);
+
+    const tokenASurplusMinusTokenAQtyNum =
+        tokenASurplusMinusTokenARemainderNum >= 0 ? tokenASurplusMinusTokenARemainderNum : 0;
+    const tokenBSurplusMinusTokenBQtyNum =
+        tokenBSurplusMinusTokenBRemainderNum >= 0 ? tokenBSurplusMinusTokenBRemainderNum : 0;
+    //  const tokenASurplusMinusTokenAQtyNum =
+    //      tokenASurplusMinusTokenARemainderNum >= 0 ? tokenASurplusMinusTokenARemainderNum : 0;
+
+    const tokenAWalletMinusTokenAQtyNum = isTokenAEth
+        ? isWithdrawTokenAFromDexChecked
+            ? parseFloat(tokenABalance || '0')
+            : parseFloat(tokenABalance || '0') - (tokenAQtyLocal || 0)
+        : isWithdrawTokenAFromDexChecked && tokenASurplusMinusTokenARemainderNum < 0
+        ? parseFloat(tokenABalance || '0') + tokenASurplusMinusTokenARemainderNum
+        : isWithdrawTokenAFromDexChecked
+        ? parseFloat(tokenABalance || '0')
+        : parseFloat(tokenABalance || '0') - (tokenAQtyLocal || 0);
+
+    const tokenBWalletMinusTokenAQtyNum = isTokenAEth
+        ? isWithdrawTokenBFromDexChecked
+            ? parseFloat(tokenBBalance || '0')
+            : parseFloat(tokenBBalance || '0') - (tokenBQtyLocal || 0)
+        : isWithdrawTokenBFromDexChecked && tokenBSurplusMinusTokenBRemainderNum < 0
+        ? parseFloat(tokenBBalance || '0') + tokenBSurplusMinusTokenBRemainderNum
+        : isWithdrawTokenBFromDexChecked
+        ? parseFloat(tokenBBalance || '0')
+        : parseFloat(tokenBBalance || '0') - (tokenBQtyLocal || 0);
 
     useEffect(() => {
         setTokenAQtyValue(0);
@@ -478,10 +514,13 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         tokensBank: tokensBank,
         setImportedTokens: setImportedTokens,
         searchableTokens: searchableTokens,
+        isTokenAEth,
         isWithdrawTokenAFromDexChecked: isWithdrawTokenAFromDexChecked,
         setIsWithdrawTokenAFromDexChecked: setIsWithdrawTokenAFromDexChecked,
         isWithdrawTokenBFromDexChecked: isWithdrawTokenBFromDexChecked,
         setIsWithdrawTokenBFromDexChecked: setIsWithdrawTokenBFromDexChecked,
+        tokenAWalletMinusTokenAQtyNum: tokenAWalletMinusTokenAQtyNum,
+        tokenBWalletMinusTokenBQtyNum: tokenBWalletMinusTokenAQtyNum,
         reverseTokens: reverseTokens,
         tokenABalance: tokenABalance,
         tokenBBalance: tokenBBalance,
@@ -489,6 +528,10 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         tokenBDexBalance: tokenBDexBalance,
         isTokenADisabled: isTokenADisabled,
         isTokenBDisabled: isTokenBDisabled,
+        tokenASurplusMinusTokenARemainderNum: tokenASurplusMinusTokenARemainderNum,
+        tokenBSurplusMinusTokenBRemainderNum: tokenBSurplusMinusTokenBRemainderNum,
+        tokenASurplusMinusTokenAQtyNum: tokenASurplusMinusTokenAQtyNum,
+        tokenBSurplusMinusTokenBQtyNum: tokenBSurplusMinusTokenBQtyNum,
         activeTokenListsChanged: activeTokenListsChanged,
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
     };

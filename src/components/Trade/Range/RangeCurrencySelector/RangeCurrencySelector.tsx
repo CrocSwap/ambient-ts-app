@@ -18,11 +18,18 @@ interface RangeCurrencySelectorProps {
     tokensBank: Array<TokenIF>;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     searchableTokens: Array<TokenIF>;
+    isTokenAEth: boolean;
     updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
     isWithdrawTokenAFromDexChecked: boolean;
     setIsWithdrawTokenAFromDexChecked: Dispatch<SetStateAction<boolean>>;
     isWithdrawTokenBFromDexChecked: boolean;
     setIsWithdrawTokenBFromDexChecked: Dispatch<SetStateAction<boolean>>;
+    tokenAWalletMinusTokenAQtyNum: number;
+    tokenBWalletMinusTokenBQtyNum: number;
+    tokenASurplusMinusTokenARemainderNum: number;
+    tokenBSurplusMinusTokenBRemainderNum: number;
+    tokenASurplusMinusTokenAQtyNum: number;
+    tokenBSurplusMinusTokenBQtyNum: number;
     sellToken?: boolean;
     reverseTokens: () => void;
     tokenABalance: string;
@@ -45,10 +52,13 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
         setImportedTokens,
         searchableTokens,
         chainId,
+        isTokenAEth,
         isWithdrawTokenAFromDexChecked,
         setIsWithdrawTokenAFromDexChecked,
         isWithdrawTokenBFromDexChecked,
         setIsWithdrawTokenBFromDexChecked,
+        tokenAWalletMinusTokenAQtyNum,
+        tokenBWalletMinusTokenBQtyNum,
         fieldId,
         sellToken,
         updateOtherQuantity,
@@ -57,6 +67,10 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
         tokenBBalance,
         tokenADexBalance,
         tokenBDexBalance,
+        tokenASurplusMinusTokenARemainderNum,
+        // tokenBSurplusMinusTokenBRemainderNum,
+        tokenASurplusMinusTokenAQtyNum,
+        tokenBSurplusMinusTokenBQtyNum,
         isTokenADisabled,
         isTokenBDisabled,
         isAdvancedMode,
@@ -65,7 +79,9 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
         handleChangeClick,
     } = props;
 
-    const thisToken = fieldId === 'A' ? tokenPair.dataTokenA : tokenPair.dataTokenB;
+    const isTokenASelector = fieldId === 'A';
+
+    const thisToken = isTokenASelector ? tokenPair.dataTokenA : tokenPair.dataTokenB;
     const [showManageTokenListContent, setShowManageTokenListContent] = useState(false);
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -104,15 +120,16 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
 
     const DexBalanceContent = (
         <span className={styles.surplus_toggle}>
-            <IconWithTooltip title='Use Surplus' placement='left'>
-                {fieldId === 'A' ? (
+            <IconWithTooltip title='Use Exchange Surplus' placement='bottom'>
+                {isTokenASelector ? (
                     <Toggle2
                         isOn={isWithdrawTokenAFromDexChecked}
                         handleToggle={() =>
                             setIsWithdrawTokenAFromDexChecked(!isWithdrawTokenAFromDexChecked)
                         }
                         id='withdraw_from_dex'
-                        disabled={parseFloat(tokenADexBalance) <= 0}
+                        disabled={false}
+                        // disabled={parseFloat(tokenADexBalance) <= 0}
                     />
                 ) : (
                     <Toggle2
@@ -121,52 +138,72 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                             setIsWithdrawTokenBFromDexChecked(!isWithdrawTokenBFromDexChecked)
                         }
                         id='withdraw_to_wallet'
-                        disabled={parseFloat(tokenBDexBalance) <= 0}
+                        disabled={false}
+                        // disabled={parseFloat(tokenBDexBalance) <= 0}
                     />
                 )}
             </IconWithTooltip>
         </span>
     );
 
-    // const walletBalanceNum =
-    //     fieldId === 'A' && tokenABalance !== ''
-    //         ? parseFloat(tokenABalance)
-    //         : fieldId === 'B' && tokenBBalance !== ''
-    //         ? parseFloat(tokenBBalance)
-    //         : 0;
-
     const walletBalanceNonLocaleString =
-        fieldId === 'A' && tokenABalance !== ''
+        isTokenASelector && tokenABalance !== ''
             ? parseFloat(tokenABalance).toString()
             : fieldId !== 'A' && tokenBBalance !== ''
             ? parseFloat(tokenBBalance).toString()
-            : '0';
+            : '0.00';
 
-    const walletBalanceLocaleString =
-        fieldId === 'A' && tokenABalance !== ''
-            ? parseFloat(tokenABalance).toLocaleString()
-            : fieldId !== 'A' && tokenBBalance !== ''
-            ? parseFloat(tokenBBalance).toLocaleString()
-            : '0';
+    const walletBalanceLocaleString = isTokenASelector
+        ? tokenAWalletMinusTokenAQtyNum.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          })
+        : tokenBWalletMinusTokenBQtyNum.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          });
 
     const surplusBalanceNonLocaleString =
-        fieldId === 'A' && tokenADexBalance !== ''
+        isTokenASelector && tokenADexBalance !== ''
             ? parseFloat(tokenADexBalance).toString()
             : fieldId === 'B' && tokenBDexBalance !== ''
             ? parseFloat(tokenBDexBalance).toString()
-            : '0';
+            : '0.00';
 
-    const surplusBalanceLocaleString =
-        fieldId === 'A' && tokenADexBalance !== ''
-            ? parseFloat(tokenADexBalance).toLocaleString()
-            : fieldId === 'B' && tokenBDexBalance !== ''
-            ? parseFloat(tokenBDexBalance).toLocaleString()
-            : '0';
+    const surplusBalanceLocaleString = isTokenASelector
+        ? isWithdrawTokenAFromDexChecked
+            ? isTokenAEth && tokenASurplusMinusTokenARemainderNum
+                ? tokenASurplusMinusTokenARemainderNum.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                  })
+                : tokenASurplusMinusTokenAQtyNum.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                  })
+            : parseFloat(tokenADexBalance || '0').toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              })
+        : isWithdrawTokenBFromDexChecked
+        ? !isTokenAEth && tokenBSurplusMinusTokenBQtyNum
+            ? tokenBSurplusMinusTokenBQtyNum.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              })
+            : tokenBSurplusMinusTokenBQtyNum.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              })
+        : parseFloat(tokenBDexBalance || '0').toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          });
 
     // console.log({ fieldId });
     // console.log({ isTokenADisabled });
     const isFieldDisabled =
-        (fieldId === 'A' && isTokenADisabled) || (fieldId === 'B' && isTokenBDisabled);
+        (isTokenASelector && isTokenADisabled) || (!isTokenASelector && isTokenBDisabled);
 
     return (
         <div className={styles.swapbox}>
@@ -184,7 +221,7 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                     <img
                         className={styles.token_list_img}
                         src={thisToken.logoURI}
-                        alt='ethereum logo'
+                        alt={`${thisToken.name} logo`}
                         width='30px'
                     />
                     <span className={styles.token_list_text}>{thisToken.symbol}</span>
@@ -195,39 +232,55 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                 <div
                     className={styles.surplus_container}
                     style={{
-                        color: isWithdrawTokenAFromDexChecked ? '#ebebff' : '#555555',
+                        color:
+                            (isTokenASelector && isWithdrawTokenAFromDexChecked) ||
+                            (!isTokenASelector && isWithdrawTokenBFromDexChecked)
+                                ? '#555555'
+                                : '#ebebff',
                     }}
                 >
-                    <div
-                        className={styles.balance_with_pointer}
-                        onClick={() => {
-                            handleChangeClick(walletBalanceNonLocaleString);
-                        }}
-                    >
-                        <div className={styles.wallet_logo}>
-                            <IconWithTooltip title='wallet' placement='bottom'>
+                    <IconWithTooltip title='Wallet Balance After Range Mint' placement='bottom'>
+                        <div
+                            className={styles.balance_with_pointer}
+                            onClick={() => {
+                                handleChangeClick(walletBalanceNonLocaleString);
+                            }}
+                        >
+                            <div className={styles.wallet_logo}>
                                 <MdAccountBalanceWallet
-                                    size={15}
-                                    color={isWithdrawTokenAFromDexChecked ? '#ebebff' : '#555555'}
+                                    size={20}
+                                    color={
+                                        (isTokenASelector && isWithdrawTokenAFromDexChecked) ||
+                                        (!isTokenASelector && isWithdrawTokenBFromDexChecked)
+                                            ? '#555555'
+                                            : '#ebebff'
+                                    }
                                 />
-                            </IconWithTooltip>
-                        </div>
-                        <div>{walletBalanceLocaleString}</div>
-                    </div>
-                    <IconWithTooltip title='surplus' placement='bottom'>
+                            </div>
+                            <div>{walletBalanceLocaleString}</div>
+                        </div>{' '}
+                    </IconWithTooltip>
+                    <IconWithTooltip title='Exchange Surplus After Range Mint' placement='bottom'>
                         <div
                             className={`${styles.balance_with_pointer} ${
-                                isWithdrawTokenAFromDexChecked ? styles.grey_logo : null
+                                (isTokenASelector && isWithdrawTokenAFromDexChecked) ||
+                                (!isTokenASelector && isWithdrawTokenBFromDexChecked)
+                                    ? null
+                                    : styles.grey_logo
                             }`}
                             onClick={() => {
                                 handleChangeClick(surplusBalanceNonLocaleString);
                             }}
                             style={{
-                                color: isWithdrawTokenAFromDexChecked ? '#555555' : '#ebebff',
+                                color:
+                                    (isTokenASelector && isWithdrawTokenAFromDexChecked) ||
+                                    (!isTokenASelector && isWithdrawTokenBFromDexChecked)
+                                        ? '#ebebff'
+                                        : '#555555',
                             }}
                         >
                             <div className={styles.wallet_logo}>
-                                <img src={ambientLogo} width='15' alt='surplus' />
+                                <img src={ambientLogo} width='20' alt='surplus' />
                             </div>
                             {surplusBalanceLocaleString}
                         </div>
