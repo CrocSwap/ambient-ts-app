@@ -186,27 +186,67 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
 
     useEffect(() => {
         isTokenAPrimaryLocal ? handleTokenAChangeEvent() : handleTokenBChangeEvent();
-    }, [limitRateNumber, isSellTokenBase, isTokenAPrimaryLocal, tokenABalance]);
+    }, [
+        limitRateNumber,
+        isSellTokenBase,
+        isTokenAPrimaryLocal,
+        tokenABalance,
+        isWithdrawFromDexChecked,
+    ]);
 
     const handleLimitButtonMessage = (tokenAAmount: number) => {
         if (limitRateNumber === 0 || poolPriceNonDisplay === 0) {
             setLimitAllowed(false);
             setLimitButtonErrorMessage('Invalid Token Pair');
-        } else if (tokenAAmount > parseFloat(tokenABalance)) {
-            setLimitAllowed(false);
-            setLimitButtonErrorMessage(
-                `${tokenPair.dataTokenA.symbol} Amount Exceeds Wallet Balance`,
-            );
-        }
-        // else if (parseInt(tokenAAllowance) < tokenAAmount) {
-        //     setSwapAllowed(false);
-        //     setSwapButtonErrorMessage(`${tokenPair.dataTokenA.symbol} Amount Exceeds Allowance`);
-        // }
-        else if (isNaN(tokenAAmount) || tokenAAmount <= 0) {
+        } else if (isNaN(tokenAAmount) || tokenAAmount <= 0) {
             setLimitAllowed(false);
             setLimitButtonErrorMessage('Enter an Amount');
         } else {
-            setLimitAllowed(true);
+            if (isSellTokenEth) {
+                if (isWithdrawFromDexChecked) {
+                    const roundedTokenADexBalance =
+                        Math.floor(parseFloat(tokenADexBalance) * 1000) / 1000;
+                    if (tokenAAmount >= roundedTokenADexBalance) {
+                        setLimitAllowed(false);
+                        setLimitButtonErrorMessage(
+                            `${tokenPair.dataTokenA.symbol} Amount Must Be Less Than Exchange Surplus Balance`,
+                        );
+                    } else {
+                        setLimitAllowed(true);
+                    }
+                } else {
+                    const roundedTokenAWalletBalance =
+                        Math.floor(parseFloat(tokenABalance) * 1000) / 1000;
+                    if (tokenAAmount >= roundedTokenAWalletBalance) {
+                        setLimitAllowed(false);
+                        setLimitButtonErrorMessage(
+                            `${tokenPair.dataTokenA.symbol} Amount Must Be Less Than Wallet Balance`,
+                        );
+                    } else {
+                        setLimitAllowed(true);
+                    }
+                }
+            } else {
+                if (isWithdrawFromDexChecked) {
+                    if (tokenAAmount > parseFloat(tokenADexBalance) + parseFloat(tokenABalance)) {
+                        setLimitAllowed(false);
+                        setLimitButtonErrorMessage(
+                            `${tokenPair.dataTokenA.symbol} Amount Exceeds Combined Wallet and Exchange Surplus Balance`,
+                        );
+                    } else {
+                        setLimitAllowed(true);
+                    }
+                } else {
+                    if (tokenAAmount > parseFloat(tokenABalance)) {
+                        setLimitAllowed(false);
+                        setLimitButtonErrorMessage(
+                            `${tokenPair.dataTokenA.symbol} Amount Exceeds Wallet Balance`,
+                        );
+                    } else {
+                        setLimitAllowed(true);
+                    }
+                }
+            }
         }
     };
 
