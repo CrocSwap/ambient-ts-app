@@ -58,11 +58,12 @@ export default function WalletCard(props: WalletPropsIF) {
         return null;
     }
 
+    // const tokenBalance = token?.balance ? token.balance : '0';
+
     const tokenBalance =
-        // token && token.symbol === 'ETH'
-        //     ? token.balance
-        //     :
-        token && token.balance && token?.decimals
+        token && token.symbol === 'ETH'
+            ? token.balance
+            : token && token.balance && token?.decimals
             ? toDisplayQty(token.balance, token.decimals)
             : '0';
 

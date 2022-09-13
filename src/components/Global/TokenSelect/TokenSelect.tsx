@@ -24,14 +24,7 @@ interface TokenSelectPropsIF {
 }
 
 export default function TokenSelect(props: TokenSelectPropsIF) {
-    const {
-        token,
-        chooseToken,
-        tokensBank,
-        undeletableTokens,
-        chainId,
-        setImportedTokens,
-    } = props;
+    const { token, chooseToken, tokensBank, undeletableTokens, chainId, setImportedTokens } = props;
 
     const [showDelete, setShowDelete] = useState(false);
     const [toggleDeleteOn, setToggleDeleteOn] = useState(false);
