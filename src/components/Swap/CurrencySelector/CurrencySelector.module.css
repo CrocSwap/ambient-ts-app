@@ -12,8 +12,6 @@
     background-color: var(--dark2);
 }
 
-
-
 .direction {
     padding: 0.4.5px 0;
     margin: 10px 0;
@@ -27,34 +25,29 @@
 
 .surplus_container {
     /* width: 200px; */
-    
+    margin-right: 10px;
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
     gap: 2rem;
-
-    
-   
 }
 
 .balance_with_pointer {
     display: flex;
     flex-direction: row;
-   
+
     align-items: center;
-  
-gap: 5px;    cursor: pointer;
+    margin-right: 5px;
+    gap: 5px;
+    cursor: pointer;
     font-size: var(--body-size);
     line-height: var(--body-lh);
-   
 }
 
 .wallet_logo {
-   
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    
 }
 
 .swapbox_top {
@@ -101,10 +94,10 @@ gap: 5px;    cursor: pointer;
 .swapbox_bottom {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: flex-end;
     align-items: center;
     min-height: 33px;
-   
+
     margin: 6px 0;
 }
 

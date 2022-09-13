@@ -110,7 +110,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                     />
                 </IconWithTooltip>
             ) : (
-                <IconWithTooltip title='Use Wallet Balance' placement='bottom'>
+                <IconWithTooltip title='Save to Exchange Surplus' placement='bottom'>
                     <Toggle2
                         isOn={isSaveAsDexSurplusChecked}
                         handleToggle={() =>
@@ -252,23 +252,23 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                                 : '#555555',
                     }}
                 >
-                    <div
-                        className={styles.balance_with_pointer}
-                        onClick={() => {
-                            if (props.sellToken) {
-                                setIsWithdrawFromDexChecked(false);
-                                if (handleChangeClick && !isWithdrawFromWalletDisabled) {
-                                    handleChangeClick(walletBalanceNonLocaleString);
+                    <IconWithTooltip title='Wallet Balance' placement='bottom'>
+                        <div
+                            className={styles.balance_with_pointer}
+                            onClick={() => {
+                                if (props.sellToken) {
+                                    setIsWithdrawFromDexChecked(false);
+                                    if (handleChangeClick && !isWithdrawFromWalletDisabled) {
+                                        handleChangeClick(walletBalanceNonLocaleString);
+                                    }
+                                } else {
+                                    setIsSaveAsDexSurplusChecked(false);
                                 }
-                            } else {
-                                setIsSaveAsDexSurplusChecked(false);
-                            }
-                        }}
-                    >
-                        <div className={styles.wallet_logo}>
-                            <IconWithTooltip title='wallet' placement='bottom'>
+                            }}
+                        >
+                            <div className={styles.wallet_logo}>
                                 <MdAccountBalanceWallet
-                                    size={15}
+                                    size={20}
                                     color={
                                         (isSellTokenSelector && !isWithdrawFromDexChecked) ||
                                         (!isSellTokenSelector && !isSaveAsDexSurplusChecked) ||
@@ -281,11 +281,11 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                                             : '#555555'
                                     }
                                 />
-                            </IconWithTooltip>
+                            </div>
+                            <div>{walletBalanceLocaleString}</div>
                         </div>
-                        <div>{walletBalanceLocaleString}</div>
-                    </div>
-                    <IconWithTooltip title='surplus' placement='bottom'>
+                    </IconWithTooltip>
+                    <IconWithTooltip title='Exchange Surplus Balance' placement='bottom'>
                         <div
                             className={`${styles.balance_with_pointer} ${
                                 (isSellTokenSelector && !isWithdrawFromDexChecked) ||
@@ -313,7 +313,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                             }}
                         >
                             <div className={styles.wallet_logo}>
-                                <img src={ambientLogo} width='15' alt='surplus' />
+                                <img src={ambientLogo} width='20' alt='surplus' />
                             </div>
                             {surplusBalanceLocaleString}
                         </div>
