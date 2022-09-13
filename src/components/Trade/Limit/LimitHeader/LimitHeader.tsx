@@ -56,7 +56,11 @@ export default function LimitHeader(props: LimitHeaderPropsIF) {
                 {isDenomBase ? quoteTokenSymbol : baseTokenSymbol}
             </div>
             <IconWithTooltip title='Settings' placement='left'>
-                <div onClick={openModal} style={{ cursor: 'pointer' }}>
+                <div
+                    onClick={openModal}
+                    style={{ cursor: 'pointer' }}
+                    className={styles.settings_icon}
+                >
                     <img src={settingsIcon} alt='settings' />
                 </div>
             </IconWithTooltip>

@@ -53,7 +53,11 @@ export default function RangeHeader(props: RangeHeaderPropsIF) {
                 {reverseDisplay ? tokenPair.dataTokenB.symbol : tokenPair.dataTokenA.symbol}
             </div>
             <IconWithTooltip title='Settings' placement='left'>
-                <div onClick={openModal} style={{ cursor: 'pointer' }}>
+                <div
+                    onClick={openModal}
+                    style={{ cursor: 'pointer' }}
+                    className={`${styles.settings_container} ${styles.settings_icon}`}
+                >
                     <img src={settingsIcon} alt='settings' />
                 </div>
             </IconWithTooltip>

@@ -56,7 +56,11 @@ export default function SwapHeader(props: SwapHeaderPropsIF) {
             </div>
 
             <IconWithTooltip title='Settings' placement='left'>
-                <div onClick={openModal} style={{ cursor: 'pointer' }}>
+                <div
+                    onClick={openModal}
+                    style={{ cursor: 'pointer' }}
+                    className={`${styles.settings_container} ${styles.settings_icon}`}
+                >
                     <img src={settingsIcon} alt='settings' />
                 </div>
             </IconWithTooltip>
@@ -69,7 +73,8 @@ export default function SwapHeader(props: SwapHeaderPropsIF) {
             <span className={styles.title}>Swap</span>
             <IconWithTooltip title='Settings' placement='left'>
                 <div
-                    className={styles.settings_container}
+                    className={`${styles.settings_container}
+                    ${styles.settings_icon}`}
                     onClick={openModal}
                     style={{ cursor: 'pointer' }}
                 >

@@ -1187,7 +1187,12 @@ export default function App() {
                     .token(tradeData.baseToken.address)
                     .balanceDisplay(account)
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    .then((bal: any) => setBaseTokenDexBalance(bal));
+                    .then((bal: any) => {
+                        setBaseTokenDexBalance(bal);
+                        if (tradeData.baseToken.address === ZERO_ADDRESS) {
+                            setNativeDexBalance(bal);
+                        }
+                    });
                 crocEnv
                     .token(tradeData.quoteToken.address)
                     .walletDisplay(account)
@@ -1602,11 +1607,34 @@ export default function App() {
 
     useEffect(() => toggleSidebarBasedOnRoute(), [location]);
 
-    const [nativeBalance, setNativeBalance] = useState<string>('');
+    // const [nativeBalance, setNativeBalance] = useState<string>('');
+    const [nativeWalletBalance, setNativeWalletBalance] = useState<string>('');
+    const [nativeDexBalance, setNativeDexBalance] = useState<string>('');
+    const nativeBalance = (
+        parseFloat(nativeWalletBalance || '0') + parseFloat(nativeDexBalance || '0')
+    ).toString();
+
+    useEffect(() => {
+        const nativeToken: TokenIF = {
+            name: 'Native Token',
+
+            address: '0x0000000000000000000000000000000000000000',
+            // eslint-disable-next-line camelcase
+            token_address: '0x0000000000000000000000000000000000000000',
+            symbol: 'ETH',
+            decimals: 18,
+            chainId: parseInt(chainData.chainId),
+            logoURI: '',
+            balance: nativeWalletBalance,
+        };
+        if (JSON.stringify(tokensInRTK[0]) !== JSON.stringify(nativeToken))
+            dispatch(addNativeBalance([nativeToken]));
+    }, [nativeWalletBalance]);
 
     // function to sever connection between user wallet and Moralis server
     const clickLogout = async () => {
-        setNativeBalance('');
+        setNativeWalletBalance('');
+        setNativeDexBalance('');
         setBaseTokenBalance('0');
         setQuoteTokenBalance('0');
         setBaseTokenDexBalance('0');
@@ -1631,22 +1659,7 @@ export default function App() {
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     .then((eth: any) => {
                         const displayBalance = toDisplayQty(eth.toString(), 18);
-                        if (displayBalance) setNativeBalance(displayBalance);
-
-                        const nativeToken: TokenIF = {
-                            name: 'Native Token',
-
-                            address: '0x0000000000000000000000000000000000000000',
-                            // eslint-disable-next-line camelcase
-                            token_address: '0x0000000000000000000000000000000000000000',
-                            symbol: 'ETH',
-                            decimals: 18,
-                            chainId: parseInt(chainData.chainId),
-                            logoURI: '',
-                            balance: eth.toString(),
-                        };
-                        if (JSON.stringify(tokensInRTK[0]) !== JSON.stringify(nativeToken))
-                            dispatch(addNativeBalance([nativeToken]));
+                        if (displayBalance) setNativeWalletBalance(displayBalance);
                     });
             }
         })();
