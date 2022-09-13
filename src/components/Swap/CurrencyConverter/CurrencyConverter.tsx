@@ -100,6 +100,8 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         !isTokenAPrimaryLocal ? tradeData?.primaryQuantity : '',
     );
 
+    const userHasEnteredAmount = tokenAQtyLocal !== '';
+
     const tokenABalance = isSellTokenBase ? baseTokenBalance : quoteTokenBalance;
     const tokenBBalance = isSellTokenBase ? quoteTokenBalance : baseTokenBalance;
     const tokenADexBalance = isSellTokenBase ? baseTokenDexBalance : quoteTokenDexBalance;
@@ -211,7 +213,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                     if (tokenAAmount >= roundedTokenADexBalance) {
                         setSwapAllowed(false);
                         setSwapButtonErrorMessage(
-                            `${tokenPair.dataTokenA.symbol} Amount Must Be Less Than Surplus Balance`,
+                            `${tokenPair.dataTokenA.symbol} Amount Must Be Less Than Exchange Surplus Balance`,
                         );
                     } else {
                         setSwapAllowed(true);
@@ -453,6 +455,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                 direction={isLiq ? 'Select Pair' : 'From:'}
                 fieldId='sell'
                 sellToken
+                userHasEnteredAmount={userHasEnteredAmount}
                 handleChangeEvent={handleTokenAChangeEvent}
                 handleChangeClick={handleTokenAChangeClick}
                 nativeBalance={props.nativeBalance}
@@ -491,6 +494,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                 chainId={chainId}
                 direction={isLiq ? '' : 'To:'}
                 fieldId='buy'
+                userHasEnteredAmount={userHasEnteredAmount}
                 handleChangeEvent={handleTokenBChangeEvent}
                 // handleChangeClick={handleTokenBChangeClick}
                 nativeBalance={props.nativeBalance}

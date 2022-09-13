@@ -27,6 +27,7 @@ interface CurrencySelectorProps {
     tokenADexBalance: string;
     tokenBDexBalance: string;
     isSellTokenEth?: boolean;
+    userHasEnteredAmount: boolean;
     tokenASurplusMinusTokenARemainderNum?: number;
     tokenAWalletMinusTokenAQtyNum: number;
     tokenBWalletPlusTokenBQtyNum: number;
@@ -62,6 +63,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
         tokenBBalance,
         tokenADexBalance,
         tokenBDexBalance,
+        userHasEnteredAmount,
         isSellTokenEth,
         tokenASurplusMinusTokenARemainderNum,
         tokenAWalletMinusTokenAQtyNum,
@@ -252,7 +254,14 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                                 : '#555555',
                     }}
                 >
-                    <IconWithTooltip title='Wallet Balance' placement='bottom'>
+                    <IconWithTooltip
+                        title={
+                            userHasEnteredAmount
+                                ? 'Wallet Balance After Swap'
+                                : 'Current Wallet Balance'
+                        }
+                        placement='bottom'
+                    >
                         <div
                             className={styles.balance_with_pointer}
                             onClick={() => {
@@ -285,7 +294,14 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                             <div>{walletBalanceLocaleString}</div>
                         </div>
                     </IconWithTooltip>
-                    <IconWithTooltip title='Exchange Surplus Balance' placement='bottom'>
+                    <IconWithTooltip
+                        title={
+                            userHasEnteredAmount
+                                ? 'Exchange Surplus Balance After Swap'
+                                : 'Current Exchange Surplus Balance'
+                        }
+                        placement='bottom'
+                    >
                         <div
                             className={`${styles.balance_with_pointer} ${
                                 (isSellTokenSelector && !isWithdrawFromDexChecked) ||
