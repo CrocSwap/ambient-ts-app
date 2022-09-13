@@ -18,20 +18,17 @@ const variants = {
     },
 };
 
-const colors = ['#fef6e4', '#f582ae', '#8bd3dd', '#b8c1ec', '#ff8906'];
-
 interface MobileSidebarItemPropsIF {
     children: React.ReactNode;
-    id: number;
 }
 
 export default function MobileSidebarItem(props: MobileSidebarItemPropsIF) {
-    const { children, id } = props;
-    const style = { border: `3px solid ${colors[id]}` };
+    const { children } = props;
+    const style = { margin: '8px 0', cursor: 'pointer' };
 
     return (
-        <motion.li variants={variants} whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+        <motion.div variants={variants} whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
             <div style={style}>{children}</div>
-        </motion.li>
+        </motion.div>
     );
 }

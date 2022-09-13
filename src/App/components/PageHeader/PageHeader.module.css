@@ -163,6 +163,7 @@
         display: none;
     }
     .primary_navigation {
+        display: none;
         --gap: 2em;
         position: fixed;
         z-index: 1000;

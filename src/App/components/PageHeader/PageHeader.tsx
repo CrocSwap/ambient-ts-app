@@ -17,7 +17,7 @@ import styles from './PageHeader.module.css';
 import trimString from '../../../utils/functions/trimString';
 import ambientLogo from '../../../assets/images/logos/ambient_logo.svg';
 import { useModal } from '../../../components/Global/Modal/useModal';
-import { MenuButton } from '../../../components/Global/MenuButton/MenuButton';
+import MobileSidebar from '../../../components/Global/MobileSidebar/MobileSidebar';
 
 interface HeaderPropsIF {
     nativeBalance: string;
@@ -81,13 +81,14 @@ export default function PageHeader(props: HeaderPropsIF) {
     // end of rive component
 
     // Page Header states
+    // eslint-disable-next-line
     const [mobileNavToggle, setMobileNavToggle] = useState<boolean>(false);
     // End of Page Header States
 
     // Page Header functions
-    function handleMobileNavToggle() {
-        setMobileNavToggle(!mobileNavToggle);
-    }
+    // function handleMobileNavToggle() {
+    //     setMobileNavToggle(!mobileNavToggle);
+    // }
 
     // -----------------END OF SWITCH NETWORK FUNCTIONALITY--------------------------------------
     const accountAddress = isAuthenticated && account ? trimString(account, 6, 6) : '';
@@ -175,7 +176,7 @@ export default function PageHeader(props: HeaderPropsIF) {
                 <img src={ambientLogo} alt='ambient' />
                 <h1>ambient</h1>
             </Link>
-            <div
+            {/* <div
                 className={styles.mobile_nav_toggle}
                 style={{ cursor: 'pointer' }}
                 aria-controls='primary_navigation'
@@ -191,8 +192,10 @@ export default function PageHeader(props: HeaderPropsIF) {
                     height='18'
                 />
                 <span className='sr-only'>Menu</span>
-            </div>
+            </div> */}
+
             {routeDisplay}
+            <MobileSidebar />
 
             <div className={styles.account}>
                 <NetworkSelector chainId={chainId} switchChain={switchChain} />
