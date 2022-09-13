@@ -26,11 +26,22 @@
 .surplus_container {
     display: flex;
     flex-direction: row;
+    align-items: center;
     gap: 5px;
 }
 
 .balance_with_pointer {
+    display: flex;
+    flex-direction: row;
+    padding-left: 5px;
+    padding-right: 5px;
+    font-size: 15px;
     cursor: pointer;
+    align-items: center;
+}
+
+.wallet_logo {
+    padding-right: 5px;
 }
 
 .swapbox_top {
@@ -77,10 +88,10 @@
 .swapbox_bottom {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: flex-end;
     align-items: center;
     min-height: 33px;
-    margin: 4px 0;
+    margin: 6px 0;
 }
 
 .token_select_button {
@@ -102,11 +113,18 @@
     color: hotpink;
 }
 
+.grey_logo img {
+    filter: grayscale(100%);
+}
+
 .surplus_toggle {
     display: flex;
     flex-direction: row;
     align-items: center;
     gap: 8px;
+    padding-top: 3px;
+    padding-left: 10px;
+    padding-right: 10px;
 }
 
 /* modal */

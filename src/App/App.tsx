@@ -1173,8 +1173,8 @@ export default function App() {
             if (
                 crocEnv &&
                 account &&
-                // isAuthenticated &&
-                // isWeb3Enabled &&
+                isAuthenticated &&
+                isWeb3Enabled &&
                 tradeData.baseToken.address &&
                 tradeData.quoteToken.address
             ) {
@@ -1609,6 +1609,8 @@ export default function App() {
         setNativeBalance('');
         setBaseTokenBalance('0');
         setQuoteTokenBalance('0');
+        setBaseTokenDexBalance('0');
+        setQuoteTokenDexBalance('0');
         dispatch(resetTradeData());
         dispatch(resetTokenData());
         dispatch(resetGraphData());
