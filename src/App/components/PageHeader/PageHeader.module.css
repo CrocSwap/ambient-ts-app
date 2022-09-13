@@ -22,6 +22,8 @@
     flex-direction: row;
     align-items: center;
     gap: var(--gap, 2rem);
+
+    /* display: none; */
 }
 
 .active,
@@ -140,6 +142,21 @@
     gap: 1rem;
 }
 
+/* @media only screen and (min-width: 768px) {
+    .primary_navigation{
+        display: flex;
+    }
+
+} */
+
+@media (min-width: 580px) 
+  and (max-width: 1000px)
+  {
+.primary_navigation{
+    display: none;
+}
+}
+
 @media (max-width: 35em) {
     .account,
     .header_gradient {
@@ -174,3 +191,4 @@
         right: 2rem;
     }
 }
+
