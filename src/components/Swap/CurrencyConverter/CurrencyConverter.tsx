@@ -102,6 +102,15 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
     const tokenADexBalance = isSellTokenBase ? baseTokenDexBalance : quoteTokenDexBalance;
     const tokenBDexBalance = isSellTokenBase ? quoteTokenDexBalance : baseTokenDexBalance;
 
+    const tokenAWalletMinusTokenAQtyNum =
+        parseFloat(tokenABalance) - parseFloat(tokenAQtyLocal || '0');
+    const tokenBWalletPlusTokenBQtyNum =
+        parseFloat(tokenBBalance) + parseFloat(tokenBQtyLocal || '0');
+    const tokenASurplusMinusTokenAQtyNum =
+        parseFloat(tokenADexBalance) - parseFloat(tokenAQtyLocal || '0');
+    const tokenBSurplusPlusTokenBQtyNum =
+        parseFloat(tokenBDexBalance) + parseFloat(tokenBQtyLocal || '0');
+
     useEffect(() => {
         if (tradeData && crocEnv) {
             if (tradeData.isTokenAPrimary) {
@@ -381,6 +390,10 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                 tokenBBalance={tokenBBalance}
                 tokenADexBalance={tokenADexBalance}
                 tokenBDexBalance={tokenBDexBalance}
+                tokenAWalletMinusTokenAQtyNum={tokenAWalletMinusTokenAQtyNum}
+                tokenBWalletPlusTokenBQtyNum={tokenBWalletPlusTokenBQtyNum}
+                tokenASurplusMinusTokenAQtyNum={tokenASurplusMinusTokenAQtyNum}
+                tokenBSurplusPlusTokenBQtyNum={tokenBSurplusPlusTokenBQtyNum}
                 isWithdrawFromDexChecked={isWithdrawFromDexChecked}
                 setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
                 isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
@@ -409,6 +422,10 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                 tokenBBalance={tokenBBalance}
                 tokenADexBalance={tokenADexBalance}
                 tokenBDexBalance={tokenBDexBalance}
+                tokenAWalletMinusTokenAQtyNum={tokenAWalletMinusTokenAQtyNum}
+                tokenBWalletPlusTokenBQtyNum={tokenBWalletPlusTokenBQtyNum}
+                tokenASurplusMinusTokenAQtyNum={tokenASurplusMinusTokenAQtyNum}
+                tokenBSurplusPlusTokenBQtyNum={tokenBSurplusPlusTokenBQtyNum}
                 isWithdrawFromDexChecked={isWithdrawFromDexChecked}
                 setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
                 isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
