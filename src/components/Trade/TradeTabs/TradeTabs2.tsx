@@ -4,6 +4,7 @@ import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { ethers } from 'ethers';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import Transactions from './Transactions/Transactions';
+import styles from './TradeTabs2.module.css';
 import Orders from './Orders/Orders';
 // import DropdownMenu from '../../Global/DropdownMenu/DropdownMenu';
 // import DropdownMenuContainer from '../../Global/DropdownMenu/DropdownMenuContainer/DropdownMenuContainer';
@@ -215,7 +216,7 @@ export default function TradeTabs2(props: ITabsProps) {
     useOnClickOutside(tabComponentRef, clickOutsideHandler);
 
     return (
-        <div ref={tabComponentRef}>
+        <div ref={tabComponentRef} className={styles.trade_tab_container}>
             {
                 <TabComponent
                     data={tradeTabData}
