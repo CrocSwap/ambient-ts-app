@@ -1,11 +1,14 @@
 import React from 'react';
 import { useTermsOfService } from '../../App/hooks/useTermsOfService';
+import { MenuButton } from '../../components/Global/MenuButton/MenuButton';
 import styles from './TestPage.module.css';
 
 interface TestPageProps {
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
 }
 export default function TestPage(props: TestPageProps) {
+    const [isOpen, setOpen] = React.useState(false);
+
     const { openGlobalModal } = props;
     const { tosText, agreement, agreementDate } = useTermsOfService();
 
@@ -26,6 +29,9 @@ export default function TestPage(props: TestPageProps) {
         </div>
     );
 
+    const menuButtonStyle = {
+        marginLeft: '2rem',
+    };
     return (
         <main className={styles.main}>
             <h1>Hi there!</h1>
@@ -35,10 +41,27 @@ export default function TestPage(props: TestPageProps) {
             </p>
             {/* <button onClick={() => acceptToS()}>Agree to ToS</button>
             <button onClick={() => rejectToS()}>Reject ToS</button> */}
-
             <button onClick={() => openGlobalModal(exampleTest, 'this is title')}>
                 Test Modal
             </button>
+            I am here
+            <MenuButton
+                isOpen={isOpen}
+                onClick={() => setOpen(!isOpen)}
+                style={menuButtonStyle}
+                width={24}
+                height={24}
+            />
+            <MenuButton
+                isOpen={isOpen}
+                onClick={() => setOpen(!isOpen)}
+                strokeWidth='4'
+                color='#7371fc'
+                transition={{ ease: 'easeOut', duration: 0.2 }}
+                width='34'
+                height='24'
+                style={menuButtonStyle}
+            />
         </main>
     );
 }

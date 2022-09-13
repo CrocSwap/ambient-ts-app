@@ -3,7 +3,6 @@ import { useCallback, useEffect, useState, Dispatch, SetStateAction } from 'reac
 import { Link } from 'react-router-dom';
 import { useMoralis } from 'react-moralis';
 import { useTranslation } from 'react-i18next';
-import { useRive, useStateMachineInput } from 'rive-react';
 import { motion, AnimateSharedLayout } from 'framer-motion';
 
 // START: Import JSX Elements
@@ -18,6 +17,7 @@ import styles from './PageHeader.module.css';
 import trimString from '../../../utils/functions/trimString';
 import ambientLogo from '../../../assets/images/logos/ambient_logo.svg';
 import { useModal } from '../../../components/Global/Modal/useModal';
+import { MenuButton } from '../../../components/Global/MenuButton/MenuButton';
 
 interface HeaderPropsIF {
     nativeBalance: string;
@@ -78,18 +78,6 @@ export default function PageHeader(props: HeaderPropsIF) {
         }
     }, [user, account, metamaskLocked]);
 
-    // rive component
-    const STATE_MACHINE_NAME = 'Basic State Machine';
-    const INPUT_NAME = 'Switch';
-
-    const { rive, RiveComponent } = useRive({
-        src: './hamburger.riv',
-        stateMachines: STATE_MACHINE_NAME,
-        autoplay: true,
-    });
-
-    const onClickInput = useStateMachineInput(rive, STATE_MACHINE_NAME, INPUT_NAME);
-
     // end of rive component
 
     // Page Header states
@@ -99,7 +87,6 @@ export default function PageHeader(props: HeaderPropsIF) {
     // Page Header functions
     function handleMobileNavToggle() {
         setMobileNavToggle(!mobileNavToggle);
-        onClickInput?.fire();
     }
 
     // -----------------END OF SWITCH NETWORK FUNCTIONALITY--------------------------------------
@@ -189,10 +176,20 @@ export default function PageHeader(props: HeaderPropsIF) {
             </Link>
             <div
                 className={styles.mobile_nav_toggle}
+                style={{ cursor: 'pointer' }}
                 aria-controls='primary_navigation'
                 aria-expanded={mobileNavToggle}
             >
-                <RiveComponent onClick={handleMobileNavToggle} />
+                {/* <RiveComponent onClick={handleMobileNavToggle} /> */}
+                <MenuButton
+                    isOpen={mobileNavToggle}
+                    onClick={handleMobileNavToggle}
+                    strokeWidth='2'
+                    color='#cdc1ff'
+                    transition={{ ease: 'easeOut', duration: 0.2 }}
+                    width='24'
+                    height='18'
+                />
                 <span className='sr-only'>Menu</span>
             </div>
             {routeDisplay}

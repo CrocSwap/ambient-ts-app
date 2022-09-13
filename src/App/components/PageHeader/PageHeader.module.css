@@ -172,8 +172,14 @@
         transition: transform var(--animation-speed) ease-in-out;
 
         flex-direction: column;
-        background: hsl(0 0% 100% / 0.1);
+        /* background: hsl(0 0% 100% / 0.1); */
+        
         backdrop-filter: blur(1rem);
+        background: rgba( 23, 29, 39, 0.5 );
+box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 );
+backdrop-filter: blur( 13px );
+-webkit-backdrop-filter: blur( 13px );
+border-radius: 10px;
 
         font-size: calc(var(--header2-size) + 0.5rem);
         line-height: calc(var(--header2-lh) + 0.5rem);
