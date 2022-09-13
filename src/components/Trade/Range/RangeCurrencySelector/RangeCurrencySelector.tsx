@@ -104,7 +104,7 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
 
     const DexBalanceContent = (
         <span className={styles.surplus_toggle}>
-            <IconWithTooltip title='Use Surplus' placement='left'>
+            <IconWithTooltip title='Use Exchange Surplus' placement='bottom'>
                 {fieldId === 'A' ? (
                     <Toggle2
                         isOn={isWithdrawTokenAFromDexChecked}
@@ -112,7 +112,8 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                             setIsWithdrawTokenAFromDexChecked(!isWithdrawTokenAFromDexChecked)
                         }
                         id='withdraw_from_dex'
-                        disabled={parseFloat(tokenADexBalance) <= 0}
+                        disabled={false}
+                        // disabled={parseFloat(tokenADexBalance) <= 0}
                     />
                 ) : (
                     <Toggle2
@@ -121,47 +122,41 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                             setIsWithdrawTokenBFromDexChecked(!isWithdrawTokenBFromDexChecked)
                         }
                         id='withdraw_to_wallet'
-                        disabled={parseFloat(tokenBDexBalance) <= 0}
+                        disabled={false}
+                        // disabled={parseFloat(tokenBDexBalance) <= 0}
                     />
                 )}
             </IconWithTooltip>
         </span>
     );
 
-    // const walletBalanceNum =
-    //     fieldId === 'A' && tokenABalance !== ''
-    //         ? parseFloat(tokenABalance)
-    //         : fieldId === 'B' && tokenBBalance !== ''
-    //         ? parseFloat(tokenBBalance)
-    //         : 0;
-
     const walletBalanceNonLocaleString =
         fieldId === 'A' && tokenABalance !== ''
             ? parseFloat(tokenABalance).toString()
             : fieldId !== 'A' && tokenBBalance !== ''
             ? parseFloat(tokenBBalance).toString()
-            : '0';
+            : '0.00';
 
     const walletBalanceLocaleString =
         fieldId === 'A' && tokenABalance !== ''
             ? parseFloat(tokenABalance).toLocaleString()
             : fieldId !== 'A' && tokenBBalance !== ''
             ? parseFloat(tokenBBalance).toLocaleString()
-            : '0';
+            : '0.00';
 
     const surplusBalanceNonLocaleString =
         fieldId === 'A' && tokenADexBalance !== ''
             ? parseFloat(tokenADexBalance).toString()
             : fieldId === 'B' && tokenBDexBalance !== ''
             ? parseFloat(tokenBDexBalance).toString()
-            : '0';
+            : '0.00';
 
     const surplusBalanceLocaleString =
         fieldId === 'A' && tokenADexBalance !== ''
             ? parseFloat(tokenADexBalance).toLocaleString()
             : fieldId === 'B' && tokenBDexBalance !== ''
             ? parseFloat(tokenBDexBalance).toLocaleString()
-            : '0';
+            : '0.00';
 
     // console.log({ fieldId });
     // console.log({ isTokenADisabled });
@@ -198,23 +193,23 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                         color: isWithdrawTokenAFromDexChecked ? '#ebebff' : '#555555',
                     }}
                 >
-                    <div
-                        className={styles.balance_with_pointer}
-                        onClick={() => {
-                            handleChangeClick(walletBalanceNonLocaleString);
-                        }}
-                    >
-                        <div className={styles.wallet_logo}>
-                            <IconWithTooltip title='wallet' placement='bottom'>
+                    <IconWithTooltip title='Wallet Balance After Range Mint' placement='bottom'>
+                        <div
+                            className={styles.balance_with_pointer}
+                            onClick={() => {
+                                handleChangeClick(walletBalanceNonLocaleString);
+                            }}
+                        >
+                            <div className={styles.wallet_logo}>
                                 <MdAccountBalanceWallet
-                                    size={15}
+                                    size={20}
                                     color={isWithdrawTokenAFromDexChecked ? '#ebebff' : '#555555'}
                                 />
-                            </IconWithTooltip>
-                        </div>
-                        <div>{walletBalanceLocaleString}</div>
-                    </div>
-                    <IconWithTooltip title='surplus' placement='bottom'>
+                            </div>
+                            <div>{walletBalanceLocaleString}</div>
+                        </div>{' '}
+                    </IconWithTooltip>
+                    <IconWithTooltip title='Exchange Surplus After Range Mint' placement='bottom'>
                         <div
                             className={`${styles.balance_with_pointer} ${
                                 isWithdrawTokenAFromDexChecked ? styles.grey_logo : null
@@ -227,7 +222,7 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                             }}
                         >
                             <div className={styles.wallet_logo}>
-                                <img src={ambientLogo} width='15' alt='surplus' />
+                                <img src={ambientLogo} width='20' alt='surplus' />
                             </div>
                             {surplusBalanceLocaleString}
                         </div>
