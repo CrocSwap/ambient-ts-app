@@ -8,6 +8,8 @@ import { useModal } from '../../../components/Global/Modal/useModal';
 import Modal from '../../../components/Global/Modal/Modal';
 import TokenSelectContainer from '../../Global/TokenSelectContainer/TokenSelectContainer';
 import Toggle2 from '../../Global/Toggle/Toggle2';
+import ambientLogo from '../../../assets/images/logos/ambient_logo.svg';
+import { MdAccountBalanceWallet } from 'react-icons/md';
 
 interface CurrencySelectorProps {
     tokenPair: TokenPairIF;
@@ -61,7 +63,8 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
     const [isModalOpen, openModal, closeModal] = useModal();
     const [showManageTokenListContent, setShowManageTokenListContent] = useState(false);
 
-    const thisToken = fieldId === 'sell' ? tokenPair.dataTokenA : tokenPair.dataTokenB;
+    const isSellTokenSelector = fieldId === 'sell';
+    const thisToken = isSellTokenSelector ? tokenPair.dataTokenA : tokenPair.dataTokenB;
 
     useEffect(() => {
         if (parseFloat(tokenADexBalance) <= 0) {
@@ -71,7 +74,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
 
     const WithdrawTokensContent = (
         <div className={styles.surplus_toggle}>
-            {fieldId === 'sell' ? 'Use Surplus' : 'Add to Surplus'}
+            {/* {fieldId === 'sell' ? 'Use Surplus' : 'Add to Surplus'} */}
             {/* {fieldId === 'sell'
                 ? isWithdrawFromDexChecked
                     ? 'Use Exchange Surplus'
@@ -80,7 +83,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                 ? 'Save as Exchange Surplus'
                 : 'Withdraw to Wallet'} */}
 
-            {fieldId === 'sell' ? (
+            {isSellTokenSelector ? (
                 // <Toggle
                 //     isOn={isWithdrawFromDexChecked}
                 //     handleToggle={() => setIsWithdrawFromDexChecked(!isWithdrawFromDexChecked)}
@@ -103,7 +106,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
         </div>
     );
 
-    const tokenToUpdate = fieldId === 'sell' ? 'A' : 'B';
+    const tokenToUpdate = isSellTokenSelector ? 'A' : 'B';
 
     const footer = (
         <div
@@ -195,7 +198,16 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                 </div>
             </div>
             <div className={styles.swapbox_bottom}>
-                <div className={styles.surplus_container}>
+                <div
+                    className={styles.surplus_container}
+                    style={{
+                        color:
+                            (isSellTokenSelector && !isWithdrawFromDexChecked) ||
+                            (!isSellTokenSelector && !isSaveAsDexSurplusChecked)
+                                ? '#ebebff'
+                                : '#555555',
+                    }}
+                >
                     <div
                         className={styles.balance_with_pointer}
                         onClick={() => {
@@ -204,11 +216,33 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                                 : setIsSaveAsDexSurplusChecked(false);
                         }}
                     >
-                        Wallet: {walletBalanceLocaleString}{' '}
-                    </div>{' '}
-                    |{' '}
+                        <div className={styles.wallet_logo}>
+                            <MdAccountBalanceWallet
+                                size={20}
+                                color={
+                                    (isSellTokenSelector && !isWithdrawFromDexChecked) ||
+                                    (!isSellTokenSelector && !isSaveAsDexSurplusChecked)
+                                        ? '#ebebff'
+                                        : '#555555'
+                                }
+                            />
+                        </div>
+                        <div>{walletBalanceLocaleString}</div>
+                    </div>
                     <div
-                        className={styles.balance_with_pointer}
+                        className={`${styles.balance_with_pointer} ${
+                            (isSellTokenSelector && !isWithdrawFromDexChecked) ||
+                            (!isSellTokenSelector && !isSaveAsDexSurplusChecked)
+                                ? styles.grey_logo
+                                : null
+                        }`}
+                        style={{
+                            color:
+                                (isSellTokenSelector && !isWithdrawFromDexChecked) ||
+                                (!isSellTokenSelector && !isSaveAsDexSurplusChecked)
+                                    ? '#555555'
+                                    : '#ebebff',
+                        }}
                         // className={props.sellToken ? styles.balance_with_pointer : null}
                         onClick={() => {
                             props.sellToken && handleChangeClick
@@ -216,7 +250,10 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                                 : setIsSaveAsDexSurplusChecked(true);
                         }}
                     >
-                        Surplus: {surplusBalanceLocaleString}
+                        <div className={styles.wallet_logo}>
+                            <img src={ambientLogo} width='20' alt='' />
+                        </div>
+                        {surplusBalanceLocaleString}
                     </div>
                 </div>
                 {/* {fieldId === 'limit-sell' ? DexBalanceContent : WithdrawTokensContent} */}
