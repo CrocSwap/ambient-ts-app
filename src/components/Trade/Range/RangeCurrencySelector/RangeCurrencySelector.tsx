@@ -18,11 +18,18 @@ interface RangeCurrencySelectorProps {
     tokensBank: Array<TokenIF>;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     searchableTokens: Array<TokenIF>;
+    isTokenAEth: boolean;
     updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
     isWithdrawTokenAFromDexChecked: boolean;
     setIsWithdrawTokenAFromDexChecked: Dispatch<SetStateAction<boolean>>;
     isWithdrawTokenBFromDexChecked: boolean;
     setIsWithdrawTokenBFromDexChecked: Dispatch<SetStateAction<boolean>>;
+    tokenAWalletMinusTokenAQtyNum: number;
+    tokenBWalletMinusTokenBQtyNum: number;
+    tokenASurplusMinusTokenARemainderNum: number;
+    tokenBSurplusMinusTokenBRemainderNum: number;
+    tokenASurplusMinusTokenAQtyNum: number;
+    tokenBSurplusMinusTokenBQtyNum: number;
     sellToken?: boolean;
     reverseTokens: () => void;
     tokenABalance: string;
@@ -45,10 +52,13 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
         setImportedTokens,
         searchableTokens,
         chainId,
+        isTokenAEth,
         isWithdrawTokenAFromDexChecked,
         setIsWithdrawTokenAFromDexChecked,
         isWithdrawTokenBFromDexChecked,
         setIsWithdrawTokenBFromDexChecked,
+        tokenAWalletMinusTokenAQtyNum,
+        tokenBWalletMinusTokenBQtyNum,
         fieldId,
         sellToken,
         updateOtherQuantity,
@@ -57,6 +67,10 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
         tokenBBalance,
         tokenADexBalance,
         tokenBDexBalance,
+        tokenASurplusMinusTokenARemainderNum,
+        // tokenBSurplusMinusTokenBRemainderNum,
+        tokenASurplusMinusTokenAQtyNum,
+        tokenBSurplusMinusTokenBQtyNum,
         isTokenADisabled,
         isTokenBDisabled,
         isAdvancedMode,
@@ -139,12 +153,15 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
             ? parseFloat(tokenBBalance).toString()
             : '0.00';
 
-    const walletBalanceLocaleString =
-        isTokenASelector && tokenABalance !== ''
-            ? parseFloat(tokenABalance).toLocaleString()
-            : fieldId !== 'A' && tokenBBalance !== ''
-            ? parseFloat(tokenBBalance).toLocaleString()
-            : '0.00';
+    const walletBalanceLocaleString = isTokenASelector
+        ? tokenAWalletMinusTokenAQtyNum.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          })
+        : tokenBWalletMinusTokenBQtyNum.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          });
 
     const surplusBalanceNonLocaleString =
         isTokenASelector && tokenADexBalance !== ''
@@ -153,12 +170,35 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
             ? parseFloat(tokenBDexBalance).toString()
             : '0.00';
 
-    const surplusBalanceLocaleString =
-        isTokenASelector && tokenADexBalance !== ''
-            ? parseFloat(tokenADexBalance).toLocaleString()
-            : fieldId === 'B' && tokenBDexBalance !== ''
-            ? parseFloat(tokenBDexBalance).toLocaleString()
-            : '0.00';
+    const surplusBalanceLocaleString = isTokenASelector
+        ? isWithdrawTokenAFromDexChecked
+            ? isTokenAEth && tokenASurplusMinusTokenARemainderNum
+                ? tokenASurplusMinusTokenARemainderNum.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                  })
+                : tokenASurplusMinusTokenAQtyNum.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                  })
+            : parseFloat(tokenADexBalance || '0').toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              })
+        : isWithdrawTokenBFromDexChecked
+        ? !isTokenAEth && tokenBSurplusMinusTokenBQtyNum
+            ? tokenBSurplusMinusTokenBQtyNum.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              })
+            : tokenBSurplusMinusTokenBQtyNum.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              })
+        : parseFloat(tokenBDexBalance || '0').toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          });
 
     // console.log({ fieldId });
     // console.log({ isTokenADisabled });

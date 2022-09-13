@@ -122,15 +122,6 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         ? parseFloat(tokenABalance || '0')
         : parseFloat(tokenABalance || '0') - parseFloat(tokenAQtyLocal || '0');
 
-    // const tokenAWalletMinusTokenAQtyNum =
-    //     isSellTokenEth && !isWithdrawFromDexChecked
-    //         ? parseFloat(tokenABalance || '0') - parseFloat(tokenAQtyLocal || '0')
-    //         : isWithdrawFromDexChecked && tokenASurplusMinusTokenARemainderNum < 0
-    //         ? parseFloat(tokenABalance || '0') + tokenASurplusMinusTokenARemainderNum
-    //         : isWithdrawFromDexChecked
-    //         ? parseFloat(tokenABalance || '0')
-    //         : parseFloat(tokenABalance || '0') - parseFloat(tokenAQtyLocal || '0');
-
     const tokenBWalletPlusTokenBQtyNum =
         parseFloat(tokenBBalance || '0') + parseFloat(tokenBQtyLocal || '0');
     const tokenBSurplusPlusTokenBQtyNum =
