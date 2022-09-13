@@ -103,13 +103,13 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
     const tokenBDexBalance = isSellTokenBase ? quoteTokenDexBalance : baseTokenDexBalance;
 
     const tokenAWalletMinusTokenAQtyNum =
-        parseFloat(tokenABalance) - parseFloat(tokenAQtyLocal || '0');
+        parseFloat(tokenABalance || '0') - parseFloat(tokenAQtyLocal || '0');
     const tokenBWalletPlusTokenBQtyNum =
-        parseFloat(tokenBBalance) + parseFloat(tokenBQtyLocal || '0');
+        parseFloat(tokenBBalance || '0') + parseFloat(tokenBQtyLocal || '0');
     const tokenASurplusMinusTokenAQtyNum =
-        parseFloat(tokenADexBalance) - parseFloat(tokenAQtyLocal || '0');
+        parseFloat(tokenADexBalance || '0') - parseFloat(tokenAQtyLocal || '0');
     const tokenBSurplusPlusTokenBQtyNum =
-        parseFloat(tokenBDexBalance) + parseFloat(tokenBQtyLocal || '0');
+        parseFloat(tokenBDexBalance || '0') + parseFloat(tokenBQtyLocal || '0');
 
     useEffect(() => {
         if (tradeData && crocEnv) {
@@ -372,6 +372,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         }
     };
 
+    // console.log({ tokenAWalletMinusTokenAQtyNum });
     return (
         <section className={styles.currency_converter}>
             <CurrencySelector

@@ -74,7 +74,8 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
     const isSellTokenSelector = fieldId === 'sell';
     const thisToken = isSellTokenSelector ? tokenPair.dataTokenA : tokenPair.dataTokenB;
 
-    const isWithdrawFromDexDisabled = parseFloat(tokenADexBalance) <= 0;
+    const isWithdrawFromDexDisabled = parseFloat(tokenADexBalance || '0') <= 0;
+    const isWithdrawFromWalletDisabled = parseFloat(tokenABalance || '0') <= 0;
 
     useEffect(() => {
         if (parseFloat(tokenADexBalance) <= 0) {
@@ -104,7 +105,8 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                     isOn={isWithdrawFromDexChecked}
                     handleToggle={() => setIsWithdrawFromDexChecked(!isWithdrawFromDexChecked)}
                     id='sell_token_withdrawal'
-                    disabled={isWithdrawFromDexDisabled}
+                    disabled={false}
+                    // disabled={isWithdrawFromDexDisabled}
                 />
             ) : (
                 <Toggle2
@@ -176,7 +178,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
               })
-            : parseFloat(tokenABalance).toLocaleString(undefined, {
+            : parseFloat(tokenABalance || '0').toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
               })
@@ -185,7 +187,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
           })
-        : parseFloat(tokenBBalance).toLocaleString(undefined, {
+        : parseFloat(tokenBBalance || '0').toLocaleString(undefined, {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
           });
@@ -215,7 +217,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
               })
-            : parseFloat(tokenADexBalance).toLocaleString(undefined, {
+            : parseFloat(tokenADexBalance || '0').toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
               })
@@ -224,7 +226,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
           })
-        : parseFloat(tokenBDexBalance).toLocaleString(undefined, {
+        : parseFloat(tokenBDexBalance || '0').toLocaleString(undefined, {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
           });
@@ -280,9 +282,9 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                         className={styles.balance_with_pointer}
                         onClick={() => {
                             if (props.sellToken) {
-                                if (handleChangeClick) {
+                                setIsWithdrawFromDexChecked(false);
+                                if (handleChangeClick && !isWithdrawFromWalletDisabled) {
                                     handleChangeClick(walletBalanceNonLocaleString);
-                                    setIsWithdrawFromDexChecked(false);
                                 }
                             } else {
                                 setIsSaveAsDexSurplusChecked(false);
@@ -319,9 +321,9 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                         // className={props.sellToken ? styles.balance_with_pointer : null}
                         onClick={() => {
                             if (props.sellToken) {
+                                setIsWithdrawFromDexChecked(true);
                                 if (handleChangeClick && !isWithdrawFromDexDisabled) {
                                     handleChangeClick(surplusBalanceNonLocaleString);
-                                    setIsWithdrawFromDexChecked(true);
                                 }
                             } else {
                                 setIsSaveAsDexSurplusChecked(true);
