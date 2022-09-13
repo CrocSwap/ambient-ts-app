@@ -25,6 +25,8 @@ interface CurrencySelectorProps {
     tokenBBalance: string;
     tokenADexBalance: string;
     tokenBDexBalance: string;
+    isSellTokenEth?: boolean;
+    tokenASurplusMinusTokenARemainderNum?: number;
     tokenAWalletMinusTokenAQtyNum: number;
     tokenBWalletPlusTokenBQtyNum: number;
     tokenASurplusMinusTokenAQtyNum: number;
@@ -59,6 +61,8 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
         tokenBBalance,
         tokenADexBalance,
         tokenBDexBalance,
+        isSellTokenEth,
+        tokenASurplusMinusTokenARemainderNum,
         tokenAWalletMinusTokenAQtyNum,
         tokenBWalletPlusTokenBQtyNum,
         tokenASurplusMinusTokenAQtyNum,
@@ -173,15 +177,10 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
     //         : '0';
 
     const walletBalanceLocaleString = props.sellToken
-        ? !isWithdrawFromDexChecked
-            ? tokenAWalletMinusTokenAQtyNum.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              })
-            : parseFloat(tokenABalance || '0').toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              })
+        ? tokenAWalletMinusTokenAQtyNum.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          })
         : !isSaveAsDexSurplusChecked
         ? tokenBWalletPlusTokenBQtyNum.toLocaleString(undefined, {
               minimumFractionDigits: 2,
@@ -191,18 +190,25 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
           });
-    // const walletBalanceLocaleString =
-    //     props.sellToken && tokenABalance !== ''
-    //         ? parseFloat(tokenABalance).toLocaleString(undefined, {
+    // const walletBalanceLocaleString = props.sellToken
+    //     ? !isWithdrawFromDexChecked
+    //         ? tokenAWalletMinusTokenAQtyNum.toLocaleString(undefined, {
     //               minimumFractionDigits: 2,
     //               maximumFractionDigits: 2,
     //           })
-    //         : !props.sellToken && tokenBBalance !== ''
-    //         ? parseFloat(tokenBBalance).toLocaleString(undefined, {
+    //         : parseFloat(tokenABalance || '0').toLocaleString(undefined, {
     //               minimumFractionDigits: 2,
     //               maximumFractionDigits: 2,
     //           })
-    //         : '0';
+    //     : !isSaveAsDexSurplusChecked
+    //     ? tokenBWalletPlusTokenBQtyNum.toLocaleString(undefined, {
+    //           minimumFractionDigits: 2,
+    //           maximumFractionDigits: 2,
+    //       })
+    //     : parseFloat(tokenBBalance || '0').toLocaleString(undefined, {
+    //           minimumFractionDigits: 2,
+    //           maximumFractionDigits: 2,
+    //       });
 
     const surplusBalanceNonLocaleString =
         props.sellToken && tokenADexBalance !== ''
@@ -273,7 +279,12 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                     style={{
                         color:
                             (isSellTokenSelector && !isWithdrawFromDexChecked) ||
-                            (!isSellTokenSelector && !isSaveAsDexSurplusChecked)
+                            (!isSellTokenSelector && !isSaveAsDexSurplusChecked) ||
+                            (isSellTokenSelector &&
+                                isSellTokenEth === false &&
+                                isWithdrawFromDexChecked &&
+                                tokenASurplusMinusTokenARemainderNum &&
+                                tokenASurplusMinusTokenARemainderNum < 0)
                                 ? '#ebebff'
                                 : '#555555',
                     }}
@@ -296,7 +307,12 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                                 size={20}
                                 color={
                                     (isSellTokenSelector && !isWithdrawFromDexChecked) ||
-                                    (!isSellTokenSelector && !isSaveAsDexSurplusChecked)
+                                    (!isSellTokenSelector && !isSaveAsDexSurplusChecked) ||
+                                    (isSellTokenSelector &&
+                                        isSellTokenEth === false &&
+                                        isWithdrawFromDexChecked &&
+                                        tokenASurplusMinusTokenARemainderNum &&
+                                        tokenASurplusMinusTokenARemainderNum < 0)
                                         ? '#ebebff'
                                         : '#555555'
                                 }

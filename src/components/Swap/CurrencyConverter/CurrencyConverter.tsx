@@ -14,6 +14,7 @@ import TokensArrow from '../../Global/TokensArrow/TokensArrow';
 import { CrocEnv, CrocImpact } from '@crocswap-libs/sdk';
 import { ethers } from 'ethers';
 import { calcImpact } from '../../../App/functions/calcImpact';
+import { ZERO_ADDRESS } from '../../../constants';
 interface CurrencyConverterPropsIF {
     crocEnv: CrocEnv | undefined;
     provider: ethers.providers.Provider | undefined;
@@ -85,6 +86,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
+    const isSellTokenEth = tradeData.tokenA.address === ZERO_ADDRESS;
     const isSellTokenBase = tradeData.baseToken.address === tradeData.tokenA.address;
 
     const [isTokenAPrimaryLocal, setIsTokenAPrimaryLocal] = useState<boolean>(
@@ -102,12 +104,22 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
     const tokenADexBalance = isSellTokenBase ? baseTokenDexBalance : quoteTokenDexBalance;
     const tokenBDexBalance = isSellTokenBase ? quoteTokenDexBalance : baseTokenDexBalance;
 
+    const tokenASurplusMinusTokenARemainderNum =
+        parseFloat(tokenADexBalance || '0') - parseFloat(tokenAQtyLocal || '0');
+    const tokenASurplusMinusTokenAQtyNum =
+        tokenASurplusMinusTokenARemainderNum >= 0 ? tokenASurplusMinusTokenARemainderNum : 0;
+
     const tokenAWalletMinusTokenAQtyNum =
-        parseFloat(tokenABalance || '0') - parseFloat(tokenAQtyLocal || '0');
+        isSellTokenEth && !isWithdrawFromDexChecked
+            ? parseFloat(tokenABalance || '0') - parseFloat(tokenAQtyLocal || '0')
+            : isWithdrawFromDexChecked && tokenASurplusMinusTokenARemainderNum < 0
+            ? parseFloat(tokenABalance || '0') + tokenASurplusMinusTokenARemainderNum
+            : isWithdrawFromDexChecked
+            ? parseFloat(tokenABalance || '0')
+            : parseFloat(tokenABalance || '0') - parseFloat(tokenAQtyLocal || '0');
+
     const tokenBWalletPlusTokenBQtyNum =
         parseFloat(tokenBBalance || '0') + parseFloat(tokenBQtyLocal || '0');
-    const tokenASurplusMinusTokenAQtyNum =
-        parseFloat(tokenADexBalance || '0') - parseFloat(tokenAQtyLocal || '0');
     const tokenBSurplusPlusTokenBQtyNum =
         parseFloat(tokenBDexBalance || '0') + parseFloat(tokenBQtyLocal || '0');
 
@@ -163,22 +175,69 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
 
     useEffect(() => {
         isTokenAPrimaryLocal ? handleTokenAChangeEvent() : handleTokenBChangeEvent();
-    }, [crocEnv, poolPriceDisplay, isSellTokenBase, isTokenAPrimaryLocal, tokenABalance]);
+    }, [
+        crocEnv,
+        poolPriceDisplay,
+        isSellTokenBase,
+        isTokenAPrimaryLocal,
+        tokenABalance,
+        isWithdrawFromDexChecked,
+        // isSellTokenEth,
+    ]);
 
     const handleSwapButtonMessage = (tokenAAmount: number) => {
         if (poolPriceDisplay === 0 || poolPriceDisplay === Infinity) {
             setSwapAllowed(false);
             setSwapButtonErrorMessage('Invalid Token Pair');
-        } else if (tokenAAmount > parseFloat(tokenABalance)) {
-            setSwapAllowed(false);
-            setSwapButtonErrorMessage(
-                `${tokenPair.dataTokenA.symbol} Amount Exceeds Wallet Balance`,
-            );
         } else if (isNaN(tokenAAmount) || tokenAAmount <= 0) {
             setSwapAllowed(false);
             setSwapButtonErrorMessage('Enter an Amount');
         } else {
-            setSwapAllowed(true);
+            if (isSellTokenEth) {
+                if (isWithdrawFromDexChecked) {
+                    const roundedTokenADexBalance =
+                        Math.floor(parseFloat(tokenADexBalance) * 10000) / 10000;
+                    if (tokenAAmount >= roundedTokenADexBalance) {
+                        setSwapAllowed(false);
+                        setSwapButtonErrorMessage(
+                            `${tokenPair.dataTokenA.symbol} Amount Must Be Less Than Surplus Balance`,
+                        );
+                    } else {
+                        setSwapAllowed(true);
+                    }
+                } else {
+                    const roundedTokenAWalletBalance =
+                        Math.floor(parseFloat(tokenABalance) * 10000) / 10000;
+                    if (tokenAAmount >= roundedTokenAWalletBalance) {
+                        setSwapAllowed(false);
+                        setSwapButtonErrorMessage(
+                            `${tokenPair.dataTokenA.symbol} Amount Must Be Less Than Wallet Balance`,
+                        );
+                    } else {
+                        setSwapAllowed(true);
+                    }
+                }
+            } else {
+                if (isWithdrawFromDexChecked) {
+                    if (tokenAAmount > parseFloat(tokenADexBalance) + parseFloat(tokenABalance)) {
+                        setSwapAllowed(false);
+                        setSwapButtonErrorMessage(
+                            `${tokenPair.dataTokenA.symbol} Amount Exceeds Combined Wallet and Exchange Surplus Balance`,
+                        );
+                    } else {
+                        setSwapAllowed(true);
+                    }
+                } else {
+                    if (tokenAAmount > parseFloat(tokenABalance)) {
+                        setSwapAllowed(false);
+                        setSwapButtonErrorMessage(
+                            `${tokenPair.dataTokenA.symbol} Amount Exceeds Wallet Balance`,
+                        );
+                    } else {
+                        setSwapAllowed(true);
+                    }
+                }
+            }
         }
     };
 
@@ -372,7 +431,6 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         }
     };
 
-    // console.log({ tokenAWalletMinusTokenAQtyNum });
     return (
         <section className={styles.currency_converter}>
             <CurrencySelector
@@ -391,6 +449,8 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                 tokenBBalance={tokenBBalance}
                 tokenADexBalance={tokenADexBalance}
                 tokenBDexBalance={tokenBDexBalance}
+                isSellTokenEth={isSellTokenEth}
+                tokenASurplusMinusTokenARemainderNum={tokenASurplusMinusTokenARemainderNum}
                 tokenAWalletMinusTokenAQtyNum={tokenAWalletMinusTokenAQtyNum}
                 tokenBWalletPlusTokenBQtyNum={tokenBWalletPlusTokenBQtyNum}
                 tokenASurplusMinusTokenAQtyNum={tokenASurplusMinusTokenAQtyNum}
