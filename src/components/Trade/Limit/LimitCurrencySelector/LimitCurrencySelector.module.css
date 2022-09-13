@@ -24,15 +24,29 @@
 }
 
 .surplus_container {
+    margin-right: 15px;
     display: flex;
     flex-direction: row;
-    gap: 5px;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 2rem;
 }
 
 .balance_with_pointer {
-    cursor: pointer;
-}
+    display: flex;
+    flex-direction: row;
 
+    align-items: center;
+    margin-right: 5px;
+    gap: 5px;
+    cursor: pointer;
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+}
+.wallet_logo {
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+}
 .swapbox_top {
     border-radius: var(--border-radius);
     background-color: var(--dark2);
@@ -54,6 +68,7 @@
     align-items: center;
     width: 35%;
     cursor: pointer;
+    transition: all var(--animation-speed) ease-in-out;
 }
 
 .token_select img {
@@ -73,10 +88,11 @@
 .swapbox_bottom {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: flex-end;
     align-items: center;
     min-height: 33px;
-    margin: 4px 0;
+
+    margin: 6px 0;
 }
 
 .token_select_button {
@@ -97,12 +113,17 @@
 .sellAllButton:hover {
     color: hotpink;
 }
-
+.grey_logo img {
+    filter: grayscale(100%);
+}
 .surplus_toggle {
     display: flex;
     flex-direction: row;
     align-items: center;
     gap: 8px;
+    padding-top: 3px;
+    /* padding-left: 10px;
+    padding-right: 10px; */
 }
 
 /* modal */

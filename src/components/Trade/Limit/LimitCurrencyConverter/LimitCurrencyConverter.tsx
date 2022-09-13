@@ -22,6 +22,7 @@ import { TokenIF, TokenPairIF } from '../../../../utils/interfaces/exports';
 import TokensArrow from '../../../Global/TokensArrow/TokensArrow';
 import DividerDark from '../../../Global/DividerDark/DividerDark';
 import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
+import { ZERO_ADDRESS } from '../../../../constants';
 
 // interface for component props
 interface LimitCurrencyConverterProps {
@@ -103,6 +104,8 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
         !isTokenAPrimaryLocal ? tradeData?.primaryQuantity : '',
     );
 
+    const isSellTokenEth = tradeData.tokenA.address === ZERO_ADDRESS;
+
     const tokenABalance = isSellTokenBase ? baseTokenBalance : quoteTokenBalance;
     const tokenBBalance = isSellTokenBase ? quoteTokenBalance : baseTokenBalance;
     const tokenADexBalance = isSellTokenBase ? baseTokenDexBalance : quoteTokenDexBalance;
@@ -111,6 +114,19 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
     const tokenADecimals = tokenPair.dataTokenA.decimals;
     const tokenBDecimals = tokenPair.dataTokenB.decimals;
 
+    const tokenASurplusMinusTokenARemainderNum =
+        parseFloat(tokenADexBalance || '0') - parseFloat(tokenAQtyLocal || '0');
+    const tokenASurplusMinusTokenAQtyNum =
+        tokenASurplusMinusTokenARemainderNum >= 0 ? tokenASurplusMinusTokenARemainderNum : 0;
+    const tokenAWalletMinusTokenAQtyNum = isSellTokenEth
+        ? isWithdrawFromDexChecked
+            ? parseFloat(tokenABalance || '0')
+            : parseFloat(tokenABalance || '0') - parseFloat(tokenAQtyLocal || '0')
+        : isWithdrawFromDexChecked && tokenASurplusMinusTokenARemainderNum < 0
+        ? parseFloat(tokenABalance || '0') + tokenASurplusMinusTokenARemainderNum
+        : isWithdrawFromDexChecked
+        ? parseFloat(tokenABalance || '0')
+        : parseFloat(tokenABalance || '0') - parseFloat(tokenAQtyLocal || '0');
     // TODO: pass tokenPair to <LimitRate /> as a prop such that we can use a dynamic
     // TODO: ... logo instead of the hardcoded one it contains
 
@@ -332,6 +348,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 chainId={chainId}
                 fieldId='sell'
                 sellToken
+                isSellTokenEth={isSellTokenEth}
                 direction='From: '
                 handleChangeEvent={handleTokenAChangeEvent}
                 handleChangeClick={handleTokenAChangeClick}
@@ -340,6 +357,9 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 tokenBBalance={tokenBBalance}
                 tokenADexBalance={tokenADexBalance}
                 tokenBDexBalance={tokenBDexBalance}
+                tokenAWalletMinusTokenAQtyNum={tokenAWalletMinusTokenAQtyNum}
+                tokenASurplusMinusTokenAQtyNum={tokenASurplusMinusTokenAQtyNum}
+                tokenASurplusMinusTokenARemainderNum={tokenASurplusMinusTokenARemainderNum}
                 isWithdrawFromDexChecked={isWithdrawFromDexChecked}
                 setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
                 isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
@@ -371,6 +391,9 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 tokenBBalance={tokenBBalance}
                 tokenADexBalance={tokenADexBalance}
                 tokenBDexBalance={tokenBDexBalance}
+                tokenAWalletMinusTokenAQtyNum={tokenAWalletMinusTokenAQtyNum}
+                tokenASurplusMinusTokenAQtyNum={tokenASurplusMinusTokenAQtyNum}
+                tokenASurplusMinusTokenARemainderNum={tokenASurplusMinusTokenARemainderNum}
                 isWithdrawFromDexChecked={isWithdrawFromDexChecked}
                 setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
                 isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
