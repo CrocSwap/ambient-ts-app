@@ -53,7 +53,10 @@ export default function SwapHeader(props: SwapHeaderPropsIF) {
                 {isDenomBase ? baseTokenSymbol : quoteTokenSymbol} /{' '}
                 {isDenomBase ? quoteTokenSymbol : baseTokenSymbol}
             </div>
-            <div onClick={openModal}>
+            <div
+                onClick={openModal}
+                className={`${styles.settings_container} ${styles.settings_icon}`}
+            >
                 <img src={settingsIcon} alt='settings' />
             </div>
         </ContentHeader>
@@ -63,7 +66,10 @@ export default function SwapHeader(props: SwapHeaderPropsIF) {
         <ContentHeader>
             <div />
             <span className={styles.title}>Swap</span>
-            <div className={styles.settings_container} onClick={openModal}>
+            <div
+                className={`${styles.settings_container} ${styles.settings_icon}`}
+                onClick={openModal}
+            >
                 <img src={settingsIcon} alt='settings' />
             </div>
         </ContentHeader>

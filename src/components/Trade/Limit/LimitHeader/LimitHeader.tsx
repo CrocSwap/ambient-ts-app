@@ -54,7 +54,7 @@ export default function LimitHeader(props: LimitHeaderPropsIF) {
                 {isDenomBase ? baseTokenSymbol : quoteTokenSymbol} /{' '}
                 {isDenomBase ? quoteTokenSymbol : baseTokenSymbol}
             </div>
-            <div onClick={openModal}>
+            <div onClick={openModal} className={styles.settings_icon}>
                 <img src={settingsIcon} alt='settings' />
             </div>
             {settingsModalOrNull}

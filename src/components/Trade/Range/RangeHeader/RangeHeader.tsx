@@ -51,7 +51,10 @@ export default function RangeHeader(props: RangeHeaderPropsIF) {
                 {reverseDisplay ? tokenPair.dataTokenA.symbol : tokenPair.dataTokenB.symbol} /{' '}
                 {reverseDisplay ? tokenPair.dataTokenB.symbol : tokenPair.dataTokenA.symbol}
             </div>
-            <div onClick={openModal}>
+            <div
+                onClick={openModal}
+                className={`${styles.settings_container} ${styles.settings_icon}`}
+            >
                 <img src={settingsIcon} alt='settings' />
             </div>
             {settingsModalOrNull}
