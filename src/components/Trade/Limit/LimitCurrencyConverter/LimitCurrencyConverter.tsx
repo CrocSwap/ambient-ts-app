@@ -111,8 +111,8 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
     const tokenADexBalance = isSellTokenBase ? baseTokenDexBalance : quoteTokenDexBalance;
     const tokenBDexBalance = isSellTokenBase ? quoteTokenDexBalance : baseTokenDexBalance;
 
-    const tokenADecimals = tokenPair.dataTokenA.decimals;
-    const tokenBDecimals = tokenPair.dataTokenB.decimals;
+    // const tokenADecimals = tokenPair.dataTokenA.decimals;
+    // const tokenBDecimals = tokenPair.dataTokenB.decimals;
 
     const tokenASurplusMinusTokenARemainderNum =
         parseFloat(tokenADexBalance || '0') - parseFloat(tokenAQtyLocal || '0');
@@ -285,7 +285,11 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
 
             handleLimitButtonMessage(parseFloat(tokenAQtyLocal));
         }
-        const truncatedTokenBQty = truncateDecimals(rawTokenBQty, tokenBDecimals).toString();
+        const truncatedTokenBQty = rawTokenBQty
+            ? rawTokenBQty < 100000
+                ? rawTokenBQty.toPrecision(6)
+                : truncateDecimals(rawTokenBQty, 0)
+            : '';
 
         setTokenBQtyLocal(truncatedTokenBQty);
         // setTokenBInputQty(truncatedTokenBQty);
@@ -320,7 +324,11 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
         }
 
         handleLimitButtonMessage(parseFloat(input));
-        const truncatedTokenBQty = truncateDecimals(rawTokenBQty, tokenBDecimals).toString();
+        const truncatedTokenBQty = rawTokenBQty
+            ? rawTokenBQty < 100000
+                ? rawTokenBQty.toPrecision(6)
+                : truncateDecimals(rawTokenBQty, 0)
+            : '';
 
         // const truncatedTokenBQty = truncateDecimals(rawTokenBQty, tokenBDecimals).toString();
 
@@ -369,7 +377,11 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
             }
         }
         handleLimitButtonMessage(rawTokenAQty);
-        const truncatedTokenAQty = truncateDecimals(rawTokenAQty, tokenADecimals).toString();
+        const truncatedTokenAQty = rawTokenAQty
+            ? rawTokenAQty < 100000
+                ? rawTokenAQty.toPrecision(6)
+                : truncateDecimals(rawTokenAQty, 0)
+            : '';
         setTokenAQtyLocal(truncatedTokenAQty);
         // setTokenAInputQty(truncatedTokenAQty);
         const sellQtyField = document.getElementById('sell-limit-quantity') as HTMLInputElement;
