@@ -51,20 +51,18 @@ export default function ChatPanel(props: ChatProps) {
     const _socket = socket;
     const [messages, setMessages] = useState<Message[]>([]);
     const [room, setRoom] = useState('Global');
-
-    // useEffect(() => {
-    //     _socket.connect();
-
-    // }, [_socket]);
+    const __socket = io(host, { query: [room] }).connect();
+    useEffect(() => {
+        __socket.connect();
+    }, [__socket]);
 
     const currentUser = '62f24f3ff40188d467c532e8';
 
     useEffect(() => {
-        const __socket = io(host, { query: [room] }).connect();
         __socket.on('msg-recieve', (mostRecentMessages) => {
             setMessages([...mostRecentMessages]);
         });
-    }, []);
+    }, [messages]);
 
     useEffect(() => {
         setRoomSocket();
