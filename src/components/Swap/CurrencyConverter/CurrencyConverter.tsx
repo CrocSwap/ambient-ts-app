@@ -112,6 +112,18 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
     const tokenASurplusMinusTokenAQtyNum =
         tokenASurplusMinusTokenARemainderNum >= 0 ? tokenASurplusMinusTokenARemainderNum : 0;
 
+    const tokenAQtyCoveredBySurplusBalance = isWithdrawFromDexChecked
+        ? tokenASurplusMinusTokenARemainderNum >= 0
+            ? parseFloat(tokenAQtyLocal || '0')
+            : parseFloat(tokenADexBalance || '0')
+        : 0;
+
+    const tokenAQtyCoveredByWalletBalance = isWithdrawFromDexChecked
+        ? tokenASurplusMinusTokenARemainderNum < 0
+            ? tokenASurplusMinusTokenARemainderNum * -1
+            : 0
+        : parseFloat(tokenAQtyLocal || '0');
+
     const tokenAWalletMinusTokenAQtyNum = isSellTokenEth
         ? isWithdrawFromDexChecked
             ? parseFloat(tokenABalance || '0')
@@ -455,6 +467,8 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                 tokenADexBalance={tokenADexBalance}
                 tokenBDexBalance={tokenBDexBalance}
                 isSellTokenEth={isSellTokenEth}
+                tokenAQtyCoveredByWalletBalance={tokenAQtyCoveredByWalletBalance}
+                tokenAQtyCoveredBySurplusBalance={tokenAQtyCoveredBySurplusBalance}
                 tokenASurplusMinusTokenARemainderNum={tokenASurplusMinusTokenARemainderNum}
                 tokenAWalletMinusTokenAQtyNum={tokenAWalletMinusTokenAQtyNum}
                 tokenBWalletPlusTokenBQtyNum={tokenBWalletPlusTokenBQtyNum}
@@ -478,6 +492,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                 )}
             </div>
             <CurrencySelector
+                tokenBQtyLocal={tokenBQtyLocal}
                 tokenPair={tokenPair}
                 tokensBank={tokensBank}
                 setImportedTokens={setImportedTokens}
