@@ -1,4 +1,4 @@
-import Moralis from 'moralis';
+import Moralis from 'moralis-v1';
 export const fetchTokenPrice = async (address: string, chain: string) => {
     // get ENS domain of an address
     const options = { address: address, chain: chain as '0x5' | '0x1' };

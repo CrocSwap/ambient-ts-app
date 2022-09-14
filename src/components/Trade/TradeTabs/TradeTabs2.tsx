@@ -18,9 +18,10 @@ import TabComponent from '../../Global/TabComponent/TabComponent';
 import PositionsOnlyToggle from './PositionsOnlyToggle/PositionsOnlyToggle';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
 import { CandleData } from '../../../utils/state/graphDataSlice';
-import { ChainSpec } from '@crocswap-libs/sdk';
+import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 
 interface ITabsProps {
+    crocEnv: CrocEnv | undefined;
     provider: ethers.providers.Provider | undefined;
     account: string;
     isAuthenticated: boolean;
@@ -47,10 +48,13 @@ interface ITabsProps {
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
 
     openGlobalModal: (content: React.ReactNode) => void;
+
+    closeGlobalModal: () => void;
 }
 
 export default function TradeTabs2(props: ITabsProps) {
     const {
+        crocEnv,
         chainId,
         chainData,
         isAuthenticated,
@@ -120,6 +124,8 @@ export default function TradeTabs2(props: ITabsProps) {
 
     // Props for <Ranges/> React Element
     const rangesProps = {
+        crocEnv: crocEnv,
+        chainData: chainData,
         provider: provider,
         account: account,
         isAuthenticated: isAuthenticated,
@@ -131,6 +137,10 @@ export default function TradeTabs2(props: ITabsProps) {
         expandTradeTable: expandTradeTable,
         currentPositionActive: currentPositionActive,
         setCurrentPositionActive: setCurrentPositionActive,
+
+        openGlobalModal: props.openGlobalModal,
+
+        closeGlobalModal: props.closeGlobalModal,
     };
     // Props for <Transactions/> React Element
     const transactionsProps = {

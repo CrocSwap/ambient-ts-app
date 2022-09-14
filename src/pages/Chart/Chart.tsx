@@ -1,5 +1,6 @@
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
+import { constants } from 'ethers';
 import moment from 'moment';
 import { DetailedHTMLProps, HTMLAttributes, useCallback, useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
@@ -85,6 +86,7 @@ export default function Chart(props: ChartData) {
 
     const d3Container = useRef(null);
     const d3PlotArea = useRef(null);
+
     const d3Xaxis = useRef(null);
     const d3Yaxis = useRef(null);
 
@@ -195,6 +197,26 @@ export default function Chart(props: ChartData) {
                 }
             });
     }, [location]);
+
+    useEffect(() => {
+        d3.select(d3Container.current).select('.targets').append('rect').attr('id', 'rect');
+    }, [location, parsedChartData]);
+
+    useEffect(() => {
+        if (scaleData) {
+            d3.select(d3Container.current)
+                .select('.targets')
+                .select('#rect')
+                .attr('fill', '#7371FC1A')
+                .attr('width', '100%')
+                .attr('opacity', '0.7')
+                .attr(
+                    'height',
+                    Math.abs(scaleData.yScale(ranges[1].value) - scaleData.yScale(ranges[0].value)),
+                )
+                .attr('y', scaleData.yScale(ranges[1].value));
+        }
+    }, [ranges, parsedChartData]);
 
     // Set Scale
     useEffect(() => {

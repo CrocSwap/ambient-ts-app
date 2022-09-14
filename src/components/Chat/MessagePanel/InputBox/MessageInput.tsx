@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useMoralis } from 'react-moralis';
 import { useEffect, useState } from 'react';
 import { BsSlashSquare, BsEmojiSmileFill } from 'react-icons/bs';
@@ -21,17 +22,12 @@ export default function MessageInput(props: MessageInputProps) {
 
     useEffect(() => {
         _socket.connect();
-        // _socket.on('msg-recieve', (data) => {
-        // //   setMessageReceived(data.message)
-        // })
-        // _socket.disconnect();
     }, [_socket]);
 
     const [message, setMessage] = useState('');
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-    const { user, account, enableWeb3, isWeb3Enabled, isAuthenticated } = useMoralis();
+    const { isWeb3Enabled, isAuthenticated } = useMoralis();
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleEmojiClick = (event: any, emoji: any) => {
         let msg = message;
         msg += emoji.emoji;
@@ -41,7 +37,6 @@ export default function MessageInput(props: MessageInputProps) {
     const handleEmojiPickerHideShow = () => {
         setShowEmojiPicker(!showEmojiPicker);
     };
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const _handleKeyDown = (e: any) => {
         if (e.key === 'Enter') {
             handleSendMsg(e.target.value);
@@ -60,15 +55,10 @@ export default function MessageInput(props: MessageInputProps) {
         });
     };
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const onChangeMessage = (e: any) => {
         setMessage(e.target.value);
     };
 
-    const accountProps = {
-        isAuthenticated: isAuthenticated,
-        isWeb3Enabled: isWeb3Enabled,
-    };
     return (
         <div className={styles.input_box}>
             <div className={styles.input}>

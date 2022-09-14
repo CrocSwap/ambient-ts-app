@@ -1,51 +1,27 @@
-import RangeStatus from '../../Global/RangeStatus/RangeStatus';
 import styles from './HarvestPositionHeader.module.css';
-// import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
-// import { toggleDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
-// interface IHarvestPositionHeaderProps {
-//     isPositionInRange: boolean;
-//     isAmbient: boolean;
-//     baseTokenSymbol: string;
-//     quoteTokenSymbol: string;
-//     baseTokenLogoURI: string;
-//     quoteTokenLogoURI: string;
-//     isDenomBase: boolean;
-// }
+import { BiArrowBack } from 'react-icons/bi';
 
-export default function HarvestPositionHeader() {
-    // const dispatch = useAppDispatch();
-
-    // temp values
-    const baseTokenSymbol = 'ETH';
-    const quoteTokenSymbol = 'USDC';
-
-    const baseTokenLogoURI =
-        'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png';
-
-    const quoteTokenLogoURI = 'https://cryptologos.cc/logos/usd-coin-usdc-logo.png';
-
-    const isDenomBase = false;
-
-    const isAmbient = false;
-
-    const isPositionInRange = true;
-
+import { VscClose } from 'react-icons/vsc';
+interface HarvestPositionHeaderPropsIF {
+    title: string;
+    onClose: () => void;
+    onBackButton: () => void;
+    showBackButton: boolean;
+}
+export default function HarvestPositionHeader(props: HarvestPositionHeaderPropsIF) {
     return (
-        <div className={styles.container}>
-            <div
-                className={styles.token_info}
-                // onClick={() => {
-                //     dispatch(toggleDidUserFlipDenom());
-                // }}
-            >
-                <img src={isDenomBase ? baseTokenLogoURI : quoteTokenLogoURI} alt='' />
-                <img src={isDenomBase ? quoteTokenLogoURI : baseTokenLogoURI} alt='' />
-                <span>
-                    {isDenomBase ? baseTokenSymbol : quoteTokenSymbol} /
-                    {isDenomBase ? quoteTokenSymbol : baseTokenSymbol}
-                </span>
+        <header className={styles.header_container}>
+            {props.showBackButton ? (
+                <div onClick={() => props.onBackButton()}>
+                    <BiArrowBack size={22} />
+                </div>
+            ) : (
+                <div />
+            )}
+            <h2>{props.title}</h2>
+            <div onClick={props.onClose}>
+                <VscClose size={22} />
             </div>
-            <RangeStatus isInRange={isPositionInRange} isAmbient={isAmbient} />
-        </div>
+        </header>
     );
 }

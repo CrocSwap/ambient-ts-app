@@ -1,5 +1,5 @@
 import styles from './ConfirmSwapModal.module.css';
-import { useState } from 'react';
+// import { useState } from 'react';
 import CurrencyDisplay from '../../Global/CurrencyDisplay/CurrencyDisplay';
 import WaitingConfirmation from '../../Global/WaitingConfirmation/WaitingConfirmation';
 import TransactionSubmitted from '../../Global/TransactionSubmitted/TransactionSubmitted';
@@ -8,6 +8,7 @@ import Button from '../../Global/Button/Button';
 import { TokenPairIF } from '../../../utils/interfaces/exports';
 import Divider from '../../Global/Divider/Divider';
 import { CrocImpact } from '@crocswap-libs/sdk';
+import { Dispatch, SetStateAction } from 'react';
 
 interface ConfirmSwapModalProps {
     initiateSwapMethod: () => void;
@@ -21,6 +22,9 @@ interface ConfirmSwapModalProps {
     tokenPair: TokenPairIF;
     txErrorCode: number;
     txErrorMessage: string;
+    showConfirmation: boolean;
+    setShowConfirmation: Dispatch<SetStateAction<boolean>>;
+    resetConfirmation: () => void;
 }
 
 export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
@@ -36,30 +40,23 @@ export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
         tokenPair,
         txErrorCode,
         txErrorMessage,
+        resetConfirmation,
+        showConfirmation,
+        setShowConfirmation,
     } = props;
 
-    const [confirmDetails, setConfirmDetails] = useState<boolean>(true);
     const transactionApproved = newSwapTransactionHash !== '';
     const isTransactionDenied =
         txErrorCode === 4001 &&
         txErrorMessage === 'MetaMask Tx Signature: User denied transaction signature.';
+
     const sellTokenQty = (document.getElementById('sell-quantity') as HTMLInputElement)?.value;
     const buyTokenQty = (document.getElementById('buy-quantity') as HTMLInputElement)?.value;
 
     const primarySwapInput = 'sell';
     const sellTokenData = tokenPair.dataTokenA;
-    // const sellTokenData = {
-    //     symbol: 'ETH',
-    //     logoAltText: 'eth',
-    //     logoLocal:
-    //         'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png',
-    // };
+
     const buyTokenData = tokenPair.dataTokenB;
-    // const buyTokenData = {
-    //     symbol: 'DAI',
-    //     logoAltText: 'dai',
-    //     logoLocal: 'https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.png',
-    // };
 
     const explanationText =
         primarySwapInput === 'sell' ? (
@@ -161,7 +158,7 @@ export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
         />
     );
 
-    const transactionDenied = <TransactionDenied />;
+    const transactionDenied = <TransactionDenied resetConfirmation={resetConfirmation} />;
 
     const transactionSubmitted = (
         <TransactionSubmitted
@@ -186,7 +183,7 @@ export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
                     `Buy Token Full name: ${buyTokenData.symbol} and quantity: ${buyTokenQty}`,
                 );
                 initiateSwapMethod();
-                setConfirmDetails(false);
+                setShowConfirmation(false);
             }}
         />
     );
@@ -206,10 +203,10 @@ export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
     const modal = (
         <div className={styles.modal_container}>
             <section className={styles.modal_content}>
-                {confirmDetails ? fullTxDetails : confirmationDisplay}
+                {showConfirmation ? fullTxDetails : confirmationDisplay}
             </section>
             <footer className={styles.modal_footer}>
-                {confirmDetails ? confirmSwapButton : null}
+                {showConfirmation ? confirmSwapButton : null}
             </footer>
         </div>
     );

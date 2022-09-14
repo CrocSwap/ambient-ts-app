@@ -3,71 +3,71 @@ import Row from '../../Global/Row/Row';
 import DividerDark from '../../Global/DividerDark/DividerDark';
 // import { formatAmount } from '../../../utils/numbers';
 
-// interface IHarvestPositionInfoProps {
-//     baseTokenSymbol: string;
-//     quoteTokenSymbol: string;
-//     baseTokenLogoURI: string;
-//     quoteTokenLogoURI: string;
-//     posLiqBaseDecimalCorrected: number | undefined;
-//     posLiqQuoteDecimalCorrected: number | undefined;
-//     feeLiqBaseDecimalCorrected: number | undefined;
-//     feeLiqQuoteDecimalCorrected: number | undefined;
-//     removalPercentage: number;
-// }
+interface IHarvestPositionInfoProps {
+    baseTokenSymbol: string;
+    quoteTokenSymbol: string;
+    baseTokenLogoURI: string;
+    quoteTokenLogoURI: string;
+    posLiqBaseDecimalCorrected: number | undefined;
+    posLiqQuoteDecimalCorrected: number | undefined;
+    feeLiqBaseDecimalCorrected: number | undefined;
+    feeLiqQuoteDecimalCorrected: number | undefined;
+    removalPercentage: number;
+}
 
-export default function HarvestPositionInfo() {
-    // const {
-    //     baseTokenSymbol,
-    //     quoteTokenSymbol,
-    //     baseTokenLogoURI,
-    //     quoteTokenLogoURI,
-    //     posLiqBaseDecimalCorrected,
-    //     posLiqQuoteDecimalCorrected,
-    //     feeLiqBaseDecimalCorrected,
-    //     feeLiqQuoteDecimalCorrected,
-    //     removalPercentage,
-    // } = props;
+export default function HarvestPositionInfo(props: IHarvestPositionInfoProps) {
+    const {
+        baseTokenSymbol,
+        quoteTokenSymbol,
+        baseTokenLogoURI,
+        quoteTokenLogoURI,
+        // posLiqBaseDecimalCorrected,
+        // posLiqQuoteDecimalCorrected,
+        feeLiqBaseDecimalCorrected,
+        feeLiqQuoteDecimalCorrected,
+        removalPercentage,
+    } = props;
 
     // Temp Values
-    const baseTokenSymbol = 'ETH';
-    const quoteTokenSymbol = 'USDC';
+    // const baseTokenSymbol = 'ETH';
+    // const quoteTokenSymbol = 'USDC';
 
-    const baseTokenLogoURI =
-        'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png';
+    // const baseTokenLogoURI =
+    //     'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png';
 
-    const quoteTokenLogoURI = 'https://cryptologos.cc/logos/usd-coin-usdc-logo.png';
+    // const quoteTokenLogoURI = 'https://cryptologos.cc/logos/usd-coin-usdc-logo.png';
 
-    const posLiqBaseDecimalCorrected = 0.2343;
-    const posLiqQuoteDecimalCorrected = 213.34;
+    // const posLiqBaseDecimalCorrected = 0.2343;
+    // const posLiqQuoteDecimalCorrected = 213.34;
 
-    const feeLiqBaseDecimalCorrected = 1;
+    // const feeLiqBaseDecimalCorrected = 1;
 
-    const feeLiqQuoteDecimalCorrected = 21;
+    // const feeLiqQuoteDecimalCorrected = 21;
 
-    const removalPercentage = 23;
+    // const removalPercentage = 23;
 
-    const liqBaseDisplay = posLiqBaseDecimalCorrected
-        ? posLiqBaseDecimalCorrected < 2
-            ? posLiqBaseDecimalCorrected.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 6,
-              })
-            : posLiqBaseDecimalCorrected.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              })
-        : undefined;
-    const liqQuoteDisplay = posLiqQuoteDecimalCorrected
-        ? posLiqQuoteDecimalCorrected < 2
-            ? posLiqQuoteDecimalCorrected.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 6,
-              })
-            : posLiqQuoteDecimalCorrected.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              })
-        : undefined;
+    // const liqBaseDisplay = posLiqBaseDecimalCorrected
+    //     ? posLiqBaseDecimalCorrected < 2
+    //         ? posLiqBaseDecimalCorrected.toLocaleString(undefined, {
+    //               minimumFractionDigits: 2,
+    //               maximumFractionDigits: 6,
+    //           })
+    //         : posLiqBaseDecimalCorrected.toLocaleString(undefined, {
+    //               minimumFractionDigits: 2,
+    //               maximumFractionDigits: 2,
+    //           })
+    //     : undefined;
+    // const liqQuoteDisplay = posLiqQuoteDecimalCorrected
+    //     ? posLiqQuoteDecimalCorrected < 2
+    //         ? posLiqQuoteDecimalCorrected.toLocaleString(undefined, {
+    //               minimumFractionDigits: 2,
+    //               maximumFractionDigits: 6,
+    //           })
+    //         : posLiqQuoteDecimalCorrected.toLocaleString(undefined, {
+    //               minimumFractionDigits: 2,
+    //               maximumFractionDigits: 2,
+    //           })
+    //     : undefined;
     const feeLiqBaseDisplay = feeLiqBaseDecimalCorrected
         ? feeLiqBaseDecimalCorrected < 2
             ? feeLiqBaseDecimalCorrected.toLocaleString(undefined, {
@@ -91,15 +91,9 @@ export default function HarvestPositionInfo() {
               })
         : undefined;
 
-    const baseRemovalNum =
-        (((posLiqBaseDecimalCorrected || 0) + (feeLiqBaseDecimalCorrected || 0)) *
-            removalPercentage) /
-        100;
+    const baseRemovalNum = ((feeLiqBaseDecimalCorrected || 0) * removalPercentage) / 100;
 
-    const quoteRemovalNum =
-        (((posLiqQuoteDecimalCorrected || 0) + (feeLiqQuoteDecimalCorrected || 0)) *
-            removalPercentage) /
-        100;
+    const quoteRemovalNum = ((feeLiqQuoteDecimalCorrected || 0) * removalPercentage) / 100;
 
     const baseRemovalString = baseRemovalNum
         ? baseRemovalNum < 2
@@ -128,23 +122,23 @@ export default function HarvestPositionInfo() {
     return (
         <div className={styles.row}>
             <div className={styles.remove_position_info}>
-                <Row>
+                {/* <Row>
                     <span>Pooled {baseTokenSymbol}</span>
                     <div className={styles.token_price}>
                         {liqBaseDisplay !== undefined ? liqBaseDisplay : '…'}
                         <img src={baseTokenLogoURI} alt='' />
                     </div>
-                </Row>
+                </Row> */}
                 {/*  */}
-                <Row>
+                {/* <Row>
                     <span>Pooled {quoteTokenSymbol}</span>
                     <div className={styles.token_price}>
                         {liqQuoteDisplay !== undefined ? liqQuoteDisplay : '…'}
                         <img src={quoteTokenLogoURI} alt='' />
                     </div>
-                </Row>
+                </Row> */}
                 {/*  */}
-                <DividerDark />
+                {/* <DividerDark /> */}
                 <Row>
                     <span>{baseTokenSymbol} Fees Earned</span>
                     <div className={styles.token_price}>

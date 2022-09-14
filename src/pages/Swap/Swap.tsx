@@ -156,6 +156,13 @@ export default function Swap(props: SwapPropsIF) {
     const [txErrorCode, setTxErrorCode] = useState(0);
     const [txErrorMessage, setTxErrorMessage] = useState('');
     const [priceImpact, setPriceImpact] = useState<CrocImpact | undefined>();
+    const [showConfirmation, setShowConfirmation] = useState<boolean>(true);
+
+    const resetConfirmation = () => {
+        setShowConfirmation(true);
+        setTxErrorCode(0);
+        setTxErrorMessage('');
+    };
 
     useEffect(() => {
         if (poolPriceDisplay === undefined) {
@@ -297,8 +304,9 @@ export default function Swap(props: SwapPropsIF) {
     const handleModalClose = () => {
         closeModal();
         setNewSwapTransactionHash('');
-        setTxErrorCode(0);
-        setTxErrorMessage('');
+        // setTxErrorCode(0);
+        // setTxErrorMessage('');
+        resetConfirmation();
     };
 
     // TODO:  @Emily refactor this Modal and later elements such that
@@ -318,6 +326,9 @@ export default function Swap(props: SwapPropsIF) {
                 // setNewSwapTransactionHash={setNewSwapTransactionHash}
                 txErrorCode={txErrorCode}
                 txErrorMessage={txErrorMessage}
+                showConfirmation={showConfirmation}
+                setShowConfirmation={setShowConfirmation}
+                resetConfirmation={resetConfirmation}
             />
         </Modal>
     ) : null;

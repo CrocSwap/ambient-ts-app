@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction } from 'react';
 import { AmbientLiqPos, CrocEnv, RangeLiqPos, toDisplayPrice } from '@crocswap-libs/sdk';
-import Moralis from 'moralis';
+import Moralis from 'moralis-v1';
 import { ethers } from 'ethers';
 
 export interface ParsedPositionIF {

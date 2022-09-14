@@ -3,10 +3,11 @@ import { useTermsOfService } from '../../App/hooks/useTermsOfService';
 import styles from './TestPage.module.css';
 
 interface TestPageProps {
-    openGlobalModal: (content: React.ReactNode) => void;
+    openGlobalModal: (content: React.ReactNode, title?: string) => void;
 }
 export default function TestPage(props: TestPageProps) {
-    const { tosText, agreement, agreementDate, acceptToS, rejectToS } = useTermsOfService();
+    const { openGlobalModal } = props;
+    const { tosText, agreement, agreementDate } = useTermsOfService();
 
     const exampleTest = (
         <div className={styles.example_container}>
@@ -32,12 +33,12 @@ export default function TestPage(props: TestPageProps) {
             <p>
                 You {agreement ? 'accepted' : 'rejected'} the Terms of Service on {agreementDate}
             </p>
-            <button onClick={() => acceptToS()}>Agree to ToS</button>
-            <button onClick={() => rejectToS()}>Reject ToS</button>
-            <button onClick={() => props.openGlobalModal('demo')}>open modal</button>
-            <button onClick={() => props.openGlobalModal('example2')}>open example 2</button>
-            <button onClick={() => props.openGlobalModal('example4')}>open example 4</button>
-            <button onClick={() => props.openGlobalModal(exampleTest)}>Another one</button>
+            {/* <button onClick={() => acceptToS()}>Agree to ToS</button>
+            <button onClick={() => rejectToS()}>Reject ToS</button> */}
+
+            <button onClick={() => openGlobalModal(exampleTest, 'this is title')}>
+                Test Modal
+            </button>
         </main>
     );
 }

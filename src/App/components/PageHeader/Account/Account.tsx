@@ -22,14 +22,7 @@ interface AccountPropsIF {
 }
 
 export default function Account(props: AccountPropsIF) {
-    const {
-        isAuthenticated,
-        isWeb3Enabled,
-        clickLogout,
-        ensName,
-        openModal,
-        chainId,
-    } = props;
+    const { isAuthenticated, isWeb3Enabled, clickLogout, ensName, openModal, chainId } = props;
 
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [value, copy] = useCopyToClipboard();
@@ -52,7 +45,7 @@ export default function Account(props: AccountPropsIF) {
         <div className={styles.account_container}>
             <span className={styles.white}>
                 {props.nativeBalance && isAuthenticated && isWeb3Enabled
-                    ? 'Ξ' + parseFloat(props.nativeBalance).toPrecision(4)
+                    ? 'Ξ ' + parseFloat(props.nativeBalance).toPrecision(4)
                     : ''}
             </span>
             <div className={`${styles.title_gradient}`} onClick={handleCopyAddress}>
