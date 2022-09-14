@@ -1,42 +1,53 @@
 import styles from './NotificationCenter.module.css';
-import { motion, AnimatePresence, useAnimation } from 'framer-motion';
-import React, { useEffect, useRef, Dispatch, SetStateAction } from 'react';
+import { AnimateSharedLayout } from 'framer-motion';
+import { Dispatch, SetStateAction } from 'react';
 import NotificationTable from './NotificationTable/NotificationTable';
 import ActivityIndicator from './ActivityIndicator/ActivityIndicator';
-
-const animStates = {
-    hidden: { scale: 0, opacity: 0 },
-    visible: { scale: 1, opacity: 1 },
-    pop: { scale: [1.3, 1], opacity: 1 },
-    hover: { scale: 1.1 },
-    pressed: { scale: 0.95 },
-};
+import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 
 interface NotificationCenterPropsIF {
-    value: number;
-    pending: boolean;
-
     showNotificationTable: boolean;
     setShowNotificationTable: Dispatch<SetStateAction<boolean>>;
+
+    pendingTransactions: string[];
 }
 
 const NotificationCenter = (props: NotificationCenterPropsIF) => {
-    const { value, pending, showNotificationTable, setShowNotificationTable } = props;
+    const { showNotificationTable, setShowNotificationTable, pendingTransactions } = props;
+
+    const receiptData = useAppSelector((state) => state.receiptData);
+
+    const sessionReceipts = receiptData.sessionReceipts;
+
+    const receiveReceiptHashes: Array<string> = [];
+
+    function handleParseReceipt(receipt: any) {
+        const parseReceipt = JSON.parse(receipt);
+        receiveReceiptHashes.push(parseReceipt?.transactionHash);
+    }
+    sessionReceipts.map((receipt) => handleParseReceipt(receipt));
+
+    const currentPendingTransactionsArray = pendingTransactions.filter(
+        (hash: string) => !receiveReceiptHashes.includes(hash),
+    );
 
     return (
-        <div className={styles.container}>
-            <ActivityIndicator
-                value={value}
-                pending={pending}
-                showNotificationTable={showNotificationTable}
-                setShowNotificationTable={setShowNotificationTable}
-            />
+        <AnimateSharedLayout>
+            <div className={styles.container}>
+                <ActivityIndicator
+                    value={receiveReceiptHashes.length}
+                    pending={currentPendingTransactionsArray.length > 0}
+                    showNotificationTable={showNotificationTable}
+                    setShowNotificationTable={setShowNotificationTable}
+                />
 
-            <NotificationTable
-                showNotificationTable={showNotificationTable}
-                setShowNotificationTable={setShowNotificationTable}
-            />
-        </div>
+                <NotificationTable
+                    showNotificationTable={showNotificationTable}
+                    setShowNotificationTable={setShowNotificationTable}
+                    pendingTransactions={currentPendingTransactionsArray}
+                />
+            </div>
+        </AnimateSharedLayout>
     );
 };
 

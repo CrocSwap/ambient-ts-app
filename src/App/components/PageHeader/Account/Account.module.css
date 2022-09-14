@@ -1,10 +1,13 @@
 .account_container {
     display: flex;
     justify-content: flex-end;
+    
     align-items: center;
     background: transparent;
     border-radius: var(--border-radius);
     gap: var(--gap, 0.5rem);
+
+   
 }
 .account_container div {
     font-size: var(--body-size);

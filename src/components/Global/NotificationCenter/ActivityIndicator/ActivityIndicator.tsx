@@ -7,8 +7,8 @@ interface AcitivtyIndicatorProps {
     value: number;
     pending: boolean;
 
-    showQueueTable: boolean;
-    setShowQueueTable: Dispatch<SetStateAction<boolean>>;
+    showNotificationTable: boolean;
+    setShowNotificationTable: Dispatch<SetStateAction<boolean>>;
 }
 const animStates = {
     hidden: { scale: 0, opacity: 0 },
@@ -21,7 +21,7 @@ const ActivityIndicator = (props: AcitivtyIndicatorProps) => {
     const controls = useAnimation();
     const isFirstRun = useRef(true);
 
-    const { value, pending, showQueueTable, setShowQueueTable } = props;
+    const { value, pending, showNotificationTable, setShowNotificationTable } = props;
 
     useEffect(() => {
         if (!isFirstRun.current && value > 0) {
@@ -33,7 +33,10 @@ const ActivityIndicator = (props: AcitivtyIndicatorProps) => {
     }, [controls, value]);
 
     const pendingCircle = (
-        <div className={styles.circle} onClick={() => setShowQueueTable(!showQueueTable)}>
+        <div
+            className={styles.circle}
+            onClick={() => setShowNotificationTable(!showNotificationTable)}
+        >
             <div className={styles.ring} />
         </div>
     );
@@ -47,7 +50,7 @@ const ActivityIndicator = (props: AcitivtyIndicatorProps) => {
                     exit='hidden'
                     animate='visible'
                     variants={animStates}
-                    onClick={() => setShowQueueTable(!showQueueTable)}
+                    onClick={() => setShowNotificationTable(!showNotificationTable)}
                 >
                     <motion.div
                         className={styles.activity_indicator}

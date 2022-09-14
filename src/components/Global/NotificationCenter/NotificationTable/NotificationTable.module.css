@@ -1,5 +1,6 @@
 .container{
-    width: 360px;
+    z-index: 10;
+    width: 380px;
     /* padding: 1rem; */
 
     height: 400px;
@@ -8,26 +9,82 @@
     border-radius: 4px;
     box-shadow: 0px 35px 20px rgba(0, 0, 0, 0.3);
     transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    right: 30px;
-    top: 80px;
+    right: 0;
+    top: 60px;
 
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-
+    
 }
 
 .container .header, .container .footer{
     padding: 1rem;
     background: #0d1117;
+    height: 50px;
 }
 
 .container .header{
     color: #ebebff;
 }
 
+.container .content{
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+height: 300px;
+    overflow-y: scroll;
+    padding:  8px;
+}
+
+
+.container .content::-webkit-scrollbar {
+width: 0.25rem;
+}
+
+
 .container .footer{
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.footer button {
+    
+
+    padding: 4px 16px;
+    font-size: var(--body-size);
+
+    line-height: var(--body-lh);
+
+    display: block;
+
+    max-height: 3rem;
+    cursor: pointer;
+    text-align: center;
+
+    background: transparent;
+    text-transform: uppercase;
+
+    color: #cdc1ff;
+    border-radius: 4px;
+    transition: all var(--animation-speed) ease-out;
+    background: linear-gradient(
+        270deg,
+        #7371fc,
+        #cdc1ff,
+        #7371fc,
+        rgba(34, 34, 34, 0),
+        rgba(34, 34, 34, 0)
+    );
+    background-position: 1% 50%;
+    background-size: 300% 300%;
+    text-decoration: none;
+    border: 1px solid #7371fc;
+}
+
+.footer button:hover {
+    color: black;
+    border: 1px solid rgba(223, 190, 106, 0);
+    background-position: 99% 50%;
 }

@@ -56,6 +56,9 @@ interface SwapPropsIF {
     activeTokenListsChanged: boolean;
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
     openModalWallet: () => void;
+
+    pendingTransactions: string[];
+    setPendingTransactions: Dispatch<SetStateAction<never[]>>;
 }
 
 export default function Swap(props: SwapPropsIF) {
@@ -83,6 +86,7 @@ export default function Swap(props: SwapPropsIF) {
         activeTokenListsChanged,
         indicateActiveTokenListsChanged,
         openModalWallet,
+        pendingTransactions,
     } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -329,6 +333,7 @@ export default function Swap(props: SwapPropsIF) {
                 showConfirmation={showConfirmation}
                 setShowConfirmation={setShowConfirmation}
                 resetConfirmation={resetConfirmation}
+                pendingTransactions={pendingTransactions}
             />
         </Modal>
     ) : null;

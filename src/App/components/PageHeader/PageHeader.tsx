@@ -18,6 +18,7 @@ import trimString from '../../../utils/functions/trimString';
 import ambientLogo from '../../../assets/images/logos/ambient_logo.svg';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import MobileSidebar from '../../../components/Global/MobileSidebar/MobileSidebar';
+import NotificationCenter from '../../../components/Global/NotificationCenter/NotificationCenter';
 
 interface HeaderPropsIF {
     nativeBalance: string;
@@ -30,6 +31,7 @@ interface HeaderPropsIF {
     switchChain: Dispatch<SetStateAction<string>>;
     switchNetworkInMoralis: (providedChainId: string) => Promise<void>;
     openModalWallet: () => void;
+    pendingTransactions: string[];
 }
 
 export default function PageHeader(props: HeaderPropsIF) {
@@ -44,6 +46,7 @@ export default function PageHeader(props: HeaderPropsIF) {
         switchChain,
         switchNetworkInMoralis,
         openModalWallet,
+        pendingTransactions,
     } = props;
 
     const { user, account, enableWeb3, isWeb3Enabled, isAuthenticated } = useMoralis();
@@ -169,6 +172,7 @@ export default function PageHeader(props: HeaderPropsIF) {
     );
 
     // ----------------------------END OF NAVIGATION FUNCTIONALITY-------------------------------------
+    const [showNotificationTable, setShowNotificationTable] = useState(false);
 
     return (
         <header data-testid={'page-header'} className={styles.primary_header}>
@@ -201,6 +205,11 @@ export default function PageHeader(props: HeaderPropsIF) {
                 <NetworkSelector chainId={chainId} switchChain={switchChain} />
                 {(!isAuthenticated || !isWeb3Enabled) && metamaskButton}
                 <Account {...accountProps} />
+                <NotificationCenter
+                    showNotificationTable={showNotificationTable}
+                    setShowNotificationTable={setShowNotificationTable}
+                    pendingTransactions={pendingTransactions}
+                />
             </div>
             {isChainSupported || <SwitchNetwork switchNetworkInMoralis={switchNetworkInMoralis} />}
             {modalOrNull}
