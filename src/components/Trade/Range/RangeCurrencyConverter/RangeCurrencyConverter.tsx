@@ -250,7 +250,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
             tokenBQtyField.value = '';
             // dispatch(setPrimaryQuantityRange('0'));
             setIsTokenAPrimaryLocal(true);
-            // setTokenBQtyLocal(0);
+            setTokenBQtyLocal(0);
             // setTokenBInputQty('0');
         }
     };
@@ -294,7 +294,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
             tokenAQtyField.value = '';
             // dispatch(setPrimaryQuantityRange('0'));
             setIsTokenAPrimaryLocal(false);
-            // setTokenAQtyLocal(0);
+            setTokenAQtyLocal(0);
             // setTokenAInputQty('0');
         }
     };
@@ -617,11 +617,12 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
             : parseFloat(tokenADexBalance || '0')
         : 0;
 
-    const tokenBQtyCoveredBySurplusBalance = isWithdrawTokenBFromDexChecked
-        ? tokenBSurplusMinusTokenBRemainderNum >= 0
-            ? tokenBQtyLocal
-            : parseFloat(tokenBDexBalance || '0')
-        : 0;
+    const tokenBQtyCoveredBySurplusBalance =
+        isWithdrawTokenBFromDexChecked && tokenBQtyLocal > 0
+            ? tokenBSurplusMinusTokenBRemainderNum >= 0
+                ? tokenBQtyLocal
+                : parseFloat(tokenBDexBalance || '0')
+            : 0;
 
     // props for <RangeCurrencyConverter/> React element
     const rangeCurrencySelectorCommonProps = {
