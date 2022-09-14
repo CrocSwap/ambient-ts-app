@@ -51,22 +51,25 @@ export default function ChatPanel(props: ChatProps) {
     const _socket = socket;
     const [messages, setMessages] = useState<Message[]>([]);
     const [room, setRoom] = useState('Global');
-    const __socket = io(host, { query: [room] }).connect();
-    useEffect(() => {
-        __socket.connect();
-    }, [__socket]);
+    const [scrollBottomControl, setScrollBottomControl] = useState(true);
 
+    useEffect(() => {
+        _socket.connect();
+    }, [_socket]);
     const currentUser = '62f24f3ff40188d467c532e8';
 
     useEffect(() => {
-        __socket.on('msg-recieve', (mostRecentMessages) => {
+        _socket.on('msg-recieve', (mostRecentMessages) => {
             setMessages([...mostRecentMessages]);
+            if (scrollBottomControl) {
+                scrollToBottom();
+            }
         });
     }, [messages]);
 
     useEffect(() => {
         setRoomSocket();
-    }, [room, _socket, messages]);
+    }, [room, currentPool, props.chatStatus]);
 
     const setRoomSocket = async () => {
         _socket.emit('listen', {
@@ -79,6 +82,14 @@ export default function ChatPanel(props: ChatProps) {
 
     const scrollToBottom = () => {
         messageEnd.current?.scrollTo(0, messageEnd.current?.scrollHeight);
+    };
+
+    const handleScroll = (e: any) => {
+        setScrollBottomControl(
+            e.target.clientHeight - 10 <
+                e.target.scrollHeight - e.target.scrollTop <
+                e.target.clientHeight,
+        );
     };
 
     useEffect(() => {
@@ -136,7 +147,11 @@ export default function ChatPanel(props: ChatProps) {
                                 }
                             />
 
-                            <div className={styles.scrollable_div} ref={messageEnd}>
+                            <div
+                                className={styles.scrollable_div}
+                                ref={messageEnd}
+                                onScroll={handleScroll}
+                            >
                                 {messages.map((item) => (
                                     <div key={item._id} style={{ width: '90%', marginBottom: 4 }}>
                                         {item.sender === currentUser ? (
