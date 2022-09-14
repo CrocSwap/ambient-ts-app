@@ -1824,6 +1824,8 @@ export default function App() {
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
         openModalWallet: openModalWallet,
         ambientApy: ambientApy,
+
+        pendingTransactions: pendingTransactions,
     };
 
     function toggleSidebar() {
