@@ -51,10 +51,15 @@ export default function ChatPanel(props: ChatProps) {
     const _socket = socket;
     const [messages, setMessages] = useState<Message[]>([]);
     const [room, setRoom] = useState('Global');
+    const [showChatPanel, setShowChatPanel] = useState(false);
 
     useEffect(() => {
         console.log({ favePools });
     }, [favePools]);
+
+    useEffect(() => {
+        props.isFullScreen ? setShowChatPanel(true) : null;
+    }, [props.isFullScreen]);
 
     const currentUser = '62f24f3ff40188d467c532e8';
 
@@ -95,7 +100,11 @@ export default function ChatPanel(props: ChatProps) {
     const header = (
         <header className={styles.modal_header}>
             <h2 className={styles.modal_title}>Chat</h2>
-            <RiCloseFill size={27} className={styles.close_button} onClick={props.onClose} />
+            <RiCloseFill
+                size={27}
+                className={styles.close_button}
+                onClick={() => setShowChatPanel(false)}
+            />
         </header>
     );
 

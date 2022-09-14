@@ -30,6 +30,7 @@ export default function MessageInput(props: MessageInputProps) {
     const [message, setMessage] = useState('');
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const { user, account, enableWeb3, isWeb3Enabled, isAuthenticated } = useMoralis();
+    const [positionIsActive, setPositionIsActive] = useState(false);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleEmojiClick = (event: any, emoji: any) => {
@@ -41,6 +42,12 @@ export default function MessageInput(props: MessageInputProps) {
     const handleEmojiPickerHideShow = () => {
         setShowEmojiPicker(!showEmojiPicker);
     };
+
+    function handlePositionShow() {
+        /* setShowPosition(!showPosition);*/
+        setPositionIsActive(true);
+    }
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const _handleKeyDown = (e: any) => {
         if (e.key === 'Enter') {
@@ -78,7 +85,7 @@ export default function MessageInput(props: MessageInputProps) {
                     placeholder={
                         !isAuthenticated || !isWeb3Enabled
                             ? 'Please log in to chat.'
-                            : 'Enter Message...'
+                            : 'Type to chat. Enter to submit.'
                     }
                     disabled={!isAuthenticated || !isWeb3Enabled}
                     className={styles.input_text}
@@ -86,7 +93,12 @@ export default function MessageInput(props: MessageInputProps) {
                     value={message}
                     onChange={onChangeMessage}
                 />
-                <BsSlashSquare />
+                <BsSlashSquare
+                    style={positionIsActive ? { color: '#5FA2FF' } : { color: '' }}
+                    onClick={() => {
+                        handlePositionShow();
+                    }}
+                />
                 <BsEmojiSmileFill onClick={handleEmojiPickerHideShow} />
             </div>
             <div className={styles.emojiPicker}>
