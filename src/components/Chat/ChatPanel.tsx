@@ -7,12 +7,12 @@ import IncomingMessage from './MessagePanel/Inbox/IncomingMessage';
 import Room from './MessagePanel/Room/Room';
 import { RiCloseFill } from 'react-icons/ri';
 import { useEffect, useRef, useState } from 'react';
-import { recieveMessageByRoomRoute, socket } from './Service/chatApi';
-import axios from 'axios';
+import { host, socket } from './Service/chatApi';
 import { Message } from './Model/MessageModel';
 import { PoolIF } from '../../utils/interfaces/PoolIF';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
 import { targetData } from '../../utils/state/tradeDataSlice';
+import { io } from 'socket.io-client';
 
 interface currentPoolInfo {
     tokenA: TokenIF;
@@ -52,36 +52,31 @@ export default function ChatPanel(props: ChatProps) {
     const [messages, setMessages] = useState<Message[]>([]);
     const [room, setRoom] = useState('Global');
 
-    useEffect(() => {
-        console.log({ favePools });
-    }, [favePools]);
+    // useEffect(() => {
+    //     _socket.connect();
+
+    // }, [_socket]);
 
     const currentUser = '62f24f3ff40188d467c532e8';
 
     useEffect(() => {
-        _socket.on('msg-recieve', () => {
-            /*
-            
-             */
+        const __socket = io(host, { query: [room] }).connect();
+        __socket.on('msg-recieve', (mostRecentMessages) => {
+            setMessages([...mostRecentMessages]);
         });
-        getMsg();
-    }, [props.chatStatus, messages, room, props.currentPool]);
+    }, []);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    useEffect(() => {
+        setRoomSocket();
+    }, [room, _socket, messages]);
 
-    const getMsg = async () => {
-        let response;
-        if (room === 'Current Pool') {
-            response = await axios.get(
-                recieveMessageByRoomRoute +
-                    '/' +
-                    currentPool.baseToken.symbol +
-                    currentPool.quoteToken.symbol,
-            );
-        } else {
-            response = await axios.get(recieveMessageByRoomRoute + '/' + room);
-        }
-        setMessages(response.data);
+    const setRoomSocket = async () => {
+        _socket.emit('listen', {
+            room:
+                room === 'Current Pool'
+                    ? currentPool.baseToken.symbol + currentPool.quoteToken.symbol
+                    : room,
+        });
     };
 
     const scrollToBottom = () => {
@@ -145,10 +140,7 @@ export default function ChatPanel(props: ChatProps) {
 
                             <div className={styles.scrollable_div} ref={messageEnd}>
                                 {messages.map((item) => (
-                                    <div
-                                        key={item.sender}
-                                        style={{ width: '90%', marginBottom: 4 }}
-                                    >
+                                    <div key={item._id} style={{ width: '90%', marginBottom: 4 }}>
                                         {item.sender === currentUser ? (
                                             <>
                                                 <DividerDark
