@@ -41,6 +41,7 @@ export default function MessageInput(props: MessageInputProps) {
         if (e.key === 'Enter') {
             handleSendMsg(e.target.value);
             setMessage('');
+            handleEmojiPickerHideShow();
         }
     };
 
@@ -79,9 +80,14 @@ export default function MessageInput(props: MessageInputProps) {
                 <BsSlashSquare />
                 <BsEmojiSmileFill onClick={handleEmojiPickerHideShow} />
             </div>
-            <div className={styles.emojiPicker}>
-                {showEmojiPicker && <Picker onEmojiClick={handleEmojiClick} />}
-            </div>
+            {showEmojiPicker && (
+                <div className={styles.emojiPicker}>
+                    <Picker
+                        pickerStyle={{ width: '100%', height: '95%' }}
+                        onEmojiClick={handleEmojiClick}
+                    />
+                </div>
+            )}
         </div>
     );
 }
