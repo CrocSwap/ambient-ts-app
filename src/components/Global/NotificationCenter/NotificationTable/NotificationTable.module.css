@@ -1,0 +1,33 @@
+.container{
+    width: 360px;
+    /* padding: 1rem; */
+
+    height: 400px;
+    position: absolute;
+    background: #171d27;
+    border-radius: 4px;
+    box-shadow: 0px 35px 20px rgba(0, 0, 0, 0.3);
+    transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    right: 30px;
+    top: 80px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+}
+
+.container .header, .container .footer{
+    padding: 1rem;
+    background: #0d1117;
+}
+
+.container .header{
+    color: #ebebff;
+}
+
+.container .footer{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
