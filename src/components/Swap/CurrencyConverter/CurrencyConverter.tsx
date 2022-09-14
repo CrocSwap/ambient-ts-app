@@ -264,6 +264,9 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
 
         if (evt) {
             const input = evt.target.value;
+            const parsedInput = parseFloat(input);
+            if (isNaN(parsedInput)) return;
+            console.log({ parsedInput });
             setTokenAQtyLocal(input);
             setTokenAInputQty(input);
             setIsTokenAPrimaryLocal(true);
@@ -278,7 +281,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                           crocEnv,
                           tokenPair.dataTokenA.address,
                           tokenPair.dataTokenB.address,
-                          slippageTolerancePercentage,
+                          slippageTolerancePercentage / 100,
                           input,
                       )
                     : undefined;
@@ -296,7 +299,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                           crocEnv,
                           tokenPair.dataTokenA.address,
                           tokenPair.dataTokenB.address,
-                          slippageTolerancePercentage,
+                          slippageTolerancePercentage / 100,
                           tokenAQtyLocal,
                       )
                     : undefined;
@@ -345,7 +348,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                           crocEnv,
                           tokenPair.dataTokenA.address,
                           tokenPair.dataTokenB.address,
-                          slippageTolerancePercentage,
+                          slippageTolerancePercentage / 100,
                           input,
                       )
                     : undefined;
@@ -362,7 +365,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                           crocEnv,
                           tokenPair.dataTokenA.address,
                           tokenPair.dataTokenB.address,
-                          slippageTolerancePercentage,
+                          slippageTolerancePercentage / 100,
                           tokenAQtyLocal,
                       )
                     : undefined;
@@ -393,6 +396,8 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
 
         if (evt) {
             const input = evt.target.value;
+            const parsedInput = parseFloat(input);
+            if (isNaN(parsedInput)) return;
             setTokenBQtyLocal(input);
             setTokenBInputQty(input);
             setIsTokenAPrimaryLocal(false);
@@ -406,7 +411,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                           crocEnv,
                           tokenPair.dataTokenA.address,
                           tokenPair.dataTokenB.address,
-                          slippageTolerancePercentage,
+                          slippageTolerancePercentage / 100,
                           input,
                       )
                     : undefined;
@@ -423,7 +428,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                           crocEnv,
                           tokenPair.dataTokenA.address,
                           tokenPair.dataTokenB.address,
-                          slippageTolerancePercentage,
+                          slippageTolerancePercentage / 100,
                           tokenBQtyLocal,
                       )
                     : undefined;

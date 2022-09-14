@@ -174,9 +174,23 @@ export default function Swap(props: SwapPropsIF) {
         }
     }, [poolPriceDisplay]);
 
+    const [priceImpactExceedsTolerance, setPriceImpactExceedsTolerance] = useState(false);
+
     useEffect(() => {
         console.log({ priceImpact });
-    }, [priceImpact]);
+        const priceImpactPercentChange = priceImpact?.percentChange;
+        // console.log({ priceImpactPercentChange });
+        // console.log({ slippageTolerancePercentage });
+        if (priceImpactPercentChange) {
+            if (Math.abs(priceImpactPercentChange) > slippageTolerancePercentage / 100) {
+                console.log('price impace exceeds slippage tolerance');
+                setPriceImpactExceedsTolerance(true);
+                setSwapButtonErrorMessage('Please Increase Slippage Tolerance');
+            } else {
+                setPriceImpactExceedsTolerance(false);
+            }
+        }
+    }, [priceImpact, slippageTolerancePercentage]);
 
     async function initiateSwap() {
         if (!provider) return;
@@ -423,7 +437,7 @@ export default function Swap(props: SwapPropsIF) {
                         ) : (
                             <SwapButton
                                 onClickFn={openModal}
-                                swapAllowed={swapAllowed}
+                                swapAllowed={swapAllowed && !priceImpactExceedsTolerance}
                                 swapButtonErrorMessage={swapButtonErrorMessage}
                             />
                         )
