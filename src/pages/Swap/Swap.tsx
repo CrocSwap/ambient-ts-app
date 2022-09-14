@@ -215,13 +215,13 @@ export default function Swap(props: SwapPropsIF) {
                 ? env
                       .sell(sellTokenAddress, qty)
                       .for(buyTokenAddress, {
-                          slippage: slippageTolerancePercentage,
+                          slippage: slippageTolerancePercentage / 100,
                       })
                       .swap({ surplus: [isWithdrawFromDexChecked, isSaveAsDexSurplusChecked] })
                 : env
                       .buy(buyTokenAddress, qty)
                       .with(sellTokenAddress, {
-                          slippage: slippageTolerancePercentage,
+                          slippage: slippageTolerancePercentage / 100,
                       })
                       .swap({ surplus: [isWithdrawFromDexChecked, isSaveAsDexSurplusChecked] }))),
                 setNewSwapTransactionHash(tx?.hash);
