@@ -131,7 +131,8 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
                     isOn={isWithdrawFromDexChecked}
                     handleToggle={() => setIsWithdrawFromDexChecked(!isWithdrawFromDexChecked)}
                     id='sell_token_withdrawal'
-                    disabled={parseFloat(tokenADexBalance) <= 0}
+                    disabled={false}
+                    // disabled={parseFloat(tokenADexBalance) <= 0}
                 />
             </IconWithTooltip>
         </span>
