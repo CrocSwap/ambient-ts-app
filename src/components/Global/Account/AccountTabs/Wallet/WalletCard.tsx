@@ -22,7 +22,7 @@ export default function WalletCard(props: WalletPropsIF) {
         ? token?.address?.toLowerCase() + '_' + chainId
         : '';
 
-    const tokenFromMap = tokenMap && token?.token_address ? tokenMap.get(tokenAddress) : null;
+    const tokenFromMap = tokenMap && tokenAddress ? tokenMap.get(tokenAddress) : null;
 
     const [tokenPrice, setTokenPrice] = useState<{
         nativePrice?:
@@ -54,9 +54,9 @@ export default function WalletCard(props: WalletPropsIF) {
 
     const tokenUsdPrice = tokenPrice?.usdPrice ?? 0;
 
-    if (!tokenFromMap) {
-        return null;
-    }
+    // if (!tokenFromMap) {
+    //     return null;
+    // }
 
     // const tokenBalance = token?.balance ? token.balance : '0';
 
@@ -76,15 +76,20 @@ export default function WalletCard(props: WalletPropsIF) {
             <div className={styles.token_icon}>
                 <img
                     src={
-                        tokenFromMap?.logoURI ??
-                        'https://icons.iconarchive.com/icons/cjdowner/cryptocurrency-flat/1024/Ethereum-ETH-icon.png'
+                        tokenFromMap?.logoURI
+                            ? tokenFromMap?.logoURI
+                            : token?.logoURI
+                            ? token?.logoURI
+                            : 'https://icons.iconarchive.com/icons/cjdowner/cryptocurrency-flat/1024/Ethereum-ETH-icon.png'
                     }
                     alt=''
                     width='30px'
                 />
-                <p className={styles.token_key}>{tokenFromMap?.symbol}</p>
+                <p className={styles.token_key}>
+                    {tokenFromMap?.symbol ? tokenFromMap?.symbol : token?.symbol ?? '???'}
+                </p>
             </div>
-            <p>{tokenFromMap?.name}</p>
+            <p>{tokenFromMap?.name ? tokenFromMap?.name : token?.name ?? '???'}</p>
         </div>
     );
     return (
