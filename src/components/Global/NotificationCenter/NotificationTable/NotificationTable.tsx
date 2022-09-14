@@ -1,11 +1,11 @@
 import { ReactNode } from 'react';
-import styles from './NotificationTable.module.css';
+import styles from './Row.module.css';
 
-interface NotificationTablePropsIF {
+interface RowPropsIF {
     children: ReactNode;
 }
 
-export default function NotificationTable(props: NotificationTablePropsIF) {
+export default function Row(props: RowPropsIF) {
     const { children } = props;
     return <div className={styles.row}>{children}</div>;
 }
