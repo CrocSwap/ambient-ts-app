@@ -38,6 +38,8 @@ interface LimitCurrencySelectorProps {
     tokenAWalletMinusTokenAQtyNum: number;
     tokenASurplusMinusTokenAQtyNum: number;
     tokenASurplusMinusTokenARemainderNum: number;
+    tokenAQtyCoveredBySurplusBalance: number;
+    tokenAQtyCoveredByWalletBalance: number;
     setIsWithdrawFromDexChecked: Dispatch<SetStateAction<boolean>>;
     isSaveAsDexSurplusChecked: boolean;
     setIsSaveAsDexSurplusChecked: Dispatch<SetStateAction<boolean>>;
@@ -66,8 +68,8 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
         setIsWithdrawFromDexChecked,
         // isSaveAsDexSurplusChecked,
         setIsSaveAsDexSurplusChecked,
-        tokenAWalletMinusTokenAQtyNum,
-        tokenASurplusMinusTokenAQtyNum,
+        tokenAQtyCoveredBySurplusBalance,
+        tokenAQtyCoveredByWalletBalance,
         tokenASurplusMinusTokenARemainderNum,
         activeTokenListsChanged,
         indicateActiveTokenListsChanged,
@@ -145,7 +147,7 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
             ? parseFloat(tokenBBalance).toString()
             : '0';
 
-    const walletBalanceLocaleString = tokenAWalletMinusTokenAQtyNum.toLocaleString(undefined, {
+    const walletBalanceLocaleString = parseFloat(tokenABalance || '0').toLocaleString(undefined, {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
     });
@@ -157,20 +159,49 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
             ? parseFloat(tokenBDexBalance).toString()
             : '0';
 
-    const surplusBalanceLocaleString = isWithdrawFromDexChecked
-        ? isSellTokenEth && tokenASurplusMinusTokenARemainderNum
-            ? tokenASurplusMinusTokenARemainderNum.toLocaleString(undefined, {
+    const surplusBalanceLocaleString = parseFloat(tokenADexBalance || '0').toLocaleString(
+        undefined,
+        {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        },
+    );
+
+    // const surplusBalanceLocaleString = isWithdrawFromDexChecked
+    //     ? isSellTokenEth && tokenASurplusMinusTokenARemainderNum
+    //         ? tokenASurplusMinusTokenARemainderNum.toLocaleString(undefined, {
+    //               minimumFractionDigits: 2,
+    //               maximumFractionDigits: 2,
+    //           })
+    //         : tokenASurplusMinusTokenAQtyNum.toLocaleString(undefined, {
+    //               minimumFractionDigits: 2,
+    //               maximumFractionDigits: 2,
+    //           })
+    //     : parseFloat(tokenADexBalance || '0').toLocaleString(undefined, {
+    //           minimumFractionDigits: 2,
+    //           maximumFractionDigits: 2,
+    //       });
+
+    const sellTokenSurplusChange =
+        tokenAQtyCoveredBySurplusBalance && tokenAQtyCoveredBySurplusBalance > 0
+            ? '(-' +
+              tokenAQtyCoveredBySurplusBalance.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
-              })
-            : tokenASurplusMinusTokenAQtyNum.toLocaleString(undefined, {
+              }) +
+              ')'
+            : '';
+
+    const sellTokenWalletBalanceChange =
+        tokenAQtyCoveredByWalletBalance && tokenAQtyCoveredByWalletBalance > 0
+            ? '(-' +
+              tokenAQtyCoveredByWalletBalance.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
-              })
-        : parseFloat(tokenADexBalance || '0').toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          });
+              }) +
+              ')'
+            : '';
+
     const balanceDisplayOrNull = isSellTokenSelector ? (
         <div className={styles.swapbox_bottom}>
             <div className={styles.surplus_container}>
@@ -211,7 +242,16 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
                                 }
                             />
                         </div>
-                        {walletBalanceLocaleString}
+                        <div className={styles.balance_column}>
+                            <div>{walletBalanceLocaleString}</div>
+                            <div
+                                style={{
+                                    color: isSellTokenSelector ? '#f6385b' : '#15be67',
+                                }}
+                            >
+                                {sellTokenWalletBalanceChange}
+                            </div>
+                        </div>
                     </div>
                 </IconWithTooltip>
                 <IconWithTooltip
@@ -248,12 +288,21 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
                     >
                         <div
                             className={`${styles.wallet_logo} ${
-                                isWithdrawFromDexChecked ? styles.enabled_logo : null
+                                isSellTokenSelector ? styles.enabled_logo : null
                             }`}
                         >
                             <img src={ambientLogo} width='20' alt='surplus' />
                         </div>
-                        {surplusBalanceLocaleString}
+                        <div className={styles.balance_column}>
+                            <div> {surplusBalanceLocaleString}</div>
+                            <div
+                                style={{
+                                    color: isSellTokenSelector ? '#f6385b' : '#15be67',
+                                }}
+                            >
+                                {sellTokenSurplusChange}
+                            </div>
+                        </div>
                     </div>
                 </IconWithTooltip>
             </div>

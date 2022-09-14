@@ -72,8 +72,8 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
         // userHasEnteredAmount,
         isSellTokenEth,
         tokenAQtyCoveredBySurplusBalance,
-        tokenASurplusMinusTokenARemainderNum,
         tokenAQtyCoveredByWalletBalance,
+        tokenASurplusMinusTokenARemainderNum,
         // tokenAWalletMinusTokenAQtyNum,
         // tokenASurplusMinusTokenAQtyNum,
         reverseTokens,
@@ -178,20 +178,6 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
           });
-    // const walletBalanceLocaleString = props.sellToken
-    //     ? tokenAWalletMinusTokenAQtyNum.toLocaleString(undefined, {
-    //           minimumFractionDigits: 2,
-    //           maximumFractionDigits: 2,
-    //       })
-    //     : !isSaveAsDexSurplusChecked
-    //     ? tokenBWalletPlusTokenBQtyNum.toLocaleString(undefined, {
-    //           minimumFractionDigits: 2,
-    //           maximumFractionDigits: 2,
-    //       })
-    //     : parseFloat(tokenBBalance || '0').toLocaleString(undefined, {
-    //           minimumFractionDigits: 2,
-    //           maximumFractionDigits: 2,
-    //       });
 
     const surplusBalanceNonLocaleString =
         props.sellToken && tokenADexBalance !== ''
