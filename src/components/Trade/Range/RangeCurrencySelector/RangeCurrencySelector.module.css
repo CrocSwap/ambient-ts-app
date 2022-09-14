@@ -45,6 +45,12 @@
     line-height: var(--body-lh);
 }
 
+.balance_column {
+    display: flex;
+    overflow: hidden;
+    flex-direction: column;
+}
+
 .wallet_logo {
     font-size: var(--body-size);
     line-height: var(--body-lh);

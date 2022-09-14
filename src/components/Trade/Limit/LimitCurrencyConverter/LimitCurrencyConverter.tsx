@@ -390,6 +390,18 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
         }
     };
 
+    const tokenAQtyCoveredBySurplusBalance = isWithdrawFromDexChecked
+        ? tokenASurplusMinusTokenARemainderNum >= 0
+            ? parseFloat(tokenAQtyLocal || '0')
+            : parseFloat(tokenADexBalance || '0')
+        : 0;
+
+    const tokenAQtyCoveredByWalletBalance = isWithdrawFromDexChecked
+        ? tokenASurplusMinusTokenARemainderNum < 0
+            ? tokenASurplusMinusTokenARemainderNum * -1
+            : 0
+        : parseFloat(tokenAQtyLocal || '0');
+
     return (
         <section className={styles.currency_converter}>
             <LimitCurrencySelector
@@ -409,6 +421,8 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 tokenBBalance={tokenBBalance}
                 tokenADexBalance={tokenADexBalance}
                 tokenBDexBalance={tokenBDexBalance}
+                tokenAQtyCoveredByWalletBalance={tokenAQtyCoveredByWalletBalance}
+                tokenAQtyCoveredBySurplusBalance={tokenAQtyCoveredBySurplusBalance}
                 tokenAWalletMinusTokenAQtyNum={tokenAWalletMinusTokenAQtyNum}
                 tokenASurplusMinusTokenAQtyNum={tokenASurplusMinusTokenAQtyNum}
                 tokenASurplusMinusTokenARemainderNum={tokenASurplusMinusTokenARemainderNum}
@@ -443,6 +457,8 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 tokenBBalance={tokenBBalance}
                 tokenADexBalance={tokenADexBalance}
                 tokenBDexBalance={tokenBDexBalance}
+                tokenAQtyCoveredByWalletBalance={tokenAQtyCoveredByWalletBalance}
+                tokenAQtyCoveredBySurplusBalance={tokenAQtyCoveredBySurplusBalance}
                 tokenAWalletMinusTokenAQtyNum={tokenAWalletMinusTokenAQtyNum}
                 tokenASurplusMinusTokenAQtyNum={tokenASurplusMinusTokenAQtyNum}
                 tokenASurplusMinusTokenARemainderNum={tokenASurplusMinusTokenARemainderNum}

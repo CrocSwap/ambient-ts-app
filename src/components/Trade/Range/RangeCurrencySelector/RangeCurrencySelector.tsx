@@ -12,6 +12,7 @@ import { MdAccountBalanceWallet } from 'react-icons/md';
 import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 
 interface RangeCurrencySelectorProps {
+    resetTokenQuantities: () => void;
     fieldId: string;
     chainId: string;
     tokenPair: TokenPairIF;
@@ -19,11 +20,16 @@ interface RangeCurrencySelectorProps {
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     searchableTokens: Array<TokenIF>;
     isTokenAEth: boolean;
+    isTokenBEth: boolean;
     updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
     isWithdrawTokenAFromDexChecked: boolean;
     setIsWithdrawTokenAFromDexChecked: Dispatch<SetStateAction<boolean>>;
     isWithdrawTokenBFromDexChecked: boolean;
     setIsWithdrawTokenBFromDexChecked: Dispatch<SetStateAction<boolean>>;
+    tokenAQtyCoveredByWalletBalance: number;
+    tokenBQtyCoveredByWalletBalance: number;
+    tokenAQtyCoveredBySurplusBalance: number;
+    tokenBQtyCoveredBySurplusBalance: number;
     tokenAWalletMinusTokenAQtyNum: number;
     tokenBWalletMinusTokenBQtyNum: number;
     tokenASurplusMinusTokenARemainderNum: number;
@@ -32,6 +38,8 @@ interface RangeCurrencySelectorProps {
     tokenBSurplusMinusTokenBQtyNum: number;
     sellToken?: boolean;
     reverseTokens: () => void;
+    tokenAQtyLocal: number;
+    tokenBQtyLocal: number;
     tokenABalance: string;
     tokenBBalance: string;
     tokenADexBalance: string;
@@ -47,18 +55,20 @@ interface RangeCurrencySelectorProps {
 
 export default function RangeCurrencySelector(props: RangeCurrencySelectorProps) {
     const {
+        resetTokenQuantities,
         tokenPair,
         tokensBank,
         setImportedTokens,
         searchableTokens,
         chainId,
         isTokenAEth,
+        isTokenBEth,
         isWithdrawTokenAFromDexChecked,
         setIsWithdrawTokenAFromDexChecked,
         isWithdrawTokenBFromDexChecked,
         setIsWithdrawTokenBFromDexChecked,
-        tokenAWalletMinusTokenAQtyNum,
-        tokenBWalletMinusTokenBQtyNum,
+        // tokenAWalletMinusTokenAQtyNum,
+        // tokenBWalletMinusTokenBQtyNum,
         fieldId,
         sellToken,
         updateOtherQuantity,
@@ -66,11 +76,17 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
         tokenABalance,
         tokenBBalance,
         tokenADexBalance,
+        // tokenAQtyLocal,
+        // tokenBQtyLocal,
         tokenBDexBalance,
+        tokenAQtyCoveredByWalletBalance,
+        tokenBQtyCoveredByWalletBalance,
+        tokenAQtyCoveredBySurplusBalance,
+        tokenBQtyCoveredBySurplusBalance,
         tokenASurplusMinusTokenARemainderNum,
-        // tokenBSurplusMinusTokenBRemainderNum,
-        tokenASurplusMinusTokenAQtyNum,
-        tokenBSurplusMinusTokenBQtyNum,
+        tokenBSurplusMinusTokenBRemainderNum,
+        // tokenASurplusMinusTokenAQtyNum,
+        // tokenBSurplusMinusTokenBQtyNum,
         isTokenADisabled,
         isTokenBDisabled,
         isAdvancedMode,
@@ -101,6 +117,7 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
     const tokenSelectModalOrNull = isModalOpen ? (
         <Modal onClose={closeModal} title='Select Token' centeredTitle>
             <TokenSelectContainer
+                resetTokenQuantities={resetTokenQuantities}
                 tokenPair={tokenPair}
                 searchableTokens={searchableTokens}
                 tokensBank={tokensBank}
@@ -154,11 +171,11 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
             : '0.00';
 
     const walletBalanceLocaleString = isTokenASelector
-        ? tokenAWalletMinusTokenAQtyNum.toLocaleString(undefined, {
+        ? parseFloat(tokenABalance || '0').toLocaleString(undefined, {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
           })
-        : tokenBWalletMinusTokenBQtyNum.toLocaleString(undefined, {
+        : parseFloat(tokenBBalance || '0').toLocaleString(undefined, {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
           });
@@ -171,37 +188,57 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
             : '0.00';
 
     const surplusBalanceLocaleString = isTokenASelector
-        ? isWithdrawTokenAFromDexChecked
-            ? isTokenAEth && tokenASurplusMinusTokenARemainderNum
-                ? tokenASurplusMinusTokenARemainderNum.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                  })
-                : tokenASurplusMinusTokenAQtyNum.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                  })
-            : parseFloat(tokenADexBalance || '0').toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              })
-        : isWithdrawTokenBFromDexChecked
-        ? !isTokenAEth && tokenBSurplusMinusTokenBQtyNum
-            ? tokenBSurplusMinusTokenBQtyNum.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              })
-            : tokenBSurplusMinusTokenBQtyNum.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              })
+        ? parseFloat(tokenADexBalance || '0').toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          })
         : parseFloat(tokenBDexBalance || '0').toLocaleString(undefined, {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
           });
 
+    const tokenASurplusChange =
+        tokenAQtyCoveredBySurplusBalance && isWithdrawTokenAFromDexChecked
+            ? '(-' +
+              tokenAQtyCoveredBySurplusBalance.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              }) +
+              ')'
+            : '';
+
+    const tokenAWalletBalanceChange =
+        tokenAQtyCoveredByWalletBalance && tokenAQtyCoveredByWalletBalance > 0
+            ? '(-' +
+              tokenAQtyCoveredByWalletBalance.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              }) +
+              ')'
+            : '';
+
+    const tokenBSurplusChange =
+        tokenBQtyCoveredBySurplusBalance && isWithdrawTokenBFromDexChecked
+            ? '(-' +
+              tokenBQtyCoveredBySurplusBalance.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              }) +
+              ')'
+            : '';
+
+    const tokenBWalletBalanceChange =
+        tokenBQtyCoveredByWalletBalance && tokenBQtyCoveredByWalletBalance > 0
+            ? '(-' +
+              tokenBQtyCoveredByWalletBalance.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              }) +
+              ')'
+            : '';
+
     // console.log({ fieldId });
-    // console.log({ isTokenADisabled });
+    // console.log({ tokenBSurplusMinusTokenBRemainderNum });
     const isFieldDisabled =
         (isTokenASelector && isTokenADisabled) || (!isTokenASelector && isTokenBDisabled);
 
@@ -233,16 +270,31 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                     className={styles.surplus_container}
                     style={{
                         color:
-                            (isTokenASelector && isWithdrawTokenAFromDexChecked) ||
-                            (!isTokenASelector && isWithdrawTokenBFromDexChecked)
-                                ? '#555555'
-                                : '#ebebff',
+                            (isTokenASelector && !isWithdrawTokenAFromDexChecked) ||
+                            (!isTokenASelector && !isWithdrawTokenBFromDexChecked) ||
+                            (isTokenASelector &&
+                                isTokenAEth === false &&
+                                isWithdrawTokenAFromDexChecked &&
+                                tokenASurplusMinusTokenARemainderNum &&
+                                tokenASurplusMinusTokenARemainderNum < 0) ||
+                            (!isTokenASelector &&
+                                isTokenBEth === false &&
+                                isWithdrawTokenBFromDexChecked &&
+                                tokenBSurplusMinusTokenBRemainderNum &&
+                                tokenBSurplusMinusTokenBRemainderNum < 0)
+                                ? '#ebebff'
+                                : '#555555',
                     }}
                 >
-                    <IconWithTooltip title='Wallet Balance After Range Mint' placement='bottom'>
+                    <IconWithTooltip title='Wallet Balance' placement='bottom'>
                         <div
                             className={styles.balance_with_pointer}
                             onClick={() => {
+                                if (isTokenASelector) {
+                                    setIsWithdrawTokenAFromDexChecked(false);
+                                } else {
+                                    setIsWithdrawTokenBFromDexChecked(false);
+                                }
                                 handleChangeClick(walletBalanceNonLocaleString);
                             }}
                         >
@@ -250,17 +302,38 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                                 <MdAccountBalanceWallet
                                     size={20}
                                     color={
-                                        (isTokenASelector && isWithdrawTokenAFromDexChecked) ||
-                                        (!isTokenASelector && isWithdrawTokenBFromDexChecked)
-                                            ? '#555555'
-                                            : '#ebebff'
+                                        (isTokenASelector && !isWithdrawTokenAFromDexChecked) ||
+                                        (!isTokenASelector && !isWithdrawTokenBFromDexChecked) ||
+                                        (isTokenASelector &&
+                                            isTokenAEth === false &&
+                                            isWithdrawTokenAFromDexChecked &&
+                                            tokenASurplusMinusTokenARemainderNum &&
+                                            tokenASurplusMinusTokenARemainderNum < 0) ||
+                                        (!isTokenASelector &&
+                                            isTokenBEth === false &&
+                                            isWithdrawTokenBFromDexChecked &&
+                                            tokenBSurplusMinusTokenBRemainderNum &&
+                                            tokenBSurplusMinusTokenBRemainderNum < 0)
+                                            ? '#ebebff'
+                                            : '#555555'
                                     }
                                 />
                             </div>
-                            <div>{walletBalanceLocaleString}</div>
+                            <div className={styles.balance_column}>
+                                <div>{walletBalanceLocaleString}</div>
+                                <div
+                                    style={{
+                                        color: '#f6385b',
+                                    }}
+                                >
+                                    {isTokenASelector
+                                        ? tokenAWalletBalanceChange
+                                        : tokenBWalletBalanceChange}
+                                </div>
+                            </div>
                         </div>{' '}
                     </IconWithTooltip>
-                    <IconWithTooltip title='Exchange Surplus After Range Mint' placement='bottom'>
+                    <IconWithTooltip title='Exchange Surplus' placement='bottom'>
                         <div
                             className={`${styles.balance_with_pointer} ${
                                 (isTokenASelector && isWithdrawTokenAFromDexChecked) ||
@@ -269,6 +342,11 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                                     : styles.grey_logo
                             }`}
                             onClick={() => {
+                                if (isTokenASelector) {
+                                    setIsWithdrawTokenAFromDexChecked(true);
+                                } else {
+                                    setIsWithdrawTokenBFromDexChecked(true);
+                                }
                                 handleChangeClick(surplusBalanceNonLocaleString);
                             }}
                             style={{
@@ -292,7 +370,16 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                             >
                                 <img src={ambientLogo} width='20' alt='surplus' />
                             </div>
-                            {surplusBalanceLocaleString}
+                            <div className={styles.balance_column}>
+                                <div> {surplusBalanceLocaleString}</div>
+                                <div
+                                    style={{
+                                        color: '#f6385b',
+                                    }}
+                                >
+                                    {isTokenASelector ? tokenASurplusChange : tokenBSurplusChange}
+                                </div>
+                            </div>
                         </div>
                     </IconWithTooltip>
                 </div>
