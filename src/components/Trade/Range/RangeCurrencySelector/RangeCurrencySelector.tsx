@@ -12,6 +12,7 @@ import { MdAccountBalanceWallet } from 'react-icons/md';
 import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 
 interface RangeCurrencySelectorProps {
+    resetTokenQuantities: () => void;
     fieldId: string;
     chainId: string;
     tokenPair: TokenPairIF;
@@ -54,6 +55,7 @@ interface RangeCurrencySelectorProps {
 
 export default function RangeCurrencySelector(props: RangeCurrencySelectorProps) {
     const {
+        resetTokenQuantities,
         tokenPair,
         tokensBank,
         setImportedTokens,
@@ -115,6 +117,7 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
     const tokenSelectModalOrNull = isModalOpen ? (
         <Modal onClose={closeModal} title='Select Token' centeredTitle>
             <TokenSelectContainer
+                resetTokenQuantities={resetTokenQuantities}
                 tokenPair={tokenPair}
                 searchableTokens={searchableTokens}
                 tokensBank={tokensBank}
