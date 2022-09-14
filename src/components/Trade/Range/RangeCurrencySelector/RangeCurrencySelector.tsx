@@ -279,7 +279,17 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                                         : '#555555',
                             }}
                         >
-                            <div className={styles.wallet_logo}>
+                            <div
+                                className={`${styles.wallet_logo} ${
+                                    isTokenASelector
+                                        ? isWithdrawTokenAFromDexChecked
+                                            ? styles.enabled_logo
+                                            : null
+                                        : isWithdrawTokenBFromDexChecked
+                                        ? styles.enabled_logo
+                                        : null
+                                }`}
+                            >
                                 <img src={ambientLogo} width='20' alt='surplus' />
                             </div>
                             {surplusBalanceLocaleString}

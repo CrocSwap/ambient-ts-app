@@ -246,7 +246,11 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
                             }
                         }}
                     >
-                        <div className={styles.wallet_logo}>
+                        <div
+                            className={`${styles.wallet_logo} ${
+                                isWithdrawFromDexChecked ? styles.enabled_logo : null
+                            }`}
+                        >
                             <img src={ambientLogo} width='20' alt='surplus' />
                         </div>
                         {surplusBalanceLocaleString}

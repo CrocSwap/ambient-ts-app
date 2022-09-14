@@ -47,6 +47,11 @@
     font-size: var(--body-size);
     line-height: var(--body-lh);
 }
+
+.enabled_logo {
+    filter: brightness(0) invert(1);
+}
+
 .swapbox_top {
     border-radius: var(--border-radius);
     background-color: var(--dark2);
@@ -88,11 +93,11 @@
 .swapbox_bottom {
     display: flex;
     flex-direction: row;
-    justify-content: flex-end;
+    justify-content: space-between;
     align-items: center;
     min-height: 33px;
 
-    margin: 6px 0;
+    margin: 6px 10px 0px 10px;
 }
 
 .token_select_button {

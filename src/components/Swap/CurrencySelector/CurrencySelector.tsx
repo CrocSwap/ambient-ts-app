@@ -330,8 +330,18 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                                 }
                             }}
                         >
-                            <div className={styles.wallet_logo}>
-                                <img src={ambientLogo} width='20' alt='surplus' />
+                            <div
+                                className={`${styles.wallet_logo} ${
+                                    isSellTokenSelector
+                                        ? isWithdrawFromDexChecked
+                                            ? styles.enabled_logo
+                                            : null
+                                        : isSaveAsDexSurplusChecked
+                                        ? styles.enabled_logo
+                                        : null
+                                }`}
+                            >
+                                <img src={ambientLogo} width='20' alt='surplus' color='#ebebff' />
                             </div>
                             {surplusBalanceLocaleString}
                         </div>
