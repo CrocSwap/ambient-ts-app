@@ -208,7 +208,7 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
             <div className={styles.surplus_container}>
                 <IconWithTooltip
                     title={
-                        'Wallet Balance After Limit Order'
+                        'Wallet Balance'
                         // userHasEnteredAmount
                         //     ? 'Wallet Balance After Swap'
                         //     : 'Current Wallet Balance'
@@ -257,7 +257,7 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
                 </IconWithTooltip>
                 <IconWithTooltip
                     title={
-                        'Exchange Surplus After Limit Order'
+                        'Exchange Surplus'
                         // userHasEnteredAmount
                         //     ? 'Exchange Surplus Balance After Swap'
                         //     : 'Current Exchange Surplus Balance'
