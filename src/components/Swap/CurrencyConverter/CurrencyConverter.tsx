@@ -265,8 +265,8 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         if (evt) {
             const input = evt.target.value;
             const parsedInput = parseFloat(input);
-            if (isNaN(parsedInput)) return;
-            console.log({ parsedInput });
+            if (input !== '' && isNaN(parsedInput)) return;
+
             setTokenAQtyLocal(input);
             setTokenAInputQty(input);
             setIsTokenAPrimaryLocal(true);
@@ -397,7 +397,8 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         if (evt) {
             const input = evt.target.value;
             const parsedInput = parseFloat(input);
-            if (isNaN(parsedInput)) return;
+
+            if (input !== '' && isNaN(parsedInput)) return;
             setTokenBQtyLocal(input);
             setTokenBInputQty(input);
             setIsTokenAPrimaryLocal(false);
