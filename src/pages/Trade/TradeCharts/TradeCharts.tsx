@@ -81,6 +81,11 @@ export interface CandleChartData {
     time: number;
     allSwaps: unknown;
 }
+export interface LiquidityData {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    activeLiq: any;
+    upperBoundPriceDecimalCorrected: any;
+}
 
 // React functional component
 export default function TradeCharts(props: TradeChartsPropsIF) {

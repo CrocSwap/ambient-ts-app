@@ -140,6 +140,7 @@ export default function Chart(props: ChartData) {
     const [dragType, setDragType] = useState<any>();
     const [crosshairData, setCrosshairData] = useState([{ x: 0, y: -1 }]);
     const [intercourse, setIntercourse] = useState<string | undefined>(undefined);
+    const [zoomUtils, setZoomUtils] = useState<any>();
 
     const setDefaultRangeData = () => {
         setRanges((prevState) => {
@@ -179,8 +180,9 @@ export default function Chart(props: ChartData) {
             .select('svg')
             .append('text')
             .attr('class', 'popup')
-            .attr('dy', '30px')
-            .style('visibility', 'visible');
+            .attr('dy', '20px')
+            .style('visibility', 'visible')
+            .style('font-size', '13px');
     }, [location]);
 
     useEffect(() => {
@@ -251,6 +253,57 @@ export default function Chart(props: ChartData) {
             });
         }
     }, [parsedChartData?.period, denomInBase]);
+
+    // Set Zoom
+    useEffect(() => {
+        if (scaleData !== undefined) {
+            let lastY = 0;
+            let yOffset = 0;
+
+            const zoom = d3
+                .zoom()
+                .scaleExtent([1, 10])
+                .on('zoom', (event: any) => {
+                    scaleData.xScale.domain(
+                        event.transform.rescaleX(scaleData.xScaleCopy).domain(),
+                    );
+
+                    if (event.sourceEvent && event.sourceEvent.type != 'wheel') {
+                        lastY = event.transform.y - yOffset;
+                        const translate = d3.zoomIdentity.translate(0, lastY);
+                        scaleData.yScale.domain(translate.rescaleY(scaleData.yScaleCopy).domain());
+                    } else {
+                        yOffset = event.transform.y - lastY;
+                    }
+
+                    render();
+                }) as any;
+
+            const yAxisZoom = d3
+                .zoom()
+                .scaleExtent([1, 5])
+                .on('zoom', (event: any) => {
+                    scaleData.yScale.domain(
+                        event.transform.rescaleY(scaleData.yScaleCopy).domain(),
+                    );
+                    render();
+                }) as any;
+
+            const yAxisDrag = d3.drag().on('drag', (event: any) => {
+                console.log({ event });
+                const factor = Math.pow(2, -event.dy * 0.01);
+                d3.select(d3PlotArea.current).call(yAxisZoom.scaleBy, factor);
+            }) as any;
+
+            setZoomUtils(() => {
+                return {
+                    zoom: zoom,
+                    yAxisZoom: yAxisZoom,
+                    yAxisDrag: yAxisDrag,
+                };
+            });
+        }
+    }, [scaleData]);
 
     // Set Targets
     useEffect(() => {
@@ -559,7 +612,6 @@ export default function Chart(props: ChartData) {
                     .select('.horizontal')
                     .on('blur', () => {
                         setIntercourse(undefined);
-                        console.log('blur');
                     })
                     .on('mouseover', (event: any) => {
                         d3.select(event.currentTarget)
@@ -574,7 +626,6 @@ export default function Chart(props: ChartData) {
                     .select('#Min')
                     .on('blur', () => {
                         setIntercourse(undefined);
-                        console.log('blur');
                     })
                     .on('mouseover', (event: any) => {
                         d3.select(event.currentTarget).style('cursor', 'ns-resize');
@@ -587,7 +638,6 @@ export default function Chart(props: ChartData) {
                     .select('#Max')
                     .on('blur', () => {
                         setIntercourse(undefined);
-                        console.log('blur');
                     })
                     .on('mouseover', (event: any) => {
                         d3.select(event.currentTarget).style('cursor', 'ns-resize');
@@ -603,7 +653,8 @@ export default function Chart(props: ChartData) {
         if (
             props.liquidityData !== undefined &&
             parsedChartData !== undefined &&
-            scaleData !== undefined
+            scaleData !== undefined &&
+            zoomUtils !== undefined
         ) {
             const targetData = location.pathname.includes('limit')
                 ? limit
@@ -622,20 +673,10 @@ export default function Chart(props: ChartData) {
                 downBodyColor,
                 upBorderColor,
                 downBorderColor,
+                zoomUtils,
             );
         }
-    }, [
-        parsedChartData,
-        scaleData,
-        location,
-        market,
-        ranges,
-        limit,
-        upBodyColor,
-        downBodyColor,
-        upBorderColor,
-        downBorderColor,
-    ]);
+    }, [parsedChartData, scaleData, location, market, ranges, limit, zoomUtils]);
 
     // Draw Chart
     const drawChart = useCallback(
@@ -648,6 +689,7 @@ export default function Chart(props: ChartData) {
             downBodyColor: any,
             upBorderColor: any,
             downBorderColor: any,
+            zoomUtils: any,
         ) => {
             if (chartData.length > 0) {
                 let selectedCandle: any;
@@ -697,15 +739,17 @@ export default function Chart(props: ChartData) {
 
                 const barSeries = d3fc
                     .autoBandwidth(d3fc.seriesSvgBar())
-                    .widthFraction(3)
                     .orient('horizontal')
                     .align('center')
                     .mainValue((d: any) => scaleData.liqScale.invert(parseFloat(d.activeLiq)))
-                    .crossValue((d: any) => d.upperBoundInvPriceDecimalCorrected)
+                    .crossValue((d: any) => d.upperBoundPriceDecimalCorrected)
                     .xScale(scaleData.liquidityScale)
                     .yScale(scaleData.yScale)
                     .decorate((selection: any) => {
                         selection.select('.bar > path').style('fill', 'rgba(205, 193, 255, 0.25)');
+                        selection
+                            .select('.bar > path')
+                            .style('stroke', 'rgba(205, 193, 255, 0.25)');
                     });
 
                 const popup = d3
@@ -747,7 +791,10 @@ export default function Chart(props: ChartData) {
                         .style('pointer-events', 'all');
                     selection.enter().select('g.left-handle').remove();
                     selection.enter().select('g.right-handle');
-                    selection.select('g.right-handle text').text((d: any) => d.y);
+                    selection
+                        .select('g.right-handle text')
+                        .text((d: any) => d.y)
+                        .style('font-size', '13px');
                 });
 
                 const candlestick = d3fc
@@ -835,7 +882,6 @@ export default function Chart(props: ChartData) {
                         .append('text')
                         .attr('x', 5)
                         .attr('y', -5);
-
                     selection
                         .enter()
                         .append('rect')
@@ -863,52 +909,6 @@ export default function Chart(props: ChartData) {
                         .attr('height', 10)
                         .attr('fill', 'gainsboro');
                 });
-
-                let lastY = 0;
-                let yOffset = 0;
-
-                const zoom = d3
-                    .zoom()
-                    .scaleExtent([1, 10])
-                    .on('zoom', (event: any) => {
-                        scaleData.xScale.domain(
-                            event.transform.rescaleX(scaleData.xScaleCopy).domain(),
-                        );
-
-                        if (event.sourceEvent && event.sourceEvent.type != 'wheel') {
-                            lastY = event.transform.y - yOffset;
-                            const translate = d3.zoomIdentity.translate(0, lastY);
-                            scaleData.yScale.domain(
-                                translate.rescaleY(scaleData.yScaleCopy).domain(),
-                            );
-                        } else {
-                            yOffset = event.transform.y - lastY;
-                        }
-
-                        render();
-                    }) as any;
-
-                const yAxisZoom = d3
-                    .zoom()
-                    .scaleExtent([1, 10])
-                    .on('zoom', (event: any) => {
-                        if (event.sourceEvent && event.sourceEvent.type != 'wheel') {
-                            lastY = event.transform.y - yOffset;
-                            const translate = d3.zoomIdentity.translate(0, lastY);
-                            scaleData.yScale.domain(
-                                translate.rescaleY(scaleData.yScaleCopy).domain(),
-                            );
-                        } else {
-                            yOffset = event.transform.y - lastY;
-                        }
-
-                        render();
-                    }) as any;
-
-                const yAxisDrag = d3.drag().on('drag', (event: any) => {
-                    const factor = Math.pow(2, -event.dy * 0.01);
-                    d3.select(d3PlotArea.current).call(yAxisZoom.scaleBy, factor);
-                }) as any;
 
                 const candleJoin = d3fc.dataJoin('g', 'candle');
                 const targetsJoin = d3fc.dataJoin('g', 'targets');
@@ -947,7 +947,7 @@ export default function Chart(props: ChartData) {
                     const svg = d3.select(event.target).select('svg');
                     scaleData.xScaleCopy.range([0, event.detail.width]);
                     scaleData.yScaleCopy.range([event.detail.height, 0]);
-                    svg.call(zoom);
+                    svg.call(zoomUtils.zoom);
                 });
 
                 d3.select(d3PlotArea.current).on('mousemove', function (event: any) {
@@ -968,7 +968,7 @@ export default function Chart(props: ChartData) {
                     .on('mouseover', (event: any) => {
                         d3.select(event.currentTarget).style('cursor', 'ns-resize');
                     })
-                    .call(yAxisDrag);
+                    .call(zoomUtils.yAxisDrag);
 
                 render();
             }
@@ -976,6 +976,7 @@ export default function Chart(props: ChartData) {
         [],
     );
 
+    // Color Picker
     useEffect(() => {
         d3.select(d3PlotArea.current).select('.candle').selectAll('.up').style('fill', upBodyColor);
         d3.select(d3PlotArea.current)

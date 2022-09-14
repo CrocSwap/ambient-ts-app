@@ -121,7 +121,7 @@ div.tooltip {
 
 .crosshair {
     stroke: rgb(255, 255, 255);
-    stroke-width: 0.8px;
+    stroke-width: 0.5px;
     stroke-dasharray: 0.6 0.6;
     stroke-opacity: 1;
 }
