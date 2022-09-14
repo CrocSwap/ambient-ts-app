@@ -56,6 +56,8 @@ interface LimitPropsIF {
     openGlobalModal: (content: React.ReactNode) => void;
 
     closeGlobalModal: () => void;
+
+    pendingTransactions: string[];
 }
 
 export default function Limit(props: LimitPropsIF) {
@@ -82,6 +84,7 @@ export default function Limit(props: LimitPropsIF) {
         activeTokenListsChanged,
         indicateActiveTokenListsChanged,
         openModalWallet,
+        pendingTransactions,
     } = props;
 
     const { tradeData, navigationMenu } = useTradeData();
@@ -335,6 +338,7 @@ export default function Limit(props: LimitPropsIF) {
                 showConfirmation={showConfirmation}
                 setShowConfirmation={setShowConfirmation}
                 resetConfirmation={resetConfirmation}
+                pendingTransactions={pendingTransactions}
             />
         </Modal>
     ) : null;

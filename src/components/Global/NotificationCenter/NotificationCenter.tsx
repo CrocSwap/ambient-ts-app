@@ -20,7 +20,7 @@ const NotificationCenter = (props: NotificationCenterPropsIF) => {
     const sessionReceipts = receiptData.sessionReceipts;
 
     const receiveReceiptHashes: Array<string> = [];
-
+    // eslint-disable-next-line
     function handleParseReceipt(receipt: any) {
         const parseReceipt = JSON.parse(receipt);
         receiveReceiptHashes.push(parseReceipt?.transactionHash);

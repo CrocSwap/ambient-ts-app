@@ -1793,6 +1793,8 @@ export default function App() {
 
         openGlobalModal: openGlobalModal,
         closeGlobalModal: closeGlobalModal,
+
+        pendingTransactions: pendingTransactions,
     };
 
     // props for <Range/> React element
