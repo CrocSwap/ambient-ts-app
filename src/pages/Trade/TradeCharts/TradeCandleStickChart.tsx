@@ -104,7 +104,7 @@ export default function TradeCandleStickChart(props: ChartData) {
         setParsedChartData(() => {
             return chartUtils;
         });
-    }, [props.priceData, activeChartPeriod, denomInBase]);
+    }, [activeChartPeriod, denomInBase]);
 
     // Parse liquidtiy data
     const liquiditiyData = useMemo(() => {
