@@ -8,6 +8,7 @@ import { useModal } from '../../../components/Global/Modal/useModal';
 import Modal from '../../../components/Global/Modal/Modal';
 import TokenSelectContainer from '../../Global/TokenSelectContainer/TokenSelectContainer';
 import Toggle2 from '../../Global/Toggle/Toggle2';
+import { FaRegTimesCircle } from 'react-icons/fa';
 
 interface CurrencySelectorProps {
     tokenPair: TokenPairIF;
@@ -72,21 +73,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
     const WithdrawTokensContent = (
         <div className={styles.surplus_toggle}>
             {fieldId === 'sell' ? 'Use Surplus' : 'Add to Surplus'}
-            {/* {fieldId === 'sell'
-                ? isWithdrawFromDexChecked
-                    ? 'Use Exchange Surplus'
-                    : 'Use Wallet Balance'
-                : isSaveAsDexSurplusChecked
-                ? 'Save as Exchange Surplus'
-                : 'Withdraw to Wallet'} */}
-
             {fieldId === 'sell' ? (
-                // <Toggle
-                //     isOn={isWithdrawFromDexChecked}
-                //     handleToggle={() => setIsWithdrawFromDexChecked(!isWithdrawFromDexChecked)}
-                //     Width={36}
-                //     id='sell_token_withdrawal'
-                // />
                 <Toggle2
                     isOn={isWithdrawFromDexChecked}
                     handleToggle={() => setIsWithdrawFromDexChecked(!isWithdrawFromDexChecked)}
@@ -171,25 +158,26 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
             ? parseFloat(tokenBDexBalance).toLocaleString()
             : '0';
 
-    // const surplusBalance = 0;
-    // const surplusBalanceNonLocaleString = surplusBalance.toString();
-    // const surplusBalanceLocaleString = surplusBalance.toLocaleString();
+    if (thisToken.fromList === 'urlParam') {
+        console.log(thisToken.logoURI);
+    }
 
     return (
         <div className={styles.swapbox}>
             <div className={styles.direction}> </div>
-            {/* <div className={styles.direction}>{direction}</div> */}
             <div className={styles.swapbox_top}>
                 <div className={styles.swap_input}>
                     <CurrencyQuantity fieldId={fieldId} handleChangeEvent={handleChangeEvent} />
                 </div>
                 <div className={styles.token_select} onClick={openModal}>
-                    <img
+                    {thisToken.logoURI
+                    ? <img
                         className={styles.token_list_img}
                         src={thisToken.logoURI}
                         alt={thisToken.name}
                         width='30px'
                     />
+                    : <FaRegTimesCircle />}
                     <div className={styles.token_list_text}>{thisToken.symbol}</div>
                     <RiArrowDownSLine size={27} />
                 </div>
