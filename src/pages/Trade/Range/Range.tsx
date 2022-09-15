@@ -51,6 +51,7 @@ interface RangePropsIF {
     isPairStable: boolean;
     provider?: ethers.providers.Provider;
     gasPriceInGwei: number | undefined;
+    ethMainnetUsdPrice?: number;
     lastBlockNumber: number;
     baseTokenAddress: string;
     quoteTokenAddress: string;
@@ -92,6 +93,7 @@ export default function Range(props: RangePropsIF) {
         tokenBAllowance,
         setRecheckTokenBApproval,
         gasPriceInGwei,
+        ethMainnetUsdPrice,
         chainId,
         activeTokenListsChanged,
         indicateActiveTokenListsChanged,
@@ -704,8 +706,8 @@ export default function Range(props: RangePropsIF) {
     };
 
     useEffect(() => {
-        if (gasPriceInGwei) {
-            const gasPriceInDollarsNum = gasPriceInGwei * 120269 * 1e-9 * 1600;
+        if (gasPriceInGwei && ethMainnetUsdPrice) {
+            const gasPriceInDollarsNum = gasPriceInGwei * 120269 * 1e-9 * ethMainnetUsdPrice;
 
             setRangeGasPriceinDollars(
                 '~$' +
@@ -715,7 +717,7 @@ export default function Range(props: RangePropsIF) {
                     }),
             );
         }
-    }, [gasPriceInGwei]);
+    }, [gasPriceInGwei, ethMainnetUsdPrice]);
 
     // TODO:  @Emily refactor this fragment to use the same denomination switch
     // TODO:  ... component used in the Market and Limit modules

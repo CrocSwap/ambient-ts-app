@@ -35,6 +35,7 @@ interface LimitPropsIF {
     provider?: ethers.providers.Provider;
     isOnTradeRoute?: boolean;
     gasPriceInGwei: number | undefined;
+    ethMainnetUsdPrice?: number;
     nativeBalance: string;
     lastBlockNumber: number;
     baseTokenBalance: string;
@@ -74,6 +75,7 @@ export default function Limit(props: LimitPropsIF) {
         tokenPair,
         isTokenABase,
         gasPriceInGwei,
+        ethMainnetUsdPrice,
         poolPriceDisplay,
         poolPriceNonDisplay,
         tokenAAllowance,
@@ -363,8 +365,8 @@ export default function Limit(props: LimitPropsIF) {
     };
 
     useEffect(() => {
-        if (gasPriceInGwei) {
-            const gasPriceInDollarsNum = gasPriceInGwei * 82459 * 1e-9 * 1600;
+        if (gasPriceInGwei && ethMainnetUsdPrice) {
+            const gasPriceInDollarsNum = gasPriceInGwei * 82459 * 1e-9 * ethMainnetUsdPrice;
 
             setOrderGasPriceInDollars(
                 '~$' +
@@ -374,7 +376,7 @@ export default function Limit(props: LimitPropsIF) {
                     }),
             );
         }
-    }, [gasPriceInGwei]);
+    }, [gasPriceInGwei, ethMainnetUsdPrice]);
 
     // const tokenABalance = isTokenABase ? baseTokenBalance : quoteTokenBalance;
     // const tokenBBalance = isTokenABase ? quoteTokenBalance : baseTokenBalance;

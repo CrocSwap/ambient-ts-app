@@ -41,6 +41,7 @@ interface SwapPropsIF {
     provider?: ethers.providers.Provider;
     isOnTradeRoute?: boolean;
     gasPriceInGwei: number | undefined;
+    ethMainnetUsdPrice?: number;
     nativeBalance: string;
     lastBlockNumber: number;
     baseTokenBalance: string;
@@ -69,6 +70,7 @@ export default function Swap(props: SwapPropsIF) {
         provider,
         isOnTradeRoute,
         nativeBalance,
+        ethMainnetUsdPrice,
         gasPriceInGwei,
         baseTokenBalance,
         quoteTokenBalance,
@@ -355,9 +357,10 @@ export default function Swap(props: SwapPropsIF) {
         </RelativeModal>
     ) : null;
 
+    // calculate price of gas for swap
     useEffect(() => {
-        if (gasPriceInGwei) {
-            const gasPriceInDollarsNum = gasPriceInGwei * 79079 * 1e-9 * 1600;
+        if (gasPriceInGwei && ethMainnetUsdPrice) {
+            const gasPriceInDollarsNum = gasPriceInGwei * 79079 * 1e-9 * ethMainnetUsdPrice;
 
             setSwapGasPriceinDollars(
                 '~$' +
@@ -367,7 +370,7 @@ export default function Swap(props: SwapPropsIF) {
                     }),
             );
         }
-    }, [gasPriceInGwei]);
+    }, [gasPriceInGwei, ethMainnetUsdPrice]);
 
     const isTokenAAllowanceSufficient = parseFloat(tokenAAllowance) >= parseFloat(tokenAInputQty);
 

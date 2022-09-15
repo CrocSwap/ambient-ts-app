@@ -99,10 +99,12 @@ import { getTvlSeries } from './functions/getTvlSeries';
 import Chat from './components/Chat/Chat';
 import { formatAmount } from '../utils/numbers';
 import GlobalModal from './components/GlobalModal/GlobalModal';
+import { memoizeTokenPrice } from './functions/fetchTokenPrice';
 
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 const cachedFetchAddress = memoizeFetchAddress();
 const cachedFetchTokenBalances = memoizeTokenBalance();
+const cachedFetchTokenPrice = memoizeTokenPrice();
 // const cachedGetTokenDecimals = memoizeTokenDecimals();
 
 const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
@@ -144,6 +146,8 @@ export default function App() {
     const [expandTradeTable, setExpandTradeTable] = useState(false);
     const [userIsOnline, setUserIsOnline] = useState(navigator.onLine);
 
+    const [ethMainnetUsdPrice, setEthMainnetUsdPrice] = useState<number | undefined>();
+
     window.ononline = () => setUserIsOnline(true);
     window.onoffline = () => setUserIsOnline(false);
 
@@ -159,6 +163,17 @@ export default function App() {
             }
         })();
     }, [provider]);
+
+    useEffect(() => {
+        (async () => {
+            const mainnetEthPrice = await cachedFetchTokenPrice(
+                '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
+                '0x1',
+            );
+            const usdPrice = mainnetEthPrice.usdPrice;
+            setEthMainnetUsdPrice(usdPrice);
+        })();
+    }, []);
 
     function exposeProviderUrl(provider?: ethers.providers.Provider): string {
         if (provider && 'connection' in provider) {
@@ -1713,6 +1728,7 @@ export default function App() {
         swapSlippage: swapSlippage,
         isPairStable: isPairStable,
         gasPriceInGwei: gasPriceInGwei,
+        ethMainnetUsdPrice: ethMainnetUsdPrice,
         nativeBalance: nativeBalance,
         lastBlockNumber: lastBlockNumber,
         baseTokenBalance: baseTokenBalance,
@@ -1741,6 +1757,7 @@ export default function App() {
         isPairStable: isPairStable,
         isOnTradeRoute: true,
         gasPriceInGwei: gasPriceInGwei,
+        ethMainnetUsdPrice: ethMainnetUsdPrice,
         nativeBalance: nativeBalance,
         lastBlockNumber: lastBlockNumber,
         baseTokenBalance: baseTokenBalance,
@@ -1768,6 +1785,7 @@ export default function App() {
         isPairStable: isPairStable,
         isOnTradeRoute: true,
         gasPriceInGwei: gasPriceInGwei,
+        ethMainnetUsdPrice: ethMainnetUsdPrice,
         nativeBalance: nativeBalance,
         lastBlockNumber: lastBlockNumber,
         baseTokenBalance: baseTokenBalance,
@@ -1800,6 +1818,7 @@ export default function App() {
         isPairStable: isPairStable,
         lastBlockNumber: lastBlockNumber,
         gasPriceInGwei: gasPriceInGwei,
+        ethMainnetUsdPrice: ethMainnetUsdPrice,
         baseTokenAddress: baseTokenAddress,
         quoteTokenAddress: quoteTokenAddress,
         poolPriceNonDisplay: poolPriceNonDisplay,
