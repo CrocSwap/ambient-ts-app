@@ -1,0 +1,53 @@
+.activity_indicator{
+    height: 34px;
+    width: 34px;
+    background: #171D27;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    cursor: pointer;
+    user-select: none;
+
+    
+}
+
+
+  .activity_indicator span{
+    background:  linear-gradient(90deg, #7371fc 0%, #cdc1ff 49.48%, #7371fc 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+
+  }
+
+
+  .circle{
+    position: relative;
+    width: 20px;
+    height: 20px;
+    background-color: #3498db;
+    border-radius: 50%;
+    position: relative;
+   cursor: pointer;
+  }
+
+  .ring{
+    border: 3px solid #3498db;
+    border-radius: 30px;
+    height: 40px;
+    width: 40px;
+    position: absolute;
+    top: -50%;
+    left: -50%;
+  
+    animation: pulsate 1s ease-out;
+    animation-iteration-count: infinite;
+    opacity: 0;
+  }
+  
+  @keyframes pulsate {
+    0% {transform: scale(0.1, 0.1); opacity: 0.0;}
+    50% {opacity: 1.0;}
+    100% {transform: scale(1.2, 1.2); opacity: 0.0;}
+  }

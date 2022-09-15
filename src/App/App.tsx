@@ -1706,6 +1706,8 @@ export default function App() {
     const [isGlobalModalOpen, openGlobalModal, closeGlobalModal, currentContent, title] =
         useGlobalModal();
 
+    const [pendingTransactions, setPendingTransactions] = useState([]);
+
     // props for <PageHeader/> React element
     const headerProps = {
         nativeBalance: nativeBalance,
@@ -1718,6 +1720,7 @@ export default function App() {
         switchChain: switchChain,
         switchNetworkInMoralis: switchNetworkInMoralis,
         openModalWallet: openModalWallet,
+        pendingTransactions: pendingTransactions,
     };
 
     // props for <Swap/> React element
@@ -1746,6 +1749,8 @@ export default function App() {
         activeTokenListsChanged: activeTokenListsChanged,
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
         openModalWallet: openModalWallet,
+        pendingTransactions: pendingTransactions,
+        setPendingTransactions: setPendingTransactions,
     };
 
     // props for <Swap/> React element on trade route
@@ -1775,6 +1780,8 @@ export default function App() {
         activeTokenListsChanged: activeTokenListsChanged,
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
         openModalWallet: openModalWallet,
+        pendingTransactions: pendingTransactions,
+        setPendingTransactions: setPendingTransactions,
     };
 
     // props for <Limit/> React element on trade route
@@ -1808,6 +1815,8 @@ export default function App() {
 
         openGlobalModal: openGlobalModal,
         closeGlobalModal: closeGlobalModal,
+
+        pendingTransactions: pendingTransactions,
     };
 
     // props for <Range/> React element
@@ -1838,6 +1847,8 @@ export default function App() {
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
         openModalWallet: openModalWallet,
         ambientApy: ambientApy,
+
+        pendingTransactions: pendingTransactions,
     };
 
     function toggleSidebar() {

@@ -1,6 +1,7 @@
 // START: Import React and Dongles
 import {
     // useState,
+    useEffect,
     Dispatch,
     SetStateAction,
 } from 'react';
@@ -41,6 +42,8 @@ interface ConfirmRangeModalPropsIF {
     txErrorCode: number;
     txErrorMessage: string;
     resetConfirmation: () => void;
+
+    pendingTransactions: string[];
 }
 
 export default function ConfirmRangeModal(props: ConfirmRangeModalPropsIF) {
@@ -65,6 +68,8 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalPropsIF) {
         showConfirmation,
         setShowConfirmation,
         resetConfirmation,
+
+        pendingTransactions,
     } = props;
 
     const tokenA = tokenPair.dataTokenA;
@@ -80,6 +85,12 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalPropsIF) {
 
     const dataTokenA = tokenPair.dataTokenA;
     const dataTokenB = tokenPair.dataTokenB;
+
+    useEffect(() => {
+        if (newRangeTransactionHash && newRangeTransactionHash !== '') {
+            pendingTransactions.push(newRangeTransactionHash);
+        }
+    }, [newRangeTransactionHash]);
 
     const rangeHeader = (
         <section className={styles.position_display}>
