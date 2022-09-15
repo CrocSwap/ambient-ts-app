@@ -364,10 +364,10 @@ export default function Limit(props: LimitPropsIF) {
 
     useEffect(() => {
         if (gasPriceInGwei) {
-            const gasPriceInDollarsNum = gasPriceInGwei * 120151 * Math.pow(10, -9) * 1600;
+            const gasPriceInDollarsNum = gasPriceInGwei * 82459 * 1e-9 * 1600;
 
             setOrderGasPriceInDollars(
-                '$' +
+                '~$' +
                     gasPriceInDollarsNum.toLocaleString(undefined, {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,

@@ -357,10 +357,10 @@ export default function Swap(props: SwapPropsIF) {
 
     useEffect(() => {
         if (gasPriceInGwei) {
-            const gasPriceInDollarsNum = gasPriceInGwei * 126268 * Math.pow(10, -9) * 1600;
+            const gasPriceInDollarsNum = gasPriceInGwei * 79079 * 1e-9 * 1600;
 
             setSwapGasPriceinDollars(
-                '$' +
+                '~$' +
                     gasPriceInDollarsNum.toLocaleString(undefined, {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,

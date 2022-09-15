@@ -705,10 +705,10 @@ export default function Range(props: RangePropsIF) {
 
     useEffect(() => {
         if (gasPriceInGwei) {
-            const gasPriceInDollarsNum = gasPriceInGwei * 120269 * Math.pow(10, -9) * 1600;
+            const gasPriceInDollarsNum = gasPriceInGwei * 120269 * 1e-9 * 1600;
 
             setRangeGasPriceinDollars(
-                '$' +
+                '~$' +
                     gasPriceInDollarsNum.toLocaleString(undefined, {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
