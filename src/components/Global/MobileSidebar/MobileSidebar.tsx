@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { MenuButton } from '../MenuButton/MenuButton';
 import MobileSidebarItem from './MobileSidebarItem';
 import { FaDiscord, FaGithub } from 'react-icons/fa';
-import { BsMedium } from 'react-icons/bs';
+import { BsMedium, BsFillMoonStarsFill, BsFillSunFill } from 'react-icons/bs';
 import { AiFillTwitterCircle } from 'react-icons/ai';
 import { FiExternalLink } from 'react-icons/fi';
 const sidebar = {
@@ -90,6 +90,29 @@ export default function MobileSidebar() {
         </motion.div>
     );
 
+    const [lightMode, setLightMode] = useState(true);
+    const themeTogglerDisplay = (
+        <MobileSidebarItem>
+            <div
+                className={styles.theme_toggler_container}
+                onClick={() => setLightMode(!lightMode)}
+            >
+                <div
+                    className={`${styles.theme_toggler_content} ${
+                        lightMode && styles.theme_toggler_light
+                    }`}
+                >
+                    {lightMode ? (
+                        <BsFillMoonStarsFill color='#f0c420' />
+                    ) : (
+                        <BsFillSunFill color='#f9d71c' />
+                    )}
+                    <p>{lightMode ? 'Dark mode' : 'Light mode'}</p>
+                </div>
+            </div>
+        </MobileSidebarItem>
+    );
+
     return (
         <>
             <motion.nav
@@ -104,6 +127,7 @@ export default function MobileSidebar() {
                 >
                     {dataToDisplay}
                     {ecosystemDisplay}
+                    {themeTogglerDisplay}
                     {socialIconsDisplay}
                 </motion.div>
             </motion.nav>

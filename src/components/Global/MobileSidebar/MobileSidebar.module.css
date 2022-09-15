@@ -88,6 +88,36 @@ transition: background 400ms ease-out;
   }
   /* end of ecosystem */
 
+  /* theme toggler */
+.theme_toggler_container{
+ padding: 0 1rem;
+}
+
+.theme_toggler_content{
+  width: 100%;
+  background: var(--dark3);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 4px;
+
+  background: rgba(39, 48, 62, 0.3);
+backdrop-filter: blur( 7.5px );
+-webkit-backdrop-filter: blur( 7.5px );
+cursor: pointer;
+
+font-size: 14px;
+line-height: var(--body-lh);
+}
+
+.theme_toggler_light{
+  background: white;
+  color: black;
+}
+  /* end of theme toggler */
+
   @media (max-width: 35em) {
 .container, .toggle_button{
     display: block;
