@@ -36,6 +36,10 @@ interface HeaderPropsIF {
     isMobileSidebarOpen: boolean;
     setIsMobileSidebarOpen: Dispatch<SetStateAction<boolean>>;
     lastBlockNumber: number;
+
+    openGlobalModal: (content: React.ReactNode) => void;
+
+    closeGlobalModal: () => void;
 }
 
 export default function PageHeader(props: HeaderPropsIF) {
