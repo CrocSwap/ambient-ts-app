@@ -19,6 +19,7 @@
     width: 15px;
 }
 .qty_sing {
+    white-space: nowrap;
     display: none;
 }
 .column_qty p {

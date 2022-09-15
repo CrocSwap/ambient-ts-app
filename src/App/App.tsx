@@ -6,9 +6,9 @@ import {
     resetGraphData,
     setPositionsByPool,
     setPositionsByUser,
-    setSwapsByUser,
-    // ISwap,
-    setSwapsByPool,
+    setChangesByUser,
+    // ITransaction,
+    setChangesByPool,
     // addSwapsByUser,
     // addSwapsByPool,
     CandleData,
@@ -763,9 +763,9 @@ export default function App() {
 
                                 if (poolChanges) {
                                     dispatch(
-                                        setSwapsByPool({
+                                        setChangesByPool({
                                             dataReceived: true,
-                                            swaps: poolChanges,
+                                            changes: poolChanges,
                                         }),
                                     );
                                 }
@@ -1276,7 +1276,7 @@ export default function App() {
 
     const graphData = useAppSelector((state) => state.graphData);
 
-    // const getSwapData = async (swap: ISwap): Promise<ISwap> => {
+    // const getSwapData = async (swap: ITransaction): Promise<ITransaction> => {
     //     return swap;
     // };
 
@@ -1584,9 +1584,9 @@ export default function App() {
 
                         if (userChanges) {
                             dispatch(
-                                setSwapsByUser({
+                                setChangesByUser({
                                     dataReceived: true,
-                                    swaps: userChanges,
+                                    changes: userChanges,
                                 }),
                             );
                         }

@@ -3,7 +3,7 @@ import TokenQty from '../../../Global/Tabs/TokenQty/TokenQty';
 import TransactionTypeSide from '../../../Global/Tabs/TypeAndSide/TransactionTypeSide/TransactionTypeSide';
 import WalletAndId from '../../../Global/Tabs/WalletAndID/WalletAndId';
 import styles from './TransactionCard.module.css';
-import { ISwap } from '../../../../utils/state/graphDataSlice';
+import { ITransaction } from '../../../../utils/state/graphDataSlice';
 import TransactionsMenu from '../../../Global/Tabs/TableMenu/TableMenuComponents/TransactionsMenu';
 import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import {
@@ -16,7 +16,7 @@ import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter
 import Value from '../../../Global/Tabs/Value/Value';
 
 interface TransactionProps {
-    swap: ISwap;
+    tx: ITransaction;
     account: string;
     tokenMap: Map<string, TokenIF>;
     chainId: string;
@@ -31,7 +31,7 @@ interface TransactionProps {
 }
 export default function TransactionCard(props: TransactionProps) {
     const {
-        swap,
+        tx,
         account,
         tokenMap,
         chainId,
@@ -44,19 +44,19 @@ export default function TransactionCard(props: TransactionProps) {
     } = props;
 
     // const tempOwnerId = '0xa2b398145b7fc8fd9a01142698f15d329ebb5ff5090cfcc8caae440867ab9919';
-    const txHash = swap.tx;
-    const ownerId = swap.user;
+    const txHash = tx.tx;
+    const ownerId = tx.user;
 
     const isOwnerActiveAccount = ownerId.toLowerCase() === account.toLowerCase();
 
-    const baseId = swap.base + '_' + chainId;
-    const quoteId = swap.quote + '_' + chainId;
+    const baseId = tx.base + '_' + chainId;
+    const quoteId = tx.quote + '_' + chainId;
 
     const baseToken = tokenMap ? tokenMap.get(baseId.toLowerCase()) : undefined;
     const quoteToken = tokenMap ? tokenMap.get(quoteId.toLowerCase()) : undefined;
 
-    const transactionBaseAddressLowerCase = swap.base.toLowerCase();
-    const transactionQuoteAddressLowerCase = swap.quote.toLowerCase();
+    const transactionBaseAddressLowerCase = tx.base.toLowerCase();
+    const transactionQuoteAddressLowerCase = tx.quote.toLowerCase();
 
     const tokenAAddressLowerCase = tokenAAddress.toLowerCase();
     const tokenBAddressLowerCase = tokenBAddress.toLowerCase();
@@ -67,51 +67,81 @@ export default function TransactionCard(props: TransactionProps) {
         (transactionBaseAddressLowerCase === tokenBAddressLowerCase ||
             transactionQuoteAddressLowerCase === tokenBAddressLowerCase);
 
-    //    const qtyDecimals = swap.inBaseQty ? baseToken?.decimals : quoteToken?.decimals
+    //    const qtyDecimals = tx.inBaseQty ? baseToken?.decimals : quoteToken?.decimals
 
     const [truncatedDisplayPrice, setTruncatedDisplayPrice] = useState<string | undefined>();
-    // const limitPrice = swap.limitPrice;
+    // const limitPrice = tx.limitPrice;
 
     // console.log({ limitPrice });
     // console.log({ displayPrice });
-    // console.log({ swap });
-    // const swapQtyString = swap.qty.toString();
+    // console.log({ tx });
+    // const txQtyString = tx.qty.toString();
 
     const [baseFlowDisplay, setBaseFlowDisplay] = useState<string | undefined>(undefined);
     const [quoteFlowDisplay, setQuoteFlowDisplay] = useState<string | undefined>(undefined);
-    const swapDomId = swap.id === currentTxActiveInTransactions ? `swap-${swap.id}` : '';
+    const txDomId = tx.id === currentTxActiveInTransactions ? `tx-${tx.id}` : '';
 
     function scrollToDiv() {
-        const element = document.getElementById(swapDomId);
+        const element = document.getElementById(txDomId);
 
         element?.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
     }
 
     useEffect(() => {
-        swap.id === currentTxActiveInTransactions ? scrollToDiv() : null;
+        tx.id === currentTxActiveInTransactions ? scrollToDiv() : null;
     }, [currentTxActiveInTransactions]);
 
     useEffect(() => {
-        // console.log({ swap });
-        if (swap.priceDecimalCorrected && swap.invPriceDecimalCorrected) {
-            const priceDecimalCorrected = swap.priceDecimalCorrected;
-            const invPriceDecimalCorrected = swap.invPriceDecimalCorrected;
+        // console.log({ tx });
+        if (tx.priceDecimalCorrected && tx.invPriceDecimalCorrected) {
+            const priceDecimalCorrected = tx.priceDecimalCorrected;
+            const invPriceDecimalCorrected = tx.invPriceDecimalCorrected;
 
-            const baseTokenCharacter = swap.baseSymbol ? getUnicodeCharacter(swap.baseSymbol) : '';
-            const quoteTokenCharacter = swap.quoteSymbol
-                ? getUnicodeCharacter(swap.quoteSymbol)
-                : '';
+            const baseTokenCharacter = tx.baseSymbol ? getUnicodeCharacter(tx.baseSymbol) : '';
+            const quoteTokenCharacter = tx.quoteSymbol ? getUnicodeCharacter(tx.quoteSymbol) : '';
+
+            const nonInvertedPriceTruncated =
+                priceDecimalCorrected === 0
+                    ? '0'
+                    : priceDecimalCorrected < 0.0001
+                    ? priceDecimalCorrected.toExponential(2)
+                    : priceDecimalCorrected < 2
+                    ? priceDecimalCorrected.toPrecision(3)
+                    : priceDecimalCorrected >= 100000
+                    ? formatAmount(priceDecimalCorrected)
+                    : priceDecimalCorrected.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                      });
+
+            const invertedPriceTruncated =
+                invPriceDecimalCorrected === 0
+                    ? '0'
+                    : invPriceDecimalCorrected < 0.0001
+                    ? invPriceDecimalCorrected.toExponential(2)
+                    : invPriceDecimalCorrected < 2
+                    ? invPriceDecimalCorrected.toPrecision(3)
+                    : invPriceDecimalCorrected >= 100000
+                    ? formatAmount(invPriceDecimalCorrected)
+                    : invPriceDecimalCorrected.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                      });
 
             const truncatedDisplayPrice = isDenomBase
-                ? quoteTokenCharacter + invPriceDecimalCorrected?.toPrecision(6)
-                : baseTokenCharacter + priceDecimalCorrected?.toPrecision(6);
+                ? quoteTokenCharacter + invertedPriceTruncated
+                : baseTokenCharacter + nonInvertedPriceTruncated;
+
+            // const truncatedDisplayPrice = isDenomBase
+            //     ? quoteTokenCharacter + invPriceDecimalCorrected?.toPrecision(3)
+            //     : baseTokenCharacter + priceDecimalCorrected?.toPrecision(3);
 
             setTruncatedDisplayPrice(truncatedDisplayPrice);
         } else {
             setTruncatedDisplayPrice(undefined);
         }
-        if (swap.baseFlow && swap.baseDecimals) {
-            const baseFlowDisplayNum = parseFloat(toDisplayQty(swap.baseFlow, swap.baseDecimals));
+        if (tx.baseFlow && tx.baseDecimals) {
+            const baseFlowDisplayNum = parseFloat(toDisplayQty(tx.baseFlow, tx.baseDecimals));
             const baseFlowAbsNum = Math.abs(baseFlowDisplayNum);
             const isBaseFlowNegative = baseFlowDisplayNum > 0;
             const baseFlowDisplayTruncated =
@@ -133,30 +163,28 @@ export default function TransactionCard(props: TransactionProps) {
                 : baseFlowDisplayTruncated;
             setBaseFlowDisplay(baseFlowDisplayString);
         } else {
-            // console.log({ swap });
-            // console.log(swap.tx);
-            if (swap.inBaseQty) {
-                if (!swap.isBuy) {
-                    setBaseFlowDisplay(toDisplayQty(swap.qty, swap.baseDecimals));
+            // console.log({ tx });
+            // console.log(tx.tx);
+            if (tx.inBaseQty) {
+                if (!tx.isBuy) {
+                    setBaseFlowDisplay(toDisplayQty(tx.qty, tx.baseDecimals));
                     setQuoteFlowDisplay(undefined);
                 } else {
-                    setBaseFlowDisplay('(' + toDisplayQty(swap.qty, swap.baseDecimals) + ')');
+                    setBaseFlowDisplay('(' + toDisplayQty(tx.qty, tx.baseDecimals) + ')');
                     setQuoteFlowDisplay(undefined);
                 }
             } else {
-                if (!swap.isBuy) {
-                    setQuoteFlowDisplay('(' + toDisplayQty(swap.qty, swap.quoteDecimals) + ')');
+                if (!tx.isBuy) {
+                    setQuoteFlowDisplay('(' + toDisplayQty(tx.qty, tx.quoteDecimals) + ')');
                     setBaseFlowDisplay(undefined);
                 } else {
-                    setQuoteFlowDisplay(toDisplayQty(swap.qty, swap.quoteDecimals));
+                    setQuoteFlowDisplay(toDisplayQty(tx.qty, tx.quoteDecimals));
                     setBaseFlowDisplay(undefined);
                 }
             }
         }
-        if (swap.quoteFlow && swap.quoteDecimals) {
-            const quoteFlowDisplayNum = parseFloat(
-                toDisplayQty(swap.quoteFlow, swap.quoteDecimals),
-            );
+        if (tx.quoteFlow && tx.quoteDecimals) {
+            const quoteFlowDisplayNum = parseFloat(toDisplayQty(tx.quoteFlow, tx.quoteDecimals));
             const quoteFlowAbsNum = Math.abs(quoteFlowDisplayNum);
             const isQuoteFlowNegative = quoteFlowDisplayNum > 0;
             const quoteFlowDisplayTruncated =
@@ -178,18 +206,35 @@ export default function TransactionCard(props: TransactionProps) {
                 : quoteFlowDisplayTruncated;
             setQuoteFlowDisplay(quoteFlowDisplayString);
         }
-    }, [JSON.stringify(swap), isDenomBase]);
+    }, [JSON.stringify(tx), isDenomBase]);
 
     const priceType =
-        (isDenomBase && !swap.isBuy) || (!isDenomBase && swap.isBuy) ? 'priceBuy' : 'priceSell';
-    const sideType = (isDenomBase && !swap.isBuy) || (!isDenomBase && swap.isBuy) ? 'buy' : 'sell';
+        (isDenomBase && !tx.isBuy) || (!isDenomBase && tx.isBuy) ? 'priceBuy' : 'priceSell';
+
+    const sideType =
+        tx.entityType === 'swap' || tx.entityType === 'limitOrder'
+            ? (isDenomBase && !tx.isBuy) || (!isDenomBase && tx.isBuy)
+                ? 'buy'
+                : 'sell'
+            : tx.changeType === 'burn'
+            ? 'sell'
+            : 'buy';
+
+    const transactionTypeSide =
+        tx.entityType === 'swap'
+            ? 'market'
+            : tx.entityType === 'limitOrder'
+            ? 'limit'
+            : tx.changeType === 'burn'
+            ? 'rangeRemove'
+            : 'rangeAdd';
 
     if (!transactionMatchesSelectedTokens) return null;
 
     const activeTransactionStyle =
-        swap.id === currentTxActiveInTransactions ? styles.active_tx_style : '';
+        tx.id === currentTxActiveInTransactions ? styles.active_tx_style : '';
 
-    const usdValueNum = swap.valueUSD;
+    const usdValueNum = tx.valueUSD;
 
     const usdValueTruncated = !usdValueNum
         ? undefined
@@ -205,22 +250,15 @@ export default function TransactionCard(props: TransactionProps) {
               maximumFractionDigits: 2,
           });
 
-    const transactionTypeSide =
-        swap.entityType === 'swap'
-            ? 'market'
-            : swap.entityType === 'limitOrder'
-            ? 'limit'
-            : 'rangeAdd';
-
     return (
         <div
             className={`${styles.main_container} ${activeTransactionStyle}`}
             onClick={() =>
-                swap.id === currentTxActiveInTransactions
+                tx.id === currentTxActiveInTransactions
                     ? null
                     : setCurrentTxActiveInTransactions('')
             }
-            id={swapDomId}
+            id={txDomId}
         >
             <div className={styles.row_container}>
                 {/* ------------------------------------------------------ */}
@@ -228,7 +266,7 @@ export default function TransactionCard(props: TransactionProps) {
                 <WalletAndId
                     ownerId={ownerId}
                     posHash={txHash}
-                    ensName={swap.ensResolution ? swap.ensResolution : null}
+                    ensName={tx.ensResolution ? tx.ensResolution : null}
                     isOwnerActiveAccount={isOwnerActiveAccount}
                 />
 
@@ -251,7 +289,7 @@ export default function TransactionCard(props: TransactionProps) {
             </div>
 
             <div className={styles.menu_container}>
-                <TransactionsMenu userPosition={false} tx={swap} blockExplorer={blockExplorer} />
+                <TransactionsMenu userPosition={false} tx={tx} blockExplorer={blockExplorer} />
             </div>
         </div>
     );
