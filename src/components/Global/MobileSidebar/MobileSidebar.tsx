@@ -1,4 +1,4 @@
-import { useState, Dispatch, SetStateAction } from 'react';
+import { useState, Dispatch, SetStateAction, useRef } from 'react';
 import styles from './MobileSidebar.module.css';
 import { motion } from 'framer-motion';
 import { MenuButton } from '../MenuButton/MenuButton';
@@ -10,6 +10,7 @@ import { FiExternalLink } from 'react-icons/fi';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import ambientLogo from '../../../assets/images/logos/ambient_logo.svg';
 import { Link } from 'react-router-dom';
+import UseOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 
 const sidebar = {
     open: (height = 1000) => ({
@@ -52,7 +53,7 @@ export default function MobileSidebar(props: MobileSidebarPropsIF) {
 
     const logoContainer = (
         <Link to='/' className={styles.logo_container}>
-            <img src={ambientLogo} alt='ambient' />
+            <img src={ambientLogo} alt='ambient' width='35px' />
             <h1>ambient</h1>
         </Link>
     );
@@ -146,23 +147,44 @@ export default function MobileSidebar(props: MobileSidebarPropsIF) {
         <MobileSidebarItem>
             <div
                 className={`${styles.theme_toggler_content} ${
-                    lightMode && styles.theme_toggler_light
+                    !lightMode && styles.theme_toggler_light
                 }`}
                 onClick={() => setLightMode(!lightMode)}
             >
-                {lightMode ? (
+                {!lightMode ? (
                     <BsFillMoonStarsFill color='#f0c420' />
                 ) : (
                     <BsFillSunFill color='#f9d71c' />
                 )}
-                <p>{lightMode ? 'Dark mode' : 'Light mode'}</p>
+                <p>{!lightMode ? 'Dark mode' : 'Light mode'}</p>
             </div>
         </MobileSidebarItem>
     );
 
+    // this button stays on the right hand side of the page to close the menu
+    const closeMenuButton = (
+        <div className={styles.toggle_button_close}>
+            <MenuButton
+                isOpen={true}
+                onClick={() => setIsMobileSidebarOpen(false)}
+                strokeWidth='2'
+                color='#ebebff'
+                transition={{ ease: 'easeOut', duration: 0.2 }}
+                width='24'
+                height='18'
+            />
+        </div>
+    );
+    const sidebarMenuRef = useRef<HTMLDivElement>(null);
+    const clickOutsideHandler = () => {
+        setIsMobileSidebarOpen(false);
+    };
+    UseOnClickOutside(sidebarMenuRef, clickOutsideHandler);
+
     return (
         <>
             <motion.nav
+                ref={sidebarMenuRef}
                 className={styles.main_container}
                 initial={false}
                 animate={isMobileSidebarOpen ? 'open' : 'closed'}
@@ -188,18 +210,20 @@ export default function MobileSidebar(props: MobileSidebarPropsIF) {
                     </div>
                 </motion.div>
             </motion.nav>
-
-            <div className={styles.toggle_button}>
-                <MenuButton
-                    isOpen={isMobileSidebarOpen}
-                    onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
-                    strokeWidth='2'
-                    color='#7371fc'
-                    transition={{ ease: 'easeOut', duration: 0.2 }}
-                    width='24'
-                    height='18'
-                />
-            </div>
+            {!isMobileSidebarOpen && (
+                <div className={styles.toggle_button}>
+                    <MenuButton
+                        isOpen={isMobileSidebarOpen}
+                        onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
+                        strokeWidth='2'
+                        color='#7371fc'
+                        transition={{ ease: 'easeOut', duration: 0.2 }}
+                        width='24'
+                        height='18'
+                    />
+                </div>
+            )}
+            {isMobileSidebarOpen && closeMenuButton}
         </>
     );
 }

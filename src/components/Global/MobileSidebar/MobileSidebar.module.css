@@ -5,7 +5,7 @@
     top: 0;
     right: 0;
     bottom: 0;
-    width: 300px;
+    width: 350px;
     background: var(--dark1);
     transition: all 600ms ease-out;
     display: none;
@@ -47,6 +47,26 @@ background: var(--dark2)
 
     display: none;
   }
+  .toggle_button_close{
+    outline: none;
+    border: none;
+    cursor: pointer;
+    position: absolute;
+    top: 18px;
+    left: 15px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+                
+    background: var(--dark1);
+    z-index: 1000;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    /* display: none; */
+  }
 
   /* logo container */
 
@@ -54,9 +74,10 @@ background: var(--dark2)
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: var(--gap, 1rem);
+  gap: 8px;
  border-bottom: 1px solid rgb(55, 54, 54);
- margin-top: 2rem;
+ /* margin-top: 1rem; */
+ padding: 1rem 0;
 }
 
 .logo_container h1 {
@@ -66,9 +87,13 @@ background: var(--dark2)
   -webkit-text-fill-color: transparent;
   background-clip: text;
 
-  font-size: 2.25rem;
+  font-size: 2rem;
   font-weight: 100;
   line-height: 2.81rem;
+}
+
+.logo_container img{
+  margin-left: 1rem;
 }
 
   /* end of logo container */
