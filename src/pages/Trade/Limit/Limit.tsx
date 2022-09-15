@@ -34,7 +34,8 @@ interface LimitPropsIF {
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     provider?: ethers.providers.Provider;
     isOnTradeRoute?: boolean;
-    gasPriceinGwei: number | undefined;
+    gasPriceInGwei: number | undefined;
+    ethMainnetUsdPrice?: number;
     nativeBalance: string;
     lastBlockNumber: number;
     baseTokenBalance: string;
@@ -73,7 +74,8 @@ export default function Limit(props: LimitPropsIF) {
         quoteTokenDexBalance,
         tokenPair,
         isTokenABase,
-        gasPriceinGwei,
+        gasPriceInGwei,
+        ethMainnetUsdPrice,
         poolPriceDisplay,
         poolPriceNonDisplay,
         tokenAAllowance,
@@ -136,6 +138,7 @@ export default function Limit(props: LimitPropsIF) {
     const [limitRate, setLimitRate] = useState<string>(tradeData.limitPrice);
     const [limitTick, setLimitTick] = useState<number>(0);
     const [insideTickDisplayPrice, setInsideTickDisplayPrice] = useState<number>(0);
+    const [orderGasPriceInDollars, setOrderGasPriceInDollars] = useState<string | undefined>();
 
     const [initialLoad, setInitialLoad] = useState<boolean>(true);
 
@@ -361,6 +364,20 @@ export default function Limit(props: LimitPropsIF) {
         }
     };
 
+    useEffect(() => {
+        if (gasPriceInGwei && ethMainnetUsdPrice) {
+            const gasPriceInDollarsNum = gasPriceInGwei * 82459 * 1e-9 * ethMainnetUsdPrice;
+
+            setOrderGasPriceInDollars(
+                '~$' +
+                    gasPriceInDollarsNum.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                    }),
+            );
+        }
+    }, [gasPriceInGwei, ethMainnetUsdPrice]);
+
     // const tokenABalance = isTokenABase ? baseTokenBalance : quoteTokenBalance;
     // const tokenBBalance = isTokenABase ? quoteTokenBalance : baseTokenBalance;
 
@@ -432,7 +449,7 @@ export default function Limit(props: LimitPropsIF) {
                 </div>
                 <LimitExtraInfo
                     tokenPair={tokenPair}
-                    gasPriceinGwei={gasPriceinGwei}
+                    orderGasPriceInDollars={orderGasPriceInDollars}
                     poolPriceDisplay={poolPriceDisplay || 0}
                     slippageTolerance={slippageTolerancePercentage}
                     liquidityProviderFee={0}

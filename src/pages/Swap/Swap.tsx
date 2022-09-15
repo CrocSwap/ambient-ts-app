@@ -40,7 +40,8 @@ interface SwapPropsIF {
     isPairStable: boolean;
     provider?: ethers.providers.Provider;
     isOnTradeRoute?: boolean;
-    gasPriceinGwei: number | undefined;
+    gasPriceInGwei: number | undefined;
+    ethMainnetUsdPrice?: number;
     nativeBalance: string;
     lastBlockNumber: number;
     baseTokenBalance: string;
@@ -69,7 +70,8 @@ export default function Swap(props: SwapPropsIF) {
         provider,
         isOnTradeRoute,
         nativeBalance,
-        gasPriceinGwei,
+        ethMainnetUsdPrice,
+        gasPriceInGwei,
         baseTokenBalance,
         quoteTokenBalance,
         baseTokenDexBalance,
@@ -157,6 +159,7 @@ export default function Swap(props: SwapPropsIF) {
     const [txErrorMessage, setTxErrorMessage] = useState('');
     const [priceImpact, setPriceImpact] = useState<CrocImpact | undefined>();
     const [showConfirmation, setShowConfirmation] = useState<boolean>(true);
+    const [swapGasPriceinDollars, setSwapGasPriceinDollars] = useState<string | undefined>();
 
     const resetConfirmation = () => {
         setShowConfirmation(true);
@@ -354,6 +357,21 @@ export default function Swap(props: SwapPropsIF) {
         </RelativeModal>
     ) : null;
 
+    // calculate price of gas for swap
+    useEffect(() => {
+        if (gasPriceInGwei && ethMainnetUsdPrice) {
+            const gasPriceInDollarsNum = gasPriceInGwei * 79079 * 1e-9 * ethMainnetUsdPrice;
+
+            setSwapGasPriceinDollars(
+                '~$' +
+                    gasPriceInDollarsNum.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                    }),
+            );
+        }
+    }, [gasPriceInGwei, ethMainnetUsdPrice]);
+
     const isTokenAAllowanceSufficient = parseFloat(tokenAAllowance) >= parseFloat(tokenAInputQty);
 
     const swapContainerStyle = pathname == '/swap' ? styles.swap_page_container : null;
@@ -425,7 +443,7 @@ export default function Swap(props: SwapPropsIF) {
                         slippageTolerance={slippageTolerancePercentage}
                         liquidityProviderFee={0.3}
                         quoteTokenIsBuy={true}
-                        gasPriceinGwei={gasPriceinGwei}
+                        swapGasPriceinDollars={swapGasPriceinDollars}
                         didUserFlipDenom={tradeData.didUserFlipDenom}
                         isDenomBase={tradeData.isDenomBase}
                     />
