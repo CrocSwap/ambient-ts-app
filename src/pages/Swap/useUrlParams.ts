@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
 import { useMoralisWeb3Api } from 'react-moralis';
@@ -26,44 +26,66 @@ export const useUrlParams = (
         // get URL parameters or empty string if undefined
         const fixedParams = params ?? '';
         // split params string at every ampersand
-        return fixedParams.split('&')
-            // remove any values missing an = symbol
-            .filter(par => par.includes('='))
-            // split substrings at = symbols to make [key, value] tuples
-            .map(par => par.split('='))
-            // remove empty strings created by extra = symbols
-            .map(par => par.filter(e => e !== ''))
-            // remove tuples with trisomy issues
-            .filter(par => par.length === 2);
+        return (
+            fixedParams
+                .split('&')
+                // remove any values missing an = symbol
+                .filter((par) => par.includes('='))
+                // split substrings at = symbols to make [key, value] tuples
+                .map((par) => par.split('='))
+                // remove empty strings created by extra = symbols
+                .map((par) => par.filter((e) => e !== ''))
+                // remove tuples with trisomy issues
+                .filter((par) => par.length === 2)
+        );
     }, []);
 
     // make a list of params found in the URL queried
-    const paramsUsed = useMemo(() => urlParams.map(param => param[0]), []);
+    const paramsUsed = useMemo(() => urlParams.map((param) => param[0]), []);
 
     // determine which chain to use
     const chainToUse = useMemo(() => {
         // find `chain` in params
-        const chainParam = urlParams.find(param => param[0] === 'chain');
+        const chainParam = urlParams.find((param) => param[0] === 'chain');
         // if a chain was included in the URL params use that
         // otherwise use whatever chain ID the hook was passed
         return chainParam ? chainParam[1] : chainId;
-    // update this value every time the app switches chains
+        // update this value every time the app switches chains
     }, [chainId]);
 
     // TODO: need to get this data from somewhere other than default tokens
-    // find the notive token of the current chain
-    const nativeToken = useMemo(() => (
-        // iterate through ambient token list
-        defaultTokens.find(tkn =>
-            // token address must be the zero address
-            tkn.address === ethers.constants.AddressZero &&
-            // token must be on the correct chain
-            tkn.chainId === parseInt(chainToUse)
-        )
-    // update this value when the hook switches to a new chain
-    ), [chainToUse]);
+    // find the native token of the current chain
+    const nativeToken = useMemo(
+        () =>
+            // iterate through ambient token list
+            defaultTokens.find(
+                (tkn) =>
+                    // token address must be the zero address
+                    tkn.address === ethers.constants.AddressZero &&
+                    // token must be on the correct chain
+                    tkn.chainId === parseInt(chainToUse),
+            ),
+        // update this value when the hook switches to a new chain
+        [chainToUse],
+    );
 
-    // useEffect to switch chains if necessary
+    const [tokenList, setTokenList] = useState<string | undefined>();
+
+    useEffect(() => {
+        // get allTokenLists from local storage
+        function check() {
+            const tokenListsFromStorage = localStorage.getItem('allTokenLists');
+            if (tokenListsFromStorage !== null) {
+                // console.log('found');
+                setTokenList(tokenListsFromStorage);
+            } else {
+                // console.log('not found');
+                setTimeout(check, 100);
+            }
+        }
+
+        setTimeout(check, 100);
+    }, []);
 
     // useEffect() to update token pair
     useEffect(() => {
@@ -71,49 +93,46 @@ export const useUrlParams = (
             // short-circuit function if native token is needed
             if (addr === ethers.constants.AddressZero) {
                 return nativeToken;
-            };
+            }
 
             let listCounter = 0;
 
             // function to find token if not the native token
-            const findToken = (listNames: string[], limiter=0): TokenIF | undefined => {
-                // get allTokenLists from local storage
-                const allTokenLists = JSON.parse(
-                    localStorage.getItem('allTokenLists') as string
-                );
+            const findToken = (listNames: string[]): TokenIF | undefined => {
+                const allTokenLists = tokenList ? JSON.parse(tokenList as string) : undefined;
                 // extract CoinGecko list from allTokenLists
                 if (
                     // make sure allTokenLists is not undefined
                     allTokenLists &&
                     // make sure desired list is in allTokenLists
                     allTokenLists.some(
-                        (list: TokenListIF) => list.name === listNames[listCounter] && list.default
+                        (list: TokenListIF) => list.name === listNames[listCounter] && list.default,
                     )
                 ) {
                     // extract desired token list
-                    const { tokens } = allTokenLists.find((list: TokenListIF) => (
-                        list.name === listNames[listCounter] && list.default
-                    ));
+                    const { tokens } = allTokenLists.find(
+                        (list: TokenListIF) => list.name === listNames[listCounter] && list.default,
+                    );
                     // see if the desired token is in the list
-                    const tokenOnList = tokens.some((token: TokenIF) => (
-                        token.address.toLowerCase() === addr &&
-                        token.chainId === parseInt(chainToUse)
-                    ));
+                    const tokenOnList = tokens.some(
+                        (token: TokenIF) =>
+                            token.address.toLowerCase() === addr &&
+                            token.chainId === parseInt(chainToUse),
+                    );
+
                     if (tokenOnList) {
-                        return tokens.find((token: TokenIF) => token.address.toLowerCase() === addr);
-                    } else if (!tokenOnList) {
+                        const token = tokens.find(
+                            (token: TokenIF) => token.address.toLowerCase() === addr,
+                        );
+                        return token;
+                    } else if (listCounter < listNames.length - 1) {
+                        listCounter++;
+                        return findToken(listNames);
+                    } else {
                         return getTokenFromChain(addr);
                     }
                 }
-                else if (limiter > 50 && listCounter < listNames.length) {
-                    listCounter++;
-                    return findToken(listNames);
-                } else if (limiter > 50 && listCounter >= listNames.length) {
-                    return getTokenFromChain(addr);
-                } else {
-                    return findToken(listNames, limiter + 1);
-                }
-            }
+            };
             return findToken(['Ambient Token List', 'CoinGecko']);
         };
 
@@ -121,48 +140,54 @@ export const useUrlParams = (
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         function getTokenFromChain(addr: string): any {
             const promise = Web3Api.token.getTokenMetadata({
-                chain: chainToUse as '0x5', addresses: [addr]
+                chain: chainToUse as '0x5',
+                addresses: [addr],
             });
             return Promise.resolve(promise)
-                .then(res => res[0])
-                .then(res => ({
+                .then((res) => res[0])
+                .then((res) => ({
                     name: res.name,
                     address: res.address,
                     symbol: res.symbol,
                     decimals: res.decimals,
                     logoURI: res.logo ?? '',
-                    fromList: 'urlParam'
+                    fromList: 'urlParam',
                 }));
         }
 
         const getAddress = (tkn: string) => {
-            const tokenParam = urlParams.find(param => param[0] === tkn);
-            const tokenAddress = tokenParam
-                ? tokenParam[1]
-                : ethers.constants.AddressZero;
+            const tokenParam = urlParams.find((param) => param[0] === tkn);
+            const tokenAddress = tokenParam ? tokenParam[1] : ethers.constants.AddressZero;
             return tokenAddress.toLowerCase();
-        }
+        };
         const addrTokenA = getAddress('tokenA');
         const addrTokenB = getAddress('tokenB');
-        const tokensAreDifferent = (
+        const tokensAreDifferent =
             paramsUsed.includes('tokenA') &&
             paramsUsed.includes('tokenB') &&
-            (addrTokenA !== addrTokenB)
-        );
-        const paramsIncludesToken = (
-            paramsUsed.includes('tokenA') ||
-            paramsUsed.includes('tokenB')
-        );
+            addrTokenA !== addrTokenB;
+        const paramsIncludesToken = paramsUsed.includes('tokenA') || paramsUsed.includes('tokenB');
         // TODO: this needs to be gatekept so it runs only once
         if (isInitialized && tokensAreDifferent && paramsIncludesToken) {
             Promise.all([
                 fetchAndFormatTokenData(addrTokenA),
-                fetchAndFormatTokenData(addrTokenB)
-            ]).then(res => {
-                res.forEach(tkn => console.assert(tkn, 'Missing token data in useUrlParams.ts, refer to file for troubleshooting'));
-                dispatch(setTokenA(res[0] as TokenIF));
-                dispatch(setTokenB(res[1] as TokenIF));
+                fetchAndFormatTokenData(addrTokenB),
+            ]).then((res) => {
+                res.forEach((tkn) =>
+                    console.assert(
+                        tkn,
+                        'Missing token data in useUrlParams.ts, refer to file for troubleshooting',
+                    ),
+                );
+                const tokenAResult = res[0];
+                const tokenBResult = res[1];
+
+                // console.log({ tokenAResult });
+                // console.log({ tokenBResult });
+
+                if (tokenAResult) dispatch(setTokenA(tokenAResult as TokenIF));
+                if (tokenBResult) dispatch(setTokenB(tokenBResult as TokenIF));
             });
         }
-    }, [isInitialized]);
-}
+    }, [tokenList]);
+};
