@@ -1,10 +1,11 @@
-import { DetailedHTMLProps, HTMLAttributes, useMemo } from 'react';
+import { DetailedHTMLProps, HTMLAttributes, useEffect, useMemo, useState } from 'react';
 import { CandleData, CandlesByPoolAndDuration } from '../../../utils/state/graphDataSlice';
 import { targetData } from '../../../utils/state/tradeDataSlice';
 import Chart from '../../Chart/Chart';
 import './TradeCandleStickChart.css';
 import logo from '../../../assets/images/logos/ambient_logo.svg';
-import { CandleChartData } from './TradeCharts';
+import { CandleChartData, LiquidityData } from './TradeCharts';
+import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -38,6 +39,10 @@ interface ChartData {
     truncatedPoolPrice: number | undefined;
     spotPriceDisplay: string | undefined;
     setCurrentData: React.Dispatch<React.SetStateAction<CandleChartData | undefined>>;
+    upBodyColor: string;
+    upBorderColor: string;
+    downBodyColor: string;
+    downBorderColor: string;
 }
 
 interface ChartUtils {
@@ -62,14 +67,17 @@ export default function TradeCandleStickChart(props: ChartData) {
 
     const { denomInBase } = props;
 
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [parsedChartData, setParsedChartData] = useState<ChartUtils | undefined>(undefined);
+
+    const tradeData = useAppSelector((state) => state.tradeData);
+    const activeChartPeriod = tradeData.activeChartPeriod;
+
     // Parse price data
-    const parsedChartData = useMemo(() => {
+    useEffect(() => {
+        setIsLoading(true);
         const chartData: CandleChartData[] = [];
-        let period = 1;
         props.priceData?.candles.map((data) => {
-            if (data.period !== undefined) {
-                period = data.period;
-            }
             chartData.push({
                 date: new Date(data.time * 1000),
                 open: denomInBase
@@ -90,11 +98,29 @@ export default function TradeCandleStickChart(props: ChartData) {
         });
 
         const chartUtils: ChartUtils = {
-            period: period,
+            period: props.priceData?.duration,
             chartData: chartData,
         };
-        return chartUtils;
-    }, [props.priceData, denomInBase]);
+        setParsedChartData(() => {
+            return chartUtils;
+        });
+    }, [props.priceData, activeChartPeriod, denomInBase]);
+
+    // Parse liquidtiy data
+    const liquiditiyData = useMemo(() => {
+        const liqData: LiquidityData[] = [];
+
+        props.liquidityData.ranges.map((data: any) => {
+            liqData.push({
+                activeLiq: data.activeLiq,
+                upperBoundPriceDecimalCorrected: denomInBase
+                    ? data.upperBoundInvPriceDecimalCorrected
+                    : data.upperBoundInvPriceDecimalCorrected,
+            });
+        });
+
+        return liqData;
+    }, [props.liquidityData, denomInBase]);
 
     const loading = (
         <div className='animatedImg'>
@@ -102,13 +128,21 @@ export default function TradeCandleStickChart(props: ChartData) {
         </div>
     );
 
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            console.log({ parsedChartData });
+            setIsLoading(parsedChartData === undefined || parsedChartData.chartData.length === 0);
+        }, 1000);
+        return () => clearTimeout(timer);
+    }, [parsedChartData?.chartData]);
+
     return (
         <>
             <div style={{ height: '100%', width: '100%' }}>
-                {parsedChartData.chartData && parsedChartData.chartData.length > 0 ? (
+                {!isLoading ? (
                     <Chart
                         priceData={parsedChartData}
-                        liquidityData={props.liquidityData.ranges}
+                        liquidityData={liquiditiyData}
                         changeState={props.changeState}
                         targetData={props.targetData}
                         limitPrice={props.limitPrice}
@@ -126,6 +160,10 @@ export default function TradeCandleStickChart(props: ChartData) {
                         tvlData={data.tvlData}
                         chartItemStates={props.chartItemStates}
                         setCurrentData={props.setCurrentData}
+                        upBodyColor={props.upBodyColor}
+                        upBorderColor={props.upBorderColor}
+                        downBodyColor={props.downBodyColor}
+                        downBorderColor={props.downBorderColor}
                     />
                 ) : (
                     <>{loading}</>

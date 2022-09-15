@@ -65,6 +65,10 @@ interface TradeChartsPropsIF {
     pinnedMinPriceDisplayTruncated: number | undefined;
     pinnedMaxPriceDisplayTruncated: number | undefined;
     spotPriceDisplay: string | undefined;
+    upBodyColor: string;
+    upBorderColor: string;
+    downBodyColor: string;
+    downBorderColor: string;
 }
 
 export interface CandleChartData {
@@ -76,6 +80,11 @@ export interface CandleChartData {
     close: number;
     time: number;
     allSwaps: unknown;
+}
+export interface LiquidityData {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    activeLiq: any;
+    upperBoundPriceDecimalCorrected: any;
 }
 
 // React functional component
@@ -638,6 +647,10 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                         spotPriceDisplay={props.spotPriceDisplay}
                         truncatedPoolPrice={parseFloat(truncatedPoolPrice)}
                         setCurrentData={setCurrentData}
+                        upBodyColor={props.upBodyColor}
+                        upBorderColor={props.upBorderColor}
+                        downBodyColor={props.downBodyColor}
+                        downBorderColor={props.downBorderColor}
                     />
                 </div>
             )}

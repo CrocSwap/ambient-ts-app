@@ -57,6 +57,10 @@ interface ChartData {
     tvlData: any[];
     chartItemStates: chartItemStates;
     setCurrentData: React.Dispatch<React.SetStateAction<CandleChartData | undefined>>;
+    upBodyColor: string;
+    upBorderColor: string;
+    downBodyColor: string;
+    downBorderColor: string;
 }
 
 interface ChartUtils {
@@ -75,6 +79,7 @@ export default function Chart(props: ChartData) {
     } = props;
 
     const { showFeeRate, showTvl, showVolume } = props.chartItemStates;
+    const { upBodyColor, upBorderColor, downBodyColor, downBorderColor } = props;
 
     const parsedChartData = props.priceData;
 
@@ -135,6 +140,11 @@ export default function Chart(props: ChartData) {
     const [scaleData, setScaleData] = useState<any>();
     const [dragType, setDragType] = useState<any>();
     const [crosshairData, setCrosshairData] = useState([{ x: 0, y: -1 }]);
+    const [intercourse, setIntercourse] = useState<string | undefined>(undefined);
+    const [zoomUtils, setZoomUtils] = useState<any>();
+    const [zoomStatus, setZoomStatus] = useState();
+
+    const [drawControl, setDrawControl] = useState(false);
 
     const setDefaultRangeData = () => {
         setRanges((prevState) => {
@@ -166,12 +176,17 @@ export default function Chart(props: ChartData) {
     }, []);
 
     useEffect(() => {
+        render();
+    }, [props.chartItemStates]);
+
+    useEffect(() => {
         d3.select(d3Xaxis.current)
             .select('svg')
             .append('text')
             .attr('class', 'popup')
-            .attr('dy', '30px')
-            .style('visibility', 'visible');
+            .attr('dy', '20px')
+            .style('visibility', 'visible')
+            .style('font-size', '13px');
     }, [location]);
 
     useEffect(() => {
@@ -185,25 +200,30 @@ export default function Chart(props: ChartData) {
             });
     }, [location]);
 
-    useEffect(() => {
-        d3.select(d3Container.current).select('.targets').append('rect').attr('id', 'rect');
-    }, [location, parsedChartData]);
+    // useEffect(() => {
+    //     d3.select(d3Container.current).select('.targets').append('rect').attr('id', 'rect')
+
+    // }, [location,parsedChartData]);
 
     useEffect(() => {
         if (scaleData) {
+            d3.select(d3Container.current).select('.targets').append('rect').attr('id', 'rect');
             d3.select(d3Container.current)
                 .select('.targets')
                 .select('#rect')
                 .attr('fill', '#7371FC1A')
                 .attr('width', '100%')
                 .attr('opacity', '0.7')
+                .attr('cursor', 'default')
                 .attr(
                     'height',
                     Math.abs(scaleData.yScale(ranges[1].value) - scaleData.yScale(ranges[0].value)),
                 )
                 .attr('y', scaleData.yScale(ranges[1].value));
+
+            console.error('useEffect', drawControl);
         }
-    }, [ranges, parsedChartData]);
+    }, [ranges, zoomStatus, drawControl]);
 
     // Set Scale
     useEffect(() => {
@@ -262,6 +282,66 @@ export default function Chart(props: ChartData) {
             });
         }
     }, [parsedChartData?.period, denomInBase]);
+
+    // Set Zoom
+    useEffect(() => {
+        if (scaleData !== undefined) {
+            const zoomScale = [scaleData.yScaleCopy.copy()];
+
+            const zoom = d3
+                .zoom()
+                .scaleExtent([1, 10])
+                .on('zoom', (event: any) => {
+                    scaleData.xScale.domain(
+                        event.transform.rescaleX(scaleData.xScaleCopy).domain(),
+                    );
+
+                    if (event.sourceEvent && event.sourceEvent.type != 'wheel') {
+                        scaleData.yScale.domain(
+                            event.transform.rescaleY(scaleData.yScaleCopy).domain(),
+                        );
+                        setZoomStatus(event.sourceEvent.pageX + event.sourceEvent.pageY);
+                        // console.log('zoom', scaleData.yScaleCopy.domain());
+                    }
+
+                    render();
+                }) as any;
+
+            const yAxisZoom = d3
+                .zoom()
+                .scaleExtent([1, 5])
+                .on('zoom', (event: any) => {
+                    scaleData.yScale.domain(
+                        event.transform.rescaleY(scaleData.yScaleCopy).domain(),
+                    );
+                    render();
+                }) as any;
+
+            const yAxisDrag = d3.drag().on('drag', (event: any) => {
+                if (event.dy <= 0) {
+                    zoomScale[0].domain(scaleData.yScaleCopy.domain());
+
+                    scaleData.yScaleCopy.domain(scaleData.yScale.domain());
+                    console.log('if drag', scaleData.yScaleCopy.domain());
+                } else {
+                    scaleData.yScaleCopy.domain(zoomScale[0].domain());
+                    console.log('else drag', scaleData.yScaleCopy.domain());
+                }
+                const factor = Math.pow(2, -event.dy * 0.01);
+                d3.select(d3PlotArea.current).call(yAxisZoom.scaleBy, factor);
+
+                setZoomStatus(event.sourceEvent.pageX + event.sourceEvent.pageY);
+            }) as any;
+
+            setZoomUtils(() => {
+                return {
+                    zoom: zoom,
+                    yAxisZoom: yAxisZoom,
+                    yAxisDrag: yAxisDrag,
+                };
+            });
+        }
+    }, [scaleData]);
 
     // Set Targets
     useEffect(() => {
@@ -332,8 +412,6 @@ export default function Chart(props: ChartData) {
                     });
                 });
 
-                console.log(results);
-                console.log('results');
                 if (
                     props.targetData === undefined ||
                     (props.targetData[0].value === 0 && props.targetData[1].value === 0)
@@ -412,13 +490,16 @@ export default function Chart(props: ChartData) {
     useEffect(() => {
         if (scaleData !== undefined) {
             const dragRange = d3.drag().on('drag', function (event, d: any) {
-                const newValue = scaleData.yScale.invert(d3.pointer(event)[1] - 169);
+                const newValue = scaleData.yScale.invert(d3.pointer(event)[1] - 215);
                 if (!isAdvancedModeActive) {
                     let valueWithRange: number;
 
                     if (d.name === 'Max') {
                         setRanges((prevState) => {
                             const newTargets = [...prevState];
+
+                            const low = newTargets.filter((target: any) => target.name === 'Min')[0]
+                                .value;
 
                             const val =
                                 spotPriceDisplay !== undefined
@@ -431,10 +512,7 @@ export default function Chart(props: ChartData) {
                                 newTargets.filter((target: any) => target.name === 'Max')[0].value -
                                 newValue;
 
-                            const low = newTargets.filter((target: any) => target.name === 'Min')[0]
-                                .value;
-
-                            if (!(dragLimit > parseFloat(val) - low)) {
+                            if (newValue > parseFloat(val) + dragLimit) {
                                 newTargets.filter((target: any) => target.name === 'Max')[0].value =
                                     newValue;
 
@@ -473,7 +551,7 @@ export default function Chart(props: ChartData) {
                                 (target: any) => target.name === 'Max',
                             )[0].value;
 
-                            if (!(dragLimit > high - parseFloat(val))) {
+                            if (newValue < parseFloat(val) - dragLimit) {
                                 newTargets.filter((target: any) => target.name === 'Min')[0].value =
                                     newValue;
 
@@ -498,21 +576,37 @@ export default function Chart(props: ChartData) {
                 } else {
                     setRanges((prevState) => {
                         const newTargets = [...prevState];
-                        if (
-                            d.name === 'Max' &&
-                            newValue >
-                                newTargets.filter((target: any) => target.name === 'Min')[0].value
-                        ) {
-                            newTargets.filter((target: any) => target.name === d.name)[0].value =
-                                newValue;
-                        } else if (
-                            d.name === 'Min' &&
-                            newValue <
-                                newTargets.filter((target: any) => target.name === 'Max')[0].value
-                        ) {
-                            newTargets.filter((target: any) => target.name === d.name)[0].value =
-                                newValue;
+
+                        const low = newTargets.filter((target: any) => target.name === 'Min')[0]
+                            .value;
+
+                        const high = newTargets.filter((target: any) => target.name === 'Max')[0]
+                            .value;
+
+                        if (intercourse !== undefined) {
+                            newTargets.filter(
+                                (target: any) => target.name === intercourse,
+                            )[0].value = newValue;
+                        } else {
+                            if (d.name === 'Max' && newValue > low) {
+                                newTargets.filter(
+                                    (target: any) => target.name === d.name,
+                                )[0].value = newValue;
+                            } else if (d.name === 'Min' && newValue < high) {
+                                newTargets.filter(
+                                    (target: any) => target.name === d.name,
+                                )[0].value = newValue;
+                            } else if (d.name === 'Max' && newValue < low) {
+                                newTargets.filter((target: any) => target.name === 'Min')[0].value =
+                                    newValue;
+                                setIntercourse('Min');
+                            } else if (d.name === 'Min' && newValue > high) {
+                                newTargets.filter((target: any) => target.name === 'Max')[0].value =
+                                    newValue;
+                                setIntercourse('Max');
+                            }
                         }
+
                         render();
                         return newTargets;
                     });
@@ -533,7 +627,7 @@ export default function Chart(props: ChartData) {
                 return location.pathname.includes('limit') ? dragLimit : dragRange;
             });
         }
-    }, [spotPriceDisplay, location, scaleData, isAdvancedModeActive]);
+    }, [spotPriceDisplay, location, scaleData, isAdvancedModeActive, intercourse]);
 
     // set HorizontalLines
     useEffect(() => {
@@ -554,6 +648,9 @@ export default function Chart(props: ChartData) {
                 d3.select(d3Container.current)
                     .select('.targets')
                     .select('.horizontal')
+                    .on('blur', () => {
+                        setIntercourse(undefined);
+                    })
                     .on('mouseover', (event: any) => {
                         d3.select(event.currentTarget)
                             // .select('.detector')
@@ -565,6 +662,9 @@ export default function Chart(props: ChartData) {
                 d3.select(d3Container.current)
                     .select('.targets')
                     .select('#Min')
+                    .on('blur', () => {
+                        setIntercourse(undefined);
+                    })
                     .on('mouseover', (event: any) => {
                         d3.select(event.currentTarget).style('cursor', 'ns-resize');
                         d3.select(event.currentTarget).select('line').style('cursor', 'ns-resize');
@@ -574,6 +674,9 @@ export default function Chart(props: ChartData) {
                 d3.select(d3Container.current)
                     .select('.targets')
                     .select('#Max')
+                    .on('blur', () => {
+                        setIntercourse(undefined);
+                    })
                     .on('mouseover', (event: any) => {
                         d3.select(event.currentTarget).style('cursor', 'ns-resize');
                         d3.select(event.currentTarget).select('line').style('cursor', 'ns-resize');
@@ -588,7 +691,8 @@ export default function Chart(props: ChartData) {
         if (
             props.liquidityData !== undefined &&
             parsedChartData !== undefined &&
-            scaleData !== undefined
+            scaleData !== undefined &&
+            zoomUtils !== undefined
         ) {
             const targetData = location.pathname.includes('limit')
                 ? limit
@@ -598,17 +702,38 @@ export default function Chart(props: ChartData) {
                 ? market
                 : undefined;
 
-            drawChart(parsedChartData.chartData, targetData, scaleData, props.liquidityData);
+            drawChart(
+                parsedChartData.chartData,
+                targetData,
+                scaleData,
+                props.liquidityData,
+                upBodyColor,
+                downBodyColor,
+                upBorderColor,
+                downBorderColor,
+                zoomUtils,
+            );
         }
-    }, [parsedChartData, scaleData, location, market, ranges, limit]);
+    }, [parsedChartData, scaleData, location, market, ranges, limit, zoomUtils]);
 
     // Draw Chart
     const drawChart = useCallback(
-        (chartData: any, targets: any, scaleData: any, liquidityData: any) => {
+        (
+            chartData: any,
+            targets: any,
+            scaleData: any,
+            liquidityData: any,
+            upBodyColor: any,
+            downBodyColor: any,
+            upBorderColor: any,
+            downBorderColor: any,
+            zoomUtils: any,
+        ) => {
             if (chartData.length > 0) {
                 let selectedCandle: any;
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 const crosshairData = [{ x: 0, y: -1 }];
+                console.error('draw', drawControl);
 
                 const minimum = (data: any, accessor: any) => {
                     return data
@@ -653,15 +778,17 @@ export default function Chart(props: ChartData) {
 
                 const barSeries = d3fc
                     .autoBandwidth(d3fc.seriesSvgBar())
-                    .widthFraction(3)
                     .orient('horizontal')
                     .align('center')
                     .mainValue((d: any) => scaleData.liqScale.invert(parseFloat(d.activeLiq)))
-                    .crossValue((d: any) => d.upperBoundInvPriceDecimalCorrected)
+                    .crossValue((d: any) => d.upperBoundPriceDecimalCorrected)
                     .xScale(scaleData.liquidityScale)
                     .yScale(scaleData.yScale)
                     .decorate((selection: any) => {
                         selection.select('.bar > path').style('fill', 'rgba(205, 193, 255, 0.25)');
+                        selection
+                            .select('.bar > path')
+                            .style('stroke', 'rgba(205, 193, 255, 0.25)');
                     });
 
                 const popup = d3
@@ -703,7 +830,10 @@ export default function Chart(props: ChartData) {
                         .style('pointer-events', 'all');
                     selection.enter().select('g.left-handle').remove();
                     selection.enter().select('g.right-handle');
-                    selection.select('g.right-handle text').text((d: any) => d.y);
+                    selection
+                        .select('g.right-handle text')
+                        .text((d: any) => d.y)
+                        .style('font-size', '13px');
                 });
 
                 const candlestick = d3fc
@@ -711,9 +841,11 @@ export default function Chart(props: ChartData) {
                     .decorate((selection: any) => {
                         selection
                             .enter()
-                            .style('fill', (d: any) => (d.close > d.open ? '#7371FC' : '#CDC1FF'))
+                            .style('fill', (d: any) =>
+                                d.close > d.open ? upBodyColor : downBodyColor,
+                            )
                             .style('stroke', (d: any) =>
-                                d.close > d.open ? '#7371FC' : '#CDC1FF',
+                                d.close > d.open ? upBorderColor : downBorderColor,
                             );
                         selection
                             .enter()
@@ -789,7 +921,6 @@ export default function Chart(props: ChartData) {
                         .append('text')
                         .attr('x', 5)
                         .attr('y', -5);
-
                     selection
                         .enter()
                         .append('rect')
@@ -817,52 +948,6 @@ export default function Chart(props: ChartData) {
                         .attr('height', 10)
                         .attr('fill', 'gainsboro');
                 });
-
-                let lastY = 0;
-                let yOffset = 0;
-
-                const zoom = d3
-                    .zoom()
-                    .scaleExtent([1, 10])
-                    .on('zoom', (event: any) => {
-                        scaleData.xScale.domain(
-                            event.transform.rescaleX(scaleData.xScaleCopy).domain(),
-                        );
-
-                        if (event.sourceEvent && event.sourceEvent.type != 'wheel') {
-                            lastY = event.transform.y - yOffset;
-                            const translate = d3.zoomIdentity.translate(0, lastY);
-                            scaleData.yScale.domain(
-                                translate.rescaleY(scaleData.yScaleCopy).domain(),
-                            );
-                        } else {
-                            yOffset = event.transform.y - lastY;
-                        }
-
-                        render();
-                    }) as any;
-
-                const yAxisZoom = d3
-                    .zoom()
-                    .scaleExtent([1, 10])
-                    .on('zoom', (event: any) => {
-                        if (event.sourceEvent && event.sourceEvent.type != 'wheel') {
-                            lastY = event.transform.y - yOffset;
-                            const translate = d3.zoomIdentity.translate(0, lastY);
-                            scaleData.yScale.domain(
-                                translate.rescaleY(scaleData.yScaleCopy).domain(),
-                            );
-                        } else {
-                            yOffset = event.transform.y - lastY;
-                        }
-
-                        render();
-                    }) as any;
-
-                const yAxisDrag = d3.drag().on('drag', (event: any) => {
-                    const factor = Math.pow(2, -event.dy * 0.01);
-                    d3.select(d3PlotArea.current).call(yAxisZoom.scaleBy, factor);
-                }) as any;
 
                 const candleJoin = d3fc.dataJoin('g', 'candle');
                 const targetsJoin = d3fc.dataJoin('g', 'targets');
@@ -901,7 +986,7 @@ export default function Chart(props: ChartData) {
                     const svg = d3.select(event.target).select('svg');
                     scaleData.xScaleCopy.range([0, event.detail.width]);
                     scaleData.yScaleCopy.range([event.detail.height, 0]);
-                    svg.call(zoom);
+                    svg.call(zoomUtils.zoom);
                 });
 
                 d3.select(d3PlotArea.current).on('mousemove', function (event: any) {
@@ -922,13 +1007,36 @@ export default function Chart(props: ChartData) {
                     .on('mouseover', (event: any) => {
                         d3.select(event.currentTarget).style('cursor', 'ns-resize');
                     })
-                    .call(yAxisDrag);
+                    .call(zoomUtils.yAxisDrag);
 
                 render();
             }
+
+            setTimeout(() => {
+                console.error('timeout', drawControl);
+                setDrawControl(!drawControl);
+            }, 100);
         },
         [],
     );
+
+    // Color Picker
+    useEffect(() => {
+        d3.select(d3PlotArea.current).select('.candle').selectAll('.up').style('fill', upBodyColor);
+        d3.select(d3PlotArea.current)
+            .select('.candle')
+            .selectAll('.down')
+            .style('fill', downBodyColor);
+        d3.select(d3PlotArea.current)
+            .select('.candle')
+            .selectAll('.up')
+            .style('stroke', upBorderColor);
+        d3.select(d3PlotArea.current)
+            .select('.candle')
+            .selectAll('.down')
+            .style('stroke', downBorderColor);
+        render();
+    }, [upBodyColor, downBodyColor, upBorderColor, downBorderColor]);
 
     // Set selected candle transactions
     useEffect(() => {
