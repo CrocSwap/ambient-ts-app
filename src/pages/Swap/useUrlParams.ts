@@ -159,7 +159,7 @@ export const useUrlParams = (
                 fetchAndFormatTokenData(addrTokenA),
                 fetchAndFormatTokenData(addrTokenB)
             ]).then(res => {
-                console.log(res);
+                res.forEach(tkn => console.assert(tkn, 'Missing token data in useUrlParams.ts, refer to file for troubleshooting'));
                 dispatch(setTokenA(res[0] as TokenIF));
                 dispatch(setTokenB(res[1] as TokenIF));
             });
