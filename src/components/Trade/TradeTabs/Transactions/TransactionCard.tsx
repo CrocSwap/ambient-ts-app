@@ -100,9 +100,41 @@ export default function TransactionCard(props: TransactionProps) {
             const baseTokenCharacter = tx.baseSymbol ? getUnicodeCharacter(tx.baseSymbol) : '';
             const quoteTokenCharacter = tx.quoteSymbol ? getUnicodeCharacter(tx.quoteSymbol) : '';
 
+            const nonInvertedPriceTruncated =
+                priceDecimalCorrected === 0
+                    ? '0'
+                    : priceDecimalCorrected < 0.0001
+                    ? priceDecimalCorrected.toExponential(2)
+                    : priceDecimalCorrected < 2
+                    ? priceDecimalCorrected.toPrecision(3)
+                    : priceDecimalCorrected >= 100000
+                    ? formatAmount(priceDecimalCorrected)
+                    : priceDecimalCorrected.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                      });
+
+            const invertedPriceTruncated =
+                invPriceDecimalCorrected === 0
+                    ? '0'
+                    : invPriceDecimalCorrected < 0.0001
+                    ? invPriceDecimalCorrected.toExponential(2)
+                    : invPriceDecimalCorrected < 2
+                    ? invPriceDecimalCorrected.toPrecision(3)
+                    : invPriceDecimalCorrected >= 100000
+                    ? formatAmount(invPriceDecimalCorrected)
+                    : invPriceDecimalCorrected.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                      });
+
             const truncatedDisplayPrice = isDenomBase
-                ? quoteTokenCharacter + invPriceDecimalCorrected?.toPrecision(3)
-                : baseTokenCharacter + priceDecimalCorrected?.toPrecision(3);
+                ? quoteTokenCharacter + invertedPriceTruncated
+                : baseTokenCharacter + nonInvertedPriceTruncated;
+
+            // const truncatedDisplayPrice = isDenomBase
+            //     ? quoteTokenCharacter + invPriceDecimalCorrected?.toPrecision(3)
+            //     : baseTokenCharacter + priceDecimalCorrected?.toPrecision(3);
 
             setTruncatedDisplayPrice(truncatedDisplayPrice);
         } else {
@@ -180,7 +212,7 @@ export default function TransactionCard(props: TransactionProps) {
         (isDenomBase && !tx.isBuy) || (!isDenomBase && tx.isBuy) ? 'priceBuy' : 'priceSell';
 
     const sideType =
-        tx.entityType === 'tx' || tx.entityType === 'limitOrder'
+        tx.entityType === 'swap' || tx.entityType === 'limitOrder'
             ? (isDenomBase && !tx.isBuy) || (!isDenomBase && tx.isBuy)
                 ? 'buy'
                 : 'sell'
@@ -189,7 +221,7 @@ export default function TransactionCard(props: TransactionProps) {
             : 'buy';
 
     const transactionTypeSide =
-        tx.entityType === 'tx'
+        tx.entityType === 'swap'
             ? 'market'
             : tx.entityType === 'limitOrder'
             ? 'limit'
