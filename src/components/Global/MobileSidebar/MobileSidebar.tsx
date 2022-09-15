@@ -6,7 +6,7 @@ import MobileSidebarItem from './MobileSidebarItem';
 import { FaDiscord, FaGithub } from 'react-icons/fa';
 import { BsMedium } from 'react-icons/bs';
 import { AiFillTwitterCircle } from 'react-icons/ai';
-
+import { FiExternalLink } from 'react-icons/fi';
 const sidebar = {
     open: (height = 1000) => ({
         clipPath: `circle(${height * 2 + 200}px at 20px 20px)`,
@@ -45,48 +45,47 @@ export default function MobileSidebar() {
         { name: 'Settings ' },
         { name: 'Connect Wallet/ Logout ' },
     ];
-
-    const socialIcons = (
-        <div className={styles.social_container}>
-            <a href='#'>
-                <AiFillTwitterCircle size={20} />
-                {/* <span>Twitter</span> */}
-            </a>
-            <a href='#'>
-                <FaDiscord size={20} />
-                {/* <span>Discord</span> */}
-            </a>
-            <a href='#'>
-                <BsMedium size={20} />
-                {/* <span>Medium</span> */}
-            </a>
-            <a href='#'>
-                <FaGithub size={20} />
-                {/* <span>Github</span> */}
-            </a>
-            <a href='#'>
-                <FaGithub size={20} />
-                {/* <span>Github</span> */}
-            </a>
-        </div>
-    );
-
-    const ecosystemDisplay = (
-        <div className={styles.ecosystem_container}>
-            <p>Build</p>
-            <p>Blog</p>
-            <p>Docs</p>
-            <p>Governance</p>
-            <p>Analytics</p>
-            <p>Forum</p>
-            <p>Grants</p>
-        </div>
-    );
-
     const dataToDisplay = (
         <motion.div variants={navigationVariants} className={styles.content}>
             {simpleData.map((item, idx) => (
                 <MobileSidebarItem key={idx}>{item.name}</MobileSidebarItem>
+            ))}
+        </motion.div>
+    );
+
+    const ecosystemData = [
+        { name: 'Build', link: '#' },
+        { name: 'Blog', link: '#' },
+        { name: 'Docs', link: '#' },
+        { name: 'Governance', link: '#' },
+        { name: 'Analytics', link: '#' },
+        { name: 'Forum', link: '#' },
+    ];
+    const ecosystemDisplay = (
+        <motion.div variants={navigationVariants} className={styles.ecosystem_container}>
+            {ecosystemData.map((item, idx) => (
+                <MobileSidebarItem key={idx}>
+                    <p>
+                        {item.name}
+                        <FiExternalLink size={10} color='#555555' />
+                    </p>
+                </MobileSidebarItem>
+            ))}
+        </motion.div>
+    );
+
+    const socialIconsData = [
+        { icon: <AiFillTwitterCircle />, link: '#' },
+        { icon: <FaDiscord />, link: '#' },
+        { icon: <BsMedium />, link: '#' },
+        { icon: <FaGithub />, link: '#' },
+    ];
+    const socialIconsDisplay = (
+        <motion.div variants={navigationVariants} className={styles.social_container}>
+            {socialIconsData.map((item, idx) => (
+                <MobileSidebarItem key={idx}>
+                    <a href={item.link}>{item.icon}</a>
+                </MobileSidebarItem>
             ))}
         </motion.div>
     );
@@ -104,8 +103,8 @@ export default function MobileSidebar() {
                     variants={sidebar}
                 >
                     {dataToDisplay}
-                    <MobileSidebarItem>{socialIcons}</MobileSidebarItem>
-                    <MobileSidebarItem>{ecosystemDisplay}</MobileSidebarItem>
+                    {ecosystemDisplay}
+                    {socialIconsDisplay}
                 </motion.div>
             </motion.nav>
 
