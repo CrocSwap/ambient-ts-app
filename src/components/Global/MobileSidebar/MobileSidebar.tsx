@@ -3,6 +3,9 @@ import styles from './MobileSidebar.module.css';
 import { motion } from 'framer-motion';
 import { MenuButton } from '../MenuButton/MenuButton';
 import MobileSidebarItem from './MobileSidebarItem';
+import { FaDiscord, FaGithub } from 'react-icons/fa';
+import { BsMedium } from 'react-icons/bs';
+import { AiFillTwitterCircle } from 'react-icons/ai';
 
 const sidebar = {
     open: (height = 1000) => ({
@@ -43,6 +46,43 @@ export default function MobileSidebar() {
         { name: 'Connect Wallet/ Logout ' },
     ];
 
+    const socialIcons = (
+        <div className={styles.social_container}>
+            <a href='#'>
+                <AiFillTwitterCircle size={20} />
+                {/* <span>Twitter</span> */}
+            </a>
+            <a href='#'>
+                <FaDiscord size={20} />
+                {/* <span>Discord</span> */}
+            </a>
+            <a href='#'>
+                <BsMedium size={20} />
+                {/* <span>Medium</span> */}
+            </a>
+            <a href='#'>
+                <FaGithub size={20} />
+                {/* <span>Github</span> */}
+            </a>
+            <a href='#'>
+                <FaGithub size={20} />
+                {/* <span>Github</span> */}
+            </a>
+        </div>
+    );
+
+    const ecosystemDisplay = (
+        <div className={styles.ecosystem_container}>
+            <p>Build</p>
+            <p>Blog</p>
+            <p>Docs</p>
+            <p>Governance</p>
+            <p>Analytics</p>
+            <p>Forum</p>
+            <p>Grants</p>
+        </div>
+    );
+
     const dataToDisplay = (
         <motion.div variants={navigationVariants} className={styles.content}>
             {simpleData.map((item, idx) => (
@@ -64,6 +104,8 @@ export default function MobileSidebar() {
                     variants={sidebar}
                 >
                     {dataToDisplay}
+                    <MobileSidebarItem>{socialIcons}</MobileSidebarItem>
+                    <MobileSidebarItem>{ecosystemDisplay}</MobileSidebarItem>
                 </motion.div>
             </motion.nav>
 
