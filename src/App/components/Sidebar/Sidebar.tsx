@@ -74,10 +74,11 @@ export default function Sidebar(props: SidebarPropsIF) {
     } = props;
 
     const graphData = useAppSelector((state) => state.graphData);
-    const swapsByUser = graphData.changesByUser.changes;
+    const transactionsByUser = graphData.changesByUser.changes;
     const positionsByUser = graphData.positionsByUser.positions;
+    const limitOrderByUser = graphData.limitOrdersByUser.limitOrders;
 
-    const mostRecentTransactions = swapsByUser.slice(0, 4);
+    const mostRecentTransactions = transactionsByUser.slice(0, 4);
     // const mostRecentPositions = positionsByUser.slice(0, 4);
 
     // TODO:  @Ben this is the map with all the coin gecko token data objects
@@ -139,7 +140,14 @@ export default function Sidebar(props: SidebarPropsIF) {
         {
             name: 'Limit Orders',
             icon: openOrdersImage,
-            data: <SidebarLimitOrders {...sidebarLimitOrderProps} />,
+            data: (
+                <SidebarLimitOrders
+                    isDenomBase={isDenomBase}
+                    tokenMap={tokenMap}
+                    limitOrderByUser={limitOrderByUser}
+                    {...sidebarLimitOrderProps}
+                />
+            ),
         },
     ];
 
