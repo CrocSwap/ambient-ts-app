@@ -1725,6 +1725,9 @@ export default function App() {
         lastBlockNumber: lastBlockNumber,
         isMobileSidebarOpen: isMobileSidebarOpen,
         setIsMobileSidebarOpen: setIsMobileSidebarOpen,
+
+        openGlobalModal: openGlobalModal,
+        closeGlobalModal: closeGlobalModal,
     };
 
     // props for <Swap/> React element
