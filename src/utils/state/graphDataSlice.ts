@@ -10,9 +10,14 @@ export interface graphData {
     poolVolumeSeries: PoolVolumeSeries;
     poolTvlSeries: PoolTvlSeries;
     limitOrdersByUser: LimitOrdersByUser;
+    limitOrdersByPool: LimitOrdersByPool;
 }
 
 export interface LimitOrdersByUser {
+    dataReceived: boolean;
+    limitOrders: Array<ILimitOrderState>;
+}
+export interface LimitOrdersByPool {
     dataReceived: boolean;
     limitOrders: Array<ILimitOrderState>;
 }
@@ -252,6 +257,7 @@ export interface ISwap {
     quoteFlow: string;
     quoteSymbol: string;
     source: string;
+    entityType: string;
     time: number;
     tx: string;
     user: string;
@@ -280,6 +286,7 @@ const initialState: graphData = {
     positionsByPool: { dataReceived: false, positions: [] },
     swapsByUser: { dataReceived: false, swaps: [] },
     limitOrdersByUser: { dataReceived: false, limitOrders: [] },
+    limitOrdersByPool: { dataReceived: false, limitOrders: [] },
     swapsByPool: { dataReceived: false, swaps: [] },
     candlesForAllPools: { pools: [] },
     liquidityForAllPools: { pools: [] },
@@ -330,6 +337,9 @@ export const graphDataSlice = createSlice({
         },
         setLimitOrdersByUser: (state, action: PayloadAction<LimitOrdersByUser>) => {
             state.limitOrdersByUser = action.payload;
+        },
+        setLimitOrdersByPool: (state, action: PayloadAction<LimitOrdersByPool>) => {
+            state.limitOrdersByPool = action.payload;
         },
         addPositionsByPool: (state, action: PayloadAction<Array<PositionIF>>) => {
             if (action.payload[0].positionType === 'knockout') {
@@ -558,6 +568,7 @@ export const {
     setCandles,
     addCandles,
     setLimitOrdersByUser,
+    setLimitOrdersByPool,
     setSwapsByUser,
     addSwapsByUser,
     addSwapsByPool,

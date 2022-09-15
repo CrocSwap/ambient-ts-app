@@ -1,4 +1,4 @@
-import Moralis from 'moralis';
+import Moralis from 'moralis-v1';
 
 export async function getNFTs(account: string) {
     const userEthNFTs = (

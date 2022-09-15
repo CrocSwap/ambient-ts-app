@@ -50,7 +50,8 @@ interface RangePropsIF {
     mintSlippage: SlippagePairIF;
     isPairStable: boolean;
     provider?: ethers.providers.Provider;
-    gasPriceinGwei: number | undefined;
+    gasPriceInGwei: number | undefined;
+    ethMainnetUsdPrice?: number;
     lastBlockNumber: number;
     baseTokenAddress: string;
     quoteTokenAddress: string;
@@ -58,6 +59,8 @@ interface RangePropsIF {
     poolPriceNonDisplay: number | undefined;
     baseTokenBalance: string;
     quoteTokenBalance: string;
+    baseTokenDexBalance: string;
+    quoteTokenDexBalance: string;
     tokenAAllowance: string;
     setRecheckTokenAApproval: Dispatch<SetStateAction<boolean>>;
     tokenBAllowance: string;
@@ -67,6 +70,8 @@ interface RangePropsIF {
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
     openModalWallet: () => void;
     ambientApy: number | undefined;
+
+    pendingTransactions: string[];
 }
 
 export default function Range(props: RangePropsIF) {
@@ -83,16 +88,21 @@ export default function Range(props: RangePropsIF) {
         poolPriceNonDisplay,
         baseTokenBalance,
         quoteTokenBalance,
+        baseTokenDexBalance,
+        quoteTokenDexBalance,
         tokenAAllowance,
         setRecheckTokenAApproval,
         tokenBAllowance,
         setRecheckTokenBApproval,
-        gasPriceinGwei,
+        gasPriceInGwei,
+        ethMainnetUsdPrice,
         chainId,
         activeTokenListsChanged,
         indicateActiveTokenListsChanged,
         openModalWallet,
         ambientApy,
+
+        pendingTransactions,
     } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -102,8 +112,16 @@ export default function Range(props: RangePropsIF) {
     const [isWithdrawTokenAFromDexChecked, setIsWithdrawTokenAFromDexChecked] = useState(false);
     const [isWithdrawTokenBFromDexChecked, setIsWithdrawTokenBFromDexChecked] = useState(false);
     const [newRangeTransactionHash, setNewRangeTransactionHash] = useState('');
+    const [showConfirmation, setShowConfirmation] = useState(true);
     const [txErrorCode, setTxErrorCode] = useState(0);
     const [txErrorMessage, setTxErrorMessage] = useState('');
+    const [rangeGasPriceinDollars, setRangeGasPriceinDollars] = useState<string | undefined>();
+
+    const resetConfirmation = () => {
+        setShowConfirmation(true);
+        setTxErrorCode(0);
+        setTxErrorMessage('');
+    };
 
     const { account, isAuthenticated, isWeb3Enabled } = useMoralis();
 
@@ -580,18 +598,28 @@ export default function Range(props: RangePropsIF) {
         try {
             tx = await (isAmbient
                 ? isTokenAPrimary
-                    ? pool.mintAmbientLeft(tokenAInputQty, [minPrice, maxPrice])
-                    : pool.mintAmbientRight(tokenBInputQty, [minPrice, maxPrice])
+                    ? pool.mintAmbientQuote(tokenAInputQty, [minPrice, maxPrice], {
+                          surplus: [isWithdrawTokenAFromDexChecked, isWithdrawTokenBFromDexChecked],
+                      })
+                    : pool.mintAmbientBase(tokenBInputQty, [minPrice, maxPrice], {
+                          surplus: [isWithdrawTokenAFromDexChecked, isWithdrawTokenBFromDexChecked],
+                      })
                 : isTokenAPrimary
-                ? pool.mintRangeLeft(
+                ? pool.mintRangeQuote(
                       tokenAInputQty,
                       [rangeLowTick, rangeHighTick],
                       [minPrice, maxPrice],
+                      {
+                          surplus: [isWithdrawTokenAFromDexChecked, isWithdrawTokenBFromDexChecked],
+                      },
                   )
-                : pool.mintRangeRight(
+                : pool.mintRangeBase(
                       tokenBInputQty,
                       [rangeLowTick, rangeHighTick],
                       [minPrice, maxPrice],
+                      {
+                          surplus: [isWithdrawTokenAFromDexChecked, isWithdrawTokenBFromDexChecked],
+                      },
                   ));
             setNewRangeTransactionHash(tx?.hash);
         } catch (error) {
@@ -681,6 +709,20 @@ export default function Range(props: RangePropsIF) {
         }
     };
 
+    useEffect(() => {
+        if (gasPriceInGwei && ethMainnetUsdPrice) {
+            const gasPriceInDollarsNum = gasPriceInGwei * 120269 * 1e-9 * ethMainnetUsdPrice;
+
+            setRangeGasPriceinDollars(
+                '~$' +
+                    gasPriceInDollarsNum.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                    }),
+            );
+        }
+    }, [gasPriceInGwei, ethMainnetUsdPrice]);
+
     // TODO:  @Emily refactor this fragment to use the same denomination switch
     // TODO:  ... component used in the Market and Limit modules
     const denominationSwitch = (
@@ -761,12 +803,13 @@ export default function Range(props: RangePropsIF) {
     const handleModalClose = () => {
         closeModal();
         setNewRangeTransactionHash('');
-        setTxErrorCode(0);
-        setTxErrorMessage('');
+        // setTxErrorCode(0);
+        // setTxErrorMessage('');
+        resetConfirmation();
     };
 
-    const tokenABalance = isTokenABase ? baseTokenBalance : quoteTokenBalance;
-    const tokenBBalance = isTokenABase ? quoteTokenBalance : baseTokenBalance;
+    // const tokenABalance = isTokenABase ? baseTokenBalance : quoteTokenBalance;
+    // const tokenBBalance = isTokenABase ? quoteTokenBalance : baseTokenBalance;
 
     // props for <ConfirmRangeModal/> React element
     const rangeModalProps = {
@@ -782,6 +825,9 @@ export default function Range(props: RangePropsIF) {
         closeModal: handleModalClose,
         newRangeTransactionHash: newRangeTransactionHash,
         setNewRangeTransactionHash: setNewRangeTransactionHash,
+        resetConfirmation: resetConfirmation,
+        showConfirmation: showConfirmation,
+        setShowConfirmation: setShowConfirmation,
         txErrorCode: txErrorCode,
         txErrorMessage: txErrorMessage,
         isInRange: !isOutOfRange,
@@ -789,6 +835,8 @@ export default function Range(props: RangePropsIF) {
         pinnedMinPriceDisplayTruncatedInQuote: pinnedMinPriceDisplayTruncatedInQuote,
         pinnedMaxPriceDisplayTruncatedInBase: pinnedMaxPriceDisplayTruncatedInBase,
         pinnedMaxPriceDisplayTruncatedInQuote: pinnedMaxPriceDisplayTruncatedInQuote,
+
+        pendingTransactions: pendingTransactions,
     };
 
     // props for <RangeCurrencyConverter/> React element
@@ -802,14 +850,16 @@ export default function Range(props: RangePropsIF) {
         isAmbient: isAmbient,
         isTokenABase: isTokenABase,
         depositSkew: depositSkew,
+        baseTokenBalance,
+        quoteTokenBalance,
+        baseTokenDexBalance,
+        quoteTokenDexBalance,
         isTokenAPrimaryLocal: isTokenAPrimaryLocal,
         setIsTokenAPrimaryLocal: setIsTokenAPrimaryLocal,
         isWithdrawTokenAFromDexChecked: isWithdrawTokenAFromDexChecked,
         setIsWithdrawTokenAFromDexChecked: setIsWithdrawTokenAFromDexChecked,
         isWithdrawTokenBFromDexChecked: isWithdrawTokenBFromDexChecked,
         setIsWithdrawTokenBFromDexChecked: setIsWithdrawTokenBFromDexChecked,
-        tokenABalance: tokenABalance,
-        tokenBBalance: tokenBBalance,
         setTokenAInputQty: setTokenAInputQty,
         setTokenBInputQty: setTokenBInputQty,
         setRangeButtonErrorMessage: setRangeButtonErrorMessage,
@@ -831,7 +881,7 @@ export default function Range(props: RangePropsIF) {
     // props for <RangeExtraInfo/> React element
     const rangeExtraInfoProps = {
         tokenPair: tokenPair,
-        gasPriceinGwei: gasPriceinGwei,
+        rangeGasPriceinDollars: rangeGasPriceinDollars,
         poolPriceDisplay: displayPriceString,
         slippageTolerance: slippageTolerancePercentage,
         liquidityProviderFee: 0.3,

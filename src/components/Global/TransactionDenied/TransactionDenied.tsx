@@ -1,7 +1,9 @@
 import styles from './TransactionDenied.module.css';
-import Animation from '../Animation/Animation';
-import NotFound from '../../../assets/animations/NotFound.json';
-// import Button from '../Button/Button';
+// import Animation from '../Animation/Animation';
+// import NotFound from '../../../assets/animations/NotFound.json';
+import { CircleLoaderFailed } from '../LoadingAnimations/CircleLoader/CircleLoader';
+// import { Dispatch, SetStateAction } from 'react';
+import Button from '../Button/Button';
 
 // interface TransactionSubmittedProps {
 //     hash: string;
@@ -11,32 +13,21 @@ import NotFound from '../../../assets/animations/NotFound.json';
 //     tokenBImage: string;
 // }
 
-export default function TransactionDenied() {
-    // const { hash, tokenBAddress, tokenBSymbol, tokenBDecimals, tokenBImage } = props;
-    // const EthersanTx = `https://goerli.etherscan.io/tx/${hash}`;
+interface TransactionSubmittedProps {
+    resetConfirmation: () => void;
+}
 
-    // const logoURI = tokenBImage;
+export default function TransactionDenied(props: TransactionSubmittedProps) {
+    const { resetConfirmation } = props;
 
-    // const addToMetamaskButton = (
-    //     // <Button
-    //     //     title={`Add ${tokenBSymbol} to Metamask`}
-    //     //     // action={props.onClickFn}
-    //     //     action={handleAddToMetamask}
-    //     //     disabled={false}
-    //     // ></Button>
-    // );
     return (
-        <div className={styles.transaction_submitted}>
-            <div className={styles.completed_animation}>
-                <Animation animData={NotFound} loop={false} />
-            </div>
-            <h2>Transaction Denied in Wallet</h2>
+        <div className={styles.removal_pending}>
+            <CircleLoaderFailed />
             <p>
-                {/* <a href={EthersanTx} target='_blank' rel='noreferrer'>
-                    View on Etherscan
-                </a> */}
-                {/* {tokenBSymbol === 'ETH' ? null : addToMetamaskButton} */}
+                Check the Metamask extension in your browser for notifications, or click &quot;Try
+                Again&quot;. You can also click the left arrow above to try again.
             </p>
+            <Button title='Try Again' action={resetConfirmation} />
         </div>
     );
 }

@@ -1,6 +1,6 @@
 // START: Import React and Dongles
 import { useEffect, useMemo, useState } from 'react';
-import { Moralis } from 'moralis';
+import { Moralis } from 'moralis-v1';
 import { AuthenticateOptions } from 'react-moralis/lib/hooks/core/useMoralis/_useMoralisAuth';
 import { Web3EnableOptions } from 'react-moralis/lib/hooks/core/useMoralis/_useMoralisWeb3';
 

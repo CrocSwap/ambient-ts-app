@@ -1,6 +1,6 @@
 import styles from './HarvestPosition.module.css';
 // import HarvestPositionWidth from './HarvestPositionWidth/HarvestPositionWidth';
-import HarvestPositionHeader from './HarvestPositionHeader/HarvestPositionHeader';
+import HarvestPositionTokenHeader from './HarvestPositionTokenHeader/HarvestPositionTokenHeader';
 import HarvestPositionInfo from './HarvestPositionInfo/HarvestPositionInfo';
 import HarvestPositionButton from './HarvestPositionButton/HarvestPositionButton';
 import { useEffect, useState } from 'react';
@@ -22,6 +22,8 @@ import {
     CircleLoaderFailed,
 } from '../Global/LoadingAnimations/CircleLoader/CircleLoader';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
+import HarvestPositionHeader from './HarvestPositionHeader/HarvestPositionHeader';
+import HarvestExtraControls from './HarvestExtraControls/HarvestExtraControls';
 
 interface IHarvestPositionProps {
     crocEnv: CrocEnv | undefined;
@@ -34,6 +36,10 @@ interface IHarvestPositionProps {
     askTick: number;
     baseTokenAddress: string;
     quoteTokenAddress: string;
+    baseTokenBalance: string;
+    quoteTokenBalance: string;
+    baseTokenDexBalance: string;
+    quoteTokenDexBalance: string;
     isPositionInRange: boolean;
     isAmbient: boolean;
     baseTokenSymbol: string;
@@ -43,6 +49,8 @@ interface IHarvestPositionProps {
     isDenomBase: boolean;
     lastBlockNumber: number;
     position: PositionIF;
+
+    closeGlobalModal: () => void;
 }
 export default function HarvestPosition(props: IHarvestPositionProps) {
     const {
@@ -50,6 +58,10 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
         chainData,
         baseTokenLogoURI,
         quoteTokenLogoURI,
+        baseTokenBalance,
+        quoteTokenBalance,
+        baseTokenDexBalance,
+        quoteTokenDexBalance,
         // chainId,
         // poolIdx,
         // user,
@@ -59,6 +71,8 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
         // quoteTokenAddress,
         // provider,
         lastBlockNumber,
+        closeGlobalModal,
+
         position,
     } = props;
 
@@ -87,6 +101,12 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
     const [feeLiqQuoteDecimalCorrected, setFeeLiqQuoteDecimalCorrected] = useState<
         number | undefined
     >();
+
+    const resetConfirmation = () => {
+        setShowConfirmation(false);
+        setTxErrorCode(0);
+        setTxErrorMessage('');
+    };
 
     const positionStatsCacheEndpoint = 'https://809821320828123.de:5000/position_stats?';
 
@@ -141,6 +161,7 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
                 const tx = await pool.harvestRange(
                     [position.bidTick, position.askTick],
                     [lowLimit, highLimit],
+                    { surplus: isSaveAsDexSurplusChecked },
                 );
                 console.log(tx?.hash);
                 setNewHarvestTransactionHash(tx?.hash);
@@ -156,9 +177,7 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
     const positionType = 'concentrated';
 
     const feesGreaterThanZero =
-        feeLiqBaseDecimalCorrected && feeLiqQuoteDecimalCorrected
-            ? feeLiqBaseDecimalCorrected + feeLiqQuoteDecimalCorrected > 0
-            : false;
+        (feeLiqBaseDecimalCorrected || 0) + (feeLiqQuoteDecimalCorrected || 0) > 0;
 
     const harvestButtonOrNull =
         positionType === 'concentrated' && feesGreaterThanZero && !showSettings ? (
@@ -166,6 +185,12 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
         ) : (
             <HarvestPositionButton disabled={true} harvestFn={harvestFn} title={'…'} />
         );
+
+    const removalPercentage = 100;
+
+    const baseRemovalNum = ((feeLiqBaseDecimalCorrected || 0) * removalPercentage) / 100;
+
+    const quoteRemovalNum = ((feeLiqQuoteDecimalCorrected || 0) * removalPercentage) / 100;
 
     // confirmation modal
     const removalDenied = (
@@ -175,7 +200,7 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
                 Check the Metamask extension in your browser for notifications, or click &quot;Try
                 Again&quot;. You can also click the left arrow above to try again.
             </p>
-            <Button title='Try Again' action={() => setShowConfirmation(false)} />
+            <Button title='Try Again' action={resetConfirmation} />
         </div>
     );
 
@@ -186,7 +211,7 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
             <div className={styles.completed_animation}>
                 <Animation animData={completed} loop={false} />
             </div>
-            <p>message to be display here</p>
+            <p>Harvest Transaction Successfully Submitted</p>
             <a
                 href={etherscanLink}
                 target='_blank'
@@ -238,29 +263,34 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
         isRemovalDenied,
     ]);
 
-    const buttonToDisplay = showSettings ? (
-        <Button title='Confirm' action={() => setShowSettings(false)} />
-    ) : (
-        harvestButtonOrNull
+    const buttonToDisplay = (
+        <div style={{ padding: '0 1rem' }}>
+            {showSettings ? (
+                <Button title='Confirm' action={() => setShowSettings(false)} />
+            ) : (
+                harvestButtonOrNull
+            )}
+        </div>
     );
 
     const confirmationContent = (
         <div className={styles.confirmation_container}>
             {showConfirmation && (
-                <div className={styles.button} onClick={() => setShowConfirmation(false)}>
+                <div className={styles.button} onClick={resetConfirmation}>
                     <BsArrowLeft size={30} />
                 </div>
             )}
             <div className={styles.confirmation_content}>{currentConfirmationData}</div>
         </div>
     );
+    const [isSaveAsDexSurplusChecked, setIsSaveAsDexSurplusChecked] = useState(false);
 
     const mainModalContent = showSettings ? (
         <HarvestPositionSettings showSettings={showSettings} setShowSettings={setShowSettings} />
     ) : (
         <>
             <div className={styles.header_container}>
-                <HarvestPositionHeader
+                <HarvestPositionTokenHeader
                     isPositionInRange={props.isPositionInRange}
                     isAmbient={props.isAmbient}
                     baseTokenSymbol={props.baseTokenSymbol}
@@ -275,18 +305,33 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
                 removalPercentage={removalPercentage}
                 setRemovalPercentage={setRemovalPercentage}
             /> */}
-            <HarvestPositionInfo
-                baseTokenSymbol={props.baseTokenSymbol}
-                quoteTokenSymbol={props.quoteTokenSymbol}
-                baseTokenLogoURI={baseTokenLogoURI}
-                quoteTokenLogoURI={quoteTokenLogoURI}
-                posLiqBaseDecimalCorrected={position.positionLiqBaseDecimalCorrected}
-                posLiqQuoteDecimalCorrected={position.positionLiqQuoteDecimalCorrected}
-                feeLiqBaseDecimalCorrected={feeLiqBaseDecimalCorrected}
-                feeLiqQuoteDecimalCorrected={feeLiqQuoteDecimalCorrected}
-                // removalPercentage={removalPercentage}
-                removalPercentage={100}
-            />
+            <div style={{ padding: '0 1rem' }}>
+                <HarvestPositionInfo
+                    baseTokenSymbol={props.baseTokenSymbol}
+                    quoteTokenSymbol={props.quoteTokenSymbol}
+                    baseTokenLogoURI={baseTokenLogoURI}
+                    quoteTokenLogoURI={quoteTokenLogoURI}
+                    posLiqBaseDecimalCorrected={position.positionLiqBaseDecimalCorrected}
+                    posLiqQuoteDecimalCorrected={position.positionLiqQuoteDecimalCorrected}
+                    feeLiqBaseDecimalCorrected={feeLiqBaseDecimalCorrected}
+                    feeLiqQuoteDecimalCorrected={feeLiqQuoteDecimalCorrected}
+                    baseRemovalNum={baseRemovalNum}
+                    quoteRemovalNum={quoteRemovalNum}
+                    removalPercentage={removalPercentage}
+                />
+                <HarvestExtraControls
+                    isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
+                    setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
+                    baseTokenSymbol={props.baseTokenSymbol}
+                    quoteTokenSymbol={props.quoteTokenSymbol}
+                    baseRemovalNum={baseRemovalNum}
+                    quoteRemovalNum={quoteRemovalNum}
+                    baseTokenBalance={baseTokenBalance}
+                    quoteTokenBalance={quoteTokenBalance}
+                    baseTokenDexBalance={baseTokenDexBalance}
+                    quoteTokenDexBalance={quoteTokenDexBalance}
+                />
+            </div>
         </>
     );
 
@@ -298,6 +343,12 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
             {/* <RemoveRangeSettings showSettings={showSettings} setShowSettings={setShowSettings} /> */}
 
             <div className={styles.main_content}>
+                <HarvestPositionHeader
+                    onClose={closeGlobalModal}
+                    title={showSettings ? 'Harvest Position Settings' : 'Harvest Position'}
+                    onBackButton={() => setShowSettings(false)}
+                    showBackButton={showSettings}
+                />
                 {mainModalContent}
                 {/* {harvestButtonOrNull} */}
                 {buttonToDisplay}

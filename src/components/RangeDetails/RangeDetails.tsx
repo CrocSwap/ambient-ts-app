@@ -9,6 +9,8 @@ import { formatAmount } from '../../utils/numbers';
 import { PositionIF } from '../../utils/interfaces/PositionIF';
 import APYGraphDisplay from './APYGraphDisplay/APYGraphDisplay';
 import RangeDetailsControl from './RangeDetailsControl/RangeDetailsControl';
+import RangeDetailsHeader from './RangeDetailsHeader/RangeDetailsHeader';
+
 interface IRangeDetailsProps {
     provider: ethers.providers.Provider | undefined;
     position: PositionIF;
@@ -31,6 +33,8 @@ interface IRangeDetailsProps {
     quoteTokenAddress: string;
     lastBlockNumber: number;
     positionApy: number;
+
+    closeGlobalModal: () => void;
 }
 
 export default function RangeDetails(props: IRangeDetailsProps) {
@@ -48,10 +52,11 @@ export default function RangeDetails(props: IRangeDetailsProps) {
         lastBlockNumber,
         position,
         positionApy,
+
+        closeGlobalModal,
     } = props;
 
     const detailsRef = useRef(null);
-    // eslint-disable-next-line
     const downloadAsImage = () => {
         if (detailsRef.current) {
             printDomToImage(detailsRef.current);
@@ -85,6 +90,7 @@ export default function RangeDetails(props: IRangeDetailsProps) {
                         poolIdx: poolIndex.toString(),
                         chainId: chainId,
                         positionType: position.positionType,
+                        calcValues: 'true',
                         annotate: 'true',
                     }),
             )
@@ -133,41 +139,37 @@ export default function RangeDetails(props: IRangeDetailsProps) {
                     const baseFeeDisplayNum = position.feesLiqBaseDecimalCorrected;
                     const quoteFeeDisplayNum = position.feesLiqQuoteDecimalCorrected;
 
-                    if (baseFeeDisplayNum && quoteFeeDisplayNum) {
-                        // const baseFeeDisplayNum = parseFloat(
-                        //     toDisplayQty(positionStats.feeLiqBase, positionStats.baseDecimals),
-                        // );
-                        const baseFeeDisplayTruncated =
-                            baseFeeDisplayNum === 0
-                                ? '0'
-                                : baseFeeDisplayNum < 0.0001
-                                ? baseFeeDisplayNum.toExponential(2)
-                                : baseFeeDisplayNum < 2
-                                ? baseFeeDisplayNum.toPrecision(3)
-                                : baseFeeDisplayNum >= 100000
-                                ? formatAmount(baseFeeDisplayNum)
-                                : // ? baseLiqDisplayNum.toExponential(2)
-                                  baseFeeDisplayNum.toLocaleString(undefined, {
-                                      minimumFractionDigits: 2,
-                                      maximumFractionDigits: 2,
-                                  });
-                        setBaseFeesDisplay(baseFeeDisplayTruncated);
+                    // const baseFeeDisplayNum = parseFloat(
+                    //     toDisplayQty(positionStats.feeLiqBase, positionStats.baseDecimals),
+                    // );
+                    const baseFeeDisplayTruncated = !baseFeeDisplayNum
+                        ? '0'
+                        : baseFeeDisplayNum < 0.0001
+                        ? baseFeeDisplayNum.toExponential(2)
+                        : baseFeeDisplayNum < 2
+                        ? baseFeeDisplayNum.toPrecision(3)
+                        : baseFeeDisplayNum >= 100000
+                        ? formatAmount(baseFeeDisplayNum)
+                        : // ? baseLiqDisplayNum.toExponential(2)
+                          baseFeeDisplayNum.toLocaleString(undefined, {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                          });
+                    setBaseFeesDisplay(baseFeeDisplayTruncated);
 
-                        const quoteFeesDisplayTruncated =
-                            quoteFeeDisplayNum === 0
-                                ? '0'
-                                : quoteFeeDisplayNum < 0.0001
-                                ? quoteFeeDisplayNum.toExponential(2)
-                                : quoteFeeDisplayNum < 2
-                                ? quoteFeeDisplayNum.toPrecision(3)
-                                : quoteFeeDisplayNum >= 100000
-                                ? formatAmount(quoteFeeDisplayNum)
-                                : quoteFeeDisplayNum.toLocaleString(undefined, {
-                                      minimumFractionDigits: 2,
-                                      maximumFractionDigits: 2,
-                                  });
-                        setQuoteFeesDisplay(quoteFeesDisplayTruncated);
-                    }
+                    const quoteFeesDisplayTruncated = !quoteFeeDisplayNum
+                        ? '0'
+                        : quoteFeeDisplayNum < 0.0001
+                        ? quoteFeeDisplayNum.toExponential(2)
+                        : quoteFeeDisplayNum < 2
+                        ? quoteFeeDisplayNum.toPrecision(3)
+                        : quoteFeeDisplayNum >= 100000
+                        ? formatAmount(quoteFeeDisplayNum)
+                        : quoteFeeDisplayNum.toLocaleString(undefined, {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                          });
+                    setQuoteFeesDisplay(quoteFeesDisplayTruncated);
 
                     if (positionStats.apy) {
                         setUpdatedPositionApy(positionStats.apy);
@@ -196,16 +198,24 @@ export default function RangeDetails(props: IRangeDetailsProps) {
         setControlItems(modifiedControlItems);
     };
 
-    const controlDisplay = (
+    const [showSettings, setShowSettings] = useState(false);
+
+    const controlDisplay = showSettings ? (
         <div className={styles.control_display_container}>
             {controlItems.map((item, idx) => (
                 <RangeDetailsControl key={idx} item={item} handleChange={handleChange} />
             ))}
         </div>
-    );
+    ) : null;
 
     return (
         <div className={styles.range_details_container}>
+            <RangeDetailsHeader
+                onClose={closeGlobalModal}
+                showSettings={showSettings}
+                setShowSettings={setShowSettings}
+                downloadAsImage={downloadAsImage}
+            />
             {controlDisplay}
             <div ref={detailsRef}>
                 {/* <RemoveRangeHeader
@@ -250,10 +260,6 @@ export default function RangeDetails(props: IRangeDetailsProps) {
                     /> */}
                 </div>
             </div>
-
-            {/* <div onClick={downloadAsImage} className={styles.share_container}>
-                <BsDownload size={15} />
-            </div> */}
         </div>
     );
 }

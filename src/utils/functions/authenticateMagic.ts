@@ -1,5 +1,5 @@
 import { AuthenticateOptions } from 'react-moralis/lib/hooks/core/useMoralis/_useMoralisAuth';
-import { Moralis } from 'moralis';
+import { Moralis } from 'moralis-v1';
 
 export default async function authenticateMagic(
     email: string,

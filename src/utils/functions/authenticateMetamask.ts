@@ -1,6 +1,6 @@
 import { AuthenticateOptions } from 'react-moralis/lib/hooks/core/useMoralis/_useMoralisAuth';
 import { Web3EnableOptions } from 'react-moralis/lib/hooks/core/useMoralis/_useMoralisWeb3';
-import { Moralis } from 'moralis';
+import { Moralis } from 'moralis-v1';
 
 // function to authenticate wallet with Moralis server
 export default function authenticateMetamask(

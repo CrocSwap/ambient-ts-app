@@ -4,6 +4,7 @@ import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { ethers } from 'ethers';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import Transactions from './Transactions/Transactions';
+import styles from './TradeTabs2.module.css';
 import Orders from './Orders/Orders';
 // import DropdownMenu from '../../Global/DropdownMenu/DropdownMenu';
 // import DropdownMenuContainer from '../../Global/DropdownMenu/DropdownMenuContainer/DropdownMenuContainer';
@@ -34,6 +35,10 @@ interface ITabsProps {
     isShowAllEnabled: boolean;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
     tokenMap: Map<string, TokenIF>;
+    baseTokenBalance: string;
+    quoteTokenBalance: string;
+    baseTokenDexBalance: string;
+    quoteTokenDexBalance: string;
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
     isCandleSelected: boolean | undefined;
@@ -48,6 +53,8 @@ interface ITabsProps {
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
 
     openGlobalModal: (content: React.ReactNode) => void;
+
+    closeGlobalModal: () => void;
 }
 
 export default function TradeTabs2(props: ITabsProps) {
@@ -61,6 +68,10 @@ export default function TradeTabs2(props: ITabsProps) {
         isShowAllEnabled,
         setIsShowAllEnabled,
         tokenMap,
+        baseTokenBalance,
+        quoteTokenBalance,
+        baseTokenDexBalance,
+        quoteTokenDexBalance,
         provider,
         isCandleSelected,
         setIsCandleSelected,
@@ -124,6 +135,11 @@ export default function TradeTabs2(props: ITabsProps) {
     const rangesProps = {
         crocEnv: crocEnv,
         chainData: chainData,
+        baseTokenBalance: baseTokenBalance,
+        quoteTokenBalance: quoteTokenBalance,
+        baseTokenDexBalance: baseTokenDexBalance,
+        quoteTokenDexBalance: quoteTokenDexBalance,
+
         provider: provider,
         account: account,
         isAuthenticated: isAuthenticated,
@@ -135,6 +151,10 @@ export default function TradeTabs2(props: ITabsProps) {
         expandTradeTable: expandTradeTable,
         currentPositionActive: currentPositionActive,
         setCurrentPositionActive: setCurrentPositionActive,
+
+        openGlobalModal: props.openGlobalModal,
+
+        closeGlobalModal: props.closeGlobalModal,
     };
     // Props for <Transactions/> React Element
     const transactionsProps = {
@@ -156,6 +176,7 @@ export default function TradeTabs2(props: ITabsProps) {
     // Props for <Orders/> React Element
     const ordersProps = {
         expandTradeTable: expandTradeTable,
+        isShowAllEnabled: isShowAllEnabled,
         account: account,
         graphData: graphData,
     };
@@ -195,7 +216,7 @@ export default function TradeTabs2(props: ITabsProps) {
     useOnClickOutside(tabComponentRef, clickOutsideHandler);
 
     return (
-        <div ref={tabComponentRef}>
+        <div ref={tabComponentRef} className={styles.trade_tab_container}>
             {
                 <TabComponent
                     data={tradeTabData}

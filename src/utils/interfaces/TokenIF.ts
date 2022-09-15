@@ -9,4 +9,5 @@ export interface TokenIF {
     logoURI: string;
     fromList?: string;
     balance?: string;
+    dexBalance?: string;
 }

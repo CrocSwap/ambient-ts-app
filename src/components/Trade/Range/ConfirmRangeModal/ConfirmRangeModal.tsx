@@ -1,8 +1,12 @@
 // START: Import React and Dongles
-import { useState, Dispatch, SetStateAction } from 'react';
+import {
+    // useState,
+    useEffect,
+    Dispatch,
+    SetStateAction,
+} from 'react';
 
 // START: Import JSX Functional Components
-import Divider from '../../../Global/Divider/Divider';
 import RangeStatus from '../../../Global/RangeStatus/RangeStatus';
 import Button from '../../../Global/Button/Button';
 import WaitingConfirmation from '../../../Global/WaitingConfirmation/WaitingConfirmation';
@@ -33,8 +37,13 @@ interface ConfirmRangeModalPropsIF {
     pinnedMinPriceDisplayTruncatedInQuote: string;
     pinnedMaxPriceDisplayTruncatedInBase: string;
     pinnedMaxPriceDisplayTruncatedInQuote: string;
+    showConfirmation: boolean;
+    setShowConfirmation: Dispatch<SetStateAction<boolean>>;
     txErrorCode: number;
     txErrorMessage: string;
+    resetConfirmation: () => void;
+
+    pendingTransactions: string[];
 }
 
 export default function ConfirmRangeModal(props: ConfirmRangeModalPropsIF) {
@@ -56,21 +65,32 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalPropsIF) {
         pinnedMaxPriceDisplayTruncatedInQuote,
         txErrorCode,
         txErrorMessage,
+        showConfirmation,
+        setShowConfirmation,
+        resetConfirmation,
+
+        pendingTransactions,
     } = props;
 
     const tokenA = tokenPair.dataTokenA;
     const tokenB = tokenPair.dataTokenB;
 
-    const [confirmDetails, setConfirmDetails] = useState(true);
     const transactionApproved = newRangeTransactionHash !== '';
     const isTransactionDenied =
         txErrorCode === 4001 &&
         txErrorMessage === 'MetaMask Tx Signature: User denied transaction signature.';
+
     const tokenAQty = (document.getElementById('A-range-quantity') as HTMLInputElement)?.value;
     const tokenBQty = (document.getElementById('B-range-quantity') as HTMLInputElement)?.value;
 
     const dataTokenA = tokenPair.dataTokenA;
     const dataTokenB = tokenPair.dataTokenB;
+
+    useEffect(() => {
+        if (newRangeTransactionHash && newRangeTransactionHash !== '') {
+            pendingTransactions.push(newRangeTransactionHash);
+        }
+    }, [newRangeTransactionHash]);
 
     const rangeHeader = (
         <section className={styles.position_display}>
@@ -90,7 +110,7 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalPropsIF) {
     const tokenACharacter = getUnicodeCharacter(dataTokenA.symbol);
     const tokenBCharacter = getUnicodeCharacter(dataTokenB.symbol);
 
-    const feeTierDisplay = (
+    const tokenAmountDisplay = (
         <section className={styles.fee_tier_display}>
             <div className={styles.fee_tier_container}>
                 <div className={styles.detail_line}>
@@ -106,11 +126,6 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalPropsIF) {
                         <span>{dataTokenB.symbol}</span>
                     </div>
                     <span>{tokenBQty !== '' ? tokenBCharacter + tokenBQty : '0'}</span>
-                </div>
-                <Divider />
-                <div className={styles.detail_line}>
-                    <span>CURRENT FEE TIER</span>
-                    <span>{0.05}%</span>
                 </div>
             </div>
         </section>
@@ -136,7 +151,7 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalPropsIF) {
     const fullTxDetails = (
         <>
             {rangeHeader}
-            {feeTierDisplay}
+            {tokenAmountDisplay}
             {selectedRangeOrNull}
         </>
     );
@@ -149,7 +164,7 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalPropsIF) {
             } ${tokenB.symbol}`}
         />
     );
-    const transactionDenied = <TransactionDenied />;
+    const transactionDenied = <TransactionDenied resetConfirmation={resetConfirmation} />;
     const transactionSubmitted = (
         <TransactionSubmitted
             hash={newRangeTransactionHash}
@@ -171,7 +186,7 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalPropsIF) {
                     }`,
                 );
                 sendTransaction();
-                setConfirmDetails(false);
+                setShowConfirmation(false);
             }}
         />
     );
@@ -184,9 +199,9 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalPropsIF) {
 
     return (
         <div className={styles.confirm_range_modal_container}>
-            <div>{confirmDetails ? fullTxDetails : confirmationDisplay}</div>
+            <div>{showConfirmation ? fullTxDetails : confirmationDisplay}</div>
             <footer className={styles.modal_footer}>
-                {confirmDetails ? confirmTradeButton : null}
+                {showConfirmation ? confirmTradeButton : null}
             </footer>
         </div>
     );

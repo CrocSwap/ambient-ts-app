@@ -1,10 +1,13 @@
 .account_container {
     display: flex;
     justify-content: flex-end;
+    
     align-items: center;
     background: transparent;
     border-radius: var(--border-radius);
     gap: var(--gap, 0.5rem);
+
+   
 }
 .account_container div {
     font-size: var(--body-size);
@@ -18,7 +21,7 @@
     color: var(--text-grey-light);
     font-family: var(--font-deca);
     font-weight: 300;
-    font-size: var(--body-size);
+    font-size: var(--header-size);
     line-height: var(--body-lh);
     text-align: center;
     cursor: pointer;
@@ -27,7 +30,7 @@
 .white {
     font-family: var(--font-deca);
     font-weight: 300;
-    font-size: var(--body-size);
+    font-size: var(--header-size);
     line-height: var(--body-lh);
     color: white;
 }

@@ -1,6 +1,6 @@
 import styles from './RemoveRange.module.css';
 import RemoveRangeWidth from './RemoveRangeWidth/RemoveRangeWidth';
-import RemoveRangeHeader from './RemoveRangeHeader/RemoveRangeHeader';
+import RemoveRangeTokenHeader from './RemoveRangeTokenHeader/RemoveRangeTokenHeader';
 import RemoveRangeInfo from './RemoveRangeInfo/RemoveRangInfo';
 import RemoveRangeButton from './RemoveRangeButton/RemoveRangeButton';
 import { useEffect, useState } from 'react';
@@ -21,6 +21,8 @@ import {
     CircleLoader,
     CircleLoaderFailed,
 } from '../Global/LoadingAnimations/CircleLoader/CircleLoader';
+import RemoveRangeHeader from './RemoveRangeHeader/RemoveRangeHeader';
+import ExtraControls from './ExtraControls/ExtraControls';
 interface IRemoveRangeProps {
     provider: ethers.providers.Provider;
     chainData: ChainSpec;
@@ -31,6 +33,10 @@ interface IRemoveRangeProps {
     askTick: number;
     baseTokenAddress: string;
     quoteTokenAddress: string;
+    baseTokenBalance: string;
+    quoteTokenBalance: string;
+    baseTokenDexBalance: string;
+    quoteTokenDexBalance: string;
     isPositionInRange: boolean;
     isAmbient: boolean;
     baseTokenSymbol: string;
@@ -40,9 +46,14 @@ interface IRemoveRangeProps {
     isDenomBase: boolean;
     lastBlockNumber: number;
     position: PositionIF;
+
+    openGlobalModal: (content: React.ReactNode) => void;
+
+    closeGlobalModal: () => void;
 }
 
 export default function RemoveRange(props: IRemoveRangeProps) {
+    // console.log(props);
     const {
         // chainId,
         // poolIdx,
@@ -51,6 +62,11 @@ export default function RemoveRange(props: IRemoveRangeProps) {
         // askTick,
         // baseTokenAddress,
         // quoteTokenAddress,
+        baseTokenBalance,
+        quoteTokenBalance,
+        baseTokenDexBalance,
+        quoteTokenDexBalance,
+        closeGlobalModal,
         chainData,
         provider,
         lastBlockNumber,
@@ -113,16 +129,27 @@ export default function RemoveRange(props: IRemoveRangeProps) {
 
     const [showSettings, setShowSettings] = useState(false);
 
+    const positionHasLiquidity =
+        (posLiqBaseDecimalCorrected || 0) + (posLiqQuoteDecimalCorrected || 0) > 0;
+
     const removeRangeSetttingIcon = (
         <div onClick={() => setShowSettings(!showSettings)} className={styles.settings_icon}>
             {showSettings ? null : <RiListSettingsLine size={20} />}
         </div>
     );
 
+    const [isSaveAsDexSurplusChecked, setIsSaveAsDexSurplusChecked] = useState(false);
+
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [newRemovalTransactionHash, setNewRemovalTransactionHash] = useState('');
     const [txErrorCode, setTxErrorCode] = useState(0);
     const [txErrorMessage, setTxErrorMessage] = useState('');
+
+    const resetConfirmation = () => {
+        setShowConfirmation(false);
+        setTxErrorCode(0);
+        setTxErrorMessage('');
+    };
 
     const liquiditySlippageTolerance = 1;
 
@@ -140,7 +167,9 @@ export default function RemoveRange(props: IRemoveRangeProps) {
         if (position.positionType === 'ambient') {
             if (removalPercentage === 100) {
                 try {
-                    const tx = await pool.burnAmbientAll([lowLimit, highLimit]);
+                    const tx = await pool.burnAmbientAll([lowLimit, highLimit], {
+                        surplus: isSaveAsDexSurplusChecked,
+                    });
                     console.log(tx?.hash);
                     setNewRemovalTransactionHash(tx?.hash);
                 } catch (error) {
@@ -175,6 +204,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
                     liquidityToBurn,
                     [position.bidTick, position.askTick],
                     [lowLimit, highLimit],
+                    { surplus: isSaveAsDexSurplusChecked },
                 );
                 console.log(tx?.hash);
                 setNewRemovalTransactionHash(tx?.hash);
@@ -194,7 +224,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
                 Check the Metamask extension in your browser for notifications, or click &quot;Try
                 Again&quot;. You can also click the left arrow above to try again.
             </p>
-            <Button title='Try Again' action={() => setShowConfirmation(false)} />
+            <Button title='Try Again' action={resetConfirmation} />
         </div>
     );
 
@@ -205,7 +235,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
             <div className={styles.completed_animation}>
                 <Animation animData={completed} loop={false} />
             </div>
-            <p>message to be display here</p>
+            <p>Removal Transaction Successfully Submitted</p>
             <a
                 href={etherscanLink}
                 target='_blank'
@@ -257,10 +287,20 @@ export default function RemoveRange(props: IRemoveRangeProps) {
         isRemovalDenied,
     ]);
 
+    const baseRemovalNum =
+        (((posLiqBaseDecimalCorrected || 0) + (feeLiqBaseDecimalCorrected || 0)) *
+            removalPercentage) /
+        100;
+
+    const quoteRemovalNum =
+        (((posLiqQuoteDecimalCorrected || 0) + (feeLiqQuoteDecimalCorrected || 0)) *
+            removalPercentage) /
+        100;
+
     const confirmationContent = (
         <div className={styles.confirmation_container}>
-            {showConfirmation && (
-                <div className={styles.button} onClick={() => setShowConfirmation(false)}>
+            {showConfirmation && !removalDenied && (
+                <div className={styles.button} onClick={resetConfirmation}>
                     <BsArrowLeft size={30} />
                 </div>
             )}
@@ -268,10 +308,20 @@ export default function RemoveRange(props: IRemoveRangeProps) {
         </div>
     );
 
-    const buttonToDisplay = showSettings ? (
-        <Button title='Confirm' action={() => setShowSettings(false)} />
-    ) : (
-        <RemoveRangeButton removeFn={removeFn} disabled={showSettings} title='Remove Range' />
+    const buttonToDisplay = (
+        <div style={{ padding: '0 1rem' }}>
+            {showSettings ? (
+                <Button title='Confirm' action={() => setShowSettings(false)} />
+            ) : positionHasLiquidity ? (
+                <RemoveRangeButton
+                    removeFn={removeFn}
+                    disabled={showSettings}
+                    title='Remove Range'
+                />
+            ) : (
+                <RemoveRangeButton removeFn={removeFn} disabled={true} title='…' />
+            )}
+        </div>
     );
 
     const mainModalContent = showSettings ? (
@@ -279,7 +329,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
     ) : (
         <>
             <div className={styles.header_container}>
-                <RemoveRangeHeader
+                <RemoveRangeTokenHeader
                     isPositionInRange={props.isPositionInRange}
                     isAmbient={props.isAmbient}
                     baseTokenSymbol={props.baseTokenSymbol}
@@ -290,21 +340,37 @@ export default function RemoveRange(props: IRemoveRangeProps) {
                 />
                 {removeRangeSetttingIcon}
             </div>
-            <RemoveRangeWidth
-                removalPercentage={removalPercentage}
-                setRemovalPercentage={setRemovalPercentage}
-            />
-            <RemoveRangeInfo
-                baseTokenSymbol={props.baseTokenSymbol}
-                quoteTokenSymbol={props.quoteTokenSymbol}
-                baseTokenLogoURI={props.baseTokenLogoURI}
-                quoteTokenLogoURI={props.quoteTokenLogoURI}
-                posLiqBaseDecimalCorrected={posLiqBaseDecimalCorrected}
-                posLiqQuoteDecimalCorrected={posLiqQuoteDecimalCorrected}
-                feeLiqBaseDecimalCorrected={feeLiqBaseDecimalCorrected}
-                feeLiqQuoteDecimalCorrected={feeLiqQuoteDecimalCorrected}
-                removalPercentage={removalPercentage}
-            />
+            <div style={{ padding: '0 1rem' }}>
+                <RemoveRangeWidth
+                    removalPercentage={removalPercentage}
+                    setRemovalPercentage={setRemovalPercentage}
+                />
+                <RemoveRangeInfo
+                    baseTokenSymbol={props.baseTokenSymbol}
+                    quoteTokenSymbol={props.quoteTokenSymbol}
+                    baseTokenLogoURI={props.baseTokenLogoURI}
+                    quoteTokenLogoURI={props.quoteTokenLogoURI}
+                    posLiqBaseDecimalCorrected={posLiqBaseDecimalCorrected}
+                    posLiqQuoteDecimalCorrected={posLiqQuoteDecimalCorrected}
+                    feeLiqBaseDecimalCorrected={feeLiqBaseDecimalCorrected}
+                    feeLiqQuoteDecimalCorrected={feeLiqQuoteDecimalCorrected}
+                    removalPercentage={removalPercentage}
+                    baseRemovalNum={baseRemovalNum}
+                    quoteRemovalNum={quoteRemovalNum}
+                />
+                <ExtraControls
+                    isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
+                    setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
+                    baseTokenBalance={baseTokenBalance}
+                    quoteTokenBalance={quoteTokenBalance}
+                    baseTokenDexBalance={baseTokenDexBalance}
+                    quoteTokenDexBalance={quoteTokenDexBalance}
+                    baseRemovalNum={baseRemovalNum}
+                    quoteRemovalNum={quoteRemovalNum}
+                    baseTokenSymbol={props.baseTokenSymbol}
+                    quoteTokenSymbol={props.quoteTokenSymbol}
+                />
+            </div>
         </>
     );
 
@@ -312,6 +378,12 @@ export default function RemoveRange(props: IRemoveRangeProps) {
     return (
         <div className={styles.remove_range_container}>
             <div className={styles.main_content}>
+                <RemoveRangeHeader
+                    onClose={closeGlobalModal}
+                    title={showSettings ? 'Remove Position Settings' : 'Remove Position'}
+                    onBackButton={() => setShowSettings(false)}
+                    showBackButton={showSettings}
+                />
                 {mainModalContent}
                 {/* {harvestButtonOrNull} */}
                 {buttonToDisplay}
