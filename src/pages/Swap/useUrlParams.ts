@@ -100,7 +100,7 @@ export const useUrlParams = (
                         token.chainId === parseInt(chainToUse)
                     ));
                     if (tokenOnList) {
-                        return tokens.find((token: TokenIF) => token.address === addr);
+                        return tokens.find((token: TokenIF) => token.address.toLowerCase() === addr);
                     } else if (!tokenOnList) {
                         return getTokenFromChain(addr);
                     }
@@ -114,8 +114,7 @@ export const useUrlParams = (
                     return findToken(listNames, limiter + 1);
                 }
             }
-            const tkn = findToken(['Ambient Token List', 'CoinGecko']);
-            return tkn;
+            return findToken(['Ambient Token List', 'CoinGecko']);
         };
 
         // TODO: find a way to correctly type this return
@@ -124,7 +123,7 @@ export const useUrlParams = (
             const promise = Web3Api.token.getTokenMetadata({
                 chain: chainToUse as '0x5', addresses: [addr]
             });
-            const data = Promise.resolve(promise)
+            return Promise.resolve(promise)
                 .then(res => res[0])
                 .then(res => ({
                     name: res.name,
@@ -134,7 +133,6 @@ export const useUrlParams = (
                     logoURI: res.logo ?? '',
                     fromList: 'urlParam'
                 }));
-            return data;
         }
 
         const getAddress = (tkn: string) => {
@@ -161,6 +159,7 @@ export const useUrlParams = (
                 fetchAndFormatTokenData(addrTokenA),
                 fetchAndFormatTokenData(addrTokenB)
             ]).then(res => {
+                console.log(res);
                 dispatch(setTokenA(res[0] as TokenIF));
                 dispatch(setTokenB(res[1] as TokenIF));
             });
