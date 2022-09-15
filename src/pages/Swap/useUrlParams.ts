@@ -74,7 +74,7 @@ export const useUrlParams = (
             };
             
             // function to find token if not the native token
-            const findToken = (limiter=0): TokenIF | undefined => {
+            const findToken = (listName: string, limiter=0): TokenIF | undefined => {
                 // get allTokenLists from local storage
                 const allTokenLists = JSON.parse(
                     localStorage.getItem('allTokenLists') as string
@@ -85,12 +85,12 @@ export const useUrlParams = (
                     allTokenLists &&
                     // make sure CoinGecko is in allTokenLists
                     allTokenLists.some(
-                        (list: TokenListIF) => list.name === 'CoinGecko' && list.default
+                        (list: TokenListIF) => list.name === listName && list.default
                     )
                 ) {
                     // extract CoinGecko token list
                     const { tokens } = allTokenLists.find((list: TokenListIF) => (
-                        list.name === 'CoinGecko' && list.default
+                        list.name === listName && list.default
                     ));
                     // see if the desired token is in CoinGecko
                     const tokenOnList = tokens.some((token: TokenIF) => (
@@ -106,10 +106,10 @@ export const useUrlParams = (
                 else if (limiter > 50) {
                     return getTokenFromChain(addr);
                 } else {
-                    return findToken(limiter + 1);
+                    return findToken(listName, limiter + 1);
                 }
             }
-            const tkn = findToken();
+            const tkn = findToken('CoinGecko');
             return tkn;
         };
 
