@@ -202,7 +202,7 @@ export default function PageHeader(props: HeaderPropsIF) {
             </div> */}
 
             {routeDisplay}
-            <MobileSidebar lastBlockNumber={lastBlockNumber} />
+            <MobileSidebar lastBlockNumber={lastBlockNumber} chainId={chainId} />
 
             <div className={styles.account}>
                 <NetworkSelector chainId={chainId} switchChain={switchChain} />

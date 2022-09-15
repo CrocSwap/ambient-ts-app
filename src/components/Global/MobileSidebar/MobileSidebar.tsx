@@ -4,9 +4,11 @@ import { motion } from 'framer-motion';
 import { MenuButton } from '../MenuButton/MenuButton';
 import MobileSidebarItem from './MobileSidebarItem';
 import { FaDiscord, FaGithub } from 'react-icons/fa';
-import { BsMedium, BsFillMoonStarsFill, BsFillSunFill } from 'react-icons/bs';
+import { BsMedium, BsFillMoonStarsFill, BsFillSunFill, BsFillHeartFill } from 'react-icons/bs';
 import { AiFillTwitterCircle } from 'react-icons/ai';
 import { FiExternalLink } from 'react-icons/fi';
+import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+
 const sidebar = {
     open: (height = 1000) => ({
         clipPath: `circle(${height * 2 + 200}px at 20px 20px)`,
@@ -29,9 +31,12 @@ const sidebar = {
 
 interface MobileSidebarPropsIF {
     lastBlockNumber: number;
+
+    chainId: string;
 }
 
 export default function MobileSidebar(props: MobileSidebarPropsIF) {
+    const { lastBlockNumber, chainId } = props;
     const [isOpen, setIsOpen] = useState(false);
 
     const navigationVariants = {
@@ -50,7 +55,7 @@ export default function MobileSidebar(props: MobileSidebarPropsIF) {
         { name: 'Connect Wallet/ Logout ' },
     ];
     const dataToDisplay = (
-        <motion.div variants={navigationVariants} className={styles.content}>
+        <motion.div variants={navigationVariants}>
             {simpleData.map((item, idx) => (
                 <MobileSidebarItem key={idx}>{item.name}</MobileSidebarItem>
             ))}
@@ -67,6 +72,7 @@ export default function MobileSidebar(props: MobileSidebarPropsIF) {
     ];
     const ecosystemDisplay = (
         <motion.div variants={navigationVariants} className={styles.ecosystem_container}>
+            <p style={{ color: '#555555' }}>Ecosystem</p>
             {ecosystemData.map((item, idx) => (
                 <MobileSidebarItem key={idx}>
                     <p>
@@ -94,6 +100,38 @@ export default function MobileSidebar(props: MobileSidebarPropsIF) {
         </motion.div>
     );
 
+    const blockNumberDisplay = (
+        <MobileSidebarItem>
+            <div className={styles.block_number_container}>
+                <div className={styles.page_block_sign} />
+                <p> {lookupChain(chainId).displayName}:</p>
+                <p>
+                    Block {''}
+                    {lastBlockNumber}
+                </p>
+            </div>
+        </MobileSidebarItem>
+    );
+
+    const teamDisplay = (
+        <MobileSidebarItem>
+            <p className={styles.team_display}>
+                With
+                <p>{<BsFillHeartFill color='#c51104' />}</p>
+                from the Ambient team
+            </p>
+        </MobileSidebarItem>
+    );
+
+    const appVersionDisplay = (
+        <MobileSidebarItem>
+            <div className={styles.version_display}>
+                <p>App:</p>
+                <p>v1.0.0</p>
+                <FiExternalLink size={10} color='#555555' />
+            </div>
+        </MobileSidebarItem>
+    );
     const [lightMode, setLightMode] = useState(true);
     const themeTogglerDisplay = (
         <MobileSidebarItem>
@@ -125,10 +163,15 @@ export default function MobileSidebar(props: MobileSidebarPropsIF) {
                     className={`${styles.container} ${isOpen && styles.container_open}`}
                     variants={sidebar}
                 >
-                    {dataToDisplay}
-                    {ecosystemDisplay}
-                    {themeTogglerDisplay}
-                    {socialIconsDisplay}
+                    <div className={styles.content}>
+                        {dataToDisplay}
+                        {ecosystemDisplay}
+                        {themeTogglerDisplay}
+                        {socialIconsDisplay}
+                        {lastBlockNumber && blockNumberDisplay}
+                        {appVersionDisplay}
+                        {teamDisplay}
+                    </div>
                 </motion.div>
             </motion.nav>
 
