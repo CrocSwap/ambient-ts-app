@@ -2,11 +2,15 @@ import styles from './SidebarRangePositionsCard.module.css';
 import { PositionIF } from '../../../../utils/interfaces/PositionIF';
 
 // import { toDisplayQty } from '@crocswap-libs/sdk';
-import { useEffect, useState, SetStateAction, Dispatch } from 'react';
+import {
+    //  useEffect, useState,
+    SetStateAction,
+    Dispatch,
+} from 'react';
 import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import { setTokenA, setTokenB } from '../../../../utils/state/tradeDataSlice';
-import { formatAmount } from '../../../../utils/numbers';
+// import { formatAmount } from '../../../../utils/numbers';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 
 interface SidebarRangePositionsProps {
@@ -63,60 +67,12 @@ export default function SidebarRangePositionsCard(props: SidebarRangePositionsPr
         if (quoteToken) dispatch(setTokenB(quoteToken));
     }
 
-    const [liqTotalUSD, setLiqTotalUSD] = useState<string | undefined>(undefined);
-
-    const positionStatsCacheEndpoint = 'https://809821320828123.de:5000/position_stats?';
-
-    const getLiqTotalUSD = async (
-        positionType: string,
-        tokenA: string,
-        tokenB: string,
-        poolIdx: number,
-        chainId: string,
-        user: string,
-        bidTick: number,
-        askTick: number,
-    ): Promise<number> => {
-        if (tokenA && tokenB && poolIdx) {
-            const posLiqTotalUSD = fetch(
-                positionStatsCacheEndpoint +
-                    new URLSearchParams({
-                        chainId: chainId,
-                        user: user,
-                        base: tokenA,
-                        quote: tokenB,
-                        poolIdx: poolIdx.toString(),
-                        bidTick: bidTick.toString(),
-                        askTick: askTick.toString(),
-                        addValue: 'true',
-                        positionType: positionType,
-                    }),
-            )
-                .then((response) => response.json())
-                .then((json) => {
-                    return json?.data?.positionLiqTotalUSD;
-                });
-            return posLiqTotalUSD;
-        } else {
-            return 0;
-        }
-    };
-
-    useEffect(() => {
-        (async () => {
-            const totalLiqUSD = await getLiqTotalUSD(
-                position.positionType,
-                position.base,
-                position.quote,
-                position.poolIdx,
-                position.chainId,
-                position.user,
-                position.bidTick,
-                position.askTick,
-            );
-            if (totalLiqUSD) setLiqTotalUSD(formatAmount(totalLiqUSD));
-        })();
-    }, [JSON.stringify(position)]);
+    const liqTotalUSD =
+        '$' +
+        position.positionLiqTotalUSD.toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        });
 
     const rangeStatusStyle =
         position.positionType === 'ambient'
@@ -158,7 +114,7 @@ export default function SidebarRangePositionsCard(props: SidebarRangePositionsPr
                 {rangeDisplay}
                 {rangeStatusDisplay}
             </div>
-            <div className={styles.status_display}>{liqTotalUSD ? '$' + liqTotalUSD : '…'}</div>
+            <div className={styles.status_display}>{liqTotalUSD}</div>
         </div>
     );
 }
