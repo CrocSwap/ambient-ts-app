@@ -33,6 +33,10 @@ interface IRemoveRangeProps {
     askTick: number;
     baseTokenAddress: string;
     quoteTokenAddress: string;
+    baseTokenBalance: string;
+    quoteTokenBalance: string;
+    baseTokenDexBalance: string;
+    quoteTokenDexBalance: string;
     isPositionInRange: boolean;
     isAmbient: boolean;
     baseTokenSymbol: string;
@@ -58,6 +62,10 @@ export default function RemoveRange(props: IRemoveRangeProps) {
         // askTick,
         // baseTokenAddress,
         // quoteTokenAddress,
+        baseTokenBalance,
+        quoteTokenBalance,
+        baseTokenDexBalance,
+        quoteTokenDexBalance,
         closeGlobalModal,
         chainData,
         provider,
@@ -159,7 +167,9 @@ export default function RemoveRange(props: IRemoveRangeProps) {
         if (position.positionType === 'ambient') {
             if (removalPercentage === 100) {
                 try {
-                    const tx = await pool.burnAmbientAll([lowLimit, highLimit]);
+                    const tx = await pool.burnAmbientAll([lowLimit, highLimit], {
+                        surplus: isSaveAsDexSurplusChecked,
+                    });
                     console.log(tx?.hash);
                     setNewRemovalTransactionHash(tx?.hash);
                 } catch (error) {
@@ -194,6 +204,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
                     liquidityToBurn,
                     [position.bidTick, position.askTick],
                     [lowLimit, highLimit],
+                    { surplus: isSaveAsDexSurplusChecked },
                 );
                 console.log(tx?.hash);
                 setNewRemovalTransactionHash(tx?.hash);
@@ -276,6 +287,16 @@ export default function RemoveRange(props: IRemoveRangeProps) {
         isRemovalDenied,
     ]);
 
+    const baseRemovalNum =
+        (((posLiqBaseDecimalCorrected || 0) + (feeLiqBaseDecimalCorrected || 0)) *
+            removalPercentage) /
+        100;
+
+    const quoteRemovalNum =
+        (((posLiqQuoteDecimalCorrected || 0) + (feeLiqQuoteDecimalCorrected || 0)) *
+            removalPercentage) /
+        100;
+
     const confirmationContent = (
         <div className={styles.confirmation_container}>
             {showConfirmation && !removalDenied && (
@@ -334,10 +355,20 @@ export default function RemoveRange(props: IRemoveRangeProps) {
                     feeLiqBaseDecimalCorrected={feeLiqBaseDecimalCorrected}
                     feeLiqQuoteDecimalCorrected={feeLiqQuoteDecimalCorrected}
                     removalPercentage={removalPercentage}
+                    baseRemovalNum={baseRemovalNum}
+                    quoteRemovalNum={quoteRemovalNum}
                 />
                 <ExtraControls
                     isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
                     setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
+                    baseTokenBalance={baseTokenBalance}
+                    quoteTokenBalance={quoteTokenBalance}
+                    baseTokenDexBalance={baseTokenDexBalance}
+                    quoteTokenDexBalance={quoteTokenDexBalance}
+                    baseRemovalNum={baseRemovalNum}
+                    quoteRemovalNum={quoteRemovalNum}
+                    baseTokenSymbol={props.baseTokenSymbol}
+                    quoteTokenSymbol={props.quoteTokenSymbol}
                 />
             </div>
         </>
