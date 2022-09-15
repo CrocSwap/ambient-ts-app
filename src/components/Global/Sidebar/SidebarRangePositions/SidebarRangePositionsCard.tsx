@@ -68,6 +68,7 @@ export default function SidebarRangePositionsCard(props: SidebarRangePositionsPr
     const positionStatsCacheEndpoint = 'https://809821320828123.de:5000/position_stats?';
 
     const getLiqTotalUSD = async (
+        positionType: string,
         tokenA: string,
         tokenB: string,
         poolIdx: number,
@@ -87,12 +88,13 @@ export default function SidebarRangePositionsCard(props: SidebarRangePositionsPr
                         poolIdx: poolIdx.toString(),
                         bidTick: bidTick.toString(),
                         askTick: askTick.toString(),
-                        calcValues: 'true',
+                        addValue: 'true',
+                        positionType: positionType,
                     }),
             )
                 .then((response) => response.json())
                 .then((json) => {
-                    return json?.data?.posLiqTotalUSD;
+                    return json?.data?.positionLiqTotalUSD;
                 });
             return posLiqTotalUSD;
         } else {
@@ -103,6 +105,7 @@ export default function SidebarRangePositionsCard(props: SidebarRangePositionsPr
     useEffect(() => {
         (async () => {
             const totalLiqUSD = await getLiqTotalUSD(
+                position.positionType,
                 position.base,
                 position.quote,
                 position.poolIdx,
