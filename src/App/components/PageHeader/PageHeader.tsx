@@ -32,6 +32,8 @@ interface HeaderPropsIF {
     switchNetworkInMoralis: (providedChainId: string) => Promise<void>;
     openModalWallet: () => void;
     pendingTransactions: string[];
+
+    lastBlockNumber: number;
 }
 
 export default function PageHeader(props: HeaderPropsIF) {
@@ -47,6 +49,7 @@ export default function PageHeader(props: HeaderPropsIF) {
         switchNetworkInMoralis,
         openModalWallet,
         pendingTransactions,
+        lastBlockNumber,
     } = props;
 
     const { user, account, enableWeb3, isWeb3Enabled, isAuthenticated } = useMoralis();
@@ -199,7 +202,7 @@ export default function PageHeader(props: HeaderPropsIF) {
             </div> */}
 
             {routeDisplay}
-            <MobileSidebar />
+            <MobileSidebar lastBlockNumber={lastBlockNumber} />
 
             <div className={styles.account}>
                 <NetworkSelector chainId={chainId} switchChain={switchChain} />

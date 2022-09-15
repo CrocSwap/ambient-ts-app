@@ -1721,6 +1721,7 @@ export default function App() {
         switchNetworkInMoralis: switchNetworkInMoralis,
         openModalWallet: openModalWallet,
         pendingTransactions: pendingTransactions,
+        lastBlockNumber: lastBlockNumber,
     };
 
     // props for <Swap/> React element

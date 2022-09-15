@@ -27,7 +27,11 @@ const sidebar = {
     },
 };
 
-export default function MobileSidebar() {
+interface MobileSidebarPropsIF {
+    lastBlockNumber: number;
+}
+
+export default function MobileSidebar(props: MobileSidebarPropsIF) {
     const [isOpen, setIsOpen] = useState(false);
 
     const navigationVariants = {
@@ -94,21 +98,17 @@ export default function MobileSidebar() {
     const themeTogglerDisplay = (
         <MobileSidebarItem>
             <div
-                className={styles.theme_toggler_container}
+                className={`${styles.theme_toggler_content} ${
+                    lightMode && styles.theme_toggler_light
+                }`}
                 onClick={() => setLightMode(!lightMode)}
             >
-                <div
-                    className={`${styles.theme_toggler_content} ${
-                        lightMode && styles.theme_toggler_light
-                    }`}
-                >
-                    {lightMode ? (
-                        <BsFillMoonStarsFill color='#f0c420' />
-                    ) : (
-                        <BsFillSunFill color='#f9d71c' />
-                    )}
-                    <p>{lightMode ? 'Dark mode' : 'Light mode'}</p>
-                </div>
+                {lightMode ? (
+                    <BsFillMoonStarsFill color='#f0c420' />
+                ) : (
+                    <BsFillSunFill color='#f9d71c' />
+                )}
+                <p>{lightMode ? 'Dark mode' : 'Light mode'}</p>
             </div>
         </MobileSidebarItem>
     );
