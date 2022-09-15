@@ -122,7 +122,7 @@ export default function App() {
         logout,
         isAuthenticated,
         isAuthenticating,
-        // isInitialized,
+        isInitialized,
         authenticate,
         enableWeb3,
         // authError
@@ -165,15 +165,17 @@ export default function App() {
     }, [provider]);
 
     useEffect(() => {
-        (async () => {
-            const mainnetEthPrice = await cachedFetchTokenPrice(
-                '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
-                '0x1',
-            );
-            const usdPrice = mainnetEthPrice.usdPrice;
-            setEthMainnetUsdPrice(usdPrice);
-        })();
-    }, []);
+        if (isInitialized) {
+            (async () => {
+                const mainnetEthPrice = await cachedFetchTokenPrice(
+                    '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
+                    '0x1',
+                );
+                const usdPrice = mainnetEthPrice.usdPrice;
+                setEthMainnetUsdPrice(usdPrice);
+            })();
+        }
+    }, [isInitialized]);
 
     function exposeProviderUrl(provider?: ethers.providers.Provider): string {
         if (provider && 'connection' in provider) {
