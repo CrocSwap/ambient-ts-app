@@ -50,7 +50,7 @@ interface RangePropsIF {
     mintSlippage: SlippagePairIF;
     isPairStable: boolean;
     provider?: ethers.providers.Provider;
-    gasPriceinGwei: number | undefined;
+    gasPriceinDollars: string | undefined;
     lastBlockNumber: number;
     baseTokenAddress: string;
     quoteTokenAddress: string;
@@ -91,7 +91,7 @@ export default function Range(props: RangePropsIF) {
         setRecheckTokenAApproval,
         tokenBAllowance,
         setRecheckTokenBApproval,
-        gasPriceinGwei,
+        gasPriceinDollars,
         chainId,
         activeTokenListsChanged,
         indicateActiveTokenListsChanged,
@@ -858,7 +858,7 @@ export default function Range(props: RangePropsIF) {
     // props for <RangeExtraInfo/> React element
     const rangeExtraInfoProps = {
         tokenPair: tokenPair,
-        gasPriceinGwei: gasPriceinGwei,
+        gasPriceinDollars: gasPriceinDollars,
         poolPriceDisplay: displayPriceString,
         slippageTolerance: slippageTolerancePercentage,
         liquidityProviderFee: 0.3,

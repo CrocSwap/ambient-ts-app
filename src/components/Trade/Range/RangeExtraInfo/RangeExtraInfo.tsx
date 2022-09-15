@@ -7,7 +7,7 @@ import { RiArrowDownSLine } from 'react-icons/ri';
 import styles from './RangeExtraInfo.module.css';
 import { TokenPairIF } from '../../../../utils/interfaces/exports';
 import TooltipComponent from '../../../Global/TooltipComponent/TooltipComponent';
-import truncateDecimals from '../../../../utils/data/truncateDecimals';
+// import truncateDecimals from '../../../../utils/data/truncateDecimals';
 
 // interface for component props
 interface RangeExtraInfoPropsIF {
@@ -16,7 +16,7 @@ interface RangeExtraInfoPropsIF {
     slippageTolerance: string;
     liquidityProviderFee: number;
     quoteTokenIsBuy?: boolean;
-    gasPriceinGwei: number | undefined;
+    gasPriceinDollars: string | undefined;
     isDenomBase: boolean;
     isTokenABase: boolean;
     daysInRangeEstimation: number;
@@ -26,7 +26,7 @@ interface RangeExtraInfoPropsIF {
 export default function RangeExtraInfo(props: RangeExtraInfoPropsIF) {
     const {
         tokenPair,
-        gasPriceinGwei,
+        gasPriceinDollars,
         // quoteTokenIsBuy,
         poolPriceDisplay,
         slippageTolerance,
@@ -64,7 +64,7 @@ export default function RangeExtraInfo(props: RangeExtraInfoPropsIF) {
     //           (1 / poolPriceDisplay) * (1 + slippageTolerance) * (1 + liquidityProviderFee / 100),
     //           4,
     //       );
-    const truncatedGasInGwei = gasPriceinGwei ? truncateDecimals(gasPriceinGwei, 2) : undefined;
+    // const truncatedGasInGwei = gasPriceinGwei ? truncateDecimals(gasPriceinGwei, 2) : undefined;
 
     const extraInfoData = [
         {
@@ -122,8 +122,7 @@ export default function RangeExtraInfo(props: RangeExtraInfoPropsIF) {
                 onClick={() => setShowExtraDetails(!showExtraDetails)}
             >
                 <div className={styles.gas_pump}>
-                    <FaGasPump size={15} />{' '}
-                    {truncatedGasInGwei ? `${truncatedGasInGwei} gwei` : '…'}
+                    <FaGasPump size={15} /> {gasPriceinDollars ? gasPriceinDollars : '…'}
                 </div>
                 <div className={styles.token_amount}>
                     {reverseDisplay

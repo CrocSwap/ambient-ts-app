@@ -34,7 +34,7 @@ interface LimitPropsIF {
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     provider?: ethers.providers.Provider;
     isOnTradeRoute?: boolean;
-    gasPriceinGwei: number | undefined;
+    gasPriceinDollars: string | undefined;
     nativeBalance: string;
     lastBlockNumber: number;
     baseTokenBalance: string;
@@ -73,7 +73,7 @@ export default function Limit(props: LimitPropsIF) {
         quoteTokenDexBalance,
         tokenPair,
         isTokenABase,
-        gasPriceinGwei,
+        gasPriceinDollars,
         poolPriceDisplay,
         poolPriceNonDisplay,
         tokenAAllowance,
@@ -432,7 +432,7 @@ export default function Limit(props: LimitPropsIF) {
                 </div>
                 <LimitExtraInfo
                     tokenPair={tokenPair}
-                    gasPriceinGwei={gasPriceinGwei}
+                    gasPriceinDollars={gasPriceinDollars}
                     poolPriceDisplay={poolPriceDisplay || 0}
                     slippageTolerance={slippageTolerancePercentage}
                     liquidityProviderFee={0}

@@ -5,7 +5,7 @@ import { RiArrowDownSLine } from 'react-icons/ri';
 
 // START: Import Local Files
 import styles from './ExtraInfo.module.css';
-import truncateDecimals from '../../../utils/data/truncateDecimals';
+// import truncateDecimals from '../../../utils/data/truncateDecimals';
 // import makePriceDisplay from './makePriceDisplay';
 import { TokenPairIF } from '../../../utils/interfaces/exports';
 import TooltipComponent from '../../Global/TooltipComponent/TooltipComponent';
@@ -20,7 +20,7 @@ interface ExtraInfoPropsIF {
     slippageTolerance: number;
     liquidityProviderFee: number;
     quoteTokenIsBuy: boolean;
-    gasPriceinGwei: number | undefined;
+    gasPriceinDollars: string | undefined;
     didUserFlipDenom: boolean;
     isTokenABase: boolean;
     isDenomBase: boolean;
@@ -35,7 +35,7 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
         slippageTolerance,
         liquidityProviderFee,
         // quoteTokenIsBuy,
-        gasPriceinGwei,
+        gasPriceinDollars,
         // didUserFlipDenom,
         isTokenABase,
         // isDenomBase,
@@ -43,7 +43,7 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
 
     const [showExtraDetails, setShowExtraDetails] = useState<boolean>(false);
 
-    const truncatedGasInGwei = gasPriceinGwei ? truncateDecimals(gasPriceinGwei, 2) : undefined;
+    // const truncatedGasInGwei = gasPriceinGwei ? truncateDecimals(gasPriceinGwei, 2) : undefined;
 
     // const reverseDisplay = (isTokenABase && !isDenomBase) || (!isTokenABase && isDenomBase);
     const tradeData = useAppSelector((state) => state.tradeData);
@@ -188,8 +188,8 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
                 onClick={() => setShowExtraDetails(!showExtraDetails)}
             >
                 <div className={styles.gas_pump}>
-                    <FaGasPump size={15} />{' '}
-                    {truncatedGasInGwei ? `${truncatedGasInGwei} gwei` : '…'}
+                    <FaGasPump size={15} /> {gasPriceinDollars ? gasPriceinDollars : '…'}
+                    {/* {truncatedGasInGwei ? `${truncatedGasInGwei} gwei` : '…'} */}
                 </div>
                 <div className={styles.token_amount}>
                     {isDenomBase

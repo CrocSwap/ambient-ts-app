@@ -40,7 +40,7 @@ interface SwapPropsIF {
     isPairStable: boolean;
     provider?: ethers.providers.Provider;
     isOnTradeRoute?: boolean;
-    gasPriceinGwei: number | undefined;
+    gasPriceinDollars: string | undefined;
     nativeBalance: string;
     lastBlockNumber: number;
     baseTokenBalance: string;
@@ -69,7 +69,7 @@ export default function Swap(props: SwapPropsIF) {
         provider,
         isOnTradeRoute,
         nativeBalance,
-        gasPriceinGwei,
+        gasPriceinDollars,
         baseTokenBalance,
         quoteTokenBalance,
         baseTokenDexBalance,
@@ -425,7 +425,7 @@ export default function Swap(props: SwapPropsIF) {
                         slippageTolerance={slippageTolerancePercentage}
                         liquidityProviderFee={0.3}
                         quoteTokenIsBuy={true}
-                        gasPriceinGwei={gasPriceinGwei}
+                        gasPriceinDollars={gasPriceinDollars}
                         didUserFlipDenom={tradeData.didUserFlipDenom}
                         isDenomBase={tradeData.isDenomBase}
                     />

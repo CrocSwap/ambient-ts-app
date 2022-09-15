@@ -1665,7 +1665,8 @@ export default function App() {
         })();
     }, [crocEnv, account, lastBlockNumber]);
 
-    const [gasPriceinGwei, setGasPriceinGwei] = useState<number | undefined>();
+    // const [gasPriceinGwei, setGasPriceinGwei] = useState<string | undefined>();
+    const [gasPriceinDollars, setGasPriceinDollars] = useState<string | undefined>();
 
     useEffect(() => {
         fetch(
@@ -1674,7 +1675,16 @@ export default function App() {
             .then((response) => response.json())
             .then((response) => {
                 if (response.result.ProposeGasPrice) {
-                    setGasPriceinGwei(parseInt(response.result.ProposeGasPrice));
+                    const gasPriceInGwei = parseInt(response.result.ProposeGasPrice);
+                    // setGasPriceinGwei(gasPriceInGwei.toString())
+                    const gasPriceInDollarsNum = gasPriceInGwei * 126268 * Math.pow(10, -9) * 1600;
+                    setGasPriceinDollars(
+                        '$' +
+                            gasPriceInDollarsNum.toLocaleString(undefined, {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                            }),
+                    );
                 }
             })
             .catch(console.log);
@@ -1710,7 +1720,7 @@ export default function App() {
         provider: provider,
         swapSlippage: swapSlippage,
         isPairStable: isPairStable,
-        gasPriceinGwei: gasPriceinGwei,
+        gasPriceinDollars: gasPriceinDollars,
         nativeBalance: nativeBalance,
         lastBlockNumber: lastBlockNumber,
         baseTokenBalance: baseTokenBalance,
@@ -1738,7 +1748,7 @@ export default function App() {
         swapSlippage: swapSlippage,
         isPairStable: isPairStable,
         isOnTradeRoute: true,
-        gasPriceinGwei: gasPriceinGwei,
+        gasPriceinDollars: gasPriceinDollars,
         nativeBalance: nativeBalance,
         lastBlockNumber: lastBlockNumber,
         baseTokenBalance: baseTokenBalance,
@@ -1765,7 +1775,7 @@ export default function App() {
         mintSlippage: mintSlippage,
         isPairStable: isPairStable,
         isOnTradeRoute: true,
-        gasPriceinGwei: gasPriceinGwei,
+        gasPriceinDollars: gasPriceinDollars,
         nativeBalance: nativeBalance,
         lastBlockNumber: lastBlockNumber,
         baseTokenBalance: baseTokenBalance,
@@ -1797,7 +1807,7 @@ export default function App() {
         mintSlippage: mintSlippage,
         isPairStable: isPairStable,
         lastBlockNumber: lastBlockNumber,
-        gasPriceinGwei: gasPriceinGwei,
+        gasPriceinDollars: gasPriceinDollars,
         baseTokenAddress: baseTokenAddress,
         quoteTokenAddress: quoteTokenAddress,
         poolPriceNonDisplay: poolPriceNonDisplay,
