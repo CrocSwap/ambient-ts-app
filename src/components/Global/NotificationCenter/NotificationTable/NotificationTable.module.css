@@ -1,6 +1,24 @@
-.container{
+.main_container{
     z-index: 10;
     width: 380px;
+    /* padding: 1rem; */
+
+    height: calc(100vh - 9rem);
+    position: absolute;
+  
+    backdrop-filter: blur( 6px );
+    -webkit-backdrop-filter: blur( 6px );
+    transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    right: 0;
+    top: 60px;
+
+   
+}
+
+.container{
+ 
+    z-index: 10;
+    width: 100%;
     /* padding: 1rem; */
 
     height: 400px;
@@ -10,7 +28,7 @@
     box-shadow: 0px 35px 20px rgba(0, 0, 0, 0.3);
     transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
     right: 0;
-    top: 60px;
+    /* top: 60px; */
 
     display: flex;
     flex-direction: column;

@@ -31,18 +31,20 @@ const NotificationTable = (props: NotificationTableProps) => {
 
     if (!showNotificationTable) return null;
     return (
-        <div className={styles.container}>
-            <section className={styles.header}>Recent Transactions</section>
+        <div className={styles.main_container}>
+            <div className={styles.container}>
+                <section className={styles.header}>Recent Transactions</section>
 
-            <section className={styles.content}>
-                {pendingTransactionsDisplay}
-                {failedTransactionsDisplay}
-                {successfulTransactionsDisplay}
-            </section>
+                <section className={styles.content}>
+                    {pendingTransactionsDisplay}
+                    {failedTransactionsDisplay}
+                    {successfulTransactionsDisplay}
+                </section>
 
-            <section className={styles.footer}>
-                <button>Clear all</button>
-            </section>
+                <section className={styles.footer}>
+                    <button>Clear all</button>
+                </section>
+            </div>
         </div>
     );
 };

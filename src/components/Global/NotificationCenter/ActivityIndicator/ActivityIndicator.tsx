@@ -50,6 +50,7 @@ const ActivityIndicator = (props: AcitivtyIndicatorProps) => {
                     exit='hidden'
                     animate='visible'
                     variants={animStates}
+                    style={{ cursor: 'pointer' }}
                     onClick={() => setShowNotificationTable(!showNotificationTable)}
                 >
                     <motion.div
