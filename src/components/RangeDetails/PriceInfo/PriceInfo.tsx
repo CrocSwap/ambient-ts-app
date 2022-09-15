@@ -12,6 +12,7 @@ type ItemIF = {
     checked: boolean;
 };
 interface IPriceInfoProps {
+    usdValue: string;
     lowRangeDisplay: string;
     highRangeDisplay: string;
     baseLiquidityDisplay: string | undefined;
@@ -31,6 +32,7 @@ interface IPriceInfoProps {
 export default function PriceInfo(props: IPriceInfoProps) {
     const dispatch = useAppDispatch();
     const {
+        usdValue,
         lowRangeDisplay,
         highRangeDisplay,
         baseLiquidityDisplay,
@@ -120,7 +122,7 @@ export default function PriceInfo(props: IPriceInfoProps) {
         >
             <Row>
                 <span>Total Value</span>
-                <div className={styles.info_text}>$4,200.00</div>
+                <div className={styles.info_text}>{usdValue}</div>
             </Row>
         </motion.div>
     );
