@@ -279,8 +279,7 @@ export default function Chart(props: ChartData) {
     // Set Zoom
     useEffect(() => {
         if (scaleData !== undefined) {
-            let lastY = 0;
-            let yOffset = 0;
+            const zoomScale = [scaleData.yScaleCopy.copy()];
 
             const zoom = d3
                 .zoom()
@@ -291,11 +290,13 @@ export default function Chart(props: ChartData) {
                     );
 
                     if (event.sourceEvent && event.sourceEvent.type != 'wheel') {
-                        lastY = event.transform.y - yOffset;
-                        const translate = d3.zoomIdentity.translate(0, lastY);
-                        scaleData.yScale.domain(translate.rescaleY(scaleData.yScaleCopy).domain());
-                    } else {
-                        yOffset = event.transform.y - lastY;
+                        scaleData.yScale.domain(
+                            event.transform.rescaleY(scaleData.yScaleCopy).domain(),
+                        );
+                        scaleData.yScaleCopy.domain(
+                            event.transform.rescaleY(scaleData.yScaleCopy).domain(),
+                        );
+                        console.log('zoom', scaleData.yScaleCopy.domain());
                     }
 
                     render();
@@ -312,7 +313,15 @@ export default function Chart(props: ChartData) {
                 }) as any;
 
             const yAxisDrag = d3.drag().on('drag', (event: any) => {
-                console.log({ event });
+                if (event.dy <= 0) {
+                    zoomScale[0].domain(scaleData.yScaleCopy.domain());
+
+                    scaleData.yScaleCopy.domain(scaleData.yScale.domain());
+                    console.log('if drag', scaleData.yScaleCopy.domain());
+                } else {
+                    scaleData.yScaleCopy.domain(zoomScale[0].domain());
+                    console.log('else drag', scaleData.yScaleCopy.domain());
+                }
                 const factor = Math.pow(2, -event.dy * 0.01);
                 d3.select(d3PlotArea.current).call(yAxisZoom.scaleBy, factor);
             }) as any;
@@ -474,7 +483,7 @@ export default function Chart(props: ChartData) {
     useEffect(() => {
         if (scaleData !== undefined) {
             const dragRange = d3.drag().on('drag', function (event, d: any) {
-                const newValue = scaleData.yScale.invert(d3.pointer(event)[1] - 169);
+                const newValue = scaleData.yScale.invert(d3.pointer(event)[1] - 215);
                 if (!isAdvancedModeActive) {
                     let valueWithRange: number;
 
