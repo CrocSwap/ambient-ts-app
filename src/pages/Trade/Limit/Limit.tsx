@@ -34,7 +34,7 @@ interface LimitPropsIF {
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     provider?: ethers.providers.Provider;
     isOnTradeRoute?: boolean;
-    gasPriceinDollars: string | undefined;
+    gasPriceInGwei: number | undefined;
     nativeBalance: string;
     lastBlockNumber: number;
     baseTokenBalance: string;
@@ -73,7 +73,7 @@ export default function Limit(props: LimitPropsIF) {
         quoteTokenDexBalance,
         tokenPair,
         isTokenABase,
-        gasPriceinDollars,
+        gasPriceInGwei,
         poolPriceDisplay,
         poolPriceNonDisplay,
         tokenAAllowance,
@@ -136,6 +136,7 @@ export default function Limit(props: LimitPropsIF) {
     const [limitRate, setLimitRate] = useState<string>(tradeData.limitPrice);
     const [limitTick, setLimitTick] = useState<number>(0);
     const [insideTickDisplayPrice, setInsideTickDisplayPrice] = useState<number>(0);
+    const [orderGasPriceInDollars, setOrderGasPriceInDollars] = useState<string | undefined>();
 
     const [initialLoad, setInitialLoad] = useState<boolean>(true);
 
@@ -361,6 +362,20 @@ export default function Limit(props: LimitPropsIF) {
         }
     };
 
+    useEffect(() => {
+        if (gasPriceInGwei) {
+            const gasPriceInDollarsNum = gasPriceInGwei * 120151 * Math.pow(10, -9) * 1600;
+
+            setOrderGasPriceInDollars(
+                '$' +
+                    gasPriceInDollarsNum.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                    }),
+            );
+        }
+    }, [gasPriceInGwei]);
+
     // const tokenABalance = isTokenABase ? baseTokenBalance : quoteTokenBalance;
     // const tokenBBalance = isTokenABase ? quoteTokenBalance : baseTokenBalance;
 
@@ -432,7 +447,7 @@ export default function Limit(props: LimitPropsIF) {
                 </div>
                 <LimitExtraInfo
                     tokenPair={tokenPair}
-                    gasPriceinDollars={gasPriceinDollars}
+                    orderGasPriceInDollars={orderGasPriceInDollars}
                     poolPriceDisplay={poolPriceDisplay || 0}
                     slippageTolerance={slippageTolerancePercentage}
                     liquidityProviderFee={0}

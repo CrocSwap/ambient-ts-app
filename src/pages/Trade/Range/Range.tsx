@@ -50,7 +50,7 @@ interface RangePropsIF {
     mintSlippage: SlippagePairIF;
     isPairStable: boolean;
     provider?: ethers.providers.Provider;
-    gasPriceinDollars: string | undefined;
+    gasPriceInGwei: number | undefined;
     lastBlockNumber: number;
     baseTokenAddress: string;
     quoteTokenAddress: string;
@@ -91,7 +91,7 @@ export default function Range(props: RangePropsIF) {
         setRecheckTokenAApproval,
         tokenBAllowance,
         setRecheckTokenBApproval,
-        gasPriceinDollars,
+        gasPriceInGwei,
         chainId,
         activeTokenListsChanged,
         indicateActiveTokenListsChanged,
@@ -109,6 +109,7 @@ export default function Range(props: RangePropsIF) {
     const [showConfirmation, setShowConfirmation] = useState(true);
     const [txErrorCode, setTxErrorCode] = useState(0);
     const [txErrorMessage, setTxErrorMessage] = useState('');
+    const [rangeGasPriceinDollars, setRangeGasPriceinDollars] = useState<string | undefined>();
 
     const resetConfirmation = () => {
         setShowConfirmation(true);
@@ -702,6 +703,20 @@ export default function Range(props: RangePropsIF) {
         }
     };
 
+    useEffect(() => {
+        if (gasPriceInGwei) {
+            const gasPriceInDollarsNum = gasPriceInGwei * 120269 * Math.pow(10, -9) * 1600;
+
+            setRangeGasPriceinDollars(
+                '$' +
+                    gasPriceInDollarsNum.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                    }),
+            );
+        }
+    }, [gasPriceInGwei]);
+
     // TODO:  @Emily refactor this fragment to use the same denomination switch
     // TODO:  ... component used in the Market and Limit modules
     const denominationSwitch = (
@@ -858,7 +873,7 @@ export default function Range(props: RangePropsIF) {
     // props for <RangeExtraInfo/> React element
     const rangeExtraInfoProps = {
         tokenPair: tokenPair,
-        gasPriceinDollars: gasPriceinDollars,
+        rangeGasPriceinDollars: rangeGasPriceinDollars,
         poolPriceDisplay: displayPriceString,
         slippageTolerance: slippageTolerancePercentage,
         liquidityProviderFee: 0.3,

@@ -40,7 +40,7 @@ interface SwapPropsIF {
     isPairStable: boolean;
     provider?: ethers.providers.Provider;
     isOnTradeRoute?: boolean;
-    gasPriceinDollars: string | undefined;
+    gasPriceInGwei: number | undefined;
     nativeBalance: string;
     lastBlockNumber: number;
     baseTokenBalance: string;
@@ -69,7 +69,7 @@ export default function Swap(props: SwapPropsIF) {
         provider,
         isOnTradeRoute,
         nativeBalance,
-        gasPriceinDollars,
+        gasPriceInGwei,
         baseTokenBalance,
         quoteTokenBalance,
         baseTokenDexBalance,
@@ -157,6 +157,7 @@ export default function Swap(props: SwapPropsIF) {
     const [txErrorMessage, setTxErrorMessage] = useState('');
     const [priceImpact, setPriceImpact] = useState<CrocImpact | undefined>();
     const [showConfirmation, setShowConfirmation] = useState<boolean>(true);
+    const [swapGasPriceinDollars, setSwapGasPriceinDollars] = useState<string | undefined>();
 
     const resetConfirmation = () => {
         setShowConfirmation(true);
@@ -354,6 +355,20 @@ export default function Swap(props: SwapPropsIF) {
         </RelativeModal>
     ) : null;
 
+    useEffect(() => {
+        if (gasPriceInGwei) {
+            const gasPriceInDollarsNum = gasPriceInGwei * 126268 * Math.pow(10, -9) * 1600;
+
+            setSwapGasPriceinDollars(
+                '$' +
+                    gasPriceInDollarsNum.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                    }),
+            );
+        }
+    }, [gasPriceInGwei]);
+
     const isTokenAAllowanceSufficient = parseFloat(tokenAAllowance) >= parseFloat(tokenAInputQty);
 
     const swapContainerStyle = pathname == '/swap' ? styles.swap_page_container : null;
@@ -425,7 +440,7 @@ export default function Swap(props: SwapPropsIF) {
                         slippageTolerance={slippageTolerancePercentage}
                         liquidityProviderFee={0.3}
                         quoteTokenIsBuy={true}
-                        gasPriceinDollars={gasPriceinDollars}
+                        swapGasPriceinDollars={swapGasPriceinDollars}
                         didUserFlipDenom={tradeData.didUserFlipDenom}
                         isDenomBase={tradeData.isDenomBase}
                     />
