@@ -25,6 +25,10 @@ interface RangesPropsIF {
     notOnTradeRoute?: boolean;
     graphData: graphData;
     lastBlockNumber: number;
+    baseTokenBalance: string;
+    quoteTokenBalance: string;
+    baseTokenDexBalance: string;
+    quoteTokenDexBalance: string;
     expandTradeTable: boolean;
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
@@ -45,6 +49,10 @@ export default function Ranges(props: RangesPropsIF) {
         chainId,
         isShowAllEnabled,
         notOnTradeRoute,
+        baseTokenBalance,
+        quoteTokenBalance,
+        baseTokenDexBalance,
+        quoteTokenDexBalance,
         graphData,
         lastBlockNumber,
         expandTradeTable,
@@ -100,6 +108,10 @@ export default function Ranges(props: RangesPropsIF) {
                         chainId={chainId}
                         key={idx}
                         portfolio={portfolio}
+                        baseTokenBalance={baseTokenBalance}
+                        quoteTokenBalance={quoteTokenBalance}
+                        baseTokenDexBalance={baseTokenDexBalance}
+                        quoteTokenDexBalance={quoteTokenDexBalance}
                         notOnTradeRoute={notOnTradeRoute}
                         position={position}
                         isAllPositionsEnabled={isShowAllEnabled}

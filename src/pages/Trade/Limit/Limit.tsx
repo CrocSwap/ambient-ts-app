@@ -34,7 +34,8 @@ interface LimitPropsIF {
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     provider?: ethers.providers.Provider;
     isOnTradeRoute?: boolean;
-    gasPriceinGwei: number | undefined;
+    gasPriceInGwei: number | undefined;
+    ethMainnetUsdPrice?: number;
     nativeBalance: string;
     lastBlockNumber: number;
     baseTokenBalance: string;
@@ -52,6 +53,10 @@ interface LimitPropsIF {
     activeTokenListsChanged: boolean;
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
     openModalWallet: () => void;
+
+    openGlobalModal: (content: React.ReactNode) => void;
+
+    closeGlobalModal: () => void;
     setLimitRate: React.Dispatch<React.SetStateAction<string>>;
     limitRate: string;
 }
@@ -71,7 +76,8 @@ export default function Limit(props: LimitPropsIF) {
         quoteTokenDexBalance,
         tokenPair,
         isTokenABase,
-        gasPriceinGwei,
+        gasPriceInGwei,
+        ethMainnetUsdPrice,
         poolPriceDisplay,
         poolPriceNonDisplay,
         tokenAAllowance,
@@ -135,6 +141,7 @@ export default function Limit(props: LimitPropsIF) {
 
     const [limitTick, setLimitTick] = useState<number>(0);
     const [insideTickDisplayPrice, setInsideTickDisplayPrice] = useState<number>(0);
+    const [orderGasPriceInDollars, setOrderGasPriceInDollars] = useState<string | undefined>();
 
     const [initialLoad, setInitialLoad] = useState<boolean>(true);
 
@@ -275,11 +282,21 @@ export default function Limit(props: LimitPropsIF) {
         const buyToken = tradeData.tokenB.address;
         const sellQty = tokenAInputQty;
         const buyQty = tokenBInputQty;
+
         const qty = isTokenAPrimary ? sellQty : buyQty;
 
-        const seller = new CrocEnv(provider).sell(sellToken, qty);
-        const ko = seller.atLimit(buyToken, limitTick);
+        // console.log({ qty });
+        // console.log({ isTokenAPrimary });
+        // console.log({ buyToken });
+        // console.log({ sellToken });
 
+        const order = isTokenAPrimary
+            ? new CrocEnv(provider).sell(sellToken, qty)
+            : new CrocEnv(provider).buy(buyToken, qty);
+        // const seller = new CrocEnv(provider).sell(sellToken, qty);
+
+        const ko = order.atLimit(isTokenAPrimary ? buyToken : sellToken, limitTick);
+        // console.log({ ko });
         if (await ko.willMintFail()) {
             console.log('Cannot send limit order: Knockout price inside spread');
             setTxErrorMessage('Limit inside market price');
@@ -311,11 +328,13 @@ export default function Limit(props: LimitPropsIF) {
             <ConfirmLimitModal
                 onClose={handleModalClose}
                 tokenPair={tokenPair}
+                poolPriceDisplay={poolPriceDisplay || 0}
                 initiateLimitOrderMethod={sendLimitOrder}
                 tokenAInputQty={tokenAInputQty}
                 tokenBInputQty={tokenBInputQty}
                 isTokenAPrimary={isTokenAPrimary}
-                limitRate={limitRate}
+                // limitRate={limitRate}
+                insideTickDisplayPrice={insideTickDisplayPrice}
                 newLimitOrderTransactionHash={newLimitOrderTransactionHash}
                 txErrorCode={txErrorCode}
                 txErrorMessage={txErrorMessage}
@@ -347,6 +366,20 @@ export default function Limit(props: LimitPropsIF) {
             setRecheckTokenAApproval(true);
         }
     };
+
+    useEffect(() => {
+        if (gasPriceInGwei && ethMainnetUsdPrice) {
+            const gasPriceInDollarsNum = gasPriceInGwei * 82459 * 1e-9 * ethMainnetUsdPrice;
+
+            setOrderGasPriceInDollars(
+                '~$' +
+                    gasPriceInDollarsNum.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                    }),
+            );
+        }
+    }, [gasPriceInGwei, ethMainnetUsdPrice]);
 
     // const tokenABalance = isTokenABase ? baseTokenBalance : quoteTokenBalance;
     // const tokenBBalance = isTokenABase ? quoteTokenBalance : baseTokenBalance;
@@ -419,7 +452,7 @@ export default function Limit(props: LimitPropsIF) {
                 </div>
                 <LimitExtraInfo
                     tokenPair={tokenPair}
-                    gasPriceinGwei={gasPriceinGwei}
+                    orderGasPriceInDollars={orderGasPriceInDollars}
                     poolPriceDisplay={poolPriceDisplay || 0}
                     slippageTolerance={slippageTolerancePercentage}
                     liquidityProviderFee={0}

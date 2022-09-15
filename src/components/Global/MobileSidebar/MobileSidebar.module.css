@@ -1,0 +1,50 @@
+
+.container{
+    z-index: 999;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 300px;
+    background: var(--dark1);
+    transition: all 600ms ease-out;
+    display: none;
+   
+  }
+
+  .container_open{
+            
+    backdrop-filter: blur(1rem);
+    background: rgba( 23, 29, 39, 0.5 );
+/* box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 ); */
+backdrop-filter: blur( 13px );
+-webkit-backdrop-filter: blur( 13px );
+transition: background 400ms ease-out;
+
+  }
+  .content{
+ margin-top: 6rem;
+ padding: 0 1rem;
+  }
+
+  .toggle_button{
+    outline: none;
+    border: none;
+    cursor: pointer;
+    position: absolute;
+    top: 18px;
+    right: 15px;
+    width: 30px;
+    height: 30px;
+    /* border-radius: 50%; */
+    background: transparent;
+    z-index: 1000;
+
+    display: none;
+  }
+
+  @media (max-width: 35em) {
+.container, .toggle_button{
+    display: block;
+}
+  }

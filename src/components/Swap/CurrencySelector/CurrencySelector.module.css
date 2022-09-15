@@ -24,13 +24,40 @@
 }
 
 .surplus_container {
+    /* width: 200px; */
+    margin-right: 15px;
     display: flex;
     flex-direction: row;
-    gap: 5px;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 2rem;
 }
 
 .balance_with_pointer {
+    display: flex;
+    flex-direction: row;
+
+    align-items: center;
+    margin-right: 5px;
+    gap: 5px;
     cursor: pointer;
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+}
+
+.balance_column {
+    display: flex;
+    overflow: hidden;
+    flex-direction: column;
+}
+
+.wallet_logo {
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+}
+
+.enabled_logo {
+    filter: brightness(0) invert(1);
 }
 
 .swapbox_top {
@@ -80,7 +107,8 @@
     justify-content: space-between;
     align-items: center;
     min-height: 33px;
-    margin: 4px 0;
+
+    margin: 6px 10px 0px 10px;
 }
 
 .token_select_button {
@@ -102,11 +130,18 @@
     color: hotpink;
 }
 
+.grey_logo img {
+    filter: grayscale(100%);
+}
+
 .surplus_toggle {
     display: flex;
     flex-direction: row;
     align-items: center;
     gap: 8px;
+    padding-top: 3px;
+    /* padding-left: 10px;
+    padding-right: 10px; */
 }
 
 /* modal */

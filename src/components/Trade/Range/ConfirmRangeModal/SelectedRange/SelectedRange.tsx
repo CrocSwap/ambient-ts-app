@@ -103,12 +103,12 @@ export default function SelectedRange(props: SelectedRangeProps) {
         return (
             <div className={styles.price_range_container}>
                 <div className={styles.price_range_content}>
-                    <span className={styles.price_range_title}>{title}</span>
-                    <span className={styles.price_range_amount}>{value}</span>
-                    <span className={styles.price_range_title}>{tokens}</span>
-                    <span className={styles.price_range_info}>
+                    <p className={styles.price_range_title}>{title}</p>
+                    <p className={styles.price_range_amount}>{value}</p>
+                    <p className={styles.price_range_title}>{tokens}</p>
+                    <p className={styles.price_range_info}>
                         Your position will be 100% composed of {currentToken} at this price.
-                    </span>
+                    </p>
                 </div>
             </div>
         );
@@ -143,19 +143,15 @@ export default function SelectedRange(props: SelectedRangeProps) {
         </div>
     );
 
-    const currentPriceDisplay = (
-        <div className={styles.currentPrice_display}>
-            <div className={styles.currentPrice_container}>
-                <span className={styles.currentPrice_title}>Current price</span>
-                <span className={styles.currentPrice_amount}>
-                    {displayPriceString}
-                    {/* {denomInBase ? 1 / parseFloat(spotPriceDisplay) : spotPriceDisplay} */}
-                </span>
-                <span className={styles.currentPrice_info}>
-                    {reverseDisplay
-                        ? `${tokenPair.dataTokenB.symbol} per ${tokenPair.dataTokenA.symbol}`
-                        : `${tokenPair.dataTokenA.symbol} per ${tokenPair.dataTokenB.symbol}`}
-                </span>
+    const extraInfoData = (
+        <div className={styles.extra_info_container}>
+            <div className={styles.row}>
+                <p>Current Price</p>
+                <p>{displayPriceString}</p>
+            </div>
+            <div className={styles.row}>
+                <p>Current Fee Rate</p>
+                <p>0.05%</p>
             </div>
         </div>
     );
@@ -163,12 +159,9 @@ export default function SelectedRange(props: SelectedRangeProps) {
     return (
         <>
             <div className={styles.selected_range}>
-                <div className={styles.selected_range_button_container}>
-                    <div>Selected Range</div>
-                    {switchButtons}
-                </div>
+                {switchButtons}
                 {!isAmbient ? selectedRangeDisplay : null}
-                {currentPriceDisplay}
+                {extraInfoData}
             </div>
         </>
     );
