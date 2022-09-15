@@ -2,13 +2,13 @@ import styles from './SwapButton.module.css';
 // import { useState } from 'react';
 import Button from '../../Global/Button/Button';
 
-interface ISwapButtonProps {
+interface ITransactionButtonProps {
     onClickFn: () => void;
     swapAllowed: boolean;
     swapButtonErrorMessage: string;
 }
 
-export default function SwapButton(props: ISwapButtonProps) {
+export default function SwapButton(props: ITransactionButtonProps) {
     const ButtonDisplay = (
         <div className={styles.button_container}>
             <Button

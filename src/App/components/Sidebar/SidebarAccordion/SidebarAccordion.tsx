@@ -6,7 +6,7 @@ import { MdPlayArrow } from 'react-icons/md';
 // START: Import Local Files
 // import notificationStyles from './SidebarAccordion.module.css'
 import styles from '../Sidebar.module.css';
-import { ISwap } from '../../../../utils/state/graphDataSlice';
+import { ITransaction } from '../../../../utils/state/graphDataSlice';
 import { PositionIF } from '../../../../utils/interfaces/PositionIF';
 // import { CircleLoader } from '../../../../components/Global/LoadingAnimations/CircleLoader/CircleLoader';
 // import { AiFillBell } from 'react-icons/ai'
@@ -22,7 +22,7 @@ interface SidebarAccordionPropsIF {
         data: ReactNode;
     };
     idx: number | string;
-    mostRecent?: PositionIF[] | ISwap[] | string[];
+    mostRecent?: PositionIF[] | ITransaction[] | string[];
 }
 
 export default function SidebarAccordion(props: SidebarAccordionPropsIF) {

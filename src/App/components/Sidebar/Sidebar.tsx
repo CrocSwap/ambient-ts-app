@@ -74,7 +74,7 @@ export default function Sidebar(props: SidebarPropsIF) {
     } = props;
 
     const graphData = useAppSelector((state) => state.graphData);
-    const swapsByUser = graphData.swapsByUser.swaps;
+    const swapsByUser = graphData.changesByUser.changes;
     const positionsByUser = graphData.positionsByUser.positions;
 
     const mostRecentTransactions = swapsByUser.slice(0, 4);

@@ -1,9 +1,11 @@
 .range_column {
+    white-space: nowrap;
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 .range_sing {
+    white-space: nowrap;
     display: none;
 }
 

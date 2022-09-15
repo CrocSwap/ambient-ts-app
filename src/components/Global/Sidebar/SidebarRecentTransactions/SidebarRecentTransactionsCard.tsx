@@ -1,5 +1,5 @@
 import { TokenIF } from '../../../../utils/interfaces/TokenIF';
-import { ISwap } from '../../../../utils/state/graphDataSlice';
+import { ITransaction } from '../../../../utils/state/graphDataSlice';
 
 import styles from './SidebarRecentTransactionsCard.module.css';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
@@ -10,7 +10,7 @@ import { formatAmount } from '../../../../utils/numbers';
 // import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 
 interface TransactionProps {
-    tx: ISwap;
+    tx: ITransaction;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     coinGeckoTokenMap?: Map<string, TokenIF>;
     chainId: string;
@@ -68,7 +68,7 @@ export default function SidebarRecentTransactionsCard(props: TransactionProps) {
         }
     }, [JSON.stringify(tx)]);
 
-    function handleRecentTransactionClick(tx: ISwap) {
+    function handleRecentTransactionClick(tx: ITransaction) {
         setOutsideControl(true);
         setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
         setIsShowAllEnabled(false);
@@ -84,7 +84,7 @@ export default function SidebarRecentTransactionsCard(props: TransactionProps) {
             <div>
                 {baseToken?.symbol} / {quoteToken?.symbol}
             </div>
-            <div>Market</div>
+            <div>{tx.changeType}</div>
             <div className={styles.status_display}>
                 {valueUSD ? `$${valueUSD}` : '…'}
                 {/* {baseTokenDisplay} / {quoteTokenDisplay} */}
