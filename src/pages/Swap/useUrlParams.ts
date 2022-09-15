@@ -72,9 +72,11 @@ export const useUrlParams = (
             if (addr === ethers.constants.AddressZero) {
                 return nativeToken;
             };
-            
+
+            let listCounter = 0;
+
             // function to find token if not the native token
-            const findToken = (listName: string, limiter=0): TokenIF | undefined => {
+            const findToken = (listNames: string[], limiter=0): TokenIF | undefined => {
                 // get allTokenLists from local storage
                 const allTokenLists = JSON.parse(
                     localStorage.getItem('allTokenLists') as string
@@ -83,18 +85,18 @@ export const useUrlParams = (
                 if (
                     // make sure allTokenLists is not undefined
                     allTokenLists &&
-                    // make sure CoinGecko is in allTokenLists
+                    // make sure desired list is in allTokenLists
                     allTokenLists.some(
-                        (list: TokenListIF) => list.name === listName && list.default
+                        (list: TokenListIF) => list.name === listNames[listCounter] && list.default
                     )
                 ) {
-                    // extract CoinGecko token list
+                    // extract desired token list
                     const { tokens } = allTokenLists.find((list: TokenListIF) => (
-                        list.name === listName && list.default
+                        list.name === listNames[listCounter] && list.default
                     ));
-                    // see if the desired token is in CoinGecko
+                    // see if the desired token is in the list
                     const tokenOnList = tokens.some((token: TokenIF) => (
-                        token.address === addr &&
+                        token.address.toLowerCase() === addr &&
                         token.chainId === parseInt(chainToUse)
                     ));
                     if (tokenOnList) {
@@ -103,13 +105,16 @@ export const useUrlParams = (
                         return getTokenFromChain(addr);
                     }
                 }
-                else if (limiter > 50) {
+                else if (limiter > 50 && listCounter < listNames.length) {
+                    listCounter++;
+                    return findToken(listNames);
+                } else if (limiter > 50 && listCounter >= listNames.length) {
                     return getTokenFromChain(addr);
                 } else {
-                    return findToken(listName, limiter + 1);
+                    return findToken(listNames, limiter + 1);
                 }
             }
-            const tkn = findToken('CoinGecko');
+            const tkn = findToken(['Ambient Token List', 'CoinGecko']);
             return tkn;
         };
 
@@ -156,7 +161,6 @@ export const useUrlParams = (
                 fetchAndFormatTokenData(addrTokenA),
                 fetchAndFormatTokenData(addrTokenB)
             ]).then(res => {
-                console.log({res});
                 dispatch(setTokenA(res[0] as TokenIF));
                 dispatch(setTokenB(res[1] as TokenIF));
             });
