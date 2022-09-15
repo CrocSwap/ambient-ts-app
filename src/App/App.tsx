@@ -1986,7 +1986,10 @@ export default function App() {
         : 'sidebar_content_layout_close';
 
     const showSidebarOrNullStyle =
-        currentLocation == '/' || currentLocation == '/swap' || currentLocation == '/404'
+        currentLocation == '/' ||
+        currentLocation == '/swap' ||
+        currentLocation == '/404' ||
+        currentLocation.startsWith('/swap')
             ? 'hide_sidebar'
             : sidebarDislayStyle;
 
@@ -1996,7 +1999,8 @@ export default function App() {
 
     // const [isGlobalModalOpen, openGlobalModal, closeGlobalModal, currentContent] = useGlobalModal();
 
-    const swapParams = '/swap/chain=0x5&tokenA=0x0000000000000000000000000000000000000000&tokenB=0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C';
+    const swapParams =
+        '/swap/chain=0x5&tokenA=0x0000000000000000000000000000000000000000&tokenB=0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C';
 
     return (
         <>
@@ -2005,7 +2009,7 @@ export default function App() {
                 {currentLocation !== '/404' && <PageHeader {...headerProps} />}
                 {/* <MobileSidebar/> */}
                 <main className={`${showSidebarOrNullStyle} ${swapBodyStyle}`}>
-                    {sidebarRender}
+                    {!currentLocation.startsWith('/swap') && sidebarRender}
                     <Routes>
                         <Route
                             index

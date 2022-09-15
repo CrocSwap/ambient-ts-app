@@ -384,8 +384,8 @@ export default function Swap(props: SwapPropsIF) {
 
     const isTokenAAllowanceSufficient = parseFloat(tokenAAllowance) >= parseFloat(tokenAInputQty);
 
-    const swapContainerStyle = pathname == '/swap' ? styles.swap_page_container : null;
-    const swapPageStyle = pathname == '/swap' ? styles.swap_page : null;
+    const swapContainerStyle = pathname.startsWith('/swap') ? styles.swap_page_container : null;
+    const swapPageStyle = pathname.startsWith('/swap') ? styles.swap_page : null;
     return (
         <main data-testid={'swap'} className={swapPageStyle}>
             <div className={`${swapContainerStyle}`}>
