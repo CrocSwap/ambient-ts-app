@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // START: Import React and Dongles
 import { Dispatch, SetStateAction, useState } from 'react';
 import { Outlet, useOutletContext, NavLink } from 'react-router-dom';
@@ -16,7 +17,6 @@ import { CandleData } from '../../utils/state/graphDataSlice';
 import { PoolIF, TokenIF, TokenPairIF } from '../../utils/interfaces/exports';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import { SketchPicker } from 'react-color';
-import { border } from '@mui/system';
 
 // interface for React functional component props
 interface TradePropsIF {
