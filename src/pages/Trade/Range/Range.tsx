@@ -55,7 +55,8 @@ interface RangePropsIF {
     mintSlippage: SlippagePairIF;
     isPairStable: boolean;
     provider?: ethers.providers.Provider;
-    gasPriceinGwei: number | undefined;
+    gasPriceInGwei: number | undefined;
+    ethMainnetUsdPrice?: number;
     lastBlockNumber: number;
     baseTokenAddress: string;
     quoteTokenAddress: string;
@@ -96,7 +97,8 @@ export default function Range(props: RangePropsIF) {
         setRecheckTokenAApproval,
         tokenBAllowance,
         setRecheckTokenBApproval,
-        gasPriceinGwei,
+        gasPriceInGwei,
+        ethMainnetUsdPrice,
         chainId,
         activeTokenListsChanged,
         indicateActiveTokenListsChanged,
@@ -114,6 +116,7 @@ export default function Range(props: RangePropsIF) {
     const [showConfirmation, setShowConfirmation] = useState(true);
     const [txErrorCode, setTxErrorCode] = useState(0);
     const [txErrorMessage, setTxErrorMessage] = useState('');
+    const [rangeGasPriceinDollars, setRangeGasPriceinDollars] = useState<string | undefined>();
 
     const resetConfirmation = () => {
         setShowConfirmation(true);
@@ -765,6 +768,20 @@ export default function Range(props: RangePropsIF) {
         }
     };
 
+    useEffect(() => {
+        if (gasPriceInGwei && ethMainnetUsdPrice) {
+            const gasPriceInDollarsNum = gasPriceInGwei * 120269 * 1e-9 * ethMainnetUsdPrice;
+
+            setRangeGasPriceinDollars(
+                '~$' +
+                    gasPriceInDollarsNum.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                    }),
+            );
+        }
+    }, [gasPriceInGwei, ethMainnetUsdPrice]);
+
     // TODO:  @Emily refactor this fragment to use the same denomination switch
     // TODO:  ... component used in the Market and Limit modules
     const denominationSwitch = (
@@ -921,7 +938,7 @@ export default function Range(props: RangePropsIF) {
     // props for <RangeExtraInfo/> React element
     const rangeExtraInfoProps = {
         tokenPair: tokenPair,
-        gasPriceinGwei: gasPriceinGwei,
+        rangeGasPriceinDollars: rangeGasPriceinDollars,
         poolPriceDisplay: displayPriceString,
         slippageTolerance: slippageTolerancePercentage,
         liquidityProviderFee: 0.3,

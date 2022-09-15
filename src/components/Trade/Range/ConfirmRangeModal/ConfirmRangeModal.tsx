@@ -6,7 +6,6 @@ import {
 } from 'react';
 
 // START: Import JSX Functional Components
-import Divider from '../../../Global/Divider/Divider';
 import RangeStatus from '../../../Global/RangeStatus/RangeStatus';
 import Button from '../../../Global/Button/Button';
 import WaitingConfirmation from '../../../Global/WaitingConfirmation/WaitingConfirmation';
@@ -100,7 +99,7 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalPropsIF) {
     const tokenACharacter = getUnicodeCharacter(dataTokenA.symbol);
     const tokenBCharacter = getUnicodeCharacter(dataTokenB.symbol);
 
-    const feeTierDisplay = (
+    const tokenAmountDisplay = (
         <section className={styles.fee_tier_display}>
             <div className={styles.fee_tier_container}>
                 <div className={styles.detail_line}>
@@ -116,11 +115,6 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalPropsIF) {
                         <span>{dataTokenB.symbol}</span>
                     </div>
                     <span>{tokenBQty !== '' ? tokenBCharacter + tokenBQty : '0'}</span>
-                </div>
-                <Divider />
-                <div className={styles.detail_line}>
-                    <span>CURRENT FEE TIER</span>
-                    <span>{0.05}%</span>
                 </div>
             </div>
         </section>
@@ -146,7 +140,7 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalPropsIF) {
     const fullTxDetails = (
         <>
             {rangeHeader}
-            {feeTierDisplay}
+            {tokenAmountDisplay}
             {selectedRangeOrNull}
         </>
     );

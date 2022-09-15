@@ -205,6 +205,13 @@ export default function TransactionCard(props: TransactionProps) {
               maximumFractionDigits: 2,
           });
 
+    const transactionTypeSide =
+        swap.entityType === 'swap'
+            ? 'market'
+            : swap.entityType === 'limitOrder'
+            ? 'limit'
+            : 'rangeAdd';
+
     return (
         <div
             className={`${styles.main_container} ${activeTransactionStyle}`}
@@ -230,7 +237,7 @@ export default function TransactionCard(props: TransactionProps) {
                 <Price priceType={priceType} displayPrice={truncatedDisplayPrice} />
                 {/* ------------------------------------------------------ */}
 
-                <TransactionTypeSide type={sideType} side='market' />
+                <TransactionTypeSide type={sideType} side={transactionTypeSide} />
                 {/* ------------------------------------------------------ */}
 
                 <Value usdValue={usdValueTruncated ? '$' + usdValueTruncated : '…'} />

@@ -13,6 +13,8 @@ interface IRemoveRangeInfoProps {
     feeLiqBaseDecimalCorrected: number | undefined;
     feeLiqQuoteDecimalCorrected: number | undefined;
     removalPercentage: number;
+    baseRemovalNum: number;
+    quoteRemovalNum: number;
 }
 
 export default function RemoveRangeInfo(props: IRemoveRangeInfoProps) {
@@ -25,7 +27,9 @@ export default function RemoveRangeInfo(props: IRemoveRangeInfoProps) {
         posLiqQuoteDecimalCorrected,
         feeLiqBaseDecimalCorrected,
         feeLiqQuoteDecimalCorrected,
-        removalPercentage,
+        // removalPercentage,
+        baseRemovalNum,
+        quoteRemovalNum,
     } = props;
 
     const liqBaseDisplay = posLiqBaseDecimalCorrected
@@ -72,16 +76,6 @@ export default function RemoveRangeInfo(props: IRemoveRangeInfoProps) {
                   maximumFractionDigits: 2,
               })
         : undefined;
-
-    const baseRemovalNum =
-        (((posLiqBaseDecimalCorrected || 0) + (feeLiqBaseDecimalCorrected || 0)) *
-            removalPercentage) /
-        100;
-
-    const quoteRemovalNum =
-        (((posLiqQuoteDecimalCorrected || 0) + (feeLiqQuoteDecimalCorrected || 0)) *
-            removalPercentage) /
-        100;
 
     const baseRemovalString = baseRemovalNum
         ? baseRemovalNum < 2
