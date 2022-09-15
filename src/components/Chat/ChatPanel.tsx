@@ -7,12 +7,11 @@ import IncomingMessage from './MessagePanel/Inbox/IncomingMessage';
 import Room from './MessagePanel/Room/Room';
 import { RiCloseFill } from 'react-icons/ri';
 import { useEffect, useRef, useState } from 'react';
-import { host, socket } from './Service/chatApi';
+import { socket } from './Service/chatApi';
 import { Message } from './Model/MessageModel';
 import { PoolIF } from '../../utils/interfaces/PoolIF';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
 import { targetData } from '../../utils/state/tradeDataSlice';
-import { io } from 'socket.io-client';
 
 interface currentPoolInfo {
     tokenA: TokenIF;
@@ -84,6 +83,7 @@ export default function ChatPanel(props: ChatProps) {
         messageEnd.current?.scrollTo(0, messageEnd.current?.scrollHeight);
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleScroll = (e: any) => {
         setScrollBottomControl(
             e.target.clientHeight - 10 <
