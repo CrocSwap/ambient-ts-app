@@ -17,7 +17,7 @@ export default function IncomingMessage(props: IncomingMessageProps) {
                 <p className={styles.message}>{props.message.message}</p>
             </div>
 
-            <p className={styles.message_date}>2:41pm</p>
+            <p className={styles.message_date}>{props.message.createdAt}</p>
         </div>
     );
 }

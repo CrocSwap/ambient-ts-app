@@ -1,5 +1,6 @@
 // import { useEffect } from 'react';
 import io from 'socket.io-client';
+import { connect } from 'tls';
 
 export const host = 'http://localhost:5000';
 export const client = 'http://localhost:3000';

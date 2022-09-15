@@ -4,13 +4,8 @@ import { useEffect, useState } from 'react';
 import { BsSlashSquare, BsEmojiSmileFill } from 'react-icons/bs';
 import { Message } from '../../Model/MessageModel';
 import Picker from 'emoji-picker-react';
-import {
-    // host,
-    sendMessageRoute,
-    socket,
-} from '../../Service/chatApi';
+import { socket } from '../../Service/chatApi';
 import styles from './MessageInput.module.css';
-import axios from 'axios';
 
 interface MessageInputProps {
     message: Message;
@@ -41,13 +36,12 @@ export default function MessageInput(props: MessageInputProps) {
         if (e.key === 'Enter') {
             handleSendMsg(e.target.value);
             setMessage('');
+            setShowEmojiPicker(false);
         }
     };
 
     const handleSendMsg = async (msg: string) => {
-        _socket.emit('send-msg', msg);
-
-        await axios.post(sendMessageRoute, {
+        _socket.emit('send-msg', {
             from: '62f24f3ff40188d467c532e8',
             to: '62fa389c897f9778e2eb863f',
             message: msg,
@@ -79,9 +73,14 @@ export default function MessageInput(props: MessageInputProps) {
                 <BsSlashSquare />
                 <BsEmojiSmileFill onClick={handleEmojiPickerHideShow} />
             </div>
-            <div className={styles.emojiPicker}>
-                {showEmojiPicker && <Picker onEmojiClick={handleEmojiClick} />}
-            </div>
+            {showEmojiPicker && (
+                <div className={styles.emojiPicker}>
+                    <Picker
+                        pickerStyle={{ width: '100%', height: '95%' }}
+                        onEmojiClick={handleEmojiClick}
+                    />
+                </div>
+            )}
         </div>
     );
 }
