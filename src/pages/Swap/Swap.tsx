@@ -172,9 +172,9 @@ export default function Swap(props: SwapPropsIF) {
         }
     }, [poolPriceDisplay]);
 
-    useEffect(() => {
-        console.log({ priceImpact });
-    }, [priceImpact]);
+    // useEffect(() => {
+    //     console.log({ priceImpact });
+    // }, [priceImpact]);
 
     async function initiateSwap() {
         if (!provider) return;

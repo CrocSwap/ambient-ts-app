@@ -178,11 +178,11 @@ export default function App() {
     const [metamaskLocked, setMetamaskLocked] = useState<boolean>(true);
     useEffect(() => {
         try {
-            console.log('Init provider' + provider);
+            // console.log('Init provider' + provider);
             const url = exposeProviderUrl(provider);
             const onChain = exposeProviderChain(provider) === parseInt(chainData.chainId);
 
-            console.log('Exposed URL ' + url);
+            // console.log('Exposed URL ' + url);
 
             if (isAuthenticated) {
                 if (provider && url === 'metamask' && !metamaskLocked && onChain) {
@@ -202,7 +202,7 @@ export default function App() {
             } else if (!provider || !onChain) {
                 const chainSpec = lookupChain(chainData.chainId);
                 const url = chainSpec.wsUrl ? chainSpec.wsUrl : chainSpec.nodeUrl;
-                console.log('Chain URL ' + url);
+                // console.log('Chain URL ' + url);
                 setProvider(new ethers.providers.WebSocketProvider(url));
             }
         } catch (error) {
@@ -884,7 +884,7 @@ export default function App() {
     useEffect(() => {
         if (lastPoolLiqChangeMessage !== null) {
             const lastMessageData = JSON.parse(lastPoolLiqChangeMessage.data).data;
-            console.log({ lastMessageData });
+            // console.log({ lastMessageData });
             if (lastMessageData) {
                 Promise.all(lastMessageData.map(getPositionData)).then((updatedPositions) => {
                     dispatch(addPositionsByPool(updatedPositions));
@@ -914,7 +914,7 @@ export default function App() {
         candleSubscriptionEndpoint,
         {
             onOpen: () => console.log({ candleSubscriptionEndpoint }),
-            onClose: (event) => console.log({ event }),
+            // onClose: (event) => console.log({ event }),
             shouldReconnect: () => shouldCandleSubscriptionsReconnect,
         },
         // only connect if base/quote token addresses are available
@@ -1907,6 +1907,8 @@ export default function App() {
 
     const [isGlobalModalOpen, openGlobalModal, closeGlobalModal, currentContent] = useGlobalModal();
 
+    const swapParams = '/swap/chain====0x5&tokenA=0x0000000000000000000000000000000000000000&tokenB=0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C';
+
     return (
         <>
             <div className={containerStyle}>
@@ -2023,7 +2025,7 @@ export default function App() {
                             }
                         />
 
-                        <Route path='swap' element={<Swap {...swapProps} />} />
+                        <Route path='swap' element={<Navigate replace to={swapParams} />} />
                         <Route path='swap/:params' element={<Swap {...swapProps} />} />
                         <Route path='tos' element={<TermsOfService />} />
                         <Route

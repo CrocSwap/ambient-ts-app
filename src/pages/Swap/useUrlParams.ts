@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
 import { useMoralisWeb3Api } from 'react-moralis';
@@ -14,33 +14,6 @@ export const useUrlParams = (
 ) => {
     // get URL parameters, empty string if undefined
     const { params } = useParams() ?? '';
-
-    const [cgl, setCgl] = useState<TokenListIF | null>(null);
-    const [cglTryCounter, setCglTryCounter] = useState(0);
-    useEffect(() => console.log(cglTryCounter), [cglTryCounter])
-
-    useEffect(() => {
-        const getCoinGeckoList = () => {
-            const allTokenLists = JSON.parse(localStorage.getItem('allTokenLists') as string);
-                if (
-                    allTokenLists &&
-                    allTokenLists.some(
-                        (list: TokenListIF) => list.name === 'CoinGecko' && list.default
-                    )
-                ) {
-                    setCgl(
-                        allTokenLists.find((list: TokenListIF) => (
-                            list.name === 'CoinGecko' && list.default
-                        ))
-                    );
-                } else {
-                    setCglTryCounter(cglTryCounter + 1);
-                    cglTryCounter < 10 && setTimeout(() => getCoinGeckoList(), 250);
-                }
-            }
-        cgl ?? getCoinGeckoList();
-    }, []);
-    useEffect(() => console.log({cgl}), [cgl]);
 
     const dispatch = useAppDispatch();
 
@@ -64,20 +37,30 @@ export const useUrlParams = (
             .filter(par => par.length === 2);
     }, []);
 
-    const paramsUsed = useMemo(() => (
-        urlParams.map(param => param[0])
-    ), []);
+    // make a list of params found in the URL queried
+    const paramsUsed = useMemo(() => urlParams.map(param => param[0]), []);
 
+    // determine which chain to use
     const chainToUse = useMemo(() => {
+        // find `chain` in params
         const chainParam = urlParams.find(param => param[0] === 'chain');
+        // if a chain was included in the URL params use that
+        // otherwise use whatever chain ID the hook was passed
         return chainParam ? chainParam[1] : chainId;
+    // update this value every time the app switches chains
     }, [chainId]);
 
+    // TODO: need to get this data from somewhere other than default tokens
+    // find the notive token of the current chain
     const nativeToken = useMemo(() => (
+        // iterate through ambient token list
         defaultTokens.find(tkn =>
+            // token address must be the zero address
             tkn.address === ethers.constants.AddressZero &&
+            // token must be on the correct chain
             tkn.chainId === parseInt(chainToUse)
         )
+    // update this value when the hook switches to a new chain
     ), [chainToUse]);
 
     // useEffect to switch chains if necessary
@@ -85,46 +68,70 @@ export const useUrlParams = (
     // useEffect() to update token pair
     useEffect(() => {
         const fetchAndFormatTokenData = (addr: string) => {
-            if (addr === ethers.constants.AddressZero) return nativeToken;
-    
-            const getTokenFromChain = () => {
-                const promise = Web3Api.token.getTokenMetadata({
-                    chain: chainToUse as '0x1', addresses: [addr]
-                });
-                return (Promise.resolve(promise)
-                    .then(res => res[0])
-                    .then(res => ({
-                        name: res.name,
-                        address: res.address,
-                        symbol: res.symbol,
-                        decimals: res.decimals,
-                        logoURI: res.logo,
-                        fromList: 'urlParam'
-                    }))
+            // short-circuit function if native token is needed
+            if (addr === ethers.constants.AddressZero) {
+                return nativeToken;
+            };
+            
+            // function to find token if not the native token
+            const findToken = (limiter=0): TokenIF | undefined => {
+                // get allTokenLists from local storage
+                const allTokenLists = JSON.parse(
+                    localStorage.getItem('allTokenLists') as string
                 );
+                // extract CoinGecko list from allTokenLists
+                if (
+                    // make sure allTokenLists is not undefined
+                    allTokenLists &&
+                    // make sure CoinGecko is in allTokenLists
+                    allTokenLists.some(
+                        (list: TokenListIF) => list.name === 'CoinGecko' && list.default
+                    )
+                ) {
+                    // extract CoinGecko token list
+                    const { tokens } = allTokenLists.find((list: TokenListIF) => (
+                        list.name === 'CoinGecko' && list.default
+                    ));
+                    // see if the desired token is in CoinGecko
+                    const tokenOnList = tokens.some((token: TokenIF) => (
+                        token.address === addr &&
+                        token.chainId === parseInt(chainToUse)
+                    ));
+                    if (tokenOnList) {
+                        return tokens.find((token: TokenIF) => token.address === addr);
+                    } else if (!tokenOnList) {
+                        return getTokenFromChain(addr);
+                    }
+                }
+                else if (limiter > 50) {
+                    return getTokenFromChain(addr);
+                } else {
+                    return findToken(limiter + 1);
+                }
             }
-    
-            if (cgl) {
-                const token = cgl.tokens.find((token: TokenIF) => (
-                    token.address === addr
-                    // TODO: the next line makes sure the token is from
-                    // TODO: ... the current chain, it is disabled now
-                    // TODO: ... for dev testing, will turn on and test
-                    // TODO: ... error handling later
-                    // && token.chainId === parseInt(chainId)
-                ));
-                console.log('token from CG: ', token);
-                return token || getTokenFromChain();
-            } else if (cglTryCounter <= 10) {
-                console.log(cgl);
-                console.log('no CG token list yet... re-calling function');
-                // console.log(cglTryCounter);
-                setTimeout(() => fetchAndFormatTokenData(addr), 250);
-            } else {
-                console.log('hit max attempts to get token from CG, fetching from chain');
-                getTokenFromChain();
-            }
+            const tkn = findToken();
+            return tkn;
+        };
+
+        // TODO: find a way to correctly type this return
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        function getTokenFromChain(addr: string): any {
+            const promise = Web3Api.token.getTokenMetadata({
+                chain: chainToUse as '0x5', addresses: [addr]
+            });
+            const data = Promise.resolve(promise)
+                .then(res => res[0])
+                .then(res => ({
+                    name: res.name,
+                    address: res.address,
+                    symbol: res.symbol,
+                    decimals: res.decimals,
+                    logoURI: res.logo ?? '',
+                    fromList: 'urlParam'
+                }));
+            return data;
         }
+
         const getAddress = (tkn: string) => {
             const tokenParam = urlParams.find(param => param[0] === tkn);
             const tokenAddress = tokenParam
@@ -149,6 +156,7 @@ export const useUrlParams = (
                 fetchAndFormatTokenData(addrTokenA),
                 fetchAndFormatTokenData(addrTokenB)
             ]).then(res => {
+                console.log({res});
                 dispatch(setTokenA(res[0] as TokenIF));
                 dispatch(setTokenB(res[1] as TokenIF));
             });
