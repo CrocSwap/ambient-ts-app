@@ -143,6 +143,9 @@ export default function Chart(props: ChartData) {
     const [crosshairData, setCrosshairData] = useState([{ x: 0, y: -1 }]);
     const [intercourse, setIntercourse] = useState<string | undefined>(undefined);
     const [zoomUtils, setZoomUtils] = useState<any>();
+    const [zoomStatus, setZoomStatus] = useState();
+
+    const [drawControl, setDrawControl] = useState(false);
 
     const setDefaultRangeData = () => {
         setRanges((prevState) => {
@@ -198,25 +201,30 @@ export default function Chart(props: ChartData) {
             });
     }, [location]);
 
-    useEffect(() => {
-        d3.select(d3Container.current).select('.targets').append('rect').attr('id', 'rect');
-    }, [location, parsedChartData]);
+    // useEffect(() => {
+    //     d3.select(d3Container.current).select('.targets').append('rect').attr('id', 'rect')
+
+    // }, [location,parsedChartData]);
 
     useEffect(() => {
         if (scaleData) {
+            d3.select(d3Container.current).select('.targets').append('rect').attr('id', 'rect');
             d3.select(d3Container.current)
                 .select('.targets')
                 .select('#rect')
                 .attr('fill', '#7371FC1A')
                 .attr('width', '100%')
                 .attr('opacity', '0.7')
+                .attr('cursor', 'default')
                 .attr(
                     'height',
                     Math.abs(scaleData.yScale(ranges[1].value) - scaleData.yScale(ranges[0].value)),
                 )
                 .attr('y', scaleData.yScale(ranges[1].value));
+
+            console.error('useEffect', drawControl);
         }
-    }, [ranges, parsedChartData]);
+    }, [ranges, zoomStatus, drawControl]);
 
     // Set Scale
     useEffect(() => {
@@ -293,10 +301,8 @@ export default function Chart(props: ChartData) {
                         scaleData.yScale.domain(
                             event.transform.rescaleY(scaleData.yScaleCopy).domain(),
                         );
-                        scaleData.yScaleCopy.domain(
-                            event.transform.rescaleY(scaleData.yScaleCopy).domain(),
-                        );
-                        console.log('zoom', scaleData.yScaleCopy.domain());
+                        setZoomStatus(event.sourceEvent.pageX + event.sourceEvent.pageY);
+                        // console.log('zoom', scaleData.yScaleCopy.domain());
                     }
 
                     render();
@@ -324,6 +330,8 @@ export default function Chart(props: ChartData) {
                 }
                 const factor = Math.pow(2, -event.dy * 0.01);
                 d3.select(d3PlotArea.current).call(yAxisZoom.scaleBy, factor);
+
+                setZoomStatus(event.sourceEvent.pageX + event.sourceEvent.pageY);
             }) as any;
 
             setZoomUtils(() => {
@@ -726,6 +734,7 @@ export default function Chart(props: ChartData) {
                 let selectedCandle: any;
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 const crosshairData = [{ x: 0, y: -1 }];
+                console.error('draw', drawControl);
 
                 const minimum = (data: any, accessor: any) => {
                     return data
@@ -1003,6 +1012,11 @@ export default function Chart(props: ChartData) {
 
                 render();
             }
+
+            setTimeout(() => {
+                console.error('timeout', drawControl);
+                setDrawControl(!drawControl);
+            }, 100);
         },
         [],
     );
