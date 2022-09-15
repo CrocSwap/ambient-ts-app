@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, Dispatch, SetStateAction } from 'react';
 import styles from './MobileSidebar.module.css';
 import { motion } from 'framer-motion';
 import { MenuButton } from '../MenuButton/MenuButton';
@@ -8,6 +8,8 @@ import { BsMedium, BsFillMoonStarsFill, BsFillSunFill, BsFillHeartFill } from 'r
 import { AiFillTwitterCircle } from 'react-icons/ai';
 import { FiExternalLink } from 'react-icons/fi';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import ambientLogo from '../../../assets/images/logos/ambient_logo.svg';
+import { Link } from 'react-router-dom';
 
 const sidebar = {
     open: (height = 1000) => ({
@@ -31,13 +33,13 @@ const sidebar = {
 
 interface MobileSidebarPropsIF {
     lastBlockNumber: number;
-
+    isMobileSidebarOpen: boolean;
+    setIsMobileSidebarOpen: Dispatch<SetStateAction<boolean>>;
     chainId: string;
 }
 
 export default function MobileSidebar(props: MobileSidebarPropsIF) {
-    const { lastBlockNumber, chainId } = props;
-    const [isOpen, setIsOpen] = useState(false);
+    const { lastBlockNumber, chainId, isMobileSidebarOpen, setIsMobileSidebarOpen } = props;
 
     const navigationVariants = {
         open: {
@@ -47,6 +49,13 @@ export default function MobileSidebar(props: MobileSidebarPropsIF) {
             transition: { staggerChildren: 0.05, staggerDirection: -1 },
         },
     };
+
+    const logoContainer = (
+        <Link to='/' className={styles.logo_container}>
+            <img src={ambientLogo} alt='ambient' />
+            <h1>ambient</h1>
+        </Link>
+    );
     const simpleData = [
         { name: 'User ENS Name' },
         { name: 'Wallet Balance' },
@@ -156,29 +165,34 @@ export default function MobileSidebar(props: MobileSidebarPropsIF) {
             <motion.nav
                 className={styles.main_container}
                 initial={false}
-                animate={isOpen ? 'open' : 'closed'}
+                animate={isMobileSidebarOpen ? 'open' : 'closed'}
                 custom='100%'
             >
                 <motion.div
-                    className={`${styles.container} ${isOpen && styles.container_open}`}
+                    className={`${styles.container} ${
+                        isMobileSidebarOpen && styles.container_open
+                    }`}
                     variants={sidebar}
                 >
+                    {logoContainer}
                     <div className={styles.content}>
-                        {dataToDisplay}
-                        {ecosystemDisplay}
-                        {themeTogglerDisplay}
-                        {socialIconsDisplay}
-                        {lastBlockNumber && blockNumberDisplay}
-                        {appVersionDisplay}
-                        {teamDisplay}
+                        <section>{dataToDisplay}</section>
+                        <section>{ecosystemDisplay}</section>
+                        <section>
+                            {themeTogglerDisplay}
+                            {socialIconsDisplay}
+                            {lastBlockNumber && blockNumberDisplay}
+                            {appVersionDisplay}
+                            {teamDisplay}
+                        </section>
                     </div>
                 </motion.div>
             </motion.nav>
 
             <div className={styles.toggle_button}>
                 <MenuButton
-                    isOpen={isOpen}
-                    onClick={() => setIsOpen(!isOpen)}
+                    isOpen={isMobileSidebarOpen}
+                    onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
                     strokeWidth='2'
                     color='#7371fc'
                     transition={{ ease: 'easeOut', duration: 0.2 }}

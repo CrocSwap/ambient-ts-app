@@ -21,11 +21,15 @@ backdrop-filter: blur( 13px );
 -webkit-backdrop-filter: blur( 13px );
 transition: background 400ms ease-out;
 
+background: var(--dark2)
+
 
   }
   .content{
- margin-top: 6rem;
+ margin-top: 2rem;
  padding: 0 1rem;
+
+
   }
 
   .toggle_button{
@@ -43,6 +47,31 @@ transition: background 400ms ease-out;
 
     display: none;
   }
+
+  /* logo container */
+
+.logo_container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--gap, 1rem);
+ border-bottom: 1px solid rgb(55, 54, 54);
+ margin-top: 2rem;
+}
+
+.logo_container h1 {
+  background: var(--title-gradient);
+  font-family: var(--font-logo);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+
+  font-size: 2.25rem;
+  font-weight: 100;
+  line-height: 2.81rem;
+}
+
+  /* end of logo container */
 
   /* social container */
   .social_container{
@@ -178,8 +207,15 @@ line-height: var(--body-lh);
 .container{
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  /* justify-content: space-between; */
   /* padding: 4rem 0; */
   padding-bottom: 5rem;
+}
+
+.content{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
 }
   }

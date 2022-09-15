@@ -33,6 +33,8 @@ interface HeaderPropsIF {
     openModalWallet: () => void;
     pendingTransactions: string[];
 
+    isMobileSidebarOpen: boolean;
+    setIsMobileSidebarOpen: Dispatch<SetStateAction<boolean>>;
     lastBlockNumber: number;
 }
 
@@ -50,6 +52,8 @@ export default function PageHeader(props: HeaderPropsIF) {
         openModalWallet,
         pendingTransactions,
         lastBlockNumber,
+        isMobileSidebarOpen,
+        setIsMobileSidebarOpen,
     } = props;
 
     const { user, account, enableWeb3, isWeb3Enabled, isAuthenticated } = useMoralis();
@@ -202,7 +206,12 @@ export default function PageHeader(props: HeaderPropsIF) {
             </div> */}
 
             {routeDisplay}
-            <MobileSidebar lastBlockNumber={lastBlockNumber} chainId={chainId} />
+            <MobileSidebar
+                lastBlockNumber={lastBlockNumber}
+                chainId={chainId}
+                isMobileSidebarOpen={isMobileSidebarOpen}
+                setIsMobileSidebarOpen={setIsMobileSidebarOpen}
+            />
 
             <div className={styles.account}>
                 <NetworkSelector chainId={chainId} switchChain={switchChain} />

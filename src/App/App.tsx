@@ -1707,6 +1707,7 @@ export default function App() {
         useGlobalModal();
 
     const [pendingTransactions, setPendingTransactions] = useState([]);
+    const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
     // props for <PageHeader/> React element
     const headerProps = {
@@ -1722,6 +1723,8 @@ export default function App() {
         openModalWallet: openModalWallet,
         pendingTransactions: pendingTransactions,
         lastBlockNumber: lastBlockNumber,
+        isMobileSidebarOpen: isMobileSidebarOpen,
+        setIsMobileSidebarOpen: setIsMobileSidebarOpen,
     };
 
     // props for <Swap/> React element
@@ -1992,6 +1995,7 @@ export default function App() {
     return (
         <>
             <div className={containerStyle}>
+                {isMobileSidebarOpen && <div className='blur_app' />}
                 {currentLocation !== '/404' && <PageHeader {...headerProps} />}
                 {/* <MobileSidebar/> */}
                 <main className={`${showSidebarOrNullStyle} ${swapBodyStyle}`}>
