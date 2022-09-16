@@ -8,12 +8,17 @@ import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 interface NotificationCenterPropsIF {
     showNotificationTable: boolean;
     setShowNotificationTable: Dispatch<SetStateAction<boolean>>;
-
+    lastBlockNumber: number;
     pendingTransactions: string[];
 }
 
 const NotificationCenter = (props: NotificationCenterPropsIF) => {
-    const { showNotificationTable, setShowNotificationTable, pendingTransactions } = props;
+    const {
+        showNotificationTable,
+        setShowNotificationTable,
+        pendingTransactions,
+        lastBlockNumber,
+    } = props;
 
     const receiptData = useAppSelector((state) => state.receiptData);
 
@@ -45,6 +50,7 @@ const NotificationCenter = (props: NotificationCenterPropsIF) => {
                     showNotificationTable={showNotificationTable}
                     setShowNotificationTable={setShowNotificationTable}
                     pendingTransactions={currentPendingTransactionsArray}
+                    lastBlockNumber={lastBlockNumber}
                 />
             </div>
         </AnimateSharedLayout>
