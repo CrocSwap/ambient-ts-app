@@ -1,5 +1,5 @@
 import { TokenIF } from '../../../../utils/interfaces/TokenIF';
-import { ISwap } from '../../../../utils/state/graphDataSlice';
+import { ITransaction } from '../../../../utils/state/graphDataSlice';
 import styles from './SidebarRecentTransactions.module.css';
 import SidebarRecentTransactionsCard from './SidebarRecentTransactionsCard';
 import { Dispatch, SetStateAction } from 'react';
@@ -7,7 +7,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 interface SidebarRecentTransactionsPropsIF {
     // showSidebar: boolean;
-    mostRecentTransactions: ISwap[];
+    mostRecentTransactions: ITransaction[];
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     coinGeckoTokenMap?: Map<string, TokenIF>;
     chainId: string;

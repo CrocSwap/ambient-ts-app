@@ -66,13 +66,34 @@
     background-size: 300% 300%;
     text-decoration: none;
     border: 1px solid #222157;
+    animation: shine 8s linear infinite;
     /* color: #CDC1FF; */
 }
+
+
+@keyframes shine {
+    0%{
+
+        background-position: 0% 50%;
+    }
+    50%
+    {
+        
+        background-position: 100% 50%;
+        color: rgb(43, 42, 42);
+    }
+  100% {
+      
+      background-position :0%  50%;
+      color: black;
+    }
+  }
 
 .action_button:hover {
     border: 1px solid rgba(223, 190, 106, 0);
     background-position: 99% 50%;
-    color: black;
+    /* color: black; */
+    animation-play-state: paused;
 }
 .action_button p {
     background: var(--title-gradient);
@@ -92,7 +113,7 @@
     -webkit-text-fill-color: unset;
     background-clip: unset;
 
-    color: var(--dark3);
+    /* color: var(--dark3); */
 }
 
 /* Desktop screen Sizes */

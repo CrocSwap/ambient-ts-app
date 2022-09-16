@@ -70,6 +70,7 @@ export default function RangeDetails(props: IRangeDetailsProps) {
 
     const [baseFeesDisplay, setBaseFeesDisplay] = useState<string | undefined>();
     const [quoteFeesDisplay, setQuoteFeesDisplay] = useState<string | undefined>();
+    const [usdValue, setUsdValue] = useState<string | undefined>();
 
     // eslint-disable-next-line
     const [updatedPositionApy, setUpdatedPositionApy] = useState<number | undefined>(positionApy);
@@ -90,8 +91,7 @@ export default function RangeDetails(props: IRangeDetailsProps) {
                         poolIdx: poolIndex.toString(),
                         chainId: chainId,
                         positionType: position.positionType,
-                        calcValues: 'true',
-                        annotate: 'true',
+                        addValue: 'true',
                     }),
             )
                 .then((response) => response?.json())
@@ -99,6 +99,18 @@ export default function RangeDetails(props: IRangeDetailsProps) {
                     const positionStats = json?.data;
                     const liqBaseNum = position.positionLiqBaseDecimalCorrected;
                     const liqQuoteNum = position.positionLiqQuoteDecimalCorrected;
+
+                    const usdValue = position.positionLiqTotalUSD;
+
+                    if (usdValue) {
+                        setUsdValue(
+                            '$' +
+                                usdValue.toLocaleString(undefined, {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2,
+                                }),
+                        );
+                    }
 
                     if (liqBaseNum) {
                         const baseLiqDisplayTruncated =
@@ -182,7 +194,7 @@ export default function RangeDetails(props: IRangeDetailsProps) {
     const [controlItems, setControlItems] = useState([
         { slug: 'times', name: 'Show times', checked: true },
         { slug: 'collateral', name: 'Show collateral', checked: true },
-        { slug: 'value', name: 'Show value', checked: false },
+        { slug: 'value', name: 'Show value', checked: true },
     ]);
 
     const handleChange = (slug: string) => {
@@ -230,6 +242,7 @@ export default function RangeDetails(props: IRangeDetailsProps) {
                 <div className={styles.main_content}>
                     <div className={styles.left_container}>
                         <PriceInfo
+                            usdValue={usdValue ?? '…'}
                             lowRangeDisplay={lowRangeDisplay}
                             highRangeDisplay={highRangeDisplay}
                             baseLiquidityDisplay={baseLiquidityDisplay}

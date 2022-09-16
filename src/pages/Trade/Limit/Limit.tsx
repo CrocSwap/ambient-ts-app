@@ -59,6 +59,8 @@ interface LimitPropsIF {
     closeGlobalModal: () => void;
     setLimitRate: React.Dispatch<React.SetStateAction<string>>;
     limitRate: string;
+
+    pendingTransactions: string[];
 }
 
 export default function Limit(props: LimitPropsIF) {
@@ -86,6 +88,7 @@ export default function Limit(props: LimitPropsIF) {
         activeTokenListsChanged,
         indicateActiveTokenListsChanged,
         openModalWallet,
+        pendingTransactions,
         setLimitRate,
         limitRate,
     } = props;
@@ -341,6 +344,7 @@ export default function Limit(props: LimitPropsIF) {
                 showConfirmation={showConfirmation}
                 setShowConfirmation={setShowConfirmation}
                 resetConfirmation={resetConfirmation}
+                pendingTransactions={pendingTransactions}
             />
         </Modal>
     ) : null;

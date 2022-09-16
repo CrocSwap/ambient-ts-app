@@ -6,9 +6,9 @@ import {
     resetGraphData,
     setPositionsByPool,
     setPositionsByUser,
-    setSwapsByUser,
-    // ISwap,
-    setSwapsByPool,
+    setChangesByUser,
+    // ITransaction,
+    setChangesByPool,
     // addSwapsByUser,
     // addSwapsByPool,
     CandleData,
@@ -765,9 +765,9 @@ export default function App() {
 
                                 if (poolChanges) {
                                     dispatch(
-                                        setSwapsByPool({
+                                        setChangesByPool({
                                             dataReceived: true,
-                                            swaps: poolChanges,
+                                            changes: poolChanges,
                                         }),
                                     );
                                 }
@@ -1278,7 +1278,7 @@ export default function App() {
 
     const graphData = useAppSelector((state) => state.graphData);
 
-    // const getSwapData = async (swap: ISwap): Promise<ISwap> => {
+    // const getSwapData = async (swap: ITransaction): Promise<ITransaction> => {
     //     return swap;
     // };
 
@@ -1586,9 +1586,9 @@ export default function App() {
 
                         if (userChanges) {
                             dispatch(
-                                setSwapsByUser({
+                                setChangesByUser({
                                     dataReceived: true,
-                                    swaps: userChanges,
+                                    changes: userChanges,
                                 }),
                             );
                         }
@@ -1708,6 +1708,9 @@ export default function App() {
     const [isGlobalModalOpen, openGlobalModal, closeGlobalModal, currentContent, title] =
         useGlobalModal();
 
+    const [pendingTransactions, setPendingTransactions] = useState([]);
+    const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+
     // props for <PageHeader/> React element
     const headerProps = {
         nativeBalance: nativeBalance,
@@ -1720,6 +1723,13 @@ export default function App() {
         switchChain: switchChain,
         switchNetworkInMoralis: switchNetworkInMoralis,
         openModalWallet: openModalWallet,
+        pendingTransactions: pendingTransactions,
+        lastBlockNumber: lastBlockNumber,
+        isMobileSidebarOpen: isMobileSidebarOpen,
+        setIsMobileSidebarOpen: setIsMobileSidebarOpen,
+
+        openGlobalModal: openGlobalModal,
+        closeGlobalModal: closeGlobalModal,
     };
 
     // props for <Swap/> React element
@@ -1748,6 +1758,8 @@ export default function App() {
         activeTokenListsChanged: activeTokenListsChanged,
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
         openModalWallet: openModalWallet,
+        pendingTransactions: pendingTransactions,
+        setPendingTransactions: setPendingTransactions,
     };
 
     // props for <Swap/> React element on trade route
@@ -1777,6 +1789,8 @@ export default function App() {
         activeTokenListsChanged: activeTokenListsChanged,
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
         openModalWallet: openModalWallet,
+        pendingTransactions: pendingTransactions,
+        setPendingTransactions: setPendingTransactions,
     };
 
     // props for <Limit/> React element on trade route
@@ -1810,6 +1824,8 @@ export default function App() {
 
         openGlobalModal: openGlobalModal,
         closeGlobalModal: closeGlobalModal,
+
+        pendingTransactions: pendingTransactions,
         limitRate: limitRate,
         setLimitRate: setLimitRate,
     };
@@ -1842,6 +1858,8 @@ export default function App() {
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
         openModalWallet: openModalWallet,
         ambientApy: ambientApy,
+
+        pendingTransactions: pendingTransactions,
     };
 
     function toggleSidebar() {
@@ -1988,6 +2006,7 @@ export default function App() {
     return (
         <>
             <div className={containerStyle}>
+                {isMobileSidebarOpen && <div className='blur_app' />}
                 {currentLocation !== '/404' && <PageHeader {...headerProps} />}
                 {/* <MobileSidebar/> */}
                 <main className={`${showSidebarOrNullStyle} ${swapBodyStyle}`}>
