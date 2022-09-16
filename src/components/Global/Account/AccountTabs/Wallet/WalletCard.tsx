@@ -5,6 +5,7 @@ import { fetchTokenPrice } from '../../../../../App/functions/fetchTokenPrice';
 import { TokenIF } from '../../../../../utils/interfaces/TokenIF';
 import styles from './WalletCard.module.css';
 import { useEffect, useState } from 'react';
+import { formatAmount } from '../../../../../utils/numbers';
 interface WalletPropsIF {
     token?: TokenIF;
     chainId: string;
@@ -69,7 +70,20 @@ export default function WalletCard(props: WalletPropsIF) {
 
     const tokenBalanceNum = tokenBalance ? parseFloat(tokenBalance) : 0;
 
-    const truncatedTokenBalance = tokenBalanceNum.toLocaleString();
+    const truncatedTokenBalance =
+        tokenBalanceNum === 0
+            ? '0'
+            : tokenBalanceNum < 0.0001
+            ? tokenBalanceNum.toExponential(2)
+            : tokenBalanceNum < 2
+            ? tokenBalanceNum.toPrecision(3)
+            : tokenBalanceNum >= 1000000
+            ? formatAmount(tokenBalanceNum)
+            : // ? quoteLiqDisplayNum.toExponential(2)
+              tokenBalanceNum.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              });
 
     const tokenInfo = (
         <div className={styles.token_info}>
