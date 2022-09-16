@@ -225,6 +225,7 @@ export default function PageHeader(props: HeaderPropsIF) {
                     showNotificationTable={showNotificationTable}
                     setShowNotificationTable={setShowNotificationTable}
                     pendingTransactions={pendingTransactions}
+                    lastBlockNumber={lastBlockNumber}
                 />
             </div>
             {isChainSupported || <SwitchNetwork switchNetworkInMoralis={switchNetworkInMoralis} />}
