@@ -46,13 +46,14 @@ export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
         ? (lastBlockNumber - txBlockNumber) * 15 // 15 second average between blocks
         : undefined;
 
-    const elapsedTimeString = elapsedTimeInSecondsNum
-        ? elapsedTimeInSecondsNum < 60
-            ? `${elapsedTimeInSecondsNum} seconds ago`
-            : elapsedTimeInSecondsNum < 120
-            ? '1 minute ago'
-            : `${Math.floor(elapsedTimeInSecondsNum / 60)} minutes ago`
-        : 'Pending...';
+    const elapsedTimeString =
+        elapsedTimeInSecondsNum !== undefined
+            ? elapsedTimeInSecondsNum < 60
+                ? `${elapsedTimeInSecondsNum} seconds ago`
+                : elapsedTimeInSecondsNum < 120
+                ? '1 minute ago'
+                : `${Math.floor(elapsedTimeInSecondsNum / 60)} minutes ago`
+            : 'Pending...';
 
     return (
         <motion.div
