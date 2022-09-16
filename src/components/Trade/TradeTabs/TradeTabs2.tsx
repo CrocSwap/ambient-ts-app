@@ -4,6 +4,7 @@ import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { ethers } from 'ethers';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import Transactions from './Transactions/Transactions';
+import styles from './TradeTabs2.module.css';
 import Orders from './Orders/Orders';
 // import DropdownMenu from '../../Global/DropdownMenu/DropdownMenu';
 // import DropdownMenuContainer from '../../Global/DropdownMenu/DropdownMenuContainer/DropdownMenuContainer';
@@ -34,6 +35,10 @@ interface ITabsProps {
     isShowAllEnabled: boolean;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
     tokenMap: Map<string, TokenIF>;
+    baseTokenBalance: string;
+    quoteTokenBalance: string;
+    baseTokenDexBalance: string;
+    quoteTokenDexBalance: string;
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
     isCandleSelected: boolean | undefined;
@@ -63,6 +68,10 @@ export default function TradeTabs2(props: ITabsProps) {
         isShowAllEnabled,
         setIsShowAllEnabled,
         tokenMap,
+        baseTokenBalance,
+        quoteTokenBalance,
+        baseTokenDexBalance,
+        quoteTokenDexBalance,
         provider,
         isCandleSelected,
         setIsCandleSelected,
@@ -84,7 +93,7 @@ export default function TradeTabs2(props: ITabsProps) {
     const graphData = useAppSelector((state) => state?.graphData);
 
     const userPositions = graphData?.positionsByUser?.positions;
-    const userSwaps = graphData?.swapsByUser?.swaps;
+    const userChanges = graphData?.changesByUser?.changes;
     // const poolPositions = graphData?.positionsByPool?.positions;
 
     const [hasInitialized, setHasInitialized] = useState(false);
@@ -108,11 +117,11 @@ export default function TradeTabs2(props: ITabsProps) {
                     setIsShowAllEnabled(false);
                 }
             } else if (selectedOutsideTab === 0) {
-                if (!isCandleSelected && !isShowAllEnabled && userSwaps.length < 1) {
+                if (!isCandleSelected && !isShowAllEnabled && userChanges.length < 1) {
                     setIsShowAllEnabled(true);
-                } else if (userSwaps.length < 1) {
+                } else if (userChanges.length < 1) {
                     return;
-                } else if (isShowAllEnabled && userSwaps.length >= 1) {
+                } else if (isShowAllEnabled && userChanges.length >= 1) {
                     setIsShowAllEnabled(false);
                 }
             }
@@ -126,6 +135,11 @@ export default function TradeTabs2(props: ITabsProps) {
     const rangesProps = {
         crocEnv: crocEnv,
         chainData: chainData,
+        baseTokenBalance: baseTokenBalance,
+        quoteTokenBalance: quoteTokenBalance,
+        baseTokenDexBalance: baseTokenDexBalance,
+        quoteTokenDexBalance: quoteTokenDexBalance,
+
         provider: provider,
         account: account,
         isAuthenticated: isAuthenticated,
@@ -162,6 +176,7 @@ export default function TradeTabs2(props: ITabsProps) {
     // Props for <Orders/> React Element
     const ordersProps = {
         expandTradeTable: expandTradeTable,
+        isShowAllEnabled: isShowAllEnabled,
         account: account,
         graphData: graphData,
     };
@@ -201,7 +216,7 @@ export default function TradeTabs2(props: ITabsProps) {
     useOnClickOutside(tabComponentRef, clickOutsideHandler);
 
     return (
-        <div ref={tabComponentRef}>
+        <div ref={tabComponentRef} className={styles.trade_tab_container}>
             {
                 <TabComponent
                     data={tradeTabData}

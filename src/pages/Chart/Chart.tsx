@@ -1,6 +1,5 @@
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
-import { constants } from 'ethers';
 import moment from 'moment';
 import { DetailedHTMLProps, HTMLAttributes, useCallback, useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
@@ -222,7 +221,7 @@ export default function Chart(props: ChartData) {
                 )
                 .attr('y', scaleData.yScale(ranges[1].value));
 
-            console.error('useEffect', drawControl);
+            // console.error('useEffect', drawControl);
         }
     }, [ranges, zoomStatus, drawControl]);
 
@@ -731,7 +730,7 @@ export default function Chart(props: ChartData) {
                 let selectedCandle: any;
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 const crosshairData = [{ x: 0, y: -1 }];
-                console.error('draw', drawControl);
+                // console.error('draw', drawControl);
 
                 const minimum = (data: any, accessor: any) => {
                     return data
@@ -1011,7 +1010,7 @@ export default function Chart(props: ChartData) {
             }
 
             setTimeout(() => {
-                console.error('timeout', drawControl);
+                // console.error('timeout', drawControl);
                 setDrawControl(!drawControl);
             }, 100);
         },

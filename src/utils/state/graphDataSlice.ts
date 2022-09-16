@@ -3,16 +3,21 @@ import { PositionIF } from '../interfaces/PositionIF';
 export interface graphData {
     positionsByUser: PositionsByUser;
     positionsByPool: PositionsByPool;
-    swapsByUser: SwapsByUser;
-    swapsByPool: SwapsByPool;
+    changesByUser: ChangesByUser;
+    changesByPool: ChangesByPool;
     candlesForAllPools: CandlesForAllPools;
     liquidityForAllPools: LiquidityForAllPools;
     poolVolumeSeries: PoolVolumeSeries;
     poolTvlSeries: PoolTvlSeries;
     limitOrdersByUser: LimitOrdersByUser;
+    limitOrdersByPool: LimitOrdersByPool;
 }
 
 export interface LimitOrdersByUser {
+    dataReceived: boolean;
+    limitOrders: Array<ILimitOrderState>;
+}
+export interface LimitOrdersByPool {
     dataReceived: boolean;
     limitOrders: Array<ILimitOrderState>;
 }
@@ -231,7 +236,7 @@ export interface pool {
     quote: string;
 }
 
-export interface ISwap {
+export interface ITransaction {
     base: string;
     baseDecimals: number;
     baseFlow: string;
@@ -252,6 +257,8 @@ export interface ISwap {
     quoteFlow: string;
     quoteSymbol: string;
     source: string;
+    entityType: string;
+    changeType: string;
     time: number;
     tx: string;
     user: string;
@@ -265,22 +272,23 @@ export interface ISwap {
     ensResolution: string;
 }
 
-export interface SwapsByUser {
+export interface ChangesByUser {
     dataReceived: boolean;
-    swaps: Array<ISwap>;
+    changes: Array<ITransaction>;
 }
 
-export interface SwapsByPool {
+export interface ChangesByPool {
     dataReceived: boolean;
-    swaps: Array<ISwap>;
+    changes: Array<ITransaction>;
 }
 
 const initialState: graphData = {
     positionsByUser: { dataReceived: false, positions: [] },
     positionsByPool: { dataReceived: false, positions: [] },
-    swapsByUser: { dataReceived: false, swaps: [] },
+    changesByUser: { dataReceived: false, changes: [] },
+    changesByPool: { dataReceived: false, changes: [] },
     limitOrdersByUser: { dataReceived: false, limitOrders: [] },
-    swapsByPool: { dataReceived: false, swaps: [] },
+    limitOrdersByPool: { dataReceived: false, limitOrders: [] },
     candlesForAllPools: { pools: [] },
     liquidityForAllPools: { pools: [] },
     poolVolumeSeries: { dataReceived: false, pools: [] },
@@ -331,6 +339,9 @@ export const graphDataSlice = createSlice({
         setLimitOrdersByUser: (state, action: PayloadAction<LimitOrdersByUser>) => {
             state.limitOrdersByUser = action.payload;
         },
+        setLimitOrdersByPool: (state, action: PayloadAction<LimitOrdersByPool>) => {
+            state.limitOrdersByPool = action.payload;
+        },
         addPositionsByPool: (state, action: PayloadAction<Array<PositionIF>>) => {
             if (action.payload[0].positionType === 'knockout') {
                 const slotToFind = action.payload[0].merkleStorageSlot?.toLowerCase();
@@ -364,32 +375,32 @@ export const graphDataSlice = createSlice({
         setPoolTvlSeries: (state, action: PayloadAction<PoolTvlSeries>) => {
             state.poolTvlSeries = action.payload;
         },
-        setSwapsByUser: (state, action: PayloadAction<SwapsByUser>) => {
-            state.swapsByUser = action.payload;
+        setChangesByUser: (state, action: PayloadAction<ChangesByUser>) => {
+            state.changesByUser = action.payload;
         },
-        addSwapsByUser: (state, action: PayloadAction<Array<ISwap>>) => {
+        addChangesByUser: (state, action: PayloadAction<Array<ITransaction>>) => {
             const swapTxToFind = action.payload[0].tx.toLowerCase();
-            const indexOfTx = state.swapsByUser.swaps
+            const indexOfTx = state.changesByUser.changes
                 .map((item) => item.tx.toLowerCase())
                 .findIndex((tx) => tx === swapTxToFind);
             if (indexOfTx === -1) {
-                state.swapsByUser.swaps = action.payload.concat(state.swapsByUser.swaps);
+                state.changesByUser.changes = action.payload.concat(state.changesByUser.changes);
             } else {
-                state.swapsByUser.swaps[indexOfTx] = action.payload[0];
+                state.changesByUser.changes[indexOfTx] = action.payload[0];
             }
         },
-        setSwapsByPool: (state, action: PayloadAction<SwapsByPool>) => {
-            state.swapsByPool = action.payload;
+        setChangesByPool: (state, action: PayloadAction<ChangesByPool>) => {
+            state.changesByPool = action.payload;
         },
-        addSwapsByPool: (state, action: PayloadAction<Array<ISwap>>) => {
+        addChangesByPool: (state, action: PayloadAction<Array<ITransaction>>) => {
             const swapTxToFind = action.payload[0].tx.toLowerCase();
-            const indexOfTx = state.swapsByPool.swaps
+            const indexOfTx = state.changesByPool.changes
                 .map((item) => item.tx.toLowerCase())
                 .findIndex((tx) => tx === swapTxToFind);
             if (indexOfTx === -1) {
-                state.swapsByPool.swaps = action.payload.concat(state.swapsByPool.swaps);
+                state.changesByPool.changes = action.payload.concat(state.changesByPool.changes);
             } else {
-                state.swapsByPool.swaps[indexOfTx] = action.payload[0];
+                state.changesByPool.changes[indexOfTx] = action.payload[0];
             }
         },
         setLiquidity: (state, action: PayloadAction<LiquidityByPool>) => {
@@ -541,7 +552,7 @@ export const graphDataSlice = createSlice({
         },
         resetGraphData: (state) => {
             state.positionsByUser = initialState.positionsByUser;
-            state.swapsByUser = initialState.swapsByUser;
+            state.changesByUser = initialState.changesByUser;
         },
     },
 });
@@ -558,10 +569,11 @@ export const {
     setCandles,
     addCandles,
     setLimitOrdersByUser,
-    setSwapsByUser,
-    addSwapsByUser,
-    addSwapsByPool,
-    setSwapsByPool,
+    setLimitOrdersByPool,
+    setChangesByUser,
+    addChangesByUser,
+    addChangesByPool,
+    setChangesByPool,
     resetGraphData,
 } = graphDataSlice.actions;
 

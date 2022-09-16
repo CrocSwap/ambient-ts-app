@@ -8,6 +8,8 @@ import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
 import SnackbarComponent from '../../../../components/Global/SnackbarComponent/SnackbarComponent';
 import DropdownMenu from '../NavbarDropdownMenu/NavbarDropdownMenu';
 import NavItem from '../NavItem/NavItem';
+import IconWithTooltip from '../../../../components/Global/IconWithTooltip/IconWithTooltip';
+import { MdAccountBalanceWallet } from 'react-icons/md';
 
 interface AccountPropsIF {
     nativeBalance: string;
@@ -43,13 +45,16 @@ export default function Account(props: AccountPropsIF) {
     );
     return (
         <div className={styles.account_container}>
-            <span className={styles.white}>
-                {props.nativeBalance && isAuthenticated && isWeb3Enabled
-                    ? 'Ξ ' + parseFloat(props.nativeBalance).toPrecision(4)
-                    : ''}
-            </span>
+            <IconWithTooltip title='Wallet balance' placement='bottom'>
+                <span className={styles.white}>
+                    {props.nativeBalance && isAuthenticated && isWeb3Enabled
+                        ? 'Ξ ' + parseFloat(props.nativeBalance).toPrecision(4)
+                        : ''}
+                </span>
+            </IconWithTooltip>
             <div className={`${styles.title_gradient}`} onClick={handleCopyAddress}>
-                {ensName !== '' && isAuthenticated ? ensName : props.accountAddress}
+                <MdAccountBalanceWallet color='#ebebff' />
+                <p>{ensName !== '' && isAuthenticated ? ensName : props.accountAddress}</p>
             </div>
             <NavItem icon={<FiMoreHorizontal size={20} color='#CDC1FF' />}>
                 <DropdownMenu

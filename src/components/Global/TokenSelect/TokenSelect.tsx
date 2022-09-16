@@ -11,6 +11,7 @@ import uriToHttp from '../../../utils/functions/uriToHttp';
 import { removeToken } from '../../Global/TokenSelectContainer/removeToken';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { toDisplayQty } from '@crocswap-libs/sdk';
+import { ZERO_ADDRESS } from '../../../constants';
 // import truncateDecimals from '../../../utils/data/truncateDecimals';
 // import { tokenData } from '../../../utils/state/tokenDataSlice';
 
@@ -35,7 +36,10 @@ export default function TokenSelect(props: TokenSelectPropsIF) {
         let displayQty = '0';
         tokensInRTK.map((token) => {
             if (token.token_address?.toLowerCase() === address.toLowerCase()) {
-                if (token.balance && token.decimals) {
+                if (token.balance && token.address === ZERO_ADDRESS) {
+                    const displayQtyNum = parseFloat(token.balance);
+                    displayQty = displayQtyNum?.toLocaleString('en-US');
+                } else if (token.balance && token.decimals) {
                     const untruncatedDisplayQty = toDisplayQty(token.balance, token.decimals);
                     const displayQtyNum = parseFloat(untruncatedDisplayQty);
                     displayQty = displayQtyNum?.toLocaleString('en-US');

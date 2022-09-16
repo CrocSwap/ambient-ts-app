@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // START: Import React and Dongles
 import { Dispatch, SetStateAction, useState } from 'react';
 import { Outlet, useOutletContext, NavLink } from 'react-router-dom';
@@ -12,18 +13,22 @@ import TradeTabs2 from '../../components/Trade/TradeTabs/TradeTabs2';
 import styles from './Trade.module.css';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { tradeData as TradeDataIF } from '../../utils/state/tradeDataSlice';
-import { CandleData } from '../../utils/state/graphDataSlice';
+import { CandleData, CandlesByPoolAndDuration } from '../../utils/state/graphDataSlice';
 import { PoolIF, TokenIF, TokenPairIF } from '../../utils/interfaces/exports';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import { SketchPicker } from 'react-color';
-import { border } from '@mui/system';
 
 // interface for React functional component props
 interface TradePropsIF {
     crocEnv: CrocEnv | undefined;
     provider: ethers.providers.Provider | undefined;
+    candleData: CandlesByPoolAndDuration | undefined;
     baseTokenAddress: string;
     quoteTokenAddress: string;
+    baseTokenBalance: string;
+    quoteTokenBalance: string;
+    baseTokenDexBalance: string;
+    quoteTokenDexBalance: string;
     account: string;
     isAuthenticated: boolean;
     isWeb3Enabled: boolean;
@@ -66,6 +71,7 @@ interface TradePropsIF {
 export default function Trade(props: TradePropsIF) {
     const {
         crocEnv,
+        candleData,
         chainId,
         chainData,
         tokenMap,
@@ -74,6 +80,10 @@ export default function Trade(props: TradePropsIF) {
         lastBlockNumber,
         baseTokenAddress,
         quoteTokenAddress,
+        baseTokenBalance,
+        quoteTokenBalance,
+        baseTokenDexBalance,
+        quoteTokenDexBalance,
         favePools,
         addPoolToFaves,
         removePoolFromFaves,
@@ -113,10 +123,10 @@ export default function Trade(props: TradePropsIF) {
         .map((item) => JSON.stringify(item.pool).toLowerCase())
         .findIndex((pool) => pool === activePoolDefinition);
 
-    const activePoolCandleData = graphData?.candlesForAllPools?.pools[indexOfActivePool];
-    const candleData = activePoolCandleData?.candlesByPoolAndDuration.find((data) => {
-        return data.duration === tradeData.activeChartPeriod;
-    });
+    // const activePoolCandleData = graphData?.candlesForAllPools?.pools[indexOfActivePool];
+    // const candleData = activePoolCandleData?.candlesByPoolAndDuration.find((data) => {
+    //     return data.duration === tradeData.activeChartPeriod;
+    // });
 
     const activePoolLiquidityData = graphData?.liquidityForAllPools?.pools[indexOfActivePool];
     const liquidityData = activePoolLiquidityData?.liquidityData;
@@ -414,6 +424,10 @@ export default function Trade(props: TradePropsIF) {
                             setCurrentTxActiveInTransactions={
                                 props.setCurrentTxActiveInTransactions
                             }
+                            baseTokenBalance={baseTokenBalance}
+                            quoteTokenBalance={quoteTokenBalance}
+                            baseTokenDexBalance={baseTokenDexBalance}
+                            quoteTokenDexBalance={quoteTokenDexBalance}
                             isShowAllEnabled={props.isShowAllEnabled}
                             setIsShowAllEnabled={props.setIsShowAllEnabled}
                             expandTradeTable={props.expandTradeTable}

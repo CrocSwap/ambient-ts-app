@@ -14,6 +14,8 @@ import TokensArrow from '../../Global/TokensArrow/TokensArrow';
 import { CrocEnv, CrocImpact } from '@crocswap-libs/sdk';
 import { ethers } from 'ethers';
 import { calcImpact } from '../../../App/functions/calcImpact';
+import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
+import { ZERO_ADDRESS } from '../../../constants';
 interface CurrencyConverterPropsIF {
     crocEnv: CrocEnv | undefined;
     provider: ethers.providers.Provider | undefined;
@@ -85,6 +87,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
+    const isSellTokenEth = tradeData.tokenA.address === ZERO_ADDRESS;
     const isSellTokenBase = tradeData.baseToken.address === tradeData.tokenA.address;
 
     const [isTokenAPrimaryLocal, setIsTokenAPrimaryLocal] = useState<boolean>(
@@ -97,10 +100,44 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         !isTokenAPrimaryLocal ? tradeData?.primaryQuantity : '',
     );
 
+    const userHasEnteredAmount = tokenAQtyLocal !== '';
+
     const tokenABalance = isSellTokenBase ? baseTokenBalance : quoteTokenBalance;
     const tokenBBalance = isSellTokenBase ? quoteTokenBalance : baseTokenBalance;
     const tokenADexBalance = isSellTokenBase ? baseTokenDexBalance : quoteTokenDexBalance;
     const tokenBDexBalance = isSellTokenBase ? quoteTokenDexBalance : baseTokenDexBalance;
+
+    const tokenASurplusMinusTokenARemainderNum =
+        parseFloat(tokenADexBalance || '0') - parseFloat(tokenAQtyLocal || '0');
+    const tokenASurplusMinusTokenAQtyNum =
+        tokenASurplusMinusTokenARemainderNum >= 0 ? tokenASurplusMinusTokenARemainderNum : 0;
+
+    const tokenAQtyCoveredBySurplusBalance = isWithdrawFromDexChecked
+        ? tokenASurplusMinusTokenARemainderNum >= 0
+            ? parseFloat(tokenAQtyLocal || '0')
+            : parseFloat(tokenADexBalance || '0')
+        : 0;
+
+    const tokenAQtyCoveredByWalletBalance = isWithdrawFromDexChecked
+        ? tokenASurplusMinusTokenARemainderNum < 0
+            ? tokenASurplusMinusTokenARemainderNum * -1
+            : 0
+        : parseFloat(tokenAQtyLocal || '0');
+
+    const tokenAWalletMinusTokenAQtyNum = isSellTokenEth
+        ? isWithdrawFromDexChecked
+            ? parseFloat(tokenABalance || '0')
+            : parseFloat(tokenABalance || '0') - parseFloat(tokenAQtyLocal || '0')
+        : isWithdrawFromDexChecked && tokenASurplusMinusTokenARemainderNum < 0
+        ? parseFloat(tokenABalance || '0') + tokenASurplusMinusTokenARemainderNum
+        : isWithdrawFromDexChecked
+        ? parseFloat(tokenABalance || '0')
+        : parseFloat(tokenABalance || '0') - parseFloat(tokenAQtyLocal || '0');
+
+    const tokenBWalletPlusTokenBQtyNum =
+        parseFloat(tokenBBalance || '0') + parseFloat(tokenBQtyLocal || '0');
+    const tokenBSurplusPlusTokenBQtyNum =
+        parseFloat(tokenBDexBalance || '0') + parseFloat(tokenBQtyLocal || '0');
 
     useEffect(() => {
         if (tradeData && crocEnv) {
@@ -154,22 +191,69 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
 
     useEffect(() => {
         isTokenAPrimaryLocal ? handleTokenAChangeEvent() : handleTokenBChangeEvent();
-    }, [crocEnv, poolPriceDisplay, isSellTokenBase, isTokenAPrimaryLocal, tokenABalance]);
+    }, [
+        crocEnv,
+        poolPriceDisplay,
+        isSellTokenBase,
+        isTokenAPrimaryLocal,
+        tokenABalance,
+        isWithdrawFromDexChecked,
+        // isSellTokenEth,
+    ]);
 
     const handleSwapButtonMessage = (tokenAAmount: number) => {
         if (poolPriceDisplay === 0 || poolPriceDisplay === Infinity) {
             setSwapAllowed(false);
             setSwapButtonErrorMessage('Invalid Token Pair');
-        } else if (tokenAAmount > parseFloat(tokenABalance)) {
-            setSwapAllowed(false);
-            setSwapButtonErrorMessage(
-                `${tokenPair.dataTokenA.symbol} Amount Exceeds Wallet Balance`,
-            );
         } else if (isNaN(tokenAAmount) || tokenAAmount <= 0) {
             setSwapAllowed(false);
             setSwapButtonErrorMessage('Enter an Amount');
         } else {
-            setSwapAllowed(true);
+            if (isSellTokenEth) {
+                if (isWithdrawFromDexChecked) {
+                    const roundedTokenADexBalance =
+                        Math.floor(parseFloat(tokenADexBalance) * 1000) / 1000;
+                    if (tokenAAmount >= roundedTokenADexBalance) {
+                        setSwapAllowed(false);
+                        setSwapButtonErrorMessage(
+                            `${tokenPair.dataTokenA.symbol} Amount Must Be Less Than Exchange Surplus Balance`,
+                        );
+                    } else {
+                        setSwapAllowed(true);
+                    }
+                } else {
+                    const roundedTokenAWalletBalance =
+                        Math.floor(parseFloat(tokenABalance) * 1000) / 1000;
+                    if (tokenAAmount >= roundedTokenAWalletBalance) {
+                        setSwapAllowed(false);
+                        setSwapButtonErrorMessage(
+                            `${tokenPair.dataTokenA.symbol} Amount Must Be Less Than Wallet Balance`,
+                        );
+                    } else {
+                        setSwapAllowed(true);
+                    }
+                }
+            } else {
+                if (isWithdrawFromDexChecked) {
+                    if (tokenAAmount > parseFloat(tokenADexBalance) + parseFloat(tokenABalance)) {
+                        setSwapAllowed(false);
+                        setSwapButtonErrorMessage(
+                            `${tokenPair.dataTokenA.symbol} Amount Exceeds Combined Wallet and Exchange Surplus Balance`,
+                        );
+                    } else {
+                        setSwapAllowed(true);
+                    }
+                } else {
+                    if (tokenAAmount > parseFloat(tokenABalance)) {
+                        setSwapAllowed(false);
+                        setSwapButtonErrorMessage(
+                            `${tokenPair.dataTokenA.symbol} Amount Exceeds Wallet Balance`,
+                        );
+                    } else {
+                        setSwapAllowed(true);
+                    }
+                }
+            }
         }
     };
 
@@ -180,6 +264,9 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
 
         if (evt) {
             const input = evt.target.value;
+            const parsedInput = parseFloat(input);
+            if (input !== '' && isNaN(parsedInput)) return;
+
             setTokenAQtyLocal(input);
             setTokenAInputQty(input);
             setIsTokenAPrimaryLocal(true);
@@ -194,7 +281,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                           crocEnv,
                           tokenPair.dataTokenA.address,
                           tokenPair.dataTokenB.address,
-                          slippageTolerancePercentage,
+                          slippageTolerancePercentage / 100,
                           input,
                       )
                     : undefined;
@@ -212,7 +299,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                           crocEnv,
                           tokenPair.dataTokenA.address,
                           tokenPair.dataTokenB.address,
-                          slippageTolerancePercentage,
+                          slippageTolerancePercentage / 100,
                           tokenAQtyLocal,
                       )
                     : undefined;
@@ -261,7 +348,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                           crocEnv,
                           tokenPair.dataTokenA.address,
                           tokenPair.dataTokenB.address,
-                          slippageTolerancePercentage,
+                          slippageTolerancePercentage / 100,
                           input,
                       )
                     : undefined;
@@ -278,7 +365,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                           crocEnv,
                           tokenPair.dataTokenA.address,
                           tokenPair.dataTokenB.address,
-                          slippageTolerancePercentage,
+                          slippageTolerancePercentage / 100,
                           tokenAQtyLocal,
                       )
                     : undefined;
@@ -309,6 +396,9 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
 
         if (evt) {
             const input = evt.target.value;
+            const parsedInput = parseFloat(input);
+
+            if (input !== '' && isNaN(parsedInput)) return;
             setTokenBQtyLocal(input);
             setTokenBInputQty(input);
             setIsTokenAPrimaryLocal(false);
@@ -322,7 +412,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                           crocEnv,
                           tokenPair.dataTokenA.address,
                           tokenPair.dataTokenB.address,
-                          slippageTolerancePercentage,
+                          slippageTolerancePercentage / 100,
                           input,
                       )
                     : undefined;
@@ -339,7 +429,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                           crocEnv,
                           tokenPair.dataTokenA.address,
                           tokenPair.dataTokenB.address,
-                          slippageTolerancePercentage,
+                          slippageTolerancePercentage / 100,
                           tokenBQtyLocal,
                       )
                     : undefined;
@@ -374,6 +464,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                 direction={isLiq ? 'Select Pair' : 'From:'}
                 fieldId='sell'
                 sellToken
+                userHasEnteredAmount={userHasEnteredAmount}
                 handleChangeEvent={handleTokenAChangeEvent}
                 handleChangeClick={handleTokenAChangeClick}
                 nativeBalance={props.nativeBalance}
@@ -381,6 +472,14 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                 tokenBBalance={tokenBBalance}
                 tokenADexBalance={tokenADexBalance}
                 tokenBDexBalance={tokenBDexBalance}
+                isSellTokenEth={isSellTokenEth}
+                tokenAQtyCoveredByWalletBalance={tokenAQtyCoveredByWalletBalance}
+                tokenAQtyCoveredBySurplusBalance={tokenAQtyCoveredBySurplusBalance}
+                tokenASurplusMinusTokenARemainderNum={tokenASurplusMinusTokenARemainderNum}
+                tokenAWalletMinusTokenAQtyNum={tokenAWalletMinusTokenAQtyNum}
+                tokenBWalletPlusTokenBQtyNum={tokenBWalletPlusTokenBQtyNum}
+                tokenASurplusMinusTokenAQtyNum={tokenASurplusMinusTokenAQtyNum}
+                tokenBSurplusPlusTokenBQtyNum={tokenBSurplusPlusTokenBQtyNum}
                 isWithdrawFromDexChecked={isWithdrawFromDexChecked}
                 setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
                 isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
@@ -392,9 +491,14 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
             <div className={styles.arrow_container} onClick={handleArrowClick}>
                 {/* <img src={tokensArrowImage} alt="arrow pointing down" /> */}
                 {/* {isLiq ? null : <span className={styles.arrow} />} */}
-                {isLiq ? null : <TokensArrow />}
+                {isLiq ? null : (
+                    <IconWithTooltip title='Reverse tokens' placement='left'>
+                        <TokensArrow />
+                    </IconWithTooltip>
+                )}
             </div>
             <CurrencySelector
+                tokenBQtyLocal={tokenBQtyLocal}
                 tokenPair={tokenPair}
                 tokensBank={tokensBank}
                 setImportedTokens={setImportedTokens}
@@ -402,6 +506,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                 chainId={chainId}
                 direction={isLiq ? '' : 'To:'}
                 fieldId='buy'
+                userHasEnteredAmount={userHasEnteredAmount}
                 handleChangeEvent={handleTokenBChangeEvent}
                 // handleChangeClick={handleTokenBChangeClick}
                 nativeBalance={props.nativeBalance}
@@ -409,6 +514,10 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                 tokenBBalance={tokenBBalance}
                 tokenADexBalance={tokenADexBalance}
                 tokenBDexBalance={tokenBDexBalance}
+                tokenAWalletMinusTokenAQtyNum={tokenAWalletMinusTokenAQtyNum}
+                tokenBWalletPlusTokenBQtyNum={tokenBWalletPlusTokenBQtyNum}
+                tokenASurplusMinusTokenAQtyNum={tokenASurplusMinusTokenAQtyNum}
+                tokenBSurplusPlusTokenBQtyNum={tokenBSurplusPlusTokenBQtyNum}
                 isWithdrawFromDexChecked={isWithdrawFromDexChecked}
                 setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
                 isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}

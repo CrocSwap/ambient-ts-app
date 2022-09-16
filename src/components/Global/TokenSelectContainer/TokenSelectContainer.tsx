@@ -13,6 +13,7 @@ import { useSearch } from './useSearch';
 import { importToken } from './importToken';
 
 interface TokenSelectContainerPropsIF {
+    resetTokenQuantities?: () => void;
     tokenPair: TokenPairIF;
     tokensBank: Array<TokenIF>;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
@@ -30,6 +31,7 @@ interface TokenSelectContainerPropsIF {
 
 export default function TokenSelectContainer(props: TokenSelectContainerPropsIF) {
     const {
+        resetTokenQuantities,
         tokenPair,
         tokensBank,
         setImportedTokens,
@@ -85,6 +87,8 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
                 'Error in TokenSelectContainer.tsx, failed to find proper dispatch function.',
             );
         }
+
+        resetTokenQuantities ? resetTokenQuantities() : null;
         closeModal();
     };
 

@@ -3,9 +3,14 @@
 }
 
 .token_info {
+    cursor: pointer;
     font-size: var(--header1-size);
     line-height: var(--header1-lh);
     letter-spacing: -0.02em;
     font-weight: 300;
     color: var(--text-grey-white);
+}
+
+.settings_icon {
+    cursor: pointer;
 }

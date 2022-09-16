@@ -70,6 +70,7 @@ export default function RangeDetails(props: IRangeDetailsProps) {
 
     const [baseFeesDisplay, setBaseFeesDisplay] = useState<string | undefined>();
     const [quoteFeesDisplay, setQuoteFeesDisplay] = useState<string | undefined>();
+    const [usdValue, setUsdValue] = useState<string | undefined>();
 
     // eslint-disable-next-line
     const [updatedPositionApy, setUpdatedPositionApy] = useState<number | undefined>(positionApy);
@@ -90,7 +91,7 @@ export default function RangeDetails(props: IRangeDetailsProps) {
                         poolIdx: poolIndex.toString(),
                         chainId: chainId,
                         positionType: position.positionType,
-                        annotate: 'true',
+                        addValue: 'true',
                     }),
             )
                 .then((response) => response?.json())
@@ -98,6 +99,18 @@ export default function RangeDetails(props: IRangeDetailsProps) {
                     const positionStats = json?.data;
                     const liqBaseNum = position.positionLiqBaseDecimalCorrected;
                     const liqQuoteNum = position.positionLiqQuoteDecimalCorrected;
+
+                    const usdValue = position.positionLiqTotalUSD;
+
+                    if (usdValue) {
+                        setUsdValue(
+                            '$' +
+                                usdValue.toLocaleString(undefined, {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2,
+                                }),
+                        );
+                    }
 
                     if (liqBaseNum) {
                         const baseLiqDisplayTruncated =
@@ -138,41 +151,37 @@ export default function RangeDetails(props: IRangeDetailsProps) {
                     const baseFeeDisplayNum = position.feesLiqBaseDecimalCorrected;
                     const quoteFeeDisplayNum = position.feesLiqQuoteDecimalCorrected;
 
-                    if (baseFeeDisplayNum && quoteFeeDisplayNum) {
-                        // const baseFeeDisplayNum = parseFloat(
-                        //     toDisplayQty(positionStats.feeLiqBase, positionStats.baseDecimals),
-                        // );
-                        const baseFeeDisplayTruncated =
-                            baseFeeDisplayNum === 0
-                                ? '0'
-                                : baseFeeDisplayNum < 0.0001
-                                ? baseFeeDisplayNum.toExponential(2)
-                                : baseFeeDisplayNum < 2
-                                ? baseFeeDisplayNum.toPrecision(3)
-                                : baseFeeDisplayNum >= 100000
-                                ? formatAmount(baseFeeDisplayNum)
-                                : // ? baseLiqDisplayNum.toExponential(2)
-                                  baseFeeDisplayNum.toLocaleString(undefined, {
-                                      minimumFractionDigits: 2,
-                                      maximumFractionDigits: 2,
-                                  });
-                        setBaseFeesDisplay(baseFeeDisplayTruncated);
+                    // const baseFeeDisplayNum = parseFloat(
+                    //     toDisplayQty(positionStats.feeLiqBase, positionStats.baseDecimals),
+                    // );
+                    const baseFeeDisplayTruncated = !baseFeeDisplayNum
+                        ? '0'
+                        : baseFeeDisplayNum < 0.0001
+                        ? baseFeeDisplayNum.toExponential(2)
+                        : baseFeeDisplayNum < 2
+                        ? baseFeeDisplayNum.toPrecision(3)
+                        : baseFeeDisplayNum >= 100000
+                        ? formatAmount(baseFeeDisplayNum)
+                        : // ? baseLiqDisplayNum.toExponential(2)
+                          baseFeeDisplayNum.toLocaleString(undefined, {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                          });
+                    setBaseFeesDisplay(baseFeeDisplayTruncated);
 
-                        const quoteFeesDisplayTruncated =
-                            quoteFeeDisplayNum === 0
-                                ? '0'
-                                : quoteFeeDisplayNum < 0.0001
-                                ? quoteFeeDisplayNum.toExponential(2)
-                                : quoteFeeDisplayNum < 2
-                                ? quoteFeeDisplayNum.toPrecision(3)
-                                : quoteFeeDisplayNum >= 100000
-                                ? formatAmount(quoteFeeDisplayNum)
-                                : quoteFeeDisplayNum.toLocaleString(undefined, {
-                                      minimumFractionDigits: 2,
-                                      maximumFractionDigits: 2,
-                                  });
-                        setQuoteFeesDisplay(quoteFeesDisplayTruncated);
-                    }
+                    const quoteFeesDisplayTruncated = !quoteFeeDisplayNum
+                        ? '0'
+                        : quoteFeeDisplayNum < 0.0001
+                        ? quoteFeeDisplayNum.toExponential(2)
+                        : quoteFeeDisplayNum < 2
+                        ? quoteFeeDisplayNum.toPrecision(3)
+                        : quoteFeeDisplayNum >= 100000
+                        ? formatAmount(quoteFeeDisplayNum)
+                        : quoteFeeDisplayNum.toLocaleString(undefined, {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                          });
+                    setQuoteFeesDisplay(quoteFeesDisplayTruncated);
 
                     if (positionStats.apy) {
                         setUpdatedPositionApy(positionStats.apy);
@@ -185,7 +194,7 @@ export default function RangeDetails(props: IRangeDetailsProps) {
     const [controlItems, setControlItems] = useState([
         { slug: 'times', name: 'Show times', checked: true },
         { slug: 'collateral', name: 'Show collateral', checked: true },
-        { slug: 'value', name: 'Show value', checked: false },
+        { slug: 'value', name: 'Show value', checked: true },
     ]);
 
     const handleChange = (slug: string) => {
@@ -233,6 +242,7 @@ export default function RangeDetails(props: IRangeDetailsProps) {
                 <div className={styles.main_content}>
                     <div className={styles.left_container}>
                         <PriceInfo
+                            usdValue={usdValue ?? '…'}
                             lowRangeDisplay={lowRangeDisplay}
                             highRangeDisplay={highRangeDisplay}
                             baseLiquidityDisplay={baseLiquidityDisplay}

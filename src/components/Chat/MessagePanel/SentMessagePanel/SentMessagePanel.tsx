@@ -14,7 +14,7 @@ export default function SentMessagePanel(props: SentMessageProps) {
             <div className={styles.right_image_box}>
                 <div className={styles.avatar_image}>
                     <img src={noAvatarImage} alt='no avatar' />
-                    <p className={styles.message_date}>2:41pm</p>
+                    <p className={styles.message_date}>{props.message.createdAt}</p>
                 </div>
             </div>
         </div>

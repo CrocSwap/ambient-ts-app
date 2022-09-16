@@ -135,7 +135,7 @@
     max-height: unset;
     order: 0;
     align-self: stretch;
-    bottom: 0;
+    margin-bottom: 12%;
 }
 
 /* width */

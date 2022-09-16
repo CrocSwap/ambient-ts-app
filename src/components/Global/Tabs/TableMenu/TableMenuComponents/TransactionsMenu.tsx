@@ -12,12 +12,12 @@ import styles from './TableMenuComponents.module.css';
 import { useModal } from '../../../../Global/Modal/useModal';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import { DefaultTooltip } from '../../../StyledTooltip/StyledTooltip';
-import { ISwap } from '../../../../../utils/state/graphDataSlice';
+import { ITransaction } from '../../../../../utils/state/graphDataSlice';
 
 // interface for React functional component props
 interface TransactionMenuIF {
     userPosition: boolean | undefined;
-    tx: ISwap;
+    tx: ITransaction;
     blockExplorer?: string;
 }
 

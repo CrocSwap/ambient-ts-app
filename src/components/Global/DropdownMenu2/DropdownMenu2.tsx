@@ -19,7 +19,7 @@ interface DropdownMenuPropsIF {
 
 // react functional component
 export default function DropdownMenu2(props: DropdownMenuPropsIF) {
-    const { title, children, marginTop, titleWidth, titleBackground } = props;
+    const { title, children, marginTop, titleWidth } = props;
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const dropdownRefItem = useRef<HTMLDivElement>(null);
 
@@ -54,7 +54,7 @@ export default function DropdownMenu2(props: DropdownMenuPropsIF) {
                 onClick={toggleMenu}
                 style={{
                     minWidth: titleWidth ? titleWidth : '100px',
-                    background: titleBackground ? titleBackground : 'transparent',
+                    // background: titleBackground ? titleBackground : 'transparent',
                 }}
             >
                 <div className={styles.menu_item}>

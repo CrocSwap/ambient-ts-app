@@ -1,14 +1,14 @@
 import styles from './ConfirmSwapModal.module.css';
 // import { useState } from 'react';
-import CurrencyDisplay from '../../Global/CurrencyDisplay/CurrencyDisplay';
 import WaitingConfirmation from '../../Global/WaitingConfirmation/WaitingConfirmation';
 import TransactionSubmitted from '../../Global/TransactionSubmitted/TransactionSubmitted';
 import TransactionDenied from '../../Global/TransactionDenied/TransactionDenied';
 import Button from '../../Global/Button/Button';
 import { TokenPairIF } from '../../../utils/interfaces/exports';
-import Divider from '../../Global/Divider/Divider';
 import { CrocImpact } from '@crocswap-libs/sdk';
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useEffect } from 'react';
+import TokensArrow from '../../Global/TokensArrow/TokensArrow';
+import DenominationSwitch from '../DenominationSwitch/DenominationSwitch';
 
 interface ConfirmSwapModalProps {
     initiateSwapMethod: () => void;
@@ -25,6 +25,7 @@ interface ConfirmSwapModalProps {
     showConfirmation: boolean;
     setShowConfirmation: Dispatch<SetStateAction<boolean>>;
     resetConfirmation: () => void;
+    pendingTransactions: string[];
 }
 
 export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
@@ -43,6 +44,7 @@ export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
         resetConfirmation,
         showConfirmation,
         setShowConfirmation,
+        pendingTransactions,
     } = props;
 
     const transactionApproved = newSwapTransactionHash !== '';
@@ -57,6 +59,14 @@ export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
     const sellTokenData = tokenPair.dataTokenA;
 
     const buyTokenData = tokenPair.dataTokenB;
+
+    useEffect(() => {
+        if (newSwapTransactionHash && newSwapTransactionHash !== '') {
+            pendingTransactions.push(newSwapTransactionHash);
+        }
+    }, [newSwapTransactionHash]);
+
+    console.log(pendingTransactions);
 
     const explanationText =
         primarySwapInput === 'sell' ? (
@@ -81,7 +91,7 @@ export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
             ? 1 / poolPriceDisplay
             : poolPriceDisplay
         : undefined;
-
+    // eslint-disable-next-line
     const displayConversionRate = displayPriceWithDenom
         ? displayPriceWithDenom < 2
             ? displayPriceWithDenom.toLocaleString(undefined, {
@@ -114,41 +124,101 @@ export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
               })
         : '...';
 
-    const fullTxDetails = (
-        <>
-            <div className={styles.modal_currency_converter}>
-                <CurrencyDisplay amount={sellTokenQty} tokenData={sellTokenData} />
-                <div className={styles.arrow_container}>
-                    <span className={styles.arrow} />
-                </div>
-                <CurrencyDisplay amount={buyTokenQty} tokenData={buyTokenData} />
+    const buyCurrencyRow = (
+        <div className={styles.currency_row_container}>
+            <h2>{buyTokenQty}</h2>
+
+            <div className={styles.logo_display}>
+                <img src={buyTokenData.logoURI} alt={buyTokenData.symbol} />
+                <h2>{buyTokenData.symbol}</h2>
             </div>
-            <div className={styles.convRate}>
-                {isDenomBase
-                    ? `1 ${baseTokenSymbol} ≈ ${displayConversionRate} ${quoteTokenSymbol}`
-                    : `1 ${quoteTokenSymbol} ≈ ${displayConversionRate} ${baseTokenSymbol}`}
-            </div>
-            <Divider />
-            <div className={styles.confSwap_detail}>
-                <div className={styles.detail_line}>
-                    Expected Output
-                    <span>
-                        {buyTokenQty} {buyTokenData.symbol}
-                    </span>
-                </div>
-                <div className={styles.detail_line}>
-                    Effective Conversion Rate
-                    <span>
-                        {isDenomBase
-                            ? `${priceLimit} ${quoteTokenSymbol} / ${baseTokenSymbol}`
-                            : `${priceLimit} ${baseTokenSymbol} / ${quoteTokenSymbol}`}
-                    </span>
-                </div>
-                <div className={`${styles.detail_line} ${styles.min_received}`}></div>
-            </div>
-            {explanationText}
-        </>
+        </div>
     );
+
+    const sellCurrencyRow = (
+        <div className={styles.currency_row_container}>
+            <h2>{sellTokenQty}</h2>
+
+            <div className={styles.logo_display}>
+                <img src={sellTokenData.logoURI} alt={sellTokenData.symbol} />
+                <h2>{sellTokenData.symbol}</h2>
+            </div>
+        </div>
+    );
+
+    const extraInfoData = (
+        <div className={styles.extra_info_container}>
+            <div className={styles.row}>
+                <p>Expected Output</p>
+                <p>
+                    {buyTokenQty} {buyTokenData.symbol}{' '}
+                </p>
+            </div>
+            <div className={styles.row}>
+                <p>Effective Conversion Rate</p>
+                <p>
+                    {' '}
+                    {isDenomBase
+                        ? `${priceLimit} ${quoteTokenSymbol} / ${baseTokenSymbol}`
+                        : `${priceLimit} ${baseTokenSymbol} / ${quoteTokenSymbol}`}{' '}
+                </p>
+            </div>
+            <div className={styles.row}>
+                <p>Slippage</p>
+                <p>0.3% </p>
+            </div>
+        </div>
+    );
+    const fullTxDetails2 = (
+        <div className={styles.main_container}>
+            <section>
+                {sellCurrencyRow}
+                <div className={styles.arrow_container}>
+                    <TokensArrow />
+                </div>
+                {buyCurrencyRow}
+            </section>
+            <DenominationSwitch />
+            {extraInfoData}
+            {explanationText}
+        </div>
+    );
+
+    // const fullTxDetails = (
+    //     <>
+    //         <div className={styles.modal_currency_converter}>
+    //             <CurrencyDisplay amount={sellTokenQty} tokenData={sellTokenData} />
+    //             <div className={styles.arrow_container}>
+    //                 <span className={styles.arrow} />
+    //             </div>
+    //             <CurrencyDisplay amount={buyTokenQty} tokenData={buyTokenData} />
+    //         </div>
+    //         <div className={styles.convRate}>
+    //             {isDenomBase
+    //                 ? `1 ${baseTokenSymbol} ≈ ${displayConversionRate} ${quoteTokenSymbol}`
+    //                 : `1 ${quoteTokenSymbol} ≈ ${displayConversionRate} ${baseTokenSymbol}`}
+    //         </div>
+    //         <Divider />
+    //         <div className={styles.confSwap_detail}>
+    //             <div className={styles.detail_line}>
+    //                 Expected Output
+    //                 <span>
+    //                     {buyTokenQty} {buyTokenData.symbol}
+    //                 </span>
+    //             </div>
+    //             <div className={styles.detail_line}>
+    //                 Effective Conversion Rate
+    //                 <span>
+    //                     {isDenomBase
+    //                         ? `${priceLimit} ${quoteTokenSymbol} / ${baseTokenSymbol}`
+    //                         : `${priceLimit} ${baseTokenSymbol} / ${quoteTokenSymbol}`}
+    //                 </span>
+    //             </div>
+    //             <div className={`${styles.detail_line} ${styles.min_received}`}></div>
+    //         </div>
+    //         {explanationText}
+    //     </>
+    // );
 
     // REGULAR CONFIRMATION MESSAGE STARTS HERE
     // const currentTxHash = 'i am hash number';
@@ -187,12 +257,6 @@ export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
             }}
         />
     );
-    // function onConfirmSwapClose() {
-    //     setConfirmDetails(true);
-    //     onClose();
-    // }
-
-    // const closeButton = <Button title='Close' action={onConfirmSwapClose} />;
 
     const confirmationDisplay = isTransactionDenied
         ? transactionDenied
@@ -203,7 +267,7 @@ export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
     const modal = (
         <div className={styles.modal_container}>
             <section className={styles.modal_content}>
-                {showConfirmation ? fullTxDetails : confirmationDisplay}
+                {showConfirmation ? fullTxDetails2 : confirmationDisplay}
             </section>
             <footer className={styles.modal_footer}>
                 {showConfirmation ? confirmSwapButton : null}
