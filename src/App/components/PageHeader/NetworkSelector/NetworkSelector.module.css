@@ -156,13 +156,13 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
-    position: absolute;
     background: var(--dark1);
     border-radius: 4px;
-   
+    
     /* width: 160px; */
     
     right: 0;
+    position: absolute;
     top: 40px;
     padding: 1rem;
 
