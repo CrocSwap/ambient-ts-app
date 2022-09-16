@@ -450,13 +450,7 @@ export default function App() {
                         chainData.chainId,
                         lastBlockNumber,
                     );
-                    const tokensInRTKminusNative = tokensInRTK.slice(1);
-
-                    if (
-                        newTokens &&
-                        (tokensInRTK.length === 1 ||
-                            JSON.stringify(tokensInRTKminusNative) !== JSON.stringify(newTokens))
-                    ) {
+                    if (newTokens && JSON.stringify(tokensInRTK) !== JSON.stringify(newTokens)) {
                         dispatch(setTokens(newTokens));
                     }
                 } catch (error) {
