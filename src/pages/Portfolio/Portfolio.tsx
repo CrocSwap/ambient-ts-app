@@ -13,6 +13,7 @@ import { TokenIF } from '../../utils/interfaces/TokenIF';
 
 interface PortfolioPropsIF {
     ensName: string;
+    lastBlockNumber: number;
     connectedAccount: string;
     userImageData: string[];
     chainId: string;
@@ -34,7 +35,7 @@ const mainnetProvider = new ethers.providers.WebSocketProvider(
 export default function Portfolio(props: PortfolioPropsIF) {
     const { isInitialized } = useMoralis();
 
-    const { ensName, userImageData, connectedAccount, chainId, tokenMap } = props;
+    const { ensName, lastBlockNumber, userImageData, connectedAccount, chainId, tokenMap } = props;
 
     const { address } = useParams();
 
@@ -163,6 +164,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
             >
                 <PortfolioTabs
                     resolvedAddress={resolvedAddress}
+                    lastBlockNumber={lastBlockNumber}
                     activeAccount={address ?? connectedAccount}
                     connectedAccountActive={connectedAccountActive}
                     chainId={chainId}

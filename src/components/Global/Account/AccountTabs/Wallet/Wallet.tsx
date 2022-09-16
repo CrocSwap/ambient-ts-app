@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { fetchTokenBalances } from '../../../../../App/functions/fetchTokenBalances';
+import { memoizeTokenBalance } from '../../../../../App/functions/fetchTokenBalances';
 import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 import { TokenIF } from '../../../../../utils/interfaces/TokenIF';
 import styles from './Wallet.module.css';
@@ -8,14 +8,18 @@ import WalletHeader from './WalletHeader';
 
 // import { TokenIF } from '../../../../../utils/interfaces/exports';
 interface WalletPropsIF {
+    lastBlockNumber: number;
     resolvedAddress: string;
     activeAccount: string;
     connectedAccountActive: boolean;
     chainId: string;
     tokenMap: Map<string, TokenIF>;
 }
+
+const cachedFetchTokenBalances = memoizeTokenBalance();
+
 export default function Wallet(props: WalletPropsIF) {
-    const { connectedAccountActive, resolvedAddress, chainId, tokenMap } = props;
+    const { connectedAccountActive, resolvedAddress, chainId, tokenMap, lastBlockNumber } = props;
 
     const tokensInRTK = useAppSelector((state) => state.tokenData.tokens);
 
@@ -26,11 +30,11 @@ export default function Wallet(props: WalletPropsIF) {
         (async () => {
             if (resolvedAddress && chainId) {
                 try {
-                    const newTokens = await fetchTokenBalances(
+                    const newTokens = await cachedFetchTokenBalances(
                         resolvedAddress,
                         chainId,
+                        lastBlockNumber,
                         connectedAccountActive,
-                        1, // arbitrary number
                     );
                     if (newTokens) setResolvedAddressTokens(newTokens);
                 } catch (error) {
@@ -38,7 +42,7 @@ export default function Wallet(props: WalletPropsIF) {
                 }
             }
         })();
-    }, [resolvedAddress, chainId]);
+    }, [resolvedAddress, chainId, lastBlockNumber]);
 
     // const items = [1, 2, 3, 4, 5, 6];
 

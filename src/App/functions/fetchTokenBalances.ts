@@ -6,10 +6,9 @@ import { memoizePromiseFn } from './memoizePromiseFn';
 export const fetchTokenBalances = async (
     address: string,
     chain: string,
-    connectedAccountActive: boolean,
-
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _lastBlockNumber: number,
+    connectedAccountActive: boolean,
 ) => {
     // get ENS domain of an address
     const options = { address: address, chain: chain as '0x5' | '0x2a' };
@@ -32,7 +31,12 @@ export const fetchTokenBalances = async (
     return balances;
 };
 
-type TokenBalanceFn = (token: string, chain: string, lastBlock: number) => Promise<TokenIF[]>;
+type TokenBalanceFn = (
+    token: string,
+    chain: string,
+    lastBlock: number,
+    connectedAccountActive?: boolean,
+) => Promise<TokenIF[]>;
 
 export function memoizeTokenBalance(): TokenBalanceFn {
     return memoizePromiseFn(fetchTokenBalances) as TokenBalanceFn;

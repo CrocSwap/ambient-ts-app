@@ -1,11 +1,5 @@
 // START: Import React and Dongles
-import {
-    useEffect,
-    useState,
-    Dispatch,
-    SetStateAction,
-    ReactNode
-} from 'react';
+import { useEffect, useState, Dispatch, SetStateAction, ReactNode } from 'react';
 
 // START: Import JSX Functional Components
 import Wallet from '../../Global/Account/AccountTabs/Wallet/Wallet';
@@ -30,6 +24,7 @@ import exchangeImage from '../../../assets/images/sidebarImages/exchange.svg';
 // interface for React functional component props
 interface PortfolioTabsPropsIF {
     resolvedAddress: string;
+    lastBlockNumber: number;
     activeAccount: string;
     connectedAccountActive: boolean;
     chainId: string;
@@ -45,6 +40,7 @@ interface PortfolioTabsPropsIF {
 export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
     const {
         resolvedAddress,
+        lastBlockNumber,
         activeAccount,
         connectedAccountActive,
         chainId,
@@ -53,7 +49,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
         setSelectedOutsideTab,
         rightTabOptions,
         outsideControl,
-        setOutsideControl
+        setOutsideControl,
     } = props;
 
     const graphData = useAppSelector((state) => state?.graphData);
@@ -99,6 +95,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
     // props for <Wallet/> React Element
     const walletProps = {
         connectedAccountActive: connectedAccountActive,
+        lastBlockNumber: lastBlockNumber,
         resolvedAddress: resolvedAddress,
         activeAccount: activeAccount,
         chainId: chainId,

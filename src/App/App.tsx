@@ -443,6 +443,7 @@ export default function App() {
                         account,
                         chainData.chainId,
                         lastBlockNumber,
+                        true, // connected account active
                     );
                     const tokensInRTKminusNative = tokensInRTK.slice(1);
 
@@ -2088,6 +2089,7 @@ export default function App() {
                             element={
                                 <Portfolio
                                     ensName={ensName}
+                                    lastBlockNumber={lastBlockNumber}
                                     connectedAccount={account ? account : ''}
                                     userImageData={imageData}
                                     chainId={chainData.chainId}
@@ -2105,6 +2107,7 @@ export default function App() {
                             element={
                                 <Portfolio
                                     ensName={ensName}
+                                    lastBlockNumber={lastBlockNumber}
                                     connectedAccount={account ? account : ''}
                                     chainId={chainData.chainId}
                                     userImageData={imageData}
