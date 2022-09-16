@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useState } from 'react';
 import { FaDotCircle } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
@@ -41,6 +41,25 @@ export default function NetworkSelector(props: NetworkSelectorPropsIF) {
     );
 
     // TODO:  @Junior is the wrapper in the return necessary?
+    const [showDropdown, setShowDropdown] = useState(false);
+
+    const networks = ['network1', 'network2', 'network3', 'network4', 'network5'];
+    const dropdownMenu = (
+        <motion.div
+            className={styles.dropdown_menu}
+            //     variants={ButtonParentVariants}
+            //   initial='closed'
+            animate={showDropdown ? 'visible' : 'hidden'}
+            initial='hidden'
+            variants={container}
+        >
+            {networks.map((network, idx) => (
+                <motion.div variants={item} key={idx}>
+                    <p>{network}</p>
+                </motion.div>
+            ))}
+        </motion.div>
+    );
     return (
         <div className={styles.selector_select_container}>
             <IconWithTooltip title='Network' placement='left'>
@@ -57,3 +76,28 @@ export default function NetworkSelector(props: NetworkSelectorPropsIF) {
         </div>
     );
 }
+
+const item = {
+    hidden: { y: 20, opacity: 0 },
+    visible: { y: 0, opacity: 1 },
+};
+
+const container = {
+    hidden: { opacity: 0, scale: 0.1 },
+    visible: {
+        opacity: 1,
+        scale: 1,
+        transition: {
+            //   responsible for showing children 1 by 1
+            when: 'beforeChildren',
+            staggerChildren: 0.2,
+            opacity: { duration: 0.2 },
+            scale: {
+                type: 'spring',
+                stiffness: 500,
+                damping: 40,
+                restSpeed: 0.6,
+            },
+        },
+    },
+};
