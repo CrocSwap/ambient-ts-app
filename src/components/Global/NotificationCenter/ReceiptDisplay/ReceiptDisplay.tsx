@@ -43,7 +43,7 @@ export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
     const EtherscanTx = `https://goerli.etherscan.io/tx/${hash}`;
 
     const elapsedTimeInSecondsNum = txBlockNumber
-        ? (lastBlockNumber - txBlockNumber) * 13.5 // 13.5 second average between blocks
+        ? (lastBlockNumber - txBlockNumber) * 13.7 // 13.7 seconds average between blocks
         : undefined;
 
     const elapsedTimeString =
