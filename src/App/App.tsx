@@ -129,6 +129,8 @@ export default function App() {
         // authError
     } = useMoralis();
 
+    const isUserLoggedIn = isAuthenticated && isWeb3Enabled;
+
     const tokenMap = useTokenMap();
 
     const location = useLocation();
@@ -441,7 +443,7 @@ export default function App() {
     // check for token balances on each new block
     useEffect(() => {
         (async () => {
-            if (isAuthenticated && account) {
+            if (isUserLoggedIn && account) {
                 try {
                     const newTokens: TokenIF[] = await cachedFetchTokenBalances(
                         account,
@@ -1195,8 +1197,7 @@ export default function App() {
             if (
                 crocEnv &&
                 account &&
-                isAuthenticated &&
-                isWeb3Enabled &&
+                isUserLoggedIn &&
                 tradeData.baseToken.address &&
                 tradeData.quoteToken.address
             ) {
@@ -1490,7 +1491,7 @@ export default function App() {
     };
 
     useEffect(() => {
-        if (isAuthenticated && account) {
+        if (isUserLoggedIn && account) {
             console.log('fetching user positions');
 
             const userPositionsCacheEndpoint = httpGraphCacheServerDomain + '/user_positions?';
@@ -1601,7 +1602,7 @@ export default function App() {
                 console.log;
             }
         }
-    }, [isAuthenticated, account, chainData.chainId]);
+    }, [isUserLoggedIn, account, chainData.chainId]);
 
     // run function to initialize local storage
     // internal controls will only initialize values that don't exist
@@ -1637,21 +1638,23 @@ export default function App() {
     ).toString();
 
     useEffect(() => {
-        const nativeToken: TokenIF = {
-            name: 'Native Token',
+        if (isUserLoggedIn) {
+            const nativeToken: TokenIF = {
+                name: 'Native Token',
 
-            address: '0x0000000000000000000000000000000000000000',
-            // eslint-disable-next-line camelcase
-            token_address: '0x0000000000000000000000000000000000000000',
-            symbol: 'ETH',
-            decimals: 18,
-            chainId: parseInt(chainData.chainId),
-            logoURI: '',
-            balance: nativeWalletBalance,
-        };
-        if (JSON.stringify(tokensInRTK[0]) !== JSON.stringify(nativeToken))
-            dispatch(addNativeBalance([nativeToken]));
-    }, [nativeWalletBalance]);
+                address: '0x0000000000000000000000000000000000000000',
+                // eslint-disable-next-line camelcase
+                token_address: '0x0000000000000000000000000000000000000000',
+                symbol: 'ETH',
+                decimals: 18,
+                chainId: parseInt(chainData.chainId),
+                logoURI: '',
+                balance: nativeWalletBalance,
+            };
+            if (JSON.stringify(tokensInRTK[0]) !== JSON.stringify(nativeToken))
+                dispatch(addNativeBalance([nativeToken]));
+        }
+    }, [nativeWalletBalance, isUserLoggedIn]);
 
     // function to sever connection between user wallet and Moralis server
     const clickLogout = async () => {
@@ -1704,7 +1707,7 @@ export default function App() {
             .catch(console.log);
     }, [lastBlockNumber]);
 
-    const shouldDisplayAccountTab = isAuthenticated && isWeb3Enabled && account != '';
+    const shouldDisplayAccountTab = isUserLoggedIn && account != '';
 
     const [isModalOpenWallet, openModalWallet, closeModalWallet] = useModal();
 
