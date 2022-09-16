@@ -100,6 +100,7 @@ import Chat from './components/Chat/Chat';
 import { formatAmount } from '../utils/numbers';
 import GlobalModal from './components/GlobalModal/GlobalModal';
 import { memoizeTokenPrice } from './functions/fetchTokenPrice';
+import { useTokenUniverse } from './hooks/useTokenUniverse';
 
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 const cachedFetchAddress = memoizeFetchAddress();
@@ -139,6 +140,9 @@ export default function App() {
     // `'0x5'` is the chain the app should be on by default
     const [chainData, isChainSupported, switchChain, switchNetworkInMoralis] = useAppChain('0x5');
     useEffect(() => console.warn(chainData.chainId), [chainData.chainId]);
+
+    const tokenUniverse = useTokenUniverse(chainData.chainId);
+    useEffect(() => console.log({ tokenUniverse }), [tokenUniverse]);
 
     const [isShowAllEnabled, setIsShowAllEnabled] = useState(true);
     const [currentTxActiveInTransactions, setCurrentTxActiveInTransactions] = useState('');
