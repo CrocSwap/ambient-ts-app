@@ -10,25 +10,33 @@ export const fetchTokenBalances = async (
     _lastBlockNumber: number,
     connectedAccountActive: boolean,
 ) => {
-    // get ENS domain of an address
     const options = { address: address, chain: chain as '0x5' | '0x2a' };
 
-    let balances = await Moralis.Web3API.account.getTokenBalances(options);
+    const erc20Balances = await Moralis.Web3API.account.getTokenBalances(options);
+
+    let updatedErc20Balances = erc20Balances.map((tokenBalance) => {
+        return {
+            name: tokenBalance.name,
+            address: tokenBalance.token_address,
+            symbol: tokenBalance.symbol,
+            decimals: tokenBalance.decimals,
+            balance: tokenBalance.balance,
+        };
+    });
 
     if (!connectedAccountActive) {
         const nativeBalance = await Moralis.Web3API.account.getNativeBalance(options);
-        balances = [
+        updatedErc20Balances = [
             {
                 name: 'Native Token',
-                // eslint-disable-next-line camelcase
-                token_address: '0x0000000000000000000000000000000000000000',
+                address: '0x0000000000000000000000000000000000000000',
                 symbol: 'ETH',
                 decimals: 18,
                 balance: toDisplayQty(nativeBalance.balance, 18),
             },
-        ].concat(balances);
+        ].concat(updatedErc20Balances);
     }
-    return balances;
+    return updatedErc20Balances;
 };
 
 type TokenBalanceFn = (

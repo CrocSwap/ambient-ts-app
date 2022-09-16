@@ -1643,8 +1643,8 @@ export default function App() {
                 name: 'Native Token',
 
                 address: '0x0000000000000000000000000000000000000000',
-                // eslint-disable-next-line camelcase
-                token_address: '0x0000000000000000000000000000000000000000',
+                // // eslint-disable-next-line camelcase
+                // token_address: '0x0000000000000000000000000000000000000000',
                 symbol: 'ETH',
                 decimals: 18,
                 chainId: parseInt(chainData.chainId),

@@ -37,7 +37,7 @@ export default function TokenSelect(props: TokenSelectPropsIF) {
         let displayQty = '0';
         let displayQtyNum = 0;
         tokensInRTK.map((token) => {
-            if (token.token_address?.toLowerCase() === address.toLowerCase()) {
+            if (token.address?.toLowerCase() === address.toLowerCase()) {
                 if (token.balance && token.address === ZERO_ADDRESS) {
                     displayQtyNum = parseFloat(token.balance);
                 } else if (token.balance && token.decimals) {

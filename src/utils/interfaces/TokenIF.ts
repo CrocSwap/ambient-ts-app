@@ -1,8 +1,8 @@
 export interface TokenIF {
     name: string;
     address: string;
-    // eslint-disable-next-line camelcase
-    token_address?: string;
+    // // eslint-disable-next-line camelcase
+    // token_address?: string;
     symbol: string;
     decimals: number;
     chainId: number;
@@ -10,4 +10,5 @@ export interface TokenIF {
     fromList?: string;
     balance?: string;
     dexBalance?: string;
+    combinedBalance?: string;
 }

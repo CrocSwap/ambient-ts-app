@@ -17,7 +17,7 @@ export const tokenDataSlice = createSlice({
             // state.tokens = action.payload;
             action.payload.forEach((erc20Token) => {
                 const erc20TokenIndex = state.tokens?.findIndex(
-                    (obj) => obj.token_address === erc20Token.token_address,
+                    (obj) => obj.address === erc20Token.address,
                 );
                 if (erc20TokenIndex === undefined || erc20TokenIndex === -1) {
                     state.tokens = state.tokens.concat(action.payload);
@@ -33,7 +33,7 @@ export const tokenDataSlice = createSlice({
         },
         addNativeBalance: (state, action: PayloadAction<TokenIF[]>) => {
             const nativeTokenIndex = state.tokens?.findIndex(
-                (obj) => obj.token_address === action.payload[0].token_address,
+                (obj) => obj.address === action.payload[0].address,
             );
             if (nativeTokenIndex === undefined || nativeTokenIndex === -1) {
                 state.tokens = action.payload.concat(state.tokens);
