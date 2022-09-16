@@ -32,8 +32,44 @@ const mainVariant: Variants = {
     },
 };
 
+const spring = {
+    type: 'spring',
+    stiffness: 500,
+    damping: 30,
+};
+
+interface NetworkItemPropsIF {
+    color: string;
+    isSelected: boolean;
+    name: string;
+    onClick: () => void;
+}
+
+const networkItems = [
+    {
+        name: 'Network1',
+        color: '#ff0055',
+    },
+    {
+        name: 'Network2',
+        color: '#0099ff',
+    },
+    {
+        name: 'Network3',
+        color: '#22cc88',
+    },
+    {
+        name: 'Network4',
+        color: '#ffaa00',
+    },
+    {
+        name: 'Network5',
+        color: 'yellow',
+    },
+];
 export default function NewNetworkSelector() {
     const [isOpen, setIsOpen] = useState(false);
+    const [selected, setSelected] = useState(networkItems[0]);
 
     const dropdownMenuArrow = (
         <motion.div
@@ -50,8 +86,33 @@ export default function NewNetworkSelector() {
         </motion.div>
     );
 
+    function NetworkItem(props: NetworkItemPropsIF) {
+        const { color, isSelected, onClick, name } = props;
+
+        return (
+            <motion.li
+                className={styles.network_item_container}
+                onClick={onClick}
+                variants={itemVariants}
+            >
+                {name}
+                <div className={styles.network_color} style={{ backgroundColor: color }}>
+                    {isSelected && (
+                        <motion.div
+                            layoutId='outline'
+                            className={styles.outline}
+                            initial={false}
+                            animate={{ borderColor: color }}
+                            transition={spring}
+                        />
+                    )}
+                </div>
+            </motion.li>
+        );
+    }
+
     return (
-        <motion.nav initial={false} animate={isOpen ? 'open' : 'closed'} className={styles.menu}>
+        <motion.div initial={false} animate={isOpen ? 'open' : 'closed'} className={styles.menu}>
             <motion.button
                 whileTap={{ scale: 0.97 }}
                 onClick={() => setIsOpen(!isOpen)}
@@ -66,12 +127,16 @@ export default function NewNetworkSelector() {
                 style={{ pointerEvents: isOpen ? 'auto' : 'none' }}
                 className={styles.main_container}
             >
-                <motion.li variants={itemVariants}>Item 1 </motion.li>
-                <motion.li variants={itemVariants}>Item 2 </motion.li>
-                <motion.li variants={itemVariants}>Item 3 </motion.li>
-                <motion.li variants={itemVariants}>Item 4 </motion.li>
-                <motion.li variants={itemVariants}>Item 5 </motion.li>
+                {networkItems.map((network, idx) => (
+                    <NetworkItem
+                        name={network.name}
+                        color={network.color}
+                        key={idx}
+                        isSelected={selected.color === network.color}
+                        onClick={() => setSelected(network)}
+                    />
+                ))}
             </motion.ul>
-        </motion.nav>
+        </motion.div>
     );
 }
