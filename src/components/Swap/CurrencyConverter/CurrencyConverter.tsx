@@ -461,7 +461,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                 switchBoxes ? styles.currency_converter_switch : null
             }`}
         >
-            <div className={switchBoxes && styles.slide_in_bottom}>
+            <div className={switchBoxes ? styles.slide_in_bottom : undefined}>
                 <CurrencySelector
                     tokenPair={tokenPair}
                     tokensBank={tokensBank}
@@ -505,7 +505,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                     </IconWithTooltip>
                 )}
             </div>
-            <div className={switchBoxes && styles.slide_in_top}>
+            <div className={switchBoxes ? styles.slide_in_top : undefined}>
                 <CurrencySelector
                     tokenBQtyLocal={tokenBQtyLocal}
                     tokenPair={tokenPair}

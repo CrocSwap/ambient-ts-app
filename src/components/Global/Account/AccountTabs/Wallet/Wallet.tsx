@@ -34,7 +34,6 @@ export default function Wallet(props: WalletPropsIF) {
                         resolvedAddress,
                         chainId,
                         lastBlockNumber,
-                        connectedAccountActive,
                     );
                     if (newTokens) setResolvedAddressTokens(newTokens);
                 } catch (error) {

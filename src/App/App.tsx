@@ -84,7 +84,7 @@ import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { useSlippage } from './useSlippage';
 import { useFavePools } from './hooks/useFavePools';
 import { useAppChain } from './hooks/useAppChain';
-import { addNativeBalance, resetTokenData, setTokens } from '../utils/state/tokenDataSlice';
+import { resetTokenData, setTokens } from '../utils/state/tokenDataSlice';
 import { checkIsStable } from '../utils/data/stablePairs';
 import { useTokenMap } from '../utils/hooks/useTokenMap';
 import { validateChain } from './validateChain';
@@ -449,7 +449,6 @@ export default function App() {
                         account,
                         chainData.chainId,
                         lastBlockNumber,
-                        true, // connected account active
                     );
                     const tokensInRTKminusNative = tokensInRTK.slice(1);
 
@@ -1636,25 +1635,6 @@ export default function App() {
     const nativeBalance = (
         parseFloat(nativeWalletBalance || '0') + parseFloat(nativeDexBalance || '0')
     ).toString();
-
-    useEffect(() => {
-        if (isUserLoggedIn) {
-            const nativeToken: TokenIF = {
-                name: 'Native Token',
-
-                address: '0x0000000000000000000000000000000000000000',
-                // // eslint-disable-next-line camelcase
-                // token_address: '0x0000000000000000000000000000000000000000',
-                symbol: 'ETH',
-                decimals: 18,
-                chainId: parseInt(chainData.chainId),
-                logoURI: '',
-                balance: nativeWalletBalance,
-            };
-            if (JSON.stringify(tokensInRTK[0]) !== JSON.stringify(nativeToken))
-                dispatch(addNativeBalance([nativeToken]));
-        }
-    }, [nativeWalletBalance, isUserLoggedIn]);
 
     // function to sever connection between user wallet and Moralis server
     const clickLogout = async () => {

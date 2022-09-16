@@ -31,8 +31,6 @@ export default function PoolCard(props: PoolCardProps) {
 
     const tokenAAddress = tokenA?.address ?? undefined;
     const tokenBAddress = tokenB?.address ?? undefined;
-    // const tokenAAddress = tokenA?.address ? tokenA?.address : tokenA.token_address ?? null;
-    // const tokenBAddress = tokenB?.address ? tokenB?.address : tokenB.token_address ?? null;
 
     const tokenAKey = tokenAAddress?.toLowerCase() + '_0x' + tokenA?.chainId.toString();
     const tokenBKey = tokenBAddress?.toLowerCase() + '_0x' + tokenB?.chainId.toString();
