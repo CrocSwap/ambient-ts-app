@@ -95,7 +95,13 @@ export default function WalletCard(props: WalletPropsIF) {
     return (
         <div className={styles.wallet_row}>
             {tokenInfo}
-            <p className={styles.value}>${(tokenUsdPrice * tokenBalanceNum).toLocaleString()}</p>
+            <p className={styles.value}>
+                $
+                {(tokenUsdPrice * tokenBalanceNum).toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                })}
+            </p>
             <p className={styles.amount}>{truncatedTokenBalance}</p>
         </div>
     );

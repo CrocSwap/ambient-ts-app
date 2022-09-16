@@ -12,6 +12,7 @@ import { removeToken } from '../../Global/TokenSelectContainer/removeToken';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { toDisplayQty } from '@crocswap-libs/sdk';
 import { ZERO_ADDRESS } from '../../../constants';
+import { formatAmount } from '../../../utils/numbers';
 // import truncateDecimals from '../../../utils/data/truncateDecimals';
 // import { tokenData } from '../../../utils/state/tokenDataSlice';
 
@@ -34,15 +35,26 @@ export default function TokenSelect(props: TokenSelectPropsIF) {
 
     const getTokenBalance = (address: string) => {
         let displayQty = '0';
+        let displayQtyNum = 0;
         tokensInRTK.map((token) => {
             if (token.token_address?.toLowerCase() === address.toLowerCase()) {
                 if (token.balance && token.address === ZERO_ADDRESS) {
-                    const displayQtyNum = parseFloat(token.balance);
-                    displayQty = displayQtyNum?.toLocaleString('en-US');
+                    displayQtyNum = parseFloat(token.balance);
                 } else if (token.balance && token.decimals) {
                     const untruncatedDisplayQty = toDisplayQty(token.balance, token.decimals);
-                    const displayQtyNum = parseFloat(untruncatedDisplayQty);
-                    displayQty = displayQtyNum?.toLocaleString('en-US');
+                    displayQtyNum = parseFloat(untruncatedDisplayQty);
+                }
+                if (displayQtyNum < 0.0001) {
+                    displayQty = displayQtyNum.toExponential(2);
+                } else if (displayQtyNum < 2) {
+                    displayQty = displayQtyNum.toPrecision(3);
+                } else if (displayQtyNum >= 100000) {
+                    displayQty = formatAmount(displayQtyNum);
+                } else {
+                    displayQty = displayQtyNum?.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                    });
                 }
             }
         });

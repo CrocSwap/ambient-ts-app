@@ -1,3 +1,4 @@
+import { toDisplayQty } from '@crocswap-libs/sdk';
 import Moralis from 'moralis-v1';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
 import { memoizePromiseFn } from './memoizePromiseFn';
@@ -24,7 +25,7 @@ export const fetchTokenBalances = async (
                 token_address: '0x0000000000000000000000000000000000000000',
                 symbol: 'ETH',
                 decimals: 18,
-                balance: nativeBalance.balance,
+                balance: toDisplayQty(nativeBalance.balance, 18),
             },
         ].concat(balances);
     }
