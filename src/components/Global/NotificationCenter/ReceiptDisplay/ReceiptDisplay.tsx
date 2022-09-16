@@ -49,6 +49,8 @@ export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
     const elapsedTimeString = elapsedTimeInSecondsNum
         ? elapsedTimeInSecondsNum < 60
             ? `${elapsedTimeInSecondsNum} seconds ago`
+            : elapsedTimeInSecondsNum === 60
+            ? '1 minute ago'
             : `${Math.floor(elapsedTimeInSecondsNum / 60)} minutes ago`
         : 'Pending...';
 
