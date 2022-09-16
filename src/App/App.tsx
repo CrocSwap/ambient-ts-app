@@ -6,14 +6,14 @@ import {
     resetGraphData,
     setPositionsByPool,
     setPositionsByUser,
-    setSwapsByUser,
-    // ISwap,
-    setSwapsByPool,
+    setChangesByUser,
+    // ITransaction,
+    setChangesByPool,
     // addSwapsByUser,
     // addSwapsByPool,
-    CandleData,
-    setCandles,
-    addCandles,
+    // CandleData,
+    // setCandles,
+    // addCandles,
     setLiquidity,
     setPoolVolumeSeries,
     setPoolTvlSeries,
@@ -21,6 +21,8 @@ import {
     addPositionsByPool,
     setLimitOrdersByUser,
     setLimitOrdersByPool,
+    CandlesByPoolAndDuration,
+    CandleData,
 } from '../utils/state/graphDataSlice';
 import { ethers } from 'ethers';
 import { useMoralis } from 'react-moralis';
@@ -130,6 +132,12 @@ export default function App() {
     const tokenMap = useTokenMap();
 
     const location = useLocation();
+
+    const [candleData, setCandleData] = useState<CandlesByPoolAndDuration | undefined>();
+
+    useEffect(() => {
+        if (candleData) console.log({ candleData });
+    }, [candleData]);
 
     // custom hook to manage chain the app is using
     // `chainData` is data on the current chain retrieved from our SDK
@@ -765,9 +773,9 @@ export default function App() {
 
                                 if (poolChanges) {
                                     dispatch(
-                                        setSwapsByPool({
+                                        setChangesByPool({
                                             dataReceived: true,
-                                            swaps: poolChanges,
+                                            changes: poolChanges,
                                         }),
                                     );
                                 }
@@ -859,25 +867,32 @@ export default function App() {
                             const candles = json?.data;
 
                             if (candles) {
-                                Promise.all(candles.map(getCandleData)).then((updatedCandles) => {
-                                    if (
-                                        JSON.stringify(graphData.candlesForAllPools.pools) !==
-                                        JSON.stringify(updatedCandles)
-                                    ) {
-                                        dispatch(
-                                            setCandles({
-                                                pool: {
-                                                    baseAddress: baseTokenAddress.toLowerCase(),
-                                                    quoteAddress: quoteTokenAddress.toLowerCase(),
-                                                    poolIdx: chainData.poolIndex,
-                                                    network: chainData.chainId,
-                                                },
-                                                duration: activePeriod,
-                                                candles: updatedCandles,
-                                            }),
-                                        );
-                                    }
-                                });
+                                // Promise.all(candles.map(getCandleData)).then((updatedCandles) => {
+                                if (JSON.stringify(candleData) !== JSON.stringify(candles)) {
+                                    setCandleData({
+                                        pool: {
+                                            baseAddress: baseTokenAddress.toLowerCase(),
+                                            quoteAddress: quoteTokenAddress.toLowerCase(),
+                                            poolIdx: chainData.poolIndex,
+                                            network: chainData.chainId,
+                                        },
+                                        duration: activePeriod,
+                                        candles: candles,
+                                    });
+                                    // dispatch(
+                                    //     setCandles({
+                                    //         pool: {
+                                    //             baseAddress: baseTokenAddress.toLowerCase(),
+                                    //             quoteAddress: quoteTokenAddress.toLowerCase(),
+                                    //             poolIdx: chainData.poolIndex,
+                                    //             network: chainData.chainId,
+                                    //         },
+                                    //         duration: activePeriod,
+                                    //         candles: candles,
+                                    //     }),
+                                    // );
+                                }
+                                // });
                             }
                         })
                         .catch(console.log);
@@ -980,25 +995,61 @@ export default function App() {
     );
 
     useEffect(() => {
-        if (candlesMessage !== null) {
+        if (candlesMessage) {
             const lastMessageData = JSON.parse(candlesMessage.data).data;
-            if (lastMessageData) {
-                // console.log({ lastMessageData });
-                Promise.all(lastMessageData.map(getCandleData)).then((updatedCandles) => {
-                    // console.log({ updatedCandles });
-                    dispatch(
-                        addCandles({
-                            pool: {
-                                baseAddress: baseTokenAddress,
-                                quoteAddress: quoteTokenAddress,
-                                poolIdx: chainData.poolIndex,
-                                network: chainData.chainId,
-                            },
-                            duration: activePeriod,
-                            candles: updatedCandles,
-                        }),
+            console.log({ lastMessageData });
+            if (lastMessageData && candleData) {
+                const newCandles: CandleData[] = [];
+                const updatedCandles: CandleData[] = candleData.candles;
+
+                for (let index = 0; index < lastMessageData.length; index++) {
+                    const messageCandle = lastMessageData[index];
+                    const indexOfExistingCandle = candleData.candles.findIndex(
+                        (savedCandle) => savedCandle.time === messageCandle.time,
                     );
-                });
+
+                    if (indexOfExistingCandle === -1) {
+                        newCandles.push(messageCandle);
+                    } else if (
+                        JSON.stringify(candleData.candles[indexOfExistingCandle]) !==
+                        JSON.stringify(messageCandle)
+                    ) {
+                        updatedCandles[indexOfExistingCandle] = messageCandle;
+                    }
+                }
+                console.log({ newCandles });
+                const newCandleData: CandlesByPoolAndDuration = {
+                    pool: candleData.pool,
+                    duration: candleData.duration,
+                    candles: newCandles.concat(updatedCandles),
+                };
+                setCandleData(newCandleData);
+                // setCandleData((savedCandles) => {
+                //     // console.log({ savedCandles });
+                //     if (newCandles && savedCandles) {
+                //         const newCandleData: CandlesByPoolAndDuration = {
+                //             pool: savedCandles.pool,
+                //             duration: savedCandles.duration,
+                //             candles: savedCandles.candles.concat(newCandles),
+                //         };
+                //         return newCandleData;
+                //     } else {
+                //         return savedCandles;
+                //     }
+                // });
+                // dispatch(
+                //     addCandles({
+                //         pool: {
+                //             baseAddress: baseTokenAddress,
+                //             quoteAddress: quoteTokenAddress,
+                //             poolIdx: chainData.poolIndex,
+                //             network: chainData.chainId,
+                //         },
+                //         duration: activePeriod,
+                //         candles: lastMessageData,
+                //     }),
+                // );
+                // });
             }
             // console.log({ lastMessageData });
         }
@@ -1278,13 +1329,9 @@ export default function App() {
 
     const graphData = useAppSelector((state) => state.graphData);
 
-    // const getSwapData = async (swap: ISwap): Promise<ISwap> => {
+    // const getSwapData = async (swap: ITransaction): Promise<ITransaction> => {
     //     return swap;
     // };
-
-    const getCandleData = async (candle: CandleData): Promise<CandleData> => {
-        return candle;
-    };
 
     const getPositionData = async (position: PositionIF): Promise<PositionIF> => {
         position.base = position.base.startsWith('0x') ? position.base : '0x' + position.base;
@@ -1586,9 +1633,9 @@ export default function App() {
 
                         if (userChanges) {
                             dispatch(
-                                setSwapsByUser({
+                                setChangesByUser({
                                     dataReceived: true,
-                                    swaps: userChanges,
+                                    changes: userChanges,
                                 }),
                             );
                         }
@@ -1708,6 +1755,9 @@ export default function App() {
     const [isGlobalModalOpen, openGlobalModal, closeGlobalModal, currentContent, title] =
         useGlobalModal();
 
+    const [pendingTransactions, setPendingTransactions] = useState([]);
+    const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+
     // props for <PageHeader/> React element
     const headerProps = {
         nativeBalance: nativeBalance,
@@ -1720,6 +1770,13 @@ export default function App() {
         switchChain: switchChain,
         switchNetworkInMoralis: switchNetworkInMoralis,
         openModalWallet: openModalWallet,
+        pendingTransactions: pendingTransactions,
+        lastBlockNumber: lastBlockNumber,
+        isMobileSidebarOpen: isMobileSidebarOpen,
+        setIsMobileSidebarOpen: setIsMobileSidebarOpen,
+
+        openGlobalModal: openGlobalModal,
+        closeGlobalModal: closeGlobalModal,
     };
 
     // props for <Swap/> React element
@@ -1748,6 +1805,8 @@ export default function App() {
         activeTokenListsChanged: activeTokenListsChanged,
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
         openModalWallet: openModalWallet,
+        pendingTransactions: pendingTransactions,
+        setPendingTransactions: setPendingTransactions,
     };
 
     // props for <Swap/> React element on trade route
@@ -1777,6 +1836,8 @@ export default function App() {
         activeTokenListsChanged: activeTokenListsChanged,
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
         openModalWallet: openModalWallet,
+        pendingTransactions: pendingTransactions,
+        setPendingTransactions: setPendingTransactions,
     };
 
     // props for <Limit/> React element on trade route
@@ -1810,6 +1871,8 @@ export default function App() {
 
         openGlobalModal: openGlobalModal,
         closeGlobalModal: closeGlobalModal,
+
+        pendingTransactions: pendingTransactions,
         limitRate: limitRate,
         setLimitRate: setLimitRate,
     };
@@ -1842,6 +1905,8 @@ export default function App() {
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
         openModalWallet: openModalWallet,
         ambientApy: ambientApy,
+
+        pendingTransactions: pendingTransactions,
     };
 
     function toggleSidebar() {
@@ -1988,6 +2053,7 @@ export default function App() {
     return (
         <>
             <div className={containerStyle}>
+                {isMobileSidebarOpen && <div className='blur_app' />}
                 {currentLocation !== '/404' && <PageHeader {...headerProps} />}
                 {/* <MobileSidebar/> */}
                 <main className={`${showSidebarOrNullStyle} ${swapBodyStyle}`}>
@@ -2010,6 +2076,7 @@ export default function App() {
                                 <Trade
                                     crocEnv={crocEnv}
                                     provider={provider}
+                                    candleData={candleData}
                                     baseTokenAddress={baseTokenAddress}
                                     quoteTokenAddress={quoteTokenAddress}
                                     baseTokenBalance={baseTokenBalance}
@@ -2149,8 +2216,8 @@ export default function App() {
                 {currentLocation !== '/app/chat' && (
                     <ChatPanel
                         chatStatus={chatStatus}
-                        onClose={function (): void {
-                            throw new Error('Function not implemented.');
+                        onClose={() => {
+                            console.error('Function not implemented.');
                         }}
                         favePools={favePools}
                         currentPool={currentPoolInfo}

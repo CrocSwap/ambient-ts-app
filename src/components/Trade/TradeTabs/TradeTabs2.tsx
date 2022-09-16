@@ -93,7 +93,7 @@ export default function TradeTabs2(props: ITabsProps) {
     const graphData = useAppSelector((state) => state?.graphData);
 
     const userPositions = graphData?.positionsByUser?.positions;
-    const userSwaps = graphData?.swapsByUser?.swaps;
+    const userChanges = graphData?.changesByUser?.changes;
     // const poolPositions = graphData?.positionsByPool?.positions;
 
     const [hasInitialized, setHasInitialized] = useState(false);
@@ -117,11 +117,11 @@ export default function TradeTabs2(props: ITabsProps) {
                     setIsShowAllEnabled(false);
                 }
             } else if (selectedOutsideTab === 0) {
-                if (!isCandleSelected && !isShowAllEnabled && userSwaps.length < 1) {
+                if (!isCandleSelected && !isShowAllEnabled && userChanges.length < 1) {
                     setIsShowAllEnabled(true);
-                } else if (userSwaps.length < 1) {
+                } else if (userChanges.length < 1) {
                     return;
-                } else if (isShowAllEnabled && userSwaps.length >= 1) {
+                } else if (isShowAllEnabled && userChanges.length >= 1) {
                     setIsShowAllEnabled(false);
                 }
             }

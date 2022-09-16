@@ -75,6 +75,8 @@ interface RangePropsIF {
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
     openModalWallet: () => void;
     ambientApy: number | undefined;
+
+    pendingTransactions: string[];
 }
 
 export default function Range(props: RangePropsIF) {
@@ -104,6 +106,8 @@ export default function Range(props: RangePropsIF) {
         indicateActiveTokenListsChanged,
         openModalWallet,
         ambientApy,
+
+        pendingTransactions,
     } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -894,6 +898,8 @@ export default function Range(props: RangePropsIF) {
         pinnedMinPriceDisplayTruncatedInQuote: pinnedMinPriceDisplayTruncatedInQuote,
         pinnedMaxPriceDisplayTruncatedInBase: pinnedMaxPriceDisplayTruncatedInBase,
         pinnedMaxPriceDisplayTruncatedInQuote: pinnedMaxPriceDisplayTruncatedInQuote,
+
+        pendingTransactions: pendingTransactions,
     };
 
     // props for <RangeCurrencyConverter/> React element

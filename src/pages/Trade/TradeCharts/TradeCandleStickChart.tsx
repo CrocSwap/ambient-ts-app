@@ -109,15 +109,16 @@ export default function TradeCandleStickChart(props: ChartData) {
     // Parse liquidtiy data
     const liquiditiyData = useMemo(() => {
         const liqData: LiquidityData[] = [];
-
-        props.liquidityData.ranges.map((data: any) => {
-            liqData.push({
-                activeLiq: data.activeLiq,
-                upperBoundPriceDecimalCorrected: denomInBase
-                    ? data.upperBoundInvPriceDecimalCorrected
-                    : data.upperBoundInvPriceDecimalCorrected,
+        if (props.liquidityData) {
+            props.liquidityData.ranges.map((data: any) => {
+                liqData.push({
+                    activeLiq: data.activeLiq,
+                    upperBoundPriceDecimalCorrected: denomInBase
+                        ? data.upperBoundInvPriceDecimalCorrected
+                        : data.upperBoundInvPriceDecimalCorrected,
+                });
             });
-        });
+        }
 
         return liqData;
     }, [props.liquidityData, denomInBase]);

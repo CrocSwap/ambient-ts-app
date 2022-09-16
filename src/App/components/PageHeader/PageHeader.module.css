@@ -103,7 +103,12 @@
     font-size: 2.25rem;
     font-weight: 100;
     line-height: 2.81rem;
+    background-size: 200% auto;
+    animation: shine 4s linear infinite;
+
 }
+
+
 
 .mobile_nav_toggle {
     display: none;
@@ -111,6 +116,8 @@
 
 .account {
     display: flex;
+    align-items: center;
+    padding: 0 1rem;
 }
 
 .authenticate_button {
@@ -148,6 +155,11 @@
     }
 
 } */
+@keyframes shine {
+    to {
+      background-position: 200% center;
+    }
+  }
 
 @media (min-width: 580px) 
   and (max-width: 1000px)

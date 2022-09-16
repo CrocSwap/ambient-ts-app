@@ -12,6 +12,7 @@
 }
 
 .container div {
+    white-space: nowrap;
     display: flex;
     justify-content: center;
     align-items: center;

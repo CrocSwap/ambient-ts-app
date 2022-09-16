@@ -7,7 +7,7 @@ import IncomingMessage from './MessagePanel/Inbox/IncomingMessage';
 import Room from './MessagePanel/Room/Room';
 import { RiCloseFill } from 'react-icons/ri';
 import { useEffect, useRef, useState } from 'react';
-import { socket } from './Service/chatApi';
+// import { socket } from './Service/chatApi';
 import { Message } from './Model/MessageModel';
 import { PoolIF } from '../../utils/interfaces/PoolIF';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
@@ -47,37 +47,44 @@ interface ChatProps {
 export default function ChatPanel(props: ChatProps) {
     const { favePools, currentPool } = props;
     const messageEnd = useRef<HTMLInputElement | null>(null);
-    const _socket = socket;
-    const [messages, setMessages] = useState<Message[]>([]);
+    // const _socket = socket;
+    const [
+        messages,
+        // setMessages
+    ] = useState<Message[]>([]);
     const [room, setRoom] = useState('Global');
-    const [scrollBottomControl, setScrollBottomControl] = useState(true);
+    const [
+        ,
+        // scrollBottomControl
+        setScrollBottomControl,
+    ] = useState(true);
 
-    useEffect(() => {
-        _socket.connect();
-    }, [_socket]);
+    // useEffect(() => {
+    //     _socket.connect();
+    // }, [_socket]);
     const currentUser = '62f24f3ff40188d467c532e8';
 
-    useEffect(() => {
-        _socket.on('msg-recieve', (mostRecentMessages) => {
-            setMessages([...mostRecentMessages]);
-            if (scrollBottomControl) {
-                scrollToBottom();
-            }
-        });
-    }, [messages]);
+    // useEffect(() => {
+    //     _socket.on('msg-recieve', (mostRecentMessages) => {
+    //         setMessages([...mostRecentMessages]);
+    //         if (scrollBottomControl) {
+    //             scrollToBottom();
+    //         }
+    //     });
+    // }, [messages]);
 
-    useEffect(() => {
-        setRoomSocket();
-    }, [room, currentPool, props.chatStatus]);
+    // useEffect(() => {
+    //     setRoomSocket();
+    // }, [room, currentPool, props.chatStatus]);
 
-    const setRoomSocket = async () => {
-        _socket.emit('listen', {
-            room:
-                room === 'Current Pool'
-                    ? currentPool.baseToken.symbol + currentPool.quoteToken.symbol
-                    : room,
-        });
-    };
+    // const setRoomSocket = async () => {
+    //     _socket.emit('listen', {
+    //         room:
+    //             room === 'Current Pool'
+    //                 ? currentPool.baseToken.symbol + currentPool.quoteToken.symbol
+    //                 : room,
+    //     });
+    // };
 
     const scrollToBottom = () => {
         messageEnd.current?.scrollTo(0, messageEnd.current?.scrollHeight);
@@ -138,13 +145,13 @@ export default function ChatPanel(props: ChatProps) {
                             </div>
 
                             <MessageInput
-                                message={messages[0]}
-                                room={
-                                    room === 'Current Pool'
-                                        ? currentPool.baseToken.symbol +
-                                          currentPool.quoteToken.symbol
-                                        : room
-                                }
+                            // message={messages[0]}
+                            // room={
+                            //     room === 'Current Pool'
+                            //         ? currentPool.baseToken.symbol +
+                            //           currentPool.quoteToken.symbol
+                            //         : room
+                            // }
                             />
 
                             <div

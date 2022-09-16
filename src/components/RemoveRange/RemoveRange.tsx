@@ -110,7 +110,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
                             poolIdx: position.poolIdx.toString(),
                             bidTick: position.bidTick ? position.bidTick.toString() : '0',
                             askTick: position.askTick ? position.askTick.toString() : '0',
-                            calcValues: 'true',
+                            addValue: 'true',
                             positionType: position.positionType,
                         }),
                 )

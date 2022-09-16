@@ -13,7 +13,7 @@ import TradeTabs2 from '../../components/Trade/TradeTabs/TradeTabs2';
 import styles from './Trade.module.css';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { tradeData as TradeDataIF } from '../../utils/state/tradeDataSlice';
-import { CandleData } from '../../utils/state/graphDataSlice';
+import { CandleData, CandlesByPoolAndDuration } from '../../utils/state/graphDataSlice';
 import { PoolIF, TokenIF, TokenPairIF } from '../../utils/interfaces/exports';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import { SketchPicker } from 'react-color';
@@ -22,6 +22,7 @@ import { SketchPicker } from 'react-color';
 interface TradePropsIF {
     crocEnv: CrocEnv | undefined;
     provider: ethers.providers.Provider | undefined;
+    candleData: CandlesByPoolAndDuration | undefined;
     baseTokenAddress: string;
     quoteTokenAddress: string;
     baseTokenBalance: string;
@@ -70,6 +71,7 @@ interface TradePropsIF {
 export default function Trade(props: TradePropsIF) {
     const {
         crocEnv,
+        candleData,
         chainId,
         chainData,
         tokenMap,
@@ -121,10 +123,10 @@ export default function Trade(props: TradePropsIF) {
         .map((item) => JSON.stringify(item.pool).toLowerCase())
         .findIndex((pool) => pool === activePoolDefinition);
 
-    const activePoolCandleData = graphData?.candlesForAllPools?.pools[indexOfActivePool];
-    const candleData = activePoolCandleData?.candlesByPoolAndDuration.find((data) => {
-        return data.duration === tradeData.activeChartPeriod;
-    });
+    // const activePoolCandleData = graphData?.candlesForAllPools?.pools[indexOfActivePool];
+    // const candleData = activePoolCandleData?.candlesByPoolAndDuration.find((data) => {
+    //     return data.duration === tradeData.activeChartPeriod;
+    // });
 
     const activePoolLiquidityData = graphData?.liquidityForAllPools?.pools[indexOfActivePool];
     const liquidityData = activePoolLiquidityData?.liquidityData;
