@@ -1000,6 +1000,8 @@ export default function App() {
             console.log({ lastMessageData });
             if (lastMessageData && candleData) {
                 const newCandles: CandleData[] = [];
+                const updatedCandles: CandleData[] = candleData.candles;
+
                 for (let index = 0; index < lastMessageData.length; index++) {
                     const messageCandle = lastMessageData[index];
                     const indexOfExistingCandle = candleData.candles.findIndex(
@@ -1007,23 +1009,21 @@ export default function App() {
                     );
 
                     if (indexOfExistingCandle === -1) {
-                        if (
-                            JSON.stringify(candleData.candles[indexOfExistingCandle]) !==
-                            JSON.stringify(messageCandle)
-                        ) {
-                            newCandles.push(messageCandle);
-                        }
+                        newCandles.push(messageCandle);
+                    } else if (
+                        JSON.stringify(candleData.candles[indexOfExistingCandle]) !==
+                        JSON.stringify(messageCandle)
+                    ) {
+                        updatedCandles[indexOfExistingCandle] = messageCandle;
                     }
                 }
                 console.log({ newCandles });
-                if (newCandles.length > 0 && candleData) {
-                    const newCandleData: CandlesByPoolAndDuration = {
-                        pool: candleData.pool,
-                        duration: candleData.duration,
-                        candles: newCandles.concat(candleData.candles),
-                    };
-                    setCandleData(newCandleData);
-                }
+                const newCandleData: CandlesByPoolAndDuration = {
+                    pool: candleData.pool,
+                    duration: candleData.duration,
+                    candles: newCandles.concat(updatedCandles),
+                };
+                setCandleData(newCandleData);
                 // setCandleData((savedCandles) => {
                 //     // console.log({ savedCandles });
                 //     if (newCandles && savedCandles) {
