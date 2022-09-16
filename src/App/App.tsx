@@ -142,7 +142,7 @@ export default function App() {
     useEffect(() => console.warn(chainData.chainId), [chainData.chainId]);
 
     const tokenUniverse = useTokenUniverse(chainData.chainId);
-    useEffect(() => console.log(tokenUniverse), [tokenUniverse]);
+    useEffect(() => console.log({ tokenUniverse }), [tokenUniverse]);
 
     const [isShowAllEnabled, setIsShowAllEnabled] = useState(true);
     const [currentTxActiveInTransactions, setCurrentTxActiveInTransactions] = useState('');
