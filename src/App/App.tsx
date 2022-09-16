@@ -141,7 +141,8 @@ export default function App() {
     const [chainData, isChainSupported, switchChain, switchNetworkInMoralis] = useAppChain('0x5');
     useEffect(() => console.warn(chainData.chainId), [chainData.chainId]);
 
-    useTokenUniverse(chainData.chainId);
+    const tokenUniverse = useTokenUniverse(chainData.chainId);
+    useEffect(() => console.log(tokenUniverse), [tokenUniverse]);
 
     const [isShowAllEnabled, setIsShowAllEnabled] = useState(true);
     const [currentTxActiveInTransactions, setCurrentTxActiveInTransactions] = useState('');
