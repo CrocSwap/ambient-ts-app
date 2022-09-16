@@ -17,6 +17,13 @@ interface NetworkSelectorPropsIF {
     switchChain: Dispatch<SetStateAction<string>>;
 }
 
+interface NetworkItemPropsIF {
+    color: string;
+    isSelected: boolean;
+    name: string;
+    onClick: () => void;
+}
+
 export default function NetworkSelector(props: NetworkSelectorPropsIF) {
     const { chainId, switchChain } = props;
 
@@ -40,7 +47,26 @@ export default function NetworkSelector(props: NetworkSelectorPropsIF) {
             ))}
         </ul>
     );
+    function NetworkItem(props: NetworkItemPropsIF) {
+        const { color, isSelected, onClick, name } = props;
 
+        return (
+            <li className={styles.network_item_container}>
+                {name}
+                <div className={styles.network_color} style={{ backgroundColor: color }}>
+                    {isSelected && (
+                        <motion.div
+                            layoutId='outline'
+                            className={styles.outline}
+                            initial={false}
+                            animate={{ borderColor: color }}
+                            transition={spring}
+                        />
+                    )}
+                </div>
+            </li>
+        );
+    }
     // TODO:  @Junior is the wrapper in the return necessary?
     const [showDropdown, setShowDropdown] = useState(false);
 
@@ -81,6 +107,7 @@ export default function NetworkSelector(props: NetworkSelectorPropsIF) {
                         {networkMenuContent}
                     </DropdownMenu2>
                 </div>
+                {newDropdown}
             </IconWithTooltip>
         </div>
     );
@@ -109,4 +136,10 @@ const container = {
             },
         },
     },
+};
+
+const spring = {
+    type: 'spring',
+    stiffness: 500,
+    damping: 30,
 };
