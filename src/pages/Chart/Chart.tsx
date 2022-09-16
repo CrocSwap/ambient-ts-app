@@ -221,7 +221,7 @@ export default function Chart(props: ChartData) {
                 )
                 .attr('y', scaleData.yScale(ranges[1].value));
 
-            console.error('useEffect', drawControl);
+            // console.error('useEffect', drawControl);
         }
     }, [ranges, zoomStatus, drawControl]);
 
@@ -733,7 +733,7 @@ export default function Chart(props: ChartData) {
                 let selectedCandle: any;
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 const crosshairData = [{ x: 0, y: -1 }];
-                console.error('draw', drawControl);
+                // console.error('draw', drawControl);
 
                 const minimum = (data: any, accessor: any) => {
                     return data
@@ -1013,7 +1013,7 @@ export default function Chart(props: ChartData) {
             }
 
             setTimeout(() => {
-                console.error('timeout', drawControl);
+                // console.error('timeout', drawControl);
                 setDrawControl(!drawControl);
             }, 100);
         },

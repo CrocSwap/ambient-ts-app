@@ -2149,8 +2149,8 @@ export default function App() {
                 {currentLocation !== '/app/chat' && (
                     <ChatPanel
                         chatStatus={chatStatus}
-                        onClose={function (): void {
-                            throw new Error('Function not implemented.');
+                        onClose={() => {
+                            console.error('Function not implemented.');
                         }}
                         favePools={favePools}
                         currentPool={currentPoolInfo}
