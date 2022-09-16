@@ -52,10 +52,12 @@ export default function Account(props: AccountPropsIF) {
                         : ''}
                 </span>
             </IconWithTooltip>
-            <div className={`${styles.title_gradient}`} onClick={handleCopyAddress}>
-                <MdAccountBalanceWallet color='#ebebff' />
-                <p>{ensName !== '' && isAuthenticated ? ensName : props.accountAddress}</p>
-            </div>
+            {isAuthenticated && isWeb3Enabled && (
+                <div className={`${styles.title_gradient}`} onClick={handleCopyAddress}>
+                    <MdAccountBalanceWallet color='#ebebff' />
+                    <p>{ensName !== '' && isAuthenticated ? ensName : props.accountAddress}</p>
+                </div>
+            )}
             <NavItem icon={<FiMoreHorizontal size={20} color='#CDC1FF' />}>
                 <DropdownMenu
                     isAuthenticated={isAuthenticated}
