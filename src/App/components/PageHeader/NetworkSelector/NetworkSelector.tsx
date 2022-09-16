@@ -3,6 +3,7 @@ import { Dispatch, SetStateAction, useState } from 'react';
 import { FaDotCircle } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import { MdKeyboardArrowDown, MdKeyboardArrowUp } from 'react-icons/md';
 
 // START: Import Local Files
 import styles from './NetworkSelector.module.css';
@@ -47,8 +48,6 @@ export default function NetworkSelector(props: NetworkSelectorPropsIF) {
     const dropdownMenu = (
         <motion.div
             className={styles.dropdown_menu}
-            //     variants={ButtonParentVariants}
-            //   initial='closed'
             animate={showDropdown ? 'visible' : 'hidden'}
             initial='hidden'
             variants={container}
@@ -58,6 +57,16 @@ export default function NetworkSelector(props: NetworkSelectorPropsIF) {
                     <p>{network}</p>
                 </motion.div>
             ))}
+        </motion.div>
+    );
+
+    const newDropdown = (
+        <motion.div className={styles.main_container}>
+            <div className={styles.clicker} onClick={() => setShowDropdown(!showDropdown)}>
+                I am clicker
+                {showDropdown ? <MdKeyboardArrowUp /> : <MdKeyboardArrowDown />}
+            </div>
+            {showDropdown && dropdownMenu}
         </motion.div>
     );
     return (
