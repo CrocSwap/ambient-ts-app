@@ -123,6 +123,8 @@
     /* position: relative; */
     /* width: 20px;
     height: 20px; */
+    outline: none;
+    border: none;
     background: var(--dark1);
     font-weight: 200;
     font-size: 18px;

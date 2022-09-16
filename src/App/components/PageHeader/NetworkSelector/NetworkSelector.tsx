@@ -122,10 +122,14 @@ export default function NetworkSelector(props: NetworkSelectorPropsIF) {
 
     const newDropdown = (
         <motion.div className={styles.main_container}>
-            <div className={styles.clicker} onClick={() => setShowDropdown(!showDropdown)}>
+            <motion.button
+                whileTap={{ scale: 0.97 }}
+                className={styles.clicker}
+                onClick={() => setShowDropdown(!showDropdown)}
+            >
                 {selected.name}
                 {showDropdown ? <MdKeyboardArrowUp size={25} /> : <MdKeyboardArrowDown size={25} />}
-            </div>
+            </motion.button>
             {showDropdown && dropdownMenu}
         </motion.div>
     );
