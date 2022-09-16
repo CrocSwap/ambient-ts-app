@@ -1199,28 +1199,28 @@ export default function App() {
                 crocEnv
                     .token(tradeData.baseToken.address)
                     .walletDisplay(account)
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    .then((bal: any) => setBaseTokenBalance(bal));
+                    .then((bal: string) => setBaseTokenBalance(bal))
+                    .catch(console.log);
                 crocEnv
                     .token(tradeData.baseToken.address)
                     .balanceDisplay(account)
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    .then((bal: any) => {
+                    .then((bal: string) => {
                         setBaseTokenDexBalance(bal);
                         if (tradeData.baseToken.address === ZERO_ADDRESS) {
                             setNativeDexBalance(bal);
                         }
-                    });
+                    })
+                    .catch(console.log);
                 crocEnv
                     .token(tradeData.quoteToken.address)
                     .walletDisplay(account)
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    .then((bal: any) => setQuoteTokenBalance(bal));
+                    .then((bal: string) => setQuoteTokenBalance(bal))
+                    .catch(console.log);
                 crocEnv
                     .token(tradeData.quoteToken.address)
                     .balanceDisplay(account)
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    .then((bal: any) => setQuoteTokenDexBalance(bal));
+                    .then((bal: string) => setQuoteTokenDexBalance(bal))
+                    .catch(console.log);
             }
         })();
     }, [
@@ -1229,8 +1229,8 @@ export default function App() {
         account,
         // isWeb3Enabled,
         // isAuthenticated,
-        tokenPair?.dataTokenA?.address,
-        tokenPair?.dataTokenB?.address,
+        tradeData.baseToken.address,
+        tradeData.quoteToken.address,
         lastBlockNumber,
         // provider,
     ]);
