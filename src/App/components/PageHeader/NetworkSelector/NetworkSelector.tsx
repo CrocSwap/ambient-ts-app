@@ -1,7 +1,7 @@
 // START: Import React and Dongles
 import { Dispatch, SetStateAction, useState } from 'react';
 import { FaDotCircle } from 'react-icons/fa';
-import { AnimateSharedLayout, motion } from 'framer-motion';
+import { AnimateSharedLayout, motion, Variants } from 'framer-motion';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { MdKeyboardArrowDown, MdKeyboardArrowUp } from 'react-icons/md';
 
@@ -11,6 +11,7 @@ import DropdownMenu2 from '../../../../components/Global/DropdownMenu2/DropdownM
 import { ItemEnterAnimation } from '../../../../utils/others/FramerMotionAnimations';
 import { ambientChains } from '../../../../utils/data/chains';
 import IconWithTooltip from '../../../../components/Global/IconWithTooltip/IconWithTooltip';
+import NewNetworkSelector from './NewNetworkSelector';
 
 interface NetworkSelectorPropsIF {
     chainId: string;
@@ -55,7 +56,11 @@ export default function NetworkSelector(props: NetworkSelectorPropsIF) {
         const { color, isSelected, onClick, name } = props;
 
         return (
-            <motion.li className={styles.network_item_container} onClick={onClick} variants={item}>
+            <motion.li
+                className={styles.network_item_container}
+                onClick={onClick}
+                variants={itemVariants}
+            >
                 {name}
                 <div className={styles.network_color} style={{ backgroundColor: color }}>
                     {isSelected && (
@@ -97,16 +102,38 @@ export default function NetworkSelector(props: NetworkSelectorPropsIF) {
     ];
     const [selected, setSelected] = useState(networkItems[0]);
     const dropdownMenu = (
-        <motion.div
+        <motion.ul
             className={styles.dropdown_menu}
             layout
-            initial={{ opacity: 0, height: 0, scale: 0.8 }}
-            animate={{ opacity: 1, height: '300px', scale: 1 }}
-            exit={{ opacity: 0, height: 0, scale: 0 }}
-            transition={{
-                duration: 0.2,
-                ease: 'easeInOut',
+            // initial={{ opacity: 0, height: 0, scale: 0.8 }}
+            // animate={{ opacity: 1, height: '300px', scale: 1 }}
+            // exit={{ opacity: 0, height: 0, scale: 0 }}
+            // transition={{
+            //     duration: 0.2,
+            //     ease: 'easeInOut',
+            // }}
+
+            variants={{
+                open: {
+                    clipPath: 'inset(0% 0% 0% 0% round 10px)',
+                    transition: {
+                        type: 'spring',
+                        bounce: 0,
+                        duration: 0.7,
+                        delayChildren: 0.3,
+                        staggerChildren: 0.05,
+                    },
+                },
+                closed: {
+                    clipPath: 'inset(10% 50% 90% 50% round 10px)',
+                    transition: {
+                        type: 'spring',
+                        bounce: 0,
+                        duration: 0.3,
+                    },
+                },
             }}
+            style={{ pointerEvents: showDropdown ? 'auto' : 'none' }}
         >
             {networkItems.map((network, idx) => (
                 <NetworkItem
@@ -117,25 +144,44 @@ export default function NetworkSelector(props: NetworkSelectorPropsIF) {
                     onClick={() => setSelected(network)}
                 />
             ))}
-        </motion.div>
+        </motion.ul>
     );
 
+    const dropdownArrow = (
+        <motion.div
+            variants={{
+                open: { rotate: 180 },
+                closed: { rotate: 0 },
+            }}
+            transition={{ duration: 0.2 }}
+            style={{ originY: 0.55 }}
+        >
+            <svg width='15' height='15' viewBox='0 0 20 20'>
+                <path d='M0 7 L 20 7 L 10 16' />
+            </svg>
+        </motion.div>
+    );
     const newDropdown = (
-        <motion.div className={styles.main_container}>
+        <motion.div
+            className={styles.main_container}
+            initial={false}
+            animate={showDropdown ? 'open' : 'false'}
+        >
             <motion.button
                 whileTap={{ scale: 0.97 }}
                 className={styles.clicker}
                 onClick={() => setShowDropdown(!showDropdown)}
             >
                 {selected.name}
-                {showDropdown ? <MdKeyboardArrowUp size={25} /> : <MdKeyboardArrowDown size={25} />}
+
+                {dropdownArrow}
             </motion.button>
             {showDropdown && dropdownMenu}
         </motion.div>
     );
     // ------------------------END OF NEW DROPDOWN TO BE IMPLEMENTED LATER
     return (
-        <AnimateSharedLayout>
+        <>
             <div className={styles.selector_select_container}>
                 <IconWithTooltip title='Network' placement='left'>
                     <div className={styles.dropdown_menu_container}>
@@ -150,13 +196,22 @@ export default function NetworkSelector(props: NetworkSelectorPropsIF) {
                 </IconWithTooltip>
             </div>
             {newDropdown}
-        </AnimateSharedLayout>
+            <NewNetworkSelector />
+        </>
     );
 }
 
 const item = {
     hidden: { y: 20, opacity: 0 },
     visible: { y: 0, opacity: 1 },
+};
+const itemVariants: Variants = {
+    open: {
+        opacity: 1,
+        y: 0,
+        transition: { type: 'spring', stiffness: 300, damping: 24 },
+    },
+    closed: { opacity: 0, y: 20, transition: { duration: 0.2 } },
 };
 
 const spring = {
