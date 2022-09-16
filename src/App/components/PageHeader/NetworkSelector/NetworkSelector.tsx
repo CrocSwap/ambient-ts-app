@@ -1,7 +1,7 @@
 // START: Import React and Dongles
 import { Dispatch, SetStateAction, useState } from 'react';
 import { FaDotCircle } from 'react-icons/fa';
-import { motion } from 'framer-motion';
+import { AnimateSharedLayout, motion } from 'framer-motion';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { MdKeyboardArrowDown, MdKeyboardArrowUp } from 'react-icons/md';
 
@@ -47,11 +47,15 @@ export default function NetworkSelector(props: NetworkSelectorPropsIF) {
             ))}
         </ul>
     );
+
+    // NEW DROPDOWN TO BE IMPLEMENTED ONCE WE HAVE MULTIPLE NETWORKS
+    //  CURRENTLY NOT IN USE-------
+    // todo: PLEASE DON'T DELETE THIS
     function NetworkItem(props: NetworkItemPropsIF) {
         const { color, isSelected, onClick, name } = props;
 
         return (
-            <li className={styles.network_item_container}>
+            <motion.li className={styles.network_item_container} onClick={onClick} variants={item}>
                 {name}
                 <div className={styles.network_color} style={{ backgroundColor: color }}>
                     {isSelected && (
@@ -64,24 +68,54 @@ export default function NetworkSelector(props: NetworkSelectorPropsIF) {
                         />
                     )}
                 </div>
-            </li>
+            </motion.li>
         );
     }
-    // TODO:  @Junior is the wrapper in the return necessary?
     const [showDropdown, setShowDropdown] = useState(false);
 
-    const networks = ['network1', 'network2', 'network3', 'network4', 'network5'];
+    const networkItems = [
+        {
+            name: 'Network1',
+            color: '#ff0055',
+        },
+        {
+            name: 'Network2',
+            color: '#0099ff',
+        },
+        {
+            name: 'Network3',
+            color: '#22cc88',
+        },
+        {
+            name: 'Network4',
+            color: '#ffaa00',
+        },
+        {
+            name: 'Network5',
+            color: 'yellow',
+        },
+    ];
+    const [selected, setSelected] = useState(networkItems[0]);
     const dropdownMenu = (
         <motion.div
             className={styles.dropdown_menu}
-            animate={showDropdown ? 'visible' : 'hidden'}
-            initial='hidden'
-            variants={container}
+            layout
+            initial={{ opacity: 0, height: 0, scale: 0.8 }}
+            animate={{ opacity: 1, height: '300px', scale: 1 }}
+            exit={{ opacity: 0, height: 0, scale: 0 }}
+            transition={{
+                duration: 0.2,
+                ease: 'easeInOut',
+            }}
         >
-            {networks.map((network, idx) => (
-                <motion.div variants={item} key={idx}>
-                    <p>{network}</p>
-                </motion.div>
+            {networkItems.map((network, idx) => (
+                <NetworkItem
+                    name={network.name}
+                    color={network.color}
+                    key={idx}
+                    isSelected={selected.color === network.color}
+                    onClick={() => setSelected(network)}
+                />
             ))}
         </motion.div>
     );
@@ -89,53 +123,36 @@ export default function NetworkSelector(props: NetworkSelectorPropsIF) {
     const newDropdown = (
         <motion.div className={styles.main_container}>
             <div className={styles.clicker} onClick={() => setShowDropdown(!showDropdown)}>
-                I am clicker
-                {showDropdown ? <MdKeyboardArrowUp /> : <MdKeyboardArrowDown />}
+                {selected.name}
+                {showDropdown ? <MdKeyboardArrowUp size={25} /> : <MdKeyboardArrowDown size={25} />}
             </div>
             {showDropdown && dropdownMenu}
         </motion.div>
     );
+    // ------------------------END OF NEW DROPDOWN TO BE IMPLEMENTED LATER
     return (
-        <div className={styles.selector_select_container}>
-            <IconWithTooltip title='Network' placement='left'>
-                <div className={styles.dropdown_menu_container}>
-                    <DropdownMenu2
-                        marginTop={'50px'}
-                        titleWidth={'80px'}
-                        title={lookupChain(chainId).displayName}
-                    >
-                        {networkMenuContent}
-                    </DropdownMenu2>
-                </div>
-                {newDropdown}
-            </IconWithTooltip>
-        </div>
+        <AnimateSharedLayout>
+            <div className={styles.selector_select_container}>
+                <IconWithTooltip title='Network' placement='left'>
+                    <div className={styles.dropdown_menu_container}>
+                        <DropdownMenu2
+                            marginTop={'50px'}
+                            titleWidth={'80px'}
+                            title={lookupChain(chainId).displayName}
+                        >
+                            {networkMenuContent}
+                        </DropdownMenu2>
+                    </div>
+                </IconWithTooltip>
+            </div>
+            {newDropdown}
+        </AnimateSharedLayout>
     );
 }
 
 const item = {
     hidden: { y: 20, opacity: 0 },
     visible: { y: 0, opacity: 1 },
-};
-
-const container = {
-    hidden: { opacity: 0, scale: 0.1 },
-    visible: {
-        opacity: 1,
-        scale: 1,
-        transition: {
-            //   responsible for showing children 1 by 1
-            when: 'beforeChildren',
-            staggerChildren: 0.2,
-            opacity: { duration: 0.2 },
-            scale: {
-                type: 'spring',
-                stiffness: 500,
-                damping: 40,
-                restSpeed: 0.6,
-            },
-        },
-    },
 };
 
 const spring = {
