@@ -1,5 +1,9 @@
+import { CrocEnv } from '@crocswap-libs/sdk';
 import { useEffect, useState } from 'react';
-import { memoizeTokenBalance } from '../../../../../App/functions/fetchTokenBalances';
+import {
+    memoizeFetchErc20TokenBalances,
+    memoizeFetchNativeTokenBalance,
+} from '../../../../../App/functions/fetchTokenBalances';
 import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 import { TokenIF } from '../../../../../utils/interfaces/TokenIF';
 import styles from './Wallet.module.css';
@@ -8,6 +12,7 @@ import WalletHeader from './WalletHeader';
 
 // import { TokenIF } from '../../../../../utils/interfaces/exports';
 interface WalletPropsIF {
+    crocEnv: CrocEnv | undefined;
     lastBlockNumber: number;
     resolvedAddress: string;
     activeAccount: string;
@@ -16,37 +21,82 @@ interface WalletPropsIF {
     tokenMap: Map<string, TokenIF>;
 }
 
-const cachedFetchTokenBalances = memoizeTokenBalance();
+const cachedFetchErc20TokenBalances = memoizeFetchErc20TokenBalances();
+const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
 
 export default function Wallet(props: WalletPropsIF) {
-    const { connectedAccountActive, resolvedAddress, chainId, tokenMap, lastBlockNumber } = props;
+    const { connectedAccountActive, resolvedAddress, chainId, tokenMap, lastBlockNumber, crocEnv } =
+        props;
 
-    const tokensInRTK = useAppSelector((state) => state.tokenData.tokens);
+    const connectedUserNativeToken = useAppSelector((state) => state.tokenData.tokens.nativeToken);
+    const connectedUserErc20Tokens = useAppSelector((state) => state.tokenData.tokens.erc20Tokens);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const [resolvedAddressTokens, setResolvedAddressTokens] = useState<any[]>([]);
+    const connectedUserTokens = [connectedUserNativeToken].concat(connectedUserErc20Tokens);
+
+    const [resolvedAddressNativeToken, setResolvedAddressNativeToken] = useState<
+        TokenIF | undefined
+    >();
+    const [resolvedAddressErc20Tokens, setResolvedAddressErc20Tokens] = useState<TokenIF[]>([]);
+
+    const resolvedAddressTokens = [resolvedAddressNativeToken].concat(resolvedAddressErc20Tokens);
 
     useEffect(() => {
         (async () => {
-            if (resolvedAddress && chainId) {
+            if (crocEnv && resolvedAddress && chainId) {
                 try {
-                    const newTokens = await cachedFetchTokenBalances(
+                    console.log('fetching native token balance');
+                    const newNativeToken = await cachedFetchNativeTokenBalance(
                         resolvedAddress,
                         chainId,
                         lastBlockNumber,
+                        crocEnv,
                     );
-                    if (newTokens) setResolvedAddressTokens(newTokens);
+
+                    if (
+                        JSON.stringify(resolvedAddressNativeToken) !==
+                        JSON.stringify(newNativeToken)
+                    ) {
+                        setResolvedAddressNativeToken(newNativeToken);
+                    }
+                } catch (error) {
+                    console.log({ error });
+                }
+                try {
+                    const updatedTokens: TokenIF[] = resolvedAddressErc20Tokens;
+                    console.log({ updatedTokens });
+
+                    console.log('fetching resolved user erc20 token balances');
+                    const erc20Results = await cachedFetchErc20TokenBalances(
+                        resolvedAddress,
+                        chainId,
+                        lastBlockNumber,
+                        crocEnv,
+                    );
+
+                    erc20Results.map((newToken: TokenIF) => {
+                        const indexOfExistingToken = resolvedAddressErc20Tokens.findIndex(
+                            (existingToken) => existingToken.address === newToken.address,
+                        );
+
+                        if (indexOfExistingToken === -1) {
+                            updatedTokens.push(newToken);
+                        } else if (
+                            JSON.stringify(resolvedAddressErc20Tokens[indexOfExistingToken]) !==
+                            JSON.stringify(newToken)
+                        ) {
+                            updatedTokens[indexOfExistingToken] = newToken;
+                        }
+                    });
+                    setResolvedAddressErc20Tokens(updatedTokens);
                 } catch (error) {
                     console.log({ error });
                 }
             }
         })();
-    }, [resolvedAddress, chainId, lastBlockNumber]);
-
-    // const items = [1, 2, 3, 4, 5, 6];
+    }, [crocEnv, resolvedAddress, chainId, lastBlockNumber]);
 
     const ItemContent = connectedAccountActive
-        ? tokensInRTK.map((item, idx) => (
+        ? connectedUserTokens.map((item, idx) => (
               <WalletCard key={idx} token={item} chainId={chainId} tokenMap={tokenMap} />
           ))
         : resolvedAddressTokens.map((item, idx) => (

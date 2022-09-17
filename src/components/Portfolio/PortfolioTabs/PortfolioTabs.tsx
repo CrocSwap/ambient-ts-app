@@ -20,9 +20,11 @@ import rangePositionsImage from '../../../assets/images/sidebarImages/rangePosit
 import recentTransactionsImage from '../../../assets/images/sidebarImages/recentTransactions.svg';
 import walletImage from '../../../assets/images/sidebarImages/wallet.svg';
 import exchangeImage from '../../../assets/images/sidebarImages/exchange.svg';
+import { CrocEnv } from '@crocswap-libs/sdk';
 
 // interface for React functional component props
 interface PortfolioTabsPropsIF {
+    crocEnv: CrocEnv | undefined;
     resolvedAddress: string;
     lastBlockNumber: number;
     activeAccount: string;
@@ -39,6 +41,7 @@ interface PortfolioTabsPropsIF {
 // React functional component
 export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
     const {
+        crocEnv,
         resolvedAddress,
         lastBlockNumber,
         activeAccount,
@@ -94,6 +97,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
 
     // props for <Wallet/> React Element
     const walletProps = {
+        crocEnv: crocEnv,
         connectedAccountActive: connectedAccountActive,
         lastBlockNumber: lastBlockNumber,
         resolvedAddress: resolvedAddress,

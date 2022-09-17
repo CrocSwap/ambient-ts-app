@@ -10,8 +10,10 @@ import { fetchAddress } from '../../App/functions/fetchAddress';
 import { useMoralis } from 'react-moralis';
 import { ethers } from 'ethers';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
+import { CrocEnv } from '@crocswap-libs/sdk';
 
 interface PortfolioPropsIF {
+    crocEnv: CrocEnv | undefined;
     ensName: string;
     lastBlockNumber: number;
     connectedAccount: string;
@@ -35,7 +37,15 @@ const mainnetProvider = new ethers.providers.WebSocketProvider(
 export default function Portfolio(props: PortfolioPropsIF) {
     const { isInitialized } = useMoralis();
 
-    const { ensName, lastBlockNumber, userImageData, connectedAccount, chainId, tokenMap } = props;
+    const {
+        crocEnv,
+        ensName,
+        lastBlockNumber,
+        userImageData,
+        connectedAccount,
+        chainId,
+        tokenMap,
+    } = props;
 
     const { address } = useParams();
 
@@ -163,6 +173,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
                 }
             >
                 <PortfolioTabs
+                    crocEnv={crocEnv}
                     resolvedAddress={resolvedAddress}
                     lastBlockNumber={lastBlockNumber}
                     activeAccount={address ?? connectedAccount}

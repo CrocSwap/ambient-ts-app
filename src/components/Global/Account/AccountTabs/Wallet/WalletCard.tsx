@@ -1,4 +1,4 @@
-import { toDisplayQty } from '@crocswap-libs/sdk';
+// import { toDisplayQty } from '@crocswap-libs/sdk';
 // import { useTokenMap } from '../../../../../App/components/Sidebar/useTokenMap';
 import { testTokenMap } from '../../../../../utils/data/testTokenMap';
 import { fetchTokenPrice } from '../../../../../App/functions/fetchTokenPrice';
@@ -57,14 +57,15 @@ export default function WalletCard(props: WalletPropsIF) {
 
     // const tokenBalance = token?.balance ? token.balance : '0';
 
-    const tokenBalance =
-        token && token.symbol === 'ETH'
-            ? token.balance
-            : token && token.balance && token?.decimals
-            ? toDisplayQty(token.balance, token.decimals)
-            : '0';
+    // const tokenBalance =
+    //     token && token.symbol === 'ETH'
+    //         ? token.balance
+    //         : token && token.balance && token?.decimals
+    //         ? toDisplayQty(token.balance, token.decimals)
+    //         : '0';
 
-    const tokenBalanceNum = tokenBalance ? parseFloat(tokenBalance) : 0;
+    const tokenBalanceNum =
+        token && token.combinedBalanceDisplay ? parseFloat(token.combinedBalanceDisplay) : 0;
 
     const truncatedTokenBalance =
         tokenBalanceNum === 0

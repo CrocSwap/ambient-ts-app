@@ -77,14 +77,17 @@ import {
 import PoolPage from '../pages/PoolPage/PoolPage';
 import { memoizeQuerySpotPrice, querySpotPrice } from './functions/querySpotPrice';
 import { memoizeFetchAddress } from './functions/fetchAddress';
-import { memoizeTokenBalance } from './functions/fetchTokenBalances';
+import {
+    memoizeFetchErc20TokenBalances,
+    memoizeFetchNativeTokenBalance,
+} from './functions/fetchTokenBalances';
 import { getNFTs } from './functions/getNFTs';
 // import { memoizeTokenDecimals } from './functions/queryTokenDecimals';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { useSlippage } from './useSlippage';
 import { useFavePools } from './hooks/useFavePools';
 import { useAppChain } from './hooks/useAppChain';
-import { resetTokenData, setTokens } from '../utils/state/tokenDataSlice';
+import { resetTokenData, setErc20Tokens, setNativeToken } from '../utils/state/tokenDataSlice';
 import { checkIsStable } from '../utils/data/stablePairs';
 import { useTokenMap } from '../utils/hooks/useTokenMap';
 import { validateChain } from './validateChain';
@@ -104,7 +107,8 @@ import { useTokenUniverse } from './hooks/useTokenUniverse';
 
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 const cachedFetchAddress = memoizeFetchAddress();
-const cachedFetchTokenBalances = memoizeTokenBalance();
+const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
+const cachedFetchErc20TokenBalances = memoizeFetchErc20TokenBalances();
 const cachedFetchTokenPrice = memoizeTokenPrice();
 // const cachedGetTokenDecimals = memoizeTokenDecimals();
 
@@ -141,7 +145,7 @@ export default function App() {
     // `switchChain` is a function to switch to a different chain
     // `'0x5'` is the chain the app should be on by default
     const [chainData, isChainSupported, switchChain, switchNetworkInMoralis] = useAppChain('0x5');
-    useEffect(() => console.warn(chainData.chainId), [chainData.chainId]);
+    // useEffect(() => console.warn(chainData.chainId), [chainData.chainId]);
 
     const tokenUniverse = useTokenUniverse(chainData.chainId);
     useEffect(() => console.log({ tokenUniverse }), [tokenUniverse]);
@@ -438,27 +442,63 @@ export default function App() {
         })();
     }, [account, chainData.chainId]);
 
-    const tokensInRTK = useAppSelector((state) => state.tokenData.tokens);
+    const connectedUserTokens = useAppSelector((state) => state.tokenData.tokens);
+    const connectedUserNativeToken = connectedUserTokens.nativeToken;
+    const connectedUserErc20Tokens = connectedUserTokens.erc20Tokens;
 
     // check for token balances on each new block
     useEffect(() => {
         (async () => {
-            if (isUserLoggedIn && account) {
+            if (crocEnv && isUserLoggedIn && account && chainData.chainId) {
                 try {
-                    const newTokens: TokenIF[] = await cachedFetchTokenBalances(
+                    console.log('fetching native token balance');
+                    const newNativeToken: TokenIF = await cachedFetchNativeTokenBalance(
                         account,
                         chainData.chainId,
                         lastBlockNumber,
+                        crocEnv,
                     );
-                    if (newTokens && JSON.stringify(tokensInRTK) !== JSON.stringify(newTokens)) {
-                        dispatch(setTokens(newTokens));
+                    if (
+                        JSON.stringify(connectedUserNativeToken) !== JSON.stringify(newNativeToken)
+                    ) {
+                        dispatch(setNativeToken(newNativeToken));
                     }
+                } catch (error) {
+                    console.log({ error });
+                }
+                try {
+                    const updatedTokens: TokenIF[] = [];
+                    updatedTokens.push(...connectedUserErc20Tokens);
+                    // const updatedTokens: TokenIF[] = connectedUserErc20Tokens;
+                    console.log('fetching connected user erc20 token balances');
+                    const erc20Results: TokenIF[] = await cachedFetchErc20TokenBalances(
+                        account,
+                        chainData.chainId,
+                        lastBlockNumber,
+                        crocEnv,
+                    );
+
+                    erc20Results.map((newToken: TokenIF) => {
+                        const indexOfExistingToken = connectedUserErc20Tokens.findIndex(
+                            (existingToken) => existingToken.address === newToken.address,
+                        );
+
+                        if (indexOfExistingToken === -1) {
+                            updatedTokens.push(newToken);
+                        } else if (
+                            JSON.stringify(connectedUserErc20Tokens[indexOfExistingToken]) !==
+                            JSON.stringify(newToken)
+                        ) {
+                            updatedTokens[indexOfExistingToken] = newToken;
+                        }
+                    });
+                    dispatch(setErc20Tokens(updatedTokens));
                 } catch (error) {
                     console.log({ error });
                 }
             }
         })();
-    }, [account, chainData.chainId, lastBlockNumber, tokensInRTK]);
+    }, [crocEnv, account, chainData.chainId, lastBlockNumber]);
 
     const [baseTokenAddress, setBaseTokenAddress] = useState<string>('');
     const [quoteTokenAddress, setQuoteTokenAddress] = useState<string>('');
@@ -708,8 +748,8 @@ export default function App() {
 
                                 if (poolPositions) {
                                     // console.log({ poolPositions });
-                                    Promise.all(poolPositions.map(getPositionData)).then(
-                                        (updatedPositions) => {
+                                    Promise.all(poolPositions.map(getPositionData))
+                                        .then((updatedPositions) => {
                                             // console.log({ updatedPositions });
                                             if (
                                                 JSON.stringify(
@@ -723,8 +763,8 @@ export default function App() {
                                                     }),
                                                 );
                                             }
-                                        },
-                                    );
+                                        })
+                                        .catch(console.log);
                                 }
                             })
                             .catch(console.log);
@@ -2069,6 +2109,7 @@ export default function App() {
                             path='account'
                             element={
                                 <Portfolio
+                                    crocEnv={crocEnv}
                                     ensName={ensName}
                                     lastBlockNumber={lastBlockNumber}
                                     connectedAccount={account ? account : ''}
@@ -2087,6 +2128,7 @@ export default function App() {
                             path='account/:address'
                             element={
                                 <Portfolio
+                                    crocEnv={crocEnv}
                                     ensName={ensName}
                                     lastBlockNumber={lastBlockNumber}
                                     connectedAccount={account ? account : ''}
