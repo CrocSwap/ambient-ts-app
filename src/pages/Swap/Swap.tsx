@@ -2,7 +2,7 @@
 import { useState, Dispatch, SetStateAction, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { ethers } from 'ethers';
-import { useMoralis } from 'react-moralis';
+// import { useMoralis } from 'react-moralis';
 import { motion } from 'framer-motion';
 import { CrocEnv, CrocImpact } from '@crocswap-libs/sdk';
 
@@ -33,6 +33,8 @@ import { addReceipt } from '../../utils/state/receiptDataSlice';
 
 interface SwapPropsIF {
     crocEnv: CrocEnv | undefined;
+    isUserLoggedIn: boolean;
+    account: string | null;
     importedTokens: Array<TokenIF>;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     searchableTokens: Array<TokenIF>;
@@ -65,6 +67,8 @@ interface SwapPropsIF {
 export default function Swap(props: SwapPropsIF) {
     const {
         crocEnv,
+        isUserLoggedIn,
+        account,
         importedTokens,
         setImportedTokens,
         searchableTokens,
@@ -97,7 +101,7 @@ export default function Swap(props: SwapPropsIF) {
 
     const [isRelativeModalOpen, closeRelativeModal] = useRelativeModal();
 
-    const { isWeb3Enabled, isAuthenticated, account } = useMoralis();
+    // const { account } = useMoralis();
     // get URL pathway for user relative to index
     const { pathname } = useLocation();
 
@@ -402,6 +406,7 @@ export default function Swap(props: SwapPropsIF) {
                     >
                         <CurrencyConverter
                             crocEnv={crocEnv}
+                            isUserLoggedIn={isUserLoggedIn}
                             provider={provider}
                             slippageTolerancePercentage={slippageTolerancePercentage}
                             setPriceImpact={setPriceImpact}
@@ -452,7 +457,7 @@ export default function Swap(props: SwapPropsIF) {
                         didUserFlipDenom={tradeData.didUserFlipDenom}
                         isDenomBase={tradeData.isDenomBase}
                     />
-                    {isAuthenticated && isWeb3Enabled ? (
+                    {isUserLoggedIn ? (
                         !isTokenAAllowanceSufficient &&
                         parseFloat(tokenAInputQty) > 0 &&
                         tokenAInputQty !== 'Infinity' ? (
