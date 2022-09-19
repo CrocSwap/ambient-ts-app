@@ -44,6 +44,7 @@ import { addReceipt } from '../../../utils/state/receiptDataSlice';
 import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
 
 interface RangePropsIF {
+    isUserLoggedIn: boolean;
     importedTokens: Array<TokenIF>;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     searchableTokens: Array<TokenIF>;
@@ -76,6 +77,7 @@ interface RangePropsIF {
 
 export default function Range(props: RangePropsIF) {
     const {
+        isUserLoggedIn,
         importedTokens,
         setImportedTokens,
         searchableTokens,
@@ -841,6 +843,7 @@ export default function Range(props: RangePropsIF) {
 
     // props for <RangeCurrencyConverter/> React element
     const rangeCurrencyConverterProps = {
+        isUserLoggedIn: isUserLoggedIn,
         poolPriceNonDisplay: poolPriceNonDisplay,
         chainId: chainId ?? '0x2a',
         tokensBank: importedTokens,

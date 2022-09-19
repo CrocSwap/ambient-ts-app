@@ -1876,6 +1876,7 @@ export default function App() {
 
     // props for <Range/> React element
     const rangeProps = {
+        isUserLoggedIn: isUserLoggedIn,
         importedTokens: importedTokens,
         setImportedTokens: setImportedTokens,
         searchableTokens: searchableTokens,
