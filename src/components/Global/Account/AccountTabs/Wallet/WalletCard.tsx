@@ -14,6 +14,7 @@ interface WalletPropsIF {
 
 export default function WalletCard(props: WalletPropsIF) {
     const { token, chainId, tokenMap } = props;
+    if (token === undefined) return <></>;
 
     // const tokenMap = useTokenMap();
 
@@ -97,10 +98,14 @@ export default function WalletCard(props: WalletPropsIF) {
                     width='30px'
                 />
                 <p className={styles.token_key}>
-                    {tokenFromMap?.symbol ? tokenFromMap?.symbol : token?.symbol ?? '???'}
+                    {tokenFromMap?.symbol
+                        ? tokenFromMap?.symbol
+                        : token?.symbol
+                        ? token?.symbol
+                        : '???'}
                 </p>
             </div>
-            <p>{tokenFromMap?.name ? tokenFromMap?.name : token?.name ?? '???'}</p>
+            <p>{tokenFromMap?.name ? tokenFromMap?.name : token?.name ? token?.name : '???'}</p>
         </div>
     );
     return (
