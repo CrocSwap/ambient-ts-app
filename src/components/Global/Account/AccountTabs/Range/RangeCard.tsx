@@ -48,6 +48,15 @@ export default function RangeCard(props: RangeCardPropsIF) {
               maximumFractionDigits: 2,
           });
 
+    const minRangeOrAmbient =
+        position.positionType === 'ambient'
+            ? '0'
+            : quoteTokenCharacter + position.lowRangeShortDisplayInBase;
+    const maxRangeOrAmbient =
+        position.positionType === 'ambient'
+            ? '∞'
+            : quoteTokenCharacter + position.highRangeShortDisplayInBase;
+
     return (
         <div className={styles.main_container}>
             <div className={styles.tokens_container}>
@@ -63,10 +72,7 @@ export default function RangeCard(props: RangeCardPropsIF) {
                     quoteTokenSymbol={quoteTokenSymbol}
                 />
                 {/* <WalletAndId posHash='0xcD3eee3fddg134' ownerId={position.user} /> */}
-                <RangeMinMax
-                    min={quoteTokenCharacter + position.lowRangeShortDisplayInBase}
-                    max={quoteTokenCharacter + position.highRangeShortDisplayInBase}
-                />
+                <RangeMinMax min={minRangeOrAmbient} max={maxRangeOrAmbient} />
                 <Value usdValue={position.positionLiqTotalUSD ? '$' + usdValueTruncated : '…'} />
                 <TokenQty
                     baseTokenCharacter={baseTokenCharacter}
