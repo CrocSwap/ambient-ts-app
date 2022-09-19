@@ -1,45 +1,43 @@
 import { tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
-import truncateDecimals from '../../utils/data/truncateDecimals';
+// import truncateDecimals from '../../utils/data/truncateDecimals';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
 import { PositionIF } from '../../utils/interfaces/PositionIF';
+import { formatAmount } from '../../utils/numbers';
+import { ethers } from 'ethers';
+import { memoizeQuerySpotPrice } from './querySpotPrice';
 
 // import { fetchAddress } from './fetchAddress';
+const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 
-export const getPositionData = async (position: PositionIF): Promise<PositionIF> => {
-    position.base = position.base.startsWith('0x') ? position.base : '0x' + position.base;
-    position.quote = position.quote.startsWith('0x') ? position.quote : '0x' + position.quote;
-    position.user = position.user.startsWith('0x') ? position.user : '0x' + position.user;
-
+export const getPositionData = async (
+    position: PositionIF,
+    importedTokens: TokenIF[],
+    provider: ethers.providers.Provider,
+    chainId: string,
+    lastBlockNumber: number,
+): Promise<PositionIF> => {
     const baseTokenAddress = position.base;
     const quoteTokenAddress = position.quote;
 
-    // console.log({ position });
-
-    // const poolPriceNonDisplay = await cachedQuerySpotPrice(
-    //     baseTokenAddress,
-    //     quoteTokenAddress,
-    //     chainId,
-    //     lastBlockNumber,
-    // );
-
-    const poolPriceNonDisplay = 0.001;
-
-    // try {
-    //     const ensName = await fetchAddress(position.user);
-    //     position.userEnsName = ensName ?? '';
-    // } catch (error) {
-    //     console.log(error);
-    // }
+    const poolPriceNonDisplay = await cachedQuerySpotPrice(
+        provider,
+        baseTokenAddress,
+        quoteTokenAddress,
+        chainId,
+        lastBlockNumber,
+    );
 
     const poolPriceInTicks = Math.log(poolPriceNonDisplay) / Math.log(1.0001);
+    position.poolPriceInTicks = poolPriceInTicks;
 
-    // const baseTokenDecimals = await cachedGetTokenDecimals(baseTokenAddress);
-    // const quoteTokenDecimals = await cachedGetTokenDecimals(quoteTokenAddress);
-    const baseTokenDecimals = 18;
-    const quoteTokenDecimals = 18;
+    const isPositionInRange =
+        position.positionType === 'ambient' ||
+        (position.bidTick <= poolPriceInTicks && poolPriceInTicks <= position.askTick);
 
-    if (baseTokenDecimals) position.baseDecimals = baseTokenDecimals;
-    if (quoteTokenDecimals) position.quoteDecimals = quoteTokenDecimals;
+    position.isPositionInRange = isPositionInRange;
+
+    const baseTokenDecimals = position.baseDecimals;
+    const quoteTokenDecimals = position.quoteDecimals;
 
     const lowerPriceNonDisplay = tickToPrice(position.bidTick);
     const upperPriceNonDisplay = tickToPrice(position.askTick);
@@ -62,7 +60,49 @@ export const getPositionData = async (position: PositionIF): Promise<PositionIF>
         quoteTokenDecimals,
     );
 
-    const importedTokens: TokenIF[] = [];
+    position.lowRangeShortDisplayInBase =
+        lowerPriceDisplayInBase < 0.0001
+            ? lowerPriceDisplayInBase.toExponential(2)
+            : lowerPriceDisplayInBase < 2
+            ? lowerPriceDisplayInBase.toPrecision(3)
+            : lowerPriceDisplayInBase >= 1000000
+            ? lowerPriceDisplayInBase.toExponential(2)
+            : lowerPriceDisplayInBase.toLocaleString(undefined, {
+                  maximumFractionDigits: 0,
+              });
+
+    position.lowRangeShortDisplayInQuote =
+        lowerPriceDisplayInQuote < 0.0001
+            ? lowerPriceDisplayInQuote.toExponential(2)
+            : lowerPriceDisplayInQuote < 2
+            ? lowerPriceDisplayInQuote.toPrecision(3)
+            : lowerPriceDisplayInQuote >= 1000000
+            ? lowerPriceDisplayInQuote.toExponential(2)
+            : lowerPriceDisplayInQuote.toLocaleString(undefined, {
+                  maximumFractionDigits: 0,
+              });
+
+    position.highRangeShortDisplayInBase =
+        upperPriceDisplayInBase < 0.0001
+            ? upperPriceDisplayInBase.toExponential(2)
+            : upperPriceDisplayInBase < 2
+            ? upperPriceDisplayInBase.toPrecision(3)
+            : upperPriceDisplayInBase >= 1000000
+            ? upperPriceDisplayInBase.toExponential(2)
+            : upperPriceDisplayInBase.toLocaleString(undefined, {
+                  maximumFractionDigits: 0,
+              });
+
+    position.highRangeShortDisplayInQuote =
+        upperPriceDisplayInQuote < 0.0001
+            ? upperPriceDisplayInQuote.toExponential(2)
+            : upperPriceDisplayInQuote < 2
+            ? upperPriceDisplayInQuote.toPrecision(3)
+            : upperPriceDisplayInQuote >= 1000000
+            ? upperPriceDisplayInQuote.toExponential(2)
+            : upperPriceDisplayInQuote.toLocaleString(undefined, {
+                  maximumFractionDigits: 0,
+              });
 
     const baseTokenLogoURI = importedTokens.find(
         (token) => token.address.toLowerCase() === baseTokenAddress.toLowerCase(),
@@ -76,52 +116,93 @@ export const getPositionData = async (position: PositionIF): Promise<PositionIF>
 
     if (position.positionType !== 'ambient') {
         position.lowRangeDisplayInBase =
-            lowerPriceDisplayInBase < 2
-                ? truncateDecimals(lowerPriceDisplayInBase, 4).toString()
-                : truncateDecimals(lowerPriceDisplayInBase, 2).toString();
+            lowerPriceDisplayInBase < 0.0001
+                ? lowerPriceDisplayInBase.toExponential(2)
+                : lowerPriceDisplayInBase < 2
+                ? lowerPriceDisplayInBase.toPrecision(3)
+                : lowerPriceDisplayInBase >= 1000000
+                ? lowerPriceDisplayInBase.toExponential(2)
+                : lowerPriceDisplayInBase.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                  });
         position.highRangeDisplayInBase =
-            upperPriceDisplayInBase < 2
-                ? truncateDecimals(upperPriceDisplayInBase, 4).toString()
-                : truncateDecimals(upperPriceDisplayInBase, 2).toString();
+            upperPriceDisplayInBase < 0.0001
+                ? upperPriceDisplayInBase.toExponential(2)
+                : upperPriceDisplayInBase < 2
+                ? upperPriceDisplayInBase.toPrecision(3)
+                : upperPriceDisplayInBase >= 1000000
+                ? upperPriceDisplayInBase.toExponential(2)
+                : upperPriceDisplayInBase.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                  });
     }
 
     if (position.positionType !== 'ambient') {
         position.lowRangeDisplayInQuote =
-            lowerPriceDisplayInQuote < 2
-                ? truncateDecimals(lowerPriceDisplayInQuote, 4).toString()
-                : truncateDecimals(lowerPriceDisplayInQuote, 2).toString();
+            lowerPriceDisplayInQuote < 0.0001
+                ? lowerPriceDisplayInQuote.toExponential(2)
+                : lowerPriceDisplayInQuote < 2
+                ? lowerPriceDisplayInQuote.toPrecision(3)
+                : lowerPriceDisplayInQuote >= 1000000
+                ? lowerPriceDisplayInQuote.toExponential(2)
+                : lowerPriceDisplayInQuote.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                  });
         position.highRangeDisplayInQuote =
-            upperPriceDisplayInQuote < 2
-                ? truncateDecimals(upperPriceDisplayInQuote, 4).toString()
-                : truncateDecimals(upperPriceDisplayInQuote, 2).toString();
+            upperPriceDisplayInQuote < 0.0001
+                ? upperPriceDisplayInQuote.toExponential(2)
+                : upperPriceDisplayInQuote < 2
+                ? upperPriceDisplayInQuote.toPrecision(3)
+                : upperPriceDisplayInQuote >= 1000000
+                ? upperPriceDisplayInQuote.toExponential(2)
+                : upperPriceDisplayInQuote.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                  });
     }
 
-    position.poolPriceInTicks = poolPriceInTicks;
+    if (position.positionLiqBaseDecimalCorrected) {
+        const liqBaseNum = position.positionLiqBaseDecimalCorrected;
 
-    // if (baseTokenAddress === contractAddresses.ZERO_ADDR) {
-    //     position.baseSymbol = 'ETH';
-    //     position.quoteSymbol = 'DAI';
-    //     position.tokenAQtyDisplay = '1';
-    //     position.tokenBQtyDisplay = '2000';
-    //     // if (!position.ambient) {
-    //     //     position.lowRangeDisplay = '.001';
-    //     //     position.highRangeDisplay = '.002';
-    //     // }
-    // } else if (
-    //     baseTokenAddress.toLowerCase() ===
-    //     '0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa'.toLowerCase()
-    // ) {
-    //     position.baseSymbol = 'DAI';
-    //     position.quoteSymbol = 'USDC';
-    //     position.tokenAQtyDisplay = '101';
-    //     position.tokenBQtyDisplay = '100';
-    //     // if (!position.ambient) {
-    //     //     position.lowRangeDisplay = '0.9';
-    //     //     position.highRangeDisplay = '1.1';
-    //     // }
-    // } else {
-    //     position.baseSymbol = 'unknownBase';
-    //     position.quoteSymbol = 'unknownQuote';
-    // }
+        const baseLiqDisplayTruncated =
+            liqBaseNum === 0
+                ? '0'
+                : liqBaseNum < 0.0001
+                ? liqBaseNum.toExponential(2)
+                : liqBaseNum < 2
+                ? liqBaseNum.toPrecision(3)
+                : liqBaseNum >= 100000
+                ? formatAmount(liqBaseNum)
+                : // ? baseLiqDisplayNum.toExponential(2)
+                  liqBaseNum.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                  });
+
+        position.positionLiqBaseTruncated = baseLiqDisplayTruncated;
+    }
+    if (position.positionLiqQuoteDecimalCorrected) {
+        const liqQuoteNum = position.positionLiqQuoteDecimalCorrected;
+
+        const quoteLiqDisplayTruncated =
+            liqQuoteNum === 0
+                ? '0'
+                : liqQuoteNum < 0.0001
+                ? liqQuoteNum.toExponential(2)
+                : liqQuoteNum < 2
+                ? liqQuoteNum.toPrecision(3)
+                : liqQuoteNum >= 100000
+                ? formatAmount(liqQuoteNum)
+                : // ? quoteLiqDisplayNum.toExponential(2)
+                  liqQuoteNum.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                  });
+        position.positionLiqQuoteTruncated = quoteLiqDisplayTruncated;
+    }
+
     return position;
 };
