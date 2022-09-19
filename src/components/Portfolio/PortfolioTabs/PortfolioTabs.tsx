@@ -21,10 +21,13 @@ import recentTransactionsImage from '../../../assets/images/sidebarImages/recent
 import walletImage from '../../../assets/images/sidebarImages/wallet.svg';
 import exchangeImage from '../../../assets/images/sidebarImages/exchange.svg';
 import { CrocEnv } from '@crocswap-libs/sdk';
+import { ethers } from 'ethers';
 
 // interface for React functional component props
 interface PortfolioTabsPropsIF {
     crocEnv: CrocEnv | undefined;
+    provider: ethers.providers.Provider | undefined;
+    importedTokens: TokenIF[];
     connectedUserTokens: (TokenIF | undefined)[];
     resolvedAddressTokens: (TokenIF | undefined)[];
     resolvedAddress: string;
@@ -44,6 +47,8 @@ interface PortfolioTabsPropsIF {
 export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
     const {
         crocEnv,
+        provider,
+        importedTokens,
         connectedUserTokens,
         resolvedAddressTokens,
         resolvedAddress,
@@ -63,6 +68,10 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
     const connectedAccountPositionData = graphData.positionsByUser.positions;
     const [otherAccountPositionData, setOtherAccountPositionData] = useState<PositionIF[]>([]);
 
+    useEffect(() => {
+        if (otherAccountPositionData) console.log({ otherAccountPositionData });
+    }, [otherAccountPositionData]);
+
     const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
 
     const allUserPositionsCacheEndpoint = httpGraphCacheServerDomain + '/user_positions?';
@@ -73,14 +82,29 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
                 new URLSearchParams({
                     user: accountToSearch,
                     chainId: chainId,
+                    ensResolution: 'true',
+                    annotate: 'true',
+                    omitEmpty: 'true',
+                    omitKnockout: 'true',
+                    addValue: 'true',
                 }),
         )
             .then((response) => response?.json())
             .then((json) => {
                 const userPositions = json?.data;
 
-                if (userPositions) {
-                    Promise.all(userPositions.map(getPositionData)).then((updatedPositions) => {
+                if (userPositions && provider) {
+                    Promise.all(
+                        userPositions.map((position: PositionIF) => {
+                            return getPositionData(
+                                position,
+                                importedTokens,
+                                provider,
+                                chainId,
+                                lastBlockNumber,
+                            );
+                        }),
+                    ).then((updatedPositions) => {
                         setOtherAccountPositionData(updatedPositions);
                     });
                 }
@@ -90,10 +114,10 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
     useEffect(() => {
         (async () => {
             if (!connectedAccountActive) {
-                await getUserPositions(activeAccount);
+                await getUserPositions(resolvedAddress);
             }
         })();
-    }, [activeAccount, connectedAccountActive]);
+    }, [resolvedAddress, connectedAccountActive]);
 
     const activeAccountPositionData = connectedAccountActive
         ? connectedAccountPositionData
