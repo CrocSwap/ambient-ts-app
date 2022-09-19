@@ -56,10 +56,14 @@ export const fetchNativeTokenBalance = async (
                           maximumFractionDigits: 2,
                       });
 
-            const nativeDexBalanceDisplay = toDisplayQty(nativeDexBalance, 18);
-            const nativeDexBalanceDisplayNum = parseFloat(toDisplayQty(nativeDexBalance, 18));
-            const nativeDexBalanceDisplayTruncated =
-                nativeDexBalanceDisplayNum < 0.0001
+            const nativeDexBalanceDisplay = nativeDexBalance
+                ? toDisplayQty(nativeDexBalance, 18)
+                : undefined;
+            const nativeDexBalanceDisplayNum = nativeDexBalanceDisplay
+                ? parseFloat(nativeDexBalanceDisplay)
+                : undefined;
+            const nativeDexBalanceDisplayTruncated = nativeDexBalanceDisplayNum
+                ? nativeDexBalanceDisplayNum < 0.0001
                     ? nativeDexBalanceDisplayNum.toExponential(2)
                     : nativeDexBalanceDisplayNum < 2
                     ? nativeDexBalanceDisplayNum.toPrecision(3)
@@ -68,7 +72,8 @@ export const fetchNativeTokenBalance = async (
                     : nativeDexBalanceDisplayNum.toLocaleString(undefined, {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
-                      });
+                      })
+                : undefined;
 
             const combinedBalanceNonDisplay = BigNumber.from(moralisNativeBalance)
                 .add(BigNumber.from(nativeDexBalance))
@@ -135,10 +140,14 @@ export const fetchErc20TokenBalances = async (
 
     const updateMoralisBalance = async (tokenBalance: IMoralisTokenBalance): Promise<TokenIF> => {
         const erc20DexBalance = await getDexBalance(tokenBalance.token_address, address);
-        const erc20DexBalanceDisplay = toDisplayQty(erc20DexBalance, tokenBalance.decimals);
-        const erc20DexBalanceDisplayNum = parseFloat(erc20DexBalanceDisplay);
-        const erc20DexBalanceDisplayTruncated =
-            erc20DexBalanceDisplayNum < 0.0001
+        const erc20DexBalanceDisplay = erc20DexBalance
+            ? toDisplayQty(erc20DexBalance, tokenBalance.decimals)
+            : undefined;
+        const erc20DexBalanceDisplayNum = erc20DexBalanceDisplay
+            ? parseFloat(erc20DexBalanceDisplay)
+            : undefined;
+        const erc20DexBalanceDisplayTruncated = erc20DexBalanceDisplayNum
+            ? erc20DexBalanceDisplayNum < 0.0001
                 ? erc20DexBalanceDisplayNum.toExponential(2)
                 : erc20DexBalanceDisplayNum < 2
                 ? erc20DexBalanceDisplayNum.toPrecision(3)
@@ -147,7 +156,8 @@ export const fetchErc20TokenBalances = async (
                 : erc20DexBalanceDisplayNum.toLocaleString(undefined, {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
-                  });
+                  })
+            : undefined;
 
         const moralisErc20Balance = tokenBalance.balance;
         const moralisErc20BalanceDisplay = toDisplayQty(moralisErc20Balance, tokenBalance.decimals);

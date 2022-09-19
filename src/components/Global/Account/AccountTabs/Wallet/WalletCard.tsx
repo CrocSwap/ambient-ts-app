@@ -5,7 +5,7 @@ import { fetchTokenPrice } from '../../../../../App/functions/fetchTokenPrice';
 import { TokenIF } from '../../../../../utils/interfaces/TokenIF';
 import styles from './WalletCard.module.css';
 import { useEffect, useState } from 'react';
-import { formatAmount } from '../../../../../utils/numbers';
+// import { formatAmount } from '../../../../../utils/numbers';
 interface WalletPropsIF {
     token?: TokenIF;
     chainId: string;
@@ -52,36 +52,10 @@ export default function WalletCard(props: WalletPropsIF) {
 
     const tokenUsdPrice = tokenPrice?.usdPrice ?? 0;
 
-    // if (!tokenFromMap) {
-    //     return null;
-    // }
-
-    // const tokenBalance = token?.balance ? token.balance : '0';
-
-    // const tokenBalance =
-    //     token && token.symbol === 'ETH'
-    //         ? token.balance
-    //         : token && token.balance && token?.decimals
-    //         ? toDisplayQty(token.balance, token.decimals)
-    //         : '0';
-
-    const tokenBalanceNum =
-        token && token.combinedBalanceDisplay ? parseFloat(token.combinedBalanceDisplay) : 0;
-
-    const truncatedTokenBalance =
-        tokenBalanceNum === 0
-            ? '0'
-            : tokenBalanceNum < 0.0001
-            ? tokenBalanceNum.toExponential(2)
-            : tokenBalanceNum < 2
-            ? tokenBalanceNum.toPrecision(3)
-            : tokenBalanceNum >= 1000000
-            ? formatAmount(tokenBalanceNum)
-            : // ? quoteLiqDisplayNum.toExponential(2)
-              tokenBalanceNum.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              });
+    const walletBalanceNum = token.walletBalanceDisplay
+        ? parseFloat(token.walletBalanceDisplay)
+        : 0;
+    const walletBalanceTruncated = token && token.walletBalanceDisplayTruncated;
 
     const tokenInfo = (
         <div className={styles.token_info}>
@@ -113,12 +87,12 @@ export default function WalletCard(props: WalletPropsIF) {
             {tokenInfo}
             <p className={styles.value}>
                 $
-                {(tokenUsdPrice * tokenBalanceNum).toLocaleString(undefined, {
+                {(tokenUsdPrice * walletBalanceNum).toLocaleString(undefined, {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                 })}
             </p>
-            <p className={styles.amount}>{truncatedTokenBalance}</p>
+            <p className={styles.amount}>{walletBalanceTruncated}</p>
         </div>
     );
 }

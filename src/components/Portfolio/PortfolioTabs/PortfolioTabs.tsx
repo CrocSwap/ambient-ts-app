@@ -25,6 +25,8 @@ import { CrocEnv } from '@crocswap-libs/sdk';
 // interface for React functional component props
 interface PortfolioTabsPropsIF {
     crocEnv: CrocEnv | undefined;
+    connectedUserTokens: (TokenIF | undefined)[];
+    resolvedAddressTokens: (TokenIF | undefined)[];
     resolvedAddress: string;
     lastBlockNumber: number;
     activeAccount: string;
@@ -42,6 +44,8 @@ interface PortfolioTabsPropsIF {
 export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
     const {
         crocEnv,
+        connectedUserTokens,
+        resolvedAddressTokens,
         resolvedAddress,
         lastBlockNumber,
         activeAccount,
@@ -98,6 +102,21 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
     // props for <Wallet/> React Element
     const walletProps = {
         crocEnv: crocEnv,
+        connectedUserTokens: connectedUserTokens,
+        resolvedAddressTokens: resolvedAddressTokens,
+        connectedAccountActive: connectedAccountActive,
+        lastBlockNumber: lastBlockNumber,
+        resolvedAddress: resolvedAddress,
+        activeAccount: activeAccount,
+        chainId: chainId,
+        tokenMap: tokenMap,
+    };
+
+    // props for <Exchange/> React Element
+    const exchangeProps = {
+        crocEnv: crocEnv,
+        connectedUserTokens: connectedUserTokens,
+        resolvedAddressTokens: resolvedAddressTokens,
         connectedAccountActive: connectedAccountActive,
         lastBlockNumber: lastBlockNumber,
         resolvedAddress: resolvedAddress,
@@ -112,7 +131,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
 
     const accountTabData = [
         { label: 'Wallet', content: <Wallet {...walletProps} />, icon: walletImage },
-        { label: 'Exchange', content: <Exchange />, icon: exchangeImage },
+        { label: 'Exchange', content: <Exchange {...exchangeProps} />, icon: exchangeImage },
         { label: 'Ranges', content: <Range {...rangeProps} />, icon: rangePositionsImage },
         { label: ' Orders', content: <Order />, icon: openOrdersImage },
         { label: 'Transactions', content: <TransactionsTable />, icon: recentTransactionsImage },
