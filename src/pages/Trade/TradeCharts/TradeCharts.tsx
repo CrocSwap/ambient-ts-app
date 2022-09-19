@@ -81,6 +81,18 @@ export interface CandleChartData {
     time: number;
     allSwaps: unknown;
 }
+
+export interface TvlChartData {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    time: any;
+    value: number;
+}
+
+export interface VolumeChartData {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    time: any;
+    value: number;
+}
 export interface LiquidityData {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     activeLiq: any;
@@ -621,8 +633,8 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                 {graphSettingsContent}
                 {tokenInfo}
                 {timeFrameContent}
-                {/* {liquidityTypeContent} */}
                 {currentDataInfo}
+                {/* {liquidityTypeContent} */}
             </div>
             {graphIsLoading ? (
                 <TradeChartsLoading />
