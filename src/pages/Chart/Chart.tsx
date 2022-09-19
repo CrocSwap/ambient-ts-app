@@ -205,9 +205,10 @@ export default function Chart(props: ChartData) {
 
     // }, [location,parsedChartData]);
 
-    useEffect(() => {
+    async function addRect() {
+        await d3.select(d3PlotArea.current).select('.targets').select('#rect').remove();
+        await d3.select(d3PlotArea.current).select('.targets').append('rect').attr('id', 'rect');
         if (scaleData) {
-            d3.select(d3Container.current).select('.targets').append('rect').attr('id', 'rect');
             d3.select(d3Container.current)
                 .select('.targets')
                 .select('#rect')
@@ -220,9 +221,12 @@ export default function Chart(props: ChartData) {
                     Math.abs(scaleData.yScale(ranges[1].value) - scaleData.yScale(ranges[0].value)),
                 )
                 .attr('y', scaleData.yScale(ranges[1].value));
-
-            // console.error('useEffect', drawControl);
         }
+    }
+
+    useEffect(() => {
+        console.error('scaleData' + scaleData?.yScale(ranges[1].value));
+        addRect();
     }, [ranges, zoomStatus, drawControl]);
 
     // Set Scale
@@ -688,6 +692,10 @@ export default function Chart(props: ChartData) {
 
     // Call drawChart()
     useEffect(() => {
+        draw1();
+    }, [parsedChartData, scaleData, location, market, ranges, limit, zoomUtils]);
+
+    async function draw1() {
         if (
             props.liquidityData !== undefined &&
             parsedChartData !== undefined &&
@@ -702,7 +710,7 @@ export default function Chart(props: ChartData) {
                 ? market
                 : undefined;
 
-            drawChart(
+            await drawChart(
                 parsedChartData.chartData,
                 targetData,
                 scaleData,
@@ -713,12 +721,13 @@ export default function Chart(props: ChartData) {
                 downBorderColor,
                 zoomUtils,
             );
-        }
-    }, [parsedChartData, scaleData, location, market, ranges, limit, zoomUtils]);
 
+            setDrawControl(!drawControl);
+        }
+    }
     // Draw Chart
     const drawChart = useCallback(
-        (
+        async (
             chartData: any,
             targets: any,
             scaleData: any,
@@ -964,7 +973,7 @@ export default function Chart(props: ChartData) {
                     scaleData.liquidityScale.range([event.detail.width, event.detail.width / 2]);
                 });
 
-                d3.select(d3PlotArea.current).on('draw', function (event: any) {
+                await d3.select(d3PlotArea.current).on('draw', async function (event: any) {
                     const svg = d3.select(event.target).select('svg');
 
                     crosshairHorizontalJoin(svg, [crosshairData]).call(crosshairHorizontal);
@@ -973,7 +982,7 @@ export default function Chart(props: ChartData) {
                     candleJoin(svg, [chartData]).call(candlestick);
                     targetsJoin(svg, [targets]).call(horizontalLine);
                 });
-
+                setDrawControl(!drawControl);
                 d3.select(d3Xaxis.current).on('draw', function (event: any) {
                     d3.select(event.target).select('svg').call(xAxis);
                 });
@@ -1011,11 +1020,6 @@ export default function Chart(props: ChartData) {
 
                 render();
             }
-
-            setTimeout(() => {
-                // console.error('timeout', drawControl);
-                setDrawControl(!drawControl);
-            }, 100);
         },
         [],
     );
