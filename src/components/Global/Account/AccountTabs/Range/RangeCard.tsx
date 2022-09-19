@@ -11,6 +11,8 @@ import Apy from '../../../Tabs/Apy/Apy';
 import AccountPoolDisplay from '../../../Tabs/AccountPoolDisplay/AccountPoolDisplay';
 import AccountTokensDisplay from '../../../Tabs/AccountTokensDisplay/AccountTokensDisplay';
 import getUnicodeCharacter from '../../../../../utils/functions/getUnicodeCharacter';
+import Value from '../../../Tabs/Value/Value';
+import { formatAmount } from '../../../../../utils/numbers';
 
 interface RangeCardPropsIF {
     position: PositionIF;
@@ -29,6 +31,22 @@ export default function RangeCard(props: RangeCardPropsIF) {
     const quoteTokenCharacter = position.quoteSymbol
         ? getUnicodeCharacter(position.quoteSymbol)
         : '';
+
+    const usdValueNum = position.positionLiqTotalUSD;
+
+    const usdValueTruncated = !usdValueNum
+        ? undefined
+        : usdValueNum < 0.0001
+        ? usdValueNum.toExponential(2)
+        : usdValueNum < 2
+        ? usdValueNum.toPrecision(3)
+        : usdValueNum >= 100000
+        ? formatAmount(usdValueNum)
+        : // ? baseLiqDisplayNum.toExponential(2)
+          usdValueNum.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          });
 
     return (
         <div className={styles.main_container}>
@@ -49,6 +67,7 @@ export default function RangeCard(props: RangeCardPropsIF) {
                     min={quoteTokenCharacter + position.lowRangeShortDisplayInBase}
                     max={quoteTokenCharacter + position.highRangeShortDisplayInBase}
                 />
+                <Value usdValue={position.positionLiqTotalUSD ? '$' + usdValueTruncated : '…'} />
                 <TokenQty
                     baseTokenCharacter={baseTokenCharacter}
                     quoteTokenCharacter={quoteTokenCharacter}
