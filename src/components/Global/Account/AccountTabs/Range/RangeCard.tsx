@@ -10,6 +10,9 @@ import Apy from '../../../Tabs/Apy/Apy';
 // import RangesMenu from '../../../Tabs/TableMenu/TableMenuComponents/RangesMenu';
 import AccountPoolDisplay from '../../../Tabs/AccountPoolDisplay/AccountPoolDisplay';
 import AccountTokensDisplay from '../../../Tabs/AccountTokensDisplay/AccountTokensDisplay';
+import getUnicodeCharacter from '../../../../../utils/functions/getUnicodeCharacter';
+import Value from '../../../Tabs/Value/Value';
+import { formatAmount } from '../../../../../utils/numbers';
 
 interface RangeCardPropsIF {
     position: PositionIF;
@@ -17,21 +20,65 @@ interface RangeCardPropsIF {
 
 export default function RangeCard(props: RangeCardPropsIF) {
     const { position } = props;
-    console.log({ position });
+
+    const baseTokenLogoURI = position.baseTokenLogoURI;
+    const quoteTokenLogoURI = position.quoteTokenLogoURI;
+
+    const baseTokenSymbol = position.baseSymbol;
+    const quoteTokenSymbol = position.quoteSymbol;
+
+    const baseTokenCharacter = position.baseSymbol ? getUnicodeCharacter(position.baseSymbol) : '';
+    const quoteTokenCharacter = position.quoteSymbol
+        ? getUnicodeCharacter(position.quoteSymbol)
+        : '';
+
+    const usdValueNum = position.positionLiqTotalUSD;
+
+    const usdValueTruncated = !usdValueNum
+        ? undefined
+        : usdValueNum < 0.0001
+        ? usdValueNum.toExponential(2)
+        : usdValueNum < 2
+        ? usdValueNum.toPrecision(3)
+        : usdValueNum >= 100000
+        ? formatAmount(usdValueNum)
+        : // ? baseLiqDisplayNum.toExponential(2)
+          usdValueNum.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          });
 
     return (
         <div className={styles.main_container}>
             <div className={styles.tokens_container}>
-                <AccountTokensDisplay />
+                <AccountTokensDisplay
+                    baseTokenLogoURI={baseTokenLogoURI}
+                    quoteTokenLogoURI={quoteTokenLogoURI}
+                />
             </div>
 
             <div className={styles.row_container}>
-                <AccountPoolDisplay />
+                <AccountPoolDisplay
+                    baseTokenSymbol={baseTokenSymbol}
+                    quoteTokenSymbol={quoteTokenSymbol}
+                />
                 {/* <WalletAndId posHash='0xcD3eee3fddg134' ownerId={position.user} /> */}
-                <RangeMinMax min={234} max={342} />
-                <TokenQty />
-                <Apy amount={10} />
-                <RangeStatus isInRange isAmbient={false} />
+                <RangeMinMax
+                    min={quoteTokenCharacter + position.lowRangeShortDisplayInBase}
+                    max={quoteTokenCharacter + position.highRangeShortDisplayInBase}
+                />
+                <Value usdValue={position.positionLiqTotalUSD ? '$' + usdValueTruncated : '…'} />
+                <TokenQty
+                    baseTokenCharacter={baseTokenCharacter}
+                    quoteTokenCharacter={quoteTokenCharacter}
+                    baseQty={position.positionLiqBaseTruncated}
+                    quoteQty={position.positionLiqQuoteTruncated}
+                />
+                <Apy amount={position.apy} />
+                <RangeStatus
+                    isInRange={position.isPositionInRange}
+                    isAmbient={position.positionType === 'ambient'}
+                />
             </div>
 
             <div className={styles.menu_container}>...</div>
