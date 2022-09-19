@@ -18,6 +18,7 @@ import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
 import { ZERO_ADDRESS } from '../../../constants';
 interface CurrencyConverterPropsIF {
     crocEnv: CrocEnv | undefined;
+    isUserLoggedIn: boolean;
     provider: ethers.providers.Provider | undefined;
     slippageTolerancePercentage: number;
     setPriceImpact: Dispatch<SetStateAction<CrocImpact | undefined>>;
@@ -52,6 +53,7 @@ interface CurrencyConverterPropsIF {
 export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
     const {
         crocEnv,
+        isUserLoggedIn,
         // provider,
         slippageTolerancePercentage,
         setPriceImpact,
@@ -463,6 +465,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         >
             <div className={switchBoxes ? styles.slide_in_bottom : undefined}>
                 <CurrencySelector
+                    isUserLoggedIn={isUserLoggedIn}
                     tokenPair={tokenPair}
                     tokensBank={tokensBank}
                     searchableTokens={searchableTokens}
@@ -507,6 +510,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
             </div>
             <div className={switchBoxes ? styles.slide_in_top : undefined}>
                 <CurrencySelector
+                    isUserLoggedIn={isUserLoggedIn}
                     tokenBQtyLocal={tokenBQtyLocal}
                     tokenPair={tokenPair}
                     tokensBank={tokensBank}

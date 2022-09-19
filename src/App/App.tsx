@@ -1695,10 +1695,10 @@ export default function App() {
     const clickLogout = async () => {
         setNativeWalletBalance('');
         setNativeDexBalance('');
-        setBaseTokenBalance('0');
-        setQuoteTokenBalance('0');
-        setBaseTokenDexBalance('0');
-        setQuoteTokenDexBalance('0');
+        setBaseTokenBalance('');
+        setQuoteTokenBalance('');
+        setBaseTokenDexBalance('');
+        setQuoteTokenDexBalance('');
         dispatch(resetTradeData());
         dispatch(resetTokenData());
         dispatch(resetGraphData());
@@ -1776,6 +1776,8 @@ export default function App() {
     // props for <Swap/> React element
     const swapProps = {
         crocEnv: crocEnv,
+        isUserLoggedIn: isUserLoggedIn,
+        account: account,
         importedTokens: importedTokens,
         setImportedTokens: setImportedTokens,
         searchableTokens: searchableTokens,
@@ -1806,6 +1808,8 @@ export default function App() {
     // props for <Swap/> React element on trade route
     const swapPropsTrade = {
         crocEnv: crocEnv,
+        isUserLoggedIn: isUserLoggedIn,
+        account: account,
         importedTokens: importedTokens,
         setImportedTokens: setImportedTokens,
         searchableTokens: searchableTokens,
