@@ -3,8 +3,8 @@ import Price from '../../../../Global/Tabs/Price/Price';
 import TokenQty from '../../../../Global/Tabs/TokenQty/TokenQty';
 import OrderTypeSide from '../../../../Global/Tabs/TypeAndSide/OrderTypeAndSide/OrderTypeSide';
 import WalletAndId from '../../../../Global/Tabs/WalletAndID/WalletAndId';
-import AccountPoolDisplay from '../../../Tabs/AccountPoolDisplay/AccountPoolDisplay';
-import AccountTokensDisplay from '../../../Tabs/AccountTokensDisplay/AccountTokensDisplay';
+// import AccountPoolDisplay from '../../../Tabs/AccountPoolDisplay/AccountPoolDisplay';
+// import AccountTokensDisplay from '../../../Tabs/AccountTokensDisplay/AccountTokensDisplay';
 import OrdersMenu from '../../../Tabs/TableMenu/TableMenuComponents/OrdersMenu';
 
 import styles from './OrderCard.module.css';
@@ -23,12 +23,10 @@ export default function OrderCard(props: OrderCardProps) {
 
     return (
         <div className={styles.main_container}>
-            <div className={styles.tokens_container}>
-                <AccountTokensDisplay />
-            </div>
+            <div className={styles.tokens_container}>{/* <AccountTokensDisplay /> */}</div>
 
             <div className={styles.row_container}>
-                <AccountPoolDisplay />
+                {/* <AccountPoolDisplay /> */}
                 <WalletAndId
                     ownerId={tempOwnerId}
                     posHash={tempPosHash}

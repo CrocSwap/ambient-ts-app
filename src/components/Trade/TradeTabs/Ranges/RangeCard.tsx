@@ -226,8 +226,8 @@ export default function RangeCard(props: RangeCardProps) {
                 <TokenQty
                     baseQty={position.positionLiqBaseTruncated}
                     quoteQty={position.positionLiqQuoteTruncated}
-                    baseTokenSymbol={position.baseSymbol}
-                    quoteTokenSymbol={position.quoteSymbol}
+                    baseTokenCharacter={baseTokenCharacter}
+                    quoteTokenCharacter={baseTokenCharacter}
                 />
                 {/* ------------------------------------------------------ */}
                 <Apy amount={position.apy ?? undefined} />

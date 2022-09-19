@@ -31,18 +31,17 @@ export default function OrderCard(props: OrderCardProps) {
     const ownerIdDisplay = limitOrder.ensResolution ? limitOrder.ensResolution : limitOrder.user;
     const [truncatedDisplayPrice, setTruncatedDisplayPrice] = useState<string | undefined>();
 
+    const baseTokenCharacter = limitOrder.baseSymbol
+        ? getUnicodeCharacter(limitOrder.baseSymbol)
+        : '';
+    const quoteTokenCharacter = limitOrder.quoteSymbol
+        ? getUnicodeCharacter(limitOrder.quoteSymbol)
+        : '';
     useEffect(() => {
         // console.log({ limitOrder });
         if (limitOrder.limitPriceDecimalCorrected && limitOrder.invLimitPriceDecimalCorrected) {
             const priceDecimalCorrected = limitOrder.limitPriceDecimalCorrected;
             const invPriceDecimalCorrected = limitOrder.invLimitPriceDecimalCorrected;
-
-            const baseTokenCharacter = limitOrder.baseSymbol
-                ? getUnicodeCharacter(limitOrder.baseSymbol)
-                : '';
-            const quoteTokenCharacter = limitOrder.quoteSymbol
-                ? getUnicodeCharacter(limitOrder.quoteSymbol)
-                : '';
 
             const truncatedDisplayPrice = isDenomBase
                 ? quoteTokenCharacter + invPriceDecimalCorrected?.toPrecision(6)
@@ -139,8 +138,8 @@ export default function OrderCard(props: OrderCardProps) {
                 <TokenQty
                     baseQty={baseQtyTruncated}
                     quoteQty={quoteQtyTruncated}
-                    baseTokenSymbol={limitOrder.baseSymbol}
-                    quoteTokenSymbol={limitOrder.quoteSymbol}
+                    baseTokenCharacter={baseTokenCharacter}
+                    quoteTokenCharacter={quoteTokenCharacter}
                 />
                 {/* ------------------------------------------------------ */}
                 <div className={styles.status}>
