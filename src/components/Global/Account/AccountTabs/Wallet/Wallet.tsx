@@ -28,8 +28,8 @@ export default function Wallet(props: WalletPropsIF) {
     const { connectedAccountActive, resolvedAddress, chainId, tokenMap, lastBlockNumber, crocEnv } =
         props;
 
-    const connectedUserNativeToken = useAppSelector((state) => state.tokenData.tokens.nativeToken);
-    const connectedUserErc20Tokens = useAppSelector((state) => state.tokenData.tokens.erc20Tokens);
+    const connectedUserNativeToken = useAppSelector((state) => state.userData.tokens.nativeToken);
+    const connectedUserErc20Tokens = useAppSelector((state) => state.userData.tokens.erc20Tokens);
 
     const connectedUserTokens = [connectedUserNativeToken].concat(connectedUserErc20Tokens);
 

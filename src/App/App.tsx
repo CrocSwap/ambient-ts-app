@@ -87,7 +87,12 @@ import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { useSlippage } from './useSlippage';
 import { useFavePools } from './hooks/useFavePools';
 import { useAppChain } from './hooks/useAppChain';
-import { resetTokenData, setErc20Tokens, setNativeToken } from '../utils/state/tokenDataSlice';
+import {
+    resetTokenData,
+    setErc20Tokens,
+    setIsLoggedIn,
+    setNativeToken,
+} from '../utils/state/userDataSlice';
 import { checkIsStable } from '../utils/data/stablePairs';
 import { useTokenMap } from '../utils/hooks/useTokenMap';
 import { validateChain } from './validateChain';
@@ -133,11 +138,16 @@ export default function App() {
         // authError
     } = useMoralis();
 
-    const isUserLoggedIn = isAuthenticated && isWeb3Enabled;
+    const userData = useAppSelector((state) => state.userData);
+    const isUserLoggedIn = userData.isLoggedIn;
 
-    // useEffect(() => {
+    useEffect(() => {
+        const isLoggedIn = isAuthenticated && isWeb3Enabled;
 
-    // }, [isUserLoggedIn]);
+        if (userData.isLoggedIn !== isLoggedIn) {
+            dispatch(setIsLoggedIn(isLoggedIn));
+        }
+    }, [isAuthenticated, isWeb3Enabled, isUserLoggedIn]);
 
     const tokenMap = useTokenMap();
 
@@ -450,7 +460,7 @@ export default function App() {
         })();
     }, [account, chainData.chainId]);
 
-    const connectedUserTokens = useAppSelector((state) => state.tokenData.tokens);
+    const connectedUserTokens = useAppSelector((state) => state.userData.tokens);
     const connectedUserNativeToken = connectedUserTokens.nativeToken;
     const connectedUserErc20Tokens = connectedUserTokens.erc20Tokens;
 

@@ -31,8 +31,13 @@ export default function TokenSelect(props: TokenSelectPropsIF) {
     const [showDelete, setShowDelete] = useState(false);
     const [toggleDeleteOn, setToggleDeleteOn] = useState(false);
 
-    const connectedUserNativeToken = useAppSelector((state) => state.tokenData.tokens.nativeToken);
-    const connectedUserErc20Tokens = useAppSelector((state) => state.tokenData.tokens.erc20Tokens);
+    const userData = useAppSelector((state) => state.userData);
+
+    const connectedUserNativeToken = userData.tokens.nativeToken;
+    const connectedUserErc20Tokens = userData.tokens.erc20Tokens;
+    // const connectedUserNativeToken = useAppSelector((state) => state.userData.tokens.nativeToken);
+    // const connectedUserErc20Tokens = useAppSelector((state) => state.userData.tokens.erc20Tokens);
+    const isUserLoggedIn = userData.isLoggedIn;
 
     const connectedUserTokens = connectedUserNativeToken
         ? [connectedUserNativeToken].concat(connectedUserErc20Tokens)
@@ -132,7 +137,11 @@ export default function TokenSelect(props: TokenSelectPropsIF) {
                     <span className={styles.modal_token_name}>{token.name}</span>
                 </div>
                 <div className={styles.modal_tokens_amount}>
-                    {combinedBalanceDisplayTruncated ? combinedBalanceDisplayTruncated : '0'}
+                    {isUserLoggedIn
+                        ? combinedBalanceDisplayTruncated
+                            ? combinedBalanceDisplayTruncated
+                            : '0'
+                        : ''}
                 </div>
             </div>
             {undeletableTokens.includes(token.address) || deleteIcon}
