@@ -296,7 +296,7 @@ export default function App() {
     }, [tokenListsReceived]);
 
     useEffect(() => {
-        fetch('https://goerli.infura.io/v3/4a162c75bd514925890174ca13cdb6a2', {
+        fetch('https://goerli.infura.io/v3/25e7e0ec71de48bfa9c4d2431fbb3c4a', {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
@@ -317,7 +317,7 @@ export default function App() {
             });
     }, []);
 
-    const goerliWssInfuraEndpoint = 'wss://goerli.infura.io/ws/v3/4a162c75bd514925890174ca13cdb6a2';
+    const goerliWssInfuraEndpoint = 'wss://goerli.infura.io/ws/v3/25e7e0ec71de48bfa9c4d2431fbb3c4a';
 
     const { sendMessage: send, lastMessage: lastNewHeadMessage } = useWebSocket(
         goerliWssInfuraEndpoint,

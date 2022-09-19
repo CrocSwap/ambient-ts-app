@@ -6,8 +6,12 @@ export interface TokenIF {
     chainId: number;
     logoURI: string;
     fromList?: string;
-    balance?: string;
+    walletBalance?: string;
+    walletBalanceDisplay?: string;
+    walletBalanceDisplayTruncated?: string;
     dexBalance?: string;
+    dexBalanceDisplay?: string;
+    dexBalanceDisplayTruncated?: string;
     combinedBalance?: string;
     combinedBalanceDisplay?: string;
     combinedBalanceDisplayTruncated?: string;

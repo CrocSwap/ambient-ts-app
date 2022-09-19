@@ -42,8 +42,38 @@ export const fetchNativeTokenBalance = async (
     const updatedNativeBalance = Promise.resolve(getDexBalance(ZERO_ADDRESS, address))
         .then((nativeDexBalance) => {
             const moralisNativeBalance = nativeBalance.balance;
-            // console.log({ moralisNativeBalance });
-            // console.log({ nativeDexBalance });
+            const moralisNativeBalanceDisplay = toDisplayQty(moralisNativeBalance, 18);
+            const moralisNativeBalanceDisplayNum = parseFloat(moralisNativeBalanceDisplay);
+            const moralisNativeBalanceDisplayTruncated =
+                moralisNativeBalanceDisplayNum < 0.0001
+                    ? moralisNativeBalanceDisplayNum.toExponential(2)
+                    : moralisNativeBalanceDisplayNum < 2
+                    ? moralisNativeBalanceDisplayNum.toPrecision(3)
+                    : moralisNativeBalanceDisplayNum >= 100000
+                    ? formatAmount(moralisNativeBalanceDisplayNum)
+                    : moralisNativeBalanceDisplayNum.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                      });
+
+            const nativeDexBalanceDisplay = nativeDexBalance
+                ? toDisplayQty(nativeDexBalance, 18)
+                : undefined;
+            const nativeDexBalanceDisplayNum = nativeDexBalanceDisplay
+                ? parseFloat(nativeDexBalanceDisplay)
+                : undefined;
+            const nativeDexBalanceDisplayTruncated = nativeDexBalanceDisplayNum
+                ? nativeDexBalanceDisplayNum < 0.0001
+                    ? nativeDexBalanceDisplayNum.toExponential(2)
+                    : nativeDexBalanceDisplayNum < 2
+                    ? nativeDexBalanceDisplayNum.toPrecision(3)
+                    : nativeDexBalanceDisplayNum >= 100000
+                    ? formatAmount(nativeDexBalanceDisplayNum)
+                    : nativeDexBalanceDisplayNum.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                      })
+                : undefined;
 
             const combinedBalanceNonDisplay = BigNumber.from(moralisNativeBalance)
                 .add(BigNumber.from(nativeDexBalance))
@@ -71,9 +101,12 @@ export const fetchNativeTokenBalance = async (
                 address: ZERO_ADDRESS,
                 symbol: 'ETH',
                 decimals: 18,
-                balance: nativeBalance.balance,
-                // balance: toDisplayQty(nativeBalance.balance, 18),
+                walletBalance: moralisNativeBalance,
+                walletBalanceDisplay: moralisNativeBalanceDisplay,
+                walletBalanceDisplayTruncated: moralisNativeBalanceDisplayTruncated,
                 dexBalance: nativeDexBalance,
+                dexBalanceDisplay: nativeDexBalanceDisplay,
+                dexBalanceDisplayTruncated: nativeDexBalanceDisplayTruncated,
                 combinedBalance: combinedBalanceNonDisplay,
                 combinedBalanceDisplay: combinedBalanceDisplay,
                 combinedBalanceDisplayTruncated: combinedBalanceDisplayTruncated,
@@ -107,7 +140,39 @@ export const fetchErc20TokenBalances = async (
 
     const updateMoralisBalance = async (tokenBalance: IMoralisTokenBalance): Promise<TokenIF> => {
         const erc20DexBalance = await getDexBalance(tokenBalance.token_address, address);
+        const erc20DexBalanceDisplay = erc20DexBalance
+            ? toDisplayQty(erc20DexBalance, tokenBalance.decimals)
+            : undefined;
+        const erc20DexBalanceDisplayNum = erc20DexBalanceDisplay
+            ? parseFloat(erc20DexBalanceDisplay)
+            : undefined;
+        const erc20DexBalanceDisplayTruncated = erc20DexBalanceDisplayNum
+            ? erc20DexBalanceDisplayNum < 0.0001
+                ? erc20DexBalanceDisplayNum.toExponential(2)
+                : erc20DexBalanceDisplayNum < 2
+                ? erc20DexBalanceDisplayNum.toPrecision(3)
+                : erc20DexBalanceDisplayNum >= 100000
+                ? formatAmount(erc20DexBalanceDisplayNum)
+                : erc20DexBalanceDisplayNum.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                  })
+            : undefined;
+
         const moralisErc20Balance = tokenBalance.balance;
+        const moralisErc20BalanceDisplay = toDisplayQty(moralisErc20Balance, tokenBalance.decimals);
+        const moralisErc20BalanceDisplayNum = parseFloat(moralisErc20BalanceDisplay);
+        const moralisErc20BalanceDisplayTruncated =
+            moralisErc20BalanceDisplayNum < 0.0001
+                ? moralisErc20BalanceDisplayNum.toExponential(2)
+                : moralisErc20BalanceDisplayNum < 2
+                ? moralisErc20BalanceDisplayNum.toPrecision(3)
+                : moralisErc20BalanceDisplayNum >= 100000
+                ? formatAmount(moralisErc20BalanceDisplayNum)
+                : moralisErc20BalanceDisplayNum.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                  });
         // console.log({ moralisErc20Balance });
         // console.log({ erc20DexBalance });
 
@@ -118,9 +183,7 @@ export const fetchErc20TokenBalances = async (
             combinedBalanceNonDisplay,
             tokenBalance.decimals,
         );
-
         const combinedBalanceDisplayNum = parseFloat(combinedBalanceDisplay);
-
         const combinedBalanceDisplayTruncated =
             combinedBalanceDisplayNum < 0.0001
                 ? combinedBalanceDisplayNum.toExponential(2)
@@ -140,8 +203,12 @@ export const fetchErc20TokenBalances = async (
             address: tokenBalance.token_address,
             symbol: tokenBalance.symbol,
             decimals: tokenBalance.decimals,
-            balance: tokenBalance.balance,
+            walletBalance: moralisErc20Balance,
+            walletBalanceDisplay: moralisErc20BalanceDisplay,
+            walletBalanceDisplayTruncated: moralisErc20BalanceDisplayTruncated,
             dexBalance: erc20DexBalance,
+            dexBalanceDisplay: erc20DexBalanceDisplay,
+            dexBalanceDisplayTruncated: erc20DexBalanceDisplayTruncated,
             combinedBalance: combinedBalanceNonDisplay,
             combinedBalanceDisplay: combinedBalanceDisplay,
             combinedBalanceDisplayTruncated: combinedBalanceDisplayTruncated,
