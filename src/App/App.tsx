@@ -469,7 +469,7 @@ export default function App() {
         (async () => {
             if (crocEnv && isUserLoggedIn && account && chainData.chainId) {
                 try {
-                    console.log('fetching native token balance');
+                    // console.log('fetching native token balance');
                     const newNativeToken: TokenIF = await cachedFetchNativeTokenBalance(
                         account,
                         chainData.chainId,
@@ -487,8 +487,7 @@ export default function App() {
                 try {
                     const updatedTokens: TokenIF[] = [];
                     updatedTokens.push(...connectedUserErc20Tokens);
-                    // const updatedTokens: TokenIF[] = connectedUserErc20Tokens;
-                    console.log('fetching connected user erc20 token balances');
+                    // console.log('fetching connected user erc20 token balances');
                     const erc20Results: TokenIF[] = await cachedFetchErc20TokenBalances(
                         account,
                         chainData.chainId,
@@ -510,13 +509,17 @@ export default function App() {
                             updatedTokens[indexOfExistingToken] = newToken;
                         }
                     });
-                    dispatch(setErc20Tokens(updatedTokens));
+                    if (
+                        JSON.stringify(connectedUserErc20Tokens) !== JSON.stringify(updatedTokens)
+                    ) {
+                        dispatch(setErc20Tokens(updatedTokens));
+                    }
                 } catch (error) {
                     console.log({ error });
                 }
             }
         })();
-    }, [crocEnv, account, chainData.chainId, lastBlockNumber]);
+    }, [crocEnv, account, chainData.chainId, lastBlockNumber, JSON.stringify(connectedUserTokens)]);
 
     const [baseTokenAddress, setBaseTokenAddress] = useState<string>('');
     const [quoteTokenAddress, setQuoteTokenAddress] = useState<string>('');
