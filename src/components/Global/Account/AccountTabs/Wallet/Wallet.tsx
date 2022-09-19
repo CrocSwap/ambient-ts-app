@@ -44,7 +44,7 @@ export default function Wallet(props: WalletPropsIF) {
         (async () => {
             if (crocEnv && resolvedAddress && chainId) {
                 try {
-                    console.log('fetching native token balance');
+                    // console.log('fetching native token balance');
                     const newNativeToken = await cachedFetchNativeTokenBalance(
                         resolvedAddress,
                         chainId,
@@ -63,9 +63,8 @@ export default function Wallet(props: WalletPropsIF) {
                 }
                 try {
                     const updatedTokens: TokenIF[] = resolvedAddressErc20Tokens;
-                    console.log({ updatedTokens });
 
-                    console.log('fetching resolved user erc20 token balances');
+                    // console.log('fetching resolved user erc20 token balances');
                     const erc20Results = await cachedFetchErc20TokenBalances(
                         resolvedAddress,
                         chainId,
