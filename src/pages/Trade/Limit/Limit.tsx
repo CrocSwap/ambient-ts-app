@@ -27,6 +27,7 @@ import { SlippagePairIF, TokenIF, TokenPairIF } from '../../../utils/interfaces/
 import { setLimitPrice } from '../../../utils/state/tradeDataSlice';
 
 interface LimitPropsIF {
+    isUserLoggedIn: boolean;
     importedTokens: Array<TokenIF>;
     searchableTokens: Array<TokenIF>;
     mintSlippage: SlippagePairIF;
@@ -63,6 +64,7 @@ interface LimitPropsIF {
 
 export default function Limit(props: LimitPropsIF) {
     const {
+        isUserLoggedIn,
         importedTokens,
         searchableTokens,
         mintSlippage,
@@ -417,6 +419,7 @@ export default function Limit(props: LimitPropsIF) {
                     transition={{ duration: 0.5 }}
                 >
                     <LimitCurrencyConverter
+                        isUserLoggedIn={isUserLoggedIn}
                         tokenPair={tokenPair}
                         searchableTokens={searchableTokens}
                         poolPriceNonDisplay={poolPriceNonDisplay}

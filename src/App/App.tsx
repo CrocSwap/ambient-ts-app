@@ -1840,6 +1840,7 @@ export default function App() {
 
     // props for <Limit/> React element on trade route
     const limitPropsTrade = {
+        isUserLoggedIn: isUserLoggedIn,
         importedTokens: importedTokens,
         setImportedTokens: setImportedTokens,
         searchableTokens: searchableTokens,
@@ -1875,6 +1876,7 @@ export default function App() {
 
     // props for <Range/> React element
     const rangeProps = {
+        isUserLoggedIn: isUserLoggedIn,
         importedTokens: importedTokens,
         setImportedTokens: setImportedTokens,
         searchableTokens: searchableTokens,

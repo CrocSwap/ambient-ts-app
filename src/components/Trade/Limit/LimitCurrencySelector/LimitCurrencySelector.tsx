@@ -18,6 +18,7 @@ import ambientLogo from '../../../../assets/images/logos/ambient_logo.svg';
 
 // interface for component props
 interface LimitCurrencySelectorProps {
+    isUserLoggedIn: boolean;
     tokenPair: TokenPairIF;
     tokensBank: Array<TokenIF>;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
@@ -50,6 +51,7 @@ interface LimitCurrencySelectorProps {
 // central react functional component
 export default function LimitCurrencySelector(props: LimitCurrencySelectorProps) {
     const {
+        isUserLoggedIn,
         tokenPair,
         tokensBank,
         setImportedTokens,
@@ -60,9 +62,9 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
         handleChangeEvent,
         reverseTokens,
         tokenABalance,
-        tokenBBalance,
+        // tokenBBalance,
         tokenADexBalance,
-        tokenBDexBalance,
+        // tokenBDexBalance,
         isSellTokenEth,
         isWithdrawFromDexChecked,
         setIsWithdrawFromDexChecked,
@@ -141,32 +143,25 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
     const isWithdrawFromDexDisabled = parseFloat(tokenADexBalance || '0') <= 0;
     const isWithdrawFromWalletDisabled = parseFloat(tokenABalance || '0') <= 0;
 
-    const walletBalanceNonLocaleString =
-        props.sellToken && tokenABalance !== ''
-            ? parseFloat(tokenABalance).toString()
-            : !props.sellToken && tokenBBalance !== ''
-            ? parseFloat(tokenBBalance).toString()
-            : '0';
+    const walletBalanceNonLocaleString = tokenABalance ? tokenABalance : '';
 
-    const walletBalanceLocaleString = parseFloat(tokenABalance || '0').toLocaleString(undefined, {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-    });
+    const walletBalanceLocaleString = tokenABalance
+        ? parseFloat(tokenABalance).toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          })
+        : '...';
 
-    const surplusBalanceNonLocaleString =
-        props.sellToken && tokenADexBalance !== ''
-            ? parseFloat(tokenADexBalance).toString()
-            : !props.sellToken && tokenBDexBalance !== ''
-            ? parseFloat(tokenBDexBalance).toString()
-            : '0';
+    const surplusBalanceNonLocaleString = tokenADexBalance
+        ? parseFloat(tokenADexBalance).toString()
+        : '';
 
-    const surplusBalanceLocaleString = parseFloat(tokenADexBalance || '0').toLocaleString(
-        undefined,
-        {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-        },
-    );
+    const surplusBalanceLocaleString = tokenADexBalance
+        ? parseFloat(tokenADexBalance).toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          })
+        : '...';
 
     // const surplusBalanceLocaleString = isWithdrawFromDexChecked
     //     ? isSellTokenEth && tokenASurplusMinusTokenARemainderNum
@@ -244,7 +239,7 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
                             />
                         </div>
                         <div className={styles.balance_column}>
-                            <div>{walletBalanceLocaleString}</div>
+                            <div>{isUserLoggedIn ? walletBalanceLocaleString : ''}</div>
                             <div
                                 style={{
                                     color: isSellTokenSelector ? '#f6385b' : '#15be67',
@@ -295,7 +290,7 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
                             <img src={ambientLogo} width='20' alt='surplus' />
                         </div>
                         <div className={styles.balance_column}>
-                            <div> {surplusBalanceLocaleString}</div>
+                            <div> {isUserLoggedIn ? surplusBalanceLocaleString : ''}</div>
                             <div
                                 style={{
                                     color: isSellTokenSelector ? '#f6385b' : '#15be67',
