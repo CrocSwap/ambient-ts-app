@@ -1,11 +1,5 @@
 // START: Import React and Dongles
-import {
-    useEffect,
-    useState,
-    Dispatch,
-    SetStateAction,
-    ReactNode
-} from 'react';
+import { useEffect, useState, Dispatch, SetStateAction, ReactNode } from 'react';
 
 // START: Import JSX Functional Components
 import Wallet from '../../Global/Account/AccountTabs/Wallet/Wallet';
@@ -26,10 +20,13 @@ import rangePositionsImage from '../../../assets/images/sidebarImages/rangePosit
 import recentTransactionsImage from '../../../assets/images/sidebarImages/recentTransactions.svg';
 import walletImage from '../../../assets/images/sidebarImages/wallet.svg';
 import exchangeImage from '../../../assets/images/sidebarImages/exchange.svg';
+import { CrocEnv } from '@crocswap-libs/sdk';
 
 // interface for React functional component props
 interface PortfolioTabsPropsIF {
+    crocEnv: CrocEnv | undefined;
     resolvedAddress: string;
+    lastBlockNumber: number;
     activeAccount: string;
     connectedAccountActive: boolean;
     chainId: string;
@@ -44,7 +41,9 @@ interface PortfolioTabsPropsIF {
 // React functional component
 export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
     const {
+        crocEnv,
         resolvedAddress,
+        lastBlockNumber,
         activeAccount,
         connectedAccountActive,
         chainId,
@@ -53,7 +52,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
         setSelectedOutsideTab,
         rightTabOptions,
         outsideControl,
-        setOutsideControl
+        setOutsideControl,
     } = props;
 
     const graphData = useAppSelector((state) => state?.graphData);
@@ -98,7 +97,9 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
 
     // props for <Wallet/> React Element
     const walletProps = {
+        crocEnv: crocEnv,
         connectedAccountActive: connectedAccountActive,
+        lastBlockNumber: lastBlockNumber,
         resolvedAddress: resolvedAddress,
         activeAccount: activeAccount,
         chainId: chainId,

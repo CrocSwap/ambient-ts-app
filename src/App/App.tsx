@@ -77,14 +77,22 @@ import {
 import PoolPage from '../pages/PoolPage/PoolPage';
 import { memoizeQuerySpotPrice, querySpotPrice } from './functions/querySpotPrice';
 import { memoizeFetchAddress } from './functions/fetchAddress';
-import { memoizeTokenBalance } from './functions/fetchTokenBalances';
+import {
+    memoizeFetchErc20TokenBalances,
+    memoizeFetchNativeTokenBalance,
+} from './functions/fetchTokenBalances';
 import { getNFTs } from './functions/getNFTs';
 // import { memoizeTokenDecimals } from './functions/queryTokenDecimals';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { useSlippage } from './useSlippage';
 import { useFavePools } from './hooks/useFavePools';
 import { useAppChain } from './hooks/useAppChain';
-import { addNativeBalance, resetTokenData, setTokens } from '../utils/state/tokenDataSlice';
+import {
+    resetTokenData,
+    setErc20Tokens,
+    setIsLoggedIn,
+    setNativeToken,
+} from '../utils/state/userDataSlice';
 import { checkIsStable } from '../utils/data/stablePairs';
 import { useTokenMap } from '../utils/hooks/useTokenMap';
 import { validateChain } from './validateChain';
@@ -104,7 +112,8 @@ import { useTokenUniverse } from './hooks/useTokenUniverse';
 
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 const cachedFetchAddress = memoizeFetchAddress();
-const cachedFetchTokenBalances = memoizeTokenBalance();
+const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
+const cachedFetchErc20TokenBalances = memoizeFetchErc20TokenBalances();
 const cachedFetchTokenPrice = memoizeTokenPrice();
 // const cachedGetTokenDecimals = memoizeTokenDecimals();
 
@@ -129,6 +138,17 @@ export default function App() {
         // authError
     } = useMoralis();
 
+    const userData = useAppSelector((state) => state.userData);
+    const isUserLoggedIn = userData.isLoggedIn;
+
+    useEffect(() => {
+        const isLoggedIn = isAuthenticated && isWeb3Enabled;
+
+        if (userData.isLoggedIn !== isLoggedIn) {
+            dispatch(setIsLoggedIn(isLoggedIn));
+        }
+    }, [isAuthenticated, isWeb3Enabled, isUserLoggedIn]);
+
     const tokenMap = useTokenMap();
 
     const location = useLocation();
@@ -139,7 +159,7 @@ export default function App() {
     // `switchChain` is a function to switch to a different chain
     // `'0x5'` is the chain the app should be on by default
     const [chainData, isChainSupported, switchChain, switchNetworkInMoralis] = useAppChain('0x5');
-    useEffect(() => console.warn(chainData.chainId), [chainData.chainId]);
+    // useEffect(() => console.warn(chainData.chainId), [chainData.chainId]);
 
     const tokenUniverse = useTokenUniverse(chainData.chainId);
     useEffect(() => console.log({ tokenUniverse }), [tokenUniverse]);
@@ -236,6 +256,10 @@ export default function App() {
         dispatch(resetTokens(chainData.chainId));
         dispatch(resetTokenData());
     }, [chainData.chainId]);
+
+    useEffect(() => {
+        dispatch(resetTokenData());
+    }, [account]);
 
     const dispatch = useAppDispatch();
 
@@ -436,33 +460,66 @@ export default function App() {
         })();
     }, [account, chainData.chainId]);
 
-    const tokensInRTK = useAppSelector((state) => state.tokenData.tokens);
+    const connectedUserTokens = useAppSelector((state) => state.userData.tokens);
+    const connectedUserNativeToken = connectedUserTokens.nativeToken;
+    const connectedUserErc20Tokens = connectedUserTokens.erc20Tokens;
 
     // check for token balances on each new block
     useEffect(() => {
         (async () => {
-            if (isAuthenticated && account) {
+            if (crocEnv && isUserLoggedIn && account && chainData.chainId) {
                 try {
-                    const newTokens: TokenIF[] = await cachedFetchTokenBalances(
+                    // console.log('fetching native token balance');
+                    const newNativeToken: TokenIF = await cachedFetchNativeTokenBalance(
                         account,
                         chainData.chainId,
                         lastBlockNumber,
+                        crocEnv,
                     );
-                    const tokensInRTKminusNative = tokensInRTK.slice(1);
-
                     if (
-                        newTokens &&
-                        (tokensInRTK.length === 1 ||
-                            JSON.stringify(tokensInRTKminusNative) !== JSON.stringify(newTokens))
+                        JSON.stringify(connectedUserNativeToken) !== JSON.stringify(newNativeToken)
                     ) {
-                        dispatch(setTokens(newTokens));
+                        dispatch(setNativeToken(newNativeToken));
+                    }
+                } catch (error) {
+                    console.log({ error });
+                }
+                try {
+                    const updatedTokens: TokenIF[] = [];
+                    updatedTokens.push(...connectedUserErc20Tokens);
+                    // console.log('fetching connected user erc20 token balances');
+                    const erc20Results: TokenIF[] = await cachedFetchErc20TokenBalances(
+                        account,
+                        chainData.chainId,
+                        lastBlockNumber,
+                        crocEnv,
+                    );
+
+                    erc20Results.map((newToken: TokenIF) => {
+                        const indexOfExistingToken = connectedUserErc20Tokens.findIndex(
+                            (existingToken) => existingToken.address === newToken.address,
+                        );
+
+                        if (indexOfExistingToken === -1) {
+                            updatedTokens.push(newToken);
+                        } else if (
+                            JSON.stringify(connectedUserErc20Tokens[indexOfExistingToken]) !==
+                            JSON.stringify(newToken)
+                        ) {
+                            updatedTokens[indexOfExistingToken] = newToken;
+                        }
+                    });
+                    if (
+                        JSON.stringify(connectedUserErc20Tokens) !== JSON.stringify(updatedTokens)
+                    ) {
+                        dispatch(setErc20Tokens(updatedTokens));
                     }
                 } catch (error) {
                     console.log({ error });
                 }
             }
         })();
-    }, [account, chainData.chainId, lastBlockNumber, tokensInRTK]);
+    }, [crocEnv, account, chainData.chainId, lastBlockNumber, JSON.stringify(connectedUserTokens)]);
 
     const [baseTokenAddress, setBaseTokenAddress] = useState<string>('');
     const [quoteTokenAddress, setQuoteTokenAddress] = useState<string>('');
@@ -712,8 +769,8 @@ export default function App() {
 
                                 if (poolPositions) {
                                     // console.log({ poolPositions });
-                                    Promise.all(poolPositions.map(getPositionData)).then(
-                                        (updatedPositions) => {
+                                    Promise.all(poolPositions.map(getPositionData))
+                                        .then((updatedPositions) => {
                                             // console.log({ updatedPositions });
                                             if (
                                                 JSON.stringify(
@@ -727,8 +784,8 @@ export default function App() {
                                                     }),
                                                 );
                                             }
-                                        },
-                                    );
+                                        })
+                                        .catch(console.log);
                                 }
                             })
                             .catch(console.log);
@@ -1194,36 +1251,35 @@ export default function App() {
             if (
                 crocEnv &&
                 account &&
-                isAuthenticated &&
-                isWeb3Enabled &&
+                isUserLoggedIn &&
                 tradeData.baseToken.address &&
                 tradeData.quoteToken.address
             ) {
                 crocEnv
                     .token(tradeData.baseToken.address)
                     .walletDisplay(account)
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    .then((bal: any) => setBaseTokenBalance(bal));
+                    .then((bal: string) => setBaseTokenBalance(bal))
+                    .catch(console.log);
                 crocEnv
                     .token(tradeData.baseToken.address)
                     .balanceDisplay(account)
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    .then((bal: any) => {
+                    .then((bal: string) => {
                         setBaseTokenDexBalance(bal);
                         if (tradeData.baseToken.address === ZERO_ADDRESS) {
                             setNativeDexBalance(bal);
                         }
-                    });
+                    })
+                    .catch(console.log);
                 crocEnv
                     .token(tradeData.quoteToken.address)
                     .walletDisplay(account)
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    .then((bal: any) => setQuoteTokenBalance(bal));
+                    .then((bal: string) => setQuoteTokenBalance(bal))
+                    .catch(console.log);
                 crocEnv
                     .token(tradeData.quoteToken.address)
                     .balanceDisplay(account)
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    .then((bal: any) => setQuoteTokenDexBalance(bal));
+                    .then((bal: string) => setQuoteTokenDexBalance(bal))
+                    .catch(console.log);
             }
         })();
     }, [
@@ -1232,8 +1288,8 @@ export default function App() {
         account,
         // isWeb3Enabled,
         // isAuthenticated,
-        tokenPair?.dataTokenA?.address,
-        tokenPair?.dataTokenB?.address,
+        tradeData.baseToken.address,
+        tradeData.quoteToken.address,
         lastBlockNumber,
         // provider,
     ]);
@@ -1489,7 +1545,7 @@ export default function App() {
     };
 
     useEffect(() => {
-        if (isAuthenticated && account) {
+        if (isUserLoggedIn && account) {
             console.log('fetching user positions');
 
             const userPositionsCacheEndpoint = httpGraphCacheServerDomain + '/user_positions?';
@@ -1600,7 +1656,7 @@ export default function App() {
                 console.log;
             }
         }
-    }, [isAuthenticated, account, chainData.chainId]);
+    }, [isUserLoggedIn, account, chainData.chainId]);
 
     // run function to initialize local storage
     // internal controls will only initialize values that don't exist
@@ -1634,23 +1690,6 @@ export default function App() {
     const nativeBalance = (
         parseFloat(nativeWalletBalance || '0') + parseFloat(nativeDexBalance || '0')
     ).toString();
-
-    useEffect(() => {
-        const nativeToken: TokenIF = {
-            name: 'Native Token',
-
-            address: '0x0000000000000000000000000000000000000000',
-            // eslint-disable-next-line camelcase
-            token_address: '0x0000000000000000000000000000000000000000',
-            symbol: 'ETH',
-            decimals: 18,
-            chainId: parseInt(chainData.chainId),
-            logoURI: '',
-            balance: nativeWalletBalance,
-        };
-        if (JSON.stringify(tokensInRTK[0]) !== JSON.stringify(nativeToken))
-            dispatch(addNativeBalance([nativeToken]));
-    }, [nativeWalletBalance]);
 
     // function to sever connection between user wallet and Moralis server
     const clickLogout = async () => {
@@ -1703,7 +1742,7 @@ export default function App() {
             .catch(console.log);
     }, [lastBlockNumber]);
 
-    const shouldDisplayAccountTab = isAuthenticated && isWeb3Enabled && account != '';
+    const shouldDisplayAccountTab = isUserLoggedIn && account != '';
 
     const [isModalOpenWallet, openModalWallet, closeModalWallet] = useModal();
 
@@ -2091,7 +2130,9 @@ export default function App() {
                             path='account'
                             element={
                                 <Portfolio
+                                    crocEnv={crocEnv}
                                     ensName={ensName}
+                                    lastBlockNumber={lastBlockNumber}
                                     connectedAccount={account ? account : ''}
                                     userImageData={imageData}
                                     chainId={chainData.chainId}
@@ -2108,7 +2149,9 @@ export default function App() {
                             path='account/:address'
                             element={
                                 <Portfolio
+                                    crocEnv={crocEnv}
                                     ensName={ensName}
+                                    lastBlockNumber={lastBlockNumber}
                                     connectedAccount={account ? account : ''}
                                     chainId={chainData.chainId}
                                     userImageData={imageData}

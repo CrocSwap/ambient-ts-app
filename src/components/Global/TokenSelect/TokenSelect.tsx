@@ -10,8 +10,9 @@ import uriToHttp from '../../../utils/functions/uriToHttp';
 // import clickStar from './clickStar';
 import { removeToken } from '../../Global/TokenSelectContainer/removeToken';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import { toDisplayQty } from '@crocswap-libs/sdk';
-import { ZERO_ADDRESS } from '../../../constants';
+// import { toDisplayQty } from '@crocswap-libs/sdk';
+// import { ZERO_ADDRESS } from '../../../constants';
+// import { formatAmount } from '../../../utils/numbers';
 // import truncateDecimals from '../../../utils/data/truncateDecimals';
 // import { tokenData } from '../../../utils/state/tokenDataSlice';
 
@@ -30,24 +31,27 @@ export default function TokenSelect(props: TokenSelectPropsIF) {
     const [showDelete, setShowDelete] = useState(false);
     const [toggleDeleteOn, setToggleDeleteOn] = useState(false);
 
-    const tokensInRTK = useAppSelector((state) => state.tokenData.tokens);
+    const userData = useAppSelector((state) => state.userData);
 
-    const getTokenBalance = (address: string) => {
-        let displayQty = '0';
-        tokensInRTK.map((token) => {
-            if (token.token_address?.toLowerCase() === address.toLowerCase()) {
-                if (token.balance && token.address === ZERO_ADDRESS) {
-                    const displayQtyNum = parseFloat(token.balance);
-                    displayQty = displayQtyNum?.toLocaleString('en-US');
-                } else if (token.balance && token.decimals) {
-                    const untruncatedDisplayQty = toDisplayQty(token.balance, token.decimals);
-                    const displayQtyNum = parseFloat(untruncatedDisplayQty);
-                    displayQty = displayQtyNum?.toLocaleString('en-US');
-                }
-            }
-        });
-        return displayQty;
-    };
+    const connectedUserNativeToken = userData.tokens.nativeToken;
+    const connectedUserErc20Tokens = userData.tokens.erc20Tokens;
+    // const connectedUserNativeToken = useAppSelector((state) => state.userData.tokens.nativeToken);
+    // const connectedUserErc20Tokens = useAppSelector((state) => state.userData.tokens.erc20Tokens);
+    const isUserLoggedIn = userData.isLoggedIn;
+
+    const connectedUserTokens = connectedUserNativeToken
+        ? [connectedUserNativeToken].concat(connectedUserErc20Tokens)
+        : connectedUserErc20Tokens;
+
+    const isMatchingToken = (tokenInRtk: TokenIF) =>
+        tokenInRtk.address.toLowerCase() === token.address.toLowerCase();
+
+    const indexOfToken = connectedUserTokens.findIndex(isMatchingToken);
+
+    const combinedBalanceDisplayTruncated =
+        indexOfToken !== -1
+            ? connectedUserTokens[indexOfToken]?.combinedBalanceDisplayTruncated
+            : undefined;
 
     const noTokenImage = <CgUnavailable size={20} />;
 
@@ -133,7 +137,11 @@ export default function TokenSelect(props: TokenSelectPropsIF) {
                     <span className={styles.modal_token_name}>{token.name}</span>
                 </div>
                 <div className={styles.modal_tokens_amount}>
-                    {tokensInRTK.length > 0 ? getTokenBalance(token.address) : ''}
+                    {isUserLoggedIn
+                        ? combinedBalanceDisplayTruncated
+                            ? combinedBalanceDisplayTruncated
+                            : '0'
+                        : ''}
                 </div>
             </div>
             {undeletableTokens.includes(token.address) || deleteIcon}
