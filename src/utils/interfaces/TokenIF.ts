@@ -7,7 +7,11 @@ export interface TokenIF {
     logoURI: string;
     fromList?: string;
     balance?: string;
+    balanceDisplay?: string;
+    balanceDisplayTruncated?: string;
     dexBalance?: string;
+    dexBalanceDisplay?: string;
+    dexBalanceDisplayTruncated?: string;
     combinedBalance?: string;
     combinedBalanceDisplay?: string;
     combinedBalanceDisplayTruncated?: string;
