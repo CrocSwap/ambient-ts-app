@@ -12,7 +12,7 @@ import { removeToken } from '../../Global/TokenSelectContainer/removeToken';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 // import { toDisplayQty } from '@crocswap-libs/sdk';
 // import { ZERO_ADDRESS } from '../../../constants';
-import { formatAmount } from '../../../utils/numbers';
+// import { formatAmount } from '../../../utils/numbers';
 // import truncateDecimals from '../../../utils/data/truncateDecimals';
 // import { tokenData } from '../../../utils/state/tokenDataSlice';
 
@@ -34,37 +34,19 @@ export default function TokenSelect(props: TokenSelectPropsIF) {
     const connectedUserNativeToken = useAppSelector((state) => state.tokenData.tokens.nativeToken);
     const connectedUserErc20Tokens = useAppSelector((state) => state.tokenData.tokens.erc20Tokens);
 
-    const connectedUserTokens = [connectedUserNativeToken].concat(connectedUserErc20Tokens);
-    // const tokensInRTK = useAppSelector((state) => state.tokenData.tokens);
+    const connectedUserTokens = connectedUserNativeToken
+        ? [connectedUserNativeToken].concat(connectedUserErc20Tokens)
+        : connectedUserErc20Tokens;
 
-    const getTokenBalance = (address: string) => {
-        let displayQty = '0';
-        let displayQtyNum = 0;
-        connectedUserTokens.map((token) => {
-            if (token && token.address?.toLowerCase() === address.toLowerCase()) {
-                if (token.combinedBalanceDisplay) {
-                    displayQtyNum = parseFloat(token.combinedBalanceDisplay);
-                }
-                //  else if (token.balance && token.decimals) {
-                //     const untruncatedDisplayQty = toDisplayQty(token.balance, token.decimals);
-                //     displayQtyNum = parseFloat(untruncatedDisplayQty);
-                // }
-                if (displayQtyNum < 0.0001) {
-                    displayQty = displayQtyNum.toExponential(2);
-                } else if (displayQtyNum < 2) {
-                    displayQty = displayQtyNum.toPrecision(3);
-                } else if (displayQtyNum >= 100000) {
-                    displayQty = formatAmount(displayQtyNum);
-                } else {
-                    displayQty = displayQtyNum?.toLocaleString(undefined, {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                    });
-                }
-            }
-        });
-        return displayQty;
-    };
+    const isMatchingToken = (tokenInRtk: TokenIF) =>
+        tokenInRtk.address.toLowerCase() === token.address.toLowerCase();
+
+    const indexOfToken = connectedUserTokens.findIndex(isMatchingToken);
+
+    const combinedBalanceDisplayTruncated =
+        indexOfToken !== -1
+            ? connectedUserTokens[indexOfToken]?.combinedBalanceDisplayTruncated
+            : undefined;
 
     const noTokenImage = <CgUnavailable size={20} />;
 
@@ -150,7 +132,7 @@ export default function TokenSelect(props: TokenSelectPropsIF) {
                     <span className={styles.modal_token_name}>{token.name}</span>
                 </div>
                 <div className={styles.modal_tokens_amount}>
-                    {connectedUserTokens.length > 0 ? getTokenBalance(token.address) : ''}
+                    {combinedBalanceDisplayTruncated ? combinedBalanceDisplayTruncated : '0'}
                 </div>
             </div>
             {undeletableTokens.includes(token.address) || deleteIcon}

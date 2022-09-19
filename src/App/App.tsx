@@ -135,6 +135,10 @@ export default function App() {
 
     const isUserLoggedIn = isAuthenticated && isWeb3Enabled;
 
+    // useEffect(() => {
+
+    // }, [isUserLoggedIn]);
+
     const tokenMap = useTokenMap();
 
     const location = useLocation();
@@ -242,6 +246,10 @@ export default function App() {
         dispatch(resetTokens(chainData.chainId));
         dispatch(resetTokenData());
     }, [chainData.chainId]);
+
+    useEffect(() => {
+        dispatch(resetTokenData());
+    }, [account]);
 
     const dispatch = useAppDispatch();
 

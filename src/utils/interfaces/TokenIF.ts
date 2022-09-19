@@ -10,4 +10,5 @@ export interface TokenIF {
     dexBalance?: string;
     combinedBalance?: string;
     combinedBalanceDisplay?: string;
+    combinedBalanceDisplayTruncated?: string;
 }

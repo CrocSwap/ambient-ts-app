@@ -7,6 +7,7 @@ import { BigNumber } from 'ethers';
 import Moralis from 'moralis-v1';
 import { ZERO_ADDRESS } from '../../constants';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
+import { formatAmount } from '../../utils/numbers';
 import { memoizePromiseFn } from './memoizePromiseFn';
 
 interface IMoralisTokenBalance {
@@ -41,13 +42,27 @@ export const fetchNativeTokenBalance = async (
     const updatedNativeBalance = Promise.resolve(getDexBalance(ZERO_ADDRESS, address))
         .then((nativeDexBalance) => {
             const moralisNativeBalance = nativeBalance.balance;
-            console.log({ moralisNativeBalance });
-            console.log({ nativeDexBalance });
+            // console.log({ moralisNativeBalance });
+            // console.log({ nativeDexBalance });
 
             const combinedBalanceNonDisplay = BigNumber.from(moralisNativeBalance)
                 .add(BigNumber.from(nativeDexBalance))
                 .toString();
             const combinedBalanceDisplay = toDisplayQty(combinedBalanceNonDisplay, 18);
+
+            const combinedBalanceDisplayNum = parseFloat(combinedBalanceDisplay);
+
+            const combinedBalanceDisplayTruncated =
+                combinedBalanceDisplayNum < 0.0001
+                    ? combinedBalanceDisplayNum.toExponential(2)
+                    : combinedBalanceDisplayNum < 2
+                    ? combinedBalanceDisplayNum.toPrecision(3)
+                    : combinedBalanceDisplayNum >= 100000
+                    ? formatAmount(combinedBalanceDisplayNum)
+                    : combinedBalanceDisplayNum.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                      });
 
             const updatedNativeToken: TokenIF = {
                 chainId: parseInt(chain),
@@ -61,6 +76,7 @@ export const fetchNativeTokenBalance = async (
                 dexBalance: nativeDexBalance,
                 combinedBalance: combinedBalanceNonDisplay,
                 combinedBalanceDisplay: combinedBalanceDisplay,
+                combinedBalanceDisplayTruncated: combinedBalanceDisplayTruncated,
             };
             return updatedNativeToken;
             // updatedTokens.push(updatedNativeToken);
@@ -92,8 +108,8 @@ export const fetchErc20TokenBalances = async (
     const updateMoralisBalance = async (tokenBalance: IMoralisTokenBalance): Promise<TokenIF> => {
         const erc20DexBalance = await getDexBalance(tokenBalance.token_address, address);
         const moralisErc20Balance = tokenBalance.balance;
-        console.log({ moralisErc20Balance });
-        console.log({ erc20DexBalance });
+        // console.log({ moralisErc20Balance });
+        // console.log({ erc20DexBalance });
 
         const combinedBalanceNonDisplay = BigNumber.from(moralisErc20Balance)
             .add(BigNumber.from(erc20DexBalance))
@@ -102,6 +118,20 @@ export const fetchErc20TokenBalances = async (
             combinedBalanceNonDisplay,
             tokenBalance.decimals,
         );
+
+        const combinedBalanceDisplayNum = parseFloat(combinedBalanceDisplay);
+
+        const combinedBalanceDisplayTruncated =
+            combinedBalanceDisplayNum < 0.0001
+                ? combinedBalanceDisplayNum.toExponential(2)
+                : combinedBalanceDisplayNum < 2
+                ? combinedBalanceDisplayNum.toPrecision(3)
+                : combinedBalanceDisplayNum >= 100000
+                ? formatAmount(combinedBalanceDisplayNum)
+                : combinedBalanceDisplayNum.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                  });
 
         return {
             chainId: parseInt(chain),
@@ -114,6 +144,7 @@ export const fetchErc20TokenBalances = async (
             dexBalance: erc20DexBalance,
             combinedBalance: combinedBalanceNonDisplay,
             combinedBalanceDisplay: combinedBalanceDisplay,
+            combinedBalanceDisplayTruncated: combinedBalanceDisplayTruncated,
         };
     };
 
