@@ -27,6 +27,8 @@ const mainnetProvider = new ethers.providers.WebSocketProvider(
 
 interface PortfolioPropsIF {
     crocEnv: CrocEnv | undefined;
+    provider: ethers.providers.Provider | undefined;
+    importedTokens: TokenIF[];
     ensName: string;
     lastBlockNumber: number;
     connectedAccount: string;
@@ -48,6 +50,8 @@ export default function Portfolio(props: PortfolioPropsIF) {
 
     const {
         crocEnv,
+        provider,
+        importedTokens,
         ensName,
         lastBlockNumber,
         userImageData,
@@ -208,6 +212,8 @@ export default function Portfolio(props: PortfolioPropsIF) {
             >
                 <PortfolioTabs
                     crocEnv={crocEnv}
+                    provider={provider}
+                    importedTokens={importedTokens}
                     connectedUserTokens={connectedUserTokens}
                     resolvedAddressTokens={resolvedAddressTokens}
                     resolvedAddress={resolvedAddress}

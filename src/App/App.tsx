@@ -7,10 +7,7 @@ import {
     setPositionsByPool,
     setPositionsByUser,
     setChangesByUser,
-    // ITransaction,
     setChangesByPool,
-    // addSwapsByUser,
-    // addSwapsByPool,
     CandleData,
     setCandles,
     addCandles,
@@ -25,13 +22,7 @@ import {
 import { ethers } from 'ethers';
 import { useMoralis } from 'react-moralis';
 import useWebSocket from 'react-use-websocket';
-import {
-    sortBaseQuoteTokens,
-    toDisplayPrice,
-    tickToPrice,
-    CrocEnv,
-    toDisplayQty,
-} from '@crocswap-libs/sdk';
+import { sortBaseQuoteTokens, toDisplayPrice, CrocEnv, toDisplayQty } from '@crocswap-libs/sdk';
 import { resetReceiptData } from '../utils/state/receiptDataSlice';
 
 import SnackbarComponent from '../components/Global/SnackbarComponent/SnackbarComponent';
@@ -75,14 +66,16 @@ import {
     setSimpleRangeWidth,
 } from '../utils/state/tradeDataSlice';
 import PoolPage from '../pages/PoolPage/PoolPage';
-import { memoizeQuerySpotPrice, querySpotPrice } from './functions/querySpotPrice';
+import {
+    //  memoizeQuerySpotPrice,
+    querySpotPrice,
+} from './functions/querySpotPrice';
 import { memoizeFetchAddress } from './functions/fetchAddress';
 import {
     memoizeFetchErc20TokenBalances,
     memoizeFetchNativeTokenBalance,
 } from './functions/fetchTokenBalances';
 import { getNFTs } from './functions/getNFTs';
-// import { memoizeTokenDecimals } from './functions/queryTokenDecimals';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { useSlippage } from './useSlippage';
 import { useFavePools } from './hooks/useFavePools';
@@ -101,21 +94,18 @@ import { ZERO_ADDRESS } from '../constants';
 import { useModal } from '../components/Global/Modal/useModal';
 import { useGlobalModal } from './components/GlobalModal/useGlobalModal';
 
-// import authenticateUser from '../utils/functions/authenticateUser';
 import { getVolumeSeries } from './functions/getVolumeSeries';
 import { getTvlSeries } from './functions/getTvlSeries';
 import Chat from './components/Chat/Chat';
-import { formatAmount } from '../utils/numbers';
 import GlobalModal from './components/GlobalModal/GlobalModal';
 import { memoizeTokenPrice } from './functions/fetchTokenPrice';
 import { useTokenUniverse } from './hooks/useTokenUniverse';
+import { getPositionData } from './functions/getPositionData';
 
-const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 const cachedFetchAddress = memoizeFetchAddress();
 const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
 const cachedFetchErc20TokenBalances = memoizeFetchErc20TokenBalances();
 const cachedFetchTokenPrice = memoizeTokenPrice();
-// const cachedGetTokenDecimals = memoizeTokenDecimals();
 
 const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
 const wssGraphCacheServerDomain = 'wss://809821320828123.de:5000';
@@ -135,7 +125,6 @@ export default function App() {
         isInitialized,
         authenticate,
         enableWeb3,
-        // authError
     } = useMoralis();
 
     const userData = useAppSelector((state) => state.userData);
@@ -769,7 +758,17 @@ export default function App() {
 
                                 if (poolPositions) {
                                     // console.log({ poolPositions });
-                                    Promise.all(poolPositions.map(getPositionData))
+                                    Promise.all(
+                                        poolPositions.map((position: PositionIF) => {
+                                            return getPositionData(
+                                                position,
+                                                importedTokens,
+                                                provider,
+                                                chainData.chainId,
+                                                lastBlockNumber,
+                                            );
+                                        }),
+                                    )
                                         .then((updatedPositions) => {
                                             // console.log({ updatedPositions });
                                             if (
@@ -999,8 +998,18 @@ export default function App() {
         if (lastPoolLiqChangeMessage !== null) {
             const lastMessageData = JSON.parse(lastPoolLiqChangeMessage.data).data;
             console.log({ lastMessageData });
-            if (lastMessageData) {
-                Promise.all(lastMessageData.map(getPositionData)).then((updatedPositions) => {
+            if (lastMessageData && provider) {
+                Promise.all(
+                    lastMessageData.map((position: PositionIF) => {
+                        return getPositionData(
+                            position,
+                            importedTokens,
+                            provider,
+                            chainData.chainId,
+                            lastBlockNumber,
+                        );
+                    }),
+                ).then((updatedPositions) => {
                     dispatch(addPositionsByPool(updatedPositions));
                 });
             }
@@ -1145,8 +1154,18 @@ export default function App() {
         if (lastUserPositionsMessage !== null) {
             const lastMessageData = JSON.parse(lastUserPositionsMessage.data).data;
 
-            if (lastMessageData) {
-                Promise.all(lastMessageData.map(getPositionData)).then((updatedPositions) => {
+            if (lastMessageData && provider) {
+                Promise.all(
+                    lastMessageData.map((position: PositionIF) => {
+                        return getPositionData(
+                            position,
+                            importedTokens,
+                            provider,
+                            chainData.chainId,
+                            lastBlockNumber,
+                        );
+                    }),
+                ).then((updatedPositions) => {
                     dispatch(addPositionsByUser(updatedPositions));
                 });
             }
@@ -1344,206 +1363,6 @@ export default function App() {
         return candle;
     };
 
-    const getPositionData = async (position: PositionIF): Promise<PositionIF> => {
-        position.base = position.base.startsWith('0x') ? position.base : '0x' + position.base;
-        position.quote = position.quote.startsWith('0x') ? position.quote : '0x' + position.quote;
-        position.user = position.user.startsWith('0x') ? position.user : '0x' + position.user;
-
-        const baseTokenAddress = position.base;
-        const quoteTokenAddress = position.quote;
-
-        const viewProvider = provider
-            ? provider
-            : (await new CrocEnv(chainData.chainId).context).provider;
-
-        const poolPriceNonDisplay = await cachedQuerySpotPrice(
-            viewProvider,
-            baseTokenAddress,
-            quoteTokenAddress,
-            chainData.chainId,
-            lastBlockNumber,
-        );
-
-        const poolPriceInTicks = Math.log(poolPriceNonDisplay) / Math.log(1.0001);
-        position.poolPriceInTicks = poolPriceInTicks;
-
-        const isPositionInRange =
-            position.positionType === 'ambient' ||
-            (position.bidTick <= poolPriceInTicks && poolPriceInTicks <= position.askTick);
-
-        position.isPositionInRange = isPositionInRange;
-
-        const baseTokenDecimals = position.baseDecimals;
-        const quoteTokenDecimals = position.quoteDecimals;
-
-        const lowerPriceNonDisplay = tickToPrice(position.bidTick);
-        const upperPriceNonDisplay = tickToPrice(position.askTick);
-
-        const lowerPriceDisplayInBase =
-            1 / toDisplayPrice(upperPriceNonDisplay, baseTokenDecimals, quoteTokenDecimals);
-
-        const upperPriceDisplayInBase =
-            1 / toDisplayPrice(lowerPriceNonDisplay, baseTokenDecimals, quoteTokenDecimals);
-
-        const lowerPriceDisplayInQuote = toDisplayPrice(
-            lowerPriceNonDisplay,
-            baseTokenDecimals,
-            quoteTokenDecimals,
-        );
-
-        const upperPriceDisplayInQuote = toDisplayPrice(
-            upperPriceNonDisplay,
-            baseTokenDecimals,
-            quoteTokenDecimals,
-        );
-
-        position.lowRangeShortDisplayInBase =
-            lowerPriceDisplayInBase < 0.0001
-                ? lowerPriceDisplayInBase.toExponential(2)
-                : lowerPriceDisplayInBase < 2
-                ? lowerPriceDisplayInBase.toPrecision(3)
-                : lowerPriceDisplayInBase >= 1000000
-                ? lowerPriceDisplayInBase.toExponential(2)
-                : lowerPriceDisplayInBase.toLocaleString(undefined, {
-                      maximumFractionDigits: 0,
-                  });
-
-        position.lowRangeShortDisplayInQuote =
-            lowerPriceDisplayInQuote < 0.0001
-                ? lowerPriceDisplayInQuote.toExponential(2)
-                : lowerPriceDisplayInQuote < 2
-                ? lowerPriceDisplayInQuote.toPrecision(3)
-                : lowerPriceDisplayInQuote >= 1000000
-                ? lowerPriceDisplayInQuote.toExponential(2)
-                : lowerPriceDisplayInQuote.toLocaleString(undefined, {
-                      maximumFractionDigits: 0,
-                  });
-
-        position.highRangeShortDisplayInBase =
-            upperPriceDisplayInBase < 0.0001
-                ? upperPriceDisplayInBase.toExponential(2)
-                : upperPriceDisplayInBase < 2
-                ? upperPriceDisplayInBase.toPrecision(3)
-                : upperPriceDisplayInBase >= 1000000
-                ? upperPriceDisplayInBase.toExponential(2)
-                : upperPriceDisplayInBase.toLocaleString(undefined, {
-                      maximumFractionDigits: 0,
-                  });
-
-        position.highRangeShortDisplayInQuote =
-            upperPriceDisplayInQuote < 0.0001
-                ? upperPriceDisplayInQuote.toExponential(2)
-                : upperPriceDisplayInQuote < 2
-                ? upperPriceDisplayInQuote.toPrecision(3)
-                : upperPriceDisplayInQuote >= 1000000
-                ? upperPriceDisplayInQuote.toExponential(2)
-                : upperPriceDisplayInQuote.toLocaleString(undefined, {
-                      maximumFractionDigits: 0,
-                  });
-
-        const baseTokenLogoURI = importedTokens.find(
-            (token) => token.address.toLowerCase() === baseTokenAddress.toLowerCase(),
-        )?.logoURI;
-        const quoteTokenLogoURI = importedTokens.find(
-            (token) => token.address.toLowerCase() === quoteTokenAddress.toLowerCase(),
-        )?.logoURI;
-
-        position.baseTokenLogoURI = baseTokenLogoURI ?? '';
-        position.quoteTokenLogoURI = quoteTokenLogoURI ?? '';
-
-        if (position.positionType !== 'ambient') {
-            position.lowRangeDisplayInBase =
-                lowerPriceDisplayInBase < 0.0001
-                    ? lowerPriceDisplayInBase.toExponential(2)
-                    : lowerPriceDisplayInBase < 2
-                    ? lowerPriceDisplayInBase.toPrecision(3)
-                    : lowerPriceDisplayInBase >= 1000000
-                    ? lowerPriceDisplayInBase.toExponential(2)
-                    : lowerPriceDisplayInBase.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                      });
-            position.highRangeDisplayInBase =
-                upperPriceDisplayInBase < 0.0001
-                    ? upperPriceDisplayInBase.toExponential(2)
-                    : upperPriceDisplayInBase < 2
-                    ? upperPriceDisplayInBase.toPrecision(3)
-                    : upperPriceDisplayInBase >= 1000000
-                    ? upperPriceDisplayInBase.toExponential(2)
-                    : upperPriceDisplayInBase.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                      });
-        }
-
-        if (position.positionType !== 'ambient') {
-            position.lowRangeDisplayInQuote =
-                lowerPriceDisplayInQuote < 0.0001
-                    ? lowerPriceDisplayInQuote.toExponential(2)
-                    : lowerPriceDisplayInQuote < 2
-                    ? lowerPriceDisplayInQuote.toPrecision(3)
-                    : lowerPriceDisplayInQuote >= 1000000
-                    ? lowerPriceDisplayInQuote.toExponential(2)
-                    : lowerPriceDisplayInQuote.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                      });
-            position.highRangeDisplayInQuote =
-                upperPriceDisplayInQuote < 0.0001
-                    ? upperPriceDisplayInQuote.toExponential(2)
-                    : upperPriceDisplayInQuote < 2
-                    ? upperPriceDisplayInQuote.toPrecision(3)
-                    : upperPriceDisplayInQuote >= 1000000
-                    ? upperPriceDisplayInQuote.toExponential(2)
-                    : upperPriceDisplayInQuote.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                      });
-        }
-
-        if (position.positionLiqBaseDecimalCorrected) {
-            const liqBaseNum = position.positionLiqBaseDecimalCorrected;
-
-            const baseLiqDisplayTruncated =
-                liqBaseNum === 0
-                    ? '0'
-                    : liqBaseNum < 0.0001
-                    ? liqBaseNum.toExponential(2)
-                    : liqBaseNum < 2
-                    ? liqBaseNum.toPrecision(3)
-                    : liqBaseNum >= 100000
-                    ? formatAmount(liqBaseNum)
-                    : // ? baseLiqDisplayNum.toExponential(2)
-                      liqBaseNum.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                      });
-
-            position.positionLiqBaseTruncated = baseLiqDisplayTruncated;
-        }
-        if (position.positionLiqQuoteDecimalCorrected) {
-            const liqQuoteNum = position.positionLiqQuoteDecimalCorrected;
-
-            const quoteLiqDisplayTruncated =
-                liqQuoteNum === 0
-                    ? '0'
-                    : liqQuoteNum < 0.0001
-                    ? liqQuoteNum.toExponential(2)
-                    : liqQuoteNum < 2
-                    ? liqQuoteNum.toPrecision(3)
-                    : liqQuoteNum >= 100000
-                    ? formatAmount(liqQuoteNum)
-                    : // ? quoteLiqDisplayNum.toExponential(2)
-                      liqQuoteNum.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                      });
-            position.positionLiqQuoteTruncated = quoteLiqDisplayTruncated;
-        }
-
-        return position;
-    };
-
     useEffect(() => {
         if (isUserLoggedIn && account) {
             console.log('fetching user positions');
@@ -1567,22 +1386,30 @@ export default function App() {
                     .then((json) => {
                         const userPositions = json?.data;
 
-                        if (userPositions) {
-                            Promise.all(userPositions.map(getPositionData)).then(
-                                (updatedPositions) => {
-                                    if (
-                                        JSON.stringify(graphData.positionsByUser.positions) !==
-                                        JSON.stringify(updatedPositions)
-                                    ) {
-                                        dispatch(
-                                            setPositionsByUser({
-                                                dataReceived: true,
-                                                positions: updatedPositions,
-                                            }),
-                                        );
-                                    }
-                                },
-                            );
+                        if (userPositions && provider) {
+                            Promise.all(
+                                userPositions.map((position: PositionIF) => {
+                                    return getPositionData(
+                                        position,
+                                        importedTokens,
+                                        provider,
+                                        chainData.chainId,
+                                        lastBlockNumber,
+                                    );
+                                }),
+                            ).then((updatedPositions) => {
+                                if (
+                                    JSON.stringify(graphData.positionsByUser.positions) !==
+                                    JSON.stringify(updatedPositions)
+                                ) {
+                                    dispatch(
+                                        setPositionsByUser({
+                                            dataReceived: true,
+                                            positions: updatedPositions,
+                                        }),
+                                    );
+                                }
+                            });
                         }
                     })
                     .catch(console.log);
@@ -2137,6 +1964,8 @@ export default function App() {
                             element={
                                 <Portfolio
                                     crocEnv={crocEnv}
+                                    provider={provider}
+                                    importedTokens={importedTokens}
                                     ensName={ensName}
                                     lastBlockNumber={lastBlockNumber}
                                     connectedAccount={account ? account : ''}
@@ -2156,6 +1985,8 @@ export default function App() {
                             element={
                                 <Portfolio
                                     crocEnv={crocEnv}
+                                    provider={provider}
+                                    importedTokens={importedTokens}
                                     ensName={ensName}
                                     lastBlockNumber={lastBlockNumber}
                                     connectedAccount={account ? account : ''}
