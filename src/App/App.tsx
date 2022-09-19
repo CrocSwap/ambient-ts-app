@@ -1840,6 +1840,7 @@ export default function App() {
 
     // props for <Limit/> React element on trade route
     const limitPropsTrade = {
+        isUserLoggedIn: isUserLoggedIn,
         importedTokens: importedTokens,
         setImportedTokens: setImportedTokens,
         searchableTokens: searchableTokens,

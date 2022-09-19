@@ -26,6 +26,7 @@ import { ZERO_ADDRESS } from '../../../../constants';
 
 // interface for component props
 interface LimitCurrencyConverterProps {
+    isUserLoggedIn: boolean;
     tokenPair: TokenPairIF;
     tokensBank: Array<TokenIF>;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
@@ -60,6 +61,7 @@ interface LimitCurrencyConverterProps {
 // central react functional component
 export default function LimitCurrencyConverter(props: LimitCurrencyConverterProps) {
     const {
+        isUserLoggedIn,
         tokenPair,
         tokensBank,
         setImportedTokens,
@@ -405,6 +407,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
     return (
         <section className={styles.currency_converter}>
             <LimitCurrencySelector
+                isUserLoggedIn={isUserLoggedIn}
                 tokenPair={tokenPair}
                 tokensBank={tokensBank}
                 setImportedTokens={setImportedTokens}
@@ -444,6 +447,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 </IconWithTooltip>
             </div>
             <LimitCurrencySelector
+                isUserLoggedIn={isUserLoggedIn}
                 tokenPair={tokenPair}
                 tokensBank={tokensBank}
                 setImportedTokens={setImportedTokens}
