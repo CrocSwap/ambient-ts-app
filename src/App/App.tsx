@@ -508,7 +508,14 @@ export default function App() {
                 }
             }
         })();
-    }, [crocEnv, account, chainData.chainId, lastBlockNumber, JSON.stringify(connectedUserTokens)]);
+    }, [
+        crocEnv,
+        isUserLoggedIn,
+        account,
+        chainData.chainId,
+        lastBlockNumber,
+        JSON.stringify(connectedUserTokens),
+    ]);
 
     const [baseTokenAddress, setBaseTokenAddress] = useState<string>('');
     const [quoteTokenAddress, setQuoteTokenAddress] = useState<string>('');
@@ -1303,14 +1310,11 @@ export default function App() {
         })();
     }, [
         crocEnv,
-        // chainData.chainId,
+        isUserLoggedIn,
         account,
-        // isWeb3Enabled,
-        // isAuthenticated,
         tradeData.baseToken.address,
         tradeData.quoteToken.address,
         lastBlockNumber,
-        // provider,
     ]);
 
     const [tokenAAllowance, setTokenAAllowance] = useState<string>('');
