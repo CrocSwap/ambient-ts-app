@@ -553,7 +553,7 @@ export default function Chart(props: ChartData) {
                     Math.round(
                         snap(
                             props.liquidityData,
-                            scaleData.yScale.invert(d3.pointer(event)[1] - 215),
+                            scaleData.yScale.invert(d3.pointer(event)[1] - 200),
                         ) * 100,
                     ) / 100;
 
