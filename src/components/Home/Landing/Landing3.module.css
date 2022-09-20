@@ -193,3 +193,14 @@ height: 53.19px;
 
 
 }
+.single_contract_container, .multi_contract_container{
+    display: none;
+}
+
+/* Desktop screen Sizes */
+@media only screen and (min-width: 768px) {
+    .single_contract_container, .multi_contract_container{
+        display: flex;
+    }
+
+}
