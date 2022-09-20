@@ -12,6 +12,10 @@ export default function OrderCardHeader() {
                 <p className={styles.price}>Price</p>
                 <p className={styles.side}>Side</p>
                 <p className={styles.type}>Type</p>
+                <p className={styles.token}>Value</p>
+                <p className={styles.token}>Token A Qty</p>
+                <p className={styles.token}>Token B Qty</p>
+                <p>Status</p>
                 {/* <p className={styles.tokens}>ETH/USDC</p> */}
             </div>
 
