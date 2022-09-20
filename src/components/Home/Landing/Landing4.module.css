@@ -25,6 +25,10 @@
     gap: 10px;
 }
 
+.content_container img{
+    display: none;
+}
+
 .header_content {
     display: flex;
     flex-direction: column;
@@ -60,7 +64,7 @@
 
 .row {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     align-items: center;
     gap: 10px;
 }
@@ -69,6 +73,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+   
     padding: 8px 16px;
     gap: 8px;
 
@@ -80,8 +85,7 @@
 
 
 .half_content{
-    width: 442.14px;
-height: 177px;
+   text-align: center;
 
 }
 .liquidity_content img {
@@ -98,6 +102,31 @@ height: 177px;
     font-weight: 100;
     font-size: 12px;
     line-height: 15px;
+    text-align: center;
     color: #bdbdbd;
     word-wrap: break-word;
+}
+
+
+@media only screen and (min-width: 768px) {
+    .row {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .content_container img{
+        display: flex;
+    }
+    .half_content{
+        width: 442.14px;
+    height: 177px;
+    text-align: justify;
+    
+    }
+
+    .content_text{
+        text-align: justify;
+    }
 }
