@@ -25,6 +25,7 @@ import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import { SlippagePairIF, TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
 import { setLimitPrice } from '../../../utils/state/tradeDataSlice';
+import { addReceipt } from '../../../utils/state/receiptDataSlice';
 
 interface LimitPropsIF {
     isUserLoggedIn: boolean;
@@ -307,10 +308,12 @@ export default function Limit(props: LimitPropsIF) {
 
         try {
             const mint = await ko.mint({ surplus: isWithdrawFromDexChecked });
-            console.log(mint.hash);
+            // console.log(mint.hash);
             setNewLimitOrderTransactionHash(mint.hash);
             const limitOrderReceipt = await mint.wait();
-            console.log({ limitOrderReceipt });
+            if (limitOrderReceipt) {
+                dispatch(addReceipt(JSON.stringify(limitOrderReceipt)));
+            }
         } catch (error) {
             setTxErrorCode(error?.code);
             setTxErrorMessage(error?.message);
