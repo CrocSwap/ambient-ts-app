@@ -18,6 +18,7 @@ import {
     addPositionsByPool,
     setLimitOrdersByUser,
     setLimitOrdersByPool,
+    ILimitOrderState,
 } from '../utils/state/graphDataSlice';
 import { ethers } from 'ethers';
 import { useMoralis } from 'react-moralis';
@@ -101,6 +102,7 @@ import GlobalModal from './components/GlobalModal/GlobalModal';
 import { memoizeTokenPrice } from './functions/fetchTokenPrice';
 import { useTokenUniverse } from './hooks/useTokenUniverse';
 import { getPositionData } from './functions/getPositionData';
+import { getLimitOrderData } from './functions/getLimitOrderData';
 
 const cachedFetchAddress = memoizeFetchAddress();
 const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
@@ -1436,15 +1438,21 @@ export default function App() {
                 )
                     .then((response) => response?.json())
                     .then((json) => {
-                        const userLimitOrders = json?.data;
+                        const userLimitOrderStates = json?.data;
 
-                        if (userLimitOrders) {
-                            dispatch(
-                                setLimitOrdersByUser({
-                                    dataReceived: true,
-                                    limitOrders: userLimitOrders,
+                        if (userLimitOrderStates) {
+                            Promise.all(
+                                userLimitOrderStates.map((limitOrder: ILimitOrderState) => {
+                                    return getLimitOrderData(limitOrder, importedTokens);
                                 }),
-                            );
+                            ).then((updatedLimitOrderStates) => {
+                                dispatch(
+                                    setLimitOrdersByUser({
+                                        dataReceived: true,
+                                        limitOrders: updatedLimitOrderStates,
+                                    }),
+                                );
+                            });
                         }
                     })
                     .catch(console.log);
