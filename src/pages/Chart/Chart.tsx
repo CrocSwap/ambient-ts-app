@@ -129,20 +129,26 @@ export default function Chart(props: ChartData) {
         },
     ]);
 
+    // Rules
     const [isChartSelected, setIsChartSelected] = useState<boolean>(false);
     const [isHighMoved, setIsHighMoved] = useState<boolean>(false);
     const [isLowMoved, setIsLowMoved] = useState<boolean>(false);
     const [isLineSwapped, setIsLineSwapped] = useState<boolean>(false);
-    const [transactionFilter, setTransactionFilter] = useState<CandleData>();
-    const [scaleData, setScaleData] = useState<any>();
-    const [dragType, setDragType] = useState<any>();
-    const [horizontalLine, setHorizontalLine] = useState<any>();
-    const [ghostLines, setGhostLines] = useState<any>();
+    const [drawControl, setDrawControl] = useState(false);
+
+    // Data
     const [crosshairData, setCrosshairData] = useState([{ x: 0, y: -1 }]);
+
+    // d3
+    const [transactionFilter, setTransactionFilter] = useState<CandleData>();
+    const [ghostLines, setGhostLines] = useState<any>();
+    const [horizontalLine, setHorizontalLine] = useState<any>();
+
+    // Utils
     const [zoomUtils, setZoomUtils] = useState<any>();
     const [zoomStatus, setZoomStatus] = useState();
-
-    const [drawControl, setDrawControl] = useState(false);
+    const [scaleData, setScaleData] = useState<any>();
+    const [dragType, setDragType] = useState<any>();
 
     const valueFormatter = d3.format('.5f');
 
@@ -187,9 +193,7 @@ export default function Chart(props: ChartData) {
             .attr('dy', '20px')
             .style('visibility', 'visible')
             .style('font-size', '13px');
-    }, [location]);
 
-    useEffect(() => {
         d3.select(d3Yaxis.current)
             .select('svg')
             .append('text')
@@ -198,9 +202,7 @@ export default function Chart(props: ChartData) {
             .attr('dy', '2px')
             .style('visibility', 'visible')
             .style('font-size', '13px');
-    }, [location]);
 
-    useEffect(() => {
         d3.select(d3Container.current)
             .select('.targets')
             .select('.annotation-line')
@@ -231,7 +233,7 @@ export default function Chart(props: ChartData) {
         }
     }, [ranges, zoomStatus, drawControl]);
 
-    // Set Scale
+    // Scale
     useEffect(() => {
         if (parsedChartData !== undefined) {
             const priceRange = d3fc
@@ -293,7 +295,7 @@ export default function Chart(props: ChartData) {
         }
     }, [parsedChartData?.period, denomInBase]);
 
-    // Set Zoom
+    // Zoom
     useEffect(() => {
         if (scaleData !== undefined) {
             let lastY = 0;
@@ -351,7 +353,7 @@ export default function Chart(props: ChartData) {
         }
     }, [scaleData]);
 
-    // Set Targets
+    // Targets
     useEffect(() => {
         const results: boolean[] = [];
 
@@ -494,6 +496,7 @@ export default function Chart(props: ChartData) {
         pinnedMaxPriceDisplayTruncated,
     ]);
 
+    // Ghost Lines
     useEffect(() => {
         if (scaleData !== undefined) {
             const ghostLines = d3fc
@@ -522,16 +525,35 @@ export default function Chart(props: ChartData) {
         }
     }, [scaleData]);
 
-    // Set dragType
+    // Drag Type
     useEffect(() => {
         if (scaleData !== undefined) {
+            const snap = (data: any, value: any) => {
+                if (value == undefined) return [];
+
+                const filtered = data.lenght > 1 ? data.filter((d: any) => d != null) : data;
+
+                const nearest = filtered.reduce(function (prev: any, curr: any) {
+                    return Math.abs(curr.upperBoundPriceDecimalCorrected - value) <
+                        Math.abs(prev.upperBoundPriceDecimalCorrected - value)
+                        ? curr
+                        : prev;
+                });
+
+                return nearest.upperBoundPriceDecimalCorrected;
+            };
+
             const dragRange = d3.drag().on('drag', function (event, d: any) {
                 d3.select(d3Container.current)
                     .select('.ghostLines')
                     .selectAll('.horizontal')
                     .style('visibility', 'visible');
 
-                const newValue = scaleData.yScale.invert(d3.pointer(event)[1] - 215);
+                const snappedValue = snap(
+                    props.liquidityData,
+                    scaleData.yScale.invert(d3.pointer(event)[1] - 215),
+                );
+
                 if (!isAdvancedModeActive) {
                     let valueWithRange: number;
 
@@ -551,11 +573,11 @@ export default function Chart(props: ChartData) {
 
                             valueWithRange =
                                 newTargets.filter((target: any) => target.name === 'Max')[0].value -
-                                newValue;
+                                snappedValue;
 
-                            if (newValue > parseFloat(displayValue) + dragLimit) {
+                            if (snappedValue > parseFloat(displayValue) + dragLimit) {
                                 newTargets.filter((target: any) => target.name === 'Max')[0].value =
-                                    newValue;
+                                    snappedValue;
 
                                 newTargets.filter((target: any) => target.name === 'Min')[0].value =
                                     low + valueWithRange;
@@ -586,15 +608,15 @@ export default function Chart(props: ChartData) {
 
                             valueWithRange =
                                 newTargets.filter((target: any) => target.name === 'Min')[0].value -
-                                newValue;
+                                snappedValue;
 
                             const high = newTargets.filter(
                                 (target: any) => target.name === 'Max',
                             )[0].value;
 
-                            if (newValue < parseFloat(displayValue) - dragLimit) {
+                            if (snappedValue < parseFloat(displayValue) - dragLimit) {
                                 newTargets.filter((target: any) => target.name === 'Min')[0].value =
-                                    newValue;
+                                    snappedValue;
 
                                 newTargets.filter((target: any) => target.name === 'Max')[0].value =
                                     high + valueWithRange;
@@ -623,17 +645,17 @@ export default function Chart(props: ChartData) {
 
                         const high = newTargets.filter((target: any) => target.name === 'Max')[0]
                             .value;
-                        if (d.name === 'Max' && newValue > low) {
+                        if (d.name === 'Max' && snappedValue > low) {
                             newTargets.filter((target: any) => target.name === d.name)[0].value =
-                                newValue;
+                                snappedValue;
                             setIsLineSwapped(false);
-                        } else if (d.name === 'Min' && newValue < high) {
+                        } else if (d.name === 'Min' && snappedValue < high) {
                             newTargets.filter((target: any) => target.name === d.name)[0].value =
-                                newValue;
+                                snappedValue;
                             setIsLineSwapped(false);
-                        } else if (d.name === 'Max' && newValue < low) {
+                        } else if (d.name === 'Max' && snappedValue < low) {
                             newTargets.filter((target: any) => target.name === 'Max')[0].value =
-                                newValue;
+                                snappedValue;
 
                             d3.select(d3Container.current)
                                 .select('.targets')
@@ -648,16 +670,16 @@ export default function Chart(props: ChartData) {
                                 .text((d: any) => 'Min' + ' - ' + valueFormatter(d.value));
 
                             setIsLineSwapped(true);
-                        } else if (d.name === 'Min' && newValue > high) {
+                        } else if (d.name === 'Min' && snappedValue > high) {
                             newTargets.filter((target: any) => target.name === 'Min')[0].value =
-                                newValue;
+                                snappedValue;
 
                             d3.select(d3Container.current)
                                 .select('.targets')
                                 .select('#Min')
                                 .select('.left-handle')
                                 .select('text')
-                                .text((d: any) => 'Max' + ' - ' + valueFormatter(newValue));
+                                .text((d: any) => 'Max' + ' - ' + valueFormatter(snappedValue));
 
                             setIsLineSwapped(true);
                         }
@@ -684,7 +706,7 @@ export default function Chart(props: ChartData) {
         }
     }, [spotPriceDisplay, location, scaleData, isAdvancedModeActive]);
 
-    // Set Horizontal Lines
+    // Horizontal Lines
     useEffect(() => {
         if (scaleData !== undefined) {
             const horizontalLine = d3fc
@@ -734,7 +756,7 @@ export default function Chart(props: ChartData) {
         }
     }, [scaleData]);
 
-    // set Line Rules
+    // Line Rules
     useEffect(() => {
         if (dragType !== undefined) {
             if (location.pathname.includes('limit')) {
@@ -1117,7 +1139,7 @@ export default function Chart(props: ChartData) {
         render();
     }, [upBodyColor, downBodyColor, upBorderColor, downBorderColor]);
 
-    // Set selected candle transactions
+    // Candle transactions
     useEffect(() => {
         if (isChartSelected !== undefined && transactionFilter !== undefined) {
             props.changeState(isChartSelected, transactionFilter);
@@ -1184,6 +1206,12 @@ export default function Chart(props: ChartData) {
                 }
             }
         }, 1000);
+
+        d3.select(d3Container.current)
+            .select('.ghostLines')
+            .selectAll('.horizontal')
+            .style('visibility', 'hidden');
+
         return () => clearTimeout(timer);
     }, [ranges]);
 
