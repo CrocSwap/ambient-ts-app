@@ -10,7 +10,7 @@ import DropdownMenu2 from '../../../../components/Global/DropdownMenu2/DropdownM
 import { ItemEnterAnimation } from '../../../../utils/others/FramerMotionAnimations';
 import { ambientChains } from '../../../../utils/data/chains';
 import IconWithTooltip from '../../../../components/Global/IconWithTooltip/IconWithTooltip';
-import NewNetworkSelector from './NewNetworkSelector';
+// import NewNetworkSelector from './NewNetworkSelector';
 
 interface NetworkSelectorPropsIF {
     chainId: string;
@@ -57,7 +57,7 @@ export default function NetworkSelector(props: NetworkSelectorPropsIF) {
                 </IconWithTooltip>
             </div>
 
-            <NewNetworkSelector />
+            {/* <NewNetworkSelector /> */}
         </>
     );
 }
