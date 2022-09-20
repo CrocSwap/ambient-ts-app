@@ -25,6 +25,13 @@ text {
     border: 1px dashed rgba(235, 235, 255, 0.4);
 }
 
+.annotation-line > .ghostline {
+    stroke: rgba(235, 235, 255, 0.4);
+    stroke-width: 0.5;
+    stroke-opacity: 0.4;
+    border: 1px dashed rgba(235, 235, 255, 0.4);
+}
+
 .candlestick .down {
     background-color: #7371fc;
 }

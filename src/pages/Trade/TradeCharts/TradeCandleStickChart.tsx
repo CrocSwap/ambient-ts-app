@@ -4,7 +4,7 @@ import { targetData } from '../../../utils/state/tradeDataSlice';
 import Chart from '../../Chart/Chart';
 import './TradeCandleStickChart.css';
 import logo from '../../../assets/images/logos/ambient_logo.svg';
-import { CandleChartData, LiquidityData } from './TradeCharts';
+import { CandleChartData, LiquidityData, TvlChartData, VolumeChartData } from './TradeCharts';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -45,9 +45,11 @@ interface ChartData {
     downBorderColor: string;
 }
 
-interface ChartUtils {
+export interface ChartUtils {
     period: any;
     chartData: CandleChartData[];
+    tvlChartData: TvlChartData[];
+    volumeChartData: VolumeChartData[];
 }
 
 type chartItemStates = {
@@ -77,6 +79,9 @@ export default function TradeCandleStickChart(props: ChartData) {
     useEffect(() => {
         setIsLoading(true);
         const chartData: CandleChartData[] = [];
+        const tvlChartData: TvlChartData[] = [];
+        const volumeChartData: VolumeChartData[] = [];
+
         props.priceData?.candles.map((data) => {
             chartData.push({
                 date: new Date(data.time * 1000),
@@ -95,30 +100,46 @@ export default function TradeCandleStickChart(props: ChartData) {
                 time: data.time,
                 allSwaps: [],
             });
+
+            tvlChartData.push({
+                time: new Date(data.tvlData.time * 1000),
+                value: data.tvlData.interpDistHigher,
+            });
+
+            volumeChartData.push({
+                time: new Date(data.time * 1000),
+                value: data.volumeUSD,
+            });
         });
 
         const chartUtils: ChartUtils = {
             period: props.priceData?.duration,
             chartData: chartData,
+            tvlChartData: tvlChartData,
+            volumeChartData: volumeChartData,
         };
         setParsedChartData(() => {
             return chartUtils;
         });
-    }, [props.priceData, activeChartPeriod, denomInBase]);
+    }, [activeChartPeriod, denomInBase]);
 
     // Parse liquidtiy data
     const liquiditiyData = useMemo(() => {
         const liqData: LiquidityData[] = [];
         if (props.liquidityData) {
             props.liquidityData.ranges.map((data: any) => {
-                liqData.push({
-                    activeLiq: data.activeLiq,
-                    upperBoundPriceDecimalCorrected: denomInBase
-                        ? data.upperBoundInvPriceDecimalCorrected
-                        : data.upperBoundInvPriceDecimalCorrected,
-                });
+                if (data.upperBoundInvPriceDecimalCorrected > 1) {
+                    liqData.push({
+                        activeLiq: data.activeLiq,
+                        upperBoundPriceDecimalCorrected: denomInBase
+                            ? data.upperBoundInvPriceDecimalCorrected
+                            : data.upperBoundInvPriceDecimalCorrected,
+                    });
+                }
             });
         }
+
+        console.log({ liqData });
 
         return liqData;
     }, [props.liquidityData, denomInBase]);
@@ -131,7 +152,6 @@ export default function TradeCandleStickChart(props: ChartData) {
 
     useEffect(() => {
         const timer = setTimeout(() => {
-            console.log({ parsedChartData });
             setIsLoading(parsedChartData === undefined || parsedChartData.chartData.length === 0);
         }, 1000);
         return () => clearTimeout(timer);

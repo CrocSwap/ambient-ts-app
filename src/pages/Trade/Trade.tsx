@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // START: Import React and Dongles
-import { Dispatch, SetStateAction, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { Outlet, useOutletContext, NavLink } from 'react-router-dom';
 import { ethers } from 'ethers';
 import { motion, AnimateSharedLayout } from 'framer-motion';
@@ -128,7 +128,7 @@ export default function Trade(props: TradePropsIF) {
     //     return data.duration === tradeData.activeChartPeriod;
     // });
 
-    const activePoolLiquidityData = graphData?.liquidityForAllPools?.pools[indexOfActivePool];
+    const activePoolLiquidityData = graphData?.liquidityForAllPools?.pools[0];
     const liquidityData = activePoolLiquidityData?.liquidityData;
     const denomInBase = tradeData.isDenomBase;
     const targetData = tradeData.targetData;
@@ -192,6 +192,10 @@ export default function Trade(props: TradePropsIF) {
     const handleDownBorderColorPickerChange = (color: any) => {
         setDownBorderColor(color.hex);
     };
+
+    useEffect(() => {
+        console.log(candleData);
+    }, [candleData]);
 
     return (
         <AnimateSharedLayout>

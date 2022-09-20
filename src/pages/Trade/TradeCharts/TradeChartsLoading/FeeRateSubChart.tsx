@@ -45,6 +45,26 @@ export default function FeeRateSubChart(props: FreeRateData) {
                 selection.attr('stroke-width', '1');
             });
 
+        const zoom = d3
+            .zoom()
+            .scaleExtent([1, 10])
+            .on('zoom', (event: any) => {
+                const transform = event.transform;
+
+                lineSeries.attr(
+                    'transform',
+                    'translate(' +
+                        transform.x +
+                        ', ' +
+                        transform.y +
+                        ') scale(' +
+                        transform.k +
+                        ')',
+                );
+
+                render();
+            }) as any;
+
         const crosshair = d3fc
             .annotationSvgCrosshair()
             .xLabel('')
