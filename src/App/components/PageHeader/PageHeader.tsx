@@ -210,23 +210,24 @@ export default function PageHeader(props: HeaderPropsIF) {
             </div> */}
 
             {routeDisplay}
-            <MobileSidebar
-                lastBlockNumber={lastBlockNumber}
-                chainId={chainId}
-                isMobileSidebarOpen={isMobileSidebarOpen}
-                setIsMobileSidebarOpen={setIsMobileSidebarOpen}
-            />
-
-            <div className={styles.account}>
-                <NetworkSelector chainId={chainId} switchChain={switchChain} />
-                {(!isAuthenticated || !isWeb3Enabled) && metamaskButton}
-                <Account {...accountProps} />
-                <NotificationCenter
-                    showNotificationTable={showNotificationTable}
-                    setShowNotificationTable={setShowNotificationTable}
-                    pendingTransactions={pendingTransactions}
+            <div>
+                <MobileSidebar
                     lastBlockNumber={lastBlockNumber}
+                    chainId={chainId}
+                    isMobileSidebarOpen={isMobileSidebarOpen}
+                    setIsMobileSidebarOpen={setIsMobileSidebarOpen}
                 />
+                <div className={styles.account}>
+                    <NetworkSelector chainId={chainId} switchChain={switchChain} />
+                    {(!isAuthenticated || !isWeb3Enabled) && metamaskButton}
+                    <Account {...accountProps} />
+                    <NotificationCenter
+                        showNotificationTable={showNotificationTable}
+                        setShowNotificationTable={setShowNotificationTable}
+                        pendingTransactions={pendingTransactions}
+                        lastBlockNumber={lastBlockNumber}
+                    />
+                </div>
             </div>
             {isChainSupported || <SwitchNetwork switchNetworkInMoralis={switchNetworkInMoralis} />}
             {modalOrNull}
