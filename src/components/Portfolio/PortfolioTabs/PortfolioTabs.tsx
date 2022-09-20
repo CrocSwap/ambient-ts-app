@@ -23,6 +23,7 @@ import exchangeImage from '../../../assets/images/sidebarImages/exchange.svg';
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { ethers } from 'ethers';
 import { ILimitOrderState } from '../../../utils/state/graphDataSlice';
+import { getLimitOrderData } from '../../../App/functions/getLimitOrderData';
 
 // interface for React functional component props
 interface PortfolioTabsPropsIF {
@@ -74,10 +75,6 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
         ILimitOrderState[]
     >([]);
 
-    useEffect(() => {
-        if (otherAccountPositionData) console.log({ otherAccountPositionData });
-    }, [otherAccountPositionData]);
-
     const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
 
     const userPositionsCacheEndpoint = httpGraphCacheServerDomain + '/user_positions?';
@@ -125,18 +122,19 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
                     user: accountToSearch,
                     chainId: chainId,
                     ensResolution: 'true',
-                    annotate: 'true',
-                    omitEmpty: 'true',
-                    omitKnockout: 'true',
-                    addValue: 'true',
                 }),
         )
             .then((response) => response?.json())
             .then((json) => {
                 const userLimitOrderStates = json?.data;
-
                 if (userLimitOrderStates) {
-                    setOtherAccountLimitOrderData(userLimitOrderStates);
+                    Promise.all(
+                        userLimitOrderStates.map((limitOrder: ILimitOrderState) => {
+                            return getLimitOrderData(limitOrder, importedTokens);
+                        }),
+                    ).then((updatedLimitOrderStates) => {
+                        setOtherAccountLimitOrderData(updatedLimitOrderStates);
+                    });
                 }
             })
             .catch(console.log);

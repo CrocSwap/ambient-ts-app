@@ -69,7 +69,7 @@ export default function OrderCard(props: OrderCardProps) {
         selectedQuoteToken === quoteTokenAddressLowerCase;
 
     if (!transactionMatchesSelectedTokens) return null;
-    if (!limitOrder.positionLiq) return null;
+    // if (!limitOrder.positionLiq) return null;
 
     const liqBaseNum = limitOrder.positionLiqBaseDecimalCorrected;
     const liqQuoteNum = limitOrder.positionLiqQuoteDecimalCorrected;
@@ -143,7 +143,7 @@ export default function OrderCard(props: OrderCardProps) {
                 />
                 {/* ------------------------------------------------------ */}
                 <div className={styles.status}>
-                    <OpenOrderStatus isFilled={true} />
+                    <OpenOrderStatus isFilled={!limitOrder.positionLiq} />
                 </div>
             </div>
 
