@@ -139,7 +139,9 @@ export default function TokenSelect(props: TokenSelectPropsIF) {
                 <div className={styles.modal_tokens_amount}>
                     {isUserLoggedIn
                         ? combinedBalanceDisplayTruncated === undefined
-                            ? '...'
+                            ? connectedUserErc20Tokens.length > 0
+                                ? '0'
+                                : '...'
                             : combinedBalanceDisplayTruncated
                         : ''}
                 </div>
