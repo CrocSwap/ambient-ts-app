@@ -220,7 +220,37 @@ export default function Chart(props: ChartData) {
                     'height',
                     Math.abs(scaleData.yScale(ranges[1].value) - scaleData.yScale(ranges[0].value)),
                 )
-                .attr('y', scaleData.yScale(ranges[1].value));
+                .attr('y', scaleData.yScale(ranges[0].value));
+
+            console.error(
+                'resultTarget',
+                props.targetData === undefined ||
+                    (props.targetData[0].value === 0 && props.targetData[1].value === 0)
+                    ? props.priceData !== undefined
+                        ? Math.max(
+                              ...props.priceData.chartData.map((o) => {
+                                  return o.open !== undefined ? o.open : 0;
+                              }),
+                          )
+                        : 0
+                    : ranges[1].value,
+            );
+
+            console.error(
+                'resultRange',
+                ranges[0].value === 0 && ranges[1].value === 0
+                    ? props.priceData !== undefined
+                        ? Math.min(
+                              ...props.priceData.chartData.map((o) => {
+                                  return o.open !== undefined ? o.open : 0;
+                              }),
+                          )
+                        : 0
+                    : ranges[0].value,
+            );
+
+            console.error('targetData', props.targetData);
+            console.error('ranges', ranges);
         }
     }
 
@@ -722,7 +752,7 @@ export default function Chart(props: ChartData) {
                 zoomUtils,
             );
 
-            setDrawControl(!drawControl);
+            // setDrawControl(!drawControl);
         }
     }
     // Draw Chart
@@ -980,9 +1010,9 @@ export default function Chart(props: ChartData) {
                     crosshairVerticalJoin(svg, [crosshairData]).call(crosshairVertical);
                     barJoin(svg, [liquidityData]).call(barSeries);
                     candleJoin(svg, [chartData]).call(candlestick);
-                    targetsJoin(svg, [targets]).call(horizontalLine);
+                    await targetsJoin(svg, [targets]).call(horizontalLine);
+                    setDrawControl(event);
                 });
-                setDrawControl(!drawControl);
                 d3.select(d3Xaxis.current).on('draw', function (event: any) {
                     d3.select(event.target).select('svg').call(xAxis);
                 });
