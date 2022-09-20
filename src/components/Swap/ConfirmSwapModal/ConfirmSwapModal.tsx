@@ -66,8 +66,6 @@ export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
         }
     }, [newSwapTransactionHash]);
 
-    console.log(pendingTransactions);
-
     const explanationText =
         primarySwapInput === 'sell' ? (
             <div className={styles.confSwap_detail_note}>
