@@ -51,6 +51,7 @@ interface ITabsProps {
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
+    pendingTransactions: string[];
 
     openGlobalModal: (content: React.ReactNode) => void;
 
@@ -88,23 +89,36 @@ export default function TradeTabs2(props: ITabsProps) {
         setSelectedOutsideTab,
         outsideControl,
         setOutsideControl,
+        pendingTransactions,
     } = props;
 
     const graphData = useAppSelector((state) => state?.graphData);
+    const userData = useAppSelector((state) => state?.userData);
 
     const userPositions = graphData?.positionsByUser?.positions;
     const userChanges = graphData?.changesByUser?.changes;
+    const userLimitOrders = graphData?.limitOrdersByUser?.limitOrders;
     // const poolPositions = graphData?.positionsByPool?.positions;
 
     const [hasInitialized, setHasInitialized] = useState(false);
 
+    const userChangesLength = userChanges.length;
+    const userPositionsLength = userPositions.length;
+    const userLimitOrdersLength = userLimitOrders.length;
+
     useEffect(() => {
         setHasInitialized(false);
-    }, [account, isAuthenticated]);
+    }, [
+        account,
+        userData.isLoggedIn,
+        userChangesLength,
+        userLimitOrdersLength,
+        userPositionsLength,
+    ]);
 
     useEffect(() => {
         // console.log({ hasInitialized });
-        // console.log({ isShowAllEnabled });
+        // console.log({ userChangesLength });
         // console.log({ userPositions });
         // console.log({ selectedOutsideTab });
         if (!hasInitialized) {
@@ -124,10 +138,24 @@ export default function TradeTabs2(props: ITabsProps) {
                 } else if (isShowAllEnabled && userChanges.length >= 1) {
                     setIsShowAllEnabled(false);
                 }
+            } else if (selectedOutsideTab === 1) {
+                if (!isCandleSelected && !isShowAllEnabled && userLimitOrders.length < 1) {
+                    setIsShowAllEnabled(true);
+                } else if (userLimitOrders.length < 1) {
+                    return;
+                } else if (isShowAllEnabled && userLimitOrders.length >= 1) {
+                    setIsShowAllEnabled(false);
+                }
             }
             setHasInitialized(true);
         }
-    }, [hasInitialized, isShowAllEnabled, JSON.stringify(userPositions)]);
+    }, [
+        hasInitialized,
+        isShowAllEnabled,
+        userPositions.length,
+        userChanges.length,
+        userLimitOrders.length,
+    ]);
 
     // -------------------------------DATA-----------------------------------------
 
@@ -151,7 +179,7 @@ export default function TradeTabs2(props: ITabsProps) {
         expandTradeTable: expandTradeTable,
         currentPositionActive: currentPositionActive,
         setCurrentPositionActive: setCurrentPositionActive,
-
+        pendingTransactions: pendingTransactions,
         openGlobalModal: props.openGlobalModal,
 
         closeGlobalModal: props.closeGlobalModal,

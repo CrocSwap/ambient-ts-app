@@ -35,7 +35,7 @@ interface RangeCardProps {
     lastBlockNumber: number;
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
-
+    pendingTransactions: string[];
     openGlobalModal: (content: React.ReactNode) => void;
     closeGlobalModal: () => void;
 }
@@ -61,6 +61,7 @@ export default function RangeCard(props: RangeCardProps) {
         lastBlockNumber,
         currentPositionActive,
         setCurrentPositionActive,
+        pendingTransactions,
     } = props;
 
     // -------------------------------POSITION HASH------------------------
@@ -156,6 +157,7 @@ export default function RangeCard(props: RangeCardProps) {
         quoteTokenAddress: props.position.quote,
         lastBlockNumber: lastBlockNumber,
         positionApy: position.apy,
+        pendingTransactions: pendingTransactions,
 
         closeGlobalModal: props.closeGlobalModal,
         openGlobalModal: props.openGlobalModal,
