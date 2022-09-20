@@ -25,11 +25,13 @@ import { ethers } from 'ethers';
 import { ILimitOrderState, ITransaction } from '../../../utils/state/graphDataSlice';
 import { getLimitOrderData } from '../../../App/functions/getLimitOrderData';
 import { getTransactionData } from '../../../App/functions/getTransactionData';
+import { TokenPriceFn } from '../../../App/functions/fetchTokenPrice';
 
 // interface for React functional component props
 interface PortfolioTabsPropsIF {
     crocEnv: CrocEnv | undefined;
     provider: ethers.providers.Provider | undefined;
+    cachedFetchTokenPrice: TokenPriceFn;
     importedTokens: TokenIF[];
     connectedUserTokens: (TokenIF | undefined)[];
     resolvedAddressTokens: (TokenIF | undefined)[];
@@ -51,6 +53,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
     const {
         crocEnv,
         provider,
+        cachedFetchTokenPrice,
         importedTokens,
         connectedUserTokens,
         resolvedAddressTokens,
@@ -194,6 +197,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
     // props for <Wallet/> React Element
     const walletProps = {
         crocEnv: crocEnv,
+        cachedFetchTokenPrice: cachedFetchTokenPrice,
         connectedUserTokens: connectedUserTokens,
         resolvedAddressTokens: resolvedAddressTokens,
         connectedAccountActive: connectedAccountActive,
@@ -207,6 +211,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
     // props for <Exchange/> React Element
     const exchangeProps = {
         crocEnv: crocEnv,
+        cachedFetchTokenPrice: cachedFetchTokenPrice,
         connectedUserTokens: connectedUserTokens,
         resolvedAddressTokens: resolvedAddressTokens,
         connectedAccountActive: connectedAccountActive,

@@ -40,16 +40,18 @@ export default function TokenSelect(props: TokenSelectPropsIF) {
     const isUserLoggedIn = userData.isLoggedIn;
 
     const connectedUserTokens = connectedUserNativeToken
-        ? [connectedUserNativeToken].concat(connectedUserErc20Tokens)
+        ? [connectedUserNativeToken].concat(connectedUserErc20Tokens || [])
         : connectedUserErc20Tokens;
 
     const isMatchingToken = (tokenInRtk: TokenIF) =>
         tokenInRtk.address.toLowerCase() === token.address.toLowerCase();
 
-    const indexOfToken = connectedUserTokens.findIndex(isMatchingToken);
+    const indexOfToken = connectedUserTokens ? connectedUserTokens.findIndex(isMatchingToken) : -1;
+
+    const tokenIsEth = indexOfToken === 0;
 
     const combinedBalanceDisplayTruncated =
-        indexOfToken !== -1
+        connectedUserTokens && indexOfToken !== -1
             ? connectedUserTokens[indexOfToken]?.combinedBalanceDisplayTruncated
             : undefined;
 
@@ -139,9 +141,11 @@ export default function TokenSelect(props: TokenSelectPropsIF) {
                 <div className={styles.modal_tokens_amount}>
                     {isUserLoggedIn
                         ? combinedBalanceDisplayTruncated === undefined
-                            ? connectedUserErc20Tokens.length > 0
+                            ? connectedUserErc20Tokens !== undefined
                                 ? '0'
                                 : '...'
+                            : tokenIsEth && parseFloat(combinedBalanceDisplayTruncated) === 0
+                            ? '0'
                             : combinedBalanceDisplayTruncated
                         : ''}
                 </div>
