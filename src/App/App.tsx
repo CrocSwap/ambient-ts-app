@@ -1985,6 +1985,8 @@ export default function App() {
                                 <Portfolio
                                     crocEnv={crocEnv}
                                     provider={provider}
+                                    cachedFetchErc20TokenBalances={cachedFetchErc20TokenBalances}
+                                    cachedFetchNativeTokenBalance={cachedFetchNativeTokenBalance}
                                     importedTokens={importedTokens}
                                     ensName={ensName}
                                     lastBlockNumber={lastBlockNumber}
@@ -2006,6 +2008,8 @@ export default function App() {
                                 <Portfolio
                                     crocEnv={crocEnv}
                                     provider={provider}
+                                    cachedFetchErc20TokenBalances={cachedFetchErc20TokenBalances}
+                                    cachedFetchNativeTokenBalance={cachedFetchNativeTokenBalance}
                                     importedTokens={importedTokens}
                                     ensName={ensName}
                                     lastBlockNumber={lastBlockNumber}

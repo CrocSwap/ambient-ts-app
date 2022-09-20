@@ -5,21 +5,14 @@ import styles from './Portfolio.module.css';
 import { useParams } from 'react-router-dom';
 import { getNFTs } from '../../App/functions/getNFTs';
 import { useEffect, useState, Dispatch, SetStateAction } from 'react';
-// import { memoizePromiseFn } from '../../App/functions/memoizePromiseFn';
 import { fetchAddress } from '../../App/functions/fetchAddress';
 import { useMoralis } from 'react-moralis';
 import { ethers } from 'ethers';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
 import { CrocEnv } from '@crocswap-libs/sdk';
 
-import {
-    memoizeFetchErc20TokenBalances,
-    memoizeFetchNativeTokenBalance,
-} from '../../App/functions/fetchTokenBalances';
+import { Erc20TokenBalanceFn, nativeTokenBalanceFn } from '../../App/functions/fetchTokenBalances';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
-
-const cachedFetchErc20TokenBalances = memoizeFetchErc20TokenBalances();
-const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
 
 const mainnetProvider = new ethers.providers.WebSocketProvider(
     'wss://mainnet.infura.io/ws/v3/25e7e0ec71de48bfa9c4d2431fbb3c4a',
@@ -28,6 +21,8 @@ const mainnetProvider = new ethers.providers.WebSocketProvider(
 interface PortfolioPropsIF {
     crocEnv: CrocEnv | undefined;
     provider: ethers.providers.Provider | undefined;
+    cachedFetchNativeTokenBalance: nativeTokenBalanceFn;
+    cachedFetchErc20TokenBalances: Erc20TokenBalanceFn;
     importedTokens: TokenIF[];
     ensName: string;
     lastBlockNumber: number;
@@ -51,6 +46,8 @@ export default function Portfolio(props: PortfolioPropsIF) {
     const {
         crocEnv,
         provider,
+        cachedFetchNativeTokenBalance,
+        cachedFetchErc20TokenBalances,
         importedTokens,
         ensName,
         lastBlockNumber,
