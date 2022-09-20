@@ -132,14 +132,19 @@ export default function Chart(props: ChartData) {
     const [isChartSelected, setIsChartSelected] = useState<boolean>(false);
     const [isHighMoved, setIsHighMoved] = useState<boolean>(false);
     const [isLowMoved, setIsLowMoved] = useState<boolean>(false);
+    const [isLineSwapped, setIsLineSwapped] = useState<boolean>(false);
     const [transactionFilter, setTransactionFilter] = useState<CandleData>();
     const [scaleData, setScaleData] = useState<any>();
     const [dragType, setDragType] = useState<any>();
+    const [horizontalLine, setHorizontalLine] = useState<any>();
+    const [ghostLines, setGhostLines] = useState<any>();
     const [crosshairData, setCrosshairData] = useState([{ x: 0, y: -1 }]);
     const [zoomUtils, setZoomUtils] = useState<any>();
     const [zoomStatus, setZoomStatus] = useState();
 
     const [drawControl, setDrawControl] = useState(false);
+
+    const valueFormatter = d3.format('.5f');
 
     const setDefaultRangeData = () => {
         setRanges((prevState) => {
@@ -206,11 +211,6 @@ export default function Chart(props: ChartData) {
             });
     }, [location]);
 
-    // useEffect(() => {
-    //     d3.select(d3Container.current).select('.targets').append('rect').attr('id', 'rect')
-
-    // }, [location,parsedChartData]);
-
     useEffect(() => {
         if (scaleData) {
             d3.select(d3Container.current).select('.targets').append('rect').attr('id', 'rect');
@@ -255,11 +255,11 @@ export default function Chart(props: ChartData) {
             const xScaleCopy = xScale.copy();
             const yScaleCopy = yScale.copy();
 
-            const liquidityTickScale = d3.scaleBand();
             const liquidityScale = d3.scaleLinear();
 
-            const val = spotPriceDisplay !== undefined ? spotPriceDisplay.replace(',', '') : '0';
-            const barThreshold = parseFloat(val);
+            const displayValue =
+                spotPriceDisplay !== undefined ? spotPriceDisplay.replace(',', '') : '0';
+            const barThreshold = parseFloat(displayValue);
 
             // bar chart
             const liquidityExtent = d3fc
@@ -268,6 +268,8 @@ export default function Chart(props: ChartData) {
                 .accessors([(d: any) => parseFloat(d.activeLiq)]);
 
             liquidityScale.domain(liquidityExtent(props.liquidityData));
+
+            const ghostScale = liquidityScale.copy();
 
             const liqScale = liquidityScale
                 .copy()
@@ -280,12 +282,12 @@ export default function Chart(props: ChartData) {
                 return {
                     xScale: xScale,
                     yScale: yScale,
-                    liquidityTickScale: liquidityTickScale,
                     liquidityScale: liquidityScale,
                     liqScale: liqScale,
                     xScaleCopy: xScaleCopy,
                     yScaleCopy: yScaleCopy,
                     barThreshold: barThreshold,
+                    ghostScale: ghostScale,
                 };
             });
         }
@@ -492,10 +494,43 @@ export default function Chart(props: ChartData) {
         pinnedMaxPriceDisplayTruncated,
     ]);
 
+    useEffect(() => {
+        if (scaleData !== undefined) {
+            const ghostLines = d3fc
+                .annotationSvgLine()
+                .value((d: any) => d.upperBoundPriceDecimalCorrected)
+                .xScale(scaleData.xScale)
+                .yScale(scaleData.yScale);
+
+            ghostLines.decorate((selection: any) => {
+                selection.enter().attr('id', (d: any) => d.name);
+                selection
+                    .enter()
+                    .append('rect')
+                    .attr('width', '100%')
+                    .attr('y', -20)
+                    .attr('height', '8%')
+                    .attr('fill', 'transparent')
+                    .attr('stroke', 'none');
+                selection.enter().select('g.right-handle').remove();
+                selection.enter().select('line').attr('class', 'ghostline');
+                selection.enter().style('visibility', 'hidden');
+            });
+            setGhostLines(() => {
+                return ghostLines;
+            });
+        }
+    }, [scaleData]);
+
     // Set dragType
     useEffect(() => {
         if (scaleData !== undefined) {
             const dragRange = d3.drag().on('drag', function (event, d: any) {
+                d3.select(d3Container.current)
+                    .select('.ghostLines')
+                    .selectAll('.horizontal')
+                    .style('visibility', 'visible');
+
                 const newValue = scaleData.yScale.invert(d3.pointer(event)[1] - 215);
                 if (!isAdvancedModeActive) {
                     let valueWithRange: number;
@@ -507,18 +542,18 @@ export default function Chart(props: ChartData) {
                             const low = newTargets.filter((target: any) => target.name === 'Min')[0]
                                 .value;
 
-                            const val =
+                            const displayValue =
                                 spotPriceDisplay !== undefined
                                     ? spotPriceDisplay.replace(',', '')
                                     : '';
 
-                            const dragLimit = parseFloat(val) / 100;
+                            const dragLimit = parseFloat(displayValue) / 100;
 
                             valueWithRange =
                                 newTargets.filter((target: any) => target.name === 'Max')[0].value -
                                 newValue;
 
-                            if (newValue > parseFloat(val) + dragLimit) {
+                            if (newValue > parseFloat(displayValue) + dragLimit) {
                                 newTargets.filter((target: any) => target.name === 'Max')[0].value =
                                     newValue;
 
@@ -528,10 +563,10 @@ export default function Chart(props: ChartData) {
                                 render();
                             } else {
                                 newTargets.filter((target: any) => target.name === 'Max')[0].value =
-                                    parseFloat(val) + dragLimit * 1.01;
+                                    parseFloat(displayValue) + dragLimit * 1.01;
 
                                 newTargets.filter((target: any) => target.name === 'Min')[0].value =
-                                    parseFloat(val) - dragLimit * 1.01;
+                                    parseFloat(displayValue) - dragLimit * 1.01;
 
                                 render();
                             }
@@ -542,12 +577,12 @@ export default function Chart(props: ChartData) {
                         setRanges((prevState) => {
                             const newTargets = [...prevState];
 
-                            const val =
+                            const displayValue =
                                 spotPriceDisplay !== undefined
                                     ? spotPriceDisplay.replace(',', '')
                                     : '';
 
-                            const dragLimit = parseFloat(val) / 100;
+                            const dragLimit = parseFloat(displayValue) / 100;
 
                             valueWithRange =
                                 newTargets.filter((target: any) => target.name === 'Min')[0].value -
@@ -557,7 +592,7 @@ export default function Chart(props: ChartData) {
                                 (target: any) => target.name === 'Max',
                             )[0].value;
 
-                            if (newValue < parseFloat(val) - dragLimit) {
+                            if (newValue < parseFloat(displayValue) - dragLimit) {
                                 newTargets.filter((target: any) => target.name === 'Min')[0].value =
                                     newValue;
 
@@ -567,10 +602,10 @@ export default function Chart(props: ChartData) {
                                 render();
                             } else {
                                 newTargets.filter((target: any) => target.name === 'Max')[0].value =
-                                    parseFloat(val) + dragLimit * 1.01;
+                                    parseFloat(displayValue) + dragLimit * 1.01;
 
                                 newTargets.filter((target: any) => target.name === 'Min')[0].value =
-                                    parseFloat(val) - dragLimit * 1.01;
+                                    parseFloat(displayValue) - dragLimit * 1.01;
 
                                 render();
                             }
@@ -591,15 +626,40 @@ export default function Chart(props: ChartData) {
                         if (d.name === 'Max' && newValue > low) {
                             newTargets.filter((target: any) => target.name === d.name)[0].value =
                                 newValue;
+                            setIsLineSwapped(false);
                         } else if (d.name === 'Min' && newValue < high) {
                             newTargets.filter((target: any) => target.name === d.name)[0].value =
                                 newValue;
+                            setIsLineSwapped(false);
                         } else if (d.name === 'Max' && newValue < low) {
-                            newTargets.filter((target: any) => target.name === 'Min')[0].value =
-                                newValue;
-                        } else if (d.name === 'Min' && newValue > high) {
                             newTargets.filter((target: any) => target.name === 'Max')[0].value =
                                 newValue;
+
+                            d3.select(d3Container.current)
+                                .select('.targets')
+                                .select('#Max')
+                                .select('g.left-handle text')
+                                .text((d: any) => 'Min' + ' - ' + valueFormatter(d.value));
+
+                            d3.select(d3Container.current)
+                                .select('.targets')
+                                .select('#Current Market Price')
+                                .select('g.left-handle text')
+                                .text((d: any) => 'Min' + ' - ' + valueFormatter(d.value));
+
+                            setIsLineSwapped(true);
+                        } else if (d.name === 'Min' && newValue > high) {
+                            newTargets.filter((target: any) => target.name === 'Min')[0].value =
+                                newValue;
+
+                            d3.select(d3Container.current)
+                                .select('.targets')
+                                .select('#Min')
+                                .select('.left-handle')
+                                .select('text')
+                                .text((d: any) => 'Max' + ' - ' + valueFormatter(newValue));
+
+                            setIsLineSwapped(true);
                         }
 
                         render();
@@ -624,7 +684,57 @@ export default function Chart(props: ChartData) {
         }
     }, [spotPriceDisplay, location, scaleData, isAdvancedModeActive]);
 
-    // set HorizontalLines
+    // Set Horizontal Lines
+    useEffect(() => {
+        if (scaleData !== undefined) {
+            const horizontalLine = d3fc
+                .annotationSvgLine()
+                .value((d: any) => d.value)
+                .xScale(scaleData.xScale)
+                .yScale(scaleData.yScale);
+
+            horizontalLine.decorate((selection: any) => {
+                selection
+                    .enter()
+                    .attr('id', (d: any) => d.name)
+                    .select('g.left-handle')
+                    .append('text')
+                    .attr('x', 5)
+                    .attr('y', -5);
+                selection
+                    .enter()
+                    .append('rect')
+                    .attr('width', '100%')
+                    .attr('y', -20)
+                    .attr('height', '8%')
+                    .attr('fill', 'transparent')
+                    .attr('stroke', 'none');
+
+                selection.enter().select('g.right-handle').remove();
+                selection.enter().select('line').attr('class', 'redline');
+                selection
+                    .select('g.left-handle text')
+                    .text((d: any) => d.name + ' - ' + valueFormatter(d.value));
+                selection
+                    .enter()
+                    .select('line')
+                    .on('mouseout', (event: any) => {
+                        d3.select(event.currentTarget).style('cursor', 'default');
+                    });
+                selection
+                    .enter()
+                    .append('rect')
+                    .attr('width', 15)
+                    .attr('height', 10)
+                    .attr('fill', 'gainsboro');
+            });
+            setHorizontalLine(() => {
+                return horizontalLine;
+            });
+        }
+    }, [scaleData]);
+
+    // set Line Rules
     useEffect(() => {
         if (dragType !== undefined) {
             if (location.pathname.includes('limit')) {
@@ -670,7 +780,7 @@ export default function Chart(props: ChartData) {
                     .call(dragType);
             }
         }
-    }, [dragType, parsedChartData?.period, location]);
+    }, [dragType, parsedChartData?.period, location, horizontalLine]);
 
     // Call drawChart()
     useEffect(() => {
@@ -678,7 +788,9 @@ export default function Chart(props: ChartData) {
             props.liquidityData !== undefined &&
             parsedChartData !== undefined &&
             scaleData !== undefined &&
-            zoomUtils !== undefined
+            zoomUtils !== undefined &&
+            horizontalLine !== undefined &&
+            ghostLines !== undefined
         ) {
             const targetData = location.pathname.includes('limit')
                 ? limit
@@ -698,9 +810,21 @@ export default function Chart(props: ChartData) {
                 upBorderColor,
                 downBorderColor,
                 zoomUtils,
+                horizontalLine,
+                ghostLines,
             );
         }
-    }, [parsedChartData, scaleData, location, market, ranges, limit, zoomUtils]);
+    }, [
+        parsedChartData,
+        scaleData,
+        location,
+        market,
+        ranges,
+        limit,
+        zoomUtils,
+        horizontalLine,
+        ghostLines,
+    ]);
 
     // Draw Chart
     const drawChart = useCallback(
@@ -714,6 +838,8 @@ export default function Chart(props: ChartData) {
             upBorderColor: any,
             downBorderColor: any,
             zoomUtils: any,
+            horizontalLine: any,
+            ghostLines: any,
         ) => {
             if (chartData.length > 0) {
                 let selectedCandle: any;
@@ -755,8 +881,6 @@ export default function Chart(props: ChartData) {
                         },
                     ];
                 };
-
-                const valueFormatter = d3.format('.5f');
 
                 // axes
                 const xAxis = d3fc.axisBottom().scale(scaleData.xScale);
@@ -895,50 +1019,9 @@ export default function Chart(props: ChartData) {
                     .xScale(scaleData.xScale)
                     .yScale(scaleData.yScale);
 
-                const horizontalLine = d3fc
-                    .annotationSvgLine()
-                    .value((d: any) => d.value)
-                    .xScale(scaleData.xScale)
-                    .yScale(scaleData.yScale);
-
-                horizontalLine.decorate((selection: any) => {
-                    selection
-                        .enter()
-                        .attr('id', (d: any) => d.name)
-                        .select('g.left-handle')
-                        .append('text')
-                        .attr('x', 5)
-                        .attr('y', -5);
-                    selection
-                        .enter()
-                        .append('rect')
-                        .attr('width', '100%')
-                        .attr('y', -20)
-                        .attr('height', '8%')
-                        .attr('fill', 'transparent')
-                        .attr('stroke', 'none');
-
-                    selection.enter().select('g.right-handle').remove();
-                    selection.enter().select('line').attr('class', 'redline');
-                    selection
-                        .select('g.left-handle text')
-                        .text((d: any) => d.name + ' - ' + valueFormatter(d.value));
-                    selection
-                        .enter()
-                        .select('line')
-                        .on('mouseout', (event: any) => {
-                            d3.select(event.currentTarget).style('cursor', 'default');
-                        });
-                    selection
-                        .enter()
-                        .append('rect')
-                        .attr('width', 15)
-                        .attr('height', 10)
-                        .attr('fill', 'gainsboro');
-                });
-
                 const candleJoin = d3fc.dataJoin('g', 'candle');
                 const targetsJoin = d3fc.dataJoin('g', 'targets');
+                const ghostJoin = d3fc.dataJoin('g', 'ghostLines');
                 const barJoin = d3fc.dataJoin('g', 'bar');
                 const crosshairHorizontalJoin = d3fc.dataJoin('g', 'crosshairHorizontal');
                 const crosshairVerticalJoin = d3fc.dataJoin('g', 'crosshairVertical');
@@ -947,8 +1030,6 @@ export default function Chart(props: ChartData) {
                 d3.select(d3PlotArea.current).on('measure', function (event: any) {
                     scaleData.xScale.range([0, event.detail.width]);
                     scaleData.yScale.range([event.detail.height, 0]);
-
-                    scaleData.liquidityTickScale.range([event.detail.height, 0]);
                     scaleData.liquidityScale.range([event.detail.width, event.detail.width / 2]);
                 });
 
@@ -960,6 +1041,7 @@ export default function Chart(props: ChartData) {
                     barJoin(svg, [liquidityData]).call(barSeries);
                     candleJoin(svg, [chartData]).call(candlestick);
                     targetsJoin(svg, [targets]).call(horizontalLine);
+                    ghostJoin(svg, [liquidityData]).call(ghostLines);
                 });
 
                 d3.select(d3Xaxis.current).on('draw', function (event: any) {
@@ -1063,18 +1145,18 @@ export default function Chart(props: ChartData) {
                     dispatch(setPinnedMaxPrice(high));
 
                     if (spotPriceDisplay !== undefined && (isHighMoved || isLowMoved)) {
-                        const val = spotPriceDisplay.replace(',', '');
+                        const displayValue = spotPriceDisplay.replace(',', '');
 
-                        const dragLimit = parseFloat(val) / 100;
+                        const dragLimit = parseFloat(displayValue) / 100;
 
                         const difference = isHighMoved
-                            ? high - parseFloat(val)
+                            ? high - parseFloat(displayValue)
                             : isLowMoved
-                            ? parseFloat(val) - low
+                            ? parseFloat(displayValue) - low
                             : 1;
 
                         if (!(dragLimit > difference)) {
-                            const percentage = (difference * 100) / parseFloat(val);
+                            const percentage = (difference * 100) / parseFloat(displayValue);
 
                             setIsHighMoved(false);
                             setIsLowMoved(false);
@@ -1084,14 +1166,17 @@ export default function Chart(props: ChartData) {
                         dispatch(setSimpleRangeWidth(simpleRangeWidth ? simpleRangeWidth : 1));
                     }
                 } else {
+                    const high = ranges.filter((target: any) => target.name === 'Max')[0].value;
+                    const low = ranges.filter((target: any) => target.name === 'Min')[0].value;
+
                     const newTargetData: targetData[] = [
                         {
                             name: 'Max',
-                            value: ranges.filter((target: any) => target.name === 'Max')[0].value,
+                            value: isLineSwapped ? low : high,
                         },
                         {
                             name: 'Min',
-                            value: ranges.filter((target: any) => target.name === 'Min')[0].value,
+                            value: isLineSwapped ? high : low,
                         },
                     ];
 
