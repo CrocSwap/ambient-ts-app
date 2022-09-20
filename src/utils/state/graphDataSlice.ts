@@ -243,6 +243,7 @@ export interface ITransaction {
     baseDecimals: number;
     baseFlow: string;
     baseSymbol: string;
+    baseTokenLogoURI: string;
     block: number;
     chainId: string;
     network: string;
@@ -258,6 +259,7 @@ export interface ITransaction {
     quoteDecimals: number;
     quoteFlow: string;
     quoteSymbol: string;
+    quoteTokenLogoURI: string;
     source: string;
     entityType: string;
     changeType: string;

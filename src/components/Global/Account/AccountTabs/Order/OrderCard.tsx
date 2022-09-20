@@ -14,7 +14,7 @@ import AccountTokensDisplay from '../../../Tabs/AccountTokensDisplay/AccountToke
 import Price from '../../../Tabs/Price/Price';
 // import RangeMinMax from '../../../Tabs/RangeMinMax/RangeMinMax';
 // import AccountPoolDisplay from '../../../Tabs/AccountPoolDisplay/AccountPoolDisplay';
-import OrdersMenu from '../../../Tabs/TableMenu/TableMenuComponents/OrdersMenu';
+// import OrdersMenu from '../../../Tabs/TableMenu/TableMenuComponents/OrdersMenu';
 import OrderTypeSide from '../../../Tabs/TypeAndSide/OrderTypeAndSide/OrderTypeSide';
 import Value from '../../../Tabs/Value/Value';
 
@@ -106,12 +106,6 @@ export default function OrderCard(props: OrderCardProps) {
 
     return (
         <div className={styles.main_container}>
-            {/* ------------------------------------------------------ */}
-            {/* <WalletAndId
-                    ownerId={ownerIdDisplay}
-                    posHash={limitOrder.positionId}
-                    isOwnerActiveAccount={isOwnerActiveAccount}
-                /> */}
             <div className={styles.tokens_container}>
                 <AccountTokensDisplay
                     baseTokenLogoURI={baseTokenLogoURI}
@@ -140,9 +134,9 @@ export default function OrderCard(props: OrderCardProps) {
                     <OpenOrderStatus isFilled={!limitOrder.positionLiq} />
                 </div>
 
-                <div className={styles.menu_container}>
+                {/* <div className={styles.menu_container}>
                     <OrdersMenu userPosition={false} />
-                </div>
+                </div> */}
             </div>
         </div>
     );

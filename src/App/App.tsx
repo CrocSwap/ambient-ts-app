@@ -19,6 +19,7 @@ import {
     setLimitOrdersByUser,
     setLimitOrdersByPool,
     ILimitOrderState,
+    ITransaction,
 } from '../utils/state/graphDataSlice';
 import { ethers } from 'ethers';
 import { useMoralis } from 'react-moralis';
@@ -103,6 +104,7 @@ import { memoizeTokenPrice } from './functions/fetchTokenPrice';
 import { useTokenUniverse } from './hooks/useTokenUniverse';
 import { getPositionData } from './functions/getPositionData';
 import { getLimitOrderData } from './functions/getLimitOrderData';
+import { getTransactionData } from './functions/getTransactionData';
 
 const cachedFetchAddress = memoizeFetchAddress();
 const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
@@ -1479,15 +1481,21 @@ export default function App() {
                 )
                     .then((response) => response?.json())
                     .then((json) => {
-                        const userChanges = json?.data;
+                        const userTransactions = json?.data;
 
-                        if (userChanges) {
-                            dispatch(
-                                setChangesByUser({
-                                    dataReceived: true,
-                                    changes: userChanges,
+                        if (userTransactions) {
+                            Promise.all(
+                                userTransactions.map((tx: ITransaction) => {
+                                    return getTransactionData(tx, importedTokens);
                                 }),
-                            );
+                            ).then((updatedTransactions) => {
+                                dispatch(
+                                    setChangesByUser({
+                                        dataReceived: true,
+                                        changes: updatedTransactions,
+                                    }),
+                                );
+                            });
                         }
                     })
                     .catch(console.log);
@@ -1987,6 +1995,8 @@ export default function App() {
                                 <Portfolio
                                     crocEnv={crocEnv}
                                     provider={provider}
+                                    cachedFetchErc20TokenBalances={cachedFetchErc20TokenBalances}
+                                    cachedFetchNativeTokenBalance={cachedFetchNativeTokenBalance}
                                     importedTokens={importedTokens}
                                     ensName={ensName}
                                     lastBlockNumber={lastBlockNumber}
@@ -2008,6 +2018,8 @@ export default function App() {
                                 <Portfolio
                                     crocEnv={crocEnv}
                                     provider={provider}
+                                    cachedFetchErc20TokenBalances={cachedFetchErc20TokenBalances}
+                                    cachedFetchNativeTokenBalance={cachedFetchNativeTokenBalance}
                                     importedTokens={importedTokens}
                                     ensName={ensName}
                                     lastBlockNumber={lastBlockNumber}
