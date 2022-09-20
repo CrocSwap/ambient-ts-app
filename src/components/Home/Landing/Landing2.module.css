@@ -23,14 +23,20 @@
 
     /* gap: 1rem; */
 }
-.on_chain,
-.architecture {
+.on_chain{
     display: flex;
     font-family: var(--font-logo);
     font-weight: 200;
     font-size: 24px;
     line-height: 30px;
     color: #cdc1ff;
+}
+.architecture {
+    display: flex;
+    color: var(--text-grey-light);
+    font-weight: 200;
+    font-size: 24px;
+    line-height: 30px;
 }
 
 .highlight_text {

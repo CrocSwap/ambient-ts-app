@@ -201,7 +201,7 @@ export default function TradeTabs2(props: ITabsProps) {
             content: <Transactions {...transactionsProps} />,
             icon: recentTransactionsImage,
         },
-        { label: 'Orders', content: <Orders {...ordersProps} />, icon: openOrdersImage },
+        { label: 'Limit Orders', content: <Orders {...ordersProps} />, icon: openOrdersImage },
         { label: 'Ranges', content: <Ranges {...rangesProps} />, icon: rangePositionsImage },
     ];
 

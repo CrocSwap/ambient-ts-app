@@ -9,6 +9,7 @@ import SnackbarComponent from '../../../../components/Global/SnackbarComponent/S
 import DropdownMenu from '../NavbarDropdownMenu/NavbarDropdownMenu';
 import NavItem from '../NavItem/NavItem';
 import IconWithTooltip from '../../../../components/Global/IconWithTooltip/IconWithTooltip';
+import { MdAccountBalanceWallet } from 'react-icons/md';
 
 interface AccountPropsIF {
     nativeBalance: string;
@@ -51,9 +52,12 @@ export default function Account(props: AccountPropsIF) {
                         : ''}
                 </span>
             </IconWithTooltip>
-            <div className={`${styles.title_gradient}`} onClick={handleCopyAddress}>
-                {ensName !== '' && isAuthenticated ? ensName : props.accountAddress}
-            </div>
+            {isAuthenticated && isWeb3Enabled && (
+                <div className={`${styles.title_gradient}`} onClick={handleCopyAddress}>
+                    <MdAccountBalanceWallet color='#ebebff' />
+                    <p>{ensName !== '' && isAuthenticated ? ensName : props.accountAddress}</p>
+                </div>
+            )}
             <NavItem icon={<FiMoreHorizontal size={20} color='#CDC1FF' />}>
                 <DropdownMenu
                     isAuthenticated={isAuthenticated}

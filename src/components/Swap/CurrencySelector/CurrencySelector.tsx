@@ -14,6 +14,7 @@ import { MdAccountBalanceWallet } from 'react-icons/md';
 import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
 
 interface CurrencySelectorProps {
+    isUserLoggedIn: boolean;
     tokenPair: TokenPairIF;
     tokensBank: Array<TokenIF>;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
@@ -52,6 +53,7 @@ interface CurrencySelectorProps {
 
 export default function CurrencySelector(props: CurrencySelectorProps) {
     const {
+        isUserLoggedIn,
         tokenPair,
         tokensBank,
         setImportedTokens,
@@ -163,39 +165,49 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
         </Modal>
     ) : null;
 
-    const walletBalanceNonLocaleString =
-        props.sellToken && tokenABalance !== ''
+    const walletBalanceNonLocaleString = props.sellToken
+        ? tokenABalance
             ? tokenABalance
-            : !props.sellToken && tokenBBalance !== ''
-            ? tokenBBalance
-            : '0';
+            : ''
+        : tokenBBalance
+        ? tokenBBalance
+        : '';
 
     const walletBalanceLocaleString = props.sellToken
-        ? parseFloat(tokenABalance || '0').toLocaleString(undefined, {
+        ? tokenABalance
+            ? parseFloat(tokenABalance).toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              })
+            : '...'
+        : tokenBBalance
+        ? parseFloat(tokenBBalance || '...').toLocaleString(undefined, {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
           })
-        : parseFloat(tokenBBalance || '0').toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          });
+        : '...';
 
-    const surplusBalanceNonLocaleString =
-        props.sellToken && tokenADexBalance !== ''
+    const surplusBalanceNonLocaleString = props.sellToken
+        ? tokenADexBalance
             ? parseFloat(tokenADexBalance).toString()
-            : !props.sellToken && tokenBDexBalance !== ''
-            ? parseFloat(tokenBDexBalance).toString()
-            : '0';
+            : ''
+        : tokenBDexBalance
+        ? parseFloat(tokenBDexBalance).toString()
+        : '';
 
     const surplusBalanceLocaleString = props.sellToken
-        ? parseFloat(tokenADexBalance || '0').toLocaleString(undefined, {
+        ? tokenADexBalance
+            ? parseFloat(tokenADexBalance).toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              })
+            : '...'
+        : tokenBDexBalance
+        ? parseFloat(tokenBDexBalance).toLocaleString(undefined, {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
           })
-        : parseFloat(tokenBDexBalance || '0').toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          });
+        : '...';
 
     const sellTokenSurplusChange =
         tokenAQtyCoveredBySurplusBalance && tokenAQtyCoveredBySurplusBalance > 0
@@ -304,7 +316,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                                 />
                             </div>
                             <div className={styles.balance_column}>
-                                <div>{walletBalanceLocaleString}</div>
+                                <div>{isUserLoggedIn ? walletBalanceLocaleString : ''}</div>
                                 <div
                                     style={{
                                         color: isSellTokenSelector ? '#f6385b' : '#15be67',
@@ -358,7 +370,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                             </div>
 
                             <div className={styles.balance_column}>
-                                <div> {surplusBalanceLocaleString}</div>
+                                <div> {isUserLoggedIn ? surplusBalanceLocaleString : ''}</div>
                                 <div
                                     style={{
                                         color: isSellTokenSelector ? '#f6385b' : '#15be67',

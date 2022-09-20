@@ -12,6 +12,7 @@ import { MdAccountBalanceWallet } from 'react-icons/md';
 import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 
 interface RangeCurrencySelectorProps {
+    isUserLoggedIn: boolean;
     resetTokenQuantities: () => void;
     fieldId: string;
     chainId: string;
@@ -55,6 +56,7 @@ interface RangeCurrencySelectorProps {
 
 export default function RangeCurrencySelector(props: RangeCurrencySelectorProps) {
     const {
+        isUserLoggedIn,
         resetTokenQuantities,
         tokenPair,
         tokensBank,
@@ -163,39 +165,49 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
         </span>
     );
 
-    const walletBalanceNonLocaleString =
-        isTokenASelector && tokenABalance !== ''
+    const walletBalanceNonLocaleString = isTokenASelector
+        ? tokenABalance
             ? parseFloat(tokenABalance).toString()
-            : fieldId !== 'A' && tokenBBalance !== ''
-            ? parseFloat(tokenBBalance).toString()
-            : '0.00';
+            : ''
+        : tokenBBalance
+        ? parseFloat(tokenBBalance).toString()
+        : '';
 
     const walletBalanceLocaleString = isTokenASelector
-        ? parseFloat(tokenABalance || '0').toLocaleString(undefined, {
+        ? tokenABalance
+            ? parseFloat(tokenABalance).toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              })
+            : '...'
+        : tokenBBalance
+        ? parseFloat(tokenBBalance).toLocaleString(undefined, {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
           })
-        : parseFloat(tokenBBalance || '0').toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          });
+        : '...';
 
-    const surplusBalanceNonLocaleString =
-        isTokenASelector && tokenADexBalance !== ''
+    const surplusBalanceNonLocaleString = isTokenASelector
+        ? tokenADexBalance
             ? parseFloat(tokenADexBalance).toString()
-            : fieldId === 'B' && tokenBDexBalance !== ''
-            ? parseFloat(tokenBDexBalance).toString()
-            : '0.00';
+            : ''
+        : tokenBDexBalance
+        ? parseFloat(tokenBDexBalance).toString()
+        : '';
 
     const surplusBalanceLocaleString = isTokenASelector
-        ? parseFloat(tokenADexBalance || '0').toLocaleString(undefined, {
+        ? tokenADexBalance
+            ? parseFloat(tokenADexBalance).toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              })
+            : '...'
+        : tokenBDexBalance
+        ? parseFloat(tokenBDexBalance).toLocaleString(undefined, {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
           })
-        : parseFloat(tokenBDexBalance || '0').toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          });
+        : '...';
 
     const tokenASurplusChange =
         tokenAQtyCoveredBySurplusBalance && isWithdrawTokenAFromDexChecked
@@ -320,7 +332,7 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                                 />
                             </div>
                             <div className={styles.balance_column}>
-                                <div>{walletBalanceLocaleString}</div>
+                                <div>{isUserLoggedIn ? walletBalanceLocaleString : ''}</div>
                                 <div
                                     style={{
                                         color: '#f6385b',
@@ -371,7 +383,7 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                                 <img src={ambientLogo} width='20' alt='surplus' />
                             </div>
                             <div className={styles.balance_column}>
-                                <div> {surplusBalanceLocaleString}</div>
+                                <div> {isUserLoggedIn ? surplusBalanceLocaleString : ''}</div>
                                 <div
                                     style={{
                                         color: '#f6385b',

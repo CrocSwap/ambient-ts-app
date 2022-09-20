@@ -53,8 +53,10 @@ export interface ILimitOrderState {
     knockoutChanges: number;
     baseSymbol: string;
     baseDecimals: number;
+    baseTokenLogoURI: string;
     quoteSymbol: string;
     quoteDecimals: number;
+    quoteTokenLogoURI: string;
     limitPrice: number;
     invLimitPrice: number;
     limitPriceDecimalCorrected: number;
