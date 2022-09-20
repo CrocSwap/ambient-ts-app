@@ -87,7 +87,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
             if (resolvedAddress) {
                 const imageLocalURLs = await getNFTs(resolvedAddress);
                 if (imageLocalURLs) setSecondaryImageData(imageLocalURLs);
-            } else if (address && isInitialized) {
+            } else if (address && !isAddressEns && isInitialized) {
                 const imageLocalURLs = await getNFTs(address);
                 if (imageLocalURLs) setSecondaryImageData(imageLocalURLs);
             }
