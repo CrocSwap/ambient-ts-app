@@ -72,11 +72,11 @@ export default function Transactions(props: TransactionsProps) {
         setIsDataLoading(false);
         transactionData.length ? setDataToDisplay(true) : setDataToDisplay(false);
     }
-    function handleUserPoolSelected() {
+    function handleUserSelected() {
         setTransactionData(changesByUser);
         setDataReceived(dataReceivedByUser);
     }
-    function handleAllPoolSelected() {
+    function handlePoolSelected() {
         setTransactionData(changesByPool);
         setDataReceived(dataReceivedByPool);
     }
@@ -89,8 +89,8 @@ export default function Transactions(props: TransactionsProps) {
                   }),
               )
             : !isShowAllEnabled
-            ? handleUserPoolSelected()
-            : handleAllPoolSelected();
+            ? handleUserSelected()
+            : handlePoolSelected();
     }, [isShowAllEnabled, isCandleSelected, filter, changesByUser, changesByPool]);
 
     useEffect(() => {
@@ -106,14 +106,28 @@ export default function Transactions(props: TransactionsProps) {
 
     // console.log(changesByPool);
 
-    const [transactions] = useState(transactionData);
+    // const [transactions] = useState(transactionData);
     const [currentPage, setCurrentPage] = useState(1);
-    const [transactionsPerPage] = useState(15);
+    const [transactionsPerPage] = useState(30);
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [isShowAllEnabled]);
 
     // Get current transactions
     const indexOfLastTransaction = currentPage * transactionsPerPage;
     const indexOfFirstTransaction = indexOfLastTransaction - transactionsPerPage;
-    const currentTransactions = transactions.slice(indexOfFirstTransaction, indexOfLastTransaction);
+    const currentTransactions = transactionData.slice(
+        indexOfFirstTransaction,
+        indexOfLastTransaction,
+    );
+
+    // console.log({ expandTradeTable });
+    // console.log({ currentPage });
+    // console.log({ indexOfLastTransaction });
+    // console.log({ indexOfFirstTransaction });
+    // console.log({ currentTransactions });
+    // console.log({ transactionData });
 
     // Change page
     const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
@@ -155,7 +169,7 @@ export default function Transactions(props: TransactionsProps) {
             {expandTradeTable && transactionData.length > 30 && (
                 <Pagination
                     itemsPerPage={transactionsPerPage}
-                    totalItems={transactions.length}
+                    totalItems={transactionData.length}
                     paginate={paginate}
                     currentPage={currentPage}
                 />
