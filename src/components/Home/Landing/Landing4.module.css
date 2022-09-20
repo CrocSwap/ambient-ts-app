@@ -78,6 +78,12 @@
     border-radius: var(--border-radius);
 }
 
+
+.half_content{
+    width: 442.14px;
+height: 177px;
+
+}
 .liquidity_content img {
     max-width: 100%;
 }
