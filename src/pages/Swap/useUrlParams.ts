@@ -179,14 +179,8 @@ export const useUrlParams = (
                         'Missing token data in useUrlParams.ts, refer to file for troubleshooting',
                     ),
                 );
-                const tokenAResult = res[0];
-                const tokenBResult = res[1];
-
-                // console.log({ tokenAResult });
-                // console.log({ tokenBResult });
-
-                if (tokenAResult) dispatch(setTokenA(tokenAResult as TokenIF));
-                if (tokenBResult) dispatch(setTokenB(tokenBResult as TokenIF));
+                res[0] && dispatch(setTokenA(res[0] as TokenIF));
+                res[1] && dispatch(setTokenB(res[1] as TokenIF));
             });
         }
     }, [tokenList]);
