@@ -11,7 +11,7 @@ import Value from '../../../Tabs/Value/Value';
 // import WalletAndId from '../../../../Global/Tabs/WalletAndID/WalletAndId';
 import styles from './TransactionCard.module.css';
 // import AccountPoolDisplay from '../../../Tabs/AccountPoolDisplay/AccountPoolDisplay';
-// import AccountTokensDisplay from '../../../Tabs/AccountTokensDisplay/AccountTokensDisplay';
+import AccountTokensDisplay from '../../../Tabs/AccountTokensDisplay/AccountTokensDisplay';
 // import TransactionsMenu from '../../../Tabs/TableMenu/TableMenuComponents/TransactionsMenu';
 
 interface TransactionProps {
@@ -37,6 +37,9 @@ export default function TransactionCard(props: TransactionProps) {
 
     const baseTokenSymbol = tx.baseSymbol;
     const quoteTokenSymbol = tx.quoteSymbol;
+
+    const baseTokenLogoURI = tx.baseTokenLogoURI;
+    const quoteTokenLogoURI = tx.quoteTokenLogoURI;
 
     const baseTokenCharacter = tx.baseSymbol ? getUnicodeCharacter(tx.baseSymbol) : '';
     const quoteTokenCharacter = tx.quoteSymbol ? getUnicodeCharacter(tx.quoteSymbol) : '';
@@ -139,10 +142,10 @@ export default function TransactionCard(props: TransactionProps) {
     return (
         <div className={styles.main_container}>
             <div className={styles.tokens_container}>
-                {/* <AccountTokensDisplay
+                <AccountTokensDisplay
                     baseTokenLogoURI={baseTokenLogoURI}
                     quoteTokenLogoURI={quoteTokenLogoURI}
-                /> */}
+                />
             </div>
             <div className={styles.row_container}>
                 <AccountPoolDisplay

@@ -24,6 +24,7 @@ import { CrocEnv } from '@crocswap-libs/sdk';
 import { ethers } from 'ethers';
 import { ILimitOrderState, ITransaction } from '../../../utils/state/graphDataSlice';
 import { getLimitOrderData } from '../../../App/functions/getLimitOrderData';
+import { getTransactionData } from '../../../App/functions/getTransactionData';
 
 // interface for React functional component props
 interface PortfolioTabsPropsIF {
@@ -157,14 +158,13 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
             .then((json) => {
                 const userTransactions = json?.data;
                 if (userTransactions) {
-                    // Promise.all(
-                    //     userTransactions.map((tx: ITransaction) => {
-                    //         return getLimitOrderData(tx, importedTokens);
-                    //     }),
-                    // ).then((updatedTransactions) => {
-                    //     setOtherAccountTransactions(updatedTransactions);
-                    // });
-                    setOtherAccountTransactionData(userTransactions);
+                    Promise.all(
+                        userTransactions.map((tx: ITransaction) => {
+                            return getTransactionData(tx, importedTokens);
+                        }),
+                    ).then((updatedTransactions) => {
+                        setOtherAccountTransactionData(updatedTransactions);
+                    });
                 }
             })
             .catch(console.log);
