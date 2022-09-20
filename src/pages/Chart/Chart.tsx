@@ -549,10 +549,13 @@ export default function Chart(props: ChartData) {
                     .selectAll('.horizontal')
                     .style('visibility', 'visible');
 
-                const snappedValue = snap(
-                    props.liquidityData,
-                    scaleData.yScale.invert(d3.pointer(event)[1] - 215),
-                );
+                const snappedValue =
+                    Math.round(
+                        snap(
+                            props.liquidityData,
+                            scaleData.yScale.invert(d3.pointer(event)[1] - 215),
+                        ) * 100,
+                    ) / 100;
 
                 if (!isAdvancedModeActive) {
                     let valueWithRange: number;
@@ -580,15 +583,21 @@ export default function Chart(props: ChartData) {
                                     snappedValue;
 
                                 newTargets.filter((target: any) => target.name === 'Min')[0].value =
-                                    low + valueWithRange;
+                                    snap(props.liquidityData, low + valueWithRange);
 
                                 render();
                             } else {
                                 newTargets.filter((target: any) => target.name === 'Max')[0].value =
-                                    parseFloat(displayValue) + dragLimit * 1.01;
+                                    snap(
+                                        props.liquidityData,
+                                        parseFloat(displayValue) + dragLimit * 1.01,
+                                    );
 
                                 newTargets.filter((target: any) => target.name === 'Min')[0].value =
-                                    parseFloat(displayValue) - dragLimit * 1.01;
+                                    snap(
+                                        props.liquidityData,
+                                        parseFloat(displayValue) - dragLimit * 1.01,
+                                    );
 
                                 render();
                             }
@@ -619,15 +628,21 @@ export default function Chart(props: ChartData) {
                                     snappedValue;
 
                                 newTargets.filter((target: any) => target.name === 'Max')[0].value =
-                                    high + valueWithRange;
+                                    snap(props.liquidityData, high + valueWithRange);
 
                                 render();
                             } else {
                                 newTargets.filter((target: any) => target.name === 'Max')[0].value =
-                                    parseFloat(displayValue) + dragLimit * 1.01;
+                                    snap(
+                                        props.liquidityData,
+                                        parseFloat(displayValue) + dragLimit * 1.01,
+                                    );
 
                                 newTargets.filter((target: any) => target.name === 'Min')[0].value =
-                                    parseFloat(displayValue) - dragLimit * 1.01;
+                                    snap(
+                                        props.liquidityData,
+                                        parseFloat(displayValue) - dragLimit * 1.01,
+                                    );
 
                                 render();
                             }
@@ -645,6 +660,7 @@ export default function Chart(props: ChartData) {
 
                         const high = newTargets.filter((target: any) => target.name === 'Max')[0]
                             .value;
+
                         if (d.name === 'Max' && snappedValue > low) {
                             newTargets.filter((target: any) => target.name === d.name)[0].value =
                                 snappedValue;
