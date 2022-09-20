@@ -745,7 +745,10 @@ export default function Chart(props: ChartData) {
                 selection.enter().select('line').attr('class', 'redline');
                 selection
                     .select('g.left-handle text')
-                    .text((d: any) => d.name + ' - ' + valueFormatter(d.value));
+                    .text((d: any) => d.name + ' - ' + valueFormatter(d.value))
+                    .style('transform', (d: any) =>
+                        d.name == 'Min' ? ' translate(0px, 20px)' : '',
+                    );
                 selection
                     .enter()
                     .select('line')
@@ -754,7 +757,19 @@ export default function Chart(props: ChartData) {
                     });
                 selection
                     .enter()
-                    .append('rect')
+                    .append('polygon')
+                    .attr('points', (d: any) =>
+                        d.name == 'Max' || d.name == 'Limit'
+                            ? '0,0 7,15 15,0,15'
+                            : d.name == 'Min'
+                            ? '0,20 18,20 8,0,20'
+                            : '',
+                    )
+                    // .attr('points','0,0 7,15 15,0,15')
+                    // .style('transform',(d: any) => d.name=='Min' ? 'rotate(295deg)' : '')
+                    .style('transform', (d: any) =>
+                        d.name == 'Min' ? ' translate(0px, -20px)' : '',
+                    )
                     .attr('width', 15)
                     .attr('height', 10)
                     .attr('fill', 'gainsboro');
@@ -811,7 +826,7 @@ export default function Chart(props: ChartData) {
                     .call(dragType);
             }
         }
-    }, [dragType, parsedChartData?.period, location, horizontalLine, drawControl]);
+    }, [dragType, parsedChartData?.period, location, horizontalLine]);
 
     // Call drawChart()
     useEffect(() => {
