@@ -213,9 +213,12 @@ export default function Chart(props: ChartData) {
             });
     }, [location]);
 
-    useEffect(() => {
-        if (scaleData) {
-            d3.select(d3Container.current).select('.targets').append('rect').attr('id', 'rect');
+    async function addHorizontalLineArea() {
+        await d3.select(d3PlotArea.current).select('.targets').selectAll('#rect').remove();
+        await d3.select(d3PlotArea.current).select('.targets').append('rect').attr('id', 'rect');
+        const max = ranges.find((item) => item.name === 'Max')?.value as number;
+        const min = ranges.find((item) => item.name === 'Min')?.value as number;
+        if (scaleData && location.pathname.includes('range')) {
             d3.select(d3Container.current)
                 .select('.targets')
                 .select('#rect')
@@ -227,10 +230,12 @@ export default function Chart(props: ChartData) {
                     'height',
                     Math.abs(scaleData.yScale(ranges[1].value) - scaleData.yScale(ranges[0].value)),
                 )
-                .attr('y', scaleData.yScale(ranges[1].value));
-
-            // console.error('useEffect', drawControl);
+                .attr('y', min > max ? scaleData.yScale(min) : scaleData.yScale(max));
         }
+    }
+
+    useEffect(() => {
+        addHorizontalLineArea();
     }, [ranges, zoomStatus, drawControl]);
 
     // Scale
@@ -695,7 +700,7 @@ export default function Chart(props: ChartData) {
                                 .select('#Min')
                                 .select('.left-handle')
                                 .select('text')
-                                .text((d: any) => 'Max' + ' - ' + valueFormatter(snappedValue));
+                                .text(() => 'Max' + ' - ' + valueFormatter(snappedValue));
 
                             setIsLineSwapped(true);
                         }
@@ -719,6 +724,10 @@ export default function Chart(props: ChartData) {
             setDragType(() => {
                 return location.pathname.includes('limit') ? dragLimit : dragRange;
             });
+
+            console.error('dragTypeEffect', dragType);
+            console.error('dragLimit', dragLimit);
+            console.error('dragRange', dragRange);
         }
     }, [spotPriceDisplay, location, scaleData, isAdvancedModeActive]);
 
@@ -818,7 +827,7 @@ export default function Chart(props: ChartData) {
                     .call(dragType);
             }
         }
-    }, [dragType, parsedChartData?.period, location, horizontalLine]);
+    }, [dragType, parsedChartData?.period, location, horizontalLine, drawControl]);
 
     // Call drawChart()
     useEffect(() => {
@@ -826,9 +835,7 @@ export default function Chart(props: ChartData) {
             props.liquidityData !== undefined &&
             parsedChartData !== undefined &&
             scaleData !== undefined &&
-            zoomUtils !== undefined &&
-            horizontalLine !== undefined &&
-            ghostLines !== undefined
+            zoomUtils !== undefined
         ) {
             const targetData = location.pathname.includes('limit')
                 ? limit
@@ -1071,17 +1078,17 @@ export default function Chart(props: ChartData) {
                     scaleData.liquidityScale.range([event.detail.width, event.detail.width / 2]);
                 });
 
-                d3.select(d3PlotArea.current).on('draw', function (event: any) {
+                d3.select(d3PlotArea.current).on('draw', async function (event: any) {
                     const svg = d3.select(event.target).select('svg');
 
                     crosshairHorizontalJoin(svg, [crosshairData]).call(crosshairHorizontal);
                     crosshairVerticalJoin(svg, [crosshairData]).call(crosshairVertical);
                     barJoin(svg, [liquidityData]).call(barSeries);
                     candleJoin(svg, [chartData]).call(candlestick);
-                    targetsJoin(svg, [targets]).call(horizontalLine);
                     ghostJoin(svg, [liquidityData]).call(ghostLines);
+                    await targetsJoin(svg, [targets]).call(horizontalLine);
+                    setDrawControl(event);
                 });
-
                 d3.select(d3Xaxis.current).on('draw', function (event: any) {
                     d3.select(event.target).select('svg').call(xAxis);
                 });
@@ -1128,11 +1135,6 @@ export default function Chart(props: ChartData) {
 
                 render();
             }
-
-            setTimeout(() => {
-                // console.error('timeout', drawControl);
-                setDrawControl(!drawControl);
-            }, 100);
         },
         [],
     );
