@@ -213,15 +213,12 @@ export default function Chart(props: ChartData) {
             });
     }, [location]);
 
-    // useEffect(() => {
-    //     d3.select(d3Container.current).select('.targets').append('rect').attr('id', 'rect')
-
-    // }, [location,parsedChartData]);
-
-    async function addRect() {
-        await d3.select(d3PlotArea.current).select('.targets').select('#rect').remove();
+    async function addHorizontalLineArea() {
+        await d3.select(d3PlotArea.current).select('.targets').selectAll('#rect').remove();
         await d3.select(d3PlotArea.current).select('.targets').append('rect').attr('id', 'rect');
-        if (scaleData) {
+        const max = ranges.find((item) => item.name === 'Max')?.value as number;
+        const min = ranges.find((item) => item.name === 'Min')?.value as number;
+        if (scaleData && location.pathname.includes('range')) {
             d3.select(d3Container.current)
                 .select('.targets')
                 .select('#rect')
@@ -233,43 +230,12 @@ export default function Chart(props: ChartData) {
                     'height',
                     Math.abs(scaleData.yScale(ranges[1].value) - scaleData.yScale(ranges[0].value)),
                 )
-                .attr('y', scaleData.yScale(ranges[0].value));
-
-            console.error(
-                'resultTarget',
-                props.targetData === undefined ||
-                    (props.targetData[0].value === 0 && props.targetData[1].value === 0)
-                    ? props.priceData !== undefined
-                        ? Math.max(
-                              ...props.priceData.chartData.map((o) => {
-                                  return o.open !== undefined ? o.open : 0;
-                              }),
-                          )
-                        : 0
-                    : ranges[1].value,
-            );
-
-            console.error(
-                'resultRange',
-                ranges[0].value === 0 && ranges[1].value === 0
-                    ? props.priceData !== undefined
-                        ? Math.min(
-                              ...props.priceData.chartData.map((o) => {
-                                  return o.open !== undefined ? o.open : 0;
-                              }),
-                          )
-                        : 0
-                    : ranges[0].value,
-            );
-
-            console.error('targetData', props.targetData);
-            console.error('ranges', ranges);
+                .attr('y', min > max ? scaleData.yScale(min) : scaleData.yScale(max));
         }
     }
 
     useEffect(() => {
-        console.error('scaleData' + scaleData?.yScale(ranges[1].value));
-        addRect();
+        addHorizontalLineArea();
     }, [ranges, zoomStatus, drawControl]);
 
     // Scale
@@ -718,7 +684,7 @@ export default function Chart(props: ChartData) {
                                 .select('#Min')
                                 .select('.left-handle')
                                 .select('text')
-                                .text((d: any) => 'Max' + ' - ' + valueFormatter(snappedValue));
+                                .text(() => 'Max' + ' - ' + valueFormatter(snappedValue));
 
                             setIsLineSwapped(true);
                         }
@@ -742,6 +708,10 @@ export default function Chart(props: ChartData) {
             setDragType(() => {
                 return location.pathname.includes('limit') ? dragLimit : dragRange;
             });
+
+            console.error('dragTypeEffect', dragType);
+            console.error('dragLimit', dragLimit);
+            console.error('dragRange', dragRange);
         }
     }, [spotPriceDisplay, location, scaleData, isAdvancedModeActive]);
 
@@ -841,31 +811,15 @@ export default function Chart(props: ChartData) {
                     .call(dragType);
             }
         }
-    }, [dragType, parsedChartData?.period, location, horizontalLine]);
+    }, [dragType, parsedChartData?.period, location, horizontalLine, drawControl]);
 
     // Call drawChart()
     useEffect(() => {
-        draw1();
-    }, [
-        parsedChartData,
-        scaleData,
-        location,
-        market,
-        ranges,
-        limit,
-        zoomUtils,
-        horizontalLine,
-        ghostLines,
-    ]);
-
-    async function draw1() {
         if (
             props.liquidityData !== undefined &&
             parsedChartData !== undefined &&
             scaleData !== undefined &&
-            zoomUtils !== undefined &&
-            horizontalLine !== undefined &&
-            ghostLines !== undefined
+            zoomUtils !== undefined
         ) {
             const targetData = location.pathname.includes('limit')
                 ? limit
@@ -875,7 +829,7 @@ export default function Chart(props: ChartData) {
                 ? market
                 : undefined;
 
-            await drawChart(
+            drawChart(
                 parsedChartData.chartData,
                 targetData,
                 scaleData,
@@ -888,13 +842,22 @@ export default function Chart(props: ChartData) {
                 horizontalLine,
                 ghostLines,
             );
-
-            // setDrawControl(!drawControl);
         }
-    }
+    }, [
+        parsedChartData,
+        scaleData,
+        location,
+        market,
+        ranges,
+        limit,
+        zoomUtils,
+        horizontalLine,
+        ghostLines,
+    ]);
+
     // Draw Chart
     const drawChart = useCallback(
-        async (
+        (
             chartData: any,
             targets: any,
             scaleData: any,
@@ -1099,7 +1062,7 @@ export default function Chart(props: ChartData) {
                     scaleData.liquidityScale.range([event.detail.width, event.detail.width / 2]);
                 });
 
-                await d3.select(d3PlotArea.current).on('draw', async function (event: any) {
+                d3.select(d3PlotArea.current).on('draw', async function (event: any) {
                     const svg = d3.select(event.target).select('svg');
 
                     crosshairHorizontalJoin(svg, [crosshairData]).call(crosshairHorizontal);
