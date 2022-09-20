@@ -13,6 +13,7 @@ import { CrocEnv } from '@crocswap-libs/sdk';
 
 import { Erc20TokenBalanceFn, nativeTokenBalanceFn } from '../../App/functions/fetchTokenBalances';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
+import { TokenPriceFn } from '../../App/functions/fetchTokenPrice';
 
 const mainnetProvider = new ethers.providers.WebSocketProvider(
     'wss://mainnet.infura.io/ws/v3/25e7e0ec71de48bfa9c4d2431fbb3c4a',
@@ -23,6 +24,7 @@ interface PortfolioPropsIF {
     provider: ethers.providers.Provider | undefined;
     cachedFetchNativeTokenBalance: nativeTokenBalanceFn;
     cachedFetchErc20TokenBalances: Erc20TokenBalanceFn;
+    cachedFetchTokenPrice: TokenPriceFn;
     importedTokens: TokenIF[];
     ensName: string;
     lastBlockNumber: number;
@@ -48,6 +50,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
         provider,
         cachedFetchNativeTokenBalance,
         cachedFetchErc20TokenBalances,
+        cachedFetchTokenPrice,
         importedTokens,
         ensName,
         lastBlockNumber,
@@ -210,6 +213,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
                 <PortfolioTabs
                     crocEnv={crocEnv}
                     provider={provider}
+                    cachedFetchTokenPrice={cachedFetchTokenPrice}
                     importedTokens={importedTokens}
                     connectedUserTokens={connectedUserTokens}
                     resolvedAddressTokens={resolvedAddressTokens}

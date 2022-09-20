@@ -2000,6 +2000,7 @@ export default function App() {
                                     provider={provider}
                                     cachedFetchErc20TokenBalances={cachedFetchErc20TokenBalances}
                                     cachedFetchNativeTokenBalance={cachedFetchNativeTokenBalance}
+                                    cachedFetchTokenPrice={cachedFetchTokenPrice}
                                     importedTokens={importedTokens}
                                     ensName={ensName}
                                     lastBlockNumber={lastBlockNumber}
@@ -2023,6 +2024,7 @@ export default function App() {
                                     provider={provider}
                                     cachedFetchErc20TokenBalances={cachedFetchErc20TokenBalances}
                                     cachedFetchNativeTokenBalance={cachedFetchNativeTokenBalance}
+                                    cachedFetchTokenPrice={cachedFetchTokenPrice}
                                     importedTokens={importedTokens}
                                     ensName={ensName}
                                     lastBlockNumber={lastBlockNumber}

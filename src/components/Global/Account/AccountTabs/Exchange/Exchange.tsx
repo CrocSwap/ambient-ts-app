@@ -3,8 +3,10 @@ import ExchangeCard from './ExchangeCard';
 import ExchangeHeader from './ExchangeHeader';
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { TokenIF } from '../../../../../utils/interfaces/TokenIF';
+import { TokenPriceFn } from '../../../../../App/functions/fetchTokenPrice';
 interface ExchangePropsIF {
     crocEnv: CrocEnv | undefined;
+    cachedFetchTokenPrice: TokenPriceFn;
     connectedUserTokens: (TokenIF | undefined)[];
     resolvedAddressTokens: (TokenIF | undefined)[];
     lastBlockNumber: number;
@@ -17,6 +19,7 @@ interface ExchangePropsIF {
 
 export default function Exchange(props: ExchangePropsIF) {
     const {
+        cachedFetchTokenPrice,
         connectedAccountActive,
         connectedUserTokens,
         resolvedAddressTokens,
@@ -31,10 +34,22 @@ export default function Exchange(props: ExchangePropsIF) {
 
     const ItemContent = connectedAccountActive
         ? connectedUserTokens.map((item, idx) => (
-              <ExchangeCard key={idx} token={item} chainId={chainId} tokenMap={tokenMap} />
+              <ExchangeCard
+                  key={idx}
+                  token={item}
+                  chainId={chainId}
+                  tokenMap={tokenMap}
+                  cachedFetchTokenPrice={cachedFetchTokenPrice}
+              />
           ))
         : resolvedAddressTokens.map((item, idx) => (
-              <ExchangeCard key={idx} token={item} chainId={chainId} tokenMap={tokenMap} />
+              <ExchangeCard
+                  key={idx}
+                  token={item}
+                  chainId={chainId}
+                  tokenMap={tokenMap}
+                  cachedFetchTokenPrice={cachedFetchTokenPrice}
+              />
           ));
     return (
         <div className={styles.container}>

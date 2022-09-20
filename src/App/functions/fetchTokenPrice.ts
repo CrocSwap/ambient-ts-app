@@ -16,7 +16,7 @@ export const fetchTokenPrice = async (address: string, chain: string) => {
     }
 };
 
-type TokenPriceFn = (
+export type TokenPriceFn = (
     address: string,
     chain: string,
 ) => Promise<{
