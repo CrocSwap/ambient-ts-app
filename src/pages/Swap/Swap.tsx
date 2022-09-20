@@ -29,6 +29,7 @@ import { SlippagePairIF, TokenIF, TokenPairIF } from '../../utils/interfaces/exp
 import { useModal } from '../../components/Global/Modal/useModal';
 import { useRelativeModal } from '../../components/Global/RelativeModal/useRelativeModal';
 import { addReceipt } from '../../utils/state/receiptDataSlice';
+import { useUrlParams } from './useUrlParams';
 // import { calcImpact } from '../../App/functions/calcImpact';
 
 interface SwapPropsIF {
@@ -59,6 +60,7 @@ interface SwapPropsIF {
     activeTokenListsChanged: boolean;
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
     openModalWallet: () => void;
+    isInitialized: boolean;
 
     pendingTransactions: string[];
     setPendingTransactions: Dispatch<SetStateAction<never[]>>;
@@ -92,12 +94,15 @@ export default function Swap(props: SwapPropsIF) {
         activeTokenListsChanged,
         indicateActiveTokenListsChanged,
         openModalWallet,
+        isInitialized,
         pendingTransactions,
     } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
 
     const dispatch = useAppDispatch();
+
+    useUrlParams(chainId, isInitialized);
 
     const [isRelativeModalOpen, closeRelativeModal] = useRelativeModal();
 
@@ -383,8 +388,8 @@ export default function Swap(props: SwapPropsIF) {
 
     const isTokenAAllowanceSufficient = parseFloat(tokenAAllowance) >= parseFloat(tokenAInputQty);
 
-    const swapContainerStyle = pathname == '/swap' ? styles.swap_page_container : null;
-    const swapPageStyle = pathname == '/swap' ? styles.swap_page : null;
+    const swapContainerStyle = pathname.startsWith('/swap') ? styles.swap_page_container : null;
+    const swapPageStyle = pathname.startsWith('/swap') ? styles.swap_page : null;
     return (
         <main data-testid={'swap'} className={swapPageStyle}>
             <div className={`${swapContainerStyle}`}>
