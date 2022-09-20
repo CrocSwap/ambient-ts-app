@@ -3,6 +3,7 @@ import { testTokenMap } from '../../../../../utils/data/testTokenMap';
 import { fetchTokenPrice } from '../../../../../App/functions/fetchTokenPrice';
 import { TokenIF } from '../../../../../utils/interfaces/TokenIF';
 import { useEffect, useState } from 'react';
+import { ZERO_ADDRESS } from '../../../../../constants';
 // import { formatAmount } from '../../../../../utils/numbers';
 interface ExchangeCardPropsIF {
     token?: TokenIF;
@@ -12,7 +13,8 @@ interface ExchangeCardPropsIF {
 
 export default function ExchangeCard(props: ExchangeCardPropsIF) {
     const { token, chainId, tokenMap } = props;
-    if (token?.dexBalanceDisplayTruncated === undefined) return <></>;
+    if (token?.address !== ZERO_ADDRESS && token?.dexBalanceDisplayTruncated === undefined)
+        return <></>;
 
     // const tokenMap = useTokenMap();
 
@@ -51,7 +53,8 @@ export default function ExchangeCard(props: ExchangeCardPropsIF) {
     const tokenUsdPrice = tokenPrice?.usdPrice ?? 0;
 
     const exchangeBalanceNum = token.dexBalanceDisplay ? parseFloat(token.dexBalanceDisplay) : 0;
-    const exchangeBalanceTruncated = token && token.dexBalanceDisplayTruncated;
+    const exchangeBalanceTruncated =
+        exchangeBalanceNum === 0 ? '0' : token?.dexBalanceDisplayTruncated;
 
     // const tokenBalanceNum =
     //     token && token.combinedBalanceDisplay ? parseFloat(token.combinedBalanceDisplay) : 0;

@@ -55,7 +55,11 @@ export default function WalletCard(props: WalletPropsIF) {
     const walletBalanceNum = token.walletBalanceDisplay
         ? parseFloat(token.walletBalanceDisplay)
         : 0;
-    const walletBalanceTruncated = token && token.walletBalanceDisplayTruncated;
+
+    const walletBalanceTruncated =
+        token && token.walletBalanceDisplayTruncated && walletBalanceNum !== 0
+            ? token.walletBalanceDisplayTruncated
+            : '0';
 
     const tokenInfo = (
         <div className={styles.token_info}>

@@ -479,7 +479,9 @@ export default function App() {
                 }
                 try {
                     const updatedTokens: TokenIF[] = [];
-                    updatedTokens.push(...connectedUserErc20Tokens);
+                    connectedUserErc20Tokens
+                        ? updatedTokens.push(...connectedUserErc20Tokens)
+                        : null;
                     // console.log('fetching connected user erc20 token balances');
                     const erc20Results: TokenIF[] = await cachedFetchErc20TokenBalances(
                         account,
@@ -489,15 +491,16 @@ export default function App() {
                     );
 
                     erc20Results.map((newToken: TokenIF) => {
-                        const indexOfExistingToken = connectedUserErc20Tokens.findIndex(
+                        const indexOfExistingToken = (connectedUserErc20Tokens ?? []).findIndex(
                             (existingToken) => existingToken.address === newToken.address,
                         );
 
                         if (indexOfExistingToken === -1) {
                             updatedTokens.push(newToken);
                         } else if (
-                            JSON.stringify(connectedUserErc20Tokens[indexOfExistingToken]) !==
-                            JSON.stringify(newToken)
+                            JSON.stringify(
+                                (connectedUserErc20Tokens ?? [])[indexOfExistingToken],
+                            ) !== JSON.stringify(newToken)
                         ) {
                             updatedTokens[indexOfExistingToken] = newToken;
                         }
