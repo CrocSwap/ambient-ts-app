@@ -1,7 +1,7 @@
 import { ethers } from 'ethers';
 import DividerDark from '../../components/Global/DividerDark/DividerDark';
 import Investors from '../../components/Home/Investors/Investors';
-import Slides from '../../components/Home/Landing/Slides';
+import HomeSlider from '../../components/Home/Landing/HomeSlider';
 import Links from '../../components/Home/Links/Links';
 import Stats from '../../components/Home/Stats/AmbientStats';
 import TopPools from '../../components/Home/TopPools/TopPools';
@@ -21,8 +21,9 @@ export default function Home(props: HomeProps) {
         <>
             <main data-testid={'home'} className={styles.home_container}>
                 {/* <Landing /> */}
-                <Slides />
-                <DividerDark />
+                {/* <Slides /> */}
+                <HomeSlider />
+
                 <div className={styles.pools_container}>
                     <TopPools
                         tokenMap={tokenMap}
