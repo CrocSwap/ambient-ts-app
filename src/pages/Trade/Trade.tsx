@@ -156,10 +156,29 @@ export default function Trade(props: TradePropsIF) {
         setTransactionFilter(candleData);
     };
 
+    const [showChartAndNotTab, setShowChartAndNotTab] = useState(false);
+
+    const mobileDataToggle = (
+        <div className={styles.mobile_toggle_container}>
+            <button
+                onClick={() => setShowChartAndNotTab(!showChartAndNotTab)}
+                className={showChartAndNotTab ? styles.non_active_button : styles.active_button}
+            >
+                Chart
+            </button>
+            <button
+                onClick={() => setShowChartAndNotTab(!showChartAndNotTab)}
+                className={showChartAndNotTab ? styles.active_button : styles.non_active_button}
+            >
+                Tabs
+            </button>
+        </div>
+    );
     return (
         <AnimateSharedLayout>
             <main className={styles.main_layout}>
                 <div className={styles.middle_col}>
+                    {mobileDataToggle}
                     <div className={` ${expandGraphStyle} ${fullScreenStyle}`}>
                         <motion.div
                             initial={{ opacity: 0, scale: 0.5 }}
