@@ -138,7 +138,7 @@ export default function PageHeader(props: HeaderPropsIF) {
         ? '/trade/range'
         : location.pathname.includes('trade/edit')
         ? '/trade/edit'
-        : '/trade/market';
+        : '/trade/range';
 
     const linkData = [
         { title: t('common:homeTitle'), destination: '/', shouldDisplay: true },

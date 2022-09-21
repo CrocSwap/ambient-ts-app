@@ -90,16 +90,16 @@ export default function Trade(props: TradePropsIF) {
 
     const routes = [
         {
-            path: '/market',
-            name: 'Market',
+            path: '/range',
+            name: 'Range',
         },
         {
             path: '/limit',
-            name: 'Limit',
+            name: 'Limit Order',
         },
         {
-            path: '/range',
-            name: 'Range',
+            path: '/market',
+            name: 'Market',
         },
     ];
     const [fullScreenChart, setFullScreenChart] = useState(false);
