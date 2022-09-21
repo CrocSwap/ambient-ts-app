@@ -12,6 +12,7 @@ import { FaDiscord, FaSun, FaGithub, FaDotCircle } from 'react-icons/fa';
 import { GoRequestChanges } from 'react-icons/go';
 import { HiOutlineDocumentText } from 'react-icons/hi';
 import { MdHelp, MdArrowForwardIos, MdLanguage, MdReportProblem } from 'react-icons/md';
+import { RiErrorWarningLine } from 'react-icons/ri';
 
 // START: Import Local Files
 import '../../../App.css';
@@ -133,6 +134,13 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
                 Language
             </NavbarDropdownItem>
             <NavbarDropdownItem
+                leftIcon={<RiErrorWarningLine size={20} />}
+                rightIcon={<MdArrowForwardIos />}
+                goToMenu='warnings'
+            >
+                Warnings
+            </NavbarDropdownItem>
+            <NavbarDropdownItem
                 onClick={() => {
                     navigate('/tos');
                     closeMenu && closeMenu();
@@ -180,6 +188,11 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
                     </NavbarDropdownItem>
                 </div>
             ))}
+        </>
+    );
+    const warningItems = (
+        <>
+            <p>Warning Items</p>
         </>
     );
 
@@ -277,6 +290,27 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
                             <h3>{'Languages'}</h3>
                         </NavbarDropdownItem>
                         {languagesItems}
+                    </div>
+                </CSSTransition>
+            </div>
+            {/* warnings */}
+            <div>
+                <CSSTransition
+                    in={activeMenu === 'warnings'}
+                    unmountOnExit
+                    timeout={500}
+                    classNames='menu-secondary'
+                    onEnter={calcHeight}
+                >
+                    <div className={styles.menu}>
+                        <NavbarDropdownItem
+                            goToMenu='Settings & Privacy'
+                            leftIcon={<BiArrowBack />}
+                            goBackItem
+                        >
+                            <h3>{'Warnings'}</h3>
+                        </NavbarDropdownItem>
+                        {warningItems}
                     </div>
                 </CSSTransition>
             </div>
