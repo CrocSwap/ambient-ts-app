@@ -63,6 +63,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
     const { address } = useParams();
 
     const isAddressEns = address?.endsWith('.eth');
+    const isAddressHex = address?.startsWith('0x');
 
     const [resolvedAddress, setResolvedAddress] = useState<string>('');
 
@@ -74,25 +75,26 @@ export default function Portfolio(props: PortfolioPropsIF) {
                 if (newResolvedAddress) {
                     setResolvedAddress(newResolvedAddress);
                 }
-            } else if (address && !isAddressEns) {
+            } else if (address && isAddressHex && !isAddressEns) {
                 setResolvedAddress(address);
             }
         })();
-    }, [address, isAddressEns, mainnetProvider]);
+    }, [address, isAddressHex, isAddressEns, mainnetProvider]);
 
     const [secondaryImageData, setSecondaryImageData] = useState<string[]>([]);
 
     useEffect(() => {
         (async () => {
-            if (resolvedAddress) {
+            if (resolvedAddress && isInitialized) {
                 const imageLocalURLs = await getNFTs(resolvedAddress);
                 if (imageLocalURLs) setSecondaryImageData(imageLocalURLs);
-            } else if (address && !isAddressEns && isInitialized) {
-                const imageLocalURLs = await getNFTs(address);
-                if (imageLocalURLs) setSecondaryImageData(imageLocalURLs);
             }
+            // else if (address && isAddressHex && !isAddressEns && isInitialized) {
+            //     const imageLocalURLs = await getNFTs(address);
+            //     if (imageLocalURLs) setSecondaryImageData(imageLocalURLs);
+            // }
         })();
-    }, [resolvedAddress, address, isInitialized]);
+    }, [resolvedAddress, isInitialized]);
 
     const [secondaryensName, setSecondaryEnsName] = useState('');
 
@@ -143,7 +145,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
 
     useEffect(() => {
         (async () => {
-            if (crocEnv && resolvedAddress && chainId) {
+            if (crocEnv && resolvedAddress && chainId && lastBlockNumber) {
                 try {
                     // console.log('fetching native token balance');
                     const newNativeToken = await cachedFetchNativeTokenBalance(

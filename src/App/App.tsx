@@ -2049,7 +2049,31 @@ export default function App() {
                             path='testpage'
                             element={<TestPage openGlobalModal={openGlobalModal} />}
                         />
-                        <Route path='*' element={<Navigate to='/404' replace />} />
+                        {/* <Route path='*' element={<Navigate to='/404' replace />} /> */}
+                        <Route
+                            path='/:address'
+                            element={
+                                <Portfolio
+                                    crocEnv={crocEnv}
+                                    provider={provider}
+                                    cachedFetchErc20TokenBalances={cachedFetchErc20TokenBalances}
+                                    cachedFetchNativeTokenBalance={cachedFetchNativeTokenBalance}
+                                    cachedFetchTokenPrice={cachedFetchTokenPrice}
+                                    importedTokens={importedTokens}
+                                    ensName={ensName}
+                                    lastBlockNumber={lastBlockNumber}
+                                    connectedAccount={account ? account : ''}
+                                    chainId={chainData.chainId}
+                                    userImageData={imageData}
+                                    tokenMap={tokenMap}
+                                    selectedOutsideTab={selectedOutsideTab}
+                                    setSelectedOutsideTab={setSelectedOutsideTab}
+                                    outsideControl={outsideControl}
+                                    setOutsideControl={setOutsideControl}
+                                    userAccount={false}
+                                />
+                            }
+                        />
                         <Route path='/404' element={<NotFound />} />
                     </Routes>
                 </main>
