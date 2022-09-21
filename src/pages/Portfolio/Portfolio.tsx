@@ -63,11 +63,14 @@ export default function Portfolio(props: PortfolioPropsIF) {
     const { address } = useParams();
 
     const isAddressEns = address?.endsWith('.eth');
-    const isAddressHex = address?.startsWith('0x');
+    const isAddressHex = address?.startsWith('0x') && address?.length == 42;
 
     if (address && !isAddressEns && !isAddressHex) return <Navigate replace to='/404' />;
 
     const [resolvedAddress, setResolvedAddress] = useState<string>('');
+
+    const connectedAccountActive =
+        !address || resolvedAddress.toLowerCase() === connectedAccount.toLowerCase();
 
     useEffect(() => {
         (async () => {
@@ -87,7 +90,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
 
     useEffect(() => {
         (async () => {
-            if (resolvedAddress && isInitialized) {
+            if (resolvedAddress && isInitialized && !connectedAccountActive) {
                 const imageLocalURLs = await getNFTs(resolvedAddress);
                 if (imageLocalURLs) setSecondaryImageData(imageLocalURLs);
             }
@@ -96,7 +99,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
             //     if (imageLocalURLs) setSecondaryImageData(imageLocalURLs);
             // }
         })();
-    }, [resolvedAddress, isInitialized]);
+    }, [resolvedAddress, isInitialized, connectedAccountActive]);
 
     const [secondaryensName, setSecondaryEnsName] = useState('');
 
@@ -115,9 +118,6 @@ export default function Portfolio(props: PortfolioPropsIF) {
             }
         })();
     }, [address, isInitialized, isAddressEns]);
-
-    const connectedAccountActive =
-        !address || resolvedAddress.toLowerCase() === connectedAccount.toLowerCase();
 
     const exchangeBalanceComponent = (
         <div className={styles.exchange_balance}>
@@ -147,7 +147,13 @@ export default function Portfolio(props: PortfolioPropsIF) {
 
     useEffect(() => {
         (async () => {
-            if (crocEnv && resolvedAddress && chainId && lastBlockNumber) {
+            if (
+                crocEnv &&
+                resolvedAddress &&
+                chainId &&
+                lastBlockNumber &&
+                !connectedAccountActive
+            ) {
                 try {
                     // console.log('fetching native token balance');
                     const newNativeToken = await cachedFetchNativeTokenBalance(
@@ -197,7 +203,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
                 }
             }
         })();
-    }, [crocEnv, resolvedAddress, chainId, lastBlockNumber]);
+    }, [crocEnv, resolvedAddress, chainId, lastBlockNumber, connectedAccountActive]);
 
     return (
         <main data-testid={'portfolio'} className={styles.portfolio_container}>
@@ -205,7 +211,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
                 ensName={address ? secondaryensName : ensName}
                 resolvedAddress={resolvedAddress}
                 activeAccount={address ?? connectedAccount}
-                imageData={address ? secondaryImageData : userImageData}
+                imageData={connectedAccountActive ? userImageData : secondaryImageData}
             />
             <div
                 className={
