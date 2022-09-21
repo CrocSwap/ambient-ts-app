@@ -6,6 +6,7 @@ export default function ConfirmationModalControl() {
     const [disableConfirmationModal, setDisableConfirmationModal] = useState(false);
     return (
         <div className={styles.main_container}>
+            <p>Don&apos;t show this confirmation modal again</p>
             <Toggle2
                 isOn={disableConfirmationModal}
                 disabled={false}
