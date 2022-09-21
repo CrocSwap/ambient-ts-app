@@ -4,8 +4,16 @@ import { targetData } from '../../../utils/state/tradeDataSlice';
 import Chart from '../../Chart/Chart';
 import './TradeCandleStickChart.css';
 import logo from '../../../assets/images/logos/ambient_logo.svg';
-import { CandleChartData, LiquidityData, TvlChartData, VolumeChartData } from './TradeCharts';
+import {
+    CandleChartData,
+    LiqSnap,
+    LiquidityData,
+    TvlChartData,
+    VolumeChartData,
+} from './TradeCharts';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import { getPinnedPriceValuesFromDisplayPrices } from '../Range/rangeFunctions';
+import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -43,6 +51,9 @@ interface ChartData {
     upBorderColor: string;
     downBodyColor: string;
     downBorderColor: string;
+    baseTokenAddress: string;
+    chainId: string;
+    poolPriceNonDisplay: number | undefined;
 }
 
 export interface ChartUtils {
@@ -67,13 +78,44 @@ export default function TradeCandleStickChart(props: ChartData) {
         liquidityData: props.liquidityData,
     };
 
-    const { denomInBase } = props;
+    const { denomInBase, baseTokenAddress, chainId, poolPriceNonDisplay } = props;
 
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [parsedChartData, setParsedChartData] = useState<ChartUtils | undefined>(undefined);
 
     const tradeData = useAppSelector((state) => state.tradeData);
     const activeChartPeriod = tradeData.activeChartPeriod;
+
+    const tokenPair = {
+        dataTokenA: tradeData.tokenA,
+        dataTokenB: tradeData.tokenB,
+    };
+
+    const denominationsInBase = tradeData.isDenomBase;
+    const isTokenABase = tokenPair?.dataTokenA.address === baseTokenAddress;
+
+    const tokenA = tokenPair.dataTokenA;
+    const tokenB = tokenPair.dataTokenB;
+    const tokenADecimals = tokenA.decimals;
+    const tokenBDecimals = tokenB.decimals;
+    const baseTokenDecimals = isTokenABase ? tokenADecimals : tokenBDecimals;
+    const quoteTokenDecimals = !isTokenABase ? tokenADecimals : tokenBDecimals;
+
+    const currentPoolPriceTick =
+        poolPriceNonDisplay === undefined ? 0 : Math.log(poolPriceNonDisplay) / Math.log(1.0001);
+
+    const defaultMinPriceDifferencePercentage = -15;
+    const defaultMaxPriceDifferencePercentage = 15;
+
+    const defaultLowTick =
+        tradeData.advancedLowTick === 0
+            ? currentPoolPriceTick + defaultMinPriceDifferencePercentage * 100
+            : tradeData.advancedLowTick;
+
+    const defaultHighTick =
+        tradeData.advancedHighTick === 0
+            ? currentPoolPriceTick + defaultMaxPriceDifferencePercentage * 100
+            : tradeData.advancedHighTick;
 
     // Parse price data
     useEffect(() => {
@@ -126,6 +168,8 @@ export default function TradeCandleStickChart(props: ChartData) {
     // Parse liquidtiy data
     const liquiditiyData = useMemo(() => {
         const liqData: LiquidityData[] = [];
+        const liqSnapData: LiqSnap[] = [];
+
         if (props.liquidityData) {
             props.liquidityData.ranges.map((data: any) => {
                 if (data.upperBoundInvPriceDecimalCorrected > 1) {
@@ -135,13 +179,32 @@ export default function TradeCandleStickChart(props: ChartData) {
                             ? data.upperBoundInvPriceDecimalCorrected
                             : data.upperBoundInvPriceDecimalCorrected,
                     });
+
+                    const pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
+                        denominationsInBase,
+                        baseTokenDecimals,
+                        quoteTokenDecimals,
+                        data.upperBoundInvPriceDecimalCorrected,
+                        data.lowerBoundInvPriceDecimalCorrected,
+                        lookupChain(chainId).gridSize,
+                    );
+
+                    if (!isNaN(parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated))) {
+                        liqSnapData.push({
+                            activeLiq: data.activeLiq,
+                            pinnedMaxPriceDisplayTruncated: parseFloat(
+                                pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+                            ),
+                            pinnedMinPriceDisplayTruncated: parseFloat(
+                                pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+                            ),
+                        });
+                    }
                 }
             });
         }
 
-        console.log({ liqData });
-
-        return liqData;
+        return { liqData: liqData, liqSnapData: liqSnapData };
     }, [props.liquidityData, denomInBase]);
 
     const loading = (

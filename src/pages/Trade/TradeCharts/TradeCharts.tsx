@@ -69,6 +69,8 @@ interface TradeChartsPropsIF {
     upBorderColor: string;
     downBodyColor: string;
     downBorderColor: string;
+    baseTokenAddress: string;
+    poolPriceNonDisplay: number | undefined;
 }
 
 export interface CandleChartData {
@@ -98,6 +100,14 @@ export interface LiquidityData {
     activeLiq: any;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     upperBoundPriceDecimalCorrected: any;
+}
+
+export interface LiqSnap {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    activeLiq: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    pinnedMaxPriceDisplayTruncated: any;
+    pinnedMinPriceDisplayTruncated: any;
 }
 
 // React functional component
@@ -664,6 +674,9 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                         upBorderColor={props.upBorderColor}
                         downBodyColor={props.downBodyColor}
                         downBorderColor={props.downBorderColor}
+                        baseTokenAddress={props.baseTokenAddress}
+                        chainId={chainId}
+                        poolPriceNonDisplay={props.poolPriceNonDisplay}
                     />
                 </div>
             )}

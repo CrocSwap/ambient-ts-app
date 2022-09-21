@@ -65,6 +65,7 @@ interface TradePropsIF {
     openGlobalModal: (content: React.ReactNode) => void;
 
     closeGlobalModal: () => void;
+    poolPriceNonDisplay: number | undefined;
 }
 
 // React functional component
@@ -401,6 +402,8 @@ export default function Trade(props: TradePropsIF) {
                                 upBorderColor={upBorderColor}
                                 downBodyColor={downBodyColor}
                                 downBorderColor={downBorderColor}
+                                baseTokenAddress={baseTokenAddress}
+                                poolPriceNonDisplay={props.poolPriceNonDisplay}
                             />
                         </motion.div>
                     </div>

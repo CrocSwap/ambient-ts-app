@@ -2114,6 +2114,7 @@ export default function App() {
                                     setCurrentPositionActive={setCurrentPositionActive}
                                     openGlobalModal={openGlobalModal}
                                     closeGlobalModal={closeGlobalModal}
+                                    poolPriceNonDisplay={poolPriceNonDisplay}
                                 />
                             }
                         >

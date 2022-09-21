@@ -264,6 +264,7 @@ export default function Chart(props: ChartData) {
             const yScaleCopy = yScale.copy();
 
             const liquidityScale = d3.scaleLinear();
+            const ghostScale = d3.scaleLinear();
 
             const displayValue =
                 spotPriceDisplay !== undefined ? spotPriceDisplay.replace(',', '') : '0';
@@ -271,19 +272,27 @@ export default function Chart(props: ChartData) {
 
             // bar chart
             const liquidityExtent = d3fc
-                .extentLinear(props.liquidityData)
+                .extentLinear(props.liquidityData.liqData)
                 .include([0])
                 .accessors([(d: any) => parseFloat(d.activeLiq)]);
 
-            liquidityScale.domain(liquidityExtent(props.liquidityData));
+            const ghostExtent = d3fc
+                .extentLinear(props.liquidityData.liqSnapData)
+                .include([0])
+                .accessors([(d: any) => parseFloat(d.activeLiq)]);
 
-            const ghostScale = liquidityScale.copy();
+            liquidityScale.domain(liquidityExtent(props.liquidityData.liqData));
+            ghostScale.domain(ghostExtent(props.liquidityData.liqSnapData));
 
             const liqScale = liquidityScale
                 .copy()
                 .range([
-                    Math.min(...props.liquidityData.map((o: any) => parseFloat(o.activeLiq))) / 2.5,
-                    Math.max(...props.liquidityData.map((o: any) => parseFloat(o.activeLiq))) * 2.5,
+                    Math.min(
+                        ...props.liquidityData.liqData.map((o: any) => parseFloat(o.activeLiq)),
+                    ) / 2.5,
+                    Math.max(
+                        ...props.liquidityData.liqData.map((o: any) => parseFloat(o.activeLiq)),
+                    ) * 2.5,
                 ]);
 
             setScaleData(() => {
@@ -507,7 +516,7 @@ export default function Chart(props: ChartData) {
         if (scaleData !== undefined) {
             const ghostLines = d3fc
                 .annotationSvgLine()
-                .value((d: any) => d.upperBoundPriceDecimalCorrected)
+                .value((d: any) => d.pinnedMaxPriceDisplayTruncated)
                 .xScale(scaleData.xScale)
                 .yScale(scaleData.yScale);
 
@@ -537,16 +546,21 @@ export default function Chart(props: ChartData) {
             const snap = (data: any, value: any) => {
                 if (value == undefined) return [];
 
-                const filtered = data.lenght > 1 ? data.filter((d: any) => d != null) : data;
+                const filtered =
+                    data.lenght > 1
+                        ? data.filter((d: any) => d.pinnedMaxPriceDisplayTruncated != null)
+                        : data;
 
                 const nearest = filtered.reduce(function (prev: any, curr: any) {
-                    return Math.abs(curr.upperBoundPriceDecimalCorrected - value) <
-                        Math.abs(prev.upperBoundPriceDecimalCorrected - value)
+                    return Math.abs(curr.pinnedMaxPriceDisplayTruncated - value) <
+                        Math.abs(prev.pinnedMaxPriceDisplayTruncated - value)
                         ? curr
                         : prev;
                 });
 
-                return nearest.upperBoundPriceDecimalCorrected;
+                console.log({ filtered });
+
+                return nearest.pinnedMaxPriceDisplayTruncated;
             };
 
             const dragRange = d3.drag().on('drag', function (event, d: any) {
@@ -558,7 +572,7 @@ export default function Chart(props: ChartData) {
                 const snappedValue =
                     Math.round(
                         snap(
-                            props.liquidityData,
+                            props.liquidityData.liqSnapData,
                             scaleData.yScale.invert(d3.pointer(event)[1] - 200),
                         ) * 100,
                     ) / 100;
@@ -589,19 +603,19 @@ export default function Chart(props: ChartData) {
                                     snappedValue;
 
                                 newTargets.filter((target: any) => target.name === 'Min')[0].value =
-                                    snap(props.liquidityData, low + valueWithRange);
+                                    snap(props.liquidityData.liqData, low + valueWithRange);
 
                                 render();
                             } else {
                                 newTargets.filter((target: any) => target.name === 'Max')[0].value =
                                     snap(
-                                        props.liquidityData,
+                                        props.liquidityData.liqData,
                                         parseFloat(displayValue) + dragLimit * 1.01,
                                     );
 
                                 newTargets.filter((target: any) => target.name === 'Min')[0].value =
                                     snap(
-                                        props.liquidityData,
+                                        props.liquidityData.liqData,
                                         parseFloat(displayValue) - dragLimit * 1.01,
                                     );
 
@@ -634,19 +648,19 @@ export default function Chart(props: ChartData) {
                                     snappedValue;
 
                                 newTargets.filter((target: any) => target.name === 'Max')[0].value =
-                                    snap(props.liquidityData, high + valueWithRange);
+                                    snap(props.liquidityData.liqData, high + valueWithRange);
 
                                 render();
                             } else {
                                 newTargets.filter((target: any) => target.name === 'Max')[0].value =
                                     snap(
-                                        props.liquidityData,
+                                        props.liquidityData.liqData,
                                         parseFloat(displayValue) + dragLimit * 1.01,
                                     );
 
                                 newTargets.filter((target: any) => target.name === 'Min')[0].value =
                                     snap(
-                                        props.liquidityData,
+                                        props.liquidityData.liqData,
                                         parseFloat(displayValue) - dragLimit * 1.01,
                                     );
 
@@ -731,6 +745,7 @@ export default function Chart(props: ChartData) {
     useEffect(() => {
         setDragControl(false);
     }, [parsedChartData]);
+
     // Horizontal Lines
     useEffect(() => {
         if (scaleData !== undefined) {
@@ -779,27 +794,6 @@ export default function Chart(props: ChartData) {
                     : location.pathname.includes('market')
                     ? market
                     : undefined;
-
-                selection.enter();
-                /* .append('polygon')
-                    .attr('id',(d: any)=>d.name)
-                    .attr('points', (d: any) => {
-                        console.error('d.name',d.name)
-                        return d.name == 'Max' || d.name == 'Limit'
-                            ? '0,0 7,15 15,0,15'
-                            : d.name == 'Min'
-                            ? '0,20 18,20 8,0,20'
-                            : ''
-                        
-                        })
-                    // .attr('points','0,0 7,15 15,0,15')
-                    // .style('transform',(d: any) => d.name=='Min' ? 'rotate(295deg)' : '')
-                    .style('transform', (d: any) =>
-                        d.name == 'Min' ? ' translate(0px, -20px)' : '',
-                    )
-                    .attr('width', 15)
-                    .attr('height', 10)
- */ //                   .attr('fill', 'gainsboro');
             });
             setHorizontalLine(() => {
                 return horizontalLine;
@@ -808,32 +802,6 @@ export default function Chart(props: ChartData) {
     }, [scaleData]);
 
     useEffect(() => {
-        /*  const targetData = location.pathname.includes('limit')
-        ? limit
-        : location.pathname.includes('range')
-        ? ranges
-        : location.pathname.includes('market')
-        ? market
-        : undefined; */
-
-        /* targetData?.forEach(async(item)=> {
-            await d3.select(d3PlotArea.current).select('.targets').select('.annotation-line').selectAll('polygon').remove();
-             */
-        /*   if (item.name==='Limit'){
-                    d3.select(d3PlotArea.current).select('.targets').select('.annotation-line')
-                    .append('polygon')
-                    .attr('id',item.name)
-                    .attr('points', '0,0 7,15 15,0,15')
-                    // .attr('points','0,0 7,15 15,0,15')
-                    // .style('transform',(d: any) => d.name=='Min' ? 'rotate(295deg)' : '')
-                    .style('transform', (d: any) =>
-                        item.name == 'Min' ? ' translate(0px, -20px)' : '',
-                    )
-                    .attr('width', 15)
-                    .attr('height', 10)
-                    .attr('fill', 'gainsboro');
-                    } */
-
         /* else */
         if (!location.pathname.includes('market')) {
             const max = ranges.find((item) => item.name === 'Max')?.value as number;
@@ -857,30 +825,6 @@ export default function Chart(props: ChartData) {
             });
         }
     }, [drawControl]);
-
-    /*    item.name.includes('Current') ? 
-            d3.select(d3PlotArea.current).select('.targets').select('.annotation-line').selectAll('polygon').remove() :
-
-            d3.select(d3PlotArea.current).select('.targets').select('.annotation-line').append('polygon')
-            .attr('id',item.name)
-            .attr('points', () => {
-                return item.name == 'Max' || item.name == 'Limit'
-                    ? '0,0 7,15 15,0,15'
-                    : item.name == 'Min'
-                    ? '0,20 18,20 8,0,20'
-                    : ''
-                
-                })
-            // .attr('points','0,0 7,15 15,0,15')
-            // .style('transform',(d: any) => d.name=='Min' ? 'rotate(295deg)' : '')
-            .style('transform', (d: any) =>
-                d.name == 'Min' ? ' translate(0px, -20px)' : '',
-            )
-            .attr('width', 15)
-            .attr('height', 10)
-            .attr('fill', 'gainsboro');
-
-        }) */
 
     // Line Rules
     useEffect(() => {
@@ -933,7 +877,7 @@ export default function Chart(props: ChartData) {
     // Call drawChart()
     useEffect(() => {
         if (
-            props.liquidityData !== undefined &&
+            props.liquidityData.liqData !== undefined &&
             parsedChartData !== undefined &&
             scaleData !== undefined &&
             zoomUtils !== undefined
@@ -1184,9 +1128,9 @@ export default function Chart(props: ChartData) {
 
                     crosshairHorizontalJoin(svg, [crosshairData]).call(crosshairHorizontal);
                     crosshairVerticalJoin(svg, [crosshairData]).call(crosshairVertical);
-                    barJoin(svg, [liquidityData]).call(barSeries);
+                    barJoin(svg, [liquidityData.liqData]).call(barSeries);
                     candleJoin(svg, [chartData]).call(candlestick);
-                    ghostJoin(svg, [liquidityData]).call(ghostLines);
+                    ghostJoin(svg, [liquidityData.liqSnapData]).call(ghostLines);
                     await targetsJoin(svg, [targets]).call(horizontalLine);
                     setDrawControl(event);
                     setDragControl(true);
