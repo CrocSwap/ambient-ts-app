@@ -1,13 +1,23 @@
 import styles from './GraphContainer.module.css';
 import { useProtocolChartData, useProtocolData } from '../../../state/protocol/hooks';
 import { useEffect, useMemo, useState } from 'react';
-import { formatDollarAmount } from '../../../utils/numbers';
+import {
+    formatAmount,
+    //  formatDollarAmount
+} from '../../../utils/numbers';
 import AreaChart from '../../Global/Charts/AreaChart';
 import BarChart from '../../Global/Charts/BarChart';
 import { useTransformedTvlData, useTransformedVolumeData } from '../../../hooks/chart';
 import logo from '../../../assets/images/logos/ambient_logo.svg';
 import moment from 'moment';
 import { ChartDataTimeframe } from '../../../hooks/ChartDataTimeframe';
+import { getDexStatsFresh } from '../../../utils/functions/getDexStats';
+import {
+    getDexTvlSeries,
+    getDexVolumeSeries,
+    ITvlSeriesData,
+    IVolumeSeriesData,
+} from '../../../utils/functions/getDexSeriesData';
 
 export default function GraphContainer() {
     const [protocolData] = useProtocolData();
@@ -20,6 +30,48 @@ export default function GraphContainer() {
     const [valueLabelTvl, setValueLabelTvl] = useState<string | undefined>();
     const [valueLabelVolume, setValueLabelVolume] = useState<string | undefined>();
     const [tempData, setTempData] = useState(chartData);
+
+    const [totalTvlString, setTotalTvlString] = useState<string | undefined>();
+    const [totalVolumeString, setTotalVolumeString] = useState<string | undefined>();
+    const [totalFeesString, setTotalFeesString] = useState<string | undefined>();
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const [tvlSeriesData, setTvlSeriesData] = useState<ITvlSeriesData | undefined>();
+    // const [tvlSeriesData, setTvlSeriesData] = useState<tvlSeriesData | undefined>();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const [volumeSeriesData, setVolumeSeriesData] = useState<IVolumeSeriesData | undefined>();
+    // const [volumeSeriesData, setVolumeSeriesData] = useState<volumeSeriesData | undefined>();
+
+    useEffect(() => {
+        console.log({ tvlSeriesData });
+    }, [tvlSeriesData]);
+
+    useEffect(() => {
+        console.log({ volumeSeriesData });
+    }, [volumeSeriesData]);
+
+    useEffect(() => {
+        getDexStatsFresh()
+            .then((dexStats) => {
+                if (dexStats.tvl) setTotalTvlString('$' + formatAmount(dexStats.tvl));
+                if (dexStats.volume) setTotalVolumeString('$' + formatAmount(dexStats.volume));
+                if (dexStats.fees) setTotalFeesString('$' + formatAmount(dexStats.fees));
+            })
+            .catch(console.log);
+
+        getDexTvlSeries()
+            .then((tvlSeriesData) => {
+                setTvlSeriesData(tvlSeriesData);
+            })
+            .catch(console.log);
+
+        getDexVolumeSeries()
+            .then((volumeSeriesData) => {
+                setVolumeSeriesData(volumeSeriesData);
+            })
+            .catch(console.log);
+    }, []);
+
     // const oneDayVolumeData = useTransformedVolumeData(
     //     chartData?.filter(
     //         (item) =>
@@ -233,12 +285,13 @@ export default function GraphContainer() {
     const graphData = (
         <div className={styles.graph_data}>
             <div className={styles.graph_container}>
-                <div className={styles.title}>Total TV</div>
+                <div className={styles.title}>Total Value Locked</div>
 
                 <label className={styles.v4m1wv}>
-                    {latestValueTvl
+                    {totalTvlString}
+                    {/* {latestValueTvl
                         ? formatDollarAmount(latestValueTvl, 2)
-                        : formatDollarAmount(latestValueTvl, 2)}
+                        : formatDollarAmount(latestValueTvl, 2)} */}
                 </label>
                 <br></br>
                 <label className={styles.eJnjNO}>
@@ -262,9 +315,10 @@ export default function GraphContainer() {
             <div className={styles.graph_container}>
                 <div className={styles.title}>Volume 24H</div>
                 <label className={styles.eJnjNO}>
-                    {latestValueVolume
+                    {totalTvlString}
+                    {/* {latestValueVolume
                         ? formatDollarAmount(latestValueVolume, 2)
-                        : formatDollarAmount(latestValueVolume, 2)}
+                        : formatDollarAmount(latestValueVolume, 2)} */}
                 </label>
                 <br></br>
                 <label className={styles.eJnjNO}>
@@ -299,18 +353,21 @@ export default function GraphContainer() {
             <div className={styles.info_content}>
                 <div className={styles.info_title}>Total TVL</div>
                 <div className={styles.info_value}>
-                    {formatDollarAmount(liquidityHover, 2, true)}{' '}
+                    {totalTvlString || '...'}
+                    {/* {formatDollarAmount(liquidityHover, 2, true)}{' '} */}
                 </div>
             </div>
 
             <div className={styles.info_content}>
                 <div className={styles.info_title}>24h Volume</div>
-                <div className={styles.info_value}>{formatDollarAmount(volumeHover, 2)}</div>
+                <div className={styles.info_value}>{totalVolumeString || '...'}</div>
+                {/* <div className={styles.info_value}>{formatDollarAmount(volumeHover, 2)}</div> */}
             </div>
 
             <div className={styles.info_content}>
                 <div className={styles.info_title}>24h Fees</div>
-                <div className={styles.info_value}>{formatDollarAmount(protocolData?.feesUSD)}</div>
+                <div className={styles.info_value}>{totalFeesString || '...'}</div>
+                {/* <div className={styles.info_value}>{formatDollarAmount(protocolData?.feesUSD)}</div> */}
             </div>
         </div>
     );
