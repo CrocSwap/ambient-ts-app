@@ -2,7 +2,7 @@ import ExchangeBalance from '../../components/Portfolio/EchangeBalance/ExchangeB
 import PortfolioBanner from '../../components/Portfolio/PortfolioBanner/PortfolioBanner';
 import PortfolioTabs from '../../components/Portfolio/PortfolioTabs/PortfolioTabs';
 import styles from './Portfolio.module.css';
-import { Navigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { getNFTs } from '../../App/functions/getNFTs';
 import { useEffect, useState, Dispatch, SetStateAction } from 'react';
 import { fetchAddress } from '../../App/functions/fetchAddress';
@@ -14,6 +14,7 @@ import { CrocEnv } from '@crocswap-libs/sdk';
 import { Erc20TokenBalanceFn, nativeTokenBalanceFn } from '../../App/functions/fetchTokenBalances';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { TokenPriceFn } from '../../App/functions/fetchTokenPrice';
+import NotFound from '../NotFound/NotFound';
 
 const mainnetProvider = new ethers.providers.WebSocketProvider(
     'wss://mainnet.infura.io/ws/v3/25e7e0ec71de48bfa9c4d2431fbb3c4a',
@@ -65,7 +66,8 @@ export default function Portfolio(props: PortfolioPropsIF) {
     const isAddressEns = address?.endsWith('.eth');
     const isAddressHex = address?.startsWith('0x') && address?.length == 42;
 
-    if (address && !isAddressEns && !isAddressHex) return <Navigate replace to='/404' />;
+    if (address && !isAddressEns && !isAddressHex) return <NotFound />;
+    // if (address && !isAddressEns && !isAddressHex) return <Navigate replace to='/404' />;
 
     const [resolvedAddress, setResolvedAddress] = useState<string>('');
 
