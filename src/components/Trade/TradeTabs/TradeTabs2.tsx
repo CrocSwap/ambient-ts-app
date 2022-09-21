@@ -51,6 +51,7 @@ interface ITabsProps {
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
+    pendingTransactions: string[];
 
     openGlobalModal: (content: React.ReactNode) => void;
 
@@ -88,27 +89,41 @@ export default function TradeTabs2(props: ITabsProps) {
         setSelectedOutsideTab,
         outsideControl,
         setOutsideControl,
+        pendingTransactions,
     } = props;
 
     const graphData = useAppSelector((state) => state?.graphData);
+    const userData = useAppSelector((state) => state?.userData);
 
     const userPositions = graphData?.positionsByUser?.positions;
     const userChanges = graphData?.changesByUser?.changes;
+    const userLimitOrders = graphData?.limitOrdersByUser?.limitOrders;
     // const poolPositions = graphData?.positionsByPool?.positions;
 
     const [hasInitialized, setHasInitialized] = useState(false);
 
+    const userChangesLength = userChanges.length;
+    const userPositionsLength = userPositions.length;
+    const userLimitOrdersLength = userLimitOrders.length;
+
     useEffect(() => {
         setHasInitialized(false);
-    }, [account, isAuthenticated]);
+    }, [
+        account,
+        userData.isLoggedIn,
+        userChangesLength,
+        userLimitOrdersLength,
+        userPositionsLength,
+        selectedOutsideTab,
+    ]);
 
     useEffect(() => {
         // console.log({ hasInitialized });
-        // console.log({ isShowAllEnabled });
+        // console.log({ userChangesLength });
         // console.log({ userPositions });
         // console.log({ selectedOutsideTab });
         if (!hasInitialized) {
-            if (selectedOutsideTab === 2) {
+            if (selectedOutsideTab === 0) {
                 if (!isCandleSelected && !isShowAllEnabled && userPositions.length < 1) {
                     setIsShowAllEnabled(true);
                 } else if (userPositions.length < 1) {
@@ -116,7 +131,15 @@ export default function TradeTabs2(props: ITabsProps) {
                 } else if (isShowAllEnabled && userPositions.length >= 1) {
                     setIsShowAllEnabled(false);
                 }
-            } else if (selectedOutsideTab === 0) {
+            } else if (selectedOutsideTab === 1) {
+                if (!isCandleSelected && !isShowAllEnabled && userLimitOrders.length < 1) {
+                    setIsShowAllEnabled(true);
+                } else if (userLimitOrders.length < 1) {
+                    return;
+                } else if (isShowAllEnabled && userLimitOrders.length >= 1) {
+                    setIsShowAllEnabled(false);
+                }
+            } else if (selectedOutsideTab === 2) {
                 if (!isCandleSelected && !isShowAllEnabled && userChanges.length < 1) {
                     setIsShowAllEnabled(true);
                 } else if (userChanges.length < 1) {
@@ -124,10 +147,16 @@ export default function TradeTabs2(props: ITabsProps) {
                 } else if (isShowAllEnabled && userChanges.length >= 1) {
                     setIsShowAllEnabled(false);
                 }
+                setHasInitialized(true);
             }
-            setHasInitialized(true);
         }
-    }, [hasInitialized, isShowAllEnabled, JSON.stringify(userPositions)]);
+    }, [
+        hasInitialized,
+        isShowAllEnabled,
+        userPositions.length,
+        userChanges.length,
+        userLimitOrders.length,
+    ]);
 
     // -------------------------------DATA-----------------------------------------
 
@@ -151,7 +180,7 @@ export default function TradeTabs2(props: ITabsProps) {
         expandTradeTable: expandTradeTable,
         currentPositionActive: currentPositionActive,
         setCurrentPositionActive: setCurrentPositionActive,
-
+        pendingTransactions: pendingTransactions,
         openGlobalModal: props.openGlobalModal,
 
         closeGlobalModal: props.closeGlobalModal,
@@ -196,13 +225,13 @@ export default function TradeTabs2(props: ITabsProps) {
 
     // data for headings of each of the three tabs
     const tradeTabData = [
+        { label: 'Ranges', content: <Ranges {...rangesProps} />, icon: rangePositionsImage },
+        { label: 'Limit Orders', content: <Orders {...ordersProps} />, icon: openOrdersImage },
         {
             label: 'Transactions',
             content: <Transactions {...transactionsProps} />,
             icon: recentTransactionsImage,
         },
-        { label: 'Orders', content: <Orders {...ordersProps} />, icon: openOrdersImage },
-        { label: 'Ranges', content: <Ranges {...rangesProps} />, icon: rangePositionsImage },
     ];
 
     // -------------------------------END OF DATA-----------------------------------------

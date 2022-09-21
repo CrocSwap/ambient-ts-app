@@ -8,9 +8,11 @@ import { motion } from 'framer-motion';
 interface ReceiptDisplayPropsIF {
     status: 'successful' | 'failed' | 'pending';
     hash: string;
+    txBlockNumber?: number;
+    lastBlockNumber: number;
 }
 export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
-    const { status, hash } = props;
+    const { status, hash, txBlockNumber, lastBlockNumber } = props;
     const pending = (
         <div className={styles.pending}>
             <AiOutlineLoading3Quarters />
@@ -38,7 +40,29 @@ export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
         } else return 'submitted';
     }
 
-    const EthersanTx = `https://goerli.etherscan.io/tx/${hash}`;
+    const EtherscanTx = `https://goerli.etherscan.io/tx/${hash}`;
+
+    const elapsedTimeInSecondsNum = txBlockNumber
+        ? (lastBlockNumber - txBlockNumber) * 13.75 // 13.75 seconds average between blocks
+        : undefined;
+
+    const elapsedTimeString =
+        elapsedTimeInSecondsNum !== undefined
+            ? elapsedTimeInSecondsNum < 60
+                ? '< 1 minute ago'
+                : elapsedTimeInSecondsNum < 120
+                ? '1 minute ago'
+                : elapsedTimeInSecondsNum < 3600
+                ? `${Math.floor(elapsedTimeInSecondsNum / 60)} minutes ago`
+                : elapsedTimeInSecondsNum < 7200
+                ? '1 hour ago'
+                : elapsedTimeInSecondsNum < 86400
+                ? `${Math.floor(elapsedTimeInSecondsNum / 3600)} hours ago`
+                : elapsedTimeInSecondsNum < 172800
+                ? '1 day ago'
+                : `${Math.floor(elapsedTimeInSecondsNum / 86400)} days ago`
+            : 'Pending...';
+
     return (
         <motion.div
             layout
@@ -56,9 +80,9 @@ export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
                 <div>
                     Transaction {txHashTruncated} {handleTxTextDisplay(status)}
                 </div>
-                <p>13 seconds ago</p>
+                <p>{elapsedTimeString}</p>
             </div>
-            <a href={EthersanTx} className={styles.action} target='_blank' rel='noreferrer'>
+            <a href={EtherscanTx} className={styles.action} target='_blank' rel='noreferrer'>
                 <RiExternalLinkLine size={20} color='#7371fc ' />
             </a>
         </motion.div>

@@ -20,10 +20,23 @@ import rangePositionsImage from '../../../assets/images/sidebarImages/rangePosit
 import recentTransactionsImage from '../../../assets/images/sidebarImages/recentTransactions.svg';
 import walletImage from '../../../assets/images/sidebarImages/wallet.svg';
 import exchangeImage from '../../../assets/images/sidebarImages/exchange.svg';
+import { CrocEnv } from '@crocswap-libs/sdk';
+import { ethers } from 'ethers';
+import { ILimitOrderState, ITransaction } from '../../../utils/state/graphDataSlice';
+import { getLimitOrderData } from '../../../App/functions/getLimitOrderData';
+import { getTransactionData } from '../../../App/functions/getTransactionData';
+import { TokenPriceFn } from '../../../App/functions/fetchTokenPrice';
 
 // interface for React functional component props
 interface PortfolioTabsPropsIF {
+    crocEnv: CrocEnv | undefined;
+    provider: ethers.providers.Provider | undefined;
+    cachedFetchTokenPrice: TokenPriceFn;
+    importedTokens: TokenIF[];
+    connectedUserTokens: (TokenIF | undefined)[];
+    resolvedAddressTokens: (TokenIF | undefined)[];
     resolvedAddress: string;
+    lastBlockNumber: number;
     activeAccount: string;
     connectedAccountActive: boolean;
     chainId: string;
@@ -38,7 +51,14 @@ interface PortfolioTabsPropsIF {
 // React functional component
 export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
     const {
+        crocEnv,
+        provider,
+        cachedFetchTokenPrice,
+        importedTokens,
+        connectedUserTokens,
+        resolvedAddressTokens,
         resolvedAddress,
+        lastBlockNumber,
         activeAccount,
         connectedAccountActive,
         chainId,
@@ -52,27 +72,101 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
 
     const graphData = useAppSelector((state) => state?.graphData);
     const connectedAccountPositionData = graphData.positionsByUser.positions;
+    const connectedAccountLimitOrderData = graphData.limitOrdersByUser.limitOrders;
+    const connectedAccountTransactionData = graphData.changesByUser.changes;
+
     const [otherAccountPositionData, setOtherAccountPositionData] = useState<PositionIF[]>([]);
+    const [otherAccountLimitOrderData, setOtherAccountLimitOrderData] = useState<
+        ILimitOrderState[]
+    >([]);
+    const [otherAccountTransactionData, setOtherAccountTransactionData] = useState<ITransaction[]>(
+        [],
+    );
 
     const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
 
-    const allUserPositionsCacheEndpoint = httpGraphCacheServerDomain + '/user_positions?';
+    const userPositionsCacheEndpoint = httpGraphCacheServerDomain + '/user_positions?';
+    const userLimitOrdersCacheEndpoint = httpGraphCacheServerDomain + '/user_limit_order_states?';
+    const userTransactionsCacheEndpoint = httpGraphCacheServerDomain + '/user_recent_changes?';
 
     const getUserPositions = async (accountToSearch: string) =>
         fetch(
-            allUserPositionsCacheEndpoint +
+            userPositionsCacheEndpoint +
                 new URLSearchParams({
                     user: accountToSearch,
                     chainId: chainId,
+                    ensResolution: 'true',
+                    annotate: 'true',
+                    omitEmpty: 'true',
+                    omitKnockout: 'true',
+                    addValue: 'true',
                 }),
         )
             .then((response) => response?.json())
             .then((json) => {
                 const userPositions = json?.data;
 
-                if (userPositions) {
-                    Promise.all(userPositions.map(getPositionData)).then((updatedPositions) => {
+                if (userPositions && provider) {
+                    Promise.all(
+                        userPositions.map((position: PositionIF) => {
+                            return getPositionData(
+                                position,
+                                importedTokens,
+                                provider,
+                                chainId,
+                                lastBlockNumber,
+                            );
+                        }),
+                    ).then((updatedPositions) => {
                         setOtherAccountPositionData(updatedPositions);
+                    });
+                }
+            })
+            .catch(console.log);
+
+    const getUserLimitOrders = async (accountToSearch: string) =>
+        fetch(
+            userLimitOrdersCacheEndpoint +
+                new URLSearchParams({
+                    user: accountToSearch,
+                    chainId: chainId,
+                    ensResolution: 'true',
+                }),
+        )
+            .then((response) => response?.json())
+            .then((json) => {
+                const userLimitOrderStates = json?.data;
+                if (userLimitOrderStates) {
+                    Promise.all(
+                        userLimitOrderStates.map((limitOrder: ILimitOrderState) => {
+                            return getLimitOrderData(limitOrder, importedTokens);
+                        }),
+                    ).then((updatedLimitOrderStates) => {
+                        setOtherAccountLimitOrderData(updatedLimitOrderStates);
+                    });
+                }
+            })
+            .catch(console.log);
+
+    const getUserTransactions = async (accountToSearch: string) =>
+        fetch(
+            userTransactionsCacheEndpoint +
+                new URLSearchParams({
+                    user: accountToSearch,
+                    chainId: chainId,
+                    ensResolution: 'true',
+                }),
+        )
+            .then((response) => response?.json())
+            .then((json) => {
+                const userTransactions = json?.data;
+                if (userTransactions) {
+                    Promise.all(
+                        userTransactions.map((tx: ITransaction) => {
+                            return getTransactionData(tx, importedTokens);
+                        }),
+                    ).then((updatedTransactions) => {
+                        setOtherAccountTransactionData(updatedTransactions);
                     });
                 }
             })
@@ -80,19 +174,48 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
 
     useEffect(() => {
         (async () => {
-            if (!connectedAccountActive) {
-                await getUserPositions(activeAccount);
+            if (!connectedAccountActive && resolvedAddress) {
+                await getUserPositions(resolvedAddress);
+                await getUserLimitOrders(resolvedAddress);
+                await getUserTransactions(resolvedAddress);
             }
         })();
-    }, [activeAccount, connectedAccountActive]);
+    }, [resolvedAddress, connectedAccountActive]);
 
     const activeAccountPositionData = connectedAccountActive
         ? connectedAccountPositionData
         : otherAccountPositionData;
 
+    const activeAccountLimitOrderData = connectedAccountActive
+        ? connectedAccountLimitOrderData
+        : otherAccountLimitOrderData;
+
+    const activeAccountTransactionData = connectedAccountActive
+        ? connectedAccountTransactionData
+        : otherAccountTransactionData;
+
     // props for <Wallet/> React Element
     const walletProps = {
+        crocEnv: crocEnv,
+        cachedFetchTokenPrice: cachedFetchTokenPrice,
+        connectedUserTokens: connectedUserTokens,
+        resolvedAddressTokens: resolvedAddressTokens,
         connectedAccountActive: connectedAccountActive,
+        lastBlockNumber: lastBlockNumber,
+        resolvedAddress: resolvedAddress,
+        activeAccount: activeAccount,
+        chainId: chainId,
+        tokenMap: tokenMap,
+    };
+
+    // props for <Exchange/> React Element
+    const exchangeProps = {
+        crocEnv: crocEnv,
+        cachedFetchTokenPrice: cachedFetchTokenPrice,
+        connectedUserTokens: connectedUserTokens,
+        resolvedAddressTokens: resolvedAddressTokens,
+        connectedAccountActive: connectedAccountActive,
+        lastBlockNumber: lastBlockNumber,
         resolvedAddress: resolvedAddress,
         activeAccount: activeAccount,
         chainId: chainId,
@@ -102,13 +225,29 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
     const rangeProps = {
         positions: activeAccountPositionData,
     };
+    // props for <Order/> React Element
+    const limitOrderProps = {
+        orders: activeAccountLimitOrderData,
+    };
+    // props for <Transactions/> React Element
+    const transactionsProps = {
+        transactions: activeAccountTransactionData,
+    };
 
     const accountTabData = [
-        { label: 'Wallet', content: <Wallet {...walletProps} />, icon: walletImage },
-        { label: 'Exchange', content: <Exchange />, icon: exchangeImage },
         { label: 'Ranges', content: <Range {...rangeProps} />, icon: rangePositionsImage },
-        { label: ' Orders', content: <Order />, icon: openOrdersImage },
-        { label: 'Transactions', content: <TransactionsTable />, icon: recentTransactionsImage },
+        { label: 'Limit Orders', content: <Order {...limitOrderProps} />, icon: openOrdersImage },
+        {
+            label: 'Transactions',
+            content: <TransactionsTable {...transactionsProps} />,
+            icon: recentTransactionsImage,
+        },
+        {
+            label: 'Exchange Balances',
+            content: <Exchange {...exchangeProps} />,
+            icon: exchangeImage,
+        },
+        { label: 'Wallet Balances', content: <Wallet {...walletProps} />, icon: walletImage },
     ];
 
     return (

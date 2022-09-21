@@ -1,13 +1,18 @@
 export interface TokenIF {
     name: string;
     address: string;
-    // eslint-disable-next-line camelcase
-    token_address?: string;
     symbol: string;
     decimals: number;
     chainId: number;
     logoURI: string;
     fromList?: string;
-    balance?: string;
+    walletBalance?: string;
+    walletBalanceDisplay?: string;
+    walletBalanceDisplayTruncated?: string;
     dexBalance?: string;
+    dexBalanceDisplay?: string;
+    dexBalanceDisplayTruncated?: string;
+    combinedBalance?: string;
+    combinedBalanceDisplay?: string;
+    combinedBalanceDisplayTruncated?: string;
 }

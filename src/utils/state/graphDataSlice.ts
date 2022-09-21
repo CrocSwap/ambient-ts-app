@@ -53,8 +53,10 @@ export interface ILimitOrderState {
     knockoutChanges: number;
     baseSymbol: string;
     baseDecimals: number;
+    baseTokenLogoURI: string;
     quoteSymbol: string;
     quoteDecimals: number;
+    quoteTokenLogoURI: string;
     limitPrice: number;
     invLimitPrice: number;
     limitPriceDecimalCorrected: number;
@@ -241,6 +243,7 @@ export interface ITransaction {
     baseDecimals: number;
     baseFlow: string;
     baseSymbol: string;
+    baseTokenLogoURI: string;
     block: number;
     chainId: string;
     network: string;
@@ -256,6 +259,7 @@ export interface ITransaction {
     quoteDecimals: number;
     quoteFlow: string;
     quoteSymbol: string;
+    quoteTokenLogoURI: string;
     source: string;
     entityType: string;
     changeType: string;

@@ -5,14 +5,30 @@ import styles from './Portfolio.module.css';
 import { useParams } from 'react-router-dom';
 import { getNFTs } from '../../App/functions/getNFTs';
 import { useEffect, useState, Dispatch, SetStateAction } from 'react';
-// import { memoizePromiseFn } from '../../App/functions/memoizePromiseFn';
 import { fetchAddress } from '../../App/functions/fetchAddress';
 import { useMoralis } from 'react-moralis';
 import { ethers } from 'ethers';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
+import { CrocEnv } from '@crocswap-libs/sdk';
+
+import { Erc20TokenBalanceFn, nativeTokenBalanceFn } from '../../App/functions/fetchTokenBalances';
+import { useAppSelector } from '../../utils/hooks/reduxToolkit';
+import { TokenPriceFn } from '../../App/functions/fetchTokenPrice';
+import NotFound from '../NotFound/NotFound';
+
+const mainnetProvider = new ethers.providers.WebSocketProvider(
+    'wss://mainnet.infura.io/ws/v3/25e7e0ec71de48bfa9c4d2431fbb3c4a',
+);
 
 interface PortfolioPropsIF {
+    crocEnv: CrocEnv | undefined;
+    provider: ethers.providers.Provider | undefined;
+    cachedFetchNativeTokenBalance: nativeTokenBalanceFn;
+    cachedFetchErc20TokenBalances: Erc20TokenBalanceFn;
+    cachedFetchTokenPrice: TokenPriceFn;
+    importedTokens: TokenIF[];
     ensName: string;
+    lastBlockNumber: number;
     connectedAccount: string;
     userImageData: string[];
     chainId: string;
@@ -25,22 +41,38 @@ interface PortfolioPropsIF {
     userAccount?: boolean;
 }
 
-const mainnetProvider = new ethers.providers.WebSocketProvider(
-    'wss://mainnet.infura.io/ws/v3/4a162c75bd514925890174ca13cdb6a2',
-);
-
 // const cachedFetchAddress = memoizePromiseFn(fetchAddress);
 
 export default function Portfolio(props: PortfolioPropsIF) {
     const { isInitialized } = useMoralis();
 
-    const { ensName, userImageData, connectedAccount, chainId, tokenMap } = props;
+    const {
+        crocEnv,
+        provider,
+        cachedFetchNativeTokenBalance,
+        cachedFetchErc20TokenBalances,
+        cachedFetchTokenPrice,
+        importedTokens,
+        ensName,
+        lastBlockNumber,
+        userImageData,
+        connectedAccount,
+        chainId,
+        tokenMap,
+    } = props;
 
     const { address } = useParams();
 
     const isAddressEns = address?.endsWith('.eth');
+    const isAddressHex = address?.startsWith('0x') && address?.length == 42;
+
+    if (address && !isAddressEns && !isAddressHex) return <NotFound />;
+    // if (address && !isAddressEns && !isAddressHex) return <Navigate replace to='/404' />;
 
     const [resolvedAddress, setResolvedAddress] = useState<string>('');
+
+    const connectedAccountActive =
+        !address || resolvedAddress.toLowerCase() === connectedAccount.toLowerCase();
 
     useEffect(() => {
         (async () => {
@@ -50,32 +82,33 @@ export default function Portfolio(props: PortfolioPropsIF) {
                 if (newResolvedAddress) {
                     setResolvedAddress(newResolvedAddress);
                 }
-            } else if (address && !isAddressEns) {
+            } else if (address && isAddressHex && !isAddressEns) {
                 setResolvedAddress(address);
             }
         })();
-    }, [address, isAddressEns, mainnetProvider]);
+    }, [address, isAddressHex, isAddressEns, mainnetProvider]);
 
     const [secondaryImageData, setSecondaryImageData] = useState<string[]>([]);
 
     useEffect(() => {
         (async () => {
-            if (resolvedAddress) {
+            if (resolvedAddress && isInitialized && !connectedAccountActive) {
                 const imageLocalURLs = await getNFTs(resolvedAddress);
                 if (imageLocalURLs) setSecondaryImageData(imageLocalURLs);
-            } else if (address && isInitialized) {
-                const imageLocalURLs = await getNFTs(address);
-                if (imageLocalURLs) setSecondaryImageData(imageLocalURLs);
             }
+            // else if (address && isAddressHex && !isAddressEns && isInitialized) {
+            //     const imageLocalURLs = await getNFTs(address);
+            //     if (imageLocalURLs) setSecondaryImageData(imageLocalURLs);
+            // }
         })();
-    }, [resolvedAddress, address, isInitialized]);
+    }, [resolvedAddress, isInitialized, connectedAccountActive]);
 
     const [secondaryensName, setSecondaryEnsName] = useState('');
 
     // check for ENS name account changes
     useEffect(() => {
         (async () => {
-            if (address && isInitialized) {
+            if (address && isInitialized && !isAddressEns) {
                 try {
                     const ensName = await fetchAddress(mainnetProvider, address, chainId);
                     if (ensName) setSecondaryEnsName(ensName);
@@ -86,10 +119,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
                 }
             }
         })();
-    }, [address, isInitialized]);
-
-    const connectedAccountActive =
-        !address || resolvedAddress.toLowerCase() === connectedAccount.toLowerCase();
+    }, [address, isInitialized, isAddressEns]);
 
     const exchangeBalanceComponent = (
         <div className={styles.exchange_balance}>
@@ -105,46 +135,77 @@ export default function Portfolio(props: PortfolioPropsIF) {
         !props.userAccount ? setFullLayoutActive(true) : null;
     }, [props.userAccount]);
 
-    // const fullLayout = (
-    //     <div
-    //         className={`${styles.full_layout_svg} ${
-    //             fullLayoutActive ? styles.active_layout_style : null
-    //         }`}
-    //         onClick={() => setFullLayoutActive(!fullLayoutActive)}
-    //     />
-    // );
-    // const fullLayoutCopied = (
-    //     <div
-    //         className={`${styles.full_layout_svg_copied} ${
-    //             !fullLayoutActive ? styles.active_layout_style : null
-    //         }`}
-    //     />
-    // );
-    // const halfLayout = (
-    //     <div
-    //         className={`${styles.half_layout_svg} ${
-    //             !fullLayoutActive ? styles.active_layout_style : null
-    //         }`}
-    //     />
-    // );
+    const connectedUserNativeToken = useAppSelector((state) => state.userData.tokens.nativeToken);
+    const connectedUserErc20Tokens = useAppSelector((state) => state.userData.tokens.erc20Tokens);
 
-    // const sharedLayoutSVG = (
-    //     <>
-    //         <div
-    //             className={styles.shared_layout_svg}
-    //             onClick={() => setFullLayoutActive(!fullLayoutActive)}
-    //         >
-    //             {fullLayoutCopied}
-    //             {halfLayout}
-    //         </div>
-    //     </>
-    // );
-    // const rightTabOptions = (
-    //     <div className={styles.right_tab_option}>
-    //         {fullLayout}
-    //         {sharedLayoutSVG}
-    //     </div>
-    // );
+    const connectedUserTokens = [connectedUserNativeToken].concat(connectedUserErc20Tokens);
+
+    const [resolvedAddressNativeToken, setResolvedAddressNativeToken] = useState<
+        TokenIF | undefined
+    >();
+    const [resolvedAddressErc20Tokens, setResolvedAddressErc20Tokens] = useState<TokenIF[]>([]);
+
+    const resolvedAddressTokens = [resolvedAddressNativeToken].concat(resolvedAddressErc20Tokens);
+
+    useEffect(() => {
+        (async () => {
+            if (
+                crocEnv &&
+                resolvedAddress &&
+                chainId &&
+                lastBlockNumber &&
+                !connectedAccountActive
+            ) {
+                try {
+                    // console.log('fetching native token balance');
+                    const newNativeToken = await cachedFetchNativeTokenBalance(
+                        resolvedAddress,
+                        chainId,
+                        lastBlockNumber,
+                        crocEnv,
+                    );
+
+                    if (
+                        JSON.stringify(resolvedAddressNativeToken) !==
+                        JSON.stringify(newNativeToken)
+                    ) {
+                        setResolvedAddressNativeToken(newNativeToken);
+                    }
+                } catch (error) {
+                    console.log({ error });
+                }
+                try {
+                    const updatedTokens: TokenIF[] = resolvedAddressErc20Tokens;
+
+                    // console.log('fetching resolved user erc20 token balances');
+                    const erc20Results = await cachedFetchErc20TokenBalances(
+                        resolvedAddress,
+                        chainId,
+                        lastBlockNumber,
+                        crocEnv,
+                    );
+
+                    erc20Results.map((newToken: TokenIF) => {
+                        const indexOfExistingToken = resolvedAddressErc20Tokens.findIndex(
+                            (existingToken) => existingToken.address === newToken.address,
+                        );
+
+                        if (indexOfExistingToken === -1) {
+                            updatedTokens.push(newToken);
+                        } else if (
+                            JSON.stringify(resolvedAddressErc20Tokens[indexOfExistingToken]) !==
+                            JSON.stringify(newToken)
+                        ) {
+                            updatedTokens[indexOfExistingToken] = newToken;
+                        }
+                    });
+                    setResolvedAddressErc20Tokens(updatedTokens);
+                } catch (error) {
+                    console.log({ error });
+                }
+            }
+        })();
+    }, [crocEnv, resolvedAddress, chainId, lastBlockNumber, connectedAccountActive]);
 
     return (
         <main data-testid={'portfolio'} className={styles.portfolio_container}>
@@ -152,7 +213,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
                 ensName={address ? secondaryensName : ensName}
                 resolvedAddress={resolvedAddress}
                 activeAccount={address ?? connectedAccount}
-                imageData={address ? secondaryImageData : userImageData}
+                imageData={connectedAccountActive ? userImageData : secondaryImageData}
             />
             <div
                 className={
@@ -162,7 +223,14 @@ export default function Portfolio(props: PortfolioPropsIF) {
                 }
             >
                 <PortfolioTabs
+                    crocEnv={crocEnv}
+                    provider={provider}
+                    cachedFetchTokenPrice={cachedFetchTokenPrice}
+                    importedTokens={importedTokens}
+                    connectedUserTokens={connectedUserTokens}
+                    resolvedAddressTokens={resolvedAddressTokens}
                     resolvedAddress={resolvedAddress}
+                    lastBlockNumber={lastBlockNumber}
                     activeAccount={address ?? connectedAccount}
                     connectedAccountActive={connectedAccountActive}
                     chainId={chainId}

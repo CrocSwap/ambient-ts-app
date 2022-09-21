@@ -3,6 +3,7 @@ import styles from './RangeStatus.module.css';
 interface RangeStatusProps {
     isInRange: boolean;
     isAmbient: boolean;
+
     justSymbol?: boolean;
 }
 

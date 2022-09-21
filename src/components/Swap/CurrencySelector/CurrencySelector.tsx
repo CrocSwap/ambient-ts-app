@@ -8,11 +8,13 @@ import { useModal } from '../../../components/Global/Modal/useModal';
 import Modal from '../../../components/Global/Modal/Modal';
 import TokenSelectContainer from '../../Global/TokenSelectContainer/TokenSelectContainer';
 import Toggle2 from '../../Global/Toggle/Toggle2';
+import { FaRegTimesCircle } from 'react-icons/fa';
 import ambientLogo from '../../../assets/images/logos/ambient_logo.svg';
 import { MdAccountBalanceWallet } from 'react-icons/md';
 import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
 
 interface CurrencySelectorProps {
+    isUserLoggedIn: boolean;
     tokenPair: TokenPairIF;
     tokensBank: Array<TokenIF>;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
@@ -51,6 +53,7 @@ interface CurrencySelectorProps {
 
 export default function CurrencySelector(props: CurrencySelectorProps) {
     const {
+        isUserLoggedIn,
         tokenPair,
         tokensBank,
         setImportedTokens,
@@ -162,39 +165,49 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
         </Modal>
     ) : null;
 
-    const walletBalanceNonLocaleString =
-        props.sellToken && tokenABalance !== ''
+    const walletBalanceNonLocaleString = props.sellToken
+        ? tokenABalance
             ? tokenABalance
-            : !props.sellToken && tokenBBalance !== ''
-            ? tokenBBalance
-            : '0';
+            : ''
+        : tokenBBalance
+        ? tokenBBalance
+        : '';
 
     const walletBalanceLocaleString = props.sellToken
-        ? parseFloat(tokenABalance || '0').toLocaleString(undefined, {
+        ? tokenABalance
+            ? parseFloat(tokenABalance).toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              })
+            : '...'
+        : tokenBBalance
+        ? parseFloat(tokenBBalance || '...').toLocaleString(undefined, {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
           })
-        : parseFloat(tokenBBalance || '0').toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          });
+        : '...';
 
-    const surplusBalanceNonLocaleString =
-        props.sellToken && tokenADexBalance !== ''
+    const surplusBalanceNonLocaleString = props.sellToken
+        ? tokenADexBalance
             ? parseFloat(tokenADexBalance).toString()
-            : !props.sellToken && tokenBDexBalance !== ''
-            ? parseFloat(tokenBDexBalance).toString()
-            : '0';
+            : ''
+        : tokenBDexBalance
+        ? parseFloat(tokenBDexBalance).toString()
+        : '';
 
     const surplusBalanceLocaleString = props.sellToken
-        ? parseFloat(tokenADexBalance || '0').toLocaleString(undefined, {
+        ? tokenADexBalance
+            ? parseFloat(tokenADexBalance).toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              })
+            : '...'
+        : tokenBDexBalance
+        ? parseFloat(tokenBDexBalance).toLocaleString(undefined, {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
           })
-        : parseFloat(tokenBDexBalance || '0').toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          });
+        : '...';
 
     const sellTokenSurplusChange =
         tokenAQtyCoveredBySurplusBalance && tokenAQtyCoveredBySurplusBalance > 0
@@ -239,18 +252,21 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
     return (
         <div className={styles.swapbox}>
             <div className={styles.direction}> </div>
-            {/* <div className={styles.direction}>{direction}</div> */}
             <div className={styles.swapbox_top}>
                 <div className={styles.swap_input}>
                     <CurrencyQuantity fieldId={fieldId} handleChangeEvent={handleChangeEvent} />
                 </div>
                 <div className={styles.token_select} onClick={openModal}>
-                    <img
-                        className={styles.token_list_img}
-                        src={thisToken.logoURI}
-                        alt={thisToken.name}
-                        width='30px'
-                    />
+                    {thisToken.logoURI ? (
+                        <img
+                            className={styles.token_list_img}
+                            src={thisToken.logoURI}
+                            alt={thisToken.name}
+                            width='30px'
+                        />
+                    ) : (
+                        <FaRegTimesCircle />
+                    )}
                     <div className={styles.token_list_text}>{thisToken.symbol}</div>
                     <RiArrowDownSLine size={27} />
                 </div>
@@ -302,7 +318,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                                 />
                             </div>
                             <div className={styles.balance_column}>
-                                <div>{walletBalanceLocaleString}</div>
+                                <div>{isUserLoggedIn ? walletBalanceLocaleString : ''}</div>
                                 <div
                                     style={{
                                         color: isSellTokenSelector ? '#f6385b' : '#15be67',
@@ -356,7 +372,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                             </div>
 
                             <div className={styles.balance_column}>
-                                <div> {surplusBalanceLocaleString}</div>
+                                <div> {isUserLoggedIn ? surplusBalanceLocaleString : ''}</div>
                                 <div
                                     style={{
                                         color: isSellTokenSelector ? '#f6385b' : '#15be67',

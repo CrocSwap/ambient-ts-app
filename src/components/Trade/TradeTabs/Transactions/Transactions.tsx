@@ -4,9 +4,9 @@ import TransactionCardHeader from './TransactionCardHeader';
 import { CandleData, graphData } from '../../../../utils/state/graphDataSlice';
 import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
-import { Dispatch, SetStateAction, useState, useEffect, ReactNode } from 'react';
+import { Dispatch, SetStateAction, useState, useEffect } from 'react';
 import TransactionsSkeletons from './TransactionsSkeletons/TransactionsSkeletons';
-import SelectedCandleData from '../../../Global/Tabs/SelectedCanleData/SelectedCandleData';
+import Pagination from '../../../Global/Pagination/Pagination';
 
 interface TransactionsProps {
     isShowAllEnabled: boolean;
@@ -39,7 +39,6 @@ export default function Transactions(props: TransactionsProps) {
         expandTradeTable,
         isCandleSelected,
         filter,
-        openGlobalModal,
         // setExpandTradeTable,
     } = props;
 
@@ -73,11 +72,11 @@ export default function Transactions(props: TransactionsProps) {
         setIsDataLoading(false);
         transactionData.length ? setDataToDisplay(true) : setDataToDisplay(false);
     }
-    function handleUserPoolSelected() {
+    function handleUserSelected() {
         setTransactionData(changesByUser);
         setDataReceived(dataReceivedByUser);
     }
-    function handleAllPoolSelected() {
+    function handlePoolSelected() {
         setTransactionData(changesByPool);
         setDataReceived(dataReceivedByPool);
     }
@@ -90,8 +89,8 @@ export default function Transactions(props: TransactionsProps) {
                   }),
               )
             : !isShowAllEnabled
-            ? handleUserPoolSelected()
-            : handleAllPoolSelected();
+            ? handleUserSelected()
+            : handlePoolSelected();
     }, [isShowAllEnabled, isCandleSelected, filter, changesByUser, changesByPool]);
 
     useEffect(() => {
@@ -105,38 +104,57 @@ export default function Transactions(props: TransactionsProps) {
     const tokenAAddress = tradeData.tokenA.address;
     const tokenBAddress = tradeData.tokenB.address;
 
-    const TransactionsDisplay = (
-        <>
-            {isCandleSelected && <SelectedCandleData filter={filter} />}
+    // console.log(changesByPool);
 
-            {transactionData?.map((tx, idx) => (
-                //   />
-                <TransactionCard
-                    key={idx}
-                    tx={tx}
-                    tokenMap={tokenMap}
-                    chainId={chainId}
-                    blockExplorer={blockExplorer}
-                    tokenAAddress={tokenAAddress}
-                    tokenBAddress={tokenBAddress}
-                    isDenomBase={isDenomBase}
-                    account={account}
-                    currentTxActiveInTransactions={currentTxActiveInTransactions}
-                    setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
-                    openGlobalModal={openGlobalModal}
-                />
-            ))}
-        </>
+    // const [transactions] = useState(transactionData);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [transactionsPerPage] = useState(30);
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [isShowAllEnabled]);
+
+    // Get current transactions
+    const indexOfLastTransaction = currentPage * transactionsPerPage;
+    const indexOfFirstTransaction = indexOfLastTransaction - transactionsPerPage;
+    const currentTransactions = transactionData.slice(
+        indexOfFirstTransaction,
+        indexOfLastTransaction,
     );
 
-    const noData = (
-        <>
-            {' '}
-            {isCandleSelected && <SelectedCandleData filter={filter} />}{' '}
-            <div className={styles.no_data}>No Data to Display</div>{' '}
-        </>
-    );
+    // console.log({ expandTradeTable });
+    // console.log({ currentPage });
+    // console.log({ indexOfLastTransaction });
+    // console.log({ indexOfFirstTransaction });
+    // console.log({ currentTransactions });
+    // console.log({ transactionData });
 
+    // Change page
+    const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
+
+    const usePaginateDataOrNull = expandTradeTable ? currentTransactions : transactionData;
+
+    // console.log({ transactionData });
+
+    const TransactionsDisplay = usePaginateDataOrNull?.map((tx, idx) => (
+        //   />
+        <TransactionCard
+            key={idx}
+            tx={tx}
+            tokenMap={tokenMap}
+            chainId={chainId}
+            blockExplorer={blockExplorer}
+            tokenAAddress={tokenAAddress}
+            tokenBAddress={tokenBAddress}
+            isDenomBase={isDenomBase}
+            account={account}
+            currentTxActiveInTransactions={currentTxActiveInTransactions}
+            setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
+            openGlobalModal={props.openGlobalModal}
+        />
+    ));
+
+    const noData = <div className={styles.no_data}>No Data to Display</div>;
     const transactionDataOrNull = dataToDisplay ? TransactionsDisplay : noData;
 
     return (
@@ -148,14 +166,14 @@ export default function Transactions(props: TransactionsProps) {
             >
                 {isDataLoading ? <TransactionsSkeletons /> : transactionDataOrNull}
             </div>
-            {/* {expandTradeTable && transactionData.length > 30 && (
+            {expandTradeTable && transactionData.length > 30 && (
                 <Pagination
                     itemsPerPage={transactionsPerPage}
-                    totalItems={transactions.length}
+                    totalItems={transactionData.length}
                     paginate={paginate}
                     currentPage={currentPage}
                 />
-            )} */}
+            )}
         </div>
     );
 }

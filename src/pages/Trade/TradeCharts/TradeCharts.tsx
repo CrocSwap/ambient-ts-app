@@ -20,8 +20,7 @@ import styles from './TradeCharts.module.css';
 import printDomToImage from '../../../utils/functions/printDomToImage';
 import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
 import {
-    // eslint-disable-next-line
-    tradeData as TradeDataIF,
+    // tradeData as TradeDataIF,
     toggleDidUserFlipDenom,
     setActiveChartPeriod,
     targetData,
@@ -100,6 +99,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
         addPoolToFaves,
         removePoolFromFaves,
         favePools,
+        expandTradeTable,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -606,6 +606,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
     // This is a simple loading that last for 1 sec before displaying the graph. The graph is already in the dom by then. We will just positon this in front of it and then remove it after 1 sec.
 
     const expandGraphStyle = props.expandTradeTable ? styles.hide_graph : '';
+
     const [graphIsLoading, setGraphIsLoading] = useState(true);
 
     useEffect(() => {
@@ -630,6 +631,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                 <div style={{ width: '100%', height: '100%' }} ref={canvasRef}>
                     <TradeCandleStickChart
                         tvlData={formattedTvlData}
+                        expandTradeTable={expandTradeTable}
                         volumeData={formattedVolumeData}
                         feeData={formattedFeesUSD}
                         priceData={props.candleData}

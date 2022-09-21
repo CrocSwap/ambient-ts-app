@@ -5,7 +5,7 @@ import tokens from '../../state/tokens/reducer';
 import pools from '../../state/pools/reducer';
 import protocol from '../../state/protocol/reducer';
 import receiptDataReducer from './receiptDataSlice';
-import tokenDataReducer from './tokenDataSlice';
+import userDataReducer from './userDataSlice';
 
 export const store = configureStore({
     reducer: {
@@ -15,7 +15,7 @@ export const store = configureStore({
         pools,
         protocol,
         receiptData: receiptDataReducer,
-        tokenData: tokenDataReducer,
+        userData: userDataReducer,
     },
 });
 

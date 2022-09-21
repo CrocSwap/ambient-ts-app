@@ -9,6 +9,7 @@ import { CrocImpact } from '@crocswap-libs/sdk';
 import { Dispatch, SetStateAction, useEffect } from 'react';
 import TokensArrow from '../../Global/TokensArrow/TokensArrow';
 import DenominationSwitch from '../DenominationSwitch/DenominationSwitch';
+import ConfirmationModalControl from '../../Global/ConfirmationModalControl/ConfirmationModalControl';
 
 interface ConfirmSwapModalProps {
     initiateSwapMethod: () => void;
@@ -65,8 +66,6 @@ export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
             pendingTransactions.push(newSwapTransactionHash);
         }
     }, [newSwapTransactionHash]);
-
-    console.log(pendingTransactions);
 
     const explanationText =
         primarySwapInput === 'sell' ? (
@@ -179,8 +178,10 @@ export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
                 {buyCurrencyRow}
             </section>
             <DenominationSwitch />
+
             {extraInfoData}
             {explanationText}
+            <ConfirmationModalControl />
         </div>
     );
 
