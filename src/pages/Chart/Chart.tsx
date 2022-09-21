@@ -756,14 +756,6 @@ export default function Chart(props: ChartData) {
                         d3.select(event.currentTarget).style('cursor', 'default');
                     });
 
-                const targetData = location.pathname.includes('limit')
-                    ? limit
-                    : location.pathname.includes('range')
-                    ? ranges
-                    : location.pathname.includes('market')
-                    ? market
-                    : undefined;
-
                 selection.enter();
                 /* .append('polygon')
                     .attr('id',(d: any)=>d.name)
@@ -791,34 +783,15 @@ export default function Chart(props: ChartData) {
         }
     }, [scaleData]);
 
-    useEffect(() => {
-        /*  const targetData = location.pathname.includes('limit')
-        ? limit
-        : location.pathname.includes('range')
-        ? ranges
-        : location.pathname.includes('market')
-        ? market
-        : undefined; */
+    async function addTriangle() {
+        await d3
+            .select(d3PlotArea.current)
+            .select('.targets')
+            .selectAll('.annotation-line')
+            .select('path')
+            .remove();
+        const triangle = d3.symbol().type(d3.symbolTriangle);
 
-        /* targetData?.forEach(async(item)=> {
-            await d3.select(d3PlotArea.current).select('.targets').select('.annotation-line').selectAll('polygon').remove();
-             */
-        /*   if (item.name==='Limit'){
-                    d3.select(d3PlotArea.current).select('.targets').select('.annotation-line')
-                    .append('polygon')
-                    .attr('id',item.name)
-                    .attr('points', '0,0 7,15 15,0,15')
-                    // .attr('points','0,0 7,15 15,0,15')
-                    // .style('transform',(d: any) => d.name=='Min' ? 'rotate(295deg)' : '')
-                    .style('transform', (d: any) =>
-                        item.name == 'Min' ? ' translate(0px, -20px)' : '',
-                    )
-                    .attr('width', 15)
-                    .attr('height', 10)
-                    .attr('fill', 'gainsboro');
-                    } */
-
-        /* else */
         if (!location.pathname.includes('market')) {
             const max = ranges.find((item) => item.name === 'Max')?.value as number;
             const min = ranges.find((item) => item.name === 'Min')?.value as number;
@@ -828,19 +801,24 @@ export default function Chart(props: ChartData) {
                 .selectAll('.annotation-line')
                 .nodes();
             nodes.forEach((res, index) => {
-                d3.select(res)
-                    .append('polygon')
-
-                    .attr('points', index == 0 ? '0,0 7,15 15,0,15' : '0,20 18,20 8,0,20')
-                    // .attr('points','0,0 7,15 15,0,15')
-                    // .style('transform',(d: any) => d.name=='Min' ? 'rotate(295deg)' : '')
-                    .style('transform', () => (index == 1 ? ' translate(0px, -20px)' : ''))
-                    .attr('width', 15)
-                    .attr('height', 10)
-                    .attr('fill', 'gainsboro');
+                console.error('res', res);
+                location.pathname.includes('limit') || index == (max > min ? 1 : 0)
+                    ? d3
+                          .select(res)
+                          .append('path')
+                          .attr('d', triangle.size(100))
+                          .style('transform', 'translate(8px, 3px) rotate(300deg)')
+                    : d3
+                          .select(res)
+                          .append('path')
+                          .attr('d', triangle.size(100))
+                          .style('transform', 'translate(8px, -5px)');
             });
         }
-    }, [drawControl]);
+    }
+    // useEffect(() => {
+    //     // addTriangle();
+    // }, [drawControl,location]);
 
     /*    item.name.includes('Current') ? 
             d3.select(d3PlotArea.current).select('.targets').select('.annotation-line').selectAll('polygon').remove() :
