@@ -114,6 +114,7 @@ export default function TradeTabs2(props: ITabsProps) {
         userChangesLength,
         userLimitOrdersLength,
         userPositionsLength,
+        selectedOutsideTab,
     ]);
 
     useEffect(() => {
@@ -122,20 +123,12 @@ export default function TradeTabs2(props: ITabsProps) {
         // console.log({ userPositions });
         // console.log({ selectedOutsideTab });
         if (!hasInitialized) {
-            if (selectedOutsideTab === 2) {
+            if (selectedOutsideTab === 0) {
                 if (!isCandleSelected && !isShowAllEnabled && userPositions.length < 1) {
                     setIsShowAllEnabled(true);
                 } else if (userPositions.length < 1) {
                     return;
                 } else if (isShowAllEnabled && userPositions.length >= 1) {
-                    setIsShowAllEnabled(false);
-                }
-            } else if (selectedOutsideTab === 0) {
-                if (!isCandleSelected && !isShowAllEnabled && userChanges.length < 1) {
-                    setIsShowAllEnabled(true);
-                } else if (userChanges.length < 1) {
-                    return;
-                } else if (isShowAllEnabled && userChanges.length >= 1) {
                     setIsShowAllEnabled(false);
                 }
             } else if (selectedOutsideTab === 1) {
@@ -146,8 +139,16 @@ export default function TradeTabs2(props: ITabsProps) {
                 } else if (isShowAllEnabled && userLimitOrders.length >= 1) {
                     setIsShowAllEnabled(false);
                 }
+            } else if (selectedOutsideTab === 2) {
+                if (!isCandleSelected && !isShowAllEnabled && userChanges.length < 1) {
+                    setIsShowAllEnabled(true);
+                } else if (userChanges.length < 1) {
+                    return;
+                } else if (isShowAllEnabled && userChanges.length >= 1) {
+                    setIsShowAllEnabled(false);
+                }
+                setHasInitialized(true);
             }
-            setHasInitialized(true);
         }
     }, [
         hasInitialized,
