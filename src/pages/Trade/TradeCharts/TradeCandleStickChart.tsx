@@ -26,6 +26,7 @@ interface ChartData {
     changeState: (isOpen: boolean | undefined, candleData: CandleData | undefined) => void;
     chartItemStates: chartItemStates;
     denomInBase: boolean;
+    expandTradeTable: boolean;
 }
 
 type chartItemStates = {
@@ -49,6 +50,8 @@ export default function TradeCandleStickChart(props: ChartData) {
         feeData: props.feeData,
         priceData: props.priceData,
     };
+
+    const expandTradeTable = props.expandTradeTable;
 
     const [liquidityData] = useState([]);
 
@@ -252,6 +255,7 @@ export default function TradeCandleStickChart(props: ChartData) {
         <>
             <div style={{ height: `${chartHeight}%`, width: '100%' }}>
                 <Chart
+                    expandTradeTable={expandTradeTable}
                     priceData={data.priceData}
                     liquidityData={liquidityData}
                     changeState={props.changeState}

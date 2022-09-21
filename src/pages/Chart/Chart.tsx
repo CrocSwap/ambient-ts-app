@@ -17,6 +17,7 @@ declare global {
 }
 
 interface ChartData {
+    expandTradeTable: boolean;
     priceData: CandlesByPoolAndDuration | undefined;
     liquidityData: any[];
     changeState: (isOpen: boolean | undefined, candleData: CandleData | undefined) => void;
@@ -24,7 +25,7 @@ interface ChartData {
 }
 
 export default function Chart(props: ChartData) {
-    const { denomInBase } = props;
+    const { denomInBase, expandTradeTable } = props;
 
     const d3Container = useRef(null);
     const d3PlotArea = useRef(null);
@@ -46,6 +47,7 @@ export default function Chart(props: ChartData) {
     const [transactionFilter, setTransactionFilter] = useState<CandleData>();
 
     useEffect(() => {
+        if (expandTradeTable) return;
         const chartData: {
             date: any;
             open: any;
@@ -80,7 +82,7 @@ export default function Chart(props: ChartData) {
         });
 
         drawChart(chartData, period, targets);
-    }, [props.priceData, targets, denomInBase]);
+    }, [props.priceData, targets, denomInBase, expandTradeTable]);
 
     useEffect(() => {
         setTargets((prevState) => {
