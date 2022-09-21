@@ -724,10 +724,6 @@ export default function Chart(props: ChartData) {
             setDragType(() => {
                 return location.pathname.includes('limit') ? dragLimit : dragRange;
             });
-
-            console.error('dragTypeEffect', dragType);
-            console.error('dragLimit', dragLimit);
-            console.error('dragRange', dragRange);
         }
     }, [spotPriceDisplay, location, scaleData, isAdvancedModeActive]);
 
@@ -827,7 +823,7 @@ export default function Chart(props: ChartData) {
                     .call(dragType);
             }
         }
-    }, [dragType, parsedChartData?.period, location, horizontalLine, drawControl]);
+    }, [dragType, parsedChartData?.period, location, horizontalLine]);
 
     // Call drawChart()
     useEffect(() => {
@@ -942,13 +938,13 @@ export default function Chart(props: ChartData) {
                     .decorate((selection: any) => {
                         selection.select('.bar > path').style('fill', (d: any) => {
                             return d.upperBoundPriceDecimalCorrected > scaleData.barThreshold
-                                ? 'rgba(115, 113, 252, 0.25)'
-                                : 'rgba(205, 193, 255, 0.25)';
+                                ? 'rgba(115, 113, 252, 0.7)'
+                                : 'rgba(205, 193, 255, 0.7)';
                         });
                         selection.select('.bar > path').style('stroke', (d: any) => {
                             d.upperBoundPriceDecimalCorrected > scaleData.barThreshold
-                                ? 'rgba(115, 113, 252, 0.25)'
-                                : 'rgba(205, 193, 255, 0.25)';
+                                ? 'rgba(115, 113, 252, 0.7)'
+                                : 'rgba(205, 193, 255, 0.7)';
                         });
                     });
 
