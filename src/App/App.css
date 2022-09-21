@@ -212,6 +212,28 @@ footer {
     transition: all var(--animation-speed) ease;
 }
 
+/* swiper */
+
+.swiper-pagination{
+    bottom: 0 !important;
+    background:var(--body-bg) !important;
+    
+    
+}
+.swiper-pagination-bullet{
+    /* background: #171D27 !important; */
+    width: 10px !important;
+    height: 10px !important;
+    border-radius:  50% !important;
+    background:  #42464f !important;
+}
+.swiper-pagination-bullet-active{
+    background: url('../assets/images/home/active_slider_button.svg') !important;
+    width: 10px !important;
+    height: 10px !important;
+    border-radius:  50% !important;
+}
+
 .hide_sidebar {
     display: grid;
     grid-template-columns: 100%;

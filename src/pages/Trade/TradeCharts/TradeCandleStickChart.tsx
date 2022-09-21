@@ -20,6 +20,7 @@ declare global {
 }
 
 interface ChartData {
+    expandTradeTable: boolean;
     tvlData: any[];
     volumeData: any[];
     feeData: any[];
@@ -69,6 +70,7 @@ export default function TradeCandleStickChart(props: ChartData) {
 
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [parsedChartData, setParsedChartData] = useState<ChartUtils | undefined>(undefined);
+    const expandTradeTable = props?.expandTradeTable;
 
     const tradeData = useAppSelector((state) => state.tradeData);
     const activeChartPeriod = tradeData.activeChartPeriod;
@@ -143,6 +145,7 @@ export default function TradeCandleStickChart(props: ChartData) {
                 {!isLoading ? (
                     <Chart
                         priceData={parsedChartData}
+                        expandTradeTable={expandTradeTable}
                         liquidityData={liquiditiyData}
                         changeState={props.changeState}
                         targetData={props.targetData}

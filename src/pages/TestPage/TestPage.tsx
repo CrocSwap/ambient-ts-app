@@ -1,5 +1,7 @@
 import React from 'react';
+import NewNetworkSelector from '../../App/components/PageHeader/NetworkSelector/NewNetworkSelector';
 import { useTermsOfService } from '../../App/hooks/useTermsOfService';
+import ConfirmationModalControl from '../../components/Global/ConfirmationModalControl/ConfirmationModalControl';
 import { MenuButton } from '../../components/Global/MenuButton/MenuButton';
 import styles from './TestPage.module.css';
 
@@ -62,6 +64,8 @@ export default function TestPage(props: TestPageProps) {
                 height='24'
                 style={menuButtonStyle}
             />
+            <NewNetworkSelector />
+            <ConfirmationModalControl />
             {/* <MobileSidebar/> */}
         </main>
     );

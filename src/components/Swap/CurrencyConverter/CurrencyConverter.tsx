@@ -18,6 +18,7 @@ import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
 import { ZERO_ADDRESS } from '../../../constants';
 interface CurrencyConverterPropsIF {
     crocEnv: CrocEnv | undefined;
+    isUserLoggedIn: boolean;
     provider: ethers.providers.Provider | undefined;
     slippageTolerancePercentage: number;
     setPriceImpact: Dispatch<SetStateAction<CrocImpact | undefined>>;
@@ -52,6 +53,7 @@ interface CurrencyConverterPropsIF {
 export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
     const {
         crocEnv,
+        isUserLoggedIn,
         // provider,
         slippageTolerancePercentage,
         setPriceImpact,
@@ -161,11 +163,9 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         }
     }, [crocEnv]);
 
-    const handleArrowClick = (): void => {
-        reverseTokens();
-    };
-
+    const [switchBoxes, setSwitchBoxes] = useState(false);
     const reverseTokens = (): void => {
+        setSwitchBoxes(!switchBoxes);
         if (tokenPair) {
             dispatch(setTokenA(tokenPair.dataTokenB));
             dispatch(setTokenB(tokenPair.dataTokenA));
@@ -453,41 +453,52 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         }
     };
 
+    const handleArrowClick = (): void => {
+        reverseTokens();
+    };
+
     return (
-        <section className={styles.currency_converter}>
-            <CurrencySelector
-                tokenPair={tokenPair}
-                tokensBank={tokensBank}
-                searchableTokens={searchableTokens}
-                setImportedTokens={setImportedTokens}
-                chainId={chainId}
-                direction={isLiq ? 'Select Pair' : 'From:'}
-                fieldId='sell'
-                sellToken
-                userHasEnteredAmount={userHasEnteredAmount}
-                handleChangeEvent={handleTokenAChangeEvent}
-                handleChangeClick={handleTokenAChangeClick}
-                nativeBalance={props.nativeBalance}
-                tokenABalance={tokenABalance}
-                tokenBBalance={tokenBBalance}
-                tokenADexBalance={tokenADexBalance}
-                tokenBDexBalance={tokenBDexBalance}
-                isSellTokenEth={isSellTokenEth}
-                tokenAQtyCoveredByWalletBalance={tokenAQtyCoveredByWalletBalance}
-                tokenAQtyCoveredBySurplusBalance={tokenAQtyCoveredBySurplusBalance}
-                tokenASurplusMinusTokenARemainderNum={tokenASurplusMinusTokenARemainderNum}
-                tokenAWalletMinusTokenAQtyNum={tokenAWalletMinusTokenAQtyNum}
-                tokenBWalletPlusTokenBQtyNum={tokenBWalletPlusTokenBQtyNum}
-                tokenASurplusMinusTokenAQtyNum={tokenASurplusMinusTokenAQtyNum}
-                tokenBSurplusPlusTokenBQtyNum={tokenBSurplusPlusTokenBQtyNum}
-                isWithdrawFromDexChecked={isWithdrawFromDexChecked}
-                setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
-                isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
-                setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
-                reverseTokens={reverseTokens}
-                activeTokenListsChanged={activeTokenListsChanged}
-                indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
-            />
+        <section
+            className={`${styles.currency_converter} ${
+                switchBoxes ? styles.currency_converter_switch : null
+            }`}
+        >
+            <div className={switchBoxes ? styles.slide_in_bottom : undefined}>
+                <CurrencySelector
+                    isUserLoggedIn={isUserLoggedIn}
+                    tokenPair={tokenPair}
+                    tokensBank={tokensBank}
+                    searchableTokens={searchableTokens}
+                    setImportedTokens={setImportedTokens}
+                    chainId={chainId}
+                    direction={isLiq ? 'Select Pair' : 'From:'}
+                    fieldId='sell'
+                    sellToken
+                    userHasEnteredAmount={userHasEnteredAmount}
+                    handleChangeEvent={handleTokenAChangeEvent}
+                    handleChangeClick={handleTokenAChangeClick}
+                    nativeBalance={props.nativeBalance}
+                    tokenABalance={tokenABalance}
+                    tokenBBalance={tokenBBalance}
+                    tokenADexBalance={tokenADexBalance}
+                    tokenBDexBalance={tokenBDexBalance}
+                    isSellTokenEth={isSellTokenEth}
+                    tokenAQtyCoveredByWalletBalance={tokenAQtyCoveredByWalletBalance}
+                    tokenAQtyCoveredBySurplusBalance={tokenAQtyCoveredBySurplusBalance}
+                    tokenASurplusMinusTokenARemainderNum={tokenASurplusMinusTokenARemainderNum}
+                    tokenAWalletMinusTokenAQtyNum={tokenAWalletMinusTokenAQtyNum}
+                    tokenBWalletPlusTokenBQtyNum={tokenBWalletPlusTokenBQtyNum}
+                    tokenASurplusMinusTokenAQtyNum={tokenASurplusMinusTokenAQtyNum}
+                    tokenBSurplusPlusTokenBQtyNum={tokenBSurplusPlusTokenBQtyNum}
+                    isWithdrawFromDexChecked={isWithdrawFromDexChecked}
+                    setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
+                    isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
+                    setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
+                    reverseTokens={reverseTokens}
+                    activeTokenListsChanged={activeTokenListsChanged}
+                    indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
+                />
+            </div>
             <div className={styles.arrow_container} onClick={handleArrowClick}>
                 {/* <img src={tokensArrowImage} alt="arrow pointing down" /> */}
                 {/* {isLiq ? null : <span className={styles.arrow} />} */}
@@ -497,35 +508,38 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                     </IconWithTooltip>
                 )}
             </div>
-            <CurrencySelector
-                tokenBQtyLocal={tokenBQtyLocal}
-                tokenPair={tokenPair}
-                tokensBank={tokensBank}
-                setImportedTokens={setImportedTokens}
-                searchableTokens={searchableTokens}
-                chainId={chainId}
-                direction={isLiq ? '' : 'To:'}
-                fieldId='buy'
-                userHasEnteredAmount={userHasEnteredAmount}
-                handleChangeEvent={handleTokenBChangeEvent}
-                // handleChangeClick={handleTokenBChangeClick}
-                nativeBalance={props.nativeBalance}
-                tokenABalance={tokenABalance}
-                tokenBBalance={tokenBBalance}
-                tokenADexBalance={tokenADexBalance}
-                tokenBDexBalance={tokenBDexBalance}
-                tokenAWalletMinusTokenAQtyNum={tokenAWalletMinusTokenAQtyNum}
-                tokenBWalletPlusTokenBQtyNum={tokenBWalletPlusTokenBQtyNum}
-                tokenASurplusMinusTokenAQtyNum={tokenASurplusMinusTokenAQtyNum}
-                tokenBSurplusPlusTokenBQtyNum={tokenBSurplusPlusTokenBQtyNum}
-                isWithdrawFromDexChecked={isWithdrawFromDexChecked}
-                setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
-                isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
-                reverseTokens={reverseTokens}
-                setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
-                activeTokenListsChanged={activeTokenListsChanged}
-                indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
-            />
+            <div className={switchBoxes ? styles.slide_in_top : undefined}>
+                <CurrencySelector
+                    isUserLoggedIn={isUserLoggedIn}
+                    tokenBQtyLocal={tokenBQtyLocal}
+                    tokenPair={tokenPair}
+                    tokensBank={tokensBank}
+                    setImportedTokens={setImportedTokens}
+                    searchableTokens={searchableTokens}
+                    chainId={chainId}
+                    direction={isLiq ? '' : 'To:'}
+                    fieldId='buy'
+                    userHasEnteredAmount={userHasEnteredAmount}
+                    handleChangeEvent={handleTokenBChangeEvent}
+                    // handleChangeClick={handleTokenBChangeClick}
+                    nativeBalance={props.nativeBalance}
+                    tokenABalance={tokenABalance}
+                    tokenBBalance={tokenBBalance}
+                    tokenADexBalance={tokenADexBalance}
+                    tokenBDexBalance={tokenBDexBalance}
+                    tokenAWalletMinusTokenAQtyNum={tokenAWalletMinusTokenAQtyNum}
+                    tokenBWalletPlusTokenBQtyNum={tokenBWalletPlusTokenBQtyNum}
+                    tokenASurplusMinusTokenAQtyNum={tokenASurplusMinusTokenAQtyNum}
+                    tokenBSurplusPlusTokenBQtyNum={tokenBSurplusPlusTokenBQtyNum}
+                    isWithdrawFromDexChecked={isWithdrawFromDexChecked}
+                    setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
+                    isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
+                    reverseTokens={reverseTokens}
+                    setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
+                    activeTokenListsChanged={activeTokenListsChanged}
+                    indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
+                />
+            </div>
         </section>
     );
 }

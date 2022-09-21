@@ -23,6 +23,8 @@ import {
 } from '../Global/LoadingAnimations/CircleLoader/CircleLoader';
 import RemoveRangeHeader from './RemoveRangeHeader/RemoveRangeHeader';
 import ExtraControls from './ExtraControls/ExtraControls';
+import { addReceipt } from '../../utils/state/receiptDataSlice';
+import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
 interface IRemoveRangeProps {
     provider: ethers.providers.Provider;
     chainData: ChainSpec;
@@ -46,6 +48,7 @@ interface IRemoveRangeProps {
     isDenomBase: boolean;
     lastBlockNumber: number;
     position: PositionIF;
+    pendingTransactions: string[];
 
     openGlobalModal: (content: React.ReactNode) => void;
 
@@ -71,6 +74,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
         provider,
         lastBlockNumber,
         position,
+        pendingTransactions,
     } = props;
 
     const [removalPercentage, setRemovalPercentage] = useState(100);
@@ -89,6 +93,8 @@ export default function RemoveRange(props: IRemoveRangeProps) {
     >();
 
     const positionStatsCacheEndpoint = 'https://809821320828123.de:5000/position_stats?';
+
+    const dispatch = useAppDispatch();
 
     useEffect(() => {
         if (
@@ -164,10 +170,11 @@ export default function RemoveRange(props: IRemoveRangeProps) {
         const lowLimit = spotPrice * (1 - liquiditySlippageTolerance / 100);
         const highLimit = spotPrice * (1 + liquiditySlippageTolerance / 100);
 
+        let tx;
         if (position.positionType === 'ambient') {
             if (removalPercentage === 100) {
                 try {
-                    const tx = await pool.burnAmbientAll([lowLimit, highLimit], {
+                    tx = await pool.burnAmbientAll([lowLimit, highLimit], {
                         surplus: isSaveAsDexSurplusChecked,
                     });
                     console.log(tx?.hash);
@@ -184,7 +191,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
                     .div(100);
 
                 try {
-                    const tx = await pool.burnAmbientLiq(liquidityToBurn, [lowLimit, highLimit]);
+                    tx = await pool.burnAmbientLiq(liquidityToBurn, [lowLimit, highLimit]);
                     console.log(tx?.hash);
                     setNewRemovalTransactionHash(tx?.hash);
                 } catch (error) {
@@ -200,7 +207,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
                 .div(100);
 
             try {
-                const tx = await pool.burnRangeLiq(
+                tx = await pool.burnRangeLiq(
                     liquidityToBurn,
                     [position.bidTick, position.askTick],
                     [lowLimit, highLimit],
@@ -214,6 +221,15 @@ export default function RemoveRange(props: IRemoveRangeProps) {
             }
         } else {
             console.log('unsupported position type for removal');
+        }
+
+        let receipt;
+        if (tx) receipt = await tx.wait();
+
+        if (receipt) {
+            console.log('dispatching receipt');
+            console.log({ receipt });
+            dispatch(addReceipt(JSON.stringify(receipt)));
         }
     };
 
@@ -229,6 +245,12 @@ export default function RemoveRange(props: IRemoveRangeProps) {
     );
 
     const etherscanLink = chainData.blockExplorer + 'tx/' + newRemovalTransactionHash;
+
+    useEffect(() => {
+        if (newRemovalTransactionHash && newRemovalTransactionHash !== '') {
+            pendingTransactions.push(newRemovalTransactionHash);
+        }
+    }, [newRemovalTransactionHash]);
 
     const removalSuccess = (
         <div className={styles.removal_pending}>

@@ -16,6 +16,7 @@
 }
 .selector_select_container {
     position: relative;
+    
 }
 
 .custom_arrow {
@@ -110,3 +111,5 @@
     align-items: center;
     justify-content: space-between;
 }
+
+

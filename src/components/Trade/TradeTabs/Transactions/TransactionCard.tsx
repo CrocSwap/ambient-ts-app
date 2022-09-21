@@ -33,8 +33,8 @@ export default function TransactionCard(props: TransactionProps) {
     const {
         tx,
         account,
-        tokenMap,
-        chainId,
+        // tokenMap,
+        // chainId,
         blockExplorer,
         tokenAAddress,
         tokenBAddress,
@@ -49,11 +49,11 @@ export default function TransactionCard(props: TransactionProps) {
 
     const isOwnerActiveAccount = ownerId.toLowerCase() === account.toLowerCase();
 
-    const baseId = tx.base + '_' + chainId;
-    const quoteId = tx.quote + '_' + chainId;
+    // const baseId = tx.base + '_' + chainId;
+    // const quoteId = tx.quote + '_' + chainId;
 
-    const baseToken = tokenMap ? tokenMap.get(baseId.toLowerCase()) : undefined;
-    const quoteToken = tokenMap ? tokenMap.get(quoteId.toLowerCase()) : undefined;
+    // const baseToken = tokenMap ? tokenMap.get(baseId.toLowerCase()) : undefined;
+    // const quoteToken = tokenMap ? tokenMap.get(quoteId.toLowerCase()) : undefined;
 
     const transactionBaseAddressLowerCase = tx.base.toLowerCase();
     const transactionQuoteAddressLowerCase = tx.quote.toLowerCase();
@@ -91,14 +91,14 @@ export default function TransactionCard(props: TransactionProps) {
         tx.id === currentTxActiveInTransactions ? scrollToDiv() : null;
     }, [currentTxActiveInTransactions]);
 
+    const baseTokenCharacter = tx.baseSymbol ? getUnicodeCharacter(tx.baseSymbol) : '';
+    const quoteTokenCharacter = tx.quoteSymbol ? getUnicodeCharacter(tx.quoteSymbol) : '';
+
     useEffect(() => {
         // console.log({ tx });
         if (tx.priceDecimalCorrected && tx.invPriceDecimalCorrected) {
             const priceDecimalCorrected = tx.priceDecimalCorrected;
             const invPriceDecimalCorrected = tx.invPriceDecimalCorrected;
-
-            const baseTokenCharacter = tx.baseSymbol ? getUnicodeCharacter(tx.baseSymbol) : '';
-            const quoteTokenCharacter = tx.quoteSymbol ? getUnicodeCharacter(tx.quoteSymbol) : '';
 
             const nonInvertedPriceTruncated =
                 priceDecimalCorrected === 0
@@ -280,8 +280,8 @@ export default function TransactionCard(props: TransactionProps) {
 
                 <Value usdValue={usdValueTruncated ? '$' + usdValueTruncated : '…'} />
                 <TokenQty
-                    baseTokenSymbol={baseToken?.symbol}
-                    quoteTokenSymbol={quoteToken?.symbol}
+                    baseTokenCharacter={baseTokenCharacter}
+                    quoteTokenCharacter={quoteTokenCharacter}
                     baseQty={baseFlowDisplay}
                     quoteQty={quoteFlowDisplay}
                 />

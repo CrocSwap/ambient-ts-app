@@ -10,6 +10,7 @@ import { PositionIF } from '../../utils/interfaces/PositionIF';
 import APYGraphDisplay from './APYGraphDisplay/APYGraphDisplay';
 import RangeDetailsControl from './RangeDetailsControl/RangeDetailsControl';
 import RangeDetailsHeader from './RangeDetailsHeader/RangeDetailsHeader';
+import RangeDetailsActions from './RangeDetailsActions/RangeDetailsActions';
 
 interface IRangeDetailsProps {
     provider: ethers.providers.Provider | undefined;
@@ -271,6 +272,7 @@ export default function RangeDetails(props: IRangeDetailsProps) {
                         isDenomBase={props.isDenomBase}
                         positionApy={apy}
                     /> */}
+                    <RangeDetailsActions />
                 </div>
             </div>
         </div>
