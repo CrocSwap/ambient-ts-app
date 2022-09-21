@@ -18,7 +18,7 @@ export default function SidebarFooter() {
                 <RiSwapBoxFill size={18} color='#cdc1ff' />
                 <p>Swap</p>
             </Link>
-            <Link to='/analytics'>
+            <Link to='/trade/range'>
                 <GiTrade size={18} color='#cdc1ff' />
                 <p>Trade</p>
             </Link>

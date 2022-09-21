@@ -10,7 +10,7 @@ export default function Landing1() {
             <div className={styles.content_container}>
                 {/* <div className={styles.ambient_background}>DEFI 2.0</div> */}
                 <div className={styles.ambient}>ambient</div>
-                <Link to={'/trade/market'}>
+                <Link to={'/trade/range'}>
                     <button className={styles.action_button}>
                         <p className={styles.button_text}>{t('marketCTA')}</p>
                     </button>
