@@ -29,8 +29,9 @@ interface NavbarDropdownItemPropsIF {
 }
 
 interface NavbarDropdownMenuPropsIF {
-    isAuthenticated?: boolean;
-    isWeb3Enabled?: boolean;
+    isUserLoggedIn: boolean;
+    // isAuthenticated?: boolean;
+    // isWeb3Enabled?: boolean;
     clickLogout: () => void;
     openModal: () => void;
     closeMenu?: () => void;
@@ -39,11 +40,12 @@ interface NavbarDropdownMenuPropsIF {
 
 export default function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
     const {
-        isAuthenticated,
-        isWeb3Enabled,
+        isUserLoggedIn,
+        // isAuthenticated,
+        // isWeb3Enabled,
         clickLogout,
         openModal,
-        closeMenu
+        closeMenu,
     } = props;
 
     const navigate = useNavigate();
@@ -74,18 +76,18 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
         const itemIcon = <div className={styles.icon_button}>{props.leftIcon}</div>;
 
         return (
-                <div
-                    className={`${styles.menu_item} ${topLevelItemStyle} ${goBackItemStyle}`}
-                    onClick={() => {
-                        props.goToMenu && setActiveMenu(props.goToMenu);
-                        if (props.onClick) props.onClick();
-                    }}
-                >
-                    {props.imageIcon && imageIcon}
-                    {props.leftIcon && itemIcon}
-                    {props.children}
-                    <span className={styles.icon_right}>{props.rightIcon}</span>
-                </div>
+            <div
+                className={`${styles.menu_item} ${topLevelItemStyle} ${goBackItemStyle}`}
+                onClick={() => {
+                    props.goToMenu && setActiveMenu(props.goToMenu);
+                    if (props.onClick) props.onClick();
+                }}
+            >
+                {props.imageIcon && imageIcon}
+                {props.leftIcon && itemIcon}
+                {props.children}
+                <span className={styles.icon_right}>{props.rightIcon}</span>
+            </div>
         );
     }
 
@@ -139,8 +141,8 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
             >
                 Terms of Service
             </NavbarDropdownItem>
-            {isAuthenticated && isWeb3Enabled && logoutButton}
-            {(!isAuthenticated || !isWeb3Enabled) && magicButton}
+            {isUserLoggedIn && logoutButton}
+            {!isUserLoggedIn && magicButton}
         </>
     );
 

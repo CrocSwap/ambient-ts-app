@@ -21,7 +21,8 @@ import MobileSidebar from '../../../components/Global/MobileSidebar/MobileSideba
 import NotificationCenter from '../../../components/Global/NotificationCenter/NotificationCenter';
 
 interface HeaderPropsIF {
-    nativeBalance: string;
+    isUserLoggedIn: boolean;
+    nativeBalance: string | undefined;
     clickLogout: () => void;
     metamaskLocked: boolean;
     ensName: string;
@@ -44,6 +45,7 @@ interface HeaderPropsIF {
 
 export default function PageHeader(props: HeaderPropsIF) {
     const {
+        isUserLoggedIn,
         ensName,
         nativeBalance,
         clickLogout,
@@ -112,8 +114,7 @@ export default function PageHeader(props: HeaderPropsIF) {
         accountAddress: accountAddress,
         accountAddressFull: isAuthenticated && account ? account : '',
         ensName: ensName,
-        isAuthenticated: isAuthenticated,
-        isWeb3Enabled: isWeb3Enabled,
+        isUserLoggedIn: isUserLoggedIn,
         clickLogout: clickLogout,
         openModal: openModal,
         chainId: chainId,
