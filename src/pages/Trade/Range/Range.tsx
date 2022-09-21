@@ -624,6 +624,7 @@ export default function Range(props: RangePropsIF) {
                       },
                   ));
             setNewRangeTransactionHash(tx?.hash);
+            if (tx?.hash) pendingTransactions.unshift(tx?.hash);
         } catch (error) {
             setTxErrorCode(error?.code);
             setTxErrorMessage(error?.message);

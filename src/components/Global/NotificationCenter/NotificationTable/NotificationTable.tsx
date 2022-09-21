@@ -43,7 +43,7 @@ const NotificationTable = (props: NotificationTableProps) => {
             />
         ));
     const pendingTransactionsDisplay = pendingTransactions
-        ?.reverse()
+        // ?.reverse()
         .map((tx, idx) => (
             <ReceiptDisplay
                 key={idx}
