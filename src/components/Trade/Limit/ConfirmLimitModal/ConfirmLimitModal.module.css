@@ -161,3 +161,9 @@ border-radius: 4px;
     line-height: var(--body-lh);
 }
 
+
+.confSwap_detail_note{
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    color: var(--text-grey-light)
+}
