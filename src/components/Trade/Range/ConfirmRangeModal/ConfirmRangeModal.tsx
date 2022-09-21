@@ -18,6 +18,7 @@ import styles from './ConfirmRangeModal.module.css';
 import SelectedRange from './SelectedRange/SelectedRange';
 import { TokenPairIF } from '../../../../utils/interfaces/exports';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
+import ConfirmationModalControl from '../../../Global/ConfirmationModalControl/ConfirmationModalControl';
 
 interface ConfirmRangeModalPropsIF {
     sendTransaction: () => void;
@@ -153,6 +154,7 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalPropsIF) {
             {rangeHeader}
             {tokenAmountDisplay}
             {selectedRangeOrNull}
+            <ConfirmationModalControl />
         </>
     );
 

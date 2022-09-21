@@ -8,6 +8,7 @@ import TransactionDenied from '../../../Global/TransactionDenied/TransactionDeni
 // import DenominationSwitch from '../../../Swap/DenominationSwitch/DenominationSwitch';
 import TokensArrow from '../../../Global/TokensArrow/TokensArrow';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import ConfirmationModalControl from '../../../Global/ConfirmationModalControl/ConfirmationModalControl';
 
 interface ConfirmLimitModalProps {
     onClose: () => void;
@@ -181,6 +182,7 @@ export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
             {/* <DenominationSwitch /> */}
             {extraInfoData}
             {explanationText}
+            <ConfirmationModalControl />
         </div>
     );
 
