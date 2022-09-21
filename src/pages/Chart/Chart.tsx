@@ -135,6 +135,7 @@ export default function Chart(props: ChartData) {
     const [isLowMoved, setIsLowMoved] = useState<boolean>(false);
     const [isLineSwapped, setIsLineSwapped] = useState<boolean>(false);
     const [drawControl, setDrawControl] = useState(false);
+    const [dragControl, setDragControl] = useState(false);
 
     // Data
     const [crosshairData, setCrosshairData] = useState([{ x: 0, y: -1 }]);
@@ -725,8 +726,11 @@ export default function Chart(props: ChartData) {
                 return location.pathname.includes('limit') ? dragLimit : dragRange;
             });
         }
-    }, [spotPriceDisplay, location, scaleData, isAdvancedModeActive]);
+    }, [spotPriceDisplay, location, scaleData, isAdvancedModeActive, dragControl]);
 
+    useEffect(() => {
+        setDragControl(false);
+    }, [parsedChartData]);
     // Horizontal Lines
     useEffect(() => {
         if (scaleData !== undefined) {
@@ -757,25 +761,126 @@ export default function Chart(props: ChartData) {
                 selection.enter().select('line').attr('class', 'redline');
                 selection
                     .select('g.left-handle text')
-                    .text((d: any) => d.name + ' - ' + valueFormatter(d.value));
+                    .text((d: any) => d.name + ' - ' + valueFormatter(d.value))
+                    .style('transform', (d: any) =>
+                        d.name == 'Min' ? ' translate(0px, 20px)' : '',
+                    );
                 selection
                     .enter()
                     .select('line')
                     .on('mouseout', (event: any) => {
                         d3.select(event.currentTarget).style('cursor', 'default');
                     });
-                selection
-                    .enter()
-                    .append('rect')
+
+                const targetData = location.pathname.includes('limit')
+                    ? limit
+                    : location.pathname.includes('range')
+                    ? ranges
+                    : location.pathname.includes('market')
+                    ? market
+                    : undefined;
+
+                selection.enter();
+                /* .append('polygon')
+                    .attr('id',(d: any)=>d.name)
+                    .attr('points', (d: any) => {
+                        console.error('d.name',d.name)
+                        return d.name == 'Max' || d.name == 'Limit'
+                            ? '0,0 7,15 15,0,15'
+                            : d.name == 'Min'
+                            ? '0,20 18,20 8,0,20'
+                            : ''
+                        
+                        })
+                    // .attr('points','0,0 7,15 15,0,15')
+                    // .style('transform',(d: any) => d.name=='Min' ? 'rotate(295deg)' : '')
+                    .style('transform', (d: any) =>
+                        d.name == 'Min' ? ' translate(0px, -20px)' : '',
+                    )
                     .attr('width', 15)
                     .attr('height', 10)
-                    .attr('fill', 'gainsboro');
+ */ //                   .attr('fill', 'gainsboro');
             });
             setHorizontalLine(() => {
                 return horizontalLine;
             });
         }
     }, [scaleData]);
+
+    useEffect(() => {
+        /*  const targetData = location.pathname.includes('limit')
+        ? limit
+        : location.pathname.includes('range')
+        ? ranges
+        : location.pathname.includes('market')
+        ? market
+        : undefined; */
+
+        /* targetData?.forEach(async(item)=> {
+            await d3.select(d3PlotArea.current).select('.targets').select('.annotation-line').selectAll('polygon').remove();
+             */
+        /*   if (item.name==='Limit'){
+                    d3.select(d3PlotArea.current).select('.targets').select('.annotation-line')
+                    .append('polygon')
+                    .attr('id',item.name)
+                    .attr('points', '0,0 7,15 15,0,15')
+                    // .attr('points','0,0 7,15 15,0,15')
+                    // .style('transform',(d: any) => d.name=='Min' ? 'rotate(295deg)' : '')
+                    .style('transform', (d: any) =>
+                        item.name == 'Min' ? ' translate(0px, -20px)' : '',
+                    )
+                    .attr('width', 15)
+                    .attr('height', 10)
+                    .attr('fill', 'gainsboro');
+                    } */
+
+        /* else */
+        if (!location.pathname.includes('market')) {
+            const max = ranges.find((item) => item.name === 'Max')?.value as number;
+            const min = ranges.find((item) => item.name === 'Min')?.value as number;
+            const nodes = d3
+                .select(d3PlotArea.current)
+                .select('.targets')
+                .selectAll('.annotation-line')
+                .nodes();
+            nodes.forEach((res, index) => {
+                d3.select(res)
+                    .append('polygon')
+
+                    .attr('points', index == 0 ? '0,0 7,15 15,0,15' : '0,20 18,20 8,0,20')
+                    // .attr('points','0,0 7,15 15,0,15')
+                    // .style('transform',(d: any) => d.name=='Min' ? 'rotate(295deg)' : '')
+                    .style('transform', () => (index == 1 ? ' translate(0px, -20px)' : ''))
+                    .attr('width', 15)
+                    .attr('height', 10)
+                    .attr('fill', 'gainsboro');
+            });
+        }
+    }, [drawControl]);
+
+    /*    item.name.includes('Current') ? 
+            d3.select(d3PlotArea.current).select('.targets').select('.annotation-line').selectAll('polygon').remove() :
+
+            d3.select(d3PlotArea.current).select('.targets').select('.annotation-line').append('polygon')
+            .attr('id',item.name)
+            .attr('points', () => {
+                return item.name == 'Max' || item.name == 'Limit'
+                    ? '0,0 7,15 15,0,15'
+                    : item.name == 'Min'
+                    ? '0,20 18,20 8,0,20'
+                    : ''
+                
+                })
+            // .attr('points','0,0 7,15 15,0,15')
+            // .style('transform',(d: any) => d.name=='Min' ? 'rotate(295deg)' : '')
+            .style('transform', (d: any) =>
+                d.name == 'Min' ? ' translate(0px, -20px)' : '',
+            )
+            .attr('width', 15)
+            .attr('height', 10)
+            .attr('fill', 'gainsboro');
+
+        }) */
 
     // Line Rules
     useEffect(() => {
@@ -1084,6 +1189,7 @@ export default function Chart(props: ChartData) {
                     ghostJoin(svg, [liquidityData]).call(ghostLines);
                     await targetsJoin(svg, [targets]).call(horizontalLine);
                     setDrawControl(event);
+                    setDragControl(true);
                 });
                 d3.select(d3Xaxis.current).on('draw', function (event: any) {
                     d3.select(event.target).select('svg').call(xAxis);
