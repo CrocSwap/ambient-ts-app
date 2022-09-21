@@ -2,7 +2,7 @@ import ExchangeBalance from '../../components/Portfolio/EchangeBalance/ExchangeB
 import PortfolioBanner from '../../components/Portfolio/PortfolioBanner/PortfolioBanner';
 import PortfolioTabs from '../../components/Portfolio/PortfolioTabs/PortfolioTabs';
 import styles from './Portfolio.module.css';
-import { useParams } from 'react-router-dom';
+import { Navigate, useParams } from 'react-router-dom';
 import { getNFTs } from '../../App/functions/getNFTs';
 import { useEffect, useState, Dispatch, SetStateAction } from 'react';
 import { fetchAddress } from '../../App/functions/fetchAddress';
@@ -64,6 +64,8 @@ export default function Portfolio(props: PortfolioPropsIF) {
 
     const isAddressEns = address?.endsWith('.eth');
     const isAddressHex = address?.startsWith('0x');
+
+    if (address && !isAddressEns && !isAddressHex) return <Navigate replace to='/404' />;
 
     const [resolvedAddress, setResolvedAddress] = useState<string>('');
 
