@@ -1537,9 +1537,9 @@ export default function App() {
     // const [nativeBalance, setNativeBalance] = useState<string>('');
     const [nativeWalletBalance, setNativeWalletBalance] = useState<string>('');
     const [nativeDexBalance, setNativeDexBalance] = useState<string>('');
-    const nativeBalance = (
-        parseFloat(nativeWalletBalance || '0') + parseFloat(nativeDexBalance || '0')
-    ).toString();
+    const nativeBalance = nativeDexBalance
+        ? (parseFloat(nativeWalletBalance) + parseFloat(nativeDexBalance)).toString()
+        : undefined;
 
     // function to sever connection between user wallet and Moralis server
     const clickLogout = async () => {
@@ -1604,6 +1604,7 @@ export default function App() {
 
     // props for <PageHeader/> React element
     const headerProps = {
+        isUserLoggedIn: isUserLoggedIn,
         nativeBalance: nativeBalance,
         clickLogout: clickLogout,
         metamaskLocked: metamaskLocked,

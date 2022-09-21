@@ -45,7 +45,7 @@ interface SwapPropsIF {
     isOnTradeRoute?: boolean;
     gasPriceInGwei: number | undefined;
     ethMainnetUsdPrice?: number;
-    nativeBalance: string;
+    nativeBalance: string | undefined;
     lastBlockNumber: number;
     baseTokenBalance: string;
     quoteTokenBalance: string;
@@ -424,10 +424,11 @@ export default function Swap(props: SwapPropsIF) {
                             poolPriceDisplay={poolPriceDisplay}
                             isTokenAPrimary={isTokenAPrimary}
                             isSellTokenBase={isSellTokenBase}
-                            nativeBalance={truncateDecimals(
-                                parseFloat(nativeBalance),
-                                4,
-                            ).toString()}
+                            nativeBalance={
+                                nativeBalance
+                                    ? truncateDecimals(parseFloat(nativeBalance), 4).toString()
+                                    : '...'
+                            }
                             baseTokenBalance={baseTokenBalance}
                             quoteTokenBalance={quoteTokenBalance}
                             baseTokenDexBalance={baseTokenDexBalance}
