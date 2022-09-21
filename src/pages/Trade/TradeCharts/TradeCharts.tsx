@@ -20,8 +20,7 @@ import styles from './TradeCharts.module.css';
 import printDomToImage from '../../../utils/functions/printDomToImage';
 import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
 import {
-    // eslint-disable-next-line
-    tradeData as TradeDataIF,
+    // tradeData as TradeDataIF,
     toggleDidUserFlipDenom,
     setActiveChartPeriod,
     targetData,
