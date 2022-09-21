@@ -156,10 +156,37 @@ export default function Trade(props: TradePropsIF) {
         setTransactionFilter(candleData);
     };
 
+    const [showChartAndNotTab, setShowChartAndNotTab] = useState(false);
+
+    const mobileDataToggle = (
+        <div className={styles.mobile_toggle_container}>
+            <button
+                onClick={() => setShowChartAndNotTab(!showChartAndNotTab)}
+                className={
+                    showChartAndNotTab
+                        ? styles.non_active_button_mobile_toggle
+                        : styles.active_button_mobile_toggle
+                }
+            >
+                Chart
+            </button>
+            <button
+                onClick={() => setShowChartAndNotTab(!showChartAndNotTab)}
+                className={
+                    showChartAndNotTab
+                        ? styles.active_button_mobile_toggle
+                        : styles.non_active_button_mobile_toggle
+                }
+            >
+                Tabs
+            </button>
+        </div>
+    );
     return (
         <AnimateSharedLayout>
             <main className={styles.main_layout}>
                 <div className={styles.middle_col}>
+                    {mobileDataToggle}
                     <div className={` ${expandGraphStyle} ${fullScreenStyle}`}>
                         <motion.div
                             initial={{ opacity: 0, scale: 0.5 }}
@@ -169,7 +196,9 @@ export default function Trade(props: TradePropsIF) {
                                 delay: 0.5,
                                 ease: [0, 0.71, 0.2, 1.01],
                             }}
-                            className={styles.main__chart_container}
+                            className={`${styles.main__chart_container} ${
+                                showChartAndNotTab && styles.hide
+                            }`}
                         >
                             <TradeCharts
                                 poolPriceDisplay={poolPriceDisplayWithDenom}
@@ -199,42 +228,44 @@ export default function Trade(props: TradePropsIF) {
                             },
                         }}
                     >
-                        <TradeTabs2
-                            crocEnv={crocEnv}
-                            provider={provider}
-                            account={props.account}
-                            isAuthenticated={props.isAuthenticated}
-                            isWeb3Enabled={props.isWeb3Enabled}
-                            lastBlockNumber={props.lastBlockNumber}
-                            chainId={chainId}
-                            chainData={chainData}
-                            currentTxActiveInTransactions={props.currentTxActiveInTransactions}
-                            setCurrentTxActiveInTransactions={
-                                props.setCurrentTxActiveInTransactions
-                            }
-                            baseTokenBalance={baseTokenBalance}
-                            quoteTokenBalance={quoteTokenBalance}
-                            baseTokenDexBalance={baseTokenDexBalance}
-                            quoteTokenDexBalance={quoteTokenDexBalance}
-                            isShowAllEnabled={props.isShowAllEnabled}
-                            setIsShowAllEnabled={props.setIsShowAllEnabled}
-                            expandTradeTable={props.expandTradeTable}
-                            setExpandTradeTable={props.setExpandTradeTable}
-                            tokenMap={tokenMap}
-                            isCandleSelected={isCandleSelected}
-                            setIsCandleSelected={setIsCandleSelected}
-                            filter={transactionFilter}
-                            setTransactionFilter={setTransactionFilter}
-                            selectedOutsideTab={props.selectedOutsideTab}
-                            setSelectedOutsideTab={props.setSelectedOutsideTab}
-                            outsideControl={props.outsideControl}
-                            setOutsideControl={props.setOutsideControl}
-                            currentPositionActive={props.currentPositionActive}
-                            setCurrentPositionActive={props.setCurrentPositionActive}
-                            openGlobalModal={props.openGlobalModal}
-                            closeGlobalModal={props.closeGlobalModal}
-                            pendingTransactions={pendingTransactions}
-                        />
+                        <div className={!showChartAndNotTab ? styles.hide : ''}>
+                            <TradeTabs2
+                                crocEnv={crocEnv}
+                                provider={provider}
+                                account={props.account}
+                                isAuthenticated={props.isAuthenticated}
+                                isWeb3Enabled={props.isWeb3Enabled}
+                                lastBlockNumber={props.lastBlockNumber}
+                                chainId={chainId}
+                                chainData={chainData}
+                                currentTxActiveInTransactions={props.currentTxActiveInTransactions}
+                                setCurrentTxActiveInTransactions={
+                                    props.setCurrentTxActiveInTransactions
+                                }
+                                baseTokenBalance={baseTokenBalance}
+                                quoteTokenBalance={quoteTokenBalance}
+                                baseTokenDexBalance={baseTokenDexBalance}
+                                quoteTokenDexBalance={quoteTokenDexBalance}
+                                isShowAllEnabled={props.isShowAllEnabled}
+                                setIsShowAllEnabled={props.setIsShowAllEnabled}
+                                expandTradeTable={props.expandTradeTable}
+                                setExpandTradeTable={props.setExpandTradeTable}
+                                tokenMap={tokenMap}
+                                isCandleSelected={isCandleSelected}
+                                setIsCandleSelected={setIsCandleSelected}
+                                filter={transactionFilter}
+                                setTransactionFilter={setTransactionFilter}
+                                selectedOutsideTab={props.selectedOutsideTab}
+                                setSelectedOutsideTab={props.setSelectedOutsideTab}
+                                outsideControl={props.outsideControl}
+                                setOutsideControl={props.setOutsideControl}
+                                currentPositionActive={props.currentPositionActive}
+                                setCurrentPositionActive={props.setCurrentPositionActive}
+                                openGlobalModal={props.openGlobalModal}
+                                closeGlobalModal={props.closeGlobalModal}
+                                pendingTransactions={pendingTransactions}
+                            />
+                        </div>
                     </motion.div>
                 </div>
                 {mainContent}
