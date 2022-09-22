@@ -223,6 +223,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
                 resolvedAddress={resolvedAddress}
                 activeAccount={address ?? connectedAccount}
                 imageData={connectedAccountActive ? userImageData : secondaryImageData}
+                setShowProfileSettings={setShowProfileSettings}
             />
             <div
                 className={
