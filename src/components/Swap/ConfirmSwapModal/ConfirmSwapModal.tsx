@@ -6,7 +6,7 @@ import TransactionDenied from '../../Global/TransactionDenied/TransactionDenied'
 import Button from '../../Global/Button/Button';
 import { TokenPairIF } from '../../../utils/interfaces/exports';
 import { CrocImpact } from '@crocswap-libs/sdk';
-import { Dispatch, SetStateAction, useEffect } from 'react';
+import { Dispatch, SetStateAction } from 'react';
 import TokensArrow from '../../Global/TokensArrow/TokensArrow';
 import DenominationSwitch from '../DenominationSwitch/DenominationSwitch';
 import ConfirmationModalControl from '../../Global/ConfirmationModalControl/ConfirmationModalControl';
@@ -45,7 +45,7 @@ export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
         resetConfirmation,
         showConfirmation,
         setShowConfirmation,
-        pendingTransactions,
+        // pendingTransactions,
     } = props;
 
     const transactionApproved = newSwapTransactionHash !== '';
@@ -61,11 +61,11 @@ export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
 
     const buyTokenData = tokenPair.dataTokenB;
 
-    useEffect(() => {
-        if (newSwapTransactionHash && newSwapTransactionHash !== '') {
-            pendingTransactions.push(newSwapTransactionHash);
-        }
-    }, [newSwapTransactionHash]);
+    // useEffect(() => {
+    //     if (newSwapTransactionHash && newSwapTransactionHash !== '') {
+    //         pendingTransactions.push(newSwapTransactionHash);
+    //     }
+    // }, [newSwapTransactionHash]);
 
     const explanationText =
         primarySwapInput === 'sell' ? (

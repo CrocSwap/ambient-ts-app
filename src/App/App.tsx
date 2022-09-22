@@ -400,12 +400,18 @@ export default function App() {
             ? JSON.parse(receiptData.sessionReceipts[receiptData.sessionReceipts.length - 1])
             : null;
 
-    const isLastReceiptSuccess = lastReceipt?.confirmations >= 1;
+    const isLastReceiptSuccess = lastReceipt?.status === 1;
 
-    let snackMessage = '';
-    if (lastReceipt) {
-        snackMessage = `Transaction ${lastReceipt.transactionHash} successfully completed`;
-    }
+    // let snackMessage = '';
+    // if (lastReceipt) {
+
+    //     snackMessage = `Transaction ${lastReceipt.transactionHash} successfully completed`;
+    // }
+    const snackMessage = lastReceipt
+        ? isLastReceiptSuccess
+            ? `Transaction ${lastReceipt.transactionHash} successfully completed`
+            : `Transaction ${lastReceipt.transactionHash} failed`
+        : '';
 
     const snackbarContent = (
         <SnackbarComponent

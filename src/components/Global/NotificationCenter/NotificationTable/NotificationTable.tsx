@@ -16,9 +16,9 @@ const NotificationTable = (props: NotificationTableProps) => {
 
     const parsedReceipts = receiptData.sessionReceipts.map((receipt) => JSON.parse(receipt));
 
-    const successfulTransactions = parsedReceipts.filter((receipt) => receipt?.confirmations >= 1);
+    const successfulTransactions = parsedReceipts.filter((receipt) => receipt?.status === 1);
 
-    const failedTransactions = parsedReceipts.filter((receipt) => receipt?.confirmations <= 0);
+    const failedTransactions = parsedReceipts.filter((receipt) => receipt?.status === 0);
 
     const successfulTransactionsDisplay = successfulTransactions
         ?.reverse()

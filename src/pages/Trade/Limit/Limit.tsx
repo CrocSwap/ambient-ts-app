@@ -26,6 +26,11 @@ import { useModal } from '../../../components/Global/Modal/useModal';
 import { SlippagePairIF, TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
 import { setLimitPrice } from '../../../utils/state/tradeDataSlice';
 import { addReceipt } from '../../../utils/state/receiptDataSlice';
+import {
+    isTransactionFailedError,
+    isTransactionReplacedError,
+    TransactionError,
+} from '../../../utils/TransactionError';
 
 interface LimitPropsIF {
     isUserLoggedIn: boolean;
@@ -306,17 +311,44 @@ export default function Limit(props: LimitPropsIF) {
             return;
         }
 
+        let tx;
         try {
-            const mint = await ko.mint({ surplus: isWithdrawFromDexChecked });
-            // console.log(mint.hash);
-            setNewLimitOrderTransactionHash(mint.hash);
-            const limitOrderReceipt = await mint.wait();
-            if (limitOrderReceipt) {
-                dispatch(addReceipt(JSON.stringify(limitOrderReceipt)));
-            }
+            tx = await ko.mint({ surplus: isWithdrawFromDexChecked });
+            console.log(tx.hash);
+            if (tx?.hash) pendingTransactions.unshift(tx?.hash);
+            setNewLimitOrderTransactionHash(tx.hash);
         } catch (error) {
             setTxErrorCode(error?.code);
             setTxErrorMessage(error?.message);
+        }
+        let receipt;
+        try {
+            if (tx) receipt = await tx.wait();
+        } catch (e) {
+            const error = e as TransactionError;
+            console.log({ error });
+            // The user used "speed up" or something similar
+            // in their client, but we now have the updated info
+            if (isTransactionReplacedError(error)) {
+                console.log('repriced');
+                const indexOfOldHash = pendingTransactions.indexOf(error.hash);
+                if (indexOfOldHash > -1) {
+                    // only splice array when item is found
+                    pendingTransactions.splice(indexOfOldHash, 1); // 2nd parameter means remove one item only
+                }
+                const newTransactionHash = error.replacement.hash;
+                pendingTransactions.unshift(newTransactionHash);
+                setNewLimitOrderTransactionHash(newTransactionHash);
+                console.log({ newTransactionHash });
+                receipt = error.receipt;
+            } else if (isTransactionFailedError(error)) {
+                // console.log({ error });
+                receipt = error.receipt;
+            }
+        }
+
+        if (receipt) {
+            dispatch(addReceipt(JSON.stringify(receipt)));
         }
     };
 

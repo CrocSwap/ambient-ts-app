@@ -44,7 +44,7 @@ export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
         showConfirmation,
         setShowConfirmation,
 
-        pendingTransactions,
+        // pendingTransactions,
     } = props;
     // const [confirmDetails, setConfirmDetails] = useState<boolean>(true);
     const [transactionApproved, setTransactionApproved] = useState<boolean>(false);
@@ -52,9 +52,9 @@ export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
     useEffect(() => {
         if (newLimitOrderTransactionHash) {
             setTransactionApproved(true);
-            if (newLimitOrderTransactionHash !== '') {
-                pendingTransactions.push(newLimitOrderTransactionHash);
-            }
+            // if (newLimitOrderTransactionHash !== '') {
+            //     pendingTransactions.push(newLimitOrderTransactionHash);
+            // }
         }
     }, [newLimitOrderTransactionHash]);
 
