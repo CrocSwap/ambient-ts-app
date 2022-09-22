@@ -25,6 +25,11 @@ import RemoveRangeHeader from './RemoveRangeHeader/RemoveRangeHeader';
 import ExtraControls from './ExtraControls/ExtraControls';
 import { addReceipt } from '../../utils/state/receiptDataSlice';
 import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
+import {
+    isTransactionFailedError,
+    isTransactionReplacedError,
+    TransactionError,
+} from '../../utils/TransactionError';
 interface IRemoveRangeProps {
     provider: ethers.providers.Provider;
     chainData: ChainSpec;
@@ -169,6 +174,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
 
         const lowLimit = spotPrice * (1 - liquiditySlippageTolerance / 100);
         const highLimit = spotPrice * (1 + liquiditySlippageTolerance / 100);
+        console.log({ position });
 
         let tx;
         if (position.positionType === 'ambient') {
@@ -206,6 +212,14 @@ export default function RemoveRange(props: IRemoveRangeProps) {
                 .mul(removalPercentage)
                 .div(100);
 
+            console.log({ removalPercentage });
+            console.log({ liquidityToBurn });
+            console.log({ lowLimit });
+            console.log({ highLimit });
+            console.log({ isSaveAsDexSurplusChecked });
+            console.log(position.bidTick);
+            console.log(position.askTick);
+
             try {
                 tx = await pool.burnRangeLiq(
                     liquidityToBurn,
@@ -224,8 +238,25 @@ export default function RemoveRange(props: IRemoveRangeProps) {
         }
 
         let receipt;
-        if (tx) receipt = await tx.wait();
 
+        try {
+            if (tx) receipt = await tx.wait();
+        } catch (e) {
+            const error = e as TransactionError;
+            console.log({ error });
+            // The user used "speed up" or something similar
+            // in their client, but we now have the updated info
+            if (isTransactionReplacedError(error)) {
+                console.log('repriced');
+                const newTransactionHash = error.replacement.hash;
+                setNewRemovalTransactionHash(newTransactionHash);
+                console.log({ newTransactionHash });
+                receipt = error.receipt;
+            } else if (isTransactionFailedError(error)) {
+                // console.log({ error });
+                receipt = error.receipt;
+            }
+        }
         if (receipt) {
             console.log('dispatching receipt');
             console.log({ receipt });

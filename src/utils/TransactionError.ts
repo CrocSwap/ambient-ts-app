@@ -39,10 +39,12 @@ export interface TransactionFailedError {
     code: number;
     message: string;
     stack: string;
+    receipt: ContractReceipt;
 }
 
 export function isTransactionFailedError(error: TransactionError): error is TransactionError {
-    if (error?.message?.includes('-32000')) {
+    if (error?.message?.includes('transaction failed')) {
+        // if (error?.message?.includes('-32000')) {
         return true;
     }
 
