@@ -80,7 +80,7 @@ export default function TradeCandleStickChart(props: ChartData) {
         liquidityData: props.liquidityData,
     };
 
-    const { denomInBase, baseTokenAddress, chainId, poolPriceNonDisplay } = props;
+    const { denomInBase, baseTokenAddress, chainId /* poolPriceNonDisplay */ } = props;
 
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [parsedChartData, setParsedChartData] = useState<ChartUtils | undefined>(undefined);
@@ -104,21 +104,21 @@ export default function TradeCandleStickChart(props: ChartData) {
     const baseTokenDecimals = isTokenABase ? tokenADecimals : tokenBDecimals;
     const quoteTokenDecimals = !isTokenABase ? tokenADecimals : tokenBDecimals;
 
-    const currentPoolPriceTick =
-        poolPriceNonDisplay === undefined ? 0 : Math.log(poolPriceNonDisplay) / Math.log(1.0001);
+    // const currentPoolPriceTick =
+    //     poolPriceNonDisplay === undefined ? 0 : Math.log(poolPriceNonDisplay) / Math.log(1.0001);
 
-    const defaultMinPriceDifferencePercentage = -15;
-    const defaultMaxPriceDifferencePercentage = 15;
+    // const defaultMinPriceDifferencePercentage = -15;
+    // const defaultMaxPriceDifferencePercentage = 15;
 
-    const defaultLowTick =
-        tradeData.advancedLowTick === 0
-            ? currentPoolPriceTick + defaultMinPriceDifferencePercentage * 100
-            : tradeData.advancedLowTick;
+    // const defaultLowTick =
+    //     tradeData.advancedLowTick === 0
+    //         ? currentPoolPriceTick + defaultMinPriceDifferencePercentage * 100
+    //         : tradeData.advancedLowTick;
 
-    const defaultHighTick =
-        tradeData.advancedHighTick === 0
-            ? currentPoolPriceTick + defaultMaxPriceDifferencePercentage * 100
-            : tradeData.advancedHighTick;
+    // const defaultHighTick =
+    //     tradeData.advancedHighTick === 0
+    //         ? currentPoolPriceTick + defaultMaxPriceDifferencePercentage * 100
+    //         : tradeData.advancedHighTick;
 
     // Parse price data
     useEffect(() => {
