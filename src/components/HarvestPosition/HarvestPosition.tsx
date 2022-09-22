@@ -23,7 +23,7 @@ import {
 } from '../Global/LoadingAnimations/CircleLoader/CircleLoader';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import HarvestPositionHeader from './HarvestPositionHeader/HarvestPositionHeader';
-import HavrestExtraControls from './HarvestExtraControls/HarvestExtraControls';
+import HarvestExtraControls from './HarvestExtraControls/HarvestExtraControls';
 
 interface IHarvestPositionProps {
     crocEnv: CrocEnv | undefined;
@@ -36,6 +36,10 @@ interface IHarvestPositionProps {
     askTick: number;
     baseTokenAddress: string;
     quoteTokenAddress: string;
+    baseTokenBalance: string;
+    quoteTokenBalance: string;
+    baseTokenDexBalance: string;
+    quoteTokenDexBalance: string;
     isPositionInRange: boolean;
     isAmbient: boolean;
     baseTokenSymbol: string;
@@ -54,6 +58,10 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
         chainData,
         baseTokenLogoURI,
         quoteTokenLogoURI,
+        baseTokenBalance,
+        quoteTokenBalance,
+        baseTokenDexBalance,
+        quoteTokenDexBalance,
         // chainId,
         // poolIdx,
         // user,
@@ -122,7 +130,7 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
                             poolIdx: position.poolIdx.toString(),
                             bidTick: position.bidTick ? position.bidTick.toString() : '0',
                             askTick: position.askTick ? position.askTick.toString() : '0',
-                            calcValues: 'true',
+                            addValue: 'true',
                             positionType: position.positionType,
                         }),
                 )
@@ -153,6 +161,7 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
                 const tx = await pool.harvestRange(
                     [position.bidTick, position.askTick],
                     [lowLimit, highLimit],
+                    { surplus: isSaveAsDexSurplusChecked },
                 );
                 console.log(tx?.hash);
                 setNewHarvestTransactionHash(tx?.hash);
@@ -176,6 +185,12 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
         ) : (
             <HarvestPositionButton disabled={true} harvestFn={harvestFn} title={'…'} />
         );
+
+    const removalPercentage = 100;
+
+    const baseRemovalNum = ((feeLiqBaseDecimalCorrected || 0) * removalPercentage) / 100;
+
+    const quoteRemovalNum = ((feeLiqQuoteDecimalCorrected || 0) * removalPercentage) / 100;
 
     // confirmation modal
     const removalDenied = (
@@ -300,12 +315,21 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
                     posLiqQuoteDecimalCorrected={position.positionLiqQuoteDecimalCorrected}
                     feeLiqBaseDecimalCorrected={feeLiqBaseDecimalCorrected}
                     feeLiqQuoteDecimalCorrected={feeLiqQuoteDecimalCorrected}
-                    // removalPercentage={removalPercentage}
-                    removalPercentage={100}
+                    baseRemovalNum={baseRemovalNum}
+                    quoteRemovalNum={quoteRemovalNum}
+                    removalPercentage={removalPercentage}
                 />
-                <HavrestExtraControls
+                <HarvestExtraControls
                     isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
                     setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
+                    baseTokenSymbol={props.baseTokenSymbol}
+                    quoteTokenSymbol={props.quoteTokenSymbol}
+                    baseRemovalNum={baseRemovalNum}
+                    quoteRemovalNum={quoteRemovalNum}
+                    baseTokenBalance={baseTokenBalance}
+                    quoteTokenBalance={quoteTokenBalance}
+                    baseTokenDexBalance={baseTokenDexBalance}
+                    quoteTokenDexBalance={quoteTokenDexBalance}
                 />
             </div>
         </>

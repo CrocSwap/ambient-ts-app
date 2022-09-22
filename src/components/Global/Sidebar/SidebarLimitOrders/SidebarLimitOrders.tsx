@@ -2,13 +2,17 @@ import styles from './SidebarLimitOrders.module.css';
 import SidebarLimitOrdersCard from './SidebarLimitOrdersCard';
 import { SetStateAction, Dispatch } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { ILimitOrderState } from '../../../../utils/state/graphDataSlice';
+import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 
 interface SidebarLimitOrdersProps {
+    tokenMap: Map<string, TokenIF>;
+    isDenomBase: boolean;
     selectedOutsideTab: number;
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
     outsideControl: boolean;
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
-
+    limitOrderByUser?: ILimitOrderState[];
     isShowAllEnabled: boolean;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
 
@@ -16,19 +20,19 @@ interface SidebarLimitOrdersProps {
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
 }
 export default function SidebarLimitOrders(props: SidebarLimitOrdersProps) {
+    const { limitOrderByUser, tokenMap, isDenomBase } = props;
     const location = useLocation();
     const navigate = useNavigate();
     const header = (
         <div className={styles.header}>
             <div>Pool</div>
             <div>Price</div>
-            <div>Amount</div>
+            <div>Value</div>
         </div>
     );
 
-    const mapItems = [1, 2, 3, 4, 5, 6, 7];
-
     const sidebarLimitOrderCardProps = {
+        tokenMap: tokenMap,
         selectedOutsideTab: props.selectedOutsideTab,
         setSelectedOutsideTab: props.setSelectedOutsideTab,
         outsideControl: props.outsideControl,
@@ -57,9 +61,15 @@ export default function SidebarLimitOrders(props: SidebarLimitOrdersProps) {
         <div className={styles.container}>
             {header}
             <div className={styles.content}>
-                {mapItems.map((item, idx) => (
-                    <SidebarLimitOrdersCard key={idx} {...sidebarLimitOrderCardProps} />
-                ))}
+                {limitOrderByUser &&
+                    limitOrderByUser.map((order, idx) => (
+                        <SidebarLimitOrdersCard
+                            key={idx}
+                            isDenomBase={isDenomBase}
+                            order={order}
+                            {...sidebarLimitOrderCardProps}
+                        />
+                    ))}
             </div>
             {!props.expandTradeTable && (
                 <div className={styles.view_more} onClick={handleViewMoreClick}>

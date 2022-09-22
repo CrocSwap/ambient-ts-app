@@ -44,12 +44,15 @@ const pageBlockSign = <div className={styles.page_block_sign} />;
 
 export default function PageFooter(props: IFooterProps) {
     const { userIsOnline, lastBlockNumber } = props;
-
+    function aa() {
+        console.log(props.chatStatus);
+        props.setChatStatus(!props.chatStatus);
+    }
     return (
         <footer data-testid={'page-footer'} className={styles.footer}>
             {userIsOnline ? '' : 'Offline'}
 
-            <a onClick={() => props.setChatStatus(!props.chatStatus)}>Chat</a>
+            <a onClick={() => aa()}>Chat</a>
             <a href='#'>
                 <AiFillTwitterCircle size={15} />
                 {/* <span>Twitter</span> */}

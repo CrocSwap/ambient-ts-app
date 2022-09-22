@@ -20,8 +20,7 @@ import styles from './TradeCharts.module.css';
 import printDomToImage from '../../../utils/functions/printDomToImage';
 import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
 import {
-    // eslint-disable-next-line
-    tradeData as TradeDataIF,
+    // tradeData as TradeDataIF,
     toggleDidUserFlipDenom,
     setActiveChartPeriod,
     targetData,
@@ -65,6 +64,12 @@ interface TradeChartsPropsIF {
     pinnedMinPriceDisplayTruncated: number | undefined;
     pinnedMaxPriceDisplayTruncated: number | undefined;
     spotPriceDisplay: string | undefined;
+    upBodyColor: string;
+    upBorderColor: string;
+    downBodyColor: string;
+    downBorderColor: string;
+    baseTokenAddress: string;
+    poolPriceNonDisplay: number | undefined;
 }
 
 export interface CandleChartData {
@@ -76,6 +81,32 @@ export interface CandleChartData {
     close: number;
     time: number;
     allSwaps: unknown;
+}
+
+export interface TvlChartData {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    time: any;
+    value: number;
+}
+
+export interface VolumeChartData {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    time: any;
+    value: number;
+}
+export interface LiquidityData {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    activeLiq: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    upperBoundPriceDecimalCorrected: any;
+}
+
+export interface LiqSnap {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    activeLiq: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    pinnedMaxPriceDisplayTruncated: any;
+    pinnedMinPriceDisplayTruncated: any;
 }
 
 // React functional component
@@ -90,6 +121,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
         addPoolToFaves,
         removePoolFromFaves,
         favePools,
+        expandTradeTable,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -596,6 +628,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
     // This is a simple loading that last for 1 sec before displaying the graph. The graph is already in the dom by then. We will just positon this in front of it and then remove it after 1 sec.
 
     const expandGraphStyle = props.expandTradeTable ? styles.hide_graph : '';
+
     const [graphIsLoading, setGraphIsLoading] = useState(true);
 
     useEffect(() => {
@@ -611,8 +644,8 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                 {graphSettingsContent}
                 {tokenInfo}
                 {timeFrameContent}
-                {/* {liquidityTypeContent} */}
                 {currentDataInfo}
+                {/* {liquidityTypeContent} */}
             </div>
             {graphIsLoading ? (
                 <TradeChartsLoading />
@@ -620,6 +653,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                 <div style={{ width: '100%', height: '100%' }} ref={canvasRef}>
                     <TradeCandleStickChart
                         tvlData={formattedTvlData}
+                        expandTradeTable={expandTradeTable}
                         volumeData={formattedVolumeData}
                         feeData={formattedFeesUSD}
                         priceData={props.candleData}
@@ -638,6 +672,13 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                         spotPriceDisplay={props.spotPriceDisplay}
                         truncatedPoolPrice={parseFloat(truncatedPoolPrice)}
                         setCurrentData={setCurrentData}
+                        upBodyColor={props.upBodyColor}
+                        upBorderColor={props.upBorderColor}
+                        downBodyColor={props.downBodyColor}
+                        downBorderColor={props.downBorderColor}
+                        baseTokenAddress={props.baseTokenAddress}
+                        chainId={chainId}
+                        poolPriceNonDisplay={props.poolPriceNonDisplay}
                     />
                 </div>
             )}

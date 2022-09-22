@@ -33,11 +33,9 @@
 .tokens_name:hover,
 .fav_button:hover,
 .settings_container button:hover {
-
     transition: all 0.3s ease-out;
 
     filter: brightness(75%);
-
 }
 
 .settings_container,
@@ -233,7 +231,7 @@
     padding: 1rem;
 }
 
-.chart_ite_container input[type='checkbox']+label {
+.chart_ite_container input[type='checkbox'] + label {
     display: block;
     margin: 0.2em;
     cursor: pointer;
@@ -244,7 +242,7 @@
     display: none;
 }
 
-.chart_item_container input[type='checkbox']+label:before {
+.chart_item_container input[type='checkbox'] + label:before {
     content: '\2714';
     border: 0.1em solid var(--text-grey-light);
     border-radius: 0.2em;
@@ -259,11 +257,11 @@
     transition: 0.2s;
 }
 
-.chart_item_container input[type='checkbox']+label:active:before {
+.chart_item_container input[type='checkbox'] + label:active:before {
     transform: scale(0);
 }
 
-.chart_item_container input[type='checkbox']:checked+label:before {
+.chart_item_container input[type='checkbox']:checked + label:before {
     background: var(--title-gradient);
     border-color: #7371fc;
     color: #fff;
@@ -271,7 +269,6 @@
 
 .liquidity_type_container {
     background: darkblue;
-
 
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -306,7 +303,7 @@
    */
 
 .current_data_info {
-    position: absolute;
+    padding: 0.3rem 0;
 
     /* extra small */
 

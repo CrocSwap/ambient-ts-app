@@ -7,7 +7,7 @@ import { RiArrowDownSLine } from 'react-icons/ri';
 import styles from './LimitExtraInfo.module.css';
 import { TokenPairIF } from '../../../../utils/interfaces/exports';
 import TooltipComponent from '../../../Global/TooltipComponent/TooltipComponent';
-import truncateDecimals from '../../../../utils/data/truncateDecimals';
+// import truncateDecimals from '../../../../utils/data/truncateDecimals';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 // import makePriceDisplay from './makePriceDisplay';
 
@@ -18,7 +18,7 @@ interface LimitExtraInfoPropsIF {
     slippageTolerance: number;
     liquidityProviderFee: number;
     quoteTokenIsBuy?: boolean;
-    gasPriceinGwei: number | undefined;
+    orderGasPriceInDollars: string | undefined;
     didUserFlipDenom: boolean;
     isTokenABase: boolean;
     isDenomBase: boolean;
@@ -29,7 +29,7 @@ interface LimitExtraInfoPropsIF {
 export default function LimitExtraInfo(props: LimitExtraInfoPropsIF) {
     const {
         // tokenPair,
-        gasPriceinGwei,
+        orderGasPriceInDollars,
         // quoteTokenIsBuy,
         poolPriceDisplay,
         slippageTolerance,
@@ -116,7 +116,7 @@ export default function LimitExtraInfo(props: LimitExtraInfoPropsIF) {
     //           4,
     //       );
 
-    const truncatedGasInGwei = gasPriceinGwei ? truncateDecimals(gasPriceinGwei, 2) : undefined;
+    // const truncatedGasInGwei = gasPriceInGwei ? truncateDecimals(gasPriceInGwei, 2) : undefined;
 
     const extraInfoData = [
         {
@@ -183,8 +183,7 @@ export default function LimitExtraInfo(props: LimitExtraInfoPropsIF) {
                 onClick={() => setShowExtraDetails(!showExtraDetails)}
             >
                 <div className={styles.gas_pump}>
-                    <FaGasPump size={15} />{' '}
-                    {truncatedGasInGwei ? `${truncatedGasInGwei} gwei` : '…'}
+                    <FaGasPump size={15} /> {orderGasPriceInDollars ? orderGasPriceInDollars : '…'}
                 </div>
                 <div className={styles.token_amount}>
                     {isDenomBase

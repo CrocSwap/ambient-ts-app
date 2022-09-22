@@ -29,17 +29,5 @@ export default function TransactionDenied(props: TransactionSubmittedProps) {
             </p>
             <Button title='Try Again' action={resetConfirmation} />
         </div>
-        // <div className={styles.transaction_submitted}>
-        //     <div className={styles.completed_animation}>
-        //         <Animation animData={NotFound} loop={false} />
-        //     </div>
-        //     <h2>Transaction Denied in Wallet</h2>
-        //     <p>
-        //         {/* <a href={EthersanTx} target='_blank' rel='noreferrer'>
-        //             View on Etherscan
-        //         </a> */}
-        //         {/* {tokenBSymbol === 'ETH' ? null : addToMetamaskButton} */}
-        //     </p>
-        // </div>
     );
 }

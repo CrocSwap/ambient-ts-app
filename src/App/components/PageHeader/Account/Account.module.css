@@ -1,6 +1,7 @@
 .account_container {
     display: flex;
     justify-content: flex-end;
+
     align-items: center;
     background: transparent;
     border-radius: var(--border-radius);
@@ -25,6 +26,7 @@
 }
 
 .white {
+    white-space: nowrap;
     font-family: var(--font-deca);
     font-weight: 300;
     font-size: var(--header-size);
@@ -33,11 +35,24 @@
 }
 
 .title_gradient {
+    background: var(--dark3);
+    padding: 7.5px 12px 7.5px 6px;
+    border-radius: 4px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+}
+
+.title_gradient p {
     background: var(--title-gradient);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
     text-transform: lowercase;
+
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
 }
 
 .more {

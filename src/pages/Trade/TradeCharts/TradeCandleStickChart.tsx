@@ -1,10 +1,19 @@
-import { DetailedHTMLProps, HTMLAttributes, useMemo } from 'react';
+import { DetailedHTMLProps, HTMLAttributes, useEffect, useMemo, useState } from 'react';
 import { CandleData, CandlesByPoolAndDuration } from '../../../utils/state/graphDataSlice';
 import { targetData } from '../../../utils/state/tradeDataSlice';
 import Chart from '../../Chart/Chart';
 import './TradeCandleStickChart.css';
 import logo from '../../../assets/images/logos/ambient_logo.svg';
-import { CandleChartData } from './TradeCharts';
+import {
+    CandleChartData,
+    LiqSnap,
+    LiquidityData,
+    TvlChartData,
+    VolumeChartData,
+} from './TradeCharts';
+import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import { getPinnedPriceValuesFromDisplayPrices } from '../Range/rangeFunctions';
+import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -19,6 +28,7 @@ declare global {
 }
 
 interface ChartData {
+    expandTradeTable: boolean;
     tvlData: any[];
     volumeData: any[];
     feeData: any[];
@@ -38,11 +48,20 @@ interface ChartData {
     truncatedPoolPrice: number | undefined;
     spotPriceDisplay: string | undefined;
     setCurrentData: React.Dispatch<React.SetStateAction<CandleChartData | undefined>>;
+    upBodyColor: string;
+    upBorderColor: string;
+    downBodyColor: string;
+    downBorderColor: string;
+    baseTokenAddress: string;
+    chainId: string;
+    poolPriceNonDisplay: number | undefined;
 }
 
-interface ChartUtils {
+export interface ChartUtils {
     period: any;
     chartData: CandleChartData[];
+    tvlChartData: TvlChartData[];
+    volumeChartData: VolumeChartData[];
 }
 
 type chartItemStates = {
@@ -60,16 +79,54 @@ export default function TradeCandleStickChart(props: ChartData) {
         liquidityData: props.liquidityData,
     };
 
-    const { denomInBase } = props;
+    const { denomInBase, baseTokenAddress, chainId, poolPriceNonDisplay } = props;
+
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [parsedChartData, setParsedChartData] = useState<ChartUtils | undefined>(undefined);
+    const expandTradeTable = props?.expandTradeTable;
+
+    const tradeData = useAppSelector((state) => state.tradeData);
+    const activeChartPeriod = tradeData.activeChartPeriod;
+
+    const tokenPair = {
+        dataTokenA: tradeData.tokenA,
+        dataTokenB: tradeData.tokenB,
+    };
+
+    const denominationsInBase = tradeData.isDenomBase;
+    const isTokenABase = tokenPair?.dataTokenA.address === baseTokenAddress;
+
+    const tokenA = tokenPair.dataTokenA;
+    const tokenB = tokenPair.dataTokenB;
+    const tokenADecimals = tokenA.decimals;
+    const tokenBDecimals = tokenB.decimals;
+    const baseTokenDecimals = isTokenABase ? tokenADecimals : tokenBDecimals;
+    const quoteTokenDecimals = !isTokenABase ? tokenADecimals : tokenBDecimals;
+
+    const currentPoolPriceTick =
+        poolPriceNonDisplay === undefined ? 0 : Math.log(poolPriceNonDisplay) / Math.log(1.0001);
+
+    const defaultMinPriceDifferencePercentage = -15;
+    const defaultMaxPriceDifferencePercentage = 15;
+
+    const defaultLowTick =
+        tradeData.advancedLowTick === 0
+            ? currentPoolPriceTick + defaultMinPriceDifferencePercentage * 100
+            : tradeData.advancedLowTick;
+
+    const defaultHighTick =
+        tradeData.advancedHighTick === 0
+            ? currentPoolPriceTick + defaultMaxPriceDifferencePercentage * 100
+            : tradeData.advancedHighTick;
 
     // Parse price data
-    const parsedChartData = useMemo(() => {
+    useEffect(() => {
+        setIsLoading(true);
         const chartData: CandleChartData[] = [];
-        let period = 1;
+        const tvlChartData: TvlChartData[] = [];
+        const volumeChartData: VolumeChartData[] = [];
+
         props.priceData?.candles.map((data) => {
-            if (data.period !== undefined) {
-                period = data.period;
-            }
             chartData.push({
                 date: new Date(data.time * 1000),
                 open: denomInBase
@@ -87,14 +144,70 @@ export default function TradeCandleStickChart(props: ChartData) {
                 time: data.time,
                 allSwaps: [],
             });
+
+            tvlChartData.push({
+                time: new Date(data.tvlData.time * 1000),
+                value: data.tvlData.interpDistHigher,
+            });
+
+            volumeChartData.push({
+                time: new Date(data.time * 1000),
+                value: data.volumeUSD,
+            });
         });
 
         const chartUtils: ChartUtils = {
-            period: period,
+            period: props.priceData?.duration,
             chartData: chartData,
+            tvlChartData: tvlChartData,
+            volumeChartData: volumeChartData,
         };
-        return chartUtils;
-    }, [props.priceData, denomInBase]);
+        setParsedChartData(() => {
+            return chartUtils;
+        });
+    }, [activeChartPeriod, denomInBase]);
+
+    // Parse liquidtiy data
+    const liquiditiyData = useMemo(() => {
+        const liqData: LiquidityData[] = [];
+        const liqSnapData: LiqSnap[] = [];
+
+        if (props.liquidityData) {
+            props.liquidityData.ranges.map((data: any) => {
+                if (data.upperBoundInvPriceDecimalCorrected > 1) {
+                    liqData.push({
+                        activeLiq: data.activeLiq,
+                        upperBoundPriceDecimalCorrected: denomInBase
+                            ? data.upperBoundInvPriceDecimalCorrected
+                            : data.upperBoundInvPriceDecimalCorrected,
+                    });
+
+                    const pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
+                        denominationsInBase,
+                        baseTokenDecimals,
+                        quoteTokenDecimals,
+                        data.upperBoundInvPriceDecimalCorrected,
+                        data.lowerBoundInvPriceDecimalCorrected,
+                        lookupChain(chainId).gridSize,
+                    );
+
+                    if (!isNaN(parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated))) {
+                        liqSnapData.push({
+                            activeLiq: data.activeLiq,
+                            pinnedMaxPriceDisplayTruncated: parseFloat(
+                                pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+                            ),
+                            pinnedMinPriceDisplayTruncated: parseFloat(
+                                pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+                            ),
+                        });
+                    }
+                }
+            });
+        }
+
+        return { liqData: liqData, liqSnapData: liqSnapData };
+    }, [props.liquidityData, denomInBase]);
 
     const loading = (
         <div className='animatedImg'>
@@ -102,13 +215,21 @@ export default function TradeCandleStickChart(props: ChartData) {
         </div>
     );
 
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setIsLoading(parsedChartData === undefined || parsedChartData.chartData.length === 0);
+        }, 100);
+        return () => clearTimeout(timer);
+    }, [parsedChartData?.chartData]);
+
     return (
         <>
             <div style={{ height: '100%', width: '100%' }}>
-                {parsedChartData.chartData && parsedChartData.chartData.length > 0 ? (
+                {!isLoading ? (
                     <Chart
                         priceData={parsedChartData}
-                        liquidityData={props.liquidityData.ranges}
+                        expandTradeTable={expandTradeTable}
+                        liquidityData={liquiditiyData}
                         changeState={props.changeState}
                         targetData={props.targetData}
                         limitPrice={props.limitPrice}
@@ -126,6 +247,10 @@ export default function TradeCandleStickChart(props: ChartData) {
                         tvlData={data.tvlData}
                         chartItemStates={props.chartItemStates}
                         setCurrentData={props.setCurrentData}
+                        upBodyColor={props.upBodyColor}
+                        upBorderColor={props.upBorderColor}
+                        downBodyColor={props.downBodyColor}
+                        downBorderColor={props.downBorderColor}
                     />
                 ) : (
                     <>{loading}</>

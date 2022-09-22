@@ -1,7 +1,7 @@
 // START: Import React and Dongles
 import { useState, ReactNode } from 'react';
 import { Link } from 'react-router-dom';
-import { FiMoreHorizontal } from 'react-icons/fi';
+import { FiExternalLink, FiMoreHorizontal } from 'react-icons/fi';
 
 // START: Import JSX Functional Components
 import Modal from '../../../../Global/Modal/Modal';
@@ -12,12 +12,12 @@ import styles from './TableMenuComponents.module.css';
 import { useModal } from '../../../../Global/Modal/useModal';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import { DefaultTooltip } from '../../../StyledTooltip/StyledTooltip';
-import { ISwap } from '../../../../../utils/state/graphDataSlice';
+import { ITransaction } from '../../../../../utils/state/graphDataSlice';
 
 // interface for React functional component props
 interface TransactionMenuIF {
     userPosition: boolean | undefined;
-    tx: ISwap;
+    tx: ITransaction;
     blockExplorer?: string;
 }
 
@@ -112,6 +112,7 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
     const explorerButton = (
         <button className={styles.option_button} onClick={handleOpenExplorer}>
             Explorer
+            <FiExternalLink size={15} color='white' style={{ marginLeft: '.5rem' }} />
         </button>
     );
     // const detailsButton = (

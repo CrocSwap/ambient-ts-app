@@ -1,37 +1,42 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useMoralis } from 'react-moralis';
-import { useEffect, useState } from 'react';
-import { BsSlashSquare, BsEmojiSmileFill } from 'react-icons/bs';
-import { Message } from '../../Model/MessageModel';
-import Picker from 'emoji-picker-react';
 import {
+    receiveUsername,
     // host,
     sendMessageRoute,
     socket,
 } from '../../Service/chatApi';
-import styles from './MessageInput.module.css';
 import axios from 'axios';
+import { BsSlashSquare, BsEmojiSmileFill } from 'react-icons/bs';
+import { Message } from '../../Model/MessageModel';
+import Picker from 'emoji-picker-react';
+import styles from './MessageInput.module.css';
+import { useEffect, useState } from 'react';
 
 interface MessageInputProps {
     message: Message;
     room: string;
 }
 
-export default function MessageInput(props: MessageInputProps) {
+interface PortfolioBannerPropsIF {
+    ensName: string;
+    activeAccount: string;
+    imageData: string[];
+    resolvedAddress: string;
+}
+
+export default function MessageInput(props: MessageInputProps, prop: PortfolioBannerPropsIF) {
     const _socket = socket;
 
     useEffect(() => {
         _socket.connect();
-        // _socket.on('msg-recieve', (data) => {
-        // //   setMessageReceived(data.message)
-        // })
-        // _socket.disconnect();
     }, [_socket]);
 
     const [message, setMessage] = useState('');
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const { user, account, enableWeb3, isWeb3Enabled, isAuthenticated } = useMoralis();
+    const [positionIsActive, setPositionIsActive] = useState(false);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleEmojiClick = (event: any, emoji: any) => {
         let msg = message;
         msg += emoji.emoji;
@@ -41,18 +46,27 @@ export default function MessageInput(props: MessageInputProps) {
     const handleEmojiPickerHideShow = () => {
         setShowEmojiPicker(!showEmojiPicker);
     };
+
+    function handlePositionShow() {
+        /* setShowPosition(!showPosition);*/
+        setPositionIsActive(!positionIsActive);
+    }
+
+    function handleMessageWithPosition() {
+        setMessage(positionIsActive ? '/position 0xaBcD...1234      ' + message : '');
+    }
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const _handleKeyDown = (e: any) => {
         if (e.key === 'Enter') {
             handleSendMsg(e.target.value);
             setMessage('');
+            handleEmojiPickerHideShow();
         }
     };
 
     const handleSendMsg = async (msg: string) => {
-        _socket.emit('send-msg', msg);
-
-        await axios.post(sendMessageRoute, {
+        _socket.emit('send-msg', {
             from: '62f24f3ff40188d467c532e8',
             to: '62fa389c897f9778e2eb863f',
             message: msg,
@@ -60,15 +74,30 @@ export default function MessageInput(props: MessageInputProps) {
         });
     };
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const onChangeMessage = (e: any) => {
+    const onChangeMessage = async (e: any) => {
         setMessage(e.target.value);
     };
 
-    const accountProps = {
-        isAuthenticated: isAuthenticated,
-        isWeb3Enabled: isWeb3Enabled,
+    const onChangeMessageWithMention = async (e: any) => {
+        const value = e.target.value;
+        if (value.includes('@')) {
+            let response;
+            const myArray = value.split('@');
+            const word = myArray[1];
+            if (word.length > 0) {
+                response = await axios
+                    .get(receiveUsername + '/' + word)
+                    .then((response) => {
+                        console.log({ response });
+                        setMessage(value);
+                    })
+                    .catch((exception) => {
+                        console.log(exception);
+                    });
+            }
+        }
     };
+
     return (
         <div className={styles.input_box}>
             <div className={styles.input}>
@@ -78,20 +107,31 @@ export default function MessageInput(props: MessageInputProps) {
                     placeholder={
                         !isAuthenticated || !isWeb3Enabled
                             ? 'Please log in to chat.'
-                            : 'Enter Message...'
+                            : 'Type to chat. Enter to submit.'
                     }
                     disabled={!isAuthenticated || !isWeb3Enabled}
-                    className={styles.input_text}
+                    className={!positionIsActive ? styles.input_text : styles.input_text_position}
                     onKeyDown={_handleKeyDown}
                     value={message}
                     onChange={onChangeMessage}
                 />
-                <BsSlashSquare />
+                <BsSlashSquare
+                    style={positionIsActive ? { color: '#5FA2FF' } : { color: '' }}
+                    onClick={() => {
+                        handlePositionShow();
+                        handleMessageWithPosition();
+                    }}
+                />
                 <BsEmojiSmileFill onClick={handleEmojiPickerHideShow} />
             </div>
-            <div className={styles.emojiPicker}>
-                {showEmojiPicker && <Picker onEmojiClick={handleEmojiClick} />}
-            </div>
+            {showEmojiPicker && (
+                <div className={styles.emojiPicker}>
+                    <Picker
+                        pickerStyle={{ width: '100%', height: '95%' }}
+                        onEmojiClick={handleEmojiClick}
+                    />
+                </div>
+            )}
         </div>
     );
 }

@@ -8,13 +8,14 @@ import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
 import SnackbarComponent from '../../../../components/Global/SnackbarComponent/SnackbarComponent';
 import DropdownMenu from '../NavbarDropdownMenu/NavbarDropdownMenu';
 import NavItem from '../NavItem/NavItem';
+import IconWithTooltip from '../../../../components/Global/IconWithTooltip/IconWithTooltip';
+import { MdAccountBalanceWallet } from 'react-icons/md';
 
 interface AccountPropsIF {
-    nativeBalance: string;
+    isUserLoggedIn: boolean;
+    nativeBalance: string | undefined;
     accountAddress: string;
     accountAddressFull: string;
-    isAuthenticated?: boolean;
-    isWeb3Enabled?: boolean;
     clickLogout: () => void;
     openModal: () => void;
     ensName: string;
@@ -22,7 +23,7 @@ interface AccountPropsIF {
 }
 
 export default function Account(props: AccountPropsIF) {
-    const { isAuthenticated, isWeb3Enabled, clickLogout, ensName, openModal, chainId } = props;
+    const { isUserLoggedIn, nativeBalance, clickLogout, ensName, openModal, chainId } = props;
 
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [value, copy] = useCopyToClipboard();
@@ -43,18 +44,26 @@ export default function Account(props: AccountPropsIF) {
     );
     return (
         <div className={styles.account_container}>
-            <span className={styles.white}>
-                {props.nativeBalance && isAuthenticated && isWeb3Enabled
-                    ? 'Ξ ' + parseFloat(props.nativeBalance).toPrecision(4)
-                    : ''}
-            </span>
-            <div className={`${styles.title_gradient}`} onClick={handleCopyAddress}>
-                {ensName !== '' && isAuthenticated ? ensName : props.accountAddress}
-            </div>
+            <IconWithTooltip title='Wallet balance' placement='bottom'>
+                <span className={styles.white}>
+                    {isUserLoggedIn
+                        ? nativeBalance
+                            ? 'Ξ ' + parseFloat(nativeBalance).toPrecision(4)
+                            : '...'
+                        : ''}
+                </span>
+            </IconWithTooltip>
+            {isUserLoggedIn && (
+                <div className={`${styles.title_gradient}`} onClick={handleCopyAddress}>
+                    <MdAccountBalanceWallet color='#ebebff' />
+                    <p>{ensName !== '' ? ensName : props.accountAddress}</p>
+                </div>
+            )}
             <NavItem icon={<FiMoreHorizontal size={20} color='#CDC1FF' />}>
                 <DropdownMenu
-                    isAuthenticated={isAuthenticated}
-                    isWeb3Enabled={isWeb3Enabled}
+                    isUserLoggedIn={isUserLoggedIn}
+                    // isAuthenticated={isAuthenticated}
+                    // isWeb3Enabled={isWeb3Enabled}
                     clickLogout={clickLogout}
                     openModal={openModal}
                     chainId={chainId}

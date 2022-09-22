@@ -24,7 +24,7 @@
     align-items: center;
 }
 .gas_pump svg {
-    margin-right: 1rem;
+    margin-right: 5px;
 }
 
 .token_amount svg {
