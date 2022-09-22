@@ -862,6 +862,10 @@ export default function Chart(props: ChartData) {
         }
     }
 
+    useEffect(() => {
+        addTriangle();
+    }, [dragControl]);
+
     // Line Rules
     useEffect(() => {
         if (dragType !== undefined) {
@@ -1391,9 +1395,7 @@ export default function Chart(props: ChartData) {
                                 period={parsedChartData?.period}
                                 crosshairData={crosshairData}
                                 setsubChartValues={setsubChartValues}
-                                xScale={
-                                    scaleData !== undefined ? scaleData.subChartxScale : undefined
-                                }
+                                xScale={scaleData !== undefined ? scaleData.xScale : undefined}
                             />
                         </>
                     )}
@@ -1414,9 +1416,7 @@ export default function Chart(props: ChartData) {
                                 period={parsedChartData?.period}
                                 crosshairData={crosshairData}
                                 setsubChartValues={setsubChartValues}
-                                xScale={
-                                    scaleData !== undefined ? scaleData.subChartxScale : undefined
-                                }
+                                xScale={scaleData !== undefined ? scaleData.xScale : undefined}
                             />
                         </>
                     )}
