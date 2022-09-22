@@ -22,7 +22,7 @@ import Modal from '../../../components/Global/Modal/Modal';
 import Button from '../../../components/Global/Button/Button';
 import RangeExtraInfo from '../../../components/Trade/Range/RangeExtraInfo/RangeExtraInfo';
 import ConfirmRangeModal from '../../../components/Trade/Range/ConfirmRangeModal/ConfirmRangeModal';
-
+import { FiCopy } from 'react-icons/fi';
 // START: Import Local Files
 import styles from './Range.module.css';
 import {
@@ -46,6 +46,7 @@ import {
 } from '../../../utils/state/tradeDataSlice';
 import { addReceipt } from '../../../utils/state/receiptDataSlice';
 import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
+import RangeShareControl from '../../../components/Trade/Range/RangeShareControl/RangeShareControl';
 
 interface RangePropsIF {
     isUserLoggedIn: boolean;
@@ -75,7 +76,7 @@ interface RangePropsIF {
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
     openModalWallet: () => void;
     ambientApy: number | undefined;
-
+    openGlobalModal: (content: React.ReactNode, title?: string) => void;
     pendingTransactions: string[];
 }
 
@@ -107,7 +108,7 @@ export default function Range(props: RangePropsIF) {
         indicateActiveTokenListsChanged,
         openModalWallet,
         ambientApy,
-
+        openGlobalModal,
         pendingTransactions,
     } = props;
 
@@ -1026,6 +1027,54 @@ export default function Range(props: RangePropsIF) {
             }}
         />
     );
+    // -------------------------RANGE SHARE FUNCTIONALITY---------------------------
+    const [shareOptions, setShareOptions] = useState([
+        { slug: 'first', name: 'Include Range 1', checked: false },
+        { slug: 'second', name: 'Include Range 2', checked: false },
+        { slug: 'third', name: 'Include Range 3', checked: false },
+        { slug: 'fourth', name: 'Include Range 4', checked: false },
+    ]);
+
+    const handleShareOptionChange = (slug: string) => {
+        console.log('Clicked');
+        const copyShareOptions = [...shareOptions];
+        const modifiedShareOptions = copyShareOptions.map((option) => {
+            if (slug === option.slug) {
+                option.checked = !option.checked;
+            }
+
+            return option;
+        });
+
+        setShareOptions(modifiedShareOptions);
+        console.log('I am clicked');
+    };
+
+    const shareOptionsDisplay = (
+        <div className={styles.option_control_container}>
+            <div className={styles.options_control_display_container}>
+                <p className={styles.control_title}>Options</p>
+                <ul>
+                    {shareOptions.map((option, idx) => (
+                        <RangeShareControl
+                            key={idx}
+                            option={option}
+                            handleShareOptionChange={handleShareOptionChange}
+                        />
+                    ))}
+                </ul>
+            </div>
+            <p className={styles.control_title}>URL:</p>
+            <p className={styles.url_link}>
+                https://ambient.finance/trade/market/0xaaaaaa/93bbbb
+                <div>
+                    <FiCopy color='#cdc1ff' />
+                </div>
+            </p>
+        </div>
+    );
+
+    // -------------------------END OF RANGE SHARE FUNCTIONALITY---------------------------
 
     return (
         <section data-testid={'range'}>
@@ -1037,6 +1086,8 @@ export default function Range(props: RangePropsIF) {
                     isPairStable={isPairStable}
                     isDenomBase={tradeData.isDenomBase}
                     isTokenABase={isTokenABase}
+                    openGlobalModal={openGlobalModal}
+                    shareOptionsDisplay={shareOptionsDisplay}
                 />
                 <DividerDark addMarginTop />
                 {navigationMenu}
