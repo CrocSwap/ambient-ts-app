@@ -39,6 +39,7 @@ type chartItemStates = {
     showFeeRate: boolean;
 };
 interface ChartData {
+    expandTradeTable: boolean;
     priceData: ChartUtils | undefined;
     liquidityData: any;
     changeState: (isOpen: boolean | undefined, candleData: CandleData | undefined) => void;
@@ -72,6 +73,7 @@ export default function Chart(props: ChartData) {
         pinnedMaxPriceDisplayTruncated,
         simpleRangeWidth,
         spotPriceDisplay,
+        expandTradeTable,
     } = props;
 
     const { showFeeRate, showTvl, showVolume } = props.chartItemStates;
@@ -183,8 +185,10 @@ export default function Chart(props: ChartData) {
     }, []);
 
     useEffect(() => {
+        if (expandTradeTable) return;
+
         render();
-    }, [props.chartItemStates]);
+    }, [props.chartItemStates, expandTradeTable]);
 
     useEffect(() => {
         d3.select(d3Xaxis.current)

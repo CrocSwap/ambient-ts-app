@@ -1,7 +1,7 @@
 // START: Import React and Dongles
 import {
     // useState,
-    useEffect,
+    // useEffect,
     Dispatch,
     SetStateAction,
 } from 'react';
@@ -18,6 +18,7 @@ import styles from './ConfirmRangeModal.module.css';
 import SelectedRange from './SelectedRange/SelectedRange';
 import { TokenPairIF } from '../../../../utils/interfaces/exports';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
+import ConfirmationModalControl from '../../../Global/ConfirmationModalControl/ConfirmationModalControl';
 
 interface ConfirmRangeModalPropsIF {
     sendTransaction: () => void;
@@ -69,7 +70,7 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalPropsIF) {
         setShowConfirmation,
         resetConfirmation,
 
-        pendingTransactions,
+        // pendingTransactions,
     } = props;
 
     const tokenA = tokenPair.dataTokenA;
@@ -86,11 +87,11 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalPropsIF) {
     const dataTokenA = tokenPair.dataTokenA;
     const dataTokenB = tokenPair.dataTokenB;
 
-    useEffect(() => {
-        if (newRangeTransactionHash && newRangeTransactionHash !== '') {
-            pendingTransactions.push(newRangeTransactionHash);
-        }
-    }, [newRangeTransactionHash]);
+    // useEffect(() => {
+    //     if (newRangeTransactionHash && newRangeTransactionHash !== '') {
+    //         pendingTransactions.push(newRangeTransactionHash);
+    //     }
+    // }, [newRangeTransactionHash]);
 
     const rangeHeader = (
         <section className={styles.position_display}>
@@ -153,6 +154,7 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalPropsIF) {
             {rangeHeader}
             {tokenAmountDisplay}
             {selectedRangeOrNull}
+            <ConfirmationModalControl />
         </>
     );
 

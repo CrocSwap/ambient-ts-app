@@ -2,7 +2,7 @@
 import { useState, Dispatch, SetStateAction, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { ethers } from 'ethers';
-import { useMoralis } from 'react-moralis';
+// import { useMoralis } from 'react-moralis';
 import { motion } from 'framer-motion';
 import { CrocEnv, CrocImpact } from '@crocswap-libs/sdk';
 
@@ -29,10 +29,13 @@ import { SlippagePairIF, TokenIF, TokenPairIF } from '../../utils/interfaces/exp
 import { useModal } from '../../components/Global/Modal/useModal';
 import { useRelativeModal } from '../../components/Global/RelativeModal/useRelativeModal';
 import { addReceipt } from '../../utils/state/receiptDataSlice';
+import { useUrlParams } from './useUrlParams';
 // import { calcImpact } from '../../App/functions/calcImpact';
 
 interface SwapPropsIF {
     crocEnv: CrocEnv | undefined;
+    isUserLoggedIn: boolean;
+    account: string | null;
     importedTokens: Array<TokenIF>;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     searchableTokens: Array<TokenIF>;
@@ -42,7 +45,7 @@ interface SwapPropsIF {
     isOnTradeRoute?: boolean;
     gasPriceInGwei: number | undefined;
     ethMainnetUsdPrice?: number;
-    nativeBalance: string;
+    nativeBalance: string | undefined;
     lastBlockNumber: number;
     baseTokenBalance: string;
     quoteTokenBalance: string;
@@ -57,6 +60,7 @@ interface SwapPropsIF {
     activeTokenListsChanged: boolean;
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
     openModalWallet: () => void;
+    isInitialized: boolean;
 
     pendingTransactions: string[];
     setPendingTransactions: Dispatch<SetStateAction<never[]>>;
@@ -65,6 +69,8 @@ interface SwapPropsIF {
 export default function Swap(props: SwapPropsIF) {
     const {
         crocEnv,
+        isUserLoggedIn,
+        account,
         importedTokens,
         setImportedTokens,
         searchableTokens,
@@ -88,6 +94,7 @@ export default function Swap(props: SwapPropsIF) {
         activeTokenListsChanged,
         indicateActiveTokenListsChanged,
         openModalWallet,
+        isInitialized,
         pendingTransactions,
     } = props;
 
@@ -95,9 +102,11 @@ export default function Swap(props: SwapPropsIF) {
 
     const dispatch = useAppDispatch();
 
+    useUrlParams(chainId, isInitialized);
+
     const [isRelativeModalOpen, closeRelativeModal] = useRelativeModal();
 
-    const { isWeb3Enabled, isAuthenticated, account } = useMoralis();
+    // const { account } = useMoralis();
     // get URL pathway for user relative to index
     const { pathname } = useLocation();
 
@@ -379,8 +388,8 @@ export default function Swap(props: SwapPropsIF) {
 
     const isTokenAAllowanceSufficient = parseFloat(tokenAAllowance) >= parseFloat(tokenAInputQty);
 
-    const swapContainerStyle = pathname == '/swap' ? styles.swap_page_container : null;
-    const swapPageStyle = pathname == '/swap' ? styles.swap_page : null;
+    const swapContainerStyle = pathname.startsWith('/swap') ? styles.swap_page_container : null;
+    const swapPageStyle = pathname.startsWith('/swap') ? styles.swap_page : null;
     return (
         <main data-testid={'swap'} className={swapPageStyle}>
             <div className={`${swapContainerStyle}`}>
@@ -402,6 +411,7 @@ export default function Swap(props: SwapPropsIF) {
                     >
                         <CurrencyConverter
                             crocEnv={crocEnv}
+                            isUserLoggedIn={isUserLoggedIn}
                             provider={provider}
                             slippageTolerancePercentage={slippageTolerancePercentage}
                             setPriceImpact={setPriceImpact}
@@ -414,10 +424,11 @@ export default function Swap(props: SwapPropsIF) {
                             poolPriceDisplay={poolPriceDisplay}
                             isTokenAPrimary={isTokenAPrimary}
                             isSellTokenBase={isSellTokenBase}
-                            nativeBalance={truncateDecimals(
-                                parseFloat(nativeBalance),
-                                4,
-                            ).toString()}
+                            nativeBalance={
+                                nativeBalance
+                                    ? truncateDecimals(parseFloat(nativeBalance), 4).toString()
+                                    : '...'
+                            }
                             baseTokenBalance={baseTokenBalance}
                             quoteTokenBalance={quoteTokenBalance}
                             baseTokenDexBalance={baseTokenDexBalance}
@@ -452,7 +463,7 @@ export default function Swap(props: SwapPropsIF) {
                         didUserFlipDenom={tradeData.didUserFlipDenom}
                         isDenomBase={tradeData.isDenomBase}
                     />
-                    {isAuthenticated && isWeb3Enabled ? (
+                    {isUserLoggedIn ? (
                         !isTokenAAllowanceSufficient &&
                         parseFloat(tokenAInputQty) > 0 &&
                         tokenAInputQty !== 'Infinity' ? (

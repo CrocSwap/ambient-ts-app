@@ -10,6 +10,7 @@ import DropdownMenu2 from '../../../../components/Global/DropdownMenu2/DropdownM
 import { ItemEnterAnimation } from '../../../../utils/others/FramerMotionAnimations';
 import { ambientChains } from '../../../../utils/data/chains';
 import IconWithTooltip from '../../../../components/Global/IconWithTooltip/IconWithTooltip';
+// import NewNetworkSelector from './NewNetworkSelector';
 
 interface NetworkSelectorPropsIF {
     chainId: string;
@@ -40,20 +41,23 @@ export default function NetworkSelector(props: NetworkSelectorPropsIF) {
         </ul>
     );
 
-    // TODO:  @Junior is the wrapper in the return necessary?
     return (
-        <div className={styles.selector_select_container}>
-            <IconWithTooltip title='Network' placement='left'>
-                <div className={styles.dropdown_menu_container}>
-                    <DropdownMenu2
-                        marginTop={'50px'}
-                        titleWidth={'80px'}
-                        title={lookupChain(chainId).displayName}
-                    >
-                        {networkMenuContent}
-                    </DropdownMenu2>
-                </div>
-            </IconWithTooltip>
-        </div>
+        <>
+            <div className={styles.selector_select_container}>
+                <IconWithTooltip title='Network' placement='left'>
+                    <div className={styles.dropdown_menu_container}>
+                        <DropdownMenu2
+                            marginTop={'50px'}
+                            titleWidth={'80px'}
+                            title={lookupChain(chainId).displayName}
+                        >
+                            {networkMenuContent}
+                        </DropdownMenu2>
+                    </div>
+                </IconWithTooltip>
+            </div>
+
+            {/* <NewNetworkSelector /> */}
+        </>
     );
 }

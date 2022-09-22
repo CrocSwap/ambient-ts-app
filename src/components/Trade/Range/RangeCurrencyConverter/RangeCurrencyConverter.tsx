@@ -19,6 +19,7 @@ import { ZERO_ADDRESS } from '../../../../constants';
 
 // interface for component props
 interface RangeCurrencyConverterPropsIF {
+    isUserLoggedIn: boolean;
     tokensBank: Array<TokenIF>;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     searchableTokens: Array<TokenIF>;
@@ -57,6 +58,7 @@ interface RangeCurrencyConverterPropsIF {
 // central React functional component
 export default function RangeCurrencyConverter(props: RangeCurrencyConverterPropsIF) {
     const {
+        isUserLoggedIn,
         chainId,
         isLiq,
         tokensBank,
@@ -596,6 +598,8 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         // tradeData.isTokenAPrimaryRange,
         tokenABalance,
         tokenBBalance,
+        tokenADexBalance,
+        tokenBDexBalance,
         // JSON.stringify(tokenPair),
     ]);
 
@@ -626,6 +630,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
 
     // props for <RangeCurrencyConverter/> React element
     const rangeCurrencySelectorCommonProps = {
+        isUserLoggedIn: isUserLoggedIn,
         resetTokenQuantities: resetTokenQuantities,
         chainId: chainId,
         tokenPair: tokenPair,

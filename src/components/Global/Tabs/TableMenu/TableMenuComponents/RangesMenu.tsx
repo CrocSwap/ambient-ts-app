@@ -39,7 +39,6 @@ export default function RangesMenu(props: RangesMenuIF) {
         // chainData,
         userMatchesConnectedAccount,
         rangeDetailsProps,
-
         posHash,
         positionData,
         // eslint-disable-next-line

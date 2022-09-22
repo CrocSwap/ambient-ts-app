@@ -22,7 +22,7 @@ export default function WalletAndId(props: WalletAndIDProps) {
             title={
                 <div>
                     <p>{ownerId}</p>
-                    <NavLink to={`/account/${ownerId}`}>View Account</NavLink>
+                    <NavLink to={`/${ownerId}`}>View Account</NavLink>
                 </div>
             }
             placement={'right'}
@@ -52,7 +52,7 @@ export default function WalletAndId(props: WalletAndIDProps) {
             title={
                 <div>
                     <p>{ensName}</p>
-                    <NavLink to={`/account/${ensName}`}>View Account</NavLink>
+                    <NavLink to={`/${ensName}`}>View Account</NavLink>
                 </div>
             }
             placement={'right'}
@@ -70,7 +70,7 @@ export default function WalletAndId(props: WalletAndIDProps) {
             title={
                 <div>
                     <p>{ownerId}</p>
-                    <NavLink to={`/account/${ownerId}`}>View Account</NavLink>
+                    <NavLink to={`/${ownerId}`}>View Account</NavLink>
                 </div>
             }
             placement={'right'}
@@ -88,7 +88,7 @@ export default function WalletAndId(props: WalletAndIDProps) {
             title={
                 <div>
                     <p>{ensName}</p>
-                    <NavLink to={`/account/${ensName}`}>View Account</NavLink>
+                    <NavLink to={`/${ensName}`}>View Account</NavLink>
                 </div>
             }
             placement={'right'}

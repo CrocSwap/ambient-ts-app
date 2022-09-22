@@ -21,7 +21,8 @@ import MobileSidebar from '../../../components/Global/MobileSidebar/MobileSideba
 import NotificationCenter from '../../../components/Global/NotificationCenter/NotificationCenter';
 
 interface HeaderPropsIF {
-    nativeBalance: string;
+    isUserLoggedIn: boolean;
+    nativeBalance: string | undefined;
     clickLogout: () => void;
     metamaskLocked: boolean;
     ensName: string;
@@ -44,6 +45,7 @@ interface HeaderPropsIF {
 
 export default function PageHeader(props: HeaderPropsIF) {
     const {
+        isUserLoggedIn,
         ensName,
         nativeBalance,
         clickLogout,
@@ -112,8 +114,7 @@ export default function PageHeader(props: HeaderPropsIF) {
         accountAddress: accountAddress,
         accountAddressFull: isAuthenticated && account ? account : '',
         ensName: ensName,
-        isAuthenticated: isAuthenticated,
-        isWeb3Enabled: isWeb3Enabled,
+        isUserLoggedIn: isUserLoggedIn,
         clickLogout: clickLogout,
         openModal: openModal,
         chainId: chainId,
@@ -138,7 +139,7 @@ export default function PageHeader(props: HeaderPropsIF) {
         ? '/trade/range'
         : location.pathname.includes('trade/edit')
         ? '/trade/edit'
-        : '/trade/market';
+        : '/trade/range';
 
     const linkData = [
         { title: t('common:homeTitle'), destination: '/', shouldDisplay: true },
@@ -210,22 +211,24 @@ export default function PageHeader(props: HeaderPropsIF) {
             </div> */}
 
             {routeDisplay}
-            <MobileSidebar
-                lastBlockNumber={lastBlockNumber}
-                chainId={chainId}
-                isMobileSidebarOpen={isMobileSidebarOpen}
-                setIsMobileSidebarOpen={setIsMobileSidebarOpen}
-            />
-
-            <div className={styles.account}>
-                <NetworkSelector chainId={chainId} switchChain={switchChain} />
-                {(!isAuthenticated || !isWeb3Enabled) && metamaskButton}
-                <Account {...accountProps} />
-                <NotificationCenter
-                    showNotificationTable={showNotificationTable}
-                    setShowNotificationTable={setShowNotificationTable}
-                    pendingTransactions={pendingTransactions}
+            <div>
+                <MobileSidebar
+                    lastBlockNumber={lastBlockNumber}
+                    chainId={chainId}
+                    isMobileSidebarOpen={isMobileSidebarOpen}
+                    setIsMobileSidebarOpen={setIsMobileSidebarOpen}
                 />
+                <div className={styles.account}>
+                    <NetworkSelector chainId={chainId} switchChain={switchChain} />
+                    {(!isAuthenticated || !isWeb3Enabled) && metamaskButton}
+                    <Account {...accountProps} />
+                    <NotificationCenter
+                        showNotificationTable={showNotificationTable}
+                        setShowNotificationTable={setShowNotificationTable}
+                        pendingTransactions={pendingTransactions}
+                        lastBlockNumber={lastBlockNumber}
+                    />
+                </div>
             </div>
             {isChainSupported || <SwitchNetwork switchNetworkInMoralis={switchNetworkInMoralis} />}
             {modalOrNull}
