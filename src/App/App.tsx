@@ -1758,6 +1758,7 @@ export default function App() {
         ambientApy: ambientApy,
 
         pendingTransactions: pendingTransactions,
+        openGlobalModal: openGlobalModal,
     };
 
     function toggleSidebar() {

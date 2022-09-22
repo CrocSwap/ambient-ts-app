@@ -1,0 +1,57 @@
+.container{
+
+    position: relative;
+}
+
+.share_button{
+    /* position: absolute;
+    left: 30px;
+    top: 23px; */
+    height: 30px;
+    width: 30px;
+    text-align: center;
+    line-height: 55px;
+    border-radius: 50px;
+    font-size: 30px;
+    color: #fff;
+    cursor: pointer;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.share_button svg{
+    transition: transform var(--animation-speed) ease-in-out;
+
+}
+.share_button svg:hover{
+    transform: rotate(45deg);
+
+}
+
+.share_wrapper,
+.share_wrapper_active {
+  width: 400px;
+  padding: 20px;
+background:black;
+
+  position: absolute;
+  /* top:0; */
+
+  border-radius: 4px;
+  box-shadow: 0px 35px 20px rgba(0, 0, 0, 0.3);
+  transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+.share_wrapper {
+    top: 0px;
+  
+    opacity: 0;
+    pointer-events: none;
+  }
+  
+  .share_wrapper_active {
+    opacity: 1;
+  
+    top: 30px;
+    pointer-events: auto;
+  }

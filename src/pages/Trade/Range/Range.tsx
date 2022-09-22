@@ -71,7 +71,7 @@ interface RangePropsIF {
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
     openModalWallet: () => void;
     ambientApy: number | undefined;
-
+    openGlobalModal: (content: React.ReactNode, title?: string) => void;
     pendingTransactions: string[];
 }
 
@@ -103,7 +103,7 @@ export default function Range(props: RangePropsIF) {
         indicateActiveTokenListsChanged,
         openModalWallet,
         ambientApy,
-
+        openGlobalModal,
         pendingTransactions,
     } = props;
 

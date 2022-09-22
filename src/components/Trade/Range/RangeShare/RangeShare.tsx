@@ -11,6 +11,7 @@ export default function RangeShare() {
             <AiOutlineShareAlt />
         </div>
     );
+    const wrapperStyle = showShareModal ? styles.share_wrapper_active : styles.share_wrapper;
 
-    return <div> </div>;
+    return <div className={styles.container}>Range Share Data</div>;
 }
