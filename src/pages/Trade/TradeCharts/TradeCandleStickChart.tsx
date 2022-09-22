@@ -218,7 +218,7 @@ export default function TradeCandleStickChart(props: ChartData) {
     useEffect(() => {
         const timer = setTimeout(() => {
             setIsLoading(parsedChartData === undefined || parsedChartData.chartData.length === 0);
-        }, 1000);
+        }, 100);
         return () => clearTimeout(timer);
     }, [parsedChartData?.chartData]);
 

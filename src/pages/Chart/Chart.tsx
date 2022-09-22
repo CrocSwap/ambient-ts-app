@@ -258,10 +258,19 @@ export default function Chart(props: ChartData) {
                 // ensure that the scale is padded by one day in either direction
                 .pad([parsedChartData.period * 5000, (parsedChartData.period / 2) * 100000]);
 
+            const subChartxExtent = d3fc
+                .extentDate()
+                .accessors([(d: any) => d.date])
+                .padUnit('domain')
+                // ensure that the scale is padded by one day in either direction
+                .pad([parsedChartData.period * 3000, (parsedChartData.period / 2) * 100000]);
+
             const xScale = d3.scaleTime();
+            const subChartxScale = d3.scaleTime();
             const yScale = d3.scaleLinear();
 
             xScale.domain(xExtent(parsedChartData.chartData));
+            subChartxScale.domain(subChartxExtent(parsedChartData.chartData));
             yScale.domain(priceRange(parsedChartData.chartData));
 
             const xScaleCopy = xScale.copy();
@@ -309,6 +318,7 @@ export default function Chart(props: ChartData) {
                     yScaleCopy: yScaleCopy,
                     barThreshold: barThreshold,
                     ghostScale: ghostScale,
+                    subChartxScale: subChartxScale,
                 };
             });
         }
@@ -355,7 +365,6 @@ export default function Chart(props: ChartData) {
                 }) as any;
 
             const yAxisDrag = d3.drag().on('drag', (event: any) => {
-                console.log({ event });
                 const factor = Math.pow(2, -event.dy * 0.01);
                 d3.select(d3PlotArea.current).call(yAxisZoom.scaleBy, factor);
 
@@ -562,8 +571,6 @@ export default function Chart(props: ChartData) {
                         : prev;
                 });
 
-                console.log({ filtered });
-
                 return nearest.pinnedMaxPriceDisplayTruncated;
             };
 
@@ -607,19 +614,19 @@ export default function Chart(props: ChartData) {
                                     snappedValue;
 
                                 newTargets.filter((target: any) => target.name === 'Min')[0].value =
-                                    snap(props.liquidityData.liqData, low + valueWithRange);
+                                    snap(props.liquidityData.liqSnapData, low + valueWithRange);
 
                                 render();
                             } else {
                                 newTargets.filter((target: any) => target.name === 'Max')[0].value =
                                     snap(
-                                        props.liquidityData.liqData,
+                                        props.liquidityData.liqSnapData,
                                         parseFloat(displayValue) + dragLimit * 1.01,
                                     );
 
                                 newTargets.filter((target: any) => target.name === 'Min')[0].value =
                                     snap(
-                                        props.liquidityData.liqData,
+                                        props.liquidityData.liqSnapData,
                                         parseFloat(displayValue) - dragLimit * 1.01,
                                     );
 
@@ -652,19 +659,19 @@ export default function Chart(props: ChartData) {
                                     snappedValue;
 
                                 newTargets.filter((target: any) => target.name === 'Max')[0].value =
-                                    snap(props.liquidityData.liqData, high + valueWithRange);
+                                    snap(props.liquidityData.liqSnapData, high + valueWithRange);
 
                                 render();
                             } else {
                                 newTargets.filter((target: any) => target.name === 'Max')[0].value =
                                     snap(
-                                        props.liquidityData.liqData,
+                                        props.liquidityData.liqSnapData,
                                         parseFloat(displayValue) + dragLimit * 1.01,
                                     );
 
                                 newTargets.filter((target: any) => target.name === 'Min')[0].value =
                                     snap(
-                                        props.liquidityData.liqData,
+                                        props.liquidityData.liqSnapData,
                                         parseFloat(displayValue) - dragLimit * 1.01,
                                     );
 
@@ -991,13 +998,13 @@ export default function Chart(props: ChartData) {
                     .decorate((selection: any) => {
                         selection.select('.bar > path').style('fill', (d: any) => {
                             return d.upperBoundPriceDecimalCorrected > scaleData.barThreshold
-                                ? 'rgba(115, 113, 252, 0.7)'
-                                : 'rgba(205, 193, 255, 0.7)';
+                                ? 'rgba(115, 113, 252, 0.4)'
+                                : 'rgba(205, 193, 255, 0.4)';
                         });
                         selection.select('.bar > path').style('stroke', (d: any) => {
                             d.upperBoundPriceDecimalCorrected > scaleData.barThreshold
-                                ? 'rgba(115, 113, 252, 0.7)'
-                                : 'rgba(205, 193, 255, 0.7)';
+                                ? 'rgba(115, 113, 252, 0.4)'
+                                : 'rgba(205, 193, 255, 0.4)';
                         });
                     });
 
@@ -1359,7 +1366,9 @@ export default function Chart(props: ChartData) {
                                 period={parsedChartData?.period}
                                 crosshairData={crosshairData}
                                 setsubChartValues={setsubChartValues}
-                                xScale={scaleData !== undefined ? scaleData.xScale : undefined}
+                                xScale={
+                                    scaleData !== undefined ? scaleData.subChartxScale : undefined
+                                }
                             />
                         </>
                     )}
@@ -1380,7 +1389,9 @@ export default function Chart(props: ChartData) {
                                 period={parsedChartData?.period}
                                 crosshairData={crosshairData}
                                 setsubChartValues={setsubChartValues}
-                                xScale={scaleData !== undefined ? scaleData.xScale : undefined}
+                                xScale={
+                                    scaleData !== undefined ? scaleData.subChartxScale : undefined
+                                }
                             />
                         </>
                     )}
