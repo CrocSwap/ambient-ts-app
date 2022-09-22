@@ -2073,6 +2073,7 @@ export default function App() {
                         }}
                         favePools={favePools}
                         currentPool={currentPoolInfo}
+                        setChatStatus={setChatStatus}
                     />
                 )}
             </div>

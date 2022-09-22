@@ -6,6 +6,7 @@ export const client = 'http://localhost:3000';
 export const sendMessageRoute = `${host}/api/messages/addmsg`;
 export const recieveMessageRoute = `${host}/api/messages/getall`;
 export const recieveMessageByRoomRoute = `${host}/api/messages/getmsgbyroom`;
+export const receiveUsername = `${host}/api/auth/getUserByUsername`;
 
 // export const socket = io(sendMessageRoute);
 export const socket = io(host);

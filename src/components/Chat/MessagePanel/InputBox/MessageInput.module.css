@@ -89,3 +89,31 @@
     order: 0;
     flex-grow: 1;
 }
+
+.input_text_position {
+
+    width: 212px;
+    height: 22px;
+
+    /* small */
+
+    font-family: 'Lexend Deca';
+    font-style: normal;
+    font-weight: 300;
+    font-size: calc(1vw - 1px);
+    line-height: 15px;
+    display: flex;
+    align-items: center;
+    outline: none;
+
+    /* text/grey dark */
+    border-color: transparent;
+    color: #7371FC;
+    background-color: transparent;
+
+    /* Inside auto layout */
+
+    flex: none;
+    order: 0;
+    flex-grow: 1;
+}
