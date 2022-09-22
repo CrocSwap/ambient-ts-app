@@ -9,6 +9,7 @@ export type TransactionError = TransactionReplacedError | TransactionFailedError
 
 export interface TransactionReplacedError extends Error {
     code: 'TRANSACTION_REPLACED';
+    hash: string;
     // The reason why the transaction was replaced
     // - "repriced" is generally nothing of concern, the
     //   only difference in the transaction is the gasPrice

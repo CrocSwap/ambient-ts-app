@@ -30,7 +30,11 @@ import {
     getPinnedPriceValuesFromTicks,
 } from './rangeFunctions';
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
-import { isTransactionReplacedError, TransactionError } from '../../../utils/TransactionError';
+import {
+    isTransactionFailedError,
+    isTransactionReplacedError,
+    TransactionError,
+} from '../../../utils/TransactionError';
 import truncateDecimals from '../../../utils/data/truncateDecimals';
 import { SlippagePairIF, TokenIF } from '../../../utils/interfaces/exports';
 import { useTradeData } from '../Trade';
@@ -705,6 +709,9 @@ export default function Range(props: RangePropsIF) {
                             }),
                     );
                 }
+            } else if (isTransactionFailedError(error)) {
+                // console.log({ error });
+                receipt = error.receipt;
             }
         }
         if (receipt) {
