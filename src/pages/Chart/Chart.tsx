@@ -11,7 +11,6 @@ import {
     setPinnedMaxPrice,
     setPinnedMinPrice,
     setSimpleRangeWidth,
-    setTargetData,
     targetData,
 } from '../../utils/state/tradeDataSlice';
 import { CandleChartData } from '../Trade/TradeCharts/TradeCharts';
@@ -44,7 +43,6 @@ interface ChartData {
     liquidityData: any;
     changeState: (isOpen: boolean | undefined, candleData: CandleData | undefined) => void;
     denomInBase: boolean;
-    targetData: targetData[] | undefined;
     limitPrice: string | undefined;
     setLimitRate: React.Dispatch<React.SetStateAction<string>>;
     limitRate: string;
@@ -63,6 +61,8 @@ interface ChartData {
     upBorderColor: string;
     downBodyColor: string;
     downBorderColor: string;
+    setTargets: React.Dispatch<React.SetStateAction<targetData[]>>;
+    targets: targetData[];
 }
 
 export default function Chart(props: ChartData) {
@@ -443,7 +443,7 @@ export default function Chart(props: ChartData) {
                 }
             } else if (isAdvancedModeActive) {
                 ranges.map((mapData) => {
-                    props.targetData?.map((data) => {
+                    props.targets?.map((data) => {
                         if (mapData.name === data.name && mapData.value == data.value) {
                             results.push(true);
                         }
@@ -451,18 +451,16 @@ export default function Chart(props: ChartData) {
                 });
 
                 if (
-                    props.targetData === undefined ||
-                    (props.targetData[0].value === 0 && props.targetData[1].value === 0)
+                    props.targets === undefined ||
+                    (props.targets[0].value === 0 && props.targets[1].value === 0)
                 ) {
                     setDefaultRangeData();
                 } else if (results.length < 2) {
                     setRanges(() => {
-                        let high = props.targetData?.filter(
-                            (target: any) => target.name === 'Max',
-                        )[0].value;
-                        const low = props.targetData?.filter(
-                            (target: any) => target.name === 'Min',
-                        )[0].value;
+                        let high = props.targets?.filter((target: any) => target.name === 'Max')[0]
+                            .value;
+                        const low = props.targets?.filter((target: any) => target.name === 'Min')[0]
+                            .value;
 
                         if (high !== undefined && low !== undefined) {
                             if (high !== 0 && high < low) {
@@ -516,7 +514,7 @@ export default function Chart(props: ChartData) {
     }, [
         location,
         props.limitPrice,
-        props.targetData,
+        props.targets,
         denomInBase,
         isAdvancedModeActive,
         simpleRangeWidth,
@@ -797,14 +795,6 @@ export default function Chart(props: ChartData) {
                     .on('mouseout', (event: any) => {
                         d3.select(event.currentTarget).style('cursor', 'default');
                     });
-
-                const targetData = location.pathname.includes('limit')
-                    ? limit
-                    : location.pathname.includes('range')
-                    ? ranges
-                    : location.pathname.includes('market')
-                    ? market
-                    : undefined;
             });
             setHorizontalLine(() => {
                 return horizontalLine;
@@ -846,8 +836,6 @@ export default function Chart(props: ChartData) {
                         .attr('d', triangle.size(100))
                         .style('transform', 'translate(8px, 3px) rotate(300deg)');
                 } else {
-                    console.error('son');
-
                     d3.select(res)
                         .append('path')
                         .attr('d', triangle.size(100))
@@ -1255,7 +1243,7 @@ export default function Chart(props: ChartData) {
             const results: boolean[] = [];
 
             ranges.map((mapData) => {
-                props.targetData?.map((data) => {
+                props.targets?.map((data) => {
                     if (mapData.name === data.name && mapData.value == data.value) {
                         results.push(true);
                     }
@@ -1306,7 +1294,7 @@ export default function Chart(props: ChartData) {
                         },
                     ];
 
-                    dispatch(setTargetData(newTargetData));
+                    props.setTargets(newTargetData);
                 }
             }
         }, 1000);

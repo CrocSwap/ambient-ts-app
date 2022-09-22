@@ -43,7 +43,7 @@ import {
     setPinnedMaxPrice,
     setPinnedMinPrice,
     setSpotPriceDisplay,
-    setTargetData,
+    targetData,
 } from '../../../utils/state/tradeDataSlice';
 import { addReceipt } from '../../../utils/state/receiptDataSlice';
 import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
@@ -78,6 +78,8 @@ interface RangePropsIF {
     ambientApy: number | undefined;
 
     pendingTransactions: string[];
+    targets: targetData[];
+    setTargets: Dispatch<SetStateAction<targetData[]>>;
 }
 
 export default function Range(props: RangePropsIF) {
@@ -142,7 +144,7 @@ export default function Range(props: RangePropsIF) {
 
     const denominationsInBase = tradeData.isDenomBase;
     const isTokenAPrimary = tradeData.isTokenAPrimaryRange;
-    const targetData = tradeData.targetData;
+    const targetData = props.targets;
 
     const [rangeAllowed, setRangeAllowed] = useState<boolean>(false);
 
@@ -518,11 +520,11 @@ export default function Range(props: RangePropsIF) {
                     },
                 ];
 
-                dispatch(setTargetData(newTargetData));
+                props.setTargets(newTargetData);
             }
             setRangeLowBoundFieldBlurred(false);
         }
-    }, [rangeLowBoundFieldBlurred, targetData]);
+    }, [rangeLowBoundFieldBlurred, props.targets]);
 
     useEffect(() => {
         if (rangeHighBoundFieldBlurred) {
@@ -602,11 +604,11 @@ export default function Range(props: RangePropsIF) {
                     },
                 ];
 
-                dispatch(setTargetData(newTargetData));
+                props.setTargets(newTargetData);
             }
             setRangeHighBoundFieldBlurred(false);
         }
-    }, [rangeHighBoundFieldBlurred, targetData]);
+    }, [rangeHighBoundFieldBlurred, props.targets]);
 
     const depositSkew = useMemo(
         () =>
@@ -1001,7 +1003,8 @@ export default function Range(props: RangePropsIF) {
                     setRangeHighTick={setRangeHighTick}
                     disable={isInvalidRange}
                     chainId={chainId.toString()}
-                    targetData={targetData}
+                    targets={targetData}
+                    setTargets={props.setTargets}
                 />
             </motion.div>
             <DividerDark addMarginTop />

@@ -36,7 +36,6 @@ interface ChartData {
     changeState: (isOpen: boolean | undefined, candleData: CandleData | undefined) => void;
     chartItemStates: chartItemStates;
     denomInBase: boolean;
-    targetData: targetData[] | undefined;
     limitPrice: string | undefined;
     setLimitRate: React.Dispatch<React.SetStateAction<string>>;
     limitRate: string;
@@ -55,6 +54,8 @@ interface ChartData {
     baseTokenAddress: string;
     chainId: string;
     poolPriceNonDisplay: number | undefined;
+    setTargets: React.Dispatch<React.SetStateAction<targetData[]>>;
+    targets: targetData[];
 }
 
 export interface ChartUtils {
@@ -231,7 +232,6 @@ export default function TradeCandleStickChart(props: ChartData) {
                         expandTradeTable={expandTradeTable}
                         liquidityData={liquiditiyData}
                         changeState={props.changeState}
-                        targetData={props.targetData}
                         limitPrice={props.limitPrice}
                         setLimitRate={props.setLimitRate}
                         limitRate={props.limitRate}
@@ -251,6 +251,8 @@ export default function TradeCandleStickChart(props: ChartData) {
                         upBorderColor={props.upBorderColor}
                         downBodyColor={props.downBodyColor}
                         downBorderColor={props.downBorderColor}
+                        setTargets={props.setTargets}
+                        targets={props.targets}
                     />
                 ) : (
                     <>{loading}</>

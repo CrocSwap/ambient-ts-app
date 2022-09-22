@@ -45,7 +45,6 @@ interface TradeChartsPropsIF {
     setFullScreenChart: Dispatch<SetStateAction<boolean>>;
     changeState: (isOpen: boolean | undefined, candleData: CandleData | undefined) => void;
     candleData: CandlesByPoolAndDuration | undefined;
-    targetData: targetData[] | undefined;
     limitPrice: string | undefined;
     setLimitRate: React.Dispatch<React.SetStateAction<string>>;
     limitRate: string;
@@ -70,6 +69,8 @@ interface TradeChartsPropsIF {
     downBorderColor: string;
     baseTokenAddress: string;
     poolPriceNonDisplay: number | undefined;
+    setTargets: React.Dispatch<React.SetStateAction<targetData[]>>;
+    targets: targetData[];
 }
 
 export interface CandleChartData {
@@ -659,7 +660,6 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                         priceData={props.candleData}
                         changeState={props.changeState}
                         chartItemStates={chartItemStates}
-                        targetData={props.targetData}
                         limitPrice={props.limitPrice}
                         setLimitRate={props.setLimitRate}
                         limitRate={props.limitRate}
@@ -679,6 +679,8 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                         baseTokenAddress={props.baseTokenAddress}
                         chainId={chainId}
                         poolPriceNonDisplay={props.poolPriceNonDisplay}
+                        setTargets={props.setTargets}
+                        targets={props.targets}
                     />
                 </div>
             )}

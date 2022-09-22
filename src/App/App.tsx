@@ -69,6 +69,7 @@ import {
     setDidUserFlipDenom,
     setPrimaryQuantityRange,
     setSimpleRangeWidth,
+    targetData,
 } from '../utils/state/tradeDataSlice';
 import {
     //  memoizeQuerySpotPrice,
@@ -1657,6 +1658,17 @@ export default function App() {
     const [pendingTransactions, setPendingTransactions] = useState([]);
     const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
+    const [targets, setTargets] = useState<targetData[]>([
+        {
+            name: 'Min',
+            value: 0,
+        },
+        {
+            name: 'Max',
+            value: 0,
+        },
+    ]);
+
     // props for <PageHeader/> React element
     const headerProps = {
         isUserLoggedIn: isUserLoggedIn,
@@ -1815,6 +1827,8 @@ export default function App() {
         ambientApy: ambientApy,
 
         pendingTransactions: pendingTransactions,
+        targets: targets,
+        setTargets: setTargets,
     };
 
     function toggleSidebar() {
@@ -2032,6 +2046,8 @@ export default function App() {
                                     closeGlobalModal={closeGlobalModal}
                                     pendingTransactions={pendingTransactions}
                                     poolPriceNonDisplay={undefined}
+                                    setTargets={setTargets}
+                                    targets={targets}
                                 />
                             }
                         >
