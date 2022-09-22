@@ -174,7 +174,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
 
         const lowLimit = spotPrice * (1 - liquiditySlippageTolerance / 100);
         const highLimit = spotPrice * (1 + liquiditySlippageTolerance / 100);
-        console.log({ position });
+        // console.log({ position });
 
         let tx;
         if (position.positionType === 'ambient') {
@@ -212,13 +212,13 @@ export default function RemoveRange(props: IRemoveRangeProps) {
                 .mul(removalPercentage)
                 .div(100);
 
-            console.log({ removalPercentage });
-            console.log({ liquidityToBurn });
-            console.log({ lowLimit });
-            console.log({ highLimit });
-            console.log({ isSaveAsDexSurplusChecked });
-            console.log(position.bidTick);
-            console.log(position.askTick);
+            // console.log({ removalPercentage });
+            // console.log({ liquidityToBurn });
+            // console.log({ lowLimit });
+            // console.log({ highLimit });
+            // console.log({ isSaveAsDexSurplusChecked });
+            // console.log(position.bidTick);
+            // console.log(position.askTick);
 
             try {
                 tx = await pool.burnRangeLiq(
