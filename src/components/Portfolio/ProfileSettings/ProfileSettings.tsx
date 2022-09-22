@@ -1,6 +1,11 @@
-import React from 'react';
+import React, { Dispatch, SetStateAction } from 'react';
 import styles from './ProfileSettings.module.css';
 
-export default function ProfileSettings() {
-    return <div>ProfileSettings</div>;
+interface ProfileSettingsPropsIF {
+    showProfileSettings: boolean;
+    setShowProfileSettings: Dispatch<SetStateAction<boolean>>;
+}
+
+export default function ProfileSettings(props: ProfileSettingsPropsIF) {
+    return <div className={styles.container}>PROFILE SETTINGS</div>;
 }
