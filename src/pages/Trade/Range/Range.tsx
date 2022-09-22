@@ -600,7 +600,6 @@ export default function Range(props: RangePropsIF) {
         const maxPrice = spot * (1 + parseFloat(slippageTolerancePercentage) / 100);
 
         let tx;
-
         try {
             tx = await (isAmbient
                 ? isTokenAPrimary
@@ -680,12 +679,18 @@ export default function Range(props: RangePropsIF) {
             if (tx) receipt = await tx.wait();
         } catch (e) {
             const error = e as TransactionError;
-
+            console.log({ error });
             // The user used "speed up" or something similar
             // in their client, but we now have the updated info
             if (isTransactionReplacedError(error)) {
                 console.log('repriced');
+                const indexOfOldHash = pendingTransactions.indexOf(error.hash);
+                if (indexOfOldHash > -1) {
+                    // only splice array when item is found
+                    pendingTransactions.splice(indexOfOldHash, 1); // 2nd parameter means remove one item only
+                }
                 const newTransactionHash = error.replacement.hash;
+                pendingTransactions.unshift(newTransactionHash);
                 setNewRangeTransactionHash(newTransactionHash);
                 console.log({ newTransactionHash });
                 receipt = error.receipt;

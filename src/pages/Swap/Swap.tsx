@@ -22,7 +22,11 @@ import Button from '../../components/Global/Button/Button';
 // START: Import Local Files
 import styles from './Swap.module.css';
 import truncateDecimals from '../../utils/data/truncateDecimals';
-import { isTransactionReplacedError, TransactionError } from '../../utils/TransactionError';
+import {
+    isTransactionFailedError,
+    isTransactionReplacedError,
+    TransactionError,
+} from '../../utils/TransactionError';
 import { useTradeData } from '../Trade/Trade';
 import { useAppSelector, useAppDispatch } from '../../utils/hooks/reduxToolkit';
 import { SlippagePairIF, TokenIF, TokenPairIF } from '../../utils/interfaces/exports';
@@ -255,6 +259,7 @@ export default function Swap(props: SwapPropsIF) {
                       })
                       .swap({ surplus: [isWithdrawFromDexChecked, isSaveAsDexSurplusChecked] }))),
                 setNewSwapTransactionHash(tx?.hash);
+            if (tx?.hash) pendingTransactions.unshift(tx?.hash);
         } catch (error) {
             setTxErrorCode(error?.code);
             setTxErrorMessage(error?.message);
@@ -294,14 +299,20 @@ export default function Swap(props: SwapPropsIF) {
             if (tx) receipt = await tx.wait();
         } catch (e) {
             const error = e as TransactionError;
-
+            console.log({ error });
             // The user used "speed up" or something similar
             // in their client, but we now have the updated info
             if (isTransactionReplacedError(error)) {
                 console.log('repriced');
+                const indexOfOldHash = pendingTransactions.indexOf(error.hash);
+                if (indexOfOldHash > -1) {
+                    // only splice array when item is found
+                    pendingTransactions.splice(indexOfOldHash, 1); // 2nd parameter means remove one item only
+                }
                 const newTransactionHash = error.replacement.hash;
+                pendingTransactions.unshift(newTransactionHash);
                 setNewSwapTransactionHash(newTransactionHash);
-                console.log({ newSwapTransactionHash });
+                console.log({ newTransactionHash });
                 receipt = error.receipt;
 
                 if (newTransactionHash) {
@@ -323,6 +334,9 @@ export default function Swap(props: SwapPropsIF) {
                             }),
                     );
                 }
+            } else if (isTransactionFailedError(error)) {
+                // console.log({ error });
+                receipt = error.receipt;
             }
         }
 

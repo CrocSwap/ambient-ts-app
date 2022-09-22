@@ -314,8 +314,8 @@ export default function Limit(props: LimitPropsIF) {
         let tx;
         try {
             tx = await ko.mint({ surplus: isWithdrawFromDexChecked });
+            console.log(tx.hash);
             if (tx?.hash) pendingTransactions.unshift(tx?.hash);
-            // console.log(mint.hash);
             setNewLimitOrderTransactionHash(tx.hash);
         } catch (error) {
             setTxErrorCode(error?.code);
@@ -337,8 +337,8 @@ export default function Limit(props: LimitPropsIF) {
                     pendingTransactions.splice(indexOfOldHash, 1); // 2nd parameter means remove one item only
                 }
                 const newTransactionHash = error.replacement.hash;
-                setNewLimitOrderTransactionHash(newTransactionHash);
                 pendingTransactions.unshift(newTransactionHash);
+                setNewLimitOrderTransactionHash(newTransactionHash);
                 console.log({ newTransactionHash });
                 receipt = error.receipt;
             } else if (isTransactionFailedError(error)) {
