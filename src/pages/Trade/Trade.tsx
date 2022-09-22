@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // START: Import React and Dongles
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useState } from 'react';
 import { Outlet, useOutletContext, NavLink } from 'react-router-dom';
 import { ethers } from 'ethers';
 import { motion, AnimateSharedLayout } from 'framer-motion';
@@ -81,7 +81,7 @@ export default function Trade(props: TradePropsIF) {
         provider,
         lastBlockNumber,
         baseTokenAddress,
-        quoteTokenAddress,
+        // quoteTokenAddress,
         baseTokenBalance,
         quoteTokenBalance,
         baseTokenDexBalance,
@@ -115,16 +115,16 @@ export default function Trade(props: TradePropsIF) {
 
     const graphData = useAppSelector((state) => state.graphData);
 
-    const activePoolDefinition = JSON.stringify({
-        baseAddress: baseTokenAddress,
-        quoteAddress: quoteTokenAddress,
-        poolIdx: 36000,
-        network: chainId,
-    }).toLowerCase();
+    // const activePoolDefinition = JSON.stringify({
+    //     baseAddress: baseTokenAddress,
+    //     quoteAddress: quoteTokenAddress,
+    //     poolIdx: 36000,
+    //     network: chainId,
+    // }).toLowerCase();
 
-    const indexOfActivePool = graphData.candlesForAllPools.pools
-        .map((item) => JSON.stringify(item.pool).toLowerCase())
-        .findIndex((pool) => pool === activePoolDefinition);
+    // const indexOfActivePool = graphData.candlesForAllPools.pools
+    //     .map((item) => JSON.stringify(item.pool).toLowerCase())
+    //     .findIndex((pool) => pool === activePoolDefinition);
 
     // const activePoolCandleData = graphData?.candlesForAllPools?.pools[indexOfActivePool];
     // const candleData = activePoolCandleData?.candlesByPoolAndDuration.find((data) => {

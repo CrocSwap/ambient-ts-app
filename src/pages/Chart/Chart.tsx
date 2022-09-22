@@ -797,14 +797,6 @@ export default function Chart(props: ChartData) {
                     .on('mouseout', (event: any) => {
                         d3.select(event.currentTarget).style('cursor', 'default');
                     });
-
-                const targetData = location.pathname.includes('limit')
-                    ? limit
-                    : location.pathname.includes('range')
-                    ? ranges
-                    : location.pathname.includes('market')
-                    ? market
-                    : undefined;
             });
             setHorizontalLine(() => {
                 return horizontalLine;

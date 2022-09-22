@@ -106,6 +106,7 @@ export interface LiqSnap {
     activeLiq: any;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     pinnedMaxPriceDisplayTruncated: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     pinnedMinPriceDisplayTruncated: any;
 }
 
