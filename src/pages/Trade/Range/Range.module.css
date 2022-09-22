@@ -10,3 +10,23 @@
     flex-direction: column;
     gap: 4px;
 }
+
+/* options control */
+.option_control_container{
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.options_control_display_container{
+    display: flex;
+    flex-direction: column;
+}
+
+.options_control_display_container ul{
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+    list-style: none;
+}

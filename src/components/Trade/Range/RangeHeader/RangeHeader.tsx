@@ -14,7 +14,7 @@ import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
 import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 import { AiOutlineShareAlt } from 'react-icons/ai';
-import RangeShare from '../RangeShare/RangeShare';
+import { Dispatch, SetStateAction } from 'react';
 
 // interface for component props
 interface RangeHeaderPropsIF {
@@ -25,26 +25,14 @@ interface RangeHeaderPropsIF {
     isDenomBase: boolean;
     isTokenABase: boolean;
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
-    handleShareOptionChange: (option: string) => void;
-    shareOptions: {
-        slug: string;
-        name: string;
-        checked: boolean;
-    }[];
+
+    shareOptionsDisplay: JSX.Element;
 }
 
 // central react functional component
 export default function RangeHeader(props: RangeHeaderPropsIF) {
-    const {
-        tokenPair,
-        mintSlippage,
-        isPairStable,
-        isDenomBase,
-        isTokenABase,
-        openGlobalModal,
-        handleShareOptionChange,
-        shareOptions,
-    } = props;
+    const { tokenPair, mintSlippage, isPairStable, isDenomBase, isTokenABase, openGlobalModal } =
+        props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
 
@@ -62,16 +50,12 @@ export default function RangeHeader(props: RangeHeaderPropsIF) {
             />
         </Modal>
     ) : null;
-    const rangeShareProps = {
-        handleShareOptionChange: handleShareOptionChange,
-        shareOptions: shareOptions,
-    };
 
     return (
         <ContentHeader>
             <div
                 className={styles.share_button}
-                onClick={() => openGlobalModal(<RangeShare {...rangeShareProps} />, 'Share')}
+                onClick={() => openGlobalModal(props.shareOptionsDisplay, 'Share')}
             >
                 <AiOutlineShareAlt />
             </div>

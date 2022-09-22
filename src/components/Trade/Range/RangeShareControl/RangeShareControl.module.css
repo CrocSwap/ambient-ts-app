@@ -1,22 +1,10 @@
-.container{
-
-    width: 400px;
-}
-
-
-
-
-
-
-
-
-/* RANGE SHARE OPTION CONTROL */
 .custom_control{
     display: flex;
     flex-direction: row;
     align-items: center;
     gap: 4px;
     margin: 5px 0;
+    list-style: none;
 }
 
 .custom_control_label{
@@ -26,6 +14,11 @@
     color: var(--text-grey-light);
     font-weight: 100;
 }
+
+
+
+
+
 
 input[type='checkbox'].ckb {
     z-index: -1;

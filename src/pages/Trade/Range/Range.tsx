@@ -42,6 +42,7 @@ import {
 } from '../../../utils/state/tradeDataSlice';
 import { addReceipt } from '../../../utils/state/receiptDataSlice';
 import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
+import RangeShareControl from '../../../components/Trade/Range/RangeShareControl/RangeShareControl';
 
 interface RangePropsIF {
     isUserLoggedIn: boolean;
@@ -1024,16 +1025,33 @@ export default function Range(props: RangePropsIF) {
 
     const handleShareOptionChange = (slug: string) => {
         const copyShareOptions = [...shareOptions];
-        const modifiedShareOptions = copyShareOptions.map((item) => {
-            if (slug === item.slug) {
-                item.checked = !item.checked;
+        const modifiedShareOptions = copyShareOptions.map((option) => {
+            if (slug === option.slug) {
+                option.checked = !option.checked;
             }
 
-            return item;
+            return option;
         });
 
         setShareOptions(modifiedShareOptions);
     };
+
+    const shareOptionsDisplay = (
+        <div className={styles.option_control_container}>
+            <div className={styles.options_control_display_container}>
+                <p>Options</p>
+                <ul>
+                    {shareOptions.map((option, idx) => (
+                        <RangeShareControl
+                            key={idx}
+                            option={option}
+                            handleShareOptionChange={handleShareOptionChange}
+                        />
+                    ))}
+                </ul>
+            </div>
+        </div>
+    );
 
     // -------------------------END OF RANGE SHARE FUNCTIONALITY---------------------------
 
@@ -1048,8 +1066,7 @@ export default function Range(props: RangePropsIF) {
                     isDenomBase={tradeData.isDenomBase}
                     isTokenABase={isTokenABase}
                     openGlobalModal={openGlobalModal}
-                    handleShareOptionChange={handleShareOptionChange}
-                    shareOptions={shareOptions}
+                    shareOptionsDisplay={shareOptionsDisplay}
                 />
                 <DividerDark addMarginTop />
                 {navigationMenu}
