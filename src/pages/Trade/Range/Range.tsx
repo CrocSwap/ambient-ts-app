@@ -634,11 +634,11 @@ export default function Range(props: RangePropsIF) {
             setTxErrorMessage(error?.message);
         }
 
-        const newPositionCacheEndpoint = 'https://809821320828123.de:5000/new_liqchange?';
+        const newLiqChangeCacheEndpoint = 'https://809821320828123.de:5000/new_liqchange?';
         if (tx?.hash) {
             if (isAmbient) {
                 fetch(
-                    newPositionCacheEndpoint +
+                    newLiqChangeCacheEndpoint +
                         new URLSearchParams({
                             chainId: chainId,
                             tx: tx.hash,
@@ -656,7 +656,7 @@ export default function Range(props: RangePropsIF) {
                 );
             } else {
                 fetch(
-                    newPositionCacheEndpoint +
+                    newLiqChangeCacheEndpoint +
                         new URLSearchParams({
                             chainId: chainId,
                             tx: tx.hash,
@@ -698,7 +698,7 @@ export default function Range(props: RangePropsIF) {
 
                 if (tx?.hash) {
                     fetch(
-                        newPositionCacheEndpoint +
+                        newLiqChangeCacheEndpoint +
                             new URLSearchParams({
                                 chainId: chainId,
                                 tx: newTransactionHash,

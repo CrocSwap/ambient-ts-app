@@ -24,6 +24,13 @@ import {
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import HarvestPositionHeader from './HarvestPositionHeader/HarvestPositionHeader';
 import HarvestExtraControls from './HarvestExtraControls/HarvestExtraControls';
+import {
+    isTransactionFailedError,
+    isTransactionReplacedError,
+    TransactionError,
+} from '../../utils/TransactionError';
+import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
+import { addReceipt } from '../../utils/state/receiptDataSlice';
 
 interface IHarvestPositionProps {
     crocEnv: CrocEnv | undefined;
@@ -49,7 +56,7 @@ interface IHarvestPositionProps {
     isDenomBase: boolean;
     lastBlockNumber: number;
     position: PositionIF;
-
+    pendingTransactions: string[];
     closeGlobalModal: () => void;
 }
 export default function HarvestPosition(props: IHarvestPositionProps) {
@@ -72,7 +79,7 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
         // provider,
         lastBlockNumber,
         closeGlobalModal,
-
+        pendingTransactions,
         position,
     } = props;
 
@@ -109,7 +116,7 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
     };
 
     const positionStatsCacheEndpoint = 'https://809821320828123.de:5000/position_stats?';
-
+    const dispatch = useAppDispatch();
     useEffect(() => {
         if (
             position.chainId &&
@@ -156,14 +163,16 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
         const lowLimit = spotPrice * (1 - liquiditySlippageTolerance / 100);
         const highLimit = spotPrice * (1 + liquiditySlippageTolerance / 100);
 
+        let tx;
         if (position.positionType === 'concentrated') {
             try {
-                const tx = await pool.harvestRange(
+                tx = await pool.harvestRange(
                     [position.bidTick, position.askTick],
                     [lowLimit, highLimit],
                     { surplus: isSaveAsDexSurplusChecked },
                 );
                 console.log(tx?.hash);
+                if (tx?.hash) pendingTransactions.unshift(tx?.hash);
                 setNewHarvestTransactionHash(tx?.hash);
             } catch (error) {
                 setTxErrorCode(error?.code);
@@ -171,6 +180,69 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
             }
         } else {
             console.log('unsupported position type for harvest');
+        }
+
+        const newLiqChangeCacheEndpoint = 'https://809821320828123.de:5000/new_liqchange?';
+        if (tx?.hash) {
+            fetch(
+                newLiqChangeCacheEndpoint +
+                    new URLSearchParams({
+                        chainId: position.chainId,
+                        tx: tx.hash,
+                        user: position.user,
+                        base: position.base,
+                        quote: position.quote,
+                        poolIdx: position.poolIdx.toString(),
+                        bidTick: position.bidTick ? position.bidTick.toString() : '0',
+                        askTick: position.askTick ? position.askTick.toString() : '0',
+                        positionType: position.positionType,
+                        changeType: 'harvest',
+                    }),
+            );
+        }
+
+        let receipt;
+
+        try {
+            if (tx) receipt = await tx.wait();
+        } catch (e) {
+            const error = e as TransactionError;
+            console.log({ error });
+            // The user used "speed up" or something similar
+            // in their client, but we now have the updated info
+            if (isTransactionReplacedError(error)) {
+                console.log('repriced');
+                const newTransactionHash = error.replacement.hash;
+                setNewHarvestTransactionHash(newTransactionHash);
+                console.log({ newTransactionHash });
+                receipt = error.receipt;
+
+                if (newTransactionHash) {
+                    fetch(
+                        newLiqChangeCacheEndpoint +
+                            new URLSearchParams({
+                                chainId: position.chainId,
+                                tx: newTransactionHash,
+                                user: position.user,
+                                base: position.base,
+                                quote: position.quote,
+                                poolIdx: position.poolIdx.toString(),
+                                bidTick: position.bidTick ? position.bidTick.toString() : '0',
+                                askTick: position.askTick ? position.askTick.toString() : '0',
+                                positionType: position.positionType,
+                                changeType: 'harvest',
+                            }),
+                    );
+                }
+            } else if (isTransactionFailedError(error)) {
+                // console.log({ error });
+                receipt = error.receipt;
+            }
+        }
+        if (receipt) {
+            console.log('dispatching receipt');
+            console.log({ receipt });
+            dispatch(addReceipt(JSON.stringify(receipt)));
         }
     };
 

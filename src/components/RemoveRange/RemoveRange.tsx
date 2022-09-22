@@ -228,6 +228,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
                     { surplus: isSaveAsDexSurplusChecked },
                 );
                 console.log(tx?.hash);
+                if (tx?.hash) pendingTransactions.unshift(tx?.hash);
                 setNewRemovalTransactionHash(tx?.hash);
             } catch (error) {
                 setTxErrorCode(error?.code);
@@ -235,6 +236,53 @@ export default function RemoveRange(props: IRemoveRangeProps) {
             }
         } else {
             console.log('unsupported position type for removal');
+        }
+
+        const newLiqChangeCacheEndpoint = 'https://809821320828123.de:5000/new_liqchange?';
+        if (tx?.hash) {
+            const positionLiq = position.positionLiq;
+
+            const liquidityToBurn = ethers.BigNumber.from(positionLiq)
+                .mul(removalPercentage)
+                .div(100);
+
+            if (position.positionType === 'ambient') {
+                fetch(
+                    newLiqChangeCacheEndpoint +
+                        new URLSearchParams({
+                            chainId: position.chainId,
+                            tx: tx.hash,
+                            user: position.user,
+                            base: position.base,
+                            quote: position.quote,
+                            poolIdx: position.poolIdx.toString(),
+                            positionType: 'ambient',
+                            // bidTick: '0',
+                            // askTick: '0',
+                            changeType: 'burn',
+                            isBid: 'false', // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
+                            liq: liquidityToBurn.toString(), // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
+                        }),
+                );
+            } else {
+                fetch(
+                    newLiqChangeCacheEndpoint +
+                        new URLSearchParams({
+                            chainId: position.chainId,
+                            tx: tx.hash,
+                            user: position.user,
+                            base: position.base,
+                            quote: position.quote,
+                            poolIdx: position.poolIdx.toString(),
+                            positionType: 'concentrated',
+                            bidTick: position.bidTick.toString(),
+                            askTick: position.askTick.toString(),
+                            changeType: 'burn',
+                            isBid: 'false', // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
+                            liq: liquidityToBurn.toString(), // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
+                        }),
+                );
+            }
         }
 
         let receipt;
@@ -252,6 +300,52 @@ export default function RemoveRange(props: IRemoveRangeProps) {
                 setNewRemovalTransactionHash(newTransactionHash);
                 console.log({ newTransactionHash });
                 receipt = error.receipt;
+
+                if (newTransactionHash) {
+                    const positionLiq = position.positionLiq;
+
+                    const liquidityToBurn = ethers.BigNumber.from(positionLiq)
+                        .mul(removalPercentage)
+                        .div(100);
+
+                    if (position.positionType === 'ambient') {
+                        fetch(
+                            newLiqChangeCacheEndpoint +
+                                new URLSearchParams({
+                                    chainId: position.chainId,
+                                    tx: newTransactionHash,
+                                    user: position.user,
+                                    base: position.base,
+                                    quote: position.quote,
+                                    poolIdx: position.poolIdx.toString(),
+                                    positionType: 'ambient',
+                                    // bidTick: '0',
+                                    // askTick: '0',
+                                    changeType: 'burn',
+                                    isBid: 'false', // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
+                                    liq: liquidityToBurn.toString(), // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
+                                }),
+                        );
+                    } else {
+                        fetch(
+                            newLiqChangeCacheEndpoint +
+                                new URLSearchParams({
+                                    chainId: position.chainId,
+                                    tx: newTransactionHash,
+                                    user: position.user,
+                                    base: position.base,
+                                    quote: position.quote,
+                                    poolIdx: position.poolIdx.toString(),
+                                    positionType: 'concentrated',
+                                    bidTick: position.bidTick.toString(),
+                                    askTick: position.askTick.toString(),
+                                    changeType: 'burn',
+                                    isBid: 'false', // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
+                                    liq: liquidityToBurn.toString(), // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
+                                }),
+                        );
+                    }
+                }
             } else if (isTransactionFailedError(error)) {
                 // console.log({ error });
                 receipt = error.receipt;
@@ -276,12 +370,6 @@ export default function RemoveRange(props: IRemoveRangeProps) {
     );
 
     const etherscanLink = chainData.blockExplorer + 'tx/' + newRemovalTransactionHash;
-
-    useEffect(() => {
-        if (newRemovalTransactionHash && newRemovalTransactionHash !== '') {
-            pendingTransactions.push(newRemovalTransactionHash);
-        }
-    }, [newRemovalTransactionHash]);
 
     const removalSuccess = (
         <div className={styles.removal_pending}>

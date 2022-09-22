@@ -99,7 +99,7 @@ export default function Limit(props: LimitPropsIF) {
 
     const { tradeData, navigationMenu } = useTradeData();
     const dispatch = useAppDispatch();
-    const { isWeb3Enabled, isAuthenticated } = useMoralis();
+    const { account, isWeb3Enabled, isAuthenticated } = useMoralis();
     const [isModalOpen, openModal, closeModal] = useModal();
     const [limitAllowed, setLimitAllowed] = useState<boolean>(false);
 
@@ -321,6 +321,29 @@ export default function Limit(props: LimitPropsIF) {
             setTxErrorCode(error?.code);
             setTxErrorMessage(error?.message);
         }
+
+        const newLimitOrderChangeCacheEndpoint =
+            'https://809821320828123.de:5000/new_limit_order_change?';
+
+        if (tx?.hash) {
+            fetch(
+                newLimitOrderChangeCacheEndpoint +
+                    new URLSearchParams({
+                        chainId: chainId,
+                        tx: tx.hash,
+                        user: account ?? '',
+                        base: tradeData.baseToken.address,
+                        quote: tradeData.quoteToken.address,
+                        poolIdx: lookupChain(chainId).poolIndex.toString(),
+                        positionType: 'knockout',
+                        changeType: 'mint',
+                        limitTick: limitTick.toString(),
+                        isBid: isTokenAPrimary.toString(), // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
+                        liq: '0', // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
+                    }),
+            );
+        }
+
         let receipt;
         try {
             if (tx) receipt = await tx.wait();
@@ -341,6 +364,25 @@ export default function Limit(props: LimitPropsIF) {
                 setNewLimitOrderTransactionHash(newTransactionHash);
                 console.log({ newTransactionHash });
                 receipt = error.receipt;
+
+                if (newTransactionHash) {
+                    fetch(
+                        newLimitOrderChangeCacheEndpoint +
+                            new URLSearchParams({
+                                chainId: chainId,
+                                tx: newTransactionHash,
+                                user: account ?? '',
+                                base: tradeData.baseToken.address,
+                                quote: tradeData.quoteToken.address,
+                                poolIdx: lookupChain(chainId).poolIndex.toString(),
+                                positionType: 'knockout',
+                                changeType: 'mint',
+                                limitTick: limitTick.toString(),
+                                isBid: isTokenAPrimary.toString(), // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
+                                liq: '0', // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
+                            }),
+                    );
+                }
             } else if (isTransactionFailedError(error)) {
                 // console.log({ error });
                 receipt = error.receipt;
