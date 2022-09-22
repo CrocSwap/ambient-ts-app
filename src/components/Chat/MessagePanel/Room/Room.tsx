@@ -48,7 +48,7 @@ export default function RoomDropdown(props: RoomProps) {
         {
             id: 101,
             name: 'Current Pool',
-            value: 'Current Pool',
+            value: currentPool.baseToken.symbol + currentPool.quoteToken.symbol,
         },
     ];
     useEffect(() => {
@@ -56,7 +56,7 @@ export default function RoomDropdown(props: RoomProps) {
         defaultRooms.push({
             id: 101,
             name: 'Current Pool',
-            value: 'Current Pool',
+            value: currentPool.baseToken.symbol + currentPool.quoteToken.symbol,
         });
     }, [currentPool.baseToken.symbol, currentPool.quoteToken.symbol]);
 
