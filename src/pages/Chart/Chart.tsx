@@ -91,11 +91,11 @@ export default function Chart(props: ChartData) {
 
     const [ranges, setRanges] = useState([
         {
-            name: 'Max',
+            name: 'Min',
             value: 0,
         },
         {
-            name: 'Min',
+            name: 'Max',
             value: 0,
         },
     ]);
@@ -793,32 +793,48 @@ export default function Chart(props: ChartData) {
         const triangle = d3.symbol().type(d3.symbolTriangle);
 
         if (!location.pathname.includes('market')) {
+            d3.select(d3PlotArea.current)
+                .select('.targets')
+                .selectAll('.annotation-line')
+                .style('cursor', 'ns-resize');
+
             const max = ranges.find((item) => item.name === 'Max')?.value as number;
             const min = ranges.find((item) => item.name === 'Min')?.value as number;
+
             const nodes = d3
                 .select(d3PlotArea.current)
                 .select('.targets')
                 .selectAll('.annotation-line')
                 .nodes();
+
             nodes.forEach((res, index) => {
-                console.error('res', res);
-                location.pathname.includes('limit') || index == (max > min ? 1 : 0)
-                    ? d3
-                          .select(res)
-                          .append('path')
-                          .attr('d', triangle.size(100))
-                          .style('transform', 'translate(8px, 3px) rotate(300deg)')
-                    : d3
-                          .select(res)
-                          .append('path')
-                          .attr('d', triangle.size(100))
-                          .style('transform', 'translate(8px, -5px)');
+                if (
+                    location.pathname.includes('limit') ||
+                    index == (max > min && !isAdvancedModeActive ? 1 : 0)
+                ) {
+                    d3.select(res)
+                        .append('path')
+                        .attr('d', triangle.size(100))
+                        .style('transform', 'translate(8px, 3px) rotate(300deg)');
+                } else {
+                    console.error('son');
+
+                    d3.select(res)
+                        .append('path')
+                        .attr('d', triangle.size(100))
+                        .style('transform', 'translate(8px, -5px)');
+                }
             });
+        } else {
+            d3.select(d3PlotArea.current)
+                .select('.targets')
+                .select('.annotation-line')
+                .style('cursor', 'default');
         }
     }
-    // useEffect(() => {
-    //     // addTriangle();
-    // }, [drawControl,location]);
+    useEffect(() => {
+        addTriangle();
+    }, [drawControl, location]);
 
     /*    item.name.includes('Current') ? 
             d3.select(d3PlotArea.current).select('.targets').select('.annotation-line').selectAll('polygon').remove() :
