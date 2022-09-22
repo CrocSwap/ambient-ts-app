@@ -49,13 +49,15 @@ import { addReceipt } from '../../../utils/state/receiptDataSlice';
 import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
 
 interface RangePropsIF {
+    isUserLoggedIn: boolean;
     importedTokens: Array<TokenIF>;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     searchableTokens: Array<TokenIF>;
     mintSlippage: SlippagePairIF;
     isPairStable: boolean;
     provider?: ethers.providers.Provider;
-    gasPriceinGwei: number | undefined;
+    gasPriceInGwei: number | undefined;
+    ethMainnetUsdPrice?: number;
     lastBlockNumber: number;
     baseTokenAddress: string;
     quoteTokenAddress: string;
@@ -74,10 +76,13 @@ interface RangePropsIF {
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
     openModalWallet: () => void;
     ambientApy: number | undefined;
+
+    pendingTransactions: string[];
 }
 
 export default function Range(props: RangePropsIF) {
     const {
+        isUserLoggedIn,
         importedTokens,
         setImportedTokens,
         searchableTokens,
@@ -96,12 +101,15 @@ export default function Range(props: RangePropsIF) {
         setRecheckTokenAApproval,
         tokenBAllowance,
         setRecheckTokenBApproval,
-        gasPriceinGwei,
+        gasPriceInGwei,
+        ethMainnetUsdPrice,
         chainId,
         activeTokenListsChanged,
         indicateActiveTokenListsChanged,
         openModalWallet,
         ambientApy,
+
+        pendingTransactions,
     } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -114,6 +122,7 @@ export default function Range(props: RangePropsIF) {
     const [showConfirmation, setShowConfirmation] = useState(true);
     const [txErrorCode, setTxErrorCode] = useState(0);
     const [txErrorMessage, setTxErrorMessage] = useState('');
+    const [rangeGasPriceinDollars, setRangeGasPriceinDollars] = useState<string | undefined>();
 
     const resetConfirmation = () => {
         setShowConfirmation(true);
@@ -678,6 +687,7 @@ export default function Range(props: RangePropsIF) {
                       },
                   ));
             setNewRangeTransactionHash(tx?.hash);
+            if (tx?.hash) pendingTransactions.unshift(tx?.hash);
         } catch (error) {
             setTxErrorCode(error?.code);
             setTxErrorMessage(error?.message);
@@ -764,6 +774,20 @@ export default function Range(props: RangePropsIF) {
             dispatch(addReceipt(JSON.stringify(receipt)));
         }
     };
+
+    useEffect(() => {
+        if (gasPriceInGwei && ethMainnetUsdPrice) {
+            const gasPriceInDollarsNum = gasPriceInGwei * 120269 * 1e-9 * ethMainnetUsdPrice;
+
+            setRangeGasPriceinDollars(
+                '~$' +
+                    gasPriceInDollarsNum.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                    }),
+            );
+        }
+    }, [gasPriceInGwei, ethMainnetUsdPrice]);
 
     // TODO:  @Emily refactor this fragment to use the same denomination switch
     // TODO:  ... component used in the Market and Limit modules
@@ -877,10 +901,13 @@ export default function Range(props: RangePropsIF) {
         pinnedMinPriceDisplayTruncatedInQuote: pinnedMinPriceDisplayTruncatedInQuote,
         pinnedMaxPriceDisplayTruncatedInBase: pinnedMaxPriceDisplayTruncatedInBase,
         pinnedMaxPriceDisplayTruncatedInQuote: pinnedMaxPriceDisplayTruncatedInQuote,
+
+        pendingTransactions: pendingTransactions,
     };
 
     // props for <RangeCurrencyConverter/> React element
     const rangeCurrencyConverterProps = {
+        isUserLoggedIn: isUserLoggedIn,
         poolPriceNonDisplay: poolPriceNonDisplay,
         chainId: chainId ?? '0x2a',
         tokensBank: importedTokens,
@@ -921,7 +948,7 @@ export default function Range(props: RangePropsIF) {
     // props for <RangeExtraInfo/> React element
     const rangeExtraInfoProps = {
         tokenPair: tokenPair,
-        gasPriceinGwei: gasPriceinGwei,
+        rangeGasPriceinDollars: rangeGasPriceinDollars,
         poolPriceDisplay: displayPriceString,
         slippageTolerance: slippageTolerancePercentage,
         liquidityProviderFee: 0.3,

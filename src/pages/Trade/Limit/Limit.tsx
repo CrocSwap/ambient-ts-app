@@ -25,8 +25,10 @@ import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import { SlippagePairIF, TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
 import { setLimitPrice } from '../../../utils/state/tradeDataSlice';
+import { addReceipt } from '../../../utils/state/receiptDataSlice';
 
 interface LimitPropsIF {
+    isUserLoggedIn: boolean;
     importedTokens: Array<TokenIF>;
     searchableTokens: Array<TokenIF>;
     mintSlippage: SlippagePairIF;
@@ -34,8 +36,9 @@ interface LimitPropsIF {
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     provider?: ethers.providers.Provider;
     isOnTradeRoute?: boolean;
-    gasPriceinGwei: number | undefined;
-    nativeBalance: string;
+    gasPriceInGwei: number | undefined;
+    ethMainnetUsdPrice?: number;
+    nativeBalance: string | undefined;
     lastBlockNumber: number;
     baseTokenBalance: string;
     quoteTokenBalance: string;
@@ -52,12 +55,19 @@ interface LimitPropsIF {
     activeTokenListsChanged: boolean;
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
     openModalWallet: () => void;
+
+    openGlobalModal: (content: React.ReactNode) => void;
+
+    closeGlobalModal: () => void;
     setLimitRate: React.Dispatch<React.SetStateAction<string>>;
     limitRate: string;
+
+    pendingTransactions: string[];
 }
 
 export default function Limit(props: LimitPropsIF) {
     const {
+        isUserLoggedIn,
         importedTokens,
         searchableTokens,
         mintSlippage,
@@ -71,7 +81,8 @@ export default function Limit(props: LimitPropsIF) {
         quoteTokenDexBalance,
         tokenPair,
         isTokenABase,
-        gasPriceinGwei,
+        gasPriceInGwei,
+        ethMainnetUsdPrice,
         poolPriceDisplay,
         poolPriceNonDisplay,
         tokenAAllowance,
@@ -80,6 +91,7 @@ export default function Limit(props: LimitPropsIF) {
         activeTokenListsChanged,
         indicateActiveTokenListsChanged,
         openModalWallet,
+        pendingTransactions,
         setLimitRate,
         limitRate,
     } = props;
@@ -135,6 +147,7 @@ export default function Limit(props: LimitPropsIF) {
 
     const [limitTick, setLimitTick] = useState<number>(0);
     const [insideTickDisplayPrice, setInsideTickDisplayPrice] = useState<number>(0);
+    const [orderGasPriceInDollars, setOrderGasPriceInDollars] = useState<string | undefined>();
 
     const [initialLoad, setInitialLoad] = useState<boolean>(true);
 
@@ -275,11 +288,21 @@ export default function Limit(props: LimitPropsIF) {
         const buyToken = tradeData.tokenB.address;
         const sellQty = tokenAInputQty;
         const buyQty = tokenBInputQty;
+
         const qty = isTokenAPrimary ? sellQty : buyQty;
 
-        const seller = new CrocEnv(provider).sell(sellToken, qty);
-        const ko = seller.atLimit(buyToken, limitTick);
+        // console.log({ qty });
+        // console.log({ isTokenAPrimary });
+        // console.log({ buyToken });
+        // console.log({ sellToken });
 
+        const order = isTokenAPrimary
+            ? new CrocEnv(provider).sell(sellToken, qty)
+            : new CrocEnv(provider).buy(buyToken, qty);
+        // const seller = new CrocEnv(provider).sell(sellToken, qty);
+
+        const ko = order.atLimit(isTokenAPrimary ? buyToken : sellToken, limitTick);
+        // console.log({ ko });
         if (await ko.willMintFail()) {
             console.log('Cannot send limit order: Knockout price inside spread');
             setTxErrorMessage('Limit inside market price');
@@ -288,10 +311,12 @@ export default function Limit(props: LimitPropsIF) {
 
         try {
             const mint = await ko.mint({ surplus: isWithdrawFromDexChecked });
-            console.log(mint.hash);
+            // console.log(mint.hash);
             setNewLimitOrderTransactionHash(mint.hash);
             const limitOrderReceipt = await mint.wait();
-            console.log({ limitOrderReceipt });
+            if (limitOrderReceipt) {
+                dispatch(addReceipt(JSON.stringify(limitOrderReceipt)));
+            }
         } catch (error) {
             setTxErrorCode(error?.code);
             setTxErrorMessage(error?.message);
@@ -311,17 +336,20 @@ export default function Limit(props: LimitPropsIF) {
             <ConfirmLimitModal
                 onClose={handleModalClose}
                 tokenPair={tokenPair}
+                poolPriceDisplay={poolPriceDisplay || 0}
                 initiateLimitOrderMethod={sendLimitOrder}
                 tokenAInputQty={tokenAInputQty}
                 tokenBInputQty={tokenBInputQty}
                 isTokenAPrimary={isTokenAPrimary}
-                limitRate={limitRate}
+                // limitRate={limitRate}
+                insideTickDisplayPrice={insideTickDisplayPrice}
                 newLimitOrderTransactionHash={newLimitOrderTransactionHash}
                 txErrorCode={txErrorCode}
                 txErrorMessage={txErrorMessage}
                 showConfirmation={showConfirmation}
                 setShowConfirmation={setShowConfirmation}
                 resetConfirmation={resetConfirmation}
+                pendingTransactions={pendingTransactions}
             />
         </Modal>
     ) : null;
@@ -347,6 +375,20 @@ export default function Limit(props: LimitPropsIF) {
             setRecheckTokenAApproval(true);
         }
     };
+
+    useEffect(() => {
+        if (gasPriceInGwei && ethMainnetUsdPrice) {
+            const gasPriceInDollarsNum = gasPriceInGwei * 82459 * 1e-9 * ethMainnetUsdPrice;
+
+            setOrderGasPriceInDollars(
+                '~$' +
+                    gasPriceInDollarsNum.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                    }),
+            );
+        }
+    }, [gasPriceInGwei, ethMainnetUsdPrice]);
 
     // const tokenABalance = isTokenABase ? baseTokenBalance : quoteTokenBalance;
     // const tokenBBalance = isTokenABase ? quoteTokenBalance : baseTokenBalance;
@@ -383,6 +425,7 @@ export default function Limit(props: LimitPropsIF) {
                     transition={{ duration: 0.5 }}
                 >
                     <LimitCurrencyConverter
+                        isUserLoggedIn={isUserLoggedIn}
                         tokenPair={tokenPair}
                         searchableTokens={searchableTokens}
                         poolPriceNonDisplay={poolPriceNonDisplay}
@@ -419,7 +462,7 @@ export default function Limit(props: LimitPropsIF) {
                 </div>
                 <LimitExtraInfo
                     tokenPair={tokenPair}
-                    gasPriceinGwei={gasPriceinGwei}
+                    orderGasPriceInDollars={orderGasPriceInDollars}
                     poolPriceDisplay={poolPriceDisplay || 0}
                     slippageTolerance={slippageTolerancePercentage}
                     liquidityProviderFee={0}

@@ -1,6 +1,7 @@
 .main_container {
     display: flex;
     justify-content: center;
+    flex-direction: column;
     align-items: center;
     width: 100%;
 
@@ -14,6 +15,7 @@
     -moz-background-size: cover;
     -o-background-size: cover;
     background-size: cover;
+    gap: 8px;
 }
 .content_container {
     display: flex;
@@ -23,25 +25,36 @@
 
     /* gap: 1rem; */
 }
-.on_chain,
-.architecture {
+.on_chain{
     display: flex;
+    flex-direction: column;
+    text-align: center;
     font-family: var(--font-logo);
     font-weight: 200;
-    font-size: 24px;
-    line-height: 30px;
+    font-size: 18px;
+    line-height: 22px;
     color: #cdc1ff;
+}
+.architecture {
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+
+    text-align: center;
+    color: var(--text-grey-light);
+    font-weight: 200;
+    font-size: 18px;
+    line-height: 22px;
 }
 
 .highlight_text {
     font-weight: 500;
     color: #7371fc;
-    margin: 0 5px;
+  
 }
 
-.architecture {
-    color: var(--text-grey-light);
-}
+
 .ambient {
     background: var(--title-gradient);
     font-family: var(--font-logo);
@@ -51,4 +64,25 @@
 
     font-size: clamp(3rem, 12vw + 1rem, 8rem);
     font-weight: 100;
+
+    display: none;
 }
+
+/* Desktop screen Sizes */
+@media only screen and (min-width: 668px) {
+.ambient{
+    display: flex;
+}
+
+.highlight_text{
+    margin: 0 5px;
+}
+.architecture, .on_chain{
+    flex-direction: row;
+    font-size: 24px;
+    line-height: 30px;
+}
+
+
+}
+

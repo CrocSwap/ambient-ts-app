@@ -32,10 +32,11 @@ export default function TopPools(props: TopPoolsProps) {
             animate={{ width: '100%' }}
             exit={{ x: window.innerWidth, transition: { duration: 2 } }}
         >
+            <div className={styles.divider} />
             <div className={styles.title}>{t('topPools')}</div>
             <div className={styles.content}>
                 {topPools.map((pool, idx) => (
-                    <NavLink key={idx} to='/trade/market'>
+                    <NavLink key={idx} to='/trade/range'>
                         <PoolCard
                             name={pool.name}
                             tokenA={pool.base}

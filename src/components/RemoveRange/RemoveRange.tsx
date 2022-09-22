@@ -23,6 +23,8 @@ import {
 } from '../Global/LoadingAnimations/CircleLoader/CircleLoader';
 import RemoveRangeHeader from './RemoveRangeHeader/RemoveRangeHeader';
 import ExtraControls from './ExtraControls/ExtraControls';
+import { addReceipt } from '../../utils/state/receiptDataSlice';
+import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
 interface IRemoveRangeProps {
     provider: ethers.providers.Provider;
     chainData: ChainSpec;
@@ -33,6 +35,10 @@ interface IRemoveRangeProps {
     askTick: number;
     baseTokenAddress: string;
     quoteTokenAddress: string;
+    baseTokenBalance: string;
+    quoteTokenBalance: string;
+    baseTokenDexBalance: string;
+    quoteTokenDexBalance: string;
     isPositionInRange: boolean;
     isAmbient: boolean;
     baseTokenSymbol: string;
@@ -42,6 +48,7 @@ interface IRemoveRangeProps {
     isDenomBase: boolean;
     lastBlockNumber: number;
     position: PositionIF;
+    pendingTransactions: string[];
 
     openGlobalModal: (content: React.ReactNode) => void;
 
@@ -58,11 +65,16 @@ export default function RemoveRange(props: IRemoveRangeProps) {
         // askTick,
         // baseTokenAddress,
         // quoteTokenAddress,
+        baseTokenBalance,
+        quoteTokenBalance,
+        baseTokenDexBalance,
+        quoteTokenDexBalance,
         closeGlobalModal,
         chainData,
         provider,
         lastBlockNumber,
         position,
+        pendingTransactions,
     } = props;
 
     const [removalPercentage, setRemovalPercentage] = useState(100);
@@ -81,6 +93,8 @@ export default function RemoveRange(props: IRemoveRangeProps) {
     >();
 
     const positionStatsCacheEndpoint = 'https://809821320828123.de:5000/position_stats?';
+
+    const dispatch = useAppDispatch();
 
     useEffect(() => {
         if (
@@ -102,7 +116,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
                             poolIdx: position.poolIdx.toString(),
                             bidTick: position.bidTick ? position.bidTick.toString() : '0',
                             askTick: position.askTick ? position.askTick.toString() : '0',
-                            calcValues: 'true',
+                            addValue: 'true',
                             positionType: position.positionType,
                         }),
                 )
@@ -156,10 +170,13 @@ export default function RemoveRange(props: IRemoveRangeProps) {
         const lowLimit = spotPrice * (1 - liquiditySlippageTolerance / 100);
         const highLimit = spotPrice * (1 + liquiditySlippageTolerance / 100);
 
+        let tx;
         if (position.positionType === 'ambient') {
             if (removalPercentage === 100) {
                 try {
-                    const tx = await pool.burnAmbientAll([lowLimit, highLimit]);
+                    tx = await pool.burnAmbientAll([lowLimit, highLimit], {
+                        surplus: isSaveAsDexSurplusChecked,
+                    });
                     console.log(tx?.hash);
                     setNewRemovalTransactionHash(tx?.hash);
                 } catch (error) {
@@ -174,7 +191,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
                     .div(100);
 
                 try {
-                    const tx = await pool.burnAmbientLiq(liquidityToBurn, [lowLimit, highLimit]);
+                    tx = await pool.burnAmbientLiq(liquidityToBurn, [lowLimit, highLimit]);
                     console.log(tx?.hash);
                     setNewRemovalTransactionHash(tx?.hash);
                 } catch (error) {
@@ -190,10 +207,11 @@ export default function RemoveRange(props: IRemoveRangeProps) {
                 .div(100);
 
             try {
-                const tx = await pool.burnRangeLiq(
+                tx = await pool.burnRangeLiq(
                     liquidityToBurn,
                     [position.bidTick, position.askTick],
                     [lowLimit, highLimit],
+                    { surplus: isSaveAsDexSurplusChecked },
                 );
                 console.log(tx?.hash);
                 setNewRemovalTransactionHash(tx?.hash);
@@ -203,6 +221,15 @@ export default function RemoveRange(props: IRemoveRangeProps) {
             }
         } else {
             console.log('unsupported position type for removal');
+        }
+
+        let receipt;
+        if (tx) receipt = await tx.wait();
+
+        if (receipt) {
+            console.log('dispatching receipt');
+            console.log({ receipt });
+            dispatch(addReceipt(JSON.stringify(receipt)));
         }
     };
 
@@ -218,6 +245,12 @@ export default function RemoveRange(props: IRemoveRangeProps) {
     );
 
     const etherscanLink = chainData.blockExplorer + 'tx/' + newRemovalTransactionHash;
+
+    useEffect(() => {
+        if (newRemovalTransactionHash && newRemovalTransactionHash !== '') {
+            pendingTransactions.push(newRemovalTransactionHash);
+        }
+    }, [newRemovalTransactionHash]);
 
     const removalSuccess = (
         <div className={styles.removal_pending}>
@@ -275,6 +308,16 @@ export default function RemoveRange(props: IRemoveRangeProps) {
         showConfirmation,
         isRemovalDenied,
     ]);
+
+    const baseRemovalNum =
+        (((posLiqBaseDecimalCorrected || 0) + (feeLiqBaseDecimalCorrected || 0)) *
+            removalPercentage) /
+        100;
+
+    const quoteRemovalNum =
+        (((posLiqQuoteDecimalCorrected || 0) + (feeLiqQuoteDecimalCorrected || 0)) *
+            removalPercentage) /
+        100;
 
     const confirmationContent = (
         <div className={styles.confirmation_container}>
@@ -334,10 +377,20 @@ export default function RemoveRange(props: IRemoveRangeProps) {
                     feeLiqBaseDecimalCorrected={feeLiqBaseDecimalCorrected}
                     feeLiqQuoteDecimalCorrected={feeLiqQuoteDecimalCorrected}
                     removalPercentage={removalPercentage}
+                    baseRemovalNum={baseRemovalNum}
+                    quoteRemovalNum={quoteRemovalNum}
                 />
                 <ExtraControls
                     isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
                     setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
+                    baseTokenBalance={baseTokenBalance}
+                    quoteTokenBalance={quoteTokenBalance}
+                    baseTokenDexBalance={baseTokenDexBalance}
+                    quoteTokenDexBalance={quoteTokenDexBalance}
+                    baseRemovalNum={baseRemovalNum}
+                    quoteRemovalNum={quoteRemovalNum}
+                    baseTokenSymbol={props.baseTokenSymbol}
+                    quoteTokenSymbol={props.quoteTokenSymbol}
                 />
             </div>
         </>

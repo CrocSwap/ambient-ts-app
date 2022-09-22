@@ -49,7 +49,7 @@ export default function WalletModal(props: WalletModalPropsIF) {
     useEffect(() => {
         isAuthenticated && isWeb3Enabled && closeModalWallet();
     }, [isAuthenticating]);
-
+    // eslint-disable-next-line
     const { tosText, acceptToS } = useTermsOfService();
 
     const [page, setPage] = useState('wallets');
@@ -263,7 +263,7 @@ export default function WalletModal(props: WalletModalPropsIF) {
                 handleBack={clickBackArrow}
                 showBackButton={showBackArrow}
                 title={activeTitle}
-                footer={tosText}
+                // footer={tosText}
             >
                 {activeContent}
             </Modal>

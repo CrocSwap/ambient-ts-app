@@ -22,6 +22,8 @@
     flex-direction: row;
     align-items: center;
     gap: var(--gap, 2rem);
+
+    /* display: none; */
 }
 
 .active,
@@ -101,7 +103,12 @@
     font-size: 2.25rem;
     font-weight: 100;
     line-height: 2.81rem;
+    background-size: 200% auto;
+    animation: shine 4s linear infinite;
+
 }
+
+
 
 .mobile_nav_toggle {
     display: none;
@@ -109,6 +116,8 @@
 
 .account {
     display: flex;
+    align-items: center;
+    padding: 0 1rem;
 }
 
 .authenticate_button {
@@ -140,12 +149,33 @@
     gap: 1rem;
 }
 
+/* @media only screen and (min-width: 768px) {
+    .primary_navigation{
+        display: flex;
+    }
+
+} */
+@keyframes shine {
+    to {
+      background-position: 200% center;
+    }
+  }
+
+@media (min-width: 580px) 
+  and (max-width: 1000px)
+  {
+.primary_navigation{
+    display: none;
+}
+}
+
 @media (max-width: 35em) {
     .account,
     .header_gradient {
         display: none;
     }
     .primary_navigation {
+        display: none;
         --gap: 2em;
         position: fixed;
         z-index: 1000;
@@ -155,8 +185,14 @@
         transition: transform var(--animation-speed) ease-in-out;
 
         flex-direction: column;
-        background: hsl(0 0% 100% / 0.1);
+        /* background: hsl(0 0% 100% / 0.1); */
+        
         backdrop-filter: blur(1rem);
+        background: rgba( 23, 29, 39, 0.5 );
+/* box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 ); */
+backdrop-filter: blur( 13px );
+-webkit-backdrop-filter: blur( 13px );
+border-radius: 10px;
 
         font-size: calc(var(--header2-size) + 0.5rem);
         line-height: calc(var(--header2-lh) + 0.5rem);
@@ -173,4 +209,7 @@
         top: 2rem;
         right: 2rem;
     }
+
+ 
 }
+

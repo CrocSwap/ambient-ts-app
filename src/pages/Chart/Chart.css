@@ -25,6 +25,13 @@ text {
     border: 1px dashed rgba(235, 235, 255, 0.4);
 }
 
+.annotation-line > .ghostline {
+    stroke: rgba(235, 235, 255, 0.4);
+    stroke-width: 0.5;
+    stroke-opacity: 0.4;
+    border: 1px dashed rgba(235, 235, 255, 0.4);
+}
+
 .candlestick .down {
     background-color: #7371fc;
 }
@@ -121,7 +128,7 @@ div.tooltip {
 
 .crosshair {
     stroke: rgb(255, 255, 255);
-    stroke-width: 0.8px;
+    stroke-width: 0.5px;
     stroke-dasharray: 0.6 0.6;
     stroke-opacity: 1;
 }

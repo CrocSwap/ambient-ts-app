@@ -4,6 +4,7 @@ import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { ethers } from 'ethers';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import Transactions from './Transactions/Transactions';
+import styles from './TradeTabs2.module.css';
 import Orders from './Orders/Orders';
 // import DropdownMenu from '../../Global/DropdownMenu/DropdownMenu';
 // import DropdownMenuContainer from '../../Global/DropdownMenu/DropdownMenuContainer/DropdownMenuContainer';
@@ -34,6 +35,10 @@ interface ITabsProps {
     isShowAllEnabled: boolean;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
     tokenMap: Map<string, TokenIF>;
+    baseTokenBalance: string;
+    quoteTokenBalance: string;
+    baseTokenDexBalance: string;
+    quoteTokenDexBalance: string;
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
     isCandleSelected: boolean | undefined;
@@ -46,6 +51,7 @@ interface ITabsProps {
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
+    pendingTransactions: string[];
 
     openGlobalModal: (content: React.ReactNode) => void;
 
@@ -63,6 +69,10 @@ export default function TradeTabs2(props: ITabsProps) {
         isShowAllEnabled,
         setIsShowAllEnabled,
         tokenMap,
+        baseTokenBalance,
+        quoteTokenBalance,
+        baseTokenDexBalance,
+        quoteTokenDexBalance,
         provider,
         isCandleSelected,
         setIsCandleSelected,
@@ -79,27 +89,41 @@ export default function TradeTabs2(props: ITabsProps) {
         setSelectedOutsideTab,
         outsideControl,
         setOutsideControl,
+        pendingTransactions,
     } = props;
 
     const graphData = useAppSelector((state) => state?.graphData);
+    const userData = useAppSelector((state) => state?.userData);
 
     const userPositions = graphData?.positionsByUser?.positions;
-    const userSwaps = graphData?.swapsByUser?.swaps;
+    const userChanges = graphData?.changesByUser?.changes;
+    const userLimitOrders = graphData?.limitOrdersByUser?.limitOrders;
     // const poolPositions = graphData?.positionsByPool?.positions;
 
     const [hasInitialized, setHasInitialized] = useState(false);
 
+    const userChangesLength = userChanges.length;
+    const userPositionsLength = userPositions.length;
+    const userLimitOrdersLength = userLimitOrders.length;
+
     useEffect(() => {
         setHasInitialized(false);
-    }, [account, isAuthenticated]);
+    }, [
+        account,
+        userData.isLoggedIn,
+        userChangesLength,
+        userLimitOrdersLength,
+        userPositionsLength,
+        selectedOutsideTab,
+    ]);
 
     useEffect(() => {
         // console.log({ hasInitialized });
-        // console.log({ isShowAllEnabled });
+        // console.log({ userChangesLength });
         // console.log({ userPositions });
         // console.log({ selectedOutsideTab });
         if (!hasInitialized) {
-            if (selectedOutsideTab === 2) {
+            if (selectedOutsideTab === 0) {
                 if (!isCandleSelected && !isShowAllEnabled && userPositions.length < 1) {
                     setIsShowAllEnabled(true);
                 } else if (userPositions.length < 1) {
@@ -107,18 +131,32 @@ export default function TradeTabs2(props: ITabsProps) {
                 } else if (isShowAllEnabled && userPositions.length >= 1) {
                     setIsShowAllEnabled(false);
                 }
-            } else if (selectedOutsideTab === 0) {
-                if (!isCandleSelected && !isShowAllEnabled && userSwaps.length < 1) {
+            } else if (selectedOutsideTab === 1) {
+                if (!isCandleSelected && !isShowAllEnabled && userLimitOrders.length < 1) {
                     setIsShowAllEnabled(true);
-                } else if (userSwaps.length < 1) {
+                } else if (userLimitOrders.length < 1) {
                     return;
-                } else if (isShowAllEnabled && userSwaps.length >= 1) {
+                } else if (isShowAllEnabled && userLimitOrders.length >= 1) {
                     setIsShowAllEnabled(false);
                 }
+            } else if (selectedOutsideTab === 2) {
+                if (!isCandleSelected && !isShowAllEnabled && userChanges.length < 1) {
+                    setIsShowAllEnabled(true);
+                } else if (userChanges.length < 1) {
+                    return;
+                } else if (isShowAllEnabled && userChanges.length >= 1) {
+                    setIsShowAllEnabled(false);
+                }
+                setHasInitialized(true);
             }
-            setHasInitialized(true);
         }
-    }, [hasInitialized, isShowAllEnabled, JSON.stringify(userPositions)]);
+    }, [
+        hasInitialized,
+        isShowAllEnabled,
+        userPositions.length,
+        userChanges.length,
+        userLimitOrders.length,
+    ]);
 
     // -------------------------------DATA-----------------------------------------
 
@@ -126,6 +164,11 @@ export default function TradeTabs2(props: ITabsProps) {
     const rangesProps = {
         crocEnv: crocEnv,
         chainData: chainData,
+        baseTokenBalance: baseTokenBalance,
+        quoteTokenBalance: quoteTokenBalance,
+        baseTokenDexBalance: baseTokenDexBalance,
+        quoteTokenDexBalance: quoteTokenDexBalance,
+
         provider: provider,
         account: account,
         isAuthenticated: isAuthenticated,
@@ -137,7 +180,7 @@ export default function TradeTabs2(props: ITabsProps) {
         expandTradeTable: expandTradeTable,
         currentPositionActive: currentPositionActive,
         setCurrentPositionActive: setCurrentPositionActive,
-
+        pendingTransactions: pendingTransactions,
         openGlobalModal: props.openGlobalModal,
 
         closeGlobalModal: props.closeGlobalModal,
@@ -162,6 +205,7 @@ export default function TradeTabs2(props: ITabsProps) {
     // Props for <Orders/> React Element
     const ordersProps = {
         expandTradeTable: expandTradeTable,
+        isShowAllEnabled: isShowAllEnabled,
         account: account,
         graphData: graphData,
     };
@@ -181,13 +225,13 @@ export default function TradeTabs2(props: ITabsProps) {
 
     // data for headings of each of the three tabs
     const tradeTabData = [
+        { label: 'Ranges', content: <Ranges {...rangesProps} />, icon: rangePositionsImage },
+        { label: 'Limit Orders', content: <Orders {...ordersProps} />, icon: openOrdersImage },
         {
             label: 'Transactions',
             content: <Transactions {...transactionsProps} />,
             icon: recentTransactionsImage,
         },
-        { label: 'Orders', content: <Orders {...ordersProps} />, icon: openOrdersImage },
-        { label: 'Ranges', content: <Ranges {...rangesProps} />, icon: rangePositionsImage },
     ];
 
     // -------------------------------END OF DATA-----------------------------------------
@@ -201,7 +245,7 @@ export default function TradeTabs2(props: ITabsProps) {
     useOnClickOutside(tabComponentRef, clickOutsideHandler);
 
     return (
-        <div ref={tabComponentRef}>
+        <div ref={tabComponentRef} className={styles.trade_tab_container}>
             {
                 <TabComponent
                     data={tradeTabData}

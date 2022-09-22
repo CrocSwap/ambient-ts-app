@@ -2,7 +2,7 @@
 import { useState, Dispatch, SetStateAction, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { ethers } from 'ethers';
-import { useMoralis } from 'react-moralis';
+// import { useMoralis } from 'react-moralis';
 import { motion } from 'framer-motion';
 import { CrocEnv, CrocImpact } from '@crocswap-libs/sdk';
 
@@ -29,10 +29,13 @@ import { SlippagePairIF, TokenIF, TokenPairIF } from '../../utils/interfaces/exp
 import { useModal } from '../../components/Global/Modal/useModal';
 import { useRelativeModal } from '../../components/Global/RelativeModal/useRelativeModal';
 import { addReceipt } from '../../utils/state/receiptDataSlice';
+import { useUrlParams } from './useUrlParams';
 // import { calcImpact } from '../../App/functions/calcImpact';
 
 interface SwapPropsIF {
     crocEnv: CrocEnv | undefined;
+    isUserLoggedIn: boolean;
+    account: string | null;
     importedTokens: Array<TokenIF>;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     searchableTokens: Array<TokenIF>;
@@ -40,8 +43,9 @@ interface SwapPropsIF {
     isPairStable: boolean;
     provider?: ethers.providers.Provider;
     isOnTradeRoute?: boolean;
-    gasPriceinGwei: number | undefined;
-    nativeBalance: string;
+    gasPriceInGwei: number | undefined;
+    ethMainnetUsdPrice?: number;
+    nativeBalance: string | undefined;
     lastBlockNumber: number;
     baseTokenBalance: string;
     quoteTokenBalance: string;
@@ -56,11 +60,17 @@ interface SwapPropsIF {
     activeTokenListsChanged: boolean;
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
     openModalWallet: () => void;
+    isInitialized: boolean;
+
+    pendingTransactions: string[];
+    setPendingTransactions: Dispatch<SetStateAction<never[]>>;
 }
 
 export default function Swap(props: SwapPropsIF) {
     const {
         crocEnv,
+        isUserLoggedIn,
+        account,
         importedTokens,
         setImportedTokens,
         searchableTokens,
@@ -69,7 +79,8 @@ export default function Swap(props: SwapPropsIF) {
         provider,
         isOnTradeRoute,
         nativeBalance,
-        gasPriceinGwei,
+        ethMainnetUsdPrice,
+        gasPriceInGwei,
         baseTokenBalance,
         quoteTokenBalance,
         baseTokenDexBalance,
@@ -83,15 +94,19 @@ export default function Swap(props: SwapPropsIF) {
         activeTokenListsChanged,
         indicateActiveTokenListsChanged,
         openModalWallet,
+        isInitialized,
+        pendingTransactions,
     } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
 
     const dispatch = useAppDispatch();
 
+    useUrlParams(chainId, isInitialized);
+
     const [isRelativeModalOpen, closeRelativeModal] = useRelativeModal();
 
-    const { isWeb3Enabled, isAuthenticated, account } = useMoralis();
+    // const { account } = useMoralis();
     // get URL pathway for user relative to index
     const { pathname } = useLocation();
 
@@ -157,6 +172,7 @@ export default function Swap(props: SwapPropsIF) {
     const [txErrorMessage, setTxErrorMessage] = useState('');
     const [priceImpact, setPriceImpact] = useState<CrocImpact | undefined>();
     const [showConfirmation, setShowConfirmation] = useState<boolean>(true);
+    const [swapGasPriceinDollars, setSwapGasPriceinDollars] = useState<string | undefined>();
 
     const resetConfirmation = () => {
         setShowConfirmation(true);
@@ -174,9 +190,23 @@ export default function Swap(props: SwapPropsIF) {
         }
     }, [poolPriceDisplay]);
 
+    const [priceImpactExceedsTolerance, setPriceImpactExceedsTolerance] = useState(false);
+
     useEffect(() => {
         console.log({ priceImpact });
-    }, [priceImpact]);
+        const priceImpactPercentChange = priceImpact?.percentChange;
+        // console.log({ priceImpactPercentChange });
+        // console.log({ slippageTolerancePercentage });
+        if (priceImpactPercentChange) {
+            if (Math.abs(priceImpactPercentChange) > slippageTolerancePercentage / 100) {
+                console.log('price impace exceeds slippage tolerance');
+                setPriceImpactExceedsTolerance(true);
+                setSwapButtonErrorMessage('Please Increase Slippage Tolerance');
+            } else {
+                setPriceImpactExceedsTolerance(false);
+            }
+        }
+    }, [priceImpact, slippageTolerancePercentage]);
 
     async function initiateSwap() {
         if (!provider) return;
@@ -215,13 +245,13 @@ export default function Swap(props: SwapPropsIF) {
                 ? env
                       .sell(sellTokenAddress, qty)
                       .for(buyTokenAddress, {
-                          slippage: slippageTolerancePercentage,
+                          slippage: slippageTolerancePercentage / 100,
                       })
                       .swap({ surplus: [isWithdrawFromDexChecked, isSaveAsDexSurplusChecked] })
                 : env
                       .buy(buyTokenAddress, qty)
                       .with(sellTokenAddress, {
-                          slippage: slippageTolerancePercentage,
+                          slippage: slippageTolerancePercentage / 100,
                       })
                       .swap({ surplus: [isWithdrawFromDexChecked, isSaveAsDexSurplusChecked] }))),
                 setNewSwapTransactionHash(tx?.hash);
@@ -329,6 +359,7 @@ export default function Swap(props: SwapPropsIF) {
                 showConfirmation={showConfirmation}
                 setShowConfirmation={setShowConfirmation}
                 resetConfirmation={resetConfirmation}
+                pendingTransactions={pendingTransactions}
             />
         </Modal>
     ) : null;
@@ -340,10 +371,25 @@ export default function Swap(props: SwapPropsIF) {
         </RelativeModal>
     ) : null;
 
+    // calculate price of gas for swap
+    useEffect(() => {
+        if (gasPriceInGwei && ethMainnetUsdPrice) {
+            const gasPriceInDollarsNum = gasPriceInGwei * 79079 * 1e-9 * ethMainnetUsdPrice;
+
+            setSwapGasPriceinDollars(
+                '~$' +
+                    gasPriceInDollarsNum.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                    }),
+            );
+        }
+    }, [gasPriceInGwei, ethMainnetUsdPrice]);
+
     const isTokenAAllowanceSufficient = parseFloat(tokenAAllowance) >= parseFloat(tokenAInputQty);
 
-    const swapContainerStyle = pathname == '/swap' ? styles.swap_page_container : null;
-    const swapPageStyle = pathname == '/swap' ? styles.swap_page : null;
+    const swapContainerStyle = pathname.startsWith('/swap') ? styles.swap_page_container : null;
+    const swapPageStyle = pathname.startsWith('/swap') ? styles.swap_page : null;
     return (
         <main data-testid={'swap'} className={swapPageStyle}>
             <div className={`${swapContainerStyle}`}>
@@ -365,6 +411,7 @@ export default function Swap(props: SwapPropsIF) {
                     >
                         <CurrencyConverter
                             crocEnv={crocEnv}
+                            isUserLoggedIn={isUserLoggedIn}
                             provider={provider}
                             slippageTolerancePercentage={slippageTolerancePercentage}
                             setPriceImpact={setPriceImpact}
@@ -377,10 +424,11 @@ export default function Swap(props: SwapPropsIF) {
                             poolPriceDisplay={poolPriceDisplay}
                             isTokenAPrimary={isTokenAPrimary}
                             isSellTokenBase={isSellTokenBase}
-                            nativeBalance={truncateDecimals(
-                                parseFloat(nativeBalance),
-                                4,
-                            ).toString()}
+                            nativeBalance={
+                                nativeBalance
+                                    ? truncateDecimals(parseFloat(nativeBalance), 4).toString()
+                                    : '...'
+                            }
                             baseTokenBalance={baseTokenBalance}
                             quoteTokenBalance={quoteTokenBalance}
                             baseTokenDexBalance={baseTokenDexBalance}
@@ -411,11 +459,11 @@ export default function Swap(props: SwapPropsIF) {
                         slippageTolerance={slippageTolerancePercentage}
                         liquidityProviderFee={0.3}
                         quoteTokenIsBuy={true}
-                        gasPriceinGwei={gasPriceinGwei}
+                        swapGasPriceinDollars={swapGasPriceinDollars}
                         didUserFlipDenom={tradeData.didUserFlipDenom}
                         isDenomBase={tradeData.isDenomBase}
                     />
-                    {isAuthenticated && isWeb3Enabled ? (
+                    {isUserLoggedIn ? (
                         !isTokenAAllowanceSufficient &&
                         parseFloat(tokenAInputQty) > 0 &&
                         tokenAInputQty !== 'Infinity' ? (
@@ -423,7 +471,7 @@ export default function Swap(props: SwapPropsIF) {
                         ) : (
                             <SwapButton
                                 onClickFn={openModal}
-                                swapAllowed={swapAllowed}
+                                swapAllowed={swapAllowed && !priceImpactExceedsTolerance}
                                 swapButtonErrorMessage={swapButtonErrorMessage}
                             />
                         )

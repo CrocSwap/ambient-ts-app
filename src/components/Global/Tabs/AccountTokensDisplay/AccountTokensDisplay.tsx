@@ -1,16 +1,15 @@
 import styles from './AccountTokensDisplay.module.css';
 
-export default function AccountTokensDisplay() {
-    const baseToken = (
-        <img
-            src='https://icons.iconarchive.com/icons/cjdowner/cryptocurrency-flat/1024/Ethereum-ETH-icon.png'
-            alt=''
-        />
-    );
+interface AccountTokensPropsIF {
+    baseTokenLogoURI: string;
+    quoteTokenLogoURI: string;
+}
 
-    const quoteToken = (
-        <img src='https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.png' alt='' />
-    );
+export default function AccountTokensDisplay(props: AccountTokensPropsIF) {
+    const { baseTokenLogoURI, quoteTokenLogoURI } = props;
+    const baseToken = <img src={baseTokenLogoURI} alt='' />;
+
+    const quoteToken = <img src={quoteTokenLogoURI} alt='' />;
 
     return (
         <section className={styles.token_display_container}>

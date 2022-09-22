@@ -25,10 +25,15 @@ interface RangesPropsIF {
     notOnTradeRoute?: boolean;
     graphData: graphData;
     lastBlockNumber: number;
+    baseTokenBalance: string;
+    quoteTokenBalance: string;
+    baseTokenDexBalance: string;
+    quoteTokenDexBalance: string;
     expandTradeTable: boolean;
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     portfolio?: boolean;
+    pendingTransactions: string[];
 
     openGlobalModal: (content: React.ReactNode) => void;
     closeGlobalModal: () => void;
@@ -45,12 +50,17 @@ export default function Ranges(props: RangesPropsIF) {
         chainId,
         isShowAllEnabled,
         notOnTradeRoute,
+        baseTokenBalance,
+        quoteTokenBalance,
+        baseTokenDexBalance,
+        quoteTokenDexBalance,
         graphData,
         lastBlockNumber,
         expandTradeTable,
         currentPositionActive,
         setCurrentPositionActive,
         portfolio,
+        pendingTransactions,
     } = props;
 
     const tradeData = useAppSelector((state) => state.tradeData);
@@ -100,6 +110,10 @@ export default function Ranges(props: RangesPropsIF) {
                         chainId={chainId}
                         key={idx}
                         portfolio={portfolio}
+                        baseTokenBalance={baseTokenBalance}
+                        quoteTokenBalance={quoteTokenBalance}
+                        baseTokenDexBalance={baseTokenDexBalance}
+                        quoteTokenDexBalance={quoteTokenDexBalance}
                         notOnTradeRoute={notOnTradeRoute}
                         position={position}
                         isAllPositionsEnabled={isShowAllEnabled}
@@ -113,6 +127,7 @@ export default function Ranges(props: RangesPropsIF) {
                         setCurrentPositionActive={setCurrentPositionActive}
                         openGlobalModal={props.openGlobalModal}
                         closeGlobalModal={props.closeGlobalModal}
+                        pendingTransactions={pendingTransactions}
                     />
                 ))}
             </ol>

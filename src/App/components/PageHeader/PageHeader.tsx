@@ -3,7 +3,6 @@ import { useCallback, useEffect, useState, Dispatch, SetStateAction } from 'reac
 import { Link } from 'react-router-dom';
 import { useMoralis } from 'react-moralis';
 import { useTranslation } from 'react-i18next';
-import { useRive, useStateMachineInput } from 'rive-react';
 import { motion, AnimateSharedLayout } from 'framer-motion';
 
 // START: Import JSX Elements
@@ -18,9 +17,12 @@ import styles from './PageHeader.module.css';
 import trimString from '../../../utils/functions/trimString';
 import ambientLogo from '../../../assets/images/logos/ambient_logo.svg';
 import { useModal } from '../../../components/Global/Modal/useModal';
+import MobileSidebar from '../../../components/Global/MobileSidebar/MobileSidebar';
+import NotificationCenter from '../../../components/Global/NotificationCenter/NotificationCenter';
 
 interface HeaderPropsIF {
-    nativeBalance: string;
+    isUserLoggedIn: boolean;
+    nativeBalance: string | undefined;
     clickLogout: () => void;
     metamaskLocked: boolean;
     ensName: string;
@@ -30,10 +32,20 @@ interface HeaderPropsIF {
     switchChain: Dispatch<SetStateAction<string>>;
     switchNetworkInMoralis: (providedChainId: string) => Promise<void>;
     openModalWallet: () => void;
+    pendingTransactions: string[];
+
+    isMobileSidebarOpen: boolean;
+    setIsMobileSidebarOpen: Dispatch<SetStateAction<boolean>>;
+    lastBlockNumber: number;
+
+    openGlobalModal: (content: React.ReactNode) => void;
+
+    closeGlobalModal: () => void;
 }
 
 export default function PageHeader(props: HeaderPropsIF) {
     const {
+        isUserLoggedIn,
         ensName,
         nativeBalance,
         clickLogout,
@@ -44,6 +56,10 @@ export default function PageHeader(props: HeaderPropsIF) {
         switchChain,
         switchNetworkInMoralis,
         openModalWallet,
+        pendingTransactions,
+        lastBlockNumber,
+        isMobileSidebarOpen,
+        setIsMobileSidebarOpen,
     } = props;
 
     const { user, account, enableWeb3, isWeb3Enabled, isAuthenticated } = useMoralis();
@@ -78,29 +94,17 @@ export default function PageHeader(props: HeaderPropsIF) {
         }
     }, [user, account, metamaskLocked]);
 
-    // rive component
-    const STATE_MACHINE_NAME = 'Basic State Machine';
-    const INPUT_NAME = 'Switch';
-
-    const { rive, RiveComponent } = useRive({
-        src: './hamburger.riv',
-        stateMachines: STATE_MACHINE_NAME,
-        autoplay: true,
-    });
-
-    const onClickInput = useStateMachineInput(rive, STATE_MACHINE_NAME, INPUT_NAME);
-
     // end of rive component
 
     // Page Header states
+    // eslint-disable-next-line
     const [mobileNavToggle, setMobileNavToggle] = useState<boolean>(false);
     // End of Page Header States
 
     // Page Header functions
-    function handleMobileNavToggle() {
-        setMobileNavToggle(!mobileNavToggle);
-        onClickInput?.fire();
-    }
+    // function handleMobileNavToggle() {
+    //     setMobileNavToggle(!mobileNavToggle);
+    // }
 
     // -----------------END OF SWITCH NETWORK FUNCTIONALITY--------------------------------------
     const accountAddress = isAuthenticated && account ? trimString(account, 6, 6) : '';
@@ -110,8 +114,7 @@ export default function PageHeader(props: HeaderPropsIF) {
         accountAddress: accountAddress,
         accountAddressFull: isAuthenticated && account ? account : '',
         ensName: ensName,
-        isAuthenticated: isAuthenticated,
-        isWeb3Enabled: isWeb3Enabled,
+        isUserLoggedIn: isUserLoggedIn,
         clickLogout: clickLogout,
         openModal: openModal,
         chainId: chainId,
@@ -136,7 +139,7 @@ export default function PageHeader(props: HeaderPropsIF) {
         ? '/trade/range'
         : location.pathname.includes('trade/edit')
         ? '/trade/edit'
-        : '/trade/market';
+        : '/trade/range';
 
     const linkData = [
         { title: t('common:homeTitle'), destination: '/', shouldDisplay: true },
@@ -151,6 +154,7 @@ export default function PageHeader(props: HeaderPropsIF) {
     ];
 
     // Most of this functionality can be achieve by using the NavLink instead of Link and accessing the isActive prop on the Navlink. Access to this is needed outside of the link itself for animation purposes, which is why it is being done in this way.
+
     const routeDisplay = (
         <AnimateSharedLayout>
             <nav
@@ -180,6 +184,7 @@ export default function PageHeader(props: HeaderPropsIF) {
     );
 
     // ----------------------------END OF NAVIGATION FUNCTIONALITY-------------------------------------
+    const [showNotificationTable, setShowNotificationTable] = useState(false);
 
     return (
         <header data-testid={'page-header'} className={styles.primary_header}>
@@ -187,19 +192,43 @@ export default function PageHeader(props: HeaderPropsIF) {
                 <img src={ambientLogo} alt='ambient' />
                 <h1>ambient</h1>
             </Link>
-            <div
+            {/* <div
                 className={styles.mobile_nav_toggle}
+                style={{ cursor: 'pointer' }}
                 aria-controls='primary_navigation'
                 aria-expanded={mobileNavToggle}
             >
-                <RiveComponent onClick={handleMobileNavToggle} />
+                <MenuButton
+                    isOpen={mobileNavToggle}
+                    onClick={handleMobileNavToggle}
+                    strokeWidth='2'
+                    color='#cdc1ff'
+                    transition={{ ease: 'easeOut', duration: 0.2 }}
+                    width='24'
+                    height='18'
+                />
                 <span className='sr-only'>Menu</span>
-            </div>
+            </div> */}
+
             {routeDisplay}
-            <div className={styles.account}>
-                <NetworkSelector chainId={chainId} switchChain={switchChain} />
-                {(!isAuthenticated || !isWeb3Enabled) && metamaskButton}
-                <Account {...accountProps} />
+            <div>
+                <MobileSidebar
+                    lastBlockNumber={lastBlockNumber}
+                    chainId={chainId}
+                    isMobileSidebarOpen={isMobileSidebarOpen}
+                    setIsMobileSidebarOpen={setIsMobileSidebarOpen}
+                />
+                <div className={styles.account}>
+                    <NetworkSelector chainId={chainId} switchChain={switchChain} />
+                    {(!isAuthenticated || !isWeb3Enabled) && metamaskButton}
+                    <Account {...accountProps} />
+                    <NotificationCenter
+                        showNotificationTable={showNotificationTable}
+                        setShowNotificationTable={setShowNotificationTable}
+                        pendingTransactions={pendingTransactions}
+                        lastBlockNumber={lastBlockNumber}
+                    />
+                </div>
             </div>
             {isChainSupported || <SwitchNetwork switchNetworkInMoralis={switchNetworkInMoralis} />}
             {modalOrNull}

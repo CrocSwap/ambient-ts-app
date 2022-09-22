@@ -162,6 +162,25 @@ footer {
     border: 0;
 }
 
+.blur_app{
+    position: fixed;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 4;
+
+    background: rgba(1, 0, 16, 0.25);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: var(--border-radius);
+    transition: all var(--animation-speed) ease-in-out;
+}
 /* CSSTransition classes  */
 .menu-primary-enter {
     position: absolute;
@@ -191,6 +210,28 @@ footer {
 .menu-secondary-exit-active {
     transform: translateX(110%);
     transition: all var(--animation-speed) ease;
+}
+
+/* swiper */
+
+.swiper-pagination{
+    bottom: 0 !important;
+    background:var(--body-bg) !important;
+    
+    
+}
+.swiper-pagination-bullet{
+    /* background: #171D27 !important; */
+    width: 10px !important;
+    height: 10px !important;
+    border-radius:  50% !important;
+    background:  #42464f !important;
+}
+.swiper-pagination-bullet-active{
+    background: url('../assets/images/home/active_slider_button.svg') !important;
+    width: 10px !important;
+    height: 10px !important;
+    border-radius:  50% !important;
 }
 
 .hide_sidebar {

@@ -1,12 +1,12 @@
 // START: Import React and Dongles
 import {
     // useState,
+    // useEffect,
     Dispatch,
     SetStateAction,
 } from 'react';
 
 // START: Import JSX Functional Components
-import Divider from '../../../Global/Divider/Divider';
 import RangeStatus from '../../../Global/RangeStatus/RangeStatus';
 import Button from '../../../Global/Button/Button';
 import WaitingConfirmation from '../../../Global/WaitingConfirmation/WaitingConfirmation';
@@ -18,6 +18,7 @@ import styles from './ConfirmRangeModal.module.css';
 import SelectedRange from './SelectedRange/SelectedRange';
 import { TokenPairIF } from '../../../../utils/interfaces/exports';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
+import ConfirmationModalControl from '../../../Global/ConfirmationModalControl/ConfirmationModalControl';
 
 interface ConfirmRangeModalPropsIF {
     sendTransaction: () => void;
@@ -42,6 +43,8 @@ interface ConfirmRangeModalPropsIF {
     txErrorCode: number;
     txErrorMessage: string;
     resetConfirmation: () => void;
+
+    pendingTransactions: string[];
 }
 
 export default function ConfirmRangeModal(props: ConfirmRangeModalPropsIF) {
@@ -66,6 +69,8 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalPropsIF) {
         showConfirmation,
         setShowConfirmation,
         resetConfirmation,
+
+        // pendingTransactions,
     } = props;
 
     const tokenA = tokenPair.dataTokenA;
@@ -81,6 +86,12 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalPropsIF) {
 
     const dataTokenA = tokenPair.dataTokenA;
     const dataTokenB = tokenPair.dataTokenB;
+
+    // useEffect(() => {
+    //     if (newRangeTransactionHash && newRangeTransactionHash !== '') {
+    //         pendingTransactions.push(newRangeTransactionHash);
+    //     }
+    // }, [newRangeTransactionHash]);
 
     const rangeHeader = (
         <section className={styles.position_display}>
@@ -100,7 +111,7 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalPropsIF) {
     const tokenACharacter = getUnicodeCharacter(dataTokenA.symbol);
     const tokenBCharacter = getUnicodeCharacter(dataTokenB.symbol);
 
-    const feeTierDisplay = (
+    const tokenAmountDisplay = (
         <section className={styles.fee_tier_display}>
             <div className={styles.fee_tier_container}>
                 <div className={styles.detail_line}>
@@ -116,11 +127,6 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalPropsIF) {
                         <span>{dataTokenB.symbol}</span>
                     </div>
                     <span>{tokenBQty !== '' ? tokenBCharacter + tokenBQty : '0'}</span>
-                </div>
-                <Divider />
-                <div className={styles.detail_line}>
-                    <span>CURRENT FEE TIER</span>
-                    <span>{0.05}%</span>
                 </div>
             </div>
         </section>
@@ -146,8 +152,9 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalPropsIF) {
     const fullTxDetails = (
         <>
             {rangeHeader}
-            {feeTierDisplay}
+            {tokenAmountDisplay}
             {selectedRangeOrNull}
+            <ConfirmationModalControl />
         </>
     );
 

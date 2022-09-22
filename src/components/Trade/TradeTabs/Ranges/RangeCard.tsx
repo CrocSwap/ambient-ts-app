@@ -20,6 +20,10 @@ interface RangeCardProps {
     provider: ethers.providers.Provider | undefined;
     chainId: string;
     portfolio?: boolean;
+    baseTokenBalance: string;
+    quoteTokenBalance: string;
+    baseTokenDexBalance: string;
+    quoteTokenDexBalance: string;
     notOnTradeRoute?: boolean;
     position: PositionIF;
     isAllPositionsEnabled: boolean;
@@ -31,7 +35,7 @@ interface RangeCardProps {
     lastBlockNumber: number;
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
-
+    pendingTransactions: string[];
     openGlobalModal: (content: React.ReactNode) => void;
     closeGlobalModal: () => void;
 }
@@ -46,6 +50,10 @@ export default function RangeCard(props: RangeCardProps) {
         // isAllPositionsEnabled,
         tokenAAddress,
         tokenBAddress,
+        baseTokenBalance,
+        quoteTokenBalance,
+        baseTokenDexBalance,
+        quoteTokenDexBalance,
         // account,
         // notOnTradeRoute,
         // isAuthenticated,
@@ -53,6 +61,7 @@ export default function RangeCard(props: RangeCardProps) {
         lastBlockNumber,
         currentPositionActive,
         setCurrentPositionActive,
+        pendingTransactions,
     } = props;
 
     // -------------------------------POSITION HASH------------------------
@@ -135,6 +144,10 @@ export default function RangeCard(props: RangeCardProps) {
         baseTokenDecimals: position.baseDecimals,
         quoteTokenSymbol: position.quoteSymbol,
         quoteTokenDecimals: position.quoteDecimals,
+        baseTokenBalance: baseTokenBalance,
+        quoteTokenBalance: quoteTokenBalance,
+        baseTokenDexBalance: baseTokenDexBalance,
+        quoteTokenDexBalance: quoteTokenDexBalance,
         lowRangeDisplay: ambientMinOrNull,
         highRangeDisplay: ambientMaxOrNull,
         baseTokenLogoURI: position.baseTokenLogoURI,
@@ -144,6 +157,7 @@ export default function RangeCard(props: RangeCardProps) {
         quoteTokenAddress: props.position.quote,
         lastBlockNumber: lastBlockNumber,
         positionApy: position.apy,
+        pendingTransactions: pendingTransactions,
 
         closeGlobalModal: props.closeGlobalModal,
         openGlobalModal: props.openGlobalModal,
@@ -214,8 +228,8 @@ export default function RangeCard(props: RangeCardProps) {
                 <TokenQty
                     baseQty={position.positionLiqBaseTruncated}
                     quoteQty={position.positionLiqQuoteTruncated}
-                    baseTokenSymbol={position.baseSymbol}
-                    quoteTokenSymbol={position.quoteSymbol}
+                    baseTokenCharacter={baseTokenCharacter}
+                    quoteTokenCharacter={baseTokenCharacter}
                 />
                 {/* ------------------------------------------------------ */}
                 <Apy amount={position.apy ?? undefined} />
@@ -234,6 +248,10 @@ export default function RangeCard(props: RangeCardProps) {
                     rangeDetailsProps={rangeDetailsProps}
                     posHash={posHash as string}
                     positionData={position}
+                    baseTokenBalance={baseTokenBalance}
+                    quoteTokenBalance={quoteTokenBalance}
+                    baseTokenDexBalance={baseTokenDexBalance}
+                    quoteTokenDexBalance={quoteTokenDexBalance}
                     // openGlobalModal={props.openGlobalModal}
                     // closeGlobalModal={props.closeGlobalModal}
                 />
