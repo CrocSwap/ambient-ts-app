@@ -23,11 +23,13 @@ interface RangeHeaderPropsIF {
     isPairStable: boolean;
     isDenomBase: boolean;
     isTokenABase: boolean;
+    openGlobalModal: (content: React.ReactNode, title?: string) => void;
 }
 
 // central react functional component
 export default function RangeHeader(props: RangeHeaderPropsIF) {
-    const { tokenPair, mintSlippage, isPairStable, isDenomBase, isTokenABase } = props;
+    const { tokenPair, mintSlippage, isPairStable, isDenomBase, isTokenABase, openGlobalModal } =
+        props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
 

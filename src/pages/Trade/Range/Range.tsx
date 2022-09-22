@@ -1025,6 +1025,7 @@ export default function Range(props: RangePropsIF) {
                     isPairStable={isPairStable}
                     isDenomBase={tradeData.isDenomBase}
                     isTokenABase={isTokenABase}
+                    openGlobalModal={openGlobalModal}
                 />
                 <DividerDark addMarginTop />
                 {navigationMenu}
