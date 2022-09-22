@@ -13,6 +13,7 @@ import { useModal } from '../../../../components/Global/Modal/useModal';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
 import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
+import { AiOutlineShareAlt } from 'react-icons/ai';
 
 // interface for component props
 interface RangeHeaderPropsIF {
@@ -47,7 +48,9 @@ export default function RangeHeader(props: RangeHeaderPropsIF) {
 
     return (
         <ContentHeader>
-            <span />
+            <div className={styles.share_button}>
+                <AiOutlineShareAlt />
+            </div>
             <div className={styles.token_info} onClick={() => dispatch(toggleDidUserFlipDenom())}>
                 {reverseDisplay ? tokenPair.dataTokenA.symbol : tokenPair.dataTokenB.symbol} /{' '}
                 {reverseDisplay ? tokenPair.dataTokenB.symbol : tokenPair.dataTokenA.symbol}
