@@ -1014,6 +1014,28 @@ export default function Range(props: RangePropsIF) {
             }}
         />
     );
+    // -------------------------RANGE SHARE FUNCTIONALITY---------------------------
+    const [shareOptions, setShareOptions] = useState([
+        { slug: 'include1', name: 'Include Range 1', checked: true },
+        { slug: 'include2', name: 'Include Range 2', checked: true },
+        { slug: 'include3', name: 'Include Range 3', checked: true },
+        { slug: 'include4', name: 'Include Range 4', checked: true },
+    ]);
+
+    const handleShareOptionChange = (slug: string) => {
+        const copyShareOptions = [...shareOptions];
+        const modifiedShareOptions = copyShareOptions.map((item) => {
+            if (slug === item.slug) {
+                item.checked = !item.checked;
+            }
+
+            return item;
+        });
+
+        setShareOptions(modifiedShareOptions);
+    };
+
+    // -------------------------END OF RANGE SHARE FUNCTIONALITY---------------------------
 
     return (
         <section data-testid={'range'}>
@@ -1026,6 +1048,8 @@ export default function Range(props: RangePropsIF) {
                     isDenomBase={tradeData.isDenomBase}
                     isTokenABase={isTokenABase}
                     openGlobalModal={openGlobalModal}
+                    handleShareOptionChange={handleShareOptionChange}
+                    shareOptions={shareOptions}
                 />
                 <DividerDark addMarginTop />
                 {navigationMenu}

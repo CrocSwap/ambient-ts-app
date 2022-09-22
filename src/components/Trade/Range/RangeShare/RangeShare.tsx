@@ -1,17 +1,61 @@
 import styles from './RangeShare.module.css';
 import { useState } from 'react';
+import { motion } from 'framer-motion';
 
-import { AiOutlineShareAlt } from 'react-icons/ai';
+type OptionIF = {
+    slug: string;
+    name: string;
+    checked: boolean;
+};
 
-export default function RangeShare() {
-    const [showShareModal, setShowShareModal] = useState(false);
+interface RangeShareProps {
+    handleShareOptionChange: (option: string) => void;
+    shareOptions: {
+        slug: string;
+        name: string;
+        checked: boolean;
+    }[];
+}
 
-    const shareButton = (
-        <div className={styles.share_button} onClick={() => setShowShareModal(!showShareModal)}>
-            <AiOutlineShareAlt />
+interface RangeShareOptionControlPropsIF {
+    option: OptionIF;
+    handleShareOptionChange: (option: string) => void;
+}
+
+function RangeShareOptionControl(props: RangeShareOptionControlPropsIF) {
+    const { option, handleShareOptionChange } = props;
+
+    return (
+        <motion.div
+            layout
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className={styles.custom_control}
+        >
+            <input
+                id={`customCheck1-share-${option.slug}`}
+                className={`${styles.ckb} ${styles.ckb_primary}`}
+                type='checkbox'
+                checked={option.checked}
+                onChange={() => handleShareOptionChange(option.slug)}
+            />
+            <label htmlFor={`customCheck1-${option.slug}`}>{option.name}</label>
+        </motion.div>
+    );
+}
+export default function RangeShare(props: RangeShareProps) {
+    const { shareOptions, handleShareOptionChange } = props;
+
+    return (
+        <div className={styles.container}>
+            {shareOptions.map((option) => (
+                <RangeShareOptionControl
+                    key={option.slug}
+                    option={option}
+                    handleShareOptionChange={handleShareOptionChange}
+                />
+            ))}
         </div>
     );
-    const wrapperStyle = showShareModal ? styles.share_wrapper_active : styles.share_wrapper;
-
-    return <div className={styles.container}>Range Share Data</div>;
 }
