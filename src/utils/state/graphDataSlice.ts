@@ -182,7 +182,18 @@ export interface CandlesByPoolAndDuration {
     candles: Array<CandleData>;
 }
 
+export interface TvlData {
+    interpBadness: number;
+    interpDistHigher: number;
+    interpDistLower: number;
+    method: string;
+    time: number;
+    tvl: number;
+}
+
 export interface CandleData {
+    tvlData: TvlData;
+    volumeUSD: number;
     time: number;
     poolHash: string;
     firstBlock: number;

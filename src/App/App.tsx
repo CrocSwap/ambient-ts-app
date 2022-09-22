@@ -2031,6 +2031,7 @@ export default function App() {
                                     openGlobalModal={openGlobalModal}
                                     closeGlobalModal={closeGlobalModal}
                                     pendingTransactions={pendingTransactions}
+                                    poolPriceNonDisplay={undefined}
                                 />
                             }
                         >
