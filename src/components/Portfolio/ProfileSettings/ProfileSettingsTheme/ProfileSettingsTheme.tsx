@@ -1,19 +1,21 @@
 import styles from './ProfileSettingsTheme.module.css';
 import { useState } from 'react';
 import { motion, Variants } from 'framer-motion';
+import { BsCheckCircle } from 'react-icons/bs';
+import { FiCircle } from 'react-icons/fi';
 
-const itemVariants: Variants = {
-    open: {
-        opacity: 1,
-        y: 0,
-        transition: { type: 'spring', stiffness: 300, damping: 24 },
-    },
-    closed: { opacity: 0, y: 20, transition: { duration: 0.2 } },
-};
+// const itemVariants: Variants = {
+//     open: {
+//         opacity: 1,
+//         y: 0,
+//         transition: { type: 'spring', stiffness: 300, damping: 24 },
+//     },
+//     closed: { opacity: 0, y: 20, transition: { duration: 0.2 } },
+// };
 
 const mainVariant: Variants = {
     open: {
-        clipPath: 'inset(0% 0% 0% 0% round 10px)',
+        clipPath: 'inset(0% 0% 0% 0% round 4px)',
         transition: {
             type: 'spring',
             bounce: 0,
@@ -23,7 +25,7 @@ const mainVariant: Variants = {
         },
     },
     closed: {
-        clipPath: 'inset(10% 50% 90% 50% round 10px)',
+        clipPath: 'inset(10% 50% 90% 50% round 4px)',
         transition: {
             type: 'spring',
             bounce: 0,
@@ -32,14 +34,7 @@ const mainVariant: Variants = {
     },
 };
 
-const spring = {
-    type: 'spring',
-    stiffness: 500,
-    damping: 30,
-};
-
 interface ProfileSettingItemPropsIF {
-    color: string;
     isSelected: boolean;
     name: string;
     onClick: () => void;
@@ -78,27 +73,21 @@ export default function ProfileSettingsTheme() {
         </motion.div>
     );
 
-    function NetworkItem(props: ProfileSettingItemPropsIF) {
-        const { color, isSelected, onClick, name } = props;
+    function ThemeItem(props: ProfileSettingItemPropsIF) {
+        const { isSelected, onClick, name } = props;
 
         return (
             <motion.li
-                className={styles.network_item_container}
+                className={styles.theme_item_container}
                 onClick={onClick}
-                variants={itemVariants}
+                // variants={itemVariants}
             >
                 {name}
-                <div className={styles.network_color} style={{ backgroundColor: color }}>
-                    {isSelected && (
-                        <motion.div
-                            layoutId='outline'
-                            className={styles.outline}
-                            initial={false}
-                            animate={{ borderColor: color }}
-                            transition={spring}
-                        />
-                    )}
-                </div>
+                {isSelected ? (
+                    <BsCheckCircle size={24} color='#CDC1FF' />
+                ) : (
+                    <FiCircle size={24} color='#CDC1FF' />
+                )}
             </motion.li>
         );
     }
@@ -119,13 +108,12 @@ export default function ProfileSettingsTheme() {
                 style={{ pointerEvents: isOpen ? 'auto' : 'none' }}
                 className={styles.main_container}
             >
-                {themeItems.map((network, idx) => (
-                    <NetworkItem
-                        name={network.name}
-                        color={network.color}
+                {themeItems.map((theme, idx) => (
+                    <ThemeItem
+                        name={theme.name}
                         key={idx}
-                        isSelected={selected.color === network.color}
-                        onClick={() => setSelected(network)}
+                        isSelected={selected.color === theme.color}
+                        onClick={() => setSelected(theme)}
                     />
                 ))}
             </motion.ul>
