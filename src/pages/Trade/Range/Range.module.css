@@ -30,3 +30,20 @@
     gap: 1rem;
     list-style: none;
 }
+
+.control_title{
+    color: var(--text-grey-light)
+}
+
+.url_link{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-highlight)
+}
+
+.url_link div{
+    cursor: pointer;
+    
+}

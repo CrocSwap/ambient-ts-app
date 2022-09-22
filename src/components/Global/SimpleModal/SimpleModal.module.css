@@ -29,7 +29,7 @@
 
 
     min-width: 407px;
-    min-height: 350px;
+    min-height: 150px;
     border-radius: var(--border-radius);
     position: relative;
     color: white;

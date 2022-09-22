@@ -14,7 +14,6 @@ import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
 import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 import { AiOutlineShareAlt } from 'react-icons/ai';
-import { Dispatch, SetStateAction } from 'react';
 
 // interface for component props
 interface RangeHeaderPropsIF {

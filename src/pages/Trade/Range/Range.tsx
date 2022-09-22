@@ -22,7 +22,7 @@ import Modal from '../../../components/Global/Modal/Modal';
 import Button from '../../../components/Global/Button/Button';
 import RangeExtraInfo from '../../../components/Trade/Range/RangeExtraInfo/RangeExtraInfo';
 import ConfirmRangeModal from '../../../components/Trade/Range/ConfirmRangeModal/ConfirmRangeModal';
-
+import { FiCopy } from 'react-icons/fi';
 // START: Import Local Files
 import styles from './Range.module.css';
 import {
@@ -1017,13 +1017,14 @@ export default function Range(props: RangePropsIF) {
     );
     // -------------------------RANGE SHARE FUNCTIONALITY---------------------------
     const [shareOptions, setShareOptions] = useState([
-        { slug: 'include1', name: 'Include Range 1', checked: true },
-        { slug: 'include2', name: 'Include Range 2', checked: true },
-        { slug: 'include3', name: 'Include Range 3', checked: true },
-        { slug: 'include4', name: 'Include Range 4', checked: true },
+        { slug: 'first', name: 'Include Range 1', checked: false },
+        { slug: 'second', name: 'Include Range 2', checked: false },
+        { slug: 'third', name: 'Include Range 3', checked: false },
+        { slug: 'fourth', name: 'Include Range 4', checked: false },
     ]);
 
     const handleShareOptionChange = (slug: string) => {
+        console.log('Clicked');
         const copyShareOptions = [...shareOptions];
         const modifiedShareOptions = copyShareOptions.map((option) => {
             if (slug === option.slug) {
@@ -1034,12 +1035,13 @@ export default function Range(props: RangePropsIF) {
         });
 
         setShareOptions(modifiedShareOptions);
+        console.log('I am clicked');
     };
 
     const shareOptionsDisplay = (
         <div className={styles.option_control_container}>
             <div className={styles.options_control_display_container}>
-                <p>Options</p>
+                <p className={styles.control_title}>Options</p>
                 <ul>
                     {shareOptions.map((option, idx) => (
                         <RangeShareControl
@@ -1050,6 +1052,13 @@ export default function Range(props: RangePropsIF) {
                     ))}
                 </ul>
             </div>
+            <p className={styles.control_title}>URL:</p>
+            <p className={styles.url_link}>
+                https://ambient.finance/trade/market/0xaaaaaa/93bbbb
+                <div>
+                    <FiCopy color='#cdc1ff' />
+                </div>
+            </p>
         </div>
     );
 
