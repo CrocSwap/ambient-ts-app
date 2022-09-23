@@ -9,6 +9,7 @@ import TransactionsSkeletons from './TransactionsSkeletons/TransactionsSkeletons
 import Pagination from '../../../Global/Pagination/Pagination';
 import { ChainSpec } from '@crocswap-libs/sdk';
 import useWebSocket from 'react-use-websocket';
+import useDebounce from '../../../../App/hooks/useDebounce';
 
 interface TransactionsProps {
     isShowAllEnabled: boolean;
@@ -159,6 +160,9 @@ export default function Transactions(props: TransactionsProps) {
         [baseTokenAddress, quoteTokenAddress, chainData.chainId, chainData.poolIndex],
     );
 
+    // wait 5 seconds to open a subscription to pool changes
+    const debouncedIsShowAllEnabled: boolean = useDebounce(isShowAllEnabled, 5000);
+
     const {
         //  sendMessage,
         lastMessage: lastPoolChangeMessage,
@@ -174,8 +178,8 @@ export default function Transactions(props: TransactionsProps) {
             // Will attempt to reconnect on all close events, such as server shutting down
             shouldReconnect: () => true,
         },
-        // only connect if base/quote token addresses are available
-        baseTokenAddress !== '' && quoteTokenAddress !== '',
+        // only connect if user is viewing pool changes
+        debouncedIsShowAllEnabled,
     );
 
     const dispatch = useAppDispatch();
