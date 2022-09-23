@@ -17,6 +17,7 @@ import {
     getDexVolumeSeries,
     ITvlSeriesData,
     IVolumeSeriesData,
+    seriesDatum,
 } from '../../../utils/functions/getDexSeriesData';
 
 export default function GraphContainer() {
@@ -71,6 +72,34 @@ export default function GraphContainer() {
             })
             .catch(console.log);
     }, []);
+
+    const formattedTvlData = useMemo(() => {
+        if (tvlSeriesData) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            return tvlSeriesData.series.map((item: seriesDatum) => {
+                return {
+                    time: new Date(item.time * 1000),
+                    value: item.total,
+                };
+            });
+        } else {
+            return [];
+        }
+    }, [tvlSeriesData]);
+
+    const formattedVolumeData = useMemo(() => {
+        if (volumeSeriesData) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            return volumeSeriesData.series.map((item: seriesDatum) => {
+                return {
+                    time: new Date(item.time * 1000),
+                    value: item.total,
+                };
+            });
+        } else {
+            return [];
+        }
+    }, [volumeSeriesData]);
 
     // const oneDayVolumeData = useTransformedVolumeData(
     //     chartData?.filter(
@@ -137,33 +166,19 @@ export default function GraphContainer() {
         }
     }, [liquidityHover, protocolData]);
 
-    const formattedTvlData = useMemo(() => {
-        if (tvlData) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            return tvlData.map((day: any) => {
-                return {
-                    time: new Date(day.time), // new Date(day.time * 1000),
-                    value: day.value,
-                };
-            });
-        } else {
-            return [];
-        }
-    }, [tvlData]);
-
-    const formattedVolumeData = useMemo(() => {
-        if (volumeData) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            return volumeData.map((day: any) => {
-                return {
-                    time: new Date(day.time),
-                    value: day.value,
-                };
-            });
-        } else {
-            return [];
-        }
-    }, [volumeData]);
+    // const formattedTvlData = useMemo(() => {
+    //     if (tvlData) {
+    //         // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    //         return tvlData.map((day: any) => {
+    //             return {
+    //                 time: new Date(day.time), // new Date(day.time * 1000),
+    //                 value: day.value,
+    //             };
+    //         });
+    //     } else {
+    //         return [];
+    //     }
+    // }, [tvlData]);
 
     const setChartDataValues = (_volumeWindow: ChartDataTimeframe) => {
         setVolumeWindow(_volumeWindow);

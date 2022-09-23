@@ -14,7 +14,7 @@ import { formatDollarAmountAxis } from '../../../utils/numbers';
 
 interface AreaChartProps {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    data: any[];
+    data: any[] | undefined;
     setValue?: Dispatch<SetStateAction<number | undefined>>; // used for value on hover
     setLabel?: Dispatch<SetStateAction<string | undefined>>; // used for value on hover
     value?: number;
