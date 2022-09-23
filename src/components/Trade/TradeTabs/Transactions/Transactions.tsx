@@ -236,7 +236,7 @@ export default function Transactions(props: TransactionsProps) {
                             }
                         })
                         .catch(console.log);
-                }, 15000);
+                }, 60000);
             },
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             onClose: (event: any) => console.log({ event }),
