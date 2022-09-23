@@ -28,12 +28,7 @@ interface SnackbarPropsIF {
 
 // React functional component
 export default function SnackbarComponent(props: SnackbarPropsIF) {
-    const {
-        openSnackbar,
-        setOpenSnackbar,
-        children,
-        severity
-    } = props;
+    const { openSnackbar, setOpenSnackbar, children, severity } = props;
 
     const handleClose = (event?: SyntheticEvent | Event, reason?: string) => {
         if (reason === 'clickaway') {

@@ -8,9 +8,11 @@ import {
     setPositionsByUser,
     setChangesByUser,
     setChangesByPool,
-    CandleData,
-    setCandles,
-    addCandles,
+    // addSwapsByUser,
+    // addSwapsByPool,
+    // CandleData,
+    // setCandles,
+    // addCandles,
     setLiquidity,
     setPoolVolumeSeries,
     setPoolTvlSeries,
@@ -18,6 +20,8 @@ import {
     addPositionsByPool,
     setLimitOrdersByUser,
     setLimitOrdersByPool,
+    CandlesByPoolAndDuration,
+    CandleData,
     ILimitOrderState,
     // ITransaction,
     addChangesByUser,
@@ -55,7 +59,6 @@ import './App.css';
 import { useAppDispatch, useAppSelector } from '../utils/hooks/reduxToolkit';
 import { defaultTokens } from '../utils/data/defaultTokens';
 import initializeUserLocalStorage from './functions/initializeUserLocalStorage';
-import TokenPage from '../pages/TokenPage/TokenPage';
 import { TokenIF, TokenListIF, PositionIF } from '../utils/interfaces/exports';
 import { fetchTokenLists } from './functions/fetchTokenLists';
 import {
@@ -69,7 +72,6 @@ import {
     setPrimaryQuantityRange,
     setSimpleRangeWidth,
 } from '../utils/state/tradeDataSlice';
-import PoolPage from '../pages/PoolPage/PoolPage';
 import {
     //  memoizeQuerySpotPrice,
     querySpotPrice,
@@ -103,6 +105,7 @@ import { getTvlSeries } from './functions/getTvlSeries';
 import Chat from './components/Chat/Chat';
 import GlobalModal from './components/GlobalModal/GlobalModal';
 import { memoizeTokenPrice } from './functions/fetchTokenPrice';
+import ChatPanel from '../components/Chat/ChatPanel';
 import { useTokenUniverse } from './hooks/useTokenUniverse';
 import { getPositionData } from './functions/getPositionData';
 import { getLimitOrderData } from './functions/getLimitOrderData';
@@ -149,6 +152,12 @@ export default function App() {
     const tokenMap = useTokenMap();
 
     const location = useLocation();
+
+    const [candleData, setCandleData] = useState<CandlesByPoolAndDuration | undefined>();
+
+    useEffect(() => {
+        if (candleData) console.log({ candleData });
+    }, [candleData]);
 
     // custom hook to manage chain the app is using
     // `chainData` is data on the current chain retrieved from our SDK
@@ -262,11 +271,14 @@ export default function App() {
 
     // current configurations of trade as specified by the user
     const tradeData = useAppSelector((state) => state.tradeData);
+    const currentPoolInfo = tradeData;
 
     // tokens specifically imported by the end user
     const [importedTokens, setImportedTokens] = useState<TokenIF[]>(defaultTokens);
     // all tokens from active token lists
     const [searchableTokens, setSearchableTokens] = useState<TokenIF[]>(defaultTokens);
+
+    const [limitRate, setLimitRate] = useState<string>(tradeData.limitPrice);
 
     // prevent multiple fetch requests to external URIs for token lists
     const [needTokenLists, setNeedTokenLists] = useState(true);
@@ -923,25 +935,32 @@ export default function App() {
                             const candles = json?.data;
 
                             if (candles) {
-                                Promise.all(candles.map(getCandleData)).then((updatedCandles) => {
-                                    if (
-                                        JSON.stringify(graphData.candlesForAllPools.pools) !==
-                                        JSON.stringify(updatedCandles)
-                                    ) {
-                                        dispatch(
-                                            setCandles({
-                                                pool: {
-                                                    baseAddress: baseTokenAddress.toLowerCase(),
-                                                    quoteAddress: quoteTokenAddress.toLowerCase(),
-                                                    poolIdx: chainData.poolIndex,
-                                                    network: chainData.chainId,
-                                                },
-                                                duration: activePeriod,
-                                                candles: updatedCandles,
-                                            }),
-                                        );
-                                    }
-                                });
+                                // Promise.all(candles.map(getCandleData)).then((updatedCandles) => {
+                                if (JSON.stringify(candleData) !== JSON.stringify(candles)) {
+                                    setCandleData({
+                                        pool: {
+                                            baseAddress: baseTokenAddress.toLowerCase(),
+                                            quoteAddress: quoteTokenAddress.toLowerCase(),
+                                            poolIdx: chainData.poolIndex,
+                                            network: chainData.chainId,
+                                        },
+                                        duration: activePeriod,
+                                        candles: candles,
+                                    });
+                                    // dispatch(
+                                    //     setCandles({
+                                    //         pool: {
+                                    //             baseAddress: baseTokenAddress.toLowerCase(),
+                                    //             quoteAddress: quoteTokenAddress.toLowerCase(),
+                                    //             poolIdx: chainData.poolIndex,
+                                    //             network: chainData.chainId,
+                                    //         },
+                                    //         duration: activePeriod,
+                                    //         candles: candles,
+                                    //     }),
+                                    // );
+                                }
+                                // });
                             }
                         })
                         .catch(console.log);
@@ -1054,25 +1073,61 @@ export default function App() {
     );
 
     useEffect(() => {
-        if (candlesMessage !== null) {
+        if (candlesMessage) {
             const lastMessageData = JSON.parse(candlesMessage.data).data;
-            if (lastMessageData) {
-                // console.log({ lastMessageData });
-                Promise.all(lastMessageData.map(getCandleData)).then((updatedCandles) => {
-                    // console.log({ updatedCandles });
-                    dispatch(
-                        addCandles({
-                            pool: {
-                                baseAddress: baseTokenAddress,
-                                quoteAddress: quoteTokenAddress,
-                                poolIdx: chainData.poolIndex,
-                                network: chainData.chainId,
-                            },
-                            duration: activePeriod,
-                            candles: updatedCandles,
-                        }),
+            console.log({ lastMessageData });
+            if (lastMessageData && candleData) {
+                const newCandles: CandleData[] = [];
+                const updatedCandles: CandleData[] = candleData.candles;
+
+                for (let index = 0; index < lastMessageData.length; index++) {
+                    const messageCandle = lastMessageData[index];
+                    const indexOfExistingCandle = candleData.candles.findIndex(
+                        (savedCandle) => savedCandle.time === messageCandle.time,
                     );
-                });
+
+                    if (indexOfExistingCandle === -1) {
+                        newCandles.push(messageCandle);
+                    } else if (
+                        JSON.stringify(candleData.candles[indexOfExistingCandle]) !==
+                        JSON.stringify(messageCandle)
+                    ) {
+                        updatedCandles[indexOfExistingCandle] = messageCandle;
+                    }
+                }
+                console.log({ newCandles });
+                const newCandleData: CandlesByPoolAndDuration = {
+                    pool: candleData.pool,
+                    duration: candleData.duration,
+                    candles: newCandles.concat(updatedCandles),
+                };
+                setCandleData(newCandleData);
+                // setCandleData((savedCandles) => {
+                //     // console.log({ savedCandles });
+                //     if (newCandles && savedCandles) {
+                //         const newCandleData: CandlesByPoolAndDuration = {
+                //             pool: savedCandles.pool,
+                //             duration: savedCandles.duration,
+                //             candles: savedCandles.candles.concat(newCandles),
+                //         };
+                //         return newCandleData;
+                //     } else {
+                //         return savedCandles;
+                //     }
+                // });
+                // dispatch(
+                //     addCandles({
+                //         pool: {
+                //             baseAddress: baseTokenAddress,
+                //             quoteAddress: quoteTokenAddress,
+                //             poolIdx: chainData.poolIndex,
+                //             network: chainData.chainId,
+                //         },
+                //         duration: activePeriod,
+                //         candles: lastMessageData,
+                //     }),
+                // );
+                // });
             }
             // console.log({ lastMessageData });
         }
@@ -1317,9 +1372,9 @@ export default function App() {
     //     return swap;
     // };
 
-    const getCandleData = async (candle: CandleData): Promise<CandleData> => {
-        return candle;
-    };
+    // const getCandleData = async (candle: CandleData): Promise<CandleData> => {
+    //     return candle;
+    // };
 
     useEffect(() => {
         if (isUserLoggedIn && account) {
@@ -1658,6 +1713,8 @@ export default function App() {
         closeGlobalModal: closeGlobalModal,
 
         pendingTransactions: pendingTransactions,
+        limitRate: limitRate,
+        setLimitRate: setLimitRate,
     };
 
     // props for <Range/> React element
@@ -1734,6 +1791,7 @@ export default function App() {
 
     const [selectedOutsideTab, setSelectedOutsideTab] = useState(0);
     const [outsideControl, setOutsideControl] = useState(false);
+    const [chatStatus, setChatStatus] = useState(false);
 
     // props for <Sidebar/> React element
     const sidebarProps = {
@@ -1764,6 +1822,9 @@ export default function App() {
     const analyticsProps = {
         setSelectedOutsideTab: setSelectedOutsideTab,
         setOutsideControl: setOutsideControl,
+        favePools: favePools,
+        removePoolFromFaves: removePoolFromFaves,
+        addPoolToFaves: addPoolToFaves,
     };
 
     function updateDenomIsInBase() {
@@ -1866,6 +1927,7 @@ export default function App() {
                                     isUserLoggedIn={isUserLoggedIn}
                                     crocEnv={crocEnv}
                                     provider={provider}
+                                    candleData={candleData}
                                     baseTokenAddress={baseTokenAddress}
                                     quoteTokenAddress={quoteTokenAddress}
                                     baseTokenBalance={baseTokenBalance}
@@ -1890,6 +1952,8 @@ export default function App() {
                                     expandTradeTable={expandTradeTable}
                                     setExpandTradeTable={setExpandTradeTable}
                                     tokenMap={tokenMap}
+                                    setLimitRate={setLimitRate}
+                                    limitRate={limitRate}
                                     favePools={favePools}
                                     addPoolToFaves={addPoolToFaves}
                                     removePoolFromFaves={removePoolFromFaves}
@@ -1902,6 +1966,7 @@ export default function App() {
                                     openGlobalModal={openGlobalModal}
                                     closeGlobalModal={closeGlobalModal}
                                     pendingTransactions={pendingTransactions}
+                                    poolPriceNonDisplay={undefined}
                                 />
                             }
                         >
@@ -1914,8 +1979,6 @@ export default function App() {
                             <Route path='edit/' element={<Navigate to='/trade/market' replace />} />
                         </Route>
                         <Route path='analytics' element={<Analytics {...analyticsProps} />} />
-                        <Route path='tokens/:address' element={<TokenPage />} />
-                        <Route path='pools/:address' element={<PoolPage />} />
                         <Route
                             path='app/chat'
                             element={
@@ -2018,15 +2081,41 @@ export default function App() {
                 </main>
                 {snackbarContent}
             </div>
+
             <div className='footer_container'>
                 {currentLocation !== '/' && (
-                    <PageFooter lastBlockNumber={lastBlockNumber} userIsOnline={userIsOnline} />
+                    <PageFooter
+                        lastBlockNumber={lastBlockNumber}
+                        userIsOnline={userIsOnline}
+                        favePools={favePools}
+                        currentPool={currentPoolInfo}
+                        setChatStatus={setChatStatus}
+                        chatStatus={chatStatus}
+                    />
+                )}
+                {currentLocation !== '/app/chat' && (
+                    <Chat
+                        ensName={ensName}
+                        connectedAccount={account ? account : ''}
+                        fullScreen={false}
+                    />
                 )}
                 {currentLocation !== '/app/chat' && currentLocation !== '/' && (
                     <Chat
                         ensName={ensName}
                         connectedAccount={account ? account : ''}
                         fullScreen={false}
+                    />
+                )}
+
+                {currentLocation !== '/app/chat' && (
+                    <ChatPanel
+                        chatStatus={chatStatus}
+                        onClose={() => {
+                            console.error('Function not implemented.');
+                        }}
+                        favePools={favePools}
+                        currentPool={currentPoolInfo}
                     />
                 )}
             </div>

@@ -1,12 +1,5 @@
 // START: Import React and Dongles
-import {
-    cloneElement,
-    Children,
-    ReactElement,
-    ReactNode,
-    useState,
-    useEffect
-} from 'react';
+import { cloneElement, Children, ReactElement, ReactNode, useState, useEffect } from 'react';
 
 // START: Import Local Files
 import styles from './Carousel.module.css';

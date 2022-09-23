@@ -20,10 +20,10 @@ import styles from './TradeCharts.module.css';
 import printDomToImage from '../../../utils/functions/printDomToImage';
 import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
 import {
-    // eslint-disable-next-line
-    tradeData as TradeDataIF,
+    // tradeData as TradeDataIF,
     toggleDidUserFlipDenom,
     setActiveChartPeriod,
+    targetData,
 } from '../../../utils/state/tradeDataSlice';
 import { CandleData, CandlesByPoolAndDuration } from '../../../utils/state/graphDataSlice';
 import { usePoolChartData } from '../../../state/pools/hooks';
@@ -45,6 +45,10 @@ interface TradeChartsPropsIF {
     setFullScreenChart: Dispatch<SetStateAction<boolean>>;
     changeState: (isOpen: boolean | undefined, candleData: CandleData | undefined) => void;
     candleData: CandlesByPoolAndDuration | undefined;
+    targetData: targetData[] | undefined;
+    limitPrice: string | undefined;
+    setLimitRate: React.Dispatch<React.SetStateAction<string>>;
+    limitRate: string;
     favePools: PoolIF[];
     addPoolToFaves: (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) => void;
     removePoolFromFaves: (
@@ -53,6 +57,57 @@ interface TradeChartsPropsIF {
         chainId: string,
         poolId: number,
     ) => void;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    liquidityData: any;
+    isAdvancedModeActive: boolean | undefined;
+    simpleRangeWidth: number | undefined;
+    pinnedMinPriceDisplayTruncated: number | undefined;
+    pinnedMaxPriceDisplayTruncated: number | undefined;
+    spotPriceDisplay: string | undefined;
+    upBodyColor: string;
+    upBorderColor: string;
+    downBodyColor: string;
+    downBorderColor: string;
+    baseTokenAddress: string;
+    poolPriceNonDisplay: number | undefined;
+}
+
+export interface CandleChartData {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    date: any;
+    open: number;
+    high: number;
+    low: number;
+    close: number;
+    time: number;
+    allSwaps: unknown;
+}
+
+export interface TvlChartData {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    time: any;
+    value: number;
+}
+
+export interface VolumeChartData {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    time: any;
+    value: number;
+}
+export interface LiquidityData {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    activeLiq: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    upperBoundPriceDecimalCorrected: any;
+}
+
+export interface LiqSnap {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    activeLiq: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    pinnedMaxPriceDisplayTruncated: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    pinnedMinPriceDisplayTruncated: any;
 }
 
 // React functional component
@@ -496,6 +551,38 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
 
     // END OF TIME FRAME CONTENT--------------------------------------------------------------
 
+    // CURRENT DATA INFO----------------------------------------------------------------
+    const [currentData, setCurrentData] = useState<CandleChartData>();
+
+    function formattedCurrentData(data: number): string {
+        return data
+            ? data.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              })
+            : '';
+    }
+
+    const currentDataInfo = (
+        <div className={styles.current_data_info}>
+            {denomInBase ? tradeData.baseToken.symbol : tradeData.quoteToken.symbol} /{' '}
+            {denomInBase ? tradeData.quoteToken.symbol : tradeData.baseToken.symbol}·{' '}
+            {activeTimeFrame} ·{' '}
+            {currentData
+                ? 'O: ' +
+                  formattedCurrentData(currentData.open) +
+                  ' H: ' +
+                  formattedCurrentData(currentData.high) +
+                  ' L: ' +
+                  formattedCurrentData(currentData.low) +
+                  ' C: ' +
+                  formattedCurrentData(currentData.close)
+                : ''}
+        </div>
+    );
+
+    // END OF CURRENT DATA INFO--------------------------------------------------------------
+
     // CANDLE STICK DATA---------------------------------------------------
     const chartData = usePoolChartData('0x8ad599c3a0ff1de082011efddc58f1908eb6e6d8'); // ETH/USDC pool address
 
@@ -558,6 +645,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                 {graphSettingsContent}
                 {tokenInfo}
                 {timeFrameContent}
+                {currentDataInfo}
                 {/* {liquidityTypeContent} */}
             </div>
             {graphIsLoading ? (
@@ -572,7 +660,26 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                         priceData={props.candleData}
                         changeState={props.changeState}
                         chartItemStates={chartItemStates}
+                        targetData={props.targetData}
+                        limitPrice={props.limitPrice}
+                        setLimitRate={props.setLimitRate}
+                        limitRate={props.limitRate}
                         denomInBase={denomInBase}
+                        liquidityData={props.liquidityData}
+                        isAdvancedModeActive={props.isAdvancedModeActive}
+                        simpleRangeWidth={props.simpleRangeWidth}
+                        pinnedMinPriceDisplayTruncated={props.pinnedMinPriceDisplayTruncated}
+                        pinnedMaxPriceDisplayTruncated={props.pinnedMaxPriceDisplayTruncated}
+                        spotPriceDisplay={props.spotPriceDisplay}
+                        truncatedPoolPrice={parseFloat(truncatedPoolPrice)}
+                        setCurrentData={setCurrentData}
+                        upBodyColor={props.upBodyColor}
+                        upBorderColor={props.upBorderColor}
+                        downBodyColor={props.downBodyColor}
+                        downBorderColor={props.downBorderColor}
+                        baseTokenAddress={props.baseTokenAddress}
+                        chainId={chainId}
+                        poolPriceNonDisplay={props.poolPriceNonDisplay}
                     />
                 </div>
             )}

@@ -1,0 +1,78 @@
+.avatar_image {
+    max-width: 25px;
+    max-height: 25px;
+    border-radius: 50%;
+    background: var(--title-gradient);
+    padding: 2px;
+    flex-grow: 1;
+    align-self: end;
+    vertical-align: middle;
+    margin: 10px;
+
+}
+
+.message_date {
+    width: 50px;
+    height: 14px;
+
+    /* extra small */
+
+    font-family: 'Lexend Deca';
+    font-style: normal;
+    font-weight: 300;
+    font-size: calc(1vw - 8px);
+    line-height: 12px;
+    align-self: flex-end;
+
+    /* text/grey dark */
+
+    color: rgba(235, 235, 255, 0.25);
+
+    /* Inside auto layout */
+    order: 0;
+
+}
+
+.message {
+
+    min-width: 158px;
+    min-height: 45px;
+
+    bottom: -100%;
+
+    white-space: pre-line;
+    font-family: 'Lexend Deca';
+    font-style: normal;
+    font-weight: 300;
+    font-size: calc(1vw - 2px);
+    line-height: 15px;
+    flex-grow: 5px !important;
+    margin: 10px;
+    height: 100%;
+    width: 100%;
+
+    font-family: 'Lexend Deca';
+    font-style: normal;
+    font-weight: 300;
+    font-size: calc(1vw - 2px);
+    line-height: 15px;
+    color: #EBEBFF;
+    white-space: pre-line;
+    align-self: stretch;
+}
+
+.right_image_box {
+    display: flex;
+    right: 0%;
+    float: right;
+    vertical-align: middle;
+}
+
+.sent_message_body {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    padding: 5px;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+}

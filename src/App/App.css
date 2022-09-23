@@ -4,7 +4,7 @@
     box-sizing: border-box;
     padding: 0;
     margin: 0;
-    scroll-behavior: smooth;
+     scroll-behavior: smooth; 
     font-family: var(--font-family);
     font-weight: 200;
 

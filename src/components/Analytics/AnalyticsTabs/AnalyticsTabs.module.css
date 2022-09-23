@@ -14,7 +14,7 @@
     align-items: center;
 }
 .tab_navs {
-    max-width: 80%;
+    max-width: 100%;
     width: 50%;
     display: flex;
     justify-content: space-between;
@@ -55,7 +55,6 @@ ul.tab_navs {
     flex-direction: row;
     align-items: center;
     background-color: var(--dark3);
-    width: 100%;
 }
 
 .search__box {

@@ -1,0 +1,18 @@
+.room_body {
+    width: 90%;
+}
+
+.dropdown {
+    outline: none;
+    background-color: transparent;
+    border: none;
+    color: #EBEBFF;
+    width: 100%;
+}
+
+.dropdown_item {
+    outline: none;
+    background-color: #1E2734;
+    border: none;
+    color: #EBEBFF;
+}

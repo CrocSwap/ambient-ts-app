@@ -65,7 +65,7 @@ export default function BarChart(props: BarData) {
             return [
                 {
                     x: xScale(value),
-                    y: -1,
+                    y: point.y,
                 },
             ];
         };
@@ -124,8 +124,6 @@ export default function BarChart(props: BarData) {
                 selection.enter().style('fill', '#7371FC');
             });
 
-        const gridlines = d3fc.annotationSvgGridline().xScale(xScale).yScale(yScale);
-
         const crosshair = d3fc
             .annotationSvgCrosshair()
             .xLabel('')
@@ -136,15 +134,11 @@ export default function BarChart(props: BarData) {
                     .selectAll('.point>path')
                     .attr('transform', 'scale(0.2)')
                     .style('fill', 'white');
-                selection
-                    .enter()
-                    .select('g.annotation-line.horizontal')
-                    .attr('visibility', 'hidden');
             });
 
         const multi = d3fc
             .seriesSvgMulti()
-            .series([gridlines, lineSeries, crosshair])
+            .series([lineSeries, crosshair])
             .mapping((data: any, index: any, series: any) => {
                 if (data.loading) {
                     return [];
