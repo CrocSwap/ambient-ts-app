@@ -1936,6 +1936,7 @@ export default function App() {
                             path='trade'
                             element={
                                 <Trade
+                                    isUserLoggedIn={isUserLoggedIn}
                                     crocEnv={crocEnv}
                                     provider={provider}
                                     baseTokenAddress={baseTokenAddress}

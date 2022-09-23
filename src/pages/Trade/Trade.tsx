@@ -18,6 +18,7 @@ import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 
 // interface for React functional component props
 interface TradePropsIF {
+    isUserLoggedIn: boolean;
     crocEnv: CrocEnv | undefined;
     provider: ethers.providers.Provider | undefined;
     baseTokenAddress: string;
@@ -66,6 +67,7 @@ interface TradePropsIF {
 // React functional component
 export default function Trade(props: TradePropsIF) {
     const {
+        isUserLoggedIn,
         crocEnv,
         chainId,
         chainData,
@@ -230,6 +232,7 @@ export default function Trade(props: TradePropsIF) {
                     >
                         <div className={!showChartAndNotTab ? styles.hide : ''}>
                             <TradeTabs2
+                                isUserLoggedIn={isUserLoggedIn}
                                 crocEnv={crocEnv}
                                 provider={provider}
                                 account={props.account}

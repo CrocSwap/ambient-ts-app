@@ -22,6 +22,7 @@ import { CandleData } from '../../../utils/state/graphDataSlice';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 
 interface ITabsProps {
+    isUserLoggedIn: boolean;
     crocEnv: CrocEnv | undefined;
     provider: ethers.providers.Provider | undefined;
     account: string;
@@ -60,6 +61,7 @@ interface ITabsProps {
 
 export default function TradeTabs2(props: ITabsProps) {
     const {
+        isUserLoggedIn,
         crocEnv,
         chainId,
         chainData,
@@ -93,7 +95,7 @@ export default function TradeTabs2(props: ITabsProps) {
     } = props;
 
     const graphData = useAppSelector((state) => state?.graphData);
-    const userData = useAppSelector((state) => state?.userData);
+    // const userData = useAppSelector((state) => state?.userData);
 
     const userPositions = graphData?.positionsByUser?.positions;
     const userChanges = graphData?.changesByUser?.changes;
@@ -110,7 +112,8 @@ export default function TradeTabs2(props: ITabsProps) {
         setHasInitialized(false);
     }, [
         account,
-        userData.isLoggedIn,
+        isUserLoggedIn,
+        // userData.isLoggedIn,
         userChangesLength,
         userLimitOrdersLength,
         userPositionsLength,
@@ -162,6 +165,7 @@ export default function TradeTabs2(props: ITabsProps) {
 
     // Props for <Ranges/> React Element
     const rangesProps = {
+        isUserLoggedIn: isUserLoggedIn,
         crocEnv: crocEnv,
         chainData: chainData,
         baseTokenBalance: baseTokenBalance,
