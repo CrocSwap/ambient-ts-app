@@ -230,12 +230,7 @@ export default function Transactions(props: TransactionsProps) {
                     })
                         .then((poolChangesJsonData) => {
                             if (poolChangesJsonData) {
-                                dispatch(
-                                    setChangesByPool({
-                                        dataReceived: true,
-                                        changes: poolChangesJsonData,
-                                    }),
-                                );
+                                dispatch(addChangesByPool(poolChangesJsonData));
                             }
                         })
                         .catch(console.log);
