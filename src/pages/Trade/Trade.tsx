@@ -14,6 +14,7 @@ import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { tradeData as TradeDataIF } from '../../utils/state/tradeDataSlice';
 import { CandleData } from '../../utils/state/graphDataSlice';
 import { PoolIF, TokenIF, TokenPairIF } from '../../utils/interfaces/exports';
+import { useUrlParams } from './useUrlParams';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 
 // interface for React functional component props
@@ -60,6 +61,7 @@ interface TradePropsIF {
     openGlobalModal: (content: React.ReactNode) => void;
 
     closeGlobalModal: () => void;
+    isInitialized: boolean;
 }
 
 // React functional component
@@ -81,7 +83,10 @@ export default function Trade(props: TradePropsIF) {
         favePools,
         addPoolToFaves,
         removePoolFromFaves,
+        isInitialized
     } = props;
+
+    useUrlParams(chainId, isInitialized);
 
     const [isCandleSelected, setIsCandleSelected] = useState<boolean | undefined>();
     const [transactionFilter, setTransactionFilter] = useState<CandleData>();

@@ -1954,6 +1954,7 @@ export default function App() {
                                     setCurrentPositionActive={setCurrentPositionActive}
                                     openGlobalModal={openGlobalModal}
                                     closeGlobalModal={closeGlobalModal}
+                                    isInitialized={isInitialized}
                                 />
                             }
                         >
