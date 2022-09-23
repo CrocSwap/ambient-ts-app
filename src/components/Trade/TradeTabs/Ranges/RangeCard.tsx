@@ -15,6 +15,7 @@ import Value from '../../../Global/Tabs/Value/Value';
 import { formatAmount } from '../../../../utils/numbers';
 
 interface RangeCardProps {
+    isUserLoggedIn: boolean;
     crocEnv: CrocEnv | undefined;
     chainData: ChainSpec;
     provider: ethers.providers.Provider | undefined;
@@ -42,6 +43,7 @@ interface RangeCardProps {
 
 export default function RangeCard(props: RangeCardProps) {
     const {
+        // isUserLoggedIn,
         crocEnv,
         chainData,
         provider,

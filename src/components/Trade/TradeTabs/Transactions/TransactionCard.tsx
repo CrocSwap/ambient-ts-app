@@ -79,6 +79,11 @@ export default function TransactionCard(props: TransactionProps) {
 
     const [baseFlowDisplay, setBaseFlowDisplay] = useState<string | undefined>(undefined);
     const [quoteFlowDisplay, setQuoteFlowDisplay] = useState<string | undefined>(undefined);
+
+    useEffect(() => {
+        setBaseFlowDisplay(undefined);
+        setQuoteFlowDisplay(undefined);
+    }, [tx.tx]);
     const txDomId = tx.id === currentTxActiveInTransactions ? `tx-${tx.id}` : '';
 
     function scrollToDiv() {

@@ -15,6 +15,7 @@ import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 
 // interface for props
 interface RangesPropsIF {
+    isUserLoggedIn: boolean;
     crocEnv: CrocEnv | undefined;
     chainData: ChainSpec;
     provider: ethers.providers.Provider | undefined;
@@ -42,6 +43,7 @@ interface RangesPropsIF {
 // react functional component
 export default function Ranges(props: RangesPropsIF) {
     const {
+        isUserLoggedIn,
         crocEnv,
         chainData,
         provider,
@@ -104,6 +106,7 @@ export default function Ranges(props: RangesPropsIF) {
             >
                 {sortedPositions.map((position, idx) => (
                     <RangeCard
+                        isUserLoggedIn={isUserLoggedIn}
                         crocEnv={crocEnv}
                         chainData={chainData}
                         provider={provider}
