@@ -151,7 +151,8 @@ export default function Chart(props: ChartData) {
     const [zoomUtils, setZoomUtils] = useState<any>();
     const [zoomStatus, setZoomStatus] = useState();
     const [scaleData, setScaleData] = useState<any>();
-    const [dragType, setDragType] = useState<any>();
+    const [dragRange, setDragRange] = useState<any>();
+    const [dragLimit, setDragLimit] = useState<any>();
 
     const valueFormatter = d3.format('.5f');
 
@@ -208,14 +209,34 @@ export default function Chart(props: ChartData) {
             .style('visibility', 'visible')
             .style('font-size', '13px');
 
-        d3.select(d3Container.current)
-            .select('.targets')
-            .select('.annotation-line')
-            .on('mouseover', (event: any) => {
-                if (!location.pathname.includes('market')) {
+        if (location.pathname.includes('range')) {
+            d3.select(d3Container.current).select('.targets').style('visibility', 'visible');
+
+            d3.select(d3Container.current)
+                .select('.targets')
+                .select('.annotation-line')
+                .on('mouseover', (event: any) => {
                     d3.select(event.currentTarget).select('.detector').style('cursor', 'ns-resize');
-                }
-            });
+                });
+
+            d3.select(d3Container.current).select('.market').style('visibility', 'hidden');
+            d3.select(d3Container.current).select('.limit').style('visibility', 'hidden');
+        } else if (location.pathname.includes('limit')) {
+            d3.select(d3Container.current).select('.limit').style('visibility', 'visible');
+            d3.select(d3Container.current)
+                .select('.limit')
+                .select('.annotation-line')
+                .on('mouseover', (event: any) => {
+                    d3.select(event.currentTarget).select('.detector').style('cursor', 'ns-resize');
+                });
+
+            d3.select(d3Container.current).select('.market').style('visibility', 'hidden');
+            d3.select(d3Container.current).select('.targets').style('visibility', 'hidden');
+        } else if (location.pathname.includes('market')) {
+            d3.select(d3Container.current).select('.market').style('visibility', 'visible');
+            d3.select(d3Container.current).select('.limit').style('visibility', 'hidden');
+            d3.select(d3Container.current).select('.targets').style('visibility', 'hidden');
+        }
     }, [location]);
 
     async function addHorizontalLineArea() {
@@ -223,24 +244,25 @@ export default function Chart(props: ChartData) {
         await d3.select(d3PlotArea.current).select('.targets').append('rect').attr('id', 'rect');
         const max = ranges.find((item) => item.name === 'Max')?.value as number;
         const min = ranges.find((item) => item.name === 'Min')?.value as number;
-        if (scaleData && location.pathname.includes('range')) {
-            d3.select(d3Container.current)
-                .select('.targets')
-                .select('#rect')
-                .attr('fill', '#7371FC1A')
-                .attr('width', '100%')
-                .attr('opacity', '0.7')
-                .attr('cursor', 'default')
-                .attr(
-                    'height',
-                    Math.abs(scaleData.yScale(ranges[1].value) - scaleData.yScale(ranges[0].value)),
-                )
-                .attr('y', min > max ? scaleData.yScale(min) : scaleData.yScale(max));
-        }
+
+        d3.select(d3Container.current)
+            .select('.targets')
+            .select('#rect')
+            .attr('fill', '#7371FC1A')
+            .attr('width', '100%')
+            .attr('opacity', '0.7')
+            .attr('cursor', 'default')
+            .attr(
+                'height',
+                Math.abs(scaleData.yScale(ranges[1].value) - scaleData.yScale(ranges[0].value)),
+            )
+            .attr('y', min > max ? scaleData.yScale(min) : scaleData.yScale(max));
     }
 
     useEffect(() => {
-        addHorizontalLineArea();
+        if (scaleData !== undefined) {
+            addHorizontalLineArea();
+        }
     }, [ranges, zoomStatus, drawControl]);
 
     // Scale
@@ -738,15 +760,19 @@ export default function Chart(props: ChartData) {
             });
 
             const dragLimit = d3.drag().on('drag', function (event) {
-                const newValue = scaleData.yScale.invert(d3.pointer(event)[1] - 182);
+                const newValue = scaleData.yScale.invert(d3.pointer(event)[1] - 215);
                 setLimit(() => {
                     return [{ name: 'Limit', value: newValue }];
                 });
                 render();
             });
 
-            setDragType(() => {
-                return location.pathname.includes('limit') ? dragLimit : dragRange;
+            setDragRange(() => {
+                return dragRange;
+            });
+
+            setDragLimit(() => {
+                return dragLimit;
             });
         }
     }, [spotPriceDisplay, location, scaleData, isAdvancedModeActive, dragControl]);
@@ -827,10 +853,7 @@ export default function Chart(props: ChartData) {
                 .nodes();
 
             nodes.forEach((res, index) => {
-                if (
-                    location.pathname.includes('limit') ||
-                    index == (max > min && !isAdvancedModeActive ? 1 : 0)
-                ) {
+                if (index == (max > min && !isAdvancedModeActive ? 1 : 0)) {
                     d3.select(res)
                         .append('path')
                         .attr('d', triangle.size(100))
@@ -842,9 +865,9 @@ export default function Chart(props: ChartData) {
                         .style('transform', 'translate(8px, -5px)');
                 }
             });
-        } else {
+
             d3.select(d3PlotArea.current)
-                .select('.targets')
+                .select('.market')
                 .select('.annotation-line')
                 .style('cursor', 'default');
         }
@@ -852,34 +875,20 @@ export default function Chart(props: ChartData) {
 
     useEffect(() => {
         addTriangle();
-    }, [dragControl]);
+    }, [dragControl, location]);
 
     // Line Rules
     useEffect(() => {
-        if (dragType !== undefined) {
-            if (location.pathname.includes('limit')) {
-                d3.select(d3Container.current)
-                    .select('.targets')
-                    .on('mouseover', (event: any) => {
-                        d3.select(event.currentTarget)
-                            // .select('.detector')
-                            .style('cursor', 'ns-resize');
-                        d3.select(event.currentTarget).select('line').style('cursor', 'ns-resize');
-                    })
-                    .call(dragType);
-            }
-
+        if (dragLimit !== undefined && dragRange !== undefined) {
             if (location.pathname.includes('range')) {
                 d3.select(d3Container.current)
                     .select('.targets')
                     .select('.horizontal')
                     .on('mouseover', (event: any) => {
-                        d3.select(event.currentTarget)
-                            // .select('.detector')
-                            .style('cursor', 'ns-resize');
+                        d3.select(event.currentTarget).style('cursor', 'ns-resize');
                         d3.select(event.currentTarget).select('line').style('cursor', 'ns-resize');
                     })
-                    .call(dragType);
+                    .call(dragRange);
 
                 d3.select(d3Container.current)
                     .select('.targets')
@@ -888,7 +897,7 @@ export default function Chart(props: ChartData) {
                         d3.select(event.currentTarget).style('cursor', 'ns-resize');
                         d3.select(event.currentTarget).select('line').style('cursor', 'ns-resize');
                     })
-                    .call(dragType);
+                    .call(dragRange);
 
                 d3.select(d3Container.current)
                     .select('.targets')
@@ -897,10 +906,22 @@ export default function Chart(props: ChartData) {
                         d3.select(event.currentTarget).style('cursor', 'ns-resize');
                         d3.select(event.currentTarget).select('line').style('cursor', 'ns-resize');
                     })
-                    .call(dragType);
+                    .call(dragRange);
+            }
+
+            if (location.pathname.includes('limit')) {
+                d3.select(d3Container.current)
+                    .select('.limit')
+                    .on('mouseover', (event: any) => {
+                        d3.select(event.currentTarget)
+                            // .select('.detector')
+                            .style('cursor', 'ns-resize');
+                        d3.select(event.currentTarget).select('line').style('cursor', 'ns-resize');
+                    })
+                    .call(dragLimit);
             }
         }
-    }, [dragType, parsedChartData?.period, location, horizontalLine]);
+    }, [dragLimit, dragRange, parsedChartData?.period, location, horizontalLine]);
 
     // Call drawChart()
     useEffect(() => {
@@ -910,13 +931,11 @@ export default function Chart(props: ChartData) {
             scaleData !== undefined &&
             zoomUtils !== undefined
         ) {
-            const targetData = location.pathname.includes('limit')
-                ? limit
-                : location.pathname.includes('range')
-                ? ranges
-                : location.pathname.includes('market')
-                ? market
-                : undefined;
+            const targetData = {
+                limit: limit,
+                ranges: ranges,
+                market: market,
+            };
 
             drawChart(
                 parsedChartData.chartData,
@@ -1005,7 +1024,7 @@ export default function Chart(props: ChartData) {
                 const yAxis = d3fc.axisRight().scale(scaleData.yScale);
 
                 const barSeries = d3fc
-                    .autoBandwidth(d3fc.seriesSvgBar())
+                    .seriesSvgBar()
                     .orient('horizontal')
                     .align('center')
                     .mainValue((d: any) => scaleData.liqScale.invert(parseFloat(d.activeLiq)))
@@ -1015,13 +1034,13 @@ export default function Chart(props: ChartData) {
                     .decorate((selection: any) => {
                         selection.select('.bar > path').style('fill', (d: any) => {
                             return d.upperBoundPriceDecimalCorrected > scaleData.barThreshold
-                                ? 'rgba(115, 113, 252, 0.4)'
-                                : 'rgba(205, 193, 255, 0.4)';
+                                ? 'rgba(115, 113, 252, 0.3)'
+                                : 'rgba(205, 193, 255, 0.3)';
                         });
                         selection.select('.bar > path').style('stroke', (d: any) => {
                             d.upperBoundPriceDecimalCorrected > scaleData.barThreshold
-                                ? 'rgba(115, 113, 252, 0.4)'
-                                : 'rgba(205, 193, 255, 0.4)';
+                                ? 'rgba(115, 113, 252, 0.3)'
+                                : 'rgba(205, 193, 255, 0.3)';
                         });
                     });
 
@@ -1139,6 +1158,9 @@ export default function Chart(props: ChartData) {
 
                 const candleJoin = d3fc.dataJoin('g', 'candle');
                 const targetsJoin = d3fc.dataJoin('g', 'targets');
+                const marketJoin = d3fc.dataJoin('g', 'market');
+                const limitJoin = d3fc.dataJoin('g', 'limit');
+
                 const ghostJoin = d3fc.dataJoin('g', 'ghostLines');
                 const barJoin = d3fc.dataJoin('g', 'bar');
                 const crosshairHorizontalJoin = d3fc.dataJoin('g', 'crosshairHorizontal');
@@ -1159,10 +1181,13 @@ export default function Chart(props: ChartData) {
                     barJoin(svg, [liquidityData.liqData]).call(barSeries);
                     candleJoin(svg, [chartData]).call(candlestick);
                     ghostJoin(svg, [liquidityData.liqSnapData]).call(ghostLines);
-                    await targetsJoin(svg, [targets]).call(horizontalLine);
+                    targetsJoin(svg, [targets.ranges]).call(horizontalLine);
+                    marketJoin(svg, [targets.market]).call(horizontalLine);
+                    limitJoin(svg, [targets.limit]).call(horizontalLine);
                     setDrawControl(event);
                     setDragControl(true);
                 });
+
                 d3.select(d3Xaxis.current).on('draw', function (event: any) {
                     d3.select(event.target).select('svg').call(xAxis);
                 });
@@ -1297,7 +1322,7 @@ export default function Chart(props: ChartData) {
                     props.setTargets(newTargetData);
                 }
             }
-        }, 1000);
+        }, 300);
 
         d3.select(d3Container.current)
             .select('.ghostLines')

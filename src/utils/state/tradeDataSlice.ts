@@ -142,9 +142,6 @@ export const tradeDataSlice = createSlice({
         setActiveChartPeriod: (state, action: PayloadAction<number>) => {
             state.activeChartPeriod = action.payload;
         },
-        setTargetData: (state, action: PayloadAction<targetData[]>) => {
-            state.targetData = action.payload;
-        },
         resetTokens: (state, action: PayloadAction<string>) => {
             if (action.payload === '0x5') {
                 state.tokenA = initialState.tokenA;
@@ -186,7 +183,6 @@ export const {
     setSimpleRangeWidth,
     setSlippageTolerance,
     setActiveChartPeriod,
-    setTargetData,
     resetTradeData,
     resetTokens,
     setPinnedMaxPrice,
