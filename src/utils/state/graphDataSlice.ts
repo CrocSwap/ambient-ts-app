@@ -397,14 +397,21 @@ export const graphDataSlice = createSlice({
             state.changesByPool = action.payload;
         },
         addChangesByPool: (state, action: PayloadAction<Array<ITransaction>>) => {
-            const swapTxToFind = action.payload[0].tx.toLowerCase();
-            const indexOfTx = state.changesByPool.changes
-                .map((item) => item.tx.toLowerCase())
-                .findIndex((tx) => tx === swapTxToFind);
-            if (indexOfTx === -1) {
-                state.changesByPool.changes = action.payload.concat(state.changesByPool.changes);
-            } else {
-                state.changesByPool.changes[indexOfTx] = action.payload[0];
+            for (let index = 0; index < action.payload.length; index++) {
+                const updatedTx = action.payload[index];
+                const txToFind = updatedTx.tx.toLowerCase();
+                const indexOfTxInState = state.changesByPool.changes
+                    .map((item) => item.tx.toLowerCase())
+                    .findIndex((tx) => tx === txToFind);
+                // console.log({ txToFind });
+                // console.log({ indexOfTxInState });
+                if (indexOfTxInState === -1) {
+                    state.changesByPool.changes = action.payload.concat(
+                        state.changesByPool.changes,
+                    );
+                } else {
+                    state.changesByPool.changes[indexOfTxInState] = action.payload[index];
+                }
             }
         },
         setLiquidity: (state, action: PayloadAction<LiquidityByPool>) => {
