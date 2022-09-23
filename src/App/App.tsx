@@ -20,6 +20,7 @@ import {
     setLimitOrdersByPool,
     ILimitOrderState,
     ITransaction,
+    addChangesByUser,
 } from '../utils/state/graphDataSlice';
 import { ethers } from 'ethers';
 import { useMoralis } from 'react-moralis';
@@ -1077,49 +1078,6 @@ export default function App() {
         }
     }, [candlesMessage]);
 
-    // const poolSwapsCacheSubscriptionEndpoint = useMemo(
-    //     () =>
-    //         wssGraphCacheServerDomain +
-    //         '/subscribe_pool_swaps?' +
-    //         new URLSearchParams({
-    //             base: baseTokenAddress.toLowerCase(),
-    //             quote: quoteTokenAddress.toLowerCase(),
-    //             poolIdx: chainData.poolIndex.toString(),
-    //             chainId: chainData.chainId,
-    //             addValue: 'true',
-    //             ensResolution: 'true',
-    //         }),
-    //     [baseTokenAddress, quoteTokenAddress, chainData.chainId],
-    // );
-
-    // const {
-    //     //  sendMessage,
-    //     lastMessage: lastPoolSwapsMessage,
-    //     //  readyState
-    // } = useWebSocket(
-    //     poolSwapsCacheSubscriptionEndpoint,
-    //     {
-    //         // share:  true,
-    //         onOpen: () => console.log('poolSwaps subscription opened'),
-    //         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    //         onClose: (event: any) => console.log({ event }),
-    //         // Will attempt to reconnect on all close events, such as server shutting down
-    //         shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
-    //     },
-    //     // only connect if base/quote token addresses are available
-    //     baseTokenAddress !== '' && quoteTokenAddress !== '',
-    // );
-
-    // useEffect(() => {
-    //     if (lastPoolSwapsMessage !== null) {
-    //         const lastMessageData = JSON.parse(lastPoolSwapsMessage.data).data;
-
-    //         if (lastMessageData) {
-    //             dispatch(addSwapsByPool(lastMessageData));
-    //         }
-    //     }
-    // }, [lastPoolSwapsMessage]);
-
     const userLiqChangesCacheSubscriptionEndpoint = useMemo(
         () =>
             wssGraphCacheServerDomain +
@@ -1177,42 +1135,40 @@ export default function App() {
         }
     }, [lastUserPositionsMessage]);
 
-    // const userSwapsCacheSubscriptionEndpoint = useMemo(
-    //     () =>
-    //         wssGraphCacheServerDomain +
-    //         '/subscribe_user_swaps?' +
-    //         new URLSearchParams({
-    //             user: account || '',
-    //             chainId: chainData.chainId,
-    //             addValue: 'true',
-    //             ensResolution: 'true',
-    //         }),
-    //     [account, chainData.chainId],
-    // );
+    const userRecentChangesCacheSubscriptionEndpoint = useMemo(
+        () =>
+            wssGraphCacheServerDomain +
+            '/subscribe_user_recent_changes?' +
+            new URLSearchParams({
+                user: account || '',
+                chainId: chainData.chainId,
+                addValue: 'true',
+                ensResolution: 'true',
+            }),
+        [account, chainData.chainId],
+    );
 
-    // const { lastMessage: lastUserSwapsMessage } = useWebSocket(
-    //     userSwapsCacheSubscriptionEndpoint,
-    //     {
-    //         // share: true,
-    //         onOpen: () => console.log('user swaps subscription opened'),
-    //         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    //         onClose: (event: any) => console.log({ event }),
-    //         // onClose: () => console.log('userSwaps websocket connection closed'),
-    //         // Will attempt to reconnect on all close events, such as server shutting down
-    //         shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
-    //     },
-    //     // only connect if account is available
-    //     account !== null && account !== '',
-    // );
+    const { lastMessage: lastUserRecentChangesMessage } = useWebSocket(
+        userRecentChangesCacheSubscriptionEndpoint,
+        {
+            // share: true,
+            onOpen: () => console.log('user recent changes subscription opened'),
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            onClose: (event: any) => console.log({ event }),
+            // Will attempt to reconnect on all close events, such as server shutting down
+            shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
+        },
+        // only connect is account is available
+        account !== null && account !== '',
+    );
 
-    // useEffect(() => {
-    //     if (lastUserSwapsMessage !== null) {
-    //         const lastMessageData = JSON.parse(lastUserSwapsMessage.data).data;
-    //         if (lastMessageData) {
-    //             dispatch(addSwapsByUser(lastMessageData));
-    //         }
-    //     }
-    // }, [lastUserSwapsMessage]);
+    useEffect(() => {
+        if (lastUserRecentChangesMessage !== null) {
+            const lastMessageData = JSON.parse(lastUserRecentChangesMessage.data).data;
+
+            if (lastMessageData) dispatch(addChangesByUser(lastMessageData));
+        }
+    }, [lastUserRecentChangesMessage]);
 
     const [baseTokenBalance, setBaseTokenBalance] = useState<string>('');
     const [quoteTokenBalance, setQuoteTokenBalance] = useState<string>('');

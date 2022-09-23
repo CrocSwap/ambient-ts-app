@@ -383,14 +383,19 @@ export const graphDataSlice = createSlice({
             state.changesByUser = action.payload;
         },
         addChangesByUser: (state, action: PayloadAction<Array<ITransaction>>) => {
-            const swapTxToFind = action.payload[0].tx.toLowerCase();
-            const indexOfTx = state.changesByUser.changes
-                .map((item) => item.tx.toLowerCase())
-                .findIndex((tx) => tx === swapTxToFind);
-            if (indexOfTx === -1) {
-                state.changesByUser.changes = action.payload.concat(state.changesByUser.changes);
-            } else {
-                state.changesByUser.changes[indexOfTx] = action.payload[0];
+            for (let index = 0; index < action.payload.length; index++) {
+                const updatedTx = action.payload[index];
+                const txToFind = updatedTx.tx.toLowerCase();
+                const indexOfTxInState = state.changesByUser.changes
+                    .map((item) => item.tx.toLowerCase())
+                    .findIndex((tx) => tx === txToFind);
+                if (indexOfTxInState === -1) {
+                    state.changesByUser.changes = action.payload.concat(
+                        state.changesByUser.changes,
+                    );
+                } else {
+                    state.changesByUser.changes[indexOfTxInState] = action.payload[index];
+                }
             }
         },
         setChangesByPool: (state, action: PayloadAction<ChangesByPool>) => {
@@ -403,8 +408,6 @@ export const graphDataSlice = createSlice({
                 const indexOfTxInState = state.changesByPool.changes
                     .map((item) => item.tx.toLowerCase())
                     .findIndex((tx) => tx === txToFind);
-                // console.log({ txToFind });
-                // console.log({ indexOfTxInState });
                 if (indexOfTxInState === -1) {
                     state.changesByPool.changes = action.payload.concat(
                         state.changesByPool.changes,
