@@ -148,25 +148,6 @@ export default function Transactions(props: TransactionsProps) {
     const usePaginateDataOrNull = expandTradeTable ? currentTransactions : transactionData;
 
     // console.log({ transactionData });
-    const wssGraphCacheServerDomain = 'wss://809821320828123.de:5000';
-
-    const poolRecentChangesCacheSubscriptionEndpoint = useMemo(
-        () =>
-            wssGraphCacheServerDomain +
-            '/subscribe_pool_recent_changes?' +
-            new URLSearchParams({
-                base: baseTokenAddress.toLowerCase(),
-                quote: quoteTokenAddress.toLowerCase(),
-                poolIdx: chainData.poolIndex.toString(),
-                chainId: chainData.chainId,
-                ensResolution: 'true',
-                annotate: 'true',
-                //  addCachedAPY: 'true',
-                //  omitKnockout: 'true',
-                addValue: 'true',
-            }),
-        [baseTokenAddress, quoteTokenAddress, chainData.chainId, chainData.poolIndex],
-    );
 
     // wait 5 seconds to open a subscription to pool changes
     useEffect(() => {
@@ -201,6 +182,26 @@ export default function Transactions(props: TransactionsProps) {
                 .catch(console.log);
         }
     }, [isShowAllEnabled]);
+
+    const wssGraphCacheServerDomain = 'wss://809821320828123.de:5000';
+
+    const poolRecentChangesCacheSubscriptionEndpoint = useMemo(
+        () =>
+            wssGraphCacheServerDomain +
+            '/subscribe_pool_recent_changes?' +
+            new URLSearchParams({
+                base: baseTokenAddress.toLowerCase(),
+                quote: quoteTokenAddress.toLowerCase(),
+                poolIdx: chainData.poolIndex.toString(),
+                chainId: chainData.chainId,
+                ensResolution: 'true',
+                annotate: 'true',
+                //  addCachedAPY: 'true',
+                //  omitKnockout: 'true',
+                addValue: 'true',
+            }),
+        [baseTokenAddress, quoteTokenAddress, chainData.chainId, chainData.poolIndex],
+    );
 
     const {
         //  sendMessage,
