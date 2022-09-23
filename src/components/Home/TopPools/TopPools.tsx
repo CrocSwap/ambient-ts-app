@@ -36,7 +36,7 @@ export default function TopPools(props: TopPoolsProps) {
             <div className={styles.title}>{t('topPools')}</div>
             <div className={styles.content}>
                 {topPools.map((pool, idx) => (
-                    <NavLink key={idx} to='/trade/range'>
+                    <NavLink key={idx} to='/trade/market'>
                         <PoolCard
                             name={pool.name}
                             tokenA={pool.base}
