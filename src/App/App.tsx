@@ -19,8 +19,9 @@ import {
     setLimitOrdersByUser,
     setLimitOrdersByPool,
     ILimitOrderState,
-    ITransaction,
+    // ITransaction,
     addChangesByUser,
+    // ChangesByUser,
 } from '../utils/state/graphDataSlice';
 import { ethers } from 'ethers';
 import { useMoralis } from 'react-moralis';
@@ -105,8 +106,9 @@ import { memoizeTokenPrice } from './functions/fetchTokenPrice';
 import { useTokenUniverse } from './hooks/useTokenUniverse';
 import { getPositionData } from './functions/getPositionData';
 import { getLimitOrderData } from './functions/getLimitOrderData';
-import { getTransactionData } from './functions/getTransactionData';
+// import { getTransactionData } from './functions/getTransactionData';
 import { fetchPoolRecentChanges } from './functions/fetchPoolRecentChanges';
+import { fetchUserRecentChanges } from './functions/fetchUserRecentChanges';
 
 const cachedFetchAddress = memoizeFetchAddress();
 const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
@@ -1411,39 +1413,25 @@ export default function App() {
             }
 
             try {
-                const userRecentChangesCacheEndpoint =
-                    httpGraphCacheServerDomain + '/user_recent_changes?';
-                console.log('fetching user recent changes');
-                fetch(
-                    userRecentChangesCacheEndpoint +
-                        new URLSearchParams({
-                            user: account,
-                            chainId: chainData.chainId,
-                            addValue: 'true',
-                            simpleCalc: 'true',
-                            annotateMEV: 'false',
-                            annotate: 'true',
-                            ensResolution: 'true',
-                            n: '100',
-                        }),
-                )
-                    .then((response) => response?.json())
-                    .then((json) => {
-                        const userTransactions = json?.data;
-
-                        if (userTransactions) {
-                            Promise.all(
-                                userTransactions.map((tx: ITransaction) => {
-                                    return getTransactionData(tx, importedTokens);
+                fetchUserRecentChanges({
+                    importedTokens: importedTokens,
+                    user: account,
+                    chainId: chainData.chainId,
+                    annotate: true,
+                    addValue: true,
+                    simpleCalc: true,
+                    annotateMEV: false,
+                    ensResolution: true,
+                    n: 100,
+                })
+                    .then((updatedTransactions) => {
+                        if (updatedTransactions) {
+                            dispatch(
+                                setChangesByUser({
+                                    dataReceived: true,
+                                    changes: updatedTransactions,
                                 }),
-                            ).then((updatedTransactions) => {
-                                dispatch(
-                                    setChangesByUser({
-                                        dataReceived: true,
-                                        changes: updatedTransactions,
-                                    }),
-                                );
-                            });
+                            );
                         }
                     })
                     .catch(console.log);
