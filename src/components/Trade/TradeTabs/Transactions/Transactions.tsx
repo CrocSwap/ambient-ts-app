@@ -1,7 +1,12 @@
 import styles from './Transactions.module.css';
 import TransactionCard from './TransactionCard';
 import TransactionCardHeader from './TransactionCardHeader';
-import { addChangesByPool, CandleData, graphData } from '../../../../utils/state/graphDataSlice';
+import {
+    addChangesByPool,
+    CandleData,
+    graphData,
+    setChangesByPool,
+} from '../../../../utils/state/graphDataSlice';
 import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { Dispatch, SetStateAction, useState, useEffect, useMemo } from 'react';
@@ -9,7 +14,8 @@ import TransactionsSkeletons from './TransactionsSkeletons/TransactionsSkeletons
 import Pagination from '../../../Global/Pagination/Pagination';
 import { ChainSpec } from '@crocswap-libs/sdk';
 import useWebSocket from 'react-use-websocket';
-import useDebounce from '../../../../App/hooks/useDebounce';
+// import useDebounce from '../../../../App/hooks/useDebounce';
+import { fetchPoolRecentChanges } from '../../../../App/functions/fetchPoolRecentChanges';
 
 interface TransactionsProps {
     isShowAllEnabled: boolean;
@@ -60,6 +66,8 @@ export default function Transactions(props: TransactionsProps) {
     // todoJr: Finish this loading logic
     const [isDataLoading, setIsDataLoading] = useState(true);
     const [dataToDisplay, setDataToDisplay] = useState(false);
+
+    const [debouncedIsShowAllEnabled, setDebouncedIsShowAllEnabled] = useState(false);
 
     // check to see if data is received
     // if it is, set data is loading to false
@@ -161,7 +169,38 @@ export default function Transactions(props: TransactionsProps) {
     );
 
     // wait 5 seconds to open a subscription to pool changes
-    const debouncedIsShowAllEnabled: boolean = useDebounce(isShowAllEnabled, 5000);
+    useEffect(() => {
+        const handler = setTimeout(() => setDebouncedIsShowAllEnabled(isShowAllEnabled), 5000);
+        return () => clearTimeout(handler);
+    }, [isShowAllEnabled]);
+
+    useEffect(() => {
+        if (isShowAllEnabled) {
+            fetchPoolRecentChanges({
+                base: baseTokenAddress,
+                quote: quoteTokenAddress,
+                poolIdx: chainData.poolIndex,
+                chainId: chainData.chainId,
+                annotate: true,
+                addValue: true,
+                simpleCalc: true,
+                annotateMEV: false,
+                ensResolution: true,
+                n: 100,
+            })
+                .then((poolChangesJsonData) => {
+                    if (poolChangesJsonData) {
+                        dispatch(
+                            setChangesByPool({
+                                dataReceived: true,
+                                changes: poolChangesJsonData,
+                            }),
+                        );
+                    }
+                })
+                .catch(console.log);
+        }
+    }, [isShowAllEnabled]);
 
     const {
         //  sendMessage,
@@ -171,7 +210,34 @@ export default function Transactions(props: TransactionsProps) {
         poolRecentChangesCacheSubscriptionEndpoint,
         {
             // share:  true,
-            onOpen: () => console.log('pool liqChange subscription opened'),
+            onOpen: () => {
+                console.log('pool recent changes subscription opened');
+                setTimeout(() => {
+                    fetchPoolRecentChanges({
+                        base: baseTokenAddress,
+                        quote: quoteTokenAddress,
+                        poolIdx: chainData.poolIndex,
+                        chainId: chainData.chainId,
+                        annotate: true,
+                        addValue: true,
+                        simpleCalc: true,
+                        annotateMEV: false,
+                        ensResolution: true,
+                        n: 100,
+                    })
+                        .then((poolChangesJsonData) => {
+                            if (poolChangesJsonData) {
+                                dispatch(
+                                    setChangesByPool({
+                                        dataReceived: true,
+                                        changes: poolChangesJsonData,
+                                    }),
+                                );
+                            }
+                        })
+                        .catch(console.log);
+                }, 15000);
+            },
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             onClose: (event: any) => console.log({ event }),
             // onClose: () => console.log('allPositions websocket connection closed'),

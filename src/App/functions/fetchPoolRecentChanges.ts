@@ -30,6 +30,8 @@ export const fetchPoolRecentChanges = (props: IFetchPoolRecentChangesProps) => {
     const poolRecentChangesCacheEndpoint =
         'https://809821320828123.de:5000' + '/pool_recent_changes?';
 
+    console.log('fetching pool recent changes');
+
     const poolChanges = fetch(
         poolRecentChangesCacheEndpoint +
             new URLSearchParams({

@@ -816,8 +816,6 @@ export default function App() {
                 }
 
                 // retrieve pool recent changes
-                console.log('fetching pool recent changes');
-
                 fetchPoolRecentChanges({
                     base: sortedTokens[0],
                     quote: sortedTokens[1],
@@ -826,7 +824,7 @@ export default function App() {
                     annotate: true,
                     addValue: true,
                     simpleCalc: true,
-                    annotateMEV: true,
+                    annotateMEV: false,
                     ensResolution: true,
                     n: 100,
                 })
@@ -1423,10 +1421,10 @@ export default function App() {
                             chainId: chainData.chainId,
                             addValue: 'true',
                             simpleCalc: 'true',
-                            annotateMEV: 'true',
+                            annotateMEV: 'false',
                             annotate: 'true',
                             ensResolution: 'true',
-                            n: '200',
+                            n: '100',
                         }),
                 )
                     .then((response) => response?.json())
