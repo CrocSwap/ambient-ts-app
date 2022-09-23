@@ -24,7 +24,11 @@ export const useGlobalModal = (initialMode = false) => {
             setTitle(title);
         }
     };
-    const closeGlobalModal = () => setIsGlobalModalOpen(false);
+    const closeGlobalModal = () => {
+        setCurrentContent('');
+        setTitle('');
+        setIsGlobalModalOpen(false);
+    };
 
     // return all data and functions needed for local use
     return [isGlobalModalOpen, openGlobalModal, closeGlobalModal, currentContent, title] as const;
